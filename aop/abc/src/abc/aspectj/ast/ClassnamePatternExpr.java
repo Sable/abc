@@ -44,6 +44,8 @@ public interface ClassnamePatternExpr extends Node
                       CodeWriter w, PrettyPrinter pp);
 
     public boolean matches(PatternMatcher matcher, PCNode cl);
+    
+    public boolean matches(PCNode cl);
 
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern();
 

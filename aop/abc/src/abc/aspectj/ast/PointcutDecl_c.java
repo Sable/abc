@@ -78,8 +78,8 @@ public class PointcutDecl_c extends MethodDecl_c
                                        MakesAspectMethods,
                                        DependsCheck
 {
-    String name;
-    Pointcut pc; // null if abstract
+    protected String name;
+    protected Pointcut pc; // null if abstract
 
 	  
     public PointcutDecl_c(Position pos,

@@ -42,6 +42,5 @@ public interface EAJNodeFactory extends AJNodeFactory {
     public GlobalPointcutDecl GlobalPointcutDecl(
                                     Position pos,
                                     ClassnamePatternExpr aspect_pattern,
-                                    Pointcut pc,
-                                    String name);
+                                    Pointcut pc);
 }

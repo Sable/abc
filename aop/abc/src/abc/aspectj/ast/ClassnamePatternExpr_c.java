@@ -30,6 +30,7 @@ import java.util.*;
 import polyglot.ext.jl.ast.Node_c;
 
 import abc.aspectj.visit.PatternMatcher;
+import abc.aspectj.visit.PCNode;
 
 /** 
  *  Class name pattern expressions can combine name patterns with logical operators.
@@ -60,6 +61,10 @@ public abstract class ClassnamePatternExpr_c extends Node_c
         else {
             printBlock(expr, w, pp);
         }
+    }
+    
+    public boolean matches(PCNode cl) {
+    	return matches(PatternMatcher.v(),cl);
     }
 
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern() {

@@ -88,7 +88,7 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
                                                    (EAJTypeSystem) ts,
                                                    (EAJNodeFactory) nf)));
         l.add(new GlobalBarrierPass(COLLECTED_GLOBAL_POINTCUTS, job));
-        l.add(new VisitorPass(COLLECT_GLOBAL_POINTCUTS,
+        l.add(new VisitorPass(CONJOIN_GLOBAL_POINTCUTS,
                               job,
                               new GlobalPointcuts(GlobalPointcuts.CONJOIN,
                                                   job,

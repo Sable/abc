@@ -131,7 +131,7 @@ public class GlobalPointcuts extends ContextVisitor
         while (i.hasNext()) {
             ClassnamePatternExpr pattern = (ClassnamePatternExpr) i.next();
 
-            if (pattern.matches(PatternMatcher.v(), aspct)) {
+            if (pattern.matches(aspct)) {
                 Pointcut global = (Pointcut) globalpcs.get(pattern);
                 ad = ad.conjoinPointcutWith(this, global);
             }

@@ -93,10 +93,10 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
 
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	if (op == COND_OR) {
-	    return left.matches(matcher, cl) || right.matches(matcher, cl);
+	    return left.matches(cl) || right.matches(cl);
 	}
 	if (op == COND_AND) {
-	    return left.matches(matcher, cl) && right.matches(matcher, cl);
+	    return left.matches(cl) && right.matches(matcher, cl);
 	}
 	throw new RuntimeException("Illegal CPE op");
     }

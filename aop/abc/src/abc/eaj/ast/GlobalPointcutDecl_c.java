@@ -39,20 +39,17 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
                                   implements GlobalPointcutDecl
 {
     ClassnamePatternExpr aspect_pattern; // aspects that match this pattern
-    Pointcut pc;                         // should conjoin this pointcut
-                                         // with the pointcut for each piece of
-                                         // advice in the matching aspect
-    String name;
+    // Pointcut pc;                         // should conjoin this pointcut
+    //                                     // with the pointcut for each piece of
+    //                                     // advice in the matching aspect
+    // String name;
 
     public GlobalPointcutDecl_c(Position pos,
                                 ClassnamePatternExpr aspect_pattern,
-                                Pointcut pc,
-                                String name)
+                                Pointcut pc)
     {
-        super(pos, Flags.PUBLIC, name, new LinkedList(), pc);
+        super(pos, Flags.PUBLIC, UniqueID.newID("globalpc"), new LinkedList(), pc);
         this.aspect_pattern = aspect_pattern;
-        this.pc = pc;
-        this.name = name;
     }
 
     protected Node reconstruct(Node n, ClassnamePatternExpr aspect_pattern,
