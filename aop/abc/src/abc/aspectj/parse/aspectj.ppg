@@ -450,14 +450,11 @@ pointcut_declaration ::=
              LPAREN formal_parameter_list_opt:c RPAREN SEMICOLON:e
      /* must check that modifiers include ABSTRACT */
      {: Grm.parserTrace("abstract pointcut declaration");
-         TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
-                                                        parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  parser.nf.PCEmpty(parser.pos(e)),
-                                                  voidn);
+                                                  parser.nf.PCEmpty(parser.pos(e)));
         RESULT = pcd;
      :}
   |  modifiers_opt:a POINTCUT IDENTIFIER:b 
@@ -465,13 +462,11 @@ pointcut_declaration ::=
              COLON pointcut_expr:d SEMICOLON:e 
      /* must check that modifiers DO NOT include ABSTRACT */
      {: Grm.parserTrace("non-abstract pointcut declaration");
-        TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
-                                                        parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  d, voidn);
+                                                  d);
         RESULT = pcd;
      :}
   ;

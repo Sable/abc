@@ -179,9 +179,8 @@ public class AJNodeFactory_c
                                      Flags flags,
                                      String name,
                                      List formals,
-                                     Pointcut pc,
-                                     TypeNode voidn ) {
-        PointcutDecl n = new PointcutDecl_c(pos,flags,name,formals,pc,voidn);
+                                     Pointcut pc) {
+        PointcutDecl n = new PointcutDecl_c(pos,flags,name,formals,pc);
         n = (PointcutDecl)n.ext(extFactory.extPointcutDecl());
         n = (PointcutDecl)n.del(delFactory.delPointcutDecl());
         return n;

@@ -47,10 +47,9 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
     public GlobalPointcutDecl_c(Position pos,
                                 ClassnamePatternExpr aspect_pattern,
                                 Pointcut pc,
-                                String name,
-                                TypeNode voidn)
+                                String name)
     {
-        super(pos, Flags.PUBLIC, name, new LinkedList(), pc, voidn);
+        super(pos, Flags.PUBLIC, name, new LinkedList(), pc);
         this.aspect_pattern = aspect_pattern;
         this.pc = pc;
         this.name = name;

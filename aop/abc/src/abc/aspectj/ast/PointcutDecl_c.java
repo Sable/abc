@@ -86,11 +86,10 @@ public class PointcutDecl_c extends MethodDecl_c
                           Flags flags,
                           String name,
                           List formals,
-                          Pointcut pc,
-                          TypeNode voidn)
+                          Pointcut pc)
     {  super(pos,
 			  flags, 
-			  voidn,
+			  null, // no return type for pointcuts
 			  name, 
 			  formals,
 			  new TypedList(new LinkedList(),TypeNode.class,true),
@@ -176,9 +175,9 @@ public class PointcutDecl_c extends MethodDecl_c
 			if (ct.flags().isInterface()) {
 				flags = flags.Public(); // but not abstract
 			}
-		
+		    
 			return ((AJTypeSystem)ts).pointcutInstance(position(),
-										   ct, flags, returnType.type(), name,
+										   ct, flags, ts.Void(), name,
 										   argTypes,excTypes);
 		}
 

@@ -43,6 +43,5 @@ public interface EAJNodeFactory extends AJNodeFactory {
                                     Position pos,
                                     ClassnamePatternExpr aspect_pattern,
                                     Pointcut pc,
-                                    String name,
-                                    TypeNode voidn);
+                                    String name);
 }

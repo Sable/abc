@@ -90,8 +90,7 @@ public interface AJNodeFactory
                               Flags flags,
                               String name,
                               List formals,
-                              Pointcut pc,
-                              TypeNode voidn);
+                              Pointcut pc);
 
     AdviceDecl AdviceDecl(Position pos,
                       Flags flags,

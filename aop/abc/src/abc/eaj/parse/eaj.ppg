@@ -104,10 +104,8 @@ global_pointcut_decl ::=
         GLOBAL:x COLON classname_pattern_expr:a COLON pointcut_expr:b SEMICOLON:y
         {:
             Grm.parserTrace("GLOBAL type_pattern_expr, pointcut_expr");
-            TypeNode voidn = parser.nf.CanonicalTypeNode(parser.pos(x),
-                                                        parser.ts.Void());
             String name = UniqueID.newID("global");
             RESULT = parser.nf.GlobalPointcutDecl(parser.pos(x,y),
-                                                  a, b, name, voidn);
+                                                  a, b, name);
         :}
     ;

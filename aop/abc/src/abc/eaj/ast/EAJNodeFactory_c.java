@@ -62,11 +62,10 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
                                     Position pos,
                                     ClassnamePatternExpr aspect_pattern,
                                     Pointcut pc,
-                                    String name,
-                                    TypeNode voidn)
+                                    String name)
     {
         return new GlobalPointcutDecl_c(pos, aspect_pattern,
-                                        pc, name, voidn);
+                                        pc, name);
     }
 
     public AdviceDecl AdviceDecl(Position pos, Flags flags,
