@@ -1085,14 +1085,14 @@ public class IntertypeAdjuster {
 				ss.add(rStmt);
 		} else {
 			List setargs = new ArrayList();
-			args.add(res);
+			setargs.add(res);
 			InvokeExpr sie;
 			if (ifd.getSetter().getDeclaringClass().getSootClass().isInterface()) {
 					sie = Jimple.v().newInterfaceInvokeExpr(v,
-								   ifd.getSetter().getSootMethod().makeRef(),args);
+								   ifd.getSetter().getSootMethod().makeRef(),setargs);
 				} else {
 					sie = Jimple.v().newVirtualInvokeExpr(v,
-									ifd.getSetter().getSootMethod().makeRef(),args); }
+									ifd.getSetter().getSootMethod().makeRef(),setargs); }
 				InvokeStmt istmt = Jimple.v().newInvokeStmt(sie);
 				ss.add(istmt);
 		}
