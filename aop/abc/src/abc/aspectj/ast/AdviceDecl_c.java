@@ -129,7 +129,8 @@ public class AdviceDecl_c extends MethodDecl_c
 		TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 		List formals = visitList(this.formals, v);
 		List throwTypes = visitList(this.throwTypes, v);
-		// do not visit spec, to avoid duplicate errors
+		AdviceSpec spec = (AdviceSpec) visitChild(this.spec, v);
+		// FIXME: visiting spec gives duplicate errors!!
 		Pointcut pc = (Pointcut) visitChild(this.pc,v);
 		Block body = (Block) visitChild(this.body, v);
 		return reconstruct(returnType, formals, throwTypes, body, spec, pc);
