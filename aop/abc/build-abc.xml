@@ -1,0 +1,285 @@
+<?xml version="1.0"?>
+
+<project default="default">
+
+<taskdef name="abc" classname="abc.main.AntTask"/>
+
+    <target name="default"
+            depends="abc-jar,runtime-jar,testing-jar" />
+
+    <target name="settings">
+        <property file="ant.settings"/>
+        <fail
+            message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+            unless="polyglot.loc"
+        />
+    </target>
+
+    <target name="jars" 
+            depends="abc-jar,runtime-jar,testing-jar,complete-jar,abc-for-ajc-ant-jar"/>
+
+    <target name="copy-jars" depends="settings,libdir">
+        <copy file="${polyglot.loc}" tofile="lib/polyglot.jar" />
+        <copy file="${polyglot.cupclasses.loc}" tofile="lib/java_cup.jar" />
+        <copy file="${soot.loc}" tofile="lib/sootclasses.jar" />
+        <copy file="${jasmin.loc}" tofile="lib/jasminclasses-sable-nocup.jar" />
+    </target>
+
+    <target name="abc-for-ajc-ant-jar" depends="settings,libdir">
+       <jar destfile="lib/abc-for-ajc-ant.jar">
+           <fileset dir="dist/abc-for-ajc-ant"/>
+       </jar>
+    </target>
+
+    <target name="libdir">
+       <mkdir dir="lib"/>
+    </target>
+
+    <target name="abc-jar" depends="settings,abc,libdir">
+        <jar destfile="lib/abc.jar">
+            <fileset dir="classes"/>
+        </jar>
+    </target>
+    
+    <target name="runtime-jar" depends="settings,runtime,libdir">
+        <jar destfile="lib/abc-runtime.jar">
+            <fileset dir="runtime-classes"/>
+        </jar>
+    </target>
+    
+    <target name="runtime" depends="settings">
+        <mkdir dir="runtime-classes"/>
+        <abc
+            destdir="runtime-classes"
+            debug="true"
+        >
+            <src path="runtime-src"/>
+            <classpath>
+            </classpath>
+        </abc>
+    </target>
+
+    <target name="testing-jar" depends="settings,testing,libdir">
+        <jar destfile="lib/abc-testing.jar">
+            <fileset dir="testing-classes"/>
+            <zipfileset src="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+            <zipfileset src="${xact.loc}"/>
+        </jar>
+    </target>
+    
+    <target name="testing" depends="settings,abc">
+        <mkdir dir="testing-classes"/>
+        <javac
+            destdir="testing-classes"
+            debug="true"
+        >
+            <src path="testing-src"/>
+            <classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+            </classpath>
+        </javac>
+    </target>
+
+   <target name="complete-jar" depends="abc-jar,libdir">
+        <jar destfile="lib/abc-complete.jar">
+            <fileset dir="classes"/>
+            <zipfileset src="${polyglot.loc}"/>
+            <zipfileset src="${polyglot.cupclasses.loc}"/>
+            <zipfileset src="${soot.loc}"/>
+            <zipfileset src="${jasmin.loc}"/>
+        </jar>
+   </target>
+
+    <target name="abc" depends="settings,flex-translator,cup-translator">
+        <mkdir dir="classes"/>
+        <abc
+            destdir="classes"
+            debug="true"
+        >
+            <src path="src"/>
+            <src path="generated"/>
+            <classpath>
+                <pathelement location="classes"/>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+                <pathelement location="${soot.loc}"/>
+                <pathelement location="${jasmin.loc}"/>
+                <pathelement location="/usr/share/java/ant-1.6.jar"/>
+                <pathelement location="/usr/local/src/soot-dev/lib/jedd-runtime-0.2.jar"/>
+                <pathelement location="/home/ganesh/abc-project/abc/lib/abc-runtime.jar"/>
+            </classpath>
+        </abc>
+    </target>
+
+    <target name="flex-translator" depends="settings,jflex-dep" unless="jflex-up-to-date">
+        <mkdir dir="generated/abc/aspectj/parse"/>
+        <mkdir dir="generated/abc/eaj/parse"/>
+        <java classname="JFlex.Main"
+            fork="true"
+            dir="."
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${jflex.loc}"/>
+            </classpath>
+            <arg line="-d generated/abc/aspectj/parse src/abc/aspectj/parse/aspectj.flex"/>
+        </java>
+    </target>
+
+    <target name="jflex-dep" depends="settings">
+        <dependset>
+            <srcfileset dir="src/abc/aspectj/parse" includes="aspectj.flex"/>
+            <targetfileset dir="generated/abc/aspectj/parse"
+                includes="Lexer_c.java"/>
+        </dependset>
+        <condition property="jflex-up-to-date">
+            <and>
+                <available file="generated/abc/aspectj/parse/Lexer_c.java"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="cup-translator" depends="settings,flex-translator,cup-dep,ppg-translator" unless="cup-up-to-date">
+        <mkdir dir="generated/abc/aspectj/parse"/>
+        <mkdir dir="generated/abc/eaj/parse"/>
+        <java classname="java_cup.Main"
+            fork="true"
+            dir="generated/abc/aspectj/parse"
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="aspectj_ppg.cup"/>
+        </java>
+        <java classname="java_cup.Main"
+            fork="true"
+            dir="generated/abc/eaj/parse"
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="eaj_ppg.cup"/>
+        </java>
+    </target>
+
+    <target name="cup-dep" depends="ppg-translator,settings">
+        <dependset>
+            <srcfileset dir="generated/abc/aspectj/parse" includes="aspectj_ppg.cup"/>
+            <targetfileset dir="generated/abc/aspectj/parse"
+                includes="Grm.java,sym.java"/>
+        </dependset>
+        <dependset>
+            <srcfileset dir="generated/abc/eaj/parse" includes="eaj_ppg.cup"/>
+            <targetfileset dir="generated/abc/eaj/parse"
+                includes="Grm.java,sym.java"/>
+        </dependset>
+        <condition property="cup-up-to-date">
+            <and>
+                <available file="generated/abc/aspectj/parse/Grm.java"/>
+                <available file="generated/abc/aspectj/parse/sym.java"/>
+                <available file="generated/abc/eaj/parse/Grm.java"/>
+                <available file="generated/abc/eaj/parse/sym.java"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="ppg-translator" depends="settings,ppg-dep,flex-translator" unless="ppg-up-to-date">
+        <mkdir dir="generated/abc/aspectj/parse"/>
+        <mkdir dir="generated/abc/eaj/parse"/>
+        <java classname="ppg.PPG"
+            fork="true"
+            dir="src/abc/aspectj/parse"
+            failonerror="true"
+            output="generated/abc/aspectj/parse/aspectj_ppg.cup"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="aspectj.ppg"/>
+        </java>
+        <java classname="ppg.PPG"
+            fork="true"
+            dir="src/abc/eaj/parse"
+            failonerror="true"
+            output="generated/abc/eaj/parse/eaj_ppg.cup"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="eaj.ppg"/>
+        </java>
+    </target>
+    <target name="ppg-dep" depends="settings">
+        <dependset>
+            <srcfileset dir="src/abc/aspectj/parse" includes="aspectj.ppg"/>
+            <targetfileset dir="generated/abc/aspectj/parse"
+                includes="aspectj_ppg.cup"/>
+        </dependset>
+        <dependset>
+            <srcfileset dir="src/abc/eaj/parse" includes="aspectj.ppg"/>
+            <targetfileset dir="generated/abc/eaj/parse"
+                includes="eaj_ppg.cup"/>
+        </dependset>
+        <condition property="ppg-up-to-date">
+            <and> 
+                <available file="generated/abc/aspectj/parse/aspectj_ppg.cup"/>
+                <available file="generated/abc/eaj/parse/eaj_ppg.cup"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="javadoc">
+        <javadoc
+                 destdir="javadoc"
+		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/1.4.2/docs/api/"
+                 maxmemory="200m"
+                 windowtitle="ABC compiler"
+                 verbose="true"
+        >
+          <fileset dir="src" includes="**/*.java" />
+        </javadoc>
+    </target>
+
+    <target name="runtime-javadoc">
+        <javadoc
+                 destdir="runtime-javadoc"
+		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/1.4.2/docs/api/"
+                 maxmemory="200m"
+                 windowtitle="ABC compiler"
+                 verbose="true"
+        >
+          <fileset dir="runtime-src" includes="**/*.java" />
+        </javadoc>
+    </target>
+
+    <target name="clean" depends="settings">
+        <delete quiet="true" includeEmptyDirs="yes">
+            <fileset dir="runtime-classes" includes="**" />
+            <fileset dir="classes" includes="**" />
+            <fileset dir="testing-classes" includes="**" />
+            <fileset dir="lib" includes="**/*.jar" />
+            <fileset dir="ajc-harness/classes" includes="**" />
+            <fileset dir="ajc-harness/lib" includes="abc-tests.jar" />
+        </delete> 
+    </target>
+
+    <target name="clobber" depends="veryclean"/>
+
+    <target name="veryclean" depends="settings,clean">
+        <delete quiet="true">
+            <fileset dir="generated" includes="**/*" />
+        </delete>
+    </target>
+</project>
