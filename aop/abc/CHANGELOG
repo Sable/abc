@@ -4,6 +4,9 @@
 # but the format is "%<version number> <unixtime>" if you need 
 # to make one of your own. Lines beginning with '#' are ignored, predictably
 # enough. 
+#
+# If you want to warn "extenders" of an interface change, then start
+# your entry with a '!' instead of a '$'.
 # 
 # You should generally avoid changing the file below a line starting
 # with '%', as this would alter the changelog for versions that are already
