@@ -237,6 +237,7 @@ public class TestCase {
 						main = new SilentMain(args);
 						main.run();
 						// Compilation successful. If we were expecting errors, this means the test failed.
+					    List warnings = sortList(main.getErrors());
 						if(xChildren[i].has("//abc:message[@kind != \"warning\"]")) {
 						    System.err.println("Compilation succeeded but was expected to fail.");
 						    failTest();
@@ -244,12 +245,18 @@ public class TestCase {
 						} else if(xChildren[i].has("//abc:message")) {
 						    // we can only really have warnings now, otherwise we should have entered the previous
 						    // case - and we should have received a CompilationFailedException anyway.
-						    List warnings = sortList(main.getErrors());
 						    if(!checkErrors(warnings, xChildren[i]))
 						        {
 						        failTest();
 						        return;
 						        }
+						} else if(warnings != null && warnings.size() > 0) {
+						    // If we're here, then the XML file didn't specify any warnings, but we threw
+						    // some => test failed.
+						    System.err.println("Compilation produced unexpected warnings:");
+						    printErrors(warnings);
+						    failTest();
+						    return;
 						}
 					} catch(CompilerAbortedException e) {
 					    // Compiler aborted, i.e. there were insufficient options to perform a compilation.
@@ -493,16 +500,6 @@ public class TestCase {
 		for(int j = 0; j < errors.size(); j++) {
 		    // Check the errors are what we expect them to be
 		    ei = (ErrorInfo)errors.get(j);
-		    pos = ei.getPosition();
-		    if(pos == null) {
-		        // There is not much we can do with errors whose position is null, as we need
-		        // the position to identify them as what actually occured.
-		        // Current handling (abc.bridge.AbcCompiler) is to continue...
-		        // TODO: Needs improvement
-		        System.err.println("Error position is null; assuming error matches. Error message: " + ei.getMessage());
-		        System.err.println("WARNING: This test was probably not really passed!!");
-		        continue;
-		    }
 		    try {
 		        errFile = expectedErrors[j].select("//@file")[0].toString();
 		    }
@@ -530,6 +527,22 @@ public class TestCase {
 		        errLine = -1;
 		    }
 		    
+		    pos = ei.getPosition();
+		    if(pos == null) {
+		        // There is not much we can do with errors whose position is null, as we need
+		        // the position to identify them as what actually occured.
+		        // At the moment, we expect to have seen a <message tag without a line number in the xml file.
+		        if(errLine != -1) {
+		            System.err.println("Found an unexpected position-less error: " + ei.getMessage());
+		            System.err.println("Errors found during this compilation:");
+		            printErrors(errors);
+		            failTest();
+		            return false;
+		        }
+		        System.err.println("Error position is null; assuming error matches. Error message: " + ei.getMessage());
+		        System.err.println("WARNING: This test was probably not really passed!!");
+		        continue;
+		    }
 		    // Does the line match?
 		    if(errLine > 0 && errLine != pos.line()) {
 		        // TODO: Check this is correct handling (ignoring line if it wasn't specified)
@@ -541,7 +554,7 @@ public class TestCase {
 		    }
 		    
 		    // Does the file match?
-		    if (!errFile.equals("") && (pos.file() == null || !errFile.endsWith(pos.file()))) {
+		    if (!errFile.equals("") && (pos.file() == null || !(errFile.endsWith(pos.file()) || pos.file().endsWith(errFile)))) {
 		        System.err.println("Found an unexpected error - should be in file " + pos.file() + 
 		                ", but is in " + errFile + ".");
 		        System.err.println("Errors found during this compilation:");
