@@ -87,7 +87,14 @@ public class AbcCompiler extends AjCompiler {
 						ei.getPosition().column(), 
 						ei.getPosition().column()+1, 
 						ei.getPosition().line());
-					CompilationResult compilationResult= ((CompilationResult) compilationResultsMap.get(ei.getPosition().file()));
+					String file=ei.getPosition().file();
+					CompilationResult compilationResult= ((CompilationResult) compilationResultsMap.get(file));
+					
+					if(compilationResult==null) {
+					    file=System.getProperty("abc.compiler.rootdir")+"/"+file;
+					    compilationResult= ((CompilationResult) compilationResultsMap.get(file));
+					}
+
 					ReferenceContext referenceContext= (ReferenceContext) referenceContexts.get(compilationResult);
 					if (referenceContext == null) {
 						referenceContext = new TypeDeclaration(compilationResult);

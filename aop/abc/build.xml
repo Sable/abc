@@ -10,7 +10,7 @@
         />
     </target>
 
-    <target name="jars" depends="abc-jar,runtime-jar"/>
+    <target name="jars" depends="abc-jar,runtime-jar,harness-jar"/>
 
     <target name="abc-jar" depends="settings,abc">
         <jar destfile="lib/abc.jar">
@@ -32,6 +32,24 @@
         >
             <src path="runtime-src"/>
             <classpath>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="harness-jar" depends="settings,harness">
+        <jar destfile="ajc-harness/lib/abc-tests.jar">
+            <fileset dir="ajc-harness/classes"/>
+        </jar>
+    </target>
+
+    <target name="harness" depends="settings,abc">
+        <mkdir dir="ajc-harness/classes"/>
+        <javac destdir="ajc-harness/classes" debug="true">
+            <src path="ajc-harness/src"/>
+            <classpath> 
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="ajc-harness/lib/abc-testing-harness.jar"/>
+              <pathelement location="classes"/>
             </classpath>
         </javac>
     </target>

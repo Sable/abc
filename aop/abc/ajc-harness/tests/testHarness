@@ -1,3 +1,4 @@
 #!/bin/sh
-java org.aspectj.testing.Harness -logMinAll $1
+
+java -Dabc.compiler.rootdir=$2 org.aspectj.testing.Harness -logMinAll $1
 

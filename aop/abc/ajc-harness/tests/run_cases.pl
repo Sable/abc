@@ -157,7 +157,7 @@ sub do_case {
    
 
   } else {
-    system("./testHarness tmp.xml > tmp.output");
+    system("./testHarness tmp.xml `pwd`/$dir > tmp.output");
   }
 
    my $filename=$title;
