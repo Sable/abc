@@ -70,12 +70,6 @@ public class MethodPattern_c extends Node_c
 	return reconstruct(modifiers,type,name,formals,throwspats);
     }
 
-    public String toString() {
-	String s=modifiers+" "+type+" "+name+" "+formals;
-	if(throwspats!=null) s+=" throws "+throwspats;
-	return s;
-    }
-
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 
        w.begin(2);
@@ -115,6 +109,42 @@ public class MethodPattern_c extends Node_c
 	   }
        }
        w.end();
+    }
+
+    public String toString() {
+	StringBuffer sb = new StringBuffer();
+
+       for (Iterator i = modifiers.iterator(); i.hasNext(); ) {
+	    ModifierPattern f = (ModifierPattern) i.next();
+	    sb.append(f);
+       }
+
+       sb.append(type);
+       sb.append(" ");
+       sb.append(name);
+
+       sb.append("(");
+       for (Iterator i = formals.iterator(); i.hasNext(); ) {
+	    FormalPattern f = (FormalPattern) i.next();
+	    sb.append(f);
+
+	    if (i.hasNext()) {
+		sb.append(",");
+	    }
+       }
+       sb.append(")");
+       
+       if (throwspats.size() != 0) {
+	   sb.append(" throws ");
+	   for (Iterator ti = throwspats.iterator(); ti.hasNext(); ) {
+	       ThrowsPattern t = (ThrowsPattern) ti.next();
+	       sb.append(t);
+	       if (ti.hasNext()) {
+		   sb.append(", ");
+	       }
+	   }
+       }
+       return sb.toString();
     }
 
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern() {

@@ -16,7 +16,7 @@ public class FixCharLit_c extends CharLit_c
  /** Write character to output file - unicode added by ODM  */
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("'");
-	w.write(StringUtil.unicodeEscape((char) value));
+	w.write(StringUtil.unicodeEscape((char) (int) value));
         w.write("'");
     }
 

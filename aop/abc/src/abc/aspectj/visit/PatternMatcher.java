@@ -234,7 +234,11 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesClass(SootClass sc) {
-	    return PatternMatcher.this.matchesClass(pattern, sc.toString());
+	    boolean matches = PatternMatcher.this.matchesClass(pattern, sc.toString());
+	    if (abc.main.Debug.v().patternMatches) {
+		System.err.println("Matching classname pattern "+pattern+" against "+sc+": "+matches);
+	    }
+	    return matches;
 	}
 
 	public String toString() {
@@ -254,7 +258,11 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesType(Type t) {
-	    return PatternMatcher.this.matchesType(pattern, t.toString());
+	    boolean matches = PatternMatcher.this.matchesType(pattern, t.toString());
+	    if (abc.main.Debug.v().patternMatches) {
+		System.err.println("Matching type pattern "+pattern+" against "+t+": "+matches);
+	    }
+	    return matches;
 	}
 
 	public String toString() {
@@ -276,46 +284,45 @@ public class PatternMatcher {
 	public boolean matchesMethod(SootMethod method) {
 	    String name = MethodCategory.getName(method);
 	    String classname = MethodCategory.getClassName(method);
-	    return
+	    boolean matches =
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
 		matchesClass(pattern.getName().base(), classname) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
+	    if (abc.main.Debug.v().patternMatches) {
+		System.err.println("Matching method pattern "+pattern+" against "+method+": "+matches);
+	    }
+	    return matches;
 	}
 	public String toString() {
 	    return pattern.toString();
 	}
     }
 
-    public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern(List modifiers,
-								  TypePatternExpr type,
-								  ClassnamePatternExpr clpat,
-								  SimpleNamePattern name) {
-	return new AIFieldPattern(modifiers, type, clpat, name);
+    public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern(FieldPattern pattern) {
+	return new AIFieldPattern(pattern);
     }
 
 
     private class AIFieldPattern implements abc.weaving.aspectinfo.FieldPattern {
-	List/*<ModifierPattern>*/ modifiers;
-	TypePatternExpr type;
-	ClassnamePatternExpr clpat;
-	SimpleNamePattern name;
+	FieldPattern pattern;
 
-	public AIFieldPattern(List modifiers, TypePatternExpr type, ClassnamePatternExpr clpat, SimpleNamePattern name) {
-	    this.modifiers = modifiers;
-	    this.type = type;
-	    this.clpat = clpat;
-	    this.name = name;
+	public AIFieldPattern(FieldPattern pattern) {
+	    this.pattern = pattern;
 	}
 
 	public boolean matchesField(SootField sf) {
-	    return
-		matchesModifiers(modifiers, sf) &&
-		matchesType(type, sf.getType().toString()) &&
-		matchesClass(clpat, sf.getDeclaringClass().toString()) &&
-		name.getPattern().matcher(sf.getName()).matches();
+	    boolean matches =
+		matchesModifiers(pattern.getModifiers(), sf) &&
+		matchesType(pattern.getType(), sf.getType().toString()) &&
+		matchesClass(pattern.getName().base(), sf.getDeclaringClass().toString()) &&
+		pattern.getName().name().getPattern().matcher(sf.getName()).matches();
+	    if (abc.main.Debug.v().patternMatches) {
+		System.err.println("Matching field pattern "+pattern+" against "+sf+": "+matches);
+	    }
+	    return matches;
 	}
 
 	public boolean matchesMethod(SootMethod sm) {
@@ -331,7 +338,7 @@ public class PatternMatcher {
 	}
 
 	public String toString() {
-	    return modifiers.toString()+" "+type.toString()+" "+clpat.toString()+" "+name.toString();
+	    return pattern.toString();
 	}
     }
 
@@ -348,11 +355,15 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesConstructor(SootMethod method) {
-	    return
+	    boolean matches =
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
+	    if (abc.main.Debug.v().patternMatches) {
+		System.err.println("Matching constructor pattern "+pattern+" against "+method+": "+matches);
+	    }
+	    return matches;
 	}
 	public String toString() {
 	    return pattern.toString();

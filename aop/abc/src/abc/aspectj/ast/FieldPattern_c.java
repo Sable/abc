@@ -19,6 +19,10 @@ public class FieldPattern_c extends Node_c
     TypePatternExpr type;
     ClassTypeDotId name;
 
+    public List/*<ModifierPattern>*/ getModifiers() { return modifiers; }
+    public TypePatternExpr getType() { return type; }
+    public ClassTypeDotId getName() { return name; }
+
     public FieldPattern_c(Position pos,
 			  List modifiers,
 			  TypePatternExpr type,
@@ -72,8 +76,23 @@ public class FieldPattern_c extends Node_c
 
     }
 
+    public String toString() {
+	StringBuffer sb = new StringBuffer();
+
+       for (Iterator i = modifiers.iterator(); i.hasNext(); ) {
+	    ModifierPattern f = (ModifierPattern) i.next();
+	    sb.append(f);
+       }
+
+       sb.append(type);
+       sb.append(" ");
+       sb.append(name);
+
+       return sb.toString();
+    }
+
     public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern() {
-	return PatternMatcher.v().makeAIFieldPattern(modifiers, type, name.base(), name.name());
+	return PatternMatcher.v().makeAIFieldPattern(this);
     }
 
 }

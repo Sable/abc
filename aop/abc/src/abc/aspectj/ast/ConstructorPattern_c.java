@@ -93,6 +93,40 @@ public class ConstructorPattern_c extends Node_c
        }
     }
 
+    public String toString() {
+	StringBuffer sb = new StringBuffer();
+
+       for (Iterator i = modifiers.iterator(); i.hasNext(); ) {
+	    ModifierPattern f = (ModifierPattern) i.next();
+	    sb.append(f);
+       }
+
+       sb.append(name);
+
+       sb.append("(");
+       for (Iterator i = formals.iterator(); i.hasNext(); ) {
+	    FormalPattern f = (FormalPattern) i.next();
+	    sb.append(f);
+
+	    if (i.hasNext()) {
+		sb.append(",");
+	    }
+       }
+       sb.append(")");
+       
+       if (throwspats.size() != 0) {
+	   sb.append(" throws ");
+	   for (Iterator ti = throwspats.iterator(); ti.hasNext(); ) {
+	       ThrowsPattern t = (ThrowsPattern) ti.next();
+	       sb.append(t);
+	       if (ti.hasNext()) {
+		   sb.append(", ");
+	       }
+	   }
+       }
+       return sb.toString();
+    }
+
     public List/*<ModifierPattern>*/ getModifiers() {
 	return modifiers;
     }
