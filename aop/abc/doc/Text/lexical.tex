@@ -1,0 +1,264 @@
+The lexical analysis of AspectJ is complicated by the fact that there are
+really three different languages being parsed: (1) normal Java code,
+(2)aspect declarations, and 
+(3) pointcut definitions inside aspects.  
+Each of these three sub-languages has its own lexical structure,  and it 
+simplifies the subsequent design of the grammar if the scanner has different 
+states and rules for each sub-grammar.
+
+\subsection{Nested Lexical Scopes}
+From a conceptual point of view we can think of an AspectJ program 
+consisiting of nested lexical scopes.   There are four kinds of lexical
+scopes which we refer to by the mode names, {\sc Java}, {\sc Aspect},
+{\sc Pointcut} and {\sc PointcutIfExpr}.   
+Figure \ref{FIG:LexExample} shows an example of all four kinds of scopes
+and each are discussed in more detail in the subsequent subsections.   
+
+\begin{figure}[htbp]
+\input{Figs/example.java.tex}
+\caption{AspectJ code with nested lexical scopes \label{FIG:LexExample}}
+\end{figure}
+
+\subsubsection{{\sc Java} mode}
+The outermost scope is always has
+{\sc Java} mode.  In this mode all tokens are scanned exactly as in
+Java, with the exception that {\bf privileged} and {\bf aspect} are
+considered to be keywords and cannot be used an identifiers.
+
+\subsubsection{{\sc Aspect} mode}
+Inside the program one can have a nested {\sc Aspect} scope which begins
+just after the keyword {\bf aspect} and ends at the end of the aspect's body.
+Figure \ref{FIG:LexExample} shows one  {\sc Aspect} scope corresponding
+to the body of the declaration of the aspect named "OrdinaryAspect''. 
+
+In {\sc Aspect} mode all symbols are exactly
+the same as in Java,  except for the addition of  keywords
+{\bf after}, {\bf around}, {\bf before}, {\bf declare}, 
+{\bf issingleton}, {\bf percflow}, {\bf percflowbelow}, {\bf pertarget},
+{\bf perthis}, {\bf pointcut}, {\bf proceed}, 
+{\bf thisEnclosingJoinPointStaticPart}, {\bf thisJoinPoint}, and
+{\bf thisJoinPointStaticPart}.   Just like normal Java keywords, these
+additional keywords cannot be used as identifiers, inside of an
+{\sc Aspect} scope.
+
+\subsubsection{{\sc Pointcut} mode}
+Whereas the {\sc Java} and {\sc Aspect} modes are very similar, basically
+differing only on the keywords recognized, the {\sc Pointcut} mode
+has a completely different lexical structure.   
+In Figure \ref{FIG:LexExample},  the lexical scopes for pointcuts are
+shown by the boxes nexted inside the Aspect.   There four contexts in
+which pointcut scopes occur, as follows:
+
+\begin{description}
+\item[Pointcut Context \#1 - a Per clause in an aspect declaration:]
+The header of an aspect
+declaration ends with an an optional per clause.  A per clause consists
+of either the keyword {\bf issingleton} or  a parenthesized pointcut
+expression preceeded by one of the kewords {\bf percflow}, 
+{\bf percflowbelow}, {\bf pertarget} or {\bf perthis}.    
+A {\sc Pointcut} scope starts after one of the per keywords and ends at
+the matching closing parenthesis that surrounds the pointcut.   Figure
+\ref{FIG:LexExample} shows a nested scope for a pointcut expression 
+following the {\bf percflow} keyword.
+
+\item[Pointcut Context \#2 - body of a {\bf declare} declaration:]
+Inside the body of an aspect one can define
+a declare declaration.   A lexical {\sc Pointcut} scope begins just after
+the keyword {\bf declare} and ends at the {\bf ;} terminating the 
+declaration.  
+
+The example program shows a  
+declaration of  a {\bf warning} which matches all calls to constructors of
+classes found in packages ending in the digit 1, with classname Foo or
+a subclass of Foo. 
+
+\item[Pointcut Context \#3 - body of a pointcut declaration:]
+
+Pointcut declarations are provided in AspectJ as a way of 
+defining a named pointcut.  In the example program in 
+Figure \ref{FIG:LexExample} two such declarations are given, one
+for {\em notKeywords} and another for {\em hasSpecialIf}.   
+Inside pointcut declarations a pointcut lexical scope begins
+immediately following the {\bf pointcut} keyword and ends 
+after the {\bf ;} terminating the pointcut declaration.
+Pointcut declarations can appear both inside aspects and inside
+ordinary Java classes.
+
+\item[Pointcut Context \#4 - header of an advice declaration:]
+
+Advice declarations have a pointcut expression in their header.
+All such pointcuts will be preceeded by one of the keywords
+{\bf before}, {\bf after} or {\bf around}.    For example, in
+Figure \ref{FIG:LexExample},  a pointcut follows an {\bf after} keyword.
+The pointcut ends before the body of the pointcut, signalled by
+a {\bf \{}, begins.
+
+Thus, a pointcut context starts immediately after a {\bf before},
+{\bf after} or {\bf around} token, and ends at the first opening
+brace encountered.
+
+\end{description}
+
+\subsubsection{{\sc PointcutIfExpr} mode} 
+
+Pointcuts have no lexical scopes nested inside them, 
+except for one case, the
+{\bf if} pointcut.   The {\bf if} pointcut contains a boolean
+expression, which is just Java code that may contain special
+Aspect keywords such as {\bf thisJoinPoint}.    We define a special
+mode called {\sc PointcutIfExpr} which starts right after the
+{\bf if} keyword inside a pointcut, and ends at the terminating
+parenthesis closing the boolean expression.   The lexical structure,
+in terms of tokens recognized, is identical to the {\sc Aspect} mode.    
+However, in the implementation of the scanner, the end of 
+{\sc PointcutIfExpr} mode always signals a return to 
+{\sc Pointcut} mode.
+
+In Figure \ref{FIG:LexExample}, the pointcut declaration named
+{\em hasSpecialIf} shows an example of a nested {\sc PointcutIfExpr}
+lexical scope.
+
+\subsection{Nested Aspects, Classes and Interfaces}
+
+In AspectJ classes, interfaces and aspects may be nested inside each 
+other.   In terms of nested lexical scope,  a new scope is entered 
+each time the keywords {\bf class}, {\bf interface} and {\bf aspect}
+are entered,  and the scope is exited at the closing right brace.
+In the case of {\bf class} and {\bf interface} the scope entered
+has {\sc Java} mode,  whereas for the case of {\bf aspect} the scope
+entered has {\sc Aspect} mode.
+
+At the bottom of Figure \ref{FIG:LexExample} we give the declaration of
+a nested class called {\em NestedClass}.   Note that inside the class
+declaration is in {\sc Java} mode,  so the keywords recognized are those
+corresonding to {\sc Java} mode (i.e. Java keywords plus {\bf aspect}
+and {\bf privileged}).    Thus, in the example,  
+{\em before} and {\em after} are considered identifiers, not keywords.   
+Note that this use of
+inner classes provides a mechanism for referring to variables defined
+in other classes that may have the same name as keywords in 
+{\sc Aspect} mode.  In our example we have defined the method
+{\em getBefore} to read the value of {\em OtherClass.before}.
+
+The above rule for entering a new lexical scope upon encounter of
+the keyword {\bf class} is complicated by the fact that {\bf class}
+does not always signal a new class declaration in Java. In particular,
+it can be used to return a {\em Class} object that represents a type,
+as in {\em C.class} (this is useful, for example, to create typed lists, 
+where the intended element type is stored with the list structure).
+All such uses of the {\bf class} keyword are preceded by a
+dot, and class declarations themselves are never preceded by a dot. 
+For that reason, the lexer records whether the last emitted token
+was a dot; if it is, then the {\bf class} keyword does {\em not}
+cause a transition to a new lexical scope.
+
+\subsection{Lexical Structure of Pointcuts}
+
+The language for defining pointcuts is a very special purpose
+language that provides a way of specifying identifier patterns,
+classname patterns, and more complex expressions involving
+patterns.     
+
+\subsubsection{Examples of differences from the Java lexical structure}
+The example program clearly demonstrates ways in which the
+lexical structure of pointcuts is very different from the 
+lexical structure of Java.
+
+For example, if one were to use the ordinary Java
+lexical rules, then the expression ``*1.Foo+.new(..)'' 
+would be tokenized as:
+
+{\tt[ op("*"), fp\_literal(1.0), Id("Foo"), op("+"), op("."),  
+keyword("new"), op("("), op("."), op(".") op(")")]}.  
+
+\noindent
+However, in
+pointcuts, the intended lexical structure is quite different and
+would be tokenized as:
+
+{\tt[ IdPat("*1"), op("."), id("Foo"), op("+."),
+keyword("new"), op("("), op(".."), op(")")]}.   
+
+\noindent 
+Note that ``*1" is
+an identifier pattern, which matches any identifier ending in 1.  Also, the
+sequence ``+." is recognized as one token, not two.  This simplifies
+the grammar and avoids shift-reduce conflicts.  Finally, the sequence
+``.." is recognized as one token, which also simplifies the grammar.
+
+Another example of the need for a special lexical structure for pointcuts
+is given in the definition of the pointcut {\em notKeywords}.   The ordinary
+Java lexical rules would tokenize the expression ``*if*..*while*" as:
+
+{\tt[ op("*"), keyword("if"), op("*"), op("."), op("."), op("*"), 
+keyword("while"), op("*")]}.
+
+\noindent
+whereas this expression inside a pointcut has a completely different lexical
+structure, namely:
+
+{\tt[ IdPat("*if*"), op(".."), IdPat("*while*") ] }.
+ 
+\subsubsection{Tokens in pointcuts}
+Since the Java lexical structure clearly doen't match the pointcut
+langauge very well,  a completely different lexical structure is
+defined for pointcuts.   This can be summarized as follows.
+
+\begin{description}
+\item{Keywords:}
+All of the keywords in {\sc Java} mode (including
+{\bf aspect} and {\bf privileged}), plus the following:
+{\bf adviceexecution}, {\bf args}, {\bf call}, {\bf cflow}, 
+{\bf cflowbelow}, {\bf error}, {\bf execution}, {\bf get},
+{\bf handler}, {\bf initialization}, {\bf parents}, {\bf precedence},
+{\bf preinitialization}, {\bf returning}, {\bf set}, {\bf soft},
+{\bf staticinitialization}, {\bf target}, {\bf throwing}, 
+{\bf warning}, {\bf within}, {\bf withincode}.
+
+Note that extra keywords in {\sc Aspect} mode,  such as {\bf before}, are
+not keywords in the {\sc Pointcut} mode, and similarly the extra keywords
+in {\sc Pointcut} mode are not keywords in {\sc Aspect} mode.    
+
+\item{Symbols:}
+The symbols recognized in pointcuts are: 
+{\tt op("(")}, {\tt op(")")}, {\tt op("[")}, {\tt op(".")},
+{\tt op(",")}, {\tt op(":")}, {\tt op(";")}, {\tt op("\{")},
+{\tt op("\"")}, {\tt op("!")}, {\tt op("\&\&")}, {\tt op("||")},
+{\tt op("+.")}, {\tt op("+")}. 
+
+\item{Identifiers and Identifier Patterns:}  Identifiers are matched
+using the same regular expression as in {\sc Java} mode, namely:
+
+{\tt Identifier = [:jletter:][:jletterdigit:]*}
+
+\noindent
+Identifer patterns are recognized as:
+
+{\tt IdentifierPattern = ( "*" | [:jletter:] ) ( "*" | [:jletterdigit:] )*}
+
+Since identifiers and identifer patterns are used in pointcuts to
+specify names that may occur anywhere, including Java code that has
+been defined in a library,  it is possible that a pattern might want
+to refer to something with the same name as one of the extra keywords.
+This is handled later by the grammar,  where the extra keywords are
+explicitly allowed as one alternative of the rule for 
+{\em simple\_name\_pattern},  see Section \ref{SEC:NamePatterns}.
+\end{description}
+
+
+\begin{comment}
+\subsection{Implementing the Lexical Analysis}
+
+Polyglot's  JFlex-based  scanner for the base Java langauge has three states:
+\begin{description}
+\item[{\sc YYInitial}:]  This is the initial state for the scanner, and
+it corresponds to all tokens except for strings and character literals.
+\item[{\sc String}:]  This state is entered upon recognizing a {\tt "}.
+In this state the entire string is scanned and returned as one token.
+At the closing {\tt "} character, the state reverts to {\sc YYInitial} and
+the string token is returned.
+\item[{\sc CharLiteral}:] This state is entered upon recognizing a {\tt '},
+the character is scanned, handling escape sequences and then the character
+literal token is returned and the state reverts to {\sc YYInitial}.
+\end{description}
+\end{comment}

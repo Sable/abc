@@ -1,0 +1,70 @@
+% java.sty	K. J. Turner	06/11/01
+%
+% This is a style file that defines an environment for formating
+% Java source. Embedded spaces and tabs are presumed to have
+% been previously converted to tabs (\>) for the tabbing
+% environment, and newlines are presumed to have been previously
+% converted to newlines (\\) for the tabbing environment.
+%
+% For example, the Java program:
+%
+% program double (input, output);
+%  
+%   var
+%     i : integer;	{ input value }
+%    
+%   begin
+%     readln (i);	{ read integer }
+%     writeln (2 * i)	{ write double its value }
+%   end.
+%
+% should be input to LaTeX as:
+%
+% \begin{java}
+% \hspace{1.0em}{\bf program} double (input, output);\\
+% \\
+% \hspace{2.0em}{\bf var}\\
+% \hspace{3.0em}i : integer;\>\>\>\{ input value \}\\
+% \\
+% \hspace{2.0em}{\bf begin}\\
+% \hspace{3.0em}readln (i);\>\>\>\{ read integer \}\\
+% \hspace{3.0em}writeln (2 * i)\>\>\>\{ write double its value \}\\
+% \hspace{2.0em}{\bf end}.\\
+% \end{java}
+%
+% Various parameters can be changed by renewing commands:
+%
+%   \javaafter		the vertical space after the formatted text
+%
+%   \javabefore		the vertical space before the formatted text
+%
+%   \javaindent		the indent before a line of the formatted text
+%
+%   \javasize		the font size for formatted text
+%
+%   \javatab		the horizonal space between tab stops
+
+\input{comment.sty}
+
+\newcommand{\javaafter}{-3.5ex}
+\newcommand{\javabefore}{-1ex}
+\newcommand{\javatab}{6em}
+\newcommand{\javaindent}{0 \parindent}
+\newcommand{\javasize}{small}
+
+\newenvironment{java}
+  {
+    \vspace{\javabefore}
+    \begin{\javasize}
+    \begin{tabbing}
+      \hspace{\javaindent}\=\hspace{\javatab}\=\hspace{\javatab}\=%
+      \hspace{\javatab}\=\hspace{\javatab}\=\hspace{\javatab}\=%
+      \hspace{\javatab}\=\hspace{\javatab}\=\hspace{\javatab}\=%
+      \hspace{\javatab}\=\hspace{\javatab}\=\hspace{\javatab}\=%
+      \hspace{\javatab}\=\+\kill
+  }%
+  {
+    \end{tabbing}
+    \end{\javasize}
+    \vspace{\javaafter}
+ }

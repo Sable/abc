@@ -1,0 +1,74 @@
+\newcommand{\MakeTitlePage}
+{
+
+\begin{titlepage}
+
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\evensidemargin}{-0.25in}
+\setlength{\textwidth}{7.0in}
+
+\hsize=7.0in
+
+\makebox[\hsize]
+{
+    \hspace{0.05cm}
+    \raisebox{-0.31in}{\mbox{\includegraphics{McGillLogo.ps}}}
+    \hspace{2.50cm}
+        
+    \parbox{3in}
+    {
+        \newfont{\fa}{cmbx10 at 14.4pt}
+   
+        \begin{center}
+        \fa McGill University \par \smallskip
+        \fa School of Computer Science \par \smallskip
+        \fa Sable Research Group \par \bigskip
+        \fa Oxford University \par \smallskip
+        \fa Computing Laboratory \par \smallskip
+        \fa Programming Tools Group \par \smallskip
+        \end{center} 
+    }
+    
+    \hfill
+    \raisebox{-0.22in}{\mbox{\includegraphics{SableLogo.ps}}}
+} \par \vspace{-4mm}
+\rule{\hsize}{0.3mm} \par \vspace{-6.1mm} 
+\rule{\hsize}{0.3mm} \par
+
+\vspace{2.00in}
+
+{
+  \begin{center}
+
+ \newfont{\fa}{phvb8r at 17.28pt}
+ %\newfont{\fa}{cmssbx10 at 17.28pt}
+ \newfont{\fb}{cmss12 at 14.4pt}
+ \newfont{\fc}{cmss12 at 12pt}
+ \newfont{\fd}{cmss10 at 10pt}
+
+ {\fa \@title} \\
+ \vspace{0.3in}
+ \fb \SR@documenttitle \\
+ \vspace{0.2in}
+ \fc \@author \\
+ \vfill
+ \fc \@date
+
+  \end{center}
+}
+
+\vfill
+
+\rule{\hsize}{0.3mm} \par \vspace{-6.1mm} 
+\rule{\hsize}{0.3mm} \par \vspace{-2.2mm}
+{\newfont{\fa} {cmssbx10 at 14.4pt}
+
+\begin{center}
+\fa w w w . s a b l e . m c g i l l . c a
+\end{center}
+}
+
+\end{titlepage}
+
+} % \MakeTitlePage
+

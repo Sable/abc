@@ -1,0 +1,418 @@
+In this section we outline the grammar of AspectJ.   If you have a colour
+version of this document,  you will see that all references to
+productions in the original Java grammar are given in red,  and all
+productions to do with pointcuts are given in blue.
+
+This grammar is LALR(1) with no shift-reduce or reduce-reduce conflicts.
+In order to achieve this conflict-free grammar there are several places
+where a slightly too large language is specified, and these are places
+where further weeding must be used to weed out invalid programs.
+
+\subsection{Extensions to the Java Grammar}
+
+The following five rules are already found in the Java grammar.  The
+alternatives given below are additional alternatives to those rules.
+
+\begin{minipage}{6in}
+\begin{grammar}
+<{\red type_declaration}> ::= <aspect_declaration>
+
+<{\red class_member_declaration}> ::= <aspect_declaration>
+                            \alt      <pointcut_declaration>
+
+<{\red interface_member_declaration}> ::= <aspect_declaration>
+                                 \alt     <pointcut_declaration>
+
+<{\red method_invocation}> ::= 'proceed' '(' {\red <argument_list_opt>} ')'
+
+<{\red simple_name}> ::=  \hspace{1in} \\
+                  'thisJoinPoint' 
+         \alt     'thisJoinPointStaticPart'
+         \alt     'thisEnclosingJoinPointStaticPart'
+\end{grammar}
+\end{minipage}
+
+\subsection{Aspect Declaration}
+
+An aspect declaration has a header where the modifiers may include
+{\bf privileged}.   We keep the {\bf privileged} keyword
+separate from all other modifiers since it can only be used in this
+context.   
+
+\begin{minipage}{6in}
+\begin{grammar}
+<aspect_declaration> ::= \hspace{1in} \\
+        {\red <modifiers_opt>} 'privileged' {\red <modifiers_opt>} 'aspect' {\sc{Identifier}} 
+          {\red <super_opt> <interfaces_opt>} <perclause_opt> <aspect_body>
+\alt
+        {\red <modifiers_opt>} 'aspect' {\sc{Identifier}}
+        {\red<super_opt> <interfaces_opt>} <perclause_opt> <aspect_body>
+\end{grammar}
+\end{minipage}
+
+\subsubsection{Per Clause}
+
+An aspect declaration has an optional per clause.  Note that this is
+one place in the grammar where pointcut expressions are introduced.
+The last alternative has been introduced for compatibility with
+{\tt ajc}.
+
+\begin{minipage}{6in}
+\begin{grammar}
+<perclause_opt> ::= $\epsilon$ |  <perclause> 
+
+<perclause> ::= \hspace{1in} \\ 
+                'pertarget' '(' {\blue <pointcut_expr>} ')'
+         \alt   'perthis' '(' {\blue <pointcut_expr>} ')'
+         \alt   'percflow' '(' {\blue <pointcut_expr>} ')'
+         \alt   'percflowbelow' '(' {\blue <pointcut_expr>} ')'
+         \alt   'issingleton'  
+         \alt   'issingleton' '(' ')'
+\end{grammar}
+\end{minipage}
+
+\subsubsection{Aspect Body}
+
+An aspect body consists of zero or more declarations.   These include
+all valid {\em class\_body\_declarations},  plus four new kinds of
+declarations specific to AspectJ.
+
+\begin{minipage}{6in}
+\begin{grammar}
+<aspect_body> ::= $\epsilon$ | <aspect_body_declarations> 
+
+<aspect_body_declarations> ::= \hspace{1in} \\
+                  <aspect_body_declarations> 
+          \alt    <aspect_body_declarations> <aspect_body_declaration>
+
+<aspect_body_declaration> ::= \hspace{1in} \\
+                  {\red <class_body_declaration>}
+          \alt    <declare_declaration>
+          \alt    <pointcut_declaration>
+          \alt    <advice_declaration>
+          \alt    <intertype_member_declaration>
+\end{grammar}
+\end{minipage}
+
+\subsection{Aspect Body Declarations}
+
+\subsubsection{Declare Declarations}
+
+\begin{minipage}{6in}
+\begin{grammar}
+<declare_declaration> ::= \hspace{1in} \\
+       'declare' 'parents' ':' {\blue <classname_pattern_expr>} 'extends' 
+           {\red <class_type_list>} ';' 
+\alt   'declare' 'parents' ':' {\blue <classname_pattern_expr>} 'implements'
+           {\red <interface_type_list>}
+\alt   'declare' 'warning' ':' {\blue <pointcut_expr>} ':'
+                                            {\sc{StringLiteral}} ';'
+\alt   'declare' 'error' ':' {\blue <pointcut_expr>} ':' 
+                                            {\sc{StringLiteral}} ';'
+\alt   'declare' 'soft' ':' {\blue <pointcut_expr>} ';'
+\alt   'declare' 'precedence' ':' {\blue <classname_pattern_expr_list>} ';'
+\end{grammar}
+\end{minipage}
+
+\subsubsection{Pointcut Declarations}
+
+\begin{minipage}{6in}
+\begin{grammar}
+<pointcut_declaration> ::= \hspace{1in} \\
+      {\red <modifiers_opt>} 'pointcut' {\sc{Identifier}} 
+             '(' {\red <formal_parameter_list_opt>} ')' ';'
+\alt  {\red <modifiers_opt>} 'pointcut' {\sc{Identifier}} 
+             '(' {\red <formal_parameter_list_opt>} ')' 
+             ':' {\blue <pointcut_expr>} ';'
+\end{grammar}
+\end{minipage}
+
+\noindent Notes:
+\begin{itemize}
+\item For the first alternative the modifiers must include {\bf abstract}.
+\item For the second alternative the modifiers must not include {\bf abstract}.
+\end{itemize}
+
+\subsubsection{Advice Declarations}
+
+\begin{minipage}{6in}
+\begin{grammar}
+<advice_declaration> ::= \hspace{1in} \\
+      {\red <modifiers_opt>} <advice_spec> {\red <throws_opt>} ':'
+      {\blue <pointcut_expr>} {\red <method_body>}
+
+<advice_spec> :=  \hspace{1in} \\
+       'before' '(' {\red <formal_parameter_list_opt>} ')'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'returning'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'returning' '(' ')'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'returning'
+             '(' {\red <formal_parameter>} ')'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'throwing'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'throwing'
+             '(' {\red <formal_parameter>} ')'
+\alt   {\red <type>} 'around' '(' {\red <formal_parameter_list_opt>} ')'
+\alt   {\red 'void'} 'around' '(' {\red <formal_parameter_list_opt>} ')'
+\end{grammar}
+\end{minipage}
+
+\noindent Notes:
+\begin{itemize}
+\item The only valid modifier for an \em{advice\_declaration} is 
+{\bf strictfp}.
+\item The superfluous parentheses in the second alternative of
+{\it returning} have been introduced for compatibility with {\tt ajc}. 
+\end{itemize}
+
+\subsubsection{Intertype Member Declarations}
+
+\begin{minipage}{6in}
+\begin{grammar}
+<intertype_member_declaration> ::= \hspace{1in} \\
+     {\red <modifiers_opt>} 'void' {\red <name>} '.' {\sc{Identifier}}
+     '(' {\red <formal_parameter_list_opt>} ')' {\red <throws_opt>}
+     {\red <method_body>}
+\alt 
+     {\red <modifiers_opt>} {\red <type>} {\red <name>} '.' {\sc{Identifier}}
+     '(' {\red <formal_parameter_list_opt>} ')' {\red <throws_opt>}
+     {\red <method_body>}
+\alt 
+     {\red <modifiers_opt>} {\red <name>} '.' 'new' 
+     '(' {\red <formal_parameter_list_opt>} ')' {\red <throws_opt>}
+     {\red <constructor_body>}
+\alt
+     {\red <modifiers_opt>} {\red <type>} {\red <name>} '.' 
+     {\sc{Identifier}} ';'
+\alt
+     {\red <modifiers_opt>} {\red <type>} {\red <name>} '.' 
+     {\sc{Identifier}} '=' {\red <variable_initializer>} ';'
+\end{grammar}
+\end{minipage}
+ 
+ 
+\subsection{Pointcut Expressions}
+
+\begin{minipage}{6in}
+\begin{grammar}
+\begin{blue}
+<pointcut_expr> ::= \hspace{1in} \\
+       <or_pointcut_expr> 
+\alt   <pointcut_expr> '\&\&' <or_pointcut_expr>
+
+<or_pointcut_expr> ::= \hspace{1in} \\
+       <unary_pointcut_expr> 
+\alt   <or_pointcut_expr> '||' <unary_pointcut_expr>
+
+<unary_pointcut_expr> ::= \hspace{1in} \\
+       <basic_pointcut_expr> 
+\alt   '!' <unary_pointcut_expr>
+\end{blue}
+\end{grammar}
+\end{minipage}
+
+\begin{minipage}{6in}
+\begin{blue}
+\begin{grammar}
+<basic_pointcut_expr> ::= \hspace{1in} \\
+       '(' <pointcut_expr> ')'
+\alt   'call' '(' <method_constructor_pattern> ')'
+\alt   'execution' '(' <method_constructor_pattern> ')'
+\alt   'withincode' '(' <method_constructor_pattern> ')'
+\alt   'initialization' '(' <constructor_pattern> ')'
+\alt   'preinitialization' '(' <constructor_pattern> ')'
+\alt   'get' '(' <field_pattern> ')'
+\alt   'set' '(' <field_pattern> ')'
+\alt   'handler' '(' <classname_pattern_expr> ')'
+\alt   'staticinitialization' '(' <classname_pattern_expr> ')'
+\alt   'within' '(' <classname_pattern_expr> ')'
+\alt   'this' '(' <classname_pattern_expr> ')'
+\alt   'target' '(' <classname_pattern_expr> ')'
+\alt   'args' '(' <formal_pattern_list_opt> ')'
+\alt   'adviceexecution' '(' ')'
+\alt   'cflow' '(' <pointcut_expr> ')'
+\alt   'cflowbelow' '(' <pointcut_expr> ')'
+\alt   'if' '(' {\red <expression> } ')'
+\alt   {\red <name>} '(' <formal_pattern_list_opt> ')'
+\end{grammar}
+\end{blue}
+\end{minipage}
+
+
+\subsection{Patterns}
+
+\subsubsection{Name Patterns \label{SEC:NamePatterns}}
+
+In this section we give the rules for specifying names as
+patterns.   As mentioned in Section \ref{SEC:PointcutTokens}, 
+the grammar explicitly allows the extra keywords introduced for
+AspectJ to be a valid {\em simple\_name\_pattern}.
+
+\begin{minipage}{6in}
+\begin{grammar}
+\begin{blue}
+<name_pattern> ::=  \hspace{1in} \\
+      <simple_name_pattern>
+\alt  <name_pattern> '.'  <simple_name_pattern>
+\alt  <name_pattern> '..' <simple_name_pattern>
+
+<simple_name_pattern> ::= \hspace{1in} \\
+      {\sc{Identifier}}
+\alt  {\sc{IdentifierPattern}}
+\alt  <aspectj_reserved_identifier>
+
+<aspectj_reserved_identifier> ::= \hspace{1in} \\
+   'aspect' | 'privileged' 
+\alt 'adviceexecution' | 'args' | 'call' | 'cflow' | 'cflowbelow' | 'error'
+\alt 'execution' | 'get' | 'handler' | 'initialization' | 'parents' 
+\alt 'precedence' | 'preinitialization' | 'returning' | 'set' 
+\alt 'soft' | 'staticinitialization' | 'target' | 'throwing' 
+\alt 'warning' | 'withincode'
+\end{blue}
+\end{grammar}
+\end{minipage}
+
+\subsubsection{Class Name Pattern Expressions}
+
+This section defines the expressions that can be specified on
+class name patterns.  Note that by {\em classname} we mean the
+name of any class, interface or aspect.
+
+\begin{minipage}{6in}
+\begin{blue}
+\begin{grammar}
+<classname_pattern_expr_list> ::= \hspace{1in} \\
+     <classname_pattern_expr> 
+\alt <classname_pattern_expr_list> ',' <classname_pattern_expr>
+
+<classname_pattern_expr> ::= \hspace{1in} \\
+     <or_classname_pattern_expr>
+\alt <classname_pattern_expr> '\&\&' <or_classname_pattern_expr>
+
+<or_classname_pattern_expr> ::= \hspace{1in} \\
+     <unary_classname_pattern_expr>
+\alt <or_classname_pattern_expr> '||' <unary_classname_pattern_expr>
+
+<unary_classname_pattern_expr> ::= \hspace{1in} \\
+     <basic_classname_pattern>
+\alt '!' <unary_classname_pattern_expr>
+
+<basic_classname_pattern> ::=  \hspace{1in} \\
+     <name_pattern>
+\alt <name_pattern> '+'
+\alt '(' <classname_pattern_expr> ')'
+\end{grammar}
+\end{blue}
+\end{minipage}
+
+\subsubsection{Type Pattern Expressions}
+
+This section defines type pattern expressions.   These are a superset of
+class name pattern expressions.  The main difference is what is allowed
+at the leaves of the pattern.   In the case of class name patterns the
+leaves were name patterns,  whereas with type pattern expressions the
+leaves can be any valid type, including primitive types, void and
+array types.
+
+\begin{minipage}{6in}
+\begin{blue}
+\begin{grammar}
+<type_pattern_expr> ::= \hspace{1in} \\
+     <or_type_pattern_expr>
+\alt <type_pattern_expr> '\&\&' <or_type_pattern_expr>
+
+<or_type_pattern_expr> ::= \hspace{1in} \\
+     <unary_type_pattern_expr>
+\alt <or_type_pattern_expr> '||' <unary_type_pattern_expr>
+
+<unary_type_pattern_expr> ::= \hspace{1in} \\
+     <basic_type_pattern>
+\alt '!' <unary_type_pattern_expr>
+
+<basic_type_pattern> ::=  \hspace{1in} \\
+     'void'
+\alt {\red <primitive_type>}
+\alt <reference_type_pattern>
+\alt '(' <type_pattern_expr> ')'
+
+<reference_type_pattern> ::= \hspace{1in} \\
+     <name_pattern>
+\alt <name_pattern> {\red <dims>}
+\alt <name_pattern> '+'
+\alt <name_pattern> '+' {\red <dims>}
+\end{grammar}
+\end{blue}
+\end{minipage}
+
+\subsubsection{Field, Method and Constructor Patterns}
+\begin{minipage}{6in}
+\begin{blue}
+\begin{grammar}
+<method_constructor_pattern> ::= \hspace{1in} \\
+     <method_pattern>
+\alt <constructor_pattern>
+
+<method_pattern> ::= \hspace{1in} \\
+     <modifier_pattern_expr> <type_pattern_expr> <classtype_dot_id> \\
+     '(' <formal_pattern_list_opt> ')' <throws_pattern_expr_opt>
+\alt <type_pattern_expr> <classtype_dot_id> \\
+     '(' <formal_pattern_list_opt> ')' <throws_pattern_expr_opt>
+
+<constructor_pattern> ::= \hspace{1in} \\
+     <modifier_pattern_expr> <classtype_dot_new> \\
+     '(' <formal_pattern_list_opt> ')' <throws_pattern_expr_opt>
+\alt <classtype_dot_new> \\
+     '(' <formal_pattern_list_opt> ')' <throws_pattern_expr_opt>
+
+<field_pattern> ::= \hspace{1in} \\
+     <modifier_pattern_expr> <type_pattern_expr> <classtype_dot_id>
+\alt <type_pattern_expr> <classtype_dot_id>
+\end{grammar}
+\end{blue}
+\end{minipage}
+
+
+\begin{minipage}{6in}
+\begin{blue}
+\begin{grammar}
+<classtype_dot_id> ::= \hspace{1in} \\
+     <name_pattern>
+\alt <name_pattern> '+.' <simple_name_pattern>
+\alt '(' <type_pattern_expr> ')' '.' <simple_name_pattern>
+
+<classtype_dot_new> ::= \hspace{1in} \\
+    'new' 
+\alt <name_pattern> '.' 'new'
+\alt <name_pattern> '+.' 'new' 
+\alt '(' <type_pattern_expr> ')' '.' 'new' 
+\end{grammar}
+\end{blue}
+\end{minipage}
+
+\noindent
+Note: in each of these grammar rules we allow a parenthesized
+{\em type\_pattern\_expression} when we really want to allow
+only a {\em classname\_pattern\_expression}.   This is required 
+to make the grammar for {\em method\_pattern} and {\em constructor_pattern}
+LALR(1),  and must be checked at weeding time. 
+
+\subsubsection{Modifier, Formal and Throws Patterns}
+
+\begin{minipage}{6in}
+\begin{blue}
+\begin{grammar}
+<modifier_pattern_expr> ::= \hspace{1in} \\
+     {\red <modifier>}
+\alt '!' {\red <modifier>}
+\alt <modifier_pattern_expr> {\red <modifier>}
+\alt <modifier_pattern_expr> '!' {\red <modifier>}
+
+<formal_pattern_list_opt> ::= $\epsilon$ | <formal_pattern_list>
+
+<formal_pattern_list> ::= <formal_pattern> | <formal_pattern_list> ',' <formal_pattern>
+
+<formal_pattern> ::= '..' | <type_pattern_expr>
+
+<throws_pattern_expr_opt> ::= $\epsilon$ | 'throws' <classname_pattern_expr>
+\end{grammar} 
+\end{blue}
+\end{minipage}
