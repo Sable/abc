@@ -51,4 +51,11 @@ public class NotResidue extends Residue {
 	return nopStmt;
     }
 
+	public void getAdviceFormalBindings(Bindings bindings) {
+		getOp().getAdviceFormalBindings(bindings);
+	}
+	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+		op=op.restructureToCreateBindingsMask(bindingsMaskLocal, bindings);
+		return this;
+	}
 }

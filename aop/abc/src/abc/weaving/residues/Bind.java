@@ -7,6 +7,7 @@ import soot.util.Chain;
 import soot.jimple.Stmt;
 import soot.jimple.Jimple;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.residues.Residue.Bindings;
 import abc.weaving.weaver.WeavingContext;
 
 /** Bind a context value to a local or argument
@@ -80,4 +81,48 @@ public class Bind extends Residue {
 		    (localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));
 	}
 
+	/**
+	 * If this Bind binds an advice-formal,
+	 * add the binding to the Bindings object
+	 */
+	public void getAdviceFormalBindings(Bindings bindings) {
+		if (variable instanceof AdviceFormal) {
+			AdviceFormal formal = (AdviceFormal) variable;
+			Value val = value.getSootValue();
+			if (val instanceof Local) {
+				Local local = (Local) val;
+				//debug(" Binding: " + local.getName() + " => " + formal.pos);
+				
+				bindings.set(formal.pos, local);
+			} else {
+				throw new InternalError(
+				"Expecting bound values to be of type Local: "
+					+ val
+					+ " (came from: "
+					+ this
+					+ ")");
+			}
+		} else {
+		//	throw new InternalError("Expecting bound variables to be of type adviceFormal: " + bind.variable );
+		}
+	}
+	
+	/**
+	 * Replace this Bind with a BindMaskResidue containing this Bind 
+	 * if appropriate.
+	 */
+	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+		if (variable instanceof AdviceFormal) {
+			AdviceFormal formal = (AdviceFormal) variable;
+			Value val = value.getSootValue();
+			//if (val instanceof Local) {
+			Local local = (Local) val;
+			int index=bindings.lastIndexOf(local);
+			if (bindings.getMaskBits(index)>0) {
+				int mask=bindings.getMaskValue(local);
+				return new BindMaskResidue(this, bindingsMaskLocal, mask);
+			}
+		}	
+		return this;
+	}
 }

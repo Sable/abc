@@ -1,8 +1,9 @@
 package abc.weaving.residues;
 
+import soot.Local;
 import soot.SootMethod;
-import soot.util.Chain;
 import soot.jimple.Stmt;
+import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
@@ -52,4 +53,13 @@ public class AndResidue extends Residue {
 	return new AndResidue(left,right);
     }
 
+	public void getAdviceFormalBindings(Bindings bindings) {
+		getLeftOp().getAdviceFormalBindings(bindings);
+		getRightOp().getAdviceFormalBindings(bindings);
+	}
+	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+		left=left.restructureToCreateBindingsMask(bindingsMaskLocal, bindings);
+		right=right.restructureToCreateBindingsMask(bindingsMaskLocal, bindings);
+		return this;
+	}
 }

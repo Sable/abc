@@ -60,4 +60,13 @@ public class OrResidue extends Residue {
 	return nopStmt2;
     }
 
+	public void getAdviceFormalBindings(Bindings bindings) {
+		getLeftOp().getAdviceFormalBindings(bindings);
+		getRightOp().getAdviceFormalBindings(bindings);
+	}
+	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+		left=left.restructureToCreateBindingsMask(bindingsMaskLocal, bindings);
+		right=right.restructureToCreateBindingsMask(bindingsMaskLocal, bindings);
+		return this;
+	}
 }
