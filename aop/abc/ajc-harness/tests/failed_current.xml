@@ -3,6 +3,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
+        <compile files="NestedInners.java"></compile>
+        <run class="NestedInners"></run>
+    </ajc-test>
 <ajc-test title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" keywords="from-java" dir="pureJava">
         <compile files="MisplacedThisInAnnonymousInnerClasses.java"></compile>
         <run class="MisplacedThisInAnnonymousInnerClasses"></run>
@@ -256,14 +260,6 @@
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
     </ajc-test>
-<ajc-test title="privileged aspects" keywords="from-resolved_10x" dir="new/privilegedAspects">
-        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
-        <run class="main.Main"></run>
-    </ajc-test>
-<ajc-test title="advice on field gets in privileged aspects" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOnPrivileged.java"></compile>
-        <run class="AdviceOnPrivileged"></run>
-    </ajc-test>
 <ajc-test title="basic tests for initializer and staticinitializer PCDs" keywords="from-resolved_10x" dir="new">
         <compile files="InitializerTest.java"></compile>
         <run class="InitializerTest"></run>
@@ -292,10 +288,6 @@
         <compile files="ArrayCasts.java"></compile>
         <run class="ArrayCasts"></run>
     </ajc-test>
-<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" keywords="from-resolved_10x" dir="new">
-        <compile files="Fixes.java"></compile>
-        <run class="Fixes"></run>
-    </ajc-test>
 <ajc-test title="advice on an inherited method" pr="105" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnInheritedMethod.java"></compile>
         <run class="AdviceOnInheritedMethod"></run>
@@ -319,10 +311,6 @@
 <ajc-test title="correct types of parameters at call-sites" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4,-Xlint:ignore" files="CallTypes.java"></compile>
         <run vm="1.4" class="CallTypes"></run>
-    </ajc-test>
-<ajc-test title="Joinpoints are showing up on intermediate call sites" keywords="from-resolved_10x" dir="new">
-        <compile files="Counting1.java"></compile>
-        <run class="Counting1"></run>
     </ajc-test>
 <ajc-test title="Reception based on strictfp modifier" keywords="from-resolved_10x" dir="new">
         <compile files="StrictFpReceptions.java"></compile>
@@ -404,10 +392,6 @@
         <compile files="AspectOf.java"></compile>
         <run class="AspectOf"></run>
     </ajc-test>
-<ajc-test title="access to all members of class and inner class from privileged aspect" pr="35593" keywords="from-resolved_10x" dir="new/privilegedAspects">
-        <compile files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"></compile>
-        <run class="driver.PrivilegedAspect"></run>
-    </ajc-test>
 <ajc-test title="Introduced type unavailable to instanceof expressions in introduced methods" keywords="from-resolved_10x,knownLimitation" dir="new/introTypeMissing">
         <compile files="InstanceOf.java,TargetClass.java,Util.java">
             <message line="19" kind="error"></message>
@@ -453,14 +437,6 @@
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
-    </ajc-test>
-<ajc-test title="access to private members from privileged aspect" pr="555" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
-        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
-        <run class="driver.PR555"></run>
-    </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" keywords="from-resolved_10rc3" dir="new">
-        <compile files="InnerClassInPrivilegedAspect.java"></compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR559.java"></compile>
@@ -523,6 +499,10 @@
         <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
         <compile files="ParentUsingChild.java"></compile>
         <run class="ParentUsingChild"></run>
+    </ajc-test>
+<ajc-test title="final local variables may be accessed from inner class" pr="739" keywords="from-resolved_105,purejava" dir="pureJava">
+        <compile files="LocalsFromInnerCP.java"></compile>
+        <run class="LocalsFromInnerCP"></run>
     </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
@@ -827,10 +807,6 @@
         <compile options="-source,1.4" files="p1/C.java,p2/A2.java"></compile>
         <run vm="1.4" class="p2.A2"></run>
     </ajc-test>
-<ajc-test title="privileged aspect main verify error" pr="36673" dir="new/verifyError">
-        <compile files="Privilege.java"></compile>
-        <run class="Privilege"></run>
-    </ajc-test>
 <ajc-test title="Internal compiler error with thisJoinPoint.getStaticPart()" pr="36564" dir="bugs">
         <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"></compile>
         <run class="tjpStaticPart.Test"></run>
@@ -1016,9 +992,6 @@
                   <message line="13" kind="error"></message>
 		</compile>
 	</ajc-test>
-<ajc-test title="priviledged aspects calling methods from advice" pr="42711" dir="bugs/privilege/packageProtected" abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04"> 
-        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
-    </ajc-test>
 <ajc-test title="Ensure we don't look for source on the classpath when binary not found" pr="46671" dir="bugs/faultingInSource">
         <compile options="-verbose" files="SimpleTracing.java" classpath=".">
 		  <message text="no match for this type name: SampleClass" line="4" kind="warning"></message>

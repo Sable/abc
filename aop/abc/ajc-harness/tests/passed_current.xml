@@ -251,10 +251,6 @@
         <compile files="BoundaryNums.java"></compile>
         <run class="BoundaryNums"></run>
     </ajc-test>
-<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
-        <compile files="NestedInners.java"></compile>
-        <run class="NestedInners"></run>
-    </ajc-test>
 <ajc-test title="?: expressions should typecheck in interesting ways" keywords="from-java" dir="pureJava">
         <compile files="TriTestTypecheck.java"></compile>
         <run class="TriTestTypecheck"></run>
@@ -2010,6 +2006,14 @@
         <compile files="Privileged.java"></compile>
         <run class="Privileged"></run>
     </ajc-test>
+<ajc-test title="privileged aspects" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="advice on field gets in privileged aspects" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnPrivileged.java"></compile>
+        <run class="AdviceOnPrivileged"></run>
+    </ajc-test>
 <ajc-test title="Two anonymous classes in the same scope" keywords="from-resolved_10x" dir="new">
         <compile files="TwoAnonymous.java"></compile>
         <run class="TwoAnonymous"></run>
@@ -2154,6 +2158,10 @@
         <compile files="CFlowPoints.java"></compile>
         <run class="CFlowPoints"></run>
     </ajc-test>
+<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" keywords="from-resolved_10x" dir="new">
+        <compile files="Fixes.java"></compile>
+        <run class="Fixes"></run>
+    </ajc-test>
 <ajc-test title="Dave Binkley's problem with eachcflowroot. [eachcflow]" keywords="from-resolved_10x" dir="new">
         <compile files="Binkley2.java"></compile>
         <run class="Binkley2"></run>
@@ -2177,6 +2185,10 @@
 <ajc-test title="Gets and sets on a number of variables (field access ???)" keywords="from-resolved_10x" dir="new">
         <compile files="Gets.java"></compile>
         <run class="Gets"></run>
+    </ajc-test>
+<ajc-test title="Joinpoints are showing up on intermediate call sites" keywords="from-resolved_10x" dir="new">
+        <compile files="Counting1.java"></compile>
+        <run class="Counting1"></run>
     </ajc-test>
 <ajc-test title="Subclasses that do not redefine a method are not being handled correctly" pr="353" keywords="from-resolved_10x" dir="new">
         <compile files="PR353b.java"></compile>
@@ -2289,6 +2301,10 @@
 <ajc-test title="potential method conflicts with introductions and interfaces and PR#561" pr="570" keywords="from-resolved_10x" dir="new">
         <compile files="MethodConflictsCP.java"></compile>
         <run class="MethodConflictsCP"></run>
+    </ajc-test>
+<ajc-test title="access to all members of class and inner class from privileged aspect" pr="35593" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"></compile>
+        <run class="driver.PrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="cflow alone with around produces compiler bcg StackOverflowError" keywords="from-resolved_10x" dir="new">
         <compile files="CflowAlone.java"></compile>
@@ -2499,6 +2515,14 @@
         <compile files="PR554.java"></compile>
         <run class="PR554"></run>
     </ajc-test>
+<ajc-test title="access to private members from privileged aspect" pr="555" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
+        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
+        <run class="driver.PR555"></run>
+    </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
+    </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
@@ -2697,10 +2721,6 @@
             <message line="75" kind="error"></message>
             <message line="81" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="final local variables may be accessed from inner class" pr="739" keywords="from-resolved_105,purejava" dir="pureJava">
-        <compile files="LocalsFromInnerCP.java"></compile>
-        <run class="LocalsFromInnerCP"></run>
     </ajc-test>
 <ajc-test title="missing package identifier" pr="723" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="MissingPackageCE.java">
@@ -3057,6 +3077,10 @@
             <message line="14" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="privileged aspect main verify error" pr="36673" dir="new/verifyError">
+        <compile files="Privilege.java"></compile>
+        <run class="Privilege"></run>
+    </ajc-test>
 <ajc-test title="Inconsistant stack height with around" pr="29665" dir="bugs">
         <compile files="StackError.java"></compile>
         <run class="StackError"></run>
@@ -3288,6 +3312,9 @@
 <ajc-test title="JoinPoint Optimization when targetting 1.4" pr="45441" dir="bugs/jpOptimization">
         <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
         <run class="de.test.MyMain"></run>
+    </ajc-test>
+<ajc-test title="priviledged aspects calling methods from advice" pr="42711" dir="bugs/privilege/packageProtected" abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04"> 
+        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
     </ajc-test>
 <ajc-test title="No error on overloaded pointcuts in class" pr="49457" dir="bugs" abccomment="abc messages differ but ok. ODM 19/07/04">
         <compile files="OverloadedPointcutsInClass.java">
