@@ -763,6 +763,21 @@ OctalEscape = \\ [0-7]
   "*"                            { return op(sym.PC_MULT); }
 }
 
+/* We need some cases to distinguish the different lexer states from one another - otherwise
+ * they Java, Pointcut and AspectJ get collapsed into the same state by optimisations.
+ */
+<YYINITIAL> {
+	"oege"					{ return id(); }
+}
+
+<ASPECTJ> {
+	"ganesh"				{ return id(); }
+}
+
+<POINTCUTIFEXPR> {
+	"pavel"					{ return id(); }
+}
+
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
 	/* Handle keywords and identifiers here. It has to be done last as with the new parser structure,
 		whether or not an identifier is a keyword is only determined after it has been consumed, so
@@ -775,6 +790,7 @@ OctalEscape = \\ [0-7]
     {Identifier}   { 
     	// Keywords common to all states first.
     	Integer i = (Integer) javaKeywords.get(yytext());
+    	System.out.println("J/AJ/PC/PCIE: " + YYINITIAL + "/"+ASPECTJ+"/"+POINTCUT+"/"+POINTCUTIFEXPR+", currernt state: " + yystate() + " for token " + yytext());
 		if(i != null) {
 			// Some special handling is required...
 			if(yytext().equals("class")) {
