@@ -132,7 +132,8 @@ public class PatternMatcher {
     }
 
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern(MethodPattern pattern) {
-	System.out.println("FIXME: Making an incomplete method pattern");
+	if(abc.main.Debug.v.matcherWarnUnimplemented)
+	    System.err.println("FIXME: Making an incomplete method pattern");
 	return new AIMethodPattern(pattern);
     }
 
