@@ -33,6 +33,7 @@ import java.util.Set;
 
 import soot.Body;
 import soot.Local;
+import soot.SootMethod;
 import soot.javaToJimple.LocalGenerator;
 
 /**
@@ -44,11 +45,15 @@ public class LocalGeneratorEx extends LocalGenerator {
 	/**
 	 * @param b
 	 */
-	public LocalGeneratorEx(Body b) {
+	public LocalGeneratorEx(Body b) {  
 		super(b);
 		this.body=b;
 	}
 	private Body body;
+	
+	public SootMethod getMethod() {
+		return body.getMethod();
+	}
 
 	//private int nextLocal=0;
 	
@@ -93,9 +98,6 @@ public class LocalGeneratorEx extends LocalGenerator {
 
 	// The following functions are copied from the base class
 	 private soot.Local createLocal(String name, soot.Type sootType) {
-		 if (sootType instanceof soot.CharType) {
-			 sootType = soot.IntType.v();
-		 }
 		 soot.Local sootLocal = soot.jimple.Jimple.v().newLocal(name, sootType);
 		 body.getLocals().add(sootLocal);
 		 return sootLocal;
