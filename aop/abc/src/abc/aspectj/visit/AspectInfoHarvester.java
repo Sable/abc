@@ -41,10 +41,6 @@ public class AspectInfoHarvester extends ContextVisitor {
 	return super.enter(parent, n);
     }
 
-    public static int convertModifiers(Flags flags) {
-	return soot.javaToJimple.Util.getModifier(flags);
-    }
-
     /** Convert a list of polyglot nodes representing argument patterns.
      *  @param nodes a list containing {@link polyglot.ast.Local}, {@link polyglot.types.TypeNode},
      *               {@link abc.aspectj.ast.ArgStar} and {@link abc.aspectj.ast.ArgDotDot} objects.

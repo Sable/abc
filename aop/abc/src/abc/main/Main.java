@@ -63,6 +63,7 @@ public class Main {
       abc.aspectj.visit.OncePass.reset();
       abc.aspectj.visit.PCStructure.reset();
       abc.aspectj.visit.AspectInfoHarvester.reset();
+      abc.weaving.aspectinfo.AbcFactory.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.matching.ShadowType.reset();
       abc.weaving.weaver.AroundWeaver.reset();
@@ -497,7 +498,7 @@ public class Main {
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
 
-            GlobalAspectInfo.v().resolveClassNames();
+            GlobalAspectInfo.v().buildAspectHierarchy();
             AbcTimer.mark("Resolve class names");
 
         } catch (polyglot.main.UsageError e) {

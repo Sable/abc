@@ -2,10 +2,33 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
+import polyglot.types.Resolver;
+import polyglot.types.ClassType;
+import polyglot.types.SemanticException;
+
+import soot.SootClass;
 
 import java.util.*;
 
 public class AbcFactory {
+    private static Resolver resolver;
+
+    private static Map/*<String,ClassType>*/ name_to_ct;
+    private static Map/*<ClassType,String>*/ ct_to_name;
+
+
+    public static void init(Resolver res) {
+	resolver = res;
+	name_to_ct = new HashMap();
+	ct_to_name = new HashMap();
+    }
+
+    public static void reset() {
+	resolver = null;
+	name_to_ct = null;
+	ct_to_name = null;
+    }
+
     public static AbcType AbcType(polyglot.types.Type t) {
 	return new AbcType(t);
     }
@@ -14,20 +37,55 @@ public class AbcFactory {
 	return new AbcType(t);
     }
 
-    public static AbcClass AbcClass(polyglot.types.ClassType ct) {
+    public static AbcClass AbcClass(ClassType ct) {
 	return new AbcClass(ct);
     }
 
-    public static AbcClass AbcClass(polyglot.types.ClassType ct, String java_name) {
+    public static AbcClass AbcClass(ClassType ct, String java_name) {
 	return new AbcClass(ct, java_name);
     }
 
-    public static AbcClass AbcClass(soot.SootClass sc) {
+    public static AbcClass AbcClass(SootClass sc) {
 	return new AbcClass(sc);
     }
 
     public static int modifiers(polyglot.types.Flags mods) {
 	return soot.javaToJimple.Util.getModifier(mods);
+    }
+
+    public static ClassType sootClassToClassType(SootClass sc) {
+	boolean debug = abc.main.Debug.v().sootClassToClassType;
+	if (debug) System.err.print("To ClassType: "+sc.getName()+" ... ");
+	if (name_to_ct.containsKey(sc.getName())) {
+	    if (debug) System.err.println("KNOWN");
+	    return (ClassType)name_to_ct.get(sc.getName());
+	} else {
+	    try {
+		if (debug) System.err.println("LOOKUP");
+		ClassType ct = (ClassType)resolver.find(sc.getName());
+		name_to_ct.put(sc.getName(), ct);
+		ct_to_name.put(ct, sc.getName());
+		return ct;
+	    } catch (SemanticException e) {
+		throw new NoSuchElementException("No such class: "+sc);
+	    }
+	}
+    }
+
+    public static SootClass classTypeToSootClass(ClassType ct) {
+	if (ct_to_name.containsKey(ct)) {
+	    return soot.Scene.v().getSootClass((String)ct_to_name.get(ct));
+	} else {
+	    SootClass sc = ((soot.RefType)soot.javaToJimple.Util.getSootType(ct)).getSootClass();
+	    name_to_ct.put(sc.getName(), ct);
+	    ct_to_name.put(ct, sc.getName());
+	    return sc;
+	}
+    }
+
+    public static void registerName(ClassType ct, String name) {
+	name_to_ct.put(name, ct);
+	ct_to_name.put(ct, name);
     }
 
     public static MethodSig MethodSig(polyglot.ast.MethodDecl m) {

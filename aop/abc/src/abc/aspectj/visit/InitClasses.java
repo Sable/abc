@@ -27,7 +27,7 @@ public class InitClasses extends OncePass {
 	try {
 	    Resolver res = ts.loadedResolver();
 
-	    ext.hierarchy = new PCStructure(res);
+	    AbcFactory.init(res);
 
 	    // Fetch all the weavable classes and put them in the right places
 	    Iterator wcni = ext.jar_classes.iterator();
@@ -38,7 +38,7 @@ public class InitClasses extends OncePass {
 		    throw new InternalCompilerError("Class type of jar class was null");
 		}
 		ext.hierarchy.insertClassAndSuperclasses(ct, true);
-		ext.hierarchy.registerName(ct, wcn);
+		AbcFactory.registerName(ct, wcn);
 		GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
 	    }
 

@@ -1,6 +1,8 @@
 
 package abc.weaving.aspectinfo;
 
+import polyglot.types.ClassType;
+
 import soot.*;
 
 /** A Java type handled by the ABC compiler. */
@@ -21,7 +23,11 @@ public class AbcType {
     public soot.Type getSootType() {
 	if (st == null) {
 	    //System.out.println("Getting soot type for "+pt);
-	    st = soot.javaToJimple.Util.getSootType(pt);
+	    if (pt instanceof ClassType) {
+		st = AbcFactory.classTypeToSootClass((ClassType)pt).getType();
+	    } else {
+		st = soot.javaToJimple.Util.getSootType(pt);
+	    }
 	}
 	return st;
     }

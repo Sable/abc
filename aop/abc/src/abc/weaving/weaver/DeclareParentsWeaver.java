@@ -37,7 +37,9 @@ public class DeclareParentsWeaver {
 			if (abc.main.Debug.v().declareParents) {
 			    System.out.println(sc+" implements "+si);
 			}
-			sc.addInterface(si);
+			if (!sc.implementsInterface(si.getName())) {
+			    sc.addInterface(si);
+			}
 		    }
 		}
 	    }

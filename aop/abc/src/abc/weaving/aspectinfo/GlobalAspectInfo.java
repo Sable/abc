@@ -59,14 +59,7 @@ public class GlobalAspectInfo {
     private Map/*<MethodSig,Integer>*/ method_skip_last = new HashMap();
     
     
-    public void resolveClassNames() {
-	// Transform the class names from Java names to JVM names
-	Iterator ci = classes.iterator();
-	while (ci.hasNext()) {
-	    AbcClass c = (AbcClass)ci.next();
-	    c.getSootClass();
-	}
-
+    public void buildAspectHierarchy() {
 	// Build the aspect hierarchy
 	Iterator ai = aspects.iterator();
 	while (ai.hasNext()) {

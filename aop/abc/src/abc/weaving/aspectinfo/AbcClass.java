@@ -1,7 +1,7 @@
 
 package abc.weaving.aspectinfo;
 
-import polyglot.types.Type;
+import polyglot.types.ClassType;
 
 import abc.aspectj.visit.PCStructure;
 
@@ -12,16 +12,16 @@ import soot.SootClass;
 public class AbcClass {
     private String java_name;
     private String jvm_name;
-    private Type polyglot_type;
+    private ClassType polyglot_type;
     private SootClass sc;
 
-    AbcClass(Type polyglot_type, String java_name) {
+    AbcClass(ClassType polyglot_type, String java_name) {
 	this.polyglot_type = polyglot_type;
 	this.java_name = java_name;
 	polyglot_type.toString();
     }
 
-    AbcClass(Type polyglot_type) {
+    AbcClass(ClassType polyglot_type) {
 	this.polyglot_type = polyglot_type;
 	polyglot_type.toString();
     }
@@ -31,7 +31,7 @@ public class AbcClass {
 	this.jvm_name = sc.getName();
     }
 
-    public Type getPolyglotType() {
+    public ClassType getPolyglotType() {
 	return polyglot_type;
     }
 
@@ -42,7 +42,7 @@ public class AbcClass {
     public String getJvmName() {
 	if (jvm_name == null) {
 	    //System.err.println(((polyglot.types.ClassType)polyglot_type).fullName());
-	    jvm_name = soot.javaToJimple.Util.getSootType(polyglot_type).toString();
+	    jvm_name = AbcFactory.classTypeToSootClass(polyglot_type).toString();
 	}
 	return jvm_name;
     }

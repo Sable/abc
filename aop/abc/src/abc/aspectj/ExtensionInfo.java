@@ -83,6 +83,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	this.source_files = source_files;
 	class_to_ast = new HashMap();
 	aspect_names = new ArrayList();
+	hierarchy = PCStructure.v();
     }
 
     static {

@@ -5,6 +5,8 @@ import java.util.*;
 
 import abc.aspectj.ast.*;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 import polyglot.types.SemanticException;
 import polyglot.types.ClassType;
 import polyglot.types.Resolver;
@@ -20,26 +22,24 @@ public class PCStructure {
 	return v;
     }
 
-    Resolver res;
+    static {
+	reset();
+    }
+
     PCNode root;
     PCNode dummy;
     Map/*<ClassType,PCNode>*/ classes;
-    Map/*<String,ClassType>*/ name_to_ct;
-    Map/*<ClassType,String>*/ ct_to_name;
     boolean autosootify = false;
 
-    public PCStructure(Resolver res) {
-	this.res = res;
+    private PCStructure() {
 	root = new PCNode(null, null, this);
 	dummy = new PCNode(null, null, this);
 	classes = new HashMap();
-	name_to_ct = new HashMap();
-	ct_to_name = new HashMap();
 	v = this;
     }
 
     public static void reset() {
-	v = null;
+	v = new PCStructure();
     }
 
     private static boolean isNameable(ClassType ct) {
@@ -60,45 +60,10 @@ public class PCStructure {
 	    }
 	    classes.put(ct, cn);
 	    if (autosootify) {
-		classTypeToSootClass(ct);
+		AbcFactory.classTypeToSootClass(ct);
 	    }
 	    return cn;
 	}
-    }
-
-    private ClassType sootClassToClassType(SootClass sc) {
-	boolean debug = abc.main.Debug.v().sootClassToClassType;
-	if (debug) System.err.print("To ClassType: "+sc.getName()+" ... ");
-	if (name_to_ct.containsKey(sc.getName())) {
-	    if (debug) System.err.println("KNOWN");
-	    return (ClassType)name_to_ct.get(sc.getName());
-	} else {
-	    try {
-		if (debug) System.err.println("LOOKUP");
-		ClassType ct = (ClassType)res.find(sc.getName());
-		name_to_ct.put(sc.getName(), ct);
-		ct_to_name.put(ct, sc.getName());
-		return ct;
-	    } catch (SemanticException e) {
-		throw new NoSuchElementException("No such class: "+sc);
-	    }
-	}
-    }
-
-    private SootClass classTypeToSootClass(ClassType ct) {
-	if (ct_to_name.containsKey(ct)) {
-	    return Scene.v().getSootClass((String)ct_to_name.get(ct));
-	} else {
-	    SootClass sc = ((RefType)soot.javaToJimple.Util.getSootType(ct)).getSootClass();
-	    name_to_ct.put(sc.getName(), ct);
-	    ct_to_name.put(ct, sc.getName());
-	    return sc;
-	}
-    }
-
-    public void registerName(ClassType ct, String name) {
-	name_to_ct.put(name, ct);
-	ct_to_name.put(ct, name);
     }
 
     public Collection getClassTypes() {
@@ -115,7 +80,7 @@ public class PCStructure {
     }
 
     public PCNode getClass(SootClass sc) {
-	return getClass(sootClassToClassType(sc));
+	return getClass(AbcFactory.sootClassToClassType(sc));
     }
 
     public PCNode insertClassAndSuperclasses(ClassType ct, boolean weavable) {
@@ -140,14 +105,14 @@ public class PCStructure {
     }
 
     public PCNode insertClassAndSuperclasses(SootClass sc, boolean weavable) {
-	return insertClassAndSuperclasses(sootClassToClassType(sc), weavable);
+	return insertClassAndSuperclasses(AbcFactory.sootClassToClassType(sc), weavable);
     }
 
     public void updateWithAllSootClasses() {
 	Iterator cti = getClassTypes().iterator();
 	while (cti.hasNext()) {
 	    ClassType ct = (ClassType)cti.next();
-	    classTypeToSootClass(ct);
+	    AbcFactory.classTypeToSootClass(ct);
 	}
 
 	autosootify = true;

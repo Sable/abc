@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.regex.*;
 
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.AbcFactory;
 
 import soot.*;
 
@@ -193,7 +194,7 @@ public class PatternMatcher {
 	Iterator modpi = modps.iterator();
 	while (modpi.hasNext()) {
 	    ModifierPattern modp = (ModifierPattern)modpi.next();
-	    int pmods = soot.javaToJimple.Util.getModifier(modp.modifier());
+	    int pmods = AbcFactory.modifiers(modp.modifier());
 	    if (modp.positive()) {
 		if ((pmods & mods) == 0) return false;
 	    } else {

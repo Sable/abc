@@ -345,7 +345,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	    exc.add(AbcFactory.AbcClass((ClassType)t.type()));
 	}
 	abc.weaving.aspectinfo.MethodSig impl = new abc.weaving.aspectinfo.MethodSig
-	    (AspectInfoHarvester.convertModifiers(flags()),
+	    (AbcFactory.modifiers(flags()),
 	     current_aspect.getInstanceClass(),
 	     AbcFactory.AbcType(returnType().type()),
 	     name(),
@@ -353,7 +353,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	     exc,
 	     position());
 	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
-	    (AspectInfoHarvester.convertModifiers(origflags),
+	    (AbcFactory.modifiers(origflags),
 	     AbcFactory.AbcClass((ClassType)host.type()),
 	     AbcFactory.AbcType(returnType().type()),
 	     name(),

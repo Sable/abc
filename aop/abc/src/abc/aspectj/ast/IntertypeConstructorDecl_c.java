@@ -607,7 +607,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 	// System.out.println("ICD host: "+host.toString());
 		abc.weaving.aspectinfo.AbcClass target = AbcFactory.AbcClass((ClassType)host.type());
-		int mod = AspectInfoHarvester.convertModifiers(flags());
+		int mod = AbcFactory.modifiers(flags());
 		List formalTypes = new ArrayList();
 		Iterator fi = aiFormalTypes.iterator();
 		int index = 0;
