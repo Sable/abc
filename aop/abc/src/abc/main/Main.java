@@ -229,7 +229,8 @@ public class Main {
         }
 
         // Output the aspect info
-        // GlobalAspectInfo.v().print(System.err);
+	if (abc.main.Debug.v().aspectInfo)
+	    GlobalAspectInfo.v().print(System.err);
     }
 
         protected Compiler createCompiler(ExtensionInfo ext) {

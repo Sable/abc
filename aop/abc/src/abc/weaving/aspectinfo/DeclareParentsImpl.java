@@ -25,4 +25,21 @@ public class DeclareParentsImpl extends DeclareParents {
     public List/*<String>*/ getInterfaces() {
 	return interfaces;
     }
+
+    public String toString() {
+	StringBuffer sb = new StringBuffer();
+	sb.append("declare parents: ");
+	sb.append(getClasses());
+	sb.append(" implements ");
+	Iterator ii = getInterfaces().iterator();
+	while (ii.hasNext()) {
+	    String i = (String)ii.next();
+	    sb.append(i);
+	    if (ii.hasNext()) {
+		sb.append(", ");
+	    }
+	}
+	sb.append(";");
+	return sb.toString();
+    }
 }

@@ -7,8 +7,13 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.visit.ContainsAspectInfo;
+
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+
 public class DeclarePrecedence_c extends DeclareDecl_c 
-                                 implements DeclarePrecedence
+    implements DeclarePrecedence, ContainsAspectInfo
 {
 
     TypedList pats;
@@ -49,6 +54,16 @@ public class DeclarePrecedence_c extends DeclareDecl_c
         w.write(";");
     }
 
+    public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	List cnpats = new ArrayList();
+	Iterator pi = pats.iterator();
+	while (pi.hasNext()) {
+	    ClassnamePatternExpr p = (ClassnamePatternExpr)pi.next();
+	    cnpats.add(p.makeAIClassnamePattern());
+	}
+	gai.addDeclarePrecedence(new abc.weaving.aspectinfo.DeclarePrecedence
+				 (cnpats, current_aspect, position()));
+    }	
 }
 
 

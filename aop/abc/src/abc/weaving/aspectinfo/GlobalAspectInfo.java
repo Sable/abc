@@ -29,6 +29,7 @@ public class GlobalAspectInfo {
     private List/*<AbstractAdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
     private List/*<DeclareParents>*/ dps = new ArrayList();
+    private List/*<DeclarePrecedence>*/ dprs = new ArrayList();
 	
 	// additional generated classes that need to be output in the end
 	//private Collection/*<String>*/ generated_classes = new ArrayList();
@@ -129,6 +130,13 @@ public class GlobalAspectInfo {
 	return dps;
     }
 
+    /** Returns the list of all <code>declare precedence</code> declarations.
+     *  @return a list of {@link abc.weaving.aspectinfo.DeclarePrecedence} objects.
+     */
+    public List getDeclarePrecedence() {
+	return dprs;
+    }
+
     public AbcClass getClass(String name) {
 	return (AbcClass)classes_map.get(name);
     }
@@ -183,6 +191,10 @@ public class GlobalAspectInfo {
 	dps.add(dp);
     }
 
+    public void addDeclarePrecedence(DeclarePrecedence dpr) {
+	dprs.add(dpr);
+    }
+
     public void print(java.io.PrintStream p) {
 	p.println();
 	printList(p, classes, "Classes:");
@@ -192,6 +204,8 @@ public class GlobalAspectInfo {
 	printList(p, icds, "Intertype constructor decls:");
 	printList(p, ads, "Advice decls:");
 	printList(p, pcds, "Pointcut decls:");
+	printList(p, dps, "Declare parents:");
+	printList(p, dprs, "Declare precedence:");
     }
 
     private void printList(java.io.PrintStream p, List l, String name) {

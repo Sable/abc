@@ -170,15 +170,16 @@ public class PatternMatcher {
 
     private boolean matchesFormals(List/*<FormalPattern>*/ fpats, int fpi, List/*<soot.Type>*/ ftypes, int fti) {
 	// FIXME: BRUTE FORCE MATCHING. DO SOMETHING MORE CLEVER!
-	while (fpi < fpats.size() && fti < ftypes.size()) {
+	while (fpi < fpats.size()) {
 	    FormalPattern fp = (FormalPattern)fpats.get(fpi);
-	    soot.Type ft = (soot.Type)ftypes.get(fti);
 	    if (fp instanceof TypeFormalPattern) {
+		if (fti >= ftypes.size()) return false;
 		TypePatternExpr pat = ((TypeFormalPattern)fp).expr();
+		soot.Type ft = (soot.Type)ftypes.get(fti);
 		if (!matchesType(pat, ft.toString())) return false;
 	    } else {
 		// DOTDOT
-		while (fti < ftypes.size()) {
+		while (fti <= ftypes.size()) {
 		    if (matchesFormals(fpats, fpi+1, ftypes, fti)) return true;
 		    fti++;
 		}
@@ -187,7 +188,7 @@ public class PatternMatcher {
 	    fpi++;
 	    fti++;
 	}
-	return fpi == fpats.size() && fti == ftypes.size();
+	return fti == ftypes.size();
     }
 
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern(ClassnamePatternExpr pattern) {

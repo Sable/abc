@@ -22,4 +22,8 @@ public class DeclareParentsExt extends DeclareParents {
     public String getParent() {
 	return parent;
     }
+
+    public String toString() {
+	return "declare parents: "+getClasses()+" extends "+parent+";";
+    }
 }

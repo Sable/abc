@@ -26,6 +26,8 @@ public class Debug {
     }
 
 
+    public boolean aspectInfo=false;
+
     public boolean namePatternMatches=false;
     public boolean declareParents=false;
 
