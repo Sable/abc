@@ -2,3 +2,5 @@
 *.class
 *.jimple
 sootOutput
+ajcOutput
+abcOutput
