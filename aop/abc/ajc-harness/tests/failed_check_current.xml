@@ -1,6 +1,26 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="pureJava/innerDefaultConstructors"
+ <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <message kind="error" line="7"/> 
+          <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+<ajc-test dir="pureJava"
+      abccomment = "abc doesn't allow keywords, added error. LJH "
+      title="Using 'pointcut' as identifier is legal TODO"
+      keywords="from-java,purejava">
+        <compile files="KeywordPointcut.java">
+           <message kind="error" line="7" />
+           <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordPointcut"/>
+    </ajc-test>
+<ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
       abccomment="jlc doesn't report expected error.
                   Reported to Nate on July 1/04.  LJH"
@@ -10,12 +30,15 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
+      abccomment="Polyglot does not catch error on line 14. Sent to Nate
+                  July 1/04. LJH"
       keywords="from-java">
         <compile files="QualifiedThisMatchesExactly.java">
             <message kind="error" line="14"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new" title="IOException on windows if nul used as identifier"
+      abccomment="jlc misses error at line 14, reported to Nate July 1/04 LJH"
       keywords="from-java,purejava">
         <compile files="NulIOException.java">
             <message kind="error" line="12"/>
@@ -24,6 +47,10 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="invalid numeric literals"
+      abccomment="abc doesn't do a good job on these,  needs a parser
+                  that doesn't give up after the first error, and
+                  then each case needs to be check.  jlc probably does
+                  not catch all of them either.  July 1/04 LJH"
       keywords="from-java">
         <compile files="LiteralsCf.java">
             <message kind="error" line="8"/>
@@ -46,39 +73,38 @@
             <message kind="error" line="32"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" title="Error expected for field of type void"
-      keywords="from-java,purejava">
-        <compile files="VoidField.java">
-            <message kind="error" line="2"/>
-            <message kind="error" line="4"/>
-            <message kind="error" line="6"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new" title="Error expected for constructor in interfaces"
+      abccomment="ajc only finds errors on lines 2 and 8. 
+                  another example of jlc crashing after error detection.
+                  July 2/04 LJH" 
       keywords="from-java,purejava">
+
         <compile files="InterfaceConstructor.java">
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="6"/>
+            <ajcmessage kind="error" line="8"/>
             <message kind="error" line="2"/>
-            <message kind="error" line="6"/>
             <message kind="error" line="8"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" pr="567"
-      title="cyclic interface inheritance not detected if no classes implement the interfaces"
-      keywords="from-java,purejava,messages-vary">
-        <compile files="CyclicInterfaceInheritance.java" 
-               options="!eclipse">
-            <message kind="error" line="14"/>
-            <message kind="error" line="15"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new" pr="567" title="cyclic class inheritance"
+      abccomment="There are two kinds of errors in this program, one
+        due to cyclic inheritance and one due to missing bodies of the
+        constructors.  Abc finds the missing bodies, ajc finds the
+        cyclic inheritance.   If the bodies are fixed to have a body then
+        abc finds the cyclic inheritance and gives a fine error
+        message.  LJH July 2/04" 
       keywords="from-java,purejava">
         <compile files="CyclicClassInheritance.java">
-            <message kind="error" line="11"/>
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="12"/>
+            <message kind="error" line="8"/>
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="Type names are not expressions on their own"
+      abccomment="jlc misses all errors after the first two.  Example sent to
+                  Nate on July 2/04.  LJH"
       keywords="from-java,purejava">
         <compile files="TypeExprErrors.java">
             <message kind="error" line="10"/>
@@ -106,6 +132,9 @@
     </ajc-test>
 <ajc-test dir="pureJava/nameConflicts"
       title="type and package name conflicts caught as errors (1)"
+      abccomment="this is missing in jlc, but it seems less important
+                  than other problems, so won't report it to Nate 
+                   just yet.  July 2/04 LJH"
       keywords="from-java,purejava">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <message kind="error" line="3"/>
@@ -121,6 +150,8 @@
     </ajc-test>
 <ajc-test dir="new/introTypeMissing"
       title="CF expected when enclosing class superclass used as this qualifier in inner class"
+      abccomment="missing error on line 23, example set to Nate
+                  July 2/04. LJH"
       keywords="from-java">
         <compile files="TargetClassCF.java,Util.java">
             <message kind="error" line="22"/>
@@ -131,6 +162,7 @@
     </ajc-test>
 <ajc-test dir="new"
       title="PR591 compiler error expected when directly calling unimplemented abstract method using super"
+      abccomment="jlc error, reported to Nate on July 2/04 LJH."
       keywords="from-java,purejava">
         <compile files="AbstractMethodCall.java">
             <message kind="error" line="10"/>
@@ -148,18 +180,18 @@
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava"
-      title="suggested by jacks 3.7-15 all comments must be closed"
-      keywords="from-java,purejava">
-        <compile files="OpenComment.java">
-            <message kind="error" line="7"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new/classaccess"
       title="package class access not enforced outside of package"
       keywords="from-java,purejava">
         <compile files="main/Main.java,pack1/Target.java">
             <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="new" pr="642" title="invalid floating-point constant"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="ParsingFloatCE.java"
+               options="!eclipse">
+            <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new/subaspects" pr="647"
@@ -290,6 +322,12 @@
             <message kind="error" line="11"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors" title="Crashes when there're stray dots"
+      keywords="from-errors,purejava">
+        <compile files="StrayDot.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors" title="Stray characters cause a crash"
       comment="XXX public class in wrong file"
       keywords="from-errors,purejava">
@@ -313,16 +351,6 @@
         <compile files="InterfaceArrayCast.java">
             <message kind="error" line="9"/>
             <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors"
-      title="parsing errors for various bad forms of NewArrayExprs."
-      keywords="from-errors,purejava">
-        <compile files="BadNewArrayExprs.java">
-            <message kind="error" line="4"/>
-            <message kind="error" line="5"/>
-            <message kind="error" line="6"/>
-            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 <ajc-test dir="errors"
@@ -859,6 +887,13 @@
       keywords="from-resolved_105,purejava">
         <compile files="NestedInterfaceTest.java">
             <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="722" title="loop expressions not declarations"
+      keywords="from-resolved_105,purejava,messages-vary">
+        <compile files="DeclarationsInLoopsCE.java"
+                options="!eclipse">
+            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" pr="739"
@@ -1413,16 +1448,6 @@
 			<message kind="warning" line="12" text="declare warning">
 				<source line="19" file="DeclaringTypeWarning.java"/>
 			</message>
-		</compile>
-	</ajc-test>
-<ajc-test dir="bugs"
-		title="Appropriate message for 'after() thowing(Throwable th)' syntax error"
-		pr="49638"
-		>
-		<compile 
-			files="AfterThrowingAdviceSyntaxError.java" >
-			<message kind="error" line="21" />
-			<message kind="error" line="23" />
 		</compile>
 	</ajc-test>
 <ajc-test dir="bugs/faultingInSource" pr="46671"

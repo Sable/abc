@@ -379,7 +379,8 @@
       title="inner classes accessing outers and some more inner class names"
       abccomment="works outside of testHarness, but gets a
             reflection error from inside testHarness, may be fixed with
-            new test harness.   LJH"
+            new test harness. LJH  
+            FIXED July 2/04 LJH"
       keywords="from-java">
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
@@ -495,14 +496,6 @@
         <run class="CaseClauses"/>
     </ajc-test>
 <ajc-test dir="pureJava"
-      title="Checking character values with all the unicode chars."
-      abccomment="Required the fixed jasmin to handle constant
-                  pool offsets > 32K.  Fixed July 1/04 LJH "
-      keywords="from-java">
-        <compile files="CharsUnicode.java"/>
-        <run class="CharsUnicode"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
       title="Trouble finding methods with the same name and different parameter types"
       keywords="from-java">
         <compile files="MethodsWithTheSameName.java"/>
@@ -591,26 +584,6 @@
         <compile files="TernaryAssignments.java"/>
         <run class="TernaryAssignments"/>
     </ajc-test>
-<ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
-      abccomment="abc doesn't allow keywords 
-                      need to allow for syntax error. LJH "
-      keywords="from-java,purejava">
-        <compile files="KeywordAspect.java">
-          <message kind="error" line="7"/> 
-          <ajcmessage kind="ignore" />
-        </compile>
-        <ajcrun class="KeywordAspect" />
-    </ajc-test>
-<ajc-test dir="pureJava"
-      abccomment = "abc doesn't allow keywords, added error. LJH "
-      title="Using 'pointcut' as identifier is legal TODO"
-      keywords="from-java,purejava">
-        <compile files="KeywordPointcut.java">
-           <message kind="error" line="7" />
-           <ajcmessage kind="ignore" />
-        </compile>
-        <ajcrun class="KeywordPointcut"/>
-    </ajc-test>
 <ajc-test dir="pureJava" title="Conflicting inner classes with interfaces."
       keywords="from-java">
         <compile files="PR413.java"/>
@@ -636,7 +609,8 @@
 <ajc-test dir="pureJava"
       title="finally at the end of a method that needs to return"
       abccomment="incorrect code generation by j2j for m().  Problem
-                  reported to Jennifer July 1/04.  LJH "
+                  reported to Jennifer July 1/04.  LJH 
+                  FIXED July 2/04 LJH"
       keywords="from-java">
         <compile files="FinallyAndReturns.java"/>
         <run class="FinallyAndReturns"/>
@@ -794,6 +768,13 @@
             <message kind="error" line="21"/>
         </compile>
     </ajc-test>
+<ajc-test dir="pureJava" title="test try/catch/finally statements"
+      abccomment="j2j crashes with a stack overflow error.  Reported
+            to Jennifer, July 2/04 LJH"
+      keywords="from-java">
+        <compile files="TryCatchFinally.java"/>
+        <run class="TryCatchFinally"/>
+    </ajc-test>
 <ajc-test dir="pureJava" pr="547"
       title="local types can be bound in the signatures of other local types"
       keywords="from-resolved_10rc3,from-java">
@@ -806,11 +787,33 @@
         <compile files="FinalConstructorParm.java"/>
         <run class="FinalConstructorParm"/>
     </ajc-test>
+<ajc-test dir="new" title="Error expected for field of type void"
+      abccomment="causes jlc to crash when it finds the 3rd error.
+                   Reported to Nate July 2/04 LJH"
+      keywords="from-java,purejava">
+        <compile files="VoidField.java">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="new" pr="558"
       title="class name for identifier as String should provoke error"
       keywords="from-java,purejava">
         <compile files="PR558.java">
             <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="new" pr="567"
+      title="cyclic interface inheritance not detected if no classes implement the interfaces"
+      abccomment="Only one error message required, matches what javac does. 
+                  July 2/04 LJH"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="CyclicInterfaceInheritance.java" 
+               options="!eclipse">
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="15"/>
+            <message kind="error" line="15"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava/nameConflicts"
@@ -869,6 +872,33 @@
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new/introTypeMissing"
+      title="valid type expressions for introduced type testing"
+      abccomment="problem in j2j, won't compile, reported to Jennifer
+                   on July 2/04, LJH"
+      keywords="from-java,purejava">
+        <compile files="TargetClass.java,Util.java"/>
+        <run class="TargetClass"/>
+    </ajc-test>
+<ajc-test dir="new/introTypeMissing"
+      title="enclosing class may be used as this qualifier in inner class"
+      abccomment="j2j can't handle this, example sent to Jennifer, 
+                   July 2/04.  LJH"
+      keywords="from-java">
+        <compile files="TargetClassCP.java,Util.java"/>
+        <run class="TargetClassCP"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="suggested by jacks 3.7-15 all comments must be closed"
+      abccomment="we report missing end of comment at end of file 
+                  whereas ajc reports it at the beginning of the
+                  comment.  I think our error is fine.  July 2/04 LJH"
+      keywords="from-java,purejava">
+        <compile files="OpenComment.java">
+            <ajcmessage kind="error" line="7"/>
+            <message kind="error" line="10"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="pureJava" pr="601"
       title="nested synchronized blocks have interesting frame location problems"
       keywords="from-java">
@@ -886,13 +916,6 @@
         <compile files="TryNoCatchCE.java"
                options="!eclipse">
             <message kind="error" line="6"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="new" pr="642" title="invalid floating-point constant"
-      keywords="from-java,purejava,messages-vary">
-        <compile files="ParsingFloatCE.java"
-               options="!eclipse">
-            <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="anonymous inner classes with inner types"
@@ -1223,12 +1246,6 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors" title="Crashes when there're stray dots"
-      keywords="from-errors,purejava">
-        <compile files="StrayDot.java">
-            <message kind="error" line="9"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" title="Colon instead of a semi-colon causes a crash"
       comment="XXX public class in wrong file"
       keywords="from-errors,purejava">
@@ -1265,6 +1282,16 @@
 <ajc-test dir="errors" title="Missing ;" keywords="from-errors,purejava">
         <compile files="PR405.java">
             <message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors"
+      title="parsing errors for various bad forms of NewArrayExprs."
+      keywords="from-errors,purejava">
+        <compile files="BadNewArrayExprs.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 <ajc-test dir="errors" title="errors in aspect inheritance - 1"
@@ -2143,10 +2170,34 @@
         <run class="ThisInIntroFieldInit"/>
     </ajc-test>
 <ajc-test dir="new/introTypeMissing"
+      title="Introduced type unavailable to cast expressions in introduced methods"
+      keywords="from-resolved_10x">
+        <compile files="Cast.java,TargetClass.java,Util.java"/>
+        <run class="Cast"/>
+    </ajc-test>
+<ajc-test dir="new/introTypeMissing"
+      title="Introduced type unavailable to qualified new expressions in introduced methods"
+      keywords="from-resolved_10x">
+        <compile files="Inner.java,TargetClass.java,Util.java"/>
+        <run class="Inner"/>
+    </ajc-test>
+<ajc-test dir="new/introTypeMissing"
+      title="Introduced type unavailable to cast expressions in introduced field initializers"
+      keywords="from-resolved_10x">
+        <compile files="CastInFieldInit.java,TargetClass.java,Util.java"/>
+        <run class="CastInFieldInit"/>
+    </ajc-test>
+<ajc-test dir="new/introTypeMissing"
       title="Aspect type unavailable to qualified new expressions in body of introduced methods"
       keywords="from-resolved_10x">
         <compile files="AspectInIntroducedMethod.java"/>
         <run class="AspectInIntroducedMethod"/>
+    </ajc-test>
+<ajc-test dir="new/introTypeMissing"
+      title="Introduced type unavailable to qualified new expressions in introduced field initializers"
+      keywords="from-resolved_10x">
+        <compile files="InnerInFieldInit.java,TargetClass.java,Util.java"/>
+        <run class="InnerInFieldInit"/>
     </ajc-test>
 <ajc-test dir="new" pr="595"
       title="variable slots and finally/catch causing verify errors"
@@ -2377,13 +2428,6 @@
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava" pr="722" title="loop expressions not declarations"
-      keywords="from-resolved_105,purejava,messages-vary">
-        <compile files="DeclarationsInLoopsCE.java"
-                options="!eclipse">
-            <message kind="error" line="7"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="pureJava" pr="739"
       title="final local variables may be accessed from inner class"
       keywords="from-resolved_105,purejava">
@@ -2436,7 +2480,7 @@
 <ajc-test dir="pureJava"
       title="Locals inside other locals, ordering of processing [eh]"
       abccomment="Verify error in abc and j2j (when --app used).
-                  Reported to Jennifer, July 1/04 LJH"
+                  Reported to Jennifer, July 1/04 LJH, Fixed July 2/04"
       keywords="from-resolved_105">
         <compile files="LocalInners2.java"/>
         <run class="LocalInners2"/>
@@ -2753,6 +2797,11 @@
         <compile files="StackError.java"/>
         <run class="StackError"/>
     </ajc-test>
+<ajc-test dir="new" pr="36778"
+      title="advise join points in subclass of empty interface">
+        <compile files="EmptyInterface.java"/>
+        <run class="EmptyInterface"/>
+    </ajc-test>
 <ajc-test dir="bugs" title="lame error message: negation doesn't allow binding"
       pr="30663">
         <compile files="BadBindingError.java">
@@ -2963,6 +3012,16 @@
 		<compile
 			options="-Xlint:ignore,-1.3" 
 			files="DeclaringTypeWarning.java" >
+		</compile>
+	</ajc-test>
+<ajc-test dir="bugs"
+		title="Appropriate message for 'after() thowing(Throwable th)' syntax error"
+		pr="49638"
+		>
+		<compile 
+			files="AfterThrowingAdviceSyntaxError.java" >
+			<message kind="error" line="21" />
+			<message kind="error" line="23" />
 		</compile>
 	</ajc-test>
 <ajc-test dir="bugs" pr="46750" title="inner aspect containing declare soft">
