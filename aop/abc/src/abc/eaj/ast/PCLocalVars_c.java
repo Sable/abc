@@ -104,12 +104,16 @@ public class PCLocalVars_c extends Pointcut_c
         Formal f;
         Iterator i = formals.iterator();
 
+        // we must remove the private formals from the
+        // set we return, and manually perform the checks
+        // that are performed on a complete compound pointcut
+        // for the private formals
+ 
+        pc.checkFormals(formals);
+
         while (i.hasNext()) {
                 f = (Formal) i.next();
-                if (!results.remove(f.name()))
-                    throw new SemanticException("Formal \"" + f.name() +
-                                           "\" is unbound in pointcut.",
-                                           f.position());
+                results.remove(f.name());
         }
         return results;
     }
