@@ -234,7 +234,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    do {
 		name="abc$cflowStack$"+i;
 		i++;
-	    } while(cl.XdeclaresFieldByName(name));
+	    } while(cl.declaresFieldByName(name));
 	    
 	    SootClass stackClass=Scene.v()
 		.getSootClass("org.aspectj.runtime.internal.CFlowStack");
@@ -290,7 +290,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    do {
 		name="abc$cflowCounter$"+i;
 		i++;
-	    } while(cl.XdeclaresFieldByName(name));   
+	    } while(cl.declaresFieldByName(name));   
 	    
 	    SootClass counterClass=Scene.v()
 		.getSootClass("abc.runtime.internal.CFlowCounter");

@@ -626,7 +626,7 @@ public class Restructure {
 				SootMethod m=(SootMethod)it.next();
 				try {
 					
-					SootMethod m2=cl2.XgetMethod(m.getName(), m.getParameterTypes());
+					SootMethod m2=cl2.getMethod(m.getName(), m.getParameterTypes());
 					if (!m2.getReturnType().equals(m.getReturnType()))
 						return true;
 					

@@ -95,7 +95,7 @@ public class MethodSig extends Sig {
 	    try {
 		// FIXME : MethodSig should store a SootMethodRef,
 		// so this method and getSootMethodRef should be swapped around
-	    	sm = sc.XgetMethod(name, spt);
+	    	sm = sc.getMethod(name, spt);
 	    } catch (RuntimeException e) {
 	    	// output name and signature of method
 	    	String msg=name + "(";

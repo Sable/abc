@@ -150,7 +150,7 @@ public class PatternMatcher {
 		//    SootMethod m = (SootMethod)mi.next();
 		//    System.err.println(m);
 		//}
-		if (sc.XdeclaresMethod(name, parameterTypes, returnType) && matchesClass(pattern, sc)) {
+		if (sc.declaresMethod(name, parameterTypes, returnType) && matchesClass(pattern, sc)) {
 		    return true;
 		}
 		seen.add(sc);

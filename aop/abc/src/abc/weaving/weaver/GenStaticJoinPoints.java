@@ -64,9 +64,9 @@ public class GenStaticJoinPoints {
       Stmt ip;            // the instruction from with to insert (before)
 
       // --- get the units and insertion point in clinit()
-      if (sc.XdeclaresMethod(SootMethod.staticInitializerName,new ArrayList())) {
+      if (sc.declaresMethod(SootMethod.staticInitializerName,new ArrayList())) {
 	  debug("Found the clinit in which to put the SJP");
-	  clinit = sc.XgetMethod(SootMethod.staticInitializerName,new ArrayList());
+	  clinit = sc.getMethod(SootMethod.staticInitializerName,new ArrayList());
           b = clinit.retrieveActiveBody();
           units = b.getUnits();
           lg = new LocalGenerator(b);

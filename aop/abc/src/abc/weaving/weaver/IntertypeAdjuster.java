@@ -88,9 +88,9 @@ public class IntertypeAdjuster {
 	private boolean overrideITDmethod(SootClass pht, 
 															 SootMethod mi) {
 		boolean skipped = false;
-		if (pht.XdeclaresMethod(mi.getName(),mi.getParameterTypes())) {
+		if (pht.declaresMethod(mi.getName(),mi.getParameterTypes())) {
 			// System.out.println("it has the method already");
-			SootMethod minst = pht.XgetMethod(mi.getName(),mi.getParameterTypes());
+			SootMethod minst = pht.getMethod(mi.getName(),mi.getParameterTypes());
 			if (zapsmethod(pht,mi,minst)){   
 					pht.removeMethod(minst);
 					pht.addMethod(mi);
@@ -317,8 +317,8 @@ public class IntertypeAdjuster {
 			boolean skipped = false;
 			fieldToITD.put(fi,origin);
 			intertype.put(fi,origin.getAspect());
-			if (pht.XdeclaresFieldByName(fi.getName())) {
-				SootField finst = pht.XgetFieldByName(fi.getName());
+			if (pht.declaresFieldByName(fi.getName())) {
+				SootField finst = pht.getFieldByName(fi.getName());
 				if (zapsfield(fi,finst)){   
 						pht.removeField(finst);
 						IntertypeFieldDecl ifd = (IntertypeFieldDecl) fieldToITD.get(finst);
@@ -513,9 +513,9 @@ public class IntertypeAdjuster {
 	private boolean overrideITDconstructor(SootClass pht, 
 															 SootMethod mi) {
 		boolean skipped = false;
-		if (pht.XdeclaresMethod(mi.getName(),mi.getParameterTypes())) {
+		if (pht.declaresMethod(mi.getName(),mi.getParameterTypes())) {
 			// System.out.println("it has the method already");
-			SootMethod minst = pht.XgetMethod(mi.getName(),mi.getParameterTypes());
+			SootMethod minst = pht.getMethod(mi.getName(),mi.getParameterTypes());
 			if (zapsconstructor(mi,minst)){   
 					// pht.removeMethod(minst); // FIXME: this must be wrong....
 					pht.addMethod(mi);
@@ -708,7 +708,7 @@ public class IntertypeAdjuster {
 		for (Iterator classIt = targets.iterator(); classIt.hasNext(); ) {
 			SootClass cl = (SootClass) classIt.next();
 			// The field should definitely be in the class itself
-			weaveInit(ifd,cl.XgetField(field.getName(),field.getType().getSootType()),modifiers, cl);
+			weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
 		}
 	}
 	
@@ -818,7 +818,7 @@ public class IntertypeAdjuster {
 		    // if it doesn't exist, create one.	
 				SootMethod clinit; Body b;
 				try { 
-				    clinit = cl.XgetMethod(SootMethod.staticInitializerName,
+				    clinit = cl.getMethod(SootMethod.staticInitializerName,
 							   new ArrayList());
 					b = clinit.getActiveBody();
 				} catch (java.lang.RuntimeException s) {

@@ -431,7 +431,7 @@ public class AroundWeaver {
 				interfaceInfo = new InterfaceInfo();
 
 				interfaceInfo.accessInterface = createAccessInterface(allAccessMethodParameters);
-				interfaceInfo.abstractAccessMethod = interfaceInfo.accessInterface.XgetMethodByName(dynamicAccessMethodName);
+				interfaceInfo.abstractAccessMethod = interfaceInfo.accessInterface.getMethodByName(dynamicAccessMethodName);
 			}
 			
 			if (!proceedSootMethods.contains(sootAdviceMethod)) 
@@ -630,7 +630,7 @@ public class AroundWeaver {
 					SootClass exception = Scene.v().getSootClass("java.lang.RuntimeException");
 					Local ex = lg.generateLocal(exception.getType(), "exception");
 					Stmt newExceptStmt = Jimple.v().newAssignStmt(ex, Jimple.v().newNewExpr(exception.getType()));
-					Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.XgetMethod("<init>", new ArrayList()).makeRef()));
+					Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.getMethod("<init>", new ArrayList()).makeRef()));
 					Stmt throwStmt = Jimple.v().newThrowStmt(ex);
 		
 					defaultTarget = Jimple.v().newNopStmt();
@@ -1289,7 +1289,7 @@ public class AroundWeaver {
 					closureClass.addInterface(interfaceInfo.accessInterface);
 
 					//SootMethod cons=new SootMethod()
-					debug(" " + Scene.v().getSootClass("java.lang.RuntimeException").XgetMethod("<init>", new LinkedList()));
+					debug(" " + Scene.v().getSootClass("java.lang.RuntimeException").getMethod("<init>", new LinkedList()));
 					//if (closureClass!=null)
 					//	throw new RuntimeException();
 					SootMethod cons=new SootMethod("<init>", new LinkedList(), VoidType.v(), Modifier.PUBLIC );			
@@ -1305,7 +1305,7 @@ public class AroundWeaver {
 						statements.addLast(
 							Jimple.v().newInvokeStmt(
 								Jimple.v().newSpecialInvokeExpr(lThis, 
-									Scene.v().getSootClass("java.lang.Object").XgetMethod("<init>", new LinkedList()).makeRef())));
+									Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new LinkedList()).makeRef())));
 						statements.addLast(Jimple.v().newReturnVoidStmt());
 					}
 					
@@ -1388,14 +1388,14 @@ public class AroundWeaver {
 //							Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new ArrayList())));
 					Stmt init = Jimple.v().newInvokeStmt(
 						Jimple.v().newSpecialInvokeExpr(l, 
-							closureClass.XgetMethodByName("<init>").makeRef()));//, new ArrayList())));
+							closureClass.getMethodByName("<init>").makeRef()));//, new ArrayList())));
 
 					joinpointStatements.insertAfter(init, begin);
 					joinpointStatements.insertAfter(newStmt, begin);
 					int i=0;
 					for (Iterator it=context.iterator(); it.hasNext();i++) {
 						Local lContext=(Local)it.next();
-						SootField f=closureClass.XgetFieldByName("context" + i);
+						SootField f=closureClass.getFieldByName("context" + i);
 						debug("2" + f.getType()+ " : " + lContext.getType());
 						AssignStmt as=Jimple.v().newAssignStmt(
 							Jimple.v().newInstanceFieldRef(l, f.makeRef()), lContext);
@@ -1798,7 +1798,7 @@ public class AroundWeaver {
 							SootClass exception = Scene.v().getSootClass("java.lang.RuntimeException");
 							Local ex = lg.generateLocal(exception.getType(), "exception");
 							Stmt newExceptStmt = Jimple.v().newAssignStmt(ex, Jimple.v().newNewExpr(exception.getType()));
-							Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.XgetMethod("<init>", new ArrayList()).makeRef()));
+							Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.getMethod("<init>", new ArrayList()).makeRef()));
 							Stmt throwStmt = Jimple.v().newThrowStmt(ex);
 							accessMethodStatements.insertAfter(newExceptStmt, as2);
 							accessMethodStatements.insertAfter(initEx, newExceptStmt);
@@ -2012,7 +2012,7 @@ public class AroundWeaver {
 						String accessMethodName = accessInfo.sootAccessMethod.getName();
 						Util.validateMethod(accessInfo.sootAccessMethod);
 						SpecialInvokeExpr ex =
-							Jimple.v().newSpecialInvokeExpr(lThis, accessInfo.superCallTarget.XgetMethodByName(accessMethodName).makeRef(), Util.getParameterLocals(body));
+							Jimple.v().newSpecialInvokeExpr(lThis, accessInfo.superCallTarget.getMethodByName(accessMethodName).makeRef(), Util.getParameterLocals(body));
 	
 						if (returnType.equals(VoidType.v())) {
 							Stmt s = Jimple.v().newInvokeStmt(ex);
@@ -2454,7 +2454,7 @@ public class AroundWeaver {
 				if (isAspect())
 					enclosingSootClass=null;
 				else	
-					enclosingSootClass=((RefType)sootClass.XgetFieldByName("this$0").getType()).getSootClass();
+					enclosingSootClass=((RefType)sootClass.getFieldByName("this$0").getType()).getSootClass();
 				
 				this.firstDegree=
 					!isAspect() && getEnclosingSootClass().equals(getAspect());
@@ -2654,7 +2654,7 @@ public class AroundWeaver {
 							
 							while (true)  {
 								debug(" Class: " + cl);
-								SootField f=cl.XgetFieldByName("this$0");
+								SootField f=cl.getFieldByName("this$0");
 								
 								if (!proceedClasses.containsKey(((RefType)f.getType()).getSootClass()))
 									throw new InternalAroundError(" " + ((RefType)f.getType()).getSootClass());		
@@ -2778,7 +2778,7 @@ public class AroundWeaver {
 							SootClass exception = Scene.v().getSootClass("java.lang.RuntimeException");
 							Local ex = lg.generateLocal(exception.getType(), "exception");
 							Stmt newExceptStmt = Jimple.v().newAssignStmt(ex, Jimple.v().newNewExpr(exception.getType()));
-							Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.XgetMethod("<init>", new ArrayList()).makeRef()));
+							Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.getMethod("<init>", new ArrayList()).makeRef()));
 							Stmt throwStmt = Jimple.v().newThrowStmt(ex);
 							this.defaultTargetStmts.add(newExceptStmt);
 							this.defaultTargetStmts.add(initEx);
