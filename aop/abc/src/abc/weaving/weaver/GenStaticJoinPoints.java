@@ -173,7 +173,8 @@ public class GenStaticJoinPoints {
 	                  (AdviceApplication) alistIt.next(); 
 	  // find out if the advice method needs that static join point
 	  AdviceDecl advicedecl = adviceappl.advice;
-	  if (advicedecl.hasJoinPointStaticPart() ||
+	  if (advicedecl == null  || // FIXME: is this really needed
+	      advicedecl.hasJoinPointStaticPart() ||
 	      advicedecl.hasJoinPoint()) // need to create a SJP
 	    { debug("Need a SJP ");
 	      if (!factory_generated) // must generate the code for factory
@@ -184,7 +185,7 @@ public class GenStaticJoinPoints {
 
 	      // increment counter for number of times this advice method
 	      // applies .... don't know what we will use that for yet
-	      int advicemethodcount = advicedecl.incrApplCount();
+	      if (advicedecl != null) advicedecl.incrApplCount();
 
 	      // get the stmt for the mapping
               Stmt keystmt = null;
