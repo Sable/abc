@@ -6,7 +6,7 @@ package abcexer2.types;
 import abc.aspectj.types.AJTypeSystem;
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
  */
 public interface Abcexer2TypeSystem extends AJTypeSystem {

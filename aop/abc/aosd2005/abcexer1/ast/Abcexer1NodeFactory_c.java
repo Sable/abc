@@ -11,14 +11,9 @@ import polyglot.ast.TypeNode;
 import polyglot.types.Flags;
 import polyglot.util.Position;
 import abc.aspectj.ast.AJNodeFactory_c;
-import abc.aspectj.ast.AdviceFormal;
 import abc.aspectj.ast.AdviceSpec;
-import abc.aspectj.ast.Before;
-import abc.aspectj.ast.Before_c;
-import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.Pointcut;
-import abc.eaj.ast.GlobalPointcutDecl;
-import abc.eaj.ast.GlobalPointcutDecl_c;
+
 
 /**
  * @author Sascha Kuzins

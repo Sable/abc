@@ -7,18 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import polyglot.util.InternalCompilerError;
-
+import soot.Body;
 import soot.Immediate;
+import soot.Local;
 import soot.SootMethod;
-import soot.Type;
 import soot.Value;
 import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
-import soot.jimple.CastExpr;
-import soot.jimple.NullConstant;
+import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.tagkit.Host;
-import abc.eaj.weaving.matching.CastShadowMatch;
+import soot.util.Chain;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
@@ -35,7 +35,7 @@ import abc.weaving.residues.Residue;
 import abc.weaving.weaver.ConstructorInliningMap;
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
  */
 public class ArrayGetShadowMatch extends StmtShadowMatch {
@@ -43,7 +43,7 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
 	public ArrayGetShadowMatch(SootMethod container, Stmt stmt) {
 		super(container, stmt);
 	}
-	
+		
 	public static ShadowType shadowType()
     {
         return new ShadowType() {
@@ -58,7 +58,7 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
         if (!(pos instanceof StmtMethodPosition)) return null;
         if (abc.main.Debug.v().traceMatcher) System.err.println("ArrayGet");
 
-        // In Jimple: * a cast can only appear as an expression
+        // In Jimple: * an arrayref can only appear as an expression
         //            * expressions are not recursive
         //            * expressions are only used as r-values
         //            * r-values only appear in assignments
@@ -66,21 +66,36 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
         Stmt stmt = ((StmtMethodPosition) pos).getStmt();
 
         if (!(stmt instanceof AssignStmt)) return null;
-        Value rhs = ((AssignStmt) stmt).getRightOp();
+        AssignStmt assign=(AssignStmt)stmt;
+        Value rhs = assign.getRightOp();
 
         if(!(rhs instanceof ArrayRef)) return null;
         ArrayRef ref=(ArrayRef)rhs;
-        //ref.
-        //Type cast_to = ((CastExpr) rhs).getCastType();
-
+        
+        Value index=ref.getIndex();
+        // make sure the index is a local.
+        // restructure if necessary. 
+        if (!(index instanceof Local)) {
+        	Body body=pos.getContainer().getActiveBody();
+        	Chain statements=body.getUnits().getNonPatchingChain();
+        	LocalGeneratorEx lg=new LocalGeneratorEx(body);
+        	Local l=lg.generateLocal(index.getType());
+        	AssignStmt as=Jimple.v().newAssignStmt(l, index);
+        	statements.insertBefore(as,stmt);
+        	ref.setIndex(l);
+        }
+        
         return new ArrayGetShadowMatch(pos.getContainer(), stmt);
     }
 
-	// TODO
+	// Set the left hand side of the assignment as the joinpoint return value.
+	// This is always a local.
+	// is this correct?
 	public ContextValue getReturningContextValue() {
-        return new JimpleValue(NullConstant.v());
+        return new JimpleValue( (Immediate)  (Local) ((AssignStmt) stmt).getLeftOp()  );
     }
 	
+	// set the index of the array access as the joinpoint argument
 	public List /*<ContextValue>*/ getArgsContextValues()
     {
         ArrayList ret = new ArrayList(1);
@@ -91,14 +106,14 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
         return ret;
     }
 
+	// set the array itself as the target
     public ContextValue getTargetContextValue()
     {
     	ArrayRef ref = (ArrayRef) ((AssignStmt) stmt).getRightOp();
-    	
         return new JimpleValue((Immediate)ref.getBase());
     }
 
-    // why is this necessary?
+    // could we provide some default implementation?
 	public ShadowMatch inline(ConstructorInliningMap cim) {
         ShadowMatch ret = cim.map(this);
         if(ret != null) return ret;
@@ -110,16 +125,22 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
 	}
 	
     // why is this necessary?
+	// StmtShadowMatch should have default implementation.
 	public Host getHost() {
 		return stmt;
 	}
 
-	protected SJPInfo makeSJPInfo() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public SJPInfo makeSJPInfo()
+    {
+        return abc.main.Main.v().getAbcExtension().createSJPInfo
+          ("arrayget",
+           "abcexer2.lang.reflect.ArrayGetSignature",
+           "makeArrayGetSig",
+           ExtendedSJPInfo.makeArrayGetSigData(container), stmt);
+    }
 
     // why is this necessary?
+	// StmtShadowMatch should have default implementation.
 	protected AdviceApplication doAddAdviceApplication(MethodAdviceList mal,
 			AbstractAdviceDecl ad, Residue residue) {
 		StmtAdviceApplication aa = new StmtAdviceApplication(ad,residue,stmt);

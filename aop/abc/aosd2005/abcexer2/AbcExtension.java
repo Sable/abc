@@ -9,9 +9,14 @@ package abcexer2;
 import java.util.Collection;
 import java.util.List;
 
+import soot.Scene;
+import soot.SootClass;
+import soot.tagkit.Host;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
+import abc.weaving.matching.SJPInfo;
 import abcexer2.weaving.matching.ArrayGetShadowMatch;
+import abcexer2.weaving.matching.ExtendedSJPInfo;
 
 /**
  * @author sascha
@@ -40,5 +45,30 @@ public class AbcExtension extends abc.main.AbcExtension {
         
         lexer.addPointcutKeyword("arrayget", new LexerAction_c(new Integer(abcexer2.parse.sym.PC_ARRAYGET)));
         
+    }
+    
+    
+    
+    public void addBasicClassesToSoot()
+    {
+        super.addBasicClassesToSoot();
+
+        Scene.v().addBasicClass("abcexer2.runtime.reflect.Abcexer2Factory",
+                                SootClass.SIGNATURES);
+    }
+
+    public String runtimeSJPFactoryClass() {
+        return "abcexer2.runtime.reflect.Abcexer2Factory";
+    }
+
+    /**
+	 * Create a (compile-time) static join point information object that
+         * generates code to initialize static join point fields with
+         * reflective information about a join point.
+	 */
+    public SJPInfo createSJPInfo(String kind, String signatureTypeClass,
+            String signatureType, String signature, Host host) {
+        return new ExtendedSJPInfo(kind, signatureTypeClass, signatureType,
+                signature, host);
     }
 }

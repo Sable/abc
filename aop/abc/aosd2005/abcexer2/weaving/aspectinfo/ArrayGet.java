@@ -12,7 +12,7 @@ import abc.weaving.residues.Residue;
 import abcexer2.weaving.matching.ArrayGetShadowMatch;
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
  */
 public class ArrayGet extends ShadowPointcut {

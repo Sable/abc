@@ -6,7 +6,7 @@ package abcexer2.ast;
 import abc.aspectj.ast.Pointcut;
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
  */
 public interface PCArrayGet extends Pointcut {

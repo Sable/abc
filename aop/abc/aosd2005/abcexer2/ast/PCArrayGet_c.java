@@ -15,7 +15,7 @@ import abc.aspectj.ast.Pointcut_c;
 import abc.weaving.aspectinfo.Pointcut;
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
  */
 public class PCArrayGet_c extends Pointcut_c implements PCArrayGet {

@@ -7,7 +7,7 @@ import polyglot.util.Position;
 import abc.aspectj.ast.AJNodeFactory_c;
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
  */
 public class Abcexer2NodeFactory_c extends AJNodeFactory_c implements Abcexer2NodeFactory {
