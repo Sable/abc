@@ -36,6 +36,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID PATTERNS_EVALUATED = new polyglot.frontend.Pass.ID("patterns-evaluated");
     public static final polyglot.frontend.Pass.ID DECLARE_PARENTS = new polyglot.frontend.Pass.ID("declare-parents");
 
+	public static final polyglot.frontend.Pass.ID INTERFACE_ITDS = new polyglot.frontend.Pass.ID("interface-itds");
+	public static final polyglot.frontend.Pass.ID INTERFACE_ITDS_ALL = new polyglot.frontend.Pass.ID("interface-itds-all");
+	
     public static final polyglot.frontend.Pass.ID CLEAN_DECLARE = new polyglot.frontend.Pass.ID("clean-declare");
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
@@ -114,6 +117,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	
 	l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));
 	l.add(new GlobalBarrierPass(Pass.ADD_MEMBERS_ALL, job));
+	
+	l.add(new VisitorPass(INTERFACE_ITDS,job, new InterfaceITDs()));
+	l.add(new GlobalBarrierPass(INTERFACE_ITDS_ALL,job));
 	
 	l.add(new VisitorPass(Pass.DISAM, job,
 			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.ALL)));

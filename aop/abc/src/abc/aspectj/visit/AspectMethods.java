@@ -97,7 +97,7 @@ public class AspectMethods extends NodeVisitor {
 			Field f = (Field) n;
 			if (f.fieldInstance() instanceof InterTypeFieldInstance_c) {
 				InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) f.fieldInstance();
-				return f.fieldInstance(itfi.mangled()).name(itfi.mangled().name());
+				f =  f.fieldInstance(itfi.mangled()).name(itfi.mangled().name()).targetImplicit(false);
 			}
 			if (f.target() instanceof HostSpecial_c) {
 				HostSpecial_c hs = (HostSpecial_c) f.target();
@@ -106,7 +106,7 @@ public class AspectMethods extends NodeVisitor {
 					return id.getSupers().superField(nf,ts,f,id.host().type().toClass(),id.thisReference(nf,ts));
 				}
 			}
-			return n;
+			return f;
 		}
 		if (n instanceof IntertypeFieldDecl_c) {
 			IntertypeFieldDecl_c itfd = (IntertypeFieldDecl_c) n;

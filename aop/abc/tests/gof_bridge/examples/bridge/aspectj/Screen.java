@@ -41,7 +41,7 @@ public interface Screen {
      * @param text The text to be drawn/printed
      */
     
-    public void drawText(String text);
+     public void drawText(String text);
     
     /**
      * Draws or prints a text in a box to an output device determined 
@@ -50,6 +50,6 @@ public interface Screen {
      * @param text The text to be drawn/printed
      */
     
-    public void drawTextBox(String text);
+     public void drawTextBox(String text);
 }
         

@@ -19,7 +19,13 @@ import polyglot.visit.TypeChecker;
 import polyglot.ext.jl.ast.ClassBody_c;
 import polyglot.util.Position;
 
+import polyglot.types.TypeSystem;
+import polyglot.types.MemberInstance;
+import polyglot.types.MethodInstance;
+import polyglot.types.FieldInstance;
+
 import abc.aspectj.types.InterTypeConstructorInstance_c;
+import abc.aspectj.types.InterTypeMemberInstance;
 
 /**
  * @author oege
@@ -51,13 +57,59 @@ public class AJClassBody_c extends ClassBody_c {
 			 }
 		 }
 	 }
-
-	private boolean ITDok(ConstructorInstance ci, ConstructorInstance cj) {
-		return (ci instanceof InterTypeConstructorInstance_c && !ci.flags().isPrivate() &&
-		       !(cj instanceof InterTypeConstructorInstance_c) && cj.flags().isPrivate());
+	
+	private boolean ITDoks(MemberInstance ci, MemberInstance cj) {
+			return ITDok(ci,cj) || ITDok(cj,ci);
 	}
 	
-	private boolean ITDoks(ConstructorInstance ci, ConstructorInstance cj) {
-		return ITDok(ci,cj) || ITDok(cj,ci);
+	private boolean ITDok(MemberInstance ci, MemberInstance cj) {
+		return // ok to zap private members with a non-private ITD
+		            ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
+		            !(cj instanceof InterTypeMemberInstance) && 
+		            cj.flags().isPrivate())) ||
+		            // also ok to have a duplicate in an interface
+		            (ci instanceof InterTypeMemberInstance && 
+		             !(cj instanceof InterTypeMemberInstance) &&
+		             ci.container().toClass().flags().isInterface());
 	}
+	
+	protected void duplicateFieldCheck(TypeChecker tc) throws SemanticException {
+		  ClassType type = tc.context().currentClass();
+
+		  ArrayList l = new ArrayList(type.fields());
+
+		  for (int i = 0; i < l.size(); i++) {
+			  FieldInstance fi = (FieldInstance) l.get(i);
+
+			  for (int j = i+1; j < l.size(); j++) {
+				  FieldInstance fj = (FieldInstance) l.get(j);
+
+				  if (fi.name().equals(fj.name()) && !ITDoks(fi,fj)) {
+					  throw new SemanticException("Duplicate field \"" + fj + "\".", fj.position());
+				  }
+			  }
+		  }
+	  }
+	  
+
+	protected void duplicateMethodCheck(TypeChecker tc) throws SemanticException {
+		ClassType type = tc.context().currentClass();
+		TypeSystem ts = tc.typeSystem();
+
+		ArrayList l = new ArrayList(type.methods());
+
+		for (int i = 0; i < l.size(); i++) {
+			MethodInstance mi = (MethodInstance) l.get(i);
+
+			for (int j = i+1; j < l.size(); j++) {
+				MethodInstance mj = (MethodInstance) l.get(j);
+
+				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj)) {
+					throw new SemanticException("Duplicate method \"" + mj + "\".", mj.position());
+				}
+			}
+		}
+	}
+	
+	
 }

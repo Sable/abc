@@ -45,11 +45,13 @@ public class AJDisamb_c extends Disamb_c implements Disamb {
 					else
 						r = ajnf.hostSpecial(pos,Special.THIS,null);
 				} else
+				{ 
 					if (! ts.equals(scope, c.currentClass())) {
 						r = nf.This(pos, nf.CanonicalTypeNode(pos, scope));
 					} else {
 						r = nf.This(pos);
 					}
+				}
 			}
 
 			return r;

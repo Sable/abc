@@ -192,7 +192,7 @@ public class IntertypeAdjuster {
 		sm.setSource(method.getSootMethod().getSource());
 		
 		sc.addMethod(sm);
-	
+
 		return sm;
 	}
 	
@@ -200,79 +200,100 @@ public class IntertypeAdjuster {
         MethodSig method = imd.getTarget();
         
         SootClass sc = method.getDeclaringClass().getSootClass();
-        Type retType = method.getReturnType().getSootType();
-        List parms = new ArrayList();
-        for( Iterator formalIt = method.getFormals().iterator(); formalIt.hasNext(); ) {
-            final AbcType formalType = ((Formal) formalIt.next()).getType();
-            parms.add(formalType.getSootType());
-        }
-        if ( ! Modifier.isStatic(method.getModifiers()) )
-        	parms.remove(0); // drop the "this" parameter
+		 if( sc.isInterface() ) {
+			   for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
+				   final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
+				   if( childClass.isInterface() ) continue;
+				   if( !implementsInterface(childClass, sc) ) continue;
+				   if( childClass.hasSuperclass() 
+				   && implementsInterface(childClass.getSuperclass(), sc) )
+					   continue;
 
-        int modifiers = method.getModifiers();
-        modifiers |= Modifier.PUBLIC;
-        modifiers &= ~Modifier.PRIVATE;
-        modifiers &= ~Modifier.PROTECTED;
-            
-        // Create the method
-        SootMethod sm = new SootMethod( 
-                method.getName(),
-                parms,
-                retType,
-                modifiers );
-
-        for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
-
-            final SootClass exception = (SootClass) exceptionIt.next();
-            sm.addException( exception );
-        }
-
-		
-/* generate call to implementation: impl(this,arg1,arg2,...,argn) */	
-    //create a body
-	 	Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
-	 	Chain ls = b.getLocals();
-	 	PatchingChain ss = b.getUnits();
-    // argument set-up
-	    List args = new LinkedList();
-    //	the first parameter of the impl is "this : TargetType"
-		RefType rt = sc.getType();
-		if (!Modifier.isStatic(modifiers)) {
-			ThisRef thisref = Jimple.v().newThisRef(rt);
-			Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
-			IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
-			args.add(v);
-		}
-	// add references to the other parameters
-		int index = 0;
-		for (Iterator formals=parms.iterator(); formals.hasNext(); ) {
-			final Type formalType = (Type) formals.next();
-			Local p = Jimple.v().newLocal("$param"+index,formalType); ; ls.add(p);
-			ParameterRef pr = Jimple.v().newParameterRef(formalType,index);
-			IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
-			args.add(p);
-			index++;
-		}
-	// now invoke the implementation in the originating aspect
-		InvokeExpr ie = Jimple.v().newStaticInvokeExpr(implMethod,args);
-	// if this is a void returntype, create call followed by return
-	// otherwise return the value directly
-		if (retType.equals(VoidType.v())) {
-			InvokeStmt stmt1 = Jimple.v().newInvokeStmt(ie);
-			ReturnVoidStmt stmt2 = Jimple.v().newReturnVoidStmt();
-			ss.add(stmt1); ss.add(stmt2);
-		} else {
-			Local r = Jimple.v().newLocal("$result",retType); ls.add(r);
-			AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, ie); ss.add(rStmt);
-			ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
-			ss.add(stmt);
-		}
-    // Add method to the class
-        sc.addMethod(sm);
-
-		// This is a stub for an intertype method decl
-		MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
+                   createTargetMethod(implMethod,method,childClass);
+                
+				   // System.out.println("added method "+ method.getName() + " to class " + childClass);
+			   }
+		   } else createTargetMethod(implMethod,method,sc);
     }
+
+	private void createTargetMethod(
+		SootMethod implMethod,
+		MethodSig method,
+		SootClass sc) {	
+			// System.out.println("added method "+ method.getName() + " to class " + sc);
+		        Type retType = method.getReturnType().getSootType();
+		        List parms = new ArrayList();
+		        for( Iterator formalIt = method.getFormals().iterator(); formalIt.hasNext(); ) {
+		            final AbcType formalType = ((Formal) formalIt.next()).getType();
+		            parms.add(formalType.getSootType());
+		        }
+		        if ( ! Modifier.isStatic(method.getModifiers()) )
+		        	parms.remove(0); // drop the "this" parameter
+		
+		        int modifiers = method.getModifiers();
+		        modifiers |= Modifier.PUBLIC;
+		        modifiers &= ~Modifier.PRIVATE;
+		        modifiers &= ~Modifier.PROTECTED;
+		            
+		        // Create the method
+		        SootMethod sm = new SootMethod( 
+		                method.getName(),
+		                parms,
+		                retType,
+		                modifiers );
+		
+		        for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+		
+		            final SootClass exception = (SootClass) exceptionIt.next();
+		            sm.addException( exception );
+		        }
+		
+				
+		/* generate call to implementation: impl(this,arg1,arg2,...,argn) */	
+		    //create a body
+			 	Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+			 	Chain ls = b.getLocals();
+			 	PatchingChain ss = b.getUnits();
+		    // argument set-up
+			    List args = new LinkedList();
+		    //	the first parameter of the impl is "this : TargetType"
+				RefType rt = sc.getType();
+				if (!Modifier.isStatic(modifiers)) {
+					ThisRef thisref = Jimple.v().newThisRef(rt);
+					Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+					IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
+					args.add(v);
+				}
+			// add references to the other parameters
+				int index = 0;
+				for (Iterator formals=parms.iterator(); formals.hasNext(); ) {
+					final Type formalType = (Type) formals.next();
+					Local p = Jimple.v().newLocal("$param"+index,formalType); ; ls.add(p);
+					ParameterRef pr = Jimple.v().newParameterRef(formalType,index);
+					IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
+					args.add(p);
+					index++;
+				}
+			// now invoke the implementation in the originating aspect
+				InvokeExpr ie = Jimple.v().newStaticInvokeExpr(implMethod,args);
+			// if this is a void returntype, create call followed by return
+			// otherwise return the value directly
+				if (retType.equals(VoidType.v())) {
+					InvokeStmt stmt1 = Jimple.v().newInvokeStmt(ie);
+					ReturnVoidStmt stmt2 = Jimple.v().newReturnVoidStmt();
+					ss.add(stmt1); ss.add(stmt2);
+				} else {
+					Local r = Jimple.v().newLocal("$result",retType); ls.add(r);
+					AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, ie); ss.add(rStmt);
+					ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
+					ss.add(stmt);
+				}
+		    // Add method to the class
+		        sc.addMethod(sm);
+		
+				// This is a stub for an intertype method decl
+				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
+	}
 
     private void addField( IntertypeFieldDecl ifd ) {
         FieldSig field = ifd.getTarget();
@@ -285,7 +306,7 @@ public class IntertypeAdjuster {
         SootClass cl = field.getDeclaringClass().getSootClass();
         if( cl.isInterface() ) {
             for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
-                final SootClass childClass = (SootClass) childClassIt.next();
+                final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
                 if( childClass.isInterface() ) continue;
                 if( !implementsInterface(childClass, cl) ) continue;
                 if( childClass.hasSuperclass() 
@@ -298,6 +319,9 @@ public class IntertypeAdjuster {
                         field.getType().getSootType(),
                         modifiers );
                 childClass.addField(newField);
+                
+                
+                // System.out.println("added field "+field.getName() + " to class " + childClass);
 
             // TODO: add accessor methods
 
@@ -381,7 +405,7 @@ public class IntertypeAdjuster {
 			Object arg = args.next();
 			if (arg instanceof Integer) {
 					int i = ((Integer) arg).intValue();
-					System.out.println("i="+i);
+					// System.out.println("i="+i);
 					ccArgs.add(eiArgs.get(i));
 					ccArgsTypes.add(parms.get(i));
 			}
