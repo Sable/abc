@@ -476,7 +476,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	     position());
 	gai.addAdviceDecl(ad);
 
-	MethodCategory.register(this, (ParsedClassType)this.methodInstance().container(), MethodCategory.ADVICE_BODY);
+	MethodCategory.register(this, MethodCategory.ADVICE_BODY);
 	if (spec instanceof Around) {
 	    MethodCategory.register(((Around)spec).proceed(), MethodCategory.PROCEED);
 	}

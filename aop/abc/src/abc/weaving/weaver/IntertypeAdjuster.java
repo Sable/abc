@@ -338,6 +338,7 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 		// This is an accessor method for reading a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
+		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
 	    return sm;
 	}
 	
@@ -365,6 +366,7 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 		// This is an accessor method for writing a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
+		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
 		return sm;
 	}
 	

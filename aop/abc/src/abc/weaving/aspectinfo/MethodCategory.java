@@ -76,7 +76,9 @@ public class MethodCategory {
      *  This will have the name and class of the field as real name class. */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
     public static final int ACCESSOR_GET = 12;
-    /** An accessor method to set the value of a field */
+    /** An accessor method to set the value of a field.
+     *  This will have the name and class of the field as real name class. */
+    // Generated in abc/weaving/weaver/IntertypeAdjuster.java
     public static final int ACCESSOR_SET = 13;
 
 
