@@ -170,7 +170,7 @@ public class Main {
                 soot.Main.v().versionString);
         G.v().out.println("... using Polyglot compiler toolkit version " +
                 new polyglot.ext.jl.Version());
-        G.v().out.println("For usage,  abc --help");
+        G.v().out.println("For usage,  abc -help");
         G.v().out.println("-------------------------------------------------------------------------------");
         G.v().out.println("Copyright (C) 2004 The abc development team. All rights reserved.");
         G.v().out.println("See the file CREDITS for a list of contributors.");
