@@ -39,6 +39,8 @@ $Added support for inlining of advice bodies at join point shadows. A
 ;opportunities for removing the boxing that is sometimes associated with
 ;advice implementation. The original advice bodies are also removed
 ;if rendered redundant by inlining.
+$Updated runtime library to return a value copy of the argument list from
+;thisJoinPoint.getArgs(), in line with ajc bug 67592.
 
 !If you extend ShadowMatch, AdviceApplication, Residue, 
 ;WeavingVar or ContextValue, you will need to implement a new method called 
