@@ -7,9 +7,11 @@ import abc.weaving.residues.*;
 
 import soot.*;
 
-/** Advice specification for after returning advice with return variable binding. */
-// extend AfterReturningAdvice?
-public class AfterReturningArgAdvice extends AbstractAdviceSpec {
+/** Advice specification for after returning advice with return variable binding. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
+public class AfterReturningArgAdvice extends AfterReturningAdvice {
     private Formal formal;
 
     public AfterReturningArgAdvice(Formal formal, Position pos) {
@@ -25,13 +27,14 @@ public class AfterReturningArgAdvice extends AbstractAdviceSpec {
 	return "after returning arg";
     }
 
+    /*
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
 	if(!sm.supportsAfter()) return null;
-
 	ReturnValue cv=new ReturnValue();
 	Var v=new Var(formal.getName(),formal.getPosition());
 	Residue typeCheck=new CheckType(cv,we.getAbcType(v).getSootType());
 	Residue bind=new Bind(cv,we.getWeavingVar(v));
 	return AndResidue.construct(typeCheck,bind);
     }
+    */
 }

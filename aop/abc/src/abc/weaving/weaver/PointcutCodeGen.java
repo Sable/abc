@@ -140,11 +140,9 @@ public class PointcutCodeGen {
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
 	if ( advicespec instanceof BeforeAdvice ) 
            BeforeWeaver.doWeave(method, localgen, adviceappl);
-        else if ( advicespec instanceof AfterReturningAdvice  ||
-	          advicespec instanceof AfterReturningArgAdvice ) 
+        else if ( advicespec instanceof AfterReturningAdvice )
            AfterReturningWeaver.doWeave(method, localgen, adviceappl);
-	else if ( advicespec instanceof AfterThrowingAdvice ||
-		  advicespec instanceof AfterThrowingArgAdvice)
+	else if ( advicespec instanceof AfterThrowingAdvice)
            AfterThrowingWeaver.doWeave(method, localgen, adviceappl);
 	else if (advicespec instanceof AfterAdvice)
 	   {  
