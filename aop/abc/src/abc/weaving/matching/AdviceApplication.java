@@ -14,6 +14,9 @@ import java.util.*;
 public abstract class AdviceApplication {
     public AdviceDecl advice;
     public Residue residue;
+    public ShadowPoints shadowpoints; // added by LJH to keep track of
+                                      // where to weave.  Is initialized
+                                      // in first pass of weaver. 
 
     public AdviceApplication(AdviceDecl advice,Residue residue) {
 	this.advice=advice;
