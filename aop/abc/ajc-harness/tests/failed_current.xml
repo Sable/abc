@@ -45,22 +45,16 @@
         <compile files="CharsUnicode.java"/>
         <run class="CharsUnicode"/>
     </ajc-test>
-<ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
-      abccomment="abc doesn't allow keywords 
-                      need to allow for syntax error. LJH "
-      keywords="from-java,purejava">
-        <compile files="KeywordAspect.java">
-          <message kind="error" line="7"/> 
-          <ajcmessage kind="ignore" />
-        </compile>
-        <ajcrun class="KeywordAspect" />
-    </ajc-test>
 <ajc-test dir="pureJava"
       abccomment = "abc doesn't allow keywords, added error. LJH "
       title="Using 'pointcut' as identifier is legal TODO"
       keywords="from-java,purejava">
         <compile files="KeywordPointcut.java">
-           <message kind="error" line="7" />
+          <message kind="error" line="7" />
+          <message kind="error" line="10"/> 
+          <message kind="error" line="13"/> 
+          <message kind="error" line="14"/> 
+          <message kind="error" line="18"/> 
            <ajcmessage kind="ignore" />
         </compile>
         <ajcrun class="KeywordPointcut"/>
@@ -287,20 +281,16 @@
     </ajc-test>
 <ajc-test dir="new/classaccess"
       title="package class access not enforced outside of package"
+      abccomment="jlc doesn't catch the error, reported to Nate July 3/04 
+                  LJH"
       keywords="from-java,purejava">
         <compile files="main/Main.java,pack1/Target.java">
             <message kind="error" line="7"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" pr="642" title="invalid floating-point constant"
-      keywords="from-java,purejava,messages-vary">
-        <compile files="ParsingFloatCE.java"
-               options="!eclipse">
-            <message kind="error" line="5"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new/subaspects" pr="647"
       title="concrete aspect unable to access abstract package-private method in parent for overriding"
+      abccomment = "error not detected by jlc, reported to Nate July 3/04 LJH"
       keywords="from-java,purejava,messages-vary"
       comment="XXX fix source - package-private">
         <compile files="parent/ParentMethodCE.java,child/ChildMethodCE.java"
@@ -310,6 +300,7 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" pr="680"
+      abccomment="Probably a j2j error, reported to Jennifer July 3/04 LJH"
       title="interfaces with non-explicitly static inner classes"
       keywords="from-java">
         <compile files="InterfaceAndInnerHelper.java"/>
@@ -318,15 +309,8 @@
         <run class="InterfaceAndInner"/>
     </ajc-test>
 <ajc-test dir="new" pr="701"
-      title="CE for ambiguous type reference (imports)"
-      keywords="from-java,purejava">
-        <compile files="AmbiguousClassReference2CE.java">
-            <message kind="error" line="2"/>
-            <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="new" pr="701"
       title="CE for ambiguous type reference (two inner types)"
+      abccomment="error not reported by jlc, reported to Nate July 3/04 LJH"
       keywords="from-java,purejava,messages-vary">
         <compile files="AmbiguousClassReference4CE.java"
                options="!eclipse">
@@ -443,6 +427,20 @@
         <compile files="ClosingBrace.java"
                options="!eclipse">
             <message kind="error" line="11"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when two dots appear instead of one"
+      abccomment="javac,ajc and abc all give errors on all the lines.
+                  July 3/04 LJH"
+      keywords="from-errors,purejava">
+        <compile files="TwoDots.java">
+            <ajcmessage kind="error" line="9"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="14"/>
         </compile>
     </ajc-test>
 <ajc-test dir="errors" title="Crashes when there're stray dots"
@@ -1659,13 +1657,6 @@
       keywords="from-resolved_105,purejava">
         <compile files="NestedInterfaceTest.java">
             <message kind="error" line="1"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="722" title="loop expressions not declarations"
-      keywords="from-resolved_105,purejava,messages-vary">
-        <compile files="DeclarationsInLoopsCE.java"
-                options="!eclipse">
-            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" pr="739"

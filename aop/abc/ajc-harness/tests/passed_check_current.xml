@@ -1,6 +1,20 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="pureJava" title="return;;; is not really legal"
+ <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <message kind="error" line="7"/> 
+          <message kind="error" line="10"/> 
+          <message kind="error" line="13"/> 
+          <message kind="error" line="14"/> 
+          <message kind="error" line="18"/> 
+          <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+<ajc-test dir="pureJava" title="return;;; is not really legal"
       keywords="from-java,purejava"
       abccomment="ajc doesn't report one error per spurious ;, abc does"
     >
@@ -106,6 +120,27 @@
         <compile files="TryNoCatchCE.java"
                options="!eclipse">
             <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="new" pr="642" title="invalid floating-point constant"
+      abccomment="really has errors on lines 5 and 6.  July 3/04 LJH"
+      keywords="from-java,purejava,messages-vary">
+        <compile files="ParsingFloatCE.java"
+               options="!eclipse">
+            <ajcmessage kind="error" line="5"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="new" pr="701"
+      title="CE for ambiguous type reference (imports)"
+      abccomment="jlc and abc give a fine error message, no line number,
+                  seems ok.  LJH July 3/04"
+      keywords="from-java,purejava">
+        <compile files="AmbiguousClassReference2CE.java">
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="10"/>
+            <message kind="error" line="0"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new" pr="701"
@@ -393,12 +428,6 @@
             <message kind="error" line="13"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors" title="Crashes when two dots appear instead of one"
-      keywords="from-errors,purejava">
-        <compile files="TwoDots.java">
-            <message kind="error" line="9"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" title="Colon instead of a semi-colon causes a crash"
       comment="XXX public class in wrong file"
       keywords="from-errors,purejava">
@@ -633,6 +662,17 @@
         <compile files="TryBlockRequiredCE.java"
                options="!eclipse">
             <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="722" title="loop expressions not declarations"
+      keywords="from-resolved_105,purejava,messages-vary"
+      abccomment="really has three errors.  July 3.04 LJH" >
+        <compile files="DeclarationsInLoopsCE.java"
+                options="!eclipse">
+            <ajcmessage kind="error" line="7"/>
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" pr="723" title="missing package identifier"
