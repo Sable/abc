@@ -154,9 +154,6 @@ public abstract class AdviceApplication {
 	// Identify whether we're in a constructor, and if we are identify
 	// the position of the 'this' or 'super' call
 	if(method.getName().equals(SootMethod.constructorName)) {
-	    // This is a call into a utility method in the weaver; really that method ought
-	    // to be somewhere else and we shouldn't need to construct the ShadowPointsSetter object 
-	    // at all
 	    Stmt thisOrSuper=
 	      Restructure.findInitStmt(method.getActiveBody().getUnits());
 
