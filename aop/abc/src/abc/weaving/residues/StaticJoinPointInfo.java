@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,9 @@ import soot.jimple.Jimple;
 import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.AdviceApplication;
 
+/** A value that will become a thisJoinPointStaticPart structure at runtime
+ *  @author Ganesh Sittampalam
+ */
 public class StaticJoinPointInfo extends ContextValue {
 
     private SJPInfo sjpInfo;

@@ -1,4 +1,9 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Laurie Hendren
+ * Copyright (C) 2004 Ondrej Lhotak
+ * Copyright (C) 2004 Jennifer Lhotak
+ * Copyright (C) 2004 Sascha Kuzins
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,6 +50,13 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.AlwaysMatch;
 
+/** Weave in the code for pointcut invocation
+ *  @author Laurie Hendren
+ *  @author Ondrej Lhotak
+ *  @author Jennifer Lhotak
+ *  @author Sascha Kuzins
+ *  @author Ganesh Sittampalam
+ */
 public class PointcutCodeGen {
 
    public static void debug(String message)

@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,9 @@ import soot.jimple.Stmt;
 import abc.weaving.matching.ShadowMatch;
 import abc.soot.util.LocalGeneratorEx;
 
+/** A value that will become a thisJoinPoint structure at runtime
+ *  @author Ganesh Sittampalam
+ */
 public class JoinPointInfo extends ContextValue {
 
     private ShadowMatch sm;

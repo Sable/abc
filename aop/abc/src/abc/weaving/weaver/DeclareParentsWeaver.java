@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,9 @@ import soot.*;
 
 import java.util.*;
 
+/** Weave in the effects of declare parents declarations
+ *  @author Aske Simon Christensen
+ */
 public class DeclareParentsWeaver {
 
     public void weave() {

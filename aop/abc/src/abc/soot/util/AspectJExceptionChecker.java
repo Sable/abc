@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,10 @@ import soot.*;
 import soot.jimple.*;
 import soot.jimple.toolkits.base.*;
 
+/** An AspectJ specific exception checker that understands information passed
+ *  by the weaver about redirecting or suppressing exception checks
+ *  @author Ganesh Sittampalam
+ */
 public class AspectJExceptionChecker extends ExceptionChecker {
     public AspectJExceptionChecker(ExceptionCheckerErrorReporter r) {
 	super(r);
