@@ -151,6 +151,7 @@ public abstract class AdviceApplication {
 		    }
 		}
 	    }
+	    mal.flush();
 	}
     }
 

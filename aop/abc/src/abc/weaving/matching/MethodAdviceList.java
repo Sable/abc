@@ -22,7 +22,16 @@ public class MethodAdviceList {
 	ListIterator it=aalist.listIterator();
 	while(it.hasNext()) {
 	    AdviceApplication curaa=(AdviceApplication) (it.next());
-	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
+	    int prec;
+	    // try {
+	    prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
+	    /*} catch(RuntimeException e) {
+	      StringBuffer details=new StringBuffer();
+	      curaa.debugInfo("current: ",details);
+	      aa.debugInfo("new: ",details);
+	      System.err.println(details);
+	      throw e;
+	      }*/
 	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT)
 		// FIXME to SemanticException with more info
 		throw new RuntimeException("Precedence conflict");
@@ -42,30 +51,46 @@ public class MethodAdviceList {
 	}
     }
 
+    public void flush() {
+	bodyAdvice.addAll(bodyAdviceP);
+	stmtAdvice.addAll(stmtAdviceP);
+	preinitializationAdvice.addAll(preinitializationAdviceP);
+	initializationAdvice.addAll(initializationAdviceP);
+	bodyAdviceP=new LinkedList();
+	stmtAdviceP=new LinkedList();
+	preinitializationAdviceP=new LinkedList();
+	initializationAdviceP=new LinkedList();
+    }
+
+    public List bodyAdviceP=new LinkedList();
+    public List stmtAdviceP=new LinkedList();
+    public List preinitializationAdviceP=new LinkedList();
+    public List initializationAdviceP=new LinkedList();
+
     /** Advice that would apply to the whole body, i.e. at 
 	execution joinpoints */
     public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
-	addWithPrecedence(bodyAdvice,aa);
+	addWithPrecedence(bodyAdviceP,aa);
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
     public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
     public void addStmtAdvice(AdviceApplication aa) {
-	addWithPrecedence(stmtAdvice,aa);
+	addWithPrecedence(stmtAdviceP,aa);
     }
 
     /** pre-initialization joinpoints */
     public List/*<AdviceApplication>*/ preinitializationAdvice
 	=new LinkedList();
     public void addPreinitializationAdvice(AdviceApplication aa) {
-	addWithPrecedence(preinitializationAdvice,aa);
+	addWithPrecedence(preinitializationAdviceP,aa);
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
     public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
     public void addInitializationAdvice(AdviceApplication aa) {
-	addWithPrecedence(initializationAdvice,aa);
+	addWithPrecedence(initializationAdviceP,aa);
     }
 
     /** returns true if there is no advice */
