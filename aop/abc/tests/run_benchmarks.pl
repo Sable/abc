@@ -35,8 +35,8 @@ foreach $dir (@benchmarks) {
 			print " ajc compilation failed\n";
 		}
 		if ($abc==1 && $ajc==1) {
-			$diff = `diff ajc.out abc.out`;
-			if ((length $diff)>2000) {
+			$diff = `diff -u ajc.out abc.out`;
+			if ((length $diff)>20000) {
 				$diff="diff too long";
 			}
 			if ((length $diff)>0) {
