@@ -628,6 +628,8 @@ public class AroundWeaver {
 	
 				// weave in residue
 				Stmt endResidue = adviceAppl.residue.codeGen(joinpointMethod, localgen, joinpointStatements, begin, failPoint, wc);
+				
+				//((AdviceWeavingContext) wc).arglist.get()
 	
 				// debug("weaving residue: " + adviceAppl.residue);
 				if (!(adviceAppl.residue instanceof AlwaysMatch)) {
@@ -662,7 +664,8 @@ public class AroundWeaver {
 				}
 			}
 		}
-			
+		
+		// mapping formal-position => binding (local)
 		private ArrayList getStaticBinding() {
 			List bindings = getBindList(adviceAppl.residue);
 			debug("getStaticBinding: Binds found:" + bindings.size());
@@ -680,12 +683,13 @@ public class AroundWeaver {
 						Local local = (Local) value;
 						debug(" Binding: " + local.getName() + " => " + formal.pos);
 						
+						// resize
 						while (arrayList.size()<formal.pos+1)
 							arrayList.add(null);
 							
 						if (arrayList.get(formal.pos) != null)
 							throw new RuntimeException("Ambiguous variable binding");
-						// TODO:
+						// TODO: fix this message.
 	
 						arrayList.set(formal.pos, local);
 					} else {
@@ -700,17 +704,16 @@ public class AroundWeaver {
 				} else {
 				//	throw new InternalError("Expecting bound variables to be of type adviceFormal: " + bind.variable );
 				}
-			}
-			
+			}			
 			return arrayList;
 		}
 		private static void verifyBindings(ArrayList bindings) {
-			for (int i = 0; i < bindings.size(); i++) {
-				if (bindings.get(i) == null)
+			int i=0;
+			for (Iterator it=bindings.iterator(); it.hasNext();i++) {
+				if (it.next() == null)
 					throw new InternalError("Argument "+i+" is not bound"); 
 				// TODO:
 			}
-	
 		}
 		public final String accessMethodName;
 		
