@@ -53,6 +53,7 @@ import abc.weaving.aspectinfo.Formal;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ConstructorAdviceApplication;
 import abc.weaving.matching.ExecutionAdviceApplication;
+import abc.weaving.matching.HandlerAdviceApplication;
 import abc.weaving.matching.NewStmtAdviceApplication;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.residues.AdviceFormal;
@@ -560,7 +561,7 @@ public class AroundWeaver {
 		 * @param begin
 		 * @param end
 		 */
-		private static List findLocalsGoingIn(Body body, Stmt begin, Stmt end) {
+		private static List findLocalsGoingIn(Body body, Stmt begin, Stmt end, Local additionallyUsed) {
 			Chain statements = body.getUnits().getNonPatchingChain();
 	
 			if (!statements.contains(begin))
@@ -570,6 +571,9 @@ public class AroundWeaver {
 				throw new RuntimeException();
 	
 			Set usedInside = new HashSet();
+			if (additionallyUsed!=null)
+				usedInside.add(additionallyUsed);
+				
 			Set definedOutside = new HashSet();
 	
 			boolean insideRange = false;
@@ -729,7 +733,7 @@ public class AroundWeaver {
 			// find returned local
 			Local returnedLocal = findReturnedLocal();
 
-			List /*ValueBox*/context=findLocalsGoingIn(joinpointBody, begin, end);
+			List /*ValueBox*/context=findLocalsGoingIn(joinpointBody, begin, end, returnedLocal);
 			{ // print debug information
 				debug("Locals going in: ");
 				debug(" Method: " + joinpointMethod.toString());
@@ -902,19 +906,6 @@ public class AroundWeaver {
 			Stmt end = adviceAppl.shadowpoints.getEnd();
 	
 			Local returnedLocal = null;
-	
-			Stmt applStmt=null;
-			{				
-				if (adviceAppl instanceof StmtAdviceApplication) {
-					StmtAdviceApplication stmtAppl = (StmtAdviceApplication) adviceAppl;
-					applStmt=stmtAppl.stmt;	
-				} else if (adviceAppl instanceof NewStmtAdviceApplication) {
-					NewStmtAdviceApplication stmtAppl = (NewStmtAdviceApplication) adviceAppl;
-					applStmt=stmtAppl.stmt;
-				} else {
-					// TODO: add support for HandlerAdviceApplication, 
-				}
-			}
 			
 			Type objectType=Scene.v().getRefType("java.lang.Object");
 	
@@ -960,49 +951,67 @@ public class AroundWeaver {
 					returnedLocal = (Local) returnStmt.getOp();
 					// TODO: could return constant?
 				}
-			} else if (applStmt instanceof AssignStmt) {
-				AssignStmt assignStmt = (AssignStmt) applStmt;
-				Value leftOp = assignStmt.getLeftOp();
-				Value rightOp = assignStmt.getRightOp();
-				if (leftOp instanceof Local) {
-					// get
-					returnedLocal = (Local) leftOp;
-				} else if ((leftOp instanceof FieldRef && rightOp instanceof Local) ||	
-						   (leftOp instanceof FieldRef && rightOp instanceof Constant)) {
-					// set
+			} else if (adviceAppl instanceof HandlerAdviceApplication) {
+				throw new RuntimeException("Semantic error: Cannot apply around advice to exception handler"); // TODO: fix message
+			} else if (adviceAppl instanceof StmtAdviceApplication ||
+					   adviceAppl instanceof NewStmtAdviceApplication) { 
+			
+				Stmt applStmt=null;
+				{				
+					if (adviceAppl instanceof StmtAdviceApplication) {
+						StmtAdviceApplication stmtAppl = (StmtAdviceApplication) adviceAppl;
+						applStmt=stmtAppl.stmt;	
+					} else if (adviceAppl instanceof NewStmtAdviceApplication) {
+						NewStmtAdviceApplication stmtAppl = (NewStmtAdviceApplication) adviceAppl;
+						applStmt=stmtAppl.stmt;
+					} else {
+						throw new RuntimeException(); 
+					}
+				}
 					
-					// special case: with return type object, set() returns null.
-					if (adviceMethod.getReturnType().equals(objectType)) {
+				if (applStmt instanceof AssignStmt) {					   
+					AssignStmt assignStmt = (AssignStmt) applStmt;
+					Value leftOp = assignStmt.getLeftOp();
+					Value rightOp = assignStmt.getRightOp();
+					if (leftOp instanceof Local) {
+						// get
+						returnedLocal = (Local) leftOp;
+					} else if ((leftOp instanceof FieldRef && rightOp instanceof Local) ||	
+							   (leftOp instanceof FieldRef && rightOp instanceof Constant)) {
+						// set
+						
+						// special case: with return type object, set() returns null.
+						if (adviceMethod.getReturnType().equals(objectType)) {
+							LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
+							Local l=lg.generateLocal(objectType, "nullValue");
+							Stmt s=Jimple.v().newAssignStmt(l, NullConstant.v());
+							joinpointStatements.insertAfter(s, begin);
+							returnedLocal=l;
+						}				
+					} else {
+						// unexpected statement type
+						throw new InternalError();
+					}
+				} else if (applStmt instanceof InvokeStmt) {
+					InvokeStmt invStmt=(InvokeStmt)applStmt;
+					
+					// if advice method is non-void, we have to return something
+					// TODO: type checking to throw out invalid cases?
+					if (
+						! adviceMethod.getReturnType().equals(VoidType.v())					 
+						) { 
+						// make dummy local to be returned. assign default value.
 						LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
-						Local l=lg.generateLocal(objectType, "nullValue");
-						Stmt s=Jimple.v().newAssignStmt(l, NullConstant.v());
+						Local l=lg.generateLocal(adviceMethod.getReturnType(), "returnedLocal");
+						Stmt s=Jimple.v().newAssignStmt(l, 
+							Restructure.JavaTypeInfo.getDefaultValue(adviceMethod.getReturnType()));
 						joinpointStatements.insertAfter(s, begin);
-						returnedLocal=l;
-					} 
-				
+						returnedLocal=l;			
+					}
 				} else {
 					// unexpected statement type
 					throw new InternalError();
 				}
-			} else if (applStmt instanceof InvokeStmt) {
-				InvokeStmt invStmt=(InvokeStmt)applStmt;
-				
-				// if advice method is non-void, we have to return something
-				// TODO: type checking to throw out invalid cases?
-				if (
-					! adviceMethod.getReturnType().equals(VoidType.v())					 
-					) { 
-					// make dummy local to be returned. assign default value.
-					LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
-					Local l=lg.generateLocal(adviceMethod.getReturnType(), "returnedLocal");
-					Stmt s=Jimple.v().newAssignStmt(l, 
-						Restructure.JavaTypeInfo.getDefaultValue(adviceMethod.getReturnType()));
-					joinpointStatements.insertAfter(s, begin);
-					returnedLocal=l;			
-				}
-			} else {
-				// unexpected statement type
-				throw new InternalError();
 			}
 			return returnedLocal;
 		}
@@ -1809,6 +1818,8 @@ public class AroundWeaver {
 			HashMap bindings,
 			ArrayList staticBindings) {
 		
+			debug("Access method: assigning correct parameters to locals*********************");
+		
 			// Assign the correct access parameters to the locals 
 			Stmt insertionPoint = (Stmt) first;
 			Stmt skippedCase = Jimple.v().newNopStmt();
@@ -1831,9 +1842,12 @@ public class AroundWeaver {
 					throw new InternalError();
 
 				Restructure.validateMethod(method);
+				
+				
 
 				Local paramLocal;
 				if (staticBindings.contains(actual)) {
+					debug(" static binding: " + actual.getName());
 					// We use lastIndexOf here to mimic ajc's behavior:
 					// When binding the same value multiple times, ajc's
 					// proceed only regards the last one passed to it.
@@ -1856,6 +1870,7 @@ public class AroundWeaver {
 						/// allow boxing?
 					}
 				} else {
+					debug(" no binding: " + actual.getName());
 					// no binding
 					paramLocal = (Local) dynParamLocals.get(argIndex[i]);
 					AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
@@ -2157,7 +2172,7 @@ public class AroundWeaver {
 		return result;
 	}
 
-	private static List getBindList(Residue r) {
+	private static List /*Residue*/ getBindList(Residue r) {
 		// explicitly go through all the options to force early
 		// errors when a new one gets added, to make sure we have
 		// thought about it properly. This should all be delegated
