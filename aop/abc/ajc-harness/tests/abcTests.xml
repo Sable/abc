@@ -390,8 +390,10 @@
 
     <ajc-test dir="new/innerConsSyntax" pr="192"
       title="inner constructor syntax causes compile error" keywords="from-java"
-      abccomment="fails for j2j and abc, works for jlc,javac and ajc
-                  file DriverLJH.java sent to Jennifer June 30/04  LJH "
+      abccomment="fails for abc, 
+                    classCastException in ConstructorCallShadowMatch
+                  works for soot,j2j,jlc,javac and ajc
+                  file DriverLJH.java sent to Ganesh June 30/04  LJH "
     >
         <compile files="Driver.java"/>
         <run class="Driver"/>
