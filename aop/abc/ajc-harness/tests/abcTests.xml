@@ -6581,21 +6581,32 @@
     </ajc-test>
     
     <ajc-test num="763" dir="new"
+      abccomment="we don't report the advice positions too"
       title="incompatible advice throws clause are a compile-time error"
       keywords="from-resolved_10x">
         <compile files="AdviceThrowsCf.java">
+            <ajcmessage kind="error" line="13"/>
+            <ajcmessage kind="error" line="28"/>
+            <ajcmessage kind="error" line="47"/>
+            <ajcmessage kind="error" line="48"/>
+            <ajcmessage kind="error" line="50"/>
+            
+            <ajcmessage kind="error" line="70"/>
+            <ajcmessage kind="error" line="74"/>
+            <ajcmessage kind="error" line="76"/>
+            <ajcmessage kind="error" line="78"/>
+            
+            <ajcmessage kind="error" line="85"/>
+
             <message kind="error" line="13"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="28"/>
             <message kind="error" line="28"/>
             <message kind="error" line="47"/>
             <message kind="error" line="48"/>
             <message kind="error" line="50"/>
-            
-            <message kind="error" line="70"/>
-            <message kind="error" line="74"/>
-            <message kind="error" line="76"/>
-            <message kind="error" line="78"/>
-            
-            <message kind="error" line="85"/>
+            <message kind="error" line="50"/>
+
         </compile>
     </ajc-test>
     
