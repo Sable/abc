@@ -31,6 +31,7 @@ public class Bind extends Residue {
     // and mustBox will be true. In other boxing situations they will also differ, but
     // we don't currently inspect the type anyway.
     public static Residue construct(ContextValue value,Type type,WeavingVar variable) {
+	if(abc.main.Debug.v().showBinds) System.out.println("binding "+value+" to "+variable);
 	if(variable.mustBox()) {
 	    if(!value.getSootType().equals(type)) return NeverMatch.v; 
 	    PolyLocalVar temp=new PolyLocalVar("box");

@@ -63,6 +63,9 @@ public class ShadowPoints {
     public void setShadowMatch(ShadowMatch sm) {
 	shadowmatch=sm;
     }
+    public ShadowMatch getShadowMatch() {
+	return shadowmatch;
+    }
 
     public Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
 	Stmt skip=Jimple.v().newNopStmt();

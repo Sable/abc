@@ -36,6 +36,8 @@ public class BeforeWeaver {
 			       ShadowPoints shadowpoints,Residue residue,
 			       AbstractAdviceDecl advicedecl,WeavingContext wc)
       { 
+	  
+	debug("Before weaver running at "+shadowpoints.getShadowMatch());
 
         Body b = method.getActiveBody();
         // this non patching chain is needed so that Soot doesn't "Fix" 
@@ -50,9 +52,13 @@ public class BeforeWeaver {
 	Stmt failpoint = Jimple.v().newNopStmt();
 	units.insertBefore(failpoint,followingstmt);
 
+	debug("Weaving in residue: "+residue);
+
 	// weave in residue
 	Stmt endresidue=residue.codeGen
 	    (method,localgen,units,beginshadow,failpoint,true,wc);
+
+	debug("Weaving in advice execution statements");
 
         Chain stmts = advicedecl.makeAdviceExecutionStmts(localgen,wc);
 

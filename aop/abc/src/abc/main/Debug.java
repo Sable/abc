@@ -38,7 +38,7 @@ public class Debug {
     public boolean sootClassToClassType=false;
 
     public boolean showNormalizedPointcuts=false;
-    public boolean showResidues=false;
+    public boolean showPointcutMatching=false;
 
     public boolean debugPointcutNormalization=false;
 
@@ -66,9 +66,15 @@ public class Debug {
     public boolean polyglotTimer=false;
     public boolean sootResolverTimer=false;
     public boolean timerTrace=false; // print time of phases as they run
+    public boolean showArgsMatching=false;
+    public boolean showBinds=false;
+    public boolean showAdviceFormalSets=false;
+
+
     public boolean doValidate=false;  // validate jimple
     // dump CFG as dot plot, doValidate must also be true to enable it
     public boolean doValidateDumpCFG=false; 
+
 
     public boolean dontCheckExceptions=false;
 

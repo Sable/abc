@@ -212,7 +212,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	for (int i = 0; i < awc.arglist.size(); i++)
 	    if(awc.arglist.get(i)==null)
 		throw new InternalCompilerError
-		    ("Formal "+i+" to advice "+advicemethod.getSignature()+" not filled in",getPosition());
+		    ("Formal "+i+" to advice "+advicemethod.getSignature()+" not filled in: "+wc,getPosition());
 
 	Stmt s =Jimple.v().newInvokeStmt
 	    (Jimple.v().newVirtualInvokeExpr

@@ -68,7 +68,10 @@ public abstract class AdviceApplication {
 		    final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
 
 	    	    Pointcut pc=ad.getPointcut();
-		    WeavingEnv we=ad.getWeavingEnv();	    
+		    WeavingEnv we=ad.getWeavingEnv();
+
+		    if(abc.main.Debug.v().showPointcutMatching)
+			System.out.println("Matching "+pc+" at "+sm);
 
 		    // FIXME: remove the null check once everything is properly 
 		    // implemented
@@ -103,7 +106,7 @@ public abstract class AdviceApplication {
 			    residue=AndResidue.construct
 				(residue,ad.getAdviceSpec().matchesAt(we,sm));
 
-			if(abc.main.Debug.v().showResidues 
+			if(abc.main.Debug.v().showPointcutMatching
 			   && !NeverMatch.neverMatches(residue)) 
 			    System.out.println("residue: "+residue);
 			

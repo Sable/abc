@@ -31,6 +31,8 @@ public class AdviceFormal extends WeavingVar {
     }
 
     public Stmt set(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val) {
+	if(abc.main.Debug.v().showAdviceFormalSets)
+	    System.out.println("Setting argument "+pos+" to "+val+" in "+wc);
 	if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
 	units.insertAfter(assignStmt,begin);

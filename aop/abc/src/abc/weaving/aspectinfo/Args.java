@@ -61,16 +61,23 @@ public class Args extends DynamicValuePointcut {
     public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm)
 	throws SemanticException
     {
-    	// System.out.println("args="+args+"sm="+sm+" of type "+sm.getClass());
+    	if(abc.main.Debug.v().showArgsMatching)
+	    System.out.println("args="+args+"sm="+sm+" of type "+sm.getClass());
 	Residue ret=AlwaysMatch.v;
 	ListIterator formalsIt=args.listIterator();
 	List actuals=sm.getArgsContextValues();
+	if(abc.main.Debug.v().showArgsMatching)
+	    System.out.println("actuals are "+actuals);
 	ListIterator actualsIt=actuals.listIterator();
 	int fillerpos=-1;
 	while(formalsIt.hasNext() && actualsIt.hasNext()) {
 	    ArgPattern formal=(ArgPattern) formalsIt.next();
+	    if(abc.main.Debug.v().showArgsMatching)
+		System.out.println("formal is "+formal);
 	    if(formal instanceof ArgFill) {
-		//		System.out.println("filler at "+formal.getPosition());
+		if(abc.main.Debug.v().showArgsMatching) 
+		    System.out.println("filler at position "+(formalsIt.nextIndex()-1)
+				       +" ("+formal.getPosition()+")");
 		fillerpos=formalsIt.nextIndex();  // The position _after_ the filler
 		while(formalsIt.hasNext()) formalsIt.next();
 		while(actualsIt.hasNext()) actualsIt.next();
@@ -78,6 +85,8 @@ public class Args extends DynamicValuePointcut {
 	    }  
 	    ContextValue actual=(ContextValue) actualsIt.next();
 
+	    if(abc.main.Debug.v().showArgsMatching) 
+		System.out.println("matching "+formal+" with "+actual);
 	    ret=AndResidue.construct(ret,formal.matchesAt(we,actual));
 
 	}
@@ -85,10 +94,17 @@ public class Args extends DynamicValuePointcut {
 	    // we stopped because one list or the other ended, 
 	    // and there were no ArgFills
 	    if(actualsIt.hasNext() || 
-	       (formalsIt.hasNext() && !(formalsIt.next() instanceof ArgFill)))
+	       (formalsIt.hasNext() &&
+		// If there is one more formal left, it's ok as long as it is
+		// an ArgFill. Note that we rely on the short-circuiting and
+		// the left-to-right evaluation order 
+		// and that Iterator.next() affects the result of Iterator.hasNext()
+		!(formalsIt.next() instanceof ArgFill && !formalsIt.hasNext())))
 		return null; // the list lengths don't match up
 	    else return ret;
 	}
+	if(abc.main.Debug.v().showArgsMatching)
+	    System.out.println("actuals length is "+actuals.size()+" formals length is "+args.size());
 	// There was an ArgFill
 	if(actuals.size()<args.size()-1) // There aren't enough actuals for the formals minus the ArgFill
 	    return null;
@@ -104,6 +120,8 @@ public class Args extends DynamicValuePointcut {
 	    }
 	    ContextValue actual=(ContextValue) actualsIt.previous();
 	    
+	    if(abc.main.Debug.v().showArgsMatching) 
+		System.out.println("matching "+formal+" with "+actual);
 	    ret=AndResidue.construct(ret,formal.matchesAt(we,actual));
 	}
 	if(formalsIt.hasPrevious() && formalsIt.previous() instanceof ArgFill) return ret;
