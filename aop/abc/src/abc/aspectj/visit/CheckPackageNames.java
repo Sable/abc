@@ -41,35 +41,47 @@ public class CheckPackageNames extends OncePass {
     Job job;
 
     public CheckPackageNames(Pass.ID id, Job job) {
-	super(id);
-	this.job=job;
+        super(id);
+        this.job=job;
     }
 
     public void once() {
-	for (Iterator weavableClasses = GlobalAspectInfo.v().getWeavableClasses().iterator();
-	     weavableClasses.hasNext(); ) {
-	    ClassType ctype = ((AbcClass) weavableClasses.next()).getPolyglotType();
-	    
-	    if(!(ctype instanceof ParsedClassType)) continue;
+        for (Iterator weavableClasses = GlobalAspectInfo.v().getWeavableClasses().iterator();
+             weavableClasses.hasNext(); ) {
+            ClassType ctype = ((AbcClass) weavableClasses.next()).getPolyglotType();
 
-	    ParsedClassType pctype = (ParsedClassType) ctype;
+            if(!(ctype instanceof ParsedClassType)) continue;
 
-	    if(!pctype.isTopLevel()) continue;
-	    if(!pctype.flags().isPublic()) continue;
+            ParsedClassType pctype = (ParsedClassType) ctype;
 
-	    String classname=pctype.fullName();
-	    if(pctype.fromSource()==null) continue; // probably came from a jar
-	    String filename=pctype.fromSource().path();
-	    
-	    int dotindex=filename.lastIndexOf(".");
+            if(!pctype.isTopLevel()) continue;
+            if(pctype.fromSource()==null) continue; // probably came from a jar
 
-	    String gotname=filename.substring(0,dotindex).toLowerCase();
-	    String expectedname=classname.replace('.',File.separatorChar).toLowerCase();
-	    
-	    if(!gotname.endsWith(expectedname)) {
-		job.compiler().errorQueue().enqueue
-		    (ErrorInfo.SEMANTIC_ERROR,"public class "+classname+" cannot be defined in file "+filename);
-	    }
-	}
+            String classname=pctype.fullName();
+            String filename=pctype.fromSource().path();
+
+            int dotindex=filename.lastIndexOf(".");
+
+            String gotname=filename.substring(0,dotindex).toLowerCase();
+            String expectedname=classname.replace('.',File.separatorChar).toLowerCase();
+
+            if(!pctype.flags().isPublic()) {
+                // only check the package against the directory
+                int gotsepindex=gotname.lastIndexOf(File.separatorChar);
+                if(gotsepindex==-1) gotsepindex=0;
+                gotname=gotname.substring(0,gotsepindex);
+
+                int expectedsepindex=expectedname.lastIndexOf(File.separatorChar);
+                if(expectedsepindex==-1) expectedsepindex=0;
+                expectedname=expectedname.substring(0,expectedsepindex);
+            }
+
+            if(!gotname.endsWith(expectedname)) {
+                job.compiler().errorQueue().enqueue
+                    (ErrorInfo.SEMANTIC_ERROR,
+                     (pctype.flags().isPublic() ? "public " : "")
+                     +"class "+classname+" cannot be defined in file "+filename);
+            }
+        }
     }
 }

@@ -9162,7 +9162,9 @@
 
     <ajc-test num="979" dir="abctests/bugs/pack1"
         title="packages in wrong place">
-      <compile files="A/B.java"/>
+      <compile files="A/B.java">
+         <message kind="error"/>
+      </compile>
     </ajc-test>
 
     <ajc-test num="980" dir="abctests/bugs"
