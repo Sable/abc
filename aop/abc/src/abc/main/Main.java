@@ -468,14 +468,16 @@ public class Main {
 	} catch(CompilerFailedException e) {
 	    throw e;
 	} catch(InternalCompilerError e) {
+	    abortIfErrors();
 	    throw e;
         } catch(Throwable e) {
+	    abortIfErrors();
 	    throw new InternalCompilerError("unhandled exception during compilation",e);
 	}
     }
 
     private void abortIfErrors() throws CompilerFailedException {
-        if(error_queue.hasErrors()) {
+        if(error_queue!=null && error_queue.hasErrors()) {
             error_queue.flush();
             throw new CompilerFailedException("Compiler failed.");
         }
@@ -558,10 +560,13 @@ public class Main {
             Compiler compiler = createCompiler(ext);
 
             AbcTimer.mark("Create polyglot compiler");
-            if (!compiler.compile(aspect_sources)) {
-                throw new CompilerFailedException("Compiler failed.");
-            }
-            error_queue = compiler.errorQueue(); // should be empty
+	    try {
+		if (!compiler.compile(aspect_sources)) {
+		    throw new CompilerFailedException("Compiler failed.");
+		}
+	    } finally {
+		error_queue = compiler.errorQueue(); 
+	    }
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
