@@ -189,11 +189,17 @@ public class GlobalAspectInfo {
     }
 
     public PointcutDecl getPointcutDecl(String name, Aspect context) {
+        if (abc.main.Debug.v().abstractPointcutLookup)
+            System.err.println("Looking up pointcut "+name+" in aspect "+context.getName());
         Set matching_pcds = (Set)pc_map.get(name);
         Iterator pi = matching_pcds.iterator();
         while (pi.hasNext()) {
             PointcutDecl p = (PointcutDecl)pi.next();
-            if (!p.isAbstract() && ((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
+            if (abc.main.Debug.v().abstractPointcutLookup)
+                System.err.println(p);
+            if (!p.isAbstract() &&
+                p.getAspect() != null &&
+                ((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
                 return p;
             }
         }

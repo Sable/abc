@@ -61,7 +61,7 @@ public class Debug {
     public boolean showPointcutMatching=false;
 
     public boolean debugPointcutNormalization=false;
-
+    public boolean abstractPointcutLookup=false;
 
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher
