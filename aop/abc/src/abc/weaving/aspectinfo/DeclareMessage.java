@@ -84,7 +84,7 @@ public class DeclareMessage extends AbstractAdviceDecl {
     }
 
     public Chain makeAdviceExecutionStmts
-	(LocalGeneratorEx localgen,WeavingContext wc) {
+	(AdviceApplication aa,LocalGeneratorEx localgen,WeavingContext wc) {
 	throw new InternalCompilerError
 	    ("declare warning/error should never make it past the matcher");
     }

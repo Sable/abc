@@ -22,7 +22,7 @@ public class PerThisSetup extends PerSetupAdvice {
     }
 
     public Chain makeAdviceExecutionStmts
-	(LocalGeneratorEx localgen,WeavingContext wc) {
+	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
 
 	SingleValueWeavingContext svwc=(SingleValueWeavingContext) wc;
 	SootClass aspectclass=getAspect().getInstanceClass().getSootClass();

@@ -122,14 +122,8 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 	return AlwaysMatch.v;
     }
 
-    // for backwards compatibility, remove when aroundweaver doesn't need it
-    public final Chain makeAdviceExecutionStmts
-	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
-	return makeAdviceExecutionStmts(localgen,wc);
-    }
-
     public abstract Chain makeAdviceExecutionStmts
-	(LocalGeneratorEx localgen,WeavingContext wc);
+	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc);
 
     private int applcount=0; // the number of times this AdviceDecl matches
                              //   (i.e. the number of static join points)

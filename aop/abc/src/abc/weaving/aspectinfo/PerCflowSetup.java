@@ -6,6 +6,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.matching.ShadowMatch;
+import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
@@ -41,7 +42,7 @@ public class PerCflowSetup extends PerSetupAdvice {
 
 
     public Chain makeAdviceExecutionStmts
-	 (LocalGeneratorEx localgen,WeavingContext wc) {
+	 (AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
 
 	PerCflowSetupWeavingContext cswc=(PerCflowSetupWeavingContext) wc;
 

@@ -9,10 +9,11 @@ import soot.*;
 import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.Restructure;
-import abc.weaving.matching.ShadowMatch;
-import abc.weaving.matching.WeavingEnv;
+import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.weaver.AroundWeaver;
+import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for around advice. */
 public class AroundAdvice extends AbstractAdviceSpec {
@@ -119,4 +120,8 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		}
     	}
 	}
+    
+    public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
+	AroundWeaver.doWeave(method.getDeclaringClass(),method,localgen,adviceappl);
+    }
 }

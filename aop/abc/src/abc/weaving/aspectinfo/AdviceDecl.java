@@ -201,7 +201,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
  
     /** create the invoke to call the advice body */
     public Chain makeAdviceExecutionStmts
-	(LocalGeneratorEx localgen,WeavingContext wc) {
+	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
 
 	Chain c = new HashChain();
 

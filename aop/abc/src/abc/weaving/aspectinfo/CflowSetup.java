@@ -329,7 +329,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     }
 
     public Chain makeAdviceExecutionStmts
-	 (LocalGeneratorEx localgen,WeavingContext wc) {
+	 (AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
 
 	CflowSetupWeavingContext cswc=(CflowSetupWeavingContext) wc;
 
