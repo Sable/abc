@@ -333,7 +333,9 @@ public class AspectDecl_c extends ClassDecl_c
             MethodDecl md = (MethodDecl) i.next();
             cd = (AspectDecl_c) this.body(cd.body().addMember(md));
         }
+        
+        cd.type().flags(cd.flags().Public());
 
-        return cd.addAspectMembers(nf, ts);
+        return cd.addAspectMembers(nf, ts).flags(cd.flags().Public());
     }
 }
