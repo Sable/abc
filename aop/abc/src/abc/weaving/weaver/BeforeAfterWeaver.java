@@ -31,12 +31,18 @@ public class BeforeAfterWeaver {
 
 	BeforeAfterAdvice.ChoosePhase cp=(BeforeAfterAdvice.ChoosePhase) wc;
 
-	Local adviceApplied=localgen.generateLocal(BooleanType.v(),"adviceApplied");
-	Residue beforeResidue
-	    =AndResidue.construct
-	    (new SetResidue(adviceApplied,IntConstant.v(0)),
-	     AndResidue.construct(residue,new SetResidue(adviceApplied,IntConstant.v(1))));
-	Residue afterResidue=new TestResidue(adviceApplied,IntConstant.v(1));
+	Residue beforeResidue,afterResidue;
+	if(residue instanceof AlwaysMatch) {
+          // Laurie made me do it!
+	  beforeResidue=AlwaysMatch.v; afterResidue=AlwaysMatch.v;
+        } else {
+	  Local adviceApplied=localgen.generateLocal(BooleanType.v(),"adviceApplied");
+	  beforeResidue
+	      =AndResidue.construct
+	       (new SetResidue(adviceApplied,IntConstant.v(0)),
+	        AndResidue.construct(residue,new SetResidue(adviceApplied,IntConstant.v(1))));
+	  afterResidue=new TestResidue(adviceApplied,IntConstant.v(1));
+	}
 
 	// Weave the after advice first to ensure that the exception range doesn't cover
 	// the before advice. Otherwise the signalling variable adviceApplied is not
