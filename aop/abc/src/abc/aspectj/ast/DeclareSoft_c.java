@@ -39,7 +39,7 @@ public class DeclareSoft_c extends DeclareDecl_c
     }
 
     public Node visitChildren(NodeVisitor v) {
-	TypeNode type = (TypeNode) visitChild(this.pat, v);
+	TypeNode type = (TypeNode) visitChild(this.type, v);
 	Pointcut pc = (Pointcut) visitChild(this.pc, v);
 	return reconstruct(type, pc);
     }
