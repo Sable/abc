@@ -3,9 +3,9 @@
     <classpathentry kind="src" path="generated"/>
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-    <classpathentry kind="lib" path="jasminclasses-sable-1.2.jar"/>
-    <classpathentry kind="lib" path="JFlex.jar"/>
-    <classpathentry kind="lib" path="polyglot-1.2.0.jar"/>
-    <classpathentry kind="lib" path="sootclasses-2.1.0.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/jasminclasses-sable-1.2.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/JFlex.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/polyglot-1.2.0.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/sootclasses-2.1.0.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
