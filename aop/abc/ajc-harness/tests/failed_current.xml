@@ -79,33 +79,6 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
-        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
-        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
-        <run class="ImportingStaticInnerInterfacesStars_PR386"></run>
-    </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
-        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
-        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars2_PR386.java"></compile>
-        <run class="ImportingStaticInnerInterfacesStars2_PR386"></run>
-    </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
-        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
-        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars3_PR386.java"></compile>
-        <run class="ImportingStaticInnerInterfacesStars3_PR386"></run>
-    </ajc-test>
-<ajc-test title="Referencing interfaces with import statements stars" pr="386" num="679" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="polyglot should be reporting an error on the import                    statements, as with number 678; once it does, skip this or                    mark them as errors">
-        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars_PR386.java"></compile>
-        <run class="ImportingInnerInterfacesStars_PR386"></run>
-    </ajc-test>
-<ajc-test title="Referencing interfaces with import statements stars 2" pr="386" num="680" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="polyglot should be reporting an error on the import                    statements, as with number 678; once it does, skip this or                    mark them as errors">
-        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars2_PR386.java"></compile>
-        <run class="ImportingInnerInterfacesStars2_PR386"></run>
-    </ajc-test>
-<ajc-test title="Referencing interfaces with import statements stars 3" pr="386" num="681" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="polyglot should be reporting an error on the import                    statements, as with number 678; once it does, skip this or                    mark them as errors">
-        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"></compile>
-        <run class="ImportingInnerInterfacesStars3_PR386"></run>
-    </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
@@ -114,10 +87,6 @@
 <ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 77201, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
-    </ajc-test>
-<ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents">
-        <compile files="Driver.java"></compile>
-        <run class="Driver"></run>
     </ajc-test>
  
 </suite>

@@ -93,10 +93,43 @@
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfaces_PR386.java"></compile>
         <run class="ImportingStaticInnerInterfaces_PR386"></run>
     </ajc-test>
-<ajc-test title="Referencing interfaces with import statements" pr="386" num="678" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="this tries to reference an inner class with an import,                   which javac doesn't allow either">
+<ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly.                    Neither javac nor jikes pass this test.                    It used to work with javac 1.3.1. See                    http://www.geocities.com/herong_yang/jdk/unnamed_package.html                    Decided to skip 18/08/04 ODM/OL/PA/AGS">
+       <abckeywords> <skip></skip> </abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfacesStars_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 675">
+       <abckeywords> <skip></skip> </abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars2_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfacesStars2_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords> <skip></skip> </abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars3_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfacesStars3_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements" pr="386" num="678" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
         <abckeywords><skip></skip></abckeywords>
         <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfaces_PR386.java"></compile>
         <run class="ImportingInnerInterfaces_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements stars" pr="386" num="679" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars_PR386.java"></compile>
+        <run class="ImportingInnerInterfacesStars_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements stars 2" pr="386" num="680" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars2_PR386.java"></compile>
+        <run class="ImportingInnerInterfacesStars2_PR386"></run>
+    </ajc-test>
+<ajc-test title="Referencing interfaces with import statements stars 3" pr="386" num="681" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"></compile>
+        <run class="ImportingInnerInterfacesStars3_PR386"></run>
     </ajc-test>
 <ajc-test title="source locations within expressions (hard case of constructor start)" pr="885" num="689" keywords="knownLimitation" dir="new" comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved" abccomment="the pointcut in the source file refers to the wrong class, which means                   that neither abc nor ajc can pass. Cloned in 68901">
         <abckeywords><skip></skip></abckeywords>

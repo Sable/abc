@@ -1,34 +1,34 @@
 Running test 115: new/Not binding constructor when using more than one compilation
 Commandline: abc -d new new/OuterAbstract_PR408.java 
-Abc started on Wed Aug 18 15:20:53 BST 2004
+Abc started on Wed Aug 18 22:21:02 BST 2004
 Transforming OuterAbstract_PR408... 
 Transforming OuterAbstract_PR408$InnerAbstract... 
-Abc finished on Wed Aug 18 15:20:54 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:21:02 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 595 millisec.)
+Breakdown of abc phases  (total: 547 millisec.)
 ------------------------------------------------
-[ 59.328% ] Init. of Soot:  353
-[ 00.000% ] Loading Jars:  0
+[ 62.340% ] Init. of Soot:  341
+[ 00.183% ] Loading Jars:  1
 [ 00.000% ] Create polyglot compiler:  0
-[ 24.034% ] Polyglot phases:  143
+[ 26.508% ] Polyglot phases:  145
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.504% ] Retrieving bodies:  3
-[ 04.202% ] Update pattern matcher:  25
-[ 00.168% ] Weave Initializers:  1
+[ 00.548% ] Retrieving bodies:  3
+[ 04.570% ] Update pattern matcher:  25
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.168% ] Compute advice lists:  1
+[ 00.548% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
 [ 00.000% ] Weaving advice:  0
-[ 00.000% ] Exceptions check:  0
+[ 00.183% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.412% ] Soot Packs:  56
-[ 02.185% ] Soot Writing Output:  13
+[ 02.377% ] Soot Packs:  13
+[ 02.742% ] Soot Writing Output:  15
 ================================================
 Commandline: abc -cp new:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new new/ExtendsOuterAbstract_PR408.java 
-Abc started on Wed Aug 18 15:20:54 BST 2004
+Abc started on Wed Aug 18 22:21:02 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,30-60: No valid constructor found for OuterAbstract_PR408.InnerAbstract(java.lang.String).
@@ -37,49 +37,44 @@ FAIL: Test 115: "new/Not binding constructor when using more than one compilatio
 
 Running test 149: pureJava/invalid numeric literals
 Commandline: abc -d pureJava pureJava/LiteralsCf.java 
-Abc started on Wed Aug 18 15:21:14 BST 2004
-Compilation produced an unexpected number of errors: 6, should be 18
+Abc started on Wed Aug 18 22:21:24 BST 2004
+Compilation produced an unexpected number of errors: 1, should be 18
 Actual errors found: 
-Syntax Error at pureJava/LiteralsCf.java:18,22-23: Syntax error.
-Syntax Error at pureJava/LiteralsCf.java:20,23-24: Syntax error.
-Syntax Error at pureJava/LiteralsCf.java:22,23-24: Syntax error.
-Syntax Error at pureJava/LiteralsCf.java:29,23-33: Syntax error.
-Syntax Error at pureJava/LiteralsCf.java:30,37-38: Syntax error.
-Semantic Error at pureJava/LiteralsCf.java:32,8-14: Cannot assign double to int.
+Syntax Error at pureJava/LiteralsCf.java:32,13-14: Syntax error.
 FAIL: Test 149: "pureJava/invalid numeric literals" failed.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
-Abc started on Wed Aug 18 15:21:26 BST 2004
+Abc started on Wed Aug 18 22:21:36 BST 2004
 Transforming p1.p2.Foo... 
 Transforming p1.Main1... 
 Transforming p1.p2$Foo... 
 Transforming p1.Foo... 
 Transforming p1.p2... 
-Abc finished on Wed Aug 18 15:21:27 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:21:37 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 729 millisec.)
+Breakdown of abc phases  (total: 697 millisec.)
 ------------------------------------------------
-[ 49.108% ] Init. of Soot:  358
+[ 43.615% ] Init. of Soot:  304
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 38.683% ] Polyglot phases:  282
+[ 43.759% ] Polyglot phases:  305
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.137% ] Intertype Adjuster:  1
-[ 00.686% ] Retrieving bodies:  5
-[ 03.978% ] Update pattern matcher:  29
-[ 00.137% ] Weave Initializers:  1
+[ 00.143% ] Intertype Adjuster:  1
+[ 00.574% ] Retrieving bodies:  4
+[ 04.304% ] Update pattern matcher:  30
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.274% ] Compute advice lists:  2
+[ 00.287% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.137% ] Weaving advice:  1
+[ 00.143% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.292% ] Soot Packs:  24
-[ 03.567% ] Soot Writing Output:  26
+[ 03.443% ] Soot Packs:  24
+[ 03.730% ] Soot Writing Output:  26
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed.
@@ -87,7 +82,7 @@ FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught a
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
 Commandline: abc -d pureJava pureJava/NestedFinally.java 
-Abc started on Wed Aug 18 15:21:33 BST 2004
+Abc started on Wed Aug 18 22:21:44 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
@@ -96,34 +91,34 @@ FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location 
 
 Running test 358: new/non-static advice on inner class defined inside of method body
 Commandline: abc -d new new/MethodInner.java 
-Abc started on Wed Aug 18 15:22:58 BST 2004
+Abc started on Wed Aug 18 22:23:09 BST 2004
 Transforming A... 
 Transforming C... 
 Transforming C$1Inner... 
 Transforming MethodInner... 
-Abc finished on Wed Aug 18 15:22:59 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:23:09 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 755 millisec.)
+Breakdown of abc phases  (total: 710 millisec.)
 ------------------------------------------------
-[ 46.490% ] Init. of Soot:  351
+[ 49.577% ] Init. of Soot:  352
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 26.490% ] Polyglot phases:  200
+[ 30.141% ] Polyglot phases:  214
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.457% ] Retrieving bodies:  11
-[ 03.444% ] Update pattern matcher:  26
-[ 00.000% ] Weave Initializers:  0
+[ 01.408% ] Retrieving bodies:  10
+[ 03.521% ] Update pattern matcher:  25
+[ 00.141% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.662% ] Compute advice lists:  5
+[ 00.704% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.132% ] Add aspect code:  1
-[ 00.530% ] Weaving advice:  4
-[ 00.132% ] Exceptions check:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.563% ] Weaving advice:  4
+[ 00.141% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 14.702% ] Soot Packs:  111
-[ 05.960% ] Soot Writing Output:  45
+[ 07.042% ] Soot Packs:  50
+[ 06.761% ] Soot Writing Output:  48
 ================================================
 before: execution(int C.foo())
 Failed to define or resolve class C$1Inner from new
@@ -164,7 +159,7 @@ FAIL: Test 358: "new/non-static advice on inner class defined inside of method b
 
 Running test 410: new/holding onto proceed calls in a closure-like way
 Commandline: abc -d new new/HoldProceed.java 
-Abc started on Wed Aug 18 15:23:40 BST 2004
+Abc started on Wed Aug 18 22:23:51 BST 2004
 Transforming A... 
 Transforming A$1MyRun... 
 Transforming A$2... 
@@ -172,31 +167,31 @@ Transforming A$1...
 Transforming C... 
 Transforming HoldProceed... 
 Transforming Abc$proceed$A$around$784... 
-Abc finished on Wed Aug 18 15:23:41 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 18 22:23:52 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1084 millisec.)
+Breakdown of abc phases  (total: 1168 millisec.)
 ------------------------------------------------
-[ 28.782% ] Init. of Soot:  312
+[ 30.223% ] Init. of Soot:  353
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 42.989% ] Polyglot phases:  466
+[ 45.034% ] Polyglot phases:  526
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.937% ] Retrieving bodies:  21
-[ 02.768% ] Update pattern matcher:  30
-[ 00.092% ] Weave Initializers:  1
+[ 00.086% ] Intertype Adjuster:  1
+[ 01.712% ] Retrieving bodies:  20
+[ 02.568% ] Update pattern matcher:  30
+[ 00.086% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.923% ] Compute advice lists:  10
+[ 00.856% ] Compute advice lists:  10
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 01.015% ] Weaving advice:  11
-[ 00.092% ] Exceptions check:  1
+[ 00.942% ] Weaving advice:  11
+[ 00.171% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 13.653% ] Soot Packs:  148
-[ 07.749% ] Soot Writing Output:  84
+[ 07.620% ] Soot Packs:  89
+[ 10.702% ] Soot Writing Output:  125
 ================================================
-InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A$1, method: run signature: ()V) Accessing value from uninitialized register 1
+InvocationTargetException while trying to run compiled class: java.lang.Exception: from m3
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -205,41 +200,44 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.TestCase.runTest(TestCase.java:385)
 	at abc.testing.Main.doCase(Main.java:270)
 	at abc.testing.Main.main(Main.java:104)
-Caused by: java.lang.VerifyError: (class: A$1, method: run signature: ()V) Accessing value from uninitialized register 1
-	at A.around$784(HoldProceed.java:45)
-	at HoldProceed.main(HoldProceed.java:7)
+Caused by: java.lang.Exception: from m3
+	at C.m3(HoldProceed.java:34)
+	at HoldProceed.abc$static$proceed$A$around$784(HoldProceed.java:17)
+	at A$1.run(HoldProceed.java)
+	at A.runProceeds(HoldProceed.java:64)
+	at HoldProceed.main(HoldProceed.java:23)
 	... 7 more
 FAIL: Test 410: "new/holding onto proceed calls in a closure-like way" failed.
 
 
 Running test 418: new/join points exist in the execution of field initializers
 Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Abc started on Wed Aug 18 15:23:46 BST 2004
+Abc started on Wed Aug 18 22:23:57 BST 2004
 Transforming A... 
 Transforming FieldInitializerJoinPoints... 
-Abc finished on Wed Aug 18 15:23:47 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:23:58 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 853 millisec.)
+Breakdown of abc phases  (total: 866 millisec.)
 ------------------------------------------------
-[ 41.852% ] Init. of Soot:  357
+[ 34.758% ] Init. of Soot:  301
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 27.081% ] Polyglot phases:  231
-[ 00.000% ] Resolve class names:  0
+[ 06.120% ] Create polyglot compiler:  53
+[ 30.600% ] Polyglot phases:  265
+[ 00.115% ] Resolve class names:  1
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.110% ] Retrieving bodies:  18
-[ 03.165% ] Update pattern matcher:  27
-[ 00.117% ] Weave Initializers:  1
+[ 02.079% ] Retrieving bodies:  18
+[ 03.002% ] Update pattern matcher:  26
+[ 00.115% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 01.758% ] Compute advice lists:  15
+[ 02.079% ] Compute advice lists:  18
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.234% ] Weaving advice:  2
-[ 00.352% ] Exceptions check:  3
-[ 00.000% ] Validate jimple:  0
-[ 16.295% ] Soot Packs:  139
-[ 07.034% ] Soot Writing Output:  60
+[ 00.231% ] Weaving advice:  2
+[ 00.000% ] Exceptions check:  0
+[ 00.115% ] Validate jimple:  1
+[ 14.550% ] Soot Packs:  126
+[ 06.236% ] Soot Writing Output:  54
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail ncount: 0 < 1
@@ -261,35 +259,35 @@ FAIL: Test 418: "new/join points exist in the execution of field initializers" f
 
 Running test 426: new/field patterns and subtyping
 Commandline: abc -d new new/FieldPatterns.java 
-Abc started on Wed Aug 18 15:23:55 BST 2004
+Abc started on Wed Aug 18 22:24:06 BST 2004
 Transforming SubC... 
 Transforming C... 
 Transforming SuperC... 
 Transforming A... 
 Transforming FieldPatterns... 
-Abc finished on Wed Aug 18 15:23:55 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:24:07 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 658 millisec.)
+Breakdown of abc phases  (total: 734 millisec.)
 ------------------------------------------------
-[ 52.280% ] Init. of Soot:  344
+[ 45.913% ] Init. of Soot:  337
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 25.228% ] Polyglot phases:  166
+[ 26.294% ] Polyglot phases:  193
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.520% ] Retrieving bodies:  10
-[ 03.951% ] Update pattern matcher:  26
-[ 00.152% ] Weave Initializers:  1
+[ 01.362% ] Retrieving bodies:  10
+[ 03.951% ] Update pattern matcher:  29
+[ 00.136% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 01.672% ] Compute advice lists:  11
+[ 00.954% ] Compute advice lists:  7
 [ 00.000% ] Intertype weave:  0
-[ 00.152% ] Add aspect code:  1
-[ 00.304% ] Weaving advice:  2
-[ 00.152% ] Exceptions check:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.272% ] Weaving advice:  2
+[ 00.136% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 07.751% ] Soot Packs:  51
-[ 06.839% ] Soot Writing Output:  45
+[ 06.948% ] Soot Packs:  51
+[ 14.033% ] Soot Writing Output:  103
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail C: 2 > 1
@@ -311,34 +309,34 @@ FAIL: Test 426: "new/field patterns and subtyping" failed.
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-Abc started on Wed Aug 18 15:24:49 BST 2004
+Abc started on Wed Aug 18 22:25:01 BST 2004
 Transforming A... 
 Transforming Test... 
 Transforming ObjectForInt... 
 Transforming Abc$proceed$A$around$1397... 
-Abc finished on Wed Aug 18 15:24:50 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:25:02 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 652 millisec.)
+Breakdown of abc phases  (total: 703 millisec.)
 ------------------------------------------------
-[ 48.160% ] Init. of Soot:  314
+[ 49.787% ] Init. of Soot:  350
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 32.669% ] Polyglot phases:  213
+[ 24.893% ] Polyglot phases:  175
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.227% ] Retrieving bodies:  8
-[ 03.834% ] Update pattern matcher:  25
+[ 00.142% ] Intertype Adjuster:  1
+[ 00.996% ] Retrieving bodies:  7
+[ 11.238% ] Update pattern matcher:  79
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.767% ] Compute advice lists:  5
+[ 00.711% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.153% ] Add aspect code:  1
-[ 00.460% ] Weaving advice:  3
-[ 00.153% ] Exceptions check:  1
+[ 00.142% ] Add aspect code:  1
+[ 00.427% ] Weaving advice:  3
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.902% ] Soot Packs:  45
-[ 05.675% ] Soot Writing Output:  37
+[ 06.401% ] Soot Packs:  45
+[ 05.263% ] Soot Writing Output:  37
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
@@ -360,35 +358,35 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-Abc started on Wed Aug 18 15:25:11 BST 2004
+Abc started on Wed Aug 18 22:25:24 BST 2004
 Transforming A... 
 Transforming C... 
 Transforming SuperC... 
 Transforming AroundAll... 
 Transforming Abc$proceed$A$around$1601... 
-Abc finished on Wed Aug 18 15:25:12 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 18 22:25:26 BST 2004. ( 0 min. 2 sec. )
 ================================================
-Breakdown of abc phases  (total: 1967 millisec.)
+Breakdown of abc phases  (total: 2017 millisec.)
 ------------------------------------------------
-[ 17.590% ] Init. of Soot:  346
+[ 14.824% ] Init. of Soot:  299
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 23.183% ] Polyglot phases:  456
+[ 25.880% ] Polyglot phases:  522
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.525% ] Retrieving bodies:  30
-[ 01.525% ] Update pattern matcher:  30
-[ 00.051% ] Weave Initializers:  1
+[ 03.520% ] Retrieving bodies:  71
+[ 01.487% ] Update pattern matcher:  30
+[ 00.050% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 01.118% ] Compute advice lists:  22
+[ 01.091% ] Compute advice lists:  22
 [ 00.000% ] Intertype weave:  0
-[ 00.051% ] Add aspect code:  1
-[ 15.913% ] Weaving advice:  313
-[ 00.203% ] Exceptions check:  4
+[ 00.050% ] Add aspect code:  1
+[ 14.824% ] Weaving advice:  299
+[ 00.099% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 25.572% ] Soot Packs:  503
-[ 13.269% ] Soot Writing Output:  261
+[ 23.996% ] Soot Packs:  484
+[ 14.179% ] Soot Writing Output:  286
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 126
@@ -414,7 +412,7 @@ FAIL: Test 496: "new/elaborated into testing of around on all join points" faile
 Running test 499: new/target type matching with messy interface hierarchies
 Commandline: abc -d new -1.4 -Xlint:ignore new/CallTypesI.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-Abc started on Wed Aug 18 15:25:14 BST 2004
+Abc started on Wed Aug 18 22:25:28 BST 2004
 Transforming C0... 
 Transforming C1a... 
 Transforming I1a... 
@@ -423,29 +421,29 @@ Transforming A...
 Transforming CallTypesI... 
 Transforming I1b... 
 Transforming C1b... 
-Abc finished on Wed Aug 18 15:25:16 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 18 22:25:29 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1344 millisec.)
+Breakdown of abc phases  (total: 1320 millisec.)
 ------------------------------------------------
-[ 26.562% ] Init. of Soot:  357
+[ 26.061% ] Init. of Soot:  344
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 31.548% ] Polyglot phases:  424
+[ 34.848% ] Polyglot phases:  460
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.860% ] Retrieving bodies:  25
-[ 02.158% ] Update pattern matcher:  29
-[ 00.149% ] Weave Initializers:  2
+[ 01.894% ] Retrieving bodies:  25
+[ 02.197% ] Update pattern matcher:  29
+[ 00.076% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 03.051% ] Compute advice lists:  41
+[ 03.106% ] Compute advice lists:  41
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 01.190% ] Weaving advice:  16
-[ 00.223% ] Exceptions check:  3
+[ 00.076% ] Add aspect code:  1
+[ 01.136% ] Weaving advice:  15
+[ 00.227% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 19.568% ] Soot Packs:  263
-[ 13.690% ] Soot Writing Output:  184
+[ 18.939% ] Soot Packs:  250
+[ 11.439% ] Soot Writing Output:  151
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail base: c1a.mI(): [instanceof c0, instanceof c1a, instanceof i0, instanceof i1a, static c1a, static i0] !equals [instanceof c0, instanceof c1a, instanceof i0, instanceof i1a, static c1a, static i0, static i1a]
@@ -469,35 +467,35 @@ FAIL: Test 499: "new/target type matching with messy interface hierarchies" fail
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-Abc started on Wed Aug 18 15:26:09 BST 2004
+Abc started on Wed Aug 18 22:26:26 BST 2004
 Transforming ObjectSub... 
 Transforming A... 
 Transforming Sub... 
 Transforming Super... 
 Transforming SuperInIntroduction... 
-Abc finished on Wed Aug 18 15:26:10 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:26:26 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 768 millisec.)
+Breakdown of abc phases  (total: 766 millisec.)
 ------------------------------------------------
-[ 49.089% ] Init. of Soot:  377
+[ 43.211% ] Init. of Soot:  331
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 22.526% ] Polyglot phases:  173
+[ 00.131% ] Create polyglot compiler:  1
+[ 32.898% ] Polyglot phases:  252
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.130% ] Intertype Adjuster:  1
-[ 02.214% ] Retrieving bodies:  17
-[ 08.203% ] Update pattern matcher:  63
-[ 00.130% ] Weave Initializers:  1
+[ 00.131% ] Intertype Adjuster:  1
+[ 02.219% ] Retrieving bodies:  17
+[ 03.133% ] Update pattern matcher:  24
+[ 00.131% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.651% ] Compute advice lists:  5
+[ 00.653% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.130% ] Add aspect code:  1
-[ 00.130% ] Weaving advice:  1
-[ 00.130% ] Exceptions check:  1
+[ 00.131% ] Add aspect code:  1
+[ 00.131% ] Weaving advice:  1
+[ 00.131% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.766% ] Soot Packs:  75
-[ 06.901% ] Soot Writing Output:  53
+[ 09.530% ] Soot Packs:  73
+[ 07.572% ] Soot Writing Output:  58
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
 java.lang.reflect.InvocationTargetException
@@ -517,32 +515,32 @@ FAIL: Test 555: "new/accessing protected superclass members in and outside CCC f
 
 Running test 634: new/CE for ambiguous type reference (two files in package)
 Commandline: abc -d new new/ambiguousClass/AmbiguousReferent.java new/ambiguousClass/AmbiguousClassReference.java 
-Abc started on Wed Aug 18 15:27:05 BST 2004
+Abc started on Wed Aug 18 22:27:24 BST 2004
 Transforming ambiguousClass.AmbiguousClassReference... 
 Transforming ambiguousClass.AmbiguousReferent... 
-Abc finished on Wed Aug 18 15:27:06 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:27:24 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 455 millisec.)
+Breakdown of abc phases  (total: 442 millisec.)
 ------------------------------------------------
-[ 78.242% ] Init. of Soot:  356
+[ 81.222% ] Init. of Soot:  359
 [ 00.000% ] Loading Jars:  0
-[ 00.220% ] Create polyglot compiler:  1
-[ 02.418% ] Polyglot phases:  11
+[ 00.000% ] Create polyglot compiler:  0
+[ 05.204% ] Polyglot phases:  23
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.440% ] Retrieving bodies:  2
-[ 14.286% ] Update pattern matcher:  65
+[ 00.226% ] Intertype Adjuster:  1
+[ 00.226% ] Retrieving bodies:  1
+[ 06.787% ] Update pattern matcher:  30
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.220% ] Compute advice lists:  1
+[ 00.226% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.000% ] Weaving advice:  0
-[ 00.220% ] Exceptions check:  1
+[ 00.226% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 01.758% ] Soot Packs:  8
-[ 02.198% ] Soot Writing Output:  10
+[ 03.846% ] Soot Packs:  17
+[ 02.036% ] Soot Writing Output:  9
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" failed.
@@ -550,36 +548,36 @@ FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" fai
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
 Commandline: abc -d abctests/new abctests/new/test/TypePat.java 
-Abc started on Wed Aug 18 15:27:11 BST 2004
+Abc started on Wed Aug 18 22:27:30 BST 2004
 Transforming test.A... 
 Transforming test.TypePat... 
 Transforming test.TypePat$Inner... 
 Transforming test.TypePat$InnerA... 
 Transforming test.C... 
 Transforming test.TypePat$1... 
-Abc finished on Wed Aug 18 15:27:12 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 18 22:27:32 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1191 millisec.)
+Breakdown of abc phases  (total: 1610 millisec.)
 ------------------------------------------------
-[ 31.570% ] Init. of Soot:  376
+[ 43.416% ] Init. of Soot:  699
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 33.669% ] Polyglot phases:  401
+[ 30.186% ] Polyglot phases:  486
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.084% ] Intertype Adjuster:  1
-[ 01.511% ] Retrieving bodies:  18
-[ 02.603% ] Update pattern matcher:  31
-[ 00.084% ] Weave Initializers:  1
+[ 00.062% ] Intertype Adjuster:  1
+[ 01.429% ] Retrieving bodies:  23
+[ 02.857% ] Update pattern matcher:  46
+[ 00.062% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 02.687% ] Compute advice lists:  32
+[ 02.857% ] Compute advice lists:  46
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 01.008% ] Weaving advice:  12
-[ 00.084% ] Exceptions check:  1
+[ 00.062% ] Add aspect code:  1
+[ 00.932% ] Weaving advice:  15
+[ 00.062% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 14.358% ] Soot Packs:  171
-[ 12.343% ] Soot Writing Output:  147
+[ 09.565% ] Soot Packs:  154
+[ 08.509% ] Soot Writing Output:  137
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "A.before2: C.foo()" not found]
@@ -603,179 +601,35 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
 
 
-Running test 675: pureJava/Referencing static interfaces with import statements stars
-Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 18 15:29:03 BST 2004
-Transforming ClassWithStaticInnerInterfaces... 
-Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
-Transforming ClassWithStaticInnerInterfaces$Inner1... 
-Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 18 15:29:03 BST 2004. ( 0 min. 0 sec. )
-================================================
-Breakdown of abc phases  (total: 442 millisec.)
-------------------------------------------------
-[ 79.186% ] Init. of Soot:  350
-[ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 02.489% ] Polyglot phases:  11
-[ 00.000% ] Resolve class names:  0
-[ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.226% ] Retrieving bodies:  1
-[ 11.086% ] Update pattern matcher:  49
-[ 00.000% ] Weave Initializers:  0
-[ 00.000% ] Load shadow types:  0
-[ 00.226% ] Compute advice lists:  1
-[ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.226% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
-[ 00.000% ] Validate jimple:  0
-[ 02.262% ] Soot Packs:  10
-[ 04.299% ] Soot Writing Output:  19
-================================================
-Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars_PR386.java 
-Abc started on Wed Aug 18 15:29:03 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at pureJava/ImportingStaticInnerInterfacesStars_PR386.java:23,20-26: Could not find type "Inner3".
-FAIL: Test 675: "pureJava/Referencing static interfaces with import statements stars" failed.
-
-
-Running test 676: pureJava/Referencing static interfaces with import statements stars 2
-Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 18 15:29:04 BST 2004
-Transforming ClassWithStaticInnerInterfaces... 
-Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
-Transforming ClassWithStaticInnerInterfaces$Inner1... 
-Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 18 15:29:04 BST 2004. ( 0 min. 0 sec. )
-================================================
-Breakdown of abc phases  (total: 415 millisec.)
-------------------------------------------------
-[ 84.578% ] Init. of Soot:  351
-[ 00.000% ] Loading Jars:  0
-[ 00.241% ] Create polyglot compiler:  1
-[ 02.410% ] Polyglot phases:  10
-[ 00.000% ] Resolve class names:  0
-[ 00.000% ] Declare Parents:  0
-[ 00.241% ] Intertype Adjuster:  1
-[ 00.241% ] Retrieving bodies:  1
-[ 04.819% ] Update pattern matcher:  20
-[ 00.241% ] Weave Initializers:  1
-[ 00.000% ] Load shadow types:  0
-[ 00.241% ] Compute advice lists:  1
-[ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.000% ] Weaving advice:  0
-[ 00.000% ] Exceptions check:  0
-[ 00.000% ] Validate jimple:  0
-[ 02.410% ] Soot Packs:  10
-[ 04.578% ] Soot Writing Output:  19
-================================================
-Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars2_PR386.java 
-Abc started on Wed Aug 18 15:29:04 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at pureJava/ImportingStaticInnerInterfacesStars2_PR386.java:19,20-26: Could not find type "Inner2".
-FAIL: Test 676: "pureJava/Referencing static interfaces with import statements stars 2" failed.
-
-
-Running test 677: pureJava/Referencing static interfaces with import statements stars 3
-Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 18 15:29:05 BST 2004
-Transforming ClassWithStaticInnerInterfaces... 
-Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
-Transforming ClassWithStaticInnerInterfaces$Inner1... 
-Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 18 15:29:05 BST 2004. ( 0 min. 0 sec. )
-================================================
-Breakdown of abc phases  (total: 448 millisec.)
-------------------------------------------------
-[ 79.241% ] Init. of Soot:  355
-[ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 02.455% ] Polyglot phases:  11
-[ 00.000% ] Resolve class names:  0
-[ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.223% ] Retrieving bodies:  1
-[ 04.688% ] Update pattern matcher:  21
-[ 00.000% ] Weave Initializers:  0
-[ 00.000% ] Load shadow types:  0
-[ 00.223% ] Compute advice lists:  1
-[ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.223% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
-[ 00.000% ] Validate jimple:  0
-[ 08.705% ] Soot Packs:  39
-[ 04.241% ] Soot Writing Output:  19
-================================================
-Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars3_PR386.java 
-Abc started on Wed Aug 18 15:29:05 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at pureJava/ImportingStaticInnerInterfacesStars3_PR386.java:14,20-26: Could not find type "Inner1".
-FAIL: Test 677: "pureJava/Referencing static interfaces with import statements stars 3" failed.
-
-
-Running test 679: pureJava/Referencing interfaces with import statements stars
-Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars_PR386.java 
-Abc started on Wed Aug 18 15:29:05 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at pureJava/ImportingInnerInterfacesStars_PR386.java:23,20-26: Could not find type "Inner3".
-FAIL: Test 679: "pureJava/Referencing interfaces with import statements stars" failed.
-
-
-Running test 680: pureJava/Referencing interfaces with import statements stars 2
-Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars2_PR386.java 
-Abc started on Wed Aug 18 15:29:06 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at pureJava/ImportingInnerInterfacesStars2_PR386.java:19,20-26: Could not find type "Inner2".
-FAIL: Test 680: "pureJava/Referencing interfaces with import statements stars 2" failed.
-
-
-Running test 681: pureJava/Referencing interfaces with import statements stars 3
-Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars3_PR386.java 
-Abc started on Wed Aug 18 15:29:06 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at pureJava/ImportingInnerInterfacesStars3_PR386.java:14,20-26: Could not find type "Inner1".
-FAIL: Test 681: "pureJava/Referencing interfaces with import statements stars 3" failed.
-
-
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs bugs/Finalizer.java 
-Abc started on Wed Aug 18 15:29:41 BST 2004
+Abc started on Wed Aug 18 22:29:59 BST 2004
 Transforming Finalizer... 
 Transforming FinalizeContract... 
 Transforming Abc$proceed$FinalizeContract$around$2595... 
-Abc finished on Wed Aug 18 15:29:42 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 18 22:30:00 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 556 millisec.)
+Breakdown of abc phases  (total: 573 millisec.)
 ------------------------------------------------
-[ 63.309% ] Init. of Soot:  352
+[ 58.639% ] Init. of Soot:  336
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 20.683% ] Polyglot phases:  115
+[ 00.175% ] Create polyglot compiler:  1
+[ 21.291% ] Polyglot phases:  122
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.899% ] Retrieving bodies:  5
-[ 04.137% ] Update pattern matcher:  23
+[ 00.175% ] Intertype Adjuster:  1
+[ 00.698% ] Retrieving bodies:  4
+[ 04.014% ] Update pattern matcher:  23
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.360% ] Compute advice lists:  2
+[ 00.349% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.180% ] Add aspect code:  1
-[ 00.360% ] Weaving advice:  2
+[ 00.175% ] Add aspect code:  1
+[ 00.349% ] Weaving advice:  2
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 05.576% ] Soot Packs:  31
-[ 04.496% ] Soot Writing Output:  25
+[ 10.122% ] Soot Packs:  58
+[ 04.014% ] Soot Writing Output:  23
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
@@ -783,20 +637,10 @@ FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 Running test 77201: abctests/bugs/declare soft and throw statements
 Commandline: abc -d abctests/bugs abctests/bugs/ConvertToUnchecked.java 
-Abc started on Wed Aug 18 15:29:52 BST 2004
+Abc started on Wed Aug 18 22:30:09 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
 FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed.
-
-
-Running test 775: new/declareParents/Declare parents with intermediate ancestor
-Commandline: abc -d new/declareParents new/declareParents/Driver.java 
-Abc started on Wed Aug 18 15:29:54 BST 2004
-Compilation produced an unexpected number of errors: 2, should be 0
-Actual errors found: 
-Semantic Error at new/declareParents/Driver.java:15,15-16: Expression operand incompatible with type in "instanceof".
-Semantic Error at new/declareParents/Driver.java:16,15-16: Expression operand incompatible with type in "instanceof".
-FAIL: Test 775: "new/declareParents/Declare parents with intermediate ancestor" failed.
 
 

@@ -3754,6 +3754,10 @@
         <compile files="a_impl/AImpl.java,a_impl/Af.java,a_intf/A.java,b_impl/BImpl.java,b_intf/B.java"></compile>
         <run class="b_impl.BImpl"></run>
     </ajc-test>
+<ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="Declare parents removing ancestor" num="776" keywords="from-new" dir="new/declareParents">
         <compile files="IllegalAdoption.java">
             <message line="13" kind="error"></message>
