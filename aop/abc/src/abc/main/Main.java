@@ -703,7 +703,7 @@ public class Main {
 	if(optflag)
 	    for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 		final AbcClass cl = (AbcClass) clIt.next();
-		abc.soot.util.NullEliminator.transform(cl.getSootClass());
+//		abc.soot.util.NullEliminator.transform(cl.getSootClass());
 	    }
 	PackManager.v().runPacks();
     }
