@@ -7879,7 +7879,9 @@
     
     <ajc-test dir="bugs/interfaceDefinition" 
     	pr="43972"
+        abccomment="don't do separate compilation. ODM 19/07/04"
     	title="Use class implementing interface via aspect (only one implementer)">
+     <abckeywords> <skip/> </abckeywords>
         <compile 
         	files="pack/DefineInterface.java,
         		   pack/InterfaceDefinition.java,
