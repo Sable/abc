@@ -694,7 +694,7 @@ public class AroundWeaver {
 						debug(" Binding: " + local.getName() + " => " + formal.pos);
 						
 						while (arrayList.size()<formal.pos+1)
-							arrayList.add(0,null);
+							arrayList.add(null);
 							
 						if (arrayList.get(formal.pos) != null)
 							throw new RuntimeException("Ambiguous variable binding");
