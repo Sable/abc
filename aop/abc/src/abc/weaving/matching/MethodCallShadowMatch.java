@@ -5,6 +5,7 @@ import soot.jimple.*;
 import soot.tagkit.SourceLnPosTag;
 
 import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
@@ -58,6 +59,8 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	    invoke=(InvokeExpr) rhs;
 	} else return null;
 	SootMethod method=invoke.getMethod();
+
+	if(!MethodCategory.weaveCalls(method)) return null;
 
 	if(method.getName().equals(SootMethod.constructorName)) return null;
 	// The next one really ought not to happen...
