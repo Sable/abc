@@ -393,6 +393,13 @@ public class MethodCategory {
 		registerFieldSet(fs,sig);
 	}
 	
+	/* don't weave if this is a synthetic field introduced by normal Java compilation.
+	 */
+	public static boolean weaveSetGet(SootField sfs) {
+		return !((GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(sfs)) == null) &&
+		         (sfs.getName().indexOf('$') != -1));
+	}
+	
     /** is this an ITD (method or field initialiser) that has "this"
      *  as a parameter?
      */

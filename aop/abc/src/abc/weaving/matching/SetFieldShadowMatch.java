@@ -59,6 +59,8 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		if (lhs instanceof FieldRef) {
 			FieldRef fr = (FieldRef) lhs;
 			sf = fr.getField();
+			if (!MethodCategory.weaveSetGet(sf))
+				return null;
 			makeLocalForRHS(((StmtMethodPosition) pos).getContainer(), as);
 		} else return null;
 	} else if (stmt instanceof InvokeStmt) {

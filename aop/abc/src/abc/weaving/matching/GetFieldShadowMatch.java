@@ -42,8 +42,10 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	Value rhs = as.getRightOp();
        	if(rhs instanceof FieldRef) {
 	    FieldRef fr = (FieldRef) rhs;
-
-	    return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+		if (MethodCategory.weaveSetGet(fr.getField()))
+	    	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+	    else
+	    	return null;
 	} else if(rhs instanceof InvokeExpr) {
 		InvokeExpr ie = (InvokeExpr) rhs;
 		SootMethod sm = ie.getMethod();
