@@ -30,5 +30,6 @@ public interface DeclareParents extends DeclareDecl
 
     public Node disambiguate(DeclareParentsAmbiguityRemover ar) throws SemanticException;
 
+    public void setKind(Kind kind);
     public void addTarget(AbcClass cl);
 }

@@ -34,5 +34,8 @@ public aspect CallAndExecution {
     after(String s) returning(): set(String A.f*) && args(s)  { p("A: "+s); }
     after(String s) returning(): set(String B.f*) && args(s)  { p("B: "+s); }
 
+    before(): initialization(M.new())  { p("initialization M");  }
+    before(): initialization(J.new())  { p("initialization J");  }
+    before(): initialization(K.new())  { p("initialization K");  }
     before(): initialization((I||J||K).new())  { p("initialization I|J|K");  }
 }

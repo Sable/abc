@@ -4,8 +4,10 @@ public interface I {
     public void xiab();
 }
 
-interface J {}
-interface K {}
+interface M {}
+
+interface J extends M {}
+interface K extends M {}
 
 abstract class O implements I,K {}
 

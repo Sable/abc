@@ -6134,24 +6134,28 @@
     <ajc-test num="705" dir="options" 
       title="options negative -Xlint args()" 
       keywords="lint">
+        <abckeywords><skip/></abckeywords>
         <compile files="XLintTypeArgsPCD.java" options="-Xlint:ignore"/>
     </ajc-test>
     
     <ajc-test num="706" dir="options" 
       title="options negative -Xlint declare parent" 
       keywords="lint">
+        <abckeywords><skip/></abckeywords>
         <compile files="XLintTypeDeclareParent.java" options="-Xlint:ignore"/>
     </ajc-test>
     
     <ajc-test num="707" dir="options" 
       title="options negative -Xlint target()" 
       keywords="lint">
+        <abckeywords><skip/></abckeywords>
         <compile files="XLintTypeTargetPCD.java" options="-Xlint:ignore"/>
     </ajc-test>
     
     <ajc-test num="708" dir="options" 
       title="options negative -Xlint this()" 
       keywords="lint">
+        <abckeywords><skip/></abckeywords>
         <compile files="XLintTypeThisPCD.java" options="-Xlint:ignore"/>
     </ajc-test>
 

@@ -108,7 +108,7 @@ public class AccessorDispatch extends AccessorMethod {
         
         soot.SootMethod accessMeth = new soot.SootMethod(name, paramTypes, returnType, modifiers);
         
-		for( Iterator exceptionIt = ms.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+		for( Iterator exceptionIt = ms.getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
 			final SootClass exception = (SootClass) exceptionIt.next();
 			accessMeth.addException( exception );
 		}

@@ -169,7 +169,7 @@ public class IntertypeAdjuster {
 						  retType,
 						  modifiers );
 	
-			for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+			for( Iterator exceptionIt = method.getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
 				final SootClass exception = (SootClass) exceptionIt.next();
 				sm.addException( exception );
 			}
@@ -195,7 +195,7 @@ public class IntertypeAdjuster {
 		 		                              method.getReturnType(), 
 		 		                              method.getName(), 
 		 		                              method.getFormals(),
-		 		                              method.getAbcExceptions(), 
+		 		                              method.getExceptions(), 
 		 		                              method.getPosition());
 		 		createTargetMethod(implMethod,itf,sc,imd.getAspect(),sc,imd.getOrigName());
 		 		Set implementors = hierarchy.getAllImplementersOfInterface(sc);
@@ -245,7 +245,7 @@ public class IntertypeAdjuster {
 		                retType,
 		                modifiers );
 		
-		        for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+		        for( Iterator exceptionIt = method.getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
 		
 		            final SootClass exception = (SootClass) exceptionIt.next();
 		            sm.addException( exception );
@@ -365,7 +365,7 @@ public class IntertypeAdjuster {
 											parms,
 											retType,
 											modifiers );
-		for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+		for( Iterator exceptionIt = method.getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
 				final SootClass exception = (SootClass) exceptionIt.next();
 				sm.addException( exception );
 		}
@@ -723,7 +723,7 @@ public class IntertypeAdjuster {
 		// get the method that initialises this field
 		// which is a static method of the aspect that contains the ITD
 		SootMethod initialiser = ifd.getInit().getSootMethod();
-		for( Iterator exceptionIt = ifd.getInit().getExceptions().iterator(); exceptionIt.hasNext(); ) {
+		for( Iterator exceptionIt = ifd.getInit().getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
 			final SootClass exception = (SootClass) exceptionIt.next();
 			sm.addException( exception );
 		}
@@ -761,7 +761,7 @@ public class IntertypeAdjuster {
 		// get the method that initialises this field
 		// which is a static method of the aspect that contains the ITD
 		SootMethod initialiser = ifd.getInit().getSootMethod();
-		for( Iterator exceptionIt = ifd.getInit().getExceptions().iterator(); exceptionIt.hasNext(); ) {
+		for( Iterator exceptionIt = ifd.getInit().getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
 			final SootClass exception = (SootClass) exceptionIt.next();
 			sm.addException( exception );
 		}

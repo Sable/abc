@@ -55,14 +55,17 @@ public class MethodSig extends Sig {
 	return formals;
     }
     
-    public List getAbcExceptions() {
+    /** Get the exceptions thrown by the method.
+     *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
+     */
+    public List getExceptions() {
     	return exc;
     }
 
     /** Get the exceptions thrown by the method.
      *  @return a list of {@link soot.SootClass} objects.
      */
-    public List getExceptions() {
+    public List getSootExceptions() {
 	if (sexc == null) {
 	    sexc = new ArrayList();
 	    Iterator ei = exc.iterator();

@@ -58,12 +58,13 @@ public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
 			PCNode cl = (PCNode)worklist.removeFirst();
 			if (!seen.contains(cl)) {
 			    seen.add(cl);
+			    /* FIXME: Is precedence really not inherited?
 			    Iterator pi = cl.getParents().iterator();
 			    while (pi.hasNext()) {
 				PCNode p = (PCNode)pi.next();
 				worklist.addLast(p);
 			    }
-
+			    */
 			    if (pat.matches(PatternMatcher.v(), cl)) {
 				// It is an error if an aspect is matched twice on the same list
 				if (passed.contains(a)) {
