@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +31,9 @@ import java.util.*;
 
 import abc.main.AbcTimer;
 
+/** 
+ *  @author Aske Simon Christensen
+ */
 public class Jimplify extends OncePass {
     private Map class_to_ast;
 

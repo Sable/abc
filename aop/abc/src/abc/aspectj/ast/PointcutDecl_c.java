@@ -1,4 +1,7 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Oege de Moor
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Julian Tibble
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -61,6 +64,11 @@ import abc.aspectj.visit.DependsChecker;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
 
+/** 
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
+ *  @author Julian Tibble
+ */
 public class PointcutDecl_c extends MethodDecl_c
                             implements PointcutDecl,
                                        ContainsAspectInfo,

@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Pavel Avgustinov
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,6 +19,9 @@
 
 package abc.main;
 
+/** 
+ *  @author Pavel Avgustinov
+ */
 public class CompilerAbortedException extends Exception {
     public CompilerAbortedException(String mes) {
     	super(mes);

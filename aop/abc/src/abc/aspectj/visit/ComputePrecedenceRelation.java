@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +33,7 @@ import java.util.*;
 /** Compute the precedence relation between aspects from all
  *  <code>declare precedence</code> declarations in the program.
  *  @exception SemanticException if any aspect is matched by more than one pattern on the same list.
+ *  @author Aske Simon Christensen
  */
 public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
     ExtensionInfo ext;

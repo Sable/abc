@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +34,7 @@ import soot.*;
 
 /** The internal representation of the class hierarchy and the class and
  *  package nesting used by the pattern matcher.
+ *  @author Aske Simon Christensen
  */
 public class PCStructure {
     private static PCStructure v;

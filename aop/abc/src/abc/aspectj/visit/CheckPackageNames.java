@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +31,12 @@ import polyglot.util.ErrorQueue;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcClass;
 
+/** Check that public classes are declared in an appropriate
+ *  file. This checks both the name of the file itself and that
+ *  it has been specified in a path that corresponds to the
+ *  package name.
+ *  @author Ganesh Sittampalam
+ */
 public class CheckPackageNames extends OncePass {
     Job job;
 

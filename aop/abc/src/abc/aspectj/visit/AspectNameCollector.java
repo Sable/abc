@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,6 +30,9 @@ import abc.aspectj.ast.*;
 
 import java.util.*;
 
+/** 
+ *  @author Aske Simon Christensen
+ */
 public class AspectNameCollector extends NodeVisitor {
     private Collection/*<String>*/ aspect_names;
 
