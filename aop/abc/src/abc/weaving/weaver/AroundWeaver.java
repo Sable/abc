@@ -936,10 +936,22 @@ public class AroundWeaver {
 				Value leftOp = assignStmt.getLeftOp();
 				Value rightOp = assignStmt.getRightOp();
 				if (leftOp instanceof Local) {
+					// get
 					returnedLocal = (Local) leftOp;
-				} else if (leftOp instanceof FieldRef && rightOp instanceof Local) {
-				} else if (leftOp instanceof FieldRef && rightOp instanceof Constant) {
-	
+				} else if ((leftOp instanceof FieldRef && rightOp instanceof Local) ||	
+						   (leftOp instanceof FieldRef && rightOp instanceof Constant)) {
+					// set
+					
+					Type objectType=Scene.v().getRefType("java.lang.Object");
+					// special case: with return type object, set() returns null.
+					if (adviceMethod.getReturnType().equals(objectType)) {
+						LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
+						Local l=lg.generateLocal(objectType, "nullValue");
+						Stmt s=Jimple.v().newAssignStmt(l, NullConstant.v());
+						joinpointStatements.insertAfter(s, begin);
+						returnedLocal=l;
+					} 
+				
 				} else {
 					// unexpected statement type
 					throw new InternalError();
