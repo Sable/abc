@@ -45,6 +45,27 @@
         </jar>
     </target>
     
+    <target name="paddle-jar" depends="settings,paddle,libdir">
+        <jar destfile="lib/abc-paddle.jar">
+            <fileset dir="paddle-classes"/>
+        </jar>
+    </target>
+    
+    <target name="paddle" depends="settings,abc">
+        <mkdir dir="paddle-classes"/>
+        <javac
+            destdir="paddle-classes"
+            debug="true"
+        >
+            <src path="paddle-src"/>
+            <classpath>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${paddle.loc}"/>
+              <pathelement location="classes"/>
+            </classpath>
+        </javac>
+    </target>
+
     <target name="runtime" depends="settings">
         <mkdir dir="runtime-classes"/>
         <javac
@@ -271,6 +292,7 @@ source="1.4"
             <fileset dir="runtime-classes" includes="**" />
             <fileset dir="classes" includes="**" />
             <fileset dir="testing-classes" includes="**" />
+            <fileset dir="paddle-classes" includes="**" />
             <fileset dir="lib" includes="**/*.jar" />
             <fileset dir="ajc-harness/classes" includes="**" />
             <fileset dir="ajc-harness/lib" includes="abc-tests.jar" />

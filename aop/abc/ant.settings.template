@@ -22,3 +22,5 @@ jasmin.loc=/usr/local/src/jasmin-dev/lib/jasminclasses-sable-nocup.jar
 ## Location of xact jar
 xact.loc=/usr/local/src/xact/java/xact-complete.jar
 
+## Location of Paddle jar (optional, for cflow analysis)
+paddle.loc=${user.home}/paddle/lib/paddle-2.1.0-custom.jar

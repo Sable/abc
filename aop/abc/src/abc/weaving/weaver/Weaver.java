@@ -37,6 +37,8 @@ import abc.main.Options;
 import abc.main.options.OptionsParser;
 import abc.main.*;
 
+import polyglot.util.InternalCompilerError;
+
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
  * @author Ondrej Lhotak
@@ -126,8 +128,7 @@ public class Weaver {
 
                 // We could do several passes, but for now, just do one.
                 weaveAdvice();
-                CflowAnalysisBridge cfab = new CflowAnalysisBridge();
-                cfab.run();
+                runCflowAnalysis();
                 optimizeResidues();
                 reportMessages();
                 if( !abc.main.Debug.v().dontWeaveAfterAnalysis ) {
@@ -302,4 +303,13 @@ public class Weaver {
                 AbcTimer.mark("Weaving advice");
                 abc.main.Main.phaseDebug("Weaving advice");
         } // method weave
+    private static void runCflowAnalysis() {
+        CflowAnalysis cfab = null;
+        try {
+            cfab = (CflowAnalysis) Class.forName("abc.weaving.weaver.CflowAnalysisImpl").newInstance();
+        } catch( Exception e ) {
+            throw new InternalCompilerError("Couldn't load interprocedural analysis plugin. "+e);
+        }
+        cfab.run();
+    }
 } // class Weaver
