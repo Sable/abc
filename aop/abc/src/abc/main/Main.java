@@ -25,6 +25,8 @@ public class Main {
 
     public String classpath = System.getProperty("java.class.path");
     public String classes_destdir = ""; //FIXME
+    
+    public Compiler compiler;
 
     public static void main(String[] args) {
 	try {
@@ -110,7 +112,7 @@ public class Main {
 		// FIXME: Use updated source set?
 	    }
 	    Options.global = options;
-	    Compiler compiler = new Compiler(ext);
+	    compiler = new Compiler(ext);
 	    if (!compiler.compile(aspect_sources)) {
 		throw new CompilerFailedException("Compiler failed.");
 	    }
