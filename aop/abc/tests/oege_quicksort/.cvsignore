@@ -3,3 +3,5 @@
 *.jasmin
 dava
 test.tmp
+ajcOutput
+abcOutput
