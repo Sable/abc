@@ -329,12 +329,12 @@ public class AroundWeaver {
 				}
 				// TODO: clean up the following 7 lines
 				int size=adviceMethodInfo.originalAdviceFormals.size();
-				if (adviceDecl.hasEnclosingJoinPoint())
-					adviceMethodInfo.originalAdviceFormals.remove(size-1);
-				if (adviceDecl.hasJoinPoint())
-					adviceMethodInfo.originalAdviceFormals.remove(size-2);
+				if (adviceDecl.hasEnclosingJoinPoint()) 
+					adviceMethodInfo.originalAdviceFormals.remove(--size); 
+				if (adviceDecl.hasJoinPoint()) 
+					adviceMethodInfo.originalAdviceFormals.remove(--size); 
 				if (adviceDecl.hasJoinPointStaticPart())
-					adviceMethodInfo.originalAdviceFormals.remove(size-3);
+					adviceMethodInfo.originalAdviceFormals.remove(--size); 
 						
 				//adviceMethodInfo.originalAdviceFormals.addAll(adviceMethod.getParameterTypes());
 			}
