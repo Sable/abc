@@ -3260,7 +3260,7 @@
         <run class="AspectOnInterface"/>
     </ajc-test>
 
-    <ajc-test dir="new" pr="106" title="advice and package visibility"
+    <ajc-test dir="new" pr="106" title="advice and package visibility 1"
       keywords="from-resolved_10x">
         <compile
           files="packagevisibility/PackagesAndAdvice.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"
@@ -3268,7 +3268,7 @@
         <run class="packagevisibility.PackagesAndAdvice"/>
     </ajc-test>
     
-    <ajc-test dir="new" pr="106" title="advice and package visibility"
+    <ajc-test dir="new" pr="106" title="advice and package visibility 2"
       keywords="from-resolved_10x">
         <compile
           files="packagevisibility/PackagesAndAdviceCf.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"
