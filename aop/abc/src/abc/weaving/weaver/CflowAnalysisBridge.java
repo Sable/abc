@@ -26,6 +26,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.jimple.paddle.*;
 import soot.options.PaddleOptions;
+import soot.tagkit.*;
 
 /** Bridge between abc and Soot Paddle cflow analysis.
  *  @author Ondrej Lhotak
@@ -94,10 +95,9 @@ public class CflowAnalysisBridge {
                 new BDDCflowStack(cflowAnalysis, si.shadows );
             for( Iterator stmtIt = si.stmtMap.keySet().iterator(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
-                debug("alwaysValid");
+                debug("stmt:"+stmt);
                 boolean alwaysValid = bddcfs.alwaysValid(stmt);
                 debug("alwaysValid: "+alwaysValid);
-                debug("neverValid");
                 boolean neverValid = bddcfs.neverValid(stmt);
                 debug("neverValid: "+neverValid);
                 if( alwaysValid || neverValid ) {
@@ -108,10 +108,16 @@ public class CflowAnalysisBridge {
                         CflowResidue cfr = (CflowResidue) rb.getResidue();
                         if( cfr.setup() != stack ) continue;
                         debug("found a residue");
-                        if( alwaysValid ) rb.setResidue(AlwaysMatch.v());
-                        if( neverValid ) rb.setResidue(NeverMatch.v());
+                        if( abc.main.Debug.v().checkCflowOpt ) {
+                            rb.setResidue(new OptimizationCheckResidue(rb.getResidue(), alwaysValid));
+                        } else {
+                            if( alwaysValid ) rb.setResidue(AlwaysMatch.v());
+                            if( neverValid ) rb.setResidue(NeverMatch.v());
+                        }
                     }
                 }
+                if(alwaysValid) stmt.addTag(new StringTag("always: "+stack));
+                if(neverValid) stmt.addTag(new StringTag("never: "+stack));
             }
         }
 
@@ -153,14 +159,14 @@ public class CflowAnalysisBridge {
         }
     }
     private void processCflowSetup( final AdviceApplication aa ) {
-        CflowSetup cfs = (CflowSetup) aa.advice;
+        final CflowSetup cfs = (CflowSetup) aa.advice;
         StackInfo si = stackInfo(cfs);
         final ShadowPoints sp = aa.shadowmatch.sp;
         final boolean unconditional = (aa.getResidue() instanceof AlwaysMatch);
         Shadow sh = new Shadow() {
             public SootMethod method() { return aa.shadowmatch.getContainer(); }
-            public Stmt pushStmt() { return sp.getBegin(); }
-            public Stmt popStmt() { return sp.getEnd(); }
+            public Stmt pushStmt() { return (Stmt) cfs.pushStmts.get(aa); }
+            public Stmt popStmt() { return (Stmt) cfs.popStmts.get(aa); }
             public boolean unconditional() { return unconditional; } 
         };
         si.shadows.add(sh);

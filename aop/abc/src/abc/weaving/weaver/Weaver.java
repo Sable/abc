@@ -90,6 +90,7 @@ public class Weaver {
         // just reset the lot.
 
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
@@ -117,11 +118,12 @@ public class Weaver {
                 weaveAdvice();
                 CflowAnalysisBridge cfab = new CflowAnalysisBridge();
                 cfab.run();
-                unitBindings = unweaver.restore();
-                AroundWeaver.reset();
-                resetForReweaving();
-                weaveAdvice();
-
+                if( !abc.main.Debug.v().dontWeaveAfterAnalysis ) {
+                    unitBindings = unweaver.restore();
+                    AroundWeaver.reset();
+                    resetForReweaving();
+                    weaveAdvice();
+                }
             } else {
                 // add aspectOf(), hasAspect(), ...
                 weaveGenerateAspectMethods();

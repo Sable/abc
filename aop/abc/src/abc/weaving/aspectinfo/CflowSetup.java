@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +39,7 @@ import abc.main.Debug;
 /** Manufactured advice that is responsible for setting up cflow stacks/counters
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
+ *  @author Ondrej Lhotak
  */
 public class CflowSetup extends AbstractAdviceDecl {
 
@@ -110,6 +112,12 @@ public class CflowSetup extends AbstractAdviceDecl {
                   +" setup\n");
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer();
+        debugInfo("", sb);
+        return sb.toString();
+    }
+
     public static class CflowSetupWeavingContext
         extends WeavingContext
         implements BeforeAfterAdvice.ChoosePhase {
@@ -131,7 +139,9 @@ public class CflowSetup extends AbstractAdviceDecl {
         private boolean mustbox;
         private Local loc=null;
 
-        public void resetForReweaving() { loc=null; }
+        public void resetForReweaving() {
+            loc=null;
+        }
         
         public CflowSetupBound(int pos,Type type,boolean mustbox) {
             this.pos=pos;
@@ -246,6 +256,8 @@ public class CflowSetup extends AbstractAdviceDecl {
     public void resetForReweaving() {
     	cflowStack=null;
     	cflowCounter=null;
+        popStmts=new HashMap();
+        pushStmts=new HashMap();
     }
     
     private SootFieldRef cflowStack=null;
@@ -304,6 +316,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     // getCflowCounter retrieves the counter associated with a pcd
     //  - didn't use getCflowStack for this b/c confusing
 
+
     private SootFieldRef cflowCounter=null;
     public SootFieldRef getCflowCounter() {
         if(cflowCounter==null) {
@@ -358,6 +371,9 @@ public class CflowSetup extends AbstractAdviceDecl {
         return cflowCounter;
     }
 
+    public Map/*AdviceApplication->Stmt*/ popStmts = new HashMap();
+    public Map/*AdviceApplication->Stmt*/ pushStmts = new HashMap();
+
     public Chain makeAdviceExecutionStmts
          (AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
 
@@ -377,7 +393,9 @@ public class CflowSetup extends AbstractAdviceDecl {
             SootMethodRef inc=Scene.v().makeMethodRef(counterClass,"inc",new ArrayList(),VoidType.v(),false);
             c.addLast(Jimple.v().newAssignStmt
                       (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
-            c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,inc)));
+            Stmt pushStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,inc));
+            c.addLast(pushStmt);
+            pushStmts.put(adviceappl, pushStmt);
             return c;
 
             } else {
@@ -387,7 +405,9 @@ public class CflowSetup extends AbstractAdviceDecl {
             SootMethodRef dec=Scene.v().makeMethodRef(counterClass,"dec",new ArrayList(),VoidType.v(),false);
             c.addLast(Jimple.v().newAssignStmt
                       (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
-            c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,dec)));
+            Stmt popStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,dec));
+            c.addLast(popStmt);
+            popStmts.put(adviceappl, popStmt);
             return c;
 
             }
@@ -423,8 +443,10 @@ public class CflowSetup extends AbstractAdviceDecl {
             c.addLast(Jimple.v().newAssignStmt
                       (cflowStack,Jimple.v().newStaticFieldRef(getCflowStack())));
 
-            c.addLast(Jimple.v().newInvokeStmt
-                      (Jimple.v().newVirtualInvokeExpr(cflowStack,push,l)));
+            Stmt pushStmt = Jimple.v().newInvokeStmt
+                      (Jimple.v().newVirtualInvokeExpr(cflowStack,push,l));
+            c.addLast(pushStmt);
+            pushStmts.put(adviceappl, pushStmt);
 
             return c;
         } else {
@@ -435,7 +457,9 @@ public class CflowSetup extends AbstractAdviceDecl {
             Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
             c.addLast(Jimple.v().newAssignStmt
                       (cflowStack,Jimple.v().newStaticFieldRef(getCflowStack())));
-            c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowStack,pop)));
+            Stmt popStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowStack,pop));
+            c.addLast(popStmt);
+            popStmts.put(adviceappl, popStmt);
             return c;
         }
 
