@@ -3094,15 +3094,6 @@
     </ajc-test>
 
 
-    <ajc-test dir="abctests/design/intro"
-     abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF1.java">
-            <message kind="error" line="8"/>
-            <message kind="error" line="23"/>
-        </compile>
-    </ajc-test>
-
      <ajc-test dir="abctests/design/intro"
      abccomment="abc bails out early, so copied. ODM 09/07/04"
       title="declared exceptions are checked correctly on intros (errors)">
