@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@1e719e8
+creating: A@155f12b
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -599,7 +599,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@1497104
+InterfaceAndObject$1@173ea13
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2286,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@7d0988, [Ljava.lang.Object;@fd0098, TwoAnonymous$3@7d0988
+calling run: TwoAnonymous$3@1aa34ff, [Ljava.lang.Object;@17d67be, TwoAnonymous$3@1aa34ff
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2403,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@16e1321.foo calls Outer$Inner@1a9f8fb.mi
+Outer@2966d1.foo calls Outer$Inner@1d4f88.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1a9f8fb.mi calls java.io.PrintStream@195cef.println
+Outer$Inner@1d4f88.mi calls java.io.PrintStream@508680.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@16e1321.foo calls Outer$InnerRandom@1a0cb31.nextHook
+Outer@2966d1.foo calls Outer$InnerRandom@e64b9c.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1a0cb31.nextHook calls Outer$InnerRandom@1a0cb31.next
+Outer$InnerRandom@e64b9c.nextHook calls Outer$InnerRandom@e64b9c.next
 Outer.foo() calls Random.nextInt(..)
-Outer@16e1321.foo calls X.nextInt
+Outer@2966d1.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@105b248.foo calls Outer$Inner@fbb237.mi
+Outer@50d73c.foo calls Outer$Inner@162ab7b.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@fbb237.mi calls java.io.PrintStream@714bd9.println
+Outer$Inner@162ab7b.mi calls java.io.PrintStream@e84822.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@105b248.foo calls Outer$InnerRandom@59dc12.nextHook
+Outer@50d73c.foo calls Outer$InnerRandom@157010b.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@59dc12.nextHook calls Outer$InnerRandom@59dc12.next
+Outer$InnerRandom@157010b.nextHook calls Outer$InnerRandom@157010b.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@105b248.foo calls X.nextInt
+Outer@50d73c.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4045,7 +4045,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@9839d1.x:=-3
+test.Test3@2e88c2.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4128,8 +4128,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@17b8b87
-o: Bar@17b8b87, i: 10
+o: Bar@7b0897
+o: Bar@7b0897, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4539,14 +4539,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:567)
+	at abc.main.Main.run(Main.java:568)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:654)
-	at abc.main.Main.loadSourceRoots(Main.java:671)
-	at abc.main.Main.run(Main.java:472)
+	at abc.main.Main.findSourcesInDir(Main.java:655)
+	at abc.main.Main.loadSourceRoots(Main.java:672)
+	at abc.main.Main.run(Main.java:473)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -4714,7 +4714,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@ce1d1b
+LibraryAspect-defined run() for C@1b22517
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5452,7 +5452,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:567)
+	at abc.main.Main.run(Main.java:568)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -5462,8 +5462,8 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:751)
-	at abc.main.Main.run(Main.java:478)
+	at abc.main.Main.compile(Main.java:752)
+	at abc.main.Main.run(Main.java:479)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
