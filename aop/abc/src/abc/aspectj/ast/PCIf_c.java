@@ -11,6 +11,9 @@ import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
+import abc.aspectj.visit.TransformsAspectReflection;
+import abc.aspectj.visit.AspectReflectionInspect;
+import abc.aspectj.visit.AspectReflectionRewrite;
 
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
@@ -103,6 +106,8 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     protected LocalInstance thisJoinPointInstance=null;
     protected LocalInstance thisJoinPointStaticPartInstance=null;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
+
+    protected boolean canRewriteThisJoinPoint=false;
 
     private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
     	if (thisJoinPointInstance==null)
@@ -232,5 +237,22 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
         visitor.addMethod(md);
 	visitor.popPCIf();
         return liftMethod(nf); // replace expression by method call
+    }
+
+    public void enterAspectReflectionInspect(AspectReflectionInspect v,Node parent) {
+	v.enterAdvice();
+    }
+
+    public void leaveAspectReflectionInspect(AspectReflectionInspect v) {
+	canRewriteThisJoinPoint=v.leaveAdvice();
+    }
+
+    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AspectJTypeSystem ts) {
+	v.enterAdvice(canRewriteThisJoinPoint ? thisJoinPointStaticPartInstance(ts) : null);
+    }
+
+    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AspectJNodeFactory nf) {
+	v.leaveAdvice();
+	return this;
     }
 }

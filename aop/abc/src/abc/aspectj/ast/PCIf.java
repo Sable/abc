@@ -5,9 +5,10 @@ import polyglot.types.*;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Local;
 import abc.aspectj.ast.MakesAspectMethods;
+import abc.aspectj.visit.TransformsAspectReflection;
 import abc.aspectj.types.AspectJTypeSystem;
 
-public interface PCIf extends Pointcut, MakesAspectMethods
+public interface PCIf extends Pointcut, MakesAspectMethods, TransformsAspectReflection
 {
 	MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, ParsedClassType container);
 	PCIf liftMethod(AspectJNodeFactory nf);

@@ -70,6 +70,10 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID JIMPLIFY_DONE = new polyglot.frontend.Pass.ID("jimplify-done");
     public static final polyglot.frontend.Pass.ID EVALUATE_PATTERNS_FINALLY = new polyglot.frontend.Pass.ID("evaluate-patterns-finally");
 
+    public static final polyglot.frontend.Pass.ID ASPECT_REFLECTION_INSPECT = new polyglot.frontend.Pass.ID("aspect-reflection-inspect");
+    public static final polyglot.frontend.Pass.ID ASPECT_REFLECTION_REWRITE = new polyglot.frontend.Pass.ID("aspect-reflection-rewrite");
+    
+
     /** The JVM names for all classes loaded from jar files */
     public Collection/*<String>*/ jar_classes;
 
@@ -229,6 +233,13 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     protected void passes_aspectj_transforms(List l, Job job)
     {
+	/*
+	// look to see if all thisJoinPoint references could be changed into thisJoinPointStaticPart
+	l.add(new VisitorPass(ASPECT_REFLECTION_INSPECT,job, new AspectReflectionInspect()));
+	// Change them
+	l.add(new VisitorPass(ASPECT_REFLECTION_REWRITE,job, new AspectReflectionRewrite(nf,ts)));
+	*/
+
         // add new methods for proceed and if-pointcuts, and turn advice into methods
         l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
 

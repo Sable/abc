@@ -56,6 +56,8 @@ import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.ContainsAspectInfo;
+import abc.aspectj.visit.AspectReflectionInspect;
+import abc.aspectj.visit.AspectReflectionRewrite;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
@@ -74,6 +76,8 @@ public class AdviceDecl_c extends MethodDecl_c
     protected LocalInstance thisJoinPointInstance=null;
     protected LocalInstance thisJoinPointStaticPartInstance=null;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
+
+    protected boolean canRewriteThisJoinPoint=false;
     
 
     protected Set/*<CodeInstance>*/ methodsInAdvice;
@@ -544,5 +548,22 @@ public class AdviceDecl_c extends MethodDecl_c
             visitor.addMethod(md);
 
         return this.methodDecl(nf,ts);
+    }
+
+    public void enterAspectReflectionInspect(AspectReflectionInspect v,Node parent) {
+	v.enterAdvice();
+    }
+
+    public void leaveAspectReflectionInspect(AspectReflectionInspect v) {
+	canRewriteThisJoinPoint=v.leaveAdvice();
+    }
+
+    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AspectJTypeSystem ts) {
+	v.enterAdvice(canRewriteThisJoinPoint ? thisJoinPointStaticPartInstance(ts) : null);
+    }
+
+    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AspectJNodeFactory nf) {
+	v.leaveAdvice();
+	return this;
     }
 }

@@ -5,9 +5,11 @@ import polyglot.ast.Local;
 import polyglot.types.CodeInstance;
 
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.visit.TransformsAspectReflection;
 
-
-public interface AdviceDecl extends MethodDecl, MakesAspectMethods
+public interface AdviceDecl extends MethodDecl, 
+                                    MakesAspectMethods, 
+                                    TransformsAspectReflection
 {
     /* new stuff to be added */
    
