@@ -3852,6 +3852,17 @@
 
     <ajc-test num="418" dir="new"
       title="join points exist in the execution of field initializers"
+      abccomment="bug in test case, according to Erik Hilsdale 
+                  (see ajc bug database: 72245,72335);
+                  duplicated as 41801"
+      keywords="from-resolved_10x">
+        <compile files="FieldInitializerJoinPoints.java"/>
+        <run class="FieldInitializerJoinPoints"/>
+    </ajc-test>
+
+    <ajc-test num="41801" dir="abctests/new"
+      title="join points exist in the execution of field initializers"
+      abccomment="cloned from 418"
       keywords="from-resolved_10x">
         <compile files="FieldInitializerJoinPoints.java"/>
         <run class="FieldInitializerJoinPoints"/>
@@ -9258,4 +9269,9 @@
         <run class="Throw"/>
     </ajc-test>
 
+    <ajc-test num="994" dir="abctests/bugs"
+        title="&amp;&amp; and || interact correctly with binding">
+       <compile files="AndOrBind.java"/>
+       <run class="AndOrBind"/>
+    </ajc-test>
 </suite>
