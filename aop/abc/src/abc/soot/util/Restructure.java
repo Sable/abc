@@ -119,13 +119,16 @@ public class Restructure {
 	  }
       }
 
+  private static Map/*<SootMethod,Stmt>*/ returns=new Hashtable();
+
   /** Given a SootMethod, restructure its body so that the body ends
    *  with   L1:nop; return;    or   L1:nop; return(<local>);.
    *  Rewire all other returns in the body to assign to <local> and
    *  goto L1.   Return a reference to the nop at L1.
    */
   public static Stmt restructureReturn(SootMethod method) {
-    Body b = method.getActiveBody(); 
+    if(returns.containsKey(method)) return ((Stmt) returns.get(method));
+    Body b = method.getActiveBody();
     LocalGenerator localgen = new LocalGenerator(b);
     Stmt endnop = Jimple.v().newNopStmt();
     Chain units = b.getUnits();  // want a patching chain here, to make sure
@@ -198,6 +201,7 @@ public class Restructure {
               } // each trap
 	  } // if return stmt
       } // each stmt in body
+    returns.put(method,endnop);
     return(endnop);
   }
 

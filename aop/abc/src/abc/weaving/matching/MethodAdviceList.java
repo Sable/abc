@@ -60,15 +60,6 @@ public class MethodAdviceList {
 	else initializationAdvice.add(aa);
     }
 
-    /** is true if method has been restructured to move returns to bottom */
-    private boolean hasReturnsRestructured = false;
-
-    /** should be called the first time the restructuring is done */
-    public void restructuringDone() { hasReturnsRestructured = true; }
-
-    /** public method, returns true if restructuring done */
-    public boolean isRestructured() { return hasReturnsRestructured; } 
-
     /** returns true if there is no advice */
     public boolean isEmpty() { 
         return(bodyAdvice.isEmpty() && 

@@ -97,8 +97,6 @@ public class ShadowPointsSetter {
     // restructure returns, and insert begin and end nops
     ShadowPoints execution_sp = restructureBody(method); 
 
-    // register that this method has already been restructured
-    methodadvicelist.restructuringDone();
     debug("ShadowPoints are: " + execution_sp);
 	     
     // make all execution AdviceApplications refer to the shadowpoints
@@ -298,10 +296,7 @@ public class ShadowPointsSetter {
            { debug("Must inline body of " + method.getName());
 	     // add to list of methods to process
 	     // if returns not restructured, do it now 
-	     if (!adviceList.isRestructured())
-	       { Restructure.restructureReturn(method);
-		 adviceList.restructuringDone();
-	       }
+	     Restructure.restructureReturn(method);
 
 	     boolean inlining_performed;
 	     // keep inlining until no inlining happened
