@@ -17,6 +17,43 @@ general:
       many uses of the same cflow
 
 
+=====================  bean: ==============================================
+
+ITD: field
+     methods
+     declare parents
+
+pointcuts:
+     call
+     target
+
+advice:
+     void around (is this the old meaning void?)
+ 
+=====================  gregor_bean: =======================================
+
+ITD: field
+     methods
+     declare parents
+
+pointcuts:
+     call
+     target
+
+advice:
+     void around (is this the old meaning void?)
+
+=====================  gof_adapter: =======================================
+
+ITD: methods
+     declare parents
+
+=====================  gof_bridge: =======================================
+
+ITD: field
+     method
+
+
 =====================  figure: ============================================
 
 advice: 
