@@ -69,22 +69,25 @@ public class MethodCategory {
     /** The initializer for an intertype field declaration */
     // Generated in abc/aspectj/ast/IntertypeFieldDecl_c.java
     public static final int INTERTYPE_FIELD_INITIALIZER = 10;
+    
+    /** The delegate for an initializer for an intertype field declaration */
+    public static final int INTERTYPE_INITIALIZER_DELEGATE = 11;
 
     /** A method delegating a <code>this</code> or <code>super</code> call from an
      *  intertype method or constructor */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int INTERTYPE_SPECIAL_CALL_DELEGATOR = 11;
+    public static final int INTERTYPE_SPECIAL_CALL_DELEGATOR = 12;
 
     // **********
 
     /** An accessor method to get the value of a field.
      *  This will have the name and class of the field as real name class. */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int ACCESSOR_GET = 12;
+    public static final int ACCESSOR_GET = 13;
     /** An accessor method to set the value of a field.
      *  This will have the name and class of the field as real name class. */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int ACCESSOR_SET = 13;
+    public static final int ACCESSOR_SET = 14;
 
 
 	// ******
@@ -92,23 +95,23 @@ public class MethodCategory {
 	 * inside an intertype method.
 	 */
 	// Generated in abc/weaving/weaver/IntertypeAdjuster.java
-	public static final int THIS_GET = 14;
+	public static final int THIS_GET = 15;
 	
     // CATEGORY PROPERTY TABLES
 
     // normal, aspect, advice, proceed, if,
     // it_m_src, it_m_del,
     // it_c_body, it_c_arg, it_c_del,
-    // it_f_init, it_spec_del,
-    // acc_get, acc_set
+    // it_f_init, it_f_deleg, it_spec_del,
+    // acc_get, acc_set, this_get
 
     private static final boolean[] weave_inside =
     {
 	true, false, true, false, false/*AJC doesn't, but why not?*/,
 	true, false,
 	true, true, false,
-	true, false,
-	true/*?*/, true/*?*/, false
+	true, true, false,
+	false, false, false
     };
 
     private static final boolean[] weave_execution =
@@ -116,7 +119,7 @@ public class MethodCategory {
 	true, false, true, false, false,
 	true, false,
 	true, false, false,
-	false, false,
+	false, true, false,
 	false/*?*/, false/*?*/, false
     };
 
@@ -125,7 +128,7 @@ public class MethodCategory {
 	true, true, false, false, false,
 	false, true,
 	false, false, true,
-	false, true/*?*/,
+	false, true, true/*?*/,
 	false/*?*/, false/*?*/, false
     };
 
@@ -253,8 +256,7 @@ public class MethodCategory {
 
    	public static void registerRealNameAndClass(SootField m,
 					   int mods,
-					   String real_name, AbcClass real_class,
-					   int skip_first, int skip_last) {
+					   String real_name, AbcClass real_class) {
    	registerRealNameAndClass(AbcFactory.FieldSig(m),
 				mods,
 				real_name, real_class);
@@ -396,6 +398,7 @@ public class MethodCategory {
      */
     public static boolean hasThisAsFirstParameter(SootMethod m) {
     	return (getCategory(m) == INTERTYPE_FIELD_INITIALIZER ||
+    			getCategory(m) == INTERTYPE_INITIALIZER_DELEGATE ||
     	        getCategory(m) == INTERTYPE_METHOD_SOURCE) &&
     	        getSkipFirst(m) == 1; // FIXME: this is a fragile test to
     	                              // see whether the ITM was declared static

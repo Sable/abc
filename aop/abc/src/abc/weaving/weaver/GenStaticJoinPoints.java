@@ -280,11 +280,17 @@ public class GenStaticJoinPoints {
       String SJPName = "SJP" + sjpcount + "$" + idkind + "$" + idmethod;
       debug("The name of the field being created is " + SJPName);	      
 
+	  int  mod;
+	  if (sc.isInterface())
+	  	mod = Modifier.PUBLIC;
+	  else
+	  	mod = Modifier.PRIVATE;
+	  mod = mod | Modifier.STATIC | Modifier.FINAL;
       // create the static field
       SootField newsjpfield = 
          new SootField( SJPName, 
 			 RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
-			 Modifier.PRIVATE | Modifier.STATIC | Modifier.FINAL);
+			 mod);
 
       // insert field into class
       sc.addField(newsjpfield);

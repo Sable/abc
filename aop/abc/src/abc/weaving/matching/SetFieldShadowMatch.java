@@ -14,6 +14,7 @@ import soot.jimple.FieldRef;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
+import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.tagkit.Host;
@@ -62,6 +63,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		} else return null;
 	} else if (stmt instanceof InvokeStmt) {
 		InvokeStmt is = (InvokeStmt) stmt;
+		// System.out.println("stmt="+stmt);
 		InvokeExpr ie = is.getInvokeExpr();
 		SootMethod sm = ie.getMethod();
 		if(MethodCategory.getCategory(sm)
@@ -117,16 +119,53 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 	return aa;
     }
 
-    public ContextValue getTargetContextValue() {
-	FieldRef fr=(FieldRef) (((AssignStmt) stmt).getLeftOp());
-	if(!(fr instanceof InstanceFieldRef)) return null;
-	InstanceFieldRef ifr=(InstanceFieldRef) fr;
-	return new JimpleValue(ifr.getBase());
-    }
+       
+	public ContextValue getTargetContextValue() {
+		// System.out.println(stmt);
+		if (stmt instanceof AssignStmt) {
+			// System.out.println(stmt);
+			AssignStmt a = (AssignStmt) stmt;
+			Value lhs = a.getLeftOp();
+			if (lhs instanceof FieldRef) {
+				FieldRef fr=(FieldRef) lhs;
+				if(!(fr instanceof InstanceFieldRef)) return null;
+				InstanceFieldRef ifr=(InstanceFieldRef) fr;
+				return new JimpleValue(ifr.getBase());
+			}
+			Value rhs = a.getRightOp();
+			if (rhs instanceof InvokeExpr) {
+			InstanceInvokeExpr vie = (InstanceInvokeExpr) rhs;
+			if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_SET)
+				return new JimpleValue(vie.getBase());
+		}
+		} else if (stmt instanceof InvokeStmt) {
+			InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
+			if (ie instanceof InstanceInvokeExpr) {
+				InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
+				if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_SET)
+					return new JimpleValue(vie.getBase());
+			}
+
+		}
+		return null;
+	}
 
     public List/*<ContextValue>*/ getArgsContextValues() {
 	ArrayList ret=new ArrayList(1);
-	ret.add(new JimpleValue(((AssignStmt) stmt).getRightOp()));
+	if (stmt instanceof AssignStmt) {
+		AssignStmt a = (AssignStmt) stmt;
+		if (a.getLeftOp() instanceof FieldRef)
+			ret.add(new JimpleValue(((AssignStmt) stmt).getRightOp()));
+		Value rhs = a.getRightOp();
+		if (rhs instanceof InvokeExpr) {
+			InvokeExpr vie = (InvokeExpr) rhs;
+			if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_SET)
+				ret.add(new JimpleValue(vie.getArg(0)));
+		}
+	} else if (stmt instanceof InvokeStmt) {
+		InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
+		ret.add(new JimpleValue(ie.getArg(0)));
+	} else throw new RuntimeException("stmt neither an assignment nor an invoke");
 	return ret;
     }
 

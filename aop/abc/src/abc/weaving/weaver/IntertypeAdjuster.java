@@ -592,6 +592,9 @@ public class IntertypeAdjuster {
 				if (s==null) {
 					s = new HashSet();
 					fieldITtargets.put(origin,s);
+					MethodCategory.registerRealNameAndClass(fi,MethodCategory.getModifiers(origin.getTarget()),
+					                                        MethodCategory.getName(origin.getTarget()),
+					                                        AbcFactory.AbcClass(MethodCategory.getClass(origin.getTarget())));
 				}
 				s.add(pht);
 			}
@@ -682,6 +685,7 @@ public class IntertypeAdjuster {
 	public void removeFakeFields() {
 		for (Iterator ftrit = fieldsToRemove.iterator(); ftrit.hasNext(); ) {
 			SootField sf = (SootField) ftrit.next();
+			// System.out.println("removing "+sf);
 			sf.getDeclaringClass().removeField(sf);
 		}
 	}
@@ -693,6 +697,8 @@ public class IntertypeAdjuster {
         modifiers |= Modifier.PUBLIC;
         modifiers &= ~Modifier.PRIVATE;
         modifiers &= ~Modifier.PROTECTED;
+        modifiers &= ~Modifier.FINAL; // FIXME: just to make the init stuff work:
+                                      // initialisers are executed within the aspect
         
        
         SootClass cl = field.getDeclaringClass().getSootClass();
@@ -706,6 +712,10 @@ public class IntertypeAdjuster {
         	SootField fakeField = new SootField(field.getName(),field.getType().getSootType(),field.getModifiers());
         	cl.addField(fakeField);
         	fieldsToRemove.add(fakeField);
+        	MethodCategory.registerRealNameAndClass(fakeField,MethodCategory.getModifiers(field),
+        					                        MethodCategory.getName(field),
+        					                        AbcFactory.AbcClass(MethodCategory.getClass(field)));
+			// System.out.println("added "+fakeField+" to "+cl);
         	
         	SootMethod getter = makeSootMethod(ifd.getGetter(),modifiers | Modifier.ABSTRACT,cl);
         	MethodCategory.registerFieldGet(fakeField,getter);
@@ -942,109 +952,181 @@ public class IntertypeAdjuster {
 	private void initialiseField( IntertypeFieldDecl ifd ) {
 		if (ifd.getInit() == null)
 			return;
-			FieldSig field = ifd.getTarget();
+		FieldSig field = ifd.getTarget();
 
-			int modifiers = field.getModifiers();
-			modifiers |= Modifier.PUBLIC;
-			modifiers &= ~Modifier.PRIVATE;
-			modifiers &= ~Modifier.PROTECTED;
+		int modifiers = field.getModifiers();
+		modifiers |= Modifier.PUBLIC;
+		modifiers &= ~Modifier.PRIVATE;
+		modifiers &= ~Modifier.PROTECTED;
 
-			Set targets = (Set) fieldITtargets.get(ifd);
-			for (Iterator classIt = targets.iterator(); classIt.hasNext(); ) {
-				SootClass cl = (SootClass) classIt.next();
-				weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
-			}
+		Set targets = (Set) fieldITtargets.get(ifd);
+		for (Iterator classIt = targets.iterator(); classIt.hasNext(); ) {
+			SootClass cl = (SootClass) classIt.next();
+			weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
 		}
-
-		private void weaveInit(
+	}
+	
+	private SootMethod addStaticInitToAspect(IntertypeFieldDecl ifd, SootField sf, int modifiers, SootClass cl) {
+		Type retType = VoidType.v();
+		List parms = new ArrayList(); // no parameters
+		String name = UniqueID.newID("fieldinit");
+		SootMethod sm = new SootMethod( name,  
+										parms,
+										retType,
+										Modifier.STATIC | Modifier.PUBLIC );
+		// get the method that initialises this field
+		// which is a static method of the aspect that contains the ITD
+		SootMethod initialiser = ifd.getInit().getSootMethod();
+		for( Iterator exceptionIt = ifd.getInit().getExceptions().iterator(); exceptionIt.hasNext(); ) {
+			final SootClass exception = (SootClass) exceptionIt.next();
+			sm.addException( exception );
+		}
+		ifd.getAspect().getInstanceClass().getSootClass().addMethod(sm);
+		MethodCategory.register(sm,MethodCategory.INTERTYPE_INITIALIZER_DELEGATE);
+		MethodCategory.registerRealNameAndClass(sm, sm.getModifiers(), name, AbcFactory.AbcClass(cl), 0,0);
+		Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+		Chain ls = b.getLocals();
+		PatchingChain ss = b.getUnits();
+		// create the call
+		List args = new ArrayList();
+		InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initialiser,args);
+		Local res = Jimple.v().newLocal("result",initialiser.getReturnType()); ls.add(res);
+		AssignStmt as = Jimple.v().newAssignStmt(res,ie);  ss.add(as);
+		// get the field we want to initialise
+		FieldRef sfref = Jimple.v().newStaticFieldRef(sf); 
+		//  assign the value
+		AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res);  ss.add(rStmt);
+		// return
+		ReturnVoidStmt ret = soot.jimple.Jimple.v().newReturnVoidStmt(); ss.add(ret);
+		return sm;
+	}
+	private SootMethod addInstInitToAspect(
 			IntertypeFieldDecl ifd,
-			SootField sf,
-			int modifiers,
-			SootClass cl) {
-			if (Modifier.isStatic(modifiers)) {
-				// add a call to the initialiser method from clinit of target class
-			    // if it doesn't exist, create one.	
-					SootMethod clinit; Body b;
-					try { 
-						clinit = cl.getMethodByName("<clinit>");
-						b = clinit.getActiveBody();
-					} catch (java.lang.RuntimeException s) {
-						clinit = new SootMethod( 
-										  "<clinit>",   
-										  new ArrayList(),
-										  VoidType.v(),
-										  Modifier.STATIC | Modifier.PUBLIC );
-						b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
-						cl.addMethod(clinit);
-						Chain ss = b.getUnits();
-						ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
-						ss.add(ret);
-					}
+		SootField sf, int modifiers, SootClass cl) {
+		Type retType = VoidType.v();
+		// one parameter, namely "this" of target
+		List parms = new ArrayList(); 
+		parms.add(cl.getType());
+		String name = UniqueID.newID("fieldinit");
+		SootMethod sm = new SootMethod( name,  
+										parms,
+										retType,
+										Modifier.STATIC | Modifier.PUBLIC );
+		// get the method that initialises this field
+		// which is a static method of the aspect that contains the ITD
+		SootMethod initialiser = ifd.getInit().getSootMethod();
+		for( Iterator exceptionIt = ifd.getInit().getExceptions().iterator(); exceptionIt.hasNext(); ) {
+			final SootClass exception = (SootClass) exceptionIt.next();
+			sm.addException( exception );
+		}
+		ifd.getAspect().getInstanceClass().getSootClass().addMethod(sm);
+		MethodCategory.register(sm,MethodCategory.INTERTYPE_INITIALIZER_DELEGATE);
+		MethodCategory.registerRealNameAndClass(sm, sm.getModifiers(), name, 
+		                          AbcFactory.AbcClass(cl), 1,0);
+		Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+		Chain ls = b.getLocals();
+		PatchingChain ss = b.getUnits();
+		// 	the method that initialises this field
+		//	which is a static method of the aspect that contains the ITD
+		SootMethod smInit = ifd.getInit().getSootMethod(); 
+		//	now create the call
+		List args = new ArrayList();
+		ParameterRef thisPref = Jimple.v().newParameterRef(cl.getType(),0);
+		Local v = Jimple.v().newLocal("thisparam",cl.getType()); ls.add(v);
+		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisPref); ss.add(thisStmt);
+		args.add(v); // the only argument is "this"
+		InvokeExpr ie = Jimple.v().newStaticInvokeExpr(smInit,args); 
+		Local res = Jimple.v().newLocal("result",smInit.getReturnType()); ls.add(res);
+		AssignStmt as = Jimple.v().newAssignStmt(res,ie); ss.add(as);
+		if (ifd.getSetter() == null) {
+			//  get the field we want to initialise
+				FieldRef sfref = Jimple.v().newInstanceFieldRef(v,sf);
+			//  assign the value
+				AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
+				ss.add(rStmt);
+		} else {
+			List setargs = new ArrayList();
+			args.add(res);
+			InvokeExpr sie;
+			if (ifd.getSetter().getDeclaringClass().getSootClass().isInterface()) {
+					sie = Jimple.v().newInterfaceInvokeExpr(v,
+								   ifd.getSetter().getSootMethod(),args);
+				} else {
+					sie = Jimple.v().newVirtualInvokeExpr(v,
+									ifd.getSetter().getSootMethod(),args); }
+				InvokeStmt istmt = Jimple.v().newInvokeStmt(sie);
+				ss.add(istmt);
+		}
+		ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt(); ss.add(ret);
+		return sm;
+	}
+	
+	
+	private void weaveInit(
+		IntertypeFieldDecl ifd,
+		SootField sf,
+		int modifiers,
+		SootClass cl) {
+		if (Modifier.isStatic(modifiers)) {
+			// add a call to the initialiser method from clinit of target class
+		    // if it doesn't exist, create one.	
+				SootMethod clinit; Body b;
+				try { 
+					clinit = cl.getMethodByName("<clinit>");
+					b = clinit.getActiveBody();
+				} catch (java.lang.RuntimeException s) {
+					clinit = new SootMethod( 
+									  "<clinit>",   
+									  new ArrayList(),
+									  VoidType.v(),
+									  Modifier.STATIC | Modifier.PUBLIC );
+					b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
+					cl.addMethod(clinit);
 					Chain ss = b.getUnits();
-				// find first normal statement
-					Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
-				// get the method that initialises this field
-				// which is a static method of the aspect that contains the ITD
-					SootMethod initialiser = ifd.getInit().getSootMethod();
-				// create the call
-					List args = new ArrayList();
-					InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initialiser,args);
-					Local res = Jimple.v().newLocal("result",initialiser.getReturnType()); b.getLocals().add(res);
-					AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
-					ss.insertBefore(as,initstmt);
-				// get the field we want to initialise
-					FieldRef sfref = Jimple.v().newStaticFieldRef(sf); 
-				//  assign the value
-					AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
-					ss.insertBefore(rStmt,initstmt);
-			}
-			else {
-				// add a call to the initialiser method to any constructor of target class
-				// that calls "super.<init>"
-				for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
-					SootMethod clsm = (SootMethod) ms.next();
-					if (clsm.getName() == "<init>") {
-						Body b = clsm.getActiveBody();
-						Chain ss = b.getUnits();
-						// find unique super.<init>, throw exception if it's not unique
-						Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
-						// the following needs to be inserted right after initstmt
-						if (initstmt.getInvokeExpr().getMethod().getDeclaringClass() == cl.getSuperclass()) {
-							Chain units = b.getUnits();
-							Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
-						// 	the method that initialises this field
-						//	which is a static method of the aspect that contains the ITD
-							SootMethod sm = ifd.getInit().getSootMethod(); 
-						//	now create the call
-							List args = new ArrayList();
-							args.add(b.getThisLocal()); // the only argument is "this"
-							InvokeExpr ie = Jimple.v().newStaticInvokeExpr(sm,args); 
-							Local res = Jimple.v().newLocal("result",sm.getReturnType()); b.getLocals().add(res);
-							AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
-							units.insertBefore(as,followingstmt);
-							if (ifd.getSetter() == null) {
-							//  get the field we want to initialise
-								FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
-							//  assign the value
-								AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
-							    units.insertBefore(rStmt,followingstmt); 
-							} else {
-								List setargs = new ArrayList();
-								args.add(res);
-								InvokeExpr sie;
-								if (ifd.getSetter().getDeclaringClass().getSootClass().isInterface()) {
-									sie = Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
-								                   ifd.getSetter().getSootMethod(),args);
-								} else {
-									sie = Jimple.v().newVirtualInvokeExpr(b.getThisLocal(),
-													ifd.getSetter().getSootMethod(),args); }
-								InvokeStmt istmt = Jimple.v().newInvokeStmt(sie);
-								units.insertBefore(istmt,followingstmt);
-							}
-						}
+					ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
+					ss.add(ret);
+				}
+				Chain ss = b.getUnits();
+			// find first normal statement
+				Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
+			// create a call to a method that calls the appropriate init from the aspect.
+			// this method is necessary to handle "within" correctly: the init happens
+			// lexically within the aspect
+				SootMethod initdel = addStaticInitToAspect(ifd,sf,modifiers,cl);
+				List args = new ArrayList();
+				InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initdel,args);
+				InvokeStmt is = Jimple.v().newInvokeStmt(ie);
+				ss.insertBefore(is,initstmt);
+		}
+		else {
+			// add a call to the initialiser method to any constructor of target class
+			// that calls "super.<init>"
+			for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
+				SootMethod clsm = (SootMethod) ms.next();
+				if (clsm.getName() == "<init>") {
+					Body b = clsm.getActiveBody();
+					Chain ss = b.getUnits();
+					// find unique super.<init>, throw exception if it's not unique
+					Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
+					// the following needs to be inserted right after initstmt
+					if (initstmt.getInvokeExpr().getMethod().getDeclaringClass() == cl.getSuperclass()) {
+						Chain units = b.getUnits();
+						Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
+						// create a call to a method that calls the appropriate init from the aspect.
+						// this method is necessary to handle "within" correctly: the init happens
+						// lexically within the aspect
+					    SootMethod initdel = addInstInitToAspect(ifd, sf, modifiers, cl);
+					    List args = new ArrayList();
+						args.add(b.getThisLocal());
+					    InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initdel,args);
+					    InvokeStmt is = Jimple.v().newInvokeStmt(ie);
+					    units.insertBefore(is,followingstmt);
 					}
 				}
 			}
 		}
+	}
+
+	
 
 }

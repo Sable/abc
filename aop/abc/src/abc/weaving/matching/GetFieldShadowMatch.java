@@ -77,10 +77,29 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     }
 
     public ContextValue getTargetContextValue() {
-	FieldRef fr=(FieldRef) (((AssignStmt) stmt).getRightOp());
-	if(!(fr instanceof InstanceFieldRef)) return null;
-	InstanceFieldRef ifr=(InstanceFieldRef) fr;
-	return new JimpleValue(ifr.getBase());
+		if (stmt instanceof AssignStmt) {
+			// System.out.println(stmt);
+			AssignStmt a = (AssignStmt) stmt;
+			Value rhs = a.getRightOp();
+			if (rhs instanceof FieldRef) {
+				FieldRef fr=(FieldRef) rhs;
+				if(!(fr instanceof InstanceFieldRef)) return null;
+				InstanceFieldRef ifr=(InstanceFieldRef) fr;
+				return new JimpleValue(ifr.getBase());
+			} else if (rhs instanceof InstanceInvokeExpr) {
+				InstanceInvokeExpr vie = (InstanceInvokeExpr) rhs;
+				if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_GET)
+					return new JimpleValue(vie.getBase());
+			} 
+		} else if (stmt instanceof InvokeStmt) {
+			InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
+			if (ie instanceof InstanceInvokeExpr) {
+				InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
+				if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_GET)
+					return new JimpleValue(vie.getBase());
+			}
+		}
+		return null;
     }
 
     public ContextValue getReturningContextValue() {
