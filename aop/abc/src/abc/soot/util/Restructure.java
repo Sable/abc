@@ -515,9 +515,12 @@ public class Restructure {
 			Stmt stmt=(Stmt)itUnits.next();
 			IdentityStmt id=(IdentityStmt)stmt;
 			Local local=(Local)id.getLeftOp();
+			
+			debug("  parameter " + i + ": " + type.toString() + ":" + local.getName());
+			debug("   rightOp: " + id.getRightOp());
 			ParameterRef ref=(ParameterRef)id.getRightOp();
 		
-			debug("  parameter " + i + ": " + type.toString() + ":" + local.getName());		
+					
 			
 			if (!Type.toMachineType(local.getType()).equals(Type.toMachineType(type))) {
 				debug("type mismatch: local: " + local.getType() + " param: " + type);

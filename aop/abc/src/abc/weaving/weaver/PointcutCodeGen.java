@@ -25,6 +25,7 @@ import abc.weaving.aspectinfo.BeforeAfterAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.residues.AlwaysMatch;
 
 public class PointcutCodeGen {
 
@@ -133,6 +134,9 @@ public class PointcutCodeGen {
 		final AdviceApplication execappl;
 		final SootMethod adviceMethod;
 		//final int original
+		public boolean isAlwaysMatchAppl() {
+			return execappl.residue instanceof AlwaysMatch;
+		}
 		
 		int orderID=-1;
 		final int originalOrderID;
@@ -148,13 +152,11 @@ public class PointcutCodeGen {
 			return result;
 		}
 		
-
 		
 		public String toString() {
 			return adviceMethod.getName() + "=>" + targetMethod.getName() 
 				+ " (" + originalOrderID + ")" ;
 		}
-
 	}
 	
 	// id for the sorting algorithm
@@ -245,8 +247,9 @@ public class PointcutCodeGen {
 	// These are woven in last.
 	void weaveInAroundAdviceExecutionsPass() {		
 		debug("********* Weaving around/adviceexecution");
-		if (!aroundAdviceExecutionApplications.isEmpty())
-			sortAroundAdviceExecutionApplications();
+		
+		//if (!aroundAdviceExecutionApplications.isEmpty())
+		//	sortAroundAdviceExecutionApplications();
 			
 		for (Iterator it=aroundAdviceExecutionApplications.iterator();
 				it.hasNext();) {
@@ -263,13 +266,13 @@ public class PointcutCodeGen {
 	// is around advice applying to around advice 
 	int originalOrderID=0;
 	private boolean checkForAroundAdviceExecution(final SootMethod targetMethod, final AdviceApplication execappl) {
-		if (targetMethod.getName().startsWith("around$")) {	// TODO: use cleaner check			
+		if (AroundWeaver.Util.isAroundAdviceMethod(targetMethod)) {			
 			if (execappl.advice instanceof AdviceDecl) {
 				AdviceDecl adviceDecl = (AdviceDecl)  execappl.advice;
 				AdviceSpec adviceSpec =adviceDecl.getAdviceSpec();
 				if (adviceSpec instanceof AroundAdvice) {
 					SootMethod adviceMethod = adviceDecl.getImpl().getSootMethod();
-					if (!adviceMethod.getName().startsWith("around$"))
+					if (!AroundWeaver.Util.isAroundAdviceMethod(adviceMethod))
 						throw new RuntimeException("Expecting around advice method names to start with 'around$'");
 					
 					debug("Advice method " + adviceMethod + " applies to advice method " + targetMethod + "(adviceexecution)");
