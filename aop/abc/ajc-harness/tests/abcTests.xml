@@ -9329,4 +9329,9 @@
          <compile files="AroundAR.java"/>
          <run class="AroundAR"/>
     </ajc-test>
+    <ajc-test num="1004" dir="abctests/around/initialization" 
+         title="around with initialization">
+         <compile files="Foo.java"/>
+         <run class="Foo"/>
+    </ajc-test>
 </suite>
