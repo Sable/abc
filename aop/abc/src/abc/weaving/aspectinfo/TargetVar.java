@@ -1,5 +1,6 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
 import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.*;
@@ -28,5 +29,13 @@ public class TargetVar extends TargetAny {
 	return Bind.construct
 	    (cv,we.getAbcType(var).getSootType(),we.getWeavingVar(var));
     }
+
+    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv) {
+	Var var=this.var.rename(renameEnv);
+
+	if(var==this.var) return this;
+	else return new TargetVar(var,getPosition());
+    }
+
 
 }

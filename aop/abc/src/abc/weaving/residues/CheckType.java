@@ -1,11 +1,6 @@
 package abc.weaving.residues;
 
-import soot.Type;
-import soot.PrimType;
-import soot.Value;
-import soot.Local;
-import soot.SootMethod;
-import soot.BooleanType;
+import soot.*;
 import soot.jimple.Jimple;
 import soot.util.Chain;
 import soot.jimple.Stmt;
@@ -18,7 +13,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @date 30-Apr-04
  */ 
 
-public class CheckType extends AbstractResidue {
+public class CheckType extends Residue {
     public ContextValue value;
     public Type type;
 
@@ -28,7 +23,8 @@ public class CheckType extends AbstractResidue {
     }
 
     public static Residue construct(ContextValue value,Type type) {
-	return new CheckType(value,type);
+	if(type.equals(Scene.v().getSootClass("java.lang.Object").getType())) return AlwaysMatch.v;
+	else return new CheckType(value,type);
     }
 
     public String toString() {

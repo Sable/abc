@@ -37,22 +37,10 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 
 	InvokeExpr invoke;
 
-	// Eagerly restructure non-constructor InvokeStmts to AssignStmts, 
-	// because it saves us from having to fix up the AdviceApplications later
-	// We may wish to improve this behaviour later.
 	if (stmt instanceof InvokeStmt) {
-
 	    InvokeStmt istmt=(InvokeStmt) stmt;
-	    SootMethod m=istmt.getInvokeExpr().getMethod();
-
-	    if(!(m.getReturnType() instanceof VoidType) && 
-	       !(m.getName().equals(SootMethod.constructorName)))
-
-		stmt=Restructure.getEquivAssignStmt(pos.getContainer(),istmt);
-
-	    //	    invoke = ((InvokeStmt) stmt).getInvokeExpr();
-	}
-	if(stmt instanceof AssignStmt) {
+	    invoke=istmt.getInvokeExpr();
+	} else if(stmt instanceof AssignStmt) {
 	    AssignStmt as = (AssignStmt) stmt;
 	    Value rhs = as.getRightOp();
 	    if(!(rhs instanceof InvokeExpr)) return null;
@@ -65,6 +53,12 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	if(method.getName().equals(SootMethod.constructorName)) return null;
 	// The next one really ought not to happen...
 	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
+
+	// Eagerly restructure non-constructor InvokeStmts to AssignStmts, 
+	// because it saves us from having to fix up the AdviceApplications later
+	// We may wish to improve this behaviour later.
+	if(stmt instanceof InvokeStmt && !(method.getReturnType() instanceof VoidType))
+	    stmt=Restructure.getEquivAssignStmt(pos.getContainer(),(InvokeStmt) stmt);
 
 	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,method);
     }

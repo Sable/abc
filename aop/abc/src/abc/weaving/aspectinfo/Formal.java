@@ -25,4 +25,8 @@ public class Formal extends Syntax {
     public String getName() {
 	return name;
     }
+
+    public String toString() {
+	return type+" "+name;
+    }
 }

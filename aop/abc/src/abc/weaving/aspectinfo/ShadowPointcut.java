@@ -15,7 +15,7 @@ import abc.weaving.residues.Residue;
 /** A pointcut designator representing a set of joinpoint shadows
  *  at which the pointcut will match.
  */
-public abstract class ShadowPointcut extends AbstractPointcut {
+public abstract class ShadowPointcut extends Pointcut {
     public final Residue matchesAt(WeavingEnv env,
 				   SootClass cls,
 				   SootMethod method,
@@ -29,5 +29,10 @@ public abstract class ShadowPointcut extends AbstractPointcut {
 
     /** Shadow pointcuts just need to know the ShadowMatch */
     protected abstract Residue matchesAt(ShadowMatch sm);
+
+    protected Pointcut inline(Hashtable renameEnv,
+			      Hashtable typeEnv) {
+	return this;
+    }
 
 }

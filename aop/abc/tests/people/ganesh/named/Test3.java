@@ -18,7 +18,7 @@ aspect Test3Aspect {
 
     pointcut b(Baz3 o) : a(o);
 
-    before() : b(*) {
+    before() : call(void bar()) && b(*) {
 	System.out.println("ran advice");
     }
 

@@ -10,7 +10,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
  */ 
-public class AndResidue extends AbstractResidue {
+public class AndResidue extends Residue {
     private Residue left;
     private Residue right;
 

@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import polyglot.util.Position;
 
 import soot.*;
@@ -9,7 +11,7 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** Pointcut conjunction. */
-public class AndPointcut extends AbstractPointcut {
+public class AndPointcut extends Pointcut {
     private Pointcut pc1;
     private Pointcut pc2;
 
@@ -35,6 +37,13 @@ public class AndPointcut extends AbstractPointcut {
 				    pc2.matchesAt(we,cls,method,sm));
     }
     
+    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv) {
+	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv);
+	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv);
+	if(pc1==this.pc1 && pc2==this.pc2) return this;
+	else return new AndPointcut(pc1,pc2,getPosition());
+    }
+
     public String toString() {
 	return "("+pc1+") && ("+pc2+")";
     }

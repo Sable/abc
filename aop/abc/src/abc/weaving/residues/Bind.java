@@ -1,9 +1,7 @@
 package abc.weaving.residues;
 
 import java.util.Vector;
-import soot.Local;
-import soot.Type;
-import soot.SootMethod;
+import soot.*;
 import soot.util.Chain;
 import soot.jimple.Stmt;
 import soot.jimple.Jimple;
@@ -15,7 +13,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @date 30-Apr-04
  */ 
 
-public class Bind extends AbstractResidue {
+public class Bind extends Residue {
     public ContextValue value;
     public WeavingVar variable;
 
@@ -25,9 +23,15 @@ public class Bind extends AbstractResidue {
     }
 
     public static Residue construct(ContextValue value,Type type,WeavingVar variable) {
-	return AndResidue.construct
-	    (new CheckType(value,type),
-	     new Bind(value,variable));
+	if(variable.getType().equals(Scene.v().getSootClass("java.lang.Object").getType())) {
+	    PolyLocalVar temp=new PolyLocalVar("box");
+	    return AndResidue.construct
+		(new Bind(value,temp),
+		 new Box(temp,variable));
+	}
+	else return AndResidue.construct
+		 (new CheckType(value,type),
+		  new Bind(value,variable));
     }
 
     public String toString() {
@@ -41,15 +45,14 @@ public class Bind extends AbstractResidue {
 		Stmt fail,
 		WeavingContext wc) {
 	
-		Type type = variable.getType();
-		Local loc = localgen.generateLocal(type, "bind");
-		Stmt castStmt =
-			Jimple.v().newAssignStmt(
-				loc,
-				Jimple.v().newCastExpr(value.getSootValue(method, localgen), type));
-		variable.set(wc, loc);
-		units.insertAfter(castStmt, begin);
-		return castStmt;
+		Value val=value.getSootValue(method,localgen);
+		if(!variable.hasType() || val.getType() instanceof PrimType)
+		    return variable.set(localgen,units,begin,wc,val);
+		else {
+		    Type type=variable.getType();
+		    return variable.set
+			(localgen,units,begin,wc,Jimple.v().newCastExpr(val,type));
+		}
 	}
 
 }

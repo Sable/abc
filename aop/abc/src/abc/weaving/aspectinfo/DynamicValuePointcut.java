@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import polyglot.util.Position;
 import abc.weaving.matching.MethodPosition;
 import abc.weaving.residues.*;
@@ -9,8 +11,14 @@ import abc.weaving.residues.*;
  *  @date 04-May-04
  */
 
-public abstract class DynamicValuePointcut extends AbstractPointcut {
+public abstract class DynamicValuePointcut extends Pointcut {
     public DynamicValuePointcut(Position pos) {
 	super(pos);
     }
+
+    protected Pointcut inline(Hashtable renameEnv,
+			      Hashtable typeEnv) {
+	return this;
+    }
+
 }

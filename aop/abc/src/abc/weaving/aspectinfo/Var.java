@@ -1,5 +1,6 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
 import polyglot.util.Position;
 import abc.weaving.residues.*;
 
@@ -21,6 +22,15 @@ public class Var extends Syntax {
 
     public String getName() {
 	return name;
+    }
+
+    public String toString() {
+	return name;
+    }
+
+    public Var rename(Hashtable/*<String,Var>*/ env) {
+	if(env.containsKey(name)) return (Var) env.get(name);
+	else return this;
     }
 
     //public int getIndex() {

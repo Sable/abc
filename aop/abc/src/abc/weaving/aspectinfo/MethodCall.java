@@ -29,6 +29,7 @@ public class MethodCall extends ShadowPointcut {
 	if(getPattern()==null) return AlwaysMatch.v;
 
 	if(!getPattern().matchesMethod(msm.getMethod())) return null;
+
 	return AlwaysMatch.v;
     }
 

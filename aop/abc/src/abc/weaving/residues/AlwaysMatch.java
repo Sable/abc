@@ -12,7 +12,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @date 28-Apr-04
  */ 
 
-public class AlwaysMatch extends AbstractResidue {
+public class AlwaysMatch extends Residue {
     // is this worthwhile? (save on heap turnover)
     public final static AlwaysMatch v=new AlwaysMatch();
 

@@ -9,30 +9,32 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
-/** A formal parameter to advice
+/** A variable needed only during residue computation
  *  @author Ganesh Sittampalam
  *  @date 04-May-04
  */ 
 
-public class AdviceFormal implements WeavingVar {
-    public int pos;
+public class LocalVar implements WeavingVar {
     public Type type;
-    private Local loc=null;
+    public String name;
+    private Local loc;
 
-    public AdviceFormal(int pos,Type type) {
-	this.pos=pos;
+    /** The name parameter is just for debugging purposes;
+     *  identity of the variable comes from the reference
+     */
+    public LocalVar(Type type,String name) {
 	this.type=type;
+	this.name=name;
     }
 
     public String toString() {
-	return "advicearg("+pos+":"+type+")";
+	return "localvar("+name+":"+type+")";
     }
 
     public Stmt set(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val) {
-	if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
+	if(loc==null) loc = localgen.generateLocal(type,"pointcutlocal");	
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
 	units.insertAfter(assignStmt,begin);
-	wc.arglist.setElementAt(loc,pos);
 	return assignStmt;
     }
 
@@ -40,7 +42,7 @@ public class AdviceFormal implements WeavingVar {
 	if(loc==null) 
 	    throw new RuntimeException
 		("Internal error: someone tried to read from a variable bound "
-		 +"to an advice formal before it was written");
+		 +"to a pointcut local before it was written");
 
 	return loc;
     }
@@ -54,4 +56,3 @@ public class AdviceFormal implements WeavingVar {
     }
 
 }
-

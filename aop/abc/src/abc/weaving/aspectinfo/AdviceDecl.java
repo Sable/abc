@@ -21,8 +21,15 @@ public class AdviceDecl extends AbstractAdviceDecl {
     private Map/*<String,Integer>*/ formal_pos_map = new HashMap();
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
 
-    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, int jp, int jpsp, int ejp, Position pos) {
-	super(spec,pc,pos);
+    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, 
+		      int jp, int jpsp, int ejp, Position pos) {
+
+	// the list of formals we give the super constructor for normalizing
+	// is a little too large because it might include thisJoinPoint etc, 
+	// but since people shouldn't be using that in pointcuts anyway this 
+	// doesn't matter.
+
+	super(spec,pc,impl.getFormals(),pos);
 	this.impl = impl;
 	this.aspect = aspect;
 	this.jp = jp;
@@ -56,13 +63,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
     }
 	
 
-    public AdviceSpec getAdviceSpec() {
-	return spec;
-    }
 
-    public Pointcut getPointcut() {
-	return pc;
-    }
 
     /** Get the signature of the placeholder method that contains the
      *  body of this advice.

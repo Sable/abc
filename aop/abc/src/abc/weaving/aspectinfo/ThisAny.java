@@ -32,5 +32,5 @@ public class ThisAny extends DynamicValuePointcut {
     public String toString() {
 	return "this(*)";
     }
-	
+
 }

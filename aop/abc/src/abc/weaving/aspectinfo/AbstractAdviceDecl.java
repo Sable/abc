@@ -13,10 +13,12 @@ public abstract class AbstractAdviceDecl extends Syntax {
     protected AdviceSpec spec;
     protected Pointcut pc;
 
-    protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,Position pos) {
+    protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
+				 List/*<Formal>*/ formals,Position pos) {
 	super(pos);
 	this.spec=spec;
-	this.pc=pc;
+
+	this.pc=Pointcut.normalize(pc,formals);
 
 	if (spec instanceof AbstractAdviceSpec) {
 	    ((AbstractAdviceSpec)spec).setAdvice(this);

@@ -4,7 +4,7 @@ package abc.weaving.residues;
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
  */ 
-public class NotResidue extends AbstractResidue {
+public class NotResidue extends Residue {
     private Residue op;
     
     /** Get the operand */

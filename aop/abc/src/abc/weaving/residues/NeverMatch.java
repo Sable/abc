@@ -8,7 +8,7 @@ package abc.weaving.residues;
  *  @date 28-Apr-04
  */ 
 
-public class NeverMatch extends AbstractResidue {
+public class NeverMatch extends Residue {
     // is this worthwhile? (save on heap turnover)
     public final static NeverMatch v=new NeverMatch();
 

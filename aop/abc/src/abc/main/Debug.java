@@ -28,6 +28,8 @@ public class Debug {
 
     public boolean namePatternMatches=false;
 
+    public boolean showNormalizedPointcuts=false;
+
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher
                                                    // or things it sees (like patterns)

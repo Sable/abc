@@ -4,7 +4,7 @@ package abc.weaving.residues;
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
  */ 
-public class OrResidue extends AbstractResidue {
+public class OrResidue extends Residue {
     private Residue left;
     private Residue right;
 
