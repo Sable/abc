@@ -4,6 +4,13 @@ import soot.*;
 import soot.util.*;
 import soot.xml.*;
 
+import soot.tagkit.SourceFileTag;
+import soot.tagkit.SourceLnPosTag;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.base.ExceptionChecker;
+import soot.jimple.toolkits.base.ExceptionCheckerError;
+import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
+
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
@@ -12,6 +19,7 @@ import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
+import polyglot.util.Position;
 
 import abc.aspectj.visit.PatternMatcher;
 
@@ -179,7 +187,7 @@ public class Main {
           Timers.v().totalTimer.start(); // Soot timer start
 
         // Main phases
-	try {
+
 	    AbcTimer.start(); // start the AbcTimer
 
 	    addJarsToClasspath();
@@ -191,7 +199,18 @@ public class Main {
 
 	    compile(); // Timers marked inside compile()
 
+	    // The compile method itself aborts if there is an error
+
 	    weave();   // Timers marked inside weave()
+
+	    abortIfErrors();
+
+	    if(!abc.main.Debug.v().dontCheckExceptions) {
+		checkExceptions();
+		AbcTimer.mark("Exceptions check");
+	    }
+	    
+	    abortIfErrors();
 
             if (Debug.v().doValidate)
 	      validate();
@@ -203,9 +222,6 @@ public class Main {
 
 	    output();
 	    AbcTimer.mark("Soot Writing Output");
-	} catch (SemanticException e) {
-	    System.out.println(e.position()+": "+e.getMessage());
-	}
 
         // Timer end stuff
         Date abcfinish = new Date(); // wall clock time finish
@@ -223,6 +239,14 @@ public class Main {
         // Print out abc timer information
         AbcTimer.report();
     }
+
+    private void abortIfErrors() throws CompilerFailedException {
+        if(error_queue.hasErrors()) {
+            error_queue.flush();
+            throw new CompilerFailedException("Compiler failed.");
+        }
+    }
+
 
     public void addJarsToClasspath() {
 	StringBuffer sb = new StringBuffer();
@@ -263,7 +287,7 @@ public class Main {
 	}
     }
 
-    public void compile() throws CompilerFailedException, IllegalArgumentException, SemanticException {
+    public void compile() throws CompilerFailedException, IllegalArgumentException {
         // Invoke polyglot
         try {
             abc.aspectj.ExtensionInfo ext = 
@@ -284,7 +308,7 @@ public class Main {
             if (!compiler.compile(aspect_sources)) {
                 throw new CompilerFailedException("Compiler failed.");
             }
-	    error_queue = compiler.errorQueue();
+	    error_queue = compiler.errorQueue(); // should be empty
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
@@ -305,7 +329,8 @@ public class Main {
                 return new Compiler(ext);
         }
         
-    public void weave() throws CompilerFailedException, SemanticException {
+    public void weave() throws CompilerFailedException {
+	try {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
         AbcTimer.mark("Declare Parents");
@@ -358,6 +383,63 @@ public class Main {
 	
 	        Weaver weaver = new Weaver();
 	        weaver.weave(); // timer marks inside weave() */
+        }
+	} catch(SemanticException e) {
+	    error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
+	}
+    }
+
+    private class GotCheckedExceptionError implements ExceptionCheckerErrorReporter {
+        public void reportError(ExceptionCheckerError err) {
+            SootClass exctype=err.excType();
+	    
+            String message="The exception "+exctype+" must be either caught "+
+                "or declared to be thrown";
+            Stmt stmt=err.throwing();
+            Position pos=null;
+            if(err.method().getDeclaringClass().hasTag("SourceFileTag")) {
+                SourceFileTag sfTag=(SourceFileTag) err.method()
+		    .getDeclaringClass().getTag("SourceFileTag");
+                if(stmt.hasTag("SourceLnPosTag")) {
+                    SourceLnPosTag slpTag=(SourceLnPosTag) stmt.getTag("SourceLnPosTag");
+                    pos=new Position(sfTag.getSourceFile(),
+                                     slpTag.startLn(),slpTag.startPos(),
+                                     slpTag.endLn(),slpTag.endPos());
+                } else {
+                    pos=new Position(sfTag.getSourceFile());
+                    message+=" in method "+err.method();
+                }
+            } else {
+                message+=" in method "+err.method()
+                    +" in class "+err.method().getDeclaringClass();
+            }
+
+            if(pos==null) error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,message);
+            else error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,message,pos);
+        }
+    }
+
+    public void checkExceptions() {
+        ExceptionChecker exccheck=new ExceptionChecker(new GotCheckedExceptionError());
+        HashMap options=new HashMap();
+        options.put("enabled","true");
+
+        for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); 
+            clIt.hasNext(); ) {
+            final AbcClass cl = (AbcClass) clIt.next();
+            
+            for(Iterator methodIt=cl.getSootClass().getMethods().iterator(); 
+                methodIt.hasNext(); ) {
+                final SootMethod method = (SootMethod) methodIt.next();
+
+                if(!method.isConcrete()) continue;
+                if(method.getName().equals(SootMethod.staticInitializerName)) 
+                    continue;
+
+                //FIXME: is "jtp.jec" sensible?
+                exccheck.transform(method.getActiveBody(),"jtp.jec",options);
+
+            }
         }
     }
 
