@@ -48,7 +48,9 @@ public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 				}
 	 		}
 	 		// resolving to a local failed, so it must be a type
-	 		Prefix pref = (Prefix) amb.qual().disambiguate(ar);
+	 		Prefix pref = null;
+	 		if (amb.qual() != null)
+	 			pref = (Prefix) amb.qual().disambiguate(ar);
 			Node n = ar.nodeFactory().disamb().disambiguate(amb, ar, position(), pref,amb.name());
 			 if (n instanceof TypeNode) {
 				return n;

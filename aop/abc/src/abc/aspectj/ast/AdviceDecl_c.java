@@ -274,7 +274,7 @@ public class AdviceDecl_c extends MethodDecl_c
 			newformals.add(jp);
 			newformalTypes.add(ts.JoinPoint());
 		}
-		Flags f = this.flags().set(Flags.FINAL);
+		Flags f = this.flags().set(Flags.FINAL).set(Flags.PUBLIC);
     	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc).flags(f);
     	MethodInstance mi = md.methodInstance().formalTypes(newformalTypes).flags(f);
 	//nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,newformals,throwTypes(),body());
@@ -358,6 +358,10 @@ public class AdviceDecl_c extends MethodDecl_c
 		if (spec.returnVal() != null) 
 			initialised = (Formal)  formals.get(formals.size()-1); // last parameter is always initialised
 		pc.checkFormals(formals,initialised);
+		
+		Flags f = flags().clear(Flags.STRICTFP);
+		if (!f.equals(Flags.NONE))
+			throw new SemanticException("advice cannot have flags "+f,position());
 	  
 		return this;
 	}

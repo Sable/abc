@@ -116,9 +116,12 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	* @author Oege de Moor
 	* change private intertype constructor decl into public,
 	* mangling by giving it an extra parameter
+	* 
+	* This creates countless problems in the presence of super calls and so on,
+	* so until there is a better solution, this is turned off.
 	*/
 	public IntertypeConstructorDecl accessChange(AspectJNodeFactory nf, AspectJTypeSystem ts) {
-		if (flags().isPrivate() || flags().isPackage()) {
+		if (flags().isPrivate() || flags().isPackage()){
 			ParsedClassType ht = (ParsedClassType) host.type();
 			ht.fields().remove(itConstructorInstance); // remove old instance from host type    		
 			ConstructorInstance mmi = itConstructorInstance.mangled();  // retrieve the mangled instance 		
