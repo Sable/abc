@@ -109,7 +109,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@4d03e5
+creating: A@99d33d
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -602,7 +602,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@133732c
+InterfaceAndObject$1@2d1ab1
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2303,7 +2303,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@9a544, [Ljava.lang.Object;@141332d, TwoAnonymous$3@9a544
+calling run: TwoAnonymous$3@daa612, [Ljava.lang.Object;@cd196b, TwoAnonymous$3@daa612
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2420,32 +2420,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@987426.foo calls Outer$Inner@f17b81.mi
+Outer@cb5d9f.foo calls Outer$Inner@16f9c30.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@f17b81.mi calls java.io.PrintStream@1e3902f.println
+Outer$Inner@16f9c30.mi calls java.io.PrintStream@772683.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@987426.foo calls Outer$InnerRandom@46058a.nextHook
+Outer@cb5d9f.foo calls Outer$InnerRandom@12511f2.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@46058a.nextHook calls Outer$InnerRandom@46058a.next
+Outer$InnerRandom@12511f2.nextHook calls Outer$InnerRandom@12511f2.next
 Outer.foo() calls Random.nextInt(..)
-Outer@987426.foo calls X.nextInt
+Outer@cb5d9f.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@13517a8.foo calls Outer$Inner@a43c24.mi
+Outer@7ec763.foo calls Outer$Inner@1547369.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@a43c24.mi calls java.io.PrintStream@687e96.println
+Outer$Inner@1547369.mi calls java.io.PrintStream@164ff7c.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@13517a8.foo calls Outer$InnerRandom@12d5c50.nextHook
+Outer@7ec763.foo calls Outer$InnerRandom@1530f81.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@12d5c50.nextHook calls Outer$InnerRandom@12d5c50.next
+Outer$InnerRandom@1530f81.nextHook calls Outer$InnerRandom@1530f81.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@13517a8.foo calls X.nextInt
+Outer@7ec763.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -3750,7 +3750,7 @@ Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertInOnePackage.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:580)
+	at abc.main.Main.run(Main.java:593)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -3759,7 +3759,7 @@ Caused by: java.util.NoSuchElementException: No such class: InnerStaticInitializ
 	at abc.aspectj.visit.PCStructure.insertClassAndSuperclasses(PCStructure.java:163)
 	at abc.aspectj.visit.PCStructure.updateWithAllSootClasses(PCStructure.java:178)
 	at abc.aspectj.visit.PatternMatcher.updateWithAllSootClasses(PatternMatcher.java:125)
-	at abc.main.Main.weave(Main.java:789)
+	at abc.main.Main.weave(Main.java:802)
 	at abc.main.Main.run(Main.java:522)
 	... 3 more
 FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" failed.
@@ -4104,7 +4104,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@aa6e3d.x:=-3
+test.Test3@10567f0.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4187,8 +4187,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@1ed8877
-o: Bar@1ed8877, i: 10
+o: Bar@15e1a1
+o: Bar@15e1a1, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4406,13 +4406,13 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:580)
+	at abc.main.Main.run(Main.java:593)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:667)
-	at abc.main.Main.loadSourceRoots(Main.java:684)
+	at abc.main.Main.findSourcesInDir(Main.java:680)
+	at abc.main.Main.loadSourceRoots(Main.java:697)
 	at abc.main.Main.run(Main.java:513)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -4579,7 +4579,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@f860aa
+LibraryAspect-defined run() for C@9da0ec
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4903,7 +4903,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/Test.java bugs/s
 Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
-? Util.read() obj=Test@1608fd2
+? Util.read() obj=Test@27e0ab
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -4920,7 +4920,7 @@ Running test 933: bugs/serialVersionUID/SUID: thisJoinPoint with clinit method
 Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
-? Util.read() obj=ClinitTest@180c293
+? Util.read() obj=ClinitTest@1b74aef
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -4929,7 +4929,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 ? Util.write() suid=SuidTest: static final long serialVersionUID = 8904684881596717140L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@106c0cd
+? Util.read() obj=SuidTest@f71130
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5133,12 +5133,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@182d64f
-Invoking command bean:  Command@c3ebab
-hello(Command@c3ebab)
-Created a PerThis aspect : Testcase2@a5657e
-Invoking command bean:  Command@aa369a
-hello again(Command@aa369a)
+Created a PerThis aspect : Testcase2@1a76988
+Invoking command bean:  Command@163a5
+hello(Command@163a5)
+Created a PerThis aspect : Testcase2@134e5a3
+Invoking command bean:  Command@1d05f1c
+hello again(Command@1d05f1c)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5178,7 +5178,7 @@ polyglot.util.InternalCompilerError: exception while resolving C.B
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:102)
 	at soot.SootResolver.resolveClass(SootResolver.java:88)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:737)
+	at abc.main.Main.compile(Main.java:750)
 	at abc.main.Main.run(Main.java:518)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
@@ -5238,5 +5238,11 @@ Actual errors found:
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error.
 FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
+
+
+Running test 987: abctests/bugs/method intertype onto inner class
+Commandline: abc -d abctests/bugs abctests/bugs/Sep9.java 
+3
+PASS: Test 987: "abctests/bugs/method intertype onto inner class" passed.
 
 

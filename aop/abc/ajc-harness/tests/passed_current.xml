@@ -4942,5 +4942,9 @@
 <ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
         <compile files="DeclareParentsRef.java"></compile>
     </ajc-test>
+<ajc-test title="method intertype onto inner class" num="987" dir="abctests/bugs" abccomment="abc fails in generation of accessors; ajc fails                     at runtime">
+	<compile files="Sep9.java"></compile>
+	<run class="Sep9"></run>
+    </ajc-test>
  
 </suite>
