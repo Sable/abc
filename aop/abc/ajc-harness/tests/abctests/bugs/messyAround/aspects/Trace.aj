@@ -2,6 +2,8 @@ package aspects;
 
 import java.io.*;
 import java.util.*;
+import org.aspectj.lang.*;
+import org.aspectj.lang.reflect.*;
 import java.lang.reflect.*;
 
 /** Trace is an aspect that traces execution through code.  
