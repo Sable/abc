@@ -169,7 +169,8 @@ public class CflowAnalysisBridge {
                 if( rb.getResidue() instanceof CflowResidue) {
                     CflowResidue cfr = (CflowResidue) rb.getResidue();
                     StackInfo si = stackInfo(cfr.setup());
-                    si.stmtMap.put(cfr.getIsValidStmt(), aa);
+                    Stmt s = cfr.getIsValidStmt();
+                    if(s != null) si.stmtMap.put(s, aa);
                 } else if( rb.getResidue() instanceof Load) {
                     Load load = (Load) rb.getResidue();
                     if(load.value instanceof JoinPointInfo) {

@@ -97,7 +97,6 @@ public class Debug {
     public boolean showBinds=false;
     public boolean showAdviceFormalSets=false;
     public boolean warnUntaggedSourceInfo=false;
-    public boolean warnUnusedAdvice=true;
 
 
     public boolean doValidate=false;  // validate jimple
@@ -127,8 +126,5 @@ public class Debug {
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before
     public boolean java13=false; // java 1.3 semantics
-    // information about whether nested comments should be allowed
-    public boolean allowNestedComments = false;
-    public boolean verbose = false;
 
 }

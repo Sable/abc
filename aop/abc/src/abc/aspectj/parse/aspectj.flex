@@ -484,7 +484,7 @@ OctalEscape = \\ [0-7]
 %%
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
     /* 3.7 Comments */
-	"/*"                       { if(abc.main.Debug.v().allowNestedComments) 
+	"/*"                       { if(abc.main.options.OptionsParser.v().nested_comments()) 
 						enterLexerState(NESTABLECOMMENT);
 				     else 
 						enterLexerState(NONNESTABLECOMMENT); 

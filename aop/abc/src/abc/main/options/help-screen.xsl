@@ -40,11 +40,11 @@ public class Usage extends UsageBase {
 <!--* USAGE TEMPLATES *******************************************************-->
 <!--*************************************************************************-->
 
+  <xsl:template mode="usage" match="* [@undoc]"/>
+
   <xsl:template mode="usage" match="section">
-       <xsl:if test="count(undocumented)=0">
 +"\n<xsl:value-of select="name"/>:\n"
         <xsl:apply-templates mode="usage" select="boolopt|pathopt|intopt|stringopt|argfileopt"/>
-      </xsl:if>
   </xsl:template>
 
 <!--* BOOLEAN_OPTION *******************************************************-->

@@ -24,8 +24,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:apply-templates mode="to_latex" select="."/>
 </xsl:for-each>
 
-<xsl:for-each select="options/section">
-<xsl:if test="count(undocumented)=0">
+<xsl:for-each select="options/section [not(@undoc)]">
 \section{<xsl:value-of select="name"/>}
 <xsl:apply-templates mode="to_latex" select="long_desc"/>
 
@@ -37,7 +36,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 \end{description}
 </xsl:if>
 
-</xsl:if>
 </xsl:for-each>
 
 \end{document}

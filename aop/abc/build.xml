@@ -314,5 +314,10 @@
             in="src/abc/main/options/options.xml"
             out="generated/abc/main/options/Usage.java"
         />
+        <xslt
+            style="src/abc/main/options/parser.xsl"
+            in="src/abc/main/options/options.xml"
+            out="generated/abc/main/options/OptionsParser.java"
+        />
     </target>
 </project>

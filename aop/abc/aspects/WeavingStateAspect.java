@@ -30,6 +30,7 @@ public privileged aspect WeavingStateAspect {
 
     pointcut not_in_grammar():
         !within(abc.aspectj.parse..*);
+        //&& !within(abc.eaj.parse..*);
 
     before(): (setpc() || modify_collection()) && inweaver() && not_in_grammar() {
         String sjp = "+++ "+thisJoinPointStaticPart.getSignature().toString()+"\n"+

@@ -85,6 +85,7 @@ import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.Weaver;
+import abc.main.options.*;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -109,13 +110,10 @@ public class Main {
 
     public Collection/*<String>*/ aspect_sources = new ArrayList();
     public Collection/*<String>*/ jar_classes = new ArrayList();
-    public Collection/*<String>*/ in_jars = new ArrayList();
-    public Collection/*<String>*/ source_roots = new ArrayList();
 
     public List/*<String>*/ soot_args = new ArrayList();
     public List/*<String>*/ polyglot_args = new ArrayList();
 
-    public String classpath = System.getProperty("java.class.path");
     public String classes_destdir = ""; // TODO: LJH - fixed with -d option?
 
     public ErrorQueue error_queue; // For reporting errors and warnings
@@ -151,6 +149,7 @@ public class Main {
         abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
         abc.weaving.weaver.CflowIntraAggregate.reset();
         abc.soot.util.LocalGeneratorEx.reset();
+        abc.main.options.OptionsParser.reset();
 
         v=null;
     }
@@ -212,107 +211,19 @@ public class Main {
         v=this;
     }
 
-    static class ArgList extends LinkedList {
-        ArgList(String[] args) {
-            for(int i = 0; i < args.length; i++) add(args[i]);
-        }
-        /** Return the current arg. */
-        String top() { return (String) getFirst(); }
-        /** Return the argument of the current argument, or throw an exception
-         * if there isn't one. */
-        String argTo() {
-            String top = top();
-            shift();
-            if(isEmpty())
-                throw new IllegalArgumentException("Missing argument to " + top);
-            return top();
-        }
-        /** Move to the next argument. */
-        void shift() { removeFirst(); }
-        /** Add arg to the front of the arg list. */
-        void push( String arg ) { addFirst(arg); }
-    }
 
     public void parseArgs(String[] argArray) throws IllegalArgumentException, CompilerAbortedException {
         ArgList args = new ArgList(argArray);
-        String outputdir=".";
-        boolean optflag=true;
-        boolean outputIsJar=false;
         boolean noArguments = args.isEmpty();
-        boolean seenVersionFlag = false;
+        OptionsParser.v().set_classpath(System.getProperty("java.class.path"));
 
-        String abcExtensionPackage = "abc.main";
+        while(!args.isEmpty())
+        { 
 
-        for(; !args.isEmpty(); args.shift())
-        { /* --------FULLY IMPLEMENTED AJC-COMPLIANT OPTIONS ----------*/
-            // abc options that we handle completely,
-            //     and correspond to ajc options
-
-            // TODO: -help needs to be filled in
-            if (args.top().equals("-help") || args.top().equals("--help") ||
-                    args.top().equals("-h"))
-            { abc.main.Usage.abcPrintHelp();
-                throw new CompilerAbortedException("Acted on -help option.");
-            }
-            else if (args.top().equals("-version") || args.top().equals("--version") ||
-                    args.top().equals("-v"))
-            {
-                seenVersionFlag = true;
-            }
-            else if (args.top().equals("-injars")||args.top().equals("-inpath"))
-            {
-                // a class-path-delimiter separated list should follow -injars
-                parsePath(args.argTo(), in_jars);
-            } // injars
-            else if (args.top().equals("-sourceroots"))
-            {
-                // a class-path-delimiter separated list should follow -sourceroots
-                parsePath(args.argTo(), source_roots);
-            } // sourceroots
-            else if (args.top().equals("-outjar")) {
-                outputdir = args.argTo();
-                outputIsJar = true;
-            }
-            else if (args.top().equals("-classpath") || args.top().equals("-cp"))
-            {
-                classpath = args.argTo();
-            } // classpath
-            else if (args.top().equals("-d"))  // -d flag in abc options
-            {
-                outputdir = args.argTo();
-                outputIsJar = false;
-            } // output directory
-            else if (args.top().equals("-noImportError"))
+            if (args.top().equals("-noImportError"))
                 // don't report unresolved imports
             { // nothing to do, because we don't do it anyway.
             }
-            else if (args.top().equals("-nested-comments") || args.top().equals("-nested-comments:true")
-                    || args.top().equals("-nested-comments:on"))
-            {
-                //allow nested comments for this compiler run
-                abc.main.Debug.v().allowNestedComments = true;
-            }
-            else if(args.top().equals("-nested-comments:false") || args.top().equals("-nested-comments:off"))
-            {
-                abc.main.Debug.v().allowNestedComments = false;
-            }
-            else if(args.top().equals("-warn-unused-advice") || args.top().equals("-warn-unused-advice:true")
-                    ||args.top().equals("-warn-unused-advice:on")) {
-                abc.main.Debug.v().warnUnusedAdvice = true;
-            }
-            else if(args.top().equals("-warn-unused-advice:false")
-                    ||args.top().equals("-warn-unused-advice:off")) {
-                abc.main.Debug.v().warnUnusedAdvice = false;
-            }
-            else if (args.top().equals("-time"))
-            { abc.main.Debug.v().abcTimer=true;
-                abc.main.Debug.v().polyglotTimer=true;
-                abc.main.Debug.v().sootResolverTimer=true;
-            }
-
-            /* -------- PARTIALLY-IMPLEMENTED AJC-COMPLIANT OPTIONS -------*/
-            // abc options that we handle incompletely, but don't
-            //    want to stop compilation
 
             // -Xlint, -Xlint:ignore, -Xlint:warning, -Xlint:errror
             else if (args.top().equals("-Xlint") ||
@@ -321,12 +232,12 @@ public class Main {
                     args.top().equals("-Xlint:ignore"))
             { compilerOptionIgnored(args.top(),
                     "abc does not support Xlint");
-            if (args.top().equals("Xlint") || args.top().equals("Xlint:warning"))
-                abc.main.Options.v().Xlint = abc.main.Options.WARNING;
-            else if (args.top().equals("Xlint:error"))
-                abc.main.Options.v().Xlint = abc.main.Options.ERROR;
-            else
-                abc.main.Options.v().Xlint = abc.main.Options.IGNORE;
+                if (args.top().equals("Xlint") || args.top().equals("Xlint:warning"))
+                    abc.main.Options.v().Xlint = abc.main.Options.WARNING;
+                else if (args.top().equals("Xlint:error"))
+                    abc.main.Options.v().Xlint = abc.main.Options.ERROR;
+                else
+                    abc.main.Options.v().Xlint = abc.main.Options.IGNORE;
             }
 
             // -1.3, -1.4
@@ -419,13 +330,6 @@ public class Main {
                 throw new CompilerAbortedException("Acted on -help:polyglot option.");
             }
 
-            // optimization settings
-            else if (args.top().equals("-O") || (args.top().equals("-O1"))
-		     || args.top().equals("-O2"))
-                optflag=true;                 //   this is the default
-            else if (args.top().equals("-O0")) // -O0 turns opt off
-                optflag=false;
-
             // -debug and -nodebug flags in abc options
             else if (args.top().equals("-debug") || args.top().equals("-nodebug"))
             { String debug_no_debug = args.top();
@@ -442,49 +346,6 @@ public class Main {
                             "Error setting debug field "+debug_name, e);
                 }
             }
-            else if (args.top().equals("-ext"))
-            {
-                abcExtensionPackage = args.argTo();
-            }
-            else if (args.top().equals("-verbose") || args.top().equals("--verbose")) {
-                abc.main.Debug.v().verbose=true;
-            }
-            else if (args.top().equals("-dava") || args.top().equals("--dava")) {
-                soot_args.add("-f");
-                soot_args.add("dava");
-            }
-            else if (args.top().startsWith("@") || args.top().equals("-argfile")) {
-                String fileName;
-                if(args.top().startsWith("@")) {
-                    fileName = args.top().substring(1);
-                } else {
-                    fileName = args.argTo();
-                }
-                args.shift();
-                BufferedReader br;
-                try {
-                    br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
-                } catch(IOException e) {
-                    throw new IllegalArgumentException("Couldn't open argfile "+fileName);
-                }
-                LinkedList newArgs = new LinkedList();
-                try {
-                    while(true) {
-                        String s = br.readLine();
-                        if(s == null) break;
-                        newArgs.addFirst(s);
-                    }
-                } catch(IOException e) {
-                    throw new IllegalArgumentException("Error reading from argfile "+fileName);
-                }
-                for( Iterator argIt = newArgs.iterator(); argIt.hasNext(); ) {
-                    final String arg = (String) argIt.next();
-                    args.push(arg);
-                }
-                // push filename back on, so that after we advance, we're on the
-                // first arg from the argfile
-                args.push(fileName);
-            }
 
             /* -------------------  SOOT OPTIONS -------------------------*/
             // handle soot-specific options, must be between +soot -soot
@@ -492,9 +353,9 @@ public class Main {
             { args.shift(); // skip +soot
                 while (!args.isEmpty() && !args.top().equals("-soot"))
                 { if (args.top().equals("-d")) // get the Soot -d option
-                    outputdir = args.argTo();
+                    OptionsParser.v().set_d(args.argTo());
                     else if (args.top().equals("-O"))
-                        optflag = true;
+                        OptionsParser.v().set_O(1);
                     else
                         if(!args.top().equals("-keep-line-number") &&
                                 !args.top().equals("-xml-attributes"))
@@ -520,6 +381,8 @@ public class Main {
                             "no matching -polyglot found");
             } // +polyglot ... -polyglot options
 
+            else if(OptionsParser.v().parse(args)) continue;
+
             /* ---------  UNKNOWN OPTION ---------------------------------- */
             else if (args.top().startsWith("-"))
             { throw new IllegalArgumentException("Unknown option "+args.top());
@@ -529,21 +392,44 @@ public class Main {
             else
             { aspect_sources.add(args.top());
             } // must be file name
-        } // for each arg
 
-        // always want line number info
-        soot_args.add("-keep-line-number");
-        // handle output directory, -d . is default
-        soot_args.add("-d");
-        soot_args.add(outputdir);
-        if(outputIsJar) soot_args.add("-outjar");
-        if(optflag) {
+            args.shift();
+        } // for each arg
+        if (OptionsParser.v().help()) {
+            abc.main.Usage.abcPrintHelp();
+            throw new CompilerAbortedException("Acted on -help option.");
+        }
+
+        if(OptionsParser.v().outjar() != null) {
+            soot_args.add("-outjar");
+            soot_args.add("-d");
+            soot_args.add(OptionsParser.v().outjar());
+        } else if(OptionsParser.v().d() != null) {
+            soot_args.add("-d");
+            soot_args.add(OptionsParser.v().d());
+        } else {
+            soot_args.add("-d");
+            soot_args.add(".");
+        }
+
+        if(OptionsParser.v().O()>0) {
             soot_args.add("-O");
+        }
+        if(OptionsParser.v().dava()) {
+            soot_args.add("-f");
+            soot_args.add("dava");
+        }
+        soot_args.add("-keep-line-number");
+
+        if(OptionsParser.v().time()) {
+            abc.main.Debug.v().abcTimer=true;
+            abc.main.Debug.v().polyglotTimer=true;
+            abc.main.Debug.v().sootResolverTimer=true;
         }
 
         // now we have parsed the arguments we know which AbcExtension
         // to load
-        loadAbcExtension(abcExtensionPackage);
+        loadAbcExtension(OptionsParser.v().ext());
 
         if (noArguments)
         {
@@ -551,7 +437,7 @@ public class Main {
             throw new CompilerAbortedException("No arguments provided.");
         }
 
-        if (seenVersionFlag)
+        if (OptionsParser.v().version())
         {
             abcPrintVersion();
             throw new CompilerAbortedException("Acted on -version option.");
@@ -563,7 +449,7 @@ public class Main {
         try {
             // Timer start stuff
             Date abcstart = new Date(); // wall clock time start
-            if(abc.main.Debug.v().verbose)
+            if(OptionsParser.v().verbose())
                 G.v().out.println("abc started on " + abcstart);
             else
                 soot.G.v().out=new java.io.PrintStream
@@ -617,7 +503,7 @@ public class Main {
 
             // Timer end stuff
             Date abcfinish = new Date(); // wall clock time finish
-            if(abc.main.Debug.v().verbose) {
+            if(OptionsParser.v().verbose()) {
                 G.v().out.print("abc finished on " + abcfinish + ".");
                 long runtime = abcfinish.getTime() - abcstart.getTime();
                 G.v().out.println(" ( " + (runtime / 60000) + " min. " + ((runtime % 60000) / 1000) + " sec. )");
@@ -681,13 +567,19 @@ public class Main {
 
     public void addJarsToClasspath() {
         StringBuffer sb = new StringBuffer();
-        Iterator jari = in_jars.iterator();
+        Iterator jari = OptionsParser.v().injars().iterator();
         while (jari.hasNext()) {
             String jar = (String)jari.next();
             sb.append(jar);
             sb.append(File.pathSeparator);
         }
-        sb.append(classpath);
+        jari = OptionsParser.v().inpath().iterator();
+        while (jari.hasNext()) {
+            String jar = (String)jari.next();
+            sb.append(jar);
+            sb.append(File.pathSeparator);
+        }
+        sb.append(OptionsParser.v().classpath());
 
         sb.append(File.pathSeparator);
         sb.append(System.getProperty("java.home"));
@@ -705,11 +597,11 @@ public class Main {
             sb.append("abc-runtime.jar");
         }
 
-        classpath = sb.toString();
+        OptionsParser.v().set_classpath(sb.toString());
     }
 
     public void initSoot() throws IllegalArgumentException {
-        if(!abc.main.Debug.v().verbose)
+        if(!OptionsParser.v().verbose())
             soot.G.v().out=new java.io.PrintStream(new java.io.OutputStream() {
                 public void write(int b) { }
             });
@@ -731,7 +623,7 @@ public class Main {
             }
         });
 
-        Scene.v().setSootClassPath(classpath);
+        Scene.v().setSootClassPath(OptionsParser.v().classpath());
         getAbcExtension().addBasicClassesToSoot();
         Scene.v().loadDynamicClasses();
 
@@ -759,7 +651,7 @@ public class Main {
     }
     public void loadSourceRoots() throws IllegalArgumentException {
         // Load the classes in all given roots
-        Iterator rooti = source_roots.iterator();
+        Iterator rooti = OptionsParser.v().sourceroots().iterator();
         while (rooti.hasNext()) {
             String root = (String)rooti.next();
             findSourcesInDir(root, aspect_sources);
@@ -768,7 +660,13 @@ public class Main {
 
     public void loadJars() throws CompilerFailedException {
         // Load the classes in all given jars
-        Iterator jari = in_jars.iterator();
+        Iterator jari = OptionsParser.v().injars().iterator();
+        while (jari.hasNext()) {
+            String jar = (String)jari.next();
+            List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
+            jar_classes.addAll(this_jar_classes);
+        }
+        jari = OptionsParser.v().inpath().iterator();
         while (jari.hasNext()) {
             String jar = (String)jari.next();
             List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
@@ -784,7 +682,7 @@ public class Main {
             Options options = ext.getOptions();
             options.assertions = true;
             options.serialize_type_info = false;
-            options.classpath = classpath;
+            options.classpath = OptionsParser.v().classpath();
             if (polyglot_args.size() > 0) {
                 String[] polyglot_argv = (String[]) polyglot_args.toArray(new String[0]);
                 Set sources = new HashSet(aspect_sources);
@@ -832,7 +730,6 @@ public class Main {
                     System.err.println( "WeavableClasses are "+GlobalAspectInfo.v().getWeavableClasses() );
                 }
             for( Iterator clsIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clsIt.hasNext(); ) {
-
                 final AbcClass cls = (AbcClass) clsIt.next();
                 SootClass scls = cls.getSootClass();
                 scls.setApplicationClass();
@@ -958,7 +855,7 @@ public class Main {
                     System.err.println("--- END ADVICE LISTS ---");
                 }
 
-                if(abc.main.Debug.v().warnUnusedAdvice) {
+                if(abc.main.options.OptionsParser.v().warn_unused_advice()) {
                     for( Iterator adIt = GlobalAspectInfo.v().getAdviceDecls().iterator(); adIt.hasNext(); ) {
                         final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
 
