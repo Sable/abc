@@ -3,6 +3,7 @@
 use strict;
 
 print << 'START';
+<!-- This file is auto-generated. Changes you make directly will be lost! -->
 <!--#set var="title" value="Credits"-->
 <!--#set var="file" value="credits.shtml"-->
 <!--#set var="logo" value="standard"-->
@@ -16,6 +17,8 @@ my $inpara=0;
 
 while(<>) {
   s/\</&lt;/g; s/\</&gt;/g;
+  s{\babc\b}{<span class=\"abc\">abc</span>}g;
+  s{\bajc\b}{<span class=\"abc\">ajc</span>}g;
   s{http://([\w\d\.\/]+)}{<a href=\"http://$1\">http://$1</a>}g;
   if($_=~/^\s+\-(.*)$/) {
     if(!$indashlist) { 
