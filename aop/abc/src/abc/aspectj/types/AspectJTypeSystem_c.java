@@ -37,7 +37,7 @@ public class AspectJTypeSystem_c
 		    }
 		    super.checkTopLevelClassFlags(f);
 	}
-		
+    		
 	public MethodInstance adviceInstance(Position pos,
 										ReferenceType container, Flags flags,
 						Type returnType, String name,
@@ -50,7 +50,7 @@ public class AspectJTypeSystem_c
 	   return new AdviceInstance_c(this, pos, container, flags,
 					   returnType, name, argTypes, excTypes,spec);
 	}	
-			
+    			
 	
 
 }

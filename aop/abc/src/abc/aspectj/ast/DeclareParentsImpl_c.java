@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -23,6 +25,24 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
         this.interfaces = TypedList.copyAndCheck(interfaces,
                                                  TypeNode.class,
                                                  true);
+    }
+
+    public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
+	//System.out.println("DeclareParentsImpl 0 "+ar.kind());
+	if (ar.kind() == DeclareParentsAmbiguityRemover.DECLARE) {
+	    TypedList interfaces_disam = new TypedList(new ArrayList(), TypeNode.class, false);
+	    Iterator ti = interfaces.iterator();
+	    while (ti.hasNext()) {
+		TypeNode tn = (TypeNode)ti.next();
+		//System.out.println("DeclareParentsImpl 1 "+((AmbTypeNode)tn).name());
+		tn = (TypeNode)tn.disambiguate(ar);
+		//System.out.println("DeclareParentsImpl 2 "+tn.type());
+		interfaces_disam.add(tn);
+	    }
+	    interfaces = interfaces_disam;
+	}
+
+	return this;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {

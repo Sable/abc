@@ -26,7 +26,7 @@ public class Main {
         }
 
 	Scene.v().setSootClassPath(classpath);
-	Scene.v().loadClassAndSupport("java.lang.Object");
+	//Scene.v().loadClassAndSupport("java.lang.Object");
 
 	// TODO: Resolve java classes
 
