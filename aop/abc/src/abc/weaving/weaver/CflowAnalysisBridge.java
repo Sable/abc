@@ -133,6 +133,7 @@ public class CflowAnalysisBridge {
             }
             for( Iterator shIt = bddcfs.unnecessaryShadows(); shIt.hasNext(); ) {
                 final Shadow sh = (Shadow) shIt.next();
+                sh.aa().setResidue(NeverMatch.v());
             }
         }
 
