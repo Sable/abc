@@ -3786,6 +3786,15 @@
 	     cases that could produce weave-time errors.
 	-->
     <ajc-test num="410" dir="new" title="holding onto proceed calls in a closure-like way"
+      abccomment="ajc fails in the same way as abc, due to a bug in the 
+                  test case. Duplicated as 41001."
+      keywords="from-resolved_10x,knownLimitation">
+        <abckeywords><skip/></abckeywords>
+        <compile files="HoldProceed.java"/>
+        <run class="HoldProceed"/>
+    </ajc-test>
+    <ajc-test num="41001" dir="abctests/new" title="holding onto proceed calls in a closure-like way"
+      abccomment="duplicated from 410 to fix bug in test case"
       keywords="from-resolved_10x,knownLimitation">
         <compile files="HoldProceed.java"/>
         <run class="HoldProceed"/>
@@ -6797,7 +6806,7 @@
     </ajc-test>
 
    <ajc-test num="77201" dir="abctests/bugs" pr="34925"
-      abccomment="Cloned from 77201, removing the offending parentheses.
+      abccomment="Cloned from 772, removing the offending parentheses.
                   ODM 17/08/04"
       title="declare soft and throw statements">
         <compile files="ConvertToUnchecked.java"/>
