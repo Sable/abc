@@ -9,11 +9,9 @@ import soot.javaToJimple.LocalGenerator;
 
 public class PointcutCodeGen {
 
-   /** set to false to disable debugging messages for PointcutCodeGen */
-   public static boolean debug = true;
-
    private static void debug(String message)
-     { if (debug) System.err.println("PCG*** " + message);
+     { if (abc.main.Debug.v().pointcutCodeGen) 
+          System.err.println("PCG*** " + message);
      }
 
    public void weaveInAspectsPass( SootClass cl, int pass) {
@@ -131,31 +129,68 @@ public class PointcutCodeGen {
 
 
     /** create the invoke to call the advice body */
-    public static InvokeStmt makeAdviceInvokeStmt(Local aspectref,
-	AdviceApplication adviceappl, Chain units)
+    public static Chain makeAdviceInvokeStmt(Local aspectref,
+	AdviceApplication adviceappl, Chain units, LocalGenerator localgen)
      { AdviceDecl advicedecl = adviceappl.advice;
-       SootClass aspect = advicedecl.getAspect().
+       SootClass sootaspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
        SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
-       InvokeStmt s;
+
+       Chain c = new HashChain();
        int nformals = advicedecl.numFormals();
        // if there are no formals for the advicemethod
        if (nformals == 0)
-          s = Jimple.v().
+         { Stmt s = Jimple.v().
 	        newInvokeStmt( Jimple.v().
 		  newVirtualInvokeExpr( aspectref, advicemethod ) );
+           c.addLast(s);
+	   return(c);
+	 }
        else // have to fill in a bunch of formals
-         /* { formalsdone = new boolean[nformals+1];
-	   formalsdone[0] = true;  // won't use this index
-
+         { boolean[] formalsdone = new boolean[nformals];
+           Vector arglist = new Vector(nformals);
 	   // try to fill in all the formals
-	   //if (advicedecl 
+	   //   --- first the join point ones
+	   if (advicedecl.hasJoinPointStaticPart())
+	     { int position = advicedecl.joinPointStaticPartPos();
+	       debug("The index for hasJoinPointStaticPart is " + position);
+	       // FIXME: should really be ref to static field for SJP
+	       StaticFieldRef sjpfieldref = 
+		  Jimple.v().newStaticFieldRef(adviceappl.sjpfield);
+	       Local sjploc = localgen.generateLocal(
+		  RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
+	       Stmt assignsjp = Jimple.v().newAssignStmt(
+		   sjploc,sjpfieldref);
+	       c.addLast(assignsjp);
+	       arglist.insertElementAt( sjploc,position);
+	       formalsdone[position] = true;
+	     }
+	   if (advicedecl.hasJoinPoint())
+	     { debug("The index for hasJoinPoint is " +
+	                                  advicedecl.joinPointPos());
+	     }
+	   if (advicedecl.hasEnclosingJoinPoint())
+	     { debug("The index for enclosingJoinPoint is " +
+	                                  advicedecl.enclosingJoinPointPos());
+	     }
 
-	 } */
-	 throw new 
-	   CodeGenException("case not handled yet in making invoke to " +
+	   // now the other ones
+	   // TODO: need to fill in
+	   boolean alldone = true;
+	   for (int i = 0; i<formalsdone.length; i++) 
+	     alldone = alldone && formalsdone[i];
+
+	   if (alldone)
+	   { Stmt s = Jimple.v().
+	          newInvokeStmt ( Jimple.v().
+		     newVirtualInvokeExpr( aspectref, advicemethod, arglist));
+             c.addLast(s);
+	     return(c);
+	   }
+	   else
+	      throw new 
+	        CodeGenException("case not handled yet in making invoke to " +
 	                        advicemethod.getName());
-       return(s);
+	  }
      }
-    
 }

@@ -17,11 +17,10 @@ import soot.javaToJimple.LocalGenerator;
 
 public class AfterThrowingWeaver {
 
-   /** set to false to disable debugging messages for After Throwing Weaver */
-   public static boolean debug = true;
 
    private static void debug(String message)
-     { if (debug) System.err.println("AFT*** " + message);
+     { if (abc.main.Debug.v().afterThrowingWeaver) 
+          System.err.println("AFT*** " + message);
      }
 
 
@@ -72,12 +71,17 @@ public class AfterThrowingWeaver {
 			     newStaticInvokeExpr(aspect.getMethod("aspectOf",
 				                             new ArrayList())));
         units.insertAfter( assignStmt, idStmt);
-        InvokeStmt vInvokeStmt =  
-                PointcutCodeGen.makeAdviceInvokeStmt (l,adviceappl,units);
-        units.insertAfter( vInvokeStmt, assignStmt);
 
         ThrowStmt throwStmt = Jimple.v().newThrowStmt(catchLocal);
-        units.insertAfter(throwStmt, vInvokeStmt);
+        units.insertAfter(throwStmt, assignStmt);
+
+        Chain invokestmts =  
+                PointcutCodeGen.makeAdviceInvokeStmt 
+		                      (l,adviceappl,units,lg);
+	for (Iterator stmtlist = invokestmts.iterator(); stmtlist.hasNext(); )
+	  { Stmt nextstmt = (Stmt) stmtlist.next();
+	    units.insertBefore(nextstmt,throwStmt);
+	  }
 
 	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
         Stmt begincode = (Stmt) units.getSuccOf(beginshadow);
@@ -92,7 +96,7 @@ public class AfterThrowingWeaver {
 	//    goto1:         goto nop2;
 	//    idStmt:        catchLocal := @caughtexception;
 	//    assignStmt:    l = new AspectOf();
-	//    vInvokeStmt:   l.<advicemethod>();
+	//             .... invoke statements .... 
 	//    throwStmt:     throw catchLocal;
 	//    nop2:          nop;  
 	//    endshadow:     nop;

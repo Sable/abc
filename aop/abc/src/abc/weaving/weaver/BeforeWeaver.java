@@ -17,11 +17,9 @@ import soot.javaToJimple.LocalGenerator;
 
 public class BeforeWeaver {
 
-   /** set to false to disable debugging messages for Before Weaver */
-   public static boolean debug = true;
-
    private static void debug(String message)
-     { if (debug) System.err.println("BEF*** " + message);
+     { if (abc.main.Debug.v().beforeWeaver) 
+         System.err.println("BEF*** " + message);
      }
 
 
@@ -49,15 +47,18 @@ public class BeforeWeaver {
 	debug("Generated stmt1: " + stmt1);
 
 	// stmt2:  <aspectref>.<advicemethod>();
-        InvokeStmt stmt2 = PointcutCodeGen.makeAdviceInvokeStmt
-	                                 (aspectref,adviceappl,units);
-        debug("Generated stmt2: " + stmt2);
+        Chain stmts2 = PointcutCodeGen.makeAdviceInvokeStmt
+	                       (aspectref,adviceappl,units,localgen);
+        debug("Generated stmts2: " + stmts2);
 
 	// weave in statements just after beginning of join point shadow
 	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
-	units.insertAfter(stmt2,beginshadow);
+	Stmt followingstmt = (Stmt) units.getSuccOf(beginshadow);
 	units.insertAfter(stmt1,beginshadow);
+	for (Iterator stmtlist = stmts2.iterator(); stmtlist.hasNext(); )
+	  { Stmt nextstmt = (Stmt) stmtlist.next();
+	    units.insertBefore(nextstmt,followingstmt);
+	  }
       } // method doWeave 
-
 
 }

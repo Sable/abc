@@ -28,11 +28,10 @@ import abc.weaving.weaver.*;
 
 public class ShadowPointsSetter {
 
-    /** set to false to disable debugging messages for ShadowPointsSetter */
-    public static boolean debug = true;
 
     private static void debug(String message)
-      { if (debug) System.err.println("SPS*** " + message);
+      { if (abc.main.Debug.v().shadowPointsSetter) 
+	   System.err.println("SPS*** " + message);
       }	
 
     /** Set all ShadowPoints for AdviceApplications in class sc. */
@@ -135,9 +134,9 @@ public class ShadowPointsSetter {
 		           stmtappl);
 
 	   // FIXME: can remove after Ganesh gets line no working
-	   debug("... " + keystmt + " [" + stmtappl + "]");
-	   debug(" TAGS ... " + keystmt.getTags());
-	   debug(" Line number " + keystmt.getTag("SourceLnPosTag"));
+	   // debug("... " + keystmt + " [" + stmtappl + "]");
+	   // debug(" TAGS ... " + keystmt.getTags());
+	   // debug(" Line number " + keystmt.getTag("SourceLnPosTag"));
 	   // If stmt is in Hashtable,  use SP entry assciated with it
 	   // else, introduce new nops before and after stmt and 
 	   // create new SP.
@@ -289,7 +288,7 @@ public class ShadowPointsSetter {
          if( method.isAbstract() ) continue;
          if( method.isNative() ) continue;
          // FIXME: shouldn't have to check name
-	 if( !method.getName().equals("<init>") ) continue;
+	 //if( !method.getName().equals("<init>") ) continue;
 
 
 	 // get all the advice list for this method
@@ -323,9 +322,6 @@ public class ShadowPointsSetter {
 	     GlobalAspectInfo.v().getAdviceList(method);
           debug("   --- BEGIN Setting ShadowPoints Pass2 for method " + 
 	                method.getName());
-	  debug("Advice for method " + method.getName() + " is : \n" +
-	               adviceList);
-
 	 // --- First look at preinitialization pointcuts 
 	 if (adviceList.hasPreinitializationAdvice())
 	   insertPreinitializationSP(method,adviceList.preinitializationAdvice);
@@ -428,7 +424,7 @@ public class ShadowPointsSetter {
       int countinits = 0;
       while ( it.hasNext() )
         { Stmt u = (Stmt) it.next();
-          debug("Looking at stmt " + u);
+          // debug("Looking at stmt " + u);
           if ((u instanceof InvokeStmt) && 
              ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
 	     ((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).

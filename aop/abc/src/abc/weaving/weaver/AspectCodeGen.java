@@ -16,11 +16,10 @@ import abc.weaving.matching.*;
  */
 
 public class AspectCodeGen {
-      /** set to false to disable debugging messages for AspectCodeGen */
-      public static boolean debug = true;
 
       private static void debug(String message)
-        { if (debug) System.err.println("ACG*** " + message); }
+        { if (abc.main.Debug.v().aspectCodeGen) 
+	    System.err.println("ACG*** " + message); }
 
 
     /** top-level call to fill in aspect with fields and methods */

@@ -16,12 +16,10 @@ import abc.weaving.matching.*;
 
 public class Weaver {
 
-    /** set to false to disable debugging messages for ShadowPointsSetter */
-    public static boolean debug = true;
-
 
     private static void debug(String message)
-      { if (debug) System.err.println("WEAVER DRIVER ***** " + message);
+      { if (abc.main.Debug.v().weaverDriver) 
+	  System.err.println("WEAVER DRIVER ***** " + message);
       }	
 
     public void weave() {
