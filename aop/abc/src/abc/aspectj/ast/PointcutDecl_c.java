@@ -64,11 +64,13 @@ import abc.aspectj.visit.DependsChecker;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
 
+
 /** 
  *  @author Oege de Moor
  *  @author Aske Simon Christensen
  *  @author Julian Tibble
  */
+
 public class PointcutDecl_c extends MethodDecl_c
                             implements PointcutDecl,
                                        ContainsAspectInfo,

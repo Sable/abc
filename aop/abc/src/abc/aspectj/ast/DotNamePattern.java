@@ -23,10 +23,7 @@ package abc.aspectj.ast;
 
 import polyglot.ast.Node;
 
-/** 
- *  @author Aske Simon Christensen
- *  @author Damien Sereni
- */
+
 public interface DotNamePattern extends NamePattern
 {
 

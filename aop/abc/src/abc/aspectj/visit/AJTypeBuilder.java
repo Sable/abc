@@ -34,6 +34,8 @@ import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
 import polyglot.types.ClassType;
 import polyglot.types.ParsedClassType;
+import polyglot.types.Named;
+import polyglot.types.CachingResolver;
 
 import polyglot.visit.TypeBuilder;
 
@@ -64,7 +66,8 @@ public class AJTypeBuilder extends TypeBuilder {
 	 }
 	 
 	/** cloned from TypeBuilder.newClass */
-	protected ParsedClassType newAspect(Position pos, Flags flags, String name, int perKind) {
+	protected ParsedClassType newAspect(Position pos, Flags flags, String name, int perKind) 
+	  throws SemanticException{
 		AJTypeSystem ts = (AJTypeSystem) typeSystem();
 
 		ParsedClassType ct = ts.createAspectType(this.job.source(),perKind);
@@ -122,6 +125,12 @@ public class AJTypeBuilder extends TypeBuilder {
 				ct.package_(currentPackage());
 			}
 
+			Named dup = ((CachingResolver) typeSystem().systemResolver()).check(ct.fullName());
+
+		   if (dup != null) {
+			   throw new SemanticException("Duplicate class \"" +
+										   ct.fullName() + "\".", pos);
+		   }
 			typeSystem().parsedResolver().addNamed(ct.fullName(), ct);
 
 			return ct;

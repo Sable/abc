@@ -179,7 +179,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 			   return findPointcutScope(outer,name);
 		   }
 
-		   throw new SemanticException("Pointcut " + name + " not found.", position());
+		   throw new SemanticException("Pointcut " + name + " not found ss.", position());
 	   }
 
    

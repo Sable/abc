@@ -28,10 +28,14 @@ import java.util.Iterator;
 import java.util.Collection;
 
 import polyglot.util.InternalCompilerError;
+import polyglot.util.CollectionUtil;
+
+import polyglot.main.Report;
 
 import polyglot.ext.jl.types.Context_c;
 
 import polyglot.types.Context;
+import polyglot.types.Named;
 import polyglot.types.ParsedClassType;
 import polyglot.types.ClassType;
 import polyglot.types.TypeSystem;
@@ -41,6 +45,7 @@ import polyglot.types.VarInstance;
 import polyglot.types.ReferenceType;
 import polyglot.types.FieldInstance;
 import polyglot.types.Type;
+import polyglot.types.SemanticException;
 
 /**
  * @author Oege de Moor
@@ -54,6 +59,7 @@ public class AJContext_c extends Context_c implements AJContext {
     protected AJContext_c startHostScope; // the first item on the context stack that signifies an ITD
     protected AJContext_c endHostScope; // the last item on the context stack that signifies an ITD
     protected ClassType fakeType;
+    protected boolean isfake;
     protected boolean indeclare;
     protected boolean isAdvice;
     protected boolean isAround;
@@ -70,6 +76,7 @@ public class AJContext_c extends Context_c implements AJContext {
 		indeclare = false;
 		isAdvice = false;
 		isAround = false;
+		isfake = false;
 		proceed = null;
 		inCflow = false;
 		inIf = false;
@@ -157,6 +164,8 @@ public class AJContext_c extends Context_c implements AJContext {
 	public Context pushClass(ParsedClassType c, ClassType t) {
 		AJContext_c r = (AJContext_c) super.pushClass(c,t);
 		r.nested = inInterType();
+		r.isfake = false;
+		r.fakeType = r.type;
 		return r;
 	}
 	
@@ -181,30 +190,37 @@ public class AJContext_c extends Context_c implements AJContext {
 		return declaredStatic;
 	}
 	
+	protected Context_c push() {
+		AJContext_c nc = (AJContext_c) super.push();
+		nc.isfake = false;
+	    return nc;
+	}
+	
 	private Context fakePushClass(ClassType ct) {
 		AJContext_c c = (AJContext_c) super.push();
 		c.fakeType = ct;
+		c.isfake = true;
 		return c;
 	}
 	
+	
 	/**
 		 * Finds the class which added a field to the scope.
-		 * just like findFieldScope, but return fakeType rather than type
+		 * 
 		 */
 	public ClassType findFieldScopeInHost(String name)  {
-		VarInstance vi = findVariableInThisScope(name);
-		if (vi instanceof FieldInstance) {
-			return fakeType;
-		}
-		if (vi == null && outer != null) {
-			return ((AJContext_c)outer).findFieldScopeInHost(name);
-		}
-		throw new InternalCompilerError ("Field " + name + " not found.");
+		ClassType ct = null;
+		ClassType ot = host;
+		while (ct == null)
+			try {
+				 ts.findField(ot,name,currentClass());
+				 ct = ot;
+			} catch (SemanticException e)
+					{ ot = ot.outer(); }
+		return ct;
 	}
 	
-	
-	/** Finds the class which added a method to the host scope.
-	   */
+	/** Finds the class which added a method to the host scope. */
 	  public ClassType findMethodScopeInHost(String name) {
 		  ClassType container = findMethodContainerInThisScope(name);
 		  if (container != null) {
@@ -216,12 +232,111 @@ public class AJContext_c extends Context_c implements AJContext {
 		  throw new InternalCompilerError ("Method " + name + " not found.");
 	  }
 	
-	public void addMethodContainerToThisHostScope(MethodInstance mi) {
-		 if (methods == null) methods = new HashMap();
-		 methods.put(mi.name(), fakeType);
-	 }
+	
+	protected ClassType type() {
+		if (isfake)
+			return fakeType;
+		else
+			return type;
+	}
+	
+	/**
+	   * Looks up a method with name "name" and arguments compatible with
+	   * "argTypes".
+	   */
+	  public MethodInstance findMethod(String name, List argTypes) throws SemanticException {
+		  if (Report.should_report(TOPICS, 3))
+			Report.report(3, "find-method " + name + argTypes + " in " + this);
+
+		  // Check for any method with the appropriate name.
+		  // If found, stop the search since it shadows any enclosing
+		  // classes method of the same name.
+		  if (this.type() != null &&                                 // AspectJ: currentClass() => type()
+			  ts.hasMethodNamed(this.type(), name)) {  // AspectJ: currentClass() => type()
+			  if (Report.should_report(TOPICS, 3))
+				Report.report(3, "find-method " + name + argTypes + " -> " +
+								  this.currentClass());
+
+			  // Found a class which has a method of the right name.
+			  // Now need to check if the method is of the correct type.
+			  return ts.findMethod(this.type(),                // AspectJ: currentClass() => type()
+								   name, argTypes, this.currentClass());
+		  }
+
+		  if (outer != null) {
+			  return outer.findMethod(name, argTypes);
+		  }
+
+		  throw new SemanticException("Method " + name + " not found.");
+	  }
 
 	
+	/** Finds the class which added a method to the scope.
+	   */
+	  public ClassType findMethodScope(String name) throws SemanticException {
+		  if (Report.should_report(TOPICS, 3))
+			Report.report(3, "find-method-scope " + name + " in " + this);
+
+		  if (this.type() != null &&  // AspectJ : currentClass() => type
+			  ts.hasMethodNamed(this.type(), name)) { // AspectJ: currentClass => type
+			  if (Report.should_report(TOPICS, 3))
+				Report.report(3, "find-method-scope " + name + " -> " +
+								  this.currentClass());
+			  return this.currentClass();
+		  }
+
+		  if (outer != null) {
+			  return outer.findMethodScope(name);
+		  }
+
+		  throw new SemanticException("Method " + name + " not found.");
+	  }
+	
+	
+	public ClassType findMethodContainerInThisScope(String name) {
+		if ((isClass() || isfake) && ts.hasMethodNamed(type(),name)){
+				return this.type();
+		}	
+		return null;
+	}
+		
+	public VarInstance findVariableInThisScope(String name) {
+			VarInstance vi = null;
+			if (vars != null) {
+				vi = (VarInstance) vars.get(name);
+			}
+			if (vi == null && (isClass() || isfake)) {  //AspectJ : isClass() => isClass() || isfake
+				try {
+					return ts.findField(this.type(), name, this.type); // AspectJ: first occurrence of type => type()
+				}
+				catch (SemanticException e) {
+					return null;
+				}
+			}
+			return vi;
+	}
+	
+	public Named findInThisScope(String name) {
+		  Named t = null;
+		  if (types != null) {
+			  t = (Named) types.get(name);
+		  }
+		  if (t == null && (isClass() || isfake)) {   // AspectJ: isClass() => isClass() || isfake
+			  if (! this.type().isAnonymous() &&   // AspectJ: type => type()
+				  this.type().name().equals(name)) { // AspectJ: type => type()
+				  return this.type();                          // AspectJ: type => type()
+			  }
+			  else {
+				  try {
+					  return ts.findMemberClass(this.type(), name, this.type); // AspectJ: type => type() (only the first)
+				  }
+				  catch (SemanticException e) {
+				  }
+			  }
+		  }
+		  return t;
+	  }
+		
 	public AJContext startHostScope() {
 		return startHostScope;
 	}
@@ -247,10 +362,12 @@ public class AJContext_c extends Context_c implements AJContext {
 
 	private boolean methodBetween(String name) {
 			if (this == startHostScope)
-				return false;
+				{ return false; }
 			else
+			   {
 				return (findMethodContainerInThisScope(name) != null ||
 							((AJContext_c)outer).methodBetween(name));
+			   }
 	}
 	
 	public boolean methodInHost(String name) {
@@ -286,73 +403,12 @@ public class AJContext_c extends Context_c implements AJContext {
 				   for (Iterator oct = outers.iterator(); oct.hasNext(); ) {
 					   ct = (ParsedClassType) oct.next();
 					   result = (AJContext_c) result.fakePushClass(ct);
-					   result.addMembers(ct,new HashSet());
+					   // result.addMembers(ct,new HashSet());
 				   }
 			  }
 			  return result;
 	}
 	
-	private void addMembers(ReferenceType type, Set visited) {
-
-	   if (visited.contains(type)) {
-		   return;
-	   }
-	
-	   visited.add(type);
-	
-	   // Add supertype members first to ensure overrides work correctly.
-	   if (type.superType() != null) {
-		   if (! type.superType().isReference()) {
-			   throw new InternalCompilerError(
-				   "Super class \"" + type.superType() +
-			   "\" of \"" + type + "\" is ambiguous.  " +
-			   "An error must have occurred earlier.",
-				   type.position());
-		   }
-	
-		   addMembers(type.superType().toReference(), visited);
-	   }
-	
-	   for (Iterator i = type.interfaces().iterator(); i.hasNext(); ) {
-		   Type t = (Type) i.next();
-	
-		   if (! t.isReference()) {
-			   throw new InternalCompilerError(
-				   "Interface \"" + t + "\" of \"" + type +
-			   "\" is ambiguous.  " +
-			   "An error must have occurred earlier.",
-				   type.position());
-		   }
-	
-		   addMembers(t.toReference(),visited);
-	   }
-	   
-
-	   
-	
-		AJTypeSystem ts = (AJTypeSystem) typeSystem();
-	
-	   for (Iterator i = type.methods().iterator(); i.hasNext(); ) {
-		   MethodInstance mi = (MethodInstance) i.next();
-		   if (ts.isAccessible(mi,startHostScope)) 
-				addMethodContainerToThisHostScope(mi); 
-	   }
-	
-	   for (Iterator i = type.fields().iterator(); i.hasNext(); ) {
-			FieldInstance fi = (FieldInstance) i.next();
-			if (ts.isAccessible(fi,startHostScope)) 
-				addVariable(fi);
-	   }
-	   
-	   if (type.isClass()) {
-				   for (Iterator i = type.toClass().memberClasses().iterator();
-						i.hasNext(); ) {
-					   ClassType mct = (ClassType) i.next();
-					   if (ts.isAccessible(mct,startHostScope))
-					   		addNamed(mct);
-				   }
-			   }
-	}
 
 	public AspectType currentAspect() {
 	    ClassType cur = currentClass();
@@ -371,4 +427,8 @@ public class AJContext_c extends Context_c implements AJContext {
 	    }
 	    return null;
 	}
+	
+	private static final Collection TOPICS = 
+					CollectionUtil.list(Report.types, Report.context);
+
 }
