@@ -491,6 +491,7 @@ public class Main {
             Options.global = options;
             Compiler compiler = createCompiler(ext);
 
+            AbcTimer.mark("Created polyglot compiler");
             if (!compiler.compile(aspect_sources)) {
                 throw new CompilerFailedException("Compiler failed.");
             }
