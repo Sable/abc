@@ -1,4 +1,4 @@
-#!/bin/perl -w
+#!/usr/bin/perl -w
 
 my $argc = @ARGV;
 if ($argc!=1) {
