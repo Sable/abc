@@ -596,10 +596,6 @@ public class Main {
 
                 abortIfErrors();
 
-                if (Debug.v().doValidate)
-                    validate();
-                AbcTimer.mark("Validate jimple");
-
                 optimize();
 
                 AbcTimer.mark("Soot Packs");
