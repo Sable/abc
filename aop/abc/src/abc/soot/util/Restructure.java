@@ -402,7 +402,7 @@ public class Restructure {
 		    do { 
 			stmt=(Stmt) units.getSuccOf(stmt); 
 		    } while(stmt instanceof IdentityStmt);
-		    units.insertAfter(Jimple.v().newAssignStmt(l,tr),stmt);
+		    units.insertBefore(Jimple.v().newAssignStmt(l,tr),stmt);
 		    break;
 		}
 	    }
