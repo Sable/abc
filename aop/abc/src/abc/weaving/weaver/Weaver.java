@@ -55,10 +55,10 @@ public class Weaver {
 
 	    // pass one, do not handle initialization and preinitialization
             sg.setShadowPointsPass1(scl);
-            pg.weaveInAspectsPass1(scl);
+            pg.weaveInAspectsPass(scl,1);
 	    // pass two, handle initializaiton and preinititalization
 	    sg.setShadowPointsPass2(scl);
-	    // TODO: pg.weaveInAspectsPass2(scl);
+	    pg.weaveInAspectsPass(scl,2);
 	} // each class
 
     } // method weave

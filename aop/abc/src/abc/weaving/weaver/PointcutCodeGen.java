@@ -16,12 +16,12 @@ public class PointcutCodeGen {
      { if (debug) System.err.println("PCG*** " + message);
      }
 
-   public void weaveInAspectsPass1( SootClass cl) {
+   public void weaveInAspectsPass( SootClass cl, int pass) {
      for( Iterator methodIt = cl.getMethods().iterator(); 
 	     methodIt.hasNext(); ) 
        { // get the next method
          final SootMethod method = (SootMethod) methodIt.next();
-         debug("   --- BEGIN weaveInAspectsPass1 for method " + 
+         debug("   --- BEGIN weaveInAspectsPass " + pass + " for method " + 
 	                method.getName());
 
 	 // nothing to do for abstract or native methods 
@@ -32,6 +32,8 @@ public class PointcutCodeGen {
          MethodAdviceList adviceList = 
 	     GlobalAspectInfo.v().getAdviceList(method);
 
+	 switch (pass) {
+	 case 1: // ----------------------- PASS 1 -------------
 	 // if no advice list for this method, nothing to do
 	 if ( (adviceList == null) || 
 	      (!adviceList.hasBodyAdvice() && !adviceList.hasStmtAdvice())
@@ -59,8 +61,44 @@ public class PointcutCodeGen {
 	          (AdviceApplication) alistIt.next(); 
 	      weave_one(cl,method,localgen,execappl);
 	   }  // each stmt advice
-	 
-         debug("   --- END weaveInAspectsPass1 for method " + 
+         break;
+
+	 case 2: // ----------------------- PASS 2 ----------------
+	 // if no advice list for this method, nothing to do
+	 if ( (adviceList == null) || 
+	      (!adviceList.hasInitializationAdvice() && 
+	       !adviceList.hasPreinitializationAdvice())
+	    )
+           { debug("No init or preinit advice for method " + method.getName());
+	     continue;
+	   }
+
+	 // have something to do ...
+         Body b2 = method.getActiveBody();
+         LocalGenerator localgen2 = new LocalGenerator(b2);
+
+	 // do the init advice 
+         for (Iterator alistIt = adviceList.initializationAdvice.iterator(); 
+	      alistIt.hasNext();)
+           { final AdviceApplication initappl = 
+	          (AdviceApplication) alistIt.next(); 
+	     weave_one(cl,method,localgen2,initappl);
+	   } // each init advice 
+
+	 // do the preinit advice 
+         for (Iterator alistIt = adviceList.preinitializationAdvice.iterator(); 
+	      alistIt.hasNext();)
+           { final AdviceApplication preinitappl = 
+	          (AdviceApplication) alistIt.next(); 
+	     weave_one(cl,method,localgen2,preinitappl);
+	   } // each preinit advice 
+	   break;
+
+	 default: // ------------------------- DEFAULT --------------
+	   throw new CodeGenException("Undefined pass");
+         }
+
+         debug("   --- END weaveInAspectsPass " + pass + " for method " + 
 	                method.getName());
 	} // each method 
    } // method weaveInAspectsPass1
