@@ -822,6 +822,9 @@ public class AroundWeaver {
 								throw new InternalAroundError();
 							switchTarget = Jimple.v().newNopStmt();
 						
+							if (first==lookupStmt)
+								throw new InternalAroundError();
+							
 							accessMethodStatements.insertBefore(switchTarget, first);
 						}
 						updateSavedReferencesToStatements(localMap);

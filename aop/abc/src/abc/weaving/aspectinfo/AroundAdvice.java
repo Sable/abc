@@ -74,11 +74,11 @@ public class AroundAdvice extends AbstractAdviceSpec {
     	try {
     		checkTypes(shadowType, adviceType);
     	} catch (RuntimeException e) {
-    		reportError(e.getMessage() +
-					"***  Shadow type: " + originalShadowType + " Advice Type: " + adviceType
-					+ " ShadowMatch: " + sm.toString() + 
-					  " Type: " + sm.getClass().getName()
-					,sm);
+    		reportError(
+    				"Invalid application of around advice: " +
+    				e.getMessage() +
+					" (shadow type: " + originalShadowType + 
+					"; advice return type: " + adviceType + ")",sm);
     		return null; // don't weave if type error
     	}
     	
