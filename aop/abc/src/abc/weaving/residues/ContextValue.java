@@ -22,6 +22,7 @@ package abc.weaving.residues;
 
 import soot.*;
 import abc.weaving.weaver.*;
+import java.util.*;
 
 /** The base class defining a value to be extracted from the context
  *  @author Ganesh Sittampalam
@@ -39,4 +40,13 @@ public abstract class ContextValue {
     public abstract Value getSootValue();
 
     public abstract ContextValue inline(ConstructorInliningMap cim);
+    public static List/*ContextValue*/ inline( List/*ContextValue*/ list,
+            ConstructorInliningMap cim) {
+        List ret = new ArrayList(list.size());
+        for( Iterator cvIt = list.iterator(); cvIt.hasNext(); ) {
+            final ContextValue cv = (ContextValue) cvIt.next();
+            ret.add(cv.inline(cim));
+        }
+        return ret;
+    }
 }

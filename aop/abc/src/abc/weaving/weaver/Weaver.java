@@ -112,26 +112,6 @@ public class Weaver {
             final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
             ad.resetForReweaving();
         }
-        // reset all shadow points
-        // In practice most will be thrown away later,
-        // but InterfaceInitialization ones won't and to keep things robust
-        // just reset the lot.
-
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-
-            final AbcClass cl = (AbcClass) clIt.next();
-            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-                final SootMethod method = (SootMethod) methodIt.next();
-
-                List/*<ShadowMatch>*/ shadowList=GlobalAspectInfo.v().getShadowMatchList(method);
-                Iterator smIt=shadowList.iterator();
-                while (smIt.hasNext()) {
-                    ShadowMatch sm=(ShadowMatch) smIt.next();
-                    if(sm.sp!=null) sm.sp.resetForReweaving();
-                }
-            }
-        }
-
     }
 
         static public void weave() {
