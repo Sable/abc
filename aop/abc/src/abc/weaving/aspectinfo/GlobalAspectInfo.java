@@ -73,4 +73,23 @@ public class GlobalAspectInfo {
 	ads.add(ad);
     }
 
+
+    private Hashtable /*<SootMethod,List<AdviceApplication>*/ adviceLists=null;
+
+    /** Computes the lists of advice application points for all weavable classes */
+    public void computeAdviceLists() {
+	adviceLists=abc.weaving.matching.AdviceApplication.computeAdviceLists(this);
+    }
+
+    /** Returns the list of AdviceApplication structures for the given method */
+    public List/*<AdviceApplication>*/ getAdviceList(SootMethod m) {
+
+	// lazily compute advice lists; could insist that it is done in advance
+	// to avoid surprising timing behaviour, and throw an exception here instead
+
+	if(adviceLists==null) computeAdviceLists(); 
+
+	return (List) adviceLists.get(m);
+    }
+
 }

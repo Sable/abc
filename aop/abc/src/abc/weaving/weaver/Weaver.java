@@ -3,20 +3,14 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import java.util.*;
+import abc.weaving.aspectinfo.*;
+import abc.weaving.matching.*;
 
 public class Weaver {
-    public void weave() {
-        for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
-            final SootClass cl = (SootClass) clIt.next();
-            for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
-                final SootMethod method = (SootMethod) methodIt.next();
-                if( method.isAbstract() ) continue;
-                if( method.isNative() ) continue;
-                method.retrieveActiveBody();
-            }
-        }
-        G.v().out.println( "The application classes are (hi):" );
+    public GlobalAspectInfo gai;
 
+    public Weaver() {
+	gai=new GlobalAspectInfo();
         for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
 
             final SootClass cl = (SootClass) clIt.next();
@@ -24,13 +18,32 @@ public class Weaver {
             if( isAspect(cl) ) {
                 System.out.println( "it's an aspect");
                 fillInAspect( cl ); 
+		final Aspect aspect=new Aspect(new abc.weaving.aspectinfo.Class(cl.getName()),null,null);
+		gai.addAspect(aspect);
+		gai.addAdviceDecl(new AdviceDecl(null,new SetField(null),null,aspect,null));
             } else {
                 System.out.println( "it's not an aspect");
-                weaveInAspects( cl );
+		gai.addClass(new abc.weaving.aspectinfo.Class(cl.getName()));
             }
-        }
+        }   
+    }
+
+    public void weave() {
+        G.v().out.println( "The application classes are (hi):" );
+
+        for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
+
+            final SootClass cl = (SootClass) clIt.next();
+            G.v().out.println( "hello "+cl.toString() );
+	    if(!isAspect(cl) ) {
+		System.out.println("it's not an aspect");
+		weaveInAspects( cl );
+	    }
+	}
+
         G.v().out.println( "finished application classes" );
     }
+
     public void fillInAspect( SootClass cl ) {
         System.out.println( "filling in aspect "+cl );
 
@@ -115,28 +128,32 @@ public class Weaver {
             if( method.isAbstract() ) continue;
             if( method.isNative() ) continue;
 
+	    List/*<AdviceApplication>*/ adviceList = gai.getAdviceList(method);
+
             Body b = method.getActiveBody();
             Chain units = b.getUnits();
-            Iterator it = units.snapshotIterator();
-            while( it.hasNext() ) {
-                Stmt stmt = (Stmt) it.next();
-                if( !(stmt instanceof AssignStmt) ) continue;
-                AssignStmt as = (AssignStmt) stmt;
-                Value lhs = as.getLeftOp();
-                if( !(lhs instanceof FieldRef) ) continue;
+            Iterator codeIt = units.snapshotIterator();
+	    Iterator adviceIt = adviceList.iterator();
+	    Stmt stmt = null;
+	    AdviceApplication aa = null;
+            while( codeIt.hasNext() && adviceIt.hasNext()) {
+		if(stmt==null) stmt = (Stmt) codeIt.next();
+		if(aa==null) aa = (AdviceApplication) adviceIt.next();
+		if(stmt!=aa.begin) {
+		    stmt=null;
+		    continue;
+		}
+		final AdviceDecl advicedecl=aa.advice;
+		final SootClass aspect=advicedecl.getAspect().getInstanceClass().getSootClass();
 
-                for( Iterator aspectIt = Scene.v().getApplicationClasses().iterator(); aspectIt.hasNext(); ) {
-
-                    final SootClass aspect = (SootClass) aspectIt.next();
-                    if( !isAspect( aspect ) ) continue;
-                    Local l = Jimple.v().newLocal( localName(), aspect.getType() );
-                    b.getLocals().add(l);
-                    units.insertBefore( Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList()))), as);
-                    units.insertBefore( 
-                            Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, aspect.getMethod("before$1", new ArrayList() ) ) ), as ); 
-                }
-            }
-        }
+		Local l = Jimple.v().newLocal( localName(), aspect.getType() );
+		b.getLocals().add(l);
+		units.insertBefore( Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList()))), stmt);
+		units.insertBefore( 
+				   Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, aspect.getMethod("before$1", new ArrayList() ) ) ), stmt );
+		aa=null;
+	    }
+	}
     }
     private static boolean isAspect( SootClass cl ) {
         if( cl.getName().equals( "Aspect" ) ) return true;
