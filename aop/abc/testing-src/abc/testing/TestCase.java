@@ -156,7 +156,7 @@ public class TestCase {
 					String[] arrFiles = (files == "") ? new String[0] : files.split(",");
 					String[] arrJars = new String[arrFiles.length];
 					for(int j = 0; j < arrFiles.length; j++) {
-					    arrFiles[j].trim();
+					    arrFiles[j] = arrFiles[j].trim();
 					    if(arrFiles[j].endsWith(".jar") || arrFiles[j].endsWith(".zip")) {
 					        arrJars[j] = arrFiles[j];
 					        arrFiles[j] = null;
