@@ -19,7 +19,6 @@ public class IntertypeAdjuster {
         }
     }
 
-    // TODO: When Aske gives us a throws list, use it
     private void addMethod( IntertypeMethodDecl imd ) {
         MethodSig method = imd.getTarget();
 
@@ -43,7 +42,7 @@ public class IntertypeAdjuster {
                 retType,
                 modifiers );
 
-        for( Iterator exceptionIt = imd.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+        for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
 
             final SootClass exception = (SootClass) exceptionIt.next();
             sm.addException( exception );
