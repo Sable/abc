@@ -33,6 +33,7 @@ import polyglot.main.Report;
 import polyglot.types.Context;
 import polyglot.types.TypeSystem;
 import polyglot.types.ParsedClassType;
+import polyglot.types.SemanticException;
 
 import abc.aspectj.ast.PCIf;
 import abc.aspectj.ast.AdviceDecl;
@@ -219,22 +220,7 @@ public class AspectMethods extends ContextVisitor {
 	pcifs.pop();
     }
 	
-    public NodeVisitor enter(Node parent, Node n) {
-        // The following code is needed to build the context information:
-        if (Report.should_report(Report.visit, 5))
-    	    Report.report(5, "enter(" + n + ")");
-
-        AspectMethods v = this;
-
-        Context c = this.enterScope(parent, n);
-
-        if (c != this.context) {
-            v = (AspectMethods) this.copy();
-            v.context = c;
-            v.outer = this;
-            v.error = false;
-        }
-        
+    public NodeVisitor enterCall(Node parent, Node n) throws SemanticException {
         // Code to handle aspect methods:
         JL del = n.del();
         if (del instanceof MakesAspectMethods) {
@@ -244,25 +230,20 @@ public class AspectMethods extends ContextVisitor {
 		    cflowdepth++;
 		    ((CflowDepth) del).recordCflowDepth(cflowdepth);
 		}
+		return this;
 		
-		// This call is how traversal works for ContextVisitors.
-	    return v.superSuperEnter(parent, n);
     }
  
-    public NodeVisitor superSuperEnter(Node parent, Node n) {
-        return super.superEnter(parent, n);
-    }
-    
-    public Node leave(Node parent, Node old, Node n, NodeVisitor v)
-    {
-        JL del = n.del();
+	protected Node leaveCall(Node old, Node n, NodeVisitor v)  throws SemanticException {
+		JL del = n.del();
 		if (del instanceof CflowDepth) {
-		    cflowdepth--;
+			cflowdepth--;
 		}              
 		if (del instanceof MakesAspectMethods) {
-                        return ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
-                }
-
-                return n;
-        }
+					 n = ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
+				}
+		return n;
+		
+	}
+    
 }

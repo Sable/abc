@@ -142,17 +142,7 @@ public class AJClassDecl_c extends ClassDecl_c
                                        AspectJNodeFactory nf,
                                        AspectJTypeSystem ts)
         {
-                if (visitor.isAdvice()) {
-	                for (Iterator mets = type().methods().iterator(); mets.hasNext(); ) {
-	                	MethodInstance mi = (MethodInstance) mets.next();
-	                	visitor.advice().localMethod(mi);
-	                }
-	                for (Iterator cons = type().constructors().iterator(); cons.hasNext(); ) {
-	                	ConstructorInstance ci = (ConstructorInstance) cons.next();
-	                	visitor.advice().localMethod(ci);
-	                }
-                }
-                               
+                                               
                 ClassDecl cd = this;
                 List localMethods = visitor.methods();
                 visitor.popClass();

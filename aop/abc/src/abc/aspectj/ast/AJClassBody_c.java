@@ -7,6 +7,7 @@
 package abc.aspectj.ast;
 
 import java.util.List;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 import polyglot.types.SemanticException;
@@ -24,13 +25,18 @@ import polyglot.types.TypeSystem;
 import polyglot.types.MemberInstance;
 import polyglot.types.MethodInstance;
 import polyglot.types.FieldInstance;
+import polyglot.types.Context;
 
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
 import abc.aspectj.types.AspectJTypeSystem_c;
+import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.PointcutInstance_c;
+import abc.aspectj.types.AJContext;
+
+import abc.aspectj.visit.AspectMethods;
 
 import abc.aspectj.ast.IntertypeMethodDecl_c;
 
@@ -40,7 +46,7 @@ import abc.aspectj.ast.IntertypeMethodDecl_c;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class AJClassBody_c extends ClassBody_c {
+public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 
 	
 	public AJClassBody_c(Position pos, List members) {
@@ -180,4 +186,27 @@ public class AJClassBody_c extends ClassBody_c {
 		duplicateMethodCheck(ct);
 	}
 	
+	public void aspectMethodsEnter(AspectMethods visitor)
+	{
+		AJContext c = (AJContext) visitor.context();
+		ClassType ct = c.currentClassScope();
+		if (c.inAdvice()) {
+			  for (Iterator mets = ct.methods().iterator(); mets.hasNext(); ) {
+				  MethodInstance mi = (MethodInstance) mets.next();
+				  visitor.advice().localMethod(mi);
+			  }
+			  for (Iterator cons = ct.constructors().iterator(); cons.hasNext(); ) {
+				  ConstructorInstance ci = (ConstructorInstance) cons.next();
+				  visitor.advice().localMethod(ci);
+			  }
+		  }
+	}
+
+	
+	public Node aspectMethodsLeave(AspectMethods visitor,
+										  AspectJNodeFactory nf,
+										  AspectJTypeSystem ts)
+   {              
+		   return this;
+   }
 }
