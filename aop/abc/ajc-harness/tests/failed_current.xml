@@ -47,9 +47,8 @@
 <ajc-test title="packages in wrong place" num="979" dir="abctests/bugs/pack1">
       <compile files="A/B.java"></compile>
     </ajc-test>
-<ajc-test title="binding of variables inside || pointcuts" num="980" dir="abctests/bugs">
-      <compile files="BindProblem.java"></compile>
-      <run class="BindProblem"></run>
+<ajc-test title="problem with byte constants" num="981" dir="abctests/bugs">
+       <compile files="ByteProblem.java"></compile>
     </ajc-test>
  
 </suite>

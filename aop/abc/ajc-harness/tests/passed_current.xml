@@ -4935,5 +4935,9 @@
           <compile files="AbstractPrec1.java"></compile>
           <run class="AbstractPrec1"></run>
     </ajc-test>
+<ajc-test title="binding of variables inside || pointcuts" num="980" dir="abctests/bugs">
+      <compile files="BindProblem.java"></compile>
+      <run class="BindProblem"></run>
+    </ajc-test>
  
 </suite>
