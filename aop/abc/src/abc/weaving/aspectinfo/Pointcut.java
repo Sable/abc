@@ -118,16 +118,20 @@ public abstract class Pointcut extends Syntax {
 
 	private static Pointcut makeConjuncts(List/*<Pointcut>*/ conjuncts,Position pos) {
 	    Iterator it=conjuncts.iterator();
-	    Pointcut res=(Pointcut) it.next();
+	    Pointcut res=new FullPointcut(pos);
+	    Pointcut ifs=new FullPointcut(pos);
 	    while(it.hasNext()) {
-		res=new AndPointcut(res,(Pointcut) it.next(),pos);
+		Pointcut cur=(Pointcut) it.next();
+		if(cur instanceof If)
+		    ifs=new AndPointcut(ifs,cur,pos);
+		else res=new AndPointcut(res,cur,pos);
 	    }
-	    return res;
+	    return new AndPointcut(res,ifs,pos);
 	}
 
 	private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/ disjuncts,Position pos) {
 	    Iterator it=disjuncts.iterator();
-	    Pointcut res=makeConjuncts((List) it.next(),pos);
+	    Pointcut res=new EmptyPointcut(pos);
 	    while(it.hasNext()) {
 		res=new OrPointcut(res,makeConjuncts((List) it.next(),pos),pos);
 	    }
