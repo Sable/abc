@@ -2,6 +2,84 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd">
 
 <!--
+
+--------------------------------------------------------------------
+ABC Boys and Girls .... Rules for editing this file.
+--------------------------------------------------------------------
+
+1)  you may add an abccomment to an ajc-test entry,  here is an
+    example I have added to the first entry of abcTests.xml.
+
+    Note that this is INSIDE that <ajc-test ajc-test ....> tag.
+
+<ajc-test dir="base/test100"
+      abccomment="I have put this comment in as a test, and this is a very
+         long one over multiple lines too. LJH"
+      title="static and non-static before methods -  one file"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+2)  if you want to change any of the <message ... /> items because they don't
+    correspond to the errors/warnings that we expect from abc,  you
+    should.
+
+      (a) RENAME ALL existing <message ... /> items to
+                              <ajcmessage ... />.
+
+      (b) INSERT new <message .../> items corresponding to what you
+               expect from abc.  (note that the testHarness seems to
+               only handle one message per line number)
+
+      (c) INSERT an abccomment into the <ajc-test ... /> tag to describe
+             what you changed and why
+
+3) if you want to change an entry from one that was supposed to run, to
+     one that should exit with compile-time errors ...
+
+      (a) REPLACE the <compile files="foo.java"/>  
+          with an entry as follows.  Note that the <compile .../> entry
+          is replaced with <compile>  .... </compile>, where the first
+          entry is an ajcmessage with kind="ignore" and then your
+          real messages.
+ 
+                      <compile files="foo.java">
+                         <ajcmessage kind="ignore"/>
+                         <message kind="error" line="xx"/>
+                         <message kind="warning" line="yy"/>
+                       </compile>
+
+       (b) CHANGE  the <run .... > to <ajcrun ....>
+
+       (c) INSERT an abccomment to say what you changed and why
+           
+     Here is an example:
+
+     original entry:
+
+     <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal"
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java"/>
+        <crun class="KeywordAspect" />
+     </ajc-test>
+
+
+     new entry:
+
+     <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <ajcmessage kind="ignore" />
+          <message kind="error" line="7"/> 
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+-->
+
+<!--
   known keywords:
  
   knownLimitation     Accepted limitation of current implementation (fails)
@@ -778,9 +856,7 @@
 
     <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
       abccomment="abc doesn't allow keywords 
-                      need to allow for syntax error. LJH 
-                  to translate back message must be removed and
-                  ajcrun changed to run"
+                      need to allow for syntax error. LJH "
       keywords="from-java,purejava">
         <compile files="KeywordAspect.java">
           <message kind="error" line="7"/> 
