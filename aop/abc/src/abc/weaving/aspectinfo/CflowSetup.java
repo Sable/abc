@@ -413,8 +413,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     }
 
     public static int getPrecedence(CflowSetup a,CflowSetup b) {
-	// We know that the belows are the same and that we are in
-	// the same aspect
+	// We know that the belows are the same
 
 	if(a.isBelow()) {
 	    if(a.getDepth() < b.getDepth()) return GlobalAspectInfo.PRECEDENCE_FIRST;
@@ -423,6 +422,10 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    if(a.getDepth() > b.getDepth()) return GlobalAspectInfo.PRECEDENCE_FIRST;
 	    if(a.getDepth() < b.getDepth()) return GlobalAspectInfo.PRECEDENCE_SECOND;
 	}
+
+	if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
+	    return GlobalAspectInfo.v().getPrecedence
+		(a.getDefiningAspect(),b.getDefiningAspect());
 
 	// FIXME: Best guess is to compare by positions, but is this correct w.r.t inlining?
 	if(a.getPosition().line() < b.getPosition().line()) 

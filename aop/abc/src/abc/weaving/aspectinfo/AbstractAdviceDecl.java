@@ -64,6 +64,13 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 	return aspct;
     }
 
+    /** Get the aspect an advice declaration was originally defined in.
+     *  @author Ganesh Sittampalam
+     */
+    public Aspect getDefiningAspect() {
+	return defined_aspct;
+    }
+
     protected Object clone() {
 	try {
 	    return super.clone();
@@ -175,16 +182,18 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
 	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
 
-	// FIXME : what happens when we merge cflow stacks?
+	// CflowSetup needs to be compared by depth first
+	if(a instanceof CflowSetup && b instanceof CflowSetup) 
+	    return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
+
 	if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
 	    return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
 
-	// Must be both AdviceDecl or both CflowSetup, from the same aspect
-	// Check carefully just to be on the safe side
 	if(a instanceof AdviceDecl && b instanceof AdviceDecl)
 	    return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
-	if(a instanceof CflowSetup && b instanceof CflowSetup) 
-	    return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
+
+	if(a instanceof DeclareSoft && b instanceof DeclareSoft)
+	    return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
 
 	throw new InternalCompilerError
 	    ("case not handled when comparing "+a+" and "+b);

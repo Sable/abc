@@ -94,6 +94,24 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
     }
 
+    public static int getPrecedence(AdviceDecl a,AdviceDecl b) {
+	// We know that we are in the same aspect
+
+	if(a.getPosition().line() < b.getPosition().line()) 
+	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(a.getPosition().line() > b.getPosition().line()) 
+	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	if(a.getPosition().column() < b.getPosition().column()) 
+	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(a.getPosition().column() > b.getPosition().column()) 
+	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	// Trying to compare the same advice, I guess... (modulo inlining behaviour)
+	return GlobalAspectInfo.PRECEDENCE_NONE;
+
+    }
+
     public String toString() {
 	return "soften "+getException()+" at "+getPointcut();
     }
