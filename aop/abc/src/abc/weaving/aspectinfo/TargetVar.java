@@ -42,4 +42,12 @@ public class TargetVar extends TargetAny {
     public void getFreeVars(Set/*<String>*/ result) {
 	result.add(var.getName());
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof TargetVar) {
+	    othervar = ((TargetVar)otherpc).getVar();
+	    return (othervar.equals(var));
+	} else return false;
+    }
+
 }

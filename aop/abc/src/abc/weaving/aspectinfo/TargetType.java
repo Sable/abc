@@ -27,4 +27,12 @@ public class TargetType extends TargetAny {
     protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
 	return CheckType.construct(cv,type.getSootType());
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof TargetType) {
+	    othertype = ((TargetType)otherpc).getType();
+	    return (othertype.equals(type));
+	} else return false;
+    }
+
 }

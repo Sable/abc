@@ -41,4 +41,11 @@ public class ThisVar extends ThisAny {
     public void getFreeVars(Set/*<String>*/ result) {
 	result.add(var.getName());
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof ThisVar) {
+	    othervar = ((ThisVar)otherpc).getVar();
+	    return (othervar.equals(var));
+	} else return false;
+    }
 }
