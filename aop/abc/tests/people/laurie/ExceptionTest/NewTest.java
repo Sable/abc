@@ -1,29 +1,47 @@
 public class NewTest {
-  int a;
-  int b;
+  int a = 2;
+  int b = 3;
+  int c = 4;
+  static int forceclinit = 13;
 
   public NewTest(int a, int b)
     { // TODO: bug in Java2Jimple, loses this try catch block 
-      try 
-        { a = a;
-          b = b;
+      /* try 
+        { this.a = a;
+          this.b = b;
 	}
       catch (Exception e)
-        { a = 1;
+        { this.a = 1;
 	}
+       */
+       this.a = a;
+       this.b = b;
     }
 
   // creating objects in args to this, make sure correct <init> is found
   public NewTest()
     { this (new Integer(2).intValue(), new Integer(3).intValue());
-      a = 13;
+      this.a = 13;
     }
 
   // creating NewTest args in this, make sure correct <init> is found
   public NewTest(int a)
     { this (new NewTest(2,3).a, new NewTest(2,3).b);
-      a = 13;
+      this.a = 13;
     }
+
+  // creating NewTest with multiple returns
+  public NewTest(int a, int b, int c)
+    {  if ( a == 0 )
+         { this.a = 0; return; }
+        else if (b == 0)
+	 { this.b = 1; return; }
+	else if (c == 0)
+	 { this.c = 2; return; }
+        this.a = a;
+        this.b = b;
+        this.c = c;
+     }	
       
   // body ending in a goto
   public int c(int x)
@@ -62,13 +80,11 @@ public class NewTest {
 
   // branch to first instruction in body
   public int g(int x)
-    { int sum = 0;
-      do
-        { sum += x;
-	  x--;
+    { do
+        { x--;
 	}
       while (x > 0);
-      return(sum);
+      return(x);
     }
 
   // only one return
