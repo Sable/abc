@@ -188,28 +188,6 @@ Semantic Error at abctests/bugs/PrecedenceSort.java:2,18-3:5: Pieces of advice f
 FAIL: Test 1015: "abctests/bugs/correct topological sorting of precedence" failed.
 
 
-Running test 1017: abctests/bugs/around weaver incorrectly unboxing double literals in float context
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundUnboxing.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:568)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Warning: Bad use of primitive type at $f0 = 1.0E-5 in <AroundUnboxing: void first(float)> in <AroundUnboxing: void first(float)>
-	at soot.Body.checkCopy(Body.java:618)
-	at soot.Body.checkTypes(Body.java:583)
-	at soot.Body.validate(Body.java:208)
-	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.PackManager.runBodyPacks(PackManager.java:551)
-	at soot.PackManager.runBodyPacks(PackManager.java:371)
-	at soot.PackManager.runPacks(PackManager.java:315)
-	at abc.main.Main.optimize(Main.java:947)
-	at abc.main.Main.run(Main.java:508)
-	... 3 more
-FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed.
-
-
 Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtractedProceed.java 
  java.util.NoSuchElementException null
@@ -217,7 +195,7 @@ soot.util.HashChain$LinkIterator.<init>(HashChain.java:466)
 soot.util.HashChain.iterator(HashChain.java:327)
 abc.weaving.weaver.AroundWeaver$Util.removeStatements(AroundWeaver.java:245)
 abc.weaving.weaver.AroundWeaver$Util.access$900(AroundWeaver.java:118)
-abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3083)
+abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3084)
 abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod.generateProceeds(AroundWeaver.java:3031)
 abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass.generateProceeds(AroundWeaver.java:2657)
 abc.weaving.weaver.AroundWeaver$AdviceMethod.generateProceedCalls(AroundWeaver.java:2539)
@@ -254,7 +232,7 @@ Caused by: java.util.NoSuchElementException: HashChain.LinkIterator(obj) with ob
 	at soot.util.HashChain.iterator(HashChain.java:327)
 	at abc.weaving.weaver.AroundWeaver$Util.removeStatements(AroundWeaver.java:245)
 	at abc.weaving.weaver.AroundWeaver$Util.access$900(AroundWeaver.java:118)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3083)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3084)
 	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod.generateProceeds(AroundWeaver.java:3031)
 	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass.generateProceeds(AroundWeaver.java:2657)
 	at abc.weaving.weaver.AroundWeaver$AdviceMethod.generateProceedCalls(AroundWeaver.java:2539)

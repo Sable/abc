@@ -5094,5 +5094,9 @@
             <message kind="error"></message>
          </compile>
     </ajc-test>
+<ajc-test title="around weaver incorrectly unboxing double literals in float context" num="1017" dir="abctests/bugs">
+        <compile files="AroundUnboxing.java"></compile>
+        <run class="AroundUnboxing"></run>
+    </ajc-test>
  
 </suite>
