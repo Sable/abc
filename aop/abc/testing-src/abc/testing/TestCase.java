@@ -476,8 +476,8 @@ public class TestCase {
 		    try {
 		        BufferedReader tmp = new BufferedReader(new FileReader("tmp.output"));
 		        BufferedWriter local = null;
+			    (new File(dir + System.getProperty("path.separator") + filename(title))).delete();
 		        if(this.failed) {
-				    (new File(dir + System.getProperty("path.separator") + filename(title))).delete();
 				    local = new BufferedWriter(new FileWriter(dir + System.getProperty("file.separator") + filename(title) + ".output"));
 		        }
 			    String line;
