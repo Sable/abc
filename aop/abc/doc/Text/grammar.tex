@@ -11,7 +11,12 @@ where further weeding must be used to weed out invalid programs.
 \subsection{Extensions to the Java Grammar}
 
 The following five rules are already found in the Java grammar.  The
-alternatives given below are additional alternatives to those rules.
+alternatives given below are additional alternatives to those rules.    At the
+highest level ({\em type\_declaration}), we add the possibility for declaring
+an aspect.    Inside a class ({\em class\_member\_declaration}) and inside an
+interface ({\em interface\_member\_declaration}), we
+add the possibility of declaring an aspect or a pointcut.   Finally, we add the
+special method call for proceed. 
 
 \begin{minipage}{6in}
 \begin{grammar}
@@ -25,10 +30,6 @@ alternatives given below are additional alternatives to those rules.
 
 <{\red method_invocation}> ::= 'proceed' '(' {\red <argument_list_opt>} ')'
 
-<{\red simple_name}> ::=  \hspace{1in} \\
-                  'thisJoinPoint' 
-         \alt     'thisJoinPointStaticPart'
-         \alt     'thisEnclosingJoinPointStaticPart'
 \end{grammar}
 \end{minipage}
 
@@ -74,12 +75,12 @@ The last alternative has been introduced for compatibility with
 \subsubsection{Aspect Body}
 
 An aspect body consists of zero or more declarations.   These include
-all valid {\em class\_body\_declarations},  plus four new kinds of
-declarations specific to AspectJ.
+all valid {\em class\_body\_declarations},  plus three new kinds of
+declarations specific to AspectJ.   Note that 
 
 \begin{minipage}{6in}
 \begin{grammar}
-<aspect_body> ::= $\epsilon$ | <aspect_body_declarations> 
+<aspect_body> ::= '{' '}' | '{' <aspect_body_declarations> '}'
 
 <aspect_body_declarations> ::= \hspace{1in} \\
                   <aspect_body_declarations> 
@@ -88,7 +89,6 @@ declarations specific to AspectJ.
 <aspect_body_declaration> ::= \hspace{1in} \\
                   {\red <class_body_declaration>}
           \alt    <declare_declaration>
-          \alt    <pointcut_declaration>
           \alt    <advice_declaration>
           \alt    <intertype_member_declaration>
 \end{grammar}
@@ -127,7 +127,7 @@ declarations specific to AspectJ.
 \end{grammar}
 \end{minipage}
 
-\noindent Notes:
+\noindent Note, a later weeding phase must ensure that:
 \begin{itemize}
 \item For the first alternative the modifiers must include {\bf abstract}.
 \item For the second alternative the modifiers must not include {\bf abstract}.
@@ -149,6 +149,7 @@ declarations specific to AspectJ.
 \alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'returning'
              '(' {\red <formal_parameter>} ')'
 \alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'throwing'
+\alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'throwing' '(' ')'
 \alt   'after'  '(' {\red <formal_parameter_list_opt>} ')' 'throwing'
              '(' {\red <formal_parameter>} ')'
 \alt   {\red <type>} 'around' '(' {\red <formal_parameter_list_opt>} ')'
@@ -160,8 +161,8 @@ declarations specific to AspectJ.
 \begin{itemize}
 \item The only valid modifier for an \em{advice\_declaration} is 
 {\bf strictfp}.
-\item The superfluous parentheses in the second alternative of
-{\it returning} have been introduced for compatibility with {\tt ajc}. 
+\item The superfluous parentheses in the second alternatives of
+{\it returning} and {\it throwing} have been introduced for compatibility with {\tt ajc}. 
 \end{itemize}
 
 \subsubsection{Intertype Member Declarations}
@@ -217,22 +218,22 @@ declarations specific to AspectJ.
        '(' <pointcut_expr> ')'
 \alt   'call' '(' <method_constructor_pattern> ')'
 \alt   'execution' '(' <method_constructor_pattern> ')'
-\alt   'withincode' '(' <method_constructor_pattern> ')'
 \alt   'initialization' '(' <constructor_pattern> ')'
 \alt   'preinitialization' '(' <constructor_pattern> ')'
+\alt   'staticinitialization' '(' <classname_pattern_expr> ')'
 \alt   'get' '(' <field_pattern> ')'
 \alt   'set' '(' <field_pattern> ')'
 \alt   'handler' '(' <classname_pattern_expr> ')'
-\alt   'staticinitialization' '(' <classname_pattern_expr> ')'
-\alt   'within' '(' <classname_pattern_expr> ')'
-\alt   'this' '(' <classname_pattern_expr> ')'
-\alt   'target' '(' <classname_pattern_expr> ')'
-\alt   'args' '(' <formal_pattern_list_opt> ')'
 \alt   'adviceexecution' '(' ')'
+\alt   'within' '(' <classname_pattern_expr> ')'
+\alt   'withincode' '(' <method_constructor_pattern> ')'
 \alt   'cflow' '(' <pointcut_expr> ')'
 \alt   'cflowbelow' '(' <pointcut_expr> ')'
 \alt   'if' '(' {\red <expression> } ')'
-\alt   {\red <name>} '(' <formal_pattern_list_opt> ')'
+\alt   'this' '(' <type_id_star> ')'
+\alt   'target' '(' <type_id_star> ')'
+\alt   'args' '(' <type_id_star_list_opt> ')'
+\alt   {\red <name>} '(' <type_id_star_list_opt> ')'
 \end{grammar}
 \end{blue}
 \end{minipage}

@@ -1,7 +1,5 @@
-\documentclass{SableReport}
-
-\input{spacing.sty}
-%%\input{psfig.sty}
+\documentclass[11pt]{article}
+\usepackage{fullpage}
 \usepackage{epsfig}
 \usepackage{pstricks}
 \usepackage{pst-node}
@@ -38,10 +36,9 @@
 \def\dblfloatpagefraction{.95}
 \end{comment}
 
-\def\mytitle{AspectJ Clearly}
+\def\mytitle{The abc scanner and parser, including an LALR(1) grammar for AspectJ }
 \def\myauthors{Laurie Hendren,  Oege De Moor and Aske Simon Christensen}
-\def\myack{This work was supported, in part, by EPSRC, NSERC and Aske???.}
-\def\myreportnumber{2004-1}
+\def\myack{This work was supported, in part, by EPSRC and NSERC.}
 
 %\setlength{\grammarindent}{5em}
 
@@ -51,13 +48,7 @@
 
 \begin{document}
 
-\ReportNumber{\myreportnumber}
-\MakeTitlePage
-\tableofcontents
-\clearpage
-\listoffigures
-\listoftables
-\clearpage
+\maketitle
 
 \begin{abstract}
 \input{Text/abs}
@@ -72,12 +63,6 @@
 
 \section{LALR(1) Grammar \label{GRAMMAR}}
 \input{Text/grammar}
-
-\section{Weeding \label{WEEDING}}
-\input{Text/weeding}
-
-\section{Semantic Analysis \label{SEMANTICANALYSIS}}
-\input{Text/semantic}
 
 \subsection*{Acknowledgments}
 \myack

@@ -1,5 +1,13 @@
-The purpose of this document is to give a clear explanation of AspectJ
-from the perspective of a compiler writer.  
+The purpose of this document is to give a clear explanation of the scanner
+and parser for abc.    In defining the scanner and lexer our goal was to
+come up with clear rules for tokens and to express the grammar in an
+LALR(1) specification that results in no shift-reduce or reduce-reduce
+conflicts.   Any language extensions implemented using abc should follow
+the same principles.
 
 We have based our implementation on Polyglot~\cite{Nystrom:2003:PEC}, 
-starting with the base Java compiler.
+starting with the base Java compiler.   The scanner is an extended version
+of polyglot's base Java scanner.   The main difference is that the abc
+scanner uses states to distinguish between different contexts.  The parser
+uses polyglot's mechanism for extending an existing grammar.
+

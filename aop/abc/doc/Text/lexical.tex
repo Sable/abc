@@ -1,7 +1,7 @@
 The lexical analysis of AspectJ is complicated by the fact that there are
 really three different languages being parsed: (1) normal Java code,
 (2)aspect declarations, and 
-(3) pointcut definitions inside aspects.  
+(3) pointcut definitions.
 Each of these three sub-languages has its own lexical structure,  and it 
 simplifies the subsequent design of the grammar if the scanner has different 
 states and rules for each sub-grammar.
@@ -22,8 +22,8 @@ and each are discussed in more detail in the subsequent subsections.
 \subsubsection{{\sc Java} mode}
 The outermost scope is always has
 {\sc Java} mode.  In this mode all tokens are scanned exactly as in
-Java, with the exception that {\bf privileged} and {\bf aspect} are
-considered to be keywords and cannot be used an identifiers.
+Java, with the exception that {\bf privileged},  {\bf aspect} and 
+{\bf pointcut} are considered to be keywords and cannot be used an identifiers.
 
 \subsubsection{{\sc Aspect} mode}
 Inside the program one can have a nested {\sc Aspect} scope which begins
@@ -32,12 +32,11 @@ Figure \ref{FIG:LexExample} shows one  {\sc Aspect} scope corresponding
 to the body of the declaration of the aspect named "OrdinaryAspect''. 
 
 In {\sc Aspect} mode all symbols are exactly
-the same as in Java,  except for the addition of  keywords
+the same as in {\sc Java} mode,  except for the addition of  keywords
 {\bf after}, {\bf around}, {\bf before}, {\bf declare}, 
 {\bf issingleton}, {\bf percflow}, {\bf percflowbelow}, {\bf pertarget},
-{\bf perthis}, {\bf pointcut}, {\bf proceed}, 
-{\bf thisEnclosingJoinPointStaticPart}, {\bf thisJoinPoint}, and
-{\bf thisJoinPointStaticPart}.   Just like normal Java keywords, these
+{\bf perthis}, {\bf pointcut}, {\bf proceed}. 
+Just like normal Java keywords, these
 additional keywords cannot be used as identifiers, inside of an
 {\sc Aspect} scope.
 
@@ -46,7 +45,7 @@ Whereas the {\sc Java} and {\sc Aspect} modes are very similar, basically
 differing only on the keywords recognized, the {\sc Pointcut} mode
 has a completely different lexical structure.   
 In Figure \ref{FIG:LexExample},  the lexical scopes for pointcuts are
-shown by the boxes nexted inside the Aspect.   There four contexts in
+shown by the boxes nexted inside the Aspect.   There are four contexts in
 which pointcut scopes occur, as follows:
 
 \begin{description}
@@ -90,8 +89,8 @@ Advice declarations have a pointcut expression in their header.
 All such pointcuts will be preceeded by one of the keywords
 {\bf before}, {\bf after} or {\bf around}.    For example, in
 Figure \ref{FIG:LexExample},  a pointcut follows an {\bf after} keyword.
-The pointcut ends before the body of the pointcut, signalled by
-a {\bf \{}, begins.
+The pointcut ends before the body of the pointcut begins, signalled by
+a {\bf \{}.
 
 Thus, a pointcut context starts immediately after a {\bf before},
 {\bf after} or {\bf around} token, and ends at the first opening
@@ -104,8 +103,8 @@ brace encountered.
 Pointcuts have no lexical scopes nested inside them, 
 except for one case, the
 {\bf if} pointcut.   The {\bf if} pointcut contains a boolean
-expression, which is just Java code that may contain special
-Aspect keywords such as {\bf thisJoinPoint}.    We define a special
+expression, which is just Java code.
+We define a special
 mode called {\sc PointcutIfExpr} which starts right after the
 {\bf if} keyword inside a pointcut, and ends at the terminating
 parenthesis closing the boolean expression.   The lexical structure,
@@ -131,8 +130,8 @@ entered has {\sc Aspect} mode.
 At the bottom of Figure \ref{FIG:LexExample} we give the declaration of
 a nested class called {\em NestedClass}.   Note that inside the class
 declaration is in {\sc Java} mode,  so the keywords recognized are those
-corresonding to {\sc Java} mode (i.e. Java keywords plus {\bf aspect}
-and {\bf privileged}).    Thus, in the example,  
+corresonding to {\sc Java} mode (i.e. Java keywords plus {\bf aspect},
+{\bf privileged} and {\bf pointcut}).    Thus, in the example,  
 {\em before} and {\em after} are considered identifiers, not keywords.   
 Note that this use of
 inner classes provides a mechanism for referring to variables defined
@@ -176,7 +175,7 @@ However, in
 pointcuts, the intended lexical structure is quite different and
 would be tokenized as:
 
-{\tt[ IdPat("*1"), op("."), id("Foo"), op("+."),
+{\tt[ IdPat("*1"), op("."), id("Foo"), op("+"), op("."),
 keyword("new"), op("("), op(".."), op(")")]}.   
 
 \noindent 
@@ -201,7 +200,7 @@ structure, namely:
  
 \subsubsection{Tokens in pointcuts}
 Since the Java lexical structure clearly doen't match the pointcut
-langauge very well,  a completely different lexical structure is
+language very well,  a completely different lexical structure is
 defined for pointcuts.   This can be summarized as follows.
 
 \begin{description}
@@ -224,7 +223,7 @@ The symbols recognized in pointcuts are:
 {\tt op("(")}, {\tt op(")")}, {\tt op("[")}, {\tt op(".")},
 {\tt op(",")}, {\tt op(":")}, {\tt op(";")}, {\tt op("\{")},
 {\tt op("\"")}, {\tt op("!")}, {\tt op("\&\&")}, {\tt op("||")},
-{\tt op("+.")}, {\tt op("+")}. 
+{\tt op("..")}, {\tt op("+")}. 
 
 \item{Identifiers and Identifier Patterns:}  Identifiers are matched
 using the same regular expression as in {\sc Java} mode, namely:
