@@ -4,6 +4,8 @@ import java.util.*;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
+import soot.toolkits.scalar.FlowSet;
+import soot.toolkits.graph.TrapUnitGraph;
 
 // import polyglot.util.InternalCompilerError;
 
@@ -13,6 +15,7 @@ public class Validate {
 	for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
 	    final SootMethod method = (SootMethod) methodIt.next();
 	    checkTypes(method);
+	    checkInit(method);
 	}
     }
 
@@ -97,6 +100,31 @@ public class Validate {
 	    return;
 	}
 	System.err.println("Warning: Bad types"+errorSuffix);
+    }
+
+    public static void checkInit(SootMethod method) {
+	if(!method.isConcrete()) return;
+
+	InitAnalysis analysis=new InitAnalysis(new TrapUnitGraph(method.getActiveBody()));
+	Chain units=method.getActiveBody().getUnits();
+
+	Iterator it=units.iterator();
+	while(it.hasNext()) {
+	    Stmt s=(Stmt) (it.next());
+	    FlowSet init=(FlowSet) analysis.getFlowBefore(s);
+	    List uses=s.getUseBoxes();
+	    Iterator usesIt=uses.iterator();
+	    while(usesIt.hasNext()) {
+		Value v=((ValueBox) (usesIt.next())).getValue();
+		if(v instanceof Local) {
+		    Local l=(Local) v;
+		    if(!init.contains(l))
+			System.err.println("Warning: Local variable "+l
+					   +" not definitely defined at "+s
+					   +" in "+method);
+		}
+	    }
+	}
     }
 
 }
