@@ -28,6 +28,22 @@ public class DeclareSoft_c extends DeclareDecl_c
         this.pc   = pc;
     }
 
+    protected DeclareSoft_c reconstruct(TypeNode type, Pointcut pc) {
+	if (type != this.type || pc != this.pc) {
+	    DeclareSoft_c n = (DeclareSoft_c) copy();
+	    n.type = type;
+	    n.pc = pc;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	TypeNode type = (TypeNode) visitChild(this.pat, v);
+	Pointcut pc = (Pointcut) visitChild(this.pc, v);
+	return reconstruct(type, pc);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("declare soft : ");
         print(type,w,tr);
