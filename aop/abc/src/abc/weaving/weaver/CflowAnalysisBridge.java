@@ -37,6 +37,10 @@ public class CflowAnalysisBridge {
         if (abc.main.Debug.v().cflowAnalysis) 
             System.err.println("CFLOW ANALYSIS ***** " + message);
     }   
+    private static void stats(String message) {
+        if (abc.main.Debug.v().cflowAnalysisStats) 
+            System.err.println("CFLOW STATS ***** " + message);
+    }   
 
     static class StackInfo {
         public StackInfo( boolean bindsArgs ) {
@@ -101,8 +105,12 @@ public class CflowAnalysisBridge {
             StackInfo si = stackInfo(stack);
             BDDCflowStack bddcfs =
                 new BDDCflowStack(cflowAnalysis, si.shadows, si.stmtMap.keySet(), si.bindsArgs );
+            stats("cflowsetup is "+stack);
+            stats("update shadows: "+si.shadows.size()+" query shadows: "+si.stmtMap.keySet().size());
+            int never = 0;
             for( Iterator stmtIt = bddcfs.neverValid(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
+                never++;
                 debug("found never: "+stmt);
                 stmt.addTag(new StringTag("never: "+stack));
                 for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
@@ -119,8 +127,10 @@ public class CflowAnalysisBridge {
                     }
                 }
             }
+            int always = 0;
             for( Iterator stmtIt = bddcfs.alwaysValid(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
+                always++;
                 debug("found always: "+stmt);
                 stmt.addTag(new StringTag("always: "+stack));
                 for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
@@ -139,11 +149,16 @@ public class CflowAnalysisBridge {
             }
             if( !abc.main.Debug.v().dontRemovePushPop 
             &&  !abc.main.Debug.v().checkCflowOpt ) {
+                int update = 0;
                 for( Iterator shIt = bddcfs.unnecessaryShadows(); shIt.hasNext(); ) {
                     final Shadow sh = (Shadow) shIt.next();
+                    update++;
                     debug("removing shadow: "+sh);
                     sh.aa().setResidue(NeverMatch.v());
                 }
+                stats("always: "+always+" never: "+never+" update shadows removed: "+update);
+            } else {
+                stats("always: "+always+" never: "+never);
             }
         }
 

@@ -34,6 +34,7 @@ import abc.weaving.weaver.WeavingContext;
 public class IsNull extends Residue {
     private ContextValue value;
 
+    public Residue optimize() { return this; }
     public IsNull(ContextValue value) {
 	this.value=value;
     }

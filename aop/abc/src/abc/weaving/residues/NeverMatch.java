@@ -35,6 +35,7 @@ public class NeverMatch extends Residue {
     private final static NeverMatch v=new NeverMatch();
     public static NeverMatch v() { return v; }
 
+    public Residue optimize() { return this; }
     public static boolean neverMatches(Residue r) {
         if(r==null) throw new InternalCompilerError("null residue found");
         // using null for NeverMatch is now deprecated

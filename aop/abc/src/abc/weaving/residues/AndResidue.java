@@ -110,6 +110,10 @@ public class AndResidue extends Residue implements BindingLink {
         return new AndResidue(left,right);
     }
 
+    public Residue optimize() {
+        return construct(getLeftOp().optimize(), getRightOp().optimize());
+    }
+
     public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
     	AndResidue root=andRoot==null ? this : andRoot;
         getLeftOp().getAdviceFormalBindings(bindings, root );

@@ -35,6 +35,7 @@ public class Box extends Residue implements BindingLink {
     public WeavingVar from;
     public WeavingVar to;
 
+    public Residue optimize() { return this; }
     public Box(WeavingVar from,WeavingVar to) {
 	this.from=from;
 	this.to=to;

@@ -69,6 +69,23 @@ public class Weaver {
         else
                 return ut;
     }
+    static public void optimizeResidues() {
+        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                final SootMethod method = (SootMethod) methodIt.next();
+
+                MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
+                if (adviceList!=null) {
+                    Iterator appIt=adviceList.allAdvice().iterator();
+                    while (appIt.hasNext()) {
+                        AdviceApplication appl=(AdviceApplication)appIt.next();
+                        appl.setResidue(appl.getResidue().optimize());
+                    }
+                }
+            }
+        }
+    }
     static public void resetForReweaving() {
     	AroundWeaver.reset();
     	AfterBeforeInliner.reset();
@@ -128,6 +145,7 @@ public class Weaver {
                 weaveAdvice();
                 CflowAnalysisBridge cfab = new CflowAnalysisBridge();
                 cfab.run();
+                optimizeResidues();
                 reportMessages();
                 if( !abc.main.Debug.v().dontWeaveAfterAnalysis ) {
                     unitBindings = unweaver.restore();
@@ -156,12 +174,14 @@ public class Weaver {
                     resetForReweaving();
                     //throw new RuntimeException("just a test");
                 }
+                if( abc.main.Debug.v().optimizeResidues ) {
+                    optimizeResidues();
+                }
                 reportMessages();
                 removeDeclareWarnings();
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
-            
         }
         
         public static void doInlining() {

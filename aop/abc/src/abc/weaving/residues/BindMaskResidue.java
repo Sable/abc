@@ -51,6 +51,10 @@ public class BindMaskResidue extends Residue {
                 this.bindMaskLocal=bindMaskLocal;
                 this.mask=mask;
         }
+
+        public Residue optimize() {
+            return new BindMaskResidue((Bind)getOp().optimize(), bindMaskLocal, mask);
+        }
         /**
          * Generates code to set the bits in the mask, then
          * generates the Bind code. 

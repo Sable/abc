@@ -32,6 +32,7 @@ import abc.weaving.weaver.WeavingContext;
 
 public class AlwaysMatch extends Residue {
     private final static AlwaysMatch v=new AlwaysMatch();
+    public Residue optimize() { return this; }
     public static AlwaysMatch v() {
         return v;
     }

@@ -35,6 +35,7 @@ public class SetResidue extends Residue {
     Local loc;
     Value val;
 
+    public Residue optimize() { return this; }
     public SetResidue(Local l,Value v) {
 	loc=l;
 	val=v;

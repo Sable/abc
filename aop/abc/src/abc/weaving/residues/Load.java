@@ -37,6 +37,7 @@ public class Load extends Residue {
     public ContextValue value;
     public WeavingVar variable;
 
+    public Residue optimize() { return this; }
     public Load(ContextValue value,WeavingVar variable) {
 	this.value=value;
 	this.variable=variable;

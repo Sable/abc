@@ -36,6 +36,7 @@ import abc.weaving.weaver.AdviceWeavingContext;
 public class AspectOf extends Residue {
 
     private SootClass aspct;
+    public Residue optimize() { return this; }
 
     // null to indicate singleton aspect; i.e. no params to aspectOf
     private ContextValue pervalue;

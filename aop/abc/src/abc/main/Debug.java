@@ -73,7 +73,8 @@ public class Debug {
 
     public boolean weaverDriver=false;  // main driver for weaver
     public boolean unweaver=false;  // saving and restoring jimple bodies
-    public boolean cflowAnalysis=false;  // analysis of cflows
+    public boolean cflowAnalysis=false;  // interprocedural analysis of cflows
+    public boolean cflowAnalysisStats=false;  // statistics from cflowinter
     public boolean cflowIntraAnalysis=true; // intraprocedural cflow analysis
 
     public boolean aspectCodeGen=false; // inserting stuff into aspect class
@@ -131,6 +132,8 @@ public class Debug {
 
     // dump each advice application just before weaving it
     public boolean dumpAAWeave = false;
+
+    public boolean optimizeResidues = false;
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance

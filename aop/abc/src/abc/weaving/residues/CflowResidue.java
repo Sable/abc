@@ -39,6 +39,7 @@ public class CflowResidue extends Residue {
     private List/*<WeavingVar>*/ vars;
     private boolean useCounter;
 
+    public Residue optimize() { return this; }
     public CflowResidue(CflowSetup setup,List vars) {
         this.setup=setup;
         this.vars=vars;
@@ -47,8 +48,8 @@ public class CflowResidue extends Residue {
 
     public Residue resetForReweaving() {
         if (vars!=null)
-            for(Iterator it=vars.iterator();it.hasNext();) {
-                WeavingVar variable=(WeavingVar)it.next();
+            for( Iterator variableIt = vars.iterator(); variableIt.hasNext(); ) {
+                final WeavingVar variable = (WeavingVar) variableIt.next();
                 if (variable!=null)
                     variable.resetForReweaving();
             }

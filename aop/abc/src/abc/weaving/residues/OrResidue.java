@@ -35,6 +35,9 @@ public class OrResidue extends Residue {
     private ResidueBox left = new ResidueBox();
     private ResidueBox right = new ResidueBox();
 
+    public Residue optimize() {
+        return construct(getLeftOp().optimize(), getRightOp().optimize());
+    }
     /** Get the left operand */
     public Residue getLeftOp() {
         return left.getResidue();

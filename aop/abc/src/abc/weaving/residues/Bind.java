@@ -172,4 +172,7 @@ public class Bind extends Residue {
             return succeed(units,set,fail,sense);
         }
 
+    public Residue optimize() {
+        return this;
+    }
 }

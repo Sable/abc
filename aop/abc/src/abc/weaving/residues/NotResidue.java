@@ -38,6 +38,10 @@ public class NotResidue extends Residue {
         return op.getResidue();
     }
 
+    public Residue optimize() {
+        return construct(getOp().optimize());
+    }
+
     public Residue resetForReweaving() {
         op.setResidue(op.getResidue().resetForReweaving());
         return this;

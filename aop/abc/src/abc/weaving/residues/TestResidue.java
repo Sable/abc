@@ -35,6 +35,7 @@ public class TestResidue extends Residue {
     Local loc;
     Value val;
 
+    public Residue optimize() { return this; }
     public TestResidue(Local l,Value v) {
 	loc=l;
 	val=v;

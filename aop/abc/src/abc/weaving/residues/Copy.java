@@ -32,6 +32,8 @@ import abc.soot.util.LocalGeneratorEx;
 public class Copy extends Residue implements BindingLink {
     public WeavingVar from;
     public WeavingVar to;
+
+    public Residue optimize() { return this; }
     
 	public WeavingVar getAdviceFormal(WeavingVar var) {
 		if (var==from)

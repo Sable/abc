@@ -33,6 +33,7 @@ import java.util.*;
  *  @author Ondrej Lhotak
  */
 public class AssertResidue extends Residue {
+    public Residue optimize() { return this; }
     private String message;
     public AssertResidue() {
     }

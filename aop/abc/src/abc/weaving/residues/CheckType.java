@@ -34,6 +34,7 @@ import abc.weaving.weaver.WeavingContext;
 public class CheckType extends Residue {
     private ContextValue value;
     private Type type;
+    public Residue optimize() { return this; }
 
     private CheckType(ContextValue value,Type type) {
         this.value=value;

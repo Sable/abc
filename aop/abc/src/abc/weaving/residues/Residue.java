@@ -37,6 +37,11 @@ import abc.weaving.weaver.WeavingContext;
  */
 
 public abstract class Residue {
+    /** Optimize the residue by rebuilding it, invoking the smart
+     * constructors along the way.
+     */
+    public abstract Residue optimize();
+
     /** Generate the code for this dynamic residue.
      *  @param method The method the code is being inserted into
      *  @param localgen A local generator for the method
@@ -243,8 +248,8 @@ public abstract class Residue {
                 }
                 List list=localsFromIndex(i);
                 if (list!=null) {
-                    for (Iterator it=list.iterator();it.hasNext();) {
-                        Local l=(Local)it.next();
+                    for( Iterator lIt = list.iterator(); lIt.hasNext(); ) {
+                        final Local l = (Local) lIt.next();
                         result+= l + " ";
                     }
                 }

@@ -37,6 +37,7 @@ public class IfResidue extends Residue {
     private SootMethod impl;
     private List/*<WeavingVar>*/ args;
 
+    public Residue optimize() { return this; }
     private IfResidue(SootMethod impl,List args) {
 	this.impl=impl;
 	this.args=args;
@@ -44,8 +45,8 @@ public class IfResidue extends Residue {
 
 
     public Residue resetForReweaving() {
-    	for(Iterator it=args.iterator();it.hasNext();) {
-    		WeavingVar variable=(WeavingVar)it.next();
+    	for( Iterator variableIt = args.iterator(); variableIt.hasNext(); ) {
+    	    final WeavingVar variable = (WeavingVar) variableIt.next();
     		variable.resetForReweaving();
     	}
     	return this;

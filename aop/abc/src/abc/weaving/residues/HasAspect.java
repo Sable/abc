@@ -34,6 +34,7 @@ import abc.weaving.weaver.WeavingContext;
 
 public class HasAspect extends Residue {
 
+    public Residue optimize() { return this; }
     private SootClass aspct;
 
     // null to indicate singleton aspect; i.e. no params to hasAspect
