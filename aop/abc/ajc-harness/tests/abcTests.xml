@@ -8842,14 +8842,15 @@
     </ajc-test>
     
    	<ajc-test num="971" dir="bugs"
+                abccomment="we support ambiguous bindings"
 		pr="62073" title="false ambigous binding error (introduced in 1.2rc2)">
         <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        	<ajcmessage kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
+        	<ajcmessage kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
         </compile>
         <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
-        	<message kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
+        	<ajcmessage kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type B"/>
+        	<ajcmessage kind="error" line="25" file="DisjunctVarBinding_2.java" text="Ambiguous binding of type A"/>
         </compile>
     </ajc-test>
     
