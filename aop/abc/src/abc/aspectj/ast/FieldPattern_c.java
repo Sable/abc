@@ -11,6 +11,11 @@ import polyglot.ext.jl.ast.Node_c;
 
 import abc.aspectj.visit.PatternMatcher;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class FieldPattern_c extends Node_c 
                             implements FieldPattern
 {

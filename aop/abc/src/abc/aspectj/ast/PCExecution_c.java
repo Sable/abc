@@ -8,6 +8,11 @@ import polyglot.visit.*;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCExecution_c extends Pointcut_c implements PCExecution
 {
     protected MethodConstructorPattern pat;

@@ -7,6 +7,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/**
+ * Negation of a pointcut.
+ * @author Oege de Moor
+ *
+ */
 public class PCNot_c extends Pointcut_c implements PCNot
 {
     protected Pointcut pc;
@@ -26,7 +31,7 @@ public class PCNot_c extends Pointcut_c implements PCNot
     }
     
 	public Set pcRefs() {
-		return new HashSet();
+		return pc.pcRefs();
 	}
 	
 	public boolean isDynamic() {

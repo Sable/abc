@@ -11,6 +11,11 @@ import abc.aspectj.visit.AspectInfoHarvester;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.aspectj.types.AJContext;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCThis_c extends Pointcut_c implements PCThis
 {
     protected Node pat; // ArgPattern, becomes TypeNode, Local or ArgStar

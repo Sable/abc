@@ -21,9 +21,7 @@ import polyglot.util.Position;
 import polyglot.util.UniqueID;
 
 /**
- * @author oege
- *
- * a method instance that was introduced via an intertype declaration
+ * @author Oege de Moor
  */
 public class InterTypeMethodInstance_c
 	extends MethodInstance_c

@@ -12,6 +12,11 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.aspectj.types.AspectType;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class IntertypeAdjuster {
 	
 	public void adjust() {

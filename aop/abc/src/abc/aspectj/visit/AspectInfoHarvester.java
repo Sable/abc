@@ -12,6 +12,11 @@ import polyglot.frontend.*;
 
 import java.util.*;
 
+/**
+ * @author Aske Simon Christensen
+ * @author Oege de Moor
+ *
+ */
 public class AspectInfoHarvester extends ContextVisitor {
     private static Map pc_decl_map = new HashMap();
 

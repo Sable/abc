@@ -6,6 +6,11 @@ import polyglot.ast.Expr;
 
 import abc.aspectj.types.AJTypeSystem;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface IntertypeDecl extends ClassMember, MakesAspectMethods
 {
     

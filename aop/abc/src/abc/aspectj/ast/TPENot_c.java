@@ -9,6 +9,12 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/**
+ * negation of a type pattern expression.
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ *
+ */
 public class TPENot_c extends TypePatternExpr_c implements TPENot
 {
     protected TypePatternExpr tpe;

@@ -27,7 +27,6 @@ import abc.aspectj.ast.AJNodeFactory;
 /**
  * @author Oege de Moor
  *
- * A constructor that was introduced via an intertype declaration.
  */
 
 public class InterTypeConstructorInstance_c

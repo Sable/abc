@@ -9,6 +9,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** binary operation (&&,||) on type pattern exprs.
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class TPEBinary_c extends TypePatternExpr_c 
                          implements TPEBinary
 {

@@ -36,7 +36,11 @@ import abc.aspectj.types.AJContext;
 
 import abc.aspectj.visit.AspectMethods;
 
-
+/**
+ * A reference to "proceed(x1,x2)" inside a piece of around advice.
+ * @author Oege de Moor
+ *
+ */
 public class ProceedCall_c extends Call_c
                            implements ProceedCall, MakesAspectMethods
 {

@@ -10,6 +10,11 @@ import java.util.*;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.types.AJContext;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCArgs_c extends Pointcut_c implements PCArgs
 {
     protected List pats;

@@ -20,9 +20,6 @@ import java.util.*;
 
 /**
  * 
- * @author Aske Christensen
- * @author Oege de Moor
- * 
  * This visitor cleans up the AST prior to Jimplification, turning it
  * into a Java tree. Advice declarations are rewritten to pure method
  * declarations. Intertype field delcarations, declare declarations and
@@ -30,6 +27,10 @@ import java.util.*;
  * stripped out of the tree.
  * For all intertype declarations, we remove the relevant types 
  * (which were earlier added to do type checking).
+ * 
+ * @author Aske Christensen
+ * @author Oege de Moor
+ * 
  */
 
 public class CleanAspectMembers extends NodeVisitor {

@@ -9,6 +9,11 @@ import java.util.*;
 
 import abc.aspectj.types.AJContext;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCCflow_c extends Pointcut_c implements PCCflow
 {
     protected Pointcut pc;

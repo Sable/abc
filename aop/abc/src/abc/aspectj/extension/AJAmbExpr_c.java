@@ -8,6 +8,11 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.AmbExpr_c;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class AJAmbExpr_c extends AmbExpr_c implements AmbExpr
 {
 

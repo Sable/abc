@@ -21,9 +21,9 @@ import abc.aspectj.types.AJTypeSystem;
 import polyglot.ext.jl.ast.Special_c;
 
 /**
+ *  disambiguate this and super in intertype method declarations
  * @author Oege de Moor
  *
- * disambiguate this and super in intertype method declarations
  */
 public class AJSpecial_c extends Special_c implements Special {
 	

@@ -15,7 +15,7 @@ import polyglot.visit.ContextVisitor;
 import abc.aspectj.types.AJContext;
 
 /**
- * @author oege
+ * @author Oege de Moor
  */
 public class AnonBodyITDs extends ContextVisitor {
 

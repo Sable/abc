@@ -4,6 +4,11 @@ import polyglot.ast.Node;
 
 import polyglot.types.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @ author Aske Simon Christensen
+ */
 public interface ThrowsPattern extends Node
 {
 

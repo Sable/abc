@@ -24,6 +24,11 @@ import soot.javaToJimple.jj.types.JjTypeSystem;
 
 import polyglot.types.Context;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface AJTypeSystem extends JjTypeSystem {
     
 	public ClassType JoinPoint() ;

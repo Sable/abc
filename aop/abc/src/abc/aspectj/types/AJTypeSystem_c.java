@@ -21,6 +21,11 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import soot.javaToJimple.jj.types.JjTypeSystem_c;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class AJTypeSystem_c 
        extends JjTypeSystem_c 
        implements AJTypeSystem {

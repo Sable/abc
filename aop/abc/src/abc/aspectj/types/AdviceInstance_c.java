@@ -17,6 +17,11 @@ import polyglot.ext.jl.types.MethodInstance_c;
 import abc.aspectj.ast.AdviceSpec;
 
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class AdviceInstance_c extends MethodInstance_c {
 	
 	AdviceSpec spec;

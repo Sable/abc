@@ -37,8 +37,8 @@ import abc.aspectj.visit.AspectMethods;
 
 
 /**
- * @author oege
  * specials in intertype declarations
+ * @author Oege de Moor
  */
 public class HostSpecial_c extends Special_c implements Special, MakesAspectMethods {
 

@@ -13,6 +13,12 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 import java.util.*;
 
+/**
+ * @author Aske Simon Christensen
+ * @author Oege de Moor
+ *
+ */
+
 public class HierarchyBuilder extends NodeVisitor {
     private ExtensionInfo ext;
     private Map/*<ParsedClassType,String>*/ seen_classes_name = new HashMap();
@@ -30,7 +36,6 @@ public class HierarchyBuilder extends NodeVisitor {
     public NodeVisitor enter(Node n) {
 	boolean debug = abc.main.Debug.v().classKinds;
 	if (n instanceof ClassDecl) {
-		System.out.println("n.getClass()"+n.getClass());
 		AJClassDecl_c ajcn = (AJClassDecl_c) n;
 		if (ajcn.hierarchyBuilt())
 			return this;

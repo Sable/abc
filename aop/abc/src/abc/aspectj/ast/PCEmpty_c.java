@@ -10,6 +10,11 @@ import polyglot.ast.Precedence;
 import polyglot.visit.PrettyPrinter;
 import abc.weaving.aspectinfo.EmptyPointcut;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCEmpty_c extends Pointcut_c implements PCEmpty {
 
 	public PCEmpty_c(Position pos) {

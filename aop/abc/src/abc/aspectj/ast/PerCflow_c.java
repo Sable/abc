@@ -9,6 +9,11 @@ import java.util.*;
 
 import abc.aspectj.types.AspectType;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PerCflow_c extends PerClause_c implements PerCflow
 {
 

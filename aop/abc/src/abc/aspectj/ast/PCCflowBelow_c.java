@@ -8,6 +8,11 @@ import polyglot.visit.*;
 import java.util.*;
 import abc.aspectj.types.AJContext;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 {
     protected Pointcut pc;

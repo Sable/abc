@@ -11,6 +11,11 @@ import polyglot.visit.*;
 import java.util.*;
 import java.util.regex.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class DotNamePattern_c extends NamePattern_c 
                               implements DotNamePattern
 {

@@ -4,6 +4,11 @@ import polyglot.ast.Node;
 
 import polyglot.types.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface ModifierPattern extends Node
 {
 

@@ -6,7 +6,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 
 import polyglot.ext.jl.ast.Field_c;
-
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class AJField_c extends Field_c implements Field
 {
 

@@ -8,6 +8,11 @@ import polyglot.ext.jl.parse.Name;
 
 import abc.aspectj.ast.*;
 
+/**
+* @author Laurie Hendren
+* @author Oege de Moor
+* @author Aske Simon Christensen
+*/
 parser Grm extends polyglot.ext.jl.parse.Grm {:
     public final AJTypeSystem ts;
     public final AJNodeFactory nf;

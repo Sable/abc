@@ -16,8 +16,9 @@ import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 
 /**
- when creating missing field targets, check whether this is a reference
- to an intertype host.
+*  when creating missing field targets, check whether this is a reference
+ * to an intertype host.
+ * @author Oege de Moor
  */
 
 public class AJDisamb_c extends Disamb_c implements Disamb {

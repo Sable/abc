@@ -13,7 +13,8 @@ import polyglot.types.SemanticException;
 import polyglot.visit.ContextVisitor;
 
 /**
- * @author oege
+ * check dependencies between named pointcuts, and also abstract flags
+ * @author Oege de Moor
  */
 public class DependsChecker extends ContextVisitor {
 

@@ -17,6 +17,11 @@ import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class DeclarePrecedence_c extends DeclareDecl_c 
     implements DeclarePrecedence, ContainsAspectInfo
 {

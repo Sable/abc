@@ -10,6 +10,12 @@ import abc.weaving.aspectinfo.AbcClass;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ *
+ */
 public interface DeclareParents extends DeclareDecl
 {
     /* new stuff to be added */

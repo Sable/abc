@@ -30,6 +30,11 @@ import abc.aspectj.types.InterTypeMemberInstance;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcClass;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class InterfaceITDs extends OncePass {
 
 

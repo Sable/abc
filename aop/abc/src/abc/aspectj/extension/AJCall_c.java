@@ -41,7 +41,7 @@ import polyglot.util.InternalCompilerError;
  * Override the typechecking of method calls, to delegate to the host in certain
  * cases when the call occurs from within an intertype declaration.
  * 
- * @author oege
+ * @author Oege de Moor.
  *
  */
 public class AJCall_c extends Call_c implements Call, MakesAspectMethods {

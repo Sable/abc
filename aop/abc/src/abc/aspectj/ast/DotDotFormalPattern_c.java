@@ -9,6 +9,13 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+/**
+ * wildcard for parameters, e.g. "call int foo(..)".
+ * not to be confused with ArgDotDot.
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class DotDotFormalPattern_c extends Node_c 
                              implements DotDotFormalPattern
 {

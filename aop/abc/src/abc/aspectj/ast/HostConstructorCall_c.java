@@ -29,6 +29,9 @@ import polyglot.ext.jl.ast.ConstructorCall_c;
 import polyglot.util.Position;
 
 /**
+ * In an intertype declaration, when a constructor call refers to the host 
+ * rather than the containing aspect, it is disambiguated to a HostConstructorCall.
+ * 
  * @author Oege de Moor
  *
  */

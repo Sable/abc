@@ -8,7 +8,11 @@ import polyglot.types.TypeSystem;
 
 import abc.aspectj.visit.AccessorMethods;
 
-
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class AspectType_c extends ParsedClassType_c implements AspectType {
 	
 	protected int perKind;

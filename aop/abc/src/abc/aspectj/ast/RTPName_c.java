@@ -12,6 +12,11 @@ import polyglot.ext.jl.ast.Node_c;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class RTPName_c extends Node_c 
     implements RTPName, ContainsNamePattern
 {

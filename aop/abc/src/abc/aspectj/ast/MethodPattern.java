@@ -4,6 +4,11 @@ import polyglot.ast.Node;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public interface MethodPattern extends MethodConstructorPattern
 {
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern();

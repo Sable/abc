@@ -9,6 +9,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** A type pattern expression for array types.
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class TPEArray_c extends TypePatternExpr_c 
     implements TPEArray
 {

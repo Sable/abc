@@ -1,8 +1,6 @@
 /*
  * Created on Jul 13, 2004
  *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package abc.aspectj.visit;
 
@@ -23,10 +21,8 @@ import polyglot.visit.TypeBuilder;
 import abc.aspectj.types.AJTypeSystem;
 
 /**
- * @author oege
+ * @author Oege de Moor
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class AJTypeBuilder extends TypeBuilder {
 

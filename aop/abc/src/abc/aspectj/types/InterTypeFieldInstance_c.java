@@ -32,7 +32,7 @@ import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 
 /**
- * @author oege
+ * @author Oege de Moor
  * a FieldInstance that was introduced via an intertype declaration, recording its origin
  */
 public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTypeMemberInstance {

@@ -9,7 +9,6 @@ import abc.aspectj.types.AJTypeSystem;
 
 /**
  * @author Oege de Moor
- * An instance that was introduced via an intertype member declaration
  */
 public interface InterTypeMemberInstance extends MemberInstance {
 

@@ -17,7 +17,7 @@ import abc.aspectj.types.InterTypeMemberInstance;
 import abc.aspectj.types.AJTypeSystem;
 
 /**
- * @author oege
+ * @author Oege de Moor
  */
 public class MangleNames extends NodeVisitor {
 

@@ -12,6 +12,11 @@ import abc.aspectj.ast.*;
 import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
 
+/**
+ * @author Julian Tibble
+ * @author Oege de Moor
+ *
+ */
 public class LocalDel_c extends JL_c implements MakesAspectMethods,
                                                 TransformsAspectReflection
 {

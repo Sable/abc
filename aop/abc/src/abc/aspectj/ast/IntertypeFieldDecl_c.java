@@ -38,6 +38,11 @@ import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo, MakesAspectMethods
 {

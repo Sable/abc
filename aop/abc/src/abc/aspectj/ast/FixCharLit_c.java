@@ -6,6 +6,11 @@ import polyglot.types.*;
 import polyglot.visit.*;
 import polyglot.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class FixCharLit_c extends CharLit_c
 {
 

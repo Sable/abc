@@ -19,6 +19,11 @@ import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.DependsCheck;
 import abc.aspectj.visit.DependsChecker;
 
+/**
+ * A reference to a named pointcut.
+ * @author Oege de Moor
+ *
+ */
 public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 {
 	protected Receiver target;

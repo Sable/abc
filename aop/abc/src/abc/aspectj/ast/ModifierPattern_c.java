@@ -8,7 +8,11 @@ import polyglot.visit.*;
 import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
-
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class ModifierPattern_c extends Node_c implements ModifierPattern
 {
     protected Flags modifier;

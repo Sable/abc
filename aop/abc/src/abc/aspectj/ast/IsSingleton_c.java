@@ -10,6 +10,11 @@ import java.util.*;
 import abc.aspectj.ast.IsSingleton;
 import abc.aspectj.types.AspectType;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class IsSingleton_c extends PerClause_c implements IsSingleton
 {
 

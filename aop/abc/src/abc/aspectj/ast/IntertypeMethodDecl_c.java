@@ -45,7 +45,11 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
 
-
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class IntertypeMethodDecl_c extends MethodDecl_c
     implements IntertypeMethodDecl, ContainsAspectInfo, MakesAspectMethods
 {

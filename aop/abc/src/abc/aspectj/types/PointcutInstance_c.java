@@ -19,6 +19,11 @@ import polyglot.types.MethodInstance;
 
 import polyglot.ext.jl.types.MethodInstance_c;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PointcutInstance_c extends MethodInstance_c {
 
     String localName;

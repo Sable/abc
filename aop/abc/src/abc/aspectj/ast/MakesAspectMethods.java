@@ -7,6 +7,11 @@ import abc.aspectj.visit.AspectMethods;
 
 // All AST nodes visited by AspectMethods should implement this interface
 
+/**
+ * 
+ * @author Julian Tibble
+ *
+ */
 public interface MakesAspectMethods
 {
         void aspectMethodsEnter(AspectMethods visitor);

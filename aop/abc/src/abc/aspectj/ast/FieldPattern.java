@@ -4,6 +4,11 @@ import polyglot.ast.Node;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface FieldPattern extends Node
 {
     /* new stuff to be added */

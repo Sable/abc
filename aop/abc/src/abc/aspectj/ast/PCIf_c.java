@@ -19,6 +19,11 @@ import abc.aspectj.visit.AspectReflectionRewrite;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 {
     protected Expr expr;

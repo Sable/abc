@@ -12,8 +12,6 @@ import polyglot.types.SemanticException;
 
 /**
  * @author Oege de Moor
- *
- * handle this and super in intertype method decls
  */
 public interface AJContext extends Context {
 	

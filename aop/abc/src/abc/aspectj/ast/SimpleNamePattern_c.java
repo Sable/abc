@@ -11,6 +11,11 @@ import polyglot.visit.*;
 import java.util.*;
 import java.util.regex.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class SimpleNamePattern_c extends NamePattern_c 
                                  implements SimpleNamePattern
 {

@@ -14,6 +14,11 @@ import abc.aspectj.types.AspectType;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectMethods;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public abstract class PerClause_c extends Node_c implements PerClause,
 							    MakesAspectMethods
 {

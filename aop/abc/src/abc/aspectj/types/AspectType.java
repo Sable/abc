@@ -4,6 +4,11 @@ package abc.aspectj.types;
 import polyglot.types.ParsedClassType;
 import abc.aspectj.visit.AccessorMethods;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface AspectType extends ParsedClassType {
 	public static int PER_NONE = 0;
 	public static int PER_SINGLETON = 1;

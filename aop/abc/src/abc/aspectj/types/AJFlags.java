@@ -3,6 +3,11 @@ package abc.aspectj.types;
 
 import polyglot.types.Flags;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class AJFlags extends Flags {
 
     public static final Flags PRIVILEGEDASPECT  =  createFlag("privilegedaspect", null);

@@ -10,6 +10,11 @@ import polyglot.ext.jl.ast.Node_c;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCBinary_c extends Pointcut_c implements PCBinary
 {
     protected Pointcut left;

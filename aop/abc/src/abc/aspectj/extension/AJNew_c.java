@@ -34,7 +34,7 @@ import polyglot.ext.jl.ast.New_c;
 import polyglot.util.Position;
 
 /**
- * @author oege
+ * @author Oege de Moor
  */
 public class AJNew_c extends New_c implements New, MakesAspectMethods {
 

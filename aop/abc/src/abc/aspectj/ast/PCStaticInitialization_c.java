@@ -7,6 +7,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class PCStaticInitialization_c extends Pointcut_c 
     implements PCStaticInitialization
 {

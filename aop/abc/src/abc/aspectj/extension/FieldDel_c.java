@@ -10,6 +10,11 @@ import abc.aspectj.visit.*;
 import polyglot.types.ClassType;
 import soot.javaToJimple.jj.ast.JjAccessField_c;
 
+/**
+ * @author Julian Tibble
+ * @author Oege de Moor
+ *
+ */
 public class FieldDel_c extends JL_c implements MakesAspectMethods
 {
     public void aspectMethodsEnter(AspectMethods visitor)

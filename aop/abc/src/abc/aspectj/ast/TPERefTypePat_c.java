@@ -9,6 +9,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/**
+ * A type pattern expression that is a reference type pattern.
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class TPERefTypePat_c extends TypePatternExpr_c 
     implements TPERefTypePat
 {

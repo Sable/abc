@@ -9,6 +9,11 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class ThrowsPattern_c extends Node_c implements ThrowsPattern
 {
     protected ClassnamePatternExpr type;
