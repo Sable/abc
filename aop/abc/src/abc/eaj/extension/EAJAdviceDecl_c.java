@@ -10,6 +10,9 @@ import abc.aspectj.ast.*;
 
 import abc.eaj.visit.*;
 
+/**
+ * @author Julian Tibble
+ */
 public class EAJAdviceDecl_c extends AdviceDecl_c implements EAJAdviceDecl
 {
     public EAJAdviceDecl_c(Position pos, Flags flags,

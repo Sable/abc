@@ -11,6 +11,7 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** The result of matching at a cast
+ *  @author Julian Tibble
  */
 public class CastShadowMatch extends StmtShadowMatch
 {

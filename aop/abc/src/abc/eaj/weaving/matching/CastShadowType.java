@@ -3,6 +3,7 @@ package abc.eaj.weaving.matching;
 import abc.weaving.matching.*;
 
 /** A joinpoint shadow that applies at a cast
+ * @author Julian Tibble
  */
 public class CastShadowType extends ShadowType
 {

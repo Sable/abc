@@ -12,6 +12,7 @@ import java.util.*;
 
 /**
  * NodeFactory for Extended AspectJ extension.
+ * @author Julian Tibble
  */
 public class EAJNodeFactory_c extends AJNodeFactory_c
                               implements EAJNodeFactory

@@ -11,6 +11,9 @@ import abc.aspectj.visit.AspectMethods;
 
 import java.util.*;
 
+/**
+ * @author Julian Tibble
+ */
 public class PCLocalVars_c extends Pointcut_c
                            implements PCLocalVars
 {

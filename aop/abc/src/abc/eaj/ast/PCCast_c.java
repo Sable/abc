@@ -8,7 +8,9 @@ import abc.aspectj.ast.*;
 
 import java.util.*;
 
-
+/**
+ * @author Julian Tibble
+ */
 public class PCCast_c extends Pointcut_c
                       implements PCCast
 {

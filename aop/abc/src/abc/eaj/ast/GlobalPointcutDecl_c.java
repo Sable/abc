@@ -13,7 +13,9 @@ import abc.eaj.ast.EAJNodeFactory;
 import abc.eaj.util.ToReceiver;
 import abc.eaj.visit.GlobalPointcuts;
 
-
+/**
+ * @author Julian Tibble
+ */
 public class GlobalPointcutDecl_c extends PointcutDecl_c
                                   implements GlobalPointcutDecl
 {

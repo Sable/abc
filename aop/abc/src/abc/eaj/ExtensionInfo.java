@@ -17,6 +17,7 @@ import java.io.Reader;
 
 /**
  * Extension information for Extended AspectJ extension.
+ * @author Julian Tibble
  */
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo
 {

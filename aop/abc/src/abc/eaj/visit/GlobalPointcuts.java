@@ -13,6 +13,9 @@ import abc.eaj.ast.*;
 import abc.eaj.extension.*;
 import abc.eaj.types.*;
 
+/**
+ * @author Julian Tibble
+ */
 public class GlobalPointcuts extends ContextVisitor
 {
     public final static int COLLECT = 1;

@@ -12,7 +12,9 @@ import abc.weaving.residues.*;
 
 import abc.eaj.weaving.matching.*;
 
-/** Handler for <code>cast</code> shadow pointcut. */
+/** Handler for <code>cast</code> shadow pointcut. 
+ *  @author Julian Tibble
+ */
 public class Cast extends ShadowPointcut
 {
     private TypePattern pattern;

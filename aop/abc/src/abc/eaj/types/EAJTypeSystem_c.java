@@ -2,6 +2,9 @@ package abc.eaj.types;
 
 import abc.aspectj.types.*;
 
+/**
+ * @author Julian Tibble
+ */
 public class EAJTypeSystem_c extends AJTypeSystem_c
                              implements EAJTypeSystem
 {

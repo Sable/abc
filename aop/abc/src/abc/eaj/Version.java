@@ -2,6 +2,7 @@ package abc.eaj;
 
 /**
  * Version information for eaj extension
+ * @author Julian Tibble
  */
 public class Version extends polyglot.main.Version {
     public String name() { return "eaj"; }

@@ -9,6 +9,7 @@ import java.util.*;
 
 /**
  * NodeFactory for Extended AspectJ extension.
+ * @author Julian Tibble
  */
 public interface EAJNodeFactory extends AJNodeFactory {
     // TODO: Declare any factory methods for new AST nodes.

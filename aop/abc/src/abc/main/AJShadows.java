@@ -2,6 +2,10 @@ package abc.main;
 
 import abc.weaving.matching.*;
 
+/** Register all the AspectJ shadow types with the matcher
+ *  @author Ganesh Sittampalam
+ */
+
 public class AJShadows {
 
     static void load() {

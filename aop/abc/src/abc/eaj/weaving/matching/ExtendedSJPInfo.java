@@ -3,6 +3,10 @@ package abc.eaj.weaving.matching;
 import soot.*;
 import abc.weaving.matching.SJPInfo;
 
+
+/**
+ * @author Julian Tibble
+ */
 public class ExtendedSJPInfo
 {
     public static String makeCastSigData(SootMethod container, Type cast_to)

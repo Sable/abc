@@ -8,6 +8,9 @@ import polyglot.util.Position;
 
 import abc.eaj.ast.EAJNodeFactory;
 
+/**
+ * @author Julian Tibble
+ */
 public class ToReceiver
 {
     final private static Pattern dot = Pattern.compile("\\.");
