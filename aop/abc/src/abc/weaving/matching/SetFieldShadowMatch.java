@@ -41,7 +41,8 @@ public class SetFieldShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("field-set","makeFieldSig","",stmt);
+	    = new AdviceApplication.SJPInfo("field-set",
+		  "FieldSignature","makeFieldSig","",stmt);
         mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }
