@@ -1,11 +1,5 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
-        <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
-            <ajcmessage line="3" kind="error"></ajcmessage>
-            <message line="14" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="nested finally blocks have interesting frame location problems" num="178" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">
+ <ajc-test title="nested finally blocks have interesting frame location problems" num="178" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>

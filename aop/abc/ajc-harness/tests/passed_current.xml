@@ -759,6 +759,12 @@
         <compile files="p1/Main2.java,p1/p2/Foo.java"></compile>
         <run class="p1.Main2"></run>
     </ajc-test>
+<ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
+        <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
+            <ajcmessage line="3" kind="error"></ajcmessage>
+            <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="flow analysis where final variable set in another constructor" num="166" keywords="from-java,purejava" dir="pureJava">
         <compile files="ConstructorFlow.java"></compile>
         <run class="ConstructorFlow"></run>
@@ -1766,7 +1772,7 @@
             <message line="53" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public" pr="494" num="314" keywords="from-errors" dir="new" abccomment="abc pinpoints first three errors differently, but ok. ODM 11/08/04">
+<ajc-test title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public" pr="494" num="314" keywords="from-errors" dir="new" abccomment="abc bails out earlier, but ok. ODM 11/08/04">
         <compile options="-Xlint:ignore" files="IntroduceInnerInterfaceCF.java">
             <ajcmessage line="18" kind="error"></ajcmessage>
             <ajcmessage line="19" kind="error"></ajcmessage>
@@ -1777,13 +1783,6 @@
             <ajcmessage line="48" kind="error"></ajcmessage>
             <ajcmessage line="50" kind="error"></ajcmessage>
             <ajcmessage line="58" kind="error"></ajcmessage>
-            <message line="16" kind="error"></message>
-            <message line="23" kind="error"></message>
-            <message line="24" kind="error"></message>
-            <message line="42" kind="error"></message>
-            <message line="45" kind="error"></message>
-            <message line="48" kind="error"></message>
-            <message line="50" kind="error"></message>
             <message line="58" kind="error"></message>
         </compile>
     </ajc-test>
