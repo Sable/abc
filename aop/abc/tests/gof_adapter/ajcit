@@ -1,0 +1,2 @@
+#!/bin/csh
+ajc $* examples/adapter/aspectj/*.java 

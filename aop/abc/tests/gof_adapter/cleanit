@@ -1,0 +1,2 @@
+#!/bin/csh
+/bin/rm  examples/adapter/aspectj/*.class 
