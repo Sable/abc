@@ -57,10 +57,14 @@ public class DeclareParentsWeaver {
 		    while (sii.hasNext()) {
 			SootClass si = (SootClass)sii.next();
 			// Make the class implement the interface
-			if (abc.main.Debug.v().declareParents) {
-			    System.out.println(sc+" implements "+si);
-			}
-			if (!sc.implementsInterface(si.getName())) {
+                        Hierarchy h = Scene.v().getActiveHierarchy();
+                        boolean already = sc.isInterface() ?
+                            (sc.equals(si) || h.isInterfaceSubinterfaceOf(sc, si)) :
+                            h.getImplementersOf(si).contains(sc);
+			if (!already) {
+                            if (abc.main.Debug.v().declareParents) {
+                                System.out.println(sc+" implements "+si);
+                            }
 			    sc.addInterface(si);
                             classesToReResolve.add(sc);
 			}
@@ -74,11 +78,15 @@ public class DeclareParentsWeaver {
 		while (sci.hasNext()) {
 		    SootClass sc = (SootClass)sci.next();
 		    // Make the class extend the parent
-		    if (abc.main.Debug.v().declareParents) {
-			System.out.println(sc+" extends "+sp);
-		    }
-		    sc.setSuperclass(sp);
-                    classesToReResolve.add(sc);
+                    Hierarchy h = Scene.v().getActiveHierarchy();
+                    boolean already = h.isClassSubclassOfIncluding(sc, sp);
+                    if (!already) {
+                        if (abc.main.Debug.v().declareParents) {
+                            System.out.println(sc+" extends "+sp);
+                        }
+                        sc.setSuperclass(sp);
+                        classesToReResolve.add(sc);
+                    }
 		}
 	    }
 	}
