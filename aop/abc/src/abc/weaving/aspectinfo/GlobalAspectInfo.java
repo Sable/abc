@@ -40,7 +40,9 @@ public class GlobalAspectInfo {
     private List/*<DeclareParents>*/ dps = new ArrayList();
     private List/*<DeclarePrecedence>*/ dprs = new ArrayList();
     private List/*<DeclareMessage>*/ dms = new ArrayList();
-    private List/*<DeclareSoft>*/ dss = new ArrayList();
+
+    // Just stored in the ads list instead
+    //    private List/*<DeclareSoft>*/ dss = new ArrayList();
 	
 	// additional generated classes that need to be output in the end
 	//private Collection/*<String>*/ generated_classes = new ArrayList();
@@ -213,12 +215,6 @@ public class GlobalAspectInfo {
 	return dms;
     }
 
-    /** Returns the list of all <code>declare soft</code> declarations.
-     *  @return a list of {@link abc.weaving.aspectinfo.DeclareSoft} objects.
-     */
-    public List getDeclareSofts() {
-	return dss;
-    }
 
     public AbcClass getClass(polyglot.types.Type type) {
 	return (AbcClass)type_class_map.get(type);
@@ -310,7 +306,7 @@ public class GlobalAspectInfo {
     }
 
     public void addDeclareSoft(DeclareSoft ds) {
-	dss.add(ds);
+	ads.add(ds);
     }
 
     public void print(java.io.PrintStream p) {

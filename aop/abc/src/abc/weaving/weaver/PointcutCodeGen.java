@@ -162,7 +162,7 @@ public class PointcutCodeGen {
 					 adviceappl.advice,
 					 wc);
         }
-	else if ( advicespec instanceof AfterThrowingAdvice) {
+	else if (advicespec instanceof AfterThrowingAdvice) {
                 WeavingContext wc=adviceappl.advice.makeWeavingContext();
                 AfterThrowingWeaver.doWeave(method,localgen,
                                             adviceappl.shadowpoints,

@@ -155,6 +155,7 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	else if(d instanceof PerThisSetup) return 4;
 	else if(d instanceof PerTargetSetup) return 4;
 	else if(d instanceof AdviceDecl) return 2;
+	else if(d instanceof DeclareSoft) return 5; //FIXME: no idea where this should go
 	else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
 					     d.getPosition());
     }
