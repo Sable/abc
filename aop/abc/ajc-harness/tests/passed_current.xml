@@ -2659,6 +2659,14 @@
             <message line="4" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="binding args with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArgs.java"></compile>
+        <run class="IndeterminateArgs"></run>
+    </ajc-test>
+<ajc-test title="check arg types with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateArgType.java"></compile>
+        <run class="IndeterminateArgType"></run>
+    </ajc-test>
 <ajc-test title="testing and binding args with single indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateArg.java"></compile>
         <run class="IndeterminateArg"></run>

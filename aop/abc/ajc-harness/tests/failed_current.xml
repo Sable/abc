@@ -633,10 +633,6 @@
         <compile files="TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="binding args with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
-        <compile files="IndeterminateArgs.java"></compile>
-        <run class="IndeterminateArgs"></run>
-    </ajc-test>
 <ajc-test title="flag errors when binding args with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105,knownLimitation" dir="new">
         <compile files="IndeterminateArgsCE.java">
             <message line="67" kind="error"></message>
@@ -644,10 +640,6 @@
             <message line="70" kind="error"></message>
             <message line="72" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="check arg types with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
-        <compile files="IndeterminateArgType.java"></compile>
-        <run class="IndeterminateArgType"></run>
     </ajc-test>
 <ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateHandlerArg.java"></compile>
