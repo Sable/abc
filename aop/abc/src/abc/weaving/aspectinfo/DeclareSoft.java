@@ -14,12 +14,10 @@ import abc.soot.util.LocalGeneratorEx;
 public class DeclareSoft extends AbstractAdviceDecl {
     private AbcType exc;
     private Pointcut pc;
-    private Aspect aspct;
 
     public DeclareSoft(AbcType exc, Pointcut pc, Aspect aspct, Position pos) {
-	super(new SoftenAdvice(exc,pos),
+	super(aspct,new SoftenAdvice(exc,pos),
 	      pc, new ArrayList(), pos);
-	this.aspct=aspct;
 	this.exc = exc;
     }
 
@@ -54,9 +52,6 @@ public class DeclareSoft extends AbstractAdviceDecl {
 	return exc;
     }
 
-    public Aspect getAspect() {
-	return aspct;
-    }
 
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+" from aspect: "+getAspect().getName()+"\n");

@@ -183,7 +183,7 @@ public class GlobalAspectInfo {
 		return p;
 	    }
 	}
-	throw new RuntimeException("Pointcut "+name+" was not found in "+context);
+	throw new InternalCompilerError("Pointcut "+name+" was not found in "+context);
     }
 
     /** Returns the list of all <code>declare parents</code> declarations.
@@ -336,10 +336,30 @@ public class GlobalAspectInfo {
 	return getPrecedence(a.getName(), b.getName());
     }
 
+    public void sinkAdviceDecls() {
+	List/*<AbstractAdviceDecl>*/ newAds=new LinkedList();
+	Iterator it=ads.iterator();
+	while(it.hasNext()) {
+	    AbstractAdviceDecl ad=(AbstractAdviceDecl) it.next();
+	    if(ad.getAspect().getInstanceClass().getSootClass().isAbstract()) {
+		Set/*<Aspect>*/ concreteset=(Set) aspect_visibility.get(ad.getAspect());
+		Iterator concreteit=concreteset.iterator();
+		while(concreteit.hasNext()) {
+		    Aspect concrete=(Aspect) concreteit.next();
+		    newAds.add(ad.makeCopyInAspect(concrete));
+		}
+	    }
+	    else newAds.add(ad);
+	}
+	ads=newAds;
+    }
+
     private Hashtable /*<SootMethod,MethodAdviceList>*/ adviceLists=null;
 
     /** Computes the lists of advice application points for all weavable classes */
     public void computeAdviceLists() throws SemanticException {
+	sinkAdviceDecls();
+
 	// manual iterator because we want to add things as we go
 	for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
 

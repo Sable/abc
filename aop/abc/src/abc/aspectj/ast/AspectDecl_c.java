@@ -271,25 +271,27 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 
 	List el = new ArrayList();
 	// FIXME: Do these methods declare any exceptions?
+	if(!flags().isAbstract()) {
 
-	MethodSig aspectOf = new MethodSig
-	    (soot.Modifier.PUBLIC | soot.Modifier.STATIC,
-	     cl,
-	     AbcFactory.AbcType(type()),
-	     "aspectOf",
-	     fl,
-	     el,
-	     position());
-	MethodSig hasAspect = new MethodSig
-	    (soot.Modifier.PUBLIC | soot.Modifier.STATIC,
-	     cl,
-	     AbcFactory.AbcType(soot.BooleanType.v()),
-	     "hasAspect",
-	     fl,
-	     el,
-	     position());
-
-	MethodCategory.register(aspectOf, MethodCategory.ASPECT_INSTANCE);
-	MethodCategory.register(hasAspect, MethodCategory.ASPECT_INSTANCE);
+	    MethodSig aspectOf = new MethodSig
+		(soot.Modifier.PUBLIC | soot.Modifier.STATIC,
+		 cl,
+		 AbcFactory.AbcType(type()),
+		 "aspectOf",
+		 fl,
+		 el,
+		 position());
+	    MethodSig hasAspect = new MethodSig
+		(soot.Modifier.PUBLIC | soot.Modifier.STATIC,
+		 cl,
+		 AbcFactory.AbcType(soot.BooleanType.v()),
+		 "hasAspect",
+		 fl,
+		 el,
+		 position());
+	    
+	    MethodCategory.register(aspectOf, MethodCategory.ASPECT_INSTANCE);
+	    MethodCategory.register(hasAspect, MethodCategory.ASPECT_INSTANCE);
+	}
     }
 }

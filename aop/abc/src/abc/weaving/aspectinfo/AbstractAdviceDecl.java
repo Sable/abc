@@ -13,24 +13,30 @@ import abc.soot.util.LocalGeneratorEx;
 /** The base class for any kind of 'advice' declaration 
  *  @author Ganesh Sittampalam
  */
-public abstract class AbstractAdviceDecl extends Syntax {
+public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     protected AdviceSpec spec;
     protected Pointcut pc=null;
 
     private Pointcut origpc;
     private List formals;
 
-    protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
-				 List/*<Formal>*/ formals,Position pos) {
-	this(spec,pc,formals,pos,false);
+    private Aspect aspct;
+
+    protected AbstractAdviceDecl(Aspect aspct,
+				 AdviceSpec spec,
+				 Pointcut pc,
+				 List/*<Formal>*/ formals,
+				 Position pos) {
+	this(aspct,spec,pc,formals,pos,false);
 	if(abc.main.Debug.v.debugPointcutNormalization) 
 	    System.out.println("made unnormalized decl");
     }
 
-    protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
+    protected AbstractAdviceDecl(Aspect aspct,AdviceSpec spec,Pointcut pc,
 				 List/*<Formal>*/ formals,Position pos,
 				 boolean normalized) {
 	super(pos);
+	this.aspct=aspct;
 	this.spec=spec;
 
 	if(normalized) this.pc=pc; else this.origpc=pc;
@@ -45,17 +51,29 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	return spec;
     }
 
-    // return the associated aspect, if there is one;
-    // be careful calling it, since some things don't have 
-    // aspects
-    protected Aspect getAspect() {
-	throw new InternalCompilerError("This kind of advice doesn't have an aspect: "+getClass());
+    /** Returns the aspect of this advice decl */
+    public Aspect getAspect() {
+	return aspct;
+    }
+
+    protected Object clone() {
+	try {
+	    return super.clone();
+	} catch(CloneNotSupportedException e) {
+	    throw new InternalCompilerError("AbstractAdviceDecl should be cloneable",e);
+	}
+    }
+
+    public AbstractAdviceDecl makeCopyInAspect(Aspect newaspct) {
+	AbstractAdviceDecl n=(AbstractAdviceDecl) this.clone();
+	n.aspct=newaspct;
+	return n;
     }
 
     public void preprocess() {
 	if(pc!=null) throw new InternalCompilerError
 			 ("Trying to call preprocess on an already normalized advice decl "+this);
-	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
+	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("normalizing");
 	pc=Pointcut.normalize(origpc,formals,getAspect());
 	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
     }

@@ -25,17 +25,11 @@ public class DeclareMessage extends AbstractAdviceDecl {
 
     private int severity;
     private String message;
-    private Aspect aspct;
 
     public DeclareMessage(int severity, Pointcut pc, String message, Aspect aspct, Position pos) {
-	super(null,pc,new ArrayList(),pos);
-	this.aspct=aspct;
+	super(aspct,null,pc,new ArrayList(),pos);
 	this.severity = severity;
 	this.message = message;
-    }
-
-    public Aspect getAspect() {
-	return aspct;
     }
 
     /** Get the severity of the message.

@@ -7,14 +7,8 @@ import abc.weaving.weaver.WeavingContext;
 
 public abstract class PerSetupAdvice extends AbstractAdviceDecl {
 
-    private Aspect aspct;
-    public Aspect getAspect() {
-	return aspct;
-    }
-
     protected PerSetupAdvice(AdviceSpec spec,Aspect aspct,Pointcut pc,Position pos) {
-	super(spec,pc,new ArrayList(),pos);
-	this.aspct=aspct;
+	super(aspct,spec,pc,new ArrayList(),pos);
     }
 
     public WeavingEnv getWeavingEnv() {

@@ -3,6 +3,7 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import java.util.*;
+import polyglot.util.InternalCompilerError;
 
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.*;
@@ -23,18 +24,27 @@ public class AspectCodeGen {
       }
 
     public void fillInAspect(Aspect aspct)
-      { Per per = aspct.getPer();
-        if (per instanceof Singleton) // singleton aspect 
-          fillInSingletonAspect(aspct);
-        else if ((per instanceof PerThis) || 
-                 (per instanceof PerTarget))
-          fillInPerObjectAspect(aspct);
-        else if ((per instanceof PerCflow) ||
-                 (per instanceof PerCflowBelow))
-	  fillInPerCflowAspect(aspct);
-
-        else
-          throw new CodeGenException("Unknown kind of per aspect");
+      { 
+	  if(aspct.getInstanceClass().getSootClass().isAbstract()) return;
+	  try {
+	      Per per = aspct.getPer();
+	      if (per instanceof Singleton) // singleton aspect 
+		  fillInSingletonAspect(aspct);
+	      else if ((per instanceof PerThis) || 
+		       (per instanceof PerTarget))
+		  fillInPerObjectAspect(aspct);
+	      else if ((per instanceof PerCflow) ||
+		       (per instanceof PerCflowBelow))
+		  fillInPerCflowAspect(aspct);
+	      else
+		  throw new CodeGenException("Unknown kind of per aspect");
+	  } catch(InternalCompilerError e) {
+	      throw new InternalCompilerError(e.message()+" while filling in "+aspct,
+					      e.position(),
+					      e.getCause());
+	  } catch(Throwable e) {
+	      throw new InternalCompilerError("exception while filling in "+aspct,e);
+	  }
       }
 
     /* ===================== SINGLETON ASPECT =================== */

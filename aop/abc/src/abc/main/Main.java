@@ -104,10 +104,11 @@ public class Main {
         } catch (CompilerFailedException e) {
             System.out.println(e.getMessage());
             System.exit(5);
-        } catch(RuntimeException e) {
-	    throw (e instanceof InternalCompilerError ? e : new InternalCompilerError(e));
-	} catch(Error e) {
-	    throw new InternalCompilerError(e);
+	} catch(InternalCompilerError e) {
+	    // this clause is solely to avoid the next one matching
+	    throw e;
+        } catch(Throwable e) {
+	    throw new InternalCompilerError("unhandled exception during compilation",e);
 	}
     }
     

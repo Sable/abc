@@ -39,11 +39,6 @@ public class CflowSetup extends AbstractAdviceDecl {
 	return new CflowSetup(aspect,pc,isBelow,formals,actuals,pos);
     }
 
-    // To be removed when we share stacks, but for now we need
-    // it as somewhere to put the instance
-    private Aspect aspect;
-    protected Aspect getAspect() { return aspect; }
-
     private boolean isBelow;
 
     private List/*<Var>*/ actuals;
@@ -51,9 +46,8 @@ public class CflowSetup extends AbstractAdviceDecl {
     private CflowSetup(Aspect aspect,Pointcut pc,boolean isBelow,
 		       List/*<Formal>*/ formals,List/*<Var>*/ actuals,
 		       Position pos) {
-	super(new BeforeAfterAdvice(pos),pc,formals,pos);
+	super(aspect,new BeforeAfterAdvice(pos),pc,formals,pos);
 	this.actuals=actuals;
-	this.aspect=aspect;
 	this.isBelow=isBelow;
     }
 
@@ -206,7 +200,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     private SootField cflowStack=null;
     public SootField getCflowStack() {
 	if(cflowStack==null) {
-	    SootClass cl=aspect.getInstanceClass().getSootClass();
+	    SootClass cl=getAspect().getInstanceClass().getSootClass();
 
 	    int i=0;
 	    String name;

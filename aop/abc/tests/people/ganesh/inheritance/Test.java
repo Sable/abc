@@ -22,3 +22,12 @@ aspect Aspect2 extends AbstractAspect issingleton() {
 aspect Aspect3 extends AbstractAspect pertarget(this(Test)) {
 
 }
+
+abstract aspect AbstractAspect2 extends Base {
+
+}
+
+aspect Aspect4 extends AbstractAspect2 { 
+
+}
+

@@ -21,7 +21,6 @@ import abc.soot.util.LocalGeneratorEx;
 public class AdviceDecl extends AbstractAdviceDecl {
 
     private MethodSig impl;
-    private Aspect aspct;
     private int jp,jpsp,ejp;
 
     private int nformals; // the number of formals in the advice implementation
@@ -33,14 +32,8 @@ public class AdviceDecl extends AbstractAdviceDecl {
     public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, 
 		      int jp, int jpsp, int ejp, Position pos) {
 
-	// the list of formals we give the super constructor for normalizing
-	// is a little too large because it might include thisJoinPoint etc, 
-	// but since people shouldn't be using that in pointcuts anyway this 
-	// doesn't matter.
-
-	super(spec,pc,impl.getFormals(),pos);
+	super(aspct,spec,pc,impl.getFormals(),pos);
 	this.impl = impl;
-	this.aspct = aspct;
 	this.jp = jp;
 	this.jpsp = jpsp;
 	this.ejp = ejp;
@@ -81,12 +74,6 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	return impl;
     }
 
-    /** Get the aspect containing this intertype method declaration.
-     */
-    public Aspect getAspect() {
-	return aspct;
-    }
-
     public boolean hasJoinPoint() {
 	return jp != -1;
     }
@@ -120,7 +107,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
     }
 
     public Residue preResidue(ShadowMatch sm) {
-	return aspct.getPer().matchesAt(aspct,sm);
+	return getAspect().getPer().matchesAt(getAspect(),sm);
     }
 	
     public Residue postResidue(ShadowMatch sm) {
@@ -193,7 +180,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	}
 
 	ret=AndResidue.construct
-	    (ret,aspct.getPer().getAspectInstance(aspct,sm));
+	    (ret,getAspect().getPer().getAspectInstance(getAspect(),sm));
 	return ret;
 
     }
@@ -236,14 +223,14 @@ public class AdviceDecl extends AbstractAdviceDecl {
 
 
     public String toString() {
-	return "(in aspect "+aspct.getName()+") "+spec+": "+pc+" >> "+impl+" <<"
+	return "(in aspect "+getAspect().getName()+") "+spec+": "+pc+" >> "+impl+" <<"
 	    +(hasJoinPoint() ? " thisJoinPoint" : "")
 	    +(hasJoinPointStaticPart() ? " thisJoinPointStaticPart" : "")
 	    +(hasEnclosingJoinPoint() ? " thisEnclosingJoinPoint" : "");
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+" in aspect: "+aspct.getName()+"\n");
+	sb.append(prefix+" in aspect: "+getAspect().getName()+"\n");
 	sb.append(prefix+" type: "+spec+"\n");
 	sb.append(prefix+" pointcut: "+pc+"\n");
 	sb.append(prefix+" implementation: "+impl+"\n");
