@@ -8,6 +8,7 @@ import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 
 import abc.weaving.weaver.*;
+import abc.weaving.aspectinfo.*;
 
 import java.util.*;
 
@@ -47,7 +48,8 @@ public class Main {
 
 	// We should now have all classes as jimple
 	
-	// TODO: WEAVE!
+        generateDummyGAI();
+
         Weaver weaver = new Weaver();
         weaver.weave();
 
@@ -66,5 +68,28 @@ public class Main {
             Printer.v().write(sc, classes_destdir);
         }
     }
+
+    // Dummy code to be removed when matcher builds real GAI info
+    public static void generateDummyGAI() {
+        for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
+            final SootClass cl = (SootClass) clIt.next();
+            G.v().out.println( "generating dummy gai: "+cl.toString() );
+            if( isAspect(cl) ) {
+                System.out.println( "it's an aspect");
+		final Aspect aspect=new Aspect(new AbcClass(cl.getName()),null,null);
+		GlobalAspectInfo.v().addAspect(aspect);
+		GlobalAspectInfo.v().addAdviceDecl(new AdviceDecl(null,new SetField(null),null,aspect,null));
+            } else {
+                System.out.println( "it's not an aspect");
+		GlobalAspectInfo.v().addClass(new AbcClass(cl.getName()));
+            }
+        }   
+    }
+     private static boolean isAspect( SootClass cl ) {
+         if( cl.getName().equals( "Aspect" ) ) return true;
+         return false;
+     }
+
+
     
 }

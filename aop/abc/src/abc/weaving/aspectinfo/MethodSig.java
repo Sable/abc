@@ -9,7 +9,7 @@ import java.util.*;
 
 /** A method signature. */
 public class MethodSig extends Syntax {
-    private Class cl;
+    private AbcClass cl;
     private Type rtype;
     private String name;
     private List/*<Type>*/ params;
@@ -18,7 +18,7 @@ public class MethodSig extends Syntax {
     /** Create a method signature.
      *  @param params a list of {@link abc.weaving.aspectinfo.Type} objects
      */
-    public MethodSig(Class cl, Type rtype, String name, List params, Position pos) {
+    public MethodSig(AbcClass cl, Type rtype, String name, List params, Position pos) {
 	super(pos);
 	this.cl = cl;
 	this.rtype = rtype;

@@ -4,11 +4,11 @@ package abc.weaving.aspectinfo;
 import soot.*;
 
 /** A weavable class. */
-public class Class {
+public class AbcClass {
     private String name;
     private SootClass sc;
 
-    public Class(String name) {
+    public AbcClass(String name) {
 	this.name = name;
     }
 

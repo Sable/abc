@@ -31,8 +31,8 @@ public class AdviceApplication {
 
 	for(clsIt=info.getWeavableClasses().iterator();clsIt.hasNext();) {
 
-	    final abc.weaving.aspectinfo.Class cls 
-		= (abc.weaving.aspectinfo.Class) clsIt.next();
+	    final AbcClass cls 
+		= (AbcClass) clsIt.next();
 
 	    SootClass sootCls = cls.getSootClass();
 	    Iterator methodIt;

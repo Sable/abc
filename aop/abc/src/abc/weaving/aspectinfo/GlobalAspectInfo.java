@@ -8,7 +8,10 @@ import java.util.*;
 
 /** All aspect-specific information for an entire program. */
 public class GlobalAspectInfo {
-    private List/*<Class>*/ classes = new ArrayList();
+    private static GlobalAspectInfo instance = new GlobalAspectInfo();
+    public static GlobalAspectInfo v() { return instance; }
+
+    private List/*<AbcClass>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
     private List/*<IntertypeFieldDecl>*/ ifds = new ArrayList();
@@ -19,7 +22,7 @@ public class GlobalAspectInfo {
     }
 
     /** Returns the list of classes into which weaving can take place.
-     *  @return a list of {@link abc.weaving.aspectinfo.Class} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
      */
     public List getWeavableClasses() {
 	return classes;
@@ -53,7 +56,7 @@ public class GlobalAspectInfo {
 	return ads;
     }
 
-    public void addClass(Class cl) {
+    public void addClass(AbcClass cl) {
 	classes.add(cl);
     }
 

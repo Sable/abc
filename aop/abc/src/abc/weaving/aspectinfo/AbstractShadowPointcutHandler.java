@@ -10,7 +10,7 @@ public abstract class AbstractShadowPointcutHandler implements ShadowPointcutHan
     public ShadowType getShadowType() {
 	// FIXME
 	try {
-	    return (ShadowType) java.lang.Class.forName(getClass().toString()+"Type").newInstance();
+	    return (ShadowType) Class.forName(getClass().toString()+"Type").newInstance();
 	} catch (Exception e) {
 	    throw new RuntimeException(e);
 	}
