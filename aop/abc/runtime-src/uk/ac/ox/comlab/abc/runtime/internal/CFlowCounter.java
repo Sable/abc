@@ -110,4 +110,27 @@ public class CFlowCounter {
 	   current state */
         return (!getThreadCounter().isZero());
     }
+
+    // Getting a handle on the counter for the current thread
+    // Return an Object to ensure that the Counter class can be changed
+
+    public Object getCounter() {
+	return getThreadCounter();
+    }
+
+    // If we already have a handle on the counter (no need for a getThreadCounter()):
+    // Note: parameter will always be a return value of getCounter(), so really a Counter
+
+    public void incCounter(Object c) {
+	((Counter)c).inc();
+    }
+
+    public void decCounter(Object c) {
+	((Counter)c).dec();
+    }
+
+    public boolean isValidCounter(Object c) {
+	return (!((Counter)c).isZero());
+    }
+
 }
