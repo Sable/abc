@@ -26,6 +26,7 @@ import polyglot.types.FieldInstance;
 
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
+import abc.aspectj.types.AspectJTypeSystem_c;
 
 /**
  * @author oege
@@ -51,7 +52,7 @@ public class AJClassBody_c extends ClassBody_c {
 			 for (int j = i+1; j < l.size(); j++) {
 				 ConstructorInstance cj = (ConstructorInstance) l.get(j);
 
-				 if (ci.hasFormals(cj.formalTypes()) && !ITDoks(ci,cj)) {
+				 if (ci.hasFormals(cj.formalTypes()) && !ITDoks(ci,cj,tc.typeSystem())) {
 				 	if (ci instanceof InterTypeMemberInstance)
 				 		throw new SemanticException("Duplicate constructor \"" + ci + "\".", ci.position());
 				 	else
@@ -61,18 +62,20 @@ public class AJClassBody_c extends ClassBody_c {
 		 }
 	 }
 	
-	private boolean ITDoks(MemberInstance ci, MemberInstance cj) {
-			return ITDok(ci,cj) || ITDok(cj,ci);
+	private boolean ITDoks(MemberInstance ci, MemberInstance cj,TypeSystem ts) {
+			return ITDok(ci,cj,(AspectJTypeSystem_c)ts) || ITDok(cj,ci,(AspectJTypeSystem_c)ts);
 	}
 	
-	private boolean ITDok(MemberInstance ci, MemberInstance cj) {
+	private boolean ITDok(MemberInstance ci, MemberInstance cj, AspectJTypeSystem_c ts) {
 		return // ok to zap private members with a non-private ITD
 		            ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
 		            !(cj instanceof InterTypeMemberInstance) && 
 		            cj.flags().isPrivate())) ||
 		        // ok to have two ITDs that cannot see each other -- refine this to packages etc.
-		          ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate() &&
-		             cj instanceof InterTypeMemberInstance && cj.flags().isPrivate() )) ||
+		          ((ci instanceof InterTypeMemberInstance && 
+		            cj instanceof InterTypeMemberInstance && 
+		             ! ts.isAccessible(ci,((InterTypeMemberInstance) cj).origin()) &&
+		             ! ts.isAccessible(cj,((InterTypeMemberInstance) ci).origin()))) ||
 		       // also ok to have a duplicate in an interface
 		            (ci instanceof InterTypeMemberInstance && 
 		             !(cj instanceof InterTypeMemberInstance) &&
@@ -94,7 +97,7 @@ public class AJClassBody_c extends ClassBody_c {
 			  for (int j = i+1; j < l.size(); j++) {
 				  FieldInstance fj = (FieldInstance) l.get(j);
 
-				  if (fi.name().equals(fj.name()) && !ITDoks(fi,fj)) {
+				  if (fi.name().equals(fj.name()) && !ITDoks(fi,fj,tc.typeSystem())) {
 				  	if (fi instanceof InterTypeMemberInstance)
 				  		throw new SemanticException("Duplicate field \"" + fi + "\".", fi.position());
 				  	else
@@ -117,11 +120,13 @@ public class AJClassBody_c extends ClassBody_c {
 			for (int j = i+1; j < l.size(); j++) {
 				MethodInstance mj = (MethodInstance) l.get(j);
 
-				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj)) {
+				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj,tc.typeSystem())) {
 					if (mi instanceof InterTypeMemberInstance)
-						throw new SemanticException("Duplicate method \"" + mi + "\".", mi.position());
+						throw new SemanticException("Duplicate method \"" + mi + "\" in class \"" +
+						                            mi.container() + "\".", mi.position());
 					else
-						throw new SemanticException("Duplicate method \"" + mj + "\".", mj.position());
+						throw new SemanticException("Duplicate method \"" + mj + "\" in class \"" +
+						                            mi.container() + "\".", mj.position());
 				}
 			}
 		}

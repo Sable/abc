@@ -312,6 +312,8 @@ public class IntertypeAdjuster {
 	}
 	
 	private void addMethod( IntertypeMethodDecl imd ) {
+		// System.out.println("add method "+imd.getTarget() + "from "+imd.getAspect() +
+		//                   " and implementation " + imd.getImpl());
 		SootMethod implMethod = addImplMethod(imd);
 		addTargetMethod(imd,implMethod);
 	}
@@ -365,9 +367,9 @@ public class IntertypeAdjuster {
 			   for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
 				   final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
 				   if( childClass.isInterface() ) continue;
-				   if( !implementsInterface(childClass, sc) ) continue;
+				   if( !transImplInterface(childClass, sc) ) continue;
 				   if( childClass.hasSuperclass() 
-				   && implementsInterface(childClass.getSuperclass(), sc) )
+				   && transImplInterface(childClass.getSuperclass(), sc) )
 					   continue;
 
                    createTargetMethod(implMethod,method,childClass);
@@ -375,6 +377,20 @@ public class IntertypeAdjuster {
 				   // System.out.println("added method "+ method.getName() + " to class " + childClass);
 			   }
 		   } else createTargetMethod(implMethod,method,sc);
+    }
+    
+    
+    boolean transImplInterface(SootClass sc, SootClass interf) {
+    	// System.out.println("does "+sc+" implement "+interf+"?");
+    	boolean result = false;
+    	Stack interfaces = new Stack();
+    	interfaces.addAll(sc.getInterfaces());
+    	while(!result && !(interfaces.isEmpty())) {
+    		SootClass iff = (SootClass) interfaces.pop();
+    		interfaces.addAll(iff.getInterfaces());
+    		result = (iff.equals(interf));
+    	}
+    	return result;
     }
 
 	private void createTargetMethod(
@@ -546,6 +562,7 @@ public class IntertypeAdjuster {
         
        
         SootClass cl = field.getDeclaringClass().getSootClass();
+        
         if( cl.isInterface() ) {
         	// add the accessor methods to the interface
         	
@@ -555,17 +572,19 @@ public class IntertypeAdjuster {
             for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
                 final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
                 if( childClass.isInterface() ) continue;
-                if( !implementsInterface(childClass, cl) ) continue;
+                if( !transImplInterface(childClass, cl) ) continue;
                 if( childClass.hasSuperclass() 
-                && implementsInterface(childClass.getSuperclass(), cl) )
+                && transImplInterface(childClass.getSuperclass(), cl) )
                     continue;
-
-                // Add the field itself
-                SootField newField = new SootField(
-                        field.getName(),
-                        field.getType().getSootType(),
-                        modifiers );
-                childClass.addField(newField);
+                    
+                
+	                // Add the field itself
+	            SootField  newField = new SootField(
+	                        field.getName(),
+	                        field.getType().getSootType(),
+	                        modifiers );
+	            childClass.addField(newField);
+                
                 // System.out.println("adding field "+newField+ " with modifiers "  + Modifier.toString(modifiers) + " to class "+childClass);
                 
                 // Add the accessor methods and their implementation to the implementing class
@@ -579,6 +598,7 @@ public class IntertypeAdjuster {
 
             }
         } else {
+			
             // Add the field itself
             SootField newField = new SootField(
                     field.getName(),
@@ -591,12 +611,27 @@ public class IntertypeAdjuster {
         // TODO: Add dispatch methods
     }
     
+    
+	private void addConstructor( IntertypeConstructorDecl icd) {
+		SootClass sc = icd.getTarget().getSootClass();
+		  if( sc.isInterface() ) {
+				for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
+					final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
+					if( childClass.isInterface() ) continue;
+					if( !transImplInterface(childClass, sc) ) continue;
+					if( childClass.hasSuperclass() 
+					&& transImplInterface(childClass.getSuperclass(), sc) )
+						continue;
 
-	
-	private void addConstructor( IntertypeConstructorDecl icd ) {
-        // the target type: we are going to add the new constructor
-		SootClass scTarget = icd.getTarget().getSootClass();
-		
+					createConstructor(childClass,icd);
+                
+					// System.out.println("added method "+ method.getName() + " to class " + childClass);
+				}
+			} else createConstructor(sc,icd);
+	 }
+
+	private void createConstructor( SootClass scTarget, IntertypeConstructorDecl icd ) {
+    
 		// constructors have void return type
 		Type retType = soot.VoidType.v();
 		
@@ -691,7 +726,7 @@ public class IntertypeAdjuster {
 		//  the first argument is "this"
 		List bodyArgs = new ArrayList(eiArgs);
 		bodyArgs.add(0,thisLoc);
-		System.out.println("getting method "+icd.getBody());
+		// System.out.println("getting method "+icd.getBody());
 		SootMethod bodyMethod = icd.getBody().getSootMethod();
 		Expr bodyExpr = Jimple.v().newStaticInvokeExpr(bodyMethod,bodyArgs);
 		InvokeStmt body = Jimple.v().newInvokeStmt(bodyExpr);
@@ -745,9 +780,9 @@ public class IntertypeAdjuster {
 					
 					final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
 					if( childClass.isInterface() ) continue;
-					if( !implementsInterface(childClass, cl) ) continue;
+					if( !transImplInterface(childClass, cl) ) continue;
 					if( childClass.hasSuperclass() 
-						&& implementsInterface(childClass.getSuperclass(), cl) )
+						&& transImplInterface(childClass.getSuperclass(), cl) )
 							 continue;
 					// Add the field itself
 					SootField newField = new SootField(

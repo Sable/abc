@@ -43,6 +43,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     protected TypeNode host;
     protected LocalInstance thisParamInstance;
     protected Supers supers;
+    protected String identifier;
 
     public IntertypeConstructorDecl_c(Position pos,
                                  Flags flags,
@@ -54,6 +55,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	super(pos,flags,name,formals,throwTypes,body);
 	this.host = host;
 	this.supers = new Supers();
+	this.identifier = UniqueID.newID("id");
     }
 
 	public TypeNode host() {
@@ -94,14 +96,15 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {
 		   AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
-		   ConstructorInstance ci = ts.interTypeConstructorInstance(position(),
+		   ConstructorInstance ci = ts.interTypeConstructorInstance(position(),identifier,
 		   							(ClassType) constructorInstance().container(),
 		   							(ClassType) ht,
 		   							constructorInstance().flags(),
 		   							constructorInstance().formalTypes(),
 		   							constructorInstance().throwTypes());
 		   
-	  	  ((ParsedClassType)ht).addConstructor(ci);
+	  	  // ((ParsedClassType)ht).addConstructor(ci);
+	  	  overrideITDconstructor((ParsedClassType)ht,ci);
 	  	  itConstructorInstance = (InterTypeConstructorInstance_c) ci;
 	  	  
 		  /* record instance for "this" parameter */
@@ -110,6 +113,80 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		}
         return am.bypassChildren(this);
     }
+    
+    
+    static boolean hasConstructor(ClassType ct, ConstructorInstance ci) {
+    	boolean res = false;
+    	for (Iterator cit = ct.constructors().iterator(); !res && cit.hasNext(); ) {
+    		ConstructorInstance cj = (ConstructorInstance) cit.next();
+    		res = ci.hasFormals(cj.formalTypes());
+    	}
+    	return res;
+    }
+    
+    static List constructors(ClassType ct, List formalTypes) {
+    	List res = new ArrayList();
+		for (Iterator cit = ct.constructors().iterator(); cit.hasNext(); ) {
+			ConstructorInstance cj = (ConstructorInstance) cit.next();
+			if (cj.hasFormals(formalTypes))
+				res.add(cj);
+		}
+		return res;
+	}
+    
+	public static void overrideITDconstructor(ClassType pht, 
+											ConstructorInstance mi) {
+			// System.out.println("attempting to add constructor "+mi+" to "+pht);
+			InterTypeConstructorInstance_c itmic = (InterTypeConstructorInstance_c) mi;
+			InterTypeConstructorInstance_c toinsert = (InterTypeConstructorInstance_c) mi.container(pht).flags(itmic.origFlags());
+			// System.out.println("instance to insert:"+ " origin=" + toinsert.origin() +
+			//										  " container=" + toinsert.container() +
+			//										  " flags=" + toinsert.flags())	;
+			if (hasConstructor(pht,mi)) {
+				// System.out.println("it has the constructor already");
+				List mis = constructors(pht,mi.formalTypes());
+				boolean added = false;
+				for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
+					// System.out.println("try next instance");
+					ConstructorInstance minst = (ConstructorInstance) misIt.next();
+					if (zaps(mi,minst) && !added){   
+						pht.methods().remove(minst);
+						pht.methods().add(toinsert);
+						// System.out.println("replaced");
+						added = true;
+					} else if (zaps(minst,toinsert)) {	
+						// skip  
+						// System.out.println("skipped");
+						}
+					else if (!added) { pht.constructors().add(toinsert); added = true; 
+										// System.out.println("added");
+										} 
+				}
+			} else {pht.constructors().add(toinsert);
+				// System.out.println("added");
+				} 
+			// System.out.println("exit overrideITDconstructor");
+		}
+	
+		static boolean fromInterface(ConstructorInstance mi) {
+			return mi instanceof InterTypeConstructorInstance_c &&
+				   (((InterTypeConstructorInstance_c)mi).interfaceTarget() != null);
+		}
+	
+		// replace this by a call to the appropriate structure!
+		static boolean precedes(ClassType ct1, ClassType ct2) {
+			return ct1.descendsFrom(ct2);
+		}
+	
+		static boolean zaps(ConstructorInstance mi1,ConstructorInstance mi2) {
+			if (!(mi1 instanceof InterTypeConstructorInstance_c &&
+				  mi2 instanceof InterTypeConstructorInstance_c)) return false;
+			InterTypeConstructorInstance_c itmi1 = (InterTypeConstructorInstance_c) mi1;
+			InterTypeConstructorInstance_c itmi2 = (InterTypeConstructorInstance_c) mi2;
+			return precedes(itmi1.origin(),itmi2.origin());	    
+		}
+    
+	
     
 
 	/**

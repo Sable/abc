@@ -29,6 +29,8 @@ public class InterTypeMethodInstance_c
 	protected ClassType origin;
 	protected MethodInstance mangled;
 	protected Flags origFlags;
+	protected ClassType interfaceTarget; // for interface ITDs
+	protected String identifier;
 	
 	public ClassType origin() {
 		return origin;
@@ -36,6 +38,10 @@ public class InterTypeMethodInstance_c
 	
 	public Flags origFlags() {
 		return origFlags;
+	}
+	
+	public String getIdentifier() {
+		return identifier;
 	}
 
 	
@@ -46,6 +52,7 @@ public class InterTypeMethodInstance_c
 	public InterTypeMethodInstance_c(
 		TypeSystem ts,
 		Position pos,
+		String identifier,
 		ClassType origin,
 		ReferenceType container,
 		Flags flags,
@@ -63,8 +70,13 @@ public class InterTypeMethodInstance_c
 			name,
 			formalTypes,
 			excTypes);
+		this.identifier = identifier;
 		this.origin = origin;
 		this.origFlags = origFlags;
+		if (container.toClass().flags().isInterface())
+			interfaceTarget = container.toClass();
+		else
+			interfaceTarget = null;
 //		prepare for later transformation to mangled form:
 		if (flags.isPrivate() || flags.isPackage()){
 			Flags newFlags = flags.clearPrivate().set(Flags.PUBLIC);
@@ -74,6 +86,9 @@ public class InterTypeMethodInstance_c
 		} else mangled = this;  // no mangling
 	}
 	
+	public ClassType interfaceTarget() {
+		return interfaceTarget;
+	}
 
 	/** fix up the mangled instance to agree with super type */
 	public void setMangle(AspectJTypeSystem ts) {
@@ -82,8 +97,8 @@ public class InterTypeMethodInstance_c
 				MethodInstance superInstance = null;
 				try {
 				 superInstance = ts.findMethod(container.superType().toReference(),this.name(),this.formalTypes(),
-				                               container.superType().toClass());
-				} catch (SemanticException e) { throw new InternalCompilerError("could not find method") ; }
+				                               origin);
+				} catch (SemanticException e) { throw new InternalCompilerError("could not find method"+e.getMessage()) ; }
 				if (superInstance instanceof InterTypeMethodInstance_c)
 				{	
 					mangled = mangled.name(((InterTypeMethodInstance_c)superInstance).mangled().name());

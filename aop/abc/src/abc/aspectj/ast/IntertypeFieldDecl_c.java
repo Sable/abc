@@ -41,6 +41,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     protected InterTypeFieldInstance_c hostInstance;
     protected LocalInstance thisParamInstance;
     protected Supers supers;
+    protected String identifier;
 
     protected MethodDecl initm;
 
@@ -53,6 +54,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	super(pos,flags,type,name,init);
 	this.host = host;
 	this.supers = new Supers();
+	this.identifier = UniqueID.newID("id");
     }
     
     public TypeNode host() { 
@@ -96,14 +98,16 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			// need to make a copy because the container has changed
 			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
 			
+			// System.out.println("add field "+name() + " to "+ ht + " from " + fieldInstance().container());
 			InterTypeFieldInstance_c fi = 
 			  (InterTypeFieldInstance_c)
-			  ts.interTypeFieldInstance(position(),(ClassType) fieldInstance().container(), // origin
+			  ts.interTypeFieldInstance(position(),identifier,(ClassType) fieldInstance().container(), // origin
 			                            (ReferenceType) ht, 
 			                            fieldInstance().flags(),
 										fieldInstance().type(),
 										fieldInstance().name());
-	   	 	((ParsedClassType)ht).addField(fi); // add field for type checking
+			overrideITDField((ParsedClassType)ht,fi);
+	   	 	// ((ParsedClassType)ht).addField(fi); // add field for type checking
 	   	 	
 	   	 	hostInstance = fi;
 	   	 	
@@ -116,6 +120,49 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
         return am.bypassChildren(this);
     }
 
+	static List fieldsNamed(ClassType ct, String name) {
+		List result = new LinkedList();
+		for (Iterator fldit = ct.fields().iterator(); fldit.hasNext(); ) {
+			FieldInstance fi = (FieldInstance) fldit.next();
+			if (fi.name().equals(name))
+				result.add(fi);
+		}
+		return result;
+	}
+	
+	public static void overrideITDField(ClassType pht, FieldInstance fi) {
+		FieldInstance toInsert = fi; //.container(pht);	
+		if (pht.fieldNamed(fi.name())!= null) {
+			List fis = fieldsNamed(pht,fi.name());
+			boolean added = false;
+			for (Iterator fisIt = fis.iterator(); fisIt.hasNext(); ) {
+				FieldInstance finst = (FieldInstance) fisIt.next();
+				if (zaps(fi,finst) && !added){   
+					pht.methods().remove(finst);
+					pht.methods().add(toInsert);
+					added = true;
+				}
+				else if (zaps(finst,fi)) {	
+					// skip  
+					}
+				else if (!added) { pht.fields().add(toInsert); added = true; } 
+			}
+		} else pht.fields().add(toInsert); 
+	}
+	
+	// replace this by a call to the appropriate structure!
+	static boolean precedes(ClassType ct1, ClassType ct2) {
+		return ct1.descendsFrom(ct2);
+	}
+
+	static boolean zaps(FieldInstance mi1,FieldInstance mi2) {
+		if (!(mi1 instanceof InterTypeFieldInstance_c &&
+			  mi2 instanceof InterTypeFieldInstance_c)) return false;
+		InterTypeFieldInstance_c itmi1 = (InterTypeFieldInstance_c) mi1;
+		InterTypeFieldInstance_c itmi2 = (InterTypeFieldInstance_c) mi2;
+		return precedes(itmi1.origin(),itmi2.origin());	    
+	}
+    
 	/**
 	 * create a reference to the "this" parameter
 	 * @author Oege de Moor
@@ -221,7 +268,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
      * mangling the name.
      */
     public IntertypeFieldDecl accessChange() {
-    	if (flags().isPrivate() || flags().isPackage()) {
+    	if (flags().isPrivate() || flags().isPackage() || host.type().toClass().flags().isInterface()) {
     		ParsedClassType ht = (ParsedClassType) host.type();
     		InterTypeFieldInstance_c fi = (InterTypeFieldInstance_c) ht.fieldNamed(name());
     		ht.fields().remove(fi); // remove old instance from host type    		

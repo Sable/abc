@@ -36,16 +36,16 @@ public interface AspectJTypeSystem extends JjTypeSystem {
 											List argTypes, List excTypes);
 											
 	public FieldInstance interTypeFieldInstance(
-										  Position pos, ClassType origin,
+										  Position pos, String id, ClassType origin,
 										  ReferenceType container, Flags flags,
 							              Type type, String name);
 	
-	public MethodInstance interTypeMethodInstance(Position pos,ClassType origin,
+	public MethodInstance interTypeMethodInstance(Position pos, String id, ClassType origin,
 												ReferenceType container, Flags flags, Flags oflags,
 												Type returnType, String name,
 												List argTypes, List excTypes);
 	
-	public ConstructorInstance interTypeConstructorInstance(Position pos,ClassType origin,
+	public ConstructorInstance interTypeConstructorInstance(Position pos, String id,ClassType origin,
 													ClassType container, Flags flags,
 													List argTypes, List excTypes);
 

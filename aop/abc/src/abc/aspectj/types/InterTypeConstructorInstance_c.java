@@ -36,11 +36,16 @@ public class InterTypeConstructorInstance_c
 		
 	protected ConstructorInstance mangled;
 	protected ClassType mangleType;
-    
+    protected ClassType interfaceTarget;
 	protected ClassType origin;
+	protected String identifier;
 	
 	public ClassType origin() {
 		return origin;
+	}
+	
+	public String identifier() {
+		return identifier;
 	}
 
 	/** create a constructor that can be traced back to the aspect
@@ -50,6 +55,7 @@ public class InterTypeConstructorInstance_c
 	public InterTypeConstructorInstance_c(
 		TypeSystem ts,
 		Position pos,
+		String identifier,
 		ClassType origin,
 		ClassType container,
 		Flags flags,
@@ -57,6 +63,11 @@ public class InterTypeConstructorInstance_c
 		List excTypes) {
 		super(ts, pos, container, flags, formalTypes, excTypes);
 		this.origin = origin;
+		this.identifier = identifier;
+		if (container.toClass().flags().isInterface())
+			interfaceTarget = container.toClass();
+		else
+			interfaceTarget = null;
 		
 		if (flags().isPrivate() || flags().isPackage()) {
 			mangleType = origin; // not quite right, same as ajc.
@@ -67,6 +78,10 @@ public class InterTypeConstructorInstance_c
 		}
 	}
 	
+	
+	public ClassType interfaceTarget() {
+		return interfaceTarget;
+	}
 	
 	public Flags origFlags() {
 		return flags();

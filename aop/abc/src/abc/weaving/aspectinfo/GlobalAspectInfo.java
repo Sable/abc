@@ -55,6 +55,9 @@ public class GlobalAspectInfo {
     private Map/*<String,String>*/ method_real_classes = new HashMap();
     private Map/*<String,Integer>*/ method_skip_first = new HashMap();
     private Map/*<String,Integer>*/ method_skip_last = new HashMap();
+    
+    
+   
 
     public void insertAllSootClassesByName(Collection weavable_classes) {
 	Iterator cni = weavable_classes.iterator();
@@ -472,5 +475,37 @@ public class GlobalAspectInfo {
 	    return 0;
 	}
     }
+    
+    
+    
+    /* infrastructure for keeping track of targets of ITDs.
+     * Each ITD can end up in a (possibly empty)  collection of classes,
+     * for example because it is overridden by another ITD, or because
+     * the original target was an interface.
+     * 
+     * The ITDTARGET pass collects all the intertype declarations from
+     * potential targets. That information is then queried by the
+     * ASPECTINFO harvester (to be precise, by the update methods of
+     * intertype declarations).
+     * 
+     */
+	private Map/*<String,List<ClassType>*/ itdTargets = new HashMap();
+    
+   public void addITDtarget(String ident, polyglot.types.ClassType cl) {
+	   List targets;
+	   if (itdTargets.containsKey(ident))
+		   targets = (List) itdTargets.get(ident);
+	   else {
+		   targets = new ArrayList();
+		   itdTargets.put(ident,targets);
+	   }
+	   targets.add(cl);
+   }
+
+   public List getITDtargets(String ident) {
+	   if (itdTargets.containsKey(ident))
+		   return (List) itdTargets.get(ident);
+	   else return new ArrayList();
+   }
 
 }

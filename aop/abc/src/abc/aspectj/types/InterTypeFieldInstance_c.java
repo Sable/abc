@@ -40,17 +40,24 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 	protected FieldInstance mangled;
 	protected MethodInstance getInstance;
 	protected MethodInstance setInstance;
+	protected String identifier;
 		
+	public String getIdentifier() {
+		return identifier;
+	}
 	public InterTypeFieldInstance_c(TypeSystem ts, Position pos,
+						String identifier,
 						ClassType origin,
 						ReferenceType container,
 						Flags flags, Type type, String name) {
 		 super(ts, pos, container, flags, type, name);
 	 	this.origin = origin;
+	 	this.identifier = identifier;
 		//		prepare for later transformation to mangled form:
-		if (flags.isPrivate() || flags.isPackage()){
+		if (flags.isPrivate() || flags.isPackage() || container.toClass().flags().isInterface()){
 			Flags newFlags = flags.clearPrivate().set(Flags.PUBLIC);
-			String mangledName = UniqueID.newID(origin.name() + "$" + name);
+			String originName = origin.name().replace('.','$');
+			String mangledName = UniqueID.newID(originName + "$" + name);
 			mangled = flags(newFlags).name(mangledName);
 		} else mangled = this;  // no mangling
 		// 		create setters and getters if needed

@@ -77,16 +77,16 @@ public class AspectJTypeSystem_c
 		}	
 	
 	public FieldInstance interTypeFieldInstance(
-		                                 	Position pos, ClassType origin,
+		                                 	Position pos, String id, ClassType origin,
 										  	ReferenceType container, Flags flags,
 							  				Type type, String name) {
 		assert_(origin);
 		assert_(container);
 		assert_(type);
-		return new InterTypeFieldInstance_c(this, pos, origin, container, flags, type, name);
+		return new InterTypeFieldInstance_c(this, pos, id, origin, container, flags, type, name);
 	}
 	
-	public MethodInstance interTypeMethodInstance(Position pos,ClassType origin,
+	public MethodInstance interTypeMethodInstance(Position pos,String id, ClassType origin,
 													ReferenceType container, Flags flags, Flags oflags,
 													Type returnType, String name,
 													List argTypes, List excTypes){
@@ -95,28 +95,29 @@ public class AspectJTypeSystem_c
 		assert_(returnType);
 		assert_(argTypes);
 		assert_(excTypes);
-		return new InterTypeMethodInstance_c(this, pos, origin, container, flags, oflags,
+		return new InterTypeMethodInstance_c(this, pos, id, origin, container, flags, oflags,
 		  										returnType, name, argTypes, excTypes);
 														
 	}
 	
-	public ConstructorInstance interTypeConstructorInstance(Position pos,ClassType origin,
+	public ConstructorInstance interTypeConstructorInstance(Position pos,String id, ClassType origin,
 														ClassType container, Flags flags,
 														List argTypes, List excTypes) {
 		assert_(origin);
 		assert_(container);
 		assert_(argTypes);
 		assert_(excTypes);
-		return new InterTypeConstructorInstance_c(this,pos,origin,container,flags,argTypes,excTypes);														
+		return new InterTypeConstructorInstance_c(this,pos,id,origin,container,flags,argTypes,excTypes);														
 	}
 		   
-    protected boolean isAccessible(MemberInstance mi, ClassType ctc) {
+    public boolean isAccessible(MemberInstance mi, ClassType ctc) {
         if (mi instanceof InterTypeMemberInstance) {
         	// the following code has been copied from TypeSystem_c.isAccessible
         	// the only change is the definition of target
 			ReferenceType target = ((InterTypeMemberInstance) mi).origin(); 
 														// accessibility of intertype declarations
 		                                                // is with respect to origin, not container
+		//    System.out.println("isAccessible: mi="+mi+" ctc= "+ctc + "target="+target);
 			Flags flags = mi.flags();
 			if (flags.isPublic()) return true;
 			if (equals(target, ctc)) return true;
@@ -282,5 +283,127 @@ public class AspectJTypeSystem_c
 			}
 			return result;
 		}
+		
+		/**
+		 * Assert that <code>ct</code> implements all abstract methods required;
+		 * that is, if it is a concrete class, then it must implement all
+		 * interfaces and abstract methods that it or it's superclasses declare.
+		 */
+		public void checkClassConformance(ClassType ct) throws SemanticException {
+			if (ct.flags().isAbstract() || ct.flags().isInterface()) {
+				// ct is abstract or an interface, and so doesn't need to 
+				// implement everything.
+				return;
+			}
+        
+			// build up a list of superclasses and interfaces that ct 
+			// extends/implements that may contain abstract methods that 
+			// ct must define.
+			List superInterfaces = abstractSuperInterfaces(ct);
+
+			// check each abstract method of the classes and interfaces in 
+			// superInterfaces
+			for (Iterator i = superInterfaces.iterator(); i.hasNext(); ) {
+				ReferenceType rt = (ReferenceType)i.next();
+				for (Iterator j = rt.methods().iterator(); j.hasNext(); ) {
+					MethodInstance mi = (MethodInstance)j.next();
+					
+					// FOLLOWING LINES ARE CHANGES FOR ASPECTJ:
+					ClassType container;
+					if (mi instanceof InterTypeMemberInstance)
+						container = ((InterTypeMemberInstance) mi).origin();
+					else
+						container = ct;
+					// END OF CHANGES
+					
+					if (!mi.flags().isAbstract()) {
+						// the method isn't abstract, so ct doesn't have to 
+						// implement it.
+						continue;
+					}
+                
+					boolean implFound = false;
+					ReferenceType curr = ct;
+					while (curr != null && !implFound) {
+						List possible = curr.methods(mi.name(), mi.formalTypes());
+						for (Iterator k = possible.iterator(); k.hasNext(); ) {
+							MethodInstance mj = (MethodInstance)k.next();
+							
+							// NEXT LINE IS CHANGED FOR ASPECTJ:
+							if (!mj.flags().isAbstract() && isAccessible(mj, container)) {
+								// May have found a suitable implementation of mi.
+								// If the method instance mj is not declared
+								// in the class type ct, then we need to check
+								// that it has appropriate protections.
+								if (!equals(ct, mj.container())) {
+									try {
+										// check that mj can override mi, which
+										// includes access protection checks.
+										checkOverride(mj, mi);                                
+									}
+									catch (SemanticException e) {
+										// change the position of the semantic
+										// exception to be the class that we
+										// are checking.
+										throw new SemanticException(e.getMessage(),
+											ct.position());
+									}
+								}
+								else {
+									// the method implementation mj we found was 
+									// declared in ct. So other checks will take
+									// care of access issues
+								}
+								implFound = true;
+								break;
+							}                        
+						}
+
+						curr = curr.superType() ==  null ? 
+							   null : curr.superType().toReference();
+					}
+                
+
+					// did we find a suitable implementation of the method mi?
+					if (!implFound) {
+						throw new SemanticException(ct.fullName() + " should be " +
+								"declared abstract; it does not define " +
+								mi.signature() + ", which is declared in " +
+								rt.toClass().fullName(), ct.position());
+					}
+				}
+			}
+		}
+		
+		/** All flags allowed for a method. */
+		protected final Flags AJ_METHOD_FLAGS = AspectJFlags.intertype(AspectJFlags.interfaceorigin(METHOD_FLAGS));
+
+		public void checkMethodFlags(Flags f) throws SemanticException {
+			  if (! f.clear(AJ_METHOD_FLAGS).equals(Flags.NONE)) {
+			  throw new SemanticException(
+			  "Cannot declare method with flags " +
+			  f.clear(METHOD_FLAGS) + ".");
+		  		}
+
+			  if (f.isAbstract() && f.isPrivate() && ! AspectJFlags.isIntertype(f)) {
+			  throw new SemanticException(
+			  "Cannot declare method that is both abstract and private.");
+			  }
+
+			  if (f.isAbstract() && f.isStatic()) {
+			  throw new SemanticException(
+			  "Cannot declare method that is both abstract and static.");
+			  }
+
+			  if (f.isAbstract() && f.isFinal()) {
+			  throw new SemanticException(
+			  "Cannot declare method that is both abstract and final.");
+			  }
+
+			  if (f.isAbstract() && f.isNative()) {
+			  throw new SemanticException(
+			  "Cannot declare method that is both abstract and native.");
+			  }
+		  }
 
 }

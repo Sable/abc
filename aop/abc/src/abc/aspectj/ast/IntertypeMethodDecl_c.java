@@ -33,6 +33,7 @@ import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.FieldSig;
 
@@ -46,6 +47,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     protected LocalInstance thisParamInstance;
     protected Supers supers;
     protected Flags origflags;
+    protected String identifier;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -54,12 +56,13 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
                                  String name,
                                  List formals,
                                  List throwTypes,
-	  	                 Block body) {
-	super(pos,flags,returnType,
+	  	                 Block body) {	
+	super(pos,AspectJFlags.intertype(flags),returnType,
               name,formals,throwTypes,body);
 	this.host = host;
 	this.supers = new Supers();
 	this.origflags = flags;
+	this.identifier = UniqueID.newID("id");
     }
 
 	public TypeNode host() {
@@ -101,48 +104,17 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			Flags newFlags = flags();
 			if (pht.flags().isInterface())
 				newFlags = newFlags.set(Flags.ABSTRACT);
-			MethodInstance mi = ts.interTypeMethodInstance(position(),
+			MethodInstance mi = ts.interTypeMethodInstance(position(), identifier,
 		                                	               	(ClassType) methodInstance().container(),
 		                                               		(ReferenceType)ht,
 		                                               		newFlags,
-		                                              		flags(),
+		                                              		origflags,
 		                                               		methodInstance().returnType(),
 		                                               		methodInstance().name(),
 		                                               		methodInstance().formalTypes(),
 		                                               		methodInstance().throwTypes());
-		                                               		
-		    // to implement overriding of IT methods by subaspects, check the following:
-		    // does ht already have the method mi?
-		    //   - if so, was it introduced by an ITD?
-		    //        - is the origin of the other instance a super class of the current one?
-		    //           then replace old by current
-		    //        - is the origin of the other instance a subclass of the current one?
-		    //           then don't insert current
-		    //        - otherwise the origins are incomparable in the inheritance hierarchy
-		    //           insert current (and watch the error message later)
-		    //   - if not, insert current
-		    
-		 
-		    if (pht.hasMethod(mi)) {
-		    	List mis = pht.methods(mi.name(),mi.formalTypes());
-		    	boolean added = false;
-		    	for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
-		    		MethodInstance minst = (MethodInstance) misIt.next();
-		    		if (minst instanceof InterTypeMethodInstance_c) {
-		    			InterTypeMethodInstance_c itdminst = (InterTypeMethodInstance_c) minst;
-		    			if (itdminst.origin().descendsFrom(methodInstance().container())) {
-		    				// skip, we have a more specific instance already
-		    			}
-		    			else if (methodInstance().container().descendsFrom(itdminst.origin())) {
-		    				// the super ITD is replaced by the current one
-		    				pht.methods().remove(minst); 
-		    				if (!added) {pht.methods().add(mi);  added=true;} 
-		    			 } 
-		    			else if (!added) { pht.methods().add(mi); added=true; } 
-		    		}
-		    		else if (!added) {pht.methods().add(mi); added = true; } 
-		    	}
-		    } else {pht.addMethod(mi); } 
+		                                               			    
+		 overrideITDmethod(pht, mi);
 	    	
     	
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
@@ -153,6 +125,67 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		}
         return am.bypassChildren(this);
     }
+
+	public static void overrideITDmethod(ClassType pht, 
+											MethodInstance mi) {
+		// System.out.println("attempting to add method "+mi+" to "+pht);
+		InterTypeMethodInstance_c itmic = (InterTypeMethodInstance_c) mi;
+		InterTypeMethodInstance_c toinsert = (InterTypeMethodInstance_c) mi.container(pht).flags(itmic.origFlags());
+		// System.out.println("instance to insert:"+ " origin=" + toinsert.origin() +
+		//                                          " container=" + toinsert.container() +
+		//                                          " flags=" + toinsert.flags())	;
+		if (pht.hasMethod(mi)) {
+			// System.out.println("it has the method already");
+			List mis = pht.methods(mi.name(),mi.formalTypes());
+			boolean added = false;
+			for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
+				// System.out.println("try next instance");
+				MethodInstance minst = (MethodInstance) misIt.next();
+				if (zaps(mi,minst) && !added){   
+					pht.methods().remove(minst);
+					pht.methods().add(toinsert);
+					// System.out.println("replaced");
+					added = true;
+				} else if (zaps(minst,toinsert)) {	
+					// skip  
+					// System.out.println("skipped");
+					}
+				else if (!added) { pht.methods().add(toinsert); added = true; 
+									// System.out.println("added");
+									} 
+			}
+		} else {pht.methods().add(toinsert); // System.out.println("added");
+					} 
+		// System.out.println("exit overrideITDmethod");
+	}
+	
+	static boolean fromInterface(MethodInstance mi) {
+		return mi instanceof InterTypeMethodInstance_c &&
+		       (((InterTypeMethodInstance_c)mi).interfaceTarget() != null);
+	}
+	
+	// replace this by a call to the appropriate structure!
+	static boolean precedes(ClassType ct1, ClassType ct2) {
+		return ct1.descendsFrom(ct2);
+	}
+	
+	static boolean zaps(MethodInstance mi1,MethodInstance mi2) {
+		if (!(mi1.flags().isAbstract()) && mi2.flags().isAbstract())
+			return true;
+		// System.out.println("not (!mi1.abstract && mi2.abstract)");
+		// was mi2 then mi1
+ 		if (!fromInterface(mi1) && fromInterface(mi2)) return true;
+ 		// System.out.println("not (!mi2.fromInterface && mi1.fromInterface");
+		if (!(mi1 instanceof InterTypeMethodInstance_c &&
+		      mi2 instanceof InterTypeMethodInstance_c)) return false;
+		// System.out.println("check descendency");
+		InterTypeMethodInstance_c itmi1 = (InterTypeMethodInstance_c) mi1;
+		InterTypeMethodInstance_c itmi2 = (InterTypeMethodInstance_c) mi2;
+		if (fromInterface(itmi1) && fromInterface(itmi2) &&
+		     itmi1.interfaceTarget().descendsFrom(itmi2.interfaceTarget()))
+		    return true;
+		return precedes(itmi1.origin(),itmi2.origin());	    
+	}
     
 	
 	/**
@@ -165,8 +198,9 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			ParsedClassType ht = (ParsedClassType) host.type();
 			ht.methods().remove(itMethodInstance); // remove old instance from host type    		
 			MethodInstance mmi = itMethodInstance.mangled();  // retrieve the mangled instance 		
-			ht.addMethod(mmi); // add new instance to host type   		
-			return (IntertypeMethodDecl) name(mmi.name()).methodInstance(mmi).flags(mmi.flags());
+			ht.addMethod(mmi); // add new instance to host type
+			Flags newFlags = mmi.flags();   	
+			return (IntertypeMethodDecl) name(mmi.name()).methodInstance(mmi);
 		}
 		return this;
 	}
@@ -190,6 +224,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			newtypes.add(0,thisParamInstance.type());
 			
 			Flags newflags = mi.flags().set(Flags.STATIC);
+			
+			if (!(itMethodInstance.origFlags().isAbstract()))
+				newflags = newflags.clear(Flags.ABSTRACT);
+			// System.out.println("the new flags for the implementation are " + newflags);
 			
 			mi = mi.formalTypes(newtypes).flags(newflags);
 		
@@ -223,11 +261,13 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 */
 	
 	public Context enterScope(Context c) {
+		// System.out.println("entering scope of "+name+" in class "+c.currentClass());
 		AJContext nc = (AJContext) super.enterScope(c);
 		TypeSystem ts = nc.typeSystem();
 		AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
 			                               flags.isStatic());
 		ncc.addITMembers(host.type().toClass());
+		// System.out.println("current class="+ncc.currentClass());
 		return ncc;		
 	}
 	

@@ -7,6 +7,8 @@ public class AspectJFlags extends Flags {
 
     public static final Flags PRIVILEGEDASPECT  =  createFlag("privilegedaspect", null);
     public static final Flags ASPECTCLASS =  createFlag("aspectclass",null);
+    public static final Flags INTERTYPE = createFlag("intertype",null);
+    public static final Flags INTERFACEORIGIN = createFlag("interfaceorigin",null);
 
     public AspectJFlags() {
 	super(0);
@@ -34,6 +36,30 @@ public class AspectJFlags extends Flags {
 
     public static boolean isPrivilegedaspect(Flags f) {
        return f.contains(PRIVILEGEDASPECT);
+   }
+   
+   public static Flags intertype(Flags f) {
+   		return f.set(INTERTYPE);
+   }
+   
+   public static Flags clearIntertype(Flags f) {
+   		return f.clear(INTERTYPE);
+   }
+   
+   public static boolean isIntertype(Flags f) {
+   		return f.contains(INTERTYPE);
+   }
+   
+   public static Flags interfaceorigin(Flags f) {
+   		return f.set(INTERFACEORIGIN);
+   }
+   
+   public static Flags clearInterfaceorigin(Flags f) {
+   		return f.clear(INTERFACEORIGIN);
+   }
+   
+   public static boolean isInterfaceorigin(Flags f) {
+   		return f.contains(INTERFACEORIGIN);
    }
    
 }
