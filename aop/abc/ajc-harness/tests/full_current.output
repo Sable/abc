@@ -2419,16 +2419,16 @@ PASS: Test 440: "new/around advice on calls within inner classes (including prot
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@188af2d.foo calls Outer$Inner@a4b52b.mi
+Outer@a4b52b.foo calls Outer$Inner@1721b68.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@a4b52b.mi calls java.io.PrintStream@1721b68.println
+Outer$Inner@1721b68.mi calls java.io.PrintStream@654eb6.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@188af2d.foo calls Outer$InnerRandom@654eb6.nextHook
+Outer@a4b52b.foo calls Outer$InnerRandom@112c860.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@654eb6.nextHook calls Outer$InnerRandom@654eb6.next
+Outer$InnerRandom@112c860.nextHook calls Outer$InnerRandom@112c860.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@188af2d.foo calls X.nextInt
+Outer@a4b52b.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4060,7 +4060,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@18cb96e.x:=-3
+test.Test3@18bfa35.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4143,8 +4143,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@226f94
-o: Bar@226f94, i: 10
+o: Bar@19299d3
+o: Bar@19299d3, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -5055,7 +5055,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@4e88d2
+? Util.read() obj=Test@80747b
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5074,7 +5074,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@7eb0bc
+? Util.read() obj=ClinitTest@16c753e
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5084,7 +5084,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@824b08
+? Util.read() obj=SuidTest@f047d1
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5287,12 +5287,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@3e92c4
-Invoking command bean:  Command@15ad11
-hello(Command@15ad11)
 Created a PerThis aspect : Testcase2@1156444
 Invoking command bean:  Command@169e970
-hello again(Command@169e970)
+hello(Command@169e970)
+Created a PerThis aspect : Testcase2@5cc726
+Invoking command bean:  Command@1169a3b
+hello again(Command@1169a3b)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
