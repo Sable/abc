@@ -144,9 +144,9 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		}
 		List aspectOfthrows = new ArrayList();
 		aspectOfthrows.add(((AspectJTypeSystem)ts).NoAspectBound());
-	    hasAspectInstance = ts.methodInstance(position(),type,Flags.PUBLIC,ts.Boolean(),
+	    hasAspectInstance = ts.methodInstance(position(),type,Flags.PUBLIC.Static(),ts.Boolean(),
                                             "hasAspect",hasAspectparams,new ArrayList());
-        aspectOfInstance = ts.methodInstance(position(),type,Flags.PUBLIC,type,"aspectOf",
+        aspectOfInstance = ts.methodInstance(position(),type,Flags.PUBLIC.Static(),type,"aspectOf",
                                              aspectOfparams,aspectOfthrows);
 		type.addMethod(hasAspectInstance);
 		type.addMethod(aspectOfInstance);
