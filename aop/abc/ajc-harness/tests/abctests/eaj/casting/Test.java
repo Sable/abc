@@ -1,6 +1,6 @@
 import org.aspectj.testing.Tester;
 
-import abc.lang.reflect.CastSignature;
+import uk.ac.ox.comlab.abc.eaj.lang.reflect.CastSignature;
 
 public class Test
 {

@@ -24,6 +24,10 @@ import abc.weaving.weaver.*;
 
 public class GenStaticJoinPoints {
 
+    // FIXME: Should let the extension decide which factory to use, 
+    // or default to the standard one otherwise
+    String runtimeFactoryClass="uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory";
+
     /** only want to generate the factory for the first SJP of a class.
         It should be reset to false at the beginning of each class.  */
     private  boolean factory_generated = false;
@@ -126,26 +130,27 @@ public class GenStaticJoinPoints {
         debug("Generating getjavaclass " + getjavaclass);
         units.insertBefore(getjavaclass,ip);
 
+	/* This code should be redundant with the new resolver stuff
         // make sure the Factory class is loaded in Soot
         if (!factory_loaded)
-          {  Scene.v().getSootClass(
-	             "abc.runtime.reflect.AbcFactory");
+          {  Scene.v().getSootClass(runtimeFactoryClass);
              factory_loaded = true;
            }
+	*/
 
         // factory_local = new Factory;
         factory_local =  
-        lg.generateLocal(RefType.v("abc.runtime.reflect.AbcFactory"));
+        lg.generateLocal(RefType.v(runtimeFactoryClass));
         Stmt newfactory = Jimple.v().
         newAssignStmt(factory_local, 
 			Jimple.v().newNewExpr(
-			  RefType.v("abc.runtime.reflect.AbcFactory")));
+			  RefType.v(runtimeFactoryClass)));
         debug("Generating newfactory " + newfactory);
         units.insertBefore(newfactory,ip);
                   
         // factory_local.<init>("sourcefile",javaclass);
         SootClass fc = Scene.v().
-	     getSootClass("abc.runtime.reflect.AbcFactory");
+	     getSootClass(runtimeFactoryClass);
 	List finitParams=new ArrayList(2);
 	finitParams.add(RefType.v("java.lang.String"));
 	finitParams.add(RefType.v("java.lang.Class"));
@@ -170,7 +175,7 @@ public class GenStaticJoinPoints {
 			 SJPInfo sjpInfo) 
     { // look for interfaces in the right place
 	// FIXME: shouldn't know about the extension in the base code
-      String classpath = sjpInfo.kind.equals("cast") ? "abc.lang.reflect." : "org.aspectj.lang.reflect.";
+      String classpath = sjpInfo.kind.equals("cast") ? "uk.ac.ox.comlab.abc.eaj.lang.reflect." : "org.aspectj.lang.reflect.";
             
       // create the name for the SJP field 
       // the kind of SJP, but made into a valid id
@@ -214,8 +219,7 @@ public class GenStaticJoinPoints {
       Local sigloc = lg.generateLocal(
 	  RefType.v(classpath+sigtypeclass));
 
-      SootClass fc = Scene.v().
-	     getSootClass("abc.runtime.reflect.AbcFactory");
+      SootClass fc = Scene.v().getSootClass(runtimeFactoryClass);
       debug("Got the factory class: " + fc);
 
       List sigmethodParams=new ArrayList(1);

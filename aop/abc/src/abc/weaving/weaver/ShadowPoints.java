@@ -150,9 +150,9 @@ public class ShadowPoints {
 	constrTypes.add(ArrayType.v(object,1));
 	constrArgs.add(argsVal);
 	
-	
+	// FIXME: Should this class be delegated to the extension too?
 	SootClass factoryclass=Scene.v().getSootClass
-	    ("org.aspectj.runtime.reflect.Factory");
+	    ("uk.ac.ox.comlab.abc.runtime.reflect.Factory");
 	
 	Stmt makeJP=Jimple.v().newAssignStmt
 	    (getThisJoinPoint(),

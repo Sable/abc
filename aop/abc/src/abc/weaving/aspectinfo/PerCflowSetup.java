@@ -63,7 +63,7 @@ public class PerCflowSetup extends PerSetupAdvice {
 	} else {
 	    Chain c=new HashChain();
 	    SootClass stackClass=Scene.v()
-		.getSootClass("org.aspectj.runtime.internal.CFlowStack");
+		.getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
 	    SootClass aspectClass=getAspect().getInstanceClass().getSootClass();
 
 	    SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v(),false);

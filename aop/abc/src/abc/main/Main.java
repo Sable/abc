@@ -571,14 +571,16 @@ public class Main {
         });
 	Scene.v().setSootClassPath(classpath);
 
-	Scene.v().addBasicClass("org.aspectj.runtime.internal.CFlowStack",SootClass.SIGNATURES);
-	Scene.v().addBasicClass("org.aspectj.runtime.reflect.Factory",SootClass.SIGNATURES);
+	Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack",SootClass.SIGNATURES);
+	Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.reflect.Factory",SootClass.SIGNATURES);
 	Scene.v().addBasicClass("org.aspectj.lang.JoinPoint");
 	Scene.v().addBasicClass("org.aspectj.lang.JoinPoint$StaticPart");
 	Scene.v().addBasicClass("org.aspectj.lang.SoftException",SootClass.SIGNATURES);
 	Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException");
-	Scene.v().addBasicClass("abc.runtime.internal.CFlowCounter",SootClass.SIGNATURES);
-	Scene.v().addBasicClass("abc.runtime.reflect.AbcFactory",SootClass.SIGNATURES);
+	Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter",SootClass.SIGNATURES);
+
+	// FIXME: move this to EAJ
+	Scene.v().addBasicClass("uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory",SootClass.SIGNATURES);
 
 	// FIXME: make ClassLoadException in soot, and catch it here 
 	// and check what was wrong
@@ -822,7 +824,8 @@ public class Main {
 					soot.jimple.InvokeExpr ie=(soot.jimple.InvokeExpr) v;
 					soot.SootMethodRef m=ie.getMethodRef();
 					if(m.name().equals("makeJP") && 
-					   m.declaringClass().getName().equals("org.aspectj.runtime.reflect.Factory"))
+					   m.declaringClass().getName().equals
+					   ("uk.ac.ox.comlab.abc.runtime.reflect.Factory"))
 					    return true;
 				    }
 				    return false;

@@ -59,7 +59,7 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
     }
 
     public List passes(Job job) {
-        // shouldn't really be here:
+        // FIXME: shouldn't really be here:
         abc.eaj.weaving.matching.CastShadowType.register();
 
         return super.passes(job);
