@@ -1360,7 +1360,7 @@
         abc finds the cyclic inheritance and gives a fine error
         message.  LJH July 2/04
 	abc now finds both cyclic inheritance and missing bodies - hence
-	extra <message>. PA/AGS" 
+	extra message. PA/AGS" 
       keywords="from-java,purejava">
         <compile files="CyclicClassInheritance.java">
             <ajcmessage kind="error" line="11"/>
