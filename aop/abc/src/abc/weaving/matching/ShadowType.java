@@ -21,6 +21,11 @@ public abstract class ShadowType {
 
     private static List/*<ShadowType>*/ allShadowTypes=new LinkedList();
 
+    public static void reset() {
+	allShadowTypes=new LinkedList();
+    }
+    
+
     /** Call this for each shadow type we want to be active */
     public static void register(ShadowType st) {
         allShadowTypes.add(st);

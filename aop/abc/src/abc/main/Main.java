@@ -42,6 +42,7 @@ public class Main {
       abc.soot.util.Restructure.reset();
       abc.aspectj.visit.AspectInfoHarvester.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
+      abc.weaving.matching.ShadowType.reset();
       abc.weaving.weaver.AroundWeaver.reset();
     }
     
