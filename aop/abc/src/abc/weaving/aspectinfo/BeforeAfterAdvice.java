@@ -19,8 +19,9 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec implements ThrowingAdv
     }
 
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-	return sm.supportsBefore() && sm.supportsAfter() 
-	    ? AlwaysMatch.v : null;
+	// BeforeAfterAdvice is just used for internal bookkeeping type stuff,
+	// and always matches.
+	return AlwaysMatch.v;
     }
 
     // For use with WeavingContext

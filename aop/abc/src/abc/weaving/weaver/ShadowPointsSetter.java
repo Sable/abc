@@ -162,11 +162,11 @@ public class ShadowPointsSetter {
 		 "Not expecting a trap to start at, or " +
 		 "end just after a handler stmt");
 	  }
-       // safe situation, insert nop for start and return null for end
+       // safe situation, insert nop for start and another one after it for end.
        units.insertAfter(startnop,targetstmt);
-       // for the special case of a handler, there is no end to the shadow
+       units.insertAfter(endnop,startnop);
        debug("Inserting nop after identity stmt " + targetstmt); 
-       return new ShadowPoints(method,startnop,null);
+       return new ShadowPoints(method,startnop,endnop);
      }
    else if (sm instanceof ConstructorCallShadowMatch)
      { // expecting a new, followed by an <init> (treat these as one unit)

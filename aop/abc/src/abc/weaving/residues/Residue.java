@@ -20,7 +20,8 @@ import abc.weaving.weaver.WeavingContext;
 public abstract class Residue {
     /** Generate the code for this dynamic residue and insert it into
      *  "units", starting just after "begin". Jump to "fail" if the residue
-     *  fails. Return the final statement that was inserted.
+     *  fails. Return the final statement that was inserted. If "sense" is
+     *  false, reverse the sense of the test.
      */
     public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
 				 Chain units,Stmt begin,Stmt fail,boolean sense,
@@ -41,7 +42,7 @@ public abstract class Residue {
 	 * Returns residue that replaces the old residue. 
 	 * This way, BindMaskResidue is inserted throughout the tree in the 
 	 * appropriate places.
-	 * Has to be overwritten by all Residue classes that have children.
+	 * Has to be overridden by all Residue classes that have children.
 	 */
 	public Residue restructureToCreateBindingsMask(Local bindingsMaskLocal, Bindings bindings) {
 		return this;

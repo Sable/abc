@@ -29,15 +29,18 @@ public class ShadowPoints {
  private final Stmt end;
 
  /** Should always get references to NopStmts.  For all types of pointcuts
-  *  except for handle pointcuts, both b and e will be non-null,  for
-  *  handle pointcuts e will be null.
+  *  both b and e will be non-null. Even handler pointcuts have an ending
+  *  nop, so they can handle BeforeAfterAdvice for cflow etc; but the nop
+  *  will initially be right next to the starting nop.
   */
  public ShadowPoints(SootMethod container,Stmt b, Stmt e){
     if (b == null) 
       throw new CodeGenException("Beginning of shadow point must be non-null");
     if (!(b instanceof NopStmt))
       throw new CodeGenException("Beginning of shadow point must be NopStmt");
-    if ((e != null) && !(e instanceof NopStmt))
+    if (e == null) 
+      throw new CodeGenException("Ending of shadow point must be non-null");
+    if(!(e instanceof NopStmt))
       throw new CodeGenException("Ending of shadow point must be NopStmt");
     begin = b;
     end = e;
@@ -49,12 +52,7 @@ public class ShadowPoints {
   }
 
   public Stmt getEnd(){
-    if (end != null)
       return end;
-    else
-      throw new CodeGenException(
-	  "Shouldn't be asking for end of this shadowpoint, " + 
-	  " it is probably associated with a handle pointcut");
   }
         
   public String toString(){

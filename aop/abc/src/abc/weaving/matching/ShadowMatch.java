@@ -28,6 +28,7 @@ public abstract class ShadowMatch {
     /** return the enclosing ShadowMatch */
     public abstract ShadowMatch getEnclosing();
 
+    /** return the method that this ShadowMatch occurs within */
     public SootMethod getContainer() {
 	return container;
     }
