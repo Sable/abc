@@ -115,6 +115,12 @@ public class AntTask extends MatchingTask {
         if( src == null ) src = new Path(project);
         return src.createPath();
     }
+    private List soots = new ArrayList();
+    public Object createSoot() {
+        Object soot = new soot.AntTask();
+        soots.add(soot);
+        return soot;
+    }
     public void setIncremental(boolean arg) {
         if(arg) {
             throw new BuildException("abc does not support incremental compilation of aspects.");
@@ -144,6 +150,15 @@ public class AntTask extends MatchingTask {
             if( classpath != null ) addPath("-classpath", classpath);
             if( argfiles != null ) addArgfiles();
             if( src != null ) addSrc();
+            for( Iterator sootIt = soots.iterator(); sootIt.hasNext(); ) {
+                final soot.AntTask soot = (soot.AntTask) sootIt.next();
+                addArg("+soot");
+                for( Iterator argIt = soot.args().iterator(); argIt.hasNext(); ) {
+                    final String arg = (String) argIt.next();
+                    addArg(arg);
+                }
+                addArg("-soot");
+            }
             if(DEBUG) System.out.println(args);
             Main main = new Main((String[]) args.toArray(new String[0]));
             main.run();

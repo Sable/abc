@@ -113,6 +113,7 @@ public class Debug {
     public boolean debugUnweaver=false;
     public boolean dontWeaveAfterAnalysis=false;
     public boolean checkCflowOpt=false;
+    public boolean dontRemovePushPop=false;
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
