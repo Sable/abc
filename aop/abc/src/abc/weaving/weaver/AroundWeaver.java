@@ -45,6 +45,7 @@ public class AroundWeaver {
 			if (stmtAdv.stmt instanceof AssignStmt) {
 				arddebug("found assignment statement");
 				AssignStmt assignStmt=(AssignStmt)stmtAdv.stmt;
+				
 				Value rightOp=assignStmt.getRightOp();
 				if (rightOp instanceof InstanceFieldRef) {
 					arddebug("found assignment from field"); 
@@ -114,12 +115,41 @@ public class AroundWeaver {
 							Stmt s=(Stmt)it.next();
 							if (s instanceof InvokeStmt) {
 								InvokeStmt i=(InvokeStmt)s;
-								if (i.getInvokeExpr().getMethod().getName().equals("proceed")) {
-									/// 
+								if (i.getInvokeExpr().getMethod().getName().startsWith("proceed$")) {
+									arddebug("modifying proceed call in around() method");
+									/*IdentityStmt id=(IdentityStmt) statements.getFirst();
+									i.setInvokeExpr(Jimple.v().newVirtualInvokeExpr(
+										id.getLeftOp(),   )
+										*/
 								}											
 							}
 						}
 					}
+				
+					Local aspectref = localgen.generateLocal( theAspect.getType() );
+				 	//smt1:  aspectref = <AspectType>.aspectOf();
+			     	AssignStmt stmt1 =  
+				   		Jimple.v().newAssignStmt( 
+					   		aspectref, 
+					   			Jimple.v().newStaticInvokeExpr(
+					      			theAspect.getMethod("aspectOf", new ArrayList())));
+					 arddebug("Generated stmt1: " + stmt1);
+					 
+					/* Local thisRef=localgen.generateLocal(cl.getType() );
+//					smt1:  aspectref = <AspectType>.aspectOf();
+					  AssignStmt stmt2 =  
+						  Jimple.v().newAssignStmt( 
+							  thisRef, 
+								Jimple.v().newThisRef(RefType.v(cl)) );
+					   arddebug("Generated stmt2: " + stmt2);
+					 units.insertBefore(stmt2,assignStmt);
+				 */
+				 	units.insertBefore(stmt1,assignStmt);
+				 
+				    IdentityStmt id=(IdentityStmt) units.getFirst();
+				 	InvokeExpr invokeEx=Jimple.v().newVirtualInvokeExpr( aspectref, adviceMethod );
+				 	invokeEx.getArgs().add(id.getLeftOp());
+					assignStmt.setRightOp(invokeEx);
 					
 				} else if (rightOp instanceof StaticFieldRef) {
 					arddebug("NYI: static field get " + adviceappl);
