@@ -711,6 +711,7 @@ public class Main {
 
         Scene.v().setSootClassPath(classpath);
         getAbcExtension().addBasicClassesToSoot();
+        Scene.v().loadDynamicClasses();
 
         // FIXME: make ClassLoadException in soot, and catch it here
         // and check what was wrong
