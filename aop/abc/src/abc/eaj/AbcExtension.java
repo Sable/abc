@@ -72,7 +72,7 @@ public class AbcExtension extends abc.main.AbcExtension
                         "uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory");
     }
     /* (non-Javadoc)
-     * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.Lexer)
+     * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
      */
     public void initLexerKeywords(AbcLexer lexer) {
         // keyword for the "cast" pointcut extension
