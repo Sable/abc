@@ -22,8 +22,7 @@ public class ConstructorCall extends ShadowPointcut {
     }
 
     static private ShadowType shadowType=new NewStmtShadowType();
-    
-    static {
+    static public void registerShadowType() {
 	ShadowPointcut.registerShadowType(shadowType);
     }
 

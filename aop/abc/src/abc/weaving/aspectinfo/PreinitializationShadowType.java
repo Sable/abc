@@ -18,6 +18,7 @@ public class PreinitializationShadowType extends AbstractShadowType {
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos) {
+	if(debugResidues) System.out.println("pos: "+pos.getClass());
 	mal.constructorAdvice.add
 	    (new PreinitializationAdviceApplication(ad,residue));
     }

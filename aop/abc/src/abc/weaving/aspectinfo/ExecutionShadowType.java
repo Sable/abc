@@ -18,6 +18,7 @@ public class ExecutionShadowType extends AbstractShadowType {
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos) {
+	if(debugResidues) System.out.println("pos: "+pos.getClass());
 	mal.bodyAdvice.add
 	    (new ExecutionAdviceApplication(ad,residue));
     }

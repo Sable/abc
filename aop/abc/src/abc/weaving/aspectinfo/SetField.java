@@ -22,8 +22,7 @@ public class SetField extends ShadowPointcut {
     }
 
     static private ShadowType shadowType=new StmtShadowType();
-    
-    static {
+    static public void registerShadowType() {
 	ShadowPointcut.registerShadowType(shadowType);
     }
 

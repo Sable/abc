@@ -21,8 +21,7 @@ public class Handler extends ShadowPointcut {
     }
 
     static private ShadowType shadowType=new TrapShadowType();
-    
-    static {
+    static public void registerShadowType() {
 	ShadowPointcut.registerShadowType(shadowType);
     }
 

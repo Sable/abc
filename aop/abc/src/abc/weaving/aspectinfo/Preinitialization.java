@@ -14,8 +14,7 @@ public class Preinitialization extends ShadowPointcut {
     }
 
     static private ShadowType shadowType=new PreinitializationShadowType();
-    
-    static {
+    static public void registerShadowType() {
 	ShadowPointcut.registerShadowType(shadowType);
     }
 

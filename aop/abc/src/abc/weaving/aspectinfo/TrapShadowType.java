@@ -20,6 +20,7 @@ public class TrapShadowType extends AbstractShadowType {
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos) {
+	if(debugResidues) System.out.println("pos: "+pos.getClass());
 	mal.stmtAdvice.add
 	    (new HandlerAdviceApplication
 	     (ad,

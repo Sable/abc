@@ -135,16 +135,8 @@ public class Main {
         }
         // We should now have all classes as jimple
 
-	// Temporary hack to force pointcut classes to be loaded
-	new abc.weaving.aspectinfo.ConstructorCall(null,null);
-	new abc.weaving.aspectinfo.Execution(null);
-	new abc.weaving.aspectinfo.GetField(null,null);
-	new abc.weaving.aspectinfo.Handler(null,null);
-	new abc.weaving.aspectinfo.Initialization(null);
-	new abc.weaving.aspectinfo.MethodCall(null,null);
-	new abc.weaving.aspectinfo.Preinitialization(null);
-	new abc.weaving.aspectinfo.SetField(null,null);	
-
+	// Make sure that all the standard AspectJ shadow types are loaded
+	AspectJShadows.load();
 
         GlobalAspectInfo.v().computeAdviceLists();
 	

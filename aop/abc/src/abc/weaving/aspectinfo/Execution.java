@@ -17,7 +17,7 @@ public class Execution extends ShadowPointcut {
 
     static private ShadowType shadowType=new ExecutionShadowType();
     
-    static {
+    static public void registerShadowType() {
 	ShadowPointcut.registerShadowType(shadowType);
     }
 

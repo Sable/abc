@@ -15,8 +15,7 @@ public class Initialization extends ShadowPointcut {
     }
 
     static private ShadowType shadowType=new InitializationShadowType();
-    
-    static {
+    static public void registerShadowType() {
 	ShadowPointcut.registerShadowType(shadowType);
     }
 
