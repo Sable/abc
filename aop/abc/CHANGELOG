@@ -25,6 +25,7 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.0.1 1104961494
 $Fixed bug 34, in which arithmetic calculations within strings were sometimes
 ;misinterpreted as string concatenation. Thanks to Jonathan Churchill for
 ;reporting this bug.
