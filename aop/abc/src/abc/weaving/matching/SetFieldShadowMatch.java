@@ -1,14 +1,24 @@
 package abc.weaving.matching;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import soot.*;
-import soot.jimple.*;
-
+import soot.Body;
+import soot.Local;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.FieldRef;
+import soot.jimple.InstanceFieldRef;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.util.Chain;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
+import abc.weaving.residues.Residue;
 
 /** The results of matching at a field set
  *  @author Ganesh Sittampalam
@@ -37,7 +47,28 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
        	if(!(lhs instanceof FieldRef)) return null;
 	FieldRef fr = (FieldRef) lhs;
 
+	makeLocalForRHS(((StmtMethodPosition) pos).getContainer(), (AssignStmt)stmt);
+
 	return new SetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+    }
+    /**
+     * Ensures that the rhs of the set is a local.
+     * Needed for around().
+     * @param method
+     * @param stmt
+     */
+    private static void makeLocalForRHS(SootMethod method, AssignStmt stmt) {
+		Value val=stmt.getRightOp();
+    	if (!(val instanceof Local)) {
+			Body body=method.getActiveBody();
+			Chain statements=body.getUnits().getNonPatchingChain();
+			LocalGeneratorEx lg=new LocalGeneratorEx(body);
+			
+			Local l=lg.generateLocal(stmt.getLeftOp().getType(),
+								"setRHSLocal");
+			AssignStmt as=Jimple.v().newAssignStmt(l,val);
+			statements.insertBefore(as, stmt);
+    	}
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
