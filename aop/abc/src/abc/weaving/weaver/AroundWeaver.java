@@ -56,6 +56,8 @@ import abc.weaving.matching.StmtAdviceApplication;
  * @date May 6, 2004
  */
 
+
+
 public class AroundWeaver {
 
 	/** set to false to disable debugging messages for Around Weaver */
@@ -363,8 +365,8 @@ public class AroundWeaver {
 			accessStatements=accessBody.getUnits();
 	
 			// generate this := @this
-			LocalGenerator lg=new LocalGenerator(accessBody);
-			Local lThis=lg.generateLocal(cl.getType());
+			LocalGeneratorEx lg=new LocalGeneratorEx(accessBody);
+			Local lThis=lg.generateLocal(cl.getType(), "this");
 			accessStatements.addFirst(
 				Jimple.v().newIdentityStmt(lThis, 
 					Jimple.v().newThisRef(
@@ -372,7 +374,7 @@ public class AroundWeaver {
 			//lThis.setName("this");
 			//getBody.getThisLocal();
 			// $i0 := @parameter0: int;
-			info.idParamLocal=lg.generateLocal(IntType.v());
+			info.idParamLocal=lg.generateLocal(IntType.v(), "id");
 			Stmt paramIdStmt=Jimple.v().newIdentityStmt(info.idParamLocal, 
 			Jimple.v().newParameterRef(IntType.v(),0));
 			accessStatements.insertAfter(paramIdStmt,
@@ -392,7 +394,7 @@ public class AroundWeaver {
 		
 			// generate exception code (default target)
 			SootClass exception=Scene.v().getSootClass("java.lang.RuntimeException");	
-			Local ex=lg.generateLocal(exception.getType());
+			Local ex=lg.generateLocal(exception.getType(), "exception");
 			Stmt newExceptStmt = Jimple.v().newAssignStmt( ex, Jimple.v().newNewExpr( exception.getType() ) );
 			Stmt initEx=Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( ex, exception.getMethod( "<init>", new ArrayList()))) ;
 			Stmt throwStmt=Jimple.v().newThrowStmt(ex);
@@ -440,7 +442,7 @@ public class AroundWeaver {
 		Local lThis=joinpointBody.getThisLocal();
 		//lThis.setName("this");
 		
-		LocalGenerator localgen=new LocalGenerator(joinpointBody);	
+		LocalGeneratorEx localgen=new LocalGeneratorEx(joinpointBody);	
 		
 		debug("replacing former code with call to advice method");
 		// add another this id statement.
@@ -451,7 +453,7 @@ public class AroundWeaver {
 							Jimple.v().newThisRef(
 								RefType.v(cl))), assignStmt);
 								*/
-		Local aspectref = localgen.generateLocal( theAspect.getType() );
+		Local aspectref = localgen.generateLocal( theAspect.getType(), "theAspect" );
 		//smt1:  aspectref = <AspectType>.aspectOf();
 		AssignStmt stmt1 =  
 			Jimple.v().newAssignStmt( 
@@ -533,6 +535,14 @@ public class AroundWeaver {
 
 		
 	} 
+	private static void RemoveTraps(Body body, Unit begin, Unit end) {
+		Chain traps=body.getTraps();
+		Iterator it=traps.iterator();
+		while (it.hasNext()){
+			Trap trap=(Trap)it.next();
+			
+		}
+	}
 	/**
 	 * Removes statements between begin and end, excluding these and skip.
 	 */
@@ -612,6 +622,7 @@ public class AroundWeaver {
 			// Add cloned unit to our trap list.
 			trapChain.addLast(copy);
 
+			
 			// Store old <-> new mapping.
 			bindings.put(original, copy);
 		}
@@ -668,6 +679,22 @@ public class AroundWeaver {
 				
 		}
 
+		// fix the trap destinations
+		it = dest.getTraps().iterator();
+		while (it.hasNext()) {
+			Trap trap=(Trap) it.next();
+			List boxes=trap.getUnitBoxes();
+			Iterator it2=boxes.iterator();
+			while (it2.hasNext()) {
+				UnitBox box=(UnitBox)it2.next();
+				Unit ut=box.getUnit();
+				Unit newUnit=(Unit)bindings.get(ut);
+				if (newUnit!=null) {
+					box.setUnit(newUnit);
+				}
+			}
+		}
+
 		if (returnedLocal!=null) {
 			Local newLocal=(Local)bindings.get(returnedLocal);
 			if (newLocal==null)
@@ -717,15 +744,15 @@ public class AroundWeaver {
 		adviceMethod.setParameterTypes(aroundParameters);
 		Body aroundBody=adviceMethod.getActiveBody();
 		Chain statements=aroundBody.getUnits();
-		LocalGenerator localgen2 = new LocalGenerator(aroundBody);
-		Local l=localgen2.generateLocal(accessInterface.getType());
+		LocalGeneratorEx localgen2 = new LocalGeneratorEx(aroundBody);
+		Local l=localgen2.generateLocal(accessInterface.getType(), "accessIntf");
 		// insert id for first param (interface reference)
 		Stmt intRefIDstmt=Jimple.v().newIdentityStmt(l, 
 				Jimple.v().newParameterRef(	
 						accessInterface.getType(),0));
 		statements.insertAfter(intRefIDstmt, statements.getFirst());
 		// id for second param (id of field accessed)
-		Local l2=localgen2.generateLocal(IntType.v());
+		Local l2=localgen2.generateLocal(IntType.v(), "id");
 		Stmt fieldIDStmt=Jimple.v().newIdentityStmt(l2, 
 				Jimple.v().newParameterRef(IntType.v(),1));
 		statements.insertAfter(fieldIDStmt, intRefIDstmt);

@@ -1,12 +1,26 @@
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-import java.util.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import soot.javaToJimple.LocalGenerator;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import soot.Body;
+import soot.Local;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.jimple.AssignStmt;
+import soot.jimple.CaughtExceptionRef;
+import soot.jimple.GotoStmt;
+import soot.jimple.IdentityStmt;
+import soot.jimple.Jimple;
+import soot.jimple.NopStmt;
+import soot.jimple.Stmt;
+import soot.jimple.ThrowStmt;
+import soot.util.Chain;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AdviceSpec;
+import abc.weaving.matching.AdviceApplication;
 
 /** Handle after throwing weaving.
  * @author Laurie Hendren
@@ -24,9 +38,9 @@ public class AfterThrowingWeaver {
      }
 
 
-    public static void doWeave(SootMethod method, LocalGenerator lg,
+    public static void doWeave(SootMethod method, LocalGeneratorEx lg,
 	                      AdviceApplication adviceappl)
-      { debug("Handling after returning: " + adviceappl);
+      { debug("Handling after throwing: " + adviceappl);
         Body b = method.getActiveBody();
         Chain units = b.getUnits().getNonPatchingChain();
 	AdviceDecl advicedecl = adviceappl.advice;

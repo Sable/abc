@@ -1,12 +1,18 @@
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-import java.util.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import soot.javaToJimple.LocalGenerator;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import soot.Body;
+import soot.Local;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.jimple.AssignStmt;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.util.Chain;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.matching.AdviceApplication;
 
 /** Handle before weavering.
  * @author Laurie Hendren
@@ -23,7 +29,7 @@ public class BeforeWeaver {
      }
 
 
-    public static void doWeave(SootMethod method, LocalGenerator localgen,
+    public static void doWeave(SootMethod method, LocalGeneratorEx localgen,
 	                      AdviceApplication adviceappl)
       { debug("Handling before: " + adviceappl);
         Body b = method.getActiveBody();

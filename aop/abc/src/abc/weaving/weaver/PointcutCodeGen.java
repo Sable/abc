@@ -1,11 +1,27 @@
 package abc.weaving.weaver;
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-import java.util.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import soot.javaToJimple.LocalGenerator;
+import java.util.Iterator;
+import java.util.Vector;
+
+import soot.Body;
+import soot.Local;
+import soot.RefType;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.jimple.Jimple;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
+import soot.util.Chain;
+import soot.util.HashChain;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AdviceSpec;
+import abc.weaving.aspectinfo.AfterAdvice;
+import abc.weaving.aspectinfo.AfterReturningAdvice;
+import abc.weaving.aspectinfo.AfterThrowingAdvice;
+import abc.weaving.aspectinfo.AroundAdvice;
+import abc.weaving.aspectinfo.BeforeAdvice;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
 
 public class PointcutCodeGen {
 
@@ -42,7 +58,7 @@ public class PointcutCodeGen {
          debug("   --- BEGIN weaveInAspectsPass " + pass + " for method " + 
 	                method.getName());
          Body b = method.getActiveBody();
-         LocalGenerator localgen = new LocalGenerator(b);
+         LocalGeneratorEx localgen = new LocalGeneratorEx(b);
 
 	 // do the body advice 
          for (Iterator alistIt = adviceList.bodyAdvice.iterator(); 
@@ -76,7 +92,7 @@ public class PointcutCodeGen {
 
 	 // have something to do ...
          Body b2 = method.getActiveBody();
-         LocalGenerator localgen2 = new LocalGenerator(b2);
+         LocalGeneratorEx localgen2 = new LocalGeneratorEx(b2);
 
 	 // do the init advice 
          for (Iterator alistIt = adviceList.initializationAdvice.iterator(); 
@@ -106,7 +122,7 @@ public class PointcutCodeGen {
 	 
 	    
     private void weave_one( SootClass cl, SootMethod method,
-                            LocalGenerator localgen, 
+                            LocalGeneratorEx localgen, 
 			    AdviceApplication adviceappl)
       { AdviceDecl advicedecl = adviceappl.advice;
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
@@ -130,7 +146,7 @@ public class PointcutCodeGen {
 
     /** create the invoke to call the advice body */
     public static Chain makeAdviceInvokeStmt(Local aspectref,
-	AdviceApplication adviceappl, Chain units, LocalGenerator localgen)
+	AdviceApplication adviceappl, Chain units, LocalGeneratorEx localgen)
      { AdviceDecl advicedecl = adviceappl.advice;
        SootClass sootaspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
