@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project default="default">
+<project default="default" name="abc">
 
     <target name="default"
             depends="abc-jar,runtime-jar,testing-jar" />
