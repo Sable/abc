@@ -15,6 +15,7 @@ import polyglot.visit.TypeChecker;
 import polyglot.visit.AmbiguityRemover;
 
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.AspectJTypeSystem;
 
 import polyglot.ext.jl.ast.Special_c;
 
@@ -32,11 +33,8 @@ public class AJSpecial_c extends Special_c implements Special {
 	/** Disambiguate the expression. */
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
-		if (!c.inInterType() 
-			|| c.staticInterType()      
-		    || (c.nested() && qualifier() == null)
-		    || (c.inInterType() && qualifier() != null && 
-		    	c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))) {		       
+		AspectJTypeSystem ts = (AspectJTypeSystem) ar.typeSystem();
+		if (!(ts.refHostOfITD(c,qualifier(),null))) {		       
 			// this is an ordinary special
 			return super.disambiguate(ar);
 		} else {

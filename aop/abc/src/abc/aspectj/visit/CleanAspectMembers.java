@@ -4,8 +4,12 @@ package abc.aspectj.visit;
 import polyglot.ast.*;
 import polyglot.visit.*;
 import polyglot.types.ParsedClassType;
+import polyglot.types.ReferenceType;
+
 
 import abc.aspectj.ast.*;
+
+import abc.aspectj.types.InterTypeMethodInstance_c;
 
 import java.util.*;
 
@@ -74,9 +78,9 @@ public class CleanAspectMembers extends NodeVisitor {
 		    // This must be removed
 		} else {
 			if (m instanceof IntertypeMethodDecl) {
-				IntertypeMethodDecl itmd = (IntertypeMethodDecl) m;
+				IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) m;
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
-				hostType.methods().remove(itmd.methodInstance());
+				hostType.methods().remove(itmd.itMethodInstance);
 			}
 		    newmembers.add(m);
 		}

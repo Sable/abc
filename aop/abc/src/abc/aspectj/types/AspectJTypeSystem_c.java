@@ -3,6 +3,7 @@ package abc.aspectj.types;
 import java.util.List;
 import polyglot.util.Position;
 import polyglot.types.*;
+import polyglot.ast.Typed;
 
 
 import abc.aspectj.ast.AdviceSpec;
@@ -145,6 +146,24 @@ public class AspectJTypeSystem_c
 		return false; // ITDs cannot be protected
         }
     	else return super.isAccessible(mi,ctc);
+    }
+    
+    public boolean refHostOfITD(AJContext c, Typed qualifier, MemberInstance mi) {
+		/* return !(!c.inInterType() 
+					|| c.staticInterType()      // not so sure about this
+					|| (c.nested() && qualifier == null) // and this
+					|| (c.inInterType() && qualifier != null && 
+						c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))); */
+		return c.inInterType() && 
+		       (!(qualifier != null && 
+		       	  qualifier instanceof polyglot.ast.TypeNode &&
+		          c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))
+		        || 
+		        !(qualifier == null && c.nested())
+		        ||
+		        !c.staticInterType()
+		        ||
+		        (mi != null && mi.container() == c.hostClass()));
     }
     
 	public Context createContext() {

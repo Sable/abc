@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
@@ -18,6 +20,8 @@ import polyglot.ast.Return;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
+
 
 import polyglot.visit.*;
 import polyglot.types.*;
@@ -26,6 +30,8 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeMethodInstance_c;
+import abc.aspectj.types.InterTypeFieldInstance_c;
+
 import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.FieldSig;
@@ -36,7 +42,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     implements IntertypeMethodDecl, ContainsAspectInfo
 {
     protected TypeNode host;
-    protected InterTypeMethodInstance_c itMethodInstance;
+    public 	  InterTypeMethodInstance_c itMethodInstance;
     protected LocalInstance thisParamInstance;
     protected Supers supers;
 
@@ -97,6 +103,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		                                               		methodInstance().formalTypes(),
 		                                               		methodInstance().throwTypes());
 	    	((ParsedClassType)ht).addMethod(mi);
+	    	// System.out.println("METHODS OF "+ht+"ARE "+ ((ParsedClassType) ht).methods());
+	    	
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
 	    	
 	    	/* record instance for "this" parameter */
@@ -109,13 +117,13 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	
 	/**
 	* @author Oege de Moor
-	* change private intertype field decl into public,
+	* change private intertype method decl into public,
 	* mangling the name.
 	*/
 	public IntertypeMethodDecl accessChange() {
 		if (flags().isPrivate() || flags().isPackage()) {
 			ParsedClassType ht = (ParsedClassType) host.type();
-			ht.fields().remove(itMethodInstance); // remove old instance from host type    		
+			ht.methods().remove(itMethodInstance); // remove old instance from host type    		
 			MethodInstance mmi = itMethodInstance.mangled();  // retrieve the mangled instance 		
 			ht.addMethod(mmi); // add new instance to host type   		
 			return (IntertypeMethodDecl) name(mmi.name()).methodInstance(mmi).flags(mmi.flags());
@@ -163,16 +171,23 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	
 	/**
 	 * @author Oege de Moor
-	 * record the host type in the environment, for checking of this and super
+	 * record the host type in the environment, for checking of this and super.
+	 * also add fields and methods of the host that are visible from the aspect.
 	 */
 	
-	public Context enterScope(Context c) {
+	public Context enterScope(Node n, Context c) {
 		AJContext nc = (AJContext) super.enterScope(c);
-		TypeSystem ts = nc.typeSystem();
-		return nc.pushHost(ts.staticTarget(host.type()).toClass(),
-		                               flags.isStatic());
-	}
+		if (n==body) {
+			TypeSystem ts = nc.typeSystem();
+			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
+			                               flags.isStatic());
+			ncc.addITMembers(host.type().toClass());
+			return ncc;
+		} else return nc;
 		
+	}
+	
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.begin(0);
 	w.write(flags.translate());

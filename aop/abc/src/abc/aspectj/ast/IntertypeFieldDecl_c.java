@@ -223,16 +223,21 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     }
     
    
+	
 	/**
-	 * @author Oege de Moor
-	 * record the host type in the environment, for checking of this and super
+	* @author Oege de Moor
+	* record the host type in the environment, for checking of this and super.
+	* also add fields and methods of the host that are visible from the aspect.
 	*/
+	
 	public Context enterScope(Node n, Context c) {
-		AJContext nc = (AJContext) super.enterScope(n,c);
+		AJContext nc = (AJContext) super.enterScope(c);
 		if (n==init()) {
 			TypeSystem ts = nc.typeSystem();
-			return nc.pushHost(ts.staticTarget(host.type()).toClass(),
-												flags().isStatic());
+			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
+											 flags().isStatic());
+			ncc.addITMembers(host.type().toClass());
+			return ncc;
 		} else return nc;
 	}
 	

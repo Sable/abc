@@ -21,7 +21,7 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
 	if (n instanceof ClassMember && !(n instanceof DeclareParentsExt || n instanceof DeclareParentsImpl)) {
-	    return bypass(n);
+	    return this.bypassChildren(n);
 	}
 	return this;
     }

@@ -41,7 +41,7 @@ public aspect PrinterScreenAdapter {
      * <i>Adaptee</i> becomes its own <i>Adapter</i>. 
      */
      
-	declare parents: Screen implements Printer;
+    declare parents: Screen implements Printer;
 	
 	/**
 	 * Attaches a <code>print()</code> method to <code>Screen</code>. 

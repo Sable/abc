@@ -4,6 +4,9 @@ package abc.aspectj.types;
 import polyglot.types.ClassType;
 import polyglot.types.Type;
 import polyglot.types.Context;
+import polyglot.types.MethodInstance;
+import polyglot.types.VarInstance;
+import polyglot.types.ReferenceType;
 
 /**
  * @author Oege de Moor
@@ -25,5 +28,7 @@ public interface AJContext extends Context {
 	
 	/** inner class inside intertype decl? */
 	boolean nested(); 
-	            
+
+	/** add all the members from the intertype host that are accessible */
+	public void addITMembers(ReferenceType host);
 }

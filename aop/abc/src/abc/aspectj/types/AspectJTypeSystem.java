@@ -11,6 +11,9 @@ import polyglot.types.FieldInstance;
 import polyglot.types.ReferenceType;
 import polyglot.types.Flags;
 import polyglot.types.Type;
+import polyglot.types.MemberInstance;
+
+import polyglot.ast.Typed;
 
 import abc.aspectj.ast.AdviceSpec;
 
@@ -45,5 +48,6 @@ public interface AspectJTypeSystem extends JjTypeSystem {
 	public ConstructorInstance interTypeConstructorInstance(Position pos,ClassType origin,
 													ClassType container, Flags flags,
 													List argTypes, List excTypes);
-							              
+
+	public boolean refHostOfITD(AJContext c, Typed qualifier, MemberInstance mi); 							              
 }

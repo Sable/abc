@@ -476,7 +476,20 @@ public class AspectJNodeFactory_c
 		return cc;
 	}
 	
-	/*
+	public Call Call(Position pos, Receiver target, String name,List arguments) {
+		Call c = new AJCall_c(pos,target,name,arguments);
+		return c;
+	}
+	
+	public Disamb disamb() {
+		   return new AJDisamb_c();
+	}
+	
+	public New New(Position pos,Expr qualifier, TypeNode tn, List arguments, ClassBody body) {
+		return new AJNew_c(pos,qualifier,tn,arguments,body);
+	}
+	
+    /*
 	public ConstructorDecl ConstructorDecl(Position pos, Flags flags, String name, 
 											List formals, List throwTypes, Block body) {
 		ConstructorDecl cd = new AJConstructorDecl_c(pos,flags,name,formals,throwTypes,body);

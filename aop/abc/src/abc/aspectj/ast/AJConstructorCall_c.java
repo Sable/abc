@@ -15,6 +15,7 @@ import polyglot.ext.jl.ast.ConstructorCall_c;
 import polyglot.util.Position;
 
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.AspectJTypeSystem;
 
 /**
  * @author Oege de Moor
@@ -37,10 +38,8 @@ public class AJConstructorCall_c
 	/** Disambiguate the expression. */
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
-		if (!c.inInterType() 
-			|| (c.nested() && qualifier() == null)
-			|| (c.inInterType() && qualifier() != null && 
-				c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))) {		       
+		AspectJTypeSystem ts = (AspectJTypeSystem) ar.typeSystem();
+		if (!ts.refHostOfITD(c,qualifier(),null)) {		       
 				// this is an ordinary constructor call
 				return super.disambiguate(ar);
 		} else {

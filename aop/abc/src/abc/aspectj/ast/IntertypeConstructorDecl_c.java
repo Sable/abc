@@ -467,17 +467,26 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 
     }
     
+    
 	/**
 	* @author Oege de Moor
-	* record the host type in the environment, for checking of this and super
+	* record the host type in the environment, for checking of this and super.
+	* also add fields and methods of the host that are visible from the aspect.
 	*/
-	public Context enterScope(Context c) {
-			AJContext nc = (AJContext) super.enterScope(c);
+	
+	public Context enterScope(Node n, Context c) {
+		AJContext nc = (AJContext) super.enterScope(c);
+		if (n==body) {
 			TypeSystem ts = nc.typeSystem();
-			return nc.pushHost(ts.staticTarget(host.type()).toClass(),
-												flags().isStatic());
-    }
-    
+			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
+											   flags.isStatic());
+			System.out.println("entering the body of "+host+"."+name);
+			if (host.type().toClass() == null)
+				System.out.println("type of host is null");
+			ncc.addITMembers(host.type().toClass());
+			return ncc;
+		} else return nc;	
+	}
     
     public Supers getSupers() {
     	return supers;
