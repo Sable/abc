@@ -10,6 +10,6 @@ public aspect OrderAspect {
     }
 
     after(): set(* *.*){
-        System.out.println("After 1 in file");
+        System.out.println("After 2 in file");
     }
 }
