@@ -3418,6 +3418,10 @@
         <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
         <run vm="1.4" class="AssertInAdvice"></run>
     </ajc-test>
+<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
+        <run vm="1.4" class="AssertInAdviceBug"></run>
+    </ajc-test>
 <ajc-test title="declaring a private method on an inner interface" pr="823" num="684" keywords="tofix" dir="new">
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
         <run class="PrivateMethodOnInnerInterface"></run>
@@ -5073,6 +5077,10 @@
             <message line="11" kind="error"></message>
             <message line="12" kind="error"></message>
          </compile>
+    </ajc-test>
+<ajc-test title="interaction of named pointcuts and nested cflow" num="1014" dir="abctests/bugs">
+         <compile files="CflowInliningDepth.java"></compile>
+         <run class="CflowInliningDepth"></run>
     </ajc-test>
  
 </suite>

@@ -77,26 +77,6 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
 
 
-Running test 683: new/assert statement in advice  [requires 1.4]
-Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdviceBug.java 
-Test failed, compiled class behaved incorrectly
-Message: fail bad line for assert: 43 > 10
-org.aspectj.bridge.AbortException: bad line for assert: 43 > 10
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
-	at AssertInAdviceBug.main(AssertInAdviceBug.java:52)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:394)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed.
-
-
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-dev/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
@@ -198,31 +178,6 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.Main.run(Main.java:480)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
-
-
-Running test 1014: abctests/bugs/interaction of named pointcuts and nested cflow
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/CflowInliningDepth.java 
-Test failed, compiled class behaved incorrectly
-Message: fail [ expected event "Pointcut b applies" not found]
-org.aspectj.bridge.AbortException: [ expected event "Pointcut b applies" not found]
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.check(Tester.java:204)
-	at org.aspectj.testing.Tester.checkEqualIgnoreDups(Tester.java:702)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:742)
-	at org.aspectj.testing.Tester.checkEvents(Tester.java:922)
-	at org.aspectj.testing.Tester.checkAndClearEvents(Tester.java:933)
-	at org.aspectj.testing.Tester.checkAllEvents(Tester.java:846)
-	at CflowInliningDepth.main(CflowInliningDepth.java:8)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:394)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 1014: "abctests/bugs/interaction of named pointcuts and nested cflow" failed.
 
 
 Running test 1015: abctests/bugs/correct topological sorting of precedence
