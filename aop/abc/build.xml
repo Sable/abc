@@ -291,6 +291,21 @@
         <exec executable="latex" dir="doc/options">
             <arg value="usage.tex"/>
         </exec>
+        <exec executable="dvips" dir="doc/options">
+            <arg value="usage.dvi"/>
+            <arg value="-o"/>
+            <arg value="usage.ps"/>
+        </exec>
+        <exec executable="dvips" dir="doc/options">
+            <arg value="usage.dvi"/>
+            <arg value="-Ppdf"/>
+            <arg value="-o"/>
+            <arg value="usage-forpdf.ps"/>
+        </exec>
+        <exec executable="ps2pdf" dir="doc/options">
+            <arg value="usage-forpdf.ps"/>
+            <arg value="usage.pdf"/>
+        </exec>
     </target>
 
     <target name="options-code">
