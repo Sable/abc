@@ -27,7 +27,7 @@ public class SJP {
 }
 
 aspect Asp1 {
-   before() : within(SJP) {
+   before() : !within(Asp1) && !within(Asp2) {
      System.out.println(thisJoinPointStaticPart);
    }
 }
