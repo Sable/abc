@@ -22,6 +22,32 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
+<ajc-test dir="pureJava/abstractInner"
+      title="Abstract inner classes across package boundaries"
+      keywords="from-java">
+        <compile files="C.java,pkg/A.java"/>
+        <run class="C"/>
+    </ajc-test>
+<ajc-test dir="new" pr="417"
+      title="Full names are dropped from inner interfaces"
+      keywords="from-java,purejava">
+        <compile files="PR417a.java"/>
+        <run class="PR417a"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="421"
+      title="More thourough test of static members using full names"
+      keywords="from-java">
+        <compile
+          files="Statics.java,StaticMembers_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
+        <run class="StaticMembers_PR421"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="421"
+      title="More thourough test of static members using imports"
+      keywords="from-java">
+        <compile
+          files="Statics.java,StaticMembersImports_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
+        <run class="StaticMembersImports_PR421"/>
+    </ajc-test>
 <ajc-test dir="new" pr="408"
       title="Not binding constructor when using more than one compilation"
       abccomment="Need to compile second file, loading the CLASS file 
@@ -46,6 +72,12 @@
       keywords="from-java">
         <compile files="InterfaceAndObject.java"/>
         <run class="InterfaceAndObject"/>
+    </ajc-test>
+<ajc-test dir="pureJava/innerTypeModifiers"
+      title="Inner types must generate classfiles with only Public/Default access flags."
+      keywords="from-java">
+        <compile files="pkg1/Main.java,pkg2/Foo.java"/>
+        <run class="pkg1.Main"/>
     </ajc-test>
 <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
@@ -176,6 +208,19 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava/nameConflicts"
+      title="type and package name conflicts are resolved happily (1a)"
+      keywords="from-java,purejava">
+        <compile files="p1/Main1.java,p1/Foo.java,p1/p2.java"/>
+        <run class="p1.Main1"/>
+    </ajc-test>
+<ajc-test dir="pureJava/nameConflicts"
+      title="(fails in USEJAVAC) type and package name conflicts are resolved happily (1b)"
+      keywords="from-java,purejava">
+        <compile files="p1.java,p1/p2/Foo.java"/>
+        <compile files="p1/Main1.java,p1/Foo.java,p1/p2.java"/>
+        <run class="p1.Main1"/>
+    </ajc-test>
+<ajc-test dir="pureJava/nameConflicts"
       title="type and package name conflicts caught as errors (1)"
       abccomment="this is missing in jlc, but it seems less important
                   than other problems, so won't report it to Nate 
@@ -232,15 +277,6 @@
             <message kind="warning" line="28"/>
             <message kind="error" line="27"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="680"
-      abccomment="Probably a j2j error, reported to Jennifer July 3/04 LJH"
-      title="interfaces with non-explicitly static inner classes"
-      keywords="from-java">
-        <compile files="InterfaceAndInnerHelper.java"/>
-        <compile files="InterfaceAndInner.java"
-        	includeClassesDir="true"/>
-        <run class="InterfaceAndInner"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="private super access in inners"
       abccomment="runs fine when not in harness, July 5/04 LJH"
@@ -1055,6 +1091,12 @@
         <compile files="AroundChangeThis.java" options="-1.4"/>
         <run class="AroundChangeThis"/>
     </ajc-test>
+<ajc-test dir="new/PR569" pr="569"
+      title="anon class written to wrong directory" 
+   keywords="from-resolved_104,from-resolved_104">
+        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"/>
+        <run class="a.IntroAnon"/>
+    </ajc-test>
 <ajc-test dir="new" pr="619"
       title="indirect use outside aspect of undefined abstract pointcut"
       keywords="from-resolved_104">
@@ -1068,12 +1110,6 @@
       keywords="from-resolved_104">
         <compile files="AroundCall.java"/>
         <run class="AroundCall"/>
-    </ajc-test>
-<ajc-test dir="new" pr="660" title="name binding in around cflow - 2"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      keywords="from-resolved_104">
-        <compile files="ArgsInCflow2.java"/>
-        <run class="ArgsInCflow2"/>
     </ajc-test>
 <ajc-test dir="new" pr="677"
       title="around name-binding in cflows using factorial"
@@ -1121,6 +1157,18 @@
             <message kind="error" line="29"/>
             <message kind="error" line="32"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="737"
+      title="no circularity errors simply because of inners (1)"
+      keywords="from-resolved_105,purejava">
+        <compile files="circle/Test1CP.java"/>
+        <run class="circle.Test1CP"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="737"
+      title="no circularity errors simply because of inners (2)"
+      keywords="from-resolved_105,purejava">
+        <compile files="circle/Test2CP.java"/>
+        <run class="circle.Test2CP"/>
     </ajc-test>
 <ajc-test dir="pureJava" pr="737"
       title="should have circular inheritance errors (1)"
@@ -1390,6 +1438,11 @@
       title="after returning advice on interface constructor">
         <compile files="AfterReturningInterfaceConstructor.java"/>
         <run class="AfterReturningInterfaceConstructor"/>
+    </ajc-test>
+<ajc-test dir="bugs" pr="909"
+      title="using instance as class reference to constant field"
+      comment="XXX need to verify run">
+        <compile files="InstanceAsClassRefToConstant.java"/>
     </ajc-test>
 <ajc-test dir="options/deprecated" 
       title="options -warn:deprecation">
@@ -1915,11 +1968,6 @@
         title="-warn:none suppresses declare warnings">
         <compile files="WarningTest.java" options="-warn:none"/>
     </ajc-test>
-<ajc-test dir="bugs" pr="38168" keywords="knownLimitation"
-   	 title="insertion of lots of advice code can make branch offset for if too large">
-        <compile files="WideJumps.java"/>
-        <run class="WideJumps"/>
-    </ajc-test>
 <ajc-test dir="bugs/accessMethods" pr="38212"
    	 title="can not resolve this member warning">
         <compile files="p1/Base.java,p2/Derived.java"/>
@@ -2294,6 +2342,17 @@
         	files="Main.java">
         	<message kind="error" line="3"/>
        </compile>
+    </ajc-test>
+<ajc-test dir="bugs/interfaceDefinition" 
+    	pr="43972"
+    	title="Use class implementing interface via aspect (weave all together)">
+        <compile 
+        	files="pack/DefineInterface.java,
+        		   pack/InterfaceDefinition.java,
+        		   pack/MyInterface.java,
+        		   Main.java"/>
+        <run class="pack.InterfaceDefinition"/>
+        <run class="Main"/>
     </ajc-test>
 <ajc-test dir="bugs/interfaceDefinition" 
     	pr="43972"
