@@ -282,9 +282,8 @@ public class AroundWeaver {
 		}*/
 						
 		// and replace proceed with call to get-interface
-		if (adviceMethod.getParameterCount()==0 ||
-			 !adviceMethod.getParameterType(0).toString().equals(interfaceName)) {
-			modifyAdviceMethod(adviceMethod, accessInterface, accessMethod, 
+		if (adviceMethod.getParameterCount()==adviceAppl.advice.numFormals()) {
+			modifyAdviceMethod(adviceAppl, adviceMethod, accessInterface, accessMethod, 
 				accessInterfaceType,
 				bGet
 				);
@@ -478,15 +477,31 @@ public class AroundWeaver {
 			assignStmt.setLeftOp(lVal);
 			params.add(lVal);
 		}*/
-		InvokeExpr invokeEx=
-			Jimple.v().newVirtualInvokeExpr( aspectref, adviceMethod, params);
+		/*
+		*/
+		Chain invokeStmts =  
+					PointcutCodeGen.makeAdviceInvokeStmt 
+										  (aspectref,adviceAppl,units,localgen);
 
+		InvokeExpr invokeEx= ((InvokeStmt)invokeStmts.getLast()).getInvokeExpr();
+		invokeStmts.removeLast();
+		for (Iterator stmtlist = invokeStmts.iterator(); stmtlist.hasNext(); ){
+			Stmt nextstmt = (Stmt) stmtlist.next();
+			units.insertBefore(nextstmt,assignStmt);
+		}
+		
+		params.addAll(0, invokeEx.getArgs());
+		
+		InvokeExpr invokeEx2=
+			Jimple.v().newVirtualInvokeExpr( aspectref, adviceMethod, params);
+		//units.insertBefore((List)invokeStmts, assignStmt);
+		
 		if (bGet) {
-			assignStmt.setRightOp(invokeEx);
-		} else {
+			assignStmt.setRightOp(invokeEx2);
+		}/* else {
 			InvokeStmt invokeStmt=Jimple.v().newInvokeStmt(invokeEx);
 			units.insertAfter(invokeStmt, assignStmt);
-		}
+		}*/
 		
 	
 		/*Iterator it=relevantFields.iterator();
@@ -539,6 +554,59 @@ public class AroundWeaver {
 
 		
 	} 
+	
+	private static void validateMethod(SootMethod method) {
+		debug("validating " + method.getName());
+		
+		Body body=method.getActiveBody();
+		Chain units=body.getUnits();
+		List params=method.getParameterTypes();
+		
+		Iterator itUnits=units.iterator();
+		Stmt first=(Stmt)itUnits.next();
+		
+		{
+			IdentityStmt id=(IdentityStmt) first;
+			Local local=(Local)id.getLeftOp();
+			ThisRef ref=(ThisRef)id.getRightOp();
+			if (!ref.getType().equals(method.getDeclaringClass().getType()))
+				throw new RuntimeException();
+			
+			if (!local.getType().equals(method.getDeclaringClass().getType()))
+							throw new RuntimeException();
+			
+			
+		}
+		
+		// idStmt.getRightOp() 
+	
+		
+		
+		Iterator it=params.iterator();
+		int i=0;
+		while (it.hasNext()) {
+			Type type=(Type)it.next();
+			Stmt stmt=(Stmt)itUnits.next();
+			IdentityStmt id=(IdentityStmt)stmt;
+			Local local=(Local)id.getLeftOp();
+			ParameterRef ref=(ParameterRef)id.getRightOp();
+		
+			debug("  parameter " + i + ": " + type.toString() + ":" + local.getName());
+				
+			
+			if (!(local).getType().equals(type)) {
+				throw new RuntimeException();
+			}
+			if (ref.getIndex()!=i++) {
+				throw new RuntimeException();
+			}
+			if (!ref.getType().equals(type)) {
+				throw new RuntimeException();
+			}				
+		}
+		
+	}
+	
 	/**
 	 * Removes all traps that refer to statements between begin and end.
 	 * Throws an exception if traps partially refer to that range.
@@ -711,8 +779,8 @@ public class AroundWeaver {
     		if (original==lThisSource) {
 				bindings.put(lThisSource, lThisDest);
     		} else {
-				copy.setName(copy.getName() + "abc" + state.getUniqueID());
-				// Add cloned unit to our trap list.
+				copy.setName(copy.getName() + "$abc$" + state.getUniqueID());
+				// Add cloned unit to our local list.
 				localChain.addLast(copy);
 
 				// Build old <-> new mapping.
@@ -794,6 +862,7 @@ public class AroundWeaver {
 	}
 	
 	private static void modifyAdviceMethod(
+		AdviceApplication adviceAppl,
 		SootMethod adviceMethod,
 		SootClass accessInterface,
 		SootMethod accessMethod,
@@ -804,29 +873,61 @@ public class AroundWeaver {
 			
 			
 		debug("modifying advice method: " + adviceMethod.toString());
-		List aroundParameters=adviceMethod.getParameterTypes();
-		// params are added in reverse order...
-		/*if (bSet) {
-			aroundParameters.add(0, fieldType);	
-		}*/
-		aroundParameters.add(0, IntType.v());
-		aroundParameters.add(0, accessInterface.getType());		
-		adviceMethod.setParameterTypes(aroundParameters);
+		
+		validateMethod(adviceMethod);
+		
 		Body aroundBody=adviceMethod.getActiveBody();
 		Chain statements=aroundBody.getUnits();
+		
+		List aroundParameters=adviceMethod.getParameterTypes();
+		aroundParameters.add(accessInterface.getType());
+		int interfaceParam=aroundParameters.size()-1;
+		aroundParameters.add(IntType.v());			
+		int idParam=aroundParameters.size()-1;	
+		adviceMethod.setParameterTypes(aroundParameters);
+		debug("id1: " + interfaceParam);
+		debug("id2: " + idParam);
+		debug("count:" + adviceMethod.getParameterCount());
+		
+		Stmt lastExistingIDStmt=(Stmt)statements.getFirst();
+		if (adviceAppl.advice.numFormals()>0){		
+			Iterator it=statements.iterator();
+			for (int i=0; i<adviceAppl.advice.numFormals()+1; i++) {
+				lastExistingIDStmt=(Stmt)it.next();
+			}
+			if (lastExistingIDStmt==null)
+				throw new RuntimeException();
+		
+			IdentityStmt id=(IdentityStmt)lastExistingIDStmt;
+				
+			Local local=(Local)id.getLeftOp();
+			
+			// local.
+			
+			if ( local!=aroundBody.getParameterLocal(0))
+				throw new RuntimeException();
+			
+			debug("param:" + aroundBody.getParameterLocal(0).getType());
+			//if (((IdentityStmt)lastExistingIDStmt).getRightOp().)
+		}
+		
+		
 		LocalGeneratorEx localgen2 = new LocalGeneratorEx(aroundBody);
-		Local l=localgen2.generateLocal(accessInterface.getType(), "accessIntf");
+		Local lInterface=localgen2.generateLocal(accessInterface.getType());//, "accessIntf");
 		// insert id for first param (interface reference)
-		Stmt intRefIDstmt=Jimple.v().newIdentityStmt(l, 
+		Stmt intRefIDstmt=Jimple.v().newIdentityStmt(lInterface, 
 				Jimple.v().newParameterRef(	
-						accessInterface.getType(),0));
-		statements.insertAfter(intRefIDstmt, statements.getFirst());
+						accessInterface.getType(),interfaceParam));
+		statements.insertAfter(intRefIDstmt, lastExistingIDStmt);
 		// id for second param (id of field accessed)
-		Local l2=localgen2.generateLocal(IntType.v(), "id");
+		Local l2=localgen2.generateLocal(IntType.v());//, "id");
 		Stmt fieldIDStmt=Jimple.v().newIdentityStmt(l2, 
-				Jimple.v().newParameterRef(IntType.v(),1));
+				Jimple.v().newParameterRef(IntType.v(),idParam));
 		statements.insertAfter(fieldIDStmt, intRefIDstmt);
 		// id for third param (value for set operation)
+		
+		validateMethod(adviceMethod);
+		
 		Local l3=null;
 		/*if (bSet) {
 			l3=localgen2.generateLocal(fieldType);
@@ -851,10 +952,10 @@ public class AroundWeaver {
 				if (i.getInvokeExpr().getMethod().getName().startsWith("proceed$")) {
 					debug("modifying proceed call in around() method ");
 					IdentityStmt id=(IdentityStmt) statements.getFirst();
-					Local local= aroundBody.getParameterLocal(0);								
+					//Local local= aroundBody.getParameterLocal(0);								
 					InvokeExpr invokeExpr=
 						Jimple.v().newInterfaceInvokeExpr( 
-							local, accessMethod, proceedParams);
+							lInterface, accessMethod, proceedParams);
 					i.setInvokeExpr(invokeExpr);
 				}											
 			} else if (s instanceof AssignStmt) {
@@ -865,10 +966,10 @@ public class AroundWeaver {
 					if (invokeExpr.getMethod().getName().startsWith("proceed$")) {
 						debug("replacing proceed$ call (invoke expression) in advice method");		
 						IdentityStmt id=(IdentityStmt) statements.getFirst();
-						Local local= aroundBody.getParameterLocal(0);								
+						//Local local= aroundBody.getParameterLocal(0);								
 						invokeExpr=
 							Jimple.v().newInterfaceInvokeExpr( 
-								local, accessMethod, proceedParams);
+								lInterface, accessMethod, proceedParams);
 						a.setRightOp(invokeExpr);
 					}
 				}
