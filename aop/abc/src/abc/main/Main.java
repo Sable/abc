@@ -3,10 +3,14 @@ package arc.main;
 
 import soot.*;
 
+import polyglot.frontend.Compiler;
+import polyglot.frontend.ExtensionInfo;
+import polyglot.main.Options;
+
 import java.util.*;
 
-public class Main extends polyglot.main.Main {
-    protected void start(String[] args) {
+public class Main {
+    public static void main(String[] args) {
 	// Parse args to find aware and self-contained classes.
 
         Collection/*<String>*/ aspect_sources = Arrays.asList(args); //FIXME
@@ -21,20 +25,16 @@ public class Main extends polyglot.main.Main {
 	// TODO: Resolve java classes
 
 	// Invoke polyglot
-        List/*<String>*/ polyglot_args = new ArrayList();
-        polyglot_args.addAll(aspect_sources);
-        polyglot_args.add("-extclass");
-        polyglot_args.add("arc.aspectj.ExtensionInfo");
-        polyglot_args.add("-sx");
-        polyglot_args.add("java");
-        try {
-            super.start((String[]) polyglot_args.toArray(new String[0]));
-        } catch (polyglot.main.Main.TerminationException e) {
-	    System.out.println("Termination: " + e);
+	ExtensionInfo ext = new arc.aspectj.ExtensionInfo();
+	Options.global = ext.getOptions();
+	Compiler compiler = new Compiler(ext);
+	if (!compiler.compile(aspect_sources)) {
+	    System.out.println("Compiler failed.");
+	    System.exit(5);
 	}
 
 	// We should now have all classes as jimple
-
+	
 	// TODO: WEAVE!
 
 	// Write classes

@@ -82,7 +82,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
 
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
-	//l.add(new SaveASTVisitor(SAVE_AST, job, this));
+	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor()));
 
 	/*

@@ -32,6 +32,8 @@ public class JimplifyVisitor extends NodeVisitor {
 	    Scene.v().addClass(sc);
 	    res.resolveFromJavaFile(sc, soot_res);
 	}
+
+	System.out.println("Jimplification completed");
     }
 
     private class AspectSootResolver extends SootResolver {
