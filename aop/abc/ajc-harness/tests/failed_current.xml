@@ -15,10 +15,6 @@
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Inners can reference protected fields of their outer's super." num="135" keywords="from-java" dir="pureJava" abccomment="runs ok without harness ... July 1/04 LJH">
-        <compile files="protectedFieldRefInInner/Main.java,protectedFieldRefInInner/p1/C.java"></compile>
-        <run class="protectedFieldRefInInner.Main"></run>
-    </ajc-test>
 <ajc-test title="invalid numeric literals" num="149" keywords="from-java" dir="pureJava" abccomment="abc doesn't do a good job on these,  needs a parser                   that doesn't give up after the first error, and                   then each case needs to be check.  jlc probably does                   not catch all of them either.  July 1/04 LJH">
         <compile files="LiteralsCf.java">
             <message line="8" kind="error"></message>
@@ -300,10 +296,6 @@
             <message line="72" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="subclass access to enclosing super class private members" pr="752" num="652" keywords="from-resolved_105,purejava,fail-unimplemented" dir="pureJava">
-        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
-        <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
-    </ajc-test>
 <ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
 	    <compile files="java/lang/Object.java,java/lang/String.java">
 	    </compile>
@@ -431,12 +423,6 @@
 <ajc-test title="can't resolve nested public interfaces (also PR#32399)" pr="32421" num="756" dir="bugs/interfaceNames">
         <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"></compile>
         <run class="TransactionTest"></run>
-    </ajc-test>
-<ajc-test title="omnibus declare warning context with no initializer/constructor" pr="31724" num="760" dir="new/declare">
-        <compile files="DeclareWarningEmpty.java">
-            <message text="2 - initialization(DeclareWarningEmpty)" line="3" kind="warning"></message>
-            <message text="1 - staticinitialization(DeclareWarningEmpty)" line="3" kind="warning"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="omnibus declare warning context" pr="31724" num="761" dir="new/declare">
         <compile files="DeclareWarning.java">

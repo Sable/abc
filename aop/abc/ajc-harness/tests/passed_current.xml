@@ -535,6 +535,10 @@
             <message line="4" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Inners can reference protected fields of their outer's super." num="135" keywords="from-java" dir="pureJava" abccomment="runs ok without harness ... July 1/04 LJH">
+        <compile files="protectedFieldRefInInner/Main.java,protectedFieldRefInInner/p1/C.java"></compile>
+        <run class="protectedFieldRefInInner.Main"></run>
+    </ajc-test>
 <ajc-test title="IOException on windows if nul used as identifier" num="136" keywords="from-java,purejava" dir="new" abccomment="jlc misses error at line 14, reported to Nate July 1/04 LJH                   Fixed July 6/04">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="NulIOException.java">
@@ -3017,6 +3021,10 @@
         <compile files="LocalInners2.java"></compile>
         <run class="LocalInners2"></run>
     </ajc-test>
+<ajc-test title="subclass access to enclosing super class private members" pr="752" num="652" keywords="from-resolved_105,purejava,fail-unimplemented" dir="pureJava">
+        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
+        <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
+    </ajc-test>
 <ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
         <run class="MethodLocalAroundReturns"></run>
@@ -3302,6 +3310,12 @@
 <ajc-test title="no such constructor for proceed argument (error)" num="759" dir="binding">
         <compile files="UnfoundConstructor.java">
         	<message line="25" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="omnibus declare warning context with no initializer/constructor" pr="31724" num="760" dir="new/declare">
+        <compile files="DeclareWarningEmpty.java">
+            <message text="2 - initialization(DeclareWarningEmpty)" line="3" kind="warning"></message>
+            <message text="1 - staticinitialization(DeclareWarningEmpty)" line="3" kind="warning"></message>
         </compile>
     </ajc-test>
 <ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
