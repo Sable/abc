@@ -266,8 +266,23 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
-        // construct method for expression in if(..)
-        MethodDecl md = exprMethod(nf, ts, visitor.formals(), visitor.container());
+        // construct method for expression in if(..).
+        // When the if(..) occurs inside a cflow, the parameters are only the
+        // variables bound inside that cflow. Otherwise, the parameters are exactly
+        // the formals of the enclosing named pointcut or advice.
+        AJContext ajc = (AJContext) visitor.context();
+        List formals = new ArrayList();
+        if (ajc.inCflow()) {
+            Collection cflowVars = ajc.getCflowMustBind();
+            for (Iterator varit = cflowVars.iterator(); varit.hasNext(); ) {
+                String varName = (String) varit.next();
+                LocalInstance li = (LocalInstance) ajc.findVariableSilent(varName);
+                TypeNode tn = nf.CanonicalTypeNode(li.position(),li.type());
+                Formal vf = nf.Formal(li.position(),Flags.FINAL,tn,varName).localInstance(li);
+                formals.add(vf);
+            }
+        } else formals = visitor.formals();
+        MethodDecl md = exprMethod(nf, ts, formals, visitor.container());
         visitor.addMethod(md);
 	visitor.popPCIf();
         return liftMethod(nf); // replace expression by method call
