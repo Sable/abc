@@ -154,6 +154,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="aspect inheritance and advice, introduction" keywords="from-base" dir="base/test140">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="thisResultObject for primitives" keywords="from-base" dir="base/test141">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -1218,13 +1222,12 @@
             <message line="30" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="errors in aspect inheritance - 3" keywords="from-errors" dir="errors" abccomment="ajc fails to find an additional error involving unbound                   pointcut formals at line 15. ODM July 5, 2004">
+<ajc-test title="errors in aspect inheritance - 3" keywords="from-errors" dir="errors" abccomment="ajc fails to find an additional error involving unbound                   pointcut formals at line 15; abc bails out earlier, but ok.                   ODM July 5, 2004">
         <compile files="AspectInheritance3.java">
             <ajcmessage line="19" kind="error"></ajcmessage>
             <ajcmessage line="24" kind="error"></ajcmessage>
             <message line="15" kind="error"></message>
             <message line="19" kind="error"></message>
-            <message line="24" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="errors in aspect inheritance - 4" keywords="from-errors" dir="errors">
@@ -1271,8 +1274,10 @@
             <message line="9" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="advice on abstract pointcuts" pr="240" keywords="from-errors" dir="errors">
+<ajc-test title="advice on abstract pointcuts" pr="240" keywords="from-errors" dir="errors" abccomment="abc catches one more error than ajc. ODM 20/07/04">
         <compile files="StaticAdviceOnAbstract.java">
+            <ajcmessage line="17" kind="error"></ajcmessage>
+            <message line="12" kind="error"></message>
             <message line="17" kind="error"></message>
         </compile>
     </ajc-test>
@@ -1634,6 +1639,10 @@
 <ajc-test title="Checking new joinpoints" keywords="from-design" dir="design/reflect" abccomment="fails on account of problems with aspectOf and aspect inheritance. ODM 09/07/04">
         <compile files="Coverage.java"></compile>
         <run class="Coverage"></run>
+    </ajc-test>
+<ajc-test title="eachobject: simple test [eachobject] (still)" keywords="from-design" dir="design/eachobject" abccomment="fails on account of aspect inheritance. ODM 09/07/04">
+        <compile files="Simple.java"></compile>
+        <run class="Simple"></run>
     </ajc-test>
 <ajc-test title="scope issues with introduction (needs more work)" keywords="from-design" dir="design/intro">
         <compile files="p1/ScopeIssues.java,p1/C1.java"></compile>
@@ -2148,6 +2157,10 @@
         <compile files="IntroducedFieldsNotBinding.java"></compile>
         <run class="IntroducedFieldsNotBinding"></run>
     </ajc-test>
+<ajc-test title="Arguments are not being passed in to calls advice" pr="335" keywords="from-resolved_10x" dir="new">
+        <compile files="PR335.java"></compile>
+        <run class="PR335"></run>
+    </ajc-test>
 <ajc-test title="ExceptionInInitializerError accessing cflow in aspect initialization - before variants" keywords="from-resolved_10x" dir="new">
         <compile files="CflowInitInAspectVariantsBefore.java"></compile>
         <run class="CflowInitInAspectVariantsBefore"></run>
@@ -2223,6 +2236,18 @@
 <ajc-test title="variable slots and finally/catch causing verify errors" pr="595" keywords="from-resolved_10final,from-resolved_10x" dir="new">
         <compile files="AfterFinally.java"></compile>
         <run class="AfterFinally"></run>
+    </ajc-test>
+<ajc-test title="after advice on static method with pcd if() using result" pr="590" keywords="from-resolved_10x" dir="new">
+        <compile files="PR590.java">
+            <message line="20" kind="error"></message>
+            <message line="23" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="after advice on static method with pcd if() using result through pointcut" pr="590" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="PR590a.java">
+            <message line="29" kind="error"></message>
+            <message line="31" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="AbstractMethodError for introduced methods (order 1)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
         <compile files="Main.java,My_error.java,A.java,B.java,C.java"></compile>
@@ -2376,6 +2401,24 @@
 <ajc-test title="compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" pr="560" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR560.java"></compile>
         <run class="PR560"></run>
+    </ajc-test>
+<ajc-test title="cyclic pointcut definitions" pr="568" keywords="from-resolved_10rc3,knownLimitation" dir="new" abccomment="abc checks for cycles whether pointcuts are used or not. ODM 21/07/04">
+        <compile files="CyclicPointcuts.java">
+            <ajcmessage line="11" kind="error"></ajcmessage>
+            <ajcmessage line="14" kind="error"></ajcmessage>
+            <ajcmessage line="18" kind="error"></ajcmessage>
+            <ajcmessage line="32" kind="error"></ajcmessage>
+            <ajcmessage line="43" kind="error"></ajcmessage>
+            <message line="11" kind="error"></message>
+            <message line="14" kind="error"></message>
+            <message line="15" kind="error"></message>
+            <message line="19" kind="error"></message>
+            <message line="20" kind="error"></message>
+            <message line="29" kind="error"></message>
+            <message line="32" kind="error"></message>
+            <message line="40" kind="error"></message>
+            <message line="43" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="pertarget stack overflow getting name of anonymous (Interface) class" pr="573" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR573.java"></compile>
@@ -2819,6 +2862,10 @@
         <compile files="AdviceExec.java"></compile>
         <run class="AdviceExec"></run>
     </ajc-test>
+<ajc-test title="Negation of if pointcut does not work" pr="33635" dir="bugs">
+        <compile files="NotIf.java"></compile>
+        <run class="NotIf"></run>
+    </ajc-test>
 <ajc-test title="ajc reports error when encountering static declaration of nested classes" pr="32463" dir="bugs">
         <compile files="WeaveLocal.java"></compile>
         <run class="WeaveLocal"></run>
@@ -2844,6 +2891,14 @@
 <ajc-test title="can't apply around advice to the execution of around advice" pr="29934" keywords="from-resolved_10x" dir="new">
         <compile files="CflowCycles.java"></compile>
         <run class="CflowCycles"></run>
+    </ajc-test>
+<ajc-test title="cflow binding issues with ignoring state" pr="34858" dir="bugs">
+        <compile files="CflowBinding.java"></compile>
+        <run class="CflowBinding"></run>
+    </ajc-test>
+<ajc-test title="cflow binding -- original weaver crash" pr="34858" dir="bugs">
+        <compile files="CflowBindingOrig.java"></compile>
+        <run class="CflowBindingOrig"></run>
     </ajc-test>
 <ajc-test title="type not imported in around advice" dir="errors">
         <compile files="TypeNotImportedInAroundCE.java">
@@ -2953,6 +3008,10 @@
             <message line="13" kind="error"></message>       
         </compile>
     </ajc-test>
+<ajc-test title="NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch" pr="39479" dir="bugs">
+        <compile files="NewSwitch.java"></compile>
+        <run class="NewSwitch"></run>
+    </ajc-test>
 <ajc-test title="switch statement in aspects crashes weaving" pr="40109" dir="bugs">
         <compile files="SwitchInAround.java"></compile>
         <run class="SwitchInAround"></run>
@@ -2976,6 +3035,15 @@
         <compile files="CloneMethod.java"></compile>
         <run class="CloneMethod"></run>
     </ajc-test>
+<ajc-test title="compile error expected for abstract pointcut outside abstract aspect" dir="errors" abccomment="better errors from abc. 19/07/04 ODM">
+		<compile files="AbstractPointcutCE.java">
+			<ajcmessage line="5" kind="error"></ajcmessage>
+			<ajcmessage line="10" kind="error"></ajcmessage>
+                        <message line="4" kind="error"></message>
+                        <message line="5" kind="error"></message>
+                        <message line="9" kind="error"></message>
+		</compile>
+	</ajc-test>
 <ajc-test title="subtype-qualified pointcut reference" pr="40876" dir="bugs">
 		<compile files="PointcutLibraryTest.java"></compile>
 		<run class="PointcutLibraryTest"></run>
@@ -2984,6 +3052,17 @@
 		<compile files="SuperPointcutCE.java">
 			<message line="23" kind="error"></message>
 			<message line="26" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="compile error expected for interface pointcuts" pr="40814" dir="bugs" abccomment="an extra message from abc. ODM 19/07/04">
+		<compile files="AbstractPointcutCE.java">
+			<ajcmessage line="7" kind="error"></ajcmessage>
+			<ajcmessage line="11" kind="error"></ajcmessage>		
+			<ajcmessage line="15" kind="error"></ajcmessage>
+	                <message line="7" kind="error"></message>
+			<message line="11" kind="error"></message>
+                        <message line="14" kind="error"></message>		
+			<message line="15" kind="error"></message>                        
 		</compile>
 	</ajc-test>
 <ajc-test title="interface call signatures when declaring method in aspect" pr="40805" dir="bugs">
@@ -3065,6 +3144,30 @@
         <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
         <run class="de.test.MyMain"></run>
     </ajc-test>
+<ajc-test title="No error on overloaded pointcuts in class" pr="49457" dir="bugs" abccomment="abc messages differ but ok. ODM 19/07/04">
+        <compile files="OverloadedPointcutsInClass.java">
+        	<ajcmessage text="duplicate pointcut name: pc1" line="3" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc1" line="4" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc2" line="6" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc2" line="7" kind="error"></ajcmessage>
+                <message line="4" kind="error"></message>
+                <message line="6" kind="error"></message>
+        	<message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="No error on overloaded pointcuts unless binding variables" pr="49457" dir="bugs" abccomment="abc text different but ok. ODM 19/07/04">
+        <compile files="OverloadedPointcutsInAspect.java">
+        	<ajcmessage text="duplicate pointcut name: pc" line="15" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc" line="16" kind="error"></ajcmessage>
+        	<ajcmessage text="incompatible type" line="18" kind="error"></ajcmessage>
+        	<ajcmessage text="incompatible type" line="20" kind="error"></ajcmessage>
+                <message line="15" kind="error"></message>
+        	<message line="16" kind="error"></message>
+                <message line="16" kind="error"></message>
+        	<message line="18" kind="error"></message>
+        	<message line="20" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="alias getCause for getWrappedThrowable in SoftException" pr="49250" dir="bugs">
         <compile options="-Xlint:warning" files="GetCauseOnSoftException.java">
         </compile>
@@ -3144,6 +3247,12 @@
         <compile files="InterfaceMethodDeclarationNone.java">
         	<message text="requires a body" line="32" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="aspect declares interface method (abstract)" pr="49784" dir="bugs/interAbstract" abccomment="I believe this to be an ajc bug. The program makes perfect sense,                             it compiles fine, and the test runs ok. ODM 19/07/4">
+        <compile files="InterfaceMethodDeclarationAbstract.java">
+        	<ajcmessage text="must implement" line="40" kind="error"></ajcmessage>
+        </compile>
+        <run class="InterfaceMethodDeclarationAbstract"></run>
     </ajc-test>
 <ajc-test title="aspect declares interface method (public abstract)" pr="49784" dir="bugs/interAbstract" comment="working in 1.1.1 - keep with others?">
         <compile files="InterfaceMethodDeclarationFull.java"></compile>

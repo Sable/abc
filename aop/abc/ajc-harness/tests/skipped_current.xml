@@ -1,5 +1,10 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="advice on advice in usejavac mode" pr="456" keywords="from-resolved_10x" dir="new/pr456">
+ <ajc-test title="advice on catch clauses" keywords="from-resolved_10x,knownLimitation" dir="new" abccomment="ajc fails this, since neither compiler                    supports after advice on handlers">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="CatchAdvice.java"></compile>
+        <run class="CatchAdvice"></run>
+    </ajc-test>
+<ajc-test title="advice on advice in usejavac mode" pr="456" keywords="from-resolved_10x" dir="new/pr456">
         <compile options="-usejavac" files="Test_AroundVarBug.java,AroundVarBug.java"></compile>
         <run class="Test_AroundVarBug"></run>
     </ajc-test>
