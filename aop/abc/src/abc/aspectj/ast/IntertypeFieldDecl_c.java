@@ -54,6 +54,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 	Type ht = host.type();
+	System.out.println("Intertype field decl "+ht+"."+name());
 	if (ht instanceof ParsedClassType) {
 	    ((ParsedClassType)ht).addField(fieldInstance());
 	}

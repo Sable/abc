@@ -36,6 +36,7 @@ import polyglot.types.TypeSystem;
 import polyglot.types.ClassType;
 import polyglot.types.PrimitiveType;
 import polyglot.types.ReferenceType;
+import polyglot.types.ParsedClassType;
 
 import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.NodeVisitor;
@@ -207,6 +208,7 @@ public class AdviceDecl_c extends MethodDecl_c
 						      Flags.PRIVATE, tn.type(), name,
 						      new ArrayList(methodInstance().formalTypes()),
 						      new ArrayList(throwTypes()));
+		((ParsedClassType)methodInstance().container()).addMethod(mi);
 		md = md.methodInstance(mi);
 		((Around)spec).setProceed(md);
 		return md;
