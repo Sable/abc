@@ -8,10 +8,10 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.AmbExpr_c;
 
-public class PPAmbExpr_c extends AmbExpr_c implements AmbExpr
+public class AJAmbExpr_c extends AmbExpr_c implements AmbExpr
 {
 
-    public PPAmbExpr_c(Position pos, String name) {
+    public AJAmbExpr_c(Position pos, String name) {
 	super(pos,name);
     }
 

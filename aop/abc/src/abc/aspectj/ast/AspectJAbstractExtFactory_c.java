@@ -793,24 +793,24 @@ public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
         return postExtThrowsPattern(e);
     }
 
-    public final Ext extPPAmbExpr() {
-        Ext e = extPPAmbExprImpl();
+    public final Ext extAJAmbExpr() {
+        Ext e = extAJAmbExprImpl();
 
         if (nextExtFactory != null) {
-            Ext e2 = nextExtFactory.extPPAmbExpr();
+            Ext e2 = nextExtFactory.extAJAmbExpr();
             e = composeExts(e, e2);
         }
-        return postExtPPAmbExpr(e);
+        return postExtAJAmbExpr(e);
     }
 
-    public final Ext extPPField() {
-        Ext e = extPPFieldImpl();
+    public final Ext extAJField() {
+        Ext e = extAJFieldImpl();
 
         if (nextExtFactory != null) {
-            Ext e2 = nextExtFactory.extPPField();
+            Ext e2 = nextExtFactory.extAJField();
             e = composeExts(e, e2);
         }
-        return postExtPPField(e);
+        return postExtAJField(e);
     }
 
     public final Ext extFixCharLit() {
@@ -1288,11 +1288,11 @@ public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
         return extNodeImpl();
     }
 
-    protected Ext extPPAmbExprImpl() {
+    protected Ext extAJAmbExprImpl() {
         return extAmbExprImpl();
     }
 
-    protected Ext extPPFieldImpl() {
+    protected Ext extAJFieldImpl() {
         return extFieldImpl();
     }
 
@@ -1675,11 +1675,11 @@ public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
         return postExtNode(ext);
     }
 
-    protected Ext postExtPPAmbExpr(Ext ext) {
+    protected Ext postExtAJAmbExpr(Ext ext) {
         return postExtAmbExpr(ext);
     }
 
-    protected Ext postExtPPField(Ext ext) {
+    protected Ext postExtAJField(Ext ext) {
         return postExtField(ext);
     }
 

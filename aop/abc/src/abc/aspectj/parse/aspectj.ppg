@@ -2,19 +2,19 @@ include "java12.cup"
 
 package abc.aspectj.parse;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.ast.AspectJNodeFactory;
 import polyglot.ext.jl.parse.Name;
 
 import abc.aspectj.ast.*;
 
 parser Grm extends polyglot.ext.jl.parse.Grm {:
-    public final AspectJTypeSystem ts;
+    public final AJTypeSystem ts;
     public final AspectJNodeFactory nf;
 
     public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
         super(l, t, n, q);
-        ts = (AspectJTypeSystem) t;
+        ts = (AJTypeSystem) t;
         nf = (AspectJNodeFactory) n;
     }
 

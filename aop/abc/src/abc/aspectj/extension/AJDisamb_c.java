@@ -12,7 +12,7 @@ import polyglot.types.ClassType;
 import polyglot.ext.jl.ast.Disamb_c;
 
 import abc.aspectj.ast.AspectJNodeFactory;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 
 /**
@@ -37,7 +37,7 @@ public class AJDisamb_c extends Disamb_c implements Disamb {
 	
 			
 				
-				AspectJTypeSystem ajts = (AspectJTypeSystem) ts;
+				AJTypeSystem ajts = (AJTypeSystem) ts;
 				AspectJNodeFactory ajnf = (AspectJNodeFactory) nf;
 				// first check whether this is a reference to the host of an ITD
 				if (ajts.refHostOfITD((AJContext)c,fi)) {

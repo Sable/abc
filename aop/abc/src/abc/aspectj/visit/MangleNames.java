@@ -14,21 +14,21 @@ import polyglot.types.TypeSystem;
 import polyglot.visit.NodeVisitor;
 
 import abc.aspectj.types.InterTypeMemberInstance;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 
 /**
  * @author oege
  */
 public class MangleNames extends NodeVisitor {
 	
-	AspectJTypeSystem ts;
+	AJTypeSystem ts;
 
 	/**
 	 * 
 	 */
 	public MangleNames(TypeSystem ts) {
 		super();
-		this.ts = (AspectJTypeSystem) ts;
+		this.ts = (AJTypeSystem) ts;
 	}
 
 	public NodeVisitor enter(Node n) {

@@ -21,7 +21,7 @@ import polyglot.visit.TypeChecker;
 import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJContext;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.visit.AspectMethods;
 
@@ -144,7 +144,7 @@ public class HostConstructorCall_c extends ConstructorCall_c
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                       AspectJTypeSystem ts)
+                                       AJTypeSystem ts)
         {
                 if (constructorInstance() instanceof InterTypeConstructorInstance_c) {
                         InterTypeConstructorInstance_c itcd =

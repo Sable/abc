@@ -82,8 +82,8 @@ public interface AspectJDelFactory extends DelFactory
     JL delDotDotFormalPattern();
     JL delTypeFormalPattern();
     JL delThrowsPattern();
-    JL delPPAmbExpr();
-    JL delPPField();
+    JL delAJAmbExpr();
+    JL delAJField();
     JL delFixCharLit();
     JL delProceedCall();
     JL delArgPattern();

@@ -87,7 +87,7 @@ public class InterTypeConstructorInstance_c
 		return flags();
 	}
 	
-	public void setMangle(AspectJTypeSystem ts) {
+	public void setMangle(AJTypeSystem ts) {
 		// to be filled in!
 	}
 	
@@ -98,7 +98,7 @@ public class InterTypeConstructorInstance_c
 			return this;
 	}
 	
-	public ConstructorCall mangledCall(ConstructorCall cc, AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public ConstructorCall mangledCall(ConstructorCall cc, AspectJNodeFactory nf, AJTypeSystem ts) {
 		if (flags().isPrivate() || flags.isPackage()) {
 			Expr nl = nf.NullLit(cc.position());
 			nl = nl.type(mangleType);
@@ -109,7 +109,7 @@ public class InterTypeConstructorInstance_c
 		} else return cc;
 	}
 
-	public New mangledNew(New cc, AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public New mangledNew(New cc, AspectJNodeFactory nf, AJTypeSystem ts) {
 		New nc;
 		if (flags().isPrivate() || flags().isPackage()) {
 			Expr nl = nf.NullLit(cc.position());
@@ -121,7 +121,7 @@ public class InterTypeConstructorInstance_c
 		} else return cc;
 	}
 	
-	public Formal mangledFormal(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public Formal mangledFormal(AspectJNodeFactory nf, AJTypeSystem ts) {
 		TypeNode tn = nf.CanonicalTypeNode(position,mangleType);
 		String name = UniqueID.newID("formal");
 		Formal mangledFormal = nf.Formal(position,Flags.NONE,tn,name);

@@ -123,7 +123,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     }
 
     protected TypeSystem createTypeSystem() {
-        return new AspectJTypeSystem_c();
+        return new AJTypeSystem_c();
     }
 
     public void addDependencyToCurrentJob(Source s) {

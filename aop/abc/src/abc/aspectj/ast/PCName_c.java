@@ -10,7 +10,7 @@ import java.util.*;
 
 import polyglot.ext.jl.types.Context_c;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.PointcutInstance_c;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectType;
@@ -130,7 +130,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 		 l.add(ts.unknownType(tn.position()));
 	   }
 
-	   MethodInstance mi = ((AspectJTypeSystem)ts).pointcutInstance(position(), ts.Object(),
+	   MethodInstance mi = ((AJTypeSystem)ts).pointcutInstance(position(), ts.Object(),
 											 Flags.NONE,
 											 ts.unknownType(position()),
 											 name, l,

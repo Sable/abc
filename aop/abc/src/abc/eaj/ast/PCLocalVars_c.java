@@ -191,7 +191,7 @@ public class PCLocalVars_c extends Pointcut_c
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         visitor.popFormals();
         return this;

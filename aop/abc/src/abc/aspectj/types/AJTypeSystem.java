@@ -21,7 +21,7 @@ import abc.aspectj.ast.AdviceSpec;
 
 import soot.javaToJimple.jj.types.JjTypeSystem;
 
-public interface AspectJTypeSystem extends JjTypeSystem {
+public interface AJTypeSystem extends JjTypeSystem {
     
 	public ClassType JoinPoint() ;
 	public ClassType JoinPointStaticPart();

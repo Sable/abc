@@ -273,7 +273,7 @@ public class AJContext_c extends Context_c implements AJContext {
 
 	   
 	
-		AspectJTypeSystem ts = (AspectJTypeSystem) typeSystem();
+		AJTypeSystem ts = (AJTypeSystem) typeSystem();
 	
 	   for (Iterator i = type.methods().iterator(); i.hasNext(); ) {
 		   MethodInstance mi = (MethodInstance) i.next();

@@ -8,7 +8,7 @@ import java.util.*;
 
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.ast.AspectJNodeFactory;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
@@ -113,19 +113,19 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     protected LocalInstance thisJoinPointStaticPartInstance=null;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
     
-	private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
+	private LocalInstance thisJoinPointInstance(AJTypeSystem ts) {
 	   if (thisJoinPointInstance==null)
 		   thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
 	   return thisJoinPointInstance;
    }
 
-   private LocalInstance thisJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+   private LocalInstance thisJoinPointStaticPartInstance(AJTypeSystem ts) {
 		if (thisJoinPointStaticPartInstance==null)
 			thisJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisJoinPointStaticPart");
 		return thisJoinPointStaticPartInstance;
 	}
  
-   private LocalInstance thisEnclosingJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+   private LocalInstance thisEnclosingJoinPointStaticPartInstance(AJTypeSystem ts) {
 	   if (thisEnclosingJoinPointStaticPartInstance==null)
 		   thisEnclosingJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,
 																	   ts.JoinPointStaticPart(),"thisEnclosingJoinPointStaticPart");
@@ -135,7 +135,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 
     protected boolean canRewriteThisJoinPoint=false;
 
-    public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, ParsedClassType container){
+    public MethodDecl exprMethod(AspectJNodeFactory nf, AJTypeSystem ts, List formals, ParsedClassType container){
 		Return ret = nf.Return(position(),expr);
 		Block bl = nf.Block(position()).append(ret);
 		TypeNode retType = nf.CanonicalTypeNode(position(),ts.Boolean());
@@ -215,7 +215,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 
     public Context enterScope(Context c) {
     	AJContext ajc = (AJContext) c.pushStatic();
-		AspectJTypeSystem ts = (AspectJTypeSystem)ajc.typeSystem();
+		AJTypeSystem ts = (AJTypeSystem)ajc.typeSystem();
 		LocalInstance jp = thisJoinPointInstance(ts);
 		ajc.addVariable(jp);
 		LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
@@ -231,7 +231,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         // construct method for expression in if(..)
         MethodDecl md = exprMethod(nf, ts, visitor.formals(), visitor.container());
@@ -248,7 +248,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	canRewriteThisJoinPoint=v.leaveAdvice();
     }
 
-    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AspectJTypeSystem ts) {
+    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AJTypeSystem ts) {
 	v.enterAdvice(canRewriteThisJoinPoint ? thisJoinPointStaticPartInstance(ts) : null);
     }
 

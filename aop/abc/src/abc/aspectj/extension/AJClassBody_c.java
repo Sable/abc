@@ -31,8 +31,8 @@ import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
-import abc.aspectj.types.AspectJTypeSystem_c;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem_c;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.PointcutInstance_c;
 import abc.aspectj.types.AJContext;
 
@@ -84,7 +84,7 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 	}
 	
 	private static boolean ITDok(MemberInstance ci, MemberInstance cj) {
-		AspectJTypeSystem_c ts = (AspectJTypeSystem_c) ci.typeSystem();
+		AJTypeSystem_c ts = (AJTypeSystem_c) ci.typeSystem();
 		return // a private ITD cannot conflict with anything that's already there
 		            ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate()) &&
 		              !(cj instanceof InterTypeMemberInstance) ) ||
@@ -207,7 +207,7 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 	
 	public Node aspectMethodsLeave(AspectMethods visitor,
 										  AspectJNodeFactory nf,
-										  AspectJTypeSystem ts)
+										  AJTypeSystem ts)
    {              
 		   return this;
    }

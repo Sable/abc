@@ -3,14 +3,14 @@ package abc.aspectj.types;
 
 import polyglot.types.Flags;
 
-public class AspectJFlags extends Flags {
+public class AJFlags extends Flags {
 
     public static final Flags PRIVILEGEDASPECT  =  createFlag("privilegedaspect", null);
     public static final Flags ASPECTCLASS =  createFlag("aspectclass",null);
     public static final Flags INTERTYPE = createFlag("intertype",null);
     public static final Flags INTERFACEORIGIN = createFlag("interfaceorigin",null);
 
-    public AspectJFlags() {
+    public AJFlags() {
 	super(0);
     }
 

@@ -794,24 +794,24 @@ public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
         return postDelThrowsPattern(e);
     }
 
-    public final JL delPPAmbExpr() {
-        JL e = delPPAmbExprImpl();
+    public final JL delAJAmbExpr() {
+        JL e = delAJAmbExprImpl();
 
         if (nextDelFactory != null) {
-            JL e2 = nextDelFactory.delPPAmbExpr();
+            JL e2 = nextDelFactory.delAJAmbExpr();
             e = composeDels(e, e2);
         }
-        return postDelPPAmbExpr(e);
+        return postDelAJAmbExpr(e);
     }
 
-    public final JL delPPField() {
-        JL e = delPPFieldImpl();
+    public final JL delAJField() {
+        JL e = delAJFieldImpl();
 
         if (nextDelFactory != null) {
-            JL e2 = nextDelFactory.delPPField();
+            JL e2 = nextDelFactory.delAJField();
             e = composeDels(e, e2);
         }
-        return postDelPPField(e);
+        return postDelAJField(e);
     }
 
     public final JL delFixCharLit() {
@@ -1289,11 +1289,11 @@ public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
         return delNodeImpl();
     }
 
-    protected JL delPPAmbExprImpl() {
+    protected JL delAJAmbExprImpl() {
         return delAmbExprImpl();
     }
 
-    protected JL delPPFieldImpl() {
+    protected JL delAJFieldImpl() {
         return delFieldImpl();
     }
 
@@ -1689,11 +1689,11 @@ public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
         return postDelNode(del);
     }
 
-    protected JL postDelPPAmbExpr(JL del) {
+    protected JL postDelAJAmbExpr(JL del) {
         return postDelAmbExpr(del);
     }
 
-    protected JL postDelPPField(JL del) {
+    protected JL postDelAJField(JL del) {
         return postDelField(del);
     }
 

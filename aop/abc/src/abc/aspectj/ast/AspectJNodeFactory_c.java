@@ -651,16 +651,16 @@ public class AspectJNodeFactory_c
     }
 
     public AmbExpr AmbExpr(Position pos, String name) {
-	AmbExpr n = new PPAmbExpr_c(pos,name);
-        n = (AmbExpr)n.ext(extFactory.extPPAmbExpr());
-        n = (AmbExpr)n.del(delFactory.delPPAmbExpr());
+	AmbExpr n = new AJAmbExpr_c(pos,name);
+        n = (AmbExpr)n.ext(extFactory.extAJAmbExpr());
+        n = (AmbExpr)n.del(delFactory.delAJAmbExpr());
         return n;
     }
 
     public Field Field(Position pos, Receiver target, String name) {
-	Field n = new PPField_c(pos,target,name);
-        n = (Field)n.ext(extFactory.extPPField());
-        n = (Field)n.del(delFactory.delPPField());
+	Field n = new AJField_c(pos,target,name);
+        n = (Field)n.ext(extFactory.extAJField());
+        n = (Field)n.del(delFactory.delAJField());
         return n;
     }
 

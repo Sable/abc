@@ -6,7 +6,7 @@ import polyglot.ast.Expr;
 
 import abc.aspectj.visit.Supers;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 
 public interface IntertypeDecl extends ClassMember, MakesAspectMethods
 {
@@ -15,10 +15,10 @@ public interface IntertypeDecl extends ClassMember, MakesAspectMethods
     public TypeNode host();
     
   //  /** set the "this" parameter for dealing with hostSpecial */
-  //  public IntertypeDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts);
+  //  public IntertypeDecl thisParameter(AspectJNodeFactory nf, AJTypeSystem ts);
     
     /** create a reference to the "this" parameter for dealing with hostSpecial */
-    public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts);
+    public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts);
     
     /** data structure for recording "super" accesses that need to be dispatched */
     public Supers getSupers();

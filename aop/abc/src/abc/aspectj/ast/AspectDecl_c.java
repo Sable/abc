@@ -41,8 +41,8 @@ import polyglot.visit.AddMemberVisitor;
 
 import polyglot.ext.jl.ast.ClassDecl_c;
 
-import abc.aspectj.types.AspectJFlags;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJFlags;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AspectType;
 
 import abc.aspectj.visit.AJTypeBuilder;
@@ -72,7 +72,7 @@ public class AspectDecl_c extends ClassDecl_c
     public AspectDecl_c(Position pos, boolean is_privileged, Flags flags, String name,
                         TypeNode superClass, List interfaces, PerClause per, AspectBody body) {
 	     super(pos,
-	           AspectJFlags.aspectclass(is_privileged ? AspectJFlags.privilegedaspect(flags): flags),
+	           AJFlags.aspectclass(is_privileged ? AJFlags.privilegedaspect(flags): flags),
 	           name,superClass,interfaces,body);
          this.per = per;
     }
@@ -85,7 +85,7 @@ public class AspectDecl_c extends ClassDecl_c
 	* if it is a per-object associated aspect, it takes one parameter of type Object, otherwise none
 	*/
   
-    private MethodDecl aspectOf(NodeFactory nf,AspectJTypeSystem ts) {
+    private MethodDecl aspectOf(NodeFactory nf,AJTypeSystem ts) {
 		TypeNode tn = nf.CanonicalTypeNode(position(),type).type(type);
 		Expr nl = nf.NullLit(position()).type(type);
 		Block bl = nf.Block(position()).append(nf.Return(position(),nl));
@@ -106,7 +106,7 @@ public class AspectDecl_c extends ClassDecl_c
     /**
      * construct a dummy hasAspect method that always returns true 
      */ 
-    private MethodDecl hasAspect(NodeFactory nf, AspectJTypeSystem ts) {
+    private MethodDecl hasAspect(NodeFactory nf, AJTypeSystem ts) {
     	TypeNode bool = nf.CanonicalTypeNode(position(),ts.Boolean()).type(ts.Boolean());
     	Expr b = nf.BooleanLit(position(),true).type(ts.Boolean());
     	Block bl = nf.Block(position()).append(nf.Return(position(),b));
@@ -128,7 +128,7 @@ public class AspectDecl_c extends ClassDecl_c
      * add the aspectOf and hasAspect methods to the aspect class, but only if it is concrete
     */
     
-    public AspectDecl addAspectMembers(NodeFactory nf, AspectJTypeSystem ts) {
+    public AspectDecl addAspectMembers(NodeFactory nf, AJTypeSystem ts) {
 		if (!flags().isAbstract()) {
 				MethodDecl aspectOf = aspectOf(nf,ts);
 				MethodDecl hasAspect = hasAspect(nf,ts);
@@ -174,7 +174,7 @@ public class AspectDecl_c extends ClassDecl_c
 			aspectOfparams.add(ts.Object());
 		}
 		List aspectOfthrows = new ArrayList();
-		aspectOfthrows.add(((AspectJTypeSystem)ts).NoAspectBound());
+		aspectOfthrows.add(((AJTypeSystem)ts).NoAspectBound());
 	    hasAspectInstance = ts.methodInstance(position(),type,Flags.PUBLIC.Static(),ts.Boolean(),
                                             "hasAspect",hasAspectparams,new ArrayList());
         aspectOfInstance = ts.methodInstance(position(),type,Flags.PUBLIC.Static(),type,"aspectOf",
@@ -219,7 +219,7 @@ public class AspectDecl_c extends ClassDecl_c
 	public void prettyPrintHeader(CodeWriter w, PrettyPrinter tr) {
 		
 		    // need to overwrite, because ClassDecl_c only knows of interfaces and classes
-			w.write(AspectJFlags.clearAspectclass(flags).translate());
+			w.write(AJFlags.clearAspectclass(flags).translate());
 	        w.write("aspect ");
 
 			w.write(name);
@@ -322,7 +322,7 @@ public class AspectDecl_c extends ClassDecl_c
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         AspectDecl_c cd = this;
         List localMethods = visitor.methods();

@@ -18,7 +18,7 @@ import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.ast.HostConstructorCall_c;
 import abc.aspectj.types.AJContext;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.visit.AspectMethods;
 
@@ -44,7 +44,7 @@ public class AJConstructorCall_c
 	/** Disambiguate the expression. */
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
-		AspectJTypeSystem ts = (AspectJTypeSystem) ar.typeSystem();
+		AJTypeSystem ts = (AJTypeSystem) ar.typeSystem();
 		if (!ts.refHostOfITD(c,qualifier())) {		       
 				// this is an ordinary constructor call
 				return super.disambiguate(ar);
@@ -62,7 +62,7 @@ public class AJConstructorCall_c
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                       AspectJTypeSystem ts)
+                                       AJTypeSystem ts)
         {
                 if (constructorInstance() instanceof InterTypeConstructorInstance_c) {
                         InterTypeConstructorInstance_c itcd =

@@ -52,7 +52,7 @@ import abc.aspectj.ast.HostSpecial_c;
 import abc.aspectj.ast.AspectDecl_c;
 import abc.aspectj.ast.MakesAspectMethods;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
@@ -73,12 +73,12 @@ public class AspectMethods extends ContextVisitor {
     private int cflowdepth; // Put in this pass for lack of a better place for it
     
 	public AspectJNodeFactory nf;
-	public AspectJTypeSystem ts;
+	public AJTypeSystem ts;
 	
 	public AspectMethods(Job job, NodeFactory nf, TypeSystem ts) {
 		super(job, ts, nf);
 		this.nf = (AspectJNodeFactory) nf;
-		this.ts = (AspectJTypeSystem) ts;
+		this.ts = (AJTypeSystem) ts;
 		this.methods = new Stack();
 		this.formals = new Stack();
 		this.proceeds = new Stack();

@@ -15,13 +15,13 @@ import polyglot.types.*;
 import polyglot.ast.Typed;
 
 import abc.aspectj.ast.AdviceSpec;
-import abc.aspectj.types.AspectJFlags;
+import abc.aspectj.types.AJFlags;
 
 import soot.javaToJimple.jj.types.JjTypeSystem_c;
 
-public class AspectJTypeSystem_c 
+public class AJTypeSystem_c 
        extends JjTypeSystem_c 
-       implements AspectJTypeSystem {
+       implements AJTypeSystem {
     
     // Make sure we only load from class files
     public void initialize(LoadedClassResolver loadedResolver, ExtensionInfo extInfo)
@@ -50,10 +50,10 @@ public class AspectJTypeSystem_c
 	}
     
     // weeding out the wrong flags on aspects
-	protected final Flags ASPECT_FLAGS = AspectJFlags.privilegedaspect(AspectJFlags.aspectclass(TOP_LEVEL_CLASS_FLAGS));
+	protected final Flags ASPECT_FLAGS = AJFlags.privilegedaspect(AJFlags.aspectclass(TOP_LEVEL_CLASS_FLAGS));
  
 	public void checkTopLevelClassFlags(Flags f) throws SemanticException {
-		    if (AspectJFlags.isAspectclass(f)) {
+		    if (AJFlags.isAspectclass(f)) {
 		       if (!f.clear(ASPECT_FLAGS).equals(Flags.NONE))
 		       throw new SemanticException("Cannot declare aspect with flag(s) " +
 		                                   f.clear(ASPECT_FLAGS));
@@ -251,7 +251,7 @@ public class AspectJTypeSystem_c
 	}
 	
 	/** All flags allowed for a member class. */
-	 protected final Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AspectJFlags.ASPECTCLASS);
+	 protected final Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AJFlags.ASPECTCLASS);
 	 public void checkMemberClassFlags(Flags f) throws SemanticException {
 			if (! f.clear(MEMBER_CLASS_FLAGS).equals(Flags.NONE)) {
 			throw new SemanticException(
@@ -492,7 +492,7 @@ public class AspectJTypeSystem_c
 	   }	
 		
 	/** All flags allowed for a method. */
-	protected final Flags AJ_METHOD_FLAGS = AspectJFlags.intertype(AspectJFlags.interfaceorigin(METHOD_FLAGS));
+	protected final Flags AJ_METHOD_FLAGS = AJFlags.intertype(AJFlags.interfaceorigin(METHOD_FLAGS));
 
 	public void checkMethodFlags(Flags f) throws SemanticException {
 		  if (! f.clear(AJ_METHOD_FLAGS).equals(Flags.NONE)) {
@@ -501,7 +501,7 @@ public class AspectJTypeSystem_c
 		  f.clear(METHOD_FLAGS) + ".");
 	  		}
 
-		  if (f.isAbstract() && f.isPrivate() && ! AspectJFlags.isIntertype(f)) {
+		  if (f.isAbstract() && f.isPrivate() && ! AJFlags.isIntertype(f)) {
 		  throw new SemanticException(
 		  "Cannot declare method that is both abstract and private.");
 		  }

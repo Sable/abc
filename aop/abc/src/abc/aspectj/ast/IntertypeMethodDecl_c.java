@@ -31,13 +31,13 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 import polyglot.ext.jl.types.TypeSystem_c;
 
 import abc.aspectj.ExtensionInfo;
-import abc.aspectj.types.AspectJTypeSystem;
-import abc.aspectj.types.AspectJTypeSystem_c;
+import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.types.AJTypeSystem_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
 import abc.aspectj.types.AJContext;
-import abc.aspectj.types.AspectJFlags;
+import abc.aspectj.types.AJFlags;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.FieldSig;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -67,7 +67,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
                                  List throwTypes,
 	  	                 Block body) {	
 	
-	super(pos,AspectJFlags.intertype(flags),returnType,
+	super(pos,AJFlags.intertype(flags),returnType,
               name,formals,throwTypes,body);
 	this.host = host;
 	this.supers = new Supers();
@@ -115,7 +115,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		if (ht instanceof ParsedClassType) {
 			ParsedClassType pht = (ParsedClassType) ht;
 			
-			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
+			AJTypeSystem ts = (AJTypeSystem) am.typeSystem();
 			
 			Flags newFlags = flags();
 			if (pht.flags().isInterface()) {
@@ -192,7 +192,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * */
 	static public void conflictWithParentCheck(InterTypeMethodInstance_c mi) throws SemanticException {
 		ClassType pht = mi.container().toClass(); // host class
-		AspectJTypeSystem_c ts = (AspectJTypeSystem_c) mi.typeSystem();
+		AJTypeSystem_c ts = (AJTypeSystem_c) mi.typeSystem();
 		MethodInstance mj = null;
 		pht.methods().remove(mi);
 		try {
@@ -217,7 +217,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 
     /** Do the usual override check for newly declared methods. */
 	static public void overrideMethodCheck(InterTypeMethodInstance_c mi) throws SemanticException {
-		   AspectJTypeSystem_c ts = (AspectJTypeSystem_c) mi.typeSystem();
+		   AJTypeSystem_c ts = (AJTypeSystem_c) mi.typeSystem();
 		   for (Iterator j = mi.implemented().iterator(); j.hasNext(); ) {
 			   MethodInstance mj = (MethodInstance) j.next();
 			   if (! ts.isAccessible(mj, mi.container().toClass())) {
@@ -296,7 +296,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * introduce "this" as first parameter
 	 * @author Oege de Moor
 	 */
-	public IntertypeDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts) {	
+	public IntertypeDecl thisParameter(AspectJNodeFactory nf, AJTypeSystem ts) {	
 		if (!flags().isStatic()) {
 			// create the new list of formals
 			TypeNode tn = nf.CanonicalTypeNode(position,thisParamInstance.type());
@@ -327,7 +327,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * create a reference to the "this" parameter
 	 * @author Oege de Moor
 	 */
-    public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+    public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts) {
     	Local x = nf.Local(position,thisParamInstance.name());
     	x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
     	return x;
@@ -467,7 +467,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         visitor.popIntertypeDecl();
         return ((IntertypeMethodDecl_c) this.accessChange()).thisParameter(nf,ts);

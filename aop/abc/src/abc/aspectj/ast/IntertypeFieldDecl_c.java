@@ -29,7 +29,7 @@ import polyglot.ext.jl.ast.FieldDecl_c;
 
 import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.visit.*;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
@@ -103,7 +103,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {
 			// need to make a copy because the container has changed
-			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
+			AJTypeSystem ts = (AJTypeSystem) am.typeSystem();
 			
 			// System.out.println("add field "+name() + " to "+ ht + " from " + fieldInstance().container());
 			InterTypeFieldInstance_c fi = 
@@ -177,7 +177,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * create a reference to the "this" parameter
 	 * @author Oege de Moor
 	 */
-	public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts) {
 		Local x = nf.Local(position,thisParamInstance.name());
 		x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
 		return x;
@@ -190,7 +190,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * a parameter. TODO: If it is static, however, it does not have any parameters.
 	 * @author Oege de Moor
 	 */
-	public MethodDecl initMethod(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public MethodDecl initMethod(AspectJNodeFactory nf, AJTypeSystem ts) {
 		String name = UniqueID.newID("init$"+name());
 		
 		List formals = new LinkedList();
@@ -237,7 +237,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * not in the originating aspect.
 	 * @author Oege de Moor
 	 */
-	public IntertypeFieldDecl liftInit(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public IntertypeFieldDecl liftInit(AspectJNodeFactory nf, AJTypeSystem ts) {
 		List args = new LinkedList(); 
 		if (!(flags().isStatic())) {
 			Special targetThisRef = nf.Special(position(),Special.THIS,host);
@@ -350,7 +350,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         IntertypeFieldDecl_c itfd = this;
         visitor.popIntertypeDecl();

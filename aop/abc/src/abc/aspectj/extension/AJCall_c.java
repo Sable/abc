@@ -27,7 +27,7 @@ import abc.aspectj.ast.HostSpecial_c;
 import abc.aspectj.ast.IntertypeDecl;
 import abc.aspectj.ast.MakesAspectMethods;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 
@@ -54,7 +54,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
    	* @param argTypes list of <code>Type</code>s of the arguments
    	*/
   	protected Node typeCheckNullTarget(TypeChecker tc, List argTypes) throws SemanticException {
-	  AspectJTypeSystem ts = (AspectJTypeSystem) tc.typeSystem();
+	  AJTypeSystem ts = (AJTypeSystem) tc.typeSystem();
 	  AspectJNodeFactory nf = (AspectJNodeFactory) tc.nodeFactory();
 	  AJContext c = (AJContext) tc.context();
 
@@ -107,7 +107,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
    */
   public Node typeCheck(TypeChecker tc) throws SemanticException {
   	AJContext ajc = (AJContext) tc.context();
-  	AspectJTypeSystem ts = (AspectJTypeSystem) tc.typeSystem();
+  	AJTypeSystem ts = (AJTypeSystem) tc.typeSystem();
   	if (ajc.inInterType() && 
   	    ajc.hostClass().flags().isInterface() &&
   	    target instanceof HostSpecial_c) {
@@ -170,7 +170,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                       AspectJTypeSystem ts)
+                                       AJTypeSystem ts)
         {
                 Call c = this;
                 if (c.methodInstance() instanceof InterTypeMethodInstance_c) {

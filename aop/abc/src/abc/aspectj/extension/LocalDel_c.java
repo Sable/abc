@@ -25,7 +25,7 @@ public class LocalDel_c extends JL_c implements MakesAspectMethods,
     
     
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         if (visitor.isAdvice()) {
             Local m = (Local) node();
@@ -69,10 +69,10 @@ public class LocalDel_c extends JL_c implements MakesAspectMethods,
     public void leaveAspectReflectionInspect(AspectReflectionInspect v) {
     }
 
-    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AspectJTypeSystem ts) {
+    public void enterAspectReflectionRewrite(AspectReflectionRewrite v, AJTypeSystem ts) {
     }
 
-    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AspectJNodeFactory nf) {
+    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v, AspectJNodeFactory nf) {
 	if(!v.inspectingLocals()) return node();
 
 	Local m=(Local) node();

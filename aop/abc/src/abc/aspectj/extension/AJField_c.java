@@ -7,10 +7,10 @@ import polyglot.visit.*;
 
 import polyglot.ext.jl.ast.Field_c;
 
-public class PPField_c extends Field_c implements Field
+public class AJField_c extends Field_c implements Field
 {
 
-  public PPField_c(Position pos, Receiver target, String name) {
+  public AJField_c(Position pos, Receiver target, String name) {
     super(pos,target,name);
   }
 

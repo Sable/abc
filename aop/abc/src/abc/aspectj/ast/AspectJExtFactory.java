@@ -82,8 +82,8 @@ public interface AspectJExtFactory extends ExtFactory
     Ext extDotDotFormalPattern();
     Ext extTypeFormalPattern();
     Ext extThrowsPattern();
-    Ext extPPAmbExpr();
-    Ext extPPField();
+    Ext extAJAmbExpr();
+    Ext extAJField();
     Ext extFixCharLit();
     Ext extProceedCall();
     Ext extArgPattern();

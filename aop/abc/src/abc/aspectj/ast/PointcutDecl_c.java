@@ -30,7 +30,7 @@ import polyglot.visit.TypeChecker;
 import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.ast.Pointcut;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AspectType;
 import abc.aspectj.types.PointcutInstance_c;
 
@@ -124,7 +124,7 @@ public class PointcutDecl_c extends MethodDecl_c
 					  m.add(ts.unknownType(position()));
 			    }
 
-				MethodInstance mi = ((AspectJTypeSystem)ts).pointcutInstance(position(), ts.Object(),
+				MethodInstance mi = ((AJTypeSystem)ts).pointcutInstance(position(), ts.Object(),
 													  Flags.NONE,
 													  ts.unknownType(position()),
 													  name, l, m);
@@ -148,7 +148,7 @@ public class PointcutDecl_c extends MethodDecl_c
 				flags = flags.Public().Abstract();
 			}
 		
-			return ((AspectJTypeSystem)ts).pointcutInstance(position(),
+			return ((AJTypeSystem)ts).pointcutInstance(position(),
 										   ct, flags, returnType.type(), name,
 										   argTypes,excTypes);
 		}
@@ -245,7 +245,7 @@ public class PointcutDecl_c extends MethodDecl_c
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         return this;
     }

@@ -20,7 +20,7 @@ import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
 
 import abc.aspectj.extension.AJClassBody_c;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcClass;
@@ -33,12 +33,12 @@ public class JarCheck extends OncePass {
 
 	static String injar = "while weaving into jarred class: ";
 	
-	AspectJTypeSystem ts;
+	AJTypeSystem ts;
 	Job job;
 
 	public JarCheck(ID id, Job job, TypeSystem ts) {
 		super(id);
-		this.ts = (AspectJTypeSystem) ts;
+		this.ts = (AJTypeSystem) ts;
 		this.job = job;
 	}
 

@@ -30,7 +30,7 @@ import polyglot.types.*;
 import polyglot.ext.jl.ast.ConstructorDecl_c;
 import polyglot.ext.jl.ast.Node_c;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
@@ -99,7 +99,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {
-		   AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
+		   AJTypeSystem ts = (AJTypeSystem) am.typeSystem();
 		   ConstructorInstance ci = ts.interTypeConstructorInstance(position(),identifier,
 		   							(ClassType) constructorInstance().container(),
 		   							(ClassType) ht,
@@ -202,7 +202,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	* mangling by giving it an extra parameter
 	* 
 	*/
-	public IntertypeConstructorDecl accessChange(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public IntertypeConstructorDecl accessChange(AspectJNodeFactory nf, AJTypeSystem ts) {
 		if (flags().isPrivate() || flags().isPackage()){
 			ParsedClassType ht = (ParsedClassType) host.type();
 			ht.fields().remove(itConstructorInstance); // remove old instance from host type    		
@@ -220,7 +220,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	  * create a reference to the "this" parameter
 	  * @author Oege de Moor
 	*/
-	public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts) {
 		Local x = nf.Local(position,thisParamInstance.name());
 		x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
 		return x;
@@ -263,7 +263,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	 * 
 	 * @author Oege de Moor
 	 */
-	public IntertypeConstructorDecl liftMethods(AspectJNodeFactory nf, AspectJTypeSystem ts, List methodDecls) {
+	public IntertypeConstructorDecl liftMethods(AspectJNodeFactory nf, AJTypeSystem ts, List methodDecls) {
 		ConstructorCall ccall = findCCall();
 		Block b = nf.Block(position);
 		if (ccall != null) {
@@ -323,7 +323,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	 * is appended onto the last parameter.
 	 * @author Oege de Moor
 	 */
-	private Expr genArgMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, Expr Ei,List methodDecls) {
+	private Expr genArgMethod(AspectJNodeFactory nf, AJTypeSystem ts, Expr Ei,List methodDecls) {
 		String name = UniqueID.newID("arg$"+name());
 		
 		// build the formals: just a copy of the existing formals
@@ -405,7 +405,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	 * generate a static method for the body, in the originating
 	 * aspect. 
 	 */
-	private Call genBodyMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, List stmts, List methodDecls){
+	private Call genBodyMethod(AspectJNodeFactory nf, AJTypeSystem ts, List formals, List stmts, List methodDecls){
 		String name = UniqueID.newID("new$"+name());
 		List newFormals = buildFormals(nf);
 
@@ -664,7 +664,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                       AspectJTypeSystem ts)
+                                       AJTypeSystem ts)
         {
                 visitor.popIntertypeDecl();
                 IntertypeConstructorDecl_c itcd = (IntertypeConstructorDecl_c) accessChange(nf, ts);

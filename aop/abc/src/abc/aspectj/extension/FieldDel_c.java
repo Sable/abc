@@ -15,7 +15,7 @@ public class FieldDel_c extends JL_c implements MakesAspectMethods
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         Field f = (Field) node();
 

@@ -22,7 +22,7 @@ import polyglot.types.FieldInstance;
 import polyglot.types.Flags;
 
 import abc.aspectj.ast.AspectJNodeFactory;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 
 import abc.weaving.aspectinfo.AbcFactory;
 
@@ -56,7 +56,7 @@ public class Supers {
 					}
 	}
     
-	public Call superCall(AspectJNodeFactory nf, AspectJTypeSystem ts, Call c, ClassType target, Expr targetThis) {
+	public Call superCall(AspectJNodeFactory nf, AJTypeSystem ts, Call c, ClassType target, Expr targetThis) {
 		String supername = UniqueID.newID("super$"+c.name());
 		MethodInstance mi = c.methodInstance();
 		superCalls.add(new SuperCall(supername,mi,target,c.position()));
@@ -123,7 +123,7 @@ public class Supers {
 					 }
 	 }
 
-   public Call superFieldGetter(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
+   public Call superFieldGetter(AspectJNodeFactory nf, AJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
 	   	String supername = UniqueID.newID("get$super$"+f.name());
 	   	FieldInstance fi = f.fieldInstance();
 	   	superFieldGets.add(new SuperFieldGetter(supername,fi,target,f.position()));
@@ -139,7 +139,7 @@ public class Supers {
 	   return c;
    }
 
-   public Call superFieldSetter(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f, 
+   public Call superFieldSetter(AspectJNodeFactory nf, AJTypeSystem ts, Field f, 
                                 ClassType target, Expr targetThis,  Expr value) {
 		 String supername = UniqueID.newID("set$super$"+f.name());
 		 FieldInstance fi = f.fieldInstance();
@@ -209,7 +209,7 @@ public class Supers {
 					}
 	}
     
-	public Call qualThis(AspectJNodeFactory nf, AspectJTypeSystem ts, ClassType target, Expr targetThis, ClassType qualifier) {
+	public Call qualThis(AspectJNodeFactory nf, AJTypeSystem ts, ClassType target, Expr targetThis, ClassType qualifier) {
 		String qualName = qualifier.fullName().replace('.','$');
 		String qualThisName = UniqueID.newID(qualName + "$this");
 		Call c = nf.Call(targetThis.position(),targetThis,qualThisName);

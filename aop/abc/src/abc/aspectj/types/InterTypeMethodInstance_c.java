@@ -91,7 +91,7 @@ public class InterTypeMethodInstance_c
 	}
 
 	/** fix up the mangled instance to agree with super type */
-	public void setMangle(AspectJTypeSystem ts) {
+	public void setMangle(AJTypeSystem ts) {
 		if (container.superType() != null) {
 			if (container.superType().toReference().hasMethod(this)) {
 				MethodInstance superInstance = null;

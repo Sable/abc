@@ -5,7 +5,7 @@ import polyglot.types.ClassType;
 import polyglot.types.MemberInstance;
 import polyglot.types.Flags;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 
 /**
  * @author Oege de Moor
@@ -17,7 +17,7 @@ public interface InterTypeMemberInstance extends MemberInstance {
 	ClassType origin(); 
 	
 	/** set the mangled instance */
-	void setMangle(AspectJTypeSystem ts);
+	void setMangle(AJTypeSystem ts);
 	
 	Flags origFlags();
 	

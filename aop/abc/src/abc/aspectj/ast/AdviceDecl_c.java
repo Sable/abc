@@ -52,7 +52,7 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.ast.AdviceFormal_c;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 
 import abc.aspectj.visit.AspectInfoHarvester;
@@ -187,7 +187,7 @@ public class AdviceDecl_c extends MethodDecl_c
     }
     
     public MethodDecl proceedDecl(AspectJNodeFactory nf,
-                                                                AspectJTypeSystem ts) {
+                                                                AJTypeSystem ts) {
     if (spec instanceof Around) {
     	TypeNode tn = (TypeNode) returnType().copy();
 		List formals = new LinkedList(formals());
@@ -236,7 +236,7 @@ public class AdviceDecl_c extends MethodDecl_c
     }
     
     public MethodDecl methodDecl(AspectJNodeFactory nf,
-    															AspectJTypeSystem ts) {
+    															AJTypeSystem ts) {
     	List newformals = new LinkedList(formals());
     	List newformalTypes = new LinkedList(formals());
     	if (retval != null) {
@@ -279,19 +279,19 @@ public class AdviceDecl_c extends MethodDecl_c
     }
 
    
-    private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
+    private LocalInstance thisJoinPointInstance(AJTypeSystem ts) {
     	if (thisJoinPointInstance==null)
     		thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
     	return thisJoinPointInstance;
     }
     
-	private LocalInstance thisJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+	private LocalInstance thisJoinPointStaticPartInstance(AJTypeSystem ts) {
 		 if (thisJoinPointStaticPartInstance==null)
 			 thisJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisJoinPointStaticPart");
 		 return thisJoinPointStaticPartInstance;
 	 }
 	 
- 	private LocalInstance thisEnclosingJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+ 	private LocalInstance thisEnclosingJoinPointStaticPartInstance(AJTypeSystem ts) {
 		if (thisEnclosingJoinPointStaticPartInstance==null)
 			thisEnclosingJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,
 			                                                            ts.JoinPointStaticPart(),"thisEnclosingJoinPointStaticPart");
@@ -308,7 +308,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	public Context enterScope(Node child, Context c) {
 		if (child==body) {
 			AJContext ajc = (AJContext) child.enterScope(c);
-			 AspectJTypeSystem ts = (AspectJTypeSystem)ajc.typeSystem();
+			 AJTypeSystem ts = (AJTypeSystem)ajc.typeSystem();
 			 LocalInstance jp = thisJoinPointInstance(ts);
 			 ajc.addVariable(jp);
 			 LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
@@ -370,7 +370,7 @@ public class AdviceDecl_c extends MethodDecl_c
 			  m.add(ts.unknownType(position()));
 			}
 
-			MethodInstance mi = ((AspectJTypeSystem)ts).adviceInstance(position(), ts.Object(),
+			MethodInstance mi = ((AJTypeSystem)ts).adviceInstance(position(), ts.Object(),
 												  Flags.NONE,
 												  ts.unknownType(position()),
 												  name, l, m, spec);
@@ -400,7 +400,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		}
 	
 	
-		return ((AspectJTypeSystem)ts).adviceInstance(position(),
+		return ((AJTypeSystem)ts).adviceInstance(position(),
 								       ct, flags, returnType.type(), name,
 								       argTypes, excTypes,spec);
 	}
@@ -497,7 +497,7 @@ public class AdviceDecl_c extends MethodDecl_c
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                   AspectJTypeSystem ts)
+                                   AJTypeSystem ts)
     {
         MethodDecl md = visitor.proceed();
 
@@ -519,7 +519,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	canRewriteThisJoinPoint=v.leaveAdvice();
     }
 
-    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AspectJTypeSystem ts) {
+    public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AJTypeSystem ts) {
 	v.enterAdvice(canRewriteThisJoinPoint ? thisJoinPointStaticPartInstance(ts) : null);
     }
 

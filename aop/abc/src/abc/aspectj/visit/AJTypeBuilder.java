@@ -20,7 +20,7 @@ import polyglot.types.ParsedClassType;
 
 import polyglot.visit.TypeBuilder;
 
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 
 /**
  * @author oege
@@ -50,7 +50,7 @@ public class AJTypeBuilder extends TypeBuilder {
 	 
 	/** cloned from TypeBuilder.newClass */
 	protected ParsedClassType newAspect(Position pos, Flags flags, String name, int perKind) {
-		AspectJTypeSystem ts = (AspectJTypeSystem) typeSystem();
+		AJTypeSystem ts = (AJTypeSystem) typeSystem();
 
 		ParsedClassType ct = ts.createAspectType(this.job.source(),perKind);
 

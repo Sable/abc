@@ -29,7 +29,7 @@ import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.IntertypeDecl;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJContext;
-import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectMethods;
 
 
@@ -115,7 +115,7 @@ public class HostSpecial_c extends Special_c implements Special, MakesAspectMeth
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
-                                       AspectJTypeSystem ts)
+                                       AJTypeSystem ts)
         {
                 IntertypeDecl id = visitor.intertypeDecl();
                 if (kind() == Special.THIS) {
