@@ -13,4 +13,15 @@ public class Within extends AbstractConditionPointcutHandler {
     public ClassnamePattern getPattern() {
 	return pattern;
     }
+
+
+    public boolean matchesAt(SootClass cls,SootMethod method) {
+	if(getPattern()==null) return true;
+	return getPattern().matchesClass(cls);
+    }
+
+    public String toString() {
+	return "within("+pattern+")";
+    }
+    
 }
