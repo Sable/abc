@@ -147,14 +147,6 @@ Illegal arguments: Unknown option -deprecation
 FAIL: Test 951: "bugs/deprecated/-deprecation not working?" failed.
 
 
-Running test 982: abctests/bugs/needing declare parents to resolve inner class reference
-Commandline: abc -d abctests/bugs abctests/bugs/DeclareParentsInner.java 
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at abctests/bugs/DeclareParentsInner.java:8,13-18: Could not find type "Inner".
-FAIL: Test 982: "abctests/bugs/needing declare parents to resolve inner class reference" failed.
-
-
 Running test 983: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses.jar abctests/bugs/declareparentsbinary/Aspect.java 
 File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClass.class not found, skipping...

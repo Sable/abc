@@ -61,9 +61,6 @@
             <message line="6" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
-       <compile files="DeclareParentsInner.java"></compile>
-    </ajc-test>
 <ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
        <compile files="BinaryClasses.jar,Aspect.java"></compile>
        <run class="BinaryClass"></run>

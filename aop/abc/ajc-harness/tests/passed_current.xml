@@ -4951,6 +4951,9 @@
 <ajc-test title="problem with byte constants" num="981" dir="abctests/bugs">
        <compile files="ByteProblem.java"></compile>
     </ajc-test>
+<ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
+       <compile files="DeclareParentsInner.java"></compile>
+    </ajc-test>
 <ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
         <compile files="DeclareParentsRef.java"></compile>
     </ajc-test>
