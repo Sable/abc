@@ -31,9 +31,6 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
 	Stmt current=stmtMP.getStmt();
 	Stmt next=stmtMP.getNextStmt();
 
-	System.out.println("current:"+current);
-	System.out.println("next:"+next);
-
 	if(!(current instanceof AssignStmt)) return null;
 	AssignStmt as = (AssignStmt) current;
 	Value rhs = as.getRightOp();

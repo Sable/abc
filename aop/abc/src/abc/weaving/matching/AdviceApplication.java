@@ -111,7 +111,6 @@ public abstract class AdviceApplication {
 			current!=null;
 			current=next) {
 			next=(Stmt) stmtsChain.getSuccOf(current);
-			System.out.println("at: "+current);
 			doStatement(info,mal,sootCls,method,new StmtMethodPosition(current));
 			doStatement(info,mal,sootCls,method,new NewStmtMethodPosition(current,next));
 		    }
