@@ -9375,4 +9375,8 @@
          <compile files="Dollar$Method3.java"/>
          <run class="Dollar$Method3"/>
     </ajc-test>
+    <ajc-test num="1013" dir="abctests/bugs"
+         title="circular pointcuts">
+         <compile files="TestAspect.java"/>
+    </ajc-test>
 </suite>
