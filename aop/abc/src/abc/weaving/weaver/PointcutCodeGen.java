@@ -147,11 +147,12 @@ public class PointcutCodeGen {
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
 	if ( advicespec instanceof BeforeAdvice ) {
 	    WeavingContext wc=adviceappl.advice.makeWeavingContext();
-            BeforeWeaver.doWeave(method,localgen,
+	                BeforeWeaver.doWeave(method,localgen,
 	                         adviceappl.shadowpoints,
 			         adviceappl.residue,
 				 adviceappl.advice,
 				 wc);
+	    
         }
         else if ( advicespec instanceof AfterReturningAdvice ) {
 	    WeavingContext wc=adviceappl.advice.makeWeavingContext();

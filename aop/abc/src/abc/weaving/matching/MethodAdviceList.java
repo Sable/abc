@@ -17,7 +17,15 @@ import abc.weaving.aspectinfo.AbstractAdviceDecl;
 public class MethodAdviceList {
 
     private static void addWithPrecedence(List/*<AdviceApplication>*/ aalist,
-				     AdviceApplication aa) {
+					  AdviceApplication aa) {
+
+	// we want to sort the list in reverse order of precedence, so that
+	// highest precedence advice gets applied *last*, i.e. outermost.
+	// So we first look through the existing list until we get to a point
+	// where the next piece of advice has higher precedence than the 
+	// one we are adding. Before that advice we insert the new one,
+	// and then go through the rest of the list checking there is no
+	// circularity.
 
 	ListIterator it=aalist.listIterator();
 	while(it.hasNext()) {

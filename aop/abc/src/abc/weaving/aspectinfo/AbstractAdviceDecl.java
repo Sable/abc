@@ -131,8 +131,8 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	// a quick first pass to assist in separating out the major classes of advice
 	// consider delegating this
 	int aprec=getPrecNum(a),bprec=getPrecNum(b);
-	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
-	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
+	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
 
 	// FIXME : what happens when we merge cflow stacks?
 	if(!a.getAspect().getName().equals(b.getAspect().getName()))
@@ -150,10 +150,10 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	    ("case not handled when comparing "+a+" and "+b);
     }
     private static int getPrecNum(AbstractAdviceDecl d) {
-	if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 4 : 0;
-	else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 3 : 1;
-	else if(d instanceof PerThisSetup) return 0;
-	else if(d instanceof PerTargetSetup) return 0;
+	if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 0 : 4;
+	else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 1 : 3;
+	else if(d instanceof PerThisSetup) return 4;
+	else if(d instanceof PerTargetSetup) return 4;
 	else if(d instanceof AdviceDecl) return 2;
 	else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
 					     d.getPosition());

@@ -185,7 +185,9 @@ public class ShadowPointsSetter {
 
     // Now deal with end point.  Rewire all returns to end of method body.
     // Insert a nop just before the return at end of body.
-    Stmt endnop = Restructure.restructureReturn(method);
+    Stmt retnop = Restructure.restructureReturn(method);
+    Stmt endnop = Jimple.v().newNopStmt();
+    units.insertAfter(endnop,retnop);
     return new ShadowPoints(method,startnop,endnop);
   } // method restructureBody 
     

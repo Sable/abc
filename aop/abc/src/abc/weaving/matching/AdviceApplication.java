@@ -49,6 +49,7 @@ public abstract class AdviceApplication {
 		this.row=slpTag.startLn();
 		this.col=slpTag.startPos();
 	    } else {
+		System.err.println("getting SJPInfo for a untagged source line "+host);
 		this.row=-1;
 		this.col=-1;
 	    }
