@@ -3,6 +3,7 @@ package abc.main;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ArrayList;
+import java.text.DecimalFormat;
 import polyglot.frontend.Stats;
 import polyglot.frontend.Pass;
 
@@ -53,6 +54,14 @@ public class AbcTimer {
       laststopped = now;
     }
 
+  /** Compute percentage of total, make a string with two sig digits
+   */
+  private static String percent(long passtime)
+    { double percent = passtime * 100.0 / total; 
+      DecimalFormat percfmt = new DecimalFormat("00.000");
+      return("[ " + percfmt.format(percent) + "% ] ");
+    }
+
   /** Print out report of all phases timed so far. Debug.v().abcTimer 
    *  must be set to true for report to be printed.
    */
@@ -67,7 +76,7 @@ public class AbcTimer {
 	    { TimerPhase next = (TimerPhase) i.next();
               String name = next.name;
 	      long time = next.time;
-	      System.err.println(name + ":  " + time );
+	      System.err.println(percent(time) + name + ":  " + time  );
 	    }
 	  System.err.println("========================================"); 
 	  System.err.println("Breakdown for polyglot phases: ");
@@ -79,7 +88,8 @@ public class AbcTimer {
 	      String name = pass.name();
 	      long inclusive_time = polyglot_stats.passTime(id,true);
 	      long exclusive_time = polyglot_stats.passTime(id,false);
-	      System.err.println(name + ":  " + inclusive_time);
+	      System.err.println(percent(inclusive_time) + name + ":  " 
+		                     + inclusive_time);
 	    }
 	  System.err.println("========================================"); 
           System.err.println("Time spent in Soot resolver: " + 
