@@ -179,7 +179,7 @@ public class GlobalAspectInfo {
 	Iterator pi = matching_pcds.iterator();
 	while (pi.hasNext()) {
 	    PointcutDecl p = (PointcutDecl)pi.next();
-	    if (((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
+	    if (!p.isAbstract() && ((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
 		return p;
 	    }
 	}
