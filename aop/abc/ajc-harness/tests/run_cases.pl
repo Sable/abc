@@ -170,7 +170,7 @@ sub do_case {
      system("cat tmp.output >> failed.output");
      system("cat tmp.xml >> tmp.output");
      system("mv tmp.output $dir/$filename");
-     system("echo '*.output' > $dir/.cvsignore");
+     system("echo '*.output' > $dir/.cvsignore") unless -f "$dir/.cvsignore";
      $failed++;
      print FAILED "$xmlpart\n";
      if ($checksMessage) {
