@@ -251,6 +251,10 @@
         <compile files="BoundaryNums.java"></compile>
         <run class="BoundaryNums"></run>
     </ajc-test>
+<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
+        <compile files="NestedInners.java"></compile>
+        <run class="NestedInners"></run>
+    </ajc-test>
 <ajc-test title="?: expressions should typecheck in interesting ways" keywords="from-java" dir="pureJava">
         <compile files="TriTestTypecheck.java"></compile>
         <run class="TriTestTypecheck"></run>
@@ -2693,6 +2697,10 @@
             <message line="75" kind="error"></message>
             <message line="81" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="final local variables may be accessed from inner class" pr="739" keywords="from-resolved_105,purejava" dir="pureJava">
+        <compile files="LocalsFromInnerCP.java"></compile>
+        <run class="LocalsFromInnerCP"></run>
     </ajc-test>
 <ajc-test title="missing package identifier" pr="723" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="MissingPackageCE.java">
