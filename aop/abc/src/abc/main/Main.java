@@ -148,8 +148,9 @@ public class Main {
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
-                abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
-                abc.weaving.weaver.CflowIntraAggregate.reset();
+        abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
+        abc.weaving.weaver.CflowIntraAggregate.reset();
+        abc.soot.util.LocalGeneratorEx.reset();
 
         v=null;
     }

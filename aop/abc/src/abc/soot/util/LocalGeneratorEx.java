@@ -25,8 +25,10 @@
  */
 package abc.soot.util;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import soot.Body;
@@ -48,7 +50,27 @@ public class LocalGeneratorEx extends LocalGenerator {
 	}
 	private Body body;
 
-	private int nextLocal=0;
+	//private int nextLocal=0;
+	
+	private static Map /*Body => ID*/ idMap=new HashMap();
+	public static void reset() {
+		idMap.clear();
+	}
+	private static class ID {
+		public int getNextID() {
+			return id++;
+		}
+		private int id=0;
+	}
+	private int getNextID() {
+		ID id=(ID)idMap.get(body);
+		if (id==null) {
+			id=new ID();
+			idMap.put(body,id);
+		}		
+		return id.getNextID();
+	}
+	
         /**
          *  Generate a local with a given type, using a suggested name.
          *  If that name is already in use, then try using name0, name1 etc
@@ -57,11 +79,15 @@ public class LocalGeneratorEx extends LocalGenerator {
          */
 	public Local generateLocal(soot.Type type, String suggestedName){
 		//int i=0;
-		String name=suggestedName;
+		/*String name=suggestedName;
 		Set localNames=getLocalNames();
 		while (localNames.contains(name)) {
 			name=suggestedName + (++nextLocal);
-		}
+		}*/
+		String name=suggestedName + "$" + getNextID();
+		//if (bodyContainsLocal(name))
+		//	throw new RuntimeException("Name already exists: " + name);
+		
 		return createLocal(name, type);
 	}
 
@@ -81,7 +107,7 @@ public class LocalGeneratorEx extends LocalGenerator {
 		}
 		return false;
 	}
-	private Set localNames=new HashSet();
+	/*private Set localNames=new HashSet();
 	private Set getLocalNames() {
 		localNames.clear();
 		Iterator it = body.getLocals().iterator();
@@ -89,5 +115,5 @@ public class LocalGeneratorEx extends LocalGenerator {
 			localNames.add(((soot.Local)it.next()).getName());
 		}
 		return localNames;
-	}
+	}*/
 }
