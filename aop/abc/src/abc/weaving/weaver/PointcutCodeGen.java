@@ -1,6 +1,7 @@
 package abc.weaving.weaver;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.Hashtable;
 
 import soot.Body;
 import soot.Local;
@@ -29,6 +30,7 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 
 public class PointcutCodeGen {
+   public static Hashtable/*<SootMethod,Local>*/ thisLocalMap=new Hashtable();
 
    private static void debug(String message)
      { if (abc.main.Debug.v().pointcutCodeGen) 
