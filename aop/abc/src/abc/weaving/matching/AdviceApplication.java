@@ -7,6 +7,7 @@ import soot.tagkit.SourceLnPosTag;
 import soot.tagkit.Host;
 
 import abc.soot.util.InPreinitializationTag;
+import abc.soot.util.Restructure;
 
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
@@ -156,7 +157,8 @@ public abstract class AdviceApplication {
 	    // This is a call into a utility method in the weaver; really that method ought
 	    // to be somewhere else and we shouldn't need to construct the ShadowPointsSetter object 
 	    // at all
-	    Stmt thisOrSuper=new ShadowPointsSetter().findInitStmt(method.getActiveBody().getUnits());
+	    Stmt thisOrSuper=
+	      Restructure.findInitStmt(method.getActiveBody().getUnits());
 
 	    Iterator stmtsIt=method.getActiveBody().getUnits().iterator();
 	    while(stmtsIt.hasNext()) {
