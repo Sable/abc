@@ -193,7 +193,8 @@ public class AbcExtension
 			//              - Get the stack/counter for the current thread for
 			//                each of these lazily
 			//                to avoid repeated currentThread()s
-			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()), "jop.dae");
+		        // This MUST run before the null check elim
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()), "jop.nullcheckelim");
 			// Before running the cflow intraprocedural, need to aggregate cflow
 			// vars
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowaggregate", CflowIntraAggregate.v()), "jop.cflowintra");
