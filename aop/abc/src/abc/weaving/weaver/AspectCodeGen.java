@@ -693,7 +693,7 @@ public class AspectCodeGen {
 
         // generate the locals needed
         LocalGeneratorEx lg = new LocalGeneratorEx(b);
-        Local theObject = lg.generateLocal(acl.getType(), "theObject");
+        Local theObject = lg.generateLocal(RefType.v("java.lang.Object"), "theObject");
         Local castedArg = lg.generateLocal(inter.getType(), "castedArg");
         Local canHavePer = lg.generateLocal(BooleanType.v(), "canHavePer");
         Local perInstance = lg.generateLocal(acl.getType(), "perInstance");
