@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL; 
- * if not, write to the Free Software Foundation, Inc., 
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -27,20 +27,20 @@ package abc.main;
 public class Debug {
     public static Debug v;
     static {
-	try {
-	    v=(Debug) 
-		(ClassLoader.getSystemClassLoader()
-		.loadClass("abc.main.MyDebug")
-		 .newInstance());
-	} catch(ClassNotFoundException e) {
-	    v=new Debug();
-	} catch(Exception e) {
-	    System.err.println("Unknown failure trying to instantiate custom debug instance");
-	    v=new Debug();
-	}
+        try {
+            v=(Debug)
+                (ClassLoader.getSystemClassLoader()
+                .loadClass("abc.main.MyDebug")
+                 .newInstance());
+        } catch(ClassNotFoundException e) {
+            v=new Debug();
+        } catch(Exception e) {
+            System.err.println("Unknown failure trying to instantiate custom debug instance");
+            v=new Debug();
+        }
     }
     public static Debug v() {
-	return v;
+        return v;
     }
 
 
@@ -61,9 +61,7 @@ public class Debug {
     public boolean showPointcutMatching=false;
 
     public boolean debugPointcutNormalization=false;
-    
-    // information about whether nested comments should be allowed
-    public boolean allowNestedComments = false;
+
 
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher
@@ -72,7 +70,7 @@ public class Debug {
 
     // Weaver
     public boolean testITDsOnly = false; // will skip advice weaving
-    
+
     public boolean weaverDriver=false;  // main driver for weaver
     public boolean unweaver=false;  // saving and restoring jimple bodies
     public boolean cflowAnalysis=false;  // analysis of cflows
@@ -88,7 +86,7 @@ public class Debug {
     public boolean afterThrowingWeaver=false;
     public boolean aroundWeaver=false;
     public boolean restructure=false; // restructuring utilities
-    public boolean abcTimer=true;
+    public boolean abcTimer=false;
     public boolean polyglotTimer=false;
     public boolean sootResolverTimer=false;
     public boolean timerTrace=false; // print time of phases as they run
@@ -100,7 +98,7 @@ public class Debug {
 
     public boolean doValidate=false;  // validate jimple
     // dump CFG as dot plot, doValidate must also be true to enable it
-    public boolean doValidateDumpCFG=false; 
+    public boolean doValidateDumpCFG=false;
 
 
     public boolean dontCheckExceptions=false;
@@ -110,7 +108,10 @@ public class Debug {
     public boolean debugCflowSharing=false;
     public boolean debugPointcutUnification=false;
 
-    // Config stuff - to be moved, probably (FIXME)
+    // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean java13=false; // java 1.3 semantics
+    // information about whether nested comments should be allowed
+    public boolean allowNestedComments = false;
+    public boolean verbose = false;
 }
