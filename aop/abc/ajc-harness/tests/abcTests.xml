@@ -9216,5 +9216,12 @@
 	<run class="QualThis"/>
     </ajc-test>  
 
+    <ajc-test num="988" dir="abctests/bugs"
+        title="separate compilation and references to compile time constants">
+        <compile files="ConstantInit.java"/>
+        <compile includeClassesDir="true" files="ConstantUse.java"/>
+        <run class="ConstantUse"/>
+    </ajc-test>
+
 </suite>
 
