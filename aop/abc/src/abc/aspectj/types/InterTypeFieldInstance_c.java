@@ -70,6 +70,10 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 	public ClassType origin() {
 		return origin;
 	}
+	
+	public void setMangle(AspectJTypeSystem ts) {
+		// to be filled in!
+	}
 
 	public FieldInstance mangled() {
 		return mangled;

@@ -104,7 +104,38 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		                                               		methodInstance().name(),
 		                                               		methodInstance().formalTypes(),
 		                                               		methodInstance().throwTypes());
-	    	((ParsedClassType)ht).addMethod(mi);
+		                                               		
+		    // to implement overriding of IT methods by subaspects, check the following:
+		    // does ht already have the method mi?
+		    //   - if so, was it introduced by an ITD?
+		    //        - is the origin of the other instance a super class of the current one?
+		    //           then replace old by current
+		    //        - is the origin of the other instance a subclass of the current one?
+		    //           then don't insert current
+		    //        - otherwise the origins are incomparable in the inheritance hierarchy
+		    //           insert current (and watch the error message later)
+		    //   - if not, insert current
+		    
+		    ParsedClassType pht = (ParsedClassType) ht;
+		    if (pht.hasMethod(mi)) {
+		    	List mis = pht.methods(mi.name(),mi.formalTypes());
+		    	boolean added = false;
+		    	for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
+		    		MethodInstance minst = (MethodInstance) misIt.next();
+		    		if (minst instanceof InterTypeMethodInstance_c) {
+		    			InterTypeMethodInstance_c itdminst = (InterTypeMethodInstance_c) minst;
+		    			if (itdminst.origin().descendsFrom(methodInstance().container())) {
+		    				// skip, we have a more specific instance already
+		    			}
+		    			else if (methodInstance().container().descendsFrom(itdminst.origin())) {
+		    				// the super ITD is replaced by the current one
+		    				pht.methods().remove(minst);
+		    				if (!added) {pht.methods().add(mi); added=true;} 
+		    			} else if (!added) {pht.methods().add(mi); added=true; } 
+		    		}
+		    	}
+		    } else pht.addMethod(mi);
+	    	
 	    	// System.out.println("METHODS OF "+ht+"ARE "+ ((ParsedClassType) ht).methods());
 	    	
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;

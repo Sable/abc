@@ -67,6 +67,11 @@ public class InterTypeConstructorInstance_c
 		}
 	}
 	
+	
+	public void setMangle(AspectJTypeSystem ts) {
+		// to be filled in!
+	}
+	
 	public ConstructorInstance mangled() {
 		if (flags().isPrivate() || flags().isPackage())
 			return mangled;

@@ -8,10 +8,13 @@ import polyglot.types.ReferenceType;
 import polyglot.types.MethodInstance;
 import polyglot.types.Type;
 import polyglot.types.Flags;
+import polyglot.types.TypeSystem;
+import polyglot.types.LocalInstance;
 
 import abc.aspectj.ast.*;
 
 import abc.aspectj.types.InterTypeMethodInstance_c;
+
 
 import java.util.*;
 
@@ -31,9 +34,11 @@ import java.util.*;
 
 public class CleanAspectMembers extends NodeVisitor {
     private NodeFactory nf;
+    private TypeSystem ts;
 
-    public CleanAspectMembers(NodeFactory nf) {
+    public CleanAspectMembers(NodeFactory nf,TypeSystem ts) {
 	this.nf = nf;
+	this.ts = ts;
     }
 
     public Node leave(Node old, Node n, NodeVisitor v) {
@@ -94,20 +99,31 @@ public class CleanAspectMembers extends NodeVisitor {
 	    	List mis = cd.type().toClass().methods();
 	    	for (Iterator miss = mis.iterator(); miss.hasNext(); ) {
 	    		MethodInstance mii = (MethodInstance) miss.next();
-	    		if (mii instanceof InterTypeMethodInstance_c && !(cd.type().toClass().hasMethod(mii))) {
-	    			Block b = nf.Block(mii.position());
-	    			List formals = new LinkedList(); int index = 0;
-	    			for (Iterator formalit = mii.formalTypes().iterator(); formalit.hasNext();) {
-	    				Type t = (Type) formalit.next();
-	    				Formal f = nf.Formal(mii.position(),Flags.NONE,nf.CanonicalTypeNode(mii.position(),t),"a"+index);
-	    				formals.add(f);
-	    				index++;
+	    		if (mii instanceof InterTypeMethodInstance_c /* && !(cd.type().toClass().hasMethod(mii)) */ ) {
+	    			boolean nonITDtoo = false; // is there another instance of mii in cd that is not put there by an ITD?
+	    			for (Iterator miIt = mis.iterator(); miIt.hasNext(); ) {
+	    				MethodInstance miLoc = (MethodInstance) miIt.next();
+	    				if (! (miLoc instanceof InterTypeMethodInstance_c))
+	    					nonITDtoo = mii.isSameMethod(miLoc) || nonITDtoo;
+	    			} 
+	    			if (!nonITDtoo) {
+		    			Block b = nf.Block(mii.position());
+		    			List formals = new LinkedList(); int index = 0;
+		    			for (Iterator formalit = mii.formalTypes().iterator(); formalit.hasNext();) {
+		    				Type t = (Type) formalit.next();
+		    				String name = "a"+index;
+		    				Formal f = nf.Formal(mii.position(),Flags.NONE,nf.CanonicalTypeNode(mii.position(),t),name);
+		    				LocalInstance li = ts.localInstance(mii.position(),Flags.NONE,t,name);
+		    				f = f.localInstance(li);
+		    				formals.add(f);
+		    				index++;
+		    			}
+		    			MethodDecl md = nf.MethodDecl(mii.position(),mii.flags().set(Flags.ABSTRACT),
+		    			                    nf.CanonicalTypeNode(mii.position(),mii.returnType()),mii.name(),
+		    								formals,mii.throwTypes(),b);
+		    			md = md.methodInstance(mii);
+		    			newmembers.add(md);
 	    			}
-	    			MethodDecl md = nf.MethodDecl(mii.position(),mii.flags().set(Flags.ABSTRACT),
-	    			                    nf.CanonicalTypeNode(mii.position(),mii.returnType()),mii.name(),
-	    								formals,mii.throwTypes(),b);
-	    			md = md.methodInstance(mii);
-	    			newmembers.add(md);
 	    		}
 	    	}
 	    }

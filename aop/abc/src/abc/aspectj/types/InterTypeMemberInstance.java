@@ -3,6 +3,7 @@ package abc.aspectj.types;
 
 import polyglot.types.ClassType;
 import polyglot.types.MemberInstance;
+import abc.aspectj.types.AspectJTypeSystem;
 
 /**
  * @author Oege de Moor
@@ -12,4 +13,8 @@ public interface InterTypeMemberInstance extends MemberInstance {
 
 	/** the defining aspect of this instance */
 	ClassType origin(); 
+	
+	/** set the mangled instance */
+	void setMangle(AspectJTypeSystem ts);
+	
 }

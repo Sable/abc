@@ -10,6 +10,7 @@ import polyglot.ast.AmbExpr;
 import polyglot.ast.Node;
 import polyglot.ast.AmbTypeNode;
 import polyglot.ast.TypeNode;
+import polyglot.ast.Prefix;
 
 import polyglot.types.SemanticException;
 
@@ -47,8 +48,8 @@ public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 				}
 	 		}
 	 		// resolving to a local failed, so it must be a type
-			Node n = ar.nodeFactory().disamb().disambiguate(amb, ar, position(), amb.qual(),
-															                                           amb.name());
+	 		Prefix pref = (Prefix) amb.qual().disambiguate(ar);
+			Node n = ar.nodeFactory().disamb().disambiguate(amb, ar, position(), pref,amb.name());
 			 if (n instanceof TypeNode) {
 				return n;
 			 }

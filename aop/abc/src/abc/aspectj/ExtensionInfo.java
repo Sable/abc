@@ -42,6 +42,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	public static final polyglot.frontend.Pass.ID INTERFACE_ITDS = new polyglot.frontend.Pass.ID("interface-itds");
 	public static final polyglot.frontend.Pass.ID INTERFACE_ITDS_ALL = new polyglot.frontend.Pass.ID("interface-itds-all");
 	
+	public static final polyglot.frontend.Pass.ID MANGLE_NAMES = new polyglot.frontend.Pass.ID("mangle-names");
+	
     public static final polyglot.frontend.Pass.ID CLEAN_DECLARE = new polyglot.frontend.Pass.ID("clean-declare");
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
@@ -144,14 +146,16 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	
+	l.add(new VisitorPass(MANGLE_NAMES, job, new MangleNames(ts)));
+
 	// add new methods for proceed and if-pointcuts, and turn advice into methods
 	l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
 
 	// to test the above:
 	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
 	l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf)));
-	l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf)));
-	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+	l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf,ts)));
+	l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
 	
 	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job,
 			      new CollectJimplifyVisitor(job, ts, nf, source_files, class_to_ast)));
