@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+
+<project default="abc-jar">
+
+    <target name="settings">
+        <property file="ant.settings"/>
+        <fail
+            message="Please copy ant.settings.template to ant.settings, and set the variables in it."
+            unless="polyglot.loc"
+        />
+    </target>
+
+    <target name="abc-jar" depends="settings,abc">
+        <jar destfile="lib/abc.jar">
+            <fileset dir="classes"/>
+        </jar>
+    </target>
+    
+    <target name="abc" depends="settings,flex-translator,cup-translator">
+        <mkdir dir="classes"/>
+        <javac
+            destdir="classes"
+            debug="true"
+        >
+            <src path="src"/>
+            <src path="generated"/>
+            <classpath>
+                <pathelement location="classes"/>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${soot.loc}"/>
+                <pathelement location="${jasmin.loc}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="flex-translator" depends="settings,jflex-dep" unless="jflex-up-to-date">
+        <mkdir dir="generated/abc/aspectj/parse"/>
+        <java classname="JFlex.Main"
+            fork="true"
+            dir="."
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${jflex.loc}"/>
+            </classpath>
+            <arg line="-d generated/abc/aspectj/parse src/abc/aspectj/parse/aspectj.flex"/>
+        </java>
+    </target>
+
+    <target name="jflex-dep" depends="settings">
+        <dependset>
+            <srcfileset dir="src/abc/aspectj/parse" includes="aspectj.flex"/>
+            <targetfileset dir="generated/abc/aspectj/parse"
+                includes="Lexer_c.java"/>
+        </dependset>
+        <available property="jflex-up-to-date"
+            file="generated/abc/aspectj/parse/Lexer_c.java"/>
+    </target>
+
+    <target name="cup-translator" depends="settings,flex-translator,cup-dep,ppg-translator" unless="cup-up-to-date">
+        <mkdir dir="generated/abc/aspectj/parse"/>
+        <java classname="java_cup.Main"
+            fork="true"
+            dir="generated/abc/aspectj/parse"
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+            </classpath>
+            <arg line="aspectj_ppg.cup"/>
+        </java>
+    </target>
+
+    <target name="cup-dep" depends="ppg-translator,settings">
+        <dependset>
+            <srcfileset dir="generated/abc/aspectj/parse" includes="aspectj_ppg.cup"/>
+            <targetfileset dir="generated/abc/aspectj/parse"
+                includes="Grm.java,sym.java"/>
+        </dependset>
+        <condition property="cup-up-to-date">
+            <and>
+                <available file="generated/abc/aspectj/parse/Grm.java"/>
+                <available file="generated/abc/aspectj/parse/sym.java"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="ppg-translator" depends="settings,ppg-dep,flex-translator" unless="ppg-up-to-date">
+        <mkdir dir="generated/abc/aspectj/parse"/>
+        <java classname="ppg.PPG"
+            fork="true"
+            dir="src/abc/aspectj/parse"
+            failonerror="true"
+            output="generated/abc/aspectj/parse/aspectj_ppg.cup"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+            </classpath>
+            <arg line="aspectj.ppg"/>
+        </java>
+    </target>
+    <target name="ppg-dep" depends="settings">
+        <dependset>
+            <srcfileset dir="src/abc/aspectj/parse" includes="aspectj.ppg"/>
+            <targetfileset dir="generated/abc/aspectj/parse"
+                includes="aspectj_ppg.cup"/>
+        </dependset>
+        <available property="ppg-up-to-date"
+            file="generated/abc/aspectj/parse/aspectj_ppg.cup"/>
+    </target>
+
+    <target name="clean" depends="settings">
+        <delete quiet="true">
+            <fileset dir="classes" includes="**/*.class" />
+            <fileset dir="lib" includes="**/*.jar" />
+        </delete>
+    </target>
+
+    <target name="clobber" depends="veryclean"/>
+
+    <target name="veryclean" depends="settings,clean">
+        <delete quiet="true">
+            <fileset dir="generated" includes="**/*" />
+        </delete>
+    </target>
+</project>

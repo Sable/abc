@@ -1,0 +1,12 @@
+## Location of Polyglot classes jar
+polyglot.loc=${user.home}/polyglot-1.2.0.jar
+
+## Location of JFlex classes jar
+jflex.loc=${user.home}/JFlex.jar
+
+## Location of Soot classes (can also be sootclasses jar)
+soot.loc=${user.home}/soot/classes
+
+## Location of Jasmin classes
+jasmin.loc=${user.home}/jasminclasses-sable-1.2.jar
+
