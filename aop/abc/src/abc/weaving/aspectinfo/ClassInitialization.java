@@ -8,23 +8,23 @@ import abc.weaving.residues.*;
 import abc.weaving.matching.*;
 
 /** Handler for <code>initialization</code> shadow pointcut. */
-public class Initialization extends ShadowPointcut {
+public class ClassInitialization extends ShadowPointcut {
 
-    public Initialization(Position pos) {
+    public ClassInitialization(Position pos) {
 	super(pos);
     }
 
     protected Residue matchesAt(ShadowMatch sm) {
-	if(!(sm instanceof InitializationShadowMatch)) return null;
+	if(!(sm instanceof ClassInitializationShadowMatch)) return null;
 	return AlwaysMatch.v;
     }
 
     public String toString() {
-	return "initialization()";
+	return "classinitialization()";
     }
 
     public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof Initialization) {
+	if (otherpc instanceof ClassInitialization) {
 	    return true;
 	} else return false;
     }

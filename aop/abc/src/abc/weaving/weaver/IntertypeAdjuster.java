@@ -2,6 +2,7 @@ package abc.weaving.weaver;
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
+import soot.tagkit.*;
 import java.util.*;
 
 import polyglot.util.UniqueID;
@@ -731,7 +732,7 @@ public class IntertypeAdjuster {
     			SootClass j = (SootClass) itfs.next();
     			process(d,j,list);
     		}
-    		list.add(i);
+    		list.add(0,i);
     	}
     }
     
@@ -905,12 +906,41 @@ public class IntertypeAdjuster {
 
 		weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
 	}
+
+    public static class InterfaceInitNopTag implements Tag {
+	public final static String name="InterfaceInitNopTag";
+
+	public boolean isStart;
+	public SootClass intrface;
+	
+	public InterfaceInitNopTag(SootClass intrface,boolean isStart) {
+	    this.intrface=intrface;
+	    this.isStart=isStart;
+	}
+	
+	public String getName() {
+	    return name;
+	}
+	
+	public byte[] getValue() {
+	    throw new AttributeValueException();
+	}
+
+	public String toString() {
+	    return (isStart ? "Start" : "End")+" interface initialization: "+intrface;
+	}
+    }
+
 	
 	private void initialiseInterfaceFields( SootClass cl, InterfaceInits ifis ) {
-		for (Iterator ifds = ifis.ifds.iterator(); ifds.hasNext() ; ) {
-			IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
-			initialiseInstanceField(cl,ifd);
-		}
+   	    Tag endtag=new InterfaceInitNopTag(ifis.intrface,false);
+	    weaveInitNopWithTag(endtag,cl);
+	    for (Iterator ifds = ifis.ifds.iterator(); ifds.hasNext() ; ) {
+		IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
+		initialiseInstanceField(cl,ifd);
+	    }
+   	    Tag starttag=new InterfaceInitNopTag(ifis.intrface,true);
+	    weaveInitNopWithTag(starttag,cl);
 	}
 	
 	private void initialiseStaticField( SootClass cl, IntertypeFieldDecl ifd ) {
@@ -1021,6 +1051,29 @@ public class IntertypeAdjuster {
 		return sm;
 	}
 	
+    private void weaveInitNopWithTag(Tag tag,SootClass cl) {
+	for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
+	    SootMethod clsm = (SootMethod) ms.next();
+	    if (clsm.getName().equals(SootMethod.constructorName)) {
+		Body b = clsm.getActiveBody();
+		Chain ss = b.getUnits();
+		// find unique super.<init>, throw exception if it's not unique
+		Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
+		// the following needs to be inserted right after initstmt
+		if (initstmt.getInvokeExpr().getMethodRef().declaringClass() == cl.getSuperclass()) {
+		    Chain units = b.getUnits();
+		    Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
+		    // create a call to a method that calls the appropriate init from the aspect.
+		    // this method is necessary to handle "within" correctly: the init happens
+		    // lexically within the aspect
+		    Stmt nopstmt=Jimple.v().newNopStmt();
+		    nopstmt.addTag(tag);
+		    units.insertBefore(nopstmt,followingstmt);
+		}
+	    }
+	}	
+    }
+
 	
 	private void weaveInit(
 		IntertypeFieldDecl ifd,
@@ -1031,7 +1084,7 @@ public class IntertypeAdjuster {
 		// that calls "super.<init>"
 		for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
 			SootMethod clsm = (SootMethod) ms.next();
-			if (clsm.getName() == "<init>") {
+			if (clsm.getName().equals(SootMethod.constructorName)) {
 				Body b = clsm.getActiveBody();
 				Chain ss = b.getUnits();
 				// find unique super.<init>, throw exception if it's not unique

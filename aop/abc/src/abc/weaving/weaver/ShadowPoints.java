@@ -1,9 +1,13 @@
 package abc.weaving.weaver;
 
+import java.util.*;
+
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
-import java.util.*;
+
+import polyglot.util.InternalCompilerError;
+
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
@@ -35,13 +39,13 @@ public class ShadowPoints {
   */
  public ShadowPoints(SootMethod container,Stmt b, Stmt e){
     if (b == null) 
-      throw new CodeGenException("Beginning of shadow point must be non-null");
+      throw new InternalCompilerError("Beginning of shadow point must be non-null");
     if (!(b instanceof NopStmt))
-      throw new CodeGenException("Beginning of shadow point must be NopStmt");
+      throw new InternalCompilerError("Beginning of shadow point must be NopStmt");
     if (e == null) 
-      throw new CodeGenException("Ending of shadow point must be non-null");
+      throw new InternalCompilerError("Ending of shadow point must be non-null");
     if(!(e instanceof NopStmt))
-      throw new CodeGenException("Ending of shadow point must be NopStmt");
+      throw new InternalCompilerError("Ending of shadow point must be NopStmt");
     begin = b;
     end = e;
     this.container=container;

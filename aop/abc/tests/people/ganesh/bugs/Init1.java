@@ -12,51 +12,33 @@ aspect Aspect {
     String K.y = show("y");
     String K.x = show("x");
 
-    pointcut init() : initialization(K.new()) || initialization(J.new())
-	|| initialization(C.new());
 
-    before() : initialization(K.new()) {
-	System.out.println("before K");
+    before(): (initialization(new(int)) || initialization(new()) || execution(new())) && !within(Aspect) {
+        System.out.println("before "+thisJoinPointStaticPart);
     }
 
-    after() : initialization(K.new()) {
-	System.out.println("after K");
-    }
-    before() : initialization(J.new()) {
-	System.out.println("before J");
+	after(): (initialization(new(int)) || initialization(new()) || execution(new())) && !within(Aspect) {
+	System.out.println("after "+thisJoinPointStaticPart);
     }
 
-    after() : initialization(J.new()) {
-	System.out.println("after J");
-    }
-    before() : initialization(C.new()) {
-	System.out.println("before C init");
-    }
-
-    after() : initialization(C.new()) {
-	System.out.println("after C init");
-    }
-    before() : execution(C.new()) {
-	System.out.println("before C exec");
-    }
-
-    after() : execution(C.new()) {
-	System.out.println("after C exec");
-    }
 
 }
 
 interface J {}
 interface K {}
 
-class D implements K,J {}
-class C implements J,K {}
+class D implements K,J { D(int x) throws Exception { } }
+class C implements J,K { 
+    C(int x) { 
+	System.out.println("foo");
+    } 
+}
 
 
 public class Init1 {
 
-    public static void main(String[] args) {
-	C c = new C();
-	D d = new D();
+    public static void main(String[] args) throws Exception {
+	C c = new C(1);
+	D d = new D(2);
     }
 }

@@ -415,19 +415,29 @@ public class GlobalAspectInfo {
 	}
     }
 
+    private Hashtable/*<SootMethod,List<InterfaceInitializationShadowMatch>*/ 
+	interfaceinitShadowMatchLists=new Hashtable();
+    public List/*<StmtShadowMatch>*/ getInterfaceInitializationShadowMatchList(SootMethod method) {
+	if(interfaceinitShadowMatchLists.containsKey(method)) {
+	    return (List) interfaceinitShadowMatchLists.get(method);
+	} else {
+	    return new LinkedList();
+	}
+    }
+
     private Hashtable/*<SootMethod,ExecutionShadowMatch>*/ 
 	executionShadowMatches=new Hashtable();
     private Hashtable/*<SootMethod,PreintializationShadowMatch>*/ 
 	preinitShadowMatches=new Hashtable();
-    private Hashtable/*<SootMethod,InitializationShadowMatch>*/ 
-	initShadowMatches=new Hashtable();
+    private Hashtable/*<SootMethod,ClassInitializationShadowMatch>*/ 
+	classinitShadowMatches=new Hashtable();
 
 
     public ExecutionShadowMatch getExecutionShadowMatch(SootMethod method) {
 	return (ExecutionShadowMatch) executionShadowMatches.get(method);
     }
-    public InitializationShadowMatch getInitializationShadowMatch(SootMethod method) {
-	return (InitializationShadowMatch) initShadowMatches.get(method);
+    public ClassInitializationShadowMatch getClassInitializationShadowMatch(SootMethod method) {
+	return (ClassInitializationShadowMatch) classinitShadowMatches.get(method);
     }
     public PreinitializationShadowMatch getPreinitializationShadowMatch(SootMethod method) {
 	return (PreinitializationShadowMatch) preinitShadowMatches.get(method);
@@ -443,6 +453,15 @@ public class GlobalAspectInfo {
 		stmtShadowMatchLists.put(method,list);
 	    }
 	    list.add(sm);
+	} else if(sm instanceof InterfaceInitializationShadowMatch) {
+	    List/*<InterfaceInitializationShadowMatch>*/ list;
+	    if(interfaceinitShadowMatchLists.containsKey(method)) {
+		list = (List) interfaceinitShadowMatchLists.get(method);
+	    } else {
+		list = new LinkedList();
+		interfaceinitShadowMatchLists.put(method,list);
+	    }
+	    list.add(sm);
 	} else if(sm instanceof ExecutionShadowMatch) {
 	    if(executionShadowMatches.containsKey(method))
 		throw new InternalCompilerError
@@ -451,13 +470,13 @@ public class GlobalAspectInfo {
 	} else if(sm instanceof PreinitializationShadowMatch) {
 	    if(preinitShadowMatches.containsKey(method))
 		throw new InternalCompilerError
-		    ("Something tried to record two InitializationShadowMatches for method "+method);
+		    ("Something tried to record two PreinitializationShadowMatches for method "+method);
 	    preinitShadowMatches.put(method,sm);
-	} else if(sm instanceof InitializationShadowMatch) {
-	    if(initShadowMatches.containsKey(method))
+	} else if(sm instanceof ClassInitializationShadowMatch) {
+	    if(classinitShadowMatches.containsKey(method))
 		throw new InternalCompilerError
-		    ("Something tried to record two InitializationShadowMatches for method "+method);
-	    initShadowMatches.put(method,sm);
+		    ("Something tried to record two ClassInitializationShadowMatches for method "+method);
+	    classinitShadowMatches.put(method,sm);
 	} else throw new InternalCompilerError
 	      ("Unknown ShadowMatch type "+sm+" for method "+method);
     }

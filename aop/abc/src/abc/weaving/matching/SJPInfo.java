@@ -151,6 +151,20 @@ public class SJPInfo {
 	return makeMethodSigData(method);
     }
 
+
+    public static String makeInitializationSigData(SootClass intrface) {
+	StringBuffer sb=new StringBuffer();
+	sb.append('0'); // FIXME: check if we should assume public always?
+	sb.append('-');
+	sb.append('-');
+	sb.append(intrface.getName());
+	sb.append('-');
+	sb.append('-');
+	sb.append('-');
+	sb.append('-');
+	return sb.toString();
+    }
+
     public static String makeConstructorSigData(SootMethod method) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());

@@ -74,6 +74,8 @@ public class ShadowPointsSetter {
 	 insertStmtSP(method,
 		      GlobalAspectInfo.v().getStmtShadowMatchList(method));
 
+	 // The interface initialization shadow points have already been set
+
 	 debug("   --- END Setting ShadowPoints Pass1 for method " + 
 	                    method.getName() + "\n");
        } // for each method
@@ -128,9 +130,18 @@ public class ShadowPointsSetter {
     // <init>.  If there is more than one <init> throw an exception.
     Stmt startnop = Jimple.v().newNopStmt();
     if (method.getName().equals(SootMethod.constructorName)) { 
-	debug("Need to insert after call to <init>");
-	Unit initstmt = Restructure.findInitStmt(units);
-	units.insertAfter(startnop,initstmt);
+	debug("Need to insert after call to <init> and interface initialisations");
+	// Find call to <init>,  
+	Stmt startstmt = Restructure.findInitStmt(units);
+
+	// Find the last statement with an InterfaceInitNopTag, if any
+	Stmt nextstmt = startstmt;
+	while(nextstmt!=null) {
+	    if(nextstmt.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name))
+		startstmt=nextstmt;
+	    nextstmt=(Stmt) units.getSuccOf(nextstmt);
+	}
+	units.insertAfter(startnop,startstmt);
     } else if(method.getName().equals(SootMethod.staticInitializerName) 
 	      && method.getDeclaringClass().declaresMethod("abc$preClinit",new ArrayList(),VoidType.v())) {
 	debug("In a static initializer for a class that already has abc$preClinit");
@@ -254,7 +265,7 @@ public class ShadowPointsSetter {
          if( method.isNative() ) continue;
 
 	 // if it has init or preinit advice list, inline body 
-	 if (GlobalAspectInfo.v().getInitializationShadowMatch(method)!=null ||
+	 if (GlobalAspectInfo.v().getClassInitializationShadowMatch(method)!=null ||
 	     GlobalAspectInfo.v().getPreinitializationShadowMatch(method)!=null)
 
            { debug("Must inline body of " + method.getName());
@@ -286,10 +297,10 @@ public class ShadowPointsSetter {
 	  if(psm!=null) insertPreinitializationSP(method,psm);
 
 	  // --- Then look at initialization pointcuts 
-	  InitializationShadowMatch ism
-	      =GlobalAspectInfo.v().getInitializationShadowMatch(method);
+	  ClassInitializationShadowMatch ism
+	      =GlobalAspectInfo.v().getClassInitializationShadowMatch(method);
 
-	  if(ism!=null) insertInitializationSP(method,ism);
+	  if(ism!=null) insertClassInitializationSP(method,ism);
 
 	  debug("   --- END Setting ShadowPoints Pass2 for method " + 
 		method.getName() + "\n");
@@ -299,8 +310,8 @@ public class ShadowPointsSetter {
     } // setShadowPointsPass2
 
 
-    private void insertInitializationSP
-	(SootMethod method,InitializationShadowMatch sm) {
+    private void insertClassInitializationSP
+	(SootMethod method,ClassInitializationShadowMatch sm) {
 	// should only be for methods called <init>
 	debug("Initialization for <init> in method: " + method.getName()); 
 	// check that name is <init>, otherwise throw exception
@@ -312,9 +323,18 @@ public class ShadowPointsSetter {
 	    Stmt startnop = Jimple.v().newNopStmt();
 	    Stmt endnop = Jimple.v().newNopStmt();
 
-	    // insert startnop just after call to <init>,  
-	    Stmt initstmt = Restructure.findInitStmt(units);
-	    units.insertAfter(startnop,initstmt);
+	    // Find call to <init>,  
+	    Stmt startstmt = Restructure.findInitStmt(units);
+
+	    // Find the last statement with an InterfaceInitNopTag, if any
+	    Stmt nextstmt = startstmt;
+	    while(nextstmt!=null) {
+		if(nextstmt.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name))
+		    startstmt=nextstmt;
+		nextstmt=(Stmt) units.getSuccOf(nextstmt);
+	    }
+
+	    units.insertAfter(startnop,startstmt);
 
 	    // insert endnop just after just before final ret
 	    units.insertBefore(endnop,units.getLast());

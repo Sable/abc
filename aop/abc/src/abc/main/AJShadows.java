@@ -9,7 +9,8 @@ public class AJShadows {
 	ExecutionShadowType.register();
 	GetFieldShadowType.register();
 	HandlerShadowType.register();
-	InitializationShadowType.register();
+	ClassInitializationShadowMatch.register();
+	InterfaceInitializationShadowMatch.register();
 	MethodCallShadowType.register();
 	PreinitializationShadowType.register();
 	SetFieldShadowType.register();

@@ -8,13 +8,23 @@ import soot.tagkit.Host;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 
-/** The results of matching at an initialization shadow
+/** The results of matching at an class initialization shadow
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class InitializationShadowMatch extends BodyShadowMatch {
+public class ClassInitializationShadowMatch extends BodyShadowMatch {
 
-    private InitializationShadowMatch(SootMethod container) {
+    public static ShadowType shadowtype = new ShadowType() {
+	    public ShadowMatch matchesAt(MethodPosition pos) {
+		return ClassInitializationShadowMatch.matchesAt(pos);
+	    }
+	};
+
+    public static void register() {
+	ShadowType.register(shadowtype);
+    }
+
+    private ClassInitializationShadowMatch(SootMethod container) {
 	super(container);
     }
 
@@ -22,13 +32,13 @@ public class InitializationShadowMatch extends BodyShadowMatch {
 	return container.getExceptions();
     }
 
-    public static InitializationShadowMatch matchesAt(MethodPosition pos) {
+    public static ClassInitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
 	if(abc.main.Debug.v().traceMatcher) System.err.println("Initialization");
 
 	SootMethod container=pos.getContainer();
 	if(!container.getName().equals(SootMethod.constructorName)) return null;
-	return new InitializationShadowMatch(container);
+	return new ClassInitializationShadowMatch(container);
     }
 
     public SJPInfo makeSJPInfo() {
@@ -40,8 +50,8 @@ public class InitializationShadowMatch extends BodyShadowMatch {
     protected AdviceApplication doAddAdviceApplication
 	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 
-	InitializationAdviceApplication aa
-	    =new InitializationAdviceApplication(ad,residue);
+	ClassInitializationAdviceApplication aa
+	    =new ClassInitializationAdviceApplication(ad,residue);
 	mal.addInitializationAdvice(aa);
 	return aa;
     }
@@ -54,7 +64,7 @@ public class InitializationShadowMatch extends BodyShadowMatch {
     */
 
     public String joinpointName() {
-	return "initialization";
+	return "class initialization";
     }
 
 }

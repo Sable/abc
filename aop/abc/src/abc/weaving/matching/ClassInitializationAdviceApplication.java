@@ -7,13 +7,13 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 29-Apr-04
  */
-public class InitializationAdviceApplication extends ConstructorAdviceApplication {
-    public InitializationAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
+public class ClassInitializationAdviceApplication extends ConstructorAdviceApplication {
+    public ClassInitializationAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	super(advice,residue);
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+"initialization"+"\n");
+	sb.append(prefix+"classinitialization"+"\n");
 	super.debugInfo(prefix,sb);
     }
 }

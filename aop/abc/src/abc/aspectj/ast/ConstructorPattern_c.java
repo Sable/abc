@@ -189,4 +189,10 @@ public class ConstructorPattern_c extends Node_c
 
     }
 
+    public boolean canMatchEmptyArgumentList() {
+	if(formals.size()==0) return true;
+	if(formals.size()>1) return false;
+	return (formals.get(0) instanceof DotDotFormalPattern);
+    }
+
 }

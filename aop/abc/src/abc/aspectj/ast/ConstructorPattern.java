@@ -16,4 +16,5 @@ public interface ConstructorPattern extends MethodConstructorPattern
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern();
 
     public boolean equivalent(ConstructorPattern e);
+    public boolean canMatchEmptyArgumentList();
 }
