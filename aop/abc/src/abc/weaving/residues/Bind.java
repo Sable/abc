@@ -94,8 +94,8 @@ public class Bind extends Residue {
                 if (!(target instanceof AdviceFormal)) {
                         target=((BindingLink)andRoot).getAdviceFormal(target);
                         if (!(target instanceof AdviceFormal)) {
-                        		//return;
-                                throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
+			    return;
+			    // throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
                         }
                 }
 
@@ -128,10 +128,10 @@ public class Bind extends Residue {
                         Local local = (Local) val;
                         int index=bindings.lastIndexOf(local);
                         if (index!=-1) {
-                        	int mask=bindings.getMaskValue(local, index);
-                        	if (mask!=0) {
-                                	return new BindMaskResidue(this, bindingsMaskLocal, mask);
-                        	}
+                                int mask=bindings.getMaskValue(local, index);
+                                if (mask!=0) {
+                                        return new BindMaskResidue(this, bindingsMaskLocal, mask);
+                                }
                         }
                 //}
                 return this;
@@ -167,7 +167,8 @@ public class Bind extends Residue {
                     set=variable.set
                         (localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));
             }
-
+            if(abc.main.Debug.v().tagResidueCode)
+                set.addTag(new soot.tagkit.StringTag("^^ set for bind residue: "+this));
             return succeed(units,set,fail,sense);
         }
 
