@@ -194,9 +194,12 @@ public class Main {
             }
         }
 
-        if (soot.options.Options.v().xml_attributes()) {
-            Printer.v().setOption(Printer.ADD_JIMPLE_LN);
-        }
+        //if (soot.options.Options.v().xml_attributes()) {
+        //    Printer.v().setOption(Printer.ADD_JIMPLE_LN);
+        // }
+	
+        Printer.v().clearOption(Printer.ADD_JIMPLE_LN);
+	
         switch (format) {
             case soot.options.Options.output_format_jasmin :
                 if (c.containsBafBody())
