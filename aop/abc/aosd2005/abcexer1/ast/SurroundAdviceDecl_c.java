@@ -42,26 +42,25 @@ public class SurroundAdviceDecl_c extends AdviceDecl_c
 	
 	public AdviceDecl getBeforeAdviceDecl(AJNodeFactory nf, TypeSystem ts) {
 		Surround spec=(Surround)this.spec;
-		/*Position pos=position();
-		Flags flags=flags();
-		Before bef=spec.getBeforeSpec(nodeFactory);
-		List throwTypes=throwTypes();
-		Pointcut pc=pc();
-		Block body=body();*/	
 		
 		//AdviceDecl result=nodeFactory.AdviceDecl(position(), flags(), 
 		//		spec,//.getBeforeSpec(nodeFactory),
 		//		throwTypes(), pc(), body());
+		
 		SurroundAdviceDecl_c result=(SurroundAdviceDecl_c)this.copy();
 		result.spec=spec.getBeforeSpec(nf);
 		return result;
 	}
 	public AdviceDecl getAfterAdviceDecl(AJNodeFactory nf, TypeSystem ts){
 		Surround spec=(Surround)this.spec;
+		
 		AdviceDecl result=nf.AdviceDecl(position(), flags(), 
 				spec.getAfterSpec(nf),
-				throwTypes(), pc(), afterBody());
+				throwTypes(), pc(), 
+				afterBody() // <= set after body for after advice
+				);
 
+		// set a new MethodInstance 
 		result=(AdviceDecl)result.methodInstance(ts.methodInstance(
 				this.methodInstance().position(), 
 				this.methodInstance().container(), 

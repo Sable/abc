@@ -26,9 +26,6 @@ public class Surround_c extends AdviceSpec_c implements Surround {
 	}
 	
 	public Before getBeforeSpec(AJNodeFactory nodeFactory) {
-		/*if (position()==null)throw new RuntimeException();
-		if (formals()==null)throw new RuntimeException();
-		if (returnType()==null)throw new RuntimeException();*/
 		return nodeFactory.Before(position(),formals(), returnType());
 	}
 	public After getAfterSpec(AJNodeFactory nodeFactory) {
@@ -40,9 +37,7 @@ public class Surround_c extends AdviceSpec_c implements Surround {
 	}
 
 	public AdviceSpec makeAIAdviceSpec() {
-		// TODO Auto-generated method stub
 		throw new InternalCompilerError("Surround not transformed!");
-		//return null;
 	}
 
 }

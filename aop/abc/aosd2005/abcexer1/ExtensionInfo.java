@@ -1,8 +1,6 @@
 /*
  * Created on 08-Feb-2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package abcexer1;
 
@@ -28,10 +26,8 @@ import abcexer1.visit.Surround;
 
 
 /**
- * @author sascha
+ * @author Sascha Kuzins
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
 	public static final Pass.ID TRANSFORM_SURROUND_ADVICE =

@@ -1,4 +1,5 @@
 /* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Sascha Kuzins
  * Copyright (C) 2004 Julian Tibble
  *
  * This compiler is free software; you can redistribute it and/or
@@ -51,11 +52,11 @@ modifiers_opt:m SURROUND:x LPAREN formal_parameter_list_opt:a RPAREN:y throws_op
 	method_body:d 
 	method_body:e 
 		{: Grm.parserTrace("surround(formals){beforeadvice}{afteradvice} (advice declaration without strictfp)");
-          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(d),
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
                                                         parser.ts.Void());
           Surround r = parser.nf.Surround(parser.pos(x,y),a,voidn);
 
-          AdviceDecl ad = parser.nf.SurroundAdviceDecl(parser.pos(d,e),
+          AdviceDecl ad = parser.nf.SurroundAdviceDecl(parser.pos(x,e),
 					       m,
                                                r,
                                                b,

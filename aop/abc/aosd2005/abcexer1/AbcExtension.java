@@ -21,9 +21,6 @@ public class AbcExtension extends abc.main.AbcExtension {
 		return new abcexer1.ExtensionInfo(jar_classes, aspect_sources);
 	}
 	
-	   /* (non-Javadoc)
-     * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
-     */
     public void initLexerKeywords(AbcLexer lexer) {
                 // Add the base keywords
         super.initLexerKeywords(lexer);

@@ -1,8 +1,6 @@
 /*
  * Created on 08-Feb-2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package abcexer1.visit;
 
@@ -14,73 +12,74 @@ import java.util.Stack;
 import polyglot.ast.Node;
 import polyglot.frontend.Job;
 import polyglot.types.TypeSystem;
+import polyglot.util.Position;
 import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
 import abc.aspectj.ast.AJNodeFactory;
+import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.AspectBody;
 import abcexer1.ast.SurroundAdviceDecl;
 
 /**
- * @author sascha
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Sascha Kuzins
+ * 
+ * This pass turns any piece of surround advice into a piece of before advice
+ * and stores a copy of the advice in a list.
+ * When leaving the aspect, it generates a piece of after advice for 
+ * each advice declaration from the list.
+ * 
  */
 public class Surround extends ContextVisitor {
 
 	AJNodeFactory nodeFactory;
 	
-	/**
-	 * @param job
-	 * @param ts
-	 * @param nf
-	 */
 	public Surround(Job job, TypeSystem ts, AJNodeFactory nf) {
 		super(job, ts, nf);
 		this.nodeFactory=nf;
-		// TODO Auto-generated constructor stub
 	}
-	//public Surround(Abcexer1NodeFactory nodeFactory) {
-	//	this.nodeFactory=nodeFactory;
-	//}
 	
-	Stack afterAdvices=new Stack();
-	
+	// Stack of advice lists to deal with nested aspects
+	Stack afterAdviceListsStack=new Stack();
+	List getAfterAdviceList() { 
+		return (List)afterAdviceListsStack.peek(); 
+	}
 	
 	public NodeVisitor enter(Node parent, Node n) {		
 		if (n instanceof AspectBody) {
-			afterAdvices.push(new LinkedList());
+			afterAdviceListsStack.push(new LinkedList());
 		}		
         return super.enter(n);
     }
 	public Node leave(Node parent,  Node old, Node n, NodeVisitor v) {
 		n = super.leave(old, n, v);
 		if (n instanceof AspectBody) { // leaving the aspect?
-			// add all generated pieces of after advice
+			// generate and add all pieces of after advice
 			AspectBody oldBody=(AspectBody)n;
 			List members=new LinkedList(oldBody.members());
 			
-			for (Iterator it=members.iterator(); it.hasNext();) {
-				Node node=(Node)it.next();
-				//System.out.println("member: " +  node + " class: " + node.getClass());
-			}
-				
-			
-			List advices=(List)afterAdvices.peek();
-			for (Iterator it=advices.iterator();it.hasNext();) {
+			int line=Integer.MAX_VALUE / 2; /// HACK!!!
+			for (Iterator it=getAfterAdviceList().iterator();it.hasNext();) {
 				SurroundAdviceDecl decl=(SurroundAdviceDecl)it.next();
-				members.add(decl.getAfterAdviceDecl(nodeFactory, ts)); ///
+				
+				AdviceDecl newDecl=decl.getAfterAdviceDecl(nodeFactory, ts);				
+
+				// Invent a position for this piece of advice for precedence
+				newDecl=(AdviceDecl)newDecl.position(new Position(decl.position().file(), 
+						line++, 
+						0
+						)); ///
+				
+				members.add(newDecl);
 			}
-			afterAdvices.pop();
+			afterAdviceListsStack.pop();
 			
 			AspectBody aspectBody=nodeFactory.AspectBody(oldBody.position(), members);			
 			return aspectBody;
 		} else if (n instanceof SurroundAdviceDecl) {
 			// Turn any surround advice decl into a piece of before advice.
-			// Also store a reference 
+			// Also store a reference for later after advice generation
 			SurroundAdviceDecl decl=(SurroundAdviceDecl)n;
-			List advices=(List)afterAdvices.peek();
-			advices.add(decl);
+			getAfterAdviceList().add(0, decl); // reverse order
 			return decl.getBeforeAdviceDecl(nodeFactory, ts);
 		}
         return n;
