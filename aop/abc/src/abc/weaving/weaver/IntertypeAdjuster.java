@@ -59,25 +59,51 @@ public class IntertypeAdjuster {
     private void addField( IntertypeFieldDecl ifd ) {
         FieldSig field = ifd.getTarget();
 
+        int modifiers = field.getModifiers();
+        modifiers |= Modifier.PUBLIC;
+        modifiers &= ~Modifier.PRIVATE;
+        modifiers &= ~Modifier.PROTECTED;
+
         SootClass cl = field.getDeclaringClass().getSootClass();
         if( cl.isInterface() ) {
-            // TODO: deal with interfaces 
-            throw new RuntimeException( "NYI" );
+            for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
+                final SootClass childClass = (SootClass) childClassIt.next();
+                if( childClass.isInterface() ) continue;
+                if( !implementsInterface(childClass, cl) ) continue;
+                if( childClass.hasSuperclass() 
+                && implementsInterface(childClass.getSuperclass(), cl) )
+                    continue;
+
+                // Add the field itself
+                SootField newField = new SootField(
+                        field.getName(),
+                        field.getType().getSootType(),
+                        modifiers );
+                childClass.addField(newField);
+
+            // TODO: add accessor methods
+
+            }
         } else {
-            int modifiers = field.getModifiers();
-            modifiers |= Modifier.PUBLIC;
-            modifiers &= ~Modifier.PRIVATE;
-            modifiers &= ~Modifier.PROTECTED;
-            
             // Add the field itself
             SootField newField = new SootField(
                     field.getName(),
                     field.getType().getSootType(),
                     modifiers );
-            field.getDeclaringClass().getSootClass().addField(newField);
+            cl.addField(newField);
         }
 
         // TODO: Add dispatch methods
+    }
+
+    private boolean implementsInterface( SootClass child, SootClass iface ) {
+        while(true) {
+            if( child.getInterfaces().contains( iface ) ) return true;
+            if( !child.hasSuperclass() ) return false;
+            SootClass superClass = child.getSuperclass();
+            if( superClass == child ) throw new RuntimeException( "Error: cycle in class hierarchy" );
+            child = superClass;
+        }
     }
 
 }
