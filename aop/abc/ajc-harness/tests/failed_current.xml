@@ -151,6 +151,10 @@
         <compile files="InitializerTest.java"></compile>
         <run class="InitializerTest"></run>
     </ajc-test>
+<ajc-test title="field patterns and subtyping" num="426" keywords="from-resolved_10x" dir="new">
+        <compile files="FieldPatterns.java"></compile>
+        <run class="FieldPatterns"></run>
+    </ajc-test>
 <ajc-test title="calls advice on array objects causes error in code generation" num="430" keywords="from-resolved_10x" dir="new">
         <compile files="CallsToArray.java"></compile>
         <run class="CallsToArray"></run>
@@ -186,14 +190,6 @@
 <ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
         <compile files="ObjectForInt.java"></compile>
         <run class="ObjectForInt"></run>
-    </ajc-test>
-<ajc-test title="Does the matrix coverage thing for the new method signatures" num="473" keywords="from-resolved_10x" dir="new">
-        <compile options="-1.4,-Xlint:ignore" files="MethodSignatures.java"></compile>
-        <run vm="1.4" class="MethodSignatures"></run>
-    </ajc-test>
-<ajc-test title="correct types of parameters at call-sites" num="476" keywords="from-resolved_10x" dir="new">
-        <compile options="-1.4,-Xlint:ignore" files="CallTypes.java"></compile>
-        <run vm="1.4" class="CallTypes"></run>
     </ajc-test>
 <ajc-test title="Reception based on strictfp modifier" num="478" keywords="from-resolved_10x" dir="new">
         <compile files="StrictFpReceptions.java"></compile>
@@ -232,14 +228,6 @@
         <compile files="IntroducedModifiers.java"></compile>
         <run class="IntroducedModifiers"></run>
     </ajc-test>
-<ajc-test title="compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" pr="528" num="511" keywords="from-resolved_10x" dir="new">
-        <compile files="PR528.java"></compile>
-        <run class="PR528"></run>
-    </ajc-test>
-<ajc-test title="missing method name to synthetic invocation" pr="535" num="513" keywords="from-resolved_10x,new-messages-vary" dir="new">
-        <compile files="PR535.java"></compile>
-        <run class="PR535"></run>
-    </ajc-test>
 <ajc-test title="introduced inner interfaces accessible inside aspect" pr="494" num="517" keywords="from-resolved_10x" dir="new">
         <compile files="IntroduceInnerInterfaceCP.java"></compile>
         <run class="IntroduceInnerInterfaceCP"></run>
@@ -258,13 +246,6 @@
             <message line="20" kind="error"></message>
             <message line="28" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="VerifyError after around advice falls off end of tryCatch" num="546" keywords="from-resolved_10x" dir="new">
-        <compile files="TryOffEnd.java">
-            <message line="13" kind="warning"></message>
-            <message line="21" kind="warning"></message>
-        </compile>
-        <run class="TryOffEnd"></run>
     </ajc-test>
 <ajc-test title="aspect with private abstract pointcut" pr="647" num="548" keywords="from-resolved_10x,fail-unimplemented" dir="new/subaspects">
         <compile files="PrivatePointcutCE.java">
@@ -300,10 +281,6 @@
 <ajc-test title="anon class written to wrong directory" pr="569" num="598" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
         <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
         <run class="a.IntroAnon"></run>
-    </ajc-test>
-<ajc-test title="around name-binding in cflows using factorial" pr="677" num="608" keywords="from-resolved_104" dir="new">
-        <compile files="FactorialCflow.java"></compile>
-        <run class="FactorialCflow"></run>
     </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
@@ -388,10 +365,6 @@
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
         <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
-<ajc-test title="source locations within expressions (hard case of constructor start)" pr="885" num="689" keywords="knownLimitation" dir="new" comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved">
-        <compile files="SourceLocationWithinExprHard.java"></compile>
-        <run class="SourceLocationWithinExprHard"></run>
-    </ajc-test>
 <ajc-test title="after returning advice on interface constructor" pr="889" num="691" dir="new">
         <compile files="AfterReturningInterfaceConstructor.java"></compile>
         <run class="AfterReturningInterfaceConstructor"></run>
@@ -430,27 +403,8 @@
         <compile files="AfterReturningConstructor.java"></compile>
         <run class="AfterReturningConstructor"></run>
     </ajc-test>
-<ajc-test title="prohibit declaring new aspect constructor with arguments" pr="851" num="721" dir="new">
-        <compile files="DeclareAspectConstructorCE.java">
-          <message line="10" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="prohibit declaring only aspect constructor with arguments" pr="851" num="722" dir="new">
-        <compile files="DeclareOnlyAspectConstructorCE.java">
-          <message line="10" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="declare class extends interface" pr="853" num="723" dir="new" abccomment="we should accept extends instead of implements">
-        <compile files="DeclareClassExtendsInterface.java">
-        </compile>
-    </ajc-test>
 <ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="we should accept implements instead of extends">
         <compile files="DeclareClassImplementsClass.java">
-        </compile>
-    </ajc-test>
-<ajc-test title="if and cflow arg binding" num="726" dir="new">
-        <compile files="CflowBinding.java">
-          <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="inter-type fields with array types" pr="29113" num="733" dir="bugs">
@@ -559,10 +513,6 @@
         	<message line="23" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="cflow concretization causing assertion failure" pr="36803" num="788" dir="bugs">
-        <compile files="CflowConcrete.java"></compile>
-        <run class="CflowConcrete"></run>
-    </ajc-test>
 <ajc-test title="declare warnings on main" pr="37020" num="793" dir="new/binaryWarnings/src">
         <compile files="aspects/MainWarnings.java,app/Main.java">
         	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
@@ -644,18 +594,6 @@
         	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
         </compile>
     </ajc-test>
-<ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" num="823" keywords="knownLimitation" dir="new/binaryWarnings/src">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
-        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
-<ajc-test title="declare warnings on binary ajc 1.1 main - constructor execution" pr="37020" num="824" keywords="knownLimitation" dir="new/binaryWarnings/src">
-        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
-        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
-        </compile>
-        <run class="app.Main"></run>
-    </ajc-test>
 <ajc-test title="can not resolve this member warning" pr="38212" num="832" dir="bugs/accessMethods">
         <compile files="p1/Base.java,p2/Derived.java"></compile>
         <run class="p2.Derived"></run>
@@ -669,64 +607,11 @@
         </compile>
   		<run class="AfterThrowingCtor"></run>
     </ajc-test>
-<ajc-test title="ClasscastException on concretization of if(false) 1" pr="51320" num="926" dir="bugs">
-        <compile files="DecwClassCastException.java">
-        
-         
-         <message text="if() pointcut designator cannot be used" line="27" kind="error"></message>
-         <message text="if() pointcut designator cannot be used" line="29" kind="error"></message>
-         
-         <message text="cflow() pointcut designator cannot be used" line="31" kind="error"></message>
-         <message text="cflow() pointcut designator cannot be used" line="33" kind="error"></message>
-         
-         <message text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></message>
-         <message text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></message>
-         
-         <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
-         <message text="this() pointcut designator cannot be used" line="41" kind="error"></message>
-         
-         <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
-         <message text="target() pointcut designator cannot be used" line="45" kind="error"></message>
-         
-         <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
-         <message text="args() pointcut designator cannot be used" line="49" kind="error"></message>
-         
-        </compile>
-    </ajc-test>
-<ajc-test title="ClasscastException on concretization of if(false) 2" pr="51320" num="927" dir="bugs">
-        <compile files="DeclareSoftDynamicPCDs.java">
-        
-         
-         <message text="if() pointcut designator cannot be used" line="27" kind="error"></message>
-         <message text="if() pointcut designator cannot be used" line="29" kind="error"></message>
-         
-         <message text="cflow() pointcut designator cannot be used" line="31" kind="error"></message>
-         <message text="cflow() pointcut designator cannot be used" line="33" kind="error"></message>
-         
-         <message text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></message>
-         <message text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></message>
-         
-         <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
-         <message text="this() pointcut designator cannot be used" line="41" kind="error"></message>
-         
-         <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
-         <message text="target() pointcut designator cannot be used" line="45" kind="error"></message>
-         
-         <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
-         <message text="args() pointcut designator cannot be used" line="49" kind="error"></message>
-         
-        </compile>
-    </ajc-test>
 <ajc-test title="retitle warning to circular {advice} dependency at ..." pr="44272" num="952" dir="bugs">
         <compile files="CircularAdvicePrecedence.java">
             <message line="4" kind="error"></message> 
             <message line="5" kind="error"></message> 
             <message line="6" kind="error"></message> 
-        </compile>
-    </ajc-test>
-<ajc-test title="declare precedence on a class should be a compile-time error 1" pr="53012" num="958" dir="bugs/declarePrecedenceWithClasses">
-        <compile files="DeclarePrecedenceTestClass.java">
-          <message text="Non-aspect types can only be specified" line="10" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="declare precedence on a class should be a compile-time error 2" pr="53012" num="959" dir="bugs/declarePrecedenceWithClasses">
