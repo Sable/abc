@@ -17,11 +17,11 @@ public abstract class AdviceApplication {
     public Residue residue;
 
     public static class SJPInfo {
-	String kind;            // first parameter to makeSJP
-	String signatureType;   // name of method to call for second parameter
-        String signature;       // parameter for call in second parameter
-        int row;                // row
-	int col;                // col
+	public String kind;            // first parameter to makeSJP
+	public String signatureType;   // name of method to call for second parameter
+        public String signature;       // parameter for call in second parameter
+        public int row;                // row
+	public int col;                // col
 
 	// Where do we get this stuff from? 
 	// The kind comes from the shadow type.
