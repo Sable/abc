@@ -25,8 +25,11 @@ public class AspectType_c extends ParsedClassType_c implements AspectType {
 	}
 
 	public int perKind() {
-		if (perKind == PER_NONE && superType() instanceof AspectType)
-			 return ((AspectType)superType()).perKind();
+		if (perKind == PER_NONE)
+		   	if (superType() instanceof AspectType)
+			 	return ((AspectType)superType()).perKind();
+			else 
+				return AspectType.PER_SINGLETON;
 		else 
 			return perKind;
 	}
