@@ -905,9 +905,11 @@
       keywords="from-java,purejava">
         <compile files="KeywordAspect.java">
           <message kind="error" line="7"/> 
+          <message kind="error" line="7"/> 
           <message kind="error" line="10"/> 
           <message kind="error" line="13"/> 
           <message kind="error" line="14"/> 
+          <message kind="error" line="18"/> 
           <message kind="error" line="18"/> 
           <ajcmessage kind="ignore" />
         </compile>
@@ -920,7 +922,11 @@
       keywords="from-java,purejava">
         <compile files="KeywordPointcut.java">
           <message kind="error" line="7" />
+          <message kind="error" line="7" />
+          <message kind="error" line="7" />
           <message kind="error" line="8"/> 
+          <message kind="error" line="8"/> 
+          <message kind="error" line="9"/> 
           <message kind="error" line="9"/> 
            <ajcmessage kind="ignore" />
         </compile>
@@ -982,12 +988,21 @@
 
     <ajc-test dir="pureJava" title="return;;; is not really legal"
       keywords="from-java,purejava"
-      abccomment="ajc doesn't report one error per spurious ;, abc does"
+      abccomment="ajc doesn't report one error per spurious ;, abc does.
+                  Added additional <message>s. PA/AGS"
     >
         <compile files="ReachableEmpty.java">
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="13"/>
+            <ajcmessage kind="error" line="17"/>
             <message kind="error" line="5"/>
             <message kind="error" line="9"/>
             <message kind="error" line="13"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="17"/>
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
@@ -1343,10 +1358,15 @@
         constructors.  Abc finds the missing bodies, ajc finds the
         cyclic inheritance.   If the bodies are fixed to have a body then
         abc finds the cyclic inheritance and gives a fine error
-        message.  LJH July 2/04" 
+        message.  LJH July 2/04
+	abc now finds both cyclic inheritance and missing bodies - hence
+	extra <message>. PA/AGS" 
       keywords="from-java,purejava">
         <compile files="CyclicClassInheritance.java">
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="12"/>
             <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
@@ -1577,9 +1597,14 @@
     </ajc-test>
 
     <ajc-test dir="new" pr="643" title="try without catch or finally"
+      abccomment="abc parser throws additional errors when giving up - PA/AGS"
       keywords="from-java,purejava,message-vary">
         <compile files="TryNoCatchCE.java"
                options="!eclipse">
+            <ajcmessage kind="error" line="6"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -1820,8 +1845,11 @@
 
     <ajc-test dir="errors" pr="130"
       title="the designator has a wildcard for method name but no return type specified"
+      abccomment="abc finds 2 valid errors on that line. PA/AGS"
       keywords="from-errors">
         <compile files="NoReturnTypeInDesignator.java">
+            <ajcmessage kind="error" line="6"/>
+            <message kind="error" line="6"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -1851,10 +1879,14 @@
 
     <ajc-test dir="errors" pr="213"
       title="mismatched parens on advice (wasn't binding Tester)"
-      abccomment="difference in line number between abc and ajc message. ODM July 5, 2004"
+      abccomment="difference in line number between abc and ajc message. ODM July 5, 2004
+                  abc parser throws additional errors when giving up. PA/AGS"
       keywords="from-errors">
         <compile files="MismatchedParens.java">
             <ajcmessage kind="error" line="16"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
@@ -1875,8 +1907,11 @@
     </ajc-test>
 
     <ajc-test dir="errors" pr="219" title="extra closing brace"
-      keywords="from-errors">
+      keywords="from-errors" abccomment="abc complains about both superfluous
+              braces -- quite correctly. PA/AGS">
         <compile files="ExtraClosingBrace.java">
+	    <ajcmessage kind="error" line="8"/>
+            <message kind="error" line="8"/>
             <message kind="error" line="8"/>
         </compile>
     </ajc-test>
@@ -1977,6 +2012,7 @@
       keywords="from-errors">
         <compile files="IntLiteral.java">
             <message kind="error" line="17"/>
+            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -2041,12 +2077,12 @@
             <ajcmessage kind="error" line="30"/>
             <ajcmessage kind="error" line="38"/>
             <ajcmessage kind="error" line="39"/>
-            <message kind="error" line="30"/>
             <message kind="error" line="15"/>
             <message kind="error" line="16"/>
             <message kind="error" line="17"/>
             <message kind="error" line="18"/>
             <message kind="error" line="26"/>
+            <message kind="error" line="30"/>
             <message kind="error" line="39"/>
         </compile>
     </ajc-test>
@@ -2154,11 +2190,16 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when the closing brace is reversed"
-      abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH"
+      abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH
+                Extra errors without line number are abc parser complaints - 
+		it gives up. PA/AGS"
       keywords="from-errors,purejava,messages-vary">
         <compile files="ClosingBrace.java"
                options="!eclipse">
             <ajcmessage kind="error" line="11"/>
+            <message kind="error" />
+            <message kind="error" />
+            <message kind="error" />
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
@@ -2288,8 +2329,12 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="errors" title="Missing ;" keywords="from-errors,purejava">
+    <ajc-test dir="errors" title="Missing ;" keywords="from-errors,purejava"
+         abccomment="Extra errors with no line number for parser complaints in abc. PA/AGS">
         <compile files="PR405.java">
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="15"/>
         </compile>
     </ajc-test>
@@ -2354,8 +2399,8 @@
       keywords="from-errors">
         <compile files="AspectInheritance1.java">
             <ajcmessage kind="error" line="17"/>
-            <message kind="error" line="17"/>
             <message kind="error" line="15"/>
+            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -2368,11 +2413,11 @@
             <ajcmessage kind="error" line="20"/>
             <ajcmessage kind="error" line="26"/>
             <ajcmessage kind="error" line="30"/>
-            <message kind="error" line="16"/>
             <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
             <message kind="error" line="20"/>
-            <message kind="error" line="24"/>
             <message kind="error" line="23"/>
+            <message kind="error" line="24"/>
             <message kind="error" line="30"/>
         </compile>
     </ajc-test>
@@ -2843,9 +2888,14 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="illegal synchronized stmts"
-      keywords="from-errors,purejava,messages-vary">
+      keywords="from-errors,purejava,messages-vary"
+      abccomment="Parser throws extra errors when giving up. PA/AGS">
         <compile files="BadSynchronized.java"
                options="!eclipse">
+            <ajcmessage kind="error" line="6"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -5282,9 +5332,14 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="try requires block JLS 14.19"
-      keywords="from-resolved_105,purejava,messages-vary">
+      keywords="from-resolved_105,purejava,messages-vary"
+      abccomment="abc parser throws more errors. PA/AGS">
         <compile files="TryBlockRequiredCE.java"
                options="!eclipse">
+            <ajcmessage kind="error" line="6"/>
+	    <message kind="error"/>
+	    <message kind="error"/>
+	    <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -6879,11 +6934,13 @@
 
     <ajc-test dir="harness" 
     	keywords="command-line-error,knownLimitation-ajctaskCompiler,knownLimitation-ajdeCompiler"
+	abccomment="abc only throws one error - correctly, in our opinion. PA/AGS"
     	comment="ajde omits usage"
       title="CLE: bad filename">
         <compile  badInput="true" files="NoSuchFile.java">
-            <message kind="error" text="NoSuchFile.java"/>
-            <message kind="abort" text="Usage"/>
+            <ajcmessage kind="error" text="NoSuchFile.java"/>
+            <ajcmessage kind="abort" text="Usage"/>
+	    <message kind="error" file="NoSuchFile.java"/>
         </compile>
     </ajc-test>
 
@@ -7604,8 +7661,8 @@
 			<ajcmessage kind="error" line="21" />
 			<ajcmessage kind="error" line="23" />
 			<message kind="error" line="21" />
-			<message kind="error" line="23" />
                         <message kind="error" line="22" />
+			<message kind="error" line="23" />
                 </compile>
 	</ajc-test>
 
@@ -7626,8 +7683,8 @@
       title="Bad parser error recovery in advice">
         <compile files="ParserRecoveryTest.java">
 		  <ajcmessage kind="error" line="7"/>
-                  <message kind="error" line="7"/>
                   <message kind="error" line="4"/>
+                  <message kind="error" line="7"/>
         </compile>
     </ajc-test>   
     
