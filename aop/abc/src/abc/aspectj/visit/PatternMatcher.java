@@ -84,7 +84,7 @@ public class PatternMatcher {
     }
 
     public boolean matchesModifiers(List /*<ModifierPattern>*/ mods, soot.ClassMember thing) {
-	//TODO
+	// FIXME
 	return true;
     }
 
@@ -120,6 +120,26 @@ public class PatternMatcher {
 
 	public boolean matchesType(Type t) {
 	    return PatternMatcher.this.matchesType(pattern, t.toString());
+	}
+    }
+
+    public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern(MethodPattern pattern) {
+	System.out.println("FIXME: Making an incomplete method pattern");
+	return new AIMethodPattern(pattern);
+    }
+
+    private class AIMethodPattern implements abc.weaving.aspectinfo.MethodPattern {
+	MethodPattern pattern;
+	public AIMethodPattern(MethodPattern pattern) {
+	    this.pattern=pattern;
+	}
+	public boolean matchesMethod(SootMethod method) {
+	    if(!matchesModifiers(pattern.getModifiers(),method)) return false;
+	    if(!matchesType(pattern.getType(),method.getReturnType().toString())) return false;
+	    if(!matchesClass(pattern.getName().base(),method.getDeclaringClass().toString())) return false;
+	    if(!pattern.getName().name().getPattern().matcher(method.getName()).matches()) return false;
+	    // FIXME: need to match arguments and throws
+	    return true;
 	}
     }
 

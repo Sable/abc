@@ -22,6 +22,23 @@ public class ClassTypeDotId_c extends Node_c implements ClassTypeDotId
         this.name = name;
     }
 
+    protected ClassTypeDotId_c reconstruct(ClassnamePatternExpr base,
+					   SimpleNamePattern name) {
+	if(base!=this.base || name!=this.name) {
+	    ClassTypeDotId_c n = (ClassTypeDotId_c) copy();
+	    n.base=base;
+	    n.name=name;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr base=(ClassnamePatternExpr) visitChild(this.base,v);
+	SimpleNamePattern name=(SimpleNamePattern) visitChild(this.name,v);
+	return reconstruct(base,name);
+    }
+
     public ClassnamePatternExpr base() {
 	return base;
     }
