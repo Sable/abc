@@ -5,29 +5,16 @@ import soot.jimple.*;
 import java.util.*;
 
 import polyglot.util.UniqueID;
+import polyglot.util.InternalCompilerError;
 
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 
 public class IntertypeAdjuster {
-    public void adjust() {
+	
+	public void adjust() {
     // Generate Soot signatures for intertype methods and fields
-    // 	generate accessors for getters super.field
-        for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldGetters().iterator(); spfdIt.hasNext(); ) {
-        	final SuperFieldGet sfd = (SuperFieldGet) spfdIt.next();
-        	addSuperFieldGetter( sfd );
-        }
-	// 	generate accessors for getters super.field
-		for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldSetters().iterator(); spfdIt.hasNext(); ) {
-			final SuperFieldSet sfd = (SuperFieldSet) spfdIt.next();
-				addSuperFieldSetter( sfd );
-		}
-    // 	generate accessors for super.call
-        for( Iterator spdIt = GlobalAspectInfo.v().getSuperDispatches().iterator(); spdIt.hasNext(); ) {
-        	final SuperDispatch sd = (SuperDispatch) spdIt.next();
-        	addSuperDispatch( sd );
-        }
-        
+ 
     //  generate accessors for qualifier.this
     	for( Iterator qtsIt = GlobalAspectInfo.v().getQualThiss().iterator(); qtsIt.hasNext(); ) {
     		final QualThis qts = (QualThis) qtsIt.next();
@@ -48,6 +35,21 @@ public class IntertypeAdjuster {
             final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
             addField( ifd );
         }
+	// 	generate accessors for getters super.field
+		for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldGetters().iterator(); spfdIt.hasNext(); ) {
+			final SuperFieldGet sfd = (SuperFieldGet) spfdIt.next();
+			addSuperFieldGetter( sfd );
+		}
+	 // 	generate accessors for getters super.field
+		 for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldSetters().iterator(); spfdIt.hasNext(); ) {
+			 final SuperFieldSet sfd = (SuperFieldSet) spfdIt.next();
+				 addSuperFieldSetter( sfd );
+		 }
+	 // 	generate accessors for super.call
+		 for( Iterator spdIt = GlobalAspectInfo.v().getSuperDispatches().iterator(); spdIt.hasNext(); ) {
+			 final SuperDispatch sd = (SuperDispatch) spdIt.next();
+			 addSuperDispatch( sd );
+		 }       
     }
     
 	private void addQualThis( QualThis qts ) {
@@ -79,9 +81,9 @@ public class IntertypeAdjuster {
 	   //   and return the value...
 	   		ReturnStmt ret = Jimple.v().newReturnStmt(v); ss.add(ret);
 	   
-	   //  	This is an accessor method for reading a field
-	   //   MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-	   //	MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(), 0,0);
+	   //  	This is an accessor method for getting this
+	   //   it should be invisible to advice weaving
+	   		MethodCategory.register(sm, MethodCategory.THIS_GET);
 	   }
 	   
 	   /** return a local that contains "qualifier.this", adding the relevant statements to the body. 
@@ -311,6 +313,84 @@ public class IntertypeAdjuster {
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_SPECIAL_CALL_DELEGATOR);
 	}
 	
+/* intertype method declarations */	
+	
+	private Map /* (SootMethod, SootClass) */  interfaceTarget;
+	private Map /* (ClassMember, Aspect) */ intertype;
+	private FastHierarchy hierarchy;
+	
+	public IntertypeAdjuster() {
+		interfaceTarget = new HashMap();
+		intertype = new HashMap();
+		hierarchy = soot.Scene.v().getOrMakeFastHierarchy();
+	}
+	
+	SootClass interfaceTarget(SootMethod sm) {
+		return (SootClass) interfaceTarget.get(sm);
+	}
+	
+	boolean fromInterface(SootMethod sm) {
+		return (interfaceTarget(sm) != null);
+	}
+	
+	Aspect origin(ClassMember sm) {
+		return (Aspect) intertype.get(sm);
+	}
+	
+	boolean isIntertype(ClassMember sm) {
+		return (origin(sm) != null);
+	}
+	
+	boolean descendsfrom(SootClass sc1, SootClass sc2) {
+		return !(sc1.equals(sc2)) && 
+		           (hierarchy.getAllImplementersOfInterface(sc2).contains(sc1) ||
+		           // soot.Scene.v().getFastHierarchy().getSubclassesOf(sc2).contains(sc1));
+				   transextends(sc1,sc2));
+	}
+	
+	
+	  
+	boolean transextends(SootClass sc1, SootClass sc2) {
+		if (sc1.hasSuperclass()) {
+			return sc2.equals( sc1.getSuperclass())  || transextends(sc1.getSuperclass(),sc2);
+		} else return false;
+	}
+	
+	private boolean overrideITDmethod(SootClass pht, 
+															 SootMethod mi) {
+		boolean skipped = false;
+		if (pht.declaresMethod(mi.getName(),mi.getParameterTypes())) {
+			// System.out.println("it has the method already");
+			SootMethod minst = pht.getMethod(mi.getName(),mi.getParameterTypes());
+			if (zapsmethod(mi,minst)){   
+					pht.removeMethod(minst);
+					pht.addMethod(mi);
+			} else if (zapsmethod(minst,mi)) {	
+					skipped = true;
+					}
+				else { // pht.addMethod(mi); 
+					       throw new InternalCompilerError("ITD conflicts with an existing class member");} 
+			}
+		else pht.addMethod(mi); 
+		return !skipped;
+	}
+	
+	
+	boolean zapsmethod(SootMethod mi1,SootMethod mi2) {
+		if (!(Modifier.isAbstract(mi1.getModifiers())) && Modifier.isAbstract(mi2.getModifiers()))
+			return true;
+		// System.out.println("not (!mi1.abstract && mi2.abstract)");
+		// was mi2 then mi1
+		if (!fromInterface(mi1) && fromInterface(mi2)) return true;
+		// System.out.println("not (!mi2.fromInterface && mi1.fromInterface");
+		if (!(isIntertype(mi1) && (isIntertype(mi2)))) return false;
+		// System.out.println("check descendency");
+		if (fromInterface(mi1) && fromInterface(mi2) &&
+			 descendsfrom(interfaceTarget(mi1),interfaceTarget(mi2)))
+			return true;
+		return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
+	}
+	
 	private void addMethod( IntertypeMethodDecl imd ) {
 		// System.out.println("add method "+imd.getTarget() + "from "+imd.getAspect() +
 		//                   " and implementation " + imd.getImpl());
@@ -364,39 +444,30 @@ public class IntertypeAdjuster {
         
         SootClass sc = method.getDeclaringClass().getSootClass();
 		 if( sc.isInterface() ) {
-			   for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
-				   final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
+		 		Set implementors = hierarchy.getAllImplementersOfInterface(sc);
+			   for( Iterator childClassIt = implementors.iterator(); childClassIt.hasNext(); ) {
+				   final SootClass childClass = (SootClass) childClassIt.next();
 				   if( childClass.isInterface() ) continue;
-				   if( !transImplInterface(childClass, sc) ) continue;
 				   if( childClass.hasSuperclass() 
-				   && transImplInterface(childClass.getSuperclass(), sc) )
+				   && implementors.contains(childClass.getSuperclass()) )
 					   continue;
 
-                   createTargetMethod(implMethod,method,childClass);
-                
+                   createTargetMethod(implMethod,method,childClass,imd.getAspect());
+                	interfaceTarget.put(method,sc);
+                	
 				   // System.out.println("added method "+ method.getName() + " to class " + childClass);
 			   }
-		   } else createTargetMethod(implMethod,method,sc);
+		   } else createTargetMethod(implMethod,method,sc, imd.getAspect());
     }
     
     
-    boolean transImplInterface(SootClass sc, SootClass interf) {
-    	// System.out.println("does "+sc+" implement "+interf+"?");
-    	boolean result = false;
-    	Stack interfaces = new Stack();
-    	interfaces.addAll(sc.getInterfaces());
-    	while(!result && !(interfaces.isEmpty())) {
-    		SootClass iff = (SootClass) interfaces.pop();
-    		interfaces.addAll(iff.getInterfaces());
-    		result = (iff.equals(interf));
-    	}
-    	return result;
-    }
+  
 
 	private void createTargetMethod(
 		SootMethod implMethod,
 		MethodSig method,
-		SootClass sc) {	
+		SootClass sc,
+		Aspect origin) {	
 			// System.out.println("added method "+ method.getName() + " to class " + sc);
 		        Type retType = method.getReturnType().getSootType();
 		        List parms = new ArrayList();
@@ -426,8 +497,11 @@ public class IntertypeAdjuster {
 		        }
 		
 		//			Add method to the class
-				sc.addMethod(sm);	
-				
+		//		sc.addMethod(sm);	
+		        if (!overrideITDmethod(sc,sm))
+		        	return;
+		        intertype.put(sm,origin);
+		        			
 				if (!Modifier.isAbstract(modifiers)) {
 			/* generate call to implementation: impl(this,arg1,arg2,...,argn) */	
 			    //create a body
@@ -475,6 +549,47 @@ public class IntertypeAdjuster {
 				MethodCategory.registerRealNameAndClass(sm, method.getName(), method.getDeclaringClass().getJavaName(),
 									0,0); //FIXME: Extra formals?
 	}
+		
+		
+	private Map fieldToITD = new HashMap();       /* maps a field to the IFD that introduced it               */
+	private Map fieldITtargets = new HashMap(); /* maps IFDs to the set of targets where it ended up */
+		
+	public  boolean overrideITDfield(SootClass pht, SootField fi, IntertypeFieldDecl origin) {
+			boolean skipped = false;
+			fieldToITD.put(fi,origin);
+			intertype.put(fi,origin.getAspect());
+			if (pht.declaresFieldByName(fi.getName())) {
+				SootField finst = pht.getFieldByName(fi.getName());
+				if (zapsfield(fi,finst)){   
+						pht.removeField(finst);
+						IntertypeFieldDecl ifd = (IntertypeFieldDecl) fieldToITD.get(finst);
+						if (ifd != null) ((Set) fieldITtargets.get(ifd)).remove(pht);
+						pht.addField(fi);
+					}
+					else if (zapsfield(finst,fi)) {	
+						skipped = true;
+						}
+					else { // pht.addField(fi); 
+								throw new InternalCompilerError("introduced ambiguous field");
+							}
+			} else pht.addField(fi); 
+			if (!skipped) {
+				Set s = (Set)  fieldITtargets.get(origin);
+				if (s==null) {
+					s = new HashSet();
+					fieldITtargets.put(origin,s);
+				}
+				s.add(pht);
+			}
+			return !skipped;
+		}
+	
+		
+	boolean zapsfield(SootField mi1,SootField mi2) {
+			if (!(isIntertype(mi1) && isIntertype(mi2)))
+				return false;
+			return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
+	}    
 	
 	
 	private SootMethod makeSootMethod(MethodSig method,int modifiers,SootClass cl) {
@@ -569,12 +684,12 @@ public class IntertypeAdjuster {
         	makeSootMethod(ifd.getGetter(),modifiers | Modifier.ABSTRACT,cl);
 			makeSootMethod(ifd.getSetter(),modifiers | Modifier.ABSTRACT,cl);
         
-            for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
-                final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
+        	Set implementors = hierarchy.getAllImplementersOfInterface(cl);
+            for( Iterator childClassIt = implementors.iterator(); childClassIt.hasNext(); ) {
+                final SootClass childClass = (SootClass) childClassIt.next();
                 if( childClass.isInterface() ) continue;
-                if( !transImplInterface(childClass, cl) ) continue;
                 if( childClass.hasSuperclass() 
-                && transImplInterface(childClass.getSuperclass(), cl) )
+                && implementors.contains(childClass.getSuperclass()) )
                     continue;
                     
                 
@@ -583,8 +698,9 @@ public class IntertypeAdjuster {
 	                        field.getName(),
 	                        field.getType().getSootType(),
 	                        modifiers );
-	            childClass.addField(newField);
-                
+	            // childClass.addField(newField);
+	            overrideITDfield(childClass,newField,ifd);
+	   
                 // System.out.println("adding field "+newField+ " with modifiers "  + Modifier.toString(modifiers) + " to class "+childClass);
                 
                 // Add the accessor methods and their implementation to the implementing class
@@ -604,23 +720,48 @@ public class IntertypeAdjuster {
                     field.getName(),
                     field.getType().getSootType(),
                     modifiers );
-            cl.addField(newField);
-            
+            // cl.addField(newField);
+            overrideITDfield(cl,newField,ifd);
         }
 
         // TODO: Add dispatch methods
     }
-    
+	
+	private boolean overrideITDconstructor(SootClass pht, 
+															 SootMethod mi) {
+		boolean skipped = false;
+		if (pht.declaresMethod(mi.getName(),mi.getParameterTypes())) {
+			// System.out.println("it has the method already");
+			SootMethod minst = pht.getMethod(mi.getName(),mi.getParameterTypes());
+			if (zapsconstructor(mi,minst)){   
+					pht.removeMethod(minst);
+					pht.addMethod(mi);
+			} else if (zapsconstructor(minst,mi)) {	
+					skipped = true;
+					}
+				else { // pht.addMethod(mi); 
+						  throw new InternalCompilerError("ITD conflicts with an existing class member");} 
+			}
+		else pht.addMethod(mi); 
+		return !skipped;
+	}
+	
+	
+	boolean zapsconstructor(SootMethod mi1,SootMethod mi2) {
+		if (!(isIntertype(mi1) && (isIntertype(mi2)))) return false;
+		return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
+	}
+	
     
 	private void addConstructor( IntertypeConstructorDecl icd) {
 		SootClass sc = icd.getTarget().getSootClass();
 		  if( sc.isInterface() ) {
-				for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
-					final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
+		  		Set implementors = hierarchy.getAllImplementersOfInterface(sc);
+				for( Iterator childClassIt = implementors.iterator(); childClassIt.hasNext(); ) {
+					final SootClass childClass = (SootClass) childClassIt.next();
 					if( childClass.isInterface() ) continue;
-					if( !transImplInterface(childClass, sc) ) continue;
 					if( childClass.hasSuperclass() 
-					&& transImplInterface(childClass.getSuperclass(), sc) )
+					&& implementors.contains(childClass.getSuperclass()) )
 						continue;
 
 					createConstructor(childClass,icd);
@@ -660,6 +801,11 @@ public class IntertypeAdjuster {
 			sm.addException( exception );
 		}
 		
+		// inject the new constructor into the target type
+		// scTarget.addMethod(sm);	
+		if (!overrideITDconstructor(scTarget,sm))
+			return;
+			
 		// the body of the constructor is of the form
 		//		qualifier.ccall(aspect.e1(f1,f2,...,fn), ..., aspect.ek(f1,f2,...,fn));  // super or this call
 		//		aspect.body(this,f1,f2,...,fn)
@@ -736,13 +882,11 @@ public class IntertypeAdjuster {
 		ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
 		ss.add(ret);
 		
-		// inject the new constructor into the target type
-		scTarget.addMethod(sm);	
 		
 		// This is a stub for an intertype constructor decl
 		MethodCategory.register(sm, MethodCategory.INTERTYPE_CONSTRUCTOR_DELEGATOR);
 		MethodCategory.registerRealNameAndClass(sm, "<init>", scTarget.getName(),
-							0,0); //FIXME: Extra formals?
+							0,Modifier.isPublic(icd.getModifiers()) ? 0 : 1);//FIXME: Extra formals?
 	}
 	
 
@@ -774,28 +918,11 @@ public class IntertypeAdjuster {
 			modifiers &= ~Modifier.PRIVATE;
 			modifiers &= ~Modifier.PROTECTED;
 
-			SootClass cl = field.getDeclaringClass().getSootClass();
-			if( cl.isInterface() ) {
-				for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
-					
-					final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
-					if( childClass.isInterface() ) continue;
-					if( !transImplInterface(childClass, cl) ) continue;
-					if( childClass.hasSuperclass() 
-						&& transImplInterface(childClass.getSuperclass(), cl) )
-							 continue;
-					// Add the field itself
-					SootField newField = new SootField(
-							field.getName(),
-							field.getType().getSootType(),
-							modifiers );
-					// find the field that we have inserted earlier
-					SootField sf = childClass.getField(field.getName(),field.getType().getSootType());
-					// and weave its initialisers
-					weaveInit(ifd,sf,modifiers,childClass);
-				}
-			} else 
-				weaveInit(ifd, field.getSootField(), modifiers, cl);
+			Set targets = (Set) fieldITtargets.get(ifd);
+			for (Iterator classIt = targets.iterator(); classIt.hasNext(); ) {
+				SootClass cl = (SootClass) classIt.next();
+				weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
+			}
 		}
 
 		private void weaveInit(

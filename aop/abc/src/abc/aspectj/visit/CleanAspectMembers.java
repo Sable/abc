@@ -89,7 +89,7 @@ public class CleanAspectMembers extends NodeVisitor {
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
 				if (!(itmd.host().type().toClass().flags().isInterface()))
 					hostType.methods().remove(itmd.itMethodInstance);
-				if (!itmd.flags().isAbstract() || (itmd.host().type().toClass().flags().isInterface()))
+				if (!itmd.flags().isAbstract()) // || (itmd.host().type().toClass().flags().isInterface()))
 					newmembers.add(itmd);
 			} else
 		    	newmembers.add(m);

@@ -48,6 +48,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     protected Supers supers;
     protected Flags origflags;
     protected String identifier;
+    protected String originalName;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -63,6 +64,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	this.supers = new Supers();
 	this.origflags = flags;
 	this.identifier = UniqueID.newID("id");
+	this.originalName = name;
     }
 
 	public TypeNode host() {
@@ -129,8 +131,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	public static void overrideITDmethod(ClassType pht, 
 											MethodInstance mi) {
 		// System.out.println("attempting to add method "+mi+" to "+pht);
-		InterTypeMethodInstance_c itmic = (InterTypeMethodInstance_c) mi;
-		InterTypeMethodInstance_c toinsert = (InterTypeMethodInstance_c) mi.container(pht).flags(itmic.origFlags());
+		InterTypeMethodInstance_c toinsert = (InterTypeMethodInstance_c) mi;
+		// InterTypeMethodInstance_c toinsert =  (InterTypeMethodInstance_c) mi.container(pht).flags(itmic.origFlags());
 		// System.out.println("instance to insert:"+ " origin=" + toinsert.origin() +
 		//                                          " container=" + toinsert.container() +
 		//                                          " flags=" + toinsert.flags())	;
@@ -367,7 +369,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addQualThiss(supers.qualthiss(gai));
 
 	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
-	MethodCategory.registerRealNameAndClass(this, name(), host.toString(),
+	MethodCategory.registerRealNameAndClass(this, originalName, host.toString(),
 						(flags().isStatic()?0:1),0);
     }
     

@@ -44,7 +44,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     protected LocalInstance thisParamInstance;
     protected Supers supers;
     protected String identifier;
-
+	
     public IntertypeConstructorDecl_c(Position pos,
                                  Flags flags,
                                  TypeNode host,

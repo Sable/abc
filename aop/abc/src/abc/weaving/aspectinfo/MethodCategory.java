@@ -82,6 +82,13 @@ public class MethodCategory {
     public static final int ACCESSOR_SET = 13;
 
 
+	// ******
+	/** An accessor method to get the value of a qualified use of "this" or "super"
+	 * inside an intertype method.
+	 */
+	// Generated in abc/weaving/weaver/IntertypeAdjuster.java
+	public static final int THIS_GET = 14;
+	
     // CATEGORY PROPERTY TABLES
 
     // normal, aspect, advice, proceed, if,
@@ -96,7 +103,7 @@ public class MethodCategory {
 	true, false,
 	true, true, false,
 	true, false,
-	true/*?*/, true/*?*/
+	true/*?*/, true/*?*/, false
     };
 
     private static final boolean[] weave_execution =
@@ -105,7 +112,7 @@ public class MethodCategory {
 	true, false,
 	true, false, false,
 	false, false,
-	false/*?*/, false/*?*/
+	false/*?*/, false/*?*/, false
     };
 
     private static final boolean[] weave_calls =
@@ -114,7 +121,7 @@ public class MethodCategory {
 	false, true,
 	false, false, true,
 	false, true/*?*/,
-	false/*?*/, false/*?*/
+	false/*?*/, false/*?*/, false
     };
 
 

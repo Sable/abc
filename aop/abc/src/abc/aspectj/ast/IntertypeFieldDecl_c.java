@@ -42,6 +42,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     protected LocalInstance thisParamInstance;
     protected Supers supers;
     protected String identifier;
+    protected String originalName;
 
     protected MethodDecl initm;
 
@@ -55,6 +56,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	this.host = host;
 	this.supers = new Supers();
 	this.identifier = UniqueID.newID("id");
+	this.originalName = name;
     }
     
     public TypeNode host() { 
@@ -138,8 +140,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			for (Iterator fisIt = fis.iterator(); fisIt.hasNext(); ) {
 				FieldInstance finst = (FieldInstance) fisIt.next();
 				if (zaps(fi,finst) && !added){   
-					pht.methods().remove(finst);
-					pht.methods().add(toInsert);
+					pht.fields().remove(finst);
+					pht.fields().add(toInsert);
 					added = true;
 				}
 				else if (zaps(finst,fi)) {	
