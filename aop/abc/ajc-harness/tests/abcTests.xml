@@ -9207,5 +9207,14 @@
 	<compile files="IntArray.java"/>
 	<run class="IntArray"/>
     </ajc-test>       
+
+    <ajc-test num="987" dir="abctests/bugs"
+        title="method intertype onto inner class"
+	abccomment="abc fails in generation of accessors; ajc fails
+                    at runtime">
+	<compile files="Sep9.java"/>
+	<run class="Sep9"/>
+    </ajc-test>  
+
 </suite>
 
