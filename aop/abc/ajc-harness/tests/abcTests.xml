@@ -9361,8 +9361,18 @@
          <run class="InlinedCons"/>
     </ajc-test>
     <ajc-test num="1010" dir="abctests/bugs"
-         title="correct handling of methods in source with $ in the name">
+         title="correct handling of methods in source with $ in the name 1">
          <compile files="DollarMethod.java"/>
          <run class="DollarMethod"/>
+    </ajc-test>
+    <ajc-test num="1011" dir="abctests/bugs"
+         title="correct handling of methods in source with $ in the name 2">
+         <compile files="DollarMethod2.java"/>
+         <run class="DollarMethod2"/>
+    </ajc-test>
+    <ajc-test num="1012" dir="abctests/bugs"
+         title="correct handling of methods in source with $ in the name 3">
+         <compile files="DollarMethod3.java"/>
+         <run class="Some$Type"/>
     </ajc-test>
 </suite>
