@@ -49,7 +49,7 @@ public class SJPInfo {
 
     public static String getTypeString(Type type) {
 	// copy the behaviour of ajc - makeString(TypeX) in org.aspectj.weaver.Member
-	if(type instanceof ArrayType) return JasminClass.jasminDescriptorOf(type);
+	if(type instanceof ArrayType) return JasminClass.jasminDescriptorOf(type).replace('/','.');
 	else return type.toString();
     }
 
