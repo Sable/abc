@@ -2,6 +2,8 @@
 
 if [ "$JAVA_HOME" = "" ] ; then JAVA_HOME=/usr/lib/j2sdk1.4
 fi
+
+# abc will expect to find its runtime in $ABC_HOME/lib/abc-runtime.jar
 if [ "$ABC_HOME" = "" ] ; then ABC_HOME=/usr/local/abc
 fi
 
