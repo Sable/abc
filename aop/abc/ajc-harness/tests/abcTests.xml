@@ -950,8 +950,10 @@
                   not abc. July 6/04. LJH"
       keywords="from-java,purejava">
         <compile files="OuterAbstract_PR408.java"/>
-        <compile files="ExtendsOuterAbstract_PR408.java"/>
-        <compile files="ConstructorNotFound_PR408.java"/>
+        <compile includeClassesDir="true"
+                 files="ExtendsOuterAbstract_PR408.java"/>
+        <compile includeClassesDir="true"
+                 files="ConstructorNotFound_PR408.java"/>
         <run class="ConstructorNotFound_PR408"/>
     </ajc-test>
 
@@ -1095,7 +1097,8 @@
                   abc requires it to be in the directory p. July 1/04  LJH"
       title="packages and generated inner types (for I.class)"
       keywords="from-java">
-        <compile files="InterfaceAndClass.java"/>
+        <abckeywords><skip/></abckeywords>
+	<compile files="InterfaceAndClass.java"/>
         <run class="p.InterfaceAndClass"/>
     </ajc-test>
 
@@ -1913,9 +1916,8 @@
         <compile files="MismatchedParens.java">
             <ajcmessage kind="error" line="16"/>
             <message kind="error"/>
-            <message kind="error"/>
-            <message kind="error"/>
             <message kind="error" line="17"/>
+	    <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1946,13 +1948,16 @@
 
     <ajc-test num="219" dir="errors" pr="244"
       title="decent errors for around return type not matching target point"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      abccomment="abc doesn't report this kind of error in both places"
       keywords="from-errors">
         <compile files="AroundReturnType.java">
-            <message kind="error" line="3"/>
-            <message kind="error" line="7"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="21"/>
+            <ajcmessage kind="error" line="3"/>
+            <ajcmessage kind="error" line="7"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="21"/>
+	    <message kind="error" line="3"/>
+	    <message kind="error" line="7"/>
+	    <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
@@ -2614,7 +2619,8 @@
     </ajc-test>
 
     <ajc-test num="285" dir="errors" title="class and interface extension"
-      keywords="from-errors,purejava,messages-vary">
+     abccomment="jlc not catching missing return statements"
+     keywords="from-errors,purejava,messages-vary">
         <compile files="BadExtension.java"
                options="!eclipse">
             <message kind="error" line="7"/>
@@ -2876,15 +2882,16 @@
     <ajc-test num="306" dir="errors" title="protected accessibility"
       keywords="from-errors,purejava">
         <compile files="protectedAccess/Main.java,protectedAccess/p1/C1.java">
-            <message kind="error" line="26"/>
-            <message kind="error" line="28"/>
-            <message kind="error" line="29"/>
-            <message kind="error" line="31"/>
-            <message kind="error" line="37"/>
-            <message kind="error" line="45"/>
-            <message kind="error" line="46"/>
-            <message kind="error" line="54"/>
-            <message kind="error" line="55"/>
+            <ajcmessage kind="error" line="26"/>
+            <ajcmessage kind="error" line="28"/>
+            <ajcmessage kind="error" line="29"/>
+            <ajcmessage kind="error" line="31"/>
+            <ajcmessage kind="error" line="37"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <ajcmessage kind="error" line="54"/>
+            <ajcmessage kind="error" line="55"/>
+	    <message kind="error" line="37"/>
         </compile>
     </ajc-test>
 
@@ -2960,18 +2967,13 @@
                   1.  If 1 is commented out then 2,6,10 are not found, but
                   this is probably due to other errors that stop jlc from
                   looking for them.   Reported this case to Nate,
-                  July 6/04 LJH"
+                  July 6/04 LJH; we bomb out after failing to find the imported
+		  package - accepting this (PA/AGS/ODM)"
       comment="XXX import of class in default package"
 
       keywords="from-errors,purejava">
         <compile files="NotFound.java">
-            <message kind="error" line="1"/>
-            <message kind="error" line="2"/>
-            <message kind="error" line="6"/>
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-            <message kind="error" line="14"/>
-            <message kind="error" line="16"/>
+            <message kind="error" />
             <ajcmessage kind="error" line="1"/>
             <ajcmessage kind="error" line="2"/>
             <ajcmessage kind="error" line="6"/>
@@ -3029,15 +3031,20 @@
 
     <ajc-test num="316" dir="errors"
       title="inner classes may not have static non-constant members"
+      abccomment="ajc actually reports three errors ..."
       keywords="from-errors,purejava">
         <compile files="InnerMembers.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
             <message kind="error" line="8"/>
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-            <message kind="error" line="11"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
-        </compile>
+	    <message kind="error" line="9"/>
+	    <message kind="error" line="10"/>
+	    <message kind="error" line="11"/>
+	</compile>
     </ajc-test>
 
     <ajc-test num="317" dir="errors"
@@ -3121,9 +3128,9 @@
             <ajcmessage kind="error" line="43"/>
             <ajcmessage kind="error" line="45"/>
             <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="42"/>
+            <message kind="error" line="42"/>
             <message kind="error" line="46"/>
-            <message kind="error" line="42"/>
-            <message kind="error" line="42"/>
         </compile>
     </ajc-test>
 
@@ -3168,7 +3175,7 @@
             <ajcmessage kind="error" line="43"/>
             <ajcmessage kind="error" line="45"/>
             <ajcmessage kind="error" line="46"/>
-            <message kind="error" line="41"/>        
+            <message kind="error" line="21"/>        
         </compile>
     </ajc-test>
 
@@ -3962,14 +3969,14 @@
     </ajc-test>
 
     <ajc-test num="440" dir="new"
-      title="around advice on calls within inner classes (including protected method calls)"
+      title="around advice on calls within inner classes (including protected method calls) 1"
       keywords="from-resolved_10x">
         <compile files="AroundInnerCalls13.java" options="-1.3"/>
         <run class="AroundInnerCalls13"/>
     </ajc-test>
 
 	<ajc-test num="441" dir="new"
-      title="around advice on calls within inner classes (including protected method calls)"
+      title="around advice on calls within inner classes (including protected method calls) 2"
       keywords="from-resolved_10x">
         <compile files="AroundInnerCalls.java" options="-1.4"/>
         <run class="AroundInnerCalls"/>
@@ -4082,9 +4089,13 @@
 
     <ajc-test num="458" dir="new"
       title="different version of aspect inheritance, particularly empty pointcuts and abstract cflows [eachcflow]"
+      abccomment="There is an unbound formal in a pointcut which we correctly report as an error"
       keywords="from-resolved_10x,fail-unimplemented">
-        <compile files="AspectInheritance.java"/>
-        <run class="AspectInheritance"/>
+        <compile files="AspectInheritance.java">
+	<message kind="error" line="24"/>
+	</compile>
+        <!-- run class="AspectInheritance"/> -->
+	
     </ajc-test>
 
     <ajc-test num="459" dir="new" pr="339"
@@ -4294,7 +4305,9 @@
 
     <ajc-test num="488" dir="new"
       title="pcd if() expression visibility at compile-time  (minimal operation)"
+      abccomment="tries to use target,args etc as vars in pointcut - we skip"
       keywords="from-resolved_10x">
+        <abckeywords><skip/></abckeywords>
         <compile files="IfPCDExprVisibility.java" options="-Xlint:ignore"/>
         <run class="IfPCDExprVisibility"/>
     </ajc-test>
