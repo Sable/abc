@@ -9,6 +9,7 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 
 import polyglot.util.Position;
+import polyglot.types.SemanticException;
 
 /** A pointcut designator.
  *  @author Ganesh Sittampalam
@@ -28,7 +29,8 @@ public abstract class Pointcut extends Syntax {
      */
     public abstract Residue matchesAt
 	(WeavingEnv env,SootClass cls,
-	 SootMethod method,ShadowMatch sm);
+	 SootMethod method,ShadowMatch sm)
+	throws SemanticException;
 
     /** Return a "normalized" version of this
      *  pointcut; with the following properties:

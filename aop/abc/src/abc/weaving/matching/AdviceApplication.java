@@ -1,5 +1,6 @@
 package abc.weaving.matching;
 
+import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
 
 import soot.*;
@@ -63,8 +64,9 @@ public abstract class AdviceApplication {
 				  MethodAdviceList mal,
 				  SootClass cls,
 				  SootMethod method,
-				  MethodPosition pos) {
-	
+				  MethodPosition pos) 
+	throws SemanticException 
+    {
 	Iterator shadowIt;
 	for(shadowIt=ShadowType.shadowTypesIterator();
 	    shadowIt.hasNext();) {
@@ -132,7 +134,9 @@ public abstract class AdviceApplication {
     public static void doMethod(GlobalAspectInfo info,
 				SootClass cls,
 				SootMethod method,
-				Hashtable ret) {
+				Hashtable ret) 
+	throws SemanticException
+    {
 
 	// Restructure everything that corresponds to a 'new' in 
 	// source so that object initialisation and constructor call
@@ -217,7 +221,9 @@ public abstract class AdviceApplication {
 	ret.put(method,mal);
     }
 
-    public static Hashtable computeAdviceLists(GlobalAspectInfo info) {
+    public static Hashtable computeAdviceLists(GlobalAspectInfo info)
+	throws SemanticException
+    {
 	Iterator clsIt;
 
 	Hashtable ret=new Hashtable();

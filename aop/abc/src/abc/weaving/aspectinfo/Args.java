@@ -59,6 +59,7 @@ public class Args extends DynamicValuePointcut {
     }
 
     public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm)
+	throws SemanticException
     {
 	Residue ret=AlwaysMatch.v;
 	ListIterator formalsIt=args.listIterator();
@@ -95,8 +96,8 @@ public class Args extends DynamicValuePointcut {
 	    ArgPattern formal=(ArgPattern) formalsIt.previous();
 	    if(formal instanceof ArgFill) {
 		if(formalsIt.nextIndex()+1!=fillerpos)
-		    // make this a SemanticException
-		    throw new InternalCompilerError("Two fillers in args pattern",formal.getPosition()); 
+		    throw new SemanticException
+			("Two fillers in args pattern",formal.getPosition()); 
 
 		return ret; // all done!
 	    }

@@ -4,6 +4,7 @@ import abc.aspectj.visit.PCStructure;
 
 import polyglot.util.Position;
 import polyglot.types.SemanticException;
+import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
@@ -420,7 +421,7 @@ public class GlobalAspectInfo {
     private Hashtable /*<SootMethod,MethodAdviceList>*/ adviceLists=null;
 
     /** Computes the lists of advice application points for all weavable classes */
-    public void computeAdviceLists() {
+    public void computeAdviceLists() throws SemanticException {
 	// manual iterator because we want to add things as we go
 	for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
 
@@ -430,10 +431,9 @@ public class GlobalAspectInfo {
     /** Returns the list of AdviceApplication structures for the given method */
     public MethodAdviceList getAdviceList(SootMethod m) {
 
-	// lazily compute advice lists; could insist that it is done in advance
-	// to avoid surprising timing behaviour, and throw an exception here instead
-
-	if(adviceLists==null) computeAdviceLists(); 
+	if(adviceLists==null) 
+	    throw new InternalCompilerError
+		("Must compute advice lists before trying to get them");
 
 	return (MethodAdviceList) adviceLists.get(m);
     }

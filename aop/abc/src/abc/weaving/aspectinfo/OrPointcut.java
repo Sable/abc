@@ -3,6 +3,7 @@ package abc.weaving.aspectinfo;
 import java.util.*;
 
 import polyglot.util.Position;
+import polyglot.types.SemanticException;
 
 import soot.*;
 import soot.jimple.*;
@@ -32,7 +33,9 @@ public class OrPointcut extends Pointcut {
     public Residue matchesAt(WeavingEnv we,
 			     SootClass cls,
 			     SootMethod method,
-			     ShadowMatch sm) {
+			     ShadowMatch sm) 
+	throws SemanticException
+    {
 	return OrResidue.construct(pc1.matchesAt(we,cls,method,sm),
 				   pc2.matchesAt(we,cls,method,sm));
     }
