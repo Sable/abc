@@ -26,12 +26,15 @@
 # these comments.
 
 $Updated runtime library for a more efficient implementation of cflow. 
-;The abc100runtime options causes abc to generate code for the previous
-;implementation of cflow for compatibility. 
+;The abc101runtime option causes abc to generate code for the previous
+;implementation of cflow for compatibility.
 !Fixed a bug in EAJ with using private pointcut variables together with
 ;calls to named pointcuts.
 !Added some javadoc to the abc.weaving.aspectinfo.Pointcut class,
 ;to make it clearer what deriving classes need to do.
+$Fixed bugs 44 and 45, which were bugs in the around weaver, and 46, which
+;was to do with casts being erroneously removed by optimisations causing
+;programs which should have thrown an exception to run normally.
 
 %1.0.1 1104961494
 $Fixed bug 34, in which arithmetic calculations within strings were sometimes
