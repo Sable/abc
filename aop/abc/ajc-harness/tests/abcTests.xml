@@ -9409,4 +9409,8 @@
         <compile files="AroundUnboxing.java" />
         <run class="AroundUnboxing"/>
     </ajc-test>
+    <ajc-test num="1018" dir="abctests/bugs"
+        title="internal around weaver error when trying to capture proceed() into a closure">
+        <compile files="ExtractedProceed.java" />
+    </ajc-test>
 </suite>
