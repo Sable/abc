@@ -329,20 +329,27 @@ public class AroundWeaver {
 		 */
 		public static InvokeExpr createNewInvokeExpr(InvokeExpr old, List newArgs, List newTypes) {
 			if (newArgs.size()!=newTypes.size())
-				//throw new InternalAroundError();
-			{ // sanity check:
+				throw new InternalAroundError();
+			/*{ // sanity check:
 				Iterator it0=newTypes.iterator();
 				for (Iterator it=newArgs.iterator(); it.hasNext();) {
 					Value val=(Value)it.next();
 					Type type=(Type)it0.next();
 				}
-			}
+			}*/
 			
-			soot.SootMethodRef ref=old.getMethodRef();
-			debug("createNewInvokeExpr: old ref: " + ref + " "  + ref.getSignature());
-			//soot.SootMethodRef ref2=new soot.SootMethodRef();
-			ref.parameterTypes().clear();
-			ref.parameterTypes().addAll(newTypes);
+			soot.SootMethodRef oldRef=old.getMethodRef();
+			//debug("createNewInvokeExpr: old ref: " + ref + " "  + ref.getSignature());
+			soot.SootMethodRef ref=Scene.v().makeMethodRef(
+					oldRef.declaringClass(),
+					oldRef.name(),
+					newTypes,
+					oldRef.returnType(),
+					oldRef.isStatic()					
+					);
+			//ref.parameterTypes().clear();
+			//ref.parameterTypes().addAll(newTypes);
+			//soot.SootMethodRef ref=newTarget.makeRef();
 			debug("createNewInvokeExpr: new ref: " + ref +  " " + ref.getSignature());
 			if (old instanceof InstanceInvokeExpr) {
 				Local base = (Local) ((InstanceInvokeExpr) old).getBase();
@@ -1936,14 +1943,16 @@ public class AroundWeaver {
 				//				modify existing super call in the access method		
 				Stmt stmt = superInvokeStmt;
 				if (stmt != null) {
+					//throw new InternalCompilerError("This does not work until soot allows changing method refs properly");
+					
 					//addEmptyDynamicParameters(method, addedDynArgs, proceedMethodName);
 					InvokeExpr invoke = (InvokeExpr) stmt.getInvokeExprBox().getValue();
 					List newParams = new LinkedList();
 					newParams.addAll(Util.getParameterLocals(sootProceedMethod.getActiveBody()));
-					List types=new LinkedList(sootProceedMethod.getParameterTypes());
-					/// should we do deep copy?	
+					List types=new LinkedList(sootProceedMethod.getParameterTypes());					
+					
 					InvokeExpr newInvoke = Util.createNewInvokeExpr(invoke, newParams, types);
-					stmt.getInvokeExprBox().setValue(newInvoke);
+					stmt.getInvokeExprBox().setValue(newInvoke);					
 				}
 			}
 			private void assignCorrectParametersToLocals(
