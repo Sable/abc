@@ -10,7 +10,7 @@ CLASSPATH= ant
 cd ajc-harness/tests
 nice -n 5 ./runtests abcTests.xml
 cvs update $FILES
-perl -pe's/\&/\&amp;/g' -i passed.xml failed.xml skipped.xml
+# perl -pe's/\&/\&amp;/g' -i passed.xml failed.xml skipped.xml
 ./calc_updates.pl | mail -s"test run results" abc@comlab.ox.ac.uk
 cp failed.xml failed_current.xml
 cp passed.xml passed_current.xml
