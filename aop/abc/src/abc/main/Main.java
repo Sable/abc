@@ -94,6 +94,9 @@ public class Main {
         try {
             Main main = new Main(args);
             main.run();
+        } catch (CompilerAbortedException e) {
+            // Encountered one of the conditions that make compilation impossible, e.g. no options given
+            System.exit(0);
         } catch (IllegalArgumentException e) {
             //e.printStackTrace();
             System.out.println("Illegal arguments: "+e.getMessage());
@@ -108,17 +111,17 @@ public class Main {
 	}
     }
     
-  public Main(String[] args) throws IllegalArgumentException {
+  public Main(String[] args) throws IllegalArgumentException, CompilerAbortedException {
      parseArgs(args);
      v=this;
   }
 
-  public void parseArgs(String[] args) throws IllegalArgumentException {
+  public void parseArgs(String[] args) throws IllegalArgumentException, CompilerAbortedException {
     String outputdir=".";
     boolean optflag=true;
     if (args.length == 0)
       { abcPrintVersion();
-        System.exit(0);
+      	throw new CompilerAbortedException("No arguments provied.");
       }
 
     for (int i = 0 ; i < args.length ; i++) 
@@ -130,12 +133,12 @@ public class Main {
         if (args[i].equals("-help") || args[i].equals("--help") ||
             args[i].equals("-h"))
            { abc.main.Usage.abcPrintHelp();
-             System.exit(0);
+           	throw new CompilerAbortedException("Acted on -help option.");
            }
         else if (args[i].equals("-version") || args[i].equals("--version") ||
             args[i].equals("-v")) 
           { abcPrintVersion();
-            System.exit(0);
+          	throw new CompilerAbortedException("Acted on -version option.");
           }
         else if (args[i].equals("-injars")) 
           { while (++i < args.length && !args[i].startsWith("-")) 
@@ -269,7 +272,7 @@ public class Main {
          // TODO: should actually list only soot options useful for abc
          else if (args[i].equals("-help:soot"))  
            { G.v().out.println(soot.options.Options.v().getUsage());
-             System.exit(0);
+           	throw new CompilerAbortedException("Acted on -help:soot option.");
            }
 
         // TODO; should actually list only polyglot options useful for abc
@@ -278,7 +281,7 @@ public class Main {
                 new abc.aspectj.ExtensionInfo(null, null);
             Options options = ext.getOptions();
             options.usage(G.v().out);
-            System.exit(0);
+            throw new CompilerAbortedException("Acted on -help:polyglot option.");
           }
 
          // optimization settings
