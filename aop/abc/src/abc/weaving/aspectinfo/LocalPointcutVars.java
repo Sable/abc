@@ -1,7 +1,6 @@
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 import polyglot.util.Position;
 
@@ -55,7 +54,14 @@ public class LocalPointcutVars extends Pointcut {
 	return "local"+formals+" ("+pc+")";
     }
 
-    public void registerSetupAdvice() {
-	pc.registerSetupAdvice();
+    public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
+	pc.registerSetupAdvice(context,typeMap);
     }
+
+    public void getFreeVars(Set/*<String>*/ result) {
+	pc.getFreeVars(result);
+	Iterator it=formals.iterator();
+	while(it.hasNext()) result.remove(((Formal) (it.next())).getName());
+    }
+
 }

@@ -25,6 +25,7 @@ import abc.weaving.aspectinfo.AfterThrowingAdvice;
 import abc.weaving.aspectinfo.AfterThrowingArgAdvice;
 import abc.weaving.aspectinfo.AroundAdvice;
 import abc.weaving.aspectinfo.BeforeAdvice;
+import abc.weaving.aspectinfo.BeforeAfterAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Formal;
 import abc.weaving.matching.AdviceApplication;
@@ -134,31 +135,76 @@ public class PointcutCodeGen {
     private void weave_one( SootClass cl, SootMethod method,
                             LocalGeneratorEx localgen, 
 			    AdviceApplication adviceappl)
-      { AbstractAdviceDecl advicedecl = adviceappl.advice;
+    { debug("starting weave_one for "+method.getName());
+      StringBuffer details=new StringBuffer();
+      adviceappl.debugInfo("PCG: ",details);
+      System.out.println(details.toString());
+
+	  AbstractAdviceDecl advicedecl = adviceappl.advice;
 	if ( advicedecl == null) // it was a dummy advice to enforce a SJP
 	  return;
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
-	if ( advicespec instanceof BeforeAdvice ) 
-           BeforeWeaver.doWeave(method, localgen, adviceappl);
-        else if ( advicespec instanceof AfterReturningAdvice )
-           AfterReturningWeaver.doWeave(method, localgen, adviceappl);
-	else if ( advicespec instanceof AfterThrowingAdvice)
-           AfterThrowingWeaver.doWeave(method, localgen, adviceappl);
+	if ( advicespec instanceof BeforeAdvice ) {
+	    WeavingContext wc=adviceappl.advice.makeWeavingContext();
+            BeforeWeaver.doWeave(method,localgen,
+	                         adviceappl.shadowpoints,
+			         adviceappl.residue,
+				 adviceappl.advice,
+				 wc);
+        }
+        else if ( advicespec instanceof AfterReturningAdvice ) {
+	    WeavingContext wc=adviceappl.advice.makeWeavingContext();
+            AfterReturningWeaver.doWeave(method,localgen,
+					 adviceappl.shadowpoints,
+					 adviceappl.residue,
+					 adviceappl.advice,
+					 wc);
+        }
+	else if ( advicespec instanceof AfterThrowingAdvice) {
+                WeavingContext wc=adviceappl.advice.makeWeavingContext();
+                AfterThrowingWeaver.doWeave(method,localgen,
+                                            adviceappl.shadowpoints,
+                                            adviceappl.residue,
+                                            adviceappl.advice,
+                                            wc);
+        }
 	else if (advicespec instanceof AfterAdvice)
 	   {  
-	      AfterThrowingWeaver.doWeave(method,localgen,adviceappl);
-	      AfterReturningWeaver.doWeave(method,localgen,adviceappl);
+	       // want separate contexts 
+	    WeavingContext wc1=adviceappl.advice.makeWeavingContext();
+            AfterReturningWeaver.doWeave(method,localgen,
+					 adviceappl.shadowpoints,
+					 adviceappl.residue,
+					 adviceappl.advice,
+					 wc1);
+            WeavingContext wc2=adviceappl.advice.makeWeavingContext();
+            AfterThrowingWeaver.doWeave(method,localgen,
+                                        adviceappl.shadowpoints,
+                                        adviceappl.residue,
+                                        adviceappl.advice,
+                                        wc2);
+            
+	   }
+	else if (advicespec instanceof BeforeAfterAdvice)
+	   {  
+	       WeavingContext wc=adviceappl.advice.makeWeavingContext();
+	       BeforeAfterWeaver.doWeave(method,localgen,
+					 adviceappl.shadowpoints,
+					 adviceappl.residue,
+					 adviceappl.advice,
+					 wc);
 	   }
 	else if (advicespec instanceof AroundAdvice ) 
 	   AroundWeaver.doWeave(cl, method, localgen, adviceappl);
 	else 
 	   throw new CodeGenException ("Unsupported kind of advice: " +
 	                                 advicespec); 
+	debug("finished weave_one");
       }  // method weave_one
 
+    // inline everywhere and remove
     public static WeavingContext makeWeavingContext(AdviceApplication adviceappl) {
 	return adviceappl.advice.makeWeavingContext();
     }
-	
 
 }

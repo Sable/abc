@@ -7,7 +7,7 @@ import soot.util.*;
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
 import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
+import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.PointcutCodeGen;
@@ -121,11 +121,46 @@ public class AdviceDecl extends AbstractAdviceDecl {
     }
 	
     public Residue postResidue(ShadowMatch sm) {
-	return aspct.getPer().getAspectInstance(aspct,sm);
+	Residue ret=AlwaysMatch.v;
+
+	// cache the residue in the SJPInfo to avoid multiple field gets?
+
+	if(hasJoinPointStaticPart()) 
+	    ret=AndResidue.construct
+		(ret,new Load
+		 (new StaticJoinPointInfo(sm.getSJPInfo()),
+		  new AdviceFormal
+		  (joinPointStaticPartPos(),
+		   RefType.v("org.aspectj.lang.JoinPoint$StaticPart"))));
+		   
+
+	if(hasEnclosingJoinPoint()) 
+	    ret=AndResidue.construct
+		(ret,new Load
+		 (new StaticJoinPointInfo(sm.getEnclosing().getSJPInfo()),
+		  new AdviceFormal
+		  (enclosingJoinPointPos(),
+		   RefType.v("org.aspectj.lang.JoinPoint$StaticPart"))));
+		   
+
+	if(hasJoinPoint())
+	    ret=AndResidue.construct
+		(ret,new Load
+		 // FIXME
+		 (new JimpleValue(NullConstant.v()),
+		  new AdviceFormal
+		  (joinPointPos(),
+		   RefType.v("org.aspectj.lang.JoinPoint"))));
+
+	ret=AndResidue.construct
+	    (ret,aspct.getPer().getAspectInstance(aspct,sm));
+	return ret;
+
     }
     
 
     public WeavingContext makeWeavingContext() {
+
 	int nformals = numFormals();
 	PointcutCodeGen.debug("There are " + nformals + " formals to the advice method.");
 	Vector arglist = new Vector(nformals, 2);
@@ -137,59 +172,13 @@ public class AdviceDecl extends AbstractAdviceDecl {
  
     /** create the invoke to call the advice body */
     public Chain makeAdviceExecutionStmts
-	(AdviceApplication adviceappl,
-	 LocalGeneratorEx localgen,WeavingContext wc) {
+	(LocalGeneratorEx localgen,WeavingContext wc) {
 
 	Chain c = new HashChain();
 
 	AdviceWeavingContext awc=(AdviceWeavingContext) wc;
 
 	SootMethod advicemethod = getImpl().getSootMethod();
-
-	// try to fill in the remaining formals
-	//   --- first the join point ones
-	if (hasJoinPointStaticPart()) {
-	    int position = joinPointStaticPartPos();
-	    PointcutCodeGen.debug("The index for hasJoinPointStaticPart is " + position);
-
-	    // FIXME: should really be ref to static field for SJP
-	    StaticFieldRef sjpfieldref =
-		Jimple.v().newStaticFieldRef(adviceappl.sjpInfo.sjpfield);
-	    Local sjploc = localgen.generateLocal
-		(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),"sjp");
-	    
-	    Stmt assignsjp = Jimple.v().newAssignStmt(sjploc, sjpfieldref);
-	    c.addLast(assignsjp);
-	    PointcutCodeGen.debug
-		("inserting at postion "
-		 + position
-		 + " into a Vector of size "
-		 + awc.arglist.capacity());
-
-	    awc.arglist.setElementAt(sjploc, position);
-	}
-
-	if (hasJoinPoint()) {
-	    // FIXME
-	    int position = joinPointPos();
-	    PointcutCodeGen.debug("The index for hasJoinPoint is " + position);
-	    awc.arglist.setElementAt(NullConstant.v(),position);
-	}
-
-	if (hasEnclosingJoinPoint()) {
-	    int position = enclosingJoinPointPos();
-	    PointcutCodeGen.debug
-		("The index for enclosingJoinPoint is "
-		 + enclosingJoinPointPos());
-	    StaticFieldRef sjpencfieldref =
-		Jimple.v().newStaticFieldRef(adviceappl.sjpEnclosing.sjpfield);
-	    PointcutCodeGen.debug("The field ref is " + sjpencfieldref);
-	    Local sjpencloc = localgen.generateLocal
-		(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),"sjpenc");
-	    Stmt assignsjpenc = Jimple.v().newAssignStmt(sjpencloc, sjpencfieldref);
-	    c.addLast(assignsjpenc);
-	    awc.arglist.setElementAt(sjpencloc, position);
-	}
 
 	for (int i = 0; i < awc.arglist.size(); i++)
 	    if(awc.arglist.get(i)==null)

@@ -53,6 +53,9 @@ public class If extends Pointcut {
 	return new If(newvars,impl,getPosition());
     }
 
-    public void registerSetupAdvice() {}
+    public void registerSetupAdvice(Aspect context,Hashtable typeMap) {}
+    public void getFreeVars(Set/*<String>*/ result) {
+	// just want binding occurrences, so do nothing
+    }
 
 }

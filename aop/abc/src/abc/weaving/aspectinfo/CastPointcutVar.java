@@ -1,6 +1,6 @@
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
+import java.util.*;
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.*;
@@ -64,6 +64,8 @@ public class CastPointcutVar extends Pointcut {
 	else return this;
 	   
     }
-    public void registerSetupAdvice() {}
-
+    public void registerSetupAdvice(Aspect context,Hashtable typeMap) {}
+    public void getFreeVars(Set/*<String>*/ result) {
+	result.add(to.getName());
+    }
 }

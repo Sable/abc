@@ -8,6 +8,7 @@ public aspect Aspect {
 
     int around(Test x,Test y): call(int foo(int)) && this(x) && target(y){
 	System.out.println("advice 1 before proceed: "+display(x,y));
+	System.out.println(thisJoinPoint.getThis()+","+thisJoinPoint.getTarget());
 	int ret=proceed(y,x);
 	System.out.println("advice 1 after proceed: "+display(x,y));
 	return ret;
@@ -15,6 +16,7 @@ public aspect Aspect {
 
     int around(Test x,Test y): call(int foo(int)) && this(x) && target(y){
 	System.out.println("advice 2 before proceed: "+display(x,y));
+	System.out.println(thisJoinPoint.getThis()+","+thisJoinPoint.getTarget());
 	int ret=proceed(y,x);
 	System.out.println("advice 2 after proceed: "+display(x,y));
 	return ret;

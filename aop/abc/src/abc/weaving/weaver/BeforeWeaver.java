@@ -14,6 +14,7 @@ import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.residues.Residue;
 import abc.weaving.matching.AdviceApplication;
 
 /** Handle before weavering.
@@ -32,31 +33,29 @@ public class BeforeWeaver {
 
 
     public static void doWeave(SootMethod method, LocalGeneratorEx localgen,
-			       AdviceApplication adviceappl)
-      { debug("Handling before: " + adviceappl);
+			       ShadowPoints shadowpoints,Residue residue,
+			       AbstractAdviceDecl advicedecl,WeavingContext wc)
+      { 
+
         Body b = method.getActiveBody();
         // this non patching chain is needed so that Soot doesn't "Fix" 
         // the traps. 
         Chain units = b.getUnits().getNonPatchingChain();
 
-	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
-
 	// find location to weave in statements, 
 	// just after beginning of join point shadow
-	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
+	Stmt beginshadow = shadowpoints.getBegin();
 	Stmt followingstmt = (Stmt) units.getSuccOf(beginshadow);
 
 	Stmt failpoint = Jimple.v().newNopStmt();
 	units.insertBefore(failpoint,followingstmt);
 
 	// weave in residue
-	Stmt endresidue=adviceappl.residue.codeGen
+	Stmt endresidue=residue.codeGen
 	    (method,localgen,units,beginshadow,failpoint,wc);
 
-	AbstractAdviceDecl advicedecl = adviceappl.advice;
+        Chain stmts = advicedecl.makeAdviceExecutionStmts(localgen,wc);
 
-        Chain stmts = advicedecl.makeAdviceExecutionStmts
-	    (adviceappl,localgen,wc);
         debug("Generated stmts: " + stmts);
 	
 	for (Iterator stmtlist = stmts.iterator(); stmtlist.hasNext(); )

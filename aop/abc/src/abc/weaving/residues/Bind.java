@@ -1,6 +1,7 @@
 package abc.weaving.residues;
 
 import java.util.Vector;
+import polyglot.util.InternalCompilerError;
 import soot.*;
 import soot.util.Chain;
 import soot.jimple.Stmt;

@@ -1,8 +1,6 @@
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import soot.*;
 import soot.jimple.*;
@@ -57,7 +55,7 @@ public abstract class Pointcut extends Syntax {
 	if(abc.main.Debug.v().showNormalizedPointcuts)
 	    System.err.println("normalized pointcut: "+ret);
 
-	ret.registerSetupAdvice();
+	ret.registerSetupAdvice(context,typeEnv);
 	return ret;
     }
 
@@ -73,5 +71,9 @@ public abstract class Pointcut extends Syntax {
     }
     // changed to protected since other people shouldn't need to call it, 
     // but I can't be bothered to change the modifiers on the subclasses
-    protected abstract void registerSetupAdvice();
+    protected abstract void registerSetupAdvice
+	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap);
+    // Get a list of free variables bound by this pointcut
+    public abstract void getFreeVars(Set/*<String>*/ result);
+
 }

@@ -8,5 +8,8 @@ import soot.*;
 public class PerCflowBelow extends PerPointcut {
     public PerCflowBelow(Pointcut pc, Position pos) {
 	super(pc, pos);
+    }    
+    public String toString() {
+	return "percflowbelow(...)"; // +getPointcut()+")";
     }
 }

@@ -33,4 +33,5 @@ public class ArgAny extends ArgPattern {
 	return v;
     }
 
+    public void getFreeVars(Set/*<Var>*/ result) {}
 }

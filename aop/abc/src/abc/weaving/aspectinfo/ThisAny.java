@@ -1,5 +1,6 @@
 package abc.weaving.aspectinfo;
 
+import java.util.*;
 import soot.*;
 import polyglot.util.Position;
 import abc.weaving.matching.*;
@@ -32,5 +33,7 @@ public class ThisAny extends DynamicValuePointcut {
     public String toString() {
 	return "this(*)";
     }
-    public void registerSetupAdvice() {}
+    public void registerSetupAdvice
+	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+    public void getFreeVars(Set/*<String>*/ result) {}
 }

@@ -674,6 +674,33 @@ public class AspectCodeGen {
         units.addLast(returnstmt);
       }
 
+    public SootMethod getPreClinit(SootClass cl) {
+	if(cl.declaresMethod("abc$preClinit",new ArrayList(),VoidType.v()))
+	    return cl.getMethod("abc$preClinit",new ArrayList(),VoidType.v());
+
+	SootMethod preClinit=new SootMethod
+	    ("abc$preClinit",new ArrayList(),
+	     VoidType.v(),Modifier.PRIVATE | Modifier.STATIC);
+
+	SootMethod clinit=cl.getMethodByName(SootMethod.staticInitializerName);
+
+	Body b = Jimple.v().newBody(preClinit);
+	preClinit.setActiveBody(b);
+
+	b.getUnits().addLast(Jimple.v().newReturnVoidStmt());
+
+	cl.addMethod(preClinit);
+
+	// There shouldn't be any identity statements; 
+	// perhaps we should do getFirstRealStmt or whatever just in case,
+	// though
+	clinit.getActiveBody().getUnits().addFirst
+	    (Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(preClinit)));
+
+	return preClinit;
+
+    }
+
     
     /* =============== PERCFLOW/PERCFLOWBELOW ASPECT ============= */
     // aspectOf

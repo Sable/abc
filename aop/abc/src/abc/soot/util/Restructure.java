@@ -398,7 +398,8 @@ public class Restructure {
 	Local l=new LocalGeneratorEx(b).generateLocal
 	    (m.getDeclaringClass().getType(),"thisCopy");
 
-	Chain units=b.getUnits();
+	// don't want exceptions "fixed" up
+	Chain units=b.getUnits().getNonPatchingChain();
 	for(Stmt stmt=(Stmt) units.getFirst();
 	    ;
 	    stmt=(Stmt) units.getSuccOf(stmt)) {

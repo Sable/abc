@@ -63,6 +63,7 @@ import abc.weaving.residues.CheckType;
 import abc.weaving.residues.Copy;
 import abc.weaving.residues.HasAspect;
 import abc.weaving.residues.IfResidue;
+import abc.weaving.residues.Load;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.NotResidue;
 import abc.weaving.residues.OrResidue;
@@ -1915,6 +1916,10 @@ public class AroundWeaver {
 	}
 	
 	private static List bindList(Residue r) {
+	    // explicitly go through all the options to force early
+	    // errors when a new one gets added, to make sure we have
+	    // thought about it properly. This should all be delegated
+	    // in the future.
 		if (r instanceof AlwaysMatch) {
 			
 		} else if (r instanceof AndResidue) {
@@ -1929,6 +1934,8 @@ public class AroundWeaver {
 			l.add(r);
 			return l;
 		} else if (r instanceof Box) {
+
+		} else if (r instanceof Load) {
 
 		} else if (r instanceof CheckType) {
 			
@@ -1972,7 +1979,7 @@ public class AroundWeaver {
 					
 					result.set(formal.pos, local);
 				} else {
-					throw new InternalError("Expecting bound values to be of type Local"); 
+				    throw new InternalError("Expecting bound values to be of type Local: "+value +" (came from: "+bind+")"); 
 				}
 			} else {
 				

@@ -22,8 +22,9 @@ public abstract class AbstractAdviceDecl extends Syntax {
 
     protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
 				 List/*<Formal>*/ formals,Position pos) {
-
 	this(spec,pc,formals,pos,false);
+	if(abc.main.Debug.v.debugPointcutNormalization) 
+	    System.out.println("made unnormalized decl");
     }
 
     protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
@@ -53,14 +54,20 @@ public abstract class AbstractAdviceDecl extends Syntax {
 
     public void preprocess() {
 	if(pc!=null) throw new InternalCompilerError
-			 ("Trying to call preprocess on an already normalized advice decl");
+			 ("Trying to call preprocess on an already normalized advice decl "+this);
+	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
 	pc=Pointcut.normalize(origpc,formals,getAspect());
+	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
     }
 
     public Pointcut getPointcut() {
 	if(pc==null) throw new InternalCompilerError
 			 ("Must call preprocess on advice decls before using them");
 	return pc;
+    }
+
+    public List/*<Formal>*/ getFormals() {
+	return formals;
     }
 
     public abstract void debugInfo(String prefix,StringBuffer sb);
@@ -90,9 +97,14 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	return AlwaysMatch.v;
     }
 
+    // for backwards compatibility, remove when aroundweaver doesn't need it
+    public final Chain makeAdviceExecutionStmts
+	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
+	return makeAdviceExecutionStmts(localgen,wc);
+    }
+
     public abstract Chain makeAdviceExecutionStmts
-	(AdviceApplication adviceappl,
-	 LocalGeneratorEx localgen,WeavingContext wc);
+	(LocalGeneratorEx localgen,WeavingContext wc);
 
     private int applcount=0; // the number of times this AdviceDecl matches
                              //   (i.e. the number of static join points)

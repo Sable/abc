@@ -28,4 +28,6 @@ public class ArgFill extends ArgPattern {
 	throw new RuntimeException("Internal error: Shouldn't have a ArgFill in a PointcutRef");
     }
 
+    public void getFreeVars(Set/*<Var>*/ result) {}
+
 }

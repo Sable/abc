@@ -410,8 +410,8 @@ public class GlobalAspectInfo {
 
     /** Computes the lists of advice application points for all weavable classes */
     public void computeAdviceLists() {
-	Iterator it=ads.iterator();
-	while(it.hasNext()) ((AbstractAdviceDecl) it.next()).preprocess();
+	// manual iterator because we want to add things as we go
+	for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
 	    
 	adviceLists=abc.weaving.matching.AdviceApplication.computeAdviceLists(this);
     }

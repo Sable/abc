@@ -1,6 +1,6 @@
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
+import java.util.*;
 
 import polyglot.util.Position;
 
@@ -48,8 +48,13 @@ public class AndPointcut extends Pointcut {
 	return "("+pc1+") && ("+pc2+")";
     }
 
-    public void registerSetupAdvice() {
-	pc1.registerSetupAdvice();
-	pc2.registerSetupAdvice();
+    public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
+	pc1.registerSetupAdvice(context,typeMap);
+	pc2.registerSetupAdvice(context,typeMap);
+    }
+
+    public void getFreeVars(Set result) {
+	pc1.getFreeVars(result);
+	pc2.getFreeVars(result);
     }
 }

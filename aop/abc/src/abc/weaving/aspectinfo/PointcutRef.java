@@ -101,7 +101,11 @@ public class PointcutRef extends Pointcut {
 	return pc;
 
     }
-    public void registerSetupAdvice() {
+    public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
+	throw new InternalCompilerError
+	    ("PointcutRef should have been inlined by now",getPosition());
+    }
+    public void getFreeVars(Set s) {
 	throw new InternalCompilerError
 	    ("PointcutRef should have been inlined by now",getPosition());
     }

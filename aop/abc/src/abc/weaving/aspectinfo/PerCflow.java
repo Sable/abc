@@ -9,4 +9,8 @@ public class PerCflow extends PerPointcut {
     public PerCflow(Pointcut pc, Position pos) {
 	super(pc, pos);
     }
+
+    public String toString() {
+	return "percflow(...)"; //+getPointcut()+")";
+    }
 }

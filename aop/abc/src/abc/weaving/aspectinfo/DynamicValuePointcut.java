@@ -17,7 +17,7 @@ public abstract class DynamicValuePointcut extends Pointcut {
 	super(pos);
     }
 
-    // Check carefully that TargetVar and ThisVar still override
+    // Check carefully that TargetVar, ThisVar and Args still override
     // this if you change the signature
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,

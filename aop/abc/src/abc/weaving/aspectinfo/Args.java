@@ -112,5 +112,12 @@ public class Args extends DynamicValuePointcut {
 	     +"pattern was "+args+", method was "+method);
     }
 
-    public void registerSetupAdvice() {}
+    public void registerSetupAdvice
+	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+
+    public void getFreeVars(Set/*<Var>*/ result) {
+	Iterator it=args.iterator();
+	while(it.hasNext()) 
+	    ((ArgPattern) (it.next())).getFreeVars(result);
+    }
 }

@@ -7,7 +7,7 @@ package abc.main;
     @author Ganesh Sittampalam
 */
 public class Debug {
-    private static Debug v;
+    public static Debug v;
     static {
 	try {
 	    v=(Debug) 
@@ -38,6 +38,8 @@ public class Debug {
     public boolean showNormalizedPointcuts=false;
     public boolean showResidues=false;
 
+    public boolean debugPointcutNormalization=false;
+
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher
                                                    // or things it sees (like patterns)
@@ -49,6 +51,7 @@ public class Debug {
     public boolean shadowPointsSetter=false; // collect shadow points
     public boolean pointcutCodeGen=false; // main pointcut generator
     public boolean printAdviceInfo=false; // dumps advice info
+    public boolean residueCodeGen=false;
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;

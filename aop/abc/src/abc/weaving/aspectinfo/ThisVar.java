@@ -1,6 +1,6 @@
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
+import java.util.*;
 import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.*;
@@ -38,5 +38,7 @@ public class ThisVar extends ThisAny {
 	if(var==this.var) return this;
 	else return new ThisVar(var,getPosition());
     }
-
+    public void getFreeVars(Set/*<String>*/ result) {
+	result.add(var.getName());
+    }
 }

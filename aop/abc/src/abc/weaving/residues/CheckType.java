@@ -36,7 +36,7 @@ public class CheckType extends Residue {
 	    return AlwaysMatch.v;
 
 	if(type instanceof PrimType) {
-	    if(type.equals(value.getSootValue().getType()))
+	    if(type.equals(value.getSootType()))
 		return AlwaysMatch.v;
 	    else return NeverMatch.v;
 	}

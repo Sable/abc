@@ -29,7 +29,4 @@ public abstract class PerPointcut extends Per {
 	throw new RuntimeException("per clause not supported yet: "+this);
     }
 
-    public String toString() {
-	return "foo";
-    }
 }

@@ -24,4 +24,7 @@ public abstract class ArgPattern extends Syntax {
 	 List /*<CastPointcutVar>*/ newCasts,
 	 Position pos);
 
+    public abstract void getFreeVars(Set/*<String>*/ result);
+    
+
 }

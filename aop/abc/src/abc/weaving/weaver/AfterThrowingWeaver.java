@@ -23,6 +23,8 @@ import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.ThrowingAdvice;
 import abc.weaving.matching.AdviceApplication;
+import abc.weaving.residues.Residue;
+
 
 /** Handle after throwing weaving.
  * @author Laurie Hendren
@@ -41,18 +43,16 @@ public class AfterThrowingWeaver {
 
 
     public static void doWeave(SootMethod method, LocalGeneratorEx lg,
-	                      AdviceApplication adviceappl)
-      { debug("Handling after throwing: " + adviceappl);
+			       ShadowPoints shadowpoints,Residue residue,
+			       AbstractAdviceDecl advicedecl,WeavingContext wc)
+      { 
         Body b = method.getActiveBody();
         Chain units = b.getUnits().getNonPatchingChain();
 
-	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
-
-	AbstractAdviceDecl advicedecl = adviceappl.advice;
 	ThrowingAdvice advicespec = (ThrowingAdvice) (advicedecl.getAdviceSpec());
 
 	// end of shadow
-	Stmt endshadow = adviceappl.shadowpoints.getEnd();
+	Stmt endshadow = shadowpoints.getEnd();
         
         NopStmt nop2 = Jimple.v().newNopStmt();
         GotoStmt goto1 = Jimple.v().newGotoStmt(nop2);
@@ -74,7 +74,7 @@ public class AfterThrowingWeaver {
 
         ThrowStmt throwStmt = Jimple.v().newThrowStmt(exception);
 
-	Stmt endresidue=adviceappl.residue.codeGen
+	Stmt endresidue=residue.codeGen
 	    (method,lg,units,idStmt,throwStmt,wc);
 
 	//have ... 
@@ -87,7 +87,7 @@ public class AfterThrowingWeaver {
                 
         units.insertAfter(throwStmt, endresidue);
 
-        Chain invokestmts = advicedecl.makeAdviceExecutionStmts(adviceappl,lg,wc);
+        Chain invokestmts = advicedecl.makeAdviceExecutionStmts(lg,wc);
 
 	for (Iterator stmtlist = invokestmts.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
@@ -122,7 +122,7 @@ public class AfterThrowingWeaver {
 	     units.insertAfter(assignbool,idStmt);
 	  }
 
-	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
+	Stmt beginshadow = shadowpoints.getBegin();
         Stmt begincode = (Stmt) units.getSuccOf(beginshadow);
 
 	//have ... 

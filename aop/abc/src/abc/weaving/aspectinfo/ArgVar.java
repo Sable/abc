@@ -53,4 +53,8 @@ public class ArgVar extends ArgAny {
 	return newvar;
     }
 
+    public void getFreeVars(Set/*<String>*/ result) {
+	result.add(var.getName());
+    }
+
 }

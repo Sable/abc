@@ -24,7 +24,7 @@ public abstract class ShadowMatch {
     public abstract ShadowMatch getEnclosing();
 
     /** construct the sjpInfo structure */
-    public abstract AdviceApplication.SJPInfo makeSJPInfo();
+    protected abstract AdviceApplication.SJPInfo makeSJPInfo();
 
     private AdviceApplication.SJPInfo sjpInfo=null;
 

@@ -39,12 +39,15 @@ public class NotResidue extends Residue {
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
 			Chain units,Stmt begin,Stmt fail,
 			WeavingContext wc) {
-
+	if(abc.main.Debug.v().residueCodeGen)
+	    System.err.println("beginning not residue generation");
 	Stmt nopStmt=Jimple.v().newNopStmt();
 	Stmt notResidueEnd=op.codeGen(method,localgen,units,begin,nopStmt,wc);
 	Stmt abort=Jimple.v().newGotoStmt(fail);
 	units.insertAfter(abort,notResidueEnd);
 	units.insertAfter(nopStmt,abort);
+	if(abc.main.Debug.v().residueCodeGen)
+	    System.err.println("done not residue generation");
 	return nopStmt;
     }
 

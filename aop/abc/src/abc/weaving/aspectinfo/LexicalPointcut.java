@@ -1,7 +1,6 @@
 package abc.weaving.aspectinfo;
 
-import java.util.Hashtable;
-
+import java.util.*;
 import polyglot.util.Position;
 
 import soot.*;
@@ -37,6 +36,10 @@ public abstract class LexicalPointcut extends Pointcut {
 	return this;
     }
 
-    public void registerSetupAdvice() {}
+    public void registerSetupAdvice
+	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+
+    public void getFreeVars(Set/*<String>*/ result) {}
+
 
 }
