@@ -7,6 +7,7 @@ import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
+import abc.main.AbcTimer;
 
 /** The driver for the weaving process.  
  * @author Jennifer Lhotak
@@ -42,6 +43,8 @@ public class Weaver {
             ig.addField( ifd );
         }
 
+	AbcTimer.mark("Intertype weave");
+
         // Generate methods inside aspects needed for code gen and bodies of
 	//   methods not filled in by front-end (i.e. aspectOf())
 	debug("Generating extra code in aspects");
@@ -52,6 +55,8 @@ public class Weaver {
             final Aspect as = (Aspect) asIt.next();
             ag.fillInAspect(as.getInstanceClass().getSootClass());
         }
+
+	AbcTimer.mark("Add aspect code");
 
 	ShadowPointsSetter sg = new ShadowPointsSetter();
         PointcutCodeGen pg = new PointcutCodeGen();
@@ -90,5 +95,6 @@ public class Weaver {
 		  scl.getName() + "\n");
 	} // each class
 
+      AbcTimer.mark("Weaving advice");
     } // method weave
 } // class Weaver
