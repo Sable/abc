@@ -529,6 +529,14 @@
             <message kind="error" line="3"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="declare error working with pointcut and-not (amp,amp,bang)"
+      keywords="from-errors">
+        <compile files="DeclareError.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors" title="illegal synchronized stmts"
       keywords="from-errors,purejava,messages-vary">
         <compile files="BadSynchronized.java"
@@ -592,6 +600,13 @@
         <compile files="MissingPackageCE.java">
             <message kind="error" line="2"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="new" title="simple declare warning (NPE)"
+      keywords="from-resolved_105">
+        <compile files="DeclareWarningMain.java">
+            <message kind="warning" line="5"/>
+        </compile>
+        <run class="DeclareWarningMain"/>
     </ajc-test>
 <ajc-test dir="new" pr="770" title="cflow pcd syntax error"
       keywords="from-resolved_105">
@@ -735,6 +750,14 @@
             <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new/binaryWarnings/src" pr="37020" keywords="knownLimitation"
+   	 title="declare warnings on main - constructor execution">
+        <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
+        	<message kind="warning" file="app/Main.java"
+        	  line="23" text="execution(Main.new())"/>
+        </compile>
+        <run class="app.Main"/>
+    </ajc-test>
 <ajc-test dir="bugs" pr="39460"
    	 title="Missing import crashes compiler">
         <compile files="MissingImport.java">
@@ -747,6 +770,22 @@
         	<message kind="error" line="14"/>
         </compile>
     </ajc-test>
+<ajc-test dir="bugs"
+		pr="40805" 
+		title="interface call signatures when declaring method in aspect">
+		<compile files="DeclareWarningAndInterfaceMethodCW.java">
+			<message kind="warning" line="27" text="call getSomething"/>
+			<message kind="warning" line="27" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="31" text="call getSomething"/>
+			<message kind="warning" line="31" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="33" text="call getSomething"/>
+			<message kind="warning" line="33" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="35" text="call getSomething"/>
+			<message kind="warning" line="35" text="call ICanGetSomething.getSomething"/>
+			<message kind="warning" line="38" text="call getSomething"/>
+			<message kind="warning" line="38" text="call ICanGetSomething.getSomething"/>
+		</compile>
+	</ajc-test>
 <ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar"
 		comment="weaving required for implementations of interface? 
