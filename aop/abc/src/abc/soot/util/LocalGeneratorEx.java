@@ -25,7 +25,9 @@
  */
 package abc.soot.util;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import soot.Body;
 import soot.Local;
@@ -56,7 +58,8 @@ public class LocalGeneratorEx extends LocalGenerator {
 	public Local generateLocal(soot.Type type, String suggestedName){
 		//int i=0;
 		String name=suggestedName;
-		while (bodyContainsLocal(name)) {
+		Set localNames=getLocalNames();
+		while (localNames.contains(name)) {
 			name=suggestedName + (++nextLocal);
 		}
 		return createLocal(name, type);
@@ -77,5 +80,14 @@ public class LocalGeneratorEx extends LocalGenerator {
 			if (((soot.Local)it.next()).getName().equals(name)) return true;
 		}
 		return false;
+	}
+	private Set localNames=new HashSet();
+	private Set getLocalNames() {
+		localNames.clear();
+		Iterator it = body.getLocals().iterator();
+		while (it.hasNext()){
+			localNames.add(((soot.Local)it.next()).getName());
+		}
+		return localNames;
 	}
 }
