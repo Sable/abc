@@ -1614,10 +1614,10 @@
             <message kind="warning" line="22" text="execution(void irun())"/>
             <message kind="warning" line="23" text="execution(DeclareWarning.new())"/>
             <message kind="warning" line="23" text="initialization(DeclareWarning)"/>
-            <message kind="warning" line="33" text="handler(OutOfMemoryError) &amp;amp;&amp;amp; within(DeclareWarning)"/>
+            <message kind="warning" line="33" text="handler(OutOfMemoryError) &amp;&amp; within(DeclareWarning)"/>
             <message kind="warning" line="36" text="handler(Error)"/>
-            <message kind="warning" line="39" text="handler(RuntimeException) &amp;amp;&amp;amp; withincode(DeclareWarning.new())"/>
-            <message kind="warning" line="74" text="adviceExecution() &amp;amp;&amp;amp; within(A)"/>
+            <message kind="warning" line="39" text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())"/>
+            <message kind="warning" line="74" text="adviceExecution() &amp;&amp; within(A)"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new"
