@@ -351,7 +351,8 @@
                   - works with javac
                   - works with soot from class file
                   - does not work with j2j
-                  - does not work with jlc, reported to Nate June 30/04 LJH"
+                  - does not work with jlc, reported to Nate June 30/04 LJH
+                  FIXED July 1/04 LJH"
       dir="new" title="handle multiple nested inner classes"
       keywords="from-java">
         <compile files="InnerHell.java"/>
@@ -376,7 +377,8 @@
       abccomment = "works for ajc, jlc 
                     doesn't work for j2j or abc
                     file ClassFieldOnPrimitiveTypeLJH.java sent to Jennifer
-                       June 30/04 LJH"
+                       June 30/04 LJH
+                    FIXED July 1/04 LJH"
       keywords="from-java,purejava">
         <compile files="ClassFieldOnPrimitiveType.java"/>
         <run class="ClassFieldOnPrimitiveType"/>
@@ -432,7 +434,8 @@
     <ajc-test dir="new" title="order of type declarations shouldn't matter"
       abccomment = "doesn't work for abc,  No field this$0 in class Second
                     same behavior for soot -f src-prec java --app 
-                    Reported to Jennifer on June 30/04.  LJH "
+                    Reported to Jennifer on June 30/04.  LJH 
+                    Fixed July 1/04 LJH"
       keywords="from-java">
         <compile files="OrderOfTypes.java"/>
         <run class="OrderOfTypes"/>
@@ -525,10 +528,9 @@
 
     <ajc-test dir="pureJava"
       title="inner classes accessing outers and some more inner class names"
-      abccomment="doesn't compile with soot or j2j, compiles with abc, but
-                  gives incorrect results,  correct for ajc and jlc.
-                  Reported to Jennifer and Ondrej, June 30/04 LJH"
-
+      abccomment="works outside of testHarness, but gets a
+            reflection error from inside testHarness, may be fixed with
+            new test harness.   LJH"
       keywords="from-java">
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
@@ -664,6 +666,8 @@
 
     <ajc-test dir="pureJava"
       title="Checking character values with all the unicode chars."
+      abccomment="Required the fixed jasmin to handle constant
+                  pool offsets > 32K.  Fixed July 1/04 LJH "
       keywords="from-java">
         <compile files="CharsUnicode.java"/>
         <run class="CharsUnicode"/>
@@ -773,16 +777,25 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH 
+                  to translate back message must be removed and
+                  ajcrun changed to run"
       keywords="from-java,purejava">
-        <compile files="KeywordAspect.java"/>
-        <run class="KeywordAspect"/>
+        <compile files="KeywordAspect.java">
+          <message kind="error" line="7"/> 
+        </compile>
+        <ajcrun class="KeywordAspect" />
     </ajc-test>
 
     <ajc-test dir="pureJava"
+      abccomment = "abc doesn't allow keywords, added error. LJH "
       title="Using 'pointcut' as identifier is legal TODO"
       keywords="from-java,purejava">
-        <compile files="KeywordPointcut.java"/>
-        <run class="KeywordPointcut"/>
+        <compile files="KeywordPointcut.java">
+           <message kind="error" line="7" />
+        </compile>
+        <ajcrun class="KeywordPointcut"/>
     </ajc-test>
 
     <ajc-test dir="pureJava" title="Conflicting inner classes with interfaces."
@@ -4932,6 +4945,8 @@
 
     <ajc-test dir="pureJava"
       title="Locals inside other locals, ordering of processing [eh]"
+      abccomment="Verify error in abc and j2j (when --app used).
+                  Reported to Jennifer, July 1/04 LJH"
       keywords="from-resolved_105">
         <compile files="LocalInners2.java"/>
         <run class="LocalInners2"/>
@@ -6746,12 +6761,16 @@
 	</ajc-test>
 
 	<ajc-test dir="bugs/moreInterfaceLibrary"
+        abccomment = "need to have aspectjrt.jar on classpath by
+                          default"
 		pr="41123"
 		title="Weaving failure when using injars (on classpath)">
 		<compile
 			files="model/BusObj.java,model/MonitorBusObj.java"
 			classpath="lib.jar">
+		    <ajcmessage kind="error" line="3"/>
 		    <message kind="error" line="3"/>
+		    <message kind="error" line="6"/>
 		</compile>
 	</ajc-test>
 	
