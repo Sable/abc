@@ -7379,28 +7379,24 @@
 
 	<ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar"
-		abccomment="only type error, but ok. ODM 19/07/04"
                 comment="weaving required for implementations of interface? 
 		         XXX Would prefer to support javac compiles of Client here, mimicked with classpath only"
 		>
 		<compile 
 			files="Client.java" 
 			classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
-			<ajcmessage kind="error" line="9"/>
-			<message kind="error" line="14"/>
+			<message kind="error" line="9"/>
                         </compile>
 		</ajc-test>
 
 	<ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar"
-                abccomment="abc bails out after type checking, but ok. ODM 19/07/04"
 		comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run"
 		>
 		<compile 
 			files="Client.java" 
 			classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
-			<ajcmessage kind="error" line="9"/>
-                        <message kind="error" line="14"/>
+			<message kind="error" line="9"/>
 			</compile>
 		</ajc-test>
 
@@ -7607,7 +7603,7 @@
     
   	<ajc-test dir="bugs/concretizeNpe" pr="43033"
 		title="NPE in concretization error path"
-                abccomment = "parse error location ok. ODM 19/07/04"
+                abccomment = "parse error location ok. ODM 19/07/04 Also extra 'parser couldn't recover' error - AGS"
 		keywords="poorErrorMessages">
 		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
 		<!--
@@ -7619,6 +7615,7 @@
 		-->
 		  <ajcmessage line="12" kind="error" />		
 		  <ajcmessage line="13" kind="error" />
+                  <message kind="error" />
                   <message line="13" kind="error" />
 		</compile>
 	</ajc-test>
