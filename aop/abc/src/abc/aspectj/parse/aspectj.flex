@@ -68,6 +68,8 @@ import polyglot.ext.jl.parse.*;
     private static int savedParenLevel; // level when entering if in pointcut 
     private static int savedPerParenLevel; // level when entering a per pointcut
     private static boolean inPerPointcut = false; // currently in a per pointcut 
+    private static boolean reportedUnclosedComment = false; 
+    private static boolean inComment = false;
 
     /* Remember state to return to when finishing a String or Char */
     /* Just keep own copy of state for the four main states, JAVA (aka
@@ -262,9 +264,11 @@ import polyglot.ext.jl.parse.*;
 
 %}
 
-%eofval{
-        return new EOF(pos(), sym.EOF); 
+/*
+%eofval{  
 %eofval}
+*/
+
 
 %state COMMENT
 
@@ -276,7 +280,7 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 
 /* comments */
 
-EndOfLineComment = "//" {InputCharacter}* {LineTerminator}
+EndOfLineComment = "//" {InputCharacter}* 
 
 
 /* identifiers */
@@ -461,8 +465,12 @@ SingleCharacter = [^\r\n\'\\]
   "null"                         { return null_token(); }
 
   /* comments */
-  "/*"                           { yybegin(COMMENT); comment_count = comment_count + 1; }
-  "*/"                           { eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos()); }
+  "/*"                           { yybegin(COMMENT); 
+                                   inComment = true; 
+                                   comment_count = comment_count + 1; 
+                                 }
+  "*/"                           { eq.enqueue(ErrorInfo.LEXICAL_ERROR,
+                                                  "unmatched */",pos()); }
 
   {EndOfLineComment}             { /* ignore */ }
 
@@ -549,32 +557,43 @@ SingleCharacter = [^\r\n\'\\]
                                        savedState = IN_JAVA;
                                        javaOrAspect = IN_JAVA;
                                        // shouldn't the thing on the nesting stack be correct anyway?
-                                       nestingStack.pop();
+                                       if (!nestingStack.isEmpty())
+                                         nestingStack.pop();
                                      }
                                    else /* we are in some nesting */
                                      /* if curlyBraceLevel is same as
                                           top of nestingStack, then 
                                           exiting a class, interface or
                                           aspect declaration. */
-                                     if (curlyBraceLevel == 
-                                         ((NestingState) nestingStack.peek()).
+                                     if (!nestingStack.isEmpty())
+                                       { if (curlyBraceLevel == 
+                                           ((NestingState) nestingStack.peek()).
                                                                   nestingLevel)
-                                       { NestingState s = 
-                                           (NestingState) nestingStack.pop();
-                                         savedState = s.state;
-                                         if (savedState == IN_JAVA)
-                                           yybegin(YYINITIAL);
-                                         else if (savedState == IN_ASPECTJ)
-                                           yybegin(ASPECTJ);
-                                         else if (savedState == IN_POINTCUT) // syntax error
-                                           yybegin(POINTCUT);
-                                         else if (savedState == IN_POINTCUTIFEXPR) // syntax error
-                                           yybegin(POINTCUTIFEXPR);
-                                         else
-                                           System.err.println(
+                                           { NestingState s;  
+
+                                             s= (NestingState) nestingStack.pop();
+                                             savedState = s.state;
+                                             if (savedState == IN_JAVA)
+                                               yybegin(YYINITIAL);
+                                             else if (savedState == IN_ASPECTJ)
+                                               yybegin(ASPECTJ);
+                                             else if (savedState == IN_POINTCUT) // syntax error
+                                               yybegin(POINTCUT);
+                                             else if (savedState == IN_POINTCUTIFEXPR) // syntax error
+                                               yybegin(POINTCUTIFEXPR);
+                                             else
+                                               System.err.println(
      "Invalid state " + savedState + " popped from nestingStack in scanner");
-                                       }
-                                   return op(sym.RBRACE); 
+                                             }
+                                          }
+                                        else // an extra }
+                                          { // don't change the state
+                                            // hand over token for parser to
+                                            // find sytax error
+                                            //savedState = IN_JAVA;
+                                            //yybegin(YYINITIAL);
+                                          }
+                                        return op(sym.RBRACE); 
                                  }
   "["                            { return op(sym.LBRACK); }
   "]"                            { return op(sym.RBRACK); }
@@ -809,7 +828,9 @@ SingleCharacter = [^\r\n\'\\]
 				   if (comment_count < 0) 
                                      eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
 	                           if (comment_count == 0) 
-    		                     returnFromStringChar();
+                                     { inComment = false;
+    		                       returnFromStringChar(); 
+                                     }
 	                         }
   "/*"                           { comment_count = comment_count + 1; }
   .|\n                           { /* ignore */ }
@@ -819,3 +840,20 @@ SingleCharacter = [^\r\n\'\\]
 .|\n                             { eq.enqueue(ErrorInfo.LEXICAL_ERROR,
                                               "Illegal character \""+yytext()+"\"",
 	                                      pos()); }
+
+<<EOF>> { Position mypos = pos();
+
+          if (inComment) 
+           { // for some reason EOF gets reported twice and only want to issue
+             //    error once. 
+             if (!reportedUnclosedComment) 
+               { eq.enqueue(ErrorInfo.LEXICAL_ERROR, 
+                       "unclosed comment at EOF, expecting */", 
+                        new Position(file(),mypos.line()-1));
+                 reportedUnclosedComment = true;
+               }
+           }
+
+         return new EOF(mypos, sym.EOF); 
+
+        }
