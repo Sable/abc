@@ -20,6 +20,23 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 	return Precedence.LITERAL;
     }
 
+    /** Reconstruct the pointcut. */
+    protected PCCflowBelow_c reconstruct(Pointcut pc) {
+	if (pc != this.pc) {
+	    PCCflowBelow_c n = (PCCflowBelow_c) copy();
+	    n.pc = pc;
+	    return n;
+	}
+	return this;
+    }
+
+    /** Visit the children of the pointcut. */
+    public Node visitChildren(NodeVisitor v) {
+	Pointcut pc = (Pointcut) visitChild(this.pc, v);
+	return reconstruct(pc);
+    }
+
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("cflowbelow(");
         print(pc, w, tr);

@@ -8,6 +8,7 @@ import polyglot.ast.Node;
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
+import polyglot.ast.Node;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
@@ -33,6 +34,29 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	  	                 Block body) {
 	super(pos,flags,name,formals,throwTypes,body);
 	this.host = host;
+    }
+
+    protected IntertypeConstructorDecl_c reconstruct(List formals, 
+						     List throwTypes, 
+						     Block body,
+						     TypeNode host) {
+	if(host != this.host) {
+	    IntertypeConstructorDecl_c n 
+		= (IntertypeConstructorDecl_c) copy();
+	    n.host = host;
+	    return (IntertypeConstructorDecl_c) 
+		n.reconstruct(formals,throwTypes,body);
+	}
+	return (IntertypeConstructorDecl_c) 
+	    super.reconstruct(formals,throwTypes,body);
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+        List formals = visitList(this.formals, v);
+        List throwTypes = visitList(this.throwTypes, v);
+        Block body = (Block) visitChild(this.body, v);
+	TypeNode host=(TypeNode) visitChild(this.host,v);
+	return reconstruct(formals,throwTypes,body,host);
     }
 
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {

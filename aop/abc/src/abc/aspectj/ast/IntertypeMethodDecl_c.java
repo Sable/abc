@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
+import polyglot.ast.Node;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
@@ -34,6 +35,31 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	super(pos,flags,returnType,
               name,formals,throwTypes,body);
 	this.host = host;
+    }
+
+    protected IntertypeMethodDecl_c reconstruct(TypeNode returnType, 
+						List formals, 
+						List throwTypes, 
+						Block body,
+						TypeNode host) {
+	if(host != this.host) {
+	    IntertypeMethodDecl_c n =
+		(IntertypeMethodDecl_c) copy();
+	    n.host=host;
+	    return (IntertypeMethodDecl_c) 
+		n.reconstruct(returnType,formals,throwTypes,body);
+	}
+	return (IntertypeMethodDecl_c)
+	    super.reconstruct(returnType,formals,throwTypes,body);
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+        List formals = visitList(this.formals, v);
+        TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+        List throwTypes = visitList(this.throwTypes, v);
+        Block body = (Block) visitChild(this.body, v);
+	TypeNode host = (TypeNode) visitChild(this.host, v);
+	return reconstruct(returnType,formals,throwTypes,body,host);
     }
 
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {

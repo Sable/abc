@@ -20,6 +20,21 @@ public class PCInitialization_c extends Pointcut_c implements PCInitialization
 	return Precedence.LITERAL;
     }
 
+    protected PCInitialization_c reconstruct(ConstructorPattern pat) {
+	if(pat != this.pat) {
+	    PCInitialization_c n=(PCInitialization_c) copy();
+	    n.pat=pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ConstructorPattern pat
+	    = (ConstructorPattern) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("initialization(");
         print(pat, w, tr);

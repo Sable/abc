@@ -20,6 +20,21 @@ public class PCWithin_c extends Pointcut_c implements PCWithin
 	return Precedence.LITERAL;
     }
 
+    protected PCWithin_c reconstruct(ClassnamePatternExpr pat) {
+	if (pat != this.pat) {
+	    PCWithin_c n = (PCWithin_c) copy();
+	    n.pat = pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr pat=
+	    (ClassnamePatternExpr) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("within(");
         print(pat, w, tr);

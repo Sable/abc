@@ -21,6 +21,21 @@ public class PCPreinitialization_c extends Pointcut_c
 	return Precedence.LITERAL;
     }
 
+    protected PCPreinitialization_c reconstruct(ConstructorPattern pat) {
+	if(pat != this.pat) {
+	    PCPreinitialization_c n=(PCPreinitialization_c) copy();
+	    n.pat=pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ConstructorPattern pat
+	    = (ConstructorPattern) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("preinitialization(");
         print(pat, w, tr);

@@ -20,6 +20,21 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
 	return Precedence.LITERAL;
     }
 
+    protected PCExecution_c reconstruct(MethodConstructorPattern pat) {
+	if(pat != this.pat) {
+	    PCExecution_c n=(PCExecution_c) copy();
+	    n.pat=pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	MethodConstructorPattern pat
+	    = (MethodConstructorPattern) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("execution (");
         print(pat, w, tr);

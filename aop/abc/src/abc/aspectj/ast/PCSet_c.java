@@ -26,6 +26,20 @@ public class PCSet_c extends Pointcut_c implements PCSet
         w.write(")");
     }
 
+    protected PCSet_c reconstruct(FieldPattern pat) {
+	if (pat != this.pat) {
+	    PCSet_c n = (PCSet_c) copy();
+	    n.pat = pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	FieldPattern pat=(FieldPattern) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	return new abc.weaving.aspectinfo.ShadowPointcut
 	    (new abc.weaving.aspectinfo.SetField(pat.makeAIFieldPattern()),

@@ -22,6 +22,21 @@ public class PCStaticInitialization_c extends Pointcut_c
 	return Precedence.LITERAL;
     }
 
+    protected PCStaticInitialization_c reconstruct(ClassnamePatternExpr pat) {
+	if (pat != this.pat) {
+	    PCStaticInitialization_c n = (PCStaticInitialization_c) copy();
+	    n.pat = pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr pat=
+	    (ClassnamePatternExpr) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("staticinitialization(");
         print(pat, w, tr);

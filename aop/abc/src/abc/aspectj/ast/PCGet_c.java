@@ -26,6 +26,20 @@ public class PCGet_c extends Pointcut_c implements PCGet
         w.write(")");
     }
 
+    protected PCGet_c reconstruct(FieldPattern pat) {
+	if (pat != this.pat) {
+	    PCGet_c n = (PCGet_c) copy();
+	    n.pat = pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	FieldPattern pat=(FieldPattern) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	return new abc.weaving.aspectinfo.ShadowPointcut
 	    (new abc.weaving.aspectinfo.GetField(pat.makeAIFieldPattern()),

@@ -7,6 +7,7 @@ import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
 import polyglot.ast.Expr;
+import polyglot.ast.Node;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
@@ -31,6 +32,24 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
                                 Expr init){
 	super(pos,flags,type,name,init);
 	this.host = host;
+    }
+
+    protected IntertypeFieldDecl_c reconstruct(TypeNode type, 
+					       Expr init,
+					       TypeNode host) {
+	if(host != this.host) {
+	    IntertypeFieldDecl_c n = (IntertypeFieldDecl_c) copy();
+	    n.host=host;
+	    return (IntertypeFieldDecl_c) n.reconstruct(type,init);
+	}
+	return (IntertypeFieldDecl_c) super.reconstruct(type,init);
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	TypeNode type = (TypeNode) visitChild(type(), v);
+        Expr init = (Expr) visitChild(init(), v);
+	TypeNode host=(TypeNode) visitChild(this.host,v);
+	return reconstruct(type,init,host);
     }
 
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {

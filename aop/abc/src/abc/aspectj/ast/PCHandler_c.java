@@ -20,6 +20,21 @@ public class PCHandler_c extends Pointcut_c implements PCHandler
 	return Precedence.LITERAL;
     }
 
+    protected PCHandler_c reconstruct(ClassnamePatternExpr pat) {
+	if (pat != this.pat) {
+	    PCHandler_c n = (PCHandler_c) copy();
+	    n.pat = pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr pat=
+	    (ClassnamePatternExpr) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("handler(");
         print(pat, w, tr);

@@ -20,6 +20,21 @@ public class PCCall_c extends Pointcut_c implements PCCall
 	return Precedence.LITERAL;
     }
 
+    protected PCCall_c reconstruct(MethodConstructorPattern pat) {
+	if(pat != this.pat) {
+	    PCCall_c n=(PCCall_c) copy();
+	    n.pat=pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	MethodConstructorPattern pat
+	    = (MethodConstructorPattern) visitChild(this.pat,v);
+	return reconstruct(pat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("call(");
         print(pat, w, tr);
