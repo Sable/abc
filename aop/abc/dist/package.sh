@@ -142,7 +142,7 @@ echo "export POLYGLOT_VER=dev-$DATE" >> debian/rules
 echo "export JASMIN_VER=dev-$DATE" >> debian/rules
 cat ../../../dist/debian/rules >> debian/rules
 
-../../../dist/addchangelogrelease.pl $VERSION `date +%s` \
+../../../dist/addchangelogrelease.pl $VERSION $UNIXTIME \
    < ../../../CHANGELOG \
    | ../../../dist/makechangelogs.pl debian \
    > debian/changelog
@@ -212,4 +212,4 @@ cd ..
 
 chmod -R g+w $VERSION
 
-echo Done.
+echo Made $VERSION $UNIXTIME.

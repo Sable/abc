@@ -38,7 +38,19 @@ while(<STDIN>) {
     } elsif($mode eq 'ignoring') {
       $mode='';
     }
-    my $change={text => [$1]};
+    my $change={type => 'user', text => [$1]};
+    $change->{'restriction'}=$restriction;
+    push @{$currentitem->{'changes'}},$change;
+    $restriction='';
+  } elsif(/^\!(.*)$/) {
+    die 'Must have a version before an entry' unless defined $currentitem;
+    if($mode eq 'ignorenext') {
+      $mode='ignoring';
+      next;
+    } elsif($mode eq 'ignoring') {
+      $mode='';
+    }
+    my $change={type => 'extender', text => [$1]};
     $change->{'restriction'}=$restriction;
     push @{$currentitem->{'changes'}},$change;
     $restriction='';
@@ -98,6 +110,7 @@ if(defined $ARGV[0] && $ARGV[0] eq 'redhat') {
 } elsif(defined $ARGV[0] && $ARGV[0] eq 'latest') {
   die 'No entries at all!' unless defined $entries[0];
   foreach my $changes (@{$entries[0]->{'changes'}}) {
+    next if defined $ARGV[1] && $changes->{'type'} ne $ARGV[1];
     print '- '.$changes->{'text'}->[0]."\n";
     shift @{$changes->{'text'}};
     foreach my $item (@{$changes->{'text'}}) {

@@ -20,7 +20,7 @@
         <copy file="${polyglot.loc}" tofile="lib/polyglot.jar" />
         <copy file="${polyglot.cupclasses.loc}" tofile="lib/java_cup.jar" />
         <copy file="${soot.loc}" tofile="lib/sootclasses.jar" />
-        <copy file="${jasmin.loc}" tofile="lib/jasminclasses-sable-nocup.jar" />
+        <copy file="${jasmin.loc}" tofile="lib/jasminclasses.jar" />
     </target>
 
     <target name="abc-for-ajc-ant-jar" depends="settings,libdir">

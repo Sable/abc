@@ -12,9 +12,12 @@ build-stamp: $(patched)
 
 	mkdir -p lib
 
-	cd build-tree/jasmin-$(JASMIN_VER) && CLASSPATH= bin/compile_all.sh
-	cd build-tree/jasmin-$(JASMIN_VER)/classes && \
-	  jar -cvf ../../../lib/jasminclasses-sable-nocup.jar jas/ jasmin/ scm/
+	cd build-tree/jasmin-$(JASMIN_VER) && \
+	 (echo java_cup.jar=../../lib/java_cup.jar ; \
+	  echo release.log=../../lib/ ; \
+	  echo jasmin.version=custom ) \
+	 > ant.settings
+	cd build-tree/jasmin-$(JASMIN_VER) && CLASSPATH= ant jasmin-jar
 
 	cd build-tree/polyglot-$(POLYGLOT_VER) && CLASSPATH= ant polyglot-jar
 	cp build-tree/polyglot-$(POLYGLOT_VER)/lib/polyglot.jar lib/
@@ -34,7 +37,7 @@ build-stamp: $(patched)
 	   echo polyglot.cupclasses.loc=../../lib/java_cup.jar ; \
            echo jflex.loc=/usr/share/java/JFlex.jar ; \
 	   echo soot.loc=../../lib/sootclasses-custom.jar ; \
-	   echo jasmin.loc=../../lib/jasminclasses-sable-nocup.jar ; \
+	   echo jasmin.loc=../../lib/jasminclasses-custom.jar ; \
 	   echo xact.loc=../../xact-complete-$(XACT_VER).jar) \
 	  > ant.settings
 	mkdir -p build-tree/abc-$(ABC_VER)/classes/abc/main
