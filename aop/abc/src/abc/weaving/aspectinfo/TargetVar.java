@@ -1,12 +1,15 @@
 package abc.weaving.aspectinfo;
 
-import soot.*;
+import polyglot.util.Position;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.*;
 
 /** Handler for <code>target</code> condition pointcut with a variable argument. */
-public class TargetVar extends AbstractOtherPointcutHandler {
+public class TargetVar extends TargetAny {
     private Var var;
 
-    public TargetVar(Var var) {
+    public TargetVar(Var var,Position pos) {
+	super(pos);
 	this.var = var;
     }
 
@@ -15,6 +18,16 @@ public class TargetVar extends AbstractOtherPointcutHandler {
      */
     public Var getVar() {
 	return var;
+    }
+
+    public String toString() {
+	return "target("+var+")";
+    }
+
+    protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
+	Residue typeCheck=new CheckType(cv,we.getAbcType(var).getSootType());
+	Residue bind=new Bind(cv,we.getWeavingVar(var));
+	return AndResidue.construct(typeCheck,bind);
     }
 
 }
