@@ -2286,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@158851f, [Ljava.lang.Object;@8bb8f6, TwoAnonymous$3@158851f
+calling run: TwoAnonymous$3@1a74f90, [Ljava.lang.Object;@158851f, TwoAnonymous$3@1a74f90
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2403,16 +2403,16 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@be61f8.foo calls Outer$Inner@112071e.mi
+Outer@6d5145.foo calls Outer$Inner@f29797.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@112071e.mi calls java.io.PrintStream@914f6d.println
+Outer$Inner@f29797.mi calls java.io.PrintStream@be61f8.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@be61f8.foo calls Outer$InnerRandom@73af65.nextHook
+Outer@6d5145.foo calls Outer$InnerRandom@914f6d.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@73af65.nextHook calls Outer$InnerRandom@73af65.next
+Outer$InnerRandom@914f6d.nextHook calls Outer$InnerRandom@914f6d.next
 Outer.foo() calls Random.nextInt(..)
-Outer@be61f8.foo calls X.nextInt
+Outer@6d5145.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
@@ -4128,8 +4128,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@e6faa7
-o: Bar@e6faa7, i: 10
+o: Bar@baf7dd
+o: Bar@baf7dd, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4714,7 +4714,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@c7b645
+LibraryAspect-defined run() for C@dd3fb
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5040,7 +5040,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1355b81
+? Util.read() obj=Test@1281314
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5059,7 +5059,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1362a53
+? Util.read() obj=ClinitTest@8500e6
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5069,7 +5069,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@f3c09b
+? Util.read() obj=SuidTest@5c4ce7
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5272,12 +5272,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@43fd83
-Invoking command bean:  Command@1b8cb99
-hello(Command@1b8cb99)
-Created a PerThis aspect : Testcase2@13ed3b9
-Invoking command bean:  Command@1be3512
-hello again(Command@1be3512)
+Created a PerThis aspect : Testcase2@8e3df2
+Invoking command bean:  Command@84e66f
+hello(Command@84e66f)
+Created a PerThis aspect : Testcase2@134acc2
+Invoking command bean:  Command@13a2669
+hello again(Command@13a2669)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
