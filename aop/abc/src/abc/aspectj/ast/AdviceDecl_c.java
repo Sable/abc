@@ -203,6 +203,12 @@ public class AdviceDecl_c extends MethodDecl_c
 		List thrws = new LinkedList(throwTypes()); 
 		String name = UniqueID.newID("proceed");
 		MethodDecl md = nf.MethodDecl(position(),Flags.PRIVATE,tn,name,formals,thrws,bl);      
+		MethodInstance mi = ts.methodInstance(position(), methodInstance().container(),
+						      Flags.PRIVATE, tn.type(), name,
+						      new ArrayList(methodInstance().formalTypes()),
+						      new ArrayList(throwTypes()));
+		md = md.methodInstance(mi);
+		((Around)spec).setProceed(md);
 		return md;
     } else return null;
     }

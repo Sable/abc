@@ -15,6 +15,7 @@ import polyglot.ast.Local;
 import polyglot.visit.NodeVisitor;
 
 import polyglot.types.TypeSystem;
+import polyglot.types.ParsedClassType;
 
 import abc.aspectj.ast.PCIf;
 import abc.aspectj.ast.AdviceDecl;
@@ -31,6 +32,7 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* List Formal */ formals; // pointcut formals for generating if-methods
     private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
     private Stack /* List AdviceDecl */ advices;
+    private Stack /* ParsedClassType */ container; // Keep track of current container
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
@@ -43,11 +45,14 @@ public class AspectMethods extends NodeVisitor {
 		this.formals = new Stack();
 		this.proceeds = new Stack();
 		this.advices = new Stack();
+		this.container = new Stack();
 	}
 	
 	public NodeVisitor enter(Node n) {
-		if (n instanceof ClassDecl)
-		   	methods.push(new LinkedList());
+	    if (n instanceof ClassDecl) {
+		methods.push(new LinkedList());
+		container.push(((ClassDecl)n).type());
+	    }
 		if (n instanceof PointcutDecl) {  
 			PointcutDecl pd = (PointcutDecl) n;
 			formals.push(pd.formals());
@@ -71,7 +76,7 @@ public class AspectMethods extends NodeVisitor {
     	}
 		if (n instanceof PCIf) {
 			PCIf ifpcd = (PCIf) n;
-			MethodDecl md = ifpcd.exprMethod(nf,ts,(List) formals.peek()); // construct method for expression in if(..)
+			MethodDecl md = ifpcd.exprMethod(nf,ts,(List) formals.peek(), (ParsedClassType) container.peek()); // construct method for expression in if(..)
 			((List)methods.peek()).add(md);
 			return ifpcd.liftMethod(nf); // replace expression by method call
 		}
@@ -90,6 +95,7 @@ public class AspectMethods extends NodeVisitor {
 		}
 		if (n instanceof ClassDecl) {
 			ClassDecl cd = (ClassDecl) n.copy();
+			container.pop();
 			List localMethods = (List) methods.pop();
 			for (Iterator i = localMethods.iterator(); i.hasNext(); ) {
 				MethodDecl md = (MethodDecl) i.next();

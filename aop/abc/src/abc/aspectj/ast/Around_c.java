@@ -10,7 +10,7 @@ import java.util.*;
 public class Around_c extends AdviceSpec_c 
                               implements Around
 {
-
+    private MethodDecl proceed;
 
     public Around_c(Position pos, 
 		    TypeNode returnType,
@@ -63,9 +63,13 @@ public class Around_c extends AdviceSpec_c
         w.end();
     }
 
+    public void setProceed(MethodDecl proceed) {
+	this.proceed = proceed;
+    }
+
     public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
 	abc.weaving.aspectinfo.AbcType rtype = abc.aspectj.visit.AspectInfoHarvester.toAbcType(returnType.type());
-	abc.weaving.aspectinfo.MethodSig proceed = null;//FIXME: What is the proceed method
-	return new abc.weaving.aspectinfo.AroundAdvice(rtype, proceed, position());
+	abc.weaving.aspectinfo.MethodSig psig = abc.aspectj.visit.AspectInfoHarvester.makeMethodSig(proceed);
+	return new abc.weaving.aspectinfo.AroundAdvice(rtype, psig, position());
     }
 }

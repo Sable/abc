@@ -72,7 +72,7 @@ public class PCIf_c extends Pointcut_c implements PCIf
 		return child.type();
 	}
 
-	public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals){
+	public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, ReferenceType container){
 		Return ret = nf.Return(position(),expr);
 		Block bl = nf.Block(position()).append(ret);
 		TypeNode retType = nf.CanonicalTypeNode(position(),ts.Boolean());
@@ -83,8 +83,20 @@ public class PCIf_c extends Pointcut_c implements PCIf
 			TypeNode tn = nf.CanonicalTypeNode(position(),t);
 			throwTypes.add(tn);
 		}
+		List formaltypes = new ArrayList();
+		Iterator fi = formals.iterator();
+		while (fi.hasNext()) {
+		    Formal f = (Formal)fi.next();
+		    formaltypes.add(f.type().type());
+		}
 		methodName = UniqueID.newID("if");
 		MethodDecl md = nf.MethodDecl(position(),Flags.STATIC.Private(),retType,methodName,args,throwTypes,bl);
+		MethodInstance mi = ts.methodInstance(position, container,
+						      Flags.STATIC.Private(), retType.type(), methodName,
+						      new ArrayList(formaltypes),
+						      new ArrayList(throwTypes));
+		md = md.methodInstance(mi);
+		methodDecl = md;
 		return md;
 	}
 	
