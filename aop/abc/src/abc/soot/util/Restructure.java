@@ -191,7 +191,7 @@ public class Restructure {
    */
   public static boolean inlineThisCall(SootMethod method){
         // assure body is a constructor
-        if (method.getName().equals("<init>"))
+        if (!method.getName().equals("<init>"))
 	   throw new CodeGenException 
 	     ("trying to inline a this() in a method that is not an <init>");
 
