@@ -57,7 +57,6 @@ public class CflowSetup extends AbstractAdviceDecl {
         List formals=new LinkedList();
         List actuals=new LinkedList();
         Iterator it=fvs.iterator();
-        // FIXME make all the formals have type Object
         while(it.hasNext()) {
             String fv=(String) (it.next());
             AbcType type=(AbcType) typeMap.get(fv);
@@ -74,27 +73,26 @@ public class CflowSetup extends AbstractAdviceDecl {
     private int depth;
 
     private List/*<Var>*/ actuals;
-
-    private boolean useCounter;
-
+    
+    private CflowCodeGenUtils.CflowCodeGen codeGen = null;
+    public CflowCodeGenUtils.CflowCodeGen codeGen() { 
+    	if (codeGen == null)
+    		// Init the codegen. This occurs when the cflow stack is first added to the aspect
+    		getCflowStack();
+    	return codeGen; }
+    
     private CflowSetup(Aspect aspct,Pointcut pc,boolean isBelow,
                        List/*<Formal>*/ formals,List/*<Var>*/ actuals,
                        Position pos,int depth) {
         super(aspct,new BeforeAfterAdvice(pos),pc,formals,pos);
         this.actuals=actuals;
         this.isBelow=isBelow;
-        this.useCounter=
-            formals.isEmpty()          // If no free vars, use a counter instead of a stack
-            && !abc.main.Debug.v().dontUseCflowCounter;
         this.depth=depth;
+
     }
 
     public boolean isBelow() {
         return isBelow;
-    }
-
-    public boolean useCounter() {
-        return useCounter;
     }
 
     public int getDepth() {
@@ -109,7 +107,6 @@ public class CflowSetup extends AbstractAdviceDecl {
     public void debugInfo(String prefix,StringBuffer sb) {
         sb.append(prefix+" type: "+spec+"\n");
         sb.append(prefix+" pointcut: "+pc+"\n");
-        sb.append(prefix+" state: "+(useCounter ? "counter" : "stack")+"\n");
         sb.append(prefix+" special: "+(isBelow ? "cflowbelow" : "cflow")
                   +" setup\n");
     }
@@ -138,21 +135,19 @@ public class CflowSetup extends AbstractAdviceDecl {
     public static class CflowSetupBound extends WeavingVar {
         private int pos;
         private Type type;
-        private boolean mustbox;
         private Local loc=null;
         
         public WeavingVar inline(ConstructorInliningMap cim) {
-        	return new CflowSetupBound(pos, type, mustbox);
+        	return new CflowSetupBound(pos, type);
         }
 
         public void resetForReweaving() {
             loc=null;
         }
         
-        public CflowSetupBound(int pos,Type type,boolean mustbox) {
+        public CflowSetupBound(int pos,Type type) {
             this.pos=pos;
             this.type=type;
-            this.mustbox=mustbox;
         }
 
         public String toString() {
@@ -185,10 +180,6 @@ public class CflowSetup extends AbstractAdviceDecl {
             return type;
         }
 
-        public boolean mustBox() {
-            return mustbox;
-        }
-
     }
 
     // not static deliberately
@@ -218,13 +209,7 @@ public class CflowSetup extends AbstractAdviceDecl {
                     ("Variable "+v.getName()+" not found in context",
                      v.getPosition());
 
-            boolean mustbox;
-            if(type instanceof PrimType) {
-                type=Restructure.JavaTypeInfo.getBoxingClass(type).getType();
-                mustbox=true;
-            } else mustbox=false;
-
-            CflowSetupBound setupbound=new CflowSetupBound(index,type,mustbox);
+            CflowSetupBound setupbound=new CflowSetupBound(index,type);
 
             setupbounds.put(v.getName(),setupbound);
             return setupbound;
@@ -242,11 +227,6 @@ public class CflowSetup extends AbstractAdviceDecl {
                 throw new InternalCompilerError
                     ("Variable "+v.getName()+" not found in context",
                      v.getPosition());
-            /*
-              if(type.getSootType() instanceof PrimType)
-              type=new AbcType(Restructure.JavaTypeInfo.getBoxingClass
-              (type.getSootType()).getType());
-            */
             return type;
         }
     }
@@ -261,216 +241,203 @@ public class CflowSetup extends AbstractAdviceDecl {
 
     public void resetForReweaving() {
     	cflowStack=null;
-    	cflowCounter=null;
-        popStmts=new HashMap();
-        pushStmts=new HashMap();
+        //popStmts=new HashMap();
+        //pushStmts=new HashMap();
     }
     
-    private SootFieldRef cflowStack=null;
+    private SootFieldRef cflowStack=null; private SootMethod preClinit=null;
     public SootFieldRef getCflowStack() {
         if(cflowStack==null) {
 
-            if (!(cflowCounter==null)) {
-                //Why did we ask for a counter AND a stack??
-                throw new CodeGenException(
-                      "error: counter and stack requested for one cflow");
-            }
-
+        	// First, init the cflow codegen
+            List/*<Type>*/ formalTypes = new LinkedList();
+            for (Iterator it = getFormals().iterator(); it.hasNext(); 
+        		formalTypes.add(((Formal)it.next()).getType().getSootType()));
+            codeGen = CflowCodeGenUtils.CflowAutoChooseCodeGen.v(formalTypes);
+        	
             SootClass cl=getAspect().getInstanceClass().getSootClass();
 
             int i=0;
             String name;
             do {
-                name="abc$cflowStack$"+i;
+                name="abc$"+codeGen.chooseName()+"$"+i;
                 i++;
             } while(cl.declaresFieldByName(name));
-
-            SootClass stackClass=Scene.v()
-                .getSootClass("org.aspectbench.runtime.internal.CFlowStack");
-            RefType stackType=stackClass.getType();
-
-            SootField cflowStackF=new SootField(name,stackType,
+            
+            SootField cflowStackF=new SootField(name,codeGen.getCflowType(),
                                                 Modifier.PUBLIC | Modifier.STATIC);
             cl.addField(cflowStackF);
             cflowStack=cflowStackF.makeRef();
+   
+            codeGen.setCflowField(cflowStack);
+
 
             SootMethod preClinit=new AspectCodeGen().getPreClinit(cl);
             LocalGeneratorEx lg=new LocalGeneratorEx
                 (preClinit.getActiveBody());
+            this.preClinit = preClinit;
 
-            Local loc=lg.generateLocal(stackType,"cflowStack$"+i);
             Chain units=preClinit.getActiveBody().getUnits();
 
             Stmt returnStmt=(Stmt) units.getFirst();
             while(!(returnStmt instanceof ReturnVoidStmt))
                 returnStmt=(Stmt) units.getSuccOf(returnStmt);
-
-            units.insertBefore(Jimple.v().newAssignStmt
-                               (loc,Jimple.v().newNewExpr(stackType)),
-                               returnStmt);
-            units.insertBefore(Jimple.v().newInvokeStmt
-                               (Jimple.v().newSpecialInvokeExpr
-                                (loc,Scene.v().makeConstructorRef(stackClass,new ArrayList()))),
-                               returnStmt);
-            units.insertBefore(Jimple.v().newAssignStmt
-                               (Jimple.v().newStaticFieldRef(cflowStack),loc),
-                               returnStmt);
+            
+            codeGen.setLocalGen(lg);
+            Chain cflowInitStmts = codeGen.genInitCflowField(cflowStack);
+           
+            
+            Iterator it = cflowInitStmts.iterator();
+            while (it.hasNext()) {
+            	Stmt s = (Stmt)it.next();
+            	units.insertBefore(s, returnStmt);
+            }
+            
         }
         return cflowStack;
     }
 
-    // getCflowCounter retrieves the counter associated with a pcd
-    //  - didn't use getCflowStack for this b/c confusing
+    private Map/*SootMethod->Local*/ methodCflowLocals = new HashMap();
+    private Map/*SootMethod->Local*/ methodCflowThreadLocals = new HashMap();
+    
+    /** Return the first statement in a method after which it is safe to insert
+     *  the initialisation of a cflow local.
+     */
+    private Stmt getMethodFirstSafeCflowStatement(SootMethod m) {
+    	// Note: the cflow field is initialised in the preClInit of the aspect
+    	// that this advice belongs to.
+    	// The only problem is therefore if m is the <init> of this aspect - then
+    	// before the call the preClInit the cflow field is not initialised. 
+    	// preClInit is not weavable, so no problem there.
 
-
-    private SootFieldRef cflowCounter=null;
-    public SootFieldRef getCflowCounter() {
-        if(cflowCounter==null) {
-
-            if (!(cflowStack==null)) {
-                //Why did we ask for a counter AND a stack??
-                throw new CodeGenException(
-                      "error: counter and stack requested for one cflow");
-            }
-
-            SootClass cl=getAspect().getInstanceClass().getSootClass();
-
-            int i=0;
-            String name;
-            do {
-                name="abc$cflowCounter$"+i;
-                i++;
-            } while(cl.declaresFieldByName(name));
-
-            SootClass counterClass=Scene.v()
-                .getSootClass("org.aspectbench.runtime.internal.CFlowCounter");
-            RefType counterType=counterClass.getType();
-
-            SootField cflowCounterF=new SootField(name,counterType,
-                                                  Modifier.PUBLIC | Modifier.STATIC);
-            cl.addField(cflowCounterF);
-
-            cflowCounter=cflowCounterF.makeRef();
-
-            SootMethod preClinit=new AspectCodeGen().getPreClinit(cl);
-            LocalGeneratorEx lg=new LocalGeneratorEx
-                (preClinit.getActiveBody());
-
-            Local loc=lg.generateLocal(counterType,"cflowCounter$"+i);
-            Chain units=preClinit.getActiveBody().getUnits();
-
-            Stmt returnStmt=(Stmt) units.getFirst();
-            while(!(returnStmt instanceof ReturnVoidStmt))
-                returnStmt=(Stmt) units.getSuccOf(returnStmt);
-
-            units.insertBefore(Jimple.v().newAssignStmt
-                               (loc,Jimple.v().newNewExpr(counterType)),
-                               returnStmt);
-            units.insertBefore(Jimple.v().newInvokeStmt
-                               (Jimple.v().newSpecialInvokeExpr
-                                (loc,Scene.v().makeConstructorRef(counterClass,new ArrayList()))),
-                               returnStmt);
-            units.insertBefore(Jimple.v().newAssignStmt
-                               (Jimple.v().newStaticFieldRef(cflowCounter),loc),
-                               returnStmt);
-        }
-        return cflowCounter;
+	// Also avoid any initialisation statements before the IdentityStmts at the
+	// beginning of the method.
+    	SootClass cl = m.getDeclaringClass();
+    	if (cl.equals(getAspect().getInstanceClass().getSootClass())
+    			&&
+			m.getName().equals(SootMethod.staticInitializerName)) {
+    		// m is the <init> of this aspect...
+    		
+    		// Find the (first and hopefully only) call to preClinit
+    		Iterator it = m.getActiveBody().getUnits().iterator();
+    		while (it.hasNext()) {
+    			Stmt s = (Stmt)it.next();
+    			if (s.containsInvokeExpr()) {
+    				InvokeExpr ie = s.getInvokeExpr();
+    				if (ie.getMethod().equals(preClinit))
+						return s;
+    			}
+    		}
+    		throw new RuntimeException("preClinit not found in aspect init "+m);
+    	} else {
+    		// m is a safe method. Add a nop at the beginning for definiteness
+    		// and return it
+		Iterator it = m.getActiveBody().getUnits().iterator();
+		Stmt s = null;
+		// Skip over the IdentityStmts
+		while (it.hasNext()) {
+		    Stmt news = (Stmt)it.next();
+		    if (!(news instanceof IdentityStmt)) break;
+		    s = news;
+		}
+    		if (s == null) {
+		    Stmt nop = Jimple.v().newNopStmt();
+		    m.getActiveBody().getUnits().addFirst(nop);
+		    return nop;
+		} else {
+		    // The first safe stmt to insert after is the last
+		    // identitystmt
+		    return s;
+		}
+    	}
     }
+    
+    public Local getMethodCflowLocal(LocalGeneratorEx localgen, SootMethod m) {
+    	Local l = (Local)methodCflowLocals.get(m);
+    	if (l != null) return l;
+    	
+    	l = localgen.generateLocal(codeGen().getCflowType(), codeGen().chooseName());
+    	Stmt getIt = Jimple.v().newAssignStmt(l, Jimple.v().newStaticFieldRef(getCflowStack()));
+    	
+    	Stmt insertAfter = 
+    		getMethodFirstSafeCflowStatement(m);
+		m.getActiveBody().getUnits().insertAfter(getIt, insertAfter);
+		
+    	methodCflowLocals.put(m, l);
+    	return l;
+    }
+    public Local getMethodCflowThreadLocal(LocalGeneratorEx localgen, SootMethod m) {
+    	Local l = (Local)methodCflowThreadLocals.get(m);
+    	if (l != null) return l;
 
+    	l = localgen.generateLocal(codeGen().getCflowInstanceType(), codeGen().chooseName()+"Instance");
+		
+		codeGen().setLocalGen(localgen);
+		Chain c = codeGen().genInitLocalToNull(l);
+
+		Stmt insertAfter = getMethodFirstSafeCflowStatement(m);
+
+		Iterator it = c.iterator();
+		Chain body = m.getActiveBody().getUnits();
+
+		while (it.hasNext()) {
+			Stmt s = (Stmt)it.next();
+			body.insertAfter(s, insertAfter);
+			insertAfter = s;
+		}
+		methodCflowThreadLocals.put(m, l);
+		return l;
+    }
+    
     public Map/*AdviceApplication->Stmt*/ popStmts = new HashMap();
     public Map/*AdviceApplication->Stmt*/ pushStmts = new HashMap();
 
     public Chain makeAdviceExecutionStmts
          (AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
-
+    	
         CflowSetupWeavingContext cswc=(CflowSetupWeavingContext) wc;
+        
+        // Prepare codeGen()
+        Chain c = new HashChain();
+        codeGen().setLocalGen(localgen);
+        
+        //FIXME Getting the current method is a hack, but fixing it requires adding it as a param
+        // Get current method
+        SootMethod m = localgen.getMethod();
+        
+        // Get the cflow class and thread-local
+        // The thread-local only needs to be initialised (lazily) for PUSH, never POP
+        // (as a POP always occurs after a PUSH, and so the local must be initialised)
+        Local cflowInstance = getMethodCflowLocal(localgen, m);
+        Local cflowLocal = getMethodCflowThreadLocal(localgen, m);
+        
+        if (cswc.doBefore) {
+        	// PUSH
 
-        if (useCounter) {
+        	// Initialise the cflow thread-local
+        	Chain getInstance = codeGen().genInitLocalLazily(cflowLocal, cflowInstance);
+        	c.addAll(getInstance);
 
-            Chain c=new HashChain();
-            SootClass counterClass=Scene.v()
-                .getSootClass("org.aspectbench.runtime.internal.CFlowCounter");
-            Local cflowCounter=localgen.generateLocal(counterClass.getType(),"cflowcounter");
-
-            if (cswc.doBefore) {
-
-                // call cflowcounter.inc()
-
-            SootMethodRef inc=Scene.v().makeMethodRef(counterClass,"inc",new ArrayList(),VoidType.v(),false);
-            c.addLast(Jimple.v().newAssignStmt
-                      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
-            Stmt pushStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,inc));
-            c.addLast(pushStmt);
-            pushStmts.put(adviceappl, pushStmt);
-            return c;
-
-            } else {
-
-                // call cflowcounter.dec()
-
-            SootMethodRef dec=Scene.v().makeMethodRef(counterClass,"dec",new ArrayList(),VoidType.v(),false);
-            c.addLast(Jimple.v().newAssignStmt
-                      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
-            Stmt popStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,dec));
-            c.addLast(popStmt);
-            popStmts.put(adviceappl, popStmt);
-            return c;
-
-            }
-
+        	List/*<Value>*/ values = new LinkedList();
+        	Iterator it = cswc.bounds.iterator();
+        	while (it.hasNext()) {
+        		Value v = (Value)it.next();
+        		values.add(v);
+        	}
+        	
+        	ChainStmtBox pushChain = codeGen().genPush(cflowLocal, values);
+        	c.addAll(pushChain.getChain());
+        	pushStmts.put(adviceappl, pushChain.getStmt());
+        	
         } else {
-
-        if(cswc.doBefore) {
-
-            Chain c = new HashChain();
-            Type object=Scene.v().getSootClass("java.lang.Object").getType();
-
-            Local l=localgen.generateLocal
-                (ArrayType.v(object,1),"cflowbounds");
-
-            c.addLast
-                (Jimple.v().newAssignStmt
-                 (l,Jimple.v().newNewArrayExpr(object,IntConstant.v(getFormals().size()))));
-
-            for(int i=0;i<getFormals().size();i++)
-                c.addLast(Jimple.v().newAssignStmt
-                          (Jimple.v().newArrayRef(l,IntConstant.v(i)),
-                           (Value) (cswc.bounds.get(i))));
-
-
-            SootClass stackClass=Scene.v()
-                .getSootClass("org.aspectbench.runtime.internal.CFlowStack");
-
-            ArrayList types=new ArrayList(1);
-            types.add(ArrayType.v(object,1));
-            SootMethodRef push=Scene.v().makeMethodRef(stackClass,"push",types,VoidType.v(),false);
-
-            Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
-            c.addLast(Jimple.v().newAssignStmt
-                      (cflowStack,Jimple.v().newStaticFieldRef(getCflowStack())));
-
-            Stmt pushStmt = Jimple.v().newInvokeStmt
-                      (Jimple.v().newVirtualInvokeExpr(cflowStack,push,l));
-            c.addLast(pushStmt);
-            pushStmts.put(adviceappl, pushStmt);
-
-            return c;
-        } else {
-            Chain c=new HashChain();
-            SootClass stackClass=Scene.v()
-                .getSootClass("org.aspectbench.runtime.internal.CFlowStack");
-            SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v(),false);
-            Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
-            c.addLast(Jimple.v().newAssignStmt
-                      (cflowStack,Jimple.v().newStaticFieldRef(getCflowStack())));
-            Stmt popStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowStack,pop));
-            c.addLast(popStmt);
-            popStmts.put(adviceappl, popStmt);
-            return c;
+        	// POP
+        	ChainStmtBox popChain = codeGen().genPop(cflowLocal);
+        	c.addAll(popChain.getChain());
+        	popStmts.put(adviceappl, popChain.getStmt());
         }
-
-        }
-
+        
+        return c;
+        
     }
 
     public static int getPrecedence(CflowSetup a,CflowSetup b) {
