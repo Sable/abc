@@ -4579,7 +4579,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@db8cfd
+LibraryAspect-defined run() for C@5639e
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -4903,7 +4903,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/Test.java bugs/s
 Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
-? Util.read() obj=Test@17f54fb
+? Util.read() obj=Test@a459ab
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -4920,7 +4920,7 @@ Running test 933: bugs/serialVersionUID/SUID: thisJoinPoint with clinit method
 Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
-? Util.read() obj=ClinitTest@19578ec
+? Util.read() obj=ClinitTest@fc8547
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -4929,7 +4929,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 ? Util.write() suid=SuidTest: static final long serialVersionUID = 8904684881596717140L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1e2f0ac
+? Util.read() obj=SuidTest@727f59
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5133,12 +5133,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@106e72c
-Invoking command bean:  Command@330ebf
-hello(Command@330ebf)
-Created a PerThis aspect : Testcase2@d1fc0
-Invoking command bean:  Command@19f90f2
-hello again(Command@19f90f2)
+Created a PerThis aspect : Testcase2@1f96154
+Invoking command bean:  Command@164d6e9
+hello(Command@164d6e9)
+Created a PerThis aspect : Testcase2@15985c5
+Invoking command bean:  Command@5d4934
+hello again(Command@5d4934)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
