@@ -5035,5 +5035,13 @@
          <compile files="AroundAR.java"></compile>
          <run class="AroundAR"></run>
     </ajc-test>
+<ajc-test title="around with initialization" num="1004" dir="abctests/around/initialization">
+         <compile files="Foo.java"></compile>
+         <run class="Foo"></run>
+    </ajc-test>
+<ajc-test title="around with alternative binding, changed proceed" num="1005" dir="abctests/around/alternative">
+         <compile files="Foo.java"></compile>
+         <run class="Foo"></run>
+    </ajc-test>
  
 </suite>

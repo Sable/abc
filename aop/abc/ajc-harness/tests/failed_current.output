@@ -180,3 +180,11 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
 
+Running test 1006: abctests/around/adviceexecution/around with circular adviceexecution advice
+Commandline: abc -d abctests/around/adviceexecution -warn-unused-advice:off abctests/around/adviceexecution/Foo.java 
+Found an unexpected position-less error: Using closure object. This may impact performance.
+Errors found during this compilation:
+Warning at null: Using closure object. This may impact performance.
+FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed.
+
+

@@ -68,5 +68,11 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
+<ajc-test title="around with circular adviceexecution advice" num="1006" dir="abctests/around/adviceexecution">
+         <compile files="Foo.java">
+                  <message line="10" kind="warning"></message>
+         </compile>
+         <run class="Foo"></run>
+    </ajc-test>
  
 </suite>
