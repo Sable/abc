@@ -3068,6 +3068,7 @@
       keywords="from-design,knownLimitation">
         <compile files="Statics.java">
            <message kind="error" line="46"/>
+           <message kind="error" line="47"/>
            <message kind="error" line="49"/>
            <message kind="error" line="51"/>
         </compile>
