@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import abc.weaving.weaver.AdviceInliner.IfMethodInlineOptions;
+
 import soot.Body;
 import soot.SootMethod;
 import soot.jimple.InvokeExpr;
@@ -55,7 +57,7 @@ public class AfterBeforeInliner extends AdviceInliner {
 			System.err.println("ABI*** " + message);
 	}
 
-	boolean forceInline() {
+	public boolean forceInline() {
 		return abc.main.options.OptionsParser.v().before_after_force_inlining();
 	}
 	
@@ -110,6 +112,9 @@ public class AfterBeforeInliner extends AdviceInliner {
 	}
 	
 	protected void internalTransform(Body body, String phaseName, Map options) {
+		
+		inlineMethods(body, options, new IfMethodInlineOptions());
+		
 		// do this in a loop:
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case
@@ -119,6 +124,8 @@ public class AfterBeforeInliner extends AdviceInliner {
 			
 			// TODO: maybe should run whole jop pack here
 			// to reduce method size between inlining passes
+			
+			inlineMethods(body, options, new IfMethodInlineOptions());
 			
 			depth++;
 			if (depth>=MAX_DEPTH)

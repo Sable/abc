@@ -57,7 +57,7 @@ public class AroundInliner extends AdviceInliner {
 	public static void reset() { instance = new AroundInliner(); }
 	
 	
-	private boolean forceInline() {
+	public boolean forceInline() {
 		return abc.main.options.OptionsParser.v().around_force_inlining();
 	}
 	
@@ -90,6 +90,9 @@ public class AroundInliner extends AdviceInliner {
 			foldSwitches(body);
 			inlineMethods(body, options, new ProceedMethodInlineOptions(body));
 			foldSwitches(body);
+			
+			inlineMethods(body, options, new IfMethodInlineOptions());
+			
 			depth++;
 			if (depth>=MAX_DEPTH)
 				break;
@@ -217,50 +220,6 @@ public class AroundInliner extends AdviceInliner {
 			return false;
 		}
 	}
-	private class IfMethodInlineOptions implements InlineOptions {
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
-			SootMethod method=expr.getMethod();
-			
-			if (!expr.getMethodRef().name().startsWith("if$"))
-				return false;
-			
-			if (!method.isStatic())
-				return false;
-			
-			//if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
-			//	return false;
-			
-			debug("Trying to inline if method " + method);
-			
-			if (forceInline()) {
-				debug("force inline on.");
-				return true;
-			}
-
-			int accessViolations=getAccessViolationCount(container, method);
-			if (accessViolations!=0) {
-				debug("Access violations");
-				debug(" Method: " + container);
-				debug(" Advice method: " + method); 
-				debug(" Violations: " + accessViolations);
-				if (accessViolations>0)
-					return false;					
-			}
-			
-			Body body=method.getActiveBody();
-			
-			//if (info.proceedInvocations>1)
-			int size=body.getUnits().size();
-			debug(" Size of if method: " + size);
-			int addedLocals=body.getLocalCount()-method.getParameterCount();
-			debug(" Number of added locals (approximately): " + addedLocals);			
-						
-			if (size<6)
-				return true;
-			
-
-			return false;
-		}
-	}
+	
 	
 }

@@ -120,5 +120,53 @@ public abstract class AdviceInliner extends BodyTransformer {
         }		
         return bDidInline;
 	}
+	
+	public abstract boolean forceInline();
+	
+	protected class IfMethodInlineOptions implements InlineOptions {
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+			SootMethod method=expr.getMethod();
+			
+			if (!expr.getMethodRef().name().startsWith("if$"))
+				return false;
+			
+			if (!method.isStatic())
+				return false;
+			
+			//if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
+			//	return false;
+			
+			debug("Trying to inline if method " + method);
+			
+			if (forceInline()) {
+				debug("force inline on.");
+				return true;
+			}
+
+			int accessViolations=getAccessViolationCount(container, method);
+			if (accessViolations!=0) {
+				debug("Access violations");
+				debug(" Method: " + container);
+				debug(" Advice method: " + method); 
+				debug(" Violations: " + accessViolations);
+				if (accessViolations>0)
+					return false;					
+			}
+			
+			Body body=method.getActiveBody();
+			
+			//if (info.proceedInvocations>1)
+			int size=body.getUnits().size();
+			debug(" Size of if method: " + size);
+			int addedLocals=body.getLocalCount()-method.getParameterCount();
+			debug(" Number of added locals (approximately): " + addedLocals);			
+						
+			if (size<6)
+				return true;
+			
+
+			return false;
+		}
+	}
 
 }
