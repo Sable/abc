@@ -47,6 +47,7 @@
             <classpath>
                 <pathelement location="classes"/>
                 <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
                 <pathelement location="${soot.loc}"/>
                 <pathelement location="${jasmin.loc}"/>
             </classpath>
@@ -86,6 +87,7 @@
         >
             <classpath>
                 <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
             </classpath>
             <arg line="aspectj_ppg.cup"/>
         </java>
@@ -115,6 +117,7 @@
         >
             <classpath>
                 <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
             </classpath>
             <arg line="aspectj.ppg"/>
         </java>
