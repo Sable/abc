@@ -154,7 +154,7 @@ Running test 979: abctests/bugs/pack1/packages in wrong place
 Commandline: abc -d abctests/bugs/pack1 abctests/bugs/pack1/A/B.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: exception while resolving C.B
 polyglot.util.InternalCompilerError: exception while resolving C.B
-	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:87)
+	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:88)
 	at soot.SootResolver.bringToHierarchy(SootResolver.java:147)
 	at soot.SootResolver.bringToSignatures(SootResolver.java:168)
 	at soot.SootResolver.bringToBodies(SootResolver.java:210)
@@ -171,7 +171,7 @@ Caused by: java.lang.StringIndexOutOfBoundsException: String index out of range:
 	at java.lang.String.substring(String.java:1411)
 	at soot.javaToJimple.InitialResolver.createClassToSourceMap(InitialResolver.java:173)
 	at soot.javaToJimple.InitialResolver.resolveAST(InitialResolver.java:144)
-	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:80)
+	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:81)
 	... 11 more
 FAIL: Test 979: "abctests/bugs/pack1/packages in wrong place" failed.
 
