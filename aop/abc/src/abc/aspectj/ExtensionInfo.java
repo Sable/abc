@@ -251,7 +251,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     protected void passes_fold_and_checkcode(List l, Job job)
     {
     	// constant folder. FIXME: this folds bytes to ints
-        l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
+        //l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
         // typechecker
         l.add(new VisitorPass(Pass.TYPE_CHECK, job, new TypeChecker(job, ts, nf)));
         // reachability checker
