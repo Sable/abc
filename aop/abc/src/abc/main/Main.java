@@ -627,7 +627,6 @@ public class Main {
 
         Scene.v().setSootClassPath(OptionsParser.v().classpath());
         getAbcExtension().addBasicClassesToSoot();
-        Scene.v().loadDynamicClasses();
 
         // FIXME: make ClassLoadException in soot, and catch it here
         // and check what was wrong
@@ -722,6 +721,7 @@ public class Main {
                 // so this assignment was moved up.
                 // error_queue = compiler.errorQueue();
             }
+            Scene.v().loadDynamicClasses();
             abortIfErrors();
 
             AbcTimer.mark("Polyglot phases");
@@ -960,7 +960,7 @@ public class Main {
         }
     }
 
-    private void phaseDebug(String s) {
+    public static void phaseDebug(String s) {
         if( Debug.v().debugPhases ) System.err.println("Done phase: "+s);
     }
 }

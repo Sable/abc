@@ -234,6 +234,9 @@ public abstract class AdviceApplication {
         abc.main.Main.v().getAbcExtension().findMethodShadows(info,mal,cls,method);
 
         ret.put(method,mal);
+        if(abc.main.Debug.v().traceMatcher)
+            System.out.println("Done method: "+method);
+
     }
 
     /** Construct a hash table mapping each concrete {@link soot.SootMethod}

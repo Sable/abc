@@ -22,16 +22,16 @@
 package abc.weaving.weaver;
 
 import soot.*;
-import soot.util.*;
 import soot.jimple.*;
+import soot.jimple.toolkits.scalar.*;
 import java.util.*;
 
 import abc.soot.util.AroundInliner;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
+import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.*;
-import abc.main.AbcTimer;
-import abc.main.Debug;
+import abc.main.*;
 
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
@@ -126,6 +126,7 @@ public class Weaver {
                     unitBindings = unweaver.restore();
                     AroundWeaver.reset();
                     resetForReweaving();
+                    removeDeclareWarnings();
                     weaveAdvice();
                 }
             } else {
@@ -149,6 +150,7 @@ public class Weaver {
                     //throw new RuntimeException("just a test");
                 }
                 reportMessages();
+                removeDeclareWarnings();
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
@@ -157,9 +159,8 @@ public class Weaver {
         }
         
         public static void runAroundInliner() {
-        	for (Iterator it=AroundWeaver.state.shadowMethods.iterator();
-        		it.hasNext();) {
-        		SootMethod m=(SootMethod)it.next();
+        	for( Iterator mIt = AroundWeaver.state.shadowMethods.iterator(); mIt.hasNext(); ) {
+        	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
         	}
         }
@@ -175,6 +176,7 @@ public class Weaver {
                 }
 
                 AbcTimer.mark("Add aspect code");
+                abc.main.Main.phaseDebug("Add aspect code");
 
         }
         static public void reportMessages() {
@@ -188,6 +190,25 @@ public class Weaver {
                     for( Iterator aaIt = adviceList.allAdvice().iterator(); aaIt.hasNext(); ) {
                         final AdviceApplication aa = (AdviceApplication) aaIt.next();
                         aa.reportMessages();
+                    }
+                }
+            }
+        }
+        static public void removeDeclareWarnings() {
+            if(Debug.v().weaveDeclareWarning) return;
+            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                final AbcClass cl = (AbcClass) clIt.next();
+                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                    final SootMethod method = (SootMethod) methodIt.next();
+                    if( !method.isConcrete() ) continue;
+                    MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
+                    if(adviceList == null) continue;
+                    for( Iterator aaIt = adviceList.allAdvice().iterator(); aaIt.hasNext(); ) {
+                        final AdviceApplication aa = (AdviceApplication) aaIt.next();
+                        AbstractAdviceDecl decl = aa.advice;
+                        if(decl instanceof DeclareMessage) {
+                            aa.setResidue(NeverMatch.v());
+                        }
                     }
                 }
             }
@@ -232,6 +253,16 @@ public class Weaver {
                 // around advice applying to around advice (adviceexecution) is woven in last
                 pg.weaveInAroundAdviceExecutionsPass();
 
+                for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+
+                    final AbcClass cl = (AbcClass) clIt.next();
+                    for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
+                        final SootMethod m = (SootMethod) mIt.next();
+                        if( !m.hasActiveBody() ) continue;
+                        CopyPropagator.v().transform(m.getActiveBody());
+                    }
+                }
                 AbcTimer.mark("Weaving advice");
+                abc.main.Main.phaseDebug("Weaving advice");
         } // method weave
 } // class Weaver
