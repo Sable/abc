@@ -1,4 +1,4 @@
 #!/bin/sh
-CLASSPATH=$CLASSPATH:../lib/abc-testing-harness.jar:../lib/abc-tests.jar
-java org.aspectj.testing.Harness -logAll $1
+CLASSPATH="C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc-tests\\bin;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc-tests\\lib\\abc-testing-harness.jar;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\bin;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\jasminclasses-sable-1.2.jar;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\java_cup.jar;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\JFlex.jar;C:\\Program Files\\Java\\j2re1.4.2_02\\lib\\rt.jar;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\sootclasses-2.1.0.jar;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\lib\\aspectjrt.jar;C:\\Documents and Settings\\kuzins\\My Documents\\Oxford\\project\\compiler\\abc\\polyglot-1.2.0.jar;..\\lib\\test\\aspectjrt.jar;..\\lib\\test\\testing-client.jar"
+java org.aspectj.testing.Harness -logMinAll $1
 
