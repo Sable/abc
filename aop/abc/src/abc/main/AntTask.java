@@ -104,6 +104,13 @@ public class AntTask extends MatchingTask {
     public void setOutjar(File arg) {
         addArg( "-outjar", arg.getAbsolutePath());
     }
+    public void setSrcdir(Path arg) {
+        if( src == null ) src = new Path(project);
+        src = appendToPath(src, arg);
+    }
+    public Path createSrcdir() {
+        return createSrc();
+    }
     public Path createSrc() {
         if( src == null ) src = new Path(project);
         return src.createPath();
@@ -142,11 +149,14 @@ public class AntTask extends MatchingTask {
             main.run();
             Main.reset();
         } catch( CompilerAbortedException e ) {
+            e.printStackTrace();
             throw new BuildException(e);
         } catch( IllegalArgumentException e ) {
+            e.printStackTrace();
             System.out.println("Illegal arguments: "+e.getMessage());
             System.exit(1);
         } catch( CompilerFailedException e ) {
+            e.printStackTrace();
             System.out.println(e.getMessage());
             System.exit(5);
         } catch( Exception e ) {
