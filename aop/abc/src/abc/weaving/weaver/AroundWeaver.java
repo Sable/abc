@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java_cup.assoc;
+
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 import soot.Body;
@@ -68,6 +70,7 @@ import abc.weaving.matching.NewStmtAdviceApplication;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.AroundWeaver.AdviceMethod.ProceedLocalClass.ProceedCallMethod;
 
 /** Handle around weaving.
  * @author Sascha Kuzins 
@@ -623,9 +626,9 @@ public class AroundWeaver {
 				}
 			}
 			usedInside.retainAll(definedOutside);
-			List result=new LinkedList();
-			result.addAll(usedInside);
-			return result;
+			//List result=new LinkedList();
+			//result.addAll(usedInside);
+			return new LinkedList(usedInside);// result;
 		}
 
 		private Stmt weaveDynamicResidue(
@@ -1659,16 +1662,21 @@ public class AroundWeaver {
 					adviceBody.validate();
 	
 			{ // process all classes. the aspect class is processed last.
-				ProceedLocalClass aspectClass=null;
+				for (Iterator it=proceedClasses.values().iterator(); it.hasNext();) {
+					ProceedLocalClass pc=(ProceedLocalClass)it.next();			
+					if (pc.isFirstDegree()) 
+						pc.addParameters(addedDynArgsTypes, false);
+				}
+				for (Iterator it=proceedClasses.values().iterator(); it.hasNext();) {
+					ProceedLocalClass pc=(ProceedLocalClass)it.next();			
+					if (!pc.isFirstDegree() && !pc.isAspect()) 
+						pc.addParameters(addedDynArgsTypes, false);
+				}
 				for (Iterator it=proceedClasses.values().iterator(); it.hasNext();) {
 					ProceedLocalClass pc=(ProceedLocalClass)it.next();			
 					if (pc.isAspect()) 
-						aspectClass=pc;						
-					else
 						pc.addParameters(addedDynArgsTypes, false);
-						
 				}
-				aspectClass.addParameters(addedDynArgsTypes, false);
 			}
 	
 			// add parameters to all access method implementations
@@ -1889,6 +1897,30 @@ public class AroundWeaver {
 		public boolean bHasBeenWovenInto=false;
 		
 		public class ProceedLocalClass {
+			
+			public ProceedLocalClass getEnclosingFirstDegreeClass() {
+				if (isAspect() || isFirstDegree())
+					throw new InternalAroundError();
+				
+				ProceedLocalClass enclosing=getEnclosingClass();
+				if (enclosing.isFirstDegree())
+					return enclosing;
+				else
+					return enclosing.getEnclosingFirstDegreeClass();
+			}
+			public ProceedLocalClass getEnclosingClass() {
+				if (isAspect())
+					throw new InternalAroundError();
+				
+				return (ProceedLocalClass)proceedClasses.get(enclosingSootClass);
+			}
+			private final SootClass enclosingSootClass;
+			public SootClass getEnclosingSootClass() {
+				if (isAspect())
+					throw new InternalAroundError();
+				return enclosingSootClass;
+			}
+			
 			public void addDefaultParameters() {
 				addParameters(null, true);
 				/*
@@ -1919,9 +1951,9 @@ public class AroundWeaver {
 			}
 
 			boolean firstDegree=false;
-			public void setFirstDegree() {
+			/*public void setFirstDegree() {
 				firstDegree=true;
-			}
+			}*/
 			public void generateProceeds(AccessMethod accessMethod, String newStaticInvoke, AdviceMethod adviceMethod) {
 				for (Iterator it=this.proceedMethods.iterator(); it.hasNext();) {
 					ProceedCallMethod pm=(ProceedCallMethod)it.next();
@@ -1968,9 +2000,7 @@ public class AroundWeaver {
 						Local l = Restructure.addParameterToMethod(pm.sootProceedCallMethod, type, "dynArgFormal");
 						addedAdviceParameterLocals.add(l);						
 					}
-					if (bDefault) {
-						pm.setDefaultParameters(addedAdviceParameterLocals);
-					}
+					
 					for (Iterator it0=pm.nestedInitCalls.iterator(); it0.hasNext();) {
 						ProceedCallMethod.NestedInitCall nc=
 							(ProceedCallMethod.NestedInitCall)it0.next();
@@ -1991,71 +2021,85 @@ public class AroundWeaver {
 							pm.proceedCallBody.getUnits().getNonPatchingChain().insertAfter(ns, nc.statement);
 						}
 					}
-					for (Iterator it=proceedClasses.values().iterator(); it.hasNext();) {
-						ProceedLocalClass pl=(ProceedLocalClass)it.next();
-						pl.addedFields.clear();
-					}
-					if (!bDefault)
-						pm.modifyInterfaceInvokations(addedAdviceParameterLocals);
-				} else if (firstDegree) {
-					addedFields=new LinkedList();
-					// create fields
-					addNestedParameters(addedDynArgsTypes, bDefault);					
-				} else {
-					throw new InternalAroundError();
-				}
-				//return addedAdviceParameterLocals;
-			}
-			
-			/**
-			 * @param addedDynArgsTypes
-			 */
-			private void addNestedParameters(List addedDynArgsTypes, boolean bDefault) {
-				for (Iterator it = addedDynArgsTypes.iterator();
-					it.hasNext();) {
-					Type type = (Type) it.next();
-
-					SootField f=new SootField("dynArgField" + state.getUniqueID(), 
-								type, Modifier.PUBLIC);
-					sootClass.addField(f);
-					addedFields.add(f);
-				}
-				// add locals referencing the fields
-				for (Iterator it=proceedMethods.iterator(); it.hasNext();) {
-					ProceedCallMethod pm=(ProceedCallMethod)it.next();
-					
-					List addedAdviceParameterLocals = new LinkedList();
-					
-					Chain statements=pm.proceedCallBody.getUnits().getNonPatchingChain();
-					Stmt s=Restructure.findFirstRealStmtOrNop(pm.sootProceedCallMethod, statements);
-					LocalGeneratorEx lg=new LocalGeneratorEx(pm.proceedCallBody);
-					
-					for (Iterator it0=addedFields.iterator(); it0.hasNext();) {
-						SootField f=(SootField)it0.next();
-						Local l=lg.generateLocal(f.getType(), "dynFieldLocal");
-						Stmt sf=
-							Jimple.v().newAssignStmt(l, 
-									Jimple.v().newInstanceFieldRef(
-											pm.proceedCallBody.getThisLocal(),
-											f));
-						statements.insertBefore(sf, s);
-						addedAdviceParameterLocals.add(l);
-					}
 					if (bDefault) {
 						pm.setDefaultParameters(addedAdviceParameterLocals);
 					}
 					if (!bDefault)
 						pm.modifyInterfaceInvokations(addedAdviceParameterLocals);
-				}
+					
+					for (Iterator it=proceedClasses.values().iterator(); it.hasNext();) {
+						ProceedLocalClass pl=(ProceedLocalClass)it.next();
+						pl.addedFields.clear();
+					}
+					
+				} else  {
+					addedFields=new LinkedList();
+					if (isFirstDegree()) {
+						for (Iterator it = addedDynArgsTypes.iterator();
+							it.hasNext();) {
+							Type type = (Type) it.next();
+						
+							SootField f=new SootField("dynArgField" + state.getUniqueID(), 
+										type, Modifier.PUBLIC);
+							sootClass.addField(f);
+							addedFields.add(f);
+						}
+					} else {
+						addedFields=getEnclosingFirstDegreeClass().addedFields;
+					}
+					// add locals referencing the fields
+					for (Iterator it=proceedMethods.iterator(); it.hasNext();) {
+						ProceedCallMethod pm=(ProceedCallMethod)it.next();
+						
+						List addedAdviceParameterLocals = new LinkedList();
+						
+						Chain statements=pm.proceedCallBody.getUnits().getNonPatchingChain();
+						Stmt insertion=pm.nopAfterEnclosingLocal;
+						LocalGeneratorEx lg=new LocalGeneratorEx(pm.proceedCallBody);
+						
+						for (Iterator it0=addedFields.iterator(); it0.hasNext();) {
+							SootField f=(SootField)it0.next();
+							Local l=lg.generateLocal(f.getType(), "dynFieldLocal");
+							Stmt sf=
+								Jimple.v().newAssignStmt(l, 
+										Jimple.v().newInstanceFieldRef(
+												pm.dynArgfieldBaseLocal,
+												f));
+							statements.insertBefore(sf, insertion);
+							addedAdviceParameterLocals.add(l);
+						}
+						if (bDefault) {
+							pm.setDefaultParameters(addedAdviceParameterLocals);
+						}
+						if (!bDefault)
+							pm.modifyInterfaceInvokations(addedAdviceParameterLocals);
+						
+					}					
+				} 
+				//return addedAdviceParameterLocals;
 			}
+			
 			public final SootClass sootClass;
 			public final SootClass aspectClass;
 			public ProceedLocalClass(SootClass sootClass, SootClass aspectClass) {
 				this.sootClass=sootClass;
-				this.aspectClass=aspectClass;				
+				this.aspectClass=aspectClass;
+
+				if (isAspect())
+					enclosingSootClass=null;
+				else	
+					enclosingSootClass=((RefType)sootClass.getFieldByName("this$0").getType()).getSootClass();
+				
+				this.firstDegree=
+					!isAspect() && getEnclosingSootClass().equals(aspectClass);
+				
+				debug("XXXXXXXXXXXXXXXX" + sootClass + " isAspect: " + isAspect() + " isFirst: " + isFirstDegree());
 			}
 			public boolean isAspect() {
 				return sootClass.equals(aspectClass);
+			}
+			boolean isFirstDegree() {
+				return firstDegree;
 			}
 			
 			public void addProceedMethod(SootMethod m) {
@@ -2072,7 +2116,7 @@ public class AroundWeaver {
 					int i=0;
 					for (Iterator it=addedAdviceParameterLocals.iterator();it.hasNext();i++) {
 						Local l=(Local)it.next();
-						switch(i) {
+					switch(i) {
 						case 0: pm.interfaceLocal=l;
 							 	l.setName("accessInterface" + state.getUniqueID()); break;
 						case 1: pm.idLocal=l; 
@@ -2104,7 +2148,9 @@ public class AroundWeaver {
 				private Local staticDispatchLocal;
 				private Local idLocal;
 				private Local bindMaskLocal;
-			
+				
+				private Local dynArgfieldBaseLocal;
+				
 				private final List implicitProceedParameters=new LinkedList();
 				
 				private void modifyInterfaceInvokations(List addedAdviceParameterLocals) {
@@ -2133,17 +2179,18 @@ public class AroundWeaver {
 				}
 				
 				private final Set nestedInitCalls=new HashSet();
+				private final NopStmt nopAfterEnclosingLocal;
 				public ProceedCallMethod(AdviceMethod adviceMethod, SootMethod method) {
 					//this.adviceMethod=adviceMethod;
 					this.sootProceedCallMethod=method;
 					this.proceedCallBody=method.getActiveBody();			
 					
-					//debug("XXXXXXXXXXXXXXX creating ProceedCallMethod " + method);
+					debug("YYYYYYYYYYYYYYYYYYY creating ProceedCallMethod " + method);
 					
 					Chain proceedStatements=proceedCallBody.getUnits().getNonPatchingChain();			
 					
-					Iterator it = proceedStatements.snapshotIterator();
-					while (it.hasNext()) {
+					for (Iterator it = proceedStatements.snapshotIterator();
+						it.hasNext();) {
 						Stmt s = (Stmt) it.next();
 						InvokeExpr invokeEx;
 						try {
@@ -2168,11 +2215,13 @@ public class AroundWeaver {
 									if (si.getMethod().getName().equals("<init>")) {
 										if (adviceMethod.proceedClasses.containsKey(baseClass)) {
 											
-											
 											AroundWeaver.AdviceMethod.ProceedLocalClass pl=
 												(AroundWeaver.AdviceMethod.ProceedLocalClass)
 													adviceMethod.proceedClasses.get(baseClass);
-											pl.setFirstDegree();
+											
+											if (!pl.isFirstDegree())
+												throw new InternalAroundError();
+											
 											nestedInitCalls.add(
 													new NestedInitCall(s, pl, 
 															(Local)si.getBase()));
@@ -2183,7 +2232,48 @@ public class AroundWeaver {
 							}
 						}
 					}
-										
+					Stmt insert=Restructure.findFirstRealStmtOrNop(method, proceedStatements);
+					nopAfterEnclosingLocal=Jimple.v().newNopStmt();
+					proceedStatements.insertBefore(nopAfterEnclosingLocal, insert);
+					insert=nopAfterEnclosingLocal;
+					if (isAdviceMethod()) {
+						dynArgfieldBaseLocal=null;						
+					} else {
+						if (isFirstDegree()) {
+							dynArgfieldBaseLocal=proceedCallBody.getThisLocal();
+						} else {
+							LocalGeneratorEx lg=new LocalGeneratorEx(proceedCallBody);
+							SootClass cl=sootClass;
+							
+							Local lBase=proceedCallBody.getThisLocal();
+							
+							
+							while (true)  {
+								debug(" Class: " + cl);
+								SootField f=cl.getFieldByName("this$0");
+								
+								if (!proceedClasses.containsKey(((RefType)f.getType()).getSootClass()))
+									throw new InternalAroundError(" " + ((RefType)f.getType()).getSootClass());		
+								
+								ProceedLocalClass pl=(ProceedLocalClass)proceedClasses.get(((RefType)f.getType()).getSootClass());
+								
+								Local l=lg.generateLocal(f.getType(), "enclosingLocal");
+								AssignStmt as=Jimple.v().newAssignStmt(
+										l, Jimple.v().newInstanceFieldRef(
+												lBase, f));
+								proceedStatements.insertBefore(as , insert);
+								if (pl.isFirstDegree()) {
+									dynArgfieldBaseLocal=l;
+									break;
+								} else {
+									lBase=l;
+									cl=pl.sootClass;
+								}
+							}							
+							if (dynArgfieldBaseLocal==null)
+								throw new InternalAroundError();
+						}
+					} 
 				}
 				public void generateProceeds(AccessMethod accessMethod, String newStaticInvoke, AdviceMethod adviceMethod) {
 					for (Iterator it=proceedInvokations.iterator(); it.hasNext();) {
@@ -2429,9 +2519,24 @@ public class AroundWeaver {
 			for (Iterator it=proceedSootMethods.iterator();it.hasNext();) {
 				SootMethod m=(SootMethod)it.next();
 				if (!proceedClasses.containsKey(m.getDeclaringClass())) {
+					ProceedLocalClass newClass=
+						new ProceedLocalClass(m.getDeclaringClass(), this.getAspect());
 					proceedClasses.put(
 						m.getDeclaringClass(), 
-							new ProceedLocalClass(m.getDeclaringClass(), this.getAspect()));
+							newClass);
+					
+					while (newClass!=null && !newClass.isAspect() && !newClass.isFirstDegree()) {
+						SootClass enclosing=newClass.getEnclosingSootClass();
+						
+						if (!proceedClasses.containsKey(enclosing)) {
+							newClass=
+								new ProceedLocalClass(enclosing, this.getAspect());
+							proceedClasses.put(
+								enclosing, 
+									newClass);
+						} else
+							newClass=null;
+					}
 				}
 			}
 			// add the corresponding methods.
@@ -2449,15 +2554,21 @@ public class AroundWeaver {
 				pl.addProceedMethod(method);
 			}
 			{
-				ProceedLocalClass aspectClass=null;
 				for (Iterator it=proceedClasses.values().iterator();it.hasNext();) {
 					ProceedLocalClass pc=(ProceedLocalClass)it.next();
-					if (!pc.isAspect())
+					if (pc.isFirstDegree())
 						pc.addDefaultParameters();
-					else
-						aspectClass=pc;
 				}
-				aspectClass.addDefaultParameters();
+				for (Iterator it=proceedClasses.values().iterator();it.hasNext();) {
+					ProceedLocalClass pc=(ProceedLocalClass)it.next();
+					if (!pc.isAspect() && !pc.isFirstDegree())
+						pc.addDefaultParameters();
+				}
+				for (Iterator it=proceedClasses.values().iterator();it.hasNext();) {
+					ProceedLocalClass pc=(ProceedLocalClass)it.next();
+					if (pc.isAspect())
+						pc.addDefaultParameters();
+				}
 			}
 		}
 
