@@ -94,7 +94,8 @@ public class Bind extends Residue {
                 if (!(target instanceof AdviceFormal)) {
                         target=((BindingLink)andRoot).getAdviceFormal(target);
                         if (!(target instanceof AdviceFormal)) {
-                                throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
+                        		return;
+                                //throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
                         }
                 }
 
@@ -126,9 +127,11 @@ public class Bind extends Residue {
                         //if (val instanceof Local) {
                         Local local = (Local) val;
                         int index=bindings.lastIndexOf(local);
-                        int mask=bindings.getMaskValue(local, index);
-                        if (mask!=0) {
-                                return new BindMaskResidue(this, bindingsMaskLocal, mask);
+                        if (index!=-1) {
+                        	int mask=bindings.getMaskValue(local, index);
+                        	if (mask!=0) {
+                                	return new BindMaskResidue(this, bindingsMaskLocal, mask);
+                        	}
                         }
                 //}
                 return this;
