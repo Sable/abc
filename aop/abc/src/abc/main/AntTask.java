@@ -29,7 +29,7 @@ import java.io.*;
  * @author Ondrej Lhotak
  */
 public class AntTask extends MatchingTask {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     public void setHelp(boolean arg) {
         if(arg) addArg("-help");
     }
@@ -102,6 +102,14 @@ public class AntTask extends MatchingTask {
             Main main = new Main((String[]) args.toArray(new String[0]));
             main.run();
             Main.reset();
+        } catch( CompilerAbortedException e ) {
+            throw new BuildException(e);
+        } catch( IllegalArgumentException e ) {
+            System.out.println("Illegal arguments: "+e.getMessage());
+            System.exit(1);
+        } catch( CompilerFailedException e ) {
+            System.out.println(e.getMessage());
+            System.exit(5);
         } catch( Exception e ) {
             if(DEBUG) e.printStackTrace();
             throw new BuildException(e);

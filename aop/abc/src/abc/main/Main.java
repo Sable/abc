@@ -490,12 +490,14 @@ public class Main {
 
 			loadJars();
 			loadSourceRoots();
-                        System.out.println( aspect_sources );
 			AbcTimer.mark("Loading Jars");
 
+                        
 			// if something to compile
 			compile(); // Timers marked inside compile()
 			// The compile method itself aborts if there is an error
+
+                        Scene.v().setDoneResolving();
 
 			if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty()) {
 				weave(); // Timers marked inside weave()
