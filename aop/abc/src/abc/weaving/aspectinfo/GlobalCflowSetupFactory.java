@@ -59,6 +59,10 @@ public class GlobalCflowSetupFactory {
 	    cfsStore.addFirst(new CflowEntry(k, s));
 	}
 
+	static void reset() {
+	    cfsStore = new LinkedList();
+	}
+
     }
 
     /*  Check whether two cflows can share the same stack/counter.
@@ -178,6 +182,10 @@ public class GlobalCflowSetupFactory {
 	    return isFresh;
 	}
 
+    }
+
+    public static void reset() {
+	CfsStore.reset();
     }
 
 }
