@@ -185,9 +185,7 @@ public class IntertypeAdjuster {
 
 
 		// This is an accessor method for reading a field
-		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), field.getDeclaringClass(),
-							0,0);
+		MethodCategory.registerFieldSet(sf,sm);
     }
     
 	private void addSuperFieldSetter( SuperFieldSet sfd ) {
@@ -233,9 +231,7 @@ public class IntertypeAdjuster {
 			sfd.getTarget().getSootClass().addMethod(sm);				  
 
 		// This is an accessor method for reading a field
-			MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-			MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), field.getDeclaringClass(),
-								0,0);
+			MethodCategory.registerFieldSet(sf,sm);
 		}
     
 
@@ -649,9 +645,7 @@ public class IntertypeAdjuster {
 		ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
 		ss.add(stmt);
 		// This is an accessor method for reading a field
-		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), AbcFactory.AbcClass(field.getDeclaringClass()),
-							0,0);
+		MethodCategory.registerFieldGet(field,sm);
 	    return sm;
 	}
 	
@@ -678,13 +672,20 @@ public class IntertypeAdjuster {
 		ReturnStmt stmt = Jimple.v().newReturnStmt(p); 
 		ss.add(stmt);
 		// This is an accessor method for writing a field
-		MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-		MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), AbcFactory.AbcClass(field.getDeclaringClass()),
-							0,0);
+		MethodCategory.registerFieldSet(field,sm);
 		return sm;
 	}
 	
 
+	private List fieldsToRemove = new ArrayList();
+	
+	public void removeFakeFields() {
+		for (Iterator ftrit = fieldsToRemove.iterator(); ftrit.hasNext(); ) {
+			SootField sf = (SootField) ftrit.next();
+			sf.getDeclaringClass().removeField(sf);
+		}
+	}
+	
     private void addField( IntertypeFieldDecl ifd ) {
         FieldSig field = ifd.getTarget();
 
@@ -699,8 +700,17 @@ public class IntertypeAdjuster {
         if( cl.isInterface() ) {
         	// add the accessor methods to the interface
         	
-        	makeSootMethod(ifd.getGetter(),modifiers | Modifier.ABSTRACT,cl);
-			makeSootMethod(ifd.getSetter(),modifiers | Modifier.ABSTRACT,cl);
+        	// it is necessary to put a field into the interface, because in Soot
+        	// it is not possible to give a field a declaring class without also
+        	// putting it into that class.
+        	SootField fakeField = new SootField(field.getName(),field.getType().getSootType(),field.getModifiers());
+        	cl.addField(fakeField);
+        	fieldsToRemove.add(fakeField);
+        	
+        	SootMethod getter = makeSootMethod(ifd.getGetter(),modifiers | Modifier.ABSTRACT,cl);
+        	MethodCategory.registerFieldGet(fakeField,getter);
+			SootMethod setter = makeSootMethod(ifd.getSetter(),modifiers | Modifier.ABSTRACT,cl);
+			MethodCategory.registerFieldSet(fakeField,setter);
         
         	Set implementors = hierarchy.getAllImplementersOfInterface(cl);
             for( Iterator childClassIt = implementors.iterator(); childClassIt.hasNext(); ) {
@@ -1012,11 +1022,25 @@ public class IntertypeAdjuster {
 							Local res = Jimple.v().newLocal("result",sm.getReturnType()); b.getLocals().add(res);
 							AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
 							units.insertBefore(as,followingstmt);
-						//  get the field we want to initialise
-							FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
-						//  assign the value
-							AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
-							units.insertBefore(rStmt,followingstmt);
+							if (ifd.getSetter() == null) {
+							//  get the field we want to initialise
+								FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
+							//  assign the value
+								AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
+							    units.insertBefore(rStmt,followingstmt); 
+							} else {
+								List setargs = new ArrayList();
+								args.add(res);
+								InvokeExpr sie;
+								if (ifd.getSetter().getDeclaringClass().getSootClass().isInterface()) {
+									sie = Jimple.v().newInterfaceInvokeExpr(b.getThisLocal(),
+								                   ifd.getSetter().getSootMethod(),args);
+								} else {
+									sie = Jimple.v().newVirtualInvokeExpr(b.getThisLocal(),
+													ifd.getSetter().getSootMethod(),args); }
+								InvokeStmt istmt = Jimple.v().newInvokeStmt(sie);
+								units.insertBefore(istmt,followingstmt);
+							}
 						}
 					}
 				}

@@ -172,13 +172,17 @@ public class SJPInfo {
 	return sb.toString();
     }
 
+	// FIXME: (oege) I think the first parameter is obsolete
     public static String makeFieldSigData(SootMethod container,SootField field) {
 	StringBuffer sb=new StringBuffer();
-	sb.append(new Integer(container.getModifiers()).toString());
+	//sb.append(new Integer(container.getModifiers()).toString());
+	  sb.append(new Integer(MethodCategory.getModifiers(field)).toString());
 	sb.append('-');
-	sb.append(field.getName());
+	// sb.append(field.getName());
+	  sb.append(MethodCategory.getName(field));
 	sb.append('-');
-	sb.append(container.getDeclaringClass().getName());
+	// sb.append(container.getDeclaringClass().getName());
+	  sb.append(MethodCategory.getClass(field));
 	sb.append('-');
 	sb.append(getTypeString(field.getType()));
 	sb.append('-');

@@ -44,6 +44,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     protected Supers supers;
     protected String identifier;
     protected String originalName;
+    protected Flags originalFlags;
 
     protected MethodDecl initm;
 
@@ -58,6 +59,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	this.supers = new Supers();
 	this.identifier = UniqueID.newID("id");
 	this.originalName = name;
+	this.originalFlags = flags;
     }
     
     public TypeNode host() { 
@@ -311,6 +313,11 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	     			AbcFactory.AbcType(type().type()),
 	     			name(),
 	     			null);
+		gai.registerRealNameAndClass(fs,
+					AbcFactory.modifiers(originalFlags),
+					originalName,
+					AbcFactory.AbcClass((ClassType)host.type()));
+					
 	    Call c = (Call) init();
 		abc.weaving.aspectinfo.MethodSig initSig;
 	    if (c != null) {
@@ -345,7 +352,9 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		MethodInstance get = hostInstance.getGet();
 		MethodInstance set = hostInstance.getSet();
 		abc.weaving.aspectinfo.MethodSig getsig = get == null ? null : AbcFactory.MethodSig(get);
+		// MethodCategory.registerFieldGet(fs,getsig);
 		abc.weaving.aspectinfo.MethodSig setsig = set == null ? null : AbcFactory.MethodSig(set);
+		// MethodCategory.registerFieldSet(fs,setsig);
 		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
 		    (fs, current_aspect, initSig, getsig, setsig, position());
 		gai.addIntertypeFieldDecl(ifd);
@@ -353,5 +362,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
 		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
 		gai.addQualThiss(supers.qualthiss(gai));
+		
     }
 }

@@ -7,6 +7,7 @@ import soot.jimple.*;
 import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
@@ -14,6 +15,8 @@ import abc.weaving.residues.JimpleValue;
 /** The results of matching at a field get
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
+ *  Changes by Oege de Moor to deal with mangled names
+ *  and accessor methods.
  */
 public class GetFieldShadowMatch extends StmtShadowMatch {
     
@@ -41,14 +44,14 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	    FieldRef fr = (FieldRef) rhs;
 
 	    return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
-	    /*
 	} else if(rhs instanceof InvokeExpr) {
-	    if(MethodCategory.getCategory(rhs.getMethod())
+		InvokeExpr ie = (InvokeExpr) rhs;
+		SootMethod sm = ie.getMethod();
+	    if(MethodCategory.getCategory(sm)
 	       ==MethodCategory.ACCESSOR_GET) {
-		
-		return new GetFieldShadowMatch(pos.getContainer(),stmt,null);
+			return new GetFieldShadowMatch(pos.getContainer(),stmt,MethodCategory.getField(sm));
 	    }
-	    */
+	    else return null;
 	} else {
 	    return null;
 	}

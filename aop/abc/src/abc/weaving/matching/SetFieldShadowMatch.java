@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import soot.Body;
+import soot.JimpleBodyPack;
 import soot.Local;
 import soot.SootField;
 import soot.SootMethod;
@@ -11,6 +12,8 @@ import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.FieldRef;
 import soot.jimple.InstanceFieldRef;
+import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.tagkit.Host;
@@ -21,10 +24,13 @@ import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
 import abc.weaving.residues.Residue;
+import abc.weaving.aspectinfo.MethodCategory;
 
 /** The results of matching at a field set
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
+ *  Changes by Oege de Moor to deal with mangled names and
+ *  accessor methods.
  */
 public class SetFieldShadowMatch extends StmtShadowMatch {
     
@@ -44,15 +50,31 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 	if(abc.main.Debug.v().traceMatcher) System.err.println("SetField");
 
 	Stmt stmt=((StmtMethodPosition) pos).getStmt();
-	if(!(stmt instanceof AssignStmt)) return null;
-	AssignStmt as = (AssignStmt) stmt;
-	Value lhs = as.getLeftOp();
-       	if(!(lhs instanceof FieldRef)) return null;
-	FieldRef fr = (FieldRef) lhs;
+	
+	SootField sf = null;
+	if(stmt instanceof AssignStmt) {
+		AssignStmt as = (AssignStmt) stmt;
+		Value lhs = as.getLeftOp();
+		if (lhs instanceof FieldRef) {
+			FieldRef fr = (FieldRef) lhs;
+			sf = fr.getField();
+			makeLocalForRHS(((StmtMethodPosition) pos).getContainer(), as);
+		} else return null;
+	} else if (stmt instanceof InvokeStmt) {
+		InvokeStmt is = (InvokeStmt) stmt;
+		InvokeExpr ie = is.getInvokeExpr();
+		SootMethod sm = ie.getMethod();
+		if(MethodCategory.getCategory(sm)
+				   ==MethodCategory.ACCESSOR_SET) {
+					sf = MethodCategory.getField(sm);
+					// FIXME: make local for argument?
+		}
+		else return null;
+	} else return null;
+     
+	
 
-	makeLocalForRHS(((StmtMethodPosition) pos).getContainer(), (AssignStmt)stmt);
-
-	return new SetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+	return new SetFieldShadowMatch(pos.getContainer(),stmt,sf);
     }
     /**
      * Ensures that the rhs of the set is a local.
@@ -75,7 +97,8 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 			stmt.redirectJumpsToThisTo(as);
     	}
     }
-   
+    
+
     public Host getHost() {
 	return stmt;
     }

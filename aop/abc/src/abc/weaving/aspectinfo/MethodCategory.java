@@ -1,8 +1,11 @@
 
 package abc.weaving.aspectinfo;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootField;
 import soot.Type;
 
 import polyglot.ast.MethodDecl;
@@ -239,6 +242,23 @@ public class MethodCategory {
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
+    
+	public static void registerRealNameAndClass(FieldSig sig,
+						   int mods,
+						   String real_name, AbcClass real_class) {
+	   GlobalAspectInfo.v().registerRealNameAndClass(sig,
+								 mods,
+								 real_name, real_class);
+	}
+
+   	public static void registerRealNameAndClass(SootField m,
+					   int mods,
+					   String real_name, AbcClass real_class,
+					   int skip_first, int skip_last) {
+   	registerRealNameAndClass(AbcFactory.FieldSig(m),
+				mods,
+				real_name, real_class);
+   	}
 
     // REAL NAME QUERY
 
@@ -294,6 +314,83 @@ public class MethodCategory {
 	return GlobalAspectInfo.v().getSkipLast(AbcFactory.MethodSig(m));
     }
     
+	public static int getModifiers(SootField m) {
+	   return GlobalAspectInfo.v().getRealModifiers(AbcFactory.FieldSig(m), m.getModifiers());
+	}
+
+	public static int getModifiers(FieldSig m) {
+	   return GlobalAspectInfo.v().getRealModifiers(m, m.getModifiers());
+	}
+
+	public static String getName(SootField m) {
+	   FieldSig fs = AbcFactory.FieldSig(m);
+	   String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(m));
+	   if (real_name == null) {
+		   return m.getName().toString();
+	   } else {
+		   return real_name;
+	   }
+	}
+
+	public static String getName(FieldSig m) {
+	   String real_name = GlobalAspectInfo.v().getRealName(m);
+	   if (real_name == null) {
+		   return m.getName().toString();
+	   } else {
+		   return real_name;
+	   }
+	}
+
+	public static SootClass getClass(SootField m) {
+	   AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.FieldSig(m));
+	   if (real_class == null) {
+		   return m.getDeclaringClass();
+	   } else {
+		   return real_class.getSootClass();
+	   }
+	}
+
+	public static SootClass getClass(FieldSig m) {
+	   AbcClass real_class = GlobalAspectInfo.v().getRealClass(m);
+	   if (real_class == null) {
+		   return m.getDeclaringClass().getSootClass();
+	   } else {
+		   return real_class.getSootClass();
+	   }
+	}
+	
+	public static SootField getField(SootMethod sm) {
+		FieldSig fs = GlobalAspectInfo.v().getField(AbcFactory.MethodSig(sm));
+		if (fs == null) {
+			throw new InternalCompilerError("get field on a method that is not an accessor");
+		} else {
+			return fs.getSootField();
+		}
+	}
+	
+	
+	public static void registerFieldGet(FieldSig fs, MethodSig sig) {
+	   GlobalAspectInfo.v().registerMethodCategory(sig, MethodCategory.ACCESSOR_GET);
+	   GlobalAspectInfo.v().registerFieldAccessor(fs,sig);
+	}
+
+	public static void registerFieldSet(FieldSig fs, MethodSig sig) {
+		GlobalAspectInfo.v().registerMethodCategory(sig, MethodCategory.ACCESSOR_SET);
+		GlobalAspectInfo.v().registerFieldAccessor(fs,sig);
+	}
+
+	public static void registerFieldGet(SootField sfs, SootMethod ssig) {
+		FieldSig fs = AbcFactory.FieldSig(sfs);
+		MethodSig sig = AbcFactory.MethodSig(ssig);
+		registerFieldGet(fs,sig);
+	}
+
+	public static void registerFieldSet(SootField sfs, SootMethod ssig) {
+		FieldSig fs = AbcFactory.FieldSig(sfs);
+		MethodSig sig = AbcFactory.MethodSig(ssig);
+		registerFieldSet(fs,sig);
+	}
+	
     /** is this an ITD (method or field initialiser) that has "this"
      *  as a parameter?
      */

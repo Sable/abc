@@ -353,10 +353,10 @@ public class PatternMatcher {
 
 	public boolean matchesField(SootField sf) {
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), sf.getModifiers()) &&
+		matchesModifiers(pattern.getModifiers(), MethodCategory.getModifiers(sf)) &&
 		matchesType(pattern.getType(), sf.getType().toString()) &&
-		matchesClass(pattern.getName().base(), sf.getDeclaringClass()) &&
-		pattern.getName().name().getPattern().matcher(sf.getName()).matches();
+		matchesClass(pattern.getName().base(), MethodCategory.getClass(sf)) &&
+		pattern.getName().name().getPattern().matcher(MethodCategory.getName(sf)).matches();
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching field pattern "+pattern+" against "+sf+": "+matches);
 	    }

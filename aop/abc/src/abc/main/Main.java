@@ -573,6 +573,7 @@ public class Main {
             Weaver weaver = new Weaver();
             weaver.weave(); // timer marks inside weave() */
         }
+        ita.removeFakeFields();
     } catch(SemanticException e) {
         error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
     }

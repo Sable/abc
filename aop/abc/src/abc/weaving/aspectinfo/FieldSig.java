@@ -63,4 +63,8 @@ public class FieldSig extends Sig {
 	    type.equals(os.type) &&
 	    name.equals(os.name);
     }
+    
+	public int hashCode() {
+	  return cl.hashCode()+type.hashCode()+name.hashCode();
+	}
 }

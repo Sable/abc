@@ -58,6 +58,10 @@ public class GlobalAspectInfo {
     private Map/*<MethodSig,Integer>*/ method_skip_first = new HashMap();
     private Map/*<MethodSig,Integer>*/ method_skip_last = new HashMap();
     
+    private Map/*<FieldSig,Integer>*/ field_real_mods = new HashMap();
+    private Map/*<FieldSig,String>*/ field_real_names = new HashMap();
+    private Map/*<FieldSig,AbcClass>*/ field_real_classes = new HashMap();
+    private Map/*<MethodSig,FieldSig>*/ accessor_of_field = new HashMap();
     
     public void buildAspectHierarchy() {
 	// Build the aspect hierarchy
@@ -401,7 +405,36 @@ public class GlobalAspectInfo {
 	}
     }
     
-    
+	public void registerRealNameAndClass(FieldSig sig, int mods, String real_name, AbcClass real_class) {
+	  field_real_mods.put(sig, new Integer(mods));
+	  field_real_names.put(sig, real_name);
+	  field_real_classes.put(sig, real_class);
+	}
+	
+	public int getRealModifiers(FieldSig sig, int defmods) {
+	  if (field_real_mods.containsKey(sig)) {
+		  return ((Integer)field_real_mods.get(sig)).intValue();
+	  } else {
+		  return defmods;
+	  }
+	}
+	
+	public String getRealName(FieldSig sig) {
+	  return (String)field_real_names.get(sig);
+	}
+	
+	public AbcClass getRealClass(FieldSig sig) {
+	  return (AbcClass)field_real_classes.get(sig);
+	}
+	
+	public FieldSig getField(MethodSig sig) {
+		return (FieldSig) accessor_of_field.get(sig);
+	}
+	
+	public void registerFieldAccessor(FieldSig fs, MethodSig ms) {
+		accessor_of_field.put(ms,fs);
+	}
+
     
   
 
