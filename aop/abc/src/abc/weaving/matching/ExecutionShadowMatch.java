@@ -31,6 +31,10 @@ public class ExecutionShadowMatch extends ShadowMatch {
 	    jpKind="constructor-execution";
 	    sigMethod="makeConstructorSig";
 	} else if(container.getName().equals(SootMethod.constructorName)) {
+	    System.out.println("LJH container.getName() " +
+		               container.getName() +
+			       " SootMethod.constructorName " +
+			       SootMethod.constructorName);
 	    jpKind="staticinitialization";
 	    sigMethod=null;
 	} else { // add advice-execution case
