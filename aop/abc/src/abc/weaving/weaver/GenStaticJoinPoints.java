@@ -1,6 +1,7 @@
 package abc.weaving.weaver;
 
 import soot.*;
+import soot.tagkit.*;
 import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
@@ -254,9 +255,10 @@ public class GenStaticJoinPoints {
 			 "void <init>(java.lang.String,java.lang.Class)");
         ArrayList args = new ArrayList(2);
 	debug("tags attached to class are : " + sc.getTags());
-	debug("sourcefilename of sc : " + sc.getTag("SourceFileTag"));
+	SourceFileTag sft = (SourceFileTag) sc.getTag("SourceFileTag");
+	debug("sourcefilename of sc : " + sft);
 	// FIXME: should be sourcefile, how to get this info??
-        args.add(StringConstant.v(sc.getName()+".java")); 
+        args.add(StringConstant.v(sft.getSourceFile())); 
         args.add(javaclass);
          Stmt initfactory = Jimple.v().
 		     newInvokeStmt( Jimple.v().
