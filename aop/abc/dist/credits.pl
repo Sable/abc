@@ -4,8 +4,8 @@ use strict;
 
 print << 'START';
 <!-- This file is auto-generated. Changes you make directly will be lost! -->
-<!--#set var="title" value="Credits"-->
-<!--#set var="file" value="credits.shtml"-->
+<!--#set var="title" value="People"-->
+<!--#set var="file" value="people.shtml"-->
 <!--#set var="logo" value="standard"-->
 
 <!--#include file="includes/header.shtml"-->
