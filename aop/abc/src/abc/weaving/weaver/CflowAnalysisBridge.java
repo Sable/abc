@@ -122,7 +122,9 @@ public class CflowAnalysisBridge {
         debug("getting join point analysis result");
         for( Iterator optimizableIt = jpa.getResult().iterator(); optimizableIt.hasNext(); ) {
             final Local optimizable = (Local) optimizableIt.next();
+            debug( "trying to optimize "+optimizable );
             Load load = (Load) joinPointLocalMap.get(optimizable);
+            debug( "load is "+load );
             if( load != null ) load.makeStatic();
         }
 

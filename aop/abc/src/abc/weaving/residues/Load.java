@@ -49,14 +49,14 @@ public class Load extends Residue {
     public String toString() {
 	return "load("+value+","+variable+")";
     }
-    private boolean isStatic = false;
     /** Set the static flag on this load residue, meaning that the
      * join point info only needs static parts, and therefore can be
      * optimized to not include dynamic parts.
      */
-    public void makeStatic() { isStatic = true; }
-    private AssignStmt joinPointStmt = null;
-    public AssignStmt getJoinPointStmt() { return joinPointStmt; }
+    public void makeStatic() {
+        JoinPointInfo jpi = (JoinPointInfo) value;
+        value = new StaticJoinPointInfo(jpi.shadowMatch().getSJPInfo());
+    }
 	public Stmt codeGen(
 		SootMethod method,
 		LocalGeneratorEx localgen,
@@ -68,8 +68,22 @@ public class Load extends Residue {
 
             if(value instanceof JoinPointInfo) {
                 JoinPointInfo jpi = (JoinPointInfo) value;
-		begin=jpi.doInit(localgen,units,begin,isStatic);
-                if(!isStatic) joinPointStmt = jpi.getMakeJPStmt();
+		begin=jpi.doInit(localgen,units,begin);
+            }
+
+            RefType jptype = RefType.v("org.aspectj.lang.JoinPoint");
+            if(value instanceof StaticJoinPointInfo && variable.getType().equals(jptype)) {
+                // OL: need to put in a cast
+                Local tmp1 = localgen.generateLocal(value.getSootValue().getType(), "jpcast");
+                Stmt load = Jimple.v().newAssignStmt(tmp1, value.getSootValue());
+                units.insertAfter(load, begin);
+                Local tmp2 = localgen.generateLocal(jptype, "jpcast");
+                Stmt cast = Jimple.v().newAssignStmt(tmp2, Jimple.v().newCastExpr(tmp1, jptype));
+                units.insertAfter(cast, load);
+                return succeed(units,
+                            variable.set(localgen,units,cast,wc,tmp2),
+                            fail,
+                            sense);
             }
 
 	    return succeed(units,

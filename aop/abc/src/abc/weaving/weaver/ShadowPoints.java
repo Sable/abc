@@ -101,20 +101,12 @@ public class ShadowPoints {
         return shadowmatch;
     }
 
-    private AssignStmt makeJPStmt;
-    public AssignStmt getMakeJPStmt() { return makeJPStmt; }
-    public Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start,boolean isStatic) {
+    public Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
         Stmt skip=Jimple.v().newNopStmt();
         Stmt jump=Jimple.v().newIfStmt
             (Jimple.v().newNeExpr(getThisJoinPoint(),NullConstant.v()),skip);
         units.insertAfter(jump,start);
-        Stmt init;
-        if( isStatic ) {
-            init = initThisJoinPointStatic(lg,units,jump);
-        } else {
-            makeJPStmt = initThisJoinPoint(lg,units,jump);
-            init = makeJPStmt;
-        }
+        Stmt init = initThisJoinPoint(lg,units,jump);
         units.insertAfter(skip,init);
         return skip;
 

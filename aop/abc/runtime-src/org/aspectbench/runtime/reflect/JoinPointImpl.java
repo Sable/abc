@@ -19,7 +19,9 @@ import org.aspectj.lang.*;
 import org.aspectj.lang.reflect.SourceLocation;
 
 public class JoinPointImpl implements JoinPoint {
-    static class StaticPartImpl implements JoinPoint.StaticPart {
+    // We make StaticPartImpl implement both JoinPoint.StaticPart and JoinPoint,
+    // because we optimize some JoinPoints to use StaticPartImpl
+    static class StaticPartImpl implements JoinPoint.StaticPart, JoinPoint {
         String kind;
         Signature signature;
         SourceLocation sourceLocation;
@@ -46,6 +48,11 @@ public class JoinPointImpl implements JoinPoint {
         public final String toString() { return toString(StringMaker.middleStringMaker); }
         public final String toShortString() { return toString(StringMaker.shortStringMaker); }
         public final String toLongString() { return toString(StringMaker.longStringMaker); }
+        public Object getThis() { throw new RuntimeException("Internal error: The compiler optimized a thisJoinPoint to be static, but it's being called in a dynamic way."); }
+        public Object getTarget() { throw new RuntimeException("Internal error: The compiler optimized a thisJoinPoint to be static, but it's being called in a dynamic way."); }
+        public Object[] getArgs() { throw new RuntimeException("Internal error: The compiler optimized a thisJoinPoint to be static, but it's being called in a dynamic way."); }
+
+        public org.aspectj.lang.JoinPoint.StaticPart getStaticPart() { return this; }
     }
 
     Object _this;

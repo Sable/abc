@@ -49,9 +49,9 @@ public class JoinPointInfo extends ContextValue {
 	return sm.sp.getThisJoinPoint();
     }
 
-    public Stmt doInit(LocalGeneratorEx lg,Chain units,Stmt begin,boolean isStatic) {
-	return sm.sp.lazyInitThisJoinPoint(lg,units,begin,isStatic);
+    public Stmt doInit(LocalGeneratorEx lg,Chain units,Stmt begin) {
+	return sm.sp.lazyInitThisJoinPoint(lg,units,begin);
     }
 
-    public AssignStmt getMakeJPStmt() { return sm.sp.getMakeJPStmt(); }
+    public ShadowMatch shadowMatch() { return sm; }
 }
