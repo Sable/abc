@@ -592,7 +592,7 @@ public class Restructure {
 				{ 'N', 'C', 'C', 'C', 'C', 'C', 'X', 'Y'},
 				{ 'N', 'C', 'C', 'C', 'C', 'C', 'C', 'X'}
 			};
-		public static char getSimpleTypeCastStatus(Type from, Type to) {
+		public static char getSimpleTypeCastInfo(Type from, Type to) {
 			int f=sootTypeToInt(from);
 			if (!isSimpleType(f))
 				throw new RuntimeException();
@@ -614,39 +614,98 @@ public class Restructure {
 			return type!=refType;
 		}
 		public static boolean isWideningCast(Type from, Type to) {
-			char c=getSimpleTypeCastStatus(from, to);
+			char c=getSimpleTypeCastInfo(from, to);
 			return c=='Y' || c=='X'; 
 		}
-		// TODO: make sure this is correct. add support for arrays.
-		// how about AnySubType?
+		// returns if the classes contain a method with the same name and signature 
+		// but different return type
+		public static boolean haveCollidingMethod(SootClass cl, SootClass cl2) {
+			for (Iterator it=cl.getMethods().iterator(); it.hasNext();) {
+				SootMethod m=(SootMethod)it.next();
+				try {
+					
+					SootMethod m2=cl2.getMethod(m.getName(), m.getParameterTypes());
+					if (!m2.getReturnType().equals(m.getReturnType()))
+						return true;
+					
+				} catch (RuntimeException e) {
+					if (e.getMessage().matches("ambiguous method"))
+						throw new RuntimeException("Internal error, unexpected exception.");
+				}
+			}
+			return false;
+		}
+		
+		public static boolean implementsInterfaceRecursive(SootClass cl, String interfaceName)  {
+			if (cl.implementsInterface(interfaceName))
+				return true;
+			else {
+				if (cl.hasSuperclass())
+					return implementsInterfaceRecursive(cl.getSuperclass(), interfaceName);
+				else
+					return false;
+			}
+		}
+		/*
+		 * The aim is to return true for cases which javac would 
+		 * identify as an invalid cast at compile time.
+		 * (For example boolean to int, or unrelated RefTypes).
+		 * Based on 5.1.7 of the Java Language Spec, second edition, page 64.
+		 * Also see 5.5, Casting Conversion. 
+		 * The #numbers in the code indicate the bullet point to which the test 
+		 * refers.
+		 */
+		// TODO: how about AnySubType?
 		public static boolean isImpossibleConversion(Type from, Type to) {
+			if (from instanceof AnySubType) throw new RuntimeException();
+			if (to instanceof AnySubType) throw new RuntimeException();
+			
+			// #4
+			if (to instanceof NullType && !(from instanceof NullType ))
+				return true;			
+			
 			if (to.equals(from))
 				return false;
 			
-			if (isSimpleType(from) && isSimpleType(to))
-				return isImpossibleCastSimple(from, to);
+			if (from instanceof NullType && to instanceof RefLikeType)
+				return false;	
 			
+			// #3
+			if (from instanceof NullType && isSimpleType(to))
+				return true;
+			
+			if (isSimpleType(from) && isSimpleType(to))
+				return isImpossibleCastSimple(from, to); // #5,6
+			
+			// At this stage, they are not both simple types.
+			// #1, #2
 			if (isSimpleType(from) || isSimpleType(to))
 				return true;
 			
 			if (!(from instanceof RefType && to instanceof RefType)) {
 				Type objectType=Scene.v().getSootClass("java.lang.Object").getType();
+				// #12,13
 				if (from instanceof ArrayType && to instanceof RefType &&
-					!to.equals(objectType)) 
+					! (to.equals(objectType) || 
+							to.equals(RefType.v("java.io.Serializable")) ||
+							to.equals(RefType.v("java.lang.Cloneable")) )) 
 					return true; // cast from array to non-object reftype
 				
+				// #9
 				if (to instanceof ArrayType && from instanceof RefType &&
 						!from.equals(objectType)) 
 					return true; // cast from non-object reftype to array
 				
-				/*
-				 * Some arrays can be converted, so we can't use this rule.
-				 * Quote soot source:
-				 * 	// You can store a int[][] in a Object[]. Yuck!
-				 	// Also, you can store a Interface[] in a Object[] 
-				 if (to instanceof ArrayType && from instanceof ArrayType)
-					return true; // arrays can't be converted
-				*/
+				
+				// #14
+				if (to instanceof ArrayType && from instanceof ArrayType) {
+				 	ArrayType ato=(ArrayType)to;
+				 	ArrayType afrom=(ArrayType)from;
+				 	if (isImpossibleConversion(afrom.baseType, ato.baseType))
+				 		return true;
+					return false; 
+				}
+				
 				
 				return false;
 			}
@@ -654,13 +713,34 @@ public class Restructure {
 			RefType rFrom=(RefType)from;
 			RefType rTo=(RefType)to;
 			
-			if (rTo.getSootClass().isInterface())  // from could implement this interface
-				return false;
+			// #11
+			if (rFrom.getSootClass().isInterface() && rTo.getSootClass().isInterface()) {
+				if (haveCollidingMethod(rFrom.getSootClass(), rTo.getSootClass()))
+					return true;
+				else
+					return false;
+			}
+			// #8
+			if (rTo.getSootClass().isInterface())  {
+				if (Modifier.isFinal(rFrom.getSootClass().getModifiers()) &&
+					implementsInterfaceRecursive(rFrom.getSootClass(), rTo.getSootClass().getName()))
+					return true;
+				else
+					return false; // from could implement this interface
+			}
+			// #10
+			if (rFrom.getSootClass().isInterface()) {  
+				if (Modifier.isFinal(rTo.getSootClass().getModifiers()) &&
+						implementsInterfaceRecursive(rTo.getSootClass(), rFrom.getSootClass().getName()))
+					return true;
+				else						// from can implement other interfaces and
+					return false;			// a non-interface type, so cast could be possible
+			}
 			
-			if (rFrom.getSootClass().isInterface()) // from can implement other interfaces and 
-				return false;						// a non-interface type, so cast could be possible
+			
 			
 			FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
+			// #7
 			if (hier.isSubclass(rFrom.getSootClass(), rTo.getSootClass()) ||
 				hier.isSubclass(rTo.getSootClass(), rFrom.getSootClass())) 
 				return false;
@@ -668,7 +748,7 @@ public class Restructure {
 				return true;					
 		}
 		public static boolean isImpossibleCastSimple(Type from, Type to) {
-			char c=getSimpleTypeCastStatus(from, to);
+			char c=getSimpleTypeCastInfo(from, to);
 			return c=='N';
 		}
 		/*public static boolean canBeInstanceOf(Type source, Type target) {
