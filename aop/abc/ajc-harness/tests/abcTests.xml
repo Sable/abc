@@ -11,4 +11,13 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="errors"
+      title="StackOverFlowException with circular +implements's."
+      keywords="from-errors">
+        <compile files="CircularPlusImplementsIntros.java">
+            <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
+
+
 </suite>

@@ -15,8 +15,10 @@ import org.eclipse.jdt.internal.compiler.impl.CompilerOptions;
 import org.eclipse.jdt.internal.compiler.parser.Parser;
 
 public class AbcBuildManager extends AjBuildManager {
-	public AbcBuildManager(IMessageHandler holder) {
+	final private String[] savedArgs;
+	public AbcBuildManager(IMessageHandler holder, String[] args) {
 		super(holder);
+		savedArgs= args;
 	}
 
 	public void performCompilation(List files) {
@@ -51,7 +53,8 @@ public class AbcBuildManager extends AjBuildManager {
 			DefaultErrorHandlingPolicies.proceedWithAllProblems(),
 			buildConfig.getJavaOptions(),
 			getBatchRequestor(),
-			getProblemFactory());
+			getProblemFactory(),
+			savedArgs);
 			
 			
 		AjProblemReporter pr =

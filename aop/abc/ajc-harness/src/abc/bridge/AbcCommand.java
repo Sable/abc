@@ -37,10 +37,10 @@ public class AbcCommand implements ICommand {
 	 * @see org.aspectj.bridge.ICommand#runCommand(String[], IMessageHandler)
 	 * @return false if handler has errors or the command failed
 	 */
-	public boolean runCommand(String[] args, IMessageHandler handler) {
-		buildManager = new AbcBuildManager(handler); 
+	public boolean runCommand(String[] args, IMessageHandler handler) { 
 		savedArgs = new String[args.length];
 		System.arraycopy(args, 0, savedArgs, 0, savedArgs.length);
+		buildManager = new AbcBuildManager(handler, savedArgs);
 		for (int i = 0; i < args.length; i++) {
 			if ("-help".equals(args[i])) {
 				// should be info, but handler usually suppresses

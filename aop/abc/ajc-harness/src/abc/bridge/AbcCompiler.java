@@ -16,14 +16,16 @@ import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 import polyglot.util.ErrorInfo;
 
 public class AbcCompiler extends AjCompiler {
-
+	final private String[] savedArgs;
 	public AbcCompiler(
 		INameEnvironment environment,
 		IErrorHandlingPolicy policy,
 		Map settings,
 		ICompilerRequestor requestor,
-		IProblemFactory problemFactory) {
+		IProblemFactory problemFactory,
+		String[] args) {
 		super(environment, policy, settings, requestor, problemFactory);
+		savedArgs = args;
 	}
 
 	public AbcCompiler(
@@ -32,7 +34,8 @@ public class AbcCompiler extends AjCompiler {
 		Map settings,
 		ICompilerRequestor requestor,
 		IProblemFactory problemFactory,
-		boolean parseLiteralExpressionsAsConstants) {
+		boolean parseLiteralExpressionsAsConstants,
+		String[] args) {
 		super(
 			environment,
 			policy,
@@ -40,6 +43,7 @@ public class AbcCompiler extends AjCompiler {
 			requestor,
 			problemFactory,
 			parseLiteralExpressionsAsConstants);
+		savedArgs = args;
 	}
 
 	public void compile(ICompilationUnit[] sourceUnits) {
@@ -49,30 +53,32 @@ public class AbcCompiler extends AjCompiler {
 		totalUnits= sourceUnits.length;
 		for (; i < totalUnits; i++) {
 			unit = sourceUnits[i];
-			String[] args= new String[1];
-			args[0]= new String(unit.getFileName());
-			System.out.println("calling abc on file:" + args[0]);
+			String currentSource = new String(unit.getFileName());
+			System.out.println("calling abc on file:" + currentSource);
 			CompilationResult compilationResult= new CompilationResult(unit, 1, 1, 1);
-			AbcMain.CompilationArgs abcArgs = new AbcMain.CompilationArgs(classpath, args);
+			AbcMain.CompilationArgs abcArgs = new AbcMain.CompilationArgs(savedArgs, classpath, currentSource);
 			try {
 				AbcMain.compile(abcArgs);
+				System.out.println("compilation of " + currentSource + " completed successfully");
 			} catch (AbcMain.CompilationFailedException e) {
 //				e.printStackTrace();
-				for (Iterator it= e.getErrors().iterator(); it.hasNext();) {
-					ErrorInfo ei= (ErrorInfo) it.next();
-					//this.problemReporter.problemFactory.createProblem(originatingFilaName, problemId, problemArguments, messageArguments, severity, startPos, endPos, lineNumber);
-					if (ei.getPosition() == null) continue; //TODO: see how to report a problem with no location
-					IProblem error= problemReporter.problemFactory.createProblem(
-						ei.getPosition().file().toCharArray(), 
-						0, 
-						new String[] { ei.getErrorString() },
-						new String[] { ei.getMessage() }, 
-						problemId(ei.getErrorKind()), 
-						ei.getPosition().column(), 
-						ei.getPosition().column()+1, 
-						ei.getPosition().line());
-					compilationResult.record(error, problemReporter.referenceContext);	
-				}
+				System.out.println("compilation of " + currentSource + " failed");
+				if (e.getErrors() != null)
+					for (Iterator it= e.getErrors().iterator(); it.hasNext();) {
+						ErrorInfo ei= (ErrorInfo) it.next();
+						//this.problemReporter.problemFactory.createProblem(originatingFilaName, problemId, problemArguments, messageArguments, severity, startPos, endPos, lineNumber);
+						if (ei.getPosition() == null) continue; //TODO: see how to report a problem with no location
+						IProblem error= problemReporter.problemFactory.createProblem(
+							ei.getPosition().file().toCharArray(), 
+							0, 
+							new String[] { ei.getErrorString() },
+							new String[] { ei.getMessage() }, 
+							problemId(ei.getErrorKind()), 
+							ei.getPosition().column(), 
+							ei.getPosition().column()+1, 
+							ei.getPosition().line());
+						compilationResult.record(error, problemReporter.referenceContext);	
+					}
 /*			} catch (Throwable e) {
 				e.printStackTrace();
 				throw new RuntimeException();
