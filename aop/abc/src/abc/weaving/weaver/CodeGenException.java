@@ -10,7 +10,7 @@ package abc.weaving.weaver;
  */
 public class CodeGenException extends RuntimeException {
 
-  CodeGenException(String message)
+  public CodeGenException(String message)
     { super("\nCODE GENERATOR EXCEPTION: " + message+ "\n" +
 	    "*** This exception should not occur and is the result of " +
 	    "incomplete or incorrect code generation.***");

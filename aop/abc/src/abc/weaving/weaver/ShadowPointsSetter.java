@@ -1,4 +1,4 @@
-package abc.weaving.weaver;
+package abc.weaving.weaver; 
 
 import soot.*;
 import soot.util.*;
@@ -8,6 +8,7 @@ import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
+import abc.soot.util.*;
 
 /** The purpose of this class is to iterate over all AdviceApplication
  *    instances and initialize their ShadowPoints.   
@@ -133,10 +134,6 @@ public class ShadowPointsSetter {
 	                  "Unknown kind of advice for inside method body: " + 
 		           stmtappl);
 
-	   // FIXME: can remove after Ganesh gets line no working
-	   // debug("... " + keystmt + " [" + stmtappl + "]");
-	   // debug(" TAGS ... " + keystmt.getTags());
-	   // debug(" Line number " + keystmt.getTag("SourceLnPosTag"));
 	   // If stmt is in Hashtable,  use SP entry assciated with it
 	   // else, introduce new nops before and after stmt and 
 	   // create new SP.
@@ -176,20 +173,20 @@ public class ShadowPointsSetter {
     Stmt startnop = Jimple.v().newNopStmt();
     if (method.getName().equals("<init>"))
       { debug("Need to insert after call to <init>");
-	Unit initstmt = findInitStmt(units);
+	Unit initstmt = Restructure.findInitStmt(units);
 	units.insertAfter(startnop,initstmt);
       }
     else
       { debug("Need to insert at beginning of method.");  	     
         // now insert a nop for the beginning of real stmts
 	// find first statement after identity statements
-	Unit firstrealstmt = findFirstRealStmt(units);
+	Unit firstrealstmt = Restructure.findFirstRealStmt(units);
 	units.insertBefore(startnop,firstrealstmt);
       }
 
     // Now deal with end point.  Rewire all returns to end of method body.
     // Insert a nop just before the return at end of body.
-    Stmt endnop = restructureReturn(method);
+    Stmt endnop = Restructure.restructureReturn(method);
     return new ShadowPoints(startnop,endnop);
   } // method restructureBody 
     
@@ -238,10 +235,10 @@ public class ShadowPointsSetter {
        units.insertAfter(endnop,nextstmt);
        // if a trap started at the new,
        // it should now start at the startnop
-       resetTrapsStart(b,targetstmt,startnop);
+       Restructure.resetTrapsStart(b,targetstmt,startnop);
        // if a trap ended just after the new, 
        // it should now extend down to the stmt after the endnop 
-       resetTrapsEnd(b,nextstmt,(Stmt) units.getSuccOf(endnop));
+       Restructure.resetTrapsEnd(b,nextstmt,(Stmt) units.getSuccOf(endnop));
        return new ShadowPoints(startnop,endnop);
      }
 
@@ -252,10 +249,10 @@ public class ShadowPointsSetter {
        units.insertAfter(endnop,targetstmt);
        // if a trap started at targetstmt 
        // it should now start at the startnop
-       resetTrapsStart(b,targetstmt,startnop);
+       Restructure.resetTrapsStart(b,targetstmt,startnop);
        // if a trap ended just after the targetstmt, 
        // it should now extend down to the stmt after the endnop 
-       resetTrapsEnd(b,nextstmt,(Stmt) units.getSuccOf(endnop));
+       Restructure.resetTrapsEnd(b,nextstmt,(Stmt) units.getSuccOf(endnop));
        return new ShadowPoints(startnop,endnop);
      }
 
@@ -287,9 +284,6 @@ public class ShadowPointsSetter {
 	 // nothing to do for abstract or native methods 
          if( method.isAbstract() ) continue;
          if( method.isNative() ) continue;
-         // FIXME: shouldn't have to check name
-	 //if( !method.getName().equals("<init>") ) continue;
-
 
 	 // get all the advice list for this method
          MethodAdviceList adviceList = 
@@ -303,13 +297,17 @@ public class ShadowPointsSetter {
 	    )
            { debug("Must inline body of " + method.getName());
 	     // add to list of methods to process
-	     // if not restructured, do it now 
+	     // if returns not restructured, do it now 
 	     if (!adviceList.isRestructured())
-	       { restructureReturn(method);
+	       { Restructure.restructureReturn(method);
 		 adviceList.restructuringDone();
 	       }
 
-	     // TODO: put call to inliner 
+	     boolean inlining_performed;
+	     // keep inlining until no inlining happened
+	     do
+	       inlinining_performed = Restructure.inlineThisCall(method);
+	     while (inlining_performed);
 	     methodlist.add(method);
 	   }
 	}
@@ -351,7 +349,7 @@ public class ShadowPointsSetter {
 	  Stmt startnop = Jimple.v().newNopStmt();
 	  Stmt endnop = Jimple.v().newNopStmt();
           // insert startnop just after call to <init>,  
-	  Stmt initstmt = findInitStmt(units);
+	  Stmt initstmt = Restructure.findInitStmt(units);
 	  units.insertAfter(startnop,initstmt);
 	  // insert endnop just after just before final ret
 	  units.insertBefore(endnop,units.getLast());
@@ -382,10 +380,10 @@ public class ShadowPointsSetter {
 	  Stmt endnop = Jimple.v().newNopStmt();
 	  // insert startnop at beginning of method, just before first
 	  // real statement
-	  Stmt firstreal = findFirstRealStmt(units); 
+	  Stmt firstreal = Restructure.findFirstRealStmt(units); 
 	  units.insertBefore(startnop,firstreal);
           // insert endnop just before call to <init>,  
-	  Stmt initstmt = findInitStmt(units);
+	  Stmt initstmt = Restructure.findInitStmt(units);
 	  units.insertBefore(endnop,initstmt);
 	  preinitialization_sp = new ShadowPoints(startnop,endnop); 
           // make all preinitialization AdviceApplications refer to the
@@ -400,163 +398,5 @@ public class ShadowPointsSetter {
        throw new CodeGenException("Constructor advice on non <init>"); 
   } // insertPreinitializationSP
 
-  /* ------------------- Utility restructurers ----------------------- */
-
-  /** Given a Chain for a body of an <init> method, find the call to
-   *  the <init> corresponding to either a this() or super() call.  Check
-   *  that there is exactly one such <init>, otherwise throw a 
-   *  CodeGenException.   Return the <init> Stmt.
-   */
-  public Stmt findInitStmt(Chain units)
-    { // look for the <init> 
-      Iterator it = units.snapshotIterator();
-      Stmt initstmt = null;
-
-      // get the "this", should be first identity statement
-      Stmt first = (Stmt) it.next();
-      Local thisloc = null;
-      if (first instanceof IdentityStmt)
-        thisloc = (Local) 
-	        ((IdentityStmt) first).getLeftOp();//the local for "this" 
-	else
-	  throw new CodeGenException("Expecting an identity stmt for this");
-	
-      int countinits = 0;
-      while ( it.hasNext() )
-        { Stmt u = (Stmt) it.next();
-          // debug("Looking at stmt " + u);
-          if ((u instanceof InvokeStmt) && 
-             ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
-	     ((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).
-		                                  getBase().equals(thisloc) )
-	    { debug("Found <init> " + u);
-	      countinits++;
-	      if (countinits == 1) // great, found it
-	        initstmt = u;  
-	      else
-	        throw new CodeGenException("Expecting only one <init>");
-             }	 
-          } // all units
-	 
-       if (countinits == 0)     
-         throw new CodeGenException("Could not find a matching <init>");
-
-       return(initstmt);
-     }
-
-   /** Given a Chain for the body of a method,  find the first "real"
-    *  stmt (i.e. not an identity stmt) and return a reference to it.
-    */
-   public Stmt findFirstRealStmt(Chain units)
-     { Iterator it = units.snapshotIterator();
-       while ( it.hasNext() )
-         { Stmt u = (Stmt) it.next();
-           if (! (u instanceof IdentityStmt)) // first non-IdentityStmt
-             return(u);
-          }
-        throw new CodeGenException("Expecting to find a real stmt");
-      }
-
-   /** update all traps that used to end at oldend to now end at newend
-    */
-   public void resetTrapsEnd(Body b, Stmt oldend, Stmt newend)
-     { for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
-         { final Trap tr = (Trap) trIt.next();
-           if( tr.getEndUnit() == oldend ) 
-	     tr.setEndUnit(newend);  
-	  }
-      }
-
-   /** update all traps that used to start at oldstart to now start at newstart
-    */
-   public void resetTrapsStart(Body b, Stmt oldstart, Stmt newstart)
-     { for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
-         { final Trap tr = (Trap) trIt.next();
-           if( tr.getBeginUnit() == oldstart ) 
-	     tr.setBeginUnit(newstart);  
-	  }
-      }
-
-  /** Given a SootMethod, restructure its body so that the body ends
-   *  with   L1:nop; return;    or   L1:nop; return(<local>);.
-   *  Rewire all other returns in the body to assign to <local> and
-   *  goto L1.   Return a reference to the nop at L1.
-   */
-  public Stmt restructureReturn(SootMethod method) {
-    Body b = method.getActiveBody(); 
-    LocalGenerator localgen = new LocalGenerator(b);
-    Stmt endnop = Jimple.v().newNopStmt();
-    Chain units = b.getUnits();  // want a patching chain here, to make sure
-                             // gotos are rewired to go to the inserted nop
-    Stmt last = (Stmt) units.getLast();
-
-    Local ret = null;
-    if( last instanceof ReturnStmt ) 
-      { ReturnStmt lastRet = (ReturnStmt) last;
-	Value op = lastRet.getOp();
-        if (op instanceof Local) // return(<local>)
-          ret = (Local) op; // remember this local
-	else if (op instanceof Constant) // return(<constant>)
-	  { // change to ret := <constant>; return(ret); 
-	    Type returnType = method.getReturnType();
-	    ret = localgen.generateLocal(returnType);
-	    units.insertBefore(Jimple.v().newAssignStmt(ret,op),lastRet); 
-            lastRet.setOp(ret);
-	  }
-	else
-	  throw new CodeGenException(
-	                  "Expecting return of <local> or <constant>");
-      } 
-    else if( last instanceof ReturnVoidStmt ) 
-      { // do nothing 
-      } 
-    else 
-      { Type returnType = method.getReturnType();
-        ret = localgen.generateLocal(returnType);
-        units.insertAfter( Jimple.v().newReturnStmt(ret), last );
-      }
-
-    // now the last stmt should always be return ret; or return;
-    if( units.getLast() instanceof ReturnStmt ) 
-      { ReturnStmt lastRet = (ReturnStmt) units.getLast();
-        if( lastRet.getOp() != ret ) 
-           throw new CodeGenException("Expecting last stmt to Return ret");
-      }  
-    else if ( !(units.getLast() instanceof ReturnVoidStmt ) ) 
-      { throw new CodeGenException(
-	           "Last stmt should be ReturnStmt or ReturnVoidStmt");
-      }
-
-    // insert the nop just before the return stmt
-    units.insertBefore( endnop, units.getLast() );
-
-    resetTrapsEnd(b,(Stmt) units.getLast(),endnop);
-
-    // Look for returns in the middle of the method
-    Iterator it = units.snapshotIterator();
-    while( it.hasNext() ) 
-      { Stmt u = (Stmt) it.next();
-        if( u == units.getLast() ) continue;
-        if( u instanceof ReturnStmt ) 
-	  { ReturnStmt ur = (ReturnStmt) u;
-            units.insertBefore( 
-		Jimple.v().newAssignStmt( ret, ur.getOp() ), ur );
-           }
-        if( u instanceof ReturnVoidStmt  || u instanceof ReturnStmt) 
-	  { Stmt gotoStmt = Jimple.v().newGotoStmt(endnop);
-            units.swapWith( u, gotoStmt );
-            for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
-	      { final Trap tr = (Trap) trIt.next();
-                for( Iterator boxIt = tr.getUnitBoxes().iterator(); 
-		    boxIt.hasNext(); ) 
-		  { final UnitBox box = (UnitBox) boxIt.next();
-                    if( box.getUnit() == u ) 
-                      box.setUnit( gotoStmt );
-                  } // each box in trap 
-              } // each trap
-	  } // if return stmt
-      } // each stmt in body
-    return(endnop);
-  }
 
 } // class ShadowPointsSetter
