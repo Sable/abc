@@ -13,7 +13,7 @@ public aspect NewAspect {
 
   before () : get(* *.*) && !within(NewAspect) 
     { message("before get");  aspectlevel++; }
-  after () returning : get(* *.*) && !within(NewAspect) 
+  after () returning  : get(* *.*) && !within(NewAspect) 
     { aspectlevel--; message("after get"); }
 
   before() : execution(* *..*(..)) && !within(NewAspect)
@@ -21,25 +21,26 @@ public aspect NewAspect {
   before() : execution(* *..*(..)) && !within(NewAspect) 
     { message("before execution 2"); aspectlevel++; }
 
-  after() returning : execution(* *..*(..)) && !within(NewAspect) 
+  before() : execution(*..new(..)) && !within(NewAspect)
+     { message("before execution new"); aspectlevel++; }
+
+  after() returning  : execution(* *..*(..)) && !within(NewAspect) 
      { aspectlevel--; message("after execution 1"); }
-  after() returning: execution(* *..*(..)) && !within(NewAspect) 
+  after() returning : execution(* *..*(..)) && !within(NewAspect) 
      { aspectlevel--; message("after execution 2"); }
+
+  after() returning : execution(*..new(..)) && !within(NewAspect) 
+     { aspectlevel--; message("after execution new"); }
 
   before() : initialization(*..new(..)) && !within(NewAspect)
      { message("before initalization new"); aspectlevel++; }
-  after() returning: initialization(*..new(..)) && !within(NewAspect) 
+  after() returning  : initialization(*..new(..)) && !within(NewAspect) 
      { aspectlevel--; message("after initialization new"); }
 
   before() : preinitialization(*..new(..)) && !within(NewAspect)
      { message("before preinitialization new"); aspectlevel++; }
-  after() returning: preinitialization(*..new(..)) && !within(NewAspect) 
+  after() returning : preinitialization(*..new(..)) && !within(NewAspect) 
      { aspectlevel--; message("after preinitialization new"); }
-
-  before() : execution(*..new(..)) && !within(NewAspect)
-     { message("before execution new"); aspectlevel++; }
-  after() returning: execution(*..new(..)) && !within(NewAspect) 
-     { aspectlevel--; message("after execution new"); }
 
   before() : staticinitialization(NewTest)
      { message("before static initialization"); aspectlevel++; }
