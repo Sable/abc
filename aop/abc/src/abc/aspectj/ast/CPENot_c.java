@@ -41,6 +41,10 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
         printSubExpr(cpe, true, w, tr);
     }
 
+    public String toString() {
+	return "!"+cpe;
+    }
+
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	return !cpe.matches(matcher, cl);
     }

@@ -11,4 +11,9 @@ public class InitializationAdviceApplication extends ConstructorAdviceApplicatio
     public InitializationAdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
 	super(advice,residue,sjpInfo);
     }
+
+    public void debugInfo(String prefix,StringBuffer sb) {
+	sb.append(prefix+"initialization"+"\n");
+	super.debugInfo(prefix,sb);
+    }
 }

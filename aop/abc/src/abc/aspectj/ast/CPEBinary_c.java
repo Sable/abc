@@ -52,6 +52,10 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
 	printSubExpr(right, false, w, tr);
     }
 
+    public String toString() {
+	return "("+left+" "+op+" "+right+")";
+    }
+
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	if (op == COND_OR) {
 	    return left.matches(matcher, cl) || right.matches(matcher, cl);

@@ -45,6 +45,13 @@ public class TPEArray_c extends TypePatternExpr_c
 	    w.write("[]");
     }
 
+    public String toString() {
+	String s=base.toString();
+	for (int i=0;i<dims;i++)
+	    s+="[]";
+	return s;
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	return false;
     }

@@ -16,4 +16,6 @@ public abstract class NamePattern_c extends Node_c implements NamePattern
         super(pos);
     }
 
+    public abstract String toString();
+
 }

@@ -21,4 +21,8 @@ public class DotDotFormalPattern_c extends Node_c
 	w.write("..");
     }
 
+    public String toString() {
+	return "..";
+    }
+
 }

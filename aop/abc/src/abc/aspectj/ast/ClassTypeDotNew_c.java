@@ -28,4 +28,9 @@ public class ClassTypeDotNew_c extends Node_c implements ClassTypeDotNew
 	w.write("new");
     }
 
+    public String toString() {
+	if(base != null) return "("+base+")."+"new";
+	else return "new";
+    }
+
 }

@@ -42,6 +42,10 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
         print(type, w, tr);
     }
 
+    public String toString() {
+	return type.toString();
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	return false;
     }

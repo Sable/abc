@@ -9,12 +9,14 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
-public class FormalPattern_c extends Node_c 
+public abstract class FormalPattern_c extends Node_c 
                              implements FormalPattern
 {
 
     public FormalPattern_c(Position pos) {
         super(pos);
     }
+
+    public abstract String toString();
 
 }

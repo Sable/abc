@@ -27,6 +27,10 @@ public class DotDotNamePattern_c extends NamePattern_c
 	// Print one extra dot here - that makes two of them.
     }
 
+    public String toString() {
+	return init+".";
+    }
+
      public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set/*<PCNode>*/ matches = init.match(context, classes, packages);
 	LinkedList worklist = new LinkedList(matches);

@@ -7,6 +7,7 @@ import soot.tagkit.SourceLnPosTag;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
 
+
 /** The results of matching at a new+constructor call shadow
  *  @author Ganesh Sittampalam
  *  @date 05-May-04

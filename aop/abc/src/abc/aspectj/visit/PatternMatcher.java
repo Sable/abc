@@ -125,6 +125,10 @@ public class PatternMatcher {
 	public boolean matchesType(Type t) {
 	    return PatternMatcher.this.matchesType(pattern, t.toString());
 	}
+
+	public String toString() {
+	    return pattern.toString();
+	}
     }
 
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern(MethodPattern pattern) {
@@ -144,6 +148,9 @@ public class PatternMatcher {
 	    if(!pattern.getName().name().getPattern().matcher(method.getName()).matches()) return false;
 	    // FIXME: need to match arguments and throws
 	    return true;
+	}
+	public String toString() {
+	    return pattern.toString();
 	}
     }
 
@@ -174,6 +181,10 @@ public class PatternMatcher {
 		matchesType(type, sf.getType().toString()) &&
 		matchesClass(clpat, sf.getDeclaringClass().toString()) &&
 		name.getPattern().matcher(sf.getName()).matches();
+	}
+
+	public String toString() {
+	    return modifiers.toString()+" "+type.toString()+" "+clpat.toString()+" "+name.toString();
 	}
     }
 

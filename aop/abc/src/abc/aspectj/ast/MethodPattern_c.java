@@ -70,6 +70,12 @@ public class MethodPattern_c extends Node_c
 	return reconstruct(modifiers,type,name,formals,throwpat);
     }
 
+    public String toString() {
+	String s=modifiers+" "+type+" "+name+" "+formals;
+	if(throwpat!=null) s+=" throws "+throwpat;
+	return s;
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 
        w.begin(2);

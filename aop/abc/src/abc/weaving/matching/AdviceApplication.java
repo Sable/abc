@@ -47,7 +47,11 @@ public abstract class AdviceApplication {
 		this.col=-1;
 	    }
 	}
-    };
+
+	public String toString() {
+	    return kind+" "+signatureType+" "+signature+" "+row+" "+col;
+	}
+    }
 
     /** information for generating the SJP */
     public SJPInfo sjpInfo;
@@ -72,6 +76,8 @@ public abstract class AdviceApplication {
 	sb.append(prefix+"advice decl:\n");
        	advice.debugInfo(prefix+" ",sb);
 	sb.append(prefix+"residue: "+residue+"\n");
+	sb.append(prefix+"SJP info: "+sjpInfo+"\n");
+	sb.append(prefix+"---"+"\n");
     }
 
     private static void doStatement(GlobalAspectInfo info,

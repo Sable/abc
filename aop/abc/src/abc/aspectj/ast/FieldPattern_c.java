@@ -29,18 +29,13 @@ public class FieldPattern_c extends Node_c
 	this.name = name;
     }
 
-    private List copyList(List xs) {
-	return new LinkedList(xs);
-    }
-    
-
     protected FieldPattern_c reconstruct(List modifiers,TypePatternExpr type,ClassTypeDotId name) {
 	if(!CollectionUtil.equals(modifiers,this.modifiers) 
 	   || type!=this.type 
 	   || name!=this.name) {
 	    
 	    FieldPattern_c n = (FieldPattern_c) copy();
-	    n.modifiers=copyList(modifiers);
+	    n.modifiers=modifiers;
 	    n.type=type;
 	    n.name=name;
 	    return n;

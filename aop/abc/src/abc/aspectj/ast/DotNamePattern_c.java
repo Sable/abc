@@ -29,6 +29,10 @@ public class DotNamePattern_c extends NamePattern_c
 	print(last,w,tr);
     }
 
+    public String toString() {
+	return init+"."+last;
+    }
+
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set/*<PCNode>*/ init_matches = init.match(context, classes, packages);
 	Set/*<PCNode>*/ result = new HashSet();

@@ -36,4 +36,9 @@ public class ModifierPattern_c extends Node_c implements ModifierPattern
         w.write(modifier.translate());
     }
 
+    public String toString() {
+	if(positive) return modifier.translate();
+	else return "!"+modifier.translate();
+    }
+
 }

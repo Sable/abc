@@ -41,6 +41,10 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
         printSubExpr(tpe, true, w, tr);
     }
 
+    public String toString() {
+	return "!"+tpe;
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	return !tpe.matchesClass(matcher, cl);
     }

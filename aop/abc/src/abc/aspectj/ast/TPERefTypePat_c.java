@@ -44,6 +44,10 @@ public class TPERefTypePat_c extends TypePatternExpr_c
 	print(pat, w, tr);
     }
 
+    public String toString() {
+	return pat.toString();
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	return pat.matchesClass(matcher, cl);
     }

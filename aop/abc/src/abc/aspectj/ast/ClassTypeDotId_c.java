@@ -57,4 +57,14 @@ public class ClassTypeDotId_c extends Node_c implements ClassTypeDotId
         }
     }
 
+    public String toString() {
+	String s="";
+	if(name !=null) s+="(";
+	s+=base;
+	if(name!=null) {
+	    s+=")."+name;
+	}
+	return s;
+    }
+
 }

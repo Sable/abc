@@ -15,6 +15,11 @@ public class NewStmtAdviceApplication extends AdviceApplication {
 	super(advice,residue,sjpInfo);
 	this.stmt=stmt;
     }
+
+    public void debugInfo(String prefix,StringBuffer sb) {
+	sb.append(prefix+"new stmt: "+stmt+"\n");
+	super.debugInfo(prefix,sb);
+    }
 }
     
 				      

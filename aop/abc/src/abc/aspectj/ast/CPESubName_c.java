@@ -42,6 +42,10 @@ public class CPESubName_c extends ClassnamePatternExpr_c
 	w.write("+");
     }
 
+    public String toString() {
+	return pat+"+";
+    }
+
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	Set pat_matches = matcher.getMatches(pat);
 	if (pat_matches.contains(cl)) {

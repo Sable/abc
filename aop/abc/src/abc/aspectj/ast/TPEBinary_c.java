@@ -52,6 +52,10 @@ public class TPEBinary_c extends TypePatternExpr_c
 	printSubExpr(right, false, w, tr);
     }
 
+    public String toString() {
+	return "("+left+" "+op+" "+right+")";
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	if (op == COND_OR) {
 	    return left.matchesClass(matcher, cl) || right.matchesClass(matcher, cl);

@@ -23,6 +23,10 @@ public class TPEUniversal_c extends TypePatternExpr_c implements TPEUniversal
 	w.write("*");
     }
 
+    public String toString() {
+	return "*";
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	return true;
     }
