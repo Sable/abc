@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +22,10 @@ package abc.weaving.aspectinfo;
 
 import soot.*;
 
-/** A method pattern. */
+/** A method pattern. 
+ *  @author Aske Simon Christensen
+ *  @author Damien Sereni
+ */
 public interface MethodPattern {
     public boolean matchesCall(SootMethodRef smr);
 

@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +23,9 @@ import polyglot.util.Position;
 
 import soot.*;
 
-/** A field signature. */
+/** A field signature. 
+ *  @author Aske Simon Christensen
+ */
 public class FieldSig extends Sig {
     private int mod;
     private AbcClass cl;

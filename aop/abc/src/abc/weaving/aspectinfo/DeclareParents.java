@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +23,9 @@ import polyglot.util.Position;
 
 import java.util.*;
 
+/** A <code>declare parents</code> declaration
+ *  @author Aske Simon Christensen
+ */
 public abstract class DeclareParents extends InAspect {
     private ClassnamePattern pattern;
     private Collection/*<AbcClass>*/ classes;

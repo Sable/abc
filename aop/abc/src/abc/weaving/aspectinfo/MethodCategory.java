@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +35,10 @@ import polyglot.types.Flags;
 
 import java.util.*;
 
+/** Decide what a field or method in jimple really is
+ *  @author Aske Simon Christensen
+ *  @author Oege de Moor
+ */
 public class MethodCategory {
 
     // CATEGORY DEFINITIONS

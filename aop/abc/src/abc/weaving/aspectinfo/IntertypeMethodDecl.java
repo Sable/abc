@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +24,10 @@ import polyglot.util.Position;
 
 import soot.*;
 
-/** An intertype method declaration. */
+/** An intertype method declaration. 
+ *  @author Aske Simon Christensen
+ *  @author Oege de Moor
+ */
 public class IntertypeMethodDecl extends InAspect {
     private MethodSig target;
     private MethodSig impl;

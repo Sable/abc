@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +25,9 @@ import soot.*;
 
 import java.util.*;
 
-/** A base class for things that have an aspect associated with them. */
+/** A base class for things that have an aspect associated with them. 
+ *  @author Aske Simon Christensen
+ */
 public abstract class InAspect extends Syntax {
     private Aspect aspct;
 
