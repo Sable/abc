@@ -293,7 +293,7 @@ public class AspectJTypeSystem_c
 					  	"\" within a null container type.");
 			  	}
 
-			  	List /*FieldInstance*/ fis = findFields(container, name);
+			  	List /*FieldInstance*/ fis = findFieldInstances(container, name);
 			  	// System.out.println("findField "+fis);
 			 	List acceptable = new ArrayList();
 			 
@@ -312,7 +312,7 @@ public class AspectJTypeSystem_c
 			  	return (FieldInstance) acceptable.get(0);
 		  	}
 
-		  public List /*FieldInstance*/ findFields(ReferenceType container, String name)
+		  public List /*FieldInstance*/ findFieldInstances(ReferenceType container, String name)
 										 throws SemanticException {
 			  assert_(container);
 

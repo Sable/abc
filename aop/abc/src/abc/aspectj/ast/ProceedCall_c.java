@@ -78,6 +78,7 @@ public class ProceedCall_c extends Call_c
         public void aspectMethodsEnter(AspectMethods visitor)
         {
                 // do nothing       
+                // visitor.advice().addProceedCall(this.)
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
