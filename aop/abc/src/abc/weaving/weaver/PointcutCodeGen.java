@@ -127,6 +127,8 @@ public class PointcutCodeGen {
                             LocalGeneratorEx localgen, 
 			    AdviceApplication adviceappl)
       { AdviceDecl advicedecl = adviceappl.advice;
+	if ( advicedecl == null) // it was a dummy advice to enforce a SJP
+	  return;
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
 	if ( advicespec instanceof BeforeAdvice ) 
            BeforeWeaver.doWeave(method, localgen, adviceappl);
@@ -156,6 +158,7 @@ public class PointcutCodeGen {
 
        Chain c = new HashChain();
        int nformals = advicedecl.numFormals();
+       debug("There are " + nformals + " formals to the advice method.");
        // if there are no formals for the advicemethod
        if (nformals == 0)
          { Stmt s = Jimple.v().
@@ -166,7 +169,8 @@ public class PointcutCodeGen {
 	 }
        else // have to fill in a bunch of formals
          { boolean[] formalsdone = new boolean[nformals];
-           Vector arglist = new Vector(nformals);
+           Vector arglist = new Vector(nformals,2);
+	   arglist.setSize(nformals);
 	   // try to fill in all the formals
 	   //   --- first the join point ones
 	   if (advicedecl.hasJoinPointStaticPart())
@@ -180,7 +184,9 @@ public class PointcutCodeGen {
 	       Stmt assignsjp = Jimple.v().newAssignStmt(
 		   sjploc,sjpfieldref);
 	       c.addLast(assignsjp);
-	       arglist.insertElementAt( sjploc,position);
+	       debug("inserting at postion " + position + 
+		     " into a Vector of size " + arglist.capacity());
+	       arglist.setElementAt( sjploc, position);
 	       formalsdone[position] = true;
 	     }
 	   if (advicedecl.hasJoinPoint())
@@ -188,8 +194,19 @@ public class PointcutCodeGen {
 	                                  advicedecl.joinPointPos());
 	     }
 	   if (advicedecl.hasEnclosingJoinPoint())
-	     { debug("The index for enclosingJoinPoint is " +
+	     { int position = advicedecl.enclosingJoinPointPos(); 
+	       debug("The index for enclosingJoinPoint is " +
 	                                  advicedecl.enclosingJoinPointPos());
+	       StaticFieldRef sjpencfieldref = Jimple.v().
+		  newStaticFieldRef(adviceappl.sjpEnclosing.sjpfield);
+	       debug("The field ref is " + sjpencfieldref);
+	       Local sjpencloc = localgen.generateLocal(
+		  RefType.v("org.aspectj.lang.JoinPoint$StaticPart"), "sjpenc");
+	       Stmt assignsjpenc = Jimple.v().newAssignStmt(
+		   sjpencloc,sjpencfieldref);
+	       c.addLast(assignsjpenc);
+	       arglist.setElementAt(sjpencloc,position);
+	       formalsdone[position] = true;
 	     }
 
 	   // now the other ones

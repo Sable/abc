@@ -40,7 +40,6 @@ public class GenStaticJoinPoints {
 	   System.err.println("GSJP*** " + message);
       }	
 
-
     /** generate code for all the static join points in class sc */
     public void genStaticJoinPoints(SootClass sc) {
       debug("--- BEGIN Generating Static Join Points for class " + 
@@ -102,10 +101,6 @@ public class GenStaticJoinPoints {
 	    genSJPformethod(sc,units,ip,lg,
 		         method,adviceList.bodyAdvice);
 
-	 if (adviceList.hasStmtAdvice())
-	    genSJPforstmtlist(sc,units,ip,lg,
-		         method,adviceList.stmtAdvice);
-
          if (adviceList.hasInitializationAdvice())
 	    genSJPformethod(sc,units,ip,lg,
 		         method,adviceList.initializationAdvice);
@@ -113,6 +108,10 @@ public class GenStaticJoinPoints {
 	 if (adviceList.hasPreinitializationAdvice())
 	    genSJPformethod(sc,units,ip,lg,
 		         method,adviceList.preinitializationAdvice);
+
+	 if (adviceList.hasStmtAdvice())
+	    genSJPforstmtlist(sc,units,ip,lg,
+		         method,adviceList.stmtAdvice);
 
 	 debug("   --- END Generating Static Join Points for method " + 
 	                    method.getName() + "\n");
@@ -136,8 +135,9 @@ public class GenStaticJoinPoints {
 	                  (AdviceApplication) alistIt.next(); 
 	  // find out if the advice method needs that static join point
 	  AdviceDecl advicedecl = adviceappl.advice;
-	  if (advicedecl.hasJoinPointStaticPart() ||
-	      advicedecl.hasJoinPoint()) // need to create a SJP
+	  if ( advicedecl == null // a dummy advice just for SJP
+	       || advicedecl.hasJoinPointStaticPart() 
+	       || advicedecl.hasJoinPoint()) // need to create a SJP
 	    { debug("Need a SJP ");
 	      if (!factory_generated) // must generate the code for factory
 	        { debug(" --- Generating code for the factory");
@@ -147,12 +147,13 @@ public class GenStaticJoinPoints {
 
 	      // increment counter for number of times this advice method
 	      // applies .... don't know what we will use that for yet
-	      int advicemethodcount = advicedecl.incrApplCount();
+	      if (advicedecl != null) 
+	         advicedecl.incrApplCount();
 
               if (thisSJPfield == null) // haven't made one yet
 	         thisSJPfield =  
 		     makeSJPfield(sc,units,ip,lg,method,adviceappl);
-
+              debug("setting " + adviceappl + " to " + thisSJPfield);
    	      adviceappl.sjpInfo.sjpfield = thisSJPfield; // store in adviceappl
 	    } // if we need a SJP
 	} // each advice for the SJP

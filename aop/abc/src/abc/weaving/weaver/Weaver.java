@@ -6,6 +6,7 @@ import soot.jimple.*;
 import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
+import abc.weaving.weaver.*;
 
 /** The driver for the weaving process.  
  * @author Jennifer Lhotak
@@ -70,6 +71,7 @@ public class Weaver {
 	    // generate the Static Join Points
 	    gsjp.genStaticJoinPoints(scl);
 	    // pass one, do not handle initialization and preinitialization
+	    if (abc.main.Debug.v().printAdviceInfo) PrintAdviceInfo.printAdviceInfo(scl);
             pg.weaveInAspectsPass(scl,1);
 	    // pass two, handle initializaiton and preinititalization
 	    sg.setShadowPointsPass2(scl);
