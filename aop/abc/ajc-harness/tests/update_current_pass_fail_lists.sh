@@ -1,10 +1,10 @@
 #!/bin/sh
 
-FILES=full_current.output failed_current.output \
+FILES="full_current.output failed_current.output \
       failed_current.xml passed_current.xml \
       skipped_current.xml \
       failed_check_current.xml \
-      passed_check_current.xml
+      passed_check_current.xml"
 
 cd ../../ &&
 CLASSPATH= ant clean &&
