@@ -197,9 +197,6 @@ public class If extends Pointcut {
 				return false;			// The lists had different lengths
 			
 			// COMPARING IMPLEMENTATIONS
-			// FIXME Is it OK to require If methods to be equal regardless of renaming?
-			// It seems that some substitution should be required inside the body
-			// but inline() doesn't do that
 			
 			if (!impl.equals(oif.getImpl())) return false;
 			
