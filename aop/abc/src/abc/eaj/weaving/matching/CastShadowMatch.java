@@ -84,4 +84,9 @@ public class CastShadowMatch extends StmtShadowMatch
     {
         return stmt;
     }
+    public String joinpointName() {
+	return "cast";
+    }
+
+
 }

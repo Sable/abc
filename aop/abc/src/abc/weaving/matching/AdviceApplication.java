@@ -115,7 +115,7 @@ public abstract class AdviceApplication {
 
 		if(!NeverMatch.neverMatches(residue))
 		    residue=AndResidue.construct
-			(residue,ad.getAdviceSpec().matchesAt(we,sm));
+			(residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
 
 		if(abc.main.Debug.v().showPointcutMatching
 		   && !NeverMatch.neverMatches(residue)) 

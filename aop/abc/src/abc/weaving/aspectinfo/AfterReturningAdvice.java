@@ -16,17 +16,13 @@ import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after returning advice without return variable binding. */
-public class AfterReturningAdvice extends AbstractAdviceSpec {
+public class AfterReturningAdvice extends AbstractAfterAdvice {
     public AfterReturningAdvice(Position pos) {
 	super(pos);
     }
 
     public String toString() {
 	return "after returning";
-    }
-
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-	return sm.supportsAfter() ? AlwaysMatch.v : null;
     }
 
     private static void debug(String message) { 

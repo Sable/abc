@@ -162,4 +162,10 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 	return ret;
     }
 
+    public String joinpointName() {
+	return "field set";
+    }
+
+
+
 }

@@ -51,10 +51,18 @@ public class AroundAdvice extends AbstractAdviceSpec {
     	//Main.v().error_queue.enqueue(
 			//	ErrorInfo.SEMANTIC_ERROR, s);
     }
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-    	if (!sm.supportsAround())
-    		return null;
-    	
+    public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
+    	if (!sm.supportsAround()) {
+	    // FIXME: should be a multi-position error
+	    abc.main.Main.v().error_queue.enqueue
+		(ErrorInfoFactory.newErrorInfo
+		 (ErrorInfo.WARNING,
+		  sm.joinpointName()+" join points do not support around advice, but some advice from aspect "
+		  +ad.getAspect()+" would otherwise apply here",
+		  sm.getContainer(),
+		  sm.getHost()));
+	    return null;
+    	}
     	Type shadowType=sm.getReturningContextValue().getSootType();
     	Type originalShadowType=shadowType;
     	if (shadowType.equals(NullType.v()))

@@ -54,4 +54,9 @@ public class InitializationShadowMatch extends BodyShadowMatch {
     public boolean supportsAround() {
 	return false;
     }
+
+    public String joinpointName() {
+	return "initialization";
+    }
+
 }

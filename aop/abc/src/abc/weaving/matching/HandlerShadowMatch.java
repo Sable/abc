@@ -67,4 +67,9 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 	ret.add(new JimpleValue(((IdentityStmt) stmt).getLeftOp()));
 	return ret;
     }
+
+    public String joinpointName() {
+	return "handler";
+    }
+
 }

@@ -100,4 +100,10 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	    ret.add(new JimpleValue((Value) argsIt.next()));
 	return ret;
     }
+
+    public String joinpointName() {
+	return "constructor call";
+    }
+
+
 }

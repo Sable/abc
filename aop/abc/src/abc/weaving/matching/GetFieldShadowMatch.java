@@ -113,4 +113,9 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	return new ArrayList(0);
     }
 
+    public String joinpointName() {
+	return "field get";
+    }
+
+
 }

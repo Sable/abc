@@ -11,9 +11,10 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 import abc.soot.util.Restructure;
 
-/** The results of matching at an execution shadow
+/** The results of matching at an execution shadow.
+ *  abc does a front-end transformation that means that static initialization
+ *  and advice execution join point shadows are also treated as execution shadows
  *  @author Ganesh Sittampalam
- *  @date 05-May-04
  */
 public class ExecutionShadowMatch extends BodyShadowMatch {
 
@@ -52,17 +53,17 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	String sigClass;
 	String sigMethod;
 	String sig;
-	if(container.getName().equals(SootMethod.staticInitializerName)) {
+	if(isStaticInitializer()) {
 	    jpKind="staticinitialization";
 	    sigClass="InitializerSignature";
 	    sigMethod="makeInitializerSig"; 
 	    sig=SJPInfo.makeStaticInitializerSigData(container);
-	} else if(container.getName().equals(SootMethod.constructorName)) {
+	} else if(isConstructor()) {
 	    jpKind="constructor-execution";
 	    sigClass="ConstructorSignature";
 	    sigMethod="makeConstructorSig";
 	    sig=SJPInfo.makeConstructorSigData(container);
-	} else if(MethodCategory.adviceBody(container)) {
+	} else if(isAdviceBody()) {
 	    jpKind="advice-execution";
 	    sigClass="AdviceSignature";
 	    sigMethod="makeAdviceSig";
@@ -76,6 +77,18 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 
 	return new SJPInfo
 	    (jpKind,sigClass,sigMethod,sig,getHost());
+    }
+
+    private boolean isStaticInitializer() {
+	return container.getName().equals(SootMethod.staticInitializerName);
+    }
+
+    private boolean isConstructor() {
+	return container.getName().equals(SootMethod.constructorName);
+    }
+
+    private boolean isAdviceBody() {
+	return MethodCategory.adviceBody(container);
     }
 
     public Host getHost() {
@@ -124,5 +137,11 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	   
     }
 
+    public String joinpointName() {
+	if(isStaticInitializer()) return "staticinitialization";
+	if(isConstructor()) return "constructor execution";
+	if(isAdviceBody()) return "advice execution";
+	return "method execution";
+    }
 
 }

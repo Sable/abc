@@ -26,9 +26,11 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec {
 	return "beforeafter";
     }
 
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
+    public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
 	// BeforeAfterAdvice is just used for internal bookkeeping type stuff,
-	// and always matches.
+	// and always matches, even at joinpoints that don't support after (at such
+	// joinpoints usually we get a push immediately followed by a pop, or similar
+	// useless behaviour, but nested advice might make that relevant)
 	return AlwaysMatch.v;
     }
 

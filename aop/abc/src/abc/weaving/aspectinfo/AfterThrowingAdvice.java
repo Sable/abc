@@ -17,17 +17,13 @@ import abc.weaving.weaver.ShadowPoints;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after throwing advice without exception variable binding. */
-public class AfterThrowingAdvice extends AbstractAdviceSpec {
+public class AfterThrowingAdvice extends AbstractAfterAdvice {
     public AfterThrowingAdvice(Position pos) {
 	super(pos);
     }
 
     public String toString() {
 	return "after throwing";
-    }
-
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-	return sm.supportsAfter() ? AlwaysMatch.v : null;
     }
 
     public RefType getCatchType() {

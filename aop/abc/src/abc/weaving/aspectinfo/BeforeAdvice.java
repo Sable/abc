@@ -24,7 +24,7 @@ public class BeforeAdvice extends AbstractAdviceSpec {
 	return "before";
     }
 
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
+    public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
 	return sm.supportsBefore() ? AlwaysMatch.v : null;
     }
 

@@ -143,4 +143,5 @@ public abstract class ShadowMatch {
 	sp.setShadowMatch(this);
     }
 
+    public abstract String joinpointName();
 }

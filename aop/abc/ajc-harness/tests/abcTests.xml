@@ -4755,11 +4755,14 @@
     </ajc-test>
 
     <ajc-test num="546" dir="new"
+      abccomment="we only generate the warning at the join point, not the advice location.
+                  This should be fixed when we have multi-position errors."
       title="VerifyError after around advice falls off end of tryCatch"
       keywords="from-resolved_10x">
         <compile files="TryOffEnd.java">
+            <ajcmessage kind="warning" line="13"/>
+            <ajcmessage kind="warning" line="21"/>
             <message kind="warning" line="13"/>
-            <message kind="warning" line="21"/>
         </compile>
         <run class="TryOffEnd"/>
     </ajc-test>

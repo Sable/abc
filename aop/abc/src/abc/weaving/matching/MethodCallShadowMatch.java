@@ -149,4 +149,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	return ret;
     }
 
+    public String joinpointName() {
+	return "method call";
+    }
 }

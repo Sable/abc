@@ -14,7 +14,14 @@ public interface AdviceSpec {
      *  This affects the precedence of the advice.
      */
     public boolean isAfter();
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm);
+
+    /** Does this kind of advice match at the given join point shadow?
+     *  @param we The weaving environment
+     *  @param sm The shadow match structure
+     *  @param ad The advice declaration being matched, for use in generating a good error message
+     *            if appropriate
+     */
+    public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad);
 
     /** Weave a specific advice application into the given method
      *  using the given local generator. The AdviceSpec is used to

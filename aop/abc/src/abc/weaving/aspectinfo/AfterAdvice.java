@@ -11,7 +11,7 @@ import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after advice. */
-public class AfterAdvice extends AbstractAdviceSpec {
+public class AfterAdvice extends AbstractAfterAdvice {
     private AfterReturningAdvice returning;
     private AfterThrowingAdvice throwing;
 
@@ -23,10 +23,6 @@ public class AfterAdvice extends AbstractAdviceSpec {
 
     public String toString() {
 	return "after";
-    }
-
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-	return sm.supportsAfter() ? AlwaysMatch.v : null;
     }
 
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
