@@ -101,9 +101,13 @@ public class Main {
         } catch (CompilerFailedException e) {
             System.out.println(e.getMessage());
             System.exit(5);
-        }
+        } catch(RuntimeException e) {
+	    throw (e instanceof InternalCompilerError ? e : new InternalCompilerError(e));
+	} catch(Error e) {
+	    throw new InternalCompilerError(e);
+	}
     }
-
+    
   public Main(String[] args) throws IllegalArgumentException {
      parseArgs(args);
      v=this;
@@ -631,7 +635,7 @@ public class Main {
     }
 
     public void optimize(){
-        PackManager.v().runPacks();
+	PackManager.v().runPacks();
     }
     
     public void output() {
