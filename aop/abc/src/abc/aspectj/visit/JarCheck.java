@@ -48,12 +48,14 @@ public class JarCheck extends OncePass {
 		     wovenJarClasses.hasNext(); ) {
 		     	job.compiler().errorQueue();
 		     	ClassType jarclass = ((AbcClass) wovenJarClasses.next()).getPolyglotType();
-		     	try { ts.checkClassConformance(jarclass); 
-		     	      AJClassBody_c.checkDuplicates(jarclass); }
+		     	try { ts.checkClassConformance(jarclass); }
 		     	catch (SemanticException e) {
 		     		eq.enqueue(ErrorInfo.SEMANTIC_ERROR,injar + jarclass + ". " + e.getMessage(),e.position());
 		     	}
-		     	
+				try { AJClassBody_c.checkDuplicates(jarclass); }
+					catch (SemanticException e) {
+					eq.enqueue(ErrorInfo.SEMANTIC_ERROR,injar + jarclass + ". " + e.getMessage(),e.position());
+				}
 		     }
 	}
 }
