@@ -15,6 +15,7 @@ my $count=0;
 my $failed=0;
 my $succeeded=0; #sanity
 
+system("rm -f failed.output");
 
 my $xmlprefix="<!DOCTYPE suite SYSTEM \"../tests/ajcTestSuite.dtd\"> \n <suite> \n ";
 my $xmlsuffix="</suite> \n";
@@ -68,6 +69,7 @@ while (<>) {
    my $out=`cat tmp.output`;
    if ($out =~ m/\nFAIL/gs) {
      print "Failed. ";  
+     system("cat tmp.output >> failed.output");
      system("mv tmp.output $dir/$filename");
      system("echo '*.output' > $dir/.cvsignore");
      $failed++;
