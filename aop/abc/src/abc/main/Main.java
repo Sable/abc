@@ -624,7 +624,7 @@ public class Main {
 
         if (!Debug.v().testITDsOnly) {
             // Make sure that all the standard AspectJ shadow types are loaded
-            AspectJShadows.load();
+            AJShadows.load();
             AbcTimer.mark("Load shadow types");
     
             GlobalAspectInfo.v().computeAdviceLists();

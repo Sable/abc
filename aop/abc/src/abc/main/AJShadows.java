@@ -2,7 +2,7 @@ package abc.main;
 
 import abc.weaving.matching.*;
 
-public class AspectJShadows {
+public class AJShadows {
 
     static void load() {
 	ConstructorCallShadowType.register();
