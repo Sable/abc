@@ -123,6 +123,16 @@
             </classpath>
             <arg line="-d generated/abc/aspectj/parse src/abc/aspectj/parse/aspectj.flex"/>
         </java>
+        <java classname="JFlex.Main"
+            fork="true"
+            dir="."
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${jflex.loc}"/>
+            </classpath>
+            <arg line="-d generated/abc/eaj/parse src/abc/eaj/parse/eaj.flex"/>
+        </java>
     </target>
 
     <target name="jflex-dep" depends="settings">
@@ -131,8 +141,16 @@
             <targetfileset dir="generated/abc/aspectj/parse"
                 includes="Lexer_c.java"/>
         </dependset>
+        <dependset>
+            <srcfileset dir="src/abc/eaj/parse" includes="eajj.flex"/>
+            <targetfileset dir="generated/abc/eaj/parse"
+                includes="Lexer_c.java"/>
+        </dependset>
         <condition property="jflex-up-to-date">
-            <available file="generated/abc/aspectj/parse/Lexer_c.java"/>
+            <and>
+                <available file="generated/abc/aspectj/parse/Lexer_c.java"/>
+                <available file="generated/abc/eaj/parse/Lexer_c.java"/>
+            </and>
         </condition>
     </target>
 
