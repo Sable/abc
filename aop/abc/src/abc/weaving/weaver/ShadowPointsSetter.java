@@ -203,23 +203,39 @@ public class ShadowPointsSetter {
     // create the beginning and ending nop statements
     Stmt startnop = Jimple.v().newNopStmt();
     Stmt endnop = Jimple.v().newNopStmt();
+    Stmt nextstmt = (Stmt) units.getSuccOf(targetstmt);
 
     // insert new nop stmts into body around targetstmt
    if (stmtappl instanceof HandlerAdviceApplication)
-     { units.insertAfter(startnop,targetstmt);
-       // for the special case of a handler, there is not end to the shadow
+     { // verify that no trap exists that starts at the targetstmt nor 
+       // ends at the stmt just after the targetstmt
+       for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
+         { final Trap tr = (Trap) trIt.next();
+           if( tr.getBeginUnit() == targetstmt ||
+	       tr.getEndUnit() == nextstmt)
+	     throw new CodeGenException(
+		 "Not expecting a trap to start at, or " +
+		 "end just after a handler stmt");
+	  }
+       // safe situation, insert nop for start and return null for end
+       units.insertAfter(startnop,targetstmt);
+       // for the special case of a handler, there is no end to the shadow
        debug("Inserting nop after identity stmt " + targetstmt); 
        return new ShadowPoints(startnop,null);
      }
    else if (stmtappl instanceof NewStmtAdviceApplication)
      { // expecting a new, followed by an <init> (treat these as one unit)
-       // just check that the correct kind of stmts have been put together
-       Stmt nextstmt = (Stmt) units.getSuccOf(targetstmt);
        debug("Inserting nops around pair of stmts " + targetstmt +
 	         " ; " + nextstmt);
        units.insertBefore(startnop,targetstmt);
        targetstmt.redirectJumpsToThisTo(startnop);
        units.insertAfter(endnop,nextstmt);
+       // if a trap started at the new,
+       // it should now start at the startnop
+       resetTrapsStart(b,targetstmt,startnop);
+       // if a trap ended just after the new, 
+       // it should now extend down to the endnop 
+       resetTrapsEnd(b,nextstmt,endnop);
        return new ShadowPoints(startnop,endnop);
      }
 
@@ -228,6 +244,12 @@ public class ShadowPointsSetter {
        units.insertBefore(startnop,targetstmt);
        targetstmt.redirectJumpsToThisTo(startnop);
        units.insertAfter(endnop,targetstmt);
+       // if a trap started at targetstmt 
+       // it should now start at the startnop
+       resetTrapsStart(b,targetstmt,startnop);
+       // if a trap ended just after the targetstmt, 
+       // it should now extend down to the endnop 
+       resetTrapsEnd(b,nextstmt,endnop);
        return new ShadowPoints(startnop,endnop);
      }
 
@@ -395,6 +417,26 @@ public class ShadowPointsSetter {
         throw new CodeGenException("Expecting to find a real stmt");
       }
 
+   /** update all traps that used to end at oldend to now end at newend
+    */
+   public void resetTrapsEnd(Body b, Stmt oldend, Stmt newend)
+     { for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
+         { final Trap tr = (Trap) trIt.next();
+           if( tr.getEndUnit() == oldend ) 
+	     tr.setEndUnit(newend);  
+	  }
+      }
+
+   /** update all traps that used to start at oldstart to now start at newstart
+    */
+   public void resetTrapsStart(Body b, Stmt oldstart, Stmt newstart)
+     { for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
+         { final Trap tr = (Trap) trIt.next();
+           if( tr.getBeginUnit() == oldstart ) 
+	     tr.setBeginUnit(newstart);  
+	  }
+      }
+
   /** Given a SootMethod, restructure its body so that the body ends
    *  with   L1:nop; return;    or   L1:nop; return(<local>);.
    *  Rewire all other returns in the body to assign to <local> and
@@ -448,12 +490,7 @@ public class ShadowPointsSetter {
     // insert the nop just before the return stmt
     units.insertBefore( endnop, units.getLast() );
 
-    // update any traps to end at nop
-    for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
-      { final Trap tr = (Trap) trIt.next();
-        if( tr.getEndUnit() == units.getLast() ) 
-	  tr.setEndUnit(endnop);  
-       }
+    resetTrapsEnd(b,(Stmt) units.getLast(),endnop);
 
     // Look for returns in the middle of the method
     Iterator it = units.snapshotIterator();
