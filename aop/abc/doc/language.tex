@@ -47,16 +47,26 @@ The source code of all aspects must be available at compile time.
 \chapter{Static crosscutting}
 
 \chapter{Join points and pointcuts}
+
 \section{Join points}
 
+A join point is an event in the dynamic execution of a program. 
+All join points have clearly delimited beginning points, 
+and most also have end points (the exception being join points that occur
+when an exception is handled).
+
+A {\em method call} join point
+
 \extensionbegin{private-pointcut-vars}
-The {\em cast} join point occurs every time a value is cast from one type
+A {\em cast} join point occurs every time a value is cast from one type
 to another. This includes both reference and primitive type casts.
 \extensionend{private-pointcut-vars}
 
-\section{Join point shadows}
+\subsection{Join point shadows}
 
 \section{Pointcut language}
+
+The pointcut language
 
 \subsection{Inspecting and binding values from the context}
 
@@ -127,6 +137,14 @@ indirectly via a named pointcut). In abc, this restriction does not apply.
 \chapter{Declaring new warnings and errors}
 
 \chapter{Advice}
+
+Advice must be declared to throw checked exceptions as appropriate, just
+like normal Java methods.
+
+It is an error for advice that throws a checked exception
+to statically apply at any joinpoint shadow where it is
+not already legal to throw that exception.
+
 
 \chapter{Aspect inheritance}
 Aspects may be declared abstract. Any aspect may extend either a class
