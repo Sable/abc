@@ -43,6 +43,8 @@ import java.io.*;
 
 import javax.sound.sampled.BooleanControl;
 
+import com.sun.rsasign.i;
+
 import soot.toolkits.scalar.*;
 import soot.options.*;
 import abc.weaving.aspectinfo.AbcClass;
@@ -172,9 +174,9 @@ public class AroundWeaver {
 			ClassInterfacePair key=new ClassInterfacePair(className, interfaceName);
 			return accessInterfacesGet.containsKey(key);
 		}*/
-		public AccessMethodInfo getMethodInfo(String className, String interfaceName) {
+		public AccessMethodInfo getMethodInfo(String className, String interfaceName, boolean bStatic) {
 			InterfaceInfo info=getInterfaceInfo(interfaceName);
-			return info.getAccessMethodInfo(className);			
+			return info.getAccessMethodInfo(className, bStatic);			
 		}
 		public static class InterfaceInfo {
 			public Set interfaceInvokationStmts=new HashSet();
@@ -189,13 +191,21 @@ public class AroundWeaver {
 					dynamicArgsByType[i]=new LinkedList();
 				}
 			}
-			public AccessMethodInfo getAccessMethodInfo(String className) {
-				if (!accessMethodImplementations.containsKey(className)) {
-					accessMethodImplementations.put(className, new AccessMethodInfo());
+			public AccessMethodInfo getAccessMethodInfo(String className, boolean bStatic) {
+				if (bStatic) {
+					if (!accessMethodImplementationsStatic.containsKey(className)) {
+						accessMethodImplementationsStatic.put(className, new AccessMethodInfo());
+					}
+					return (AccessMethodInfo)accessMethodImplementationsStatic.get(className);
+				} else {				
+					if (!accessMethodImplementations.containsKey(className)) {
+						accessMethodImplementations.put(className, new AccessMethodInfo());
+					}
+					return (AccessMethodInfo)accessMethodImplementations.get(className);
 				}
-				return (AccessMethodInfo)accessMethodImplementations.get(className);
 			}
-			private HashMap /*String, AccessMethodInfo*/ accessMethodImplementations=new HashMap();			
+			private HashMap /*String, AccessMethodInfo*/ accessMethodImplementations=new HashMap();	
+			private HashMap /*String, AccessMethodInfo*/ accessMethodImplementationsStatic=new HashMap();			
 		}
 		public HashMap /*String, InterfaceInfo*/ interfaces=new HashMap();
 		public InterfaceInfo getInterfaceInfo(String interfaceName) {
@@ -219,7 +229,48 @@ public class AroundWeaver {
 			}
 			return (AdviceApplicationInfo)adviceApplications.get(app);
 		}
+		public int getStaticDispatchTypeID(Type type) {
+			String name=type.toString();
+			if (!staticDispatchTypeIDs.containsKey(name)) {
+				staticDispatchTypeIDs.put(name, new Integer(nextStaticTypeDispatchID++));				
+			}
+			return ((Integer)staticDispatchTypeIDs.get(name)).intValue();
+		}
+		int nextStaticTypeDispatchID=1; // 0 is special value
+		HashMap /*String, int*/ staticDispatchTypeIDs=new HashMap();
 		
+		public static class AdviceMethodInfo {
+			public List proceedParameters=new LinkedList();
+			public Local interfaceLocal;
+			public Local idLocal;
+			public Local staticDispatchLocal;
+			public HashSet /*String*/ staticProceedTypes=new HashSet();
+			public boolean hasDynamicProceed=false;
+			
+			public static class ProceedInvokation {
+				public Local lhs;
+				public NopStmt begin;
+				public NopStmt end;	
+				
+				
+				//List lookupValues=new LinkedList();
+				List defaultTargetStmts;
+				//Stmt lookupStmt;
+				List staticInvokes=new LinkedList();
+				List staticLookupValues=new LinkedList();
+				
+				Stmt dynamicInvoke;
+			}			  
+			public List proceedInvokations=new LinkedList();
+		}
+		private HashMap /* String, AdviceMethodInfo */ adviceMethods=new HashMap();
+		AdviceMethodInfo getAdviceMethodInfo(String aspectName, String adviceMethodName) {
+			String key=aspectName + "-" + adviceMethodName;
+			if (!adviceMethods.containsKey(key)) {
+				adviceMethods.put(key, new AdviceMethodInfo());
+			}
+			return (AdviceMethodInfo)adviceMethods.get(key);
+		}
 	}
 	public static State state=new State();
 
@@ -233,6 +284,7 @@ public class AroundWeaver {
 		//if (cl!=null) return;
 		//SootClass cl2=cl;
 		Body b = joinpointMethod.getActiveBody();
+		boolean bStatic=joinpointMethod.isStatic();
 		Chain units = b.getUnits();
 		AdviceDecl advicedecl = adviceappl.advice;
 		AdviceSpec advicespec = advicedecl.getAdviceSpec();
@@ -254,11 +306,11 @@ public class AroundWeaver {
 		//InstanceFieldRef fieldRef=(InstanceFieldRef) accessFieldRef;
 		//arddebug("found field access: " + fieldRef.getField().getName());
 		
-		Type adviceReturnType1=adviceMethod.getReturnType();
-		Type accessInterfaceType=adviceReturnType1;
+		
+		//adviceReturnType;
 		
 		String typeName=
-			accessInterfaceType.toString();// .getClass().getName();
+				adviceReturnType.toString();// .getClass().getName();
 		
 		//String accessTypeString= bGet ? "get" : "set";
 		
@@ -269,22 +321,27 @@ public class AroundWeaver {
 		String interfaceName="abc$access$" + typeName + 
 			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");
 		
-		String methodName="abc$proceed$" + typeName+ 
-			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");
+		String accessMethodName;
+		String dynamicAccessMethodName="abc$proceed$" + typeName+ 
+			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");;	
+		if (bStatic) {
+			accessMethodName="abc$static$proceed$" + typeName+ 
+						(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");	
+		} else {
+			accessMethodName=dynamicAccessMethodName;
+		}
 		
 		List /*type*/ accessMethodParameters=new LinkedList();
 		accessMethodParameters.add(IntType.v()); // the id
-		/*if (bSet) {
-			accessMethodParameters.add(accessInterfaceType);
-		}*/
 		
-		SootClass accessInterface;
-		SootMethod abstractAccessMethod;
+		SootClass accessInterface=null;
+		SootMethod abstractAccessMethod=null;
+	
 		// create "get" interface if it doesn't exist
 		if (Scene.v().containsClass(interfaceName)) {
 			debug("found access interface in scene");
 			accessInterface=Scene.v().getSootClass(interfaceName);
-			abstractAccessMethod=accessInterface.getMethodByName(methodName);
+			abstractAccessMethod=accessInterface.getMethodByName(dynamicAccessMethodName);
 		} else {
 			debug("generating access interface type");
 			accessInterface=new SootClass(interfaceName, 
@@ -293,8 +350,8 @@ public class AroundWeaver {
 			accessInterface.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
 			
 			abstractAccessMethod=
-				new SootMethod(methodName, accessMethodParameters, 
-					/*bGet ?*/ accessInterfaceType /*: VoidType.v()*/,
+				new SootMethod(dynamicAccessMethodName, accessMethodParameters, 
+						adviceReturnType,  
 						Modifier.ABSTRACT | 
 						Modifier.PUBLIC);
 			
@@ -303,143 +360,265 @@ public class AroundWeaver {
 			
 			
 			Scene.v().addClass(accessInterface);
+			accessInterface.setApplicationClass();
 			
-			GlobalAspectInfo.v().getGeneratedClasses().add(interfaceName);						 
+			//GlobalAspectInfo.v().getGeneratedClasses().add(interfaceName);						 
+		}
+		
+		
+		SootMethod localAccessMethod=null;
+		 Body accessBody=null;
+		 Chain accessStatements=null;
+		 State.AccessMethodInfo accessMethodInfo=state.getMethodInfo(joinpointClass.getName(), interfaceName, bStatic);
+
+		 Type returnType=adviceMethod.getReturnType() ;
+		boolean createdNewAccessMethod=false;		 
+		 if (bStatic) {
+		 	try {
+				localAccessMethod=joinpointClass.getMethodByName(accessMethodName);
+		 	}
+		 	catch (Exception ex) {
+//				create new method					
+				 localAccessMethod=new SootMethod(
+					 accessMethodName, accessMethodParameters, returnType ,
+						 Modifier.PUBLIC | Modifier.STATIC);
+						 
+				createdNewAccessMethod=true;
+		 	}
+		 	
+		 } else {
+			if (joinpointClass.implementsInterface(interfaceName)){
+				debug("found interface " + interfaceName + " in class: " + joinpointClass.getName());
+				SootClass cl2=joinpointClass;
+				localAccessMethod=cl2.getMethodByName(accessMethodName);
+				accessBody=localAccessMethod.getActiveBody();
+				accessStatements=accessBody.getUnits();
+			} else {
+				debug("adding interface " + interfaceName + " to class " + joinpointClass.getName());
+				
+				joinpointClass.addInterface(accessInterface);
+		
+				
+			
+				// create new method					
+				localAccessMethod=new SootMethod(
+					accessMethodName, accessMethodParameters, returnType ,
+						Modifier.PUBLIC);
+		
+				createdNewAccessMethod=true;	
+						
+			}
+		 }
+		if (createdNewAccessMethod) {
+			accessBody=Jimple.v().newBody(localAccessMethod);
+		
+			localAccessMethod.setActiveBody(accessBody);
+			debug("adding method " + localAccessMethod.getName() + " to class " + joinpointClass.getName());
+			joinpointClass.addMethod(localAccessMethod);
+
+			accessMethodInfo.method=localAccessMethod;
+
+			accessStatements=accessBody.getUnits();
+
+			// generate this := @this
+			LocalGeneratorEx lg=new LocalGeneratorEx(accessBody);
+			Local lThis=null;
+			if (!bStatic) {
+				lThis=lg.generateLocal(joinpointClass.getType(), "this");
+				accessStatements.addFirst(
+					Jimple.v().newIdentityStmt(lThis, 
+						Jimple.v().newThisRef(
+							RefType.v(joinpointClass))));
+			}
+			//lThis.setName("this");
+			//getBody.getThisLocal();
+			// $i0 := @parameter0: int;
+			accessMethodInfo.idParamLocal=lg.generateLocal(IntType.v(), "id");
+			Stmt paramIdStmt=Jimple.v().newIdentityStmt(accessMethodInfo.idParamLocal, 
+			Jimple.v().newParameterRef(IntType.v(),0));
+			if (lThis==null) {
+				accessStatements.addFirst(paramIdStmt);
+			} else {
+				accessStatements.insertAfter(paramIdStmt,
+				 accessStatements.getFirst());
+			}
+			Local p3=null;
+			Stmt lastIDStmt=paramIdStmt;
+			
+			// generate exception code (default target)
+			SootClass exception=Scene.v().getSootClass("java.lang.RuntimeException");	
+			Local ex=lg.generateLocal(exception.getType(), "exception");
+			Stmt newExceptStmt = Jimple.v().newAssignStmt( ex, Jimple.v().newNewExpr( exception.getType() ) );
+			Stmt initEx=Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( ex, exception.getMethod( "<init>", new ArrayList()))) ;
+			Stmt throwStmt=Jimple.v().newThrowStmt(ex);
+			accessStatements.add(newExceptStmt);
+			accessStatements.add(initEx);
+			accessStatements.add(throwStmt);
+			accessMethodInfo.defaultTarget=newExceptStmt;
+
+			// just generate a nop for now.
+			accessMethodInfo.lookupStmt=Jimple.v().newNopStmt();
+
+			accessStatements.insertAfter(accessMethodInfo.lookupStmt, lastIDStmt);
 		}
 		
 		// Change advice method: add parameters and replace proceed with call to get-interface
-		if (adviceMethod.getParameterCount()==adviceAppl.advice.numFormals()) {
-			modifyAdviceMethod(adviceAppl, adviceMethod, accessInterface, abstractAccessMethod, 
-				accessInterfaceType
-				);
+		{
+			boolean bFirstModification=
+				adviceMethod.getParameterCount()==adviceAppl.advice.numFormals();
+			if (bFirstModification) {
+				modifyAdviceMethod(adviceAppl, adviceMethod, accessInterface, abstractAccessMethod, 
+					returnType, bStatic, accessMethodName, joinpointClass,
+					theAspect, interfaceName
+					);
+			}
+			generateProceedCalls(adviceAppl, adviceMethod, accessInterface, abstractAccessMethod, 
+				adviceReturnType, bStatic, accessMethodName, joinpointClass,
+				theAspect, localAccessMethod, interfaceName);
+			
 		}
-		
-		
 		implementInterface(
 			theAspect,
 			joinpointMethod,
 			adviceAppl,
 			 joinpointClass,
-			 methodName,
-			 interfaceName,
-			 accessMethodParameters,
-			 accessInterface);
-	}
-	
-	private static void weaveGetSet(
-		AdviceApplication adviceAppl,
-		SootClass cl,
-		LocalGenerator localgen,
-		SootMethod method,
-		SootClass theAspect,
-		SootMethod adviceMethod
-		/*,
-		boolean bGet*/) {
-		
-		//boolean bSet=!bGet;
-		//boolean bDynamic=!bStatic;
-	
-		
-		
-		Chain units=method.getActiveBody().getUnits();
-		
-		//InstanceFieldRef fieldRef=(InstanceFieldRef) accessFieldRef;
-		//arddebug("found field access: " + fieldRef.getField().getName());
-		
-		Type adviceReturnType=adviceMethod.getReturnType();
-		Type accessInterfaceType=adviceReturnType;
-		
-		String typeName=
-			accessInterfaceType.toString();// .getClass().getName();
-		
-		//String accessTypeString= bGet ? "get" : "set";
-		
-
-		final boolean interfacePerAdviceMethod=true;
-		String adviceMethodIdentifierString=theAspect.getName() + "$" + adviceMethod.getName();
-		
-		String interfaceName="abc$access$" + typeName + 
-			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");
-		
-		String accessMethodName="abc$proceed$" + typeName+ 
-			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");
-		
-		List /*type*/ accessMethodParameters=new LinkedList();
-		accessMethodParameters.add(IntType.v()); // the id
-		/*if (bSet) {
-			accessMethodParameters.add(accessInterfaceType);
-		}*/
-		
-		SootClass accessInterface;
-		SootMethod accessMethod;
-		// create "get" interface if it doesn't exist
-		if (Scene.v().containsClass(interfaceName)) {
-			debug("found access interface in scene");
-			accessInterface=Scene.v().getSootClass(interfaceName);
-			accessMethod=accessInterface.getMethodByName(accessMethodName);
-		} else {
-			debug("generating access interface type");
-			accessInterface=new SootClass(interfaceName, 
-				Modifier.INTERFACE | Modifier.PUBLIC);						
-			
-			accessInterface.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
-			
-			accessMethod=
-				new SootMethod(accessMethodName, accessMethodParameters, 
-					/*bGet ?*/ accessInterfaceType /*: VoidType.v()*/,
-						Modifier.ABSTRACT | 
-						Modifier.PUBLIC);
-			
-			accessInterface.addMethod(accessMethod);
-			//signature.setActiveBody(Jimple.v().newBody(signature));
-			
-			
-			Scene.v().addClass(accessInterface);
-			
-			GlobalAspectInfo.v().getGeneratedClasses().add(interfaceName);						 
-		}
-		
-		// create list of fields of this type
-		/*Collection relevantFields=new LinkedList();
-		int fieldIndex=0; // will store index of current field
-		{
-			int i=0;
-			Chain fields=cl2.getFields();
-			Iterator it=fields.iterator();
-			while (it.hasNext()) {
-				SootField field=(SootField) it.next();
-				if (field.getType().toString().equals(typeName)) { /// use equals directly?
-					arddebug("found relevant field: " + field.getName());
-					relevantFields.add(field);
-					if (fieldRef.getField().equals(field)) {
-						fieldIndex=i;	
-						arddebug("current field under consideration is " + field.getName());
-					}
-					i++;								
-				}							
-			}
-		}*/
-	
-		// Change advice method: add parameters and replace proceed with call to get-interface
-		if (adviceMethod.getParameterCount()==adviceAppl.advice.numFormals()) {
-			modifyAdviceMethod(adviceAppl, adviceMethod, accessInterface, accessMethod, 
-				accessInterfaceType
-				);
-		}
-	
-
-		implementInterface(
-			theAspect,
-			method,
-			adviceAppl,
-			 cl,
 			 accessMethodName,
 			 interfaceName,
 			 accessMethodParameters,
-			 accessInterface);
-		
+			 adviceReturnType,
+			 accessInterface,
+			 localAccessMethod
+			 );
 	}
 	
+	private static void generateProceedCalls(AdviceApplication adviceAppl,
+					SootMethod adviceMethod,
+					SootClass accessInterface,
+					SootMethod abstractAccessMethod,
+					Type returnType,
+					boolean bStatic, 
+					String accessMethodName, 
+					SootClass joinpointClass,
+					SootClass theAspect,
+					SootMethod accessMethod,
+					String interfaceName) {
+		
+		State.AdviceMethodInfo info=state.getAdviceMethodInfo(theAspect.getName(), adviceMethod.getName());
+		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(interfaceName);
+		
+		Iterator it=info.proceedInvokations.iterator();
+		String newStaticInvoke=null;
+		if (bStatic) {
+			if (!info.staticProceedTypes.contains(joinpointClass.getName())) {
+				newStaticInvoke=joinpointClass.getName();
+				info.staticProceedTypes.add(joinpointClass.getName());
+			}
+		} else {
+			info.hasDynamicProceed=true;	
+		}
+		
+		
+		Body body=adviceMethod.getActiveBody();
+		Chain statements=body.getUnits().getNonPatchingChain();
+		
+		while (it.hasNext()) {
+			State.AdviceMethodInfo.ProceedInvokation invokation=
+				(State.AdviceMethodInfo.ProceedInvokation)it.next();
+			
+			// TODO: fix interfaceInfo.interfaceInvokationStmts
+			removeStatements(body, invokation.begin, invokation.end, null);
+			
+			
+			if (invokation.dynamicInvoke==null && info.hasDynamicProceed){
+				InvokeExpr newInvokeExpr=
+							Jimple.v().newInterfaceInvokeExpr( 
+								info.interfaceLocal, abstractAccessMethod, info.proceedParameters);
+				Stmt s;
+				if (invokation.lhs==null) {
+					s=Jimple.v().newInvokeStmt(newInvokeExpr);
+				} else {
+					s=Jimple.v().newAssignStmt(invokation.lhs, newInvokeExpr);
+				}
+				invokation.dynamicInvoke=s;
+				interfaceInfo.interfaceInvokationStmts.add(s);		
+			}
+
+			//List staticInvokes=new LinkedList();
+			//List targets=new LinkedList();
+			//Iterator it2=info.staticProceedTypes.iterator();
+			if (newStaticInvoke!=null) {
+				SootClass cl=Scene.v().getSootClass(newStaticInvoke);
+				SootMethod m=cl.getMethodByName(accessMethodName);
+				
+				invokation.staticLookupValues.add(IntConstant.v(state.getStaticDispatchTypeID(cl.getType())));
+				
+				InvokeExpr newInvokeExpr=
+							Jimple.v().newStaticInvokeExpr( 
+								m , info.proceedParameters);
+				Stmt s;
+				if (invokation.lhs==null) {
+					s=Jimple.v().newInvokeStmt(newInvokeExpr);
+				} else {
+					s=Jimple.v().newAssignStmt(invokation.lhs, newInvokeExpr);
+				}
+				invokation.staticInvokes.add(s);
+				interfaceInfo.interfaceInvokationStmts.add(s);
+			}
+			if (invokation.defaultTargetStmts==null) {
+//				generate exception code (default target)
+				invokation.defaultTargetStmts=new LinkedList();
+				LocalGeneratorEx lg=new LocalGeneratorEx(adviceMethod.getActiveBody());
+				 SootClass exception=Scene.v().getSootClass("java.lang.RuntimeException");	
+				 Local ex=lg.generateLocal(exception.getType(), "exception");
+				 Stmt newExceptStmt = Jimple.v().newAssignStmt( ex, Jimple.v().newNewExpr( exception.getType() ) );
+				 Stmt initEx=Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( ex, exception.getMethod( "<init>", new ArrayList()))) ;
+				 Stmt throwStmt=Jimple.v().newThrowStmt(ex);
+				invokation.defaultTargetStmts.add(newExceptStmt);
+				invokation.defaultTargetStmts.add(initEx);
+				invokation.defaultTargetStmts.add(throwStmt);	
+			}
+			
+			if (info.staticProceedTypes.isEmpty()) {
+				statements.insertAfter(invokation.dynamicInvoke, invokation.begin);					
+			} else if (info.hasDynamicProceed==false && info.staticProceedTypes.size()==1) {
+				statements.insertAfter(invokation.staticInvokes.get(0), invokation.begin);
+			} else {
+				List targets=new LinkedList();
+				List lookupValues=new LinkedList();
+				if (invokation.dynamicInvoke!=null) {
+					targets.add(invokation.dynamicInvoke);
+					lookupValues.add(IntConstant.v(0));	
+				}
+				targets.addAll(invokation.staticInvokes);
+				lookupValues.addAll(invokation.staticLookupValues);
+				 
+				Local key=info.staticDispatchLocal; ///
+				LookupSwitchStmt lookupStmt=
+					Jimple.v().newLookupSwitchStmt(key, lookupValues, targets, (Unit)invokation.defaultTargetStmts.get(0));
+				
+				statements.insertBefore(lookupStmt, invokation.end);
+				if (invokation.dynamicInvoke!=null) {
+					statements.insertBefore(invokation.dynamicInvoke, invokation.end);
+					statements.insertBefore(Jimple.v().newGotoStmt(invokation.end), invokation.end);
+				}
+				
+				Iterator it2=invokation.staticInvokes.iterator();
+				while (it2.hasNext()) {
+					Stmt stmt=(Stmt)it2.next();
+					statements.insertBefore(stmt, invokation.end);
+					statements.insertBefore(Jimple.v().newGotoStmt(invokation.end), invokation.end);
+				}
+				it2=invokation.defaultTargetStmts.iterator();
+				while (it2.hasNext()) {
+					Stmt stmt=(Stmt)it2.next();
+					statements.insertBefore(stmt, invokation.end);
+				}
+				// just in case:
+				statements.insertBefore(Jimple.v().newGotoStmt(invokation.end), invokation.end);
+			}
+		}
+	}
+		
 	private static void insertCast(Body body, Stmt stmt, ValueBox source, Type targetType) {
 		Chain units=body.getUnits();
 		if (!source.getValue().getType().equals(targetType)) {
@@ -544,101 +723,24 @@ public class AroundWeaver {
 		String accessMethodName,
 		String interfaceName,
 		List accessParameters,
-		SootClass accessInterface) {
+		Type accessReturnType,
+		SootClass accessInterface,
+		SootMethod localAccessMethod) {
 		
-	
+		Body accessBody=localAccessMethod.getActiveBody();
+		Chain accessStatements=accessBody.getUnits();
+		
+		boolean bStatic=joinpointMethod.isStatic();
 	
 		Chain units=joinpointMethod.getActiveBody().getUnits();
 		
 		SootMethod adviceMethod=adviceAppl.advice.getImpl().getSootMethod();
+		if (adviceMethod==null)
+			throw new RuntimeException();
 		
-	
-		// add interface to class if it doesn't exist.
-		// add the method with arguments and identitiy statements
-		SootMethod localAccessMethod=null;
-		Body accessBody=null;
-		Chain accessStatements=null;
-		
-		State.AccessMethodInfo info=state.getMethodInfo(joinpointClass.getName(), interfaceName);
+		State.AccessMethodInfo info=state.getMethodInfo(joinpointClass.getName(), interfaceName, bStatic);
 		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(interfaceName);
-		
-		if (joinpointClass.implementsInterface(interfaceName)){
-			debug("found interface " + interfaceName + " in class: " + joinpointClass.getName());
-			SootClass cl2=joinpointClass;
-			localAccessMethod=cl2.getMethodByName(accessMethodName);
-			accessBody=localAccessMethod.getActiveBody();
-			accessStatements=accessBody.getUnits();
-		} else {
-			debug("adding interface " + interfaceName + " to class " + joinpointClass.getName());
-			
-			joinpointClass.addInterface(accessInterface);
-	
-			Type returnType;
-			//if (bGet) {
-				returnType=adviceMethod.getReturnType() ;
-		/*	} else {
-				returnType=VoidType.v();
-			}*/
-			
-			// create new method					
-			localAccessMethod=new SootMethod(
-				accessMethodName, accessParameters, returnType ,
-					Modifier.PUBLIC);
-		
-			accessBody=Jimple.v().newBody(localAccessMethod);
-		
-			localAccessMethod.setActiveBody(accessBody);
-			debug("adding method " + localAccessMethod.getName() + " to class " + joinpointClass.getName());
-			joinpointClass.addMethod(localAccessMethod);
-			
-			info.method=localAccessMethod;
-			
-			accessStatements=accessBody.getUnits();
-	
-			// generate this := @this
-			LocalGeneratorEx lg=new LocalGeneratorEx(accessBody);
-			Local lThis=lg.generateLocal(joinpointClass.getType(), "this");
-			accessStatements.addFirst(
-				Jimple.v().newIdentityStmt(lThis, 
-					Jimple.v().newThisRef(
-						RefType.v(joinpointClass))));
-			//lThis.setName("this");
-			//getBody.getThisLocal();
-			// $i0 := @parameter0: int;
-			info.idParamLocal=lg.generateLocal(IntType.v(), "id");
-			Stmt paramIdStmt=Jimple.v().newIdentityStmt(info.idParamLocal, 
-			Jimple.v().newParameterRef(IntType.v(),0));
-			accessStatements.insertAfter(paramIdStmt,
-				 accessStatements.getFirst());
-			Local p3=null;
-			Stmt lastIDStmt=paramIdStmt;
-			/*if (bSet) {
-				p3=lg.generateLocal(accessFieldReference.getType());
-				Stmt valueIdStmt=Jimple.v().newIdentityStmt(p3, 
-					Jimple.v().newParameterRef(
-						accessFieldReference.getType(),1));
-				statements.insertAfter(valueIdStmt,
-					 paramIdStmt);		
 
-				lastIDStmt=valueIdStmt;	
-			}*/
-		
-			// generate exception code (default target)
-			SootClass exception=Scene.v().getSootClass("java.lang.RuntimeException");	
-			Local ex=lg.generateLocal(exception.getType(), "exception");
-			Stmt newExceptStmt = Jimple.v().newAssignStmt( ex, Jimple.v().newNewExpr( exception.getType() ) );
-			Stmt initEx=Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( ex, exception.getMethod( "<init>", new ArrayList()))) ;
-			Stmt throwStmt=Jimple.v().newThrowStmt(ex);
-			accessStatements.add(newExceptStmt);
-			accessStatements.add(initEx);
-			accessStatements.add(throwStmt);
-			info.defaultTarget=newExceptStmt;
-			
-			// just generate a nop for now.
-			info.lookupStmt=Jimple.v().newNopStmt();
-			
-			accessStatements.insertAfter(info.lookupStmt, lastIDStmt);		
-		}
 		
 		Body joinpointBody=joinpointMethod.getActiveBody();
 		
@@ -777,7 +879,7 @@ public class AroundWeaver {
 		}
 		
 		{ // modify the interface definition
-			SootMethod m=accessInterface.getMethodByName(accessMethodName);
+			SootMethod m=localAccessMethod;
 			List p=m.getParameterTypes();
 			p.addAll(addedDynArgsTypes);
 			m.setParameterTypes(p);
@@ -939,7 +1041,9 @@ public class AroundWeaver {
 		
 		cleanLocals(accessBody);
 		
-		Local lThis=joinpointBody.getThisLocal();
+		Local lThis=null;
+		if (!joinpointMethod.isStatic())
+			lThis=joinpointBody.getThisLocal();
 		//lThis.setName("this");
 		
 		LocalGeneratorEx localgen=new LocalGeneratorEx(joinpointBody);	
@@ -969,8 +1073,17 @@ public class AroundWeaver {
 		
 		// we need to add some of our own parameters to the invokation
 		List params=new LinkedList();
-		params.add(lThis);
+		if (lThis==null) {
+			params.add(NullConstant.v());
+		} else {
+			params.add(lThis); // pass the closure
+		}
 		params.add(IntConstant.v(intId));
+		if (bStatic) {
+			params.add(IntConstant.v(state.getStaticDispatchTypeID(joinpointClass.getType())));
+		} else {
+			params.add(IntConstant.v(0));
+		}
 		// and add the original parameters
 		params.addAll(0, invokeEx.getArgs());
 		{
@@ -1050,6 +1163,9 @@ public class AroundWeaver {
 	
 	private static void validateMethod(SootMethod method) {
 		debug("validating " + method.getName());
+		
+		if (method.isAbstract())
+			return;
 		
 		Body body=method.getActiveBody();
 		Chain units=body.getUnits();
@@ -1213,8 +1329,14 @@ public class AroundWeaver {
 			Body dest, Unit insertAfter,
 				Local returnedLocal, ObjectBox resultingFirstCopy) {
 		
-		Local lThisSource=source.getThisLocal();
-		Local lThisDest=dest.getThisLocal();			
+		Local lThisSource=null;
+		if (!source.getMethod().isStatic())
+			lThisSource=source.getThisLocal();
+		
+		Local lThisDest=null;
+		if (!dest.getMethod().isStatic()) {
+			lThisDest=dest.getThisLocal();
+		}			
 		
 		HashMap bindings = new HashMap();
 		//HashMap boxes=new HashMap();
@@ -1354,11 +1476,17 @@ public class AroundWeaver {
 		SootMethod adviceMethod,
 		SootClass accessInterface,
 		SootMethod abstractAccessMethod,
-		Type accessInterfaceType) {
+		Type returnType,
+		boolean bStatic, 
+		String accessMethodName, 
+		SootClass joinpointClass,
+		SootClass theAspect,
+		String interfaceName) {
 		
+		State.AdviceMethodInfo info=state.getAdviceMethodInfo(theAspect.getName(), adviceMethod.getName());
 		//boolean bSet=!bGet;
-			
-			
+		
+					
 		debug("modifying advice method: " + adviceMethod.toString());
 		
 		validateMethod(adviceMethod);
@@ -1367,15 +1495,21 @@ public class AroundWeaver {
 		Chain statements=aroundBody.getUnits();
 		
 		List aroundParameters=adviceMethod.getParameterTypes();
+		
 		aroundParameters.add(accessInterface.getType());
 		int interfaceParam=aroundParameters.size()-1;
 		aroundParameters.add(IntType.v());			
 		int idParam=aroundParameters.size()-1;	
+		aroundParameters.add(IntType.v());
+		int staticDispatchParam=aroundParameters.size()-1;
+		
 		adviceMethod.setParameterTypes(aroundParameters);
+		
+		
 		debug("id1: " + interfaceParam);
 		debug("id2: " + idParam);
 		debug("count:" + adviceMethod.getParameterCount());
-		
+	
 		Stmt lastExistingIDStmt=(Stmt)statements.getFirst();
 		if (adviceAppl.advice.numFormals()>0){		
 			Iterator it=statements.iterator();
@@ -1384,20 +1518,19 @@ public class AroundWeaver {
 			}
 			if (lastExistingIDStmt==null)
 				throw new RuntimeException();
-		
+
 			IdentityStmt id=(IdentityStmt)lastExistingIDStmt;
-				
+	
 			Local local=(Local)id.getLeftOp();
-			
+
 			// local.
-			
+
 			if ( local!=aroundBody.getParameterLocal(0))
 				throw new RuntimeException();
-			
+
 			debug("param:" + aroundBody.getParameterLocal(0).getType());
 			//if (((IdentityStmt)lastExistingIDStmt).getRightOp().)
 		}
-		
 		
 		LocalGeneratorEx localgen2 = new LocalGeneratorEx(aroundBody);
 		Local lInterface=localgen2.generateLocal(accessInterface.getType());//, "accessIntf");
@@ -1412,61 +1545,48 @@ public class AroundWeaver {
 				Jimple.v().newParameterRef(IntType.v(),idParam));
 		statements.insertAfter(fieldIDStmt, intRefIDstmt);
 		// id for third param (value for set operation)
-		
+		Local l3=localgen2.generateLocal(IntType.v());//, "id");
+		Stmt staticDispatchStmt=Jimple.v().newIdentityStmt(l3, 
+				Jimple.v().newParameterRef(IntType.v(),staticDispatchParam));
+		statements.insertAfter(staticDispatchStmt, fieldIDStmt);
+
 		validateMethod(adviceMethod);
 		
-		Local l3=null;
-		/*if (bSet) {
-			l3=localgen2.generateLocal(fieldType);
-			Stmt valueIDStmt=Jimple.v().newIdentityStmt(l3, 
-					Jimple.v().newParameterRef(fieldType,2));
-			statements.insertAfter(valueIDStmt, fieldIDStmt);
-		}*/
-		List proceedParams=new LinkedList();
+		info.proceedParameters.add(l2);
+		info.interfaceLocal=lInterface;
+		info.idLocal=l2;
+		info.staticDispatchLocal=l3;
 		
-		proceedParams.add(l2);
-		/*if (bSet) {
-			proceedParams.add(l3);
-		}*/
 		
-		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(accessInterface.getName());
+		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(interfaceName);
 		
 		Iterator it=statements.snapshotIterator();
 		while (it.hasNext()) { /// TODO: Check if all cases of proceed invokations are caught
 			Stmt s=(Stmt)it.next();
-			if (s instanceof InvokeStmt) {
-				InvokeStmt i=(InvokeStmt)s;
-				debug("found invoke statement in around() method " + 
-					i.getInvokeExpr().getMethod().getName());
-				if (i.getInvokeExpr().getMethod().getName().startsWith("proceed$")) {
-					debug("modifying proceed call in around() method ");
-					IdentityStmt id=(IdentityStmt) statements.getFirst();
-					//Local local= aroundBody.getParameterLocal(0);								
-					InvokeExpr invokeExpr=
-						Jimple.v().newInterfaceInvokeExpr( 
-							lInterface, abstractAccessMethod, proceedParams);
-					i.setInvokeExpr(invokeExpr);
-					interfaceInfo.interfaceInvokationStmts.add(i);
-				}											
-			} else if (s instanceof AssignStmt) {
-				AssignStmt a=(AssignStmt)s;
-				Value r=a.getRightOp();
-				if (r instanceof InvokeExpr) {
-					InvokeExpr invokeExpr=(InvokeExpr) r;									
-					if (invokeExpr.getMethod().getName().startsWith("proceed$")) {
-						debug("replacing proceed$ call (invoke expression) in advice method");		
-						IdentityStmt id=(IdentityStmt) statements.getFirst();
-						//Local local= aroundBody.getParameterLocal(0);								
-						invokeExpr=
-							Jimple.v().newInterfaceInvokeExpr( 
-								lInterface, abstractAccessMethod, proceedParams);
-						a.setRightOp(invokeExpr);
-						interfaceInfo.interfaceInvokationStmts.add(a);
+			InvokeExpr invokeEx=null;
+			try {
+				invokeEx=s.getInvokeExpr();
+			} catch(RuntimeException ex) {
+				
+			}
+			
+			if (invokeEx!=null) {
+				if (invokeEx.getMethod().getName().startsWith("proceed$")) {
+					
+					State.AdviceMethodInfo.ProceedInvokation invokation=new 
+											State.AdviceMethodInfo.ProceedInvokation();
+					info.proceedInvokations.add(invokation);
+					
+					invokation.begin=Jimple.v().newNopStmt();
+					invokation.end=Jimple.v().newNopStmt();
+					if (s instanceof AssignStmt) {
+						invokation.lhs=(Local)(((AssignStmt)s).getLeftOp());
 					}
+					statements.insertBefore(invokation.begin, s);
+					statements.insertAfter(invokation.end, s);
+					statements.remove(s);
 				}
 			}
 		}
 	}
-
-	
 }
