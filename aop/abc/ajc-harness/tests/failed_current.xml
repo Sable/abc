@@ -115,14 +115,6 @@
         <compile files="Cricket.java"></compile>
         <run class="Cricket"></run>
     </ajc-test>
-<ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
-        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
-        <run class="driver.PR555"></run>
-    </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
-        <compile files="InnerClassInPrivilegedAspect.java"></compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
-    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
@@ -202,10 +194,6 @@
 <ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="TryFinallyInAround.java"></compile>
         <run class="TryFinallyInAround"></run>
-    </ajc-test>
-<ajc-test title="can not resolve this member warning" pr="38212" num="832" dir="bugs/accessMethods">
-        <compile files="p1/Base.java,p2/Derived.java"></compile>
-        <run class="p2.Derived"></run>
     </ajc-test>
 <ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors">
         <compile files="Joinpoints101.jar,DecErrors.aj">
