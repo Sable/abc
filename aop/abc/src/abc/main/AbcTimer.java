@@ -21,6 +21,15 @@ public class AbcTimer {
 
   private static ArrayList polyglot_passes = null ;
 
+  /** reset all static vars, for rerunning abc */
+  public static void reset()
+    { sootresolve_total = 0;
+      total = 0;
+      history = new LinkedList();
+      polyglot_stats = null;
+      polyglot_passes = null;
+    }
+
   /** store the polyglot passes so we can get times out in correct order */
   public static void storePolyglotPasses(ArrayList l)
     { if (polyglot_passes == null) 
@@ -79,22 +88,24 @@ public class AbcTimer {
 	      System.err.println(percent(time) + name + ":  " + time  );
 	    }
 	  System.err.println("========================================"); 
-	  System.err.println("Breakdown for polyglot phases: ");
-	  System.err.println("-----------------------------  ");
-	  // Iterate through polyglot phases.
-	  long total = 0;
-	  for (Iterator i = polyglot_passes.iterator(); i.hasNext(); )
-	    { Pass pass = (Pass) i.next();  
-	      Pass.ID id = pass.id();
-	      String name = pass.name();
-	      long inclusive_time = polyglot_stats.passTime(id,true);
-	      total += inclusive_time;
-	      long exclusive_time = polyglot_stats.passTime(id,false);
-	      System.err.println(percent(inclusive_time) + name + ":  " 
+	  if (polyglot_passes != null)
+	    { System.err.println("Breakdown for polyglot phases: ");
+	      System.err.println("-----------------------------  ");
+	      // Iterate through polyglot phases.
+	      long total = 0;
+	      for (Iterator i = polyglot_passes.iterator(); i.hasNext(); )
+	        { Pass pass = (Pass) i.next();  
+	          Pass.ID id = pass.id();
+	          String name = pass.name();
+	          long inclusive_time = polyglot_stats.passTime(id,true);
+	          total += inclusive_time;
+	          long exclusive_time = polyglot_stats.passTime(id,false);
+	          System.err.println(percent(inclusive_time) + name + ":  " 
 		                     + inclusive_time);
+	        }
+	      System.err.println(percent(total) + "ALL  :  " + total);
+	      System.err.println("========================================"); 
 	    }
-	  System.err.println(percent(total) + "ALL  :  " + total);
-	  System.err.println("========================================"); 
           System.err.println("Time spent in Soot resolver: " + 
 	                            sootresolve_total);
 	  System.err.println("========================================"); 

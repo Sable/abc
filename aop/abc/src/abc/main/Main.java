@@ -25,8 +25,17 @@ public class Main {
 
     public String classpath = System.getProperty("java.class.path");
     public String classes_destdir = ""; //FIXME
+
+    /** reset all static information so main can be called again */
+    public static void reset() {
+      soot.G.reset(); // reset all of Soots global info
+      // TODO: add a call here to the reset method for any class that
+      //  needs staic information reset for repeated calls to main
+      abc.main.AbcTimer.reset();
+    }
     
     public static void main(String[] args) {
+        reset();
         try {
             Main main = new Main(args);
             main.run();
