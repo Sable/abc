@@ -131,17 +131,17 @@ public class Main {
 				String tmp = xFile.plug("BODY", xPassed).toString(true);
 				// Work around an Xact bug - &'s in the xml file are not turned into entities on toString();
 				// this causes subsequent imports of the exported file to fail.
-				tmp.replaceAll("&", "&amp;");
+				tmp = tmp.replaceAll("&", "&amp;");
 				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 				curFile = new BufferedWriter(new FileWriter("failed.xml"));
 				tmp = xFile.plug("BODY", xFailed).toString(true);
-				tmp.replaceAll("&", "&amp;");
+				tmp = tmp.replaceAll("&", "&amp;");
 				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 				curFile = new BufferedWriter(new FileWriter("skipped.xml"));
 				tmp = xFile.plug("BODY", xSkipped).toString(true);
-				tmp.replaceAll("&", "&amp;");
+				tmp = tmp.replaceAll("&", "&amp;");
 				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 			} catch (IOException e) {
