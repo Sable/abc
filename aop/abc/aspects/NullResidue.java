@@ -1,4 +1,5 @@
 import polyglot.util.InternalCompilerError;
+import abc.weaving.residues.Residue;
 
 public aspect NullResidue {
     after () returning(Residue r):execution(* *.*(..)) {
