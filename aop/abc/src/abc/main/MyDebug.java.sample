@@ -1,0 +1,13 @@
+package abc.main;
+
+/** The custom debugging flags class. Debug has special knowledge
+ *  of the name 'MyDebug' (using class loader magic), so if you 
+ *  have this class then any overrides you make here will take
+ *  effect globally.
+ *  @author Ganesh Sittampalam
+ */
+public class MyDebug extends Debug {
+    public MyDebug() {
+	//	super.matcherTest=true;
+    }
+}

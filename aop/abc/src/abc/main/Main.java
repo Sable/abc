@@ -144,16 +144,21 @@ public class Main {
 	AspectJShadows.load();
 
         GlobalAspectInfo.v().computeAdviceLists();
-	
-	// print out matching information for testing purposes
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-            final AbcClass cl = (AbcClass) clIt.next();
-            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-                final SootMethod method = (SootMethod) methodIt.next();
-		System.out.println("MATCH: "+method.getSignature());
-		
-            }
-        }
+	if(Debug.v.matcherTest) {
+	    System.err.println("--- BEGIN ADVICE LISTS ---");
+	    // print out matching information for testing purposes
+	    for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+		final AbcClass cl = (AbcClass) clIt.next();
+		for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+		    final SootMethod method = (SootMethod) methodIt.next();
+		    final StringBuffer sb=new StringBuffer(1000);
+		    sb.append("method: "+method.getSignature()+"\n");
+		    GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
+		    System.err.println(sb.toString());
+		}
+	    }
+	    System.err.println("--- END ADVICE LISTS ---");
+	}
 
         //generateDummyGAI();
 
