@@ -9,6 +9,7 @@ import soot.RefType;
 import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Trap;
 import soot.jimple.AssignStmt;
 import soot.jimple.CaughtExceptionRef;
 import soot.jimple.GotoStmt;
@@ -140,10 +141,19 @@ public class AfterThrowingWeaver {
 	//    nop2:          nop;  
 	//    endshadow:     nop;
 
-        b.getTraps().
-	  add(Jimple.v().
-	      newTrap(catchType.getSootClass(),
-		      begincode, idStmt, idStmt));
+	Chain traps=b.getTraps();
+	Trap t=traps.size()>0 ? (Trap) traps.getFirst() : null;
+
+	while(t!=null && units.follows(t.getBeginUnit(),begincode))
+	    t=(Trap) traps.getSuccOf(t);
+
+	Trap newt=Jimple.v().
+	    newTrap(catchType.getSootClass(),
+		    begincode, idStmt, idStmt);
+
+	if(t==null) traps.addLast(newt);
+	else traps.insertBefore(newt,t);
+    
 
 	//  added 
 	//     catch java.lang.Throwable 
