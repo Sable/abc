@@ -116,6 +116,7 @@ public class Debug {
     public boolean dontRemovePushPop=false;
     public boolean nullCheckElim=true;
     public boolean allowDynamicTests = false;
+    public boolean switchFolder = true;
 
     public boolean traceAntTask=false;
 

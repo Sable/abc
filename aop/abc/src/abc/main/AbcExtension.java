@@ -19,6 +19,7 @@
 
 package abc.main;
 
+import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
@@ -116,72 +117,68 @@ public class AbcExtension
     /** This method adds optimisation passes specificially
      *  required for abc.
      */
-    public void addJimplePacks()
-    {
-        PackManager.v().getPack("jtp")
-            .add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));
+    public void addJimplePacks() {
+    	   	
+		PackManager.v().getPack("jtp").add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));		
+		
+		//PackManager.v().getPack("jtp").add(new Transform("jtp.sf", SwitchFolder.v()));
+		
+		
+		if (Debug.v().nullCheckElim) {
+			// Add a null check eliminator that knows about abc specific stuff
+			NullCheckEliminator.AnalysisFactory f = new NullCheckEliminator.AnalysisFactory() {
+				public BranchedRefVarsAnalysis newAnalysis(soot.toolkits.graph.UnitGraph g) {
+					return new BranchedRefVarsAnalysis(g) {
+						public boolean isAlwaysNonNull(Value v) {
+							if (super.isAlwaysNonNull(v))
+								return true;
+							if (v instanceof InvokeExpr) {
+								InvokeExpr ie = (InvokeExpr) v;
+								SootMethodRef m = ie.getMethodRef();
+								if (m.name().equals("makeJP") && m.declaringClass().getName().equals("org.aspectbench.runtime.reflect.Factory"))
+									return true;
+								if (m.name().equals("getStack") || m.name().equals("getCounter"))
+									if (m.declaringClass().getName().equals("org.aspectbench.runtime.internal.CFlowStack")
+											|| m.declaringClass().getName().equals("org.aspectbench.runtime.internal.CFlowCounter"))
+										return true;
+							}
+							return false;
+						}
+					};
+				}
+			};
+			// want this to run before Dead assignment eliminiation
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.nullcheckelim", new NullCheckEliminator(f)), "jop.dae");
+		}
 
-        if(Debug.v().nullCheckElim) {
-            // Add a null check eliminator that knows about abc specific stuff
-            NullCheckEliminator.AnalysisFactory f
-                =new NullCheckEliminator.AnalysisFactory() {
-                        public BranchedRefVarsAnalysis newAnalysis
-                            (soot.toolkits.graph.UnitGraph g) {
-                            return new BranchedRefVarsAnalysis(g) {
-                                    public boolean isAlwaysNonNull(Value v) {
-                                        if(super.isAlwaysNonNull(v)) return true;
-                                        if(v instanceof InvokeExpr) {
-                                            InvokeExpr ie=(InvokeExpr) v;
-                                            SootMethodRef m=ie.getMethodRef();
-                                            if(m.name().equals("makeJP") &&
-                                               m.declaringClass().getName().equals
-                                               ("org.aspectbench.runtime.reflect.Factory"))
-                                                return true;
-                                            if(m.name().equals("getStack")
-                                               || m.name().equals("getCounter"))
-                                                if (m.declaringClass().getName().equals
-                                                    ("org.aspectbench.runtime.internal.CFlowStack") ||
-                                                    m.declaringClass().getName().equals
-                                                    ("org.aspectbench.runtime.internal.CFlowCounter"))
-                                                    return true;
-                                        }
-                                        return false;
-                                    }
-                                };
-                        }
-                    };
-            // want this to run before Dead assignment eliminiation
-            PackManager.v()
-                .getPack("jop")
-                .insertBefore(new Transform("jop.nullcheckelim", new NullCheckEliminator(f)),
-                              "jop.dae");
-        }
+		if (Debug.v().cflowIntraAnalysis) {
+			// Cflow Intraprocedural Analysis
+			// Two phases:
+			//              - Collapse all the local vars assigned to the same
+			//                CflowStack/CflowCounter field
+			//                to the same var, only needs to be assigned once
+			//              - Get the stack/counter for the current thread for
+			//                each of these lazily
+			//                to avoid repeated currentThread()s
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()), "jop.dae");
+			// Before running the cflow intraprocedural, need to aggregate cflow
+			// vars
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowaggregate", CflowIntraAggregate.v()), "jop.cflowintra");
+		}
 
-        if (Debug.v().cflowIntraAnalysis) {
-            // Cflow Intraprocedural Analysis
-            // Two phases:
-            //              - Collapse all the local vars assigned to the same
-            //                CflowStack/CflowCounter field
-            //                to the same var, only needs to be assigned once
-            //              - Get the stack/counter for the current thread for
-            //                each of these lazily
-            //                to avoid repeated currentThread()s
-            PackManager.v().getPack("jop")
-                .insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()),
-                        "jop.dae");
-            // Before running the cflow intraprocedural, need to aggregate cflow vars
-            PackManager.v().getPack("jop")
-                .insertBefore(new Transform("jop.cflowaggregate", CflowIntraAggregate.v()),
-                        "jop.cflowintra");
-        }
-
-    }
+		if (Debug.v().switchFolder) {
+			// must be inserted somewhere before the unreachable code eliminator
+			//PackManager.v().getPack("jop").add(new Transform("jtp.sf", SwitchFolder.v()));
+		//	PackManager.v().getPack("jop").insertBefore(new Transform("jtp.sf", SwitchFolder.v()), "jop.cse");
+			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
+		}
+	}
 
     /**
-     *  Call Scene.v().addBasicClass for each runtime class that the backend might
-     *  generate code for. Derived implementations should normally make sure to call
-     *  the superclass implementation.
-     */
+	 * Call Scene.v().addBasicClass for each runtime class that the backend
+	 * might generate code for. Derived implementations should normally make
+	 * sure to call the superclass implementation.
+	 */
     public void addBasicClassesToSoot()
     {
         Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowStack",
@@ -200,9 +197,10 @@ public class AbcExtension
                                 SootClass.SIGNATURES);
     }
 
-    /** Specify the class that will be used at runtime to generate
-     *  StaticJoinPoint objects.
-     */
+    /**
+	 * Specify the class that will be used at runtime to generate
+	 * StaticJoinPoint objects.
+	 */
     public String runtimeSJPFactoryClass() {
         return "org.aspectbench.runtime.reflect.Factory";
     }

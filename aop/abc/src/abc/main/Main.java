@@ -148,6 +148,7 @@ public class Main {
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
         abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
         abc.weaving.weaver.CflowIntraAggregate.reset();
+        abc.soot.util.SwitchFolder.reset();
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();
 
