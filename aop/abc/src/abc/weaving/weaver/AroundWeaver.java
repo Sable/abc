@@ -18,7 +18,7 @@ public class AroundWeaver {
    /** set to false to disable debugging messages for Around Weaver */
    public static boolean debug = true;
 
-   private static void arddebug(String message)
+   private static void debug(String message)
      { if (debug) System.err.println("ARD *** " + message);
      }
 
@@ -26,7 +26,7 @@ public class AroundWeaver {
     public static void doWeave(SootClass cl, SootMethod method, 
 	                       LocalGenerator localgen, 
 			       AdviceApplication adviceappl)
-      { arddebug("Handling after returning: " + adviceappl);
+      { debug("Handling after returning: " + adviceappl);
         Body b = method.getActiveBody();
         Chain units = b.getUnits();
 	AdviceDecl advicedecl = adviceappl.advice;
@@ -35,7 +35,7 @@ public class AroundWeaver {
 	                          getInstanceClass().getSootClass();
 	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
 
-	arddebug("Around weaving not supported yet");
+	debug("Around weaving not supported yet");
 
       } // method doWeave 
 }

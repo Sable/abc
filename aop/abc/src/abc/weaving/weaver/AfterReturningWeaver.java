@@ -20,14 +20,14 @@ public class AfterReturningWeaver {
    /** set to false to disable debugging messages for After Returning Weaver */
    public static boolean debug = true;
 
-   private static void afrdebug(String message)
+   private static void debug(String message)
      { if (debug) System.err.println("AFR*** " + message);
      }
 
 
     public static void doWeave(SootMethod method, LocalGenerator localgen,
 	                      AdviceApplication adviceappl)
-      { afrdebug("Handling after returning: " + adviceappl);
+      { debug("Handling after returning: " + adviceappl);
         Body b = method.getActiveBody();
         Chain units = b.getUnits();
 	AdviceDecl advicedecl = adviceappl.advice;
@@ -38,7 +38,7 @@ public class AfterReturningWeaver {
 
 	// <AspectType> aspectref;
         Local aspectref = localgen.generateLocal( aspect.getType() );
-	afrdebug("Generated new local: " + aspectref);
+	debug("Generated new local: " + aspectref);
 
 	// smt1:  aspectref = <AspectType>.aspectOf();
         AssignStmt stmt1 =  
@@ -46,13 +46,13 @@ public class AfterReturningWeaver {
 	      aspectref, 
 	      Jimple.v().newStaticInvokeExpr(
 		aspect.getMethod("aspectOf", new ArrayList())));
-	afrdebug("Generated stmt1: " + stmt1);
+	debug("Generated stmt1: " + stmt1);
 
 	// stmt2:  <aspectref>.<advicemethod>();
         InvokeStmt stmt2 =
           Jimple.v().newInvokeStmt( 
 	    Jimple.v().newVirtualInvokeExpr( aspectref, advicemethod ) );
-        afrdebug("Generated stmt2: " + stmt2);
+        debug("Generated stmt2: " + stmt2);
 
 	// weave in statements just before end of join point shadow
 	Stmt endshadow = adviceappl.shadowpoints.getEnd();

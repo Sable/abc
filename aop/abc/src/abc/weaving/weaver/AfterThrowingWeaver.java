@@ -20,14 +20,14 @@ public class AfterThrowingWeaver {
    /** set to false to disable debugging messages for After Throwing Weaver */
    public static boolean debug = true;
 
-   private static void aftdebug(String message)
+   private static void debug(String message)
      { if (debug) System.err.println("AFT*** " + message);
      }
 
 
     public static void doWeave(SootMethod method, LocalGenerator lg,
 	                      AdviceApplication adviceappl)
-      { aftdebug("Handling after returning: " + adviceappl);
+      { debug("Handling after returning: " + adviceappl);
         Body b = method.getActiveBody();
         Chain units = b.getUnits().getNonPatchingChain();
 	AdviceDecl advicedecl = adviceappl.advice;
@@ -89,7 +89,7 @@ public class AfterThrowingWeaver {
 	//
 	//    beginshadow:   nop
 	//    begincode:     <some statement>
-	//      ....  <stuff in between>
+	//       ....        <stuff in between>
 	//    goto1:         goto nop2;
 	//    idStmt:        catchLocal := @caughtexception;
 	//    assignStmt:    l = new AspectOf();

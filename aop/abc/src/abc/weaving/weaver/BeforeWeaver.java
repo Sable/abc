@@ -20,14 +20,14 @@ public class BeforeWeaver {
    /** set to false to disable debugging messages for Before Weaver */
    public static boolean debug = true;
 
-   private static void befdebug(String message)
+   private static void debug(String message)
      { if (debug) System.err.println("BEF*** " + message);
      }
 
 
     public static void doWeave(SootMethod method, LocalGenerator localgen,
 	                      AdviceApplication adviceappl)
-      { befdebug("Handling before: " + adviceappl);
+      { debug("Handling before: " + adviceappl);
         Body b = method.getActiveBody();
         // this non patching chain is needed so that Soot doesn't "Fix" 
         // the traps. 
@@ -40,7 +40,7 @@ public class BeforeWeaver {
 
 	// <AspectType> aspectref;
         Local aspectref = localgen.generateLocal( aspect.getType() );
-	befdebug("Generated new local: " + aspectref);
+	debug("Generated new local: " + aspectref);
 
 	// smt1:  aspectref = <AspectType>.aspectOf();
         AssignStmt stmt1 =  
@@ -48,13 +48,13 @@ public class BeforeWeaver {
 	      aspectref, 
 	      Jimple.v().newStaticInvokeExpr(
 		aspect.getMethod("aspectOf", new ArrayList())));
-	befdebug("Generated stmt1: " + stmt1);
+	debug("Generated stmt1: " + stmt1);
 
 	// stmt2:  <aspectref>.<advicemethod>();
         InvokeStmt stmt2 =
           Jimple.v().newInvokeStmt( 
 	    Jimple.v().newVirtualInvokeExpr( aspectref, advicemethod ) );
-        befdebug("Generated stmt2: " + stmt2);
+        debug("Generated stmt2: " + stmt2);
 
 	// weave in statements just after beginning of join point shadow
 	Stmt beginshadow = adviceappl.shadowpoints.getBegin();

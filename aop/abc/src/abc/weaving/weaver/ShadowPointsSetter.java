@@ -31,7 +31,7 @@ public class ShadowPointsSetter {
     /** set to false to disable debugging messages for ShadowPointsSetter */
     public static boolean debug = true;
 
-    private static void spsdebug(String message)
+    private static void debug(String message)
       { if (debug) System.err.println("SPS*** " + message);
       }	
 
@@ -40,7 +40,7 @@ public class ShadowPointsSetter {
     /* --------------------------- PASS 1 --------------------------*/
 
     public void setShadowPointsPass1(SootClass sc) {
-      spsdebug("--- BEGIN Setting ShadowPoints Pass1 for class " + 
+      debug("--- BEGIN Setting ShadowPoints Pass1 for class " + 
 	  sc.getName());
 
       // for each method in the class 
@@ -49,7 +49,7 @@ public class ShadowPointsSetter {
 
 	 // get the next method
          final SootMethod method = (SootMethod) methodIt.next();
-         spsdebug("   --- BEGIN Setting ShadowPoints Pass1 for method " + 
+         debug("   --- BEGIN Setting ShadowPoints Pass1 for method " + 
 	                method.getName());
 
 	 // nothing to do for abstract or native methods 
@@ -62,12 +62,12 @@ public class ShadowPointsSetter {
 
 	 // if no advice list for this method, nothing to do
 	 if ((adviceList == null) || adviceList.isEmpty())
-           { spsdebug("No advice list for method " + method.getName());
+           { debug("No advice list for method " + method.getName());
 	     continue;
 	   }
 
 	 // ---- we have some advice, so set things up for this method
-	 spsdebug("Advice for method " + method.getName() + " is : \n" +
+	 debug("Advice for method " + method.getName() + " is : \n" +
 	               adviceList);
 
 	 // --- First deal with execution pointcuts
@@ -78,11 +78,11 @@ public class ShadowPointsSetter {
          if (adviceList.hasStmtAdvice())
 	    insertStmtSP(method,adviceList.stmtAdvice);
 
-	 spsdebug("   --- END Setting ShadowPoints Pass1 for method " + 
+	 debug("   --- END Setting ShadowPoints Pass1 for method " + 
 	                    method.getName() + "\n");
        } // for each method
 
-      spsdebug(" --- END Setting ShadowPoints Pass1 for class " + sc.
+      debug(" --- END Setting ShadowPoints Pass1 for class " + sc.
 	          getName() + "\n");
     } // setShadowPointsPass1
 
@@ -90,11 +90,11 @@ public class ShadowPointsSetter {
   private void insertBodySP(SootMethod method, 
                             List /*<AdviceApplication>*/ advicelist) {
 
-    spsdebug("Need to transform for execution in method: " + method.getName()); 
+    debug("Need to transform for execution in method: " + method.getName()); 
 
     // restructure returns, and insert begin and end nops
     ShadowPoints execution_sp = restructureBody(method); 
-    spsdebug("ShadowPoints are: " + execution_sp);
+    debug("ShadowPoints are: " + execution_sp);
 	     
     // make all execution AdviceApplications refer to the shadowpoints
     // object just constructed.
@@ -128,7 +128,7 @@ public class ShadowPointsSetter {
 	                  "Unknown kind of advice for inside method body: " + 
 		           stmtappl);
 
-	   spsdebug("... " + keystmt + " [" + stmtappl + "]");
+	   debug("... " + keystmt + " [" + stmtappl + "]");
 
 	   // If stmt is in Hashtable,  use SP entry assciated with it
 	   // else, introduce new nops before and after stmt and 
@@ -155,12 +155,12 @@ public class ShadowPointsSetter {
     // <init>.  If there is more than one <init> throw an exception.
     Stmt startnop = Jimple.v().newNopStmt();
     if (method.getName().equals("<init>"))
-      { spsdebug("Need to insert after call to <init>");
+      { debug("Need to insert after call to <init>");
 	Unit initstmt = findInitStmt(units);
 	units.insertAfter(startnop,initstmt);
       }
     else
-      { spsdebug("Need to insert at beginning of method.");  	     
+      { debug("Need to insert at beginning of method.");  	     
         // now insert a nop for the beginning of real stmts
 	// find first statement after identity statements
 	Unit firstrealstmt = findFirstRealStmt(units);
@@ -177,13 +177,13 @@ public class ShadowPointsSetter {
     /* --------------------------- PASS 2 --------------------------*/
 
     public void setShadowPointsPass2(SootClass sc) {
-      spsdebug("--- BEGIN Setting ShadowPoints Pass2 for class " +
+      debug("--- BEGIN Setting ShadowPoints Pass2 for class " +
 	  sc.getName());
 
       // for each method in the class, look to see if it is an <init> and
       //    needs to be inlined
-      spsdebug("Iterating through methods, looking for <init> methods ");
-      spsdebug("that need inlining"); 
+      debug("Iterating through methods, looking for <init> methods ");
+      debug("that need inlining"); 
 
       LinkedList methodlist = new LinkedList();
 
@@ -208,7 +208,7 @@ public class ShadowPointsSetter {
 	      adviceList.hasInitializationAdvice()
 	     )
 	    )
-           { spsdebug("Must inline body of " + method.getName());
+           { debug("Must inline body of " + method.getName());
 	     // TODO: put call to inliner 
 	     // add to list of methods to process
 	     methodlist.add(method);
@@ -221,7 +221,7 @@ public class ShadowPointsSetter {
 	  final SootMethod method = (SootMethod) methodIt.next();
           MethodAdviceList adviceList = 
 	     GlobalAspectInfo.v().getAdviceList(method);
-	  spsdebug("Advice for method " + method.getName() + " is : \n" +
+	  debug("Advice for method " + method.getName() + " is : \n" +
 	               adviceList);
 
 	 // --- First look at preinitialization pointcuts 
@@ -232,11 +232,11 @@ public class ShadowPointsSetter {
 	 if (adviceList.hasInitializationAdvice())
 	    insertInitializationSP(method,adviceList.initializationAdvice);
 
-	 spsdebug("   --- END Setting ShadowPoints Pass2 for method " + 
+	 debug("   --- END Setting ShadowPoints Pass2 for method " + 
 	                    method.getName() + "\n");
         } // for each method
 
-      spsdebug(" --- END Setting ShadowPoints Pass2 for class " + sc.getName() + "\n");
+      debug(" --- END Setting ShadowPoints Pass2 for class " + sc.getName() + "\n");
     } // setShadowPointsPass2
 
 
@@ -244,7 +244,7 @@ public class ShadowPointsSetter {
                                    List /*<AdviceApplication>*/ advicelist) {
      // should only be for methods called <init>
      ShadowPoints initialization_sp = null;
-     spsdebug("Initialization for <init> in method: " + method.getName()); 
+     debug("Initialization for <init> in method: " + method.getName()); 
      // check that name is <init>, otherwise throw exception
      if (method.getName().equals("<init>"))
        // insert nop at beginning of method and just before call 
@@ -252,7 +252,7 @@ public class ShadowPointsSetter {
 	     
        // make all preinitializatin AdviceApplications refer to the
        // shadowpoints object just constructed.
-       spsdebug("dealing with init of <init>");
+       debug("dealing with init of <init>");
      else
        throw new CodeGenException("Constructor advice on non <init>"); 
   } // insertInitializationSP
@@ -262,7 +262,7 @@ public class ShadowPointsSetter {
                                    List /*<AdviceApplication>*/ advicelist) {
      // should only be formethods called <init>
      ShadowPoints preinitialization_sp = null;
-     spsdebug("Preinitialization for <init> in method: " + method.getName()); 
+     debug("Preinitialization for <init> in method: " + method.getName()); 
      // check that name is <init>, otherwise throw exception
      if (method.getName().equals("<init>"))
        // insert nop at beginning of method and just before call 
@@ -270,7 +270,7 @@ public class ShadowPointsSetter {
 	     
        // make all preinitializatin AdviceApplications refer to the
        // shadowpoints object just constructed.
-       spsdebug("dealing with preinit of <init>");
+       debug("dealing with preinit of <init>");
      else
        throw new CodeGenException("Constructor advice on non <init>"); 
   } // insertPreinitializationSP
@@ -299,12 +299,12 @@ public class ShadowPointsSetter {
       int countinits = 0;
       while ( it.hasNext() )
         { Stmt u = (Stmt) it.next();
-          spsdebug("Looking at stmt " + u);
+          debug("Looking at stmt " + u);
           if ((u instanceof InvokeStmt) && 
              ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
 	     ((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).
 		                                  getBase().equals(thisloc) )
-	    { spsdebug("Found <init> " + u);
+	    { debug("Found <init> " + u);
 	      countinits++;
 	      if (countinits == 1) // great, found it
 	        initstmt = u;  

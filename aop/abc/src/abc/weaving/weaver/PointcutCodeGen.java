@@ -12,7 +12,7 @@ public class PointcutCodeGen {
    /** set to false to disable debugging messages for PointcutCodeGen */
    public static boolean debug = true;
 
-   private static void pcgdebug(String message)
+   private static void debug(String message)
      { if (debug) System.err.println("PCG*** " + message);
      }
 
@@ -21,7 +21,7 @@ public class PointcutCodeGen {
 	     methodIt.hasNext(); ) 
        { // get the next method
          final SootMethod method = (SootMethod) methodIt.next();
-         pcgdebug("   --- BEGIN weaveInAspectsPass1 for method " + 
+         debug("   --- BEGIN weaveInAspectsPass1 for method " + 
 	                method.getName());
 
 	 // nothing to do for abstract or native methods 
@@ -36,7 +36,7 @@ public class PointcutCodeGen {
 	 if ( (adviceList == null) || 
 	      (!adviceList.hasBodyAdvice() && !adviceList.hasStmtAdvice())
 	    )
-           { pcgdebug("No body or stmt advice for method " + method.getName());
+           { debug("No body or stmt advice for method " + method.getName());
 	     continue;
 	   }
 
@@ -60,7 +60,7 @@ public class PointcutCodeGen {
 	     //TODO: weave_one(cl,method,localgen,execappl);
 	   }  // each stmt advice
 	 
-         pcgdebug("   --- END weaveInAspectsPass1 for method " + 
+         debug("   --- END weaveInAspectsPass1 for method " + 
 	                method.getName());
 	} // each method 
    } // method weaveInAspectsPass1
