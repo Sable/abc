@@ -5923,10 +5923,14 @@
     </ajc-test>
 
     <ajc-test num="675" dir="pureJava" pr="386"
-      abccomment="tries to import inner classes invalidly, 
-                   but we don't flag the error at import time (cf 679)"
+      abccomment="tries to import inner classes invalidly.
+                   Neither javac nor jikes pass this test.
+                   It used to work with javac 1.3.1. See
+                   http://www.geocities.com/herong_yang/jdk/unnamed_package.html
+                   Decided to skip 18/08/04 ODM/OL/PA/AGS"
       title="Referencing static interfaces with import statements stars"
       keywords="purejava,from-broken14usejavac">
+       <abckeywords> <skip/> </abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"/>
         <compile includeClassesDir="true"
                  files="ImportingStaticInnerInterfacesStars_PR386.java"/>
@@ -5934,10 +5938,10 @@
     </ajc-test>
 
     <ajc-test num="676" dir="pureJava" pr="386"
-      abccomment="tries to import inner classes invalidly, 
-                   but we don't flag the error at import time (cf 679)"
+      abccomment="See 675"
       title="Referencing static interfaces with import statements stars 2"
       keywords="purejava,from-broken14usejavac">
+       <abckeywords> <skip/> </abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"/>
         <compile includeClassesDir="true"
                  files="ImportingStaticInnerInterfacesStars2_PR386.java"/>
@@ -5945,10 +5949,10 @@
     </ajc-test>
 
     <ajc-test num="677" dir="pureJava" pr="386"
-      abccomment="tries to import inner classes invalidly, 
-                   but we don't flag the error at import time (cf 679)"
+      abccomment="See 676"
       title="Referencing static interfaces with import statements stars 3"
       keywords="purejava,from-broken14usejavac">
+      <abckeywords> <skip/> </abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"/>
         <compile includeClassesDir="true"
                  files="ImportingStaticInnerInterfacesStars3_PR386.java"/>
@@ -5957,8 +5961,7 @@
 
     <ajc-test num="678" dir="pureJava" pr="386"
       title="Referencing interfaces with import statements"
-      abccomment="this tries to reference an inner class with an import,
-                  which javac doesn't allow either"
+      abccomment="See 676" 
       keywords="purejava,from-broken14usejavac">
         <abckeywords><skip/></abckeywords>
         <compile
@@ -5967,22 +5970,20 @@
     </ajc-test>
 
     <ajc-test num="679" dir="pureJava" pr="386"
-      abccomment="polyglot should be reporting an error on the import 
-                  statements, as with number 678; once it does, skip this or 
-                  mark them as errors"
+      abccomment="See 676"
       title="Referencing interfaces with import statements stars"
       keywords="purejava,from-broken14usejavac">
+      <abckeywords><skip/></abckeywords>
         <compile
           files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars_PR386.java"/>
         <run class="ImportingInnerInterfacesStars_PR386"/>
     </ajc-test>
 
     <ajc-test num="680" dir="pureJava" pr="386"
-      abccomment="polyglot should be reporting an error on the import 
-                  statements, as with number 678; once it does, skip this or 
-                  mark them as errors"
+      abccomment="See 676"
       title="Referencing interfaces with import statements stars 2"
       keywords="purejava,from-broken14usejavac">
+      <abckeywords><skip/></abckeywords>
         <compile
           files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars2_PR386.java"/>
         <run class="ImportingInnerInterfacesStars2_PR386"/>
@@ -5990,10 +5991,9 @@
 
     <ajc-test num="681" dir="pureJava" pr="386"
       title="Referencing interfaces with import statements stars 3"
-      abccomment="polyglot should be reporting an error on the import 
-                  statements, as with number 678; once it does, skip this or 
-                  mark them as errors"
+      abccomment="See 676"
       keywords="purejava,from-broken14usejavac">
+      <abckeywords><skip/></abckeywords>
         <compile
           files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"/>
         <run class="ImportingInnerInterfacesStars3_PR386"/>
