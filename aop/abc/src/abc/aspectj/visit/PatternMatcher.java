@@ -113,7 +113,7 @@ public class PatternMatcher {
 	}
     }
 
-    Set getMatches(NamePattern pat) {
+    public Set getMatches(NamePattern pat) {
 	if (!pattern_matches.containsKey(pat)) {
 	    throw new RuntimeException("Unknown name pattern: "+pat+" ("+pat.getClass()+") at "+pat.position());
 	}

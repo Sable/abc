@@ -2,8 +2,9 @@ include "../../aspectj/parse/aspectj.ppg"
 
 package abc.eaj.parse;
 
+import abc.eaj.ast.*;
 import abc.eaj.types.EAJTypeSystem;
-import abc.eaj.ast.EAJNodeFactory;
+
 import polyglot.ext.jl.parse.Name;
 
 parser Grm extends abc.aspectj.parse.Grm {:
@@ -18,9 +19,17 @@ parser Grm extends abc.aspectj.parse.Grm {:
 :};
 
 
-// new tokens
+// ------- new tokens ------------------------------
 
 terminal Token PC_CAST;
+terminal Token GLOBAL;
+
+// ------- new non-terminals -----------------------
+
+non terminal GlobalPointcutDecl global_pointcut_decl;
+
+
+
 
 start with goal;
 
@@ -36,5 +45,38 @@ extend basic_pointcut_expr ::=
         {:
             Grm.parserTrace("CAST pointcut");
             RESULT = parser.nf.PCCast(parser.pos(x,y), a);
+        :}
+    ;
+
+extend class_member_declaration ::=
+        global_pointcut_decl:a
+        {:
+            Grm.parserTrace("class_member_declaration is a global_pointcut_decl");
+            List l = new TypedList(new LinkedList(), ClassMember.class, false);
+            l.add(a);
+            RESULT = l;
+        :}
+    ;
+
+extend interface_member_declaration ::=
+        global_pointcut_decl:a
+        {:
+            Grm.parserTrace("class_member_declaration is a global_pointcut_decl");
+            List l = new TypedList(new LinkedList(), ClassMember.class, false);
+            l.add(a);
+            RESULT = l;
+        :}
+    ;
+
+
+global_pointcut_decl ::=
+        GLOBAL:x COLON name_pattern:a COLON pointcut_expr:b SEMICOLON:y
+        {:
+            Grm.parserTrace("PUBLIC type_pattern_expr, pointcut_expr");
+            TypeNode voidn = parser.nf.CanonicalTypeNode(parser.pos(x),
+                                                        parser.ts.Void());
+            String name = UniqueID.newID("global");
+            RESULT = parser.nf.GlobalPointcutDecl(parser.pos(x,y),
+                                                  a, b, name, voidn);
         :}
     ;

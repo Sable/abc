@@ -85,7 +85,10 @@ public class PCLocalVars_c extends Pointcut_c
 
         while (i.hasNext()) {
                 f = (Formal) i.next();
-                results.remove(f.name());
+                if (!results.remove(f.name()))
+                    throw new SemanticException("Formal \"" + f.name() +
+                                           "\" is unbound in pointcut.",
+                                           f.position());
         }
         return results;
     }
@@ -120,7 +123,7 @@ public class PCLocalVars_c extends Pointcut_c
     public Context enterScope(Context c)
     {
         Context nc = super.enterScope(c);
-        nc = nc.pushStatic();
+        nc = nc.pushBlock();
 
         Formal f;
         Iterator i = formals.iterator();

@@ -426,6 +426,8 @@ SingleCharacter = [^\r\n\'\\]
   "float"                        { return key(sym.FLOAT); }
   "for"                          { return key(sym.FOR); }
   "default"                      { return key(sym.DEFAULT); }
+  "global"                       { yybegin(POINTCUT);
+                                   return key(sym.GLOBAL); }
   "implements"                   { return key(sym.IMPLEMENTS); }
   "import"                       { return key(sym.IMPORT); }
   "instanceof"                   { return key(sym.INSTANCEOF); }
@@ -684,7 +686,7 @@ SingleCharacter = [^\r\n\'\\]
 
   "adviceexecution"              { return key(sym.PC_ADVICEEXECUTION); }
   "args"                         { return key(sym.PC_ARGS); }
-  "call"                         { return key(sym.PC_CALL); }
+  "call"                         { return key(sym.PC_CALL); } 
   "cast"                         { return key(sym.PC_CAST); }
   "cflow"                        { return key(sym.PC_CFLOW); }
   "cflowbelow"                   { return key(sym.PC_CFLOWBELOW); }

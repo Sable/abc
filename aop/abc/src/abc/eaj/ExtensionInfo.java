@@ -5,6 +5,7 @@ import abc.eaj.parse.Lexer_c;
 import abc.eaj.parse.Grm;
 import abc.eaj.ast.*;
 import abc.eaj.types.*;
+import abc.eaj.visit.*;
 
 import polyglot.ast.NodeFactory;
 import polyglot.frontend.*;
@@ -19,6 +20,15 @@ import java.io.Reader;
  */
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo
 {
+    public static final Pass.ID COLLECT_GLOBAL_POINTCUTS =
+            new Pass.ID("collect-global-pointcuts");
+    public static final Pass.ID COLLECTED_GLOBAL_POINTCUTS =
+            new Pass.ID("collected-global-pointcuts");
+    public static final Pass.ID CONJOIN_GLOBAL_POINTCUTS =
+            new Pass.ID("conjoin-global-pointcuts");
+    public static final Pass.ID CONJOINED_GLOBAL_POINTCUTS =
+            new Pass.ID("conjoined-global-pointcuts");
+
     static {
         // force Topics to load
         Topics t = new Topics();
@@ -54,4 +64,22 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
         return super.passes(job);
     }
 
+    protected void passes_patterns_and_parents(List l, Job job)
+    {
+        super.passes_patterns_and_parents(l, job);
+
+        l.add(new VisitorPass(COLLECT_GLOBAL_POINTCUTS,
+                              job,
+                              new GlobalPointcuts(GlobalPointcuts.COLLECT,
+                                                   job,
+                                                   (EAJTypeSystem) ts,
+                                                   (EAJNodeFactory) nf)));
+        l.add(new GlobalBarrierPass(COLLECTED_GLOBAL_POINTCUTS, job));
+        l.add(new VisitorPass(COLLECT_GLOBAL_POINTCUTS,
+                              job,
+                              new GlobalPointcuts(GlobalPointcuts.CONJOIN,
+                                                  job,
+                                                  (EAJTypeSystem) ts,
+                                                  (EAJNodeFactory) nf)));
+    }
 }
