@@ -137,7 +137,8 @@ public class PointcutCodeGen {
 			    AdviceApplication adviceappl)
     { debug("starting weave_one for "+method.getName());
       StringBuffer details=new StringBuffer();
-      adviceappl.debugInfo("PCG: ",details);
+      if(abc.main.Debug.v().pointcutCodeGen)
+	  adviceappl.debugInfo("PCG: ",details);
       System.out.println(details.toString());
 
 	  AbstractAdviceDecl advicedecl = adviceappl.advice;
