@@ -78,7 +78,7 @@ public class AfterBeforeInliner extends AdviceInliner {
 				debug(" Method: " + container);
 				debug(" Advice method: " + method); 
 				debug(" Violations: " + accessViolations);
-				if (accessViolations>3)
+				if (accessViolations>1)
 					return false;					
 			}
 			Body body=method.getActiveBody();
