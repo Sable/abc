@@ -867,15 +867,25 @@ OctalEscape = \\ [0-7]
 }	
 
 <COMMENT> { 
-  "*/"				 { comment_count = comment_count - 1; 
-				   if (comment_count < 0) 
-                                     eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
-	                           if (comment_count == 0) 
-                                     { inComment = false;
-    		                       returnFromStringChar(); 
-                                     }
-	                         }
-  "/*"                           { comment_count = comment_count + 1; }
+  "*/"				{ 
+	  					if(abc.main.Debug.v().noNestedComments) {
+	  						inComment = false;
+	  						returnFromStringChar();
+	  					}
+	  					else {
+	  						comment_count = comment_count - 1; 
+		 			   		if (comment_count < 0) 
+	                        	eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
+	                        if (comment_count == 0) {
+                            	inComment = false;
+    		                    returnFromStringChar(); 
+                            }
+	                    } 
+	                }
+  "/*"              { 
+  						if(!abc.main.Debug.v().noNestedComments) 
+  							comment_count = comment_count + 1; 
+  					}
   .|\n                           { /* ignore */ }
 }
 

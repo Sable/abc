@@ -258,6 +258,11 @@ public class Main {
            // don't report unresolved imports 
            { // nothing to do, because we don't do it anyway.
            }
+         else if (args[i].equals("-noNestedComments"))
+         {
+             //disallow nested comments for this compiler run
+             abc.main.Debug.v().noNestedComments = true;
+         }
          else if (args[i].equals("-time"))
            { abc.main.Debug.v().abcTimer=true;
              abc.main.Debug.v().polyglotTimer=true;
