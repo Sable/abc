@@ -1,20 +1,3 @@
-Running test 97: pureJava/Checking character values with all the unicode chars.
-Commandline: abc -d pureJava pureJava/CharsUnicode.java 
-An OutOfMemoryError occured. This means there wasn't enough available
-memory to complete the compilation.
-
-If your computer has additional RAM, you can try increasing the size of
-the heap available to abc by invoking it as
-	java -Xmx512M abc.main.Main [...]
-You can also further increase the size of the heap (in the example, 
-512 MB were speecified). If this doesn't resolve your problem, please
-contact the abc team at http://abc.comlab.ox.ac.uk with the relevant 
-details.
-Unexpected exception while compiling: java.lang.OutOfMemoryError
-java.lang.OutOfMemoryError
-FAIL: Test 97: "pureJava/Checking character values with all the unicode chars." failed.
-
-
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
 Compilation succeeded but was expected to fail.
@@ -158,7 +141,7 @@ Running test 77201: abctests/bugs/declare soft and throw statements
 Commandline: abc -d abctests/bugs abctests/bugs/ConvertToUnchecked.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
-Semantic Error at ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
+Semantic Error at abctests/bugs/ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
 FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed.
 
 

@@ -365,6 +365,10 @@
         <compile files="CaseClauses.java"></compile>
         <run class="CaseClauses"></run>
     </ajc-test>
+<ajc-test title="Checking character values with all the unicode chars." num="97" keywords="from-java" dir="pureJava" abccomment="Required the fixed jasmin to handle constant                   pool offsets > 32K.  Fixed July 1/04 LJH ">
+        <compile files="CharsUnicode.java"></compile>
+        <run class="CharsUnicode"></run>
+    </ajc-test>
 <ajc-test title="Trouble finding methods with the same name and different parameter types" num="98" keywords="from-java" dir="pureJava">
         <compile files="MethodsWithTheSameName.java"></compile>
         <run class="MethodsWithTheSameName"></run>
