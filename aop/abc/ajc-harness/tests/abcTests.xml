@@ -2524,9 +2524,9 @@
       abccomment="Not an ideal error location, but ok for now. ODM July 7, 2004"
       keywords="from-errors">
         <compile files="CircularPlusImplementsIntros.java">
-            <ajcmessage kind="error" line="19"/>
-            <message kind="error" line="7"/>
-            <message kind="error" line="8"/>
+            <message kind="error" line="19"/>
+            <ajcmessage kind="error" line="7"/>
+            <ajcmessage kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -6375,9 +6375,11 @@
     </ajc-test>
 
     <ajc-test num="724" dir="new" pr="853"
-      abccomment="the file itself says it expects an error, and we give it.
-                  ODM 18/08/04"
+      abccomment="AJC does not treat this as an error, and some
+                  programs depend on it.
+                  ASC 27/09/04"
       title="declare class implements class">
+        <abckeywords><skip/></abckeywords>
         <compile files="DeclareClassImplementsClass.java">
           <message kind="error" line="10"/>
         </compile>
@@ -9252,7 +9254,7 @@
     <ajc-test num="991" dir="abctests/bugs"
         title="declare parents causes interface to implement itself">
 	<compile files="foo/Foo.java">
-	    <message kind="error" file="foo/Foo.java" line="6"/>
+	    <message kind="error" file="foo/Foo.java" line="11"/>
 	</compile>
     </ajc-test>
 
