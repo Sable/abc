@@ -7,10 +7,11 @@ import soot.*;
  *  @date 29-Apr-04                                  
  */
 
-public class TrapMethodPosition implements MethodPosition {
+public class TrapMethodPosition extends MethodPosition {
     private Trap trap;
      
-    public TrapMethodPosition(Trap trap) {
+    public TrapMethodPosition(SootMethod container,Trap trap) {
+	super(container);
 	this.trap=trap;
     }
 

@@ -12,18 +12,20 @@ import abc.weaving.residues.Residue;
 public class ExecutionShadowMatch extends ShadowMatch {
     private SootMethod container;
 
-    private ExecutionShadowMatch(SootMethod container) {
+    public ShadowMatch getEnclosing() {
+	return this;
+    }
+
+    ExecutionShadowMatch(SootMethod container) {
 	this.container=container;
     }
 
     public static ExecutionShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
-	return new ExecutionShadowMatch(((WholeMethodPosition) pos).container);
+	return new ExecutionShadowMatch(pos.getContainer());
     }
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
+    public AdviceApplication.SJPInfo makeSJPInfo() {
 	String jpKind;
 	String sigClass;
 	String sigMethod;
@@ -41,9 +43,14 @@ public class ExecutionShadowMatch extends ShadowMatch {
 	    sigClass="MethodSignature";
 	    sigMethod="makeMethodSig";
 	}
-	AdviceApplication.SJPInfo sjpInfo
-	    =new AdviceApplication.SJPInfo(jpKind,sigClass,sigMethod,
-					   sig,container.getActiveBody());
-	mal.addBodyAdvice(new ExecutionAdviceApplication(ad,residue,sjpInfo));
+	return new AdviceApplication.SJPInfo
+	    (jpKind,sigClass,sigMethod,sig,container.getActiveBody());
+    }
+
+    protected AdviceApplication doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+	ExecutionAdviceApplication aa=new ExecutionAdviceApplication(ad,residue);
+	mal.addBodyAdvice(aa);
+	return aa;
     }
 }

@@ -14,10 +14,17 @@ public class SetFieldShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootField field;
-    
-    private SetFieldShadowMatch(Stmt stmt,SootField field) {
+    private SootMethod container;
+
+    private SetFieldShadowMatch(Stmt stmt,SootField field,SootMethod container) {
 	this.stmt=stmt;
 	this.field=field;
+	this.container=container;
+    }
+
+    public ShadowMatch getEnclosing() {
+	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
+	return new ExecutionShadowMatch(container);
     }
 
     public SootField getField() {
@@ -34,15 +41,21 @@ public class SetFieldShadowMatch extends ShadowMatch {
        	if(!(lhs instanceof FieldRef)) return null;
 	FieldRef fr = (FieldRef) lhs;
 
-	return new SetFieldShadowMatch(stmt,fr.getField());
+	return new SetFieldShadowMatch(stmt,fr.getField(),pos.getContainer());
     }
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
-	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("field-set",
-		  "FieldSignature","makeFieldSig","",stmt);
-        mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,sjpInfo,stmt));
+    public AdviceApplication.SJPInfo makeSJPInfo() {
+
+	return new AdviceApplication.SJPInfo
+	    ("field-set","FieldSignature","makeFieldSig","",stmt);
     }
+
+    protected AdviceApplication doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+
+	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
+	mal.addStmtAdvice(aa);
+	return aa;
+    }
+
 }

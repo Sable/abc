@@ -6,6 +6,8 @@ import soot.util.*;
 import soot.tagkit.SourceLnPosTag;
 import soot.tagkit.Host;
 
+import abc.soot.util.InPreinitializationTag;
+
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
@@ -15,7 +17,14 @@ import java.util.*;
 /*  @author Ganesh Sittampalam                       */
 /*  @date 23-Apr-04                                  */
 public abstract class AdviceApplication {
+
+    /** The advice to be applied. If null, indicates 'dummy' advice, currently just used for
+     *  thisEnclosingJoinPointStaticPart hook points. The hierarchy needs a bit of
+     *  restructuring to allow for cflow stack setup advice etc.
+     */
     public AdviceDecl advice;
+
+    /** The dynamic residue */
     public Residue residue;
 
     public static class SJPInfo {
@@ -50,7 +59,7 @@ public abstract class AdviceApplication {
 	}
     }
 
-    /** information for generating the SJP */
+    /** information for generating the SJP - will be null if we don't need it */
     public SJPInfo sjpInfo;
 
     /** The enclosing SJP - will be null if we don't need it */
@@ -61,10 +70,9 @@ public abstract class AdviceApplication {
                                       // where to weave.  Is initialized
                                       // in first pass of weaver. 
 
-    public AdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
+    public AdviceApplication(AdviceDecl advice,Residue residue) {
 	this.advice=advice;
 	this.residue=residue;
-	this.sjpInfo=sjpInfo;
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
@@ -72,6 +80,7 @@ public abstract class AdviceApplication {
        	advice.debugInfo(prefix+" ",sb);
 	sb.append(prefix+"residue: "+residue+"\n");
 	sb.append(prefix+"SJP info: "+sjpInfo+"\n");
+	sb.append(prefix+"enclosing SJP info: "+sjpEnclosing+"\n");
 	sb.append(prefix+"---"+"\n");
     }
 
@@ -122,6 +131,11 @@ public abstract class AdviceApplication {
 				SootClass cls,
 				SootMethod method,
 				Hashtable ret) {
+
+	// Restructure everything that corresponds to a 'new' in 
+	// source so that object initialisation and constructor call
+	// are adjacent
+
 	// FIXME: Replace this call with one to the partial 
 	// transformer;
 	// Iterate through body to find "new", decide if we have a 
@@ -134,9 +148,25 @@ public abstract class AdviceApplication {
 	m.put("enabled","true");
 	(new soot.jimple.toolkits.base.JimpleConstructorFolder())
 	    .transform(method.getActiveBody(),"jtp.jcf",m);
+
+	// Identify whether we're in a constructor, and if we are identify
+	// the position of the 'this' or 'super' call
+	if(method.getName().equals(SootMethod.constructorName)) {
+	    // This is a call into a utility method in the weaver; really that method ought
+	    // to be somewhere else and we shouldn't need to construct the ShadowPointsSetter object 
+	    // at all
+	    Stmt thisOrSuper=new ShadowPointsSetter().findInitStmt(method.getActiveBody().getUnits());
+
+	    Iterator stmtsIt=method.getActiveBody().getUnits().iterator();
+	    while(stmtsIt.hasNext()) {
+		Stmt stmt=(Stmt) stmtsIt.next();
+		if(stmt==thisOrSuper) break;
+		stmt.addTag(new InPreinitializationTag());
+	    }
+	}
 	
 	MethodAdviceList mal=new MethodAdviceList();
-	
+
 	// Do whole body shadows
 	doStatement(info,mal,cls,method,new WholeMethodPosition(method));
 	
@@ -148,9 +178,10 @@ public abstract class AdviceApplication {
 	    for(current=(Stmt) stmtsChain.getFirst();
 		current!=null;
 		current=next) {
+
 		next=(Stmt) stmtsChain.getSuccOf(current);
-		doStatement(info,mal,cls,method,new StmtMethodPosition(current));
-		doStatement(info,mal,cls,method,new NewStmtMethodPosition(current,next));
+		doStatement(info,mal,cls,method,new StmtMethodPosition(method,current));
+		doStatement(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
 	    }
 	}
 	
@@ -163,8 +194,10 @@ public abstract class AdviceApplication {
 		currentTrap!=null;
 		currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
 		
-		doStatement(info,mal,cls,method,new TrapMethodPosition(currentTrap));
+		doStatement(info,mal,cls,method,new TrapMethodPosition(method,currentTrap));
 	}
+
+
 	
 	ret.put(method,mal);
     }

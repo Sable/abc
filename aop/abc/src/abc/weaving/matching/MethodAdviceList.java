@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 // FIXME: temporary precedence hack
 import abc.weaving.aspectinfo.BeforeAdvice;
+import abc.weaving.aspectinfo.AroundAdvice;
 
 /** The list(s) of advice applying to a method
  *  @author Ganesh Sittampalam
@@ -20,7 +21,8 @@ public class MethodAdviceList {
     public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
 	// FIXME: temporary precedence hack
-	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice)
+	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice
+	   || aa.advice.getAdviceSpec() instanceof AroundAdvice)
 	    ((LinkedList) bodyAdvice).addFirst(aa);
 	else bodyAdvice.add(aa);
     }
@@ -29,7 +31,8 @@ public class MethodAdviceList {
     public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
     public void addStmtAdvice(AdviceApplication aa) {
 	// FIXME: temporary precedence hack
-	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice)
+	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice
+	   || aa.advice.getAdviceSpec() instanceof AroundAdvice)
 	    ((LinkedList) stmtAdvice).addFirst(aa);
 	else stmtAdvice.add(aa);
     }
@@ -38,13 +41,19 @@ public class MethodAdviceList {
     public List/*<AdviceApplication>*/ preinitializationAdvice
 	=new LinkedList();
     public void addPreinitializationAdvice(AdviceApplication aa) {
-	preinitializationAdvice.add(aa);
+	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice
+	   || aa.advice.getAdviceSpec() instanceof AroundAdvice)
+	    ((LinkedList) preinitializationAdvice).addFirst(aa);
+	else preinitializationAdvice.add(aa);
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
     public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
     public void addInitializationAdvice(AdviceApplication aa) {
-	initializationAdvice.add(aa);
+	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice
+	   || aa.advice.getAdviceSpec() instanceof AroundAdvice)
+	    ((LinkedList) initializationAdvice).addFirst(aa);
+	else initializationAdvice.add(aa);
     }
 
     /** is true if method has been restructured to move returns to bottom */

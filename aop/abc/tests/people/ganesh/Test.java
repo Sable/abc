@@ -4,6 +4,8 @@ public class Test  {
 
     double r;
 
+    static Test t=new Test(5);
+
     static 
     { int i = 10;
       if (i == 10)
@@ -12,8 +14,17 @@ public class Test  {
         { j = 4; } 
     }
 
+   public Test (double y) {
+     r=y;
+   }
+
    public Test(int x) {
       r=(double) x;
+   }
+
+   public Test() {
+     this(t.r);
+     double y=t.r;
    }
 
    int foo(int x) {
@@ -25,7 +36,12 @@ public class Test  {
    }
 
    int bar(int x) {
-      return x;
+      try {
+         System.out.println("bar");
+         return x;
+      } catch(Exception e) {
+         return (x+1);
+      }
    }
 
    public static void main (String args[])
@@ -36,7 +52,11 @@ public class Test  {
        t.foo(3.0);
        Test t2 = new Test(k+5);
        t.r = 10.0;
-       System.out.println("j is " + j);
-       System.out.println("r is " + t.r);
+          System.out.println("j is " + j);
+          System.out.println("r is " + t.r);
      }
+}
+
+class Baz extends Test {
+
 }

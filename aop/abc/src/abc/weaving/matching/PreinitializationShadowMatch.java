@@ -16,22 +16,29 @@ public class PreinitializationShadowMatch extends ShadowMatch {
 	this.container=container;
     }
 
+    public ShadowMatch getEnclosing() {
+	return this;
+    }
+
     public static PreinitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
-	SootMethod container=((WholeMethodPosition) pos).container;
+	SootMethod container=pos.getContainer();
 	if(!container.getName().equals(SootMethod.constructorName)) return null;
 	return new PreinitializationShadowMatch(container);
     }
 
+    public AdviceApplication.SJPInfo makeSJPInfo() {
+	return new AdviceApplication.SJPInfo
+	    ("preinitialization","ConstructorSignature","makeConstructorSig","",container);
+    }
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
-	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo ("preinitialization",
-		"ConstructorSignature","makeConstructorSig","",container);
-	mal.addPreinitializationAdvice
-	    (new PreinitializationAdviceApplication(ad,residue,sjpInfo));
+    protected AdviceApplication doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+
+	PreinitializationAdviceApplication aa
+	    =new PreinitializationAdviceApplication(ad,residue);
+	mal.addPreinitializationAdvice(aa);
+	return aa;
     }
 
     public ContextValue getThisContextValue(SootMethod method) {

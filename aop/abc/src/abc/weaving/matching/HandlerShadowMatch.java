@@ -14,10 +14,17 @@ public class HandlerShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootClass sootexc;
+    private SootMethod container;
     
-    private HandlerShadowMatch(Stmt stmt,SootClass sootexc) {
+    private HandlerShadowMatch(Stmt stmt,SootClass sootexc,SootMethod container) {
+	this.container=container;
 	this.stmt=stmt;
 	this.sootexc=sootexc;
+    }
+
+    public ShadowMatch getEnclosing() {
+	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
+	return new ExecutionShadowMatch(container);
     }
 
     public SootClass getException() {
@@ -28,15 +35,19 @@ public class HandlerShadowMatch extends ShadowMatch {
 	if(!(pos instanceof TrapMethodPosition)) return null;
 	Trap trap=((TrapMethodPosition) pos).getTrap();
 	Stmt stmt=(Stmt) trap.getHandlerUnit();
-	return new HandlerShadowMatch(stmt,trap.getException());
+	return new HandlerShadowMatch(stmt,trap.getException(),pos.getContainer());
     }
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
-	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("exception-handler",
-		"CatchClauseSignature","makeCatchClauseSig","",stmt);
-        mal.addStmtAdvice(new HandlerAdviceApplication(ad,residue,sjpInfo,stmt));
+    public AdviceApplication.SJPInfo makeSJPInfo() {
+	return new AdviceApplication.SJPInfo
+	    ("exception-handler","CatchClauseSignature","makeCatchClauseSig","",stmt);
+    }
+
+    public AdviceApplication  doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+
+	HandlerAdviceApplication aa=new HandlerAdviceApplication(ad,residue,stmt);
+        mal.addStmtAdvice(aa);
+	return aa;
     }
 }

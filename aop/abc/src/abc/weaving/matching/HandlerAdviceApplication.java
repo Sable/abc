@@ -10,9 +10,8 @@ public class HandlerAdviceApplication extends AdviceApplication {
 
     public HandlerAdviceApplication(AdviceDecl advice,
 				    Residue residue,
-				    SJPInfo sjpInfo,
 				    Stmt stmt) {
-	super(advice,residue,sjpInfo);
+	super(advice,residue);
 	this.stmt=stmt;
     }
 }

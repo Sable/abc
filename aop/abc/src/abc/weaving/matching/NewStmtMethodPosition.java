@@ -1,6 +1,7 @@
 package abc.weaving.matching;
 
 import soot.jimple.*;
+import soot.SootMethod;
 
 /** Specifies matching at a particular new statement
  *  @author Ganesh Sittampalam
@@ -8,11 +9,12 @@ import soot.jimple.*;
  */
 
 
-public class NewStmtMethodPosition implements MethodPosition {
+public class NewStmtMethodPosition extends MethodPosition {
     private Stmt stmt;
     private Stmt nextStmt;
     
-    public NewStmtMethodPosition(Stmt stmt,Stmt nextStmt) {
+    public NewStmtMethodPosition(SootMethod container,Stmt stmt,Stmt nextStmt) {
+	super(container);
 	this.stmt=stmt;
 	this.nextStmt=nextStmt;
     }

@@ -7,8 +7,8 @@ import abc.weaving.residues.Residue;
 
 public class ExecutionAdviceApplication extends AdviceApplication {
 	
-    public ExecutionAdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
-	super(advice,residue,sjpInfo);
+    public ExecutionAdviceApplication(AdviceDecl advice,Residue residue) {
+	super(advice,residue);
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {

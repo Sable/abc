@@ -6,13 +6,8 @@ import soot.*;
  *  @author Ganesh Sittampalam
  *  @date 29-Apr-04                                  
  */
-public class WholeMethodPosition implements MethodPosition {
-
-    /** Specify the actual method etc we are in, needed to construct
-     *  the reflective information
-     */
-    public SootMethod container;
+public class WholeMethodPosition extends MethodPosition {
     public WholeMethodPosition(SootMethod container) {
-	this.container=container;
+	super(container);
     }
 }

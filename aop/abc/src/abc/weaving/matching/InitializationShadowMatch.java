@@ -16,21 +16,29 @@ public class InitializationShadowMatch extends ShadowMatch {
 	this.container=container;
     }
 
+    public ShadowMatch getEnclosing() {
+	return this;
+    }
+
     public static InitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
-	SootMethod container=((WholeMethodPosition) pos).container;
+	SootMethod container=pos.getContainer();
 	if(!container.getName().equals(SootMethod.constructorName)) return null;
 	return new InitializationShadowMatch(container);
     }
 
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
-	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo ("initialization",
-		    "ConstructorSignature","makeConstructorSig","",container);
-	mal.addInitializationAdvice
-	    (new InitializationAdviceApplication(ad,residue,sjpInfo));
+    public AdviceApplication.SJPInfo makeSJPInfo() {
+	return new AdviceApplication.SJPInfo
+	    ("initialization","ConstructorSignature","makeConstructorSig","",container);
+    }
+
+    protected AdviceApplication doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+
+	InitializationAdviceApplication aa
+	    =new InitializationAdviceApplication(ad,residue);
+	mal.addInitializationAdvice(aa);
+	return aa;
     }
 }

@@ -9,7 +9,7 @@ import abc.weaving.residues.Residue;
  */
 
 public abstract class ConstructorAdviceApplication extends AdviceApplication {
-    public ConstructorAdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
-	super(advice,residue,sjpInfo);
+    public ConstructorAdviceApplication(AdviceDecl advice,Residue residue) {
+	super(advice,residue);
     }
 }

@@ -8,8 +8,8 @@ import abc.weaving.residues.Residue;
  *  @date 29-Apr-04
  */
 public class InitializationAdviceApplication extends ConstructorAdviceApplication {
-    public InitializationAdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
-	super(advice,residue,sjpInfo);
+    public InitializationAdviceApplication(AdviceDecl advice,Residue residue) {
+	super(advice,residue);
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {

@@ -8,7 +8,7 @@ import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
 
 
-/** The results of matching at a new+constructor call shadow
+/** The results of matching at a method call shadow
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
@@ -16,10 +16,17 @@ public class MethodCallShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootMethod method;
+    private SootMethod container;
     
-    private MethodCallShadowMatch(Stmt stmt,SootMethod method) {
+    private MethodCallShadowMatch(Stmt stmt,SootMethod method,SootMethod container) {
 	this.stmt=stmt;
 	this.method=method;
+	this.container=container;
+    }
+
+    public ShadowMatch getEnclosing() {
+	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
+	return new ExecutionShadowMatch(container);
     }
 
     public SootMethod getMethod() {
@@ -44,17 +51,19 @@ public class MethodCallShadowMatch extends ShadowMatch {
 	// The next one really ought not to happen...
 	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
 
-	return new MethodCallShadowMatch(stmt,method);
-
+	return new MethodCallShadowMatch(stmt,method,pos.getContainer());
     }
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
+    public AdviceApplication.SJPInfo makeSJPInfo() {
+	return new AdviceApplication.SJPInfo
+	    ("method-call","MethodSignature","makeMethodSig","",stmt);
+    }
 
-	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("method-call",
-		"MethodSignature","makeMethodSig","",stmt);
-        mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,sjpInfo,stmt));
+    protected AdviceApplication doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+
+	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
+	mal.addStmtAdvice(aa);
+	return aa;
     }
 }

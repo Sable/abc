@@ -10,9 +10,8 @@ public class StmtAdviceApplication extends AdviceApplication {
     
     public StmtAdviceApplication(AdviceDecl advice,
 				 Residue residue,
-				 SJPInfo sjpInfo,
 				 Stmt stmt) {
-	super(advice,residue,sjpInfo);
+	super(advice,residue);
 	this.stmt=stmt;
     }
 

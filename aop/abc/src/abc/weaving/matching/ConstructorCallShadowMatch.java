@@ -14,10 +14,17 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootMethod method;
+    private SootMethod container;
     
-    private ConstructorCallShadowMatch(Stmt stmt,SootMethod method) {
+    public ShadowMatch getEnclosing() {
+	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
+	return new ExecutionShadowMatch(container);
+    }
+
+    private ConstructorCallShadowMatch(Stmt stmt,SootMethod method,SootMethod container) {
 	this.stmt=stmt;
 	this.method=method;
+	this.container=container;
     }
 
     public SootMethod getMethod() {
@@ -45,15 +52,19 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
 	// FIXME: Does this break with arrays?
-	return new ConstructorCallShadowMatch(current,method);
+	return new ConstructorCallShadowMatch(current,method,pos.getContainer());
     }
 
-    public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
-				     Residue residue) {
-	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo( "constructor-call",
-		"ConstructorSignature","makeConstructorSig","",stmt);
-        mal.addStmtAdvice(new NewStmtAdviceApplication(ad,residue,sjpInfo,stmt));
+    public AdviceApplication.SJPInfo makeSJPInfo() {
+	return new AdviceApplication.SJPInfo
+	    ( "constructor-call","ConstructorSignature","makeConstructorSig","",stmt);
+    }
+
+    protected AdviceApplication doAddAdviceApplication
+	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+
+	NewStmtAdviceApplication aa=new NewStmtAdviceApplication(ad,residue,stmt);
+	mal.addStmtAdvice(aa);
+	return aa;
     }
 }

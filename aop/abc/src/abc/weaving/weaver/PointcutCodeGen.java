@@ -60,6 +60,8 @@ public class PointcutCodeGen {
          Body b = method.getActiveBody();
          LocalGeneratorEx localgen = new LocalGeneratorEx(b);
 
+	 // Make a new local, put it in the advice list structure, and copy this to it
+
 	 // do the body advice 
          for (Iterator alistIt = adviceList.bodyAdvice.iterator(); 
 	      alistIt.hasNext();)
