@@ -420,11 +420,14 @@
             <message kind="error" line="58"/>
         </compile>
     </ajc-test>
-<ajc-test dir="design/intro" pr="570"
-      title="correct inheritance of multiple concrete methods"
-      keywords="from-design">
-        <compile files="MultiInheritCP.java"/>
-        <run class="MultiInheritCP"/>
+<ajc-test dir="errors"
+      title="aspects may not implement Serializable or Cloneable"
+      keywords="from-errors">
+        <compile files="AspectInterfaces.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="9"/>
+        </compile>
     </ajc-test>
 <ajc-test dir="abctests/design/intro" pr="570"
       title="errors in inheritance of multiple concrete methods 1"
@@ -440,34 +443,6 @@
             <message kind="error" line="46"/>
             <message kind="error" line="42"/>
             <message kind="error" line="42"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods 2"
-      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
-      keywords="from-design">
-        <compile files="MultiInheritCF2.java">
-            <ajcmessage kind="error" line="21"/>
-            <ajcmessage kind="error" line="41"/>
-            <ajcmessage kind="error" line="42"/>
-            <ajcmessage kind="error" line="43"/>
-            <ajcmessage kind="error" line="45"/>
-            <ajcmessage kind="error" line="46"/>
-            <message kind="error" line="43"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods 3"
-      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
-      keywords="from-design">
-        <compile files="MultiInheritCF3.java">
-            <ajcmessage kind="error" line="21"/>
-            <ajcmessage kind="error" line="41"/>
-            <ajcmessage kind="error" line="42"/>
-            <ajcmessage kind="error" line="43"/>
-            <ajcmessage kind="error" line="45"/>
-            <ajcmessage kind="error" line="46"/>
-            <message kind="error" line="41"/>
         </compile>
     </ajc-test>
 <ajc-test dir="abctests/design/intro" pr="570"
@@ -492,36 +467,12 @@
             <message kind="error" line="23"/>
         </compile>
     </ajc-test>
-<ajc-test dir="abctests/design/intro"
-     abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF1.java">
-            <ajcmessage kind="error" line="8"/>
-            <ajcmessage kind="error" line="23"/>
-            <message kind="error" line="23"/> 
-       </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro"
-     abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF2.java">
-            <ajcmessage kind="error" line="8"/>
-            <ajcmessage kind="error" line="23"/>
-            <message kind="error" line="8"/> 
-       </compile>
-    </ajc-test>
 <ajc-test dir="design/eachobject"
       title="eachobject: eachobject(receptions(...)) [eachobject]"
       abccomment="fails on account of aspect inheritance. ODM 09/07/04"
       keywords="from-design">
         <compile files="Tricky1.java"/>
         <run class="Tricky1"/>
-    </ajc-test>
-<ajc-test dir="design/reflect" title="Checking new joinpoints"
-      abccomment="fails on account of problems with aspectOf and aspect inheritance. ODM 09/07/04"
-      keywords="from-design">
-        <compile files="Coverage.java"/>
-        <run class="Coverage"/>
     </ajc-test>
 <ajc-test dir="design/eachobject"
       abccomment="fails on account of aspect inheritance. ODM 09/07/04"
@@ -593,20 +544,10 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="new/beforeNotRun" pr="265" title="more aspect inheritance"
-      keywords="from-resolved_10x">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
 <ajc-test dir="new" title="Compiler can compile correct strictfp modifiers"
       keywords="from-resolved_10x">
         <compile files="StrictFpCompile.java"/>
         <run class="StrictFpCompile"/>
-    </ajc-test>
-<ajc-test dir="new" title="package wildcards in packages"
-      keywords="from-resolved_10x">
-        <compile files="pack/PackageWildcards.java"/>
-        <run class="pack.PackageWildcards"/>
     </ajc-test>
 <ajc-test dir="new" title="advice on catch clauses"
       keywords="from-resolved_10x,knownLimitation">
@@ -619,33 +560,10 @@
         <run class="BackdoorMethods"/>
     </ajc-test>
 <ajc-test dir="new"
-      title="no duplicate advice methods in abstract aspects"
-      keywords="from-resolved_10x">
-        <compile
-          files="GeneratingDuplicateNamedAdviceMethodsInAbstractAspects.java"/>
-        <run class="GeneratingDuplicateNamedAdviceMethodsInAbstractAspects"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="no duplicate advice methods in abstract aspects extended"
-      keywords="from-resolved_10x">
-        <compile
-          files="GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.java"/>
-        <run class="GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect"
-        />
-    </ajc-test>
-<ajc-test dir="new"
       title="Parsing C+ expressions without parens in super introductions."
       keywords="from-resolved_10x">
         <compile files="ParsingSubtypesIntroductions.java"/>
         <run class="ParsingSubtypesIntroductions"/>
-    </ajc-test>
-<ajc-test dir="new" pr="464"
-      title="Methods with the same name are generated when abstract aspects extend another abstract aspect."
-      keywords="from-resolved_10x">
-        <compile
-          files="AbstractAspectsExtendingAbstractAspectsGeneratesMethodsWithTheSameName_PR464.java"/>
-        <run class="AbstractAspectsExtendingAbstractAspectsGeneratesMethodsWithTheSameName_PR464"
-        />
     </ajc-test>
 <ajc-test dir="new" title="holding onto proceed calls in a closure-like way"
       keywords="from-resolved_10x,knownLimitation">
@@ -1010,24 +928,6 @@
           files="parent/SubAspectVisibility.java,parent/ForeignChildHelper.java,child/ForeignChildAspect.java"/>
         <run class="parent.SubAspectVisibility"/>
     </ajc-test>
-<ajc-test dir="new/subaspects" pr="647"
-      title="inner subaspects of an aspect with private pointcut"
-      keywords="from-resolved_10x">
-        <compile files="parent/PrivatePointcut.java"/>
-        <run class="parent.PrivatePointcut"/>
-    </ajc-test>
-<ajc-test dir="new/subaspects" pr="647"
-      title="outer subaspects of an aspect with private pointcut"
-      keywords="from-resolved_10x">
-        <compile files="parent/PrivatePointcutOuterClass.java"/>
-        <run class="parent.PrivatePointcutOuterClass"/>
-    </ajc-test>
-<ajc-test dir="new/subaspects" pr="647"
-      title="abstract aspect used statically should not cause instantiation of advice or pointcut"
-      keywords="from-resolved_10x">
-        <compile files="AbstractAspectUsedStatically.java"/>
-        <run class="AbstractAspectUsedStatically"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="private inner interface accessible in scope when declared on outer class"
       abccomment="likely the polyglot class conformance check bug too
@@ -1119,12 +1019,6 @@
       keywords="from-resolved_10rc3,fail-unimplemented">
         <compile files="AbstractCflows.java"/>
         <run class="AbstractCflows"/>
-    </ajc-test>
-<ajc-test dir="new" pr="560"
-      title="compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects"
-      keywords="from-resolved_10rc3">
-        <compile files="PR560.java"/>
-        <run class="PR560"/>
     </ajc-test>
 <ajc-test dir="new" pr="568" title="cyclic pointcut definitions"
       keywords="from-resolved_10rc3,knownLimitation">
@@ -1356,6 +1250,13 @@
             <message kind="error" line="16"/>
             <message kind="error" line="20"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="new" pr="601"
+      title="VerifyError if nested sync returning result"
+      comment="XXX inconsistent behavior?"
+      keywords="from-resolved_10final,purejava">
+        <compile files="NestedSyncWithResult.java"/>
+        <run class="NestedSyncWithResult"/>
     </ajc-test>
 <ajc-test dir="new" pr="853"
       title="declare interface extends class">
@@ -2363,6 +2264,12 @@
         <compile files="interface/C.java"
         		 aspectpath="interface/jars/AandB.jar" />
         <run class="C"/>
+    </ajc-test>
+<ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on abstract class not implemented by subtype (single source file)">
+        <compile files="singlesource/C.java">
+        	<message kind="error" line="9"/>
+        </compile>
     </ajc-test>
 <ajc-test dir="bugs/interAbstract" 
 		pr="49784"

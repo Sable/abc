@@ -268,6 +268,15 @@
             <message kind="error" line="58"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="aspects may not implement Serializable or Cloneable"
+      keywords="from-errors">
+        <compile files="AspectInterfaces.java">
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="abctests/design/intro" pr="570"
       title="errors in inheritance of multiple concrete methods 1"
       abccomment="abc bails out early, split into several cases. ODM 08/07/04"
@@ -282,34 +291,6 @@
             <message kind="error" line="46"/>
             <message kind="error" line="42"/>
             <message kind="error" line="42"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods 2"
-      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
-      keywords="from-design">
-        <compile files="MultiInheritCF2.java">
-            <ajcmessage kind="error" line="21"/>
-            <ajcmessage kind="error" line="41"/>
-            <ajcmessage kind="error" line="42"/>
-            <ajcmessage kind="error" line="43"/>
-            <ajcmessage kind="error" line="45"/>
-            <ajcmessage kind="error" line="46"/>
-            <message kind="error" line="43"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods 3"
-      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
-      keywords="from-design">
-        <compile files="MultiInheritCF3.java">
-            <ajcmessage kind="error" line="21"/>
-            <ajcmessage kind="error" line="41"/>
-            <ajcmessage kind="error" line="42"/>
-            <ajcmessage kind="error" line="43"/>
-            <ajcmessage kind="error" line="45"/>
-            <ajcmessage kind="error" line="46"/>
-            <message kind="error" line="41"/>
         </compile>
     </ajc-test>
 <ajc-test dir="abctests/design/intro" pr="570"
@@ -333,24 +314,6 @@
             <message kind="error" line="8"/>
             <message kind="error" line="23"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro"
-     abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF1.java">
-            <ajcmessage kind="error" line="8"/>
-            <ajcmessage kind="error" line="23"/>
-            <message kind="error" line="23"/> 
-       </compile>
-    </ajc-test>
-<ajc-test dir="abctests/design/intro"
-     abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF2.java">
-            <ajcmessage kind="error" line="8"/>
-            <ajcmessage kind="error" line="23"/>
-            <message kind="error" line="8"/> 
-       </compile>
     </ajc-test>
 <ajc-test dir="new" pr="544"
       title="advice formals produce errors just like method formals"
@@ -1061,6 +1024,12 @@
    	 title="Introduced abstract method on interface not implemented by subtype (injars)">
        <compile files="interface/C.java,interface/jars/AandB.jar"> 
             <message kind="error" line="1"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="bugs/abstractMethods" pr="49784"
+   	 title="Introduced abstract method on abstract class not implemented by subtype (single source file)">
+        <compile files="singlesource/C.java">
+        	<message kind="error" line="9"/>
         </compile>
     </ajc-test>
 <ajc-test dir="bugs/interAbstract" 
