@@ -56,6 +56,7 @@ public class Usage {
     "Input Options [ajc]: \n" +
     "-------------------- \n" +
     "  -injars  <jarList>           Use classes in <jarList> as source.\n" +
+    "  -inpath  <list>              Use classes in dirs in <list> as source.\n" +
     "  -classpath -cp               Class path of zip/jar and directories."
     );
   }
