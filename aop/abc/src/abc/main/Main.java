@@ -618,7 +618,7 @@ public class Main {
             System.err.println("the heap available to abc by invoking it as");
             System.err.println("\tjava -Xmx512M abc.main.Main [...]");
             System.err.println("You can also further increase the size of the heap (in the example, ");
-            System.err.println("512 MB were speecified). If this doesn't resolve your problem, please");
+            System.err.println("512MB was specified). If this doesn't resolve your problem, please");
             System.err.println("contact the abc team at http://abc.comlab.ox.ac.uk with the relevant ");
             System.err.println("details.");
             throw e;
