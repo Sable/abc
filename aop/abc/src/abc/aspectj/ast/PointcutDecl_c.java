@@ -221,7 +221,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, Contai
 	    new abc.weaving.aspectinfo.PointcutDecl
 	    (name,
 	     AspectInfoHarvester.convertFormals(formals()),
-	     pc == null ? null : pc.makeAIPointcut(),
+	     flags().isAbstract() ? null : pc.makeAIPointcut(),
 	     current_aspect,
 	     position());
 	// Use the method instance as key
