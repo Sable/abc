@@ -717,8 +717,11 @@ public class IntertypeAdjuster {
     
        
     private List getInterfaceInits(SootClass c) {
-		SootClass d = c.getSuperclass();
 		List initJoinPoints = new LinkedList();
+		SootClass object = Scene.v().getSootClass("java.lang.Object");
+		if (object.equals(c))
+			return initJoinPoints;
+		SootClass d = c.getSuperclass();
 		for (Iterator itfs = c.getInterfaces().iterator(); itfs.hasNext(); ) {
 			SootClass i = (SootClass) itfs.next();
 			process(d,i,initJoinPoints);
@@ -1072,6 +1075,9 @@ public class IntertypeAdjuster {
 	}
 	
     private void weaveInitNopWithTag(Tag tag,SootClass cl) {
+	SootClass object = Scene.v().getSootClass("java.lang.Object");
+	if (object.equals(cl))
+			return; // Object doesn't have an init to weave into
 	for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
 	    SootMethod clsm = (SootMethod) ms.next();
 	    if (clsm.getName().equals(SootMethod.constructorName)) {
