@@ -1456,10 +1456,13 @@
       title="type and package name conflicts caught as errors (1)"
       abccomment="this is missing in jlc, but it seems less important
                   than other problems, so won't report it to Nate 
-                   just yet.  July 2/04 LJH"
+                   just yet.  July 2/04 LJH.
+                  Has been fixed in polyglot, but gives a different line
+                  number,  should be ok.  August 26/04 LJH"
       keywords="from-java,purejava">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
-            <message kind="error" line="3"/>
+            <ajcmessage kind="error" line="3"/>
+            <message kind="error" line="14"/>
         </compile>
     </ajc-test>
 
@@ -5582,12 +5585,15 @@
     <ajc-test num="634" dir="new" pr="701"
       title="CE for ambiguous type reference (two files in package)"
       abccomment="jlc doesn't find error when two classes in same package
-                  have same name.  Reported to Nate July 6/04. LJH"
+                  have same name.  Reported to Nate July 6/04. LJH
+                  Has been fixed in polyglot, but gives error on a different
+                  line."
       keywords="from-resolved_105,purejava">
      <abckeywords> <nate/> <laurie/> </abckeywords>
         <compile
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
-            <message kind="error" line="5"/>
+            <ajcmessage kind="error" line="5"/>
+            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
