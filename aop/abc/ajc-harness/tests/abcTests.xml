@@ -1318,7 +1318,7 @@
     <ajc-test dir="new" title="Error expected for constructor in interfaces"
       abccomment="ajc only finds errors on lines 2 and 8. 
                   another example of jlc crashing after error detection.
-                  July 2/04 LJH" 
+                  July 2/04 LJH. abc now finds all three errors. ODM 26/07/04" 
       keywords="from-java,purejava">
 
         <compile files="InterfaceConstructor.java">
@@ -1326,6 +1326,7 @@
             <ajcmessage kind="error" line="6"/>
             <ajcmessage kind="error" line="8"/>
             <message kind="error" line="2"/>
+            <message kind="error" line="6"/>
             <message kind="error" line="8"/>
         </compile>
     </ajc-test>
@@ -1372,10 +1373,33 @@
 
     <ajc-test dir="pureJava" title="Type names are not expressions on their own"
       abccomment="jlc misses all errors after the first two.  Example sent to
-                  Nate on July 2/04.  LJH"
+                  Nate on July 2/04.  LJH. Now find one more than ajc on line
+                  35. javac agrees it's an error, but ajc does not.
+                  ODM 26/07/04"
       keywords="from-java,purejava">
       <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="TypeExprErrors.java">
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="17"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="22"/>
+            <ajcmessage kind="error" line="23"/>
+            <ajcmessage kind="error" line="24"/>
+            <ajcmessage kind="error" line="25"/>
+            <ajcmessage kind="error" line="26"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="28"/>
+            <ajcmessage kind="error" line="29"/>
+            <ajcmessage kind="error" line="30"/>
+            <ajcmessage kind="error" line="31"/>
+            <ajcmessage kind="error" line="32"/>
+            <ajcmessage kind="error" line="33"/>
+            <ajcmessage kind="error" line="34"/>
+            <ajcmessage kind="error" line="36"/>
+            <ajcmessage kind="error" line="37"/>
             <message kind="error" line="10"/>
             <message kind="error" line="17"/>
             <message kind="error" line="18"/>
@@ -1395,6 +1419,7 @@
             <message kind="error" line="32"/>
             <message kind="error" line="33"/>
             <message kind="error" line="34"/>
+            <message kind="error" line="35"/>
             <message kind="error" line="36"/>
             <message kind="error" line="37"/>
         </compile>
@@ -1535,7 +1560,8 @@
       abccomment="ajc and javac already report different subset of possible
                     errors,  abc correctly reports first one and then
                     doesn't check rest of switch.  I think it's ok.
-                    July 5/04 LJH"
+                    July 5/04 LJH. abc and ajc 1.2 now agree.
+                    ODM 26/07/04."
       keywords="from-java,purejava,messages-vary">
         <compile files="NonConstants.java" 
                options="!eclipse">
@@ -1545,6 +1571,7 @@
             <ajcmessage kind="error" line="16"/>
             <ajcmessage kind="error" line="17"/>
             <message kind="error" line="13"/>
+            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1633,13 +1660,16 @@
 
     <ajc-test dir="new/subaspects" pr="647"
       title="concrete aspect unable to access abstract package-private method in parent for overriding"
-      abccomment = "error not detected by jlc, reported to Nate July 3/04 LJH"
+      abccomment = "error not detected by jlc, reported to Nate July 3/04 LJH
+                    now detected, and ajc 1.2 no longer gives the warning.
+                    ODM 26/09/04"
       keywords="from-java,purejava,messages-vary"
       comment="XXX fix source - package-private">
       <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="parent/ParentMethodCE.java,child/ChildMethodCE.java"
                options="!eclipse">
-            <message kind="warning" line="28"/>
+            <ajcmessage kind="warning" line="28"/>
+            <ajcmessage kind="error" line="27"/>
             <message kind="error" line="27"/>
         </compile>
     </ajc-test>
@@ -2018,11 +2048,14 @@
     <ajc-test dir="new"
       title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]"
       abccomment="Polyglot fails to check special modifier restrictions for interfaces.
-                  ODM 5/7/04"
+                  ODM 5/7/04. This has been fixed and abc now finds an error
+                  that escapes ajc. ODM 26/07/04"
       keywords="from-errors">
         <compile files="StrictFpCErr1.java">
-            <message kind="error" line="3"/>
-        </compile>
+            <ajcmessage kind="error" line="3"/>
+            <message kind="error" line="1"/>
+            <message kind="error" line="3"/> 
+       </compile>
     </ajc-test>
 
     <ajc-test dir="new"
