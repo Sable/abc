@@ -13,4 +13,8 @@ public class WithinConstructor extends AbstractConditionPointcutHandler {
     public ConstructorPattern getPattern() {
 	return pattern;
     }
+
+    public boolean matchesAt(SootClass cls,SootMethod method) {
+	return pattern.matchesConstructor(method);
+    }
 }
