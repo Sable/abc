@@ -27,7 +27,7 @@ public class ConstructorCall extends ShadowPointcut {
 	if(!(sm instanceof ConstructorCallShadowMatch)) return null;
 	ConstructorCallShadowMatch csm=(ConstructorCallShadowMatch) sm;
 
-	if(!getPattern().matchesConstructorRef(csm.getMethodRef())) return null;
+	if(!getPattern().matchesConstructor(csm.getMethodRef().resolve())) return null;
 	return AlwaysMatch.v;
     }
 

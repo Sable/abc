@@ -28,7 +28,7 @@ public class WithinMethod extends LexicalPointcut {
 	// FIXME: Remove this once pattern is built properly
 	if(getPattern()==null) return AlwaysMatch.v;
 
-	if(!getPattern().matchesMethodRef(method.makeRef())) return null;
+	if(!getPattern().matchesExecution(method)) return null;
 	return AlwaysMatch.v;
     }
 

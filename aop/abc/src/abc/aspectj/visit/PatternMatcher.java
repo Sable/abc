@@ -137,22 +137,91 @@ public class PatternMatcher {
 	return pattern.matches(this, cl_node);
     }
 
-    public boolean matchesClassWithMethod(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType, List /*<ModifierPattern>*/ modps, List/*<ThrowsPattern>*/ tpats) {
+    private boolean containsMethod(SootClass sc, String name, List parameterTypes, Type returnType, boolean isStatic) {
+	// FIXME: This is rather inefficient!
+	try {
+	    if (sc.declaresMethod(name, parameterTypes, returnType)) {
+		return true;
+	    }
+	    Scene.v().makeMethodRef(sc, name, parameterTypes, returnType, isStatic).resolve();
+	    return true;
+	} catch (Exception e) {
+	    return false;
+	}
+    }
+
+    private boolean containsField(SootClass sc, String name, Type type, boolean isStatic) {
+	// FIXME: This is rather inefficient!
+	try {
+	    if (sc.declaresField(name, type)) {
+		return true;
+	    }
+	    Scene.v().makeFieldRef(sc, name, type, isStatic).resolve();
+	    return true;
+	} catch (Exception e) {
+	    return false;
+	}
+    }
+
+    public boolean matchesClassWithMethodMatching(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType, boolean isStatic) {
 	Set seen = new HashSet();
 	LinkedList worklist = new LinkedList();
 	worklist.add(base_sc);
 	while (!worklist.isEmpty()) {
 	    SootClass sc = (SootClass)worklist.removeFirst();
 	    if (!seen.contains(sc)) {
-		//System.err.println(sc+": "+matchesClass(pattern, sc)+" ");
-		//Iterator mi = sc.getMethods().iterator();
-		//while (mi.hasNext()) {
-		//    SootMethod m = (SootMethod)mi.next();
-		//    System.err.println(m);
-		//}
-		if (sc.declaresMethod(name, parameterTypes, returnType) && matchesClass(pattern, sc)) {
-		    SootMethod sm = sc.getMethod(name, parameterTypes, returnType);
-		    if (matchesModifiers(modps, sm.getModifiers()) && matchesThrows(tpats, sm.getExceptions())) {
+		if (matchesClass(pattern, sc) && containsMethod(sc, name, parameterTypes, returnType, isStatic)) {
+		    return true;
+		}
+		seen.add(sc);
+		if (sc.hasSuperclass()) {
+		    worklist.add(sc.getSuperclass());
+		}
+		Iterator ini = sc.getInterfaces().iterator();
+		while (ini.hasNext()) {
+		    SootClass in = (SootClass)ini.next();
+		    worklist.add(in);
+		}
+	    }
+	}
+	return false;
+    }
+
+    public boolean matchesClassSubclassOf(ClassnamePatternExpr pattern, SootClass base_sc, SootClass super_sc) {
+	FastHierarchy h = Scene.v().getFastHierarchy();
+	Set seen = new HashSet();
+	LinkedList worklist = new LinkedList();
+	worklist.add(base_sc);
+	while (!worklist.isEmpty()) {
+	    SootClass sc = (SootClass)worklist.removeFirst();
+	    if (!seen.contains(sc)) {
+		if (h.canStoreType(sc.getType(), super_sc.getType()) && matchesClass(pattern, sc)) {
+		    return true;
+		}
+		seen.add(sc);
+		if (sc.hasSuperclass()) {
+		    worklist.add(sc.getSuperclass());
+		}
+		Iterator ini = sc.getInterfaces().iterator();
+		while (ini.hasNext()) {
+		    SootClass in = (SootClass)ini.next();
+		    worklist.add(in);
+		}
+	    }
+	}
+	return false;
+    }
+    /*
+    public boolean matchesClassWithFieldResolvingTo(ClassnamePatternExpr pattern, SootClass base_sc, SootField field) {
+	Set seen = new HashSet();
+	LinkedList worklist = new LinkedList();
+	worklist.add(base_sc);
+	while (!worklist.isEmpty()) {
+	    SootClass sc = (SootClass)worklist.removeFirst();
+	    if (!seen.contains(sc)) {
+		if (matchesClass(pattern, sc) && containsField(sc, field.getName(), field.getType(), field.isStatic())) {
+		    SootFieldRef sfr = Scene.v().makeFieldRef(sc, field.getName(), field.getType(), field.isStatic());
+		    if (sfr.resolve().equals(field)) {
 			return true;
 		    }
 		}
@@ -169,40 +238,7 @@ public class PatternMatcher {
 	}
 	return false;
     }
-
-    public boolean matchesClassWithField(ClassnamePatternExpr pattern, SootClass base_sc, String name, Type type, List /*<ModifierPattern>*/ modps) {
-	Set seen = new HashSet();
-	LinkedList worklist = new LinkedList();
-	worklist.add(base_sc);
-	while (!worklist.isEmpty()) {
-	    SootClass sc = (SootClass)worklist.removeFirst();
-	    if (!seen.contains(sc)) {
-		//System.err.println(sc+": "+matchesClass(pattern, sc)+" ");
-		//Iterator mi = sc.getMethods().iterator();
-		//while (mi.hasNext()) {
-		//    SootMethod m = (SootMethod)mi.next();
-		//    System.err.println(m);
-		//}
-		if (sc.declaresField(name, type) && matchesClass(pattern, sc)) {
-		    SootField sf = sc.getField(name, type);
-		    if (matchesModifiers(modps, sf.getModifiers())) {
-			return true;
-		    }
-		}
-		seen.add(sc);
-		if (sc.hasSuperclass()) {
-		    worklist.add(sc.getSuperclass());
-		}
-		Iterator ini = sc.getInterfaces().iterator();
-		while (ini.hasNext()) {
-		    SootClass in = (SootClass)ini.next();
-		    worklist.add(in);
-		}
-	    }
-	}
-	return false;
-    }
-
+    */
     public boolean matchesType(TypePatternExpr pattern, String type) {
 	// System.out.println("Matching type pattern "+pattern+" on "+pattern.position()+" to "+type+"...");
 	int dim = 0;
@@ -241,12 +277,7 @@ public class PatternMatcher {
 	return true;
     }
 
-    public boolean matchesFormals(List/*<FormalPattern>*/ fpats, SootMethodRef methodref) {
-	LinkedList/*<soot.Type>*/ ftypes = new LinkedList(methodref.parameterTypes());
-	int skip_first = MethodCategory.getSkipFirst(methodref);
-	int skip_last = MethodCategory.getSkipLast(methodref);
-	while (skip_first-- > 0) ftypes.removeFirst();
-	while (skip_last-- > 0) ftypes.removeLast();
+    public boolean matchesFormals(List/*<FormalPattern>*/ fpats, List/*<soot.Type>*/ ftypes) {
 	return matchesFormals(fpats, 0, ftypes, 0);
     }
 
@@ -369,32 +400,66 @@ public class PatternMatcher {
 	    return pattern;
 	}
 
-	public boolean matchesMethodRef(SootMethodRef methodref) {
-	    int mods = MethodCategory.getModifiers(methodref);
-	    String name = MethodCategory.getName(methodref);
-	    SootClass realcl = MethodCategory.getClass(methodref);
-	    LinkedList/*<soot.Type>*/ ftypes = new LinkedList(methodref.parameterTypes());
-	    int skip_first = MethodCategory.getSkipFirst(methodref);
-	    int skip_last = MethodCategory.getSkipLast(methodref);
+	public boolean matchesExecution(SootMethod method) {
+	    int mods = MethodCategory.getModifiers(method);
+	    String name = MethodCategory.getName(method);
+	    SootClass realcl = MethodCategory.getClass(method);
+	    LinkedList/*<soot.Type>*/ ftypes = new LinkedList(method.getParameterTypes());
+	    int skip_first = MethodCategory.getSkipFirst(method);
+	    int skip_last = MethodCategory.getSkipLast(method);
 	    //System.out.println("Real name: "+name+" "+skip_first+" "+skip_last);
 	    while (skip_first-- > 0) ftypes.removeFirst();
 	    while (skip_last-- > 0) ftypes.removeLast();
 	    boolean matches =
-		matchesType(pattern.getType(), methodref.returnType().toString()) &&
+		matchesType(pattern.getType(), method.getReturnType().toString()) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
-		matchesFormals(pattern.getFormals(), methodref) &&
-		((matchesClass(pattern.getName().base(), realcl) &&
-		  matchesModifiers(pattern.getModifiers(), mods) &&
-		  matchesThrows(pattern.getThrowspats(), methodref.resolve().getExceptions()))
-		 ||
-		 (!Modifier.isStatic(mods) &&
-		  matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, methodref.returnType(),
-					 pattern.getModifiers(), pattern.getThrowspats())));
+		matchesFormals(pattern.getFormals(), ftypes) &&
+		matchesModifiers(pattern.getModifiers(), mods) &&
+		matchesThrows(pattern.getThrowspats(), method.getExceptions());
+
+	    if (Modifier.isStatic(mods)) {
+		matches = matches && matchesClass(pattern.getName().base(), realcl);
+	    } else {
+		matches = matches && (matchesClass(pattern.getName().base(), realcl) ||
+				      matchesClassWithMethodMatching(pattern.getName().base(),
+								     realcl,
+								     name,
+								     ftypes,
+								     method.getReturnType(),
+								     false));
+	    }
 	    if (abc.main.Debug.v().patternMatches) {
-		System.err.println("Matching method pattern "+pattern+" against ("+mods+" "+realcl+"."+name+") "+methodref+": "+matches);
+		System.err.println("Matching method execution pattern "+pattern+" against ("+mods+" "+realcl+"."+name+") "+method+": "+matches);
 	    }
 	    return matches;
 	}
+
+	public boolean matchesCall(SootMethodRef methodref) {
+	    SootMethod method = methodref.resolve();
+	    boolean matches =
+		matchesType(pattern.getType(), method.getReturnType().toString()) &&
+		pattern.getName().name().getPattern().matcher(method.getName()).matches() &&
+		matchesFormals(pattern.getFormals(), method.getParameterTypes()) &&
+		matchesModifiers(pattern.getModifiers(), method.getModifiers()) &&
+		matchesThrows(pattern.getThrowspats(), method.getExceptions());
+	    if (Modifier.isStatic(method.getModifiers())) {
+		matches = matches && matchesClassSubclassOf(pattern.getName().base(),
+							    methodref.declaringClass(),
+							    method.getDeclaringClass());
+	    } else {
+		matches = matches && matchesClassWithMethodMatching(pattern.getName().base(),
+								    methodref.declaringClass(),
+								    method.getName(),
+								    method.getParameterTypes(),
+								    method.getReturnType(),
+								    false);
+	    }
+	    if (abc.main.Debug.v().patternMatches) {
+		System.err.println("Matching method call pattern "+pattern+" against "+methodref+": "+matches);
+	    }
+	    return matches;
+	}
+
 	public String toString() {
 	    return pattern.toString();
 	}
@@ -407,7 +472,6 @@ public class PatternMatcher {
     public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern(FieldPattern pattern) {
 	return new AIFieldPattern(pattern);
     }
-
 
     private class AIFieldPattern implements abc.weaving.aspectinfo.FieldPattern {
 	FieldPattern pattern;
@@ -424,15 +488,14 @@ public class PatternMatcher {
 	    int mods = MethodCategory.getModifiers(sfr);
 	    String name = MethodCategory.getName(sfr);
 	    SootClass realcl = MethodCategory.getClass(sfr);
+	    SootFieldRef realfr = Scene.v().makeFieldRef(realcl, name, sfr.type(), Modifier.isStatic(mods));
 	    boolean matches =
 		matchesType(pattern.getType(), sfr.type().toString()) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
-		((matchesClass(pattern.getName().base(), realcl) &&
-		  matchesModifiers(pattern.getModifiers(), mods))
-		 ||
-		 (!Modifier.isStatic(mods) &&
-		  matchesClassWithField(pattern.getName().base(), realcl, name, sfr.type(),
-					pattern.getModifiers())));
+		matchesModifiers(pattern.getModifiers(), mods) &&
+		(matchesClass(pattern.getName().base(), realcl) ||
+		 (containsField(realcl, name, sfr.type(), Modifier.isStatic(mods)) &&
+		  matchesClassSubclassOf(pattern.getName().base(), realcl, realfr.resolve().getDeclaringClass())));
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching field pattern "+pattern+" against "+sfr+": "+matches);
 	    }
@@ -476,14 +539,22 @@ public class PatternMatcher {
 	    return pattern;
 	}
 
-	public boolean matchesConstructorRef(SootMethodRef methodref) {
+	public boolean matchesConstructor(SootMethod method) {
+	    int mods = MethodCategory.getModifiers(method);
+	    SootClass realcl = MethodCategory.getClass(method);
+	    LinkedList/*<soot.Type>*/ ftypes = new LinkedList(method.getParameterTypes());
+	    int skip_first = MethodCategory.getSkipFirst(method);
+	    int skip_last = MethodCategory.getSkipLast(method);
+	    //System.out.println("Real name: "+name+" "+skip_first+" "+skip_last);
+	    while (skip_first-- > 0) ftypes.removeFirst();
+	    while (skip_last-- > 0) ftypes.removeLast();
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), methodref.resolve().getModifiers()) &&
-		matchesClass(pattern.getName().base(), methodref.declaringClass()) &&
-		matchesFormals(pattern.getFormals(), methodref) &&
-		matchesThrows(pattern.getThrowspats(), methodref.resolve().getExceptions());
+		matchesModifiers(pattern.getModifiers(), mods) &&
+		matchesClass(pattern.getName().base(), realcl) &&
+		matchesFormals(pattern.getFormals(), ftypes) &&
+		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	    if (abc.main.Debug.v().patternMatches) {
-		System.err.println("Matching constructor pattern "+pattern+" against "+methodref+": "+matches);
+		System.err.println("Matching constructor pattern "+pattern+" against "+method+": "+matches);
 	    }
 	    return matches;
 	}

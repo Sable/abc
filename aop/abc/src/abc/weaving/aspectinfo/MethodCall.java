@@ -30,7 +30,7 @@ public class MethodCall extends ShadowPointcut {
 	if(!(sm instanceof MethodCallShadowMatch)) return null;
 	MethodCallShadowMatch msm=(MethodCallShadowMatch) sm;
 
-	if(!getPattern().matchesMethodRef(msm.getMethodRef())) return null;
+	if(!getPattern().matchesCall(msm.getMethodRef())) return null;
 
 	return AlwaysMatch.v;
     }

@@ -29,7 +29,7 @@ public class WithinConstructor extends LexicalPointcut {
 	// FIXME: Remove this once pattern is built properly
 	if(getPattern()==null) return AlwaysMatch.v;
 
-	if(!getPattern().matchesConstructorRef(method.makeRef())) return null;
+	if(!getPattern().matchesConstructor(method)) return null;
 	return AlwaysMatch.v;
     }
 
