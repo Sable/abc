@@ -382,7 +382,7 @@
 
     <ajc-test dir="base/test140"
       title="aspect inheritance and advice, introduction" 
-      abc-comment="Fails due to use of advice in abstract aspect. ODM 04/07/04"
+      abccomment="Fails due to use of advice in abstract aspect. ODM 04/07/04"
       keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
@@ -881,10 +881,8 @@
       keywords="from-java,purejava">
         <compile files="KeywordPointcut.java">
           <message kind="error" line="7" />
-          <message kind="error" line="10"/> 
-          <message kind="error" line="13"/> 
-          <message kind="error" line="14"/> 
-          <message kind="error" line="18"/> 
+          <message kind="error" line="8"/> 
+          <message kind="error" line="9"/> 
            <ajcmessage kind="ignore" />
         </compile>
         <ajcrun class="KeywordPointcut"/>
@@ -1220,7 +1218,7 @@
 
     <ajc-test dir="pureJava" title="test try/catch/finally statements"
       abccomment="j2j crashes with a stack overflow error.  Reported
-            to Jennifer, July 2/04 LJH"
+            to Jennifer, July 2/04 LJH  FIXED July 3/04 LJH"
       keywords="from-java">
         <compile files="TryCatchFinally.java"/>
         <run class="TryCatchFinally"/>
@@ -1243,7 +1241,9 @@
 
     <ajc-test dir="new" title="Error expected for field of type void"
       abccomment="causes jlc to crash when it finds the 3rd error.
-                   Reported to Nate July 2/04 LJH"
+                   Reported to Nate July 2/04 LJH
+                   Fixed in jlc, but still a problem in abc, must
+                   investigate July 4/04 LJH"
       keywords="from-java,purejava">
         <compile files="VoidField.java">
             <message kind="error" line="2"/>
@@ -1443,7 +1443,8 @@
     <ajc-test dir="new/introTypeMissing"
       title="enclosing class may be used as this qualifier in inner class"
       abccomment="j2j can't handle this, example sent to Jennifer, 
-                   July 2/04.  LJH"
+                   July 2/04.  LJH
+                  FIXED July 4/04 LJH"
       keywords="from-java">
         <compile files="TargetClassCP.java,Util.java"/>
         <run class="TargetClassCP"/>
@@ -1944,17 +1945,24 @@
 
     <ajc-test dir="errors"
       title="Accessing instance fields and instance methods statically."
+      abccomment="all errors,  but it is completely reasonable to report
+                  only the non-statement error on line 30.  This is what
+                  javac does on the Java part of the benchmark.  Note
+                  that this is NOT a purejava benchmark, but has an
+                  aspect in it, dispite what the keyword says.
+                  July 4/04 LJH"
       keywords="from-errors,purejava">
         <compile files="AccessingInstanceFieldsStatically.java">
-            <message kind="error" line="15"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="26"/>
-            <message kind="error" line="27"/>
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="26"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+            <ajcmessage kind="error" line="38"/>
+            <ajcmessage kind="error" line="39"/>
             <message kind="error" line="30"/>
-            <message kind="error" line="38"/>
-            <message kind="error" line="39"/>
         </compile>
     </ajc-test>
 
@@ -2030,15 +2038,18 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
+      abccomment="javac report on line 9, as done ajc and abc.  July 4/04 LJH"
       keywords="from-errors,purejava,messages-vary">
         <compile files="BadCast.java"
                options="!eclipse">
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="10"/>
             <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when the closing brace is reversed"
+      abccomment="messes up compiler, may hang, must solve July 4/04 LJH"
       keywords="from-errors,purejava,messages-vary">
         <compile files="ClosingBrace.java"
                options="!eclipse">
@@ -2077,10 +2088,17 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when two dots appear instead of one"
+      keywords="from-errors,purejava">
+        <compile files="TwoDots.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="errors" title="Crashes when there're stray dots"
       abccomment="javac,ajc and abc all give errors on all the lines.
                   July 3/04 LJH"
       keywords="from-errors,purejava">
-        <compile files="TwoDots.java">
+        <compile files="StrayDot.java">
             <ajcmessage kind="error" line="9"/>
             <message kind="error" line="9"/>
             <message kind="error" line="10"/>
@@ -2091,18 +2109,17 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="errors" title="Crashes when there're stray dots"
-      keywords="from-errors,purejava">
-        <compile files="StrayDot.java">
-            <message kind="error" line="9"/>
-        </compile>
-    </ajc-test>
-
     <ajc-test dir="errors" title="Stray characters cause a crash"
+      abccomment="syntax errors from abc perfectly reasonable
+                   July 4/04 LJH"
       comment="XXX public class in wrong file"
       keywords="from-errors,purejava">
         <compile files="StraySlash.java">
-            <message kind="error" line="9"/>
+            <ajcmessage kind="error" line="9"/>
+            <message kind="error" line="9" />
+            <message kind="error" line="10" />
+            <message kind="error" line="15" />
+            <message kind="error" line="16" />
         </compile>
     </ajc-test>
 
