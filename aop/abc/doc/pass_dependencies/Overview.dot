@@ -1,0 +1,126 @@
+digraph Overview {
+    //size="8,10";
+    ratio=compress;
+
+    node [fontsize="20", fontname="Arial"];
+
+subgraph clusterFrontend {
+label="Frontend";
+fontsize="30";
+
+    subgraph clusterInput {
+        style=invis;
+	"Input Source Files";
+	"Input Class Files";
+	"Library Class Files";
+    }
+
+    "Input Source Files" ->
+    "Scan & Parse" ->
+    "AspectJ AST" ->
+    "Semantic Checks" ->
+    "Checked AspectJ AST" ->
+    "Separator" ->
+    "Java AST";
+
+    "Separator" ->
+    "Aspect Info";
+
+    "Scan & Parse" [shape=box];
+    "Semantic Checks" [shape=box];
+    "Separator" [shape=box];
+
+    "Input Class Files" ->
+    "Semantic Checks";
+
+    "Library Class Files" ->
+    "Semantic Checks";
+}
+
+subgraph clusterBackend {
+label="Weaver";
+fontsize="30";
+
+    subgraph clusterRes {
+        style=invis;
+	"AST Resolving";
+	"Class File Resolving";
+    }
+
+    subgraph clusterInput2 {
+        style=invis;
+	"Aspect Info 2" [label="Aspect Info"];
+	"Java AST 2" [label="Java AST"];
+    }
+
+    "Class File Resolving" [shape=box];
+    "AST Resolving" [shape=box];
+    "Class File Jimplification" [shape=box];
+    "AST Jimplification" [shape=box];
+    "Static Weaving" [shape=box];
+    "Static Weaving Fixup" [shape=box];
+    "Advice Weaving" [shape=box];
+
+    "Input Class Files" ->
+    "Class File Resolving" ->
+    "Class Skeletons";
+
+    "Library Class Files" ->
+    "Class File Resolving";
+
+    "Java AST 2" ->
+    "AST Resolving" ->
+    "Class Skeletons";
+
+    "Aspect Info 2" ->
+    "Static Weaving";
+
+    "Class Skeletons" ->
+    "Static Weaving" ->
+    "Woven Class Skeletons" ->
+    "AST Jimplification" ->
+    "Jimple";
+
+    "Woven Class Skeletons" ->
+    "Class File Jimplification" ->
+    "Jimple" ->
+    "Static Weaving Fixup" ->
+    "Statically Woven Jimple" ->
+    "Advice Weaving";
+
+    "Advice Weaving" ->
+    "Woven Jimple";
+
+    "Input Class Files" ->
+    "Class File Jimplification";
+    
+    "Java AST 2" ->
+    "AST Jimplification";
+    
+    "Aspect Info 2" ->
+    "Static Weaving Fixup";
+
+    "Aspect Info 2" ->
+    "Advice Weaving";
+}
+
+subgraph clusterEmit {
+label="Output";
+fontsize="30";
+
+    subgraph clusterWJ {
+        style=invis;
+	"Woven Jimple 2" [label="Woven Jimple"];
+    }
+    "Optimization" [shape=box];
+    "Output" [shape=box];
+
+    "Woven Jimple 2" ->
+    "Optimization" ->
+    "Optimized Jimple" ->
+    "Output" ->
+    "Output Class Files";
+
+}
+
+}

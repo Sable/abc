@@ -90,7 +90,7 @@ public class AbcFactory {
 		ct_to_name.put(ct, sc.getName());
 		return ct;
 	    } catch (SemanticException e) {
-		throw new NoSuchElementException("No such class: "+sc);
+		throw (NoSuchElementException)new NoSuchElementException("No such class: "+sc).initCause(e);
 	    }
 	}
     }

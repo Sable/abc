@@ -175,7 +175,10 @@ public class PCStructure {
 	Iterator sci = Scene.v().getClasses(SootClass.HIERARCHY).iterator();
 	while (sci.hasNext()) {
 	    SootClass sc = (SootClass)sci.next();
-	    insertClassAndSuperclasses(sc, false);
+            if(!sc.hasTag("SyntheticTag")) {
+                // Synthetic classes should be ignored
+                insertClassAndSuperclasses(sc, false);
+            }
 	}
     }
 

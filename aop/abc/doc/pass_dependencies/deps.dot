@@ -20,29 +20,38 @@ digraph G {
         CLEAN_SIGS;
         DECLARE_PARENTS;
         DISAM;
-        INIT_CHECK;
-        FWD_REF_CHECK;
-        CHECK_DEPENDS;
-        CONSTRUCTOR_CHECK;
         COMPUTE_PRECEDENCE_RELATION;
         EVALUATE_PATTERNS_AGAIN;
         EVALUATE_PATTERNS;
-        INIT_CHECK;
         PARSE;
+        INTERFACE_ITDS;
+        COLLECT_ASPECT_NAMES;
+        CLEAN_DECLARE;
+        INIT_CLASSES;
+        CLEAN_SUPER;
+        CLEAN_INNER;
+        TYPE_CHECK;
+    };
+
+    subgraph clusterFoo {
+        //SAVE_AST;
+        FOLD;
+        CAST_INSERTION;
+        STRICTFP_PROP;
+        Bar [shape=point];
+    };
+
+    subgraph clusterPolyglot2 {
+        FWD_REF_CHECK;
+        INIT_CHECK;
+        CHECK_DEPENDS;
+        CONSTRUCTOR_CHECK;
         REACH_CHECK;
         EXIT_CHECK;
         CHECK_PACKAGE_NAMES;
-        PRE_OUTPUT_ALL;
-        JAR_CHECK;
-        INTERFACE_ITDS;
         SOURCE_CLASSES;
-        COLLECT_ASPECT_NAMES;
-        CLEAN_DECLARE;
-        TYPE_CHECK;
-        INIT_CLASSES;
-        CLEAN_SUPER;
-        CLEAN_SIGS_FIRST;
-
+        JAR_CHECK;
+        PRE_OUTPUT_ALL;
     };
 
     subgraph clusterAspectInfo {
@@ -53,36 +62,49 @@ digraph G {
         ASPECT_METHODS;
         MANGLE_NAMES;
         MANGLE_NAME_COMPONENTS;
+        Separate [shape=point];
     };
 
-    ComputeAdviceLists;
+    PolyglotDone [shape=point];
 
+    Separate -> PolyglotDone;
+    PRE_OUTPUT_ALL -> PolyglotDone;
+    Bar -> PolyglotDone;
 
-    subgraph clusterFoo {
-        SAVE_AST;
-        FOLD;
-        CAST_INSERTION;
-        STRICTFP_PROP;
-        Bar [shape=point];
-    };
     subgraph clusterJimple2 {
         Jimplification;
-    };
-    subgraph clusterBackend {
-        COLLECT_JIMPLIFY_CLASSES;
+    //};
+
+    //subgraph clusterBackend {
         SootResolveWeavableClasses;
         DeclareParentsWeaver;
         ReResolving;
-        EvaluatePatternsAThirdTime;
         BuildAspectHierarchy;
         //EvaluatePatternsAThirdTime;
     //};
     //subgraph clusterJimple {
         //Jimplification;
-        IntertypeAdjusterInitialisers;
         IntertypeAdjusterAdjust;
+    //};
+
+    //subgraph clusterFixup {
+        IntertypeAdjusterInitialisers;
         GenerateAspectMethods;
     };
+
+    subgraph clusterMatcher {
+        ComputeAdviceLists;
+        EvaluatePatternsAThirdTime;
+    //};
+
+    //subgraph clusterAdviceWeave {
+        SetShadowPointsPass1;
+        GenStaticJoinPoints;
+        WeaveInAspectsPass1;
+        SetShadowPointsPass2;
+        WeaveInAspectsPass2;
+        WeaveInAroundAdviceExecutionsPass;
+    }
 
     subgraph clusterCleanup {
         RemoveFakeFields;
@@ -117,7 +139,7 @@ digraph G {
 
     STRICTFP_PROP -> Bar;
     CAST_INSERTION -> Bar;
-    SAVE_AST -> Bar;
+    //SAVE_AST -> Bar;
     Bar -> Jimplification;
 
 
@@ -127,7 +149,7 @@ digraph G {
 
     BuildAspectHierarchy -> ComputeAdviceLists;
 
-    SAVE_AST -> Jimplification;
+    //SAVE_AST -> Jimplification;
     
 
     REACH_CHECK -> PRE_OUTPUT_ALL;
@@ -137,8 +159,6 @@ digraph G {
     CONSTRUCTOR_CHECK -> PRE_OUTPUT_ALL;
     INIT_CHECK -> PRE_OUTPUT_ALL;
     EXIT_CHECK -> PRE_OUTPUT_ALL;
-
-    PRE_OUTPUT_ALL -> COLLECT_JIMPLIFY_CLASSES;
 
     //CAST_INSERTION -> ASPECT_METHODS;
 
@@ -159,10 +179,10 @@ digraph G {
     PARSE ->
     BUILD_TYPES ->
     CLEAN_SUPER ->
-    CLEAN_SIGS_FIRST -> DECLARE_PARENTS -> CLEAN_SIGS_FIRST;
-    CLEAN_SIGS_FIRST -> CLEAN_DECLARE [style=dashed];
-    CLEAN_SIGS_FIRST -> COLLECT_ASPECT_NAMES [style=dashed];
-    CLEAN_SIGS_FIRST -> BUILD_HIERARCHY [style=dashed];
+    CLEAN_INNER -> DECLARE_PARENTS;
+    CLEAN_INNER -> CLEAN_DECLARE [style=dashed];
+    CLEAN_INNER -> COLLECT_ASPECT_NAMES [style=dashed];
+    CLEAN_INNER -> BUILD_HIERARCHY [style=dashed];
     BUILD_HIERARCHY -> CHECK_PACKAGE_NAMES [style=bold];
     BUILD_HIERARCHY -> EVALUATE_PATTERNS [style=bold];
     EVALUATE_PATTERNS -> DECLARE_PARENTS [style=bold];
@@ -236,7 +256,7 @@ digraph G {
     // to be repeated, so it depends on everything before it
     CHECK_DEPENDS -> PRE_OUTPUT_ALL [style=bold];
     // SAVE_AST needs to be outside the range of passes that spawn new jobs
-    DISAM -> SAVE_AST [style=dashed];
+    //PARSE -> SAVE_AST [style=dashed];
 
     MANGLE_NAME_COMPONENTS [peripheries=2];
     MANGLE_NAMES [peripheries=2];
@@ -256,20 +276,16 @@ digraph G {
     ASPECT_METHODS -> CLEAN_MEMBERS [style=bold];
     HARVEST_ASPECT_INFO -> CLEAN_MEMBERS [style=dashed];
 
-    COLLECT_JIMPLIFY_CLASSES [peripheries=2];
-
-    // COLLECT_JIMPLIFY_CLASSES dependes on whatever is before it
-    CLEAN_MEMBERS -> COLLECT_JIMPLIFY_CLASSES [style=dashed];
+    CLEAN_MEMBERS -> Separate;
     CLEAN_SIGS;
 
     ADD_MEMBERS [peripheries=2];
     INTERFACE_ITDS;
-    SOURCE_CLASSES;
     ANON_ITDS [peripheries=2];
 
     DISAM [peripheries=2];
 
-    COLLECT_JIMPLIFY_CLASSES -> SootResolveWeavableClasses;
+    PolyglotDone -> SootResolveWeavableClasses;
     COLLECT_ASPECT_NAMES -> BuildAspectHierarchy;
     HARVEST_ASPECT_INFO -> BuildAspectHierarchy;
     SootResolveWeavableClasses -> BuildAspectHierarchy;
@@ -283,8 +299,8 @@ digraph G {
     ReResolving -> Jimplification;
     IntertypeAdjusterAdjust -> Jimplification;
     DeclareParentsWeaver -> Jimplification;
-    COLLECT_JIMPLIFY_CLASSES -> Jimplification;
-    CAST_INSERTION -> COLLECT_JIMPLIFY_CLASSES;
+    PolyglotDone -> Jimplification;
+    Separate -> PolyglotDone;
 
     ReResolving -> EvaluatePatternsAThirdTime;
 
@@ -299,14 +315,6 @@ digraph G {
     BuildAspectHierarchy -> GenerateAspectMethods;
     HARVEST_ASPECT_INFO -> GenerateAspectMethods;
     Jimplification -> GenerateAspectMethods;
-    subgraph clusterAdviceWeave {
-        SetShadowPointsPass1;
-        GenStaticJoinPoints;
-        WeaveInAspectsPass1;
-        SetShadowPointsPass2;
-        WeaveInAspectsPass2;
-        WeaveInAroundAdviceExecutionsPass;
-    }
 
     //ComputeAdviceLists -> GenerateAspectMethods;
 
@@ -314,12 +322,13 @@ digraph G {
     EvaluatePatternsAThirdTime -> ComputeAdviceLists;
 
 
-    ComputeAdviceLists -> SetShadowPointsPass1 [style=dashed];
-    ComputeAdviceLists -> GenStaticJoinPoints [style=dashed];
-    SetShadowPointsPass1 -> WeaveInAspectsPass1 [style=dashed];
-    GenStaticJoinPoints -> WeaveInAspectsPass1 [style=dashed];
-    WeaveInAspectsPass1 -> SetShadowPointsPass2 [style=dashed];
-    SetShadowPointsPass2 -> WeaveInAspectsPass2 [style=dashed];
+    GenerateAspectMethods -> WeaveInAspectsPass1;
+    ComputeAdviceLists -> SetShadowPointsPass1;
+    ComputeAdviceLists -> GenStaticJoinPoints;
+    SetShadowPointsPass1 -> WeaveInAspectsPass1;
+    GenStaticJoinPoints -> WeaveInAspectsPass1;
+    WeaveInAspectsPass1 -> SetShadowPointsPass2;
+    SetShadowPointsPass2 -> WeaveInAspectsPass2;
 
     WeaveInAspectsPass2 -> WeaveInAroundAdviceExecutionsPass [style=bold];
 
