@@ -5,6 +5,9 @@
     <target name="default"
             depends="abc-jar,runtime-jar,testing-jar" />
 
+<taskdef classpath="/home/ganesh/jcoverage-1.0.5/jcoverage.jar" resource="tasks.properties"/>
+
+
     <target name="settings">
         <property file="ant.settings"/>
         <fail
@@ -75,6 +78,21 @@
             <zipfileset src="${soot.loc}"/>
             <zipfileset src="${jasmin.loc}"/>
         </jar>
+   </target>
+    
+   <target name="instrumented-abc" depends="abc">
+      <instrument todir="instrumented-classes">
+          <ignore regex="abc.aspectj.parse.*"/>
+          <fileset dir="classes">
+             <include name="**/*.class"/>
+          </fileset>
+      </instrument>
+   </target>
+
+   <target name="instrumented-jar" depends="instrumented-abc">
+      <jar destfile="lib/abc-instrumented.jar">
+            <fileset dir="instrumented-classes"/>
+      </jar>
    </target>
 
     <target name="abc" depends="settings,flex-translator,cup-translator">

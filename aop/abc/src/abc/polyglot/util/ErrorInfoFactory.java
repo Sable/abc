@@ -17,10 +17,15 @@ public class ErrorInfoFactory {
 				 slpTag.startLn(),slpTag.startPos(),
 				 slpTag.endLn(),slpTag.endPos());
 	    } else {
+		if(abc.main.Debug.v().warnUntaggedSourceInfo)
+		    System.err.println("Getting position for a untagged source line "+host);
 		pos=new Position(sfTag.getSourceFile());
 		message+=" in method "+container;
 	    }
 	} else {
+		if(abc.main.Debug.v().warnUntaggedSourceInfo)
+		    System.err.println("Getting source file for an untagged class "
+				       +container.getDeclaringClass());
 	    message+=" in method "+container
 		+" in class "+container.getDeclaringClass();
 	}
