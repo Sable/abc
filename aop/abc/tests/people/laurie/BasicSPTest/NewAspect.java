@@ -21,14 +21,13 @@ public aspect NewAspect {
   before() : execution(* *..*(..)) && !within(NewAspect) 
     { message("before execution 2"); aspectlevel++; }
 
-  before() : execution(*..new(..)) && !within(NewAspect)
-     { message("before execution new"); aspectlevel++; }
-
   after() returning  : execution(* *..*(..)) && !within(NewAspect) 
      { aspectlevel--; message("after execution 1"); }
   after() returning : execution(* *..*(..)) && !within(NewAspect) 
      { aspectlevel--; message("after execution 2"); }
 
+  before() : execution(*..new(..)) && !within(NewAspect)
+     { message("before execution new"); aspectlevel++; }
   after() returning : execution(*..new(..)) && !within(NewAspect) 
      { aspectlevel--; message("after execution new"); }
 
@@ -46,7 +45,4 @@ public aspect NewAspect {
      { message("before static initialization"); aspectlevel++; }
   after() returning : staticinitialization(NewTest)
      { aspectlevel--; message("after static initialization");  }
-
-
-
 }
