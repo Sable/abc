@@ -1951,6 +1951,12 @@
         <run class="AssignOps"/>
     </ajc-test>
 <ajc-test dir="new/introTypeMissing"
+      title="this available in introduced field initializers"
+      keywords="from-resolved_10x">
+        <compile files="ThisInIntroFieldInit.java"/>
+        <run class="ThisInIntroFieldInit"/>
+    </ajc-test>
+<ajc-test dir="new/introTypeMissing"
       title="Aspect type unavailable to qualified new expressions in body of introduced methods"
       keywords="from-resolved_10x">
         <compile files="AspectInIntroducedMethod.java"/>

@@ -1,7 +1,1 @@
 *.output
-*.class
-*.jimple
-sootOutput
-ajcOutput
-abcOutput
-*.jasmin

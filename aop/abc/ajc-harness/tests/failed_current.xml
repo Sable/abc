@@ -1369,12 +1369,6 @@
         <run class="CflowAlone"/>
     </ajc-test>
 <ajc-test dir="new/introTypeMissing"
-      title="this available in introduced field initializers"
-      keywords="from-resolved_10x">
-        <compile files="ThisInIntroFieldInit.java"/>
-        <run class="ThisInIntroFieldInit"/>
-    </ajc-test>
-<ajc-test dir="new/introTypeMissing"
       title="Introduced type unavailable to cast expressions in introduced methods"
       keywords="from-resolved_10x">
         <compile files="Cast.java,TargetClass.java,Util.java"/>
