@@ -200,3 +200,15 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
 
+Running test 1013: abctests/bugs/circular pointcuts
+Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/TestAspect.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:565)
+	at abc.testing.TestCase.runTest(TestCase.java:287)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.StackOverflowError
+FAIL: Test 1013: "abctests/bugs/circular pointcuts" failed.
+
+

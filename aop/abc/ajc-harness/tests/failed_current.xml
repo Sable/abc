@@ -72,5 +72,8 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
+<ajc-test title="circular pointcuts" num="1013" dir="abctests/bugs">
+         <compile files="TestAspect.java"></compile>
+    </ajc-test>
  
 </suite>
