@@ -645,6 +645,7 @@ public class Main {
         // Retrieve all bodies
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
+	    if(Debug.v().showWeavableClasses) System.err.println("Weavable class: "+cl);
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
 		try {

@@ -37,6 +37,8 @@ public class Debug {
     public boolean classResolving=false;
     public boolean sootClassToClassType=false;
 
+    public boolean showWeavableClasses=false;
+
     public boolean showNormalizedPointcuts=false;
     public boolean showPointcutMatching=false;
 

@@ -18,12 +18,14 @@ public class Within extends LexicalPointcut {
     }
 
 
-    protected Residue matchesAt(SootClass cls,SootMethod method) {
-	// FIXME: Remove this once pattern is built properly
-	if(getPattern()==null) return AlwaysMatch.v;
-
-	if(!getPattern().matchesClass(cls)) return null;
-	return AlwaysMatch.v;
+    final protected Residue matchesAt(SootClass cls,SootMethod method) {
+	return matchesAt(cls);
+    }
+    
+    protected Residue matchesAt(SootClass cls) {
+	if(getPattern().matchesClass(cls)) return AlwaysMatch.v;
+	if(cls.hasOuterClass()) return matchesAt(cls.getOuterClass());
+	return null;
     }
 
     public String toString() {
