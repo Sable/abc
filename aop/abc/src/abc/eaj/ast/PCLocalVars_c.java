@@ -11,7 +11,6 @@ import abc.aspectj.visit.AspectMethods;
 
 import java.util.*;
 
-
 public class PCLocalVars_c extends Pointcut_c
                            implements PCLocalVars
 {
@@ -123,17 +122,7 @@ public class PCLocalVars_c extends Pointcut_c
     public Context enterScope(Context c)
     {
         Context nc = super.enterScope(c);
-        nc = nc.pushStatic();
-
-        Formal f;
-        Iterator i = formals.iterator();
-
-        while (i.hasNext()) {
-                f = (Formal) i.next();
-                f.addDecls(nc);
-        }
-
-        return nc;
+        return nc.pushStatic();
     }
 
     public Node visitChildren(NodeVisitor v)
