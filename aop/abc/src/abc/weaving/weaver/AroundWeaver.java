@@ -82,6 +82,10 @@ public class AroundWeaver {
 	/** set to false to disable debugging messages for Around Weaver */
 	public static boolean debugflag = true;
 
+
+	public static void reset() {
+		state=new State();
+	}
 	private static void debug(String message)
 	 { if (abc.main.Debug.v().aroundWeaver) 
 		  System.err.println("ARD*** " + message);

@@ -33,6 +33,7 @@ public class Main {
       //  needs staic information reset for repeated calls to main
       abc.main.AbcTimer.reset();
       abc.soot.util.Restructure.reset();
+	  abc.weaving.weaver.AroundWeaver.reset();
     }
     
     public static void main(String[] args) {
