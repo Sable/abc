@@ -36,6 +36,24 @@
         </javac>
     </target>
 
+    <target name="testing-jar" depends="settings,testing">
+        <jar destfile="lib/abc-testing.jar">
+            <fileset dir="testing-classes"/>
+        </jar>
+    </target>
+    
+    <target name="testing" depends="settings">
+        <mkdir dir="testing-classes"/>
+        <javac
+            destdir="testing-classes"
+            debug="true"
+        >
+            <src path="testing-src"/>
+            <classpath>
+            </classpath>
+        </javac>
+    </target>
+
     <target name="harness-jar" depends="settings,harness">
         <jar destfile="ajc-harness/lib/abc-tests.jar">
             <fileset dir="ajc-harness/classes"/>
@@ -60,11 +78,7 @@
             destdir="classes"
             debug="true"
         >
-            <src path="src/abc/aspectj"/>
-            <src path="src/abc/main"/>
-            <src path="src/abc/polyglot"/>
-            <src path="src/abc/soot"/>
-            <src path="src/abc/weaving"/>
+            <src path="src"/>
             <src path="generated"/>
             <classpath>
                 <pathelement location="classes"/>
