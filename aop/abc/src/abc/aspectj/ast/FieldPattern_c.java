@@ -9,6 +9,8 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+import abc.aspectj.visit.PatternMatcher;
+
 public class FieldPattern_c extends Node_c 
                             implements FieldPattern
 {
@@ -50,8 +52,7 @@ public class FieldPattern_c extends Node_c
     }
 
     public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern() {
-	//TODO
-	return null;
+	return PatternMatcher.v().makeAIFieldPattern(modifiers, type, name.base(), name.name());
     }
 
 }

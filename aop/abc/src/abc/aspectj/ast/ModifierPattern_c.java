@@ -22,6 +22,14 @@ public class ModifierPattern_c extends Node_c implements ModifierPattern
 	this.positive = positive;
     }
 
+    public Flags modifier() {
+	return modifier;
+    }
+
+    public boolean positive() {
+	return positive;
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	if (!positive)
 	    w.write("!");

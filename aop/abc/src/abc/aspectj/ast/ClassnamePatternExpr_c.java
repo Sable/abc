@@ -9,6 +9,8 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+import abc.aspectj.visit.PatternMatcher;
+
 public abstract class ClassnamePatternExpr_c extends Node_c 
                                     implements ClassnamePatternExpr
 {
@@ -35,7 +37,6 @@ public abstract class ClassnamePatternExpr_c extends Node_c
     }
 
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern() {
-	//TODO
-	return null;
+	return PatternMatcher.v().makeAIClassnamePattern(this);
     }
 }

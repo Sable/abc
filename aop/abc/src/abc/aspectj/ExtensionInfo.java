@@ -55,7 +55,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	    String cname = (String)ci.next();
 	    hierarchy.insertFullName(cname, true, true);
 	}
-	this.pattern_matcher = new PatternMatcher(hierarchy);
+	this.pattern_matcher = PatternMatcher.create(hierarchy);
 
     }
 

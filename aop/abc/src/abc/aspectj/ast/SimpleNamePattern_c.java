@@ -25,8 +25,12 @@ public class SimpleNamePattern_c extends NamePattern_c
 	w.write(pat);
     }
 
+    public Pattern getPattern() {
+	return PCStructure.compilePattern(pat);
+    }
+
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
-	return context.matchScope(PCStructure.compilePattern(pat), classes, packages);
+	return context.matchScope(getPattern(), classes, packages);
     }
 
     public boolean universal() {

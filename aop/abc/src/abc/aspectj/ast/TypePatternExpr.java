@@ -26,5 +26,7 @@ public interface TypePatternExpr extends Node
 
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException;
 
+    public abc.weaving.aspectinfo.TypePattern makeAITypePattern();
+
 }
 

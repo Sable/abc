@@ -22,6 +22,14 @@ public class ClassTypeDotId_c extends Node_c implements ClassTypeDotId
         this.name = name;
     }
 
+    public ClassnamePatternExpr base() {
+	return base;
+    }
+
+    public SimpleNamePattern name() {
+	return name;
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	if (name != null) 
 	    w.write("(");

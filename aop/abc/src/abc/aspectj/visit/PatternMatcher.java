@@ -8,13 +8,21 @@ import polyglot.visit.*;
 
 import java.util.*;
 
+import soot.*;
+
 public class PatternMatcher {
     private PCStructure hierarchy;
     private Map/*<NamePattern,Set<PCNode>>*/ pattern_matches = new HashMap();
 
     private Set/*<String>*/ prim_types;
 
-    public PatternMatcher(PCStructure hierarchy) {
+    private static PatternMatcher instance;
+
+    public static PatternMatcher v() {
+	return instance;
+    }
+
+    private PatternMatcher(PCStructure hierarchy) {
 	this.hierarchy = hierarchy;
 
 	prim_types = new HashSet();
@@ -27,6 +35,11 @@ public class PatternMatcher {
 	prim_types.add("float");
 	prim_types.add("double");
 	prim_types.add("boolean");
+    }
+
+    public static PatternMatcher create(PCStructure hierarchy) {
+	instance = new PatternMatcher(hierarchy);
+	return instance;
     }
 
     public void computeMatches(NamePattern pat, PCNode context, Set/*<String>*/ classes, Set/*<String>*/ packages) {
@@ -70,5 +83,74 @@ public class PatternMatcher {
 	}
     }
 
+    public boolean matchesModifiers(List /*<ModifierPattern>*/ mods, soot.ClassMember thing) {
+	//TODO
+	return true;
+    }
+
+
+
+
+    public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern(ClassnamePatternExpr pattern) {
+	return new AIClassnamePattern(pattern);
+    }
+
+    private class AIClassnamePattern implements abc.weaving.aspectinfo.ClassnamePattern {
+	ClassnamePatternExpr pattern;
+
+	public AIClassnamePattern(ClassnamePatternExpr pattern) {
+	    this.pattern = pattern;
+	}
+
+	public boolean matchesClass(SootClass sc) {
+	    return PatternMatcher.this.matchesClass(pattern, sc.toString());
+	}
+    }
+
+    public abc.weaving.aspectinfo.TypePattern makeAITypePattern(TypePatternExpr pattern) {
+	return new AITypePattern(pattern);
+    }
+
+    private class AITypePattern implements abc.weaving.aspectinfo.TypePattern {
+	TypePatternExpr pattern;
+
+	public AITypePattern(TypePatternExpr pattern) {
+	    this.pattern = pattern;
+	}
+
+	public boolean matchesType(Type t) {
+	    return PatternMatcher.this.matchesType(pattern, t.toString());
+	}
+    }
+
+    public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern(List modifiers,
+								  TypePatternExpr type,
+								  ClassnamePatternExpr clpat,
+								  SimpleNamePattern name) {
+	return new AIFieldPattern(modifiers, type, clpat, name);
+    }
+
+
+    private class AIFieldPattern implements abc.weaving.aspectinfo.FieldPattern {
+	List/*<ModifierPattern>*/ modifiers;
+	TypePatternExpr type;
+	ClassnamePatternExpr clpat;
+	SimpleNamePattern name;
+
+	public AIFieldPattern(List modifiers, TypePatternExpr type, ClassnamePatternExpr clpat, SimpleNamePattern name) {
+	    this.modifiers = modifiers;
+	    this.type = type;
+	    this.clpat = clpat;
+	    this.name = name;
+	}
+
+	public boolean matchesField(SootField sf) {
+	    return
+		matchesModifiers(modifiers, sf) &&
+		matchesType(type, sf.getType().toString()) &&
+		matchesClass(clpat, sf.getDeclaringClass().toString()) &&
+		name.getPattern().matcher(sf.getName()).matches();
+	}
+    }
 
 }
