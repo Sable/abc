@@ -572,98 +572,101 @@ public class IntertypeAdjuster {
 			SootClass cl = field.getDeclaringClass().getSootClass();
 			if( cl.isInterface() ) {
 				for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
-					final SootClass childClass = (SootClass) childClassIt.next();
+					
+					final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
 					if( childClass.isInterface() ) continue;
 					if( !implementsInterface(childClass, cl) ) continue;
 					if( childClass.hasSuperclass() 
-					&& implementsInterface(childClass.getSuperclass(), cl) )
-						continue;
-
+						&& implementsInterface(childClass.getSuperclass(), cl) )
+							 continue;
 					// Add the field itself
 					SootField newField = new SootField(
 							field.getName(),
 							field.getType().getSootType(),
 							modifiers );
-					
-				// TODO: also weave into constructors here...
-
+					// find the field that we have inserted earlier
+					SootField sf = childClass.getField(field.getName(),field.getType().getSootType());
+					// and weave its initialisers
+					weaveInit(ifd,sf,modifiers,childClass);
 				}
-			} else {
-            
-            	if (Modifier.isStatic(modifiers)) {
-            		// add a call to the initialiser method from clinit of target class
-                    // if it doesn't exist, create one.	
-            			SootMethod clinit; Body b;
-            			try { 
-            				clinit = cl.getMethodByName("<clinit>");
-            				b = clinit.getActiveBody();
-            			} catch (java.lang.RuntimeException s) {
-							clinit = new SootMethod( 
-											  "<clinit>",   
-											  new ArrayList(),
-											  VoidType.v(),
-											  Modifier.STATIC | Modifier.PUBLIC );
-							b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
-							Chain ss = b.getUnits();
-							ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
-							ss.add(ret);
-            			}
-            			Chain ss = b.getUnits();
-            		// find first normal statement
-            			Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
-            		// get the method that initialises this field
-            		// which is a static method of the aspect that contains the ITD
-            			SootMethod initialiser = ifd.getInit().getSootMethod();
-            		// create the call
-            			List args = new ArrayList();
-            			InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initialiser,args);
-						Local res = Jimple.v().newLocal("result",initialiser.getReturnType()); b.getLocals().add(res);
-						AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
-						ss.insertBefore(as,initstmt);
-            		// get the field we want to initialise
-						SootField sf = field.getSootField();
-						FieldRef sfref = Jimple.v().newStaticFieldRef(sf); 
-					//  assign the value
-						AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
-						ss.insertBefore(rStmt,initstmt);
-            	}
-            	else {
-					// add a call to the initialiser method to any constructor of target class
-					// that calls "super.<init>"
-					for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
-						SootMethod clsm = (SootMethod) ms.next();
-						if (clsm.getName() == "<init>") {
-							Body b = clsm.getActiveBody();
-							Chain ss = b.getUnits();
-							// find unique super.<init>, throw exception if it's not unique
-							Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
-							// the following needs to be inserted right after initstmt
-							if (initstmt.getInvokeExpr().getMethod().getDeclaringClass() == cl.getSuperclass()) {
-								Chain units = b.getUnits();
-								Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
-							// 	the method that initialises this field
-							//	which is a static method of the aspect that contains the ITD
-								SootMethod sm = ifd.getInit().getSootMethod(); 
-							//	now create the call
-								List args = new ArrayList();
-								args.add(b.getThisLocal()); // the only argument is "this"
-								InvokeExpr ie = Jimple.v().newStaticInvokeExpr(sm,args); 
-								Local res = Jimple.v().newLocal("result",sm.getReturnType()); b.getLocals().add(res);
-								AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
-								units.insertBefore(as,followingstmt);
-							//  get the field we want to initialise
-								SootField sf = field.getSootField();
-								FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
-							//  assign the value
-								AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
-								units.insertBefore(rStmt,followingstmt);
-							}
+			} else 
+				weaveInit(ifd, field.getSootField(), modifiers, cl);
+		}
+
+		private void weaveInit(
+			IntertypeFieldDecl ifd,
+			SootField sf,
+			int modifiers,
+			SootClass cl) {
+			if (Modifier.isStatic(modifiers)) {
+				// add a call to the initialiser method from clinit of target class
+			    // if it doesn't exist, create one.	
+					SootMethod clinit; Body b;
+					try { 
+						clinit = cl.getMethodByName("<clinit>");
+						b = clinit.getActiveBody();
+					} catch (java.lang.RuntimeException s) {
+						clinit = new SootMethod( 
+										  "<clinit>",   
+										  new ArrayList(),
+										  VoidType.v(),
+										  Modifier.STATIC | Modifier.PUBLIC );
+						b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
+						Chain ss = b.getUnits();
+						ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
+						ss.add(ret);
+					}
+					Chain ss = b.getUnits();
+				// find first normal statement
+					Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
+				// get the method that initialises this field
+				// which is a static method of the aspect that contains the ITD
+					SootMethod initialiser = ifd.getInit().getSootMethod();
+				// create the call
+					List args = new ArrayList();
+					InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initialiser,args);
+					Local res = Jimple.v().newLocal("result",initialiser.getReturnType()); b.getLocals().add(res);
+					AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
+					ss.insertBefore(as,initstmt);
+				// get the field we want to initialise
+					FieldRef sfref = Jimple.v().newStaticFieldRef(sf); 
+				//  assign the value
+					AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
+					ss.insertBefore(rStmt,initstmt);
+			}
+			else {
+				// add a call to the initialiser method to any constructor of target class
+				// that calls "super.<init>"
+				for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
+					SootMethod clsm = (SootMethod) ms.next();
+					if (clsm.getName() == "<init>") {
+						Body b = clsm.getActiveBody();
+						Chain ss = b.getUnits();
+						// find unique super.<init>, throw exception if it's not unique
+						Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
+						// the following needs to be inserted right after initstmt
+						if (initstmt.getInvokeExpr().getMethod().getDeclaringClass() == cl.getSuperclass()) {
+							Chain units = b.getUnits();
+							Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
+						// 	the method that initialises this field
+						//	which is a static method of the aspect that contains the ITD
+							SootMethod sm = ifd.getInit().getSootMethod(); 
+						//	now create the call
+							List args = new ArrayList();
+							args.add(b.getThisLocal()); // the only argument is "this"
+							InvokeExpr ie = Jimple.v().newStaticInvokeExpr(sm,args); 
+							Local res = Jimple.v().newLocal("result",sm.getReturnType()); b.getLocals().add(res);
+							AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
+							units.insertBefore(as,followingstmt);
+						//  get the field we want to initialise
+							FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
+						//  assign the value
+							AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
+							units.insertBefore(rStmt,followingstmt);
 						}
 					}
 				}
 			}
-
-			// TODO: Add dispatch methods
 		}
 
 }
