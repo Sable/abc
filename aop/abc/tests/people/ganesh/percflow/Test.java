@@ -14,14 +14,14 @@ public class Test {
 
 class Test2 extends Test { }
 
-aspect Aspect { //percflowbelow(call(int fact(int)) && this(Test2)) {
+aspect Aspect percflowbelow(call(int fact(int)) && this(Test2)) {
    private static boolean debug = true;
    int y;
    before (int x) : set(int x) && args(x) && if(debug) {
        y=x;
    }
-//   after () : execution(int fact(int)) {
-//       System.out.println(y);
-//   }
+   after () : execution(int fact(int)) {
+       System.out.println(y);
+   }
 }
 
