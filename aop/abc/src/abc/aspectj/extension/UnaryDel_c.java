@@ -53,7 +53,6 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
                 unary.operator() == Unary.PRE_DEC ||
                 unary.operator() == Unary.PRE_INC) {
             Node child = unary.expr();
-            System.out.println("Checking " + child);
             if(child instanceof Field) {
                 ((FieldDel_c)child.del()).introduceFieldAccessors = false;
             }

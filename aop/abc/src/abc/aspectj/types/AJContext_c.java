@@ -301,7 +301,6 @@ public class AJContext_c extends Context_c implements AJContext {
 	public AspectType currentAspect() {
 	    ClassType cur = currentClass();
 	    while(cur != null) {
-	        System.out.println("Checking to see if " + cur + " is an aspect.");
 		    if(cur instanceof AspectType) {
 		        return (AspectType) cur;
 		    }
