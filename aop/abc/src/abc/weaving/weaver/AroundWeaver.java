@@ -81,6 +81,7 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.RedirectedExceptionSpecTag;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AroundAdvice;
@@ -397,7 +398,7 @@ public class AroundWeaver {
 		}
 		
 		SootMethod adviceMethod=null;
-		try {
+		//try {
 
 			AdviceDecl adviceDecl = (AdviceDecl) adviceAppl.advice;
 			
@@ -439,7 +440,7 @@ public class AroundWeaver {
 
 			adviceMethodInfo.doWeave(adviceAppl, shadowMethod);
 			
-		} catch (InternalAroundError e) {
+		/*} catch (InternalAroundError e) {
 			throw e;
 		} catch (Throwable e) {
 			System.err.println(" " + e.getClass().getName() + " " + e.getCause());
@@ -449,7 +450,7 @@ public class AroundWeaver {
 				System.err.println(e.getStackTrace()[i].toString());
 			}			
 			throw new InternalAroundError("", e);
-		}
+		}*/
 		
 		if (abc.main.Debug.v().aroundWeaver) {
 				state.validate(); 
@@ -616,8 +617,10 @@ public class AroundWeaver {
 				
 			
 			final boolean bExecutionWeavingIntoSelf=
-					bExecutionAdvice &&
-						 sootAdviceMethod.equals(shadowMethod);
+					bExecutionAdvice && 
+					 (sootAdviceMethod.equals(shadowMethod) || 
+					 		(state.getEnclosingAroundAdviceMethod(shadowMethod)!=null &&
+					 		state.getEnclosingAroundAdviceMethod(shadowMethod).equals(sootAdviceMethod)));
 			
 			boolean bStaticShadowMethod = shadowMethod.isStatic();
 			boolean bUseClosureObject;
@@ -872,17 +875,26 @@ public class AroundWeaver {
 					
 					// if the target is an around-advice method, 
 					// make sure proceed has been generated for that method.
-					if (bExecutionAdvice && Util.isAroundAdviceMethod(shadowMethod)) {
-						AdviceMethod adviceMethodWovenInto = state.getAdviceMethod(shadowMethod);
+					if (bExecutionAdvice && 
+							(Util.isAroundAdviceMethod(shadowMethod) ||
+							state.getEnclosingAroundAdviceMethod(shadowMethod)!=null) ) {
+						
+						SootMethod relevantAdviceMethod;
+						if (Util.isAroundAdviceMethod(shadowMethod))
+							relevantAdviceMethod=shadowMethod;
+						else
+							relevantAdviceMethod=state.getEnclosingAroundAdviceMethod(shadowMethod);
+							
+						AdviceMethod adviceMethodWovenInto = state.getAdviceMethod(relevantAdviceMethod);
 						if (adviceMethodWovenInto == null) {
 							AdviceDecl advdecl;
-							advdecl=getAdviceDecl(shadowMethod);
+							advdecl=getAdviceDecl(relevantAdviceMethod);
 							List sootProceeds2=new LinkedList();
 							sootProceeds2.addAll(advdecl.getLocalSootMethods());
-							if (!sootProceeds2.contains(shadowMethod))
-								sootProceeds2.add(shadowMethod);
+							if (!sootProceeds2.contains(relevantAdviceMethod))
+								sootProceeds2.add(relevantAdviceMethod);
 							
-							adviceMethodWovenInto = new AdviceMethod(shadowMethod, 
+							adviceMethodWovenInto = new AdviceMethod(relevantAdviceMethod, 
 									AdviceMethod.getOriginalAdviceFormals(advdecl),
 									sootProceeds2);
 						}			
@@ -3296,6 +3308,34 @@ public class AroundWeaver {
 		public Map shadowInformation;
 	}
 	public static class State {
+	   Map buildAroundAdviceLocalMethodMap() {
+		   	Map result=new HashMap();
+		   	 List adviceDecls=GlobalAspectInfo.v().getAdviceDecls();
+		   	 for (Iterator it=adviceDecls.iterator(); it.hasNext();) {
+		   	 	AbstractAdviceDecl absdecl=(AbstractAdviceDecl)it.next();
+		   	 	if (!(absdecl instanceof AdviceDecl))
+		   	 		continue;
+		   	 	
+		   	 	AdviceDecl decl=(AdviceDecl)absdecl;
+		   	    SootMethod adviceMethod=decl.getImpl().getSootMethod();
+		   	    if (AroundWeaver.Util.isAroundAdviceMethod(adviceMethod)) {
+		   	    	List localMethods=decl.getLocalSootMethods();
+		   	    	for (Iterator itM=localMethods.iterator(); itM.hasNext();) {
+		   	    		SootMethod localMethod=(SootMethod)itM.next();
+		   	    		result.put(localMethod, adviceMethod);
+		   	    	}
+		   	    }   	 	
+		   	 }
+		   	 return result;
+		   }
+	   private Map aroundAdviceLocalMethods=null;
+		public SootMethod getEnclosingAroundAdviceMethod(SootMethod m) {
+			if (aroundAdviceLocalMethods==null) {
+				aroundAdviceLocalMethods=buildAroundAdviceLocalMethodMap();
+			}
+			return (SootMethod)aroundAdviceLocalMethods.get(m);
+		}
+		
 		private Map proceedMethods=new HashMap();
 		
 		private Map proceedMethodInlineInfos=new HashMap();
