@@ -2049,11 +2049,12 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when the closing brace is reversed"
-      abccomment="messes up compiler, may hang, must solve July 4/04 LJH"
+      abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH"
       keywords="from-errors,purejava,messages-vary">
         <compile files="ClosingBrace.java"
                options="!eclipse">
-            <message kind="error" line="11"/>
+            <ajcmessage kind="error" line="11"/>
+            <message kind="error" line="12"/>
         </compile>
     </ajc-test>
 
