@@ -177,8 +177,12 @@ public class Restructure {
       } 
     else 
       { Type returnType = method.getReturnType();
-        ret = localgen.generateLocal(returnType);
-        units.insertAfter( Jimple.v().newReturnStmt(ret), last );
+        if(returnType instanceof VoidType) {
+	   units.insertAfter( Jimple.v().newReturnVoidStmt(), last );
+        } else {
+           ret = localgen.generateLocal(returnType);
+           units.insertAfter( Jimple.v().newReturnStmt(ret), last );
+        }
       }
 
     // now the last stmt should always be return ret; or return;
