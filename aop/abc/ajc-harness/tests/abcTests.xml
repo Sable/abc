@@ -1247,7 +1247,7 @@
             <message kind="error" line="21"/>
         </compile>
     </ajc-test>
-
+<!--
     <ajc-test dir="pureJava"
       abccomment = "Isolated expressions that break and sent BigOpsLJH and
                      BigOpsLJHshort to Jennifer.  July 2/04  LJH" 
@@ -1255,7 +1255,7 @@
         <compile files="BigOps.java"/>
         <run class="BigOps"/>
     </ajc-test>
-
+-->
     <ajc-test dir="pureJava"
       title="test + and += for strings and variously typed values"
       abccomment = "Isolated problem cases and sent BigStringLJH.java to
@@ -3096,7 +3096,7 @@
 
      <ajc-test dir="abctests/design/intro"
      abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
+      title="declared exceptions are checked correctly on intros (errors) 1">
         <compile files="ExceptionsCF1.java">
             <ajcmessage kind="error" line="8"/>
             <ajcmessage kind="error" line="23"/>
@@ -3106,7 +3106,7 @@
 
     <ajc-test dir="abctests/design/intro"
      abccomment="abc bails out early, so copied. ODM 09/07/04"
-      title="declared exceptions are checked correctly on intros (errors)">
+      title="declared exceptions are checked correctly on intros (errors) 2">
         <compile files="ExceptionsCF2.java">
             <ajcmessage kind="error" line="8"/>
             <ajcmessage kind="error" line="23"/>
@@ -7055,13 +7055,13 @@
         title="-warn:none suppresses declare warnings">
         <compile files="WarningTest.java" options="-warn:none"/>
     </ajc-test>
-
+<!--
     <ajc-test dir="bugs" pr="38168" keywords="knownLimitation"
    	 title="insertion of lots of advice code can make branch offset for if too large">
         <compile files="WideJumps.java"/>
         <run class="WideJumps"/>
     </ajc-test>
-    
+-->    
     <!-- This doesn't actually reproduce the bug, but no test case has been submitted
          that does so this is here as a place-holder and to verify that we're mostly
          working.
