@@ -42,7 +42,7 @@ public class HasAspect extends Residue {
 	Local hasaspect = localgen.generateLocal(BooleanType.v(),"hasAspect");
 	AssignStmt stmtHasAspect = Jimple.v().newAssignStmt
 	    (hasaspect, Jimple.v().newStaticInvokeExpr
-	     (aspect.getMethod("hasAspect",paramTypes),params));
+	     (aspect.getMethodByName("hasAspect"),params));
 
 	units.insertAfter(stmtHasAspect,begin);
 
