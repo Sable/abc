@@ -339,12 +339,19 @@ public class TestCase {
 			         * I think abc code is meant to run on any vm, so it's probably safe to ignore this - check! XXX
 			         */
 			        String runClass;
+			        String[] mainArgs = null;
 			        try {
 			            runClass = xChildren[i].select("//@class")[0].toString();
 			        } catch (Exception e) {
 			            // Hmm... no "class" attribute? Don't know what to run, TODO: Check handling
 			            System.err.println("Encountered <run> tag without 'class' attribute, skipping tag...");
 			            continue;
+			        }
+			        try {
+			            mainArgs = xChildren[i].select("//@options")[0].toString().split(",");
+			        } catch (Exception e) {
+			            // no "options" specified - proceed normally.
+			            mainArgs = null;
 			        }
 			        try {
 			            File classDir = new File(dir + System.getProperty("file.separator"));
@@ -359,7 +366,7 @@ public class TestCase {
 			                return;
 			            }
 			            Object[] argsForMain = new Object[1];
-			            argsForMain[0] = new String[0];
+			            argsForMain[0] = (mainArgs == null ? new String[0] : mainArgs);
 			            // Some tests refer to files in their respective directories...
 			            Tester.setBASEDIR(new File(dir));
 			            mainMethod.invoke(null, argsForMain); // the null argument is the class instance; main is static
