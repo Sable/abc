@@ -1,0 +1,84 @@
+====================  LoD:  ============================================
+
+advice:
+      before
+      after
+      after returning (Object o)
+      pertarget
+      percflow
+
+pointcuts:
+      cflow + many others
+      named pointcuts
+      this, target, args
+
+general:
+      aspect extending an abstract class
+      many uses of the same cflow
+
+
+=====================  figure: ============================================
+
+advice: 
+    after returning
+
+pointcuts: 
+    named pointcuts
+    call
+    cflowbelow
+
+======================  dcm: ======( without catching collected objects )==
+
+advice:
+   before
+   after
+   around
+
+pointcuts:
+   mostly execution
+
+======================  dcmgc: ======( with catching collected objects )==
+
+as above for dcm PLUS
+
+ITD: 
+  declare parents
+  intertype method
+
+
+====================== nullptr: ==== (the original version ) ===============
+
+advice:
+  Object around ()
+
+pointcuts:
+  named pointcuts
+  call
+
+
+====================== oege_quicksort: =======================================
+
+advice:
+  before
+  after
+
+pointcuts:
+  named pointcuts
+  call, withincode, cflow, cflowbelow
+
+======================  productlines: ========================================
+
+ITD:
+  field
+  static field
+  method
+  constructor
+  declare parents
+
+pointcuts:
+   named pointcuts
+   target, args
+
+advice:
+   after with params
+   before with params
