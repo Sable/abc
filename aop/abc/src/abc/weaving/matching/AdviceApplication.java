@@ -42,6 +42,19 @@ public abstract class AdviceApplication {
 		
 		List/*<AdviceApplication>*/ apps=new LinkedList();
 
+		// Do execution shadow
+		Iterator adviceIt;
+		for(adviceIt=info.getAdviceDecls().iterator();
+		    adviceIt.hasNext();) {
+		    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
+
+		    Pointcut pc=ad.getPointcut();
+
+		    if(pc!=null && pc.matchesAt(sootCls,method,null))
+			apps.add(new BodyAdviceApplication(ad,null));
+		}
+
+
 		Chain stmtsChain=method.retrieveActiveBody().getUnits();
 		Stmt current=(Stmt) stmtsChain.getFirst();
 
@@ -49,7 +62,6 @@ public abstract class AdviceApplication {
 		    current!=null;
 		    current=(Stmt) stmtsChain.getSuccOf(current)) {
 		    
-		    Iterator adviceIt;
 		    for(adviceIt=info.getAdviceDecls().iterator();
 		        adviceIt.hasNext();) {
 

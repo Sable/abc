@@ -13,8 +13,9 @@ import soot.jimple.*;
 public interface ShadowPointcutHandler {
     public ShadowType getShadowType();
 
-    /** Given the current statement and the entire chain, return false if we 
+    /** Given the current statement return false if we 
 	don't match at the current shadow, and true if we do
+	If stmt is null, shadow is the entire execution
      */
     public boolean matchesAt(Stmt current);
 }

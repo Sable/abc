@@ -16,6 +16,7 @@ public class SetField extends AbstractShadowPointcutHandler {
     }
 
     public boolean matchesAt(Stmt stmt) {
+	if (stmt==null) return false;
 	if (!(stmt instanceof AssignStmt)) return false;
 	AssignStmt as = (AssignStmt) stmt;
 	Value lhs = as.getLeftOp();
