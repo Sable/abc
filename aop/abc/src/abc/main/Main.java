@@ -134,7 +134,6 @@ public class Main {
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
                 if( !method.isConcrete() ) continue;
-                System.out.println("retrieving "+method.getName()+" from class "+method.getDeclaringClass());
                 method.retrieveActiveBody();
             }
         }

@@ -60,7 +60,7 @@ public class IntertypeAdjuster {
 		sm.setSource(method.getSootMethod().getSource());
 		
 		sc.addMethod(sm);
-		
+	
 		return sm;
 	}
 	
@@ -111,10 +111,10 @@ public class IntertypeAdjuster {
 	// add references to the other parameters
 		int index = 0;
 		for (Iterator formals=parms.iterator(); formals.hasNext(); ) {
-			final AbcType formalType = ((Formal) formals.next()).getType();
-			Local p = Jimple.v().newLocal("param$"+index,rt); ; ls.add(v);
-			ParameterRef pr = Jimple.v().newParameterRef(formalType.getSootType(),index);
-			IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, thisref); ss.add(prStmt);
+			final Type formalType = (Type) formals.next();
+			Local p = Jimple.v().newLocal("param$"+index,formalType); ; ls.add(p);
+			ParameterRef pr = Jimple.v().newParameterRef(formalType,index);
+			IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
 			args.add(p);
 			index++;
 		}

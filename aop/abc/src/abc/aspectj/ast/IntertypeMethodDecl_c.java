@@ -143,7 +143,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 */
     public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts) {
     	Local x = nf.Local(position,thisParamInstance.name());
-    	x = x.localInstance(thisParamInstance);
+    	x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
     	return x;
     }
 
