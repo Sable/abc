@@ -9158,6 +9158,11 @@
          <run class="Fibonacci" />
     </ajc-test>
  
-
+    <ajc-test num="978" dir="abctests/bugs"
+              title="cflowbelow in abstract aspects">
+          <compile files="AbstractPrec1.java"/>
+          <run class="AbstractPrec1"/>
+    </ajc-test>    
 
 </suite>
+
