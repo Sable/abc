@@ -12,6 +12,8 @@ import soot.toolkits.graph.TrapUnitGraph;
 public class Validate {
 
     public static void validate(SootClass cl) {
+	// FIXME: temporary until Soot gets fixed
+	Scene.v().releaseActiveHierarchy();
 	for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
 	    final SootMethod method = (SootMethod) methodIt.next();
 	    checkTypes(method);

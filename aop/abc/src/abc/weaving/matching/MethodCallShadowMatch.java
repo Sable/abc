@@ -82,6 +82,8 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	    if(!method.isPrivate()) {
 		SootClass declaringclass=method.getDeclaringClass();
 		SootClass currentclass=pos.getContainer().getDeclaringClass();
+		// FIXME: temporary until Soot gets fixed
+		Scene.v().releaseActiveHierarchy();
 		if(Scene.v().getActiveHierarchy()
 		   .isClassSubclassOf(currentclass,declaringclass)) {
 		    // Assume ACC_SUPER was set since we have no way of checking
