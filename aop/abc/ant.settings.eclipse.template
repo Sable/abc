@@ -1,8 +1,8 @@
 ## Location of Polyglot classes jar
-polyglot.loc=../abc-lib/polyglot-1.2.0.jar
+polyglot.loc=../abc-lib/polyglot.jar
 
 ## Location of Polyglot cup-classes (if not included in Polyglot jar)
-polyglot.cupclasses.loc=../abc-lib/polyglot-1.2.0.jar
+polyglot.cupclasses.loc=../abc-lib/polyglot.jar
 
 ## Location of JFlex classes jar
 jflex.loc=../abc-lib/JFlex.jar
