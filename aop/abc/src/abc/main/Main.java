@@ -77,6 +77,7 @@ import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.BoxingRemover;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.InterprocConstantPropagator;
@@ -493,11 +494,17 @@ public class Main {
                 Weaver.doInlining();
                 
                 UnusedMethodsRemover.removeUnusedMethods();
+                
                 InterprocConstantPropagator.inlineConstantArguments();
+                
+                Weaver.runBoxingRemover();   
+             
                 
                 abortIfErrors();
 
                 optimize();
+                
+                // UnusedMethodsRemover.removeUnusedMethods(); // run it again after opts.
 
                 AbcTimer.mark("Soot Packs");
                 phaseDebug("Soot Packs");

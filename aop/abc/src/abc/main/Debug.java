@@ -104,6 +104,7 @@ public class Debug {
 
     public boolean unusedMethodsRemover=false;
     public boolean interprocConstantPropagator=false;
+    public boolean boxingRemover=false;
     
     public boolean doValidate=false;  // validate jimple
     // dump CFG as dot plot, doValidate must also be true to enable it

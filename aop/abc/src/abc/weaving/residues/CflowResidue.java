@@ -174,7 +174,7 @@ public class CflowResidue extends Residue {
                 SootClass boxClass=Restructure.JavaTypeInfo.getBoxingClass(type);
                 SootMethodRef unboxMethod=Scene.v().makeMethodRef
                     (boxClass,
-                     Restructure.JavaTypeInfo.getBoxingClassMethodName(type),
+                     Restructure.JavaTypeInfo.getSimpleTypeBoxingClassMethodName(type),
                      new ArrayList(),
                      type,
                      false);

@@ -186,6 +186,13 @@ public class Weaver {
         		AroundInliner.v().transform(m.getActiveBody());
         	}
         }
+        public static void runBoxingRemover() {
+        	for( Iterator mIt = AroundWeaver.state.shadowMethods.iterator(); mIt.hasNext(); ) {
+        	    final SootMethod m = (SootMethod) mIt.next();
+        		BoxingRemover.v().transform(m.getActiveBody());
+        	}
+        }
+        
         public static void runAfterBeforeInliner() {
         	AfterBeforeInliner.v().doInlining();
         }

@@ -90,7 +90,7 @@ public class IfResidue extends Residue {
 			
 			SootMethodRef unboxMethod=Scene.v().makeMethodRef
 				(boxClass,
-				 Restructure.JavaTypeInfo.getBoxingClassMethodName(unboxedType),
+				 Restructure.JavaTypeInfo.getSimpleTypeBoxingClassMethodName(unboxedType),
 	 			 new ArrayList(),
 	 			 unboxedType,
 	 			 false); 

@@ -845,7 +845,11 @@ public class Restructure {
 				throw new RuntimeException();
 		}
 
-		public static String getBoxingClassMethodName(Type type) {	
+		public static String getBoxingClassMethodName(Type type) {
+			return getSimpleTypeBoxingClassMethodName(
+					getBoxingClassPrimType(((RefType)type).getSootClass()));
+		}
+		public static String getSimpleTypeBoxingClassMethodName(Type type) {	
 			if (type.equals(IntType.v()))
 				return "intValue";
 			else if (type.equals(BooleanType.v())) 
@@ -863,7 +867,7 @@ public class Restructure {
 			else if (type.equals(DoubleType.v())) 
 				return "doubleValue";
 			else 
-				throw new RuntimeException();
+				throw new RuntimeException("no method for type " + type);
 		}
 		
 		/** Given the boxing class, what was the primitive type?
@@ -891,7 +895,18 @@ public class Restructure {
 			else 
 				throw new RuntimeException();
 		}
-		
+		public static boolean isBoxingType(Type type) {
+			if (type instanceof RefType) {
+				RefType rt=(RefType)type;
+				try {
+					getBoxingClassPrimType(rt.getSootClass());
+					return true;
+				} catch(RuntimeException e) {
+					return false;
+				}
+			} else
+				return false;
+		}
 	}
 	/**
 	 * Converts the assignment statement into a sequence 
@@ -948,7 +963,7 @@ public class Restructure {
 					Jimple.v().newCastExpr(castLocal, boxClass.getType()));
 				SootMethodRef method=Scene.v().makeMethodRef
 				    (boxClass,
-				     JavaTypeInfo.getBoxingClassMethodName(targetType),
+				     JavaTypeInfo.getSimpleTypeBoxingClassMethodName(targetType),
 				     new ArrayList(),
 				     targetType,
 				     false);
