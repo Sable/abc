@@ -24,58 +24,61 @@ public class MethodCategory {
     // Generated in abc/aspectj/ast/AdviceDecl_c.java
     public static final int ADVICE_BODY = 2;
 
+    /** A <code>proceed</code> dummy method */
+    public static final int PROCEED = 3;
+
     /** The expression in an <code>if</code> pointcut */
     // Generated in abc/aspectj/ast/PCIf_c.java
-    public static final int IF_EXPR = 3;
+    public static final int IF_EXPR = 4;
 
     // **********
 
     /** The implementation placeholder of an intertype method declaration */
     // Generated in abc/aspectj/ast/IntertypeMethodDecl_c.java
-    public static final int INTERTYPE_METHOD_SOURCE = 4;
+    public static final int INTERTYPE_METHOD_SOURCE = 5;
 
     /** A woven intertype method declaration, delegating to the actual implementation */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int INTERTYPE_METHOD_DELEGATOR = 5;
+    public static final int INTERTYPE_METHOD_DELEGATOR = 6;
 
     // **********
 
     /** The body of an intertype constructor declaration, without field initializers */
     // Generated in abc/aspectj/ast/IntertypeConstructorDecl_c.java
-    public static final int INTERTYPE_CONSTRUCTOR_BODY = 6;
+    public static final int INTERTYPE_CONSTRUCTOR_BODY = 7;
 
     /** The encapsulation of an argument to a <code>this</code> or <code>super</code> call
      *  in an intertype constructor declaration */
     // Generated in abc/aspectj/ast/IntertypeConstructorDecl_c.java
-    public static final int INTERTYPE_CONSTRUCTOR_SPECIAL_ARG = 7;
+    public static final int INTERTYPE_CONSTRUCTOR_SPECIAL_ARG = 8;
 
     /** A woven intertype constructor declaration, delegating to the actual implementation */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int INTERTYPE_CONSTRUCTOR_DELEGATOR = 8;
+    public static final int INTERTYPE_CONSTRUCTOR_DELEGATOR = 9;
 
     // **********
 
     /** The initializer for an intertype field declaration */
     // Generated in abc/aspectj/ast/IntertypeFieldDecl_c.java
-    public static final int INTERTYPE_FIELD_INITIALIZER = 9;
+    public static final int INTERTYPE_FIELD_INITIALIZER = 10;
 
     /** A method delegating a <code>this</code> or <code>super</code> call from an
      *  intertype method or constructor */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int INTERTYPE_SPECIAL_CALL_DELEGATOR = 10;
+    public static final int INTERTYPE_SPECIAL_CALL_DELEGATOR = 11;
 
     // **********
 
     /** An accessor method to get the value of a field */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
-    public static final int ACCESSOR_GET = 11;
+    public static final int ACCESSOR_GET = 12;
     /** An accessor method to set the value of a field */
-    public static final int ACCESSOR_SET = 12;
+    public static final int ACCESSOR_SET = 13;
 
 
     // CATEGORY PROPERTY TABLES
 
-    // normal, aspect, asvice, if,
+    // normal, aspect, advice, proceed, if,
     // it_m_src, it_m_del,
     // it_c_body, it_c_arg, it_c_del,
     // it_f_init, it_spec_del,
@@ -83,7 +86,7 @@ public class MethodCategory {
 
     private static final boolean[] weave_inside =
     {
-	true, false, true, false/*AJC doesn't, but why not?*/,
+	true, false, true, false, false/*AJC doesn't, but why not?*/,
 	true, false,
 	true, true, false,
 	true, false,
@@ -92,10 +95,19 @@ public class MethodCategory {
 
     private static final boolean[] weave_execution =
     {
-	true, false, true, false,
+	true, false, true, false, false,
 	true, false,
 	true, false, false,
 	false, false,
+	false/*?*/, false/*?*/
+    };
+
+    private static final boolean[] weave_calls =
+    {
+	true, true, false, false, false,
+	false, true,
+	false, false, true,
+	false, true/*?*/,
 	false/*?*/, false/*?*/
     };
 
@@ -120,6 +132,16 @@ public class MethodCategory {
     { return weaveExecution(getCategory(m)); }
     public static boolean weaveExecution(MethodSig m)
     { return weaveExecution(getCategory(m)); }
+
+
+    public static boolean weaveCalls(int cat) {
+	return weave_calls[cat];
+    }
+
+    public static boolean weaveCalls(SootMethod m)
+    { return weaveCalls(getCategory(m)); }
+    public static boolean weaveCalls(MethodSig m)
+    { return weaveCalls(getCategory(m)); }
 
 
     public static boolean adviceBody(int cat) {

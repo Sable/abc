@@ -5,4 +5,6 @@ import polyglot.ast.MethodDecl;
 public interface Around extends AdviceSpec
 {
     void setProceed(MethodDecl proceed);
+
+    MethodDecl proceed();
 }

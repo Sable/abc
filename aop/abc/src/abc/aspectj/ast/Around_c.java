@@ -67,6 +67,10 @@ public class Around_c extends AdviceSpec_c
 	this.proceed = proceed;
     }
 
+    public MethodDecl proceed() {
+	return proceed;
+    }
+
     public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
 	abc.weaving.aspectinfo.AbcType rtype = abc.aspectj.visit.AspectInfoHarvester.toAbcType(returnType.type());
 	abc.weaving.aspectinfo.MethodSig psig = abc.aspectj.visit.AspectInfoHarvester.makeMethodSig(proceed);
