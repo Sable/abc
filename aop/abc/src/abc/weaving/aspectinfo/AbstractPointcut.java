@@ -19,7 +19,7 @@ public abstract class AbstractPointcut extends Syntax implements Pointcut {
 
     public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
 	if(!warnedUnimplemented) {
-	    System.out.println("returning false for an unimplemented pointcut");
+	    System.out.println("returning false for an unimplemented pointcut "+this.getClass());
 	    warnedUnimplemented=true;
 	}
 	return false;

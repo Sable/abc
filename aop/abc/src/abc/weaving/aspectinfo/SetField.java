@@ -15,14 +15,13 @@ public class SetField extends AbstractShadowPointcutHandler {
 	return pattern;
     }
 
-    public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
+    public boolean matchesAt(Stmt stmt) {
 	if (!(stmt instanceof AssignStmt)) return false;
 	AssignStmt as = (AssignStmt) stmt;
 	Value lhs = as.getLeftOp();
        	if(!(lhs instanceof FieldRef)) return false;
-	return true;
-	//	FieldRef fr = (FieldRef) lhs;
-	//	return getPattern().matchesField(fr.getField());
+	FieldRef fr = (FieldRef) lhs;
+	return getPattern().matchesField(fr.getField());
     }
 
     public String toString() {

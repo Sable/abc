@@ -10,18 +10,14 @@ import java.util.*;
 /** The data structure the pointcut matcher computes */
 /*  @author Ganesh Sittampalam                       */
 /*  @date 23-Apr-04                                  */
-public class AdviceApplication {
-    public Stmt begin,end;
+public abstract class AdviceApplication {
     public AdviceDecl advice;
     public ConditionPointcutHandler cph;
 
-    public AdviceApplication(Stmt _begin,Stmt _end,
-			     AdviceDecl _advice,
-			     ConditionPointcutHandler _cph) {
-	begin=_begin;
-	end=_end;
-	advice=_advice;
-	cph=_cph;
+    public AdviceApplication(AdviceDecl advice,
+			     ConditionPointcutHandler cph) {
+	this.advice=advice;
+	this.cph=cph;
     }
 
     public static Hashtable computeAdviceLists(GlobalAspectInfo info) {
@@ -76,8 +72,8 @@ public class AdviceApplication {
 			}
 
 			if(matches) {
-			    apps.add(new AdviceApplication(current,current,
-							   ad,null));
+			    apps.add(new StmtAdviceApplication(ad,null,
+							       current));
 			}    
 		    }
 		}

@@ -7,9 +7,14 @@ import soot.jimple.*;
  *  Each joinpoint shadow will have one shadow type, so there will be
  *  exactly one implementation of {@link abc.weaving.aspectinfo.ShadowType}
  *  for each implementation of {@link abc.weaving.aspectinfo.ShadowPointcutHandler}.
+ *  @author Ganesh Sittampalam
+ *  @date 28-Apr-04
  */
 public interface ShadowPointcutHandler {
     public ShadowType getShadowType();
 
-    public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt);
+    /** Given the current statement and the entire chain, return false if we 
+	don't match at the current shadow, and true if we do
+     */
+    public boolean matchesAt(Stmt current);
 }

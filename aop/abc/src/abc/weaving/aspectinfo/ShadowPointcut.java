@@ -17,7 +17,7 @@ public class ShadowPointcut extends AbstractPointcut {
     }
 
     public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
-	return handler.matchesAt(cls,method,stmt);
+	return handler.matchesAt(stmt);
     }
 
     public String toString() {

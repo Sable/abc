@@ -17,7 +17,9 @@ public abstract class AbstractShadowPointcutHandler implements ShadowPointcutHan
 	}
     }
 
-    public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
+    /* remove this once all deriving classes implement it */
+    public boolean matchesAt(Stmt stmt) {
+	System.out.println("Returning false for unimplemented shadow pointcut type "+this.getClass());
 	return false;
     }
 
