@@ -154,7 +154,7 @@ public class AroundWeaver {
 			return methodName.startsWith("around$"); // TODO: something more solid
 		}
 		public static boolean isProceedMethodName(String methodName) {
-			return methodName.contains("$proceed$"); // TODO: something much more solid!
+			return methodName.indexOf("$proceed$")!=-1; // TODO: something much more solid!
 		}
 		private static boolean chainContainsLocal(Chain locals, String name) {
 			Iterator it = locals.iterator();
