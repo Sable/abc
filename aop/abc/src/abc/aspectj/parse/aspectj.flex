@@ -854,6 +854,6 @@ SingleCharacter = [^\r\n\'\\]
                }
            }
 
-         return new EOF(mypos, sym.EOF); 
+         return new EOF(new Position(file(),mypos.line()-1), sym.EOF); 
 
         }
