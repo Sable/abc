@@ -34,4 +34,11 @@ public class WithinConstructor extends LexicalPointcut {
     public String toString() {
 	return "withinconstructor("+pattern+")";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof WithinConstructor) {
+	    return pattern.equivalent(((WithinConstructor)otherpc).getPattern());
+	} else return false;
+    }
+
 }

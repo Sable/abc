@@ -140,4 +140,12 @@ public class Args extends DynamicValuePointcut {
 	while(it.hasNext()) 
 	    ((ArgPattern) (it.next())).getFreeVars(result);
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof Args) {
+	    List/*<ArgPattern>*/otherargs = ((Args)otherpc).getArgs();
+	    return args.equals(otherargs);
+	} else return false;
+    }
+
 }

@@ -25,6 +25,9 @@ public abstract class ArgPattern extends Syntax {
 	 Position pos);
 
     public abstract void getFreeVars(Set/*<String>*/ result);
-    
+
+    // Force subclasses to implement equals
+    public abstract boolean equals(Object o);
+
 
 }

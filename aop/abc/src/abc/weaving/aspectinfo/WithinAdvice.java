@@ -21,4 +21,11 @@ public class WithinAdvice extends LexicalPointcut {
     public String toString() {
 	return "withinadvice()";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof WithinAdvice) {
+	    return true;
+	} else return false;
+    }
+
 }

@@ -93,4 +93,13 @@ public class LocalPointcutVars extends Pointcut {
 	while(it.hasNext()) result.remove(((Formal) (it.next())).getName());
     }
 
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof LocalPointcutVars) {
+	    if (!pc.equals(((LocalPointcutVars)otherpc).getPointcut())) 
+		return false;
+	    List/*<Formal>*/ otherformals = ((LocalPointcutVars)otherpc).getFormals();
+	    return otherformals.equals(formals);
+	} else return false;
+    }
+
 }

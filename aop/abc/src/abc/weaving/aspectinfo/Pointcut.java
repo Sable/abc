@@ -179,4 +179,10 @@ public abstract class Pointcut extends Syntax {
     // Get a list of free variables bound by this pointcut
     public abstract void getFreeVars(Set/*<String>*/ result);
 
+    /** Compare for equivalence (structural) with another pc.
+     *  Not defined as equals() is we may want it to return true
+     *  for pointcuts that would not be considered equal */
+
+    public abstract boolean equivalent(Pointcut otherpc);
+
 }

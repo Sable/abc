@@ -32,4 +32,11 @@ public class TargetAny extends DynamicValuePointcut {
     public void registerSetupAdvice
 	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<Var>*/ result) {}
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof TargetAny) {
+	    return true;
+	} else return false;
+    }
+
 }

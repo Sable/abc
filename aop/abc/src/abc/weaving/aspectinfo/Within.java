@@ -29,5 +29,11 @@ public class Within extends LexicalPointcut {
     public String toString() {
 	return "within("+pattern+")";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof Within) {
+	    return pattern.equivalent(((Within)otherpc).getPattern());
+	} else return false;
+    }
     
 }

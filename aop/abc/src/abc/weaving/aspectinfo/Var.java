@@ -37,4 +37,10 @@ public class Var extends Syntax {
     //	return index;
     //}
 
+    public boolean equals(Object o) {
+	if (o instanceof Var) {
+	    return ((Var)o).getName().equals(name);
+	} else return false;
+    }
+
 }

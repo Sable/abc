@@ -38,4 +38,11 @@ public class ArgAny extends ArgPattern {
     }
 
     public void getFreeVars(Set/*<Var>*/ result) {}
+
+    public boolean equals(Object o) {
+	if (o instanceof ArgAny) {
+	    return true;
+	} else return false;
+    }
+
 }

@@ -23,4 +23,10 @@ public class Execution extends ShadowPointcut {
 	return "execution()";
     }
 
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof Execution) {
+	    return true;
+	} else return false;
+    }
+
 }

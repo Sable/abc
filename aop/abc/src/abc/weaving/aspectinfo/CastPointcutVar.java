@@ -68,4 +68,12 @@ public class CastPointcutVar extends Pointcut {
     public void getFreeVars(Set/*<String>*/ result) {
 	result.add(to.getName());
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof CastPointcutVar) {
+	    return (   (from.equals(((CastPointcutVar)otherpc).getFrom()))
+		    && (  to.equals(((CastPointcutVar)otherpc).getTo())));
+	} else return false;
+    }
+
 }

@@ -35,4 +35,11 @@ public class Handler extends ShadowPointcut {
     public String toString() {
 	return "handler("+pattern+")";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof Handler) {
+	    return pattern.equivalent(((Handler)otherpc).getPattern());
+	} else return false;
+    }
+
 }

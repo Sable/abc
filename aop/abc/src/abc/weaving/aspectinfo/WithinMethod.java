@@ -33,4 +33,11 @@ public class WithinMethod extends LexicalPointcut {
     public String toString() {
 	return "withinmethod("+pattern+")";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof WithinMethod) {
+	    return pattern.equivalent(((WithinMethod)otherpc).getPattern());
+	} else return false;
+    }
+
 }

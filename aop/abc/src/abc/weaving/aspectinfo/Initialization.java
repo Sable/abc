@@ -22,4 +22,11 @@ public class Initialization extends ShadowPointcut {
     public String toString() {
 	return "initialization()";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof Initialization) {
+	    return true;
+	} else return false;
+    }
+
 }

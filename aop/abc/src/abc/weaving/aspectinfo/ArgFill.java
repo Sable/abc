@@ -30,4 +30,10 @@ public class ArgFill extends ArgPattern {
 
     public void getFreeVars(Set/*<Var>*/ result) {}
 
+    public boolean equals(Object o) {
+	if (o instanceof ArgFill) {
+	    return true;
+	} else return false;
+    }
+
 }

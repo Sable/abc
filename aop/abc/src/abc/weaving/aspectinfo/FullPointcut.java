@@ -23,4 +23,11 @@ public class FullPointcut extends LexicalPointcut {
     public String toString() {
 	return "full";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof FullPointcut) {
+	    return true;
+	} else return false;
+    }
+
 }

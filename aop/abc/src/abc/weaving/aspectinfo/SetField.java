@@ -32,4 +32,11 @@ public class SetField extends ShadowPointcut {
     public String toString() {
 	return "set("+pattern+")";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof SetField) {
+	    return pattern.equivalent(((SetField)otherpc).getPattern());
+	} else return false;
+    }
+
 }

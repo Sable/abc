@@ -31,4 +31,10 @@ public class ArgType extends ArgAny {
     // permitted make doing a dynamic type test completely
     // pointless anyway
 
+    public boolean equals(Object o) {
+	if (o instanceof ArgType) {
+	    return (type.equals(((ArgType)o).getType()));
+	} else return false;
+    }
+
 }

@@ -64,4 +64,11 @@ public class NotPointcut extends Pointcut {
     public void getFreeVars(Set result) {
 	pc.getFreeVars(result);
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof NotPointcut) {
+	    return pc.equivalent(((NotPointcut)otherpc).getPointcut());
+	} else return false;
+    }
+
 }

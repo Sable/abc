@@ -36,4 +36,11 @@ public class ThisAny extends DynamicValuePointcut {
     public void registerSetupAdvice
 	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<String>*/ result) {}
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof ThisAny) {
+	    return true;
+	} else return false;
+    }
+
 }

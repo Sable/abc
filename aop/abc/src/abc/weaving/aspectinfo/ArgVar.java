@@ -61,4 +61,10 @@ public class ArgVar extends ArgAny {
 	result.add(var.getName());
     }
 
+    public boolean equals(Object o) {
+	if (o instanceof ArgVar) {
+	    return (var.equals(((ArgVar)o).getVar()));
+	} else return false;
+    }
+
 }

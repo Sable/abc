@@ -73,4 +73,12 @@ public class OrPointcut extends Pointcut {
 	pc1.getFreeVars(result);
 	pc2.getFreeVars(result);
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof OrPointcut) {
+	    return (   (pc1.equivalent(((OrPointcut)otherpc).getLeftPointcut()))
+		    && (pc2.equivalent(((OrPointcut)otherpc).getRightPointcut())));
+	} else return false;
+    }
+
 }

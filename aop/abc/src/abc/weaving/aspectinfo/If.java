@@ -120,4 +120,31 @@ public class If extends Pointcut {
 	// just want binding occurrences, so do nothing
     }
 
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof If) {
+	    If oif = (If)otherpc;
+
+	    if (this.hasJoinPoint() != oif.hasJoinPoint()) return false;
+	    if (this.hasJoinPointStaticPart() != oif.hasJoinPointStaticPart()) return false;
+	    if (this.hasEnclosingJoinPoint() != oif.hasEnclosingJoinPoint()) return false;
+
+	    // COMPARING VARS
+
+	    if (!this.vars.equals(oif.getVars())) return false;
+
+	    // COMPARING IMPLEMENTATIONS
+
+	    /* Note that this is probably restrictive (i don't know whether inlining duplicates
+	     * the methods used to implement if, and whether it matters) - if people are going
+	     * to be putting ifs in cflows, we might not be able to share the stack. shame */
+
+	    if (!this.impl.equals(oif.getImpl())) return false;
+
+	    // Otherwise, must be the same
+
+	    return true;
+
+	} else return false;
+    }
+
 }

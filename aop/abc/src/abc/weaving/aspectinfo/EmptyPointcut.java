@@ -25,4 +25,11 @@ public class EmptyPointcut extends LexicalPointcut {
     public String toString() {
 	return "empty";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof EmptyPointcut) {
+	    return true;
+	} else return false;
+    }
+
 }

@@ -24,4 +24,11 @@ public class WithinStaticInitializer extends LexicalPointcut {
     public String toString() {
 	return "withinstaticinitializer()";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof WithinStaticInitializer) {
+	    return true;
+	} else return false;
+    }
+
 }

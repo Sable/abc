@@ -45,8 +45,17 @@ public class Cflow extends Pointcut {
     private CflowSetup setupAdvice;
 
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
-	setupAdvice=CflowSetup.construct(context,pc,false,typeMap,getPosition(),depth);
-	GlobalAspectInfo.v().addAdviceDecl(setupAdvice);
+
+	GlobalCflowSetupFactory.CflowSetupContainer cfsCont = 
+	    GlobalCflowSetupFactory.construct(context,pc,false,typeMap,getPosition(),depth);
+
+	setupAdvice = cfsCont.getCfs();
+
+	// Should only do this if the advice has not already been added.
+
+	if (cfsCont.isFresh()) {
+	    GlobalAspectInfo.v().addAdviceDecl(setupAdvice);
+	}
     }
 
     public Residue matchesAt
@@ -63,6 +72,12 @@ public class Cflow extends Pointcut {
 
     public void getFreeVars(Set result) {
 	pc.getFreeVars(result);
+    }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof Cflow) {
+	    return pc.equivalent(((Cflow)otherpc).getPointcut());
+	} else return false;
     }
 	
 }

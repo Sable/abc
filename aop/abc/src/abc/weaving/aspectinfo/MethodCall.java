@@ -36,4 +36,11 @@ public class MethodCall extends ShadowPointcut {
     public String toString() {
 	return "call("+pattern+")";
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof MethodCall) {
+	    return pattern.equivalent(((MethodCall)otherpc).getPattern());
+	} else return false;
+    }
+
 }

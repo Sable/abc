@@ -72,4 +72,12 @@ public class AndPointcut extends Pointcut {
 	pc1.getFreeVars(result);
 	pc2.getFreeVars(result);
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	if (otherpc instanceof AndPointcut) {
+	    return (   (pc1.equivalent(((AndPointcut)otherpc).getLeftPointcut()))
+		    && (pc2.equivalent(((AndPointcut)otherpc).getRightPointcut())));
+	} else return false;
+    }
+
 }

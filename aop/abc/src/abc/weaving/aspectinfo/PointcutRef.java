@@ -119,4 +119,11 @@ public class PointcutRef extends Pointcut {
 	throw new InternalCompilerError
 	    ("PointcutRef should have been inlined by now",getPosition());
     }
+
+    public boolean equivalent(Pointcut otherpc) {
+	throw new InternalCompilerError
+	    ("PointcutRef should have been inlined by now (equivalent(pc))",
+	     getPosition());
+    }
+
 }
