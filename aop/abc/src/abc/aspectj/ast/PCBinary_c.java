@@ -54,8 +54,9 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
     }
     
 	public Set pcRefs() {
-		left.pcRefs().addAll(right.pcRefs());
-		return left.pcRefs();
+		Set pcls = left.pcRefs();
+		pcls.addAll(right.pcRefs());
+		return pcls;
 	}
 	
 	public boolean isDynamic() {
