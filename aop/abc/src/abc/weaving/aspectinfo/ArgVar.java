@@ -19,6 +19,10 @@ public class ArgVar extends ArgAny {
 	return var;
     }
 
+    public String toString() {
+	return var.toString();
+    }
+
     public Residue matchesAt(WeavingEnv we,ContextValue cv) {
 	return Bind.construct
 	    (cv,we.getAbcType(var).getSootType(),we.getWeavingVar(var));

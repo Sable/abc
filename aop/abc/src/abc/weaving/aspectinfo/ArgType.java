@@ -9,6 +9,10 @@ import abc.weaving.residues.*;
 public class ArgType extends ArgAny {
     private AbcType type;
 
+    public String toString() {
+	return type.toString();
+    }
+
     public ArgType(AbcType type, Position pos) {
 	super(pos);
 	this.type = type;

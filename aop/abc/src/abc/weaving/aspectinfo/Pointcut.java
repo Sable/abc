@@ -9,11 +9,11 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 import polyglot.types.SemanticException;
 
 /** A pointcut designator.
  *  @author Ganesh Sittampalam
- *  @date 28-Apr-04
  */
 public abstract class Pointcut extends Syntax {
 
@@ -52,6 +52,10 @@ public abstract class Pointcut extends Syntax {
 	    Iterator it=formals.iterator();
 	    while(it.hasNext()) {
 		Formal f=(Formal) it.next();
+		if(f.getName()==null)
+		    throw new InternalCompilerError("formal with null name: "+f);
+		if(f.getType()==null)
+		    throw new InternalCompilerError("formal with null type: "+f);
 		typeEnv.put(f.getName(),f.getType());
 	    }
 	}
@@ -125,17 +129,17 @@ public abstract class Pointcut extends Syntax {
 		// a "not" might have a nested if, and since it can't bind anything 
 		// moving it can't matter
 		if(cur instanceof If || cur instanceof NotPointcut) 
-		    ifs=new AndPointcut(ifs,cur,pos);
-		else res=new AndPointcut(res,cur,pos);
+		    ifs=AndPointcut.construct(ifs,cur,pos);
+		else res=AndPointcut.construct(res,cur,pos);
 	    }
-	    return new AndPointcut(res,ifs,pos);
+	    return AndPointcut.construct(res,ifs,pos);
 	}
 
 	private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/ disjuncts,Position pos) {
 	    Iterator it=disjuncts.iterator();
 	    Pointcut res=new EmptyPointcut(pos);
 	    while(it.hasNext()) {
-		res=new OrPointcut(res,makeConjuncts((List) it.next(),pos),pos);
+		res=OrPointcut.construct(res,makeConjuncts((List) it.next(),pos),pos);
 	    }
 	    return res;
 	}

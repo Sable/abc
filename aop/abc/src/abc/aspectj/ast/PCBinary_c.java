@@ -85,11 +85,11 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (op == PCBinary.COND_AND) {
-	    return new abc.weaving.aspectinfo.AndPointcut(left.makeAIPointcut(),right.makeAIPointcut(), position());
+	    return abc.weaving.aspectinfo.AndPointcut.construct(left.makeAIPointcut(),right.makeAIPointcut(), position());
 	} else if (op == PCBinary.COND_OR) {
-	    return new abc.weaving.aspectinfo.OrPointcut(left.makeAIPointcut(),right.makeAIPointcut(), position());
+	    return abc.weaving.aspectinfo.OrPointcut.construct(left.makeAIPointcut(),right.makeAIPointcut(), position());
 	} else {
-	    throw new RuntimeException("Unexpected binary pointcut operation: "+op);
+	    throw new InternalCompilerError("Unexpected binary pointcut operation: "+op,position());
 	}
     }
 }

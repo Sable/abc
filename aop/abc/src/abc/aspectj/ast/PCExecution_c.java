@@ -61,9 +61,9 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
 	    throw new RuntimeException
 		("Unexpected MethodConstructorPattern type in execution pointcut: "+pat);
 	}
-	return (new abc.weaving.aspectinfo.AndPointcut
-		(withincode,
-		 new abc.weaving.aspectinfo.Execution(position()),
-		 position()));
+	return abc.weaving.aspectinfo.AndPointcut.construct
+	    (withincode,
+	     new abc.weaving.aspectinfo.Execution(position()),
+	     position());
     }
 }

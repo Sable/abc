@@ -34,6 +34,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 	while(it.hasNext()) {
 	    String fv=(String) (it.next());
 	    AbcType type=(AbcType) typeMap.get(fv);
+	    if(type==null) throw new InternalCompilerError("variable "+fv+" not in typemap");
 	    Formal f=new Formal(type,fv,pos);
 	    formals.add(f);
 	    actuals.add(new Var(fv,pos));

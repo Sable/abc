@@ -17,6 +17,10 @@ public class ArgAny extends ArgPattern {
 	return AlwaysMatch.v;
     }
 
+    public String toString() {
+	return "*";
+    }
+
     public Var substituteForPointcutFormal
 	(Hashtable/*<String,Var>*/ renameEnv,
 	 Hashtable/*<String,AbcType>*/ typeEnv,

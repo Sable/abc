@@ -101,7 +101,7 @@ public class PointcutRef extends Pointcut {
 	Iterator castsIt=newCasts.iterator();
 	while(castsIt.hasNext()) {
 	    CastPointcutVar cpv=(CastPointcutVar) castsIt.next();
-	    pc=new AndPointcut(pc,cpv,getPosition());
+	    pc=AndPointcut.construct(pc,cpv,getPosition());
 	}
 
 	if(!newLocals.isEmpty()) {

@@ -28,7 +28,7 @@ public class Args extends DynamicValuePointcut {
     }
 
     public String toString() {
-	StringBuffer out=new StringBuffer("(");
+	StringBuffer out=new StringBuffer("args(");
 	Iterator it=args.iterator();
 	while(it.hasNext()) {
 	    out.append(it.next());

@@ -78,7 +78,13 @@ public class LocalPointcutVars extends Pointcut {
     }
 
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
-	pc.registerSetupAdvice(context,typeMap);
+	Hashtable newTypeMap=new Hashtable(typeMap);
+	Iterator it=formals.iterator();
+	while(it.hasNext()) {
+	    Formal f=(Formal) it.next();
+	    newTypeMap.put(f.getName(),f.getType());
+	}
+	pc.registerSetupAdvice(context,newTypeMap);
     }
 
     public void getFreeVars(Set/*<String>*/ result) {

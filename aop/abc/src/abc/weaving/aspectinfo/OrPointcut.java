@@ -16,10 +16,16 @@ public class OrPointcut extends Pointcut {
     private Pointcut pc1;
     private Pointcut pc2;
 
-    public OrPointcut(Pointcut pc1, Pointcut pc2, Position pos) {
+    private OrPointcut(Pointcut pc1, Pointcut pc2, Position pos) {
 	super(pos);
 	this.pc1 = pc1;
 	this.pc2 = pc2;
+    }
+
+    public static Pointcut construct(Pointcut pc1, Pointcut pc2, Position pos) {
+	if(pc2 instanceof EmptyPointcut || pc1 instanceof FullPointcut) return pc1;
+	if(pc1 instanceof EmptyPointcut || pc2 instanceof FullPointcut) return pc2;
+	return new OrPointcut(pc1,pc2,pos);
     }
 
     public Pointcut getLeftPointcut() {
@@ -44,7 +50,7 @@ public class OrPointcut extends Pointcut {
 	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv,context);
 	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv,context);
 	if(pc1==this.pc1 && pc2==this.pc2) return this;
-	else return new OrPointcut(pc1,pc2,getPosition());
+	else return construct(pc1,pc2,getPosition());
     }
 
     protected DNF dnf() {

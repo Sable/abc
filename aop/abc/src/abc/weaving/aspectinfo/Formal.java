@@ -2,6 +2,7 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
@@ -16,6 +17,10 @@ public class Formal extends Syntax {
 	super(pos);
 	this.type = type;
 	this.name = name;
+	if(name==null) 
+	    throw new InternalCompilerError("Constructing a formal with a null name");
+	if(type==null) 
+	    throw new InternalCompilerError("Constructing a formal with a null type");
     }
 
     public AbcType getType() {

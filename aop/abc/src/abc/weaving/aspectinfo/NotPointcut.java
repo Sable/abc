@@ -15,11 +15,17 @@ import abc.weaving.residues.*;
 public class NotPointcut extends Pointcut {
     private Pointcut pc;
 
-    public NotPointcut(Pointcut pc, Position pos) {
+    private NotPointcut(Pointcut pc, Position pos) {
 	super(pos);
 	this.pc = pc;
     }
 
+    public static Pointcut construct(Pointcut pc, Position pos) {
+	if(pc instanceof EmptyPointcut) return new FullPointcut(pos);
+	if(pc instanceof FullPointcut) return new EmptyPointcut(pos);
+	return new NotPointcut(pc,pos);
+    }
+    
     public Pointcut getPointcut() {
 	return pc;
     }
@@ -38,7 +44,7 @@ public class NotPointcut extends Pointcut {
 			      Aspect context) {
 	Pointcut pc=this.pc.inline(renameEnv,typeEnv,context);
 	if(pc==this.pc) return this;
-	else return new NotPointcut(pc,getPosition());
+	else return construct(pc,getPosition());
     }
 
     protected DNF dnf() {
