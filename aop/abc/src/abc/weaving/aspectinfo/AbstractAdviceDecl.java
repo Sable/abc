@@ -157,11 +157,11 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     }
 
     public Residue preResidue(ShadowMatch sm) {
-        return AlwaysMatch.v;
+        return AlwaysMatch.v();
     }
 
     public Residue postResidue(ShadowMatch sm) {
-        return AlwaysMatch.v;
+        return AlwaysMatch.v();
     }
 
     /** Produce a chain containing the statements to execute this piece of advice.

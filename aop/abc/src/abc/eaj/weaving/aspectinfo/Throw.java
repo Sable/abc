@@ -29,7 +29,7 @@ import abc.weaving.residues.*;
 
 import abc.eaj.weaving.matching.*;
 
-/** Handler for <code>throw</code> shadow pointcut. 
+/** Handler for <code>throw</code> shadow pointcut.
  *  @author Julian Tibble
  */
 public class Throw extends ShadowPointcut
@@ -49,11 +49,11 @@ public class Throw extends ShadowPointcut
 
     protected Residue matchesAt(ShadowMatch sm)
     {
-        if (!(sm instanceof ThrowShadowMatch)) return null;
+        if (!(sm instanceof ThrowShadowMatch)) return NeverMatch.v();
         Type throw_type = ((ThrowShadowMatch) sm).getThrowType();
 
-        if (!getPattern().matchesType(throw_type)) return null;
-        return AlwaysMatch.v;
+        if (!getPattern().matchesType(throw_type)) return NeverMatch.v();
+        return AlwaysMatch.v();
     }
 
     public String toString()
@@ -61,9 +61,9 @@ public class Throw extends ShadowPointcut
         return "throw(" + pattern + ")";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
     public boolean unify(Pointcut otherpc, Unification unification)
     {
         if (otherpc.getClass() == this.getClass()) {

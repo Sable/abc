@@ -22,6 +22,7 @@ package abc.weaving.residues;
 import soot.SootMethod;
 import soot.util.Chain;
 import soot.jimple.*;
+import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
@@ -29,7 +30,7 @@ import java.util.*;
 /** Disjunction of two residues
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
- */ 
+ */
 public class OrResidue extends Residue {
     private ResidueBox left = new ResidueBox();
     private ResidueBox right = new ResidueBox();
@@ -59,9 +60,9 @@ public class OrResidue extends Residue {
     }
 
     public Residue resetForReweaving() {
-    	left.setResidue(left.getResidue().resetForReweaving());
-    	right.setResidue(right.getResidue().resetForReweaving());
-    	return this;
+        left.setResidue(left.getResidue().resetForReweaving());
+        right.setResidue(right.getResidue().resetForReweaving());
+        return this;
     }
     /** Private constructor to force use of smart constructor */
     private OrResidue(Residue left,Residue right) {
@@ -73,8 +74,12 @@ public class OrResidue extends Residue {
      *  to mimic ajc behaviour
      */
     public static Residue construct(Residue left,Residue right) {
-        if(NeverMatch.neverMatches(left) || right instanceof AlwaysMatch) 
+        if(left==null || right==null)
+            throw new InternalCompilerError("null residue created");
+        // false || x = x ; x || true = true
+        if(NeverMatch.neverMatches(left) || right instanceof AlwaysMatch)
             return right;
+        // true || x = true ; x || right = x
         if(left instanceof AlwaysMatch || NeverMatch.neverMatches(right))
             return left;
         return new OrResidue(left,right);
@@ -86,8 +91,8 @@ public class OrResidue extends Residue {
         if(sense) {
             // want to fall through if either left or right succeeds, otherwise jump to fail
             Stmt nopStmt=Jimple.v().newNopStmt();
-	    if(abc.main.Debug.v().tagResidueCode)
-		nopStmt.addTag(new soot.tagkit.StringTag("^^ nop for or residue: "+this));
+            if(abc.main.Debug.v().tagResidueCode)
+                nopStmt.addTag(new soot.tagkit.StringTag("^^ nop for or residue: "+this));
             // if left succeeds, goto nop stmt, otherwise fall through
             Stmt middle=getLeftOp().codeGen(method,localgen,units,begin,nopStmt,false,wc);
             // if right succeeds fall through, otherwise jump to fail

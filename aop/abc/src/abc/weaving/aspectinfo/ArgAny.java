@@ -28,49 +28,49 @@ import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** An argument pattern denoting any type. 
+/** An argument pattern denoting any type.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
  */
 public class ArgAny extends ArgPattern {
     public ArgAny(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     public Residue matchesAt(WeavingEnv we,ContextValue cv) {
-	return AlwaysMatch.v;
+        return AlwaysMatch.v();
     }
 
     public String toString() {
-	return "*";
+        return "*";
     }
 
     public Var substituteForPointcutFormal
-	(Hashtable/*<String,Var>*/ renameEnv,
-	 Hashtable/*<String,AbcType>*/ typeEnv,
-	 Formal formal,
-	 List/*<Formal>*/ newLocals,
-	 List /*<CastPointcutVar>*/ newCasts,
-	 Position pos) {
+        (Hashtable/*<String,Var>*/ renameEnv,
+         Hashtable/*<String,AbcType>*/ typeEnv,
+         Formal formal,
+         List/*<Formal>*/ newLocals,
+         List /*<CastPointcutVar>*/ newCasts,
+         Position pos) {
 
-	String name=Pointcut.freshVar();
-	Var v=new Var(name,pos);
-	
-	newLocals.add(new Formal(formal.getType(),name,pos));
+        String name=Pointcut.freshVar();
+        Var v=new Var(name,pos);
 
-	return v;
+        newLocals.add(new Formal(formal.getType(),name,pos));
+
+        return v;
     }
 
     public void getFreeVars(Set/*<Var>*/ result) {}
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
-	 */
-	public boolean unify(ArgPattern other, Unification unification) {
-		if (other.getClass() == this.getClass()) {
-			unification.setArgPattern(this);
-			return true;
-		} else return false;
-	}
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
+         */
+        public boolean unify(ArgPattern other, Unification unification) {
+                if (other.getClass() == this.getClass()) {
+                        unification.setArgPattern(this);
+                        return true;
+                } else return false;
+        }
 }

@@ -29,78 +29,78 @@ import soot.jimple.*;
 import soot.util.Chain;
 
 import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
-import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
 import abc.soot.util.LocalGeneratorEx;
 
-/** Advice specification for before advice. 
+/** Advice specification for before advice.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  */
 public class BeforeAdvice extends AbstractAdviceSpec {
     public BeforeAdvice(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     public String toString() {
-	return "before";
+        return "before";
     }
 
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
-	return sm.supportsBefore() ? AlwaysMatch.v : null;
+        if(sm.supportsBefore()) return AlwaysMatch.v();
+        else return NeverMatch.v();
     }
 
-    private static void debug(String message) { 
-	if(abc.main.Debug.v().beforeWeaver) 
-	    System.err.println("BEF*** " + message);
+    private static void debug(String message) {
+        if(abc.main.Debug.v().beforeWeaver)
+            System.err.println("BEF*** " + message);
     }
 
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
-	WeavingContext wc=adviceappl.advice.makeWeavingContext();
-	doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
+        WeavingContext wc=adviceappl.advice.makeWeavingContext();
+        doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
     }
 
     static void doWeave(SootMethod method,
-			LocalGeneratorEx localgen,
-			AdviceApplication adviceappl,
-			Residue residue,
-			WeavingContext wc) {
+                        LocalGeneratorEx localgen,
+                        AdviceApplication adviceappl,
+                        Residue residue,
+                        WeavingContext wc) {
 
-	ShadowPoints shadowpoints=adviceappl.shadowmatch.sp;
-	AbstractAdviceDecl advicedecl=adviceappl.advice;
+        ShadowPoints shadowpoints=adviceappl.shadowmatch.sp;
+        AbstractAdviceDecl advicedecl=adviceappl.advice;
 
-	debug("Before weaver running at "+shadowpoints.getShadowMatch());
-	
-	Body b = method.getActiveBody();
-        // this non patching chain is needed so that Soot doesn't "Fix" 
-        // the traps. 
+        debug("Before weaver running at "+shadowpoints.getShadowMatch());
+
+        Body b = method.getActiveBody();
+        // this non patching chain is needed so that Soot doesn't "Fix"
+        // the traps.
         Chain units = b.getUnits().getNonPatchingChain();
 
-	// find location to weave in statements, 
-	// just after beginning of join point shadow
-	Stmt beginshadow = shadowpoints.getBegin();
-	Stmt followingstmt = (Stmt) units.getSuccOf(beginshadow);
+        // find location to weave in statements,
+        // just after beginning of join point shadow
+        Stmt beginshadow = shadowpoints.getBegin();
+        Stmt followingstmt = (Stmt) units.getSuccOf(beginshadow);
 
-	Stmt failpoint = Jimple.v().newNopStmt();
-	units.insertBefore(failpoint,followingstmt);
+        Stmt failpoint = Jimple.v().newNopStmt();
+        units.insertBefore(failpoint,followingstmt);
 
-	debug("Weaving in residue: "+residue);
+        debug("Weaving in residue: "+residue);
 
-	// weave in residue
-	Stmt endresidue=residue.codeGen
-	    (method,localgen,units,beginshadow,failpoint,true,wc);
+        // weave in residue
+        Stmt endresidue=residue.codeGen
+            (method,localgen,units,beginshadow,failpoint,true,wc);
 
-	debug("Weaving in advice execution statements");
+        debug("Weaving in advice execution statements");
 
         Chain stmts = advicedecl.makeAdviceExecutionStmts(adviceappl,localgen,wc);
 
         debug("Generated stmts: " + stmts);
-	
-	for( Iterator nextstmtIt = stmts.iterator(); nextstmtIt.hasNext(); ) {
-	
-	    final Stmt nextstmt = (Stmt) nextstmtIt.next();
-	    units.insertBefore(nextstmt,failpoint);
-	}
+
+        for( Iterator nextstmtIt = stmts.iterator(); nextstmtIt.hasNext(); ) {
+
+            final Stmt nextstmt = (Stmt) nextstmtIt.next();
+            units.insertBefore(nextstmt,failpoint);
+        }
     }
 }

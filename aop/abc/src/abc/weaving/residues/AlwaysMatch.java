@@ -28,28 +28,27 @@ import abc.weaving.weaver.WeavingContext;
 /** A "dynamic" residue that always matches.
  *  Intended for convenience during generation and residue analysis process.
  *  @author Ganesh Sittampalam
- */ 
+ */
 
 public class AlwaysMatch extends Residue {
-    // is this worthwhile? (save on heap turnover)
-    public final static AlwaysMatch v=new AlwaysMatch();
+    private final static AlwaysMatch v=new AlwaysMatch();
     public static AlwaysMatch v() {
-	return v;
+        return v;
     }
 
     public String toString() {
-	return "always";
+        return "always";
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,boolean sense,
-			WeavingContext wc) {
+                        Chain units,Stmt begin,Stmt fail,boolean sense,
+                        WeavingContext wc) {
 
-	if(sense) return begin;
+        if(sense) return begin;
 
-	Stmt abort=Jimple.v().newGotoStmt(fail);
-	units.insertAfter(abort,begin);
-	return abort;
+        Stmt abort=Jimple.v().newGotoStmt(fail);
+        units.insertAfter(abort,begin);
+        return abort;
     }
 
 }

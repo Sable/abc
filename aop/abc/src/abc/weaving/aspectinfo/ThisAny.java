@@ -45,12 +45,12 @@ public class ThisAny extends DynamicValuePointcut {
                                    SootMethod method,
                                    ShadowMatch sm) {
         ContextValue cv=sm.getThisContextValue();
-        if(cv==null) return null;
+        if(cv==null) return NeverMatch.v();
         return matchesAt(we,cv);
     }
 
     protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
-        return AlwaysMatch.v;
+        return AlwaysMatch.v();
     }
 
     public String toString() {

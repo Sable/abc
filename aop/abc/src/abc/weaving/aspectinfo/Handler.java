@@ -30,7 +30,7 @@ import polyglot.util.Position;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** Handler for <code>handler</code> shadow pointcut. 
+/** Handler for <code>handler</code> shadow pointcut.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
@@ -39,42 +39,39 @@ public class Handler extends ShadowPointcut {
     private ClassnamePattern pattern;
 
     public Handler(ClassnamePattern pattern,Position pos) {
-	super(pos);
-	this.pattern = pattern;
+        super(pos);
+        this.pattern = pattern;
     }
 
     public ClassnamePattern getPattern() {
-	return pattern;
+        return pattern;
     }
 
     protected Residue matchesAt(ShadowMatch sm) {
-	if(!(sm instanceof HandlerShadowMatch)) return null;
-	SootClass exc=((HandlerShadowMatch) sm).getException();
+        if(!(sm instanceof HandlerShadowMatch)) return NeverMatch.v();
+        SootClass exc=((HandlerShadowMatch) sm).getException();
 
-	// FIXME: Hack should be removed when patterns are added
-	if(getPattern()==null) return AlwaysMatch.v;
-
-	if(!getPattern().matchesClass(exc)) return null;
-	return AlwaysMatch.v;
+        if(!getPattern().matchesClass(exc)) return NeverMatch.v();
+        return AlwaysMatch.v();
 
     }
 
     public String toString() {
-	return "handler("+pattern+")";
+        return "handler("+pattern+")";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			if (pattern.equivalent(((Handler)otherpc).getPattern())) {
-				unification.setPointcut(this);
-				return true;
-			} else return false;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        if (pattern.equivalent(((Handler)otherpc).getPattern())) {
+                                unification.setPointcut(this);
+                                return true;
+                        } else return false;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

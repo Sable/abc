@@ -32,30 +32,30 @@ import abc.weaving.residues.*;
 public class WithinStaticInitializer extends LexicalPointcut {
 
     public WithinStaticInitializer(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     protected Residue matchesAt(SootClass cls,SootMethod method) {
-	if(!method.isStatic()) return null;
-	if(!method.getName().equals(SootMethod.staticInitializerName)) 
-	    return null;
-	return AlwaysMatch.v;
+        if(!method.isStatic()) return NeverMatch.v();
+        if(!method.getName().equals(SootMethod.staticInitializerName))
+            return NeverMatch.v();
+        return AlwaysMatch.v();
     }
 
     public String toString() {
-	return "withinstaticinitializer()";
+        return "withinstaticinitializer()";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			unification.setPointcut(this);
-			return true;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        unification.setPointcut(this);
+                        return true;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

@@ -26,26 +26,26 @@ import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.*;
 
 
-/** A <code>singleton</code> per clause. 
+/** A <code>singleton</code> per clause.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  */
 public class Singleton extends Per {
     public Singleton(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     public String toString() {
-	return "issingleton";
+        return "issingleton";
     }
 
     public void registerSetupAdvice(Aspect aspct) {}
 
     public Residue matchesAt(Aspect aspct,ShadowMatch sm) {
-	return AlwaysMatch.v;
+        return AlwaysMatch.v();
     }
 
     public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) {
-	return new AspectOf(aspct.getInstanceClass().getSootClass(),null);
+        return new AspectOf(aspct.getInstanceClass().getSootClass(),null);
     }
 }

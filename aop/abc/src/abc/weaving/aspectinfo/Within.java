@@ -26,7 +26,7 @@ import soot.*;
 import polyglot.util.Position;
 import abc.weaving.residues.*;
 
-/** Handler for <code>within</code> condition pointcut. 
+/** Handler for <code>within</code> condition pointcut.
  *  The within(ClassPattern) pointcut matches any join point lexically contained
  *  within a class matching ClassPattern.
  *  @author Aske Simon Christensen
@@ -36,41 +36,41 @@ public class Within extends LexicalPointcut {
     private ClassnamePattern pattern;
 
     public Within(ClassnamePattern pattern,Position pos) {
-	super(pos);
-	this.pattern = pattern;
+        super(pos);
+        this.pattern = pattern;
     }
 
     public ClassnamePattern getPattern() {
-	return pattern;
+        return pattern;
     }
 
 
     final protected Residue matchesAt(SootClass cls,SootMethod method) {
-	return matchesAt(cls);
+        return matchesAt(cls);
     }
-    
+
     protected Residue matchesAt(SootClass cls) {
-	if(getPattern().matchesClass(cls)) return AlwaysMatch.v;
-	if(cls.hasOuterClass()) return matchesAt(cls.getOuterClass());
-	return null;
+        if(getPattern().matchesClass(cls)) return AlwaysMatch.v();
+        if(cls.hasOuterClass()) return matchesAt(cls.getOuterClass());
+        return NeverMatch.v();
     }
 
     public String toString() {
-	return "within("+pattern+")";
+        return "within("+pattern+")";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			if (pattern.equivalent(((Within)otherpc).getPattern())) {
-				unification.setPointcut(this);
-				return true;
-			} else return false;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        if (pattern.equivalent(((Within)otherpc).getPattern())) {
+                                unification.setPointcut(this);
+                                return true;
+                        } else return false;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

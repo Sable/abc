@@ -36,27 +36,27 @@ import abc.weaving.residues.*;
 public class EmptyPointcut extends LexicalPointcut {
 
     public EmptyPointcut(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     protected Residue matchesAt(SootClass cls,SootMethod method) {
-	return NeverMatch.v;
+        return NeverMatch.v();
     }
-    
+
     public String toString() {
-	return "empty";
+        return "empty";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			unification.setPointcut(this);
-			return true;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        unification.setPointcut(this);
+                        return true;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

@@ -25,33 +25,33 @@ import soot.*;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.*;
 
-/** A <code>pertarget</code> per clause. 
+/** A <code>pertarget</code> per clause.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  */
 public class PerTarget extends PerPointcut {
     public PerTarget(Pointcut pc, Position pos) {
-	super(pc, pos);
+        super(pc, pos);
     }
 
     public String toString() {
-	return "pertarget("+getPointcut()+")";
+        return "pertarget("+getPointcut()+")";
     }
 
     public void registerSetupAdvice(Aspect aspct) {
-	GlobalAspectInfo.v().addAdviceDecl(new PerTargetSetup(aspct,getPointcut(),getPosition()));
+        GlobalAspectInfo.v().addAdviceDecl(new PerTargetSetup(aspct,getPointcut(),getPosition()));
     }
 
 
     public Residue matchesAt(Aspect aspct,ShadowMatch sm) {
-	ContextValue targetCV=sm.getTargetContextValue();
-	if(targetCV==null) return null;
-	return new HasAspect(aspct.getInstanceClass().getSootClass(),targetCV);
+        ContextValue targetCV=sm.getTargetContextValue();
+        if(targetCV==null) return NeverMatch.v();
+        return new HasAspect(aspct.getInstanceClass().getSootClass(),targetCV);
     }
 
     public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) {
-	ContextValue targetCV=sm.getTargetContextValue();
-	if(targetCV==null) return null;
-	return new AspectOf(aspct.getInstanceClass().getSootClass(),targetCV);
+        ContextValue targetCV=sm.getTargetContextValue();
+        if(targetCV==null) return NeverMatch.v();
+        return new AspectOf(aspct.getInstanceClass().getSootClass(),targetCV);
     }
 }

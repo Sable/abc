@@ -117,48 +117,63 @@ public abstract class AdviceApplication {
                 adviceIt.hasNext();) {
                 final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
 
-                Pointcut pc=ad.getPointcut();
-                WeavingEnv we=ad.getWeavingEnv();
+                try {
 
-                if(abc.main.Debug.v().showPointcutMatching)
-                    System.out.println("Matching "+pc+" at "+sm);
+                    Pointcut pc=ad.getPointcut();
+                    WeavingEnv we=ad.getWeavingEnv();
 
-                // manual short-circuit logic
-                Residue residue=AlwaysMatch.v;
+                    if(abc.main.Debug.v().showPointcutMatching)
+                        System.out.println("Matching "+pc+" at "+sm);
 
-                if(!NeverMatch.neverMatches(residue))
-                    residue=AndResidue.construct
-                        (residue,ad.preResidue(sm));
+                    // manual short-circuit logic
+                    Residue residue=AlwaysMatch.v();
 
-                if(!NeverMatch.neverMatches(residue))
-                    residue=AndResidue.construct
-                        (residue,pc.matchesAt(we,cls,method,sm));
+                    if(!NeverMatch.neverMatches(residue))
+                        residue=AndResidue.construct
+                            (residue,ad.preResidue(sm));
 
-                if(!NeverMatch.neverMatches(residue))
-                    residue=AndResidue.construct
-                        (residue,ad.postResidue(sm));
+                    if(!NeverMatch.neverMatches(residue))
+                        residue=AndResidue.construct
+                            (residue,pc.matchesAt(we,cls,method,sm));
 
-                // Mostly this is just to eliminate advice at shadow points
-                // where it can't apply - e.g. after advice at handlers
-                // ajc gives a warning if we throw away a match here;
-                // we probably should too. (FIXME)
-                // In the case of AfterReturningArg it does generate a real
-                // residue, but this may go away if we put the return value
-                // in the shadowpoints.
-                // Note that since the AdviceSpec for DeclareMessage is null,
-                // this needs to come after the postResidue above. This will
-                // probably change in future.
+                    if(!NeverMatch.neverMatches(residue))
+                        residue=AndResidue.construct
+                            (residue,ad.postResidue(sm));
 
-                if(!NeverMatch.neverMatches(residue))
-                    residue=AndResidue.construct
-                        (residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
+                    // Mostly this is just to eliminate advice at shadow points
+                    // where it can't apply - e.g. after advice at handlers
+                    // ajc gives a warning if we throw away a match here;
+                    // we probably should too. (FIXME)
+                    // In the case of AfterReturningArg it does generate a real
+                    // residue, but this may go away if we put the return value
+                    // in the shadowpoints.
+                    // Note that since the AdviceSpec for DeclareMessage is null,
+                    // this needs to come after the postResidue above. This will
+                    // probably change in future.
 
-                if(abc.main.Debug.v().showPointcutMatching
-                   && !NeverMatch.neverMatches(residue))
-                    System.out.println("residue: "+residue);
+                    if(!NeverMatch.neverMatches(residue))
+                        residue=AndResidue.construct
+                            (residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
 
-                if(!NeverMatch.neverMatches(residue))
-                    sm.addAdviceApplication(mal,ad,residue);
+                    if(abc.main.Debug.v().showPointcutMatching
+                       && !NeverMatch.neverMatches(residue))
+                        System.out.println("residue: "+residue);
+
+                    if(!NeverMatch.neverMatches(residue))
+                        sm.addAdviceApplication(mal,ad,residue);
+                } catch(InternalCompilerError e) {
+                    throw new InternalCompilerError
+                        (e.message(),
+                         e.position()==null
+                         ? ad.getPosition()
+                         : e.position(),
+                         e.getCause());
+            } catch(Throwable e) {
+                throw new InternalCompilerError
+                    ("Error during matching",
+                     ad.getPosition(),
+                     e);
+            }
             }
             mal.flush();
         }

@@ -25,32 +25,32 @@ import soot.*;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.*;
 
-/** A <code>perthis</code> per clause. 
+/** A <code>perthis</code> per clause.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  */
 public class PerThis extends PerPointcut {
     public PerThis(Pointcut pc, Position pos) {
-	super(pc, pos);
+        super(pc, pos);
     }
 
     public String toString() {
-	return "perthis("+getPointcut()+")";
+        return "perthis("+getPointcut()+")";
     }
 
     public void registerSetupAdvice(Aspect aspct) {
-	GlobalAspectInfo.v().addAdviceDecl(new PerThisSetup(aspct,getPointcut(),getPosition()));
+        GlobalAspectInfo.v().addAdviceDecl(new PerThisSetup(aspct,getPointcut(),getPosition()));
     }
 
     public Residue matchesAt(Aspect aspct,ShadowMatch sm) {
-	ContextValue thisCV=sm.getThisContextValue();
-	if(thisCV==null) return null;
-	return new HasAspect(aspct.getInstanceClass().getSootClass(),thisCV);
+        ContextValue thisCV=sm.getThisContextValue();
+        if(thisCV==null) return NeverMatch.v();
+        return new HasAspect(aspct.getInstanceClass().getSootClass(),thisCV);
     }
 
     public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) {
-	ContextValue thisCV=sm.getThisContextValue();
-	if(thisCV==null) return null;
-	return new AspectOf(aspct.getInstanceClass().getSootClass(),thisCV);
+        ContextValue thisCV=sm.getThisContextValue();
+        if(thisCV==null) return NeverMatch.v();
+        return new AspectOf(aspct.getInstanceClass().getSootClass(),thisCV);
     }
 }

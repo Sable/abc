@@ -32,22 +32,22 @@ import abc.weaving.weaver.WeavingContext;
 /** Bind a context value to a local or argument
  *  @author Ganesh Sittampalam
  *  @date 30-Apr-04
- */ 
+ */
 
 public class Bind extends Residue {
     public ContextValue value;
     public WeavingVar variable;
 
     Bind(ContextValue value,WeavingVar variable) {
-	this.value=value;
-	this.variable=variable;
+        this.value=value;
+        this.variable=variable;
     }
 
     public Residue resetForReweaving() {
-    	variable.resetForReweaving();
-    	return this;
+        variable.resetForReweaving();
+        return this;
     }
-    
+
     // FIXME : restructure WeavingVars and delegate this all to that. In fact,
     // redesign ContextValue/WeavingVar structure so it's all uniform.
     // I *think* the type parameter is redundant except in the case of CflowSetup
@@ -55,105 +55,105 @@ public class Bind extends Residue {
     // and mustBox will be true. In other boxing situations they will also differ, but
     // we don't currently inspect the type anyway.
     public static Residue construct(ContextValue value,Type type,WeavingVar variable) {
-	if(abc.main.Debug.v().showBinds) System.out.println("binding "+value+" to "+variable);
-	if(variable.mustBox()) {
-	    if(!value.getSootType().equals(type)) return NeverMatch.v; 
-	    PolyLocalVar temp=new PolyLocalVar("box");
-	    PolyLocalVar temp2=new PolyLocalVar("boxed");
-	    return AndResidue.construct
-		(AndResidue.construct
-		 (new Bind(value,temp),
-		  new Box(temp,temp2)),
-		 new Copy(temp2,variable));
-	}
-	if(variable.maybeBox()) { // && value.getSootType() instanceof PrimType) {
-	    PolyLocalVar temp=new PolyLocalVar("box");
-	    PolyLocalVar temp2=new PolyLocalVar("boxed");
-	    return AndResidue.construct
-		(AndResidue.construct
-		 (new Bind(value,temp),
-		  new Box(temp,temp2)),
-		 new Copy(temp2,variable));
-	}
-	else return AndResidue.construct
-		 (CheckType.construct(value,type),
-		  new Bind(value,variable));
+        if(abc.main.Debug.v().showBinds) System.out.println("binding "+value+" to "+variable);
+        if(variable.mustBox()) {
+            if(!value.getSootType().equals(type)) return NeverMatch.v();
+            PolyLocalVar temp=new PolyLocalVar("box");
+            PolyLocalVar temp2=new PolyLocalVar("boxed");
+            return AndResidue.construct
+                (AndResidue.construct
+                 (new Bind(value,temp),
+                  new Box(temp,temp2)),
+                 new Copy(temp2,variable));
+        }
+        if(variable.maybeBox()) { // && value.getSootType() instanceof PrimType) {
+            PolyLocalVar temp=new PolyLocalVar("box");
+            PolyLocalVar temp2=new PolyLocalVar("boxed");
+            return AndResidue.construct
+                (AndResidue.construct
+                 (new Bind(value,temp),
+                  new Box(temp,temp2)),
+                 new Copy(temp2,variable));
+        }
+        else return AndResidue.construct
+                 (CheckType.construct(value,type),
+                  new Bind(value,variable));
     }
 
     public String toString() {
-	return "bind("+value+","+variable+")";
+        return "bind("+value+","+variable+")";
     }
-	public Stmt codeGen(
-		SootMethod method,
-		LocalGeneratorEx localgen,
-		Chain units,
-		Stmt begin,
-		Stmt fail,
-		boolean sense,
-		WeavingContext wc) {
+        public Stmt codeGen(
+                SootMethod method,
+                LocalGeneratorEx localgen,
+                Chain units,
+                Stmt begin,
+                Stmt fail,
+                boolean sense,
+                WeavingContext wc) {
 
-	    Stmt set;
-	    Value val=value.getSootValue();
-	    if(!variable.hasType())
-		// PolyLocalVar
-		set=variable.set(localgen,units,begin,wc,val);
-	    else {
-	    
-		Type to=variable.getType();
-		Type from=val.getType();
-	    
-		if(from.equals(to))
-		    set=variable.set(localgen,units,begin,wc,val);
-		else 
-		    set=variable.set
-			(localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));
-	    }
+            Stmt set;
+            Value val=value.getSootValue();
+            if(!variable.hasType())
+                // PolyLocalVar
+                set=variable.set(localgen,units,begin,wc,val);
+            else {
 
-	    return succeed(units,set,fail,sense);
-	}
+                Type to=variable.getType();
+                Type from=val.getType();
 
-	/**
-	 * If this Bind binds an advice-formal,
-	 * add the binding to the Bindings object
-	 */
-	public void getAdviceFormalBindings(Bindings bindings) {
-		if (variable instanceof AdviceFormal) {
-			AdviceFormal formal = (AdviceFormal) variable;
-			Value val = value.getSootValue();
-			if (val instanceof Local) {
-				Local local = (Local) val;
-				//debug(" Binding: " + local.getName() + " => " + formal.pos);
-				
-				bindings.set(formal.pos, local);
-			} else {
-				throw new InternalError(
-				"Expecting bound values to be of type Local: "
-					+ val
-					+ " (came from: "
-					+ this
-					+ ")");
-			}
-		} else {
-			// throw new InternalError("Expecting bound variables to be of type adviceFormal: " + variable );
-		}
-	}
-	
-	/**
-	 * Replace this Bind with a BindMaskResidue containing this Bind 
-	 * if appropriate.
-	 */
-	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
-		if (variable instanceof AdviceFormal) {
-			AdviceFormal formal = (AdviceFormal) variable;
-			Value val = value.getSootValue();
-			//if (val instanceof Local) {
-			Local local = (Local) val;
-			//int index=bindings.lastIndexOf(local);
-			int mask=bindings.getMaskValue(local, formal.pos);
-			if (mask!=0) { 				
-				return new BindMaskResidue(this, bindingsMaskLocal, mask);
-			}
-		}	
-		return this;
-	}
+                if(from.equals(to))
+                    set=variable.set(localgen,units,begin,wc,val);
+                else
+                    set=variable.set
+                        (localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));
+            }
+
+            return succeed(units,set,fail,sense);
+        }
+
+        /**
+         * If this Bind binds an advice-formal,
+         * add the binding to the Bindings object
+         */
+        public void getAdviceFormalBindings(Bindings bindings) {
+                if (variable instanceof AdviceFormal) {
+                        AdviceFormal formal = (AdviceFormal) variable;
+                        Value val = value.getSootValue();
+                        if (val instanceof Local) {
+                                Local local = (Local) val;
+                                //debug(" Binding: " + local.getName() + " => " + formal.pos);
+
+                                bindings.set(formal.pos, local);
+                        } else {
+                                throw new InternalError(
+                                "Expecting bound values to be of type Local: "
+                                        + val
+                                        + " (came from: "
+                                        + this
+                                        + ")");
+                        }
+                } else {
+                        // throw new InternalError("Expecting bound variables to be of type adviceFormal: " + variable );
+                }
+        }
+
+        /**
+         * Replace this Bind with a BindMaskResidue containing this Bind
+         * if appropriate.
+         */
+        public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+                if (variable instanceof AdviceFormal) {
+                        AdviceFormal formal = (AdviceFormal) variable;
+                        Value val = value.getSootValue();
+                        //if (val instanceof Local) {
+                        Local local = (Local) val;
+                        //int index=bindings.lastIndexOf(local);
+                        int mask=bindings.getMaskValue(local, formal.pos);
+                        if (mask!=0) {
+                                return new BindMaskResidue(this, bindingsMaskLocal, mask);
+                        }
+                }
+                return this;
+        }
 }

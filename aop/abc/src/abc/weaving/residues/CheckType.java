@@ -48,25 +48,25 @@ public class CheckType extends Residue {
 
     public static Residue construct(ContextValue value,Type type) {
         if(type.equals(Scene.v().getSootClass("java.lang.Object").getType()))
-            return AlwaysMatch.v;
+            return AlwaysMatch.v();
 
 
         Type from=value.getSootType();
         Type to=type;
         if(from instanceof PrimType || to instanceof PrimType) {
-            if(from.equals(to)) return AlwaysMatch.v;
+            if(from.equals(to)) return AlwaysMatch.v();
 
             if (!(from instanceof PrimType && to instanceof PrimType))
-                return NeverMatch.v; // only one of them primitive
+                return NeverMatch.v(); // only one of them primitive
 
             // FIXME: check that the Java widening primitive conversions are
             // the right thing to do in this context
             // attempts to create a test case crash ajc, which makes things hard
 
             if (Restructure.JavaTypeInfo.isSimpleWideningConversion(from, to))
-                return AlwaysMatch.v;
+                return AlwaysMatch.v();
 
-            return NeverMatch.v;
+            return NeverMatch.v();
 
             /*if(from instanceof ByteType) from=ShortType.v();
             if(from.equals(to)) return AlwaysMatch.v;
@@ -88,10 +88,10 @@ public class CheckType extends Residue {
         } else {
             FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
 
-            if(from instanceof NullType) return NeverMatch.v;
+            if(from instanceof NullType) return NeverMatch.v();
 
             if(hier.canStoreType(from,to))
-                return AlwaysMatch.v;
+                return AlwaysMatch.v();
             // For strict compliance with ajc 1.2.0, we *must* eliminate this much, and
             // anything further we decide we can eliminate (e.g. using a global analysis)
             // must be replaced by an "is not null" check
@@ -99,7 +99,7 @@ public class CheckType extends Residue {
             // eliminates the static type check than if it doesn't.
 
             if (Restructure.JavaTypeInfo.isForbiddenConversion(from, to))
-                return NeverMatch.v;
+                return NeverMatch.v();
 
         }
 

@@ -32,27 +32,29 @@ import abc.weaving.residues.*;
 public class WithinAdvice extends LexicalPointcut {
 
     public WithinAdvice(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     protected Residue matchesAt(SootClass cls,SootMethod method) {
-	return MethodCategory.adviceBody(method) ? AlwaysMatch.v : null;
+        if(MethodCategory.adviceBody(method))
+            return AlwaysMatch.v();
+        else return NeverMatch.v();
     }
 
     public String toString() {
-	return "withinadvice()";
+        return "withinadvice()";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			unification.setPointcut(this);
-			return true;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        unification.setPointcut(this);
+                        return true;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

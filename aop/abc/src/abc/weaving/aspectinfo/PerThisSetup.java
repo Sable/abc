@@ -36,46 +36,46 @@ import abc.soot.util.LocalGeneratorEx;
 public class PerThisSetup extends PerSetupAdvice {
 
     protected PerThisSetup(Aspect aspct,Pointcut pc,Position pos) {
-	super(new BeforeAdvice(pos),aspct,pc,pos);
+        super(new BeforeAdvice(pos),aspct,pc,pos);
     }
 
     public WeavingContext makeWeavingContext() {
-	return new SingleValueWeavingContext();
+        return new SingleValueWeavingContext();
     }
 
     public Chain makeAdviceExecutionStmts
-	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
+        (AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc) {
 
-	SingleValueWeavingContext svwc=(SingleValueWeavingContext) wc;
-	SootClass aspectclass=getAspect().getInstanceClass().getSootClass();
+        SingleValueWeavingContext svwc=(SingleValueWeavingContext) wc;
+        SootClass aspectclass=getAspect().getInstanceClass().getSootClass();
 
-	Chain c=new HashChain();
+        Chain c=new HashChain();
 
-	List paramTypes=new ArrayList(1);
-	paramTypes.add(Scene.v().getSootClass("java.lang.Object").getType());
+        List paramTypes=new ArrayList(1);
+        paramTypes.add(Scene.v().getSootClass("java.lang.Object").getType());
 
-	c.addLast(Jimple.v().newInvokeStmt
-		  (Jimple.v().newStaticInvokeExpr
-		   (Scene.v().makeMethodRef(aspectclass,"abc$perThisBind",paramTypes,VoidType.v(),true),
-		    svwc.value)));
+        c.addLast(Jimple.v().newInvokeStmt
+                  (Jimple.v().newStaticInvokeExpr
+                   (Scene.v().makeMethodRef(aspectclass,"abc$perThisBind",paramTypes,VoidType.v(),true),
+                    svwc.value)));
 
-	return c;
+        return c;
 
     }
 
     public Residue postResidue(ShadowMatch sm) {
-	Type type=Scene.v().getSootClass("java.lang.Object").getType();
-	ContextValue thiscv=sm.getThisContextValue();
-	if(thiscv==null) return null;
-	return Bind.construct(thiscv,type,new SingleValueVar(type));
+        Type type=Scene.v().getSootClass("java.lang.Object").getType();
+        ContextValue thiscv=sm.getThisContextValue();
+        if(thiscv==null) return NeverMatch.v();
+        return Bind.construct(thiscv,type,new SingleValueVar(type));
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+" from aspect: "+getAspect().getName()+"\n");
-	sb.append(prefix+" type: "+spec+"\n");
-	sb.append(prefix+" pointcut: "+pc+"\n");
-	sb.append(prefix+" special: perthis instantiation\n");
+        sb.append(prefix+" from aspect: "+getAspect().getName()+"\n");
+        sb.append(prefix+" type: "+spec+"\n");
+        sb.append(prefix+" pointcut: "+pc+"\n");
+        sb.append(prefix+" special: perthis instantiation\n");
     }
 
-    
+
 }

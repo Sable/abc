@@ -32,28 +32,28 @@ import abc.weaving.residues.*;
  *  @author Ganesh Sittampalam
  */
 
-public class DirectlyWithin extends Within {    
+public class DirectlyWithin extends Within {
     public DirectlyWithin(ClassnamePattern pattern,Position pos) {
-	super(pattern,pos);
+        super(pattern,pos);
     }
 
     protected Residue matchesAt(SootClass cls) {
-	if(getPattern().matchesClass(cls)) return AlwaysMatch.v;
-	return null;
+        if(getPattern().matchesClass(cls)) return AlwaysMatch.v();
+        return NeverMatch.v();
     }
-    
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			if (getPattern().equivalent(((DirectlyWithin)otherpc).getPattern())) {
-				unification.setPointcut(this);
-				return true;
-			} else return false;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-	}
+                if (otherpc.getClass() == this.getClass()) {
+                        if (getPattern().equivalent(((DirectlyWithin)otherpc).getPattern())) {
+                                unification.setPointcut(this);
+                                return true;
+                        } else return false;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+
+        }
 }

@@ -39,68 +39,68 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec {
     private AfterAdvice after;
 
     public BeforeAfterAdvice(Position pos) {
-	super(pos);
-	before=new BeforeAdvice(pos);
-	after=new AfterAdvice(pos);
+        super(pos);
+        before=new BeforeAdvice(pos);
+        after=new AfterAdvice(pos);
     }
 
     public String toString() {
-	return "beforeafter";
+        return "beforeafter";
     }
 
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
-	// BeforeAfterAdvice is just used for internal bookkeeping type stuff,
-	// and always matches, even at joinpoints that don't support after (at such
-	// joinpoints usually we get a push immediately followed by a pop, or similar
-	// useless behaviour, but nested advice might make that relevant)
-	return AlwaysMatch.v;
+        // BeforeAfterAdvice is just used for internal bookkeeping type stuff,
+        // and always matches, even at joinpoints that don't support after (at such
+        // joinpoints usually we get a push immediately followed by a pop, or similar
+        // useless behaviour, but nested advice might make that relevant)
+        return AlwaysMatch.v();
     }
 
     // For use with WeavingContext
     public static interface ChoosePhase {
-	public void setBefore();
-	public void setAfter();
+        public void setBefore();
+        public void setAfter();
     }
 
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
-	WeavingContext wc=adviceappl.advice.makeWeavingContext();
-	doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
+        WeavingContext wc=adviceappl.advice.makeWeavingContext();
+        doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
     }
 
     void doWeave(SootMethod method,LocalGeneratorEx localgen,
-	       AdviceApplication adviceappl,Residue residue,
-	       WeavingContext wc) {
+               AdviceApplication adviceappl,Residue residue,
+               WeavingContext wc) {
 
-	Body b = method.getActiveBody();
-        // this non patching chain is needed so that Soot doesn't "Fix" 
-        // the traps. 
+        Body b = method.getActiveBody();
+        // this non patching chain is needed so that Soot doesn't "Fix"
+        // the traps.
         Chain units = b.getUnits().getNonPatchingChain();
 
-	ChoosePhase cp=(ChoosePhase) wc;
+        ChoosePhase cp=(ChoosePhase) wc;
 
-	Residue beforeResidue,afterResidue;
-	if(residue instanceof AlwaysMatch) {
-          // Laurie made me do it!
-	  beforeResidue=AlwaysMatch.v; 
-	  afterResidue=AlwaysMatch.v;
+        Residue beforeResidue,afterResidue;
+        if(residue instanceof AlwaysMatch) {
+            // Laurie made me do it!
+            beforeResidue=AlwaysMatch.v();
+            afterResidue=AlwaysMatch.v();
         } else {
-	  Local adviceApplied=localgen.generateLocal(BooleanType.v(),"adviceApplied");
-	  beforeResidue
-	      =AndResidue.construct
-	       (new SetResidue(adviceApplied,IntConstant.v(0)),
-	        AndResidue.construct(residue,new SetResidue(adviceApplied,IntConstant.v(1))));
-	  afterResidue=new TestResidue(adviceApplied,IntConstant.v(1));
-	}
+          Local adviceApplied=localgen.generateLocal(BooleanType.v(),"adviceApplied");
+          beforeResidue
+              =SeqResidue.construct
+               (new SetResidue(adviceApplied,IntConstant.v(0)),
+                SeqResidue.construct(residue,new SetResidue(adviceApplied,IntConstant.v(1))));
+          afterResidue=new TestResidue(adviceApplied,IntConstant.v(1));
+        }
 
-	// Weave the after advice first to ensure that the exception range doesn't cover
-	// the before advice. Otherwise the signalling variable adviceApplied is not
-	// guaranteed to be initialised.
-	cp.setAfter();
-	after.doWeave(method,localgen,adviceappl,afterResidue,wc);
+        // Weave the after advice first to ensure that the exception range doesn't cover
+        // the before advice. Otherwise the signalling variable adviceApplied is not
+        // guaranteed to be initialised.
+        cp.setAfter();
+        after.doWeave(method,localgen,adviceappl,afterResidue,wc);
 
-	cp.setBefore();
-	before.doWeave(method,localgen,adviceappl,beforeResidue,wc);
+        cp.setBefore();
+        before.doWeave(method,localgen,adviceappl,beforeResidue,wc);
 
-    } // method doWeave 
+    } // method doWeave
 
 }

@@ -35,7 +35,7 @@ import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
 
 
-/** A <code>declare warning</code> or <code>declare error</code> declaration. 
+/** A <code>declare warning</code> or <code>declare error</code> declaration.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  */
@@ -50,65 +50,65 @@ public class DeclareMessage extends AbstractAdviceDecl {
     private String message;
 
     public DeclareMessage(int severity, Pointcut pc, String message, Aspect aspct, Position pos) {
-	super(aspct,null,pc,new ArrayList(),pos);
-	this.severity = severity;
-	this.message = message;
+        super(aspct,null,pc,new ArrayList(),pos);
+        this.severity = severity;
+        this.message = message;
     }
 
     /** Get the severity of the message.
      *  @return either {@link WARNING} or {@link ERROR}.
      */
     public int getSeverity() {
-	return severity;
+        return severity;
     }
 
     /** Get the name of the severity of the message.
      *  @return either <code>&qout;warning&quot;</code> or <code>&qout;error&quot;</code>.
      */
     public String getSeverityName() {
-	return sev_name[severity];
+        return sev_name[severity];
     }
 
     /** Get the message to give if the pointcut matches anything. */
     public String getMessage() {
-	return message;
+        return message;
     }
 
     public String toString() {
-	return "declare "+sev_name[severity]+": "+pc+": \""+message+"\";";
+        return "declare "+sev_name[severity]+": "+pc+": \""+message+"\";";
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+" from aspect: "+getAspect().getName()+"\n");
-	sb.append(prefix+" pointcut: "+pc+"\n");
-	sb.append(prefix+" special: declare "+getSeverityName()+" : "+getMessage());
+        sb.append(prefix+" from aspect: "+getAspect().getName()+"\n");
+        sb.append(prefix+" pointcut: "+pc+"\n");
+        sb.append(prefix+" special: declare "+getSeverityName()+" : "+getMessage());
     }
 
     public WeavingEnv getWeavingEnv() {
-	return new EmptyFormals();
+        return new EmptyFormals();
     }
 
     public WeavingContext makeWeavingContext() {
-	throw new InternalCompilerError
-	    ("declare warning/error should never make it past the matcher");
+        throw new InternalCompilerError
+            ("declare warning/error should never make it past the matcher");
     }
 
     public Residue postResidue(ShadowMatch sm) {
-	if(abc.main.Main.v()==null) throw new InternalCompilerError("main was null");
-	if(abc.main.Main.v().error_queue==null) throw new InternalCompilerError("no error queue");
-	abc.main.Main.v().error_queue.enqueue
-	    (ErrorInfoFactory.newErrorInfo
-	     (polyglot_sev[severity],
-	      message,
-	      sm.getContainer(),
-	      sm.getHost()));
+        if(abc.main.Main.v()==null) throw new InternalCompilerError("main was null");
+        if(abc.main.Main.v().error_queue==null) throw new InternalCompilerError("no error queue");
+        abc.main.Main.v().error_queue.enqueue
+            (ErrorInfoFactory.newErrorInfo
+             (polyglot_sev[severity],
+              message,
+              sm.getContainer(),
+              sm.getHost()));
 
-	return NeverMatch.v;
+        return NeverMatch.v();
     }
 
     public Chain makeAdviceExecutionStmts
-	(AdviceApplication aa,LocalGeneratorEx localgen,WeavingContext wc) {
-	throw new InternalCompilerError
-	    ("declare warning/error should never make it past the matcher");
+        (AdviceApplication aa,LocalGeneratorEx localgen,WeavingContext wc) {
+        throw new InternalCompilerError
+            ("declare warning/error should never make it past the matcher");
     }
 }

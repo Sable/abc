@@ -29,54 +29,54 @@ import java.util.*;
 /** Disjunction of two residues
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
- */ 
+ */
 public class NotResidue extends Residue {
     private ResidueBox op = new ResidueBox();
-    
+
     /** Get the operand */
     public Residue getOp() {
-	return op.getResidue();
+        return op.getResidue();
     }
 
     public Residue resetForReweaving() {
-    	op.setResidue(op.getResidue().resetForReweaving());
-    	return this;
+        op.setResidue(op.getResidue().resetForReweaving());
+        return this;
     }
-    
+
         /** Private constructor to force use of smart constructor */
     private NotResidue(Residue op) {
-	this.op.setResidue(op);
+        this.op.setResidue(op);
     }
 
     public String toString() {
-	return "!("+op+")";
+        return "!("+op+")";
     }
 
     /** Smart constructor; some short-circuiting may need to be removed
      *  to mimic ajc behaviour
      */
     public static Residue construct(Residue op) {
-	if(NeverMatch.neverMatches(op)) return AlwaysMatch.v;
-	if(op instanceof AlwaysMatch) return null;
-	return new NotResidue(op);
+        if(NeverMatch.neverMatches(op)) return AlwaysMatch.v();
+        if(op instanceof AlwaysMatch) return NeverMatch.v();
+        return new NotResidue(op);
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,boolean sense,
-			WeavingContext wc) {
-	if(abc.main.Debug.v().residueCodeGen)
-	    System.err.println("beginning not residue generation");
+                        Chain units,Stmt begin,Stmt fail,boolean sense,
+                        WeavingContext wc) {
+        if(abc.main.Debug.v().residueCodeGen)
+            System.err.println("beginning not residue generation");
 
-	return getOp().codeGen(method,localgen,units,begin,fail,!sense,wc);
+        return getOp().codeGen(method,localgen,units,begin,fail,!sense,wc);
     }
 
-	public void getAdviceFormalBindings(Bindings bindings) {
-		getOp().getAdviceFormalBindings(bindings);
-	}
-	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
-		op.setResidue(getOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));
-		return this;
-	}
+        public void getAdviceFormalBindings(Bindings bindings) {
+                getOp().getAdviceFormalBindings(bindings);
+        }
+        public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+                op.setResidue(getOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));
+                return this;
+        }
         public List/*ResidueBox*/ getResidueBoxes() {
             List/*ResidueBox*/ ret = new ArrayList();
             ret.add( op );

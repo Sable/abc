@@ -38,39 +38,39 @@ public class MethodCall extends ShadowPointcut {
     private MethodPattern pattern;
 
     public MethodCall(MethodPattern pattern,Position pos) {
-	super(pos);
-	this.pattern = pattern;
+        super(pos);
+        this.pattern = pattern;
     }
 
     public MethodPattern getPattern() {
-	return pattern;
+        return pattern;
     }
 
     protected Residue matchesAt(ShadowMatch sm) {
-	if(!(sm instanceof MethodCallShadowMatch)) return null;
-	MethodCallShadowMatch msm=(MethodCallShadowMatch) sm;
+        if(!(sm instanceof MethodCallShadowMatch)) return NeverMatch.v();
+        MethodCallShadowMatch msm=(MethodCallShadowMatch) sm;
 
-	if(!getPattern().matchesCall(msm.getMethodRef())) return null;
+        if(!getPattern().matchesCall(msm.getMethodRef())) return NeverMatch.v();
 
-	return AlwaysMatch.v;
+        return AlwaysMatch.v();
     }
 
     public String toString() {
-	return "call("+pattern+")";
+        return "call("+pattern+")";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			if (pattern.equivalent(((MethodCall)otherpc).getPattern())) {
-				unification.setPointcut(this);
-				return true;
-			} else return false;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        if (pattern.equivalent(((MethodCall)otherpc).getPattern())) {
+                                unification.setPointcut(this);
+                                return true;
+                        } else return false;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

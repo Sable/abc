@@ -31,7 +31,7 @@ import polyglot.util.Position;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** Handler for <code>call</code> shadow pointcut with a constructor pattern. 
+/** Handler for <code>call</code> shadow pointcut with a constructor pattern.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
@@ -40,38 +40,40 @@ public class ConstructorCall extends ShadowPointcut {
     private ConstructorPattern pattern;
 
     public ConstructorCall(ConstructorPattern pattern,Position pos) {
-	super(pos);
-	this.pattern = pattern;
+        super(pos);
+        this.pattern = pattern;
     }
 
     public ConstructorPattern getPattern() {
-	return pattern;
+        return pattern;
     }
 
     protected Residue matchesAt(ShadowMatch sm) {
-	if(!(sm instanceof ConstructorCallShadowMatch)) return null;
-	ConstructorCallShadowMatch csm=(ConstructorCallShadowMatch) sm;
+        if(!(sm instanceof ConstructorCallShadowMatch))
+            return NeverMatch.v();
+        ConstructorCallShadowMatch csm=(ConstructorCallShadowMatch) sm;
 
-	if(!getPattern().matchesConstructor(csm.getMethodRef().resolve())) return null;
-	return AlwaysMatch.v;
+        if(!getPattern().matchesConstructor(csm.getMethodRef().resolve()))
+            return NeverMatch.v();
+        return AlwaysMatch.v();
     }
 
     public String toString() {
-	return "constructorcall("+pattern+")";
+        return "constructorcall("+pattern+")";
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			if (pattern.equivalent(((ConstructorCall)otherpc).getPattern())) {
-				unification.setPointcut(this);
-				return true;
-			} else return false;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        if (pattern.equivalent(((ConstructorCall)otherpc).getPattern())) {
+                                unification.setPointcut(this);
+                                return true;
+                        } else return false;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

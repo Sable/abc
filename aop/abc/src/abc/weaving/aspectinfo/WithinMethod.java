@@ -48,10 +48,11 @@ public class WithinMethod extends LexicalPointcut {
         if(method.getName().equals(SootMethod.constructorName) ||
            method.getName().equals(SootMethod.staticInitializerName) ||
            MethodCategory.adviceBody(method))
-            return null;
+            return NeverMatch.v();
 
-        if(!getPattern().matchesExecution(method)) return null;
-        return AlwaysMatch.v;
+        if(!getPattern().matchesExecution(method))
+            return NeverMatch.v();
+        return AlwaysMatch.v();
     }
 
     public String toString() {
