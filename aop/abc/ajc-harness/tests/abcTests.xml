@@ -9315,4 +9315,8 @@
          title="resolving anonymous classes inside classes with dollar signs">
          <compile files="ExtraAnon.java"/>
     </ajc-test>
+    <ajc-test num="1002" dir="abctests/bugs/doubledeclareparents"
+         title="">
+         <compile files="A.java"/>
+    </ajc-test>
 </suite>
