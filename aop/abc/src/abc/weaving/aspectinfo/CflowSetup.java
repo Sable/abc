@@ -243,6 +243,11 @@ public class CflowSetup extends AbstractAdviceDecl {
         return new CflowSetupWeavingContext(getFormals().size());
     }
 
+    public void resetForReweaving() {
+    	cflowStack=null;
+    	cflowCounter=null;
+    }
+    
     private SootFieldRef cflowStack=null;
     public SootFieldRef getCflowStack() {
         if(cflowStack==null) {

@@ -30,21 +30,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
+import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
-import abc.weaving.aspectinfo.AfterAdvice;
-import abc.weaving.aspectinfo.AfterReturningAdvice;
-import abc.weaving.aspectinfo.AfterThrowingAdvice;
 import abc.weaving.aspectinfo.AroundAdvice;
-import abc.weaving.aspectinfo.BeforeAdvice;
-import abc.weaving.aspectinfo.BeforeAfterAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
@@ -334,6 +329,22 @@ public class PointcutCodeGen {
 	    StringBuffer details=new StringBuffer();
 	    adviceappl.debugInfo("PCG: ",details);
 	    System.out.println(details.toString());
+	}
+	{ // Debug check
+		Chain units=method.getActiveBody().getUnits();
+		ShadowPoints sp=adviceappl.shadowmatch.sp;
+		if (!units.contains(sp.getBegin())) {
+			debug("method: \n" + AroundWeaver.Util.printMethod(method));
+			throw new InternalCompilerError(
+				"Appl: " + adviceappl + 
+				" Method body of " + method + 
+				" does not contain begin shadow point " + sp.getBegin() + 
+				" Sp.method: " + sp.getShadowMatch().getContainer() + 
+				" == " + (sp.getShadowMatch().getContainer()==method));
+		}
+		if (!units.contains(sp.getEnd())) {
+			throw new InternalCompilerError("Method body of " + method + " does not contain end shadow point " + sp.getEnd());
+		}
 	}
 
 	adviceappl.advice.getAdviceSpec().weave(method,localgen,adviceappl);

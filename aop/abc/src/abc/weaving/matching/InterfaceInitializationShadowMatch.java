@@ -22,16 +22,15 @@ package abc.weaving.matching;
 import java.util.List;
 
 import polyglot.util.InternalCompilerError;
-
-import soot.*;
+import soot.SootClass;
+import soot.SootMethod;
 import soot.jimple.Stmt;
-import soot.tagkit.Host;
 import soot.util.Chain;
-
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.ShadowPoints;
+import abc.weaving.weaver.Weaver;
 
 /** The results of matching at an interface initialization shadow
  *  @author Ganesh Sittampalam
@@ -71,7 +70,10 @@ public class InterfaceInitializationShadowMatch extends BodyShadowMatch {
 	SootMethod container=pos.getContainer();
 	if(!container.getName().equals(SootMethod.constructorName)) return null;
 
-	Stmt startNop=((StmtMethodPosition) pos).getStmt();
+	Stmt startNop=((StmtMethodPosition) pos).getStmt();//(Stmt)Weaver.rebind(((StmtMethodPosition) pos).getStmt());
+	if (!container.getActiveBody().getUnits().contains(startNop))
+		throw new InternalCompilerError("Method body does not contain startNop.");
+		
 	if(!startNop.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name)) return null;
 
 	IntertypeAdjuster.InterfaceInitNopTag tag

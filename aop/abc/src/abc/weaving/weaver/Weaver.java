@@ -55,9 +55,15 @@ public class Weaver {
     static public Map getUnitBindings() {
     	return unitBindings;
     }
-    
+    static public Unit rebind(Unit ut) {
+    	Unit result=(Unit)unitBindings.get(ut);
+    	if (result!=null)
+    		return result;
+    	else
+    		return ut;
+    }
     static public void resetResiduesForReweaving() {
-    	debug("resetResiduesForReweaving");
+    	//debug("resetResiduesForReweaving");
     	for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
@@ -65,11 +71,11 @@ public class Weaver {
             
                 MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
                 if (adviceList!=null) {			
-                	debug("found advice list for " + method);
+          //      	debug("found advice list for " + method);
                 	Iterator appIt=adviceList.allAdvice().iterator();
                 	while (appIt.hasNext()) {
                 		AdviceApplication appl=(AdviceApplication)appIt.next();
-                		debug(" " + appl.getResidue());
+            //    		debug(" " + appl.getResidue());
                 		appl.getResidue().resetForReweaving();
                 	}
                 }

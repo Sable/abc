@@ -70,6 +70,14 @@ public class ShadowPoints {
         begin = b;
         end = e;
         this.container=container;
+        
+        { /// debug
+        	if (!container.getActiveBody().getUnits().contains(b))
+        		throw new InternalCompilerError("Method " + container + " does not contain begin shadow point " + b);
+        	if (!container.getActiveBody().getUnits().contains(e))
+        		throw new InternalCompilerError("Method " + container + " does not contain end shadow point " + e);
+        	
+        }
     }
 
     public Stmt getBegin(){

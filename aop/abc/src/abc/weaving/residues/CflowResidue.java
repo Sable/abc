@@ -46,10 +46,14 @@ public class CflowResidue extends Residue {
     }
 
     public void resetForReweaving() {
-    	for(Iterator it=vars.iterator();it.hasNext();) {
-    		WeavingVar variable=(WeavingVar)it.next();
-    		variable.resetForReweaving();
-    	}
+    	if (vars!=null)
+    		for(Iterator it=vars.iterator();it.hasNext();) {
+    			WeavingVar variable=(WeavingVar)it.next();
+    			if (variable!=null)
+    				variable.resetForReweaving();
+    		}
+    	
+    	setup.resetForReweaving();
     }
     
    public static void debug(String message)
