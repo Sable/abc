@@ -94,7 +94,6 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 			// mangled instance needs the same setters/getters.
 			((InterTypeFieldInstance_c)mangled).getInstance = this.getInstance;
 			((InterTypeFieldInstance_c)mangled).setInstance = this.setInstance;
-			System.out.println("Creating getInstance " + getInstance + " for itfi " + this);
 		}
 	 }
 	
