@@ -91,8 +91,8 @@ public class AndResidue extends Residue {
         List/*ResidueBox*/ ret = new ArrayList();
         ret.add( left );
         ret.add( right );
-        ret.add( left.getResidue().getResidueBoxes() );
-        ret.add( right.getResidue().getResidueBoxes() );
+        ret.addAll( left.getResidue().getResidueBoxes() );
+        ret.addAll( right.getResidue().getResidueBoxes() );
         return ret;
     }
 }

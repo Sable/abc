@@ -17,6 +17,7 @@ import abc.weaving.weaver.WeavingContext;
 public class NeverMatch extends Residue {
     // is this worthwhile? (save on heap turnover)
     public final static NeverMatch v=new NeverMatch();
+    public static NeverMatch v() { return v; }
 
     public static boolean neverMatches(Residue r) {
 	return r==null || r instanceof NeverMatch;

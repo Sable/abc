@@ -63,7 +63,7 @@ public class BindMaskResidue extends Residue {
         public List/*ResidueBox*/ getResidueBoxes() {
             List/*ResidueBox*/ ret = new ArrayList();
             ret.add( op );
-            ret.add( op.getResidue().getResidueBoxes() );
+            ret.addAll( op.getResidue().getResidueBoxes() );
             return ret;
         }
 
