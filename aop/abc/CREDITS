@@ -17,6 +17,7 @@ Pavel Avgustinov <pavel.avgustinov at magdalen.oxford.ac.uk>
  - Implemented privileged aspects along with a generic accessor 
    method infrastructure
  - Re-wrote the lexer to make an LGPL'd version
+ - Improved Soot's handling of large methods
 
 Aske Simon Christensen <aske at brics.dk>
  - Designed the overall compiler structure, and the connection
