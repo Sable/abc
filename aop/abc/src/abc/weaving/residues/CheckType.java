@@ -27,19 +27,56 @@ public class CheckType extends Residue {
     // then the code for a corresponding Bind will probably be generated
     // as well, and will be type incorrect; although it will be dead code,
     // the Soot code generator still won't be happy.
-    // If it turns out that ContextValues need to be passed information
-    // we don't have here, then we will need a mechanism for code generation
-    // to prevent things that would be definitely dead code from being
-    // generated at all.
+
     public static Residue construct(ContextValue value,Type type) {
 	if(type.equals(Scene.v().getSootClass("java.lang.Object").getType())) 
 	    return AlwaysMatch.v;
 
-	if(type instanceof PrimType) {
-	    if(type.equals(value.getSootType()))
-		return AlwaysMatch.v;
-	    else return NeverMatch.v;
+
+	Type from=value.getSootType();
+	Type to=type;
+	if(from instanceof PrimType || to instanceof PrimType) {
+	    if(from.equals(to)) return AlwaysMatch.v;
+
+	    // FIXME: check that the Java widening primitive conversions are
+	    // the right thing to do in this context
+	    // attempts to create a test case crash ajc, which makes things hard
+
+	    if(from instanceof ByteType) from=ShortType.v();
+	    if(from.equals(to)) return AlwaysMatch.v;
+
+	    if(from instanceof ShortType || from instanceof CharType) 
+		from=IntType.v();
+	    if(from.equals(to)) return AlwaysMatch.v;
+
+	    if(from instanceof IntType) from=LongType.v();
+	    if(from.equals(to)) return AlwaysMatch.v;
+
+	    if(from instanceof LongType) from=FloatType.v();
+	    if(from.equals(to)) return AlwaysMatch.v;
+
+	    if(from instanceof FloatType) from=DoubleType.v();
+	    if(from.equals(to)) return AlwaysMatch.v;
+
+	    return NeverMatch.v;
+	} else {
+	    FastHierarchy hier=Scene.v().getFastHierarchy();
+
+	    if(hier.canStoreType(from,to)) return AlwaysMatch.v;
+	    // For strict ajc compliance, we *must* eliminate this much, and
+	    // anything further we decide we can eliminate (e.g. using a global analysis)
+	    // must be replaced by an "is not null" check
+	    // This is because if ajc treats null differently if it 
+	    // eliminates the static type check than if it doesn't.
+
 	}
+
+	Residue res=new CheckType(value,type);
+
+	if(!abc.main.Debug.v().ajcCompliance)
+	    // When not in ajc compliance mode, we always consider that null
+	    // is a valid instance of any (reference) type
+	    res=OrResidue.construct(new IsNull(value),res);
 
 	return new CheckType(value,type);
     }

@@ -31,17 +31,23 @@ public class Bind extends Residue {
     // we don't currently inspect the type anyway.
     public static Residue construct(ContextValue value,Type type,WeavingVar variable) {
 	if(variable.mustBox()) {
-	    if(!value.getSootType().equals(type)) return NeverMatch.v;
+	    if(!value.getSootType().equals(type)) return NeverMatch.v; 
 	    PolyLocalVar temp=new PolyLocalVar("box");
+	    PolyLocalVar temp2=new PolyLocalVar("boxed");
 	    return AndResidue.construct
-		(new Bind(value,temp),
-		 new Box(temp,variable));
+		(AndResidue.construct
+		 (new Bind(value,temp),
+		  new Box(temp,temp2)),
+		 new Copy(temp2,variable));
 	}
 	if(variable.maybeBox()) { // && value.getSootType() instanceof PrimType) {
 	    PolyLocalVar temp=new PolyLocalVar("box");
+	    PolyLocalVar temp2=new PolyLocalVar("boxed");
 	    return AndResidue.construct
-		(new Bind(value,temp),
-		 new Box(temp,variable));
+		(AndResidue.construct
+		 (new Bind(value,temp),
+		  new Box(temp,temp2)),
+		 new Copy(temp2,variable));
 	}
 	else return AndResidue.construct
 		 (CheckType.construct(value,type),
@@ -60,13 +66,18 @@ public class Bind extends Residue {
 		WeavingContext wc) {
 	
 		Value val=value.getSootValue();
-		if(!variable.hasType() || val.getType() instanceof PrimType)
+		if(!variable.hasType())
+		    // PolyLocalVar
 		    return variable.set(localgen,units,begin,wc,val);
-		else {
-		    Type type=variable.getType();
-		    return variable.set
-			(localgen,units,begin,wc,Jimple.v().newCastExpr(val,type));
-		}
+
+		Type to=variable.getType();
+		Type from=val.getType();
+
+		if(from.equals(to))
+		    return variable.set(localgen,units,begin,wc,val);
+
+		return variable.set
+		    (localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));
 	}
 
 }
