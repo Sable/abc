@@ -1,299 +1,327 @@
-/* Abc - The AspectBench Compiler
- * Copyright (C) 2004 damien
- * Copyright (C) 2004 Damien Sereni
- *
- * This compiler is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL; 
- * if not, write to the Free Software Foundation, Inc., 
- * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
-
 package abc.weaving.aspectinfo;
 
-import java.util.*;
-import polyglot.util.Position;
-import soot.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
+/**
+ * @author Damien Sereni
+ */
 
-/** Create new CflowSetup instances.
- *  Handles CSE whenever possible to avoid
- *  creating instances for the same pointcut
- *  to eliminate redundant stacks/counters at
- *  runtime.
- *  @author Damien Sereni
- */ 
+import java.util.*;
+import abc.main.*;
+import polyglot.util.Position;
 
 public class GlobalCflowSetupFactory {
 
-    /* Remembering which pointcuts we've seen (inside cflows),
-       and the cflowsetup instances we created for each - must
-       keep a set of these as one may match */
-
-    private static class CfsStore {
-       // Keep a list of pairs (pc, cfs): each pointcut pc already seen
-       // maps to one or more CflowSetup objects. 
-       
-	private static class CflowEntry {
-	    private Pointcut pc;
-	    private CflowSetup s;
-
-	    Pointcut getPc() { return pc; }
-	    CflowSetup getCfs() { return s; }
-
-	    public CflowEntry(Pointcut pc, CflowSetup s) {
-		this.pc = pc; this.s = s;
-	    }
-	}
-
-	private static LinkedList/*<CflowEntry>*/ cfsStore = new LinkedList();
-
-	private static class AllMatchesIterator implements Iterator {
-		private Pointcut pc;
-		private Iterator it;
-		private CflowSetupContainer cfsc;
-		
-		public AllMatchesIterator(Pointcut k) {
-			this.pc = k;
-			this.it = CfsStore.cfsStore.iterator();
-		}
-		
-		public boolean hasNext() {
-			while (it.hasNext()) {
-				CflowEntry cfe = (CflowEntry)it.next();
-				Hashtable/*<Var, PointcutVarEntry>*/ renaming = new Hashtable();
-				
-				if (cfe.getPc().canRenameTo(pc, renaming)) {
-					cfsc = new
-						CflowSetupContainer(cfe.getPc(), cfe.getCfs(), false, renaming);
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		public Object next() {
-			return cfsc;
-		}
-		
-		public void remove() {
-			throw new UnsupportedOperationException();
+	private static void debug(String s) {
+		if (Debug.v().debugCflowSharing) {
+			System.out.println(s);
 		}
 	}
-
-	/* allMatches(k) : returns an iterator that goes through the matches 
-	 * For each match return a CflowSetupContainer with the corresponding
-	 * substitution in, and FALSE as isFresh() */
-
-	static Iterator allMatches(Pointcut k) {
-		return new AllMatchesIterator(k);
-	}
-
-	/* put(k, s): adds the mapping k |-> s to the map */
-
-	static void put(Pointcut k, CflowSetup s) {
-	    cfsStore.addFirst(new CflowEntry(k, s));
-	}
-
-	static void reset() {
-	    cfsStore = new LinkedList();
-	}
-
-    }
-
-    /*  Check whether two cflows can share the same stack/counter.
-     *  Notes on sharing:
-     *    ALL cflow stacks are static and are updated at each relevant
-     *      join point - so don't need to check that in the same aspect,
-     *      and singleton vs/percfow/perinstance makes no difference
-     *    Must keep precedence so as not to break the order in which 
-     *      cflow stacks are updated - this is determined by cf/cfbelow
-     *      and the depth - make sure that both are identical
-     *  CHECK THAT THESE CONDITIONS ARE SUFFICIENT
-     *  ARE THEY NECESSARY?
-     */
-
-    private static boolean canShare(Aspect a,
-				    boolean isBelow,
-				    int depth,
-				    CflowSetup cfs
-				    ) {
-	/* Aspect check - don't need since cflow stacks are static
-
-	Aspect b = cfs.getAspect();
-
-	boolean aspcheck = 
-	    a.equals(b) || 
-	    (    a.getPer() instanceof Singleton
-		 && b.getPer() instanceof Singleton);
-	*/
-
-	boolean cflowcheck = 
-	    isBelow == cfs.isBelow();
-
-	boolean depthcheck = 
-	    depth == cfs.getDepth();
-
-	return (cflowcheck && depthcheck);
-
-    }
-
-    /* Add a new cflowsetup */
-
-    private static void registerCfsInstance(Pointcut pc, CflowSetup cfs) {
-
-		CfsStore.put(pc, cfs);
-
-    }
-
-    /** Construct a new instance of CflowSetup, or return an
-     *  existing instance if possible.
-     *  This must only be called AFTER inlining */
-
-    public static CflowSetupContainer construct(Aspect aspect,
-						Pointcut pc,
-						boolean isBelow,
-						Hashtable typeMap,
-						Position pos,
-						int depth) {
-
-	/* is there an old one we can use? if the debug flag is not set... */	
-
-	if (!abc.main.Debug.v().dontShareCflowStacks) {
-
-	Iterator it = CfsStore.allMatches(pc);
-		
-	while (it.hasNext()) {
-		CflowSetupContainer cfsc = (CflowSetupContainer) it.next();
-
-	    if (canShare(aspect, isBelow, depth, cfsc.getCfs())) {
-			// We can share the cflowsetup (but to use it may need to apply the
-			// renaming)
-			//System.out.println("******** Found pointcut to share ********");
-			//System.out.println("** "+pc+" ===>");
-			//System.out.println("** "+cfsc.getPointcut());
-			//System.out.println("** with renaming:");
-			//System.out.print("** ");
-				//Enumeration rn = cfsc.getRenaming().keys();
-				//while (rn.hasMoreElements()) {
-				//	Var v = (Var)rn.nextElement();
-				//	PointcutVarEntry pve = (PointcutVarEntry)cfsc.getRenaming().get(v);
-				//	System.out.print(v+"->"+pve);
-				//	if (rn.hasMoreElements()) System.out.print(", ");
-				//}
-				//System.out.println("");
-			return cfsc;
-	    }
-	}
-
-	}
-
-	/* else we need to create a new one */
-
-	CflowSetup ncfs = CflowSetup.construct(aspect,pc,isBelow,typeMap,pos,depth);
-	registerCfsInstance(pc, ncfs);
 	
-		// Create a new CflowSetupContainer
-		// The substitution should be the identity map on the free vars in the pc,
-		// rather than just the empty map 
-		
-		Hashtable/*<Var,PointcutVarEntry>*/ newrename = new Hashtable();
-		
-		Iterator fvs = ncfs.getActuals().iterator();
-		while (fvs.hasNext()) {
-			Var fv = (Var)fvs.next();
-			newrename.put(fv, new PointcutVarEntry(fv));
+	private static void debugMapping(Hashtable/*<Var,PointcutVarEntry>*/ renaming) {
+		if (Debug.v().debugCflowSharing) {
+		Enumeration enum = renaming.keys();
+		while (enum.hasMoreElements()) {
+			Var v = (Var)enum.nextElement();
+			VarBox ve = 
+				(VarBox)renaming.get(v);
+			System.out.print(v+"->"+ve);
+			if (enum.hasMoreElements()) 
+				System.out.print(", ");
 		}
-		
-	return new CflowSetupContainer(pc, ncfs, true, newrename);
-    }
-
-	/** A wrapper class for an optional Var value (used in Pointcut.canRenameTo)
+		System.out.println();
+		}
+	}
+	
+	/** Store the instances of CflowSetup that we've already
+	 *  seen, together with the pointcut that they represent
 	 */
-	public static class PointcutVarEntry {
+	private static class CfsStore {
+		private static class CfsEntry {
+			private Pointcut pc;
+			private CflowSetup cfs;
+			private Hashtable/*<String,AbcType>*/ typeMap;
+			
+			Pointcut getPointcut() { return pc; }
+			CflowSetup getCfs() { return cfs; }
+			Hashtable/*<String,AbcType>*/ getTypeMap() { return typeMap; }
+			
+			CfsEntry(Pointcut pc, Hashtable/*<String,AbcTy?>*/ typeMap, CflowSetup cfs) {
+				this.pc = pc; this.cfs = cfs; this.typeMap = typeMap;
+			}
+		}
 
-		private Var var;
-		private boolean hasVar;
+	    public static void reset() {
+		cfsStore.clear();
+	    }
 	
-		public PointcutVarEntry() {
-			this.hasVar = false;
+		private static List/*<CfsEntry>*/ cfsStore = new ArrayList();
+		
+		/** Add a new CflowSetup, if we could not share it
+		 * 
+		 * @param pc  The (textual) pointcut to associate with
+		 * the cfs
+		 * @param cfs The new CflowSetup
+		 */
+		static void put(Pointcut pc, Hashtable/*<String, AbcType>*/ typeMap, CflowSetup cfs) {
+			cfsStore.add(new CfsEntry(pc, typeMap, cfs));
 		}
 	
-		public PointcutVarEntry(Var var) {
-			this.var = var;
-			this.hasVar = true;
+		/** Try to find an existing CflowSetup that can be reused for this pointcut
+		 * 
+		 * @param pc The pointcut to find a Cfs for
+		 * @param isBelow Is pc in a cflowbelow?
+		 * @param depth The cflow depth that pc is located at
+		 * @param unification returns the unification if it exists
+		 * @return The index at which the Cfs can be found, -1 if none
+		 */
+		private static int find(Pointcut pc, boolean isBelow, int depth, Unification unification) {
+			int index = 0;
+			while (index < cfsStore.size()) {
+				CfsEntry cfe = (CfsEntry)cfsStore.get(index);
+				if (canShare(isBelow, depth, cfe.getCfs())) {
+					// Reset the bindings from previous attempts
+					unification.resetBindings();
+					// Set unification.typeMap1 to be the typemap for this cfs
+					unification.setTypeMap1(cfe.getTypeMap());
+					
+					if (cfe.getPointcut().unify(pc, unification)) {
+						return index; 
+					}
+				}
+				index++;
+			}
+			return -1;
 		}
+		
+		private static CfsContainer findAndUnify(Aspect a, 
+									  Pointcut pc, 
+									  boolean isBelow, 
+									  int depth, 
+									  Position pos,
+									  Hashtable typeMap,
+									  Unification unification) {
+			int index = find(pc, isBelow, depth, unification);
+			if (index == -1) return null;
+			
+			CfsEntry cfe = (CfsEntry)cfsStore.get(index);
+			
+			if (unification.getPointcut() == cfe.getPointcut()) {
+				// The unified pointcut is the existing one; we can keep the old cfs
+				debug("*** Sharing: \n"+
+					  pc+
+					  "\n (depth "+depth+","+(isBelow?"cflowbelow":"cflow")+"). Keeping CFS for: \n"+
+					  cfe.getPointcut()+
+					  "\n (depth "+cfe.getCfs().getDepth()+","+(isBelow?"cflowbelow":"cflow")+") with mapping: ");
+				debugMapping(unification.getRen2());
+				return new CfsContainer(cfe.getCfs(),unification.getRen2());
+			} else {
+				// We need to create a new CFS, delete the old mapping
+				// and reregister the new CFS with all the advice that 
+				// used the old CFS
+				debug("******** Unifying pointcuts (depth "+depth+"), "+(isBelow?"cflowbelow":"cflow"));
+				debug("******** Old CFS pointcut:\n"+cfe.getPointcut());
+				debug("******** Unified with:\n"+pc);
+				debug("******** ...New pointcut:\n"+unification.getPointcut());
+				Hashtable/*<String,AbcType>*/newTypeMap = new Hashtable();
+				CflowSetup newcfs = 
+					createNewUnificationCfs(a,isBelow,typeMap,newTypeMap,cfe.getCfs(),pos,depth,unification);
+				cfsStore.remove(index);
+				CfsEntry newcfe = new CfsEntry(unification.getPointcut(), newTypeMap, newcfs);
+				cfsStore.add(newcfe);
+				
+				Iterator cflows = cfe.getCfs().getUses().iterator();
+				while (cflows.hasNext()) {
+					CflowPointcut p = (CflowPointcut)cflows.next();
+					
+					debug(">>>> Updating Cflow:\n"+p);
+					
+					Unification rename = new Unification(true);
+					rename.setTypeMap1(newcfe.getTypeMap());
+					rename.setTypeMap2(p.getTypeMap());
+					debug("TypeMap for new CFS:\n"+newcfe.getTypeMap());
+					debug("TypeMap for updated cflow:\n"+p.getTypeMap());
+					
+//					if (!unification.getPointcut().canRenameTo(p.getPointcut(), renaming)) 
+					if (!unification.getPointcut().unify(p.getPointcut(), rename)) {
+						throw new RuntimeException("Could not rename:\n "+unification.getPointcut()+
+								"\n to \n"+p.getPointcut()+"\n when trying to replace a CFS");
+					}
+					debug("******** Unify with\n"+p.getPointcut()+"\nwith renaming:");
+					debugMapping(rename.getRen2());
+					p.reRegisterSetupAdvice(newcfs, rename.getRen2());
+				}
+				debug("******************************************");
+				
+				// Clear the uses for the old cfs
+				cfe.getCfs().clearUses();
+			
+				return new CfsContainer(newcfe.getCfs(),unification.getRen2());
+			}
+		}
+		
+		private static CflowSetup createNewUnificationCfs(
+				Aspect a, boolean isBelow, 
+				Hashtable origTypeMap /*The typemap of the NEW pc*/,
+				Hashtable newTypeMap /*To reveive the new type map*/,
+				CflowSetup oldcfs /*The existing instance of Cfs*/,
+				Position pos, int depth,
+				Unification unification) {
+			
+			// Creating a new typemap for the renamed vars
+			Set/*<String>*/ fvs = new HashSet();
+			unification.getPointcut().getFreeVars(fvs);
+			Iterator it = fvs.iterator();
+			
+			while (it.hasNext()) {
+				String fv = (String)it.next();
+				// Need to find the type of fv
+				// It is mapped to a var in the new pc, to a var in the old (cfs) pc
+				// or to both
+				VarBox ve1 = 
+					unification.getFromString1(fv);
+				VarBox ve2 = 
+					unification.getFromString2(fv);
+				
+				if (ve1.hasVar()) {
+					Formal f1 = findFormal(ve1.getVar().getName(), oldcfs.getFormals());
+					if (ve2.hasVar()) {
+						// fv is mapped to a var in BOTH
+						AbcType tp2 = (AbcType)origTypeMap.get(ve2.getVar().getName());
+						if (!tp2.equals(f1.getType())) 
+							throw new RuntimeException("Error: types are not equal after unification:\n"+
+									fv+"->"+f1.getName()+" : "+f1.getType()+"\n"+
+									fv+"->"+ve2.getVar()+" : "+tp2);
+						newTypeMap.put(fv, tp2);
+					} else {
+						// fv is mapped to a var in 1 only
+						newTypeMap.put(fv, f1.getType());
+					}
+				} else if (ve2.hasVar()) {
+					// fv is mapped to a var in 2 only
+					AbcType tp2 = (AbcType)origTypeMap.get(ve2.getVar().getName());
+					newTypeMap.put(fv, tp2);
+				} else
+					// Could not find it in either pc: this is a unification bug
+					throw new RuntimeException("Could not find variable "+fv+
+							" in either of the unified pointcuts:");
+				
+			}
+			
+			// Create the cfs
+			CflowSetup newcfs = CflowSetup.construct
+			  (a, unification.getPointcut(), isBelow, newTypeMap, pos, depth);
+			GlobalAspectInfo.v().addAdviceDecl(newcfs);
+			
+			// Return the new cfs
+			return newcfs;
+			
+		}
+		
+		static CfsContainer findExisting
+			(Aspect a, Pointcut pc, boolean isBelow, Hashtable typeMap, Position pos, int depth) {
+			
+			// Create a new (unrestricted) unification
+			Unification unification = new Unification(false);
+			
+			// Set unfication.typeMap2 to be the typeMap for pc
+			unification.setTypeMap2(typeMap);
+			
+			// Try to find it
+			return findAndUnify(a,pc,isBelow,depth,pos,typeMap,unification);
+			
+		}
+		
+	}
+
+	private static Formal findFormal(String fv, List/*<Formal>*/ fs) {
+		Iterator it = fs.iterator();
+		while (it.hasNext()) {
+			Formal newf = (Formal)it.next();
+			if (newf.getName().equals(fv))
+				return newf;
+		}
+		throw new RuntimeException("Could not find formal "+fv);
+	}
 	
-		public boolean hasVar() {
-			return hasVar;
+	private static void makeTypeMap(List/*<Formal>*/ fs, Hashtable/*<String,AbcType>*/ outTypeMap) {
+		Iterator it = fs.iterator();
+		while (it.hasNext()) {
+			Formal newf = (Formal)it.next();
+			outTypeMap.put(newf.getName(), newf.getType());
 		}
-		public Var getVar() {
-			return var;
-		}
+	}
 	
-		public boolean equals(Object o) {
-			if (o.getClass() == this.getClass()) {
-				if (!this.hasVar) return (!((PointcutVarEntry)o).hasVar());
-				return var.equals(((PointcutVarEntry)o).getVar());
-			} else return false;
+    private static boolean canShare(boolean isBelow, int depth, CflowSetup cfs) {
+
+    		boolean cflowcheck = 
+    			isBelow == cfs.isBelow();
+
+    		boolean depthcheck = 
+    			depth == cfs.getDepth();
+
+    		return (cflowcheck && depthcheck);
+
+    }
+	
+    private static CfsContainer buildNewCfs(
+    		Aspect a, Pointcut pc, boolean isBelow, Hashtable typeMap, Position pos, int depth) {
+		
+    	debug("Creating a new CFS for (depth "+depth+","+(isBelow?"cflowbelow":"cflow")+"):\n"+pc);
+		CflowSetup cfs = CflowSetup.construct(a, pc, isBelow, typeMap, pos, depth);
+		
+		// Need to create the identity renaming on pc
+		Hashtable/*<Var,PointcutVarEntry>*/ renaming = new Hashtable();
+		Iterator it = cfs.getActuals().iterator();
+		while (it.hasNext()) {
+			Var v = (Var)it.next();
+			VarBox ve = 
+				new VarBox(v);
+			renaming.put(v, ve);
 		}
-
-		public boolean equalsvar(Var v) {
-			if (!hasVar) return false;
-			return (var.equals(v));
-		}
-
-		public String toString() {
-			if (hasVar) return var.toString();
-			else return "X";
-		}
-
-	}
-
-    public static class CflowSetupContainer {
-    private Pointcut pc;	// The original pc associated with this cfs (DEBUG)
-	private CflowSetup cfs;
-	private boolean isFresh;
-	private Hashtable/*<Var, PointcutVarEntry>*/ renaming;
-
-	public CflowSetupContainer(Pointcut pc, CflowSetup cfs, boolean isFresh, 
-							   Hashtable/*<Var, PointcutVarEntry>*/ renaming) {
-		this.pc = pc;
-	    this.cfs = cfs;
-	    this.isFresh = isFresh;
-	    this.renaming = renaming;
-	}
-
-	private Pointcut getPointcut() {
-		return pc;
-	}
-
-	public CflowSetup getCfs() {
-	    return cfs;
-	}
-
-	public boolean isFresh() {
-	    return isFresh;
-	}
-
-	public Hashtable/*<Var, PointcutVarEntry>*/ getRenaming() {
-		return renaming;
-	}
-
+		
+		// Need to register the new CFS as an abstract advice decl
+		GlobalAspectInfo.v().addAdviceDecl(cfs);
+		
+		// Need to remember that we've created cfs
+		// IF THE DEBUG FLAG IS NOT SET (o/w no point)
+		if (!Debug.v().dontShareCflowStacks)
+			CfsStore.put(pc, typeMap, cfs);
+		
+		// Now return it
+		return new CfsContainer(cfs, renaming);
+    }
+    
+    public static CfsContainer construct(
+    		Aspect a, Pointcut pc, boolean isBelow, Hashtable typeMap, Position pos, int depth) {
+    	
+    	if (Debug.v().dontShareCflowStacks)
+    		return buildNewCfs(a, pc, isBelow, typeMap, pos, depth);
+    	
+    	CfsContainer cfsc = CfsStore.findExisting(a, pc, isBelow, typeMap, pos, depth);
+    	
+    	if (cfsc == null) {
+    		// We need to create a new one
+    		return buildNewCfs(a, pc, isBelow, typeMap, pos, depth);
+    		
+    	} else {
+    		return cfsc;
+    	}
+    	
+    }
+    
+    static class CfsContainer {
+    	private CflowSetup cfs = null;
+    	private Hashtable/*<Var,PointcutVarEntry>*/ renaming = null;
+    	
+    	public CfsContainer(CflowSetup cfs, Hashtable/*<Var, PointcutVarEntry>*/ renaming) {
+    		this.cfs = cfs; this.renaming = renaming;
+    	}
+    	
+    	public CflowSetup getCfs() { return cfs; }
+    	public Hashtable/*<Var,PointcutVarEntry>*/ getRenaming() { return renaming; }
     }
 
     public static void reset() {
 	CfsStore.reset();
     }
-
+    
 }

@@ -88,13 +88,40 @@ public class ArgVar extends ArgAny {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
 	 */
-	public boolean canRenameTo(ArgPattern p, Hashtable renaming) {
-		if (p.getClass() == this.getClass()) {
-			Var othervar = ((ArgVar)p).getVar(); 
-			return (var.canRenameTo(othervar, renaming));
+	public boolean unify(ArgPattern other, Unification unification) {
+		if (other.getClass() == this.getClass()) {
+			Var othervar = ((ArgVar)other).getVar();
+			if (var.unify(othervar, unification)) {
+				Var unifiedvar = unification.getVar();
+				if (unifiedvar == var) {
+					unification.setArgPattern(this);
+					return true;
+				} else {
+					if (unification.unifyWithFirst())
+						throw new RuntimeException("Unfication error: restricted unification failed");
+					if (unifiedvar == othervar) {
+					unification.setArgPattern(other);
+					return true;
+				} else {
+					unification.setArgPattern(new ArgVar(unifiedvar, unifiedvar.getPosition()));
+					return true;
+				} 
+				}
+			} else return false;
+		} else if (other.getClass() == ArgType.class) {
+			// If the other pc is an ArgType with the same type as this Var, can unify
+			if (abc.main.Debug.v().debugPointcutUnification)
+				System.out.println("Trying to unify "+this+" with an ArgType: "+other);
+			ArgType otherargtype = (ArgType)other;
+			if (unification.getType1(this.getVar().getName()).equals(otherargtype.getType())) {
+				if (abc.main.Debug.v().debugPointcutUnification)
+					System.out.println("Succeeded!");
+				unification.setArgPattern(this);
+				unification.put2(this.getVar(), new VarBox());
+				return true;
+			} else return false;
 		} else return false;
 	}
-
 }

@@ -53,18 +53,29 @@ public class ArgType extends ArgAny {
 	return CheckType.construct(cv,type.getSootType());
     }
 
-    // inherit substituteForPointcutFormal from ArgAny;
-    // as far as I can tell the rules about what is
-    // permitted make doing a dynamic type test completely
-    // pointless anyway
-
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
 	 */
-	public boolean canRenameTo(ArgPattern p, Hashtable renaming) {
-		if (p.getClass() == this.getClass()) {
-			return (type.equals(((ArgType)p).getType()));
+	public boolean unify(ArgPattern other, Unification unification) {
+		if (other.getClass() == this.getClass()) {
+			if (type.equals(((ArgType)other).getType())) {
+				unification.setArgPattern(this);
+				return true;
+			} else if ((other.getClass() == ArgVar.class)
+						&& (!unification.unifyWithFirst())) {
+				// If the other pc is a ArgVar with the same type as this, can unify
+				// BUT Only if not restricted to returning THIS
+				if (abc.main.Debug.v().debugPointcutUnification)
+					System.out.println("Trying to unify an ArgType "+this+" with an ArgVar: "+other);
+				ArgVar otherav = (ArgVar)other;
+				if (this.getType().equals(unification.getType2(otherav.getVar().getName()))) {
+					if (abc.main.Debug.v().debugPointcutUnification)
+						System.out.println("Succeeded!");
+					unification.setArgPattern(otherav);
+					unification.put1(otherav.getVar(), new VarBox());
+					return true;
+				} else return false;
+			} else return false;
 		} else return false;
 	}
-
 }

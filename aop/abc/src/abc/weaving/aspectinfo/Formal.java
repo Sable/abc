@@ -67,25 +67,29 @@ public class Formal extends Syntax {
 	return type.hashCode();
     }
     
-    public boolean canRenameTo(Formal f, Hashtable/*<Var, Var>*/ renaming) {    	
-    	if (type.equals(f.getType())) {
-    		// NOTE: the renaming maps Vars to Vars as this is what we need later
-    		// Formals are NEVER added to the renaming, we only check that there already
-    		// is a corresponding entry
-    		// Var objects are compared by name, so it is OK to create two new Vars for the
-    		// test
-    		// TODO Check that it is OK that Formal.canRenameTo does not add bindings
-    		
-    		Var thisv = new Var(name, getPosition());
-    		Var otherv = new Var(f.getName(), f.getPosition());
-    		
-    		if (renaming.containsKey(thisv)) {
-				GlobalCflowSetupFactory.PointcutVarEntry previous = 
-					(GlobalCflowSetupFactory.PointcutVarEntry)renaming.get(thisv);
-    			if (previous.getVar().getName().equals(f.getName())) {
-    				return true;
-    			} else return false; // Existing match, wrong name 
-    		} else return false;     // No match
-    		} else return false;     // Wrong type
+    /** Checks whether there is a binding with source var having the
+     *  same name as this formal in a renaming
+     * 
+     * @param renaming The Renaming(Var->VarBox) 
+     */
+    public boolean isInRenamingAsSource
+				(Hashtable/*<Var, PointcutVarEntry>*/ renaming) {
+    	// NOTE that Var.equals() compares by name only, so can
+    	// create a new Var object and remove just that
+    	Var v = new Var(name, getPosition());
+    	if (renaming.containsKey(v)) {
+    		VarBox ve = 
+				(VarBox) renaming.get(v);
+    		return (ve.hasVar());
+    	} else return false;
     }
+    
+    public void removeFromRenamingAsSource
+    			(Hashtable/*<Var, PointcutVarEntry>*/ renaming) {
+    	Var v = new Var(name, getPosition());
+    	if (renaming.containsKey(v)) {
+    		renaming.remove(v);
+    	}
+    }
+    
 }

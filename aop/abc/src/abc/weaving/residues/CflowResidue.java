@@ -134,6 +134,7 @@ public class CflowResidue extends Residue {
 	Iterator it=vars.iterator();
 	while(it.hasNext()) {
 	    WeavingVar to=(WeavingVar) (it.next());
+	    if (to != null) {
 	    
 	    debug("handling weaving var "+to);
 
@@ -171,9 +172,12 @@ public class CflowResidue extends Residue {
 		result=Jimple.v().newCastExpr(item,type);
 	    }
 	    last=to.set(localgen,units,last,wc,result);
-	    index++;
 	}
 
+	    index++;
+	    
+	}
+	    
 	}
 
 	debug("done with cflow codegen");

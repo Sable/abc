@@ -51,7 +51,21 @@ public abstract class ArgPattern extends Syntax {
 
     public abstract void getFreeVars(Set/*<String>*/ result);
 
-	public abstract boolean canRenameTo(ArgPattern p, 
-										  Hashtable/*<Var,PointcutVarEntry>*/ renaming);
+	/** Attempts to unify two pointcuts, creating another pointcut that has enough variables
+	 *  to encompass both if possible. Variables are only unified if they have the same type,
+	 *  as stored in the unification typemaps. If unification.unifyWithFirst(), then restricted
+	 *  unification is attempted, which succeeds only if both pointcuts can be unified with result
+	 *  the first pointcut (ie the first pointcut has no less free variables than the second).
+	 * 
+	 * @param other The other pointcut to unify with
+	 * @param unification The unification. This should be initialized (determining
+	 * whether we attempt proper or restricted unification) and the typemaps should
+	 * be set.
+	 * @return True iff the unification was successful. In this case, unification contains
+	 * the resulting pointcut and the substitutions taking it to THIS and OTHER. Otherwise,
+	 * unification is left in any old state.
+	 */
 
+	public abstract boolean unify(ArgPattern other, Unification unification);
+	
 }

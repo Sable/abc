@@ -147,12 +147,11 @@ public class PointcutRef extends Pointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+	public boolean unify(Pointcut otherpc, Unification unification) {
 		throw new InternalCompilerError
-			("PointcutRef should have been inlined by now (equivalent(pc, renaming))",
+			("PointcutRef should have been inlined by now (unify(pc,ren1,ren2,res)",
 			 getPosition());
 	}
-
 }

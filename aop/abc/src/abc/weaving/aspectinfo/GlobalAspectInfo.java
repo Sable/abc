@@ -38,6 +38,7 @@ import abc.weaving.matching.*;
 /** All aspect-specific information for an entire program. 
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
+ *  @author Damien Sereni
  */
 public class GlobalAspectInfo {
     private GlobalAspectInfo() {}
@@ -397,6 +398,26 @@ public class GlobalAspectInfo {
 	// manual iterator because we want to add things as we go
 	for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
 
+	// We may now need to remove some unused CFlowSetups (the CSE for sharing CFlowSetups
+	// can make CFS instance redundant - if we have cfs1 and we want cfs2, and they can be
+	// unified to cfs3, then all pcs using cfs1 are changed to use cfs3, making cfs1 redundant)
+	int i = 0;
+	while (i < ads.size()) {
+		if (ads.get(i) instanceof CflowSetup) {
+			CflowSetup cfs = (CflowSetup)ads.get(i);
+			if (cfs.isUsed()) {
+				// Don't do anything
+				i++;
+			} else {
+				// Remove it, but don't increment i as ads(i) will now be
+				// the next advice on the list
+				ads.remove(i);
+				if (abc.main.Debug.v().debugCflowSharing)
+					System.out.println("Removed CflowSetup: \n"+cfs.getPointcut());
+			}
+		} else i++;
+	}
+	
 	adviceLists=abc.weaving.matching.AdviceApplication.computeAdviceLists(this);
     }
 

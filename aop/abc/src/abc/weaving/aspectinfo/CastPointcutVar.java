@@ -90,16 +90,34 @@ public class CastPointcutVar extends Pointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+	public boolean unify(Pointcut otherpc, Unification unification) {
+
 		if (otherpc.getClass() == this.getClass()) {
 			CastPointcutVar othcast = (CastPointcutVar) otherpc;
 			
-			if (from.canRenameTo(othcast.getFrom(), renaming)) {
-				return (to.canRenameTo(othcast.getTo(), renaming));
+			if (from.unify(othcast.getFrom(), unification)) {
+				Var unifiedFrom = unification.getVar();
+				if (to.unify(othcast.getTo(), unification)) {
+					Var unifiedTo = unification.getVar();
+					if ((unifiedFrom == from) && (unifiedTo == to))
+						unification.setPointcut(this);
+					else {
+						if (unification.unifyWithFirst())
+							throw new RuntimeException("Unfication error: restricted unification failed");
+						if ((unifiedFrom == othcast.getFrom()) && (unifiedTo == othcast.getTo()))
+							unification.setPointcut(otherpc);
+						else
+							unification.setPointcut(
+								new CastPointcutVar(unifiedFrom, unifiedTo, 
+													getPosition()));
+					}
+					return true;
+				} else return false;
 			} else return false;
-		} else return false;
-	}
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
+	}
 }

@@ -100,24 +100,31 @@ public class OrPointcut extends Pointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc.getClass() == this.getClass()) {
-			Pointcut otherpc1 = ((OrPointcut)otherpc).getLeftPointcut();
-			Pointcut otherpc2 = ((OrPointcut)otherpc).getRightPointcut();
-			
-			// Bound vars on both sides of the or are the same
-			// Can find subst from the left pc, and check that it works
-			// the right pc
-			// This is done by checking whenever a var is added to the subst
-			// that it is either new, or that the new binding is the same as
-			// the existing one (ie never override bindings)
-			
-			if (pc1.canRenameTo(otherpc1, renaming)) {
-				return pc2.canRenameTo(otherpc2, renaming);
-			} else return false;
-		} else return false;
-	}
+	public boolean unify(Pointcut otherpc, Unification unification) {
 
+		if (otherpc.getClass() == this.getClass()) {
+			OrPointcut oth = (OrPointcut)otherpc;
+			if (pc1.unify(oth.getLeftPointcut(), unification)) {
+				Pointcut pc1new = unification.getPointcut();
+				if (pc2.unify(oth.getRightPointcut(), unification)) {
+					Pointcut pc2new = unification.getPointcut();
+					if ((pc1new == pc1) && (pc2new == pc2))
+						unification.setPointcut(this);
+					else {
+						if (unification.unifyWithFirst())
+							throw new RuntimeException("Unfication error: restricted unification failed");
+					if ((pc1new == oth.getLeftPointcut()) && (pc2new == oth.getRightPointcut()))
+						unification.setPointcut(otherpc);
+					else
+						unification.setPointcut(OrPointcut.construct(pc1new, pc2new, getPosition()));
+				}
+					return true;
+				} else return false;
+			} else return false;
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+
+	}
 }

@@ -44,12 +44,15 @@ public class WithinAdvice extends LexicalPointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc.getClass() == this.getClass()) {
-			return true;
-		} else return false;
-	}
+	public boolean unify(Pointcut otherpc, Unification unification) {
 
+		if (otherpc.getClass() == this.getClass()) {
+			unification.setPointcut(this);
+			return true;
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+
+	}
 }

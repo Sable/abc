@@ -91,14 +91,26 @@ public class NotPointcut extends Pointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
-		// Renaming is useless here b/c guarantees that no bound vsrs in not
-		// but no harm done
-		if (otherpc.getClass() == this.getClass()) {
-			return pc.canRenameTo(((NotPointcut)otherpc).getPointcut(), renaming);
-		} else return false;
-	}
+	public boolean unify(Pointcut otherpc, Unification unification) {
 
+		if (otherpc.getClass() == this.getClass()) {
+			if (pc.unify(((NotPointcut)otherpc).getPointcut(), unification)) {
+				if (unification.getPointcut() == pc)
+					unification.setPointcut(this);
+				else {
+					if (unification.unifyWithFirst())
+						throw new RuntimeException("Unfication error: restricted unification failed");
+				if (unification.getPointcut() == ((NotPointcut)otherpc).getPointcut())
+					unification.setPointcut(otherpc);
+				else
+					unification.setPointcut(new NotPointcut(pc, getPosition()));
+				}
+				return true;
+			} else return false;
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+
+	}
 }

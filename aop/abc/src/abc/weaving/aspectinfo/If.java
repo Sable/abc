@@ -147,9 +147,10 @@ public class If extends Pointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+	public boolean unify(Pointcut otherpc, Unification unification) {
+
 		if (otherpc.getClass() == this.getClass()) {
 			If oif = (If)otherpc;
 			
@@ -157,18 +158,43 @@ public class If extends Pointcut {
 			if (this.hasJoinPointStaticPart() != oif.hasJoinPointStaticPart()) return false;
 			if (this.hasEnclosingJoinPoint() != oif.hasEnclosingJoinPoint()) return false;
 			
-			// COMPARING VARS
+			// COMPARING VARS: POINTWISE UNIFICATION
 			
 			Iterator it1 = vars.iterator();
 			Iterator it2 = oif.getVars().iterator();
+			List unifiedvars = new LinkedList();
+			
+			// unificationType: should be set to
+			//   -1 if ALL vars come from THIS
+			//    1 if ALL vars come from OTHER
+			//    0 if vars come from both
+			//	  2 if no vars yet
+			int unificationType = 2; 
 			
 			while (it1.hasNext() && it2.hasNext()) {
 				Var var1 = (Var) it1.next();
 				Var var2 = (Var) it2.next();
 				
-				if (!var1.canRenameTo(var2, renaming)) return false;
+				if (var1.unify(var2, unification)) {
+					Var newvar = unification.getVar();
+					unifiedvars.add(newvar);
+					
+					// Check whether all vars come from one pointcut
+					switch (unificationType) {
+					case -1 : 
+						if (newvar != var1) unificationType = 0; break;
+					case 1  : 
+						if (newvar != var2) unificationType = 0; break;
+					case 2	: 
+						if (newvar == var1) { unificationType = -1; break; }
+						if (newvar == var2) { unificationType = 1; break; }
+						unificationType = 0; break;
+					}
+					
+				} else return false;
 			}
-			if (it1.hasNext() || it2.hasNext()) return false;
+			if (it1.hasNext() || it2.hasNext()) 
+				return false;			// The lists had different lengths
 			
 			// COMPARING IMPLEMENTATIONS
 			// FIXME Is it OK to require If methods to be equal regardless of renaming?
@@ -177,8 +203,38 @@ public class If extends Pointcut {
 			
 			if (!impl.equals(oif.getImpl())) return false;
 			
-			return true;
-		} else return false;
-	}
+			// THE POINTCUTS CAN BE UNIFIED
+			// CHECK TO SEE WHETHER WE CAN REUSE EITHER this OR otherpc
+			
+			// SANITY CHECK: if unification.unifyWithFirst(), the unification of the 
+			// vars should only have succeeded if they could be unified with result
+			// the lhs var, so that the unificationType should be -1
+			
+			if (unification.unifyWithFirst())
+				if ((unificationType != -1) && (unificationType != 2))
+				throw new RuntimeException("Unfication error: restricted unification failed (If: "+
+					"unficationType="+unificationType+")");
+			
+			switch (unificationType) {
+			case -1 : // All vars come from THIS
+				unification.setPointcut(this);
+				return true;
+			case 1  : // All vars come from OTHER
+				unification.setPointcut(otherpc);
+				return true;
+			case 0	: // Vars are not all from same source, need to create a new piece of syntax
+				If newpc = new If(unifiedvars,impl,jp,jpsp,ejp,getPosition());
+				unification.setPointcut(newpc);
+				return true;
+			case 2	: // No vars. Can reuse THIS
+				unification.setPointcut(this);
+				return true;
+			default : throw new RuntimeException("Invalid UnificationType "+unificationType+
+						" in Args unification");
+			}
 
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+
+	}
 }

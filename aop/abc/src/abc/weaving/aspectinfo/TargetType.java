@@ -56,13 +56,32 @@ public class TargetType extends TargetAny {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+	public boolean unify(Pointcut otherpc, Unification unification) {
+
 		if (otherpc.getClass() == this.getClass()) {
 			AbcType othertype = ((TargetType)otherpc).getType();
-			return (othertype.equals(type));
-		} else return false;
-	}
+			if (type.equals(othertype)) {
+				unification.setPointcut(this);
+				return true;
+			} else return false;
+		} else if ((otherpc.getClass() == TargetVar.class) && 
+				   (!unification.unifyWithFirst())) {
+			// If the other pc is a TargetVar with the same type as this, can unify
+			// BUT only if we are not restricted to producing THIS as a result
+			if (abc.main.Debug.v().debugPointcutUnification)
+				System.out.println("Trying to unify a TargetType "+this+" with a TargetVar: "+otherpc);
+			TargetVar othertv = (TargetVar)otherpc;
+			if (this.getType().equals(unification.getType2(othertv.getVar().getName()))) {
+				if (abc.main.Debug.v().debugPointcutUnification)
+					System.out.println("Succeeded!");
+				unification.setPointcut(othertv);
+				unification.put1(othertv.getVar(), new VarBox());
+				return true;
+			} else return false;
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
+	}
 }

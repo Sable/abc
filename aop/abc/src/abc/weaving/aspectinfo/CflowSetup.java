@@ -101,7 +101,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     public List/*<Var>*/ getActuals() {
 	return actuals;
     }
-
+    
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+" type: "+spec+"\n");
 	sb.append(prefix+" pointcut: "+pc+"\n");
@@ -467,4 +467,17 @@ public class CflowSetup extends AbstractAdviceDecl {
 
     }
 
+    // Keep a list of pointcuts that use this; if this is empty then we can get rid
+    // of this CFS before actually weaving any code in -- this is used in sharing instances
+    // of CFS, as we may actually reassign the CFS used by a pointcut to something that
+    // has more free variables, so that we can share it
+    
+    private List uses/*<CflowPointcut>*/ = new ArrayList();
+    
+    public boolean isUsed() 			       { return (!uses.isEmpty()); }
+    public void clearUses() 		     	   { uses.clear(); }
+    public void addUse(CflowPointcut pc) 	   { uses.add(pc); }
+    public void removeUse(CflowPointcut pc)    { uses.remove(pc); }
+    public List/*<CflowPointcut>*/ getUses()   { return uses; }
+    
 }

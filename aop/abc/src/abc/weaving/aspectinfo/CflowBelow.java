@@ -33,19 +33,13 @@ import abc.weaving.residues.*;
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
  */
-public class CflowBelow extends Pointcut {
-    private Pointcut pc;
+public class CflowBelow extends CflowPointcut {
     int depth;
-	private Hashtable/*<String,Var>*/ renaming;
 
     public CflowBelow(Pointcut pc,Position pos,int depth) {
 	super(pos);
-	this.pc = pc;
+	setPointcut(pc);
 	this.depth=depth;
-    }
-
-    public Pointcut getPointcut() {
-	return pc;
     }
 
     public int getDepth() {
@@ -55,44 +49,36 @@ public class CflowBelow extends Pointcut {
     protected DNF dnf() {
 	return new DNF
 	    (new CflowBelow
-	     (pc.dnf().makePointcut(pc.getPosition()),getPosition(),depth));
+	     (getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth));
     }
 
     public String toString() {
-	return "cflowbelow("+pc+")";
+	return "cflowbelow("+getPointcut()+")";
     }
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context) {
-	Pointcut pc=this.pc.inline(renameEnv,typeEnv,context);
-	if(pc==this.pc) return this;
+	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context);
+	if(pc==this.getPointcut()) return this;
 	else return new CflowBelow(pc,getPosition(),depth);
     }
 
-    private CflowSetup setupAdvice;
-
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
-
-	GlobalCflowSetupFactory.CflowSetupContainer cfsCont = 
-	    GlobalCflowSetupFactory.construct(context,pc,true,typeMap,getPosition(),depth);
-
-	setupAdvice = cfsCont.getCfs();
-	renaming = cfsCont.getRenaming();
-
-	// Should only do this if the advice has not already been added.
-
-	if (cfsCont.isFresh()) {
-	    GlobalAspectInfo.v().addAdviceDecl(setupAdvice);
-	}
-
+   
+	GlobalCflowSetupFactory.CfsContainer cfsCont = 
+	    GlobalCflowSetupFactory.construct(context,getPointcut(),true,typeMap,getPosition(),depth);
+	setCfs(cfsCont.getCfs());
+	setRenaming(cfsCont.getRenaming());
+	setTypeMap(typeMap);
+	getCfs().addUse(this);
     }
 
     public Residue matchesAt
 	(WeavingEnv env,SootClass cls,
 	 SootMethod method,ShadowMatch sm) {
 
-	List/*<Var>*/ actuals=setupAdvice.getActuals();
+	List/*<Var>*/ actuals=getCfs().getActuals();
 	// List of actuals for the Cflow setup advice
 	// These are NOT necessarily the same as the actuals for
 	// this (inlined) pointcut, but we have the renaming
@@ -100,29 +86,46 @@ public class CflowBelow extends Pointcut {
 	Iterator it=actuals.iterator();
 	while(it.hasNext()) {
 		Var setupvar = (Var) it.next();
-		GlobalCflowSetupFactory.PointcutVarEntry inlinedvar = 
-			(GlobalCflowSetupFactory.PointcutVarEntry) renaming.get(setupvar);
+		VarBox inlinedvar = 
+			(VarBox) getRenaming().get(setupvar);
 		if (inlinedvar == null) {
 			throw new RuntimeException("Internal error: Could not find variable "+
-					setupvar.getName() + " in cflow renaming");
+					setupvar.getName() + " in cflow renaming from cflowbelow:\n"+getPointcut()+
+					"\nwith CFS pointcut\n:"+getCfs().getPointcut());
 		}
 		if (inlinedvar.hasVar())
 			weavingActuals.add(env.getWeavingVar(inlinedvar.getVar()));
+		else
+			weavingActuals.add(null);
 	}
-	return new CflowResidue(setupAdvice,weavingActuals);
+	return new CflowResidue(getCfs(),weavingActuals);
     }
 
     public void getFreeVars(Set result) {
-	pc.getFreeVars(result);
+    	getPointcut().getFreeVars(result);
     }
-
+	
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc.getClass() == this.getClass()) {
-			return pc.canRenameTo(((CflowBelow)otherpc).getPointcut(), renaming);
-		} else return false;
-	}
+	public boolean unify(Pointcut otherpc, Unification unification) {
 
+		if (otherpc.getClass() == this.getClass()) {
+			if (getPointcut().unify(((CflowBelow)otherpc).getPointcut(), unification)) {
+				if (unification.getPointcut() == getPointcut())
+					unification.setPointcut(this);
+				else {
+					if (unification.unifyWithFirst())
+						throw new RuntimeException("Unfication error: restricted unification failed");
+					if (unification.getPointcut() == ((CflowBelow)otherpc).getPointcut())
+						unification.setPointcut(otherpc);
+					else
+						unification.setPointcut(new CflowBelow(getPointcut(), getPosition(), depth));
+				}
+				return true;
+			} else return false;
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+
+	}
 }

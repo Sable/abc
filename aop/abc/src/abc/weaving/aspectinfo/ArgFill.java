@@ -56,12 +56,12 @@ public class ArgFill extends ArgPattern {
     public void getFreeVars(Set/*<Var>*/ result) {}
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.ArgPattern#unify(abc.weaving.aspectinfo.ArgPattern, abc.weaving.aspectinfo.Unification)
 	 */
-	public boolean canRenameTo(ArgPattern p, Hashtable renaming) {
-		if (p.getClass() == this.getClass()) {
+	public boolean unify(ArgPattern other, Unification unification) {
+		if (other.getClass() == this.getClass()) {
+			unification.setArgPattern(this);
 			return true;
 		} else return false;
 	}
-
 }

@@ -99,17 +99,33 @@ public class AndPointcut extends Pointcut {
     }
 
 	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
 	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
-		/* if matches, subst is the union of the substs for left and right */
-		
-		if (otherpc.getClass() == this.getClass()) {
-			AndPointcut otherand = (AndPointcut)otherpc;
-			if (pc1.canRenameTo(otherand.getLeftPointcut(), renaming)) {
-				return (pc2.canRenameTo(otherand.getRightPointcut(), renaming));
-			} else return false;
-		} else return false;
-	}
+	public boolean unify(Pointcut otherpc, Unification unification) {
 
+		if (otherpc.getClass() == this.getClass()) {
+			AndPointcut oth = (AndPointcut)otherpc;
+			if (pc1.unify(oth.getLeftPointcut(), unification)) {
+				Pointcut pc1new = unification.getPointcut();
+				if (pc2.unify(oth.getRightPointcut(), unification)) {
+					Pointcut pc2new = unification.getPointcut();
+					if ((pc1new == pc1) && (pc2new == pc2))
+						unification.setPointcut(this);
+					else 
+					{
+						if (unification.unifyWithFirst())
+							throw new RuntimeException("Unfication error: restricted unification failed");
+						if ((pc1new == oth.getLeftPointcut()) && (pc2new == oth.getRightPointcut()))
+							unification.setPointcut(otherpc);
+						else
+							unification.setPointcut(AndPointcut.construct(pc1new, pc2new, getPosition()));
+					} 
+					return true;
+				} else return false;
+			} else  return false;
+		} else // Do the right thing if otherpc was a local vars pc
+			return LocalPointcutVars.unifyLocals(this,otherpc,unification); 
+			
+
+	}
 }

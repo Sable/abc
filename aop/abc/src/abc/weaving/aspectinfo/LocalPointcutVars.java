@@ -114,36 +114,172 @@ public class LocalPointcutVars extends Pointcut {
 	while(it.hasNext()) result.remove(((Formal) (it.next())).getName());
     }
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
-	 */
-	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc.getClass() == this.getClass()) {
-			LocalPointcutVars other = (LocalPointcutVars) otherpc; 
-			if (pc.canRenameTo(other.getPointcut(), renaming)) {
-				// The inner pcs are equivalent, and we have the renaming
-				// Are the variables to be abstracted the same?
-				// ie require that corresponding elements in the lists of formals:
-				//   - have the same type
-				//   - are related by the substitution
-				
-				// FIXME This is much too restrictive for comparing pcs with different bound vars
-				
-				Iterator it1 = formals.iterator();
-				Iterator it2 = other.getFormals().iterator();
-				while (it1.hasNext() && it2.hasNext()) {
-					Formal form1 = (Formal) it1.next();
-					Formal form2 = (Formal) it2.next();
-					
-					if (!form1.canRenameTo(form2, renaming)) 
-							return false;	
+	public boolean unify(Pointcut otherpc, Unification unification) {
+		// Try to unify this.pc with otherpc
+		
+		// SPECIAL CASE: restricted unification
+		// Then try to unify this.pc with otherpc, and check that the
+		// local variables are not bound to anythin
+		if (unification.unifyWithFirst()) {
+			// Set the typemap
+			addFormals(this.formals, unification.getTypeMap1());
+			if (this.pc.unify(otherpc, unification)) {
+				Iterator it = formals.iterator();
+				while (it.hasNext()) {
+					Formal f = (Formal)it.next();
+					if (f.isInRenamingAsSource(unification.getRen2()))
+						{ removeFormals(this.formals, unification.getTypeMap1());
+						  return false;} 
+					else
+						{ f.removeFromRenamingAsSource(unification.getRen2());
+						  f.removeFromRenamingAsSource(unification.getRen1()); } 
 				}
-				if (it1.hasNext() || it2.hasNext()) return false;
-				// The lists have the same length and corresponding elements are related
-				// We are done
+				unification.setPointcut(this);
+				// Clear the formals
+				removeFormals(this.formals, unification.getTypeMap1());
 				return true;
-			} else return false;
+			} else { removeFormals(this.formals, unification.getTypeMap1());
+					 return false;} 
+		}
+		
+		// ELSE we can do straightforward unification
+		else
+		return unifyLocalsGen(this, otherpc, this, this.pc, otherpc, 1, unification);
+		
+	}
+	
+	public static boolean unifyLocals(Pointcut sourcepc, Pointcut destpc,
+										Unification unification) {
+		if (destpc instanceof LocalPointcutVars) {
+			// We are trying to unify sourcepc with a LocalPointcutVars
+			LocalPointcutVars destlocal = (LocalPointcutVars)destpc;
+			
+			// SPECIAL CASE: restricted unification
+			// Try to unify sourcepc with destlocal.pc
+			// and unset the bindings for any formals
+			if (unification.unifyWithFirst()) {
+				// Set the typemap
+				addFormals(destlocal.getFormals(), unification.getTypeMap2());
+				
+				if (sourcepc.unify(destlocal.getPointcut(), unification)) {
+					Iterator it = destlocal.getFormals().iterator();
+					while (it.hasNext()) {
+						Formal f = (Formal)it.next();
+						unification.removeTargetAsString2(f.getName());
+					}
+					unification.setPointcut(sourcepc);
+					
+					// Clear the typemap and return
+					removeFormals(destlocal.getFormals(), unification.getTypeMap2());
+					return true;
+				} else { removeFormals(destlocal.getFormals(), unification.getTypeMap2());
+						 return false;} 
+			}
+			
+			// ELSE we can do straightforward unification
+
+			else			
+			return unifyLocalsGen(sourcepc,destpc,destlocal,sourcepc,destlocal.getPointcut(), 2, unification);
+
 		} else return false;
 	}
+	
+	// A Generalised unifyLocals method, used by both unify and unifyLocals
+	private static boolean unifyLocalsGen(Pointcut sourcepc, Pointcut destpc,
+		LocalPointcutVars localspc, Pointcut sourceinner, Pointcut destinner,
+		int dir /*1 if the local is source, 2 o/w*/,
+		Unification unification) {
+			
+			// Add the formals to the typemap
+			addFormals(localspc.getFormals(), unification.getTypeMap(dir));
 
+			if (sourceinner.unify(destinner, unification)) {
+				
+				// Remove bindings into the locals pc that are abstracted away
+				// by the Locals
+				Iterator it = localspc.getFormals().iterator();
+				while (it.hasNext()) {
+					Formal f = (Formal)it.next();
+					unification.removeTargetAsString(dir, f.getName());
+				}
+				
+				// Find variables that are in the unified pc but not mapped to
+				// a free var in either pointcut (anymore)
+				
+				List /*<Formal>*/ toRemove = new LinkedList();
+				Enumeration keys = unification.keys1(); // The keys had better be the same for both rens
+				while (keys.hasMoreElements()) {
+					Var v = (Var)keys.nextElement();
+					
+					// Is v unbound?
+					if ((!unification.isTargetSet1(v)) && (!unification.isTargetSet2(v))) {
+						// Only way this could happen is if v was a formal to localspc
+						Formal f = findFormalByName(localspc.getFormals(), v.getName());
+						if (f == null)
+							// SANITY CHECK: this shouldn't have happened
+							throw new RuntimeException("Unification error: variable "+v+
+							"is mapped to X under both renamings, but is not one of the" +							"LocalPointcutVars formals");
+						
+						// Mark f for abstraction
+						toRemove.add(f);
+					}
+					
+				}
+				
+				// If there are variables to abstract away, create a new Locals() pointcut
+				if (!toRemove.isEmpty()) {
+					LocalPointcutVars newpc = new
+						LocalPointcutVars(unification.getPointcut(), toRemove, localspc.getPosition());
+					unification.setPointcut(newpc);
+				}
+				// otherwise, the unification result is already set to the right thing 
+ 				
+ 				// Clean up the typemap, then return
+ 				removeFormals(localspc.getFormals(), unification.getTypeMap(dir));
+ 				return true;
+			}
+			else {
+				// Clean up typemap
+				removeFormals(localspc.getFormals(), unification.getTypeMap(dir));
+				return false;
+			}
+			
+			
+		}
+	
+	private static void addFormals(List/*<Formal>*/ formals, Hashtable/*<String,AbcType>*/ typeMap) {
+		Iterator it = formals.iterator();
+		if (abc.main.Debug.v().debugPointcutUnification)
+			System.out.println("Adding pointcut formals to typemap:");
+		while (it.hasNext()) {
+			Formal f = (Formal)it.next();
+			// Sanity Checking
+			if (typeMap.containsKey(f.getName()))
+				throw new RuntimeException("ERROR: TypeMap already contains formal "+f.getName());
+			typeMap.put(f.getName(), f.getType());
+			if (abc.main.Debug.v().debugPointcutUnification) {
+				System.out.print(f.getName() + " ");
+			}
+		}
+		if (abc.main.Debug.v().debugPointcutUnification) System.out.println();
+	}
+	
+	private static void removeFormals(List/*<Formal>*/ formals, Hashtable/*<String,AbcType>*/ typeMap) {
+		Iterator it = formals.iterator();
+		while (it.hasNext()) {
+			Formal f = (Formal)it.next();
+			typeMap.remove(f.getName());
+		}
+	}
+	
+	private static Formal findFormalByName(List/*<Formal>*/ formals, String name) {
+		Iterator it = formals.iterator();
+		while (it.hasNext()) {
+			Formal f = (Formal) it.next();
+			if (f.getName().equals(name))
+				return f;
+		}
+		return null;
+	}
+	
 }
