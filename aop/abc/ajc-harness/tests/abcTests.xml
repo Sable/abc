@@ -3564,7 +3564,10 @@
 
 	<!-- only before advice implemented for handler join points in 1.1 -->
     <ajc-test dir="new" title="advice on catch clauses"
+      abccomment="ajc fails this, since neither compiler 
+                  supports after advice on handlers"
       keywords="from-resolved_10x,knownLimitation">
+        <abckeywords><skip/></abckeywords>
         <compile files="CatchAdvice.java"/>
         <run class="CatchAdvice"/>
     </ajc-test>
