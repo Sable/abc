@@ -308,7 +308,7 @@ public class Main {
 
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
-        
+
         // Make sure that all the standard AspectJ shadow types are loaded
         AspectJShadows.load();
         AbcTimer.mark("Load shadow types");

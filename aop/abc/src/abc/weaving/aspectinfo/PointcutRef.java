@@ -21,6 +21,7 @@ public class PointcutRef extends Pointcut {
      */
     public PointcutRef(Object decl_key, Map decl_map, List args, Position pos) {
 	super(pos);
+	decl_map.size();
 	this.decl_key = decl_key;
 	this.decl_map = decl_map;
 	this.args = args;
@@ -34,8 +35,6 @@ public class PointcutRef extends Pointcut {
 	PointcutDecl decl = (PointcutDecl) decls.get(context);
 	if (decl == null) {
 	    decl = getDirectDecl();
-	    decl_key = null;
-	    decl_map = null;
 	    if (decl.isAbstract()) {
 		decl = GlobalAspectInfo.v().getPointcutDecl(decl.getName(), context);
 	    }

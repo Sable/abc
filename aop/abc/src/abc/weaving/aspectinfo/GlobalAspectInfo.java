@@ -412,7 +412,7 @@ public class GlobalAspectInfo {
     public void computeAdviceLists() {
 	// manual iterator because we want to add things as we go
 	for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
-	    
+
 	adviceLists=abc.weaving.matching.AdviceApplication.computeAdviceLists(this);
     }
 
