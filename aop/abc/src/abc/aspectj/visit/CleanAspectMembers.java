@@ -118,9 +118,15 @@ public class CleanAspectMembers extends NodeVisitor {
 		    				formals.add(f);
 		    				index++;
 		    			}
+					List throwsList = new LinkedList();
+					for (Iterator throwsIt = mii.throwTypes().iterator(); throwsIt.hasNext();) {
+					    Type t = (Type) throwsIt.next();
+					    TypeNode tn = nf.CanonicalTypeNode(mii.position(),t);
+					    throwsList.add(tn);
+					}
 		    			MethodDecl md = nf.MethodDecl(mii.position(),mii.flags().set(Flags.ABSTRACT),
-		    			                    nf.CanonicalTypeNode(mii.position(),mii.returnType()),mii.name(),
-		    								formals,mii.throwTypes(),b);
+								      nf.CanonicalTypeNode(mii.position(),mii.returnType()),mii.name(),
+								      formals,throwsList,b);
 		    			md = md.methodInstance(mii);
 		    			newmembers.add(md);
 	    			}

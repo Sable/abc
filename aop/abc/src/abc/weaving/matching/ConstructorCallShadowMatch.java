@@ -42,7 +42,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	if(!(next instanceof InvokeStmt)) { 
 	    // FIXME : improve this behaviour
 	    throw new Error
-		("INTERNAL ERROR: Didn't find an InvokeStmt after a new");
+		("INTERNAL ERROR: Didn't find an InvokeStmt after a new: "+pos.getContainer()+" "+current+" "+next);
 	}
 	InvokeExpr invoke=((InvokeStmt) next).getInvokeExpr();
 	

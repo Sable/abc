@@ -173,6 +173,7 @@ public abstract class AdviceApplication {
 	
 	HashMap m=new HashMap();
 	m.put("enabled","true");
+	//System.out.println("restructuring "+method);
 	(new soot.jimple.toolkits.base.JimpleConstructorFolder())
 	    .transform(method.getActiveBody(),"jtp.jcf",m);
 

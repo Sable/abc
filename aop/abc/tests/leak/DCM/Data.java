@@ -3,35 +3,49 @@ package DCM;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
+import java.io.*;
+
 public class Data {
   /* keys are classnames,  values are DCMrecords */ 
   private static Hashtable data = new Hashtable();
 
-  /* check to see if entry for classname exists yet */
-  public static boolean hasClass(String classname)
-    { return(data.containsKey(classname)); }
+    public static PrintStream out;
 
-  /* put a new classname in table */
-  public static void insertClass (String classname)
-    { data.put(classname, new DCMrecord());
+    static {
+	try {
+	    FileOutputStream fos = new FileOutputStream("data.out");
+	    out = new PrintStream(fos);
+	} catch (IOException e) {
+	    System.out.println("Could not open output file!");
+	    System.exit(10);
+	}
+    }
+
+  /* check to see if entry for cl exists yet */
+  public static boolean hasClass(Class cl)
+    { return(data.containsKey(cl)); }
+
+  /* put a new cl in table */
+  public static void insertClass (Class cl)
+    { data.put(cl, new DCMrecord());
     }
 
   /* called in finalizer */
-  public static void decrAllocated(String classname)
-    { DCMrecord r = (DCMrecord) data.get(classname);
+  public static void decrAllocated(Class cl)
+    { DCMrecord r = (DCMrecord) data.get(cl);
       r.numlive--;
     }
 
   /* called for constructors */
-  public static void updateForConstructorCall(String classname)
-    { DCMrecord r = (DCMrecord) data.get(classname);
+  public static void updateForConstructorCall(Class cl)
+    { DCMrecord r = (DCMrecord) data.get(cl);
       //    incr count by 1
       r.numlive++;
       r.numtotal++;
     }
 
   public static void dump()
-   { System.out.println(data.toString());
+   { out.println(data.toString());
    }
 }
 

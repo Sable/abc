@@ -37,9 +37,11 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 			ct = typeSystem().typeForName(cl);
 		    } catch (SemanticException e) {}
 		    if (ct != null) {
+			/* FIXME: Should this be here?
 			if (ct.flags().isInterface()) {
 			    throw new SemanticException("Interface "+cl+" cannot implement another interface");
 			}
+			*/
 			PCNode hi_cl = hierarchy.getClass(cl);
 			if (ct instanceof ParsedClassType) {
 			    ParsedClassType pct = (ParsedClassType)ct;
