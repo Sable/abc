@@ -11,6 +11,7 @@ public class AbcMain {
 		try {
 			main = new SilentMain(cArgs.args);
 			main.run();
+			throw new CompilerFailedException("It didn't fail really");
 		} catch (IllegalArgumentException e) {
 			System.out.println("Illegal arguments: "+e.getMessage());
 			throw new CompilationFailedException(null);//System.exit(1);
