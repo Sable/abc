@@ -26,7 +26,7 @@ public class GlobalAspectInfo {
     private List/*<SuperDispatch>*/ spds = new ArrayList();
     private List/*<SuperFieldDispatch>*/ spfds = new ArrayList();
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
-    private List/*<AdviceDecl>*/ ads = new ArrayList();
+    private List/*<AbstractAdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
     private List/*<DeclareParents>*/ dps = new ArrayList();
 	
@@ -107,7 +107,7 @@ public class GlobalAspectInfo {
     }
 
     /** Returns the list of all advice declarations.
-     *  @return a list of {@link abc.weaving.aspectinfo.AdviceDecl} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.AbstractAdviceDecl} objects.
      */
     public List getAdviceDecls() {
 	return ads;
@@ -169,7 +169,7 @@ public class GlobalAspectInfo {
 	icds.add(imd);
     }
 
-    public void addAdviceDecl(AdviceDecl ad) {
+    public void addAdviceDecl(AbstractAdviceDecl ad) {
 	ads.add(ad);
     }
 

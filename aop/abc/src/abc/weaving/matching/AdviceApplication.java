@@ -110,12 +110,32 @@ public abstract class AdviceApplication {
 		    // remove the null check once everything is properly 
 		    // implemented
 		    if(pc!=null) {
-			Residue residue=pc.matchesAt(we,cls,method,sm);
-
 			// manual short-circuit logic
+			Residue residue=AlwaysMatch.v;
+
+			if(!NeverMatch.neverMatches(residue))
+			    residue=AndResidue.construct
+				(residue,ad.preResidue(sm));
+
+			if(!NeverMatch.neverMatches(residue))
+			    residue=AndResidue.construct
+				(residue,pc.matchesAt(we,cls,method,sm));
+
+			// Mostly this is just to eliminate advice at shadow points
+			// where it can't apply - e.g. after advice at handlers
+			// ajc gives a warning if we throw away a match here; 
+			// we probably should too.
+			// In the case of AfterReturningArg it does generate a real 
+			// residue, but this may go away if we put the return value
+			// in the shadowpoints.
+
 			if(!NeverMatch.neverMatches(residue))
 			    residue=AndResidue.construct
 				(residue,ad.getAdviceSpec().matchesAt(we,sm));
+
+			if(!NeverMatch.neverMatches(residue))
+			    residue=AndResidue.construct
+				(residue,ad.postResidue(sm));
 
 			if(false) 
 			    System.out.println("residue: "+residue);

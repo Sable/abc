@@ -8,6 +8,7 @@ import soot.jimple.Jimple;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.AdviceWeavingContext;
 
 /** A formal parameter to advice
  *  @author Ganesh Sittampalam
@@ -32,7 +33,7 @@ public class AdviceFormal implements WeavingVar {
 	if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
 	units.insertAfter(assignStmt,begin);
-	wc.arglist.setElementAt(loc,pos);
+	((AdviceWeavingContext) wc).arglist.setElementAt(loc,pos);
 	return assignStmt;
     }
 

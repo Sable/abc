@@ -6,7 +6,9 @@ import soot.jimple.*;
 import soot.util.*;
 import polyglot.util.Position;
 import abc.weaving.matching.*;
+import abc.weaving.residues.Residue;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.PointcutCodeGen;
 import abc.weaving.weaver.CodeGenException;
 import abc.soot.util.LocalGeneratorEx;
@@ -108,33 +110,38 @@ public class AdviceDecl extends AbstractAdviceDecl {
     /** return number of formals (useful for determining number of args
      *     for invokes in code generator)
      */
+    // Inline and delete?
     public int numFormals() {
          return nformals;
     }
+
+    public Residue preResidue(ShadowMatch sm) {
+	return aspect.getPer().matchesAt(aspect,sm);
+    }
+	
+    public Residue postResidue(ShadowMatch sm) {
+	return aspect.getPer().getAspectInstance(aspect,sm);
+    }
+    
 
     public WeavingContext makeWeavingContext() {
 	int nformals = numFormals();
 	PointcutCodeGen.debug("There are " + nformals + " formals to the advice method.");
 	Vector arglist = new Vector(nformals, 2);
 	arglist.setSize(nformals);
-	return new WeavingContext(arglist);
+	return new AdviceWeavingContext(arglist);
     }
 
 
+ 
     /** create the invoke to call the advice body */
     public Chain makeAdviceExecutionStmts
 	(AdviceApplication adviceappl,
 	 LocalGeneratorEx localgen,WeavingContext wc) {
 
 	Chain c = new HashChain();
-	SootClass theAspect=aspect.getInstanceClass().getSootClass();
-	Local aspectref = localgen.generateLocal(theAspect.getType(),"theAspect");
 
-	AssignStmt stmtAspectOf = Jimple.v().newAssignStmt
-	    (aspectref, Jimple.v().newStaticInvokeExpr
-	     (theAspect.getMethod("aspectOf", new ArrayList())));
-
-	c.addLast(stmtAspectOf);
+	AdviceWeavingContext awc=(AdviceWeavingContext) wc;
 
 	SootMethod advicemethod = getImpl().getSootMethod();
 
@@ -156,9 +163,9 @@ public class AdviceDecl extends AbstractAdviceDecl {
 		("inserting at postion "
 		 + position
 		 + " into a Vector of size "
-		 + wc.arglist.capacity());
+		 + awc.arglist.capacity());
 
-	    wc.arglist.setElementAt(sjploc, position);
+	    awc.arglist.setElementAt(sjploc, position);
 	}
 
 	if (hasJoinPoint()) {
@@ -177,17 +184,17 @@ public class AdviceDecl extends AbstractAdviceDecl {
 		(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),"sjpenc");
 	    Stmt assignsjpenc = Jimple.v().newAssignStmt(sjpencloc, sjpencfieldref);
 	    c.addLast(assignsjpenc);
-	    wc.arglist.setElementAt(sjpencloc, position);
+	    awc.arglist.setElementAt(sjpencloc, position);
 	}
 
 	boolean alldone = true;
-	for (int i = 0; i < wc.arglist.size(); i++)
-	    alldone = alldone && wc.arglist.get(i) != null;
+	for (int i = 0; i < awc.arglist.size(); i++)
+	    alldone = alldone && awc.arglist.get(i) != null;
 
 	if (alldone) {
 	    Stmt s =Jimple.v().newInvokeStmt
 		(Jimple.v().newVirtualInvokeExpr
-		 (aspectref,advicemethod,wc.arglist)
+		 (awc.aspectinstance,advicemethod,awc.arglist)
 		 );
 	    c.addLast(s);
 	    return (c);

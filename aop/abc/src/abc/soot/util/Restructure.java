@@ -100,14 +100,20 @@ public class Restructure {
      }
 
    /** Given a Chain for the body of a method,  find the first "real"
-    *  stmt (i.e. not an identity stmt) and return a reference to it.
+    *  stmt (i.e. not an identity stmt or the copy of "this" we often make) 
+    *  and return a reference to it.
     */
-   public static Stmt findFirstRealStmt(Chain units)
+   public static Stmt findFirstRealStmt(SootMethod m,Chain units)
      { Iterator it = units.snapshotIterator();
-       while ( it.hasNext() )
-         { Stmt u = (Stmt) it.next();
-           if (! (u instanceof IdentityStmt)) // first non-IdentityStmt
-             return(u);
+       while ( it.hasNext() ) { 
+	     Stmt u = (Stmt) it.next();
+	     if(u instanceof IdentityStmt) continue;
+	     // skip over any copy of "this" we made
+	     if(u instanceof AssignStmt)
+		 if(thiscopies.containsKey(m)) 
+		     if(((AssignStmt) u).getLeftOp()==thiscopies.get(m))
+			 continue;
+	     return u;
           }
         throw new CodeGenException("Expecting to find a real stmt");
       }

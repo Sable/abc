@@ -9,6 +9,7 @@ import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.AdviceWeavingContext;
 
 /** Advice specification for after throwing advice with exception variable binding.
  *  @author Aske Simon Christensen
@@ -39,6 +40,7 @@ public class AfterThrowingArgAdvice extends AfterThrowingAdvice {
     }
 
     public void bindException(WeavingContext wc,AbstractAdviceDecl ad,Local exception) {
-	wc.arglist.setElementAt(exception,((AdviceDecl) ad).getFormalIndex(formal.getName()));
+	((AdviceWeavingContext) wc).arglist.setElementAt
+	    (exception,((AdviceDecl) ad).getFormalIndex(formal.getName()));
     }
 }

@@ -5,6 +5,7 @@ import soot.*;
 import soot.util.Chain;
 import polyglot.util.Position;
 import abc.weaving.matching.*;
+import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
@@ -57,6 +58,14 @@ public abstract class AbstractAdviceDecl extends Syntax {
 
     public boolean hasEnclosingJoinPoint() {
 	return false;
+    }
+
+    public Residue preResidue(ShadowMatch sm) {
+	return AlwaysMatch.v;
+    }
+
+    public Residue postResidue(ShadowMatch sm) {
+	return AlwaysMatch.v;
     }
 
     public abstract Chain makeAdviceExecutionStmts

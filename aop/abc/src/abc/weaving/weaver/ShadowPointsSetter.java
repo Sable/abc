@@ -177,8 +177,7 @@ public class ShadowPointsSetter {
     else
       { debug("Need to insert at beginning of method.");  	     
         // now insert a nop for the beginning of real stmts
-	// find first statement after identity statements
-	Unit firstrealstmt = Restructure.findFirstRealStmt(units);
+	Stmt firstrealstmt = Restructure.findFirstRealStmt(method,units);
 	units.insertBefore(startnop,firstrealstmt);
       }
 
@@ -375,7 +374,7 @@ public class ShadowPointsSetter {
 	  Stmt endnop = Jimple.v().newNopStmt();
 	  // insert startnop at beginning of method, just before first
 	  // real statement
-	  Stmt firstreal = Restructure.findFirstRealStmt(units); 
+	  Stmt firstreal = Restructure.findFirstRealStmt(method,units); 
 	  units.insertBefore(startnop,firstreal);
           // insert endnop just before call to <init>,  
 	  Stmt initstmt = Restructure.findInitStmt(units);

@@ -112,7 +112,7 @@ public class AfterThrowingWeaver {
 
              Stmt ifstmt = Jimple.v().
 	          newIfStmt( Jimple.v().
-		    newEqExpr(isInitError,IntConstant.v(1)), 
+		    newNeExpr(isInitError,IntConstant.v(0)), 
 		    throwStmt );
 
 	     //	     ThrowStmt throwInitError = Jimple.v().newThrowStmt(exception);

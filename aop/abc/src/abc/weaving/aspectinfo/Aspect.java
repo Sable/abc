@@ -14,6 +14,7 @@ public class Aspect extends Syntax {
 	super(pos);
 	this.cl = cl;
 	this.per = per;
+	per.registerSetupAdvice(this);
     }
 
     public AbcClass getInstanceClass() {

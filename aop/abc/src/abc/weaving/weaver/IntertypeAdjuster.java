@@ -606,7 +606,7 @@ public class IntertypeAdjuster {
             			}
             			Chain ss = b.getUnits();
             		// find first normal statement
-            			Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(ss);
+            			Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
             		// get the method that initialises this field
             		// which is a static method of the aspect that contains the ITD
             			SootMethod initialiser = ifd.getInit().getSootMethod();
