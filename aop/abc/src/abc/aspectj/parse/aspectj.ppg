@@ -504,6 +504,16 @@ advice_spec ::=
 							                                 voidn);
           RESULT = afterThrow;
        :}
+  |  AFTER:x  LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING LPAREN RPAREN:y // ajc compatibility again
+       {: Grm.parserTrace("after(formals)throwing");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
+                                                             a,
+							                                 null,
+							                                 voidn);
+          RESULT = afterThrow;
+       :}
   |  AFTER:x  LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING
                                                LPAREN formal_parameter:b RPAREN:y
        {: Grm.parserTrace("after(formals)throwing(p)");
