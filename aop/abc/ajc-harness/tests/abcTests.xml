@@ -8619,6 +8619,7 @@
     </ajc-test>
     
 	<ajc-test dir="bugs/IfPerThis"
+          abccomment="abc supports if() inside per clauses"
 		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1">
         <compile files="Testcase1.java">
         	<ajcmessage kind="error" line="15" text="if() pointcut designator cannot be used directly in a per clause"/>
@@ -8635,6 +8636,10 @@
     </ajc-test>
    	
    	<ajc-test dir="bugs/IfPerThis"
+                abccomment="abc supports if inside perclauses;
+                            the error we do produce is complaining about a
+                            reference to a static member of the aspect,
+                            which we ought to support but don't yet - AGS 6/8/04"
 		pr="62458" title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3">
         <compile files="Testcase3.java">
         	<ajcmessage kind="error" line="2" text="if() pointcut designator cannot be used directly in a per clause"/>
