@@ -85,7 +85,6 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor()));
 
-	/*
 	if (compiler.serializeClassInfo()) {
 	    l.add(new VisitorPass(Pass.SERIALIZE,
 				  job, new ClassSerializer(ts, nf,
@@ -93,7 +92,6 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 							   compiler.errorQueue(),
                                                            version())));
 	}
-	*/
 
 	//l.add(new OutputPass(Pass.OUTPUT, job, new Translator(job, ts, nf, targetFactory())));
 

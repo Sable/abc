@@ -18,6 +18,7 @@ public class JimplifyVisitor extends NodeVisitor {
 	if (n instanceof ClassDecl) {
 	    String cname = ((ClassDecl)n).name();
 	    classes.add(cname);
+	    System.out.println("Jimplify class: "+cname);
 	}
 	return null;
     }
@@ -28,9 +29,12 @@ public class JimplifyVisitor extends NodeVisitor {
 	Iterator ci = classes.iterator();
 	while (ci.hasNext()) {
 	    String cname = (String)ci.next();
-	    SootClass sc = new SootClass(cname);
-	    Scene.v().addClass(sc);
-	    res.resolveFromJavaFile(sc, soot_res);
+	    if (!Scene.v().containsClass(cname)) {
+		SootClass sc = new SootClass(cname);
+		Scene.v().addClass(sc);
+		res.resolveFromJavaFile(sc, soot_res);
+		System.out.println("Jimplified class: "+cname);
+	    }
 	}
 
 	System.out.println("Jimplification completed");
@@ -42,6 +46,7 @@ public class JimplifyVisitor extends NodeVisitor {
 		SootClass sc = new SootClass(classname);
 		Scene.v().addClass(sc);
 		res.resolveFromJavaFile(sc, soot_res);
+		System.out.println("Jimplified class (indirectly): "+classname);
 		return sc;
 	    }
 	    return AspectSootResolver.super.getResolvedClass(classname);
