@@ -32,6 +32,7 @@ public class Main {
       // TODO: add a call here to the reset method for any class that
       //  needs staic information reset for repeated calls to main
       abc.main.AbcTimer.reset();
+      abc.soot.util.Restructure.reset();
     }
     
     public static void main(String[] args) {

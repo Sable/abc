@@ -26,6 +26,12 @@ er methods to restructure Soot
 
 public class Restructure {
 
+    public static void reset() {
+	returns=new Hashtable();
+	thiscopies=new Hashtable();
+	invokeassignstmts=new Hashtable();
+    }
+
    private static void debug(String message)
      { if (abc.main.Debug.v().restructure)
          System.err.println("RST*** " + message);
