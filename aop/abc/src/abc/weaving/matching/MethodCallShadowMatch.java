@@ -16,6 +16,7 @@ import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
+import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
@@ -112,6 +113,9 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 			Body body=method.getActiveBody();
 			Chain statements=body.getUnits().getNonPatchingChain();
 			LocalGeneratorEx lg=new LocalGeneratorEx(body);
+			NopStmt nop=Jimple.v().newNopStmt();
+			statements.insertBefore(nop, stmt);
+			stmt.redirectJumpsToThisTo(nop);
 			for (int i=0; i<invokeEx.getArgCount(); i++) {
 				Value val=invokeEx.getArg(i);
 				Local l=lg.generateLocal(invokeEx.getMethod().getParameterType(i),

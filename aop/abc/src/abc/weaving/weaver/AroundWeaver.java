@@ -1190,7 +1190,12 @@ public class AroundWeaver {
 				
 				Local paramLocal;
 				if (staticBindings.contains(actual)) {
-					int index=staticBindings.indexOf(actual);
+					// We use lastIndexOf here to mimic ajc's behavior:
+					// When binding the same value multiple times, ajc's
+					// proceed only regards the last one passed to it.
+					// Can be changed to indexOf to pick the first one 
+					// (which would seem more reasonable). 
+					int index=staticBindings.lastIndexOf(actual);
 					
 					{ // non-skipped case: assign advice formal
 						paramLocal=(Local)accessMethodInfo.adviceFormalLocals.get(index);
@@ -1301,7 +1306,7 @@ public class AroundWeaver {
 		// all interfaces
 		while (it.hasNext()) {
 			String key=(String)it.next();
-			State.InterfaceInfo info=(State.InterfaceInfo) state.interfaces.get(key);
+			State.InterfaceInfo interfaceInfo=(State.InterfaceInfo) state.interfaces.get(key);
 			Set keys2=bindings.keySet();
 			Iterator it2=keys2.iterator();
 			// all bindings
@@ -1309,20 +1314,20 @@ public class AroundWeaver {
 				Object old=it2.next();
 				if (!(old instanceof Value) && !(old instanceof Stmt))
 					continue;
-				if (info.adviceMethodInvokationStmts.contains(old)) {
-					info.adviceMethodInvokationStmts.remove(old);
-					info.adviceMethodInvokationStmts.add(bindings.get(old));// replace with new
+				if (interfaceInfo.adviceMethodInvokationStmts.contains(old)) {
+					interfaceInfo.adviceMethodInvokationStmts.remove(old);
+					interfaceInfo.adviceMethodInvokationStmts.add(bindings.get(old));// replace with new
 				}
 				// this is only necessary if proceed calls are ever part of a shadow,
 				// for example if the advice body were to be matched by an adviceexecution pointcut. 
 				// TODO: does this kind of thing ever happen?
-				if (info.interfaceInvokationStmts.contains(old)) {
-					info.interfaceInvokationStmts.remove(old);
-					info.interfaceInvokationStmts.add(bindings.get(old));// replace with new
+				if (interfaceInfo.interfaceInvokationStmts.contains(old)) {
+					interfaceInfo.interfaceInvokationStmts.remove(old);
+					interfaceInfo.interfaceInvokationStmts.add(bindings.get(old));// replace with new
 				}
-				if (info.directInvokationStmts.contains(old)) {
-					info.directInvokationStmts.remove(old);
-					info.directInvokationStmts.add(bindings.get(old));
+				if (interfaceInfo.directInvokationStmts.contains(old)) {
+					interfaceInfo.directInvokationStmts.remove(old);
+					interfaceInfo.directInvokationStmts.add(bindings.get(old));
 				}
 			}			
 		}
@@ -1967,7 +1972,7 @@ public class AroundWeaver {
 					
 					result.set(formal.pos, local);
 				} else {
-					throw new RuntimeException(); 
+					throw new InternalError("Expecting bound values to be of type Local"); 
 				}
 			} else {
 				
