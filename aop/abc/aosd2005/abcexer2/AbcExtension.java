@@ -1,8 +1,6 @@
 /*
  * Created on 09-Feb-2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package abcexer2;
 
@@ -37,7 +35,7 @@ public class AbcExtension extends abc.main.AbcExtension {
     }
 
     public void initLexerKeywords(AbcLexer lexer) {
-                // Add the base keywords
+        // Add the base keywords
         super.initLexerKeywords(lexer);
         
         lexer.addPointcutKeyword("arrayget", new LexerAction_c(new Integer(abcexer2.parse.sym.PC_ARRAYGET)));

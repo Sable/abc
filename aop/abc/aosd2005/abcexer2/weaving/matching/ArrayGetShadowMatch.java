@@ -16,22 +16,16 @@ import soot.jimple.ArrayRef;
 import soot.jimple.AssignStmt;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
-import soot.tagkit.Host;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.matching.AdviceApplication;
-import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.matching.MethodPosition;
 import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.ShadowType;
-import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.StmtShadowMatch;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
-import abc.weaving.residues.Residue;
 import abc.weaving.weaver.ConstructorInliningMap;
 
 /**
@@ -82,7 +76,7 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
         	Local l=lg.generateLocal(index.getType());
         	AssignStmt as=Jimple.v().newAssignStmt(l, index);
         	statements.insertBefore(as,stmt);
-        	//FIXME: add and test this: stmt.redirectJumpsToThisTo(as);
+        	stmt.redirectJumpsToThisTo(as);
         	ref.setIndex(l);
         }
         

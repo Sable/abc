@@ -63,7 +63,7 @@ public class Surround extends ContextVisitor {
 				
 				AdviceDecl newDecl=decl.getAfterAdviceDecl(nodeFactory, ts);				
 
-				// Invent a position for this piece of advice for precedence
+				// Invent a position for this advice declaration for precedence
 				newDecl=(AdviceDecl)newDecl.position(new Position(decl.position().file(), 
 						line++, 
 						0

@@ -11,7 +11,6 @@ import polyglot.ast.TypeNode;
 import polyglot.types.Flags;
 import polyglot.util.Position;
 import abc.aspectj.ast.AJNodeFactory;
-import abc.aspectj.ast.AdviceFormal;
 import abc.aspectj.ast.AdviceSpec;
 import abc.aspectj.ast.Pointcut;
 

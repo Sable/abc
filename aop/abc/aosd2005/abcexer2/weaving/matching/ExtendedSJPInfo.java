@@ -3,20 +3,7 @@
  */
 package abcexer2.weaving.matching;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import soot.IntType;
-import soot.RefType;
-import soot.Scene;
 import soot.SootMethod;
-import soot.SootMethodRef;
-import soot.Type;
-import soot.jimple.IntConstant;
-import soot.jimple.Jimple;
-import soot.jimple.Stmt;
-import soot.jimple.StringConstant;
-import soot.tagkit.BytecodeOffsetTag;
 import soot.tagkit.Host;
 import abc.weaving.matching.AbcSJPInfo;
 import abc.weaving.matching.SJPInfo;

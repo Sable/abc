@@ -8,7 +8,6 @@ import java.util.Collection;
 
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
-import abc.aspectj.parse.sym;
 
 /**
  * @author Sascha Kuzins
@@ -22,7 +21,7 @@ public class AbcExtension extends abc.main.AbcExtension {
 	}
 	
     public void initLexerKeywords(AbcLexer lexer) {
-                // Add the base keywords
+        // Add the base keywords
         super.initLexerKeywords(lexer);
         
         lexer.addAspectJContextKeyword("surround", new LexerAction_c(new Integer(abcexer1.parse.sym.SURROUND),

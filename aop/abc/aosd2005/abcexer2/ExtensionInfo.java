@@ -25,13 +25,8 @@ import abcexer2.types.Abcexer2TypeSystem_c;
  */
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
 
-	/**
-	 * @param jar_classes
-	 * @param source_files
-	 */
 	public ExtensionInfo(Collection jar_classes, Collection source_files) {
 		super(jar_classes, source_files);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public Parser parser(Reader reader, FileSource source, ErrorQueue eq) {

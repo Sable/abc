@@ -7,14 +7,11 @@ import java.util.List;
 
 import polyglot.ast.Block;
 import polyglot.ast.Node;
-import polyglot.ast.NodeFactory;
 import polyglot.ast.TypeNode;
 import polyglot.types.Flags;
 import polyglot.types.TypeSystem;
-import polyglot.util.CodeWriter;
 import polyglot.util.Position;
 import polyglot.visit.NodeVisitor;
-import polyglot.visit.PrettyPrinter;
 import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.AdviceDecl_c;
