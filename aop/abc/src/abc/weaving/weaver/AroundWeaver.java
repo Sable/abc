@@ -72,6 +72,7 @@ import soot.util.Chain;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
+import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.DisableExceptionCheckTag;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.RedirectedExceptionSpecTag;
@@ -655,11 +656,18 @@ public class AroundWeaver {
 			proceedMethod.doWeave(adviceAppl, shadowMethod);			
 		}
 		public class ProceedMethod {
+			private Set adviceApplications=new HashSet();
+			
+			private HashMap shadowSizes=new HashMap();
+			
+			
 			ProceedMethod(SootClass shadowClass, boolean bStaticProceedMethod, String proceedMethodName, boolean bClosureMethod) {
 				this.bStaticProceedMethod=bStaticProceedMethod;
 //				this.adviceMethod = parent;
 				this.shadowClass = shadowClass;
 				this.bUseClosureObject=bClosureMethod;
+				
+				
 				
 				String interfaceName = interfaceInfo.closureInterface.getName();
 
@@ -676,6 +684,8 @@ public class AroundWeaver {
 				sootProceedMethod.addTag(new DisableExceptionCheckTag());
 				Body proceedBody = Jimple.v().newBody(sootProceedMethod);
 
+				state.proceedMethods.put(sootProceedMethod, this);
+				
 				sootProceedMethod.setActiveBody(proceedBody);
 				debug("adding method " + sootProceedMethod.getName() + " to class " + shadowClass.getName());
 				shadowClass.addMethod(sootProceedMethod);
@@ -707,6 +717,7 @@ public class AroundWeaver {
 				Util.validateMethod(sootProceedMethod);
 
 				shadowIdParamLocal = Restructure.addParameterToMethod(sootProceedMethod, (Type) proceedMethodParameterTypes.get(0), "shadowID");
+				shadowIDParamIndex=sootProceedMethod.getParameterCount()-1;
 				bindMaskParamLocal = Restructure.addParameterToMethod(sootProceedMethod, (Type) proceedMethodParameterTypes.get(1), "bindMask");
 
 				if (proceedMethodParameterTypes.size() != 2)
@@ -762,10 +773,45 @@ public class AroundWeaver {
 			public void doWeave(AdviceApplication adviceAppl, SootMethod shadowMethod) {
 
 				AdviceApplicationInfo adviceApplication=new AdviceApplicationInfo(adviceAppl, shadowMethod);
+				this.adviceApplications.add(adviceApplication);
 				adviceApplication.doWeave();
 				numOfShadows++;
 			}
 			public class AdviceApplicationInfo {
+				public final int shadowSize;
+				public int getShadowSize() {
+
+					Chain statements = shadowMethodStatements;
+			
+					if (!statements.contains(begin))
+						throw new InternalAroundError();
+			
+					if (!statements.contains(end))
+						throw new InternalAroundError();
+			
+					boolean insideRange = false;
+					int size=0;
+					Iterator it = statements.iterator();
+					while (it.hasNext()) {
+						Stmt s = (Stmt) it.next();
+						if (s == end) {
+							if (!insideRange)
+								throw new InternalAroundError();
+			
+							insideRange = false;
+						}			
+						
+						if (s == begin) {
+							if (insideRange)
+								throw new InternalAroundError();
+			
+							insideRange = true;
+						} else if (insideRange) {
+							size++;
+						}							
+					}
+					return size;			
+				}
 //				final boolean bHasProceed;
 				AdviceApplicationInfo(AdviceApplication adviceAppl, SootMethod shadowMethod) {
 					//this.proceedMethodName=ProceedMethod.this.proceedMethodSoot.getName();
@@ -796,13 +842,7 @@ public class AroundWeaver {
 					this.begin = adviceAppl.shadowmatch.sp.getBegin();
 					this.end = adviceAppl.shadowmatch.sp.getEnd();
 
-
-					
-					
-					
-					
-
-					
+					this.shadowSize=getShadowSize();
 					
 					debug("CLOSURE: " + (bUseClosureObject ? "Using closure" : "Not using closure"));
 
@@ -970,6 +1010,10 @@ public class AroundWeaver {
 								shadowID = getUniqueShadowID();
 							}
 						}
+						ProceedMethod.this.shadowSizes.put(
+								new Integer(shadowID),
+								new Integer(shadowSize));
+						
 			
 						if (bUseClosureObject) {
 							lClosure=generateClosureCreation(closureClass, context);
@@ -1422,6 +1466,7 @@ public class AroundWeaver {
 								shadowMethodStatements.insertAfter(skipAdvice, failPoint);
 							}
 							skipAdvice.addTag(attachToInvoke);
+							skipAdvice.addTag(new AroundShadowInfoTag(shadowSize));
 							directInvocationStmts.add(skipAdvice);
 						}
 					}
@@ -1640,6 +1685,7 @@ public class AroundWeaver {
 						invokeStmt = assign;
 					}
 					invokeStmt.addTag(attachToInvoke);
+					invokeStmt.addTag(new AroundShadowInfoTag(shadowSize));
 					Stmt beforeEnd=Jimple.v().newNopStmt();
 					shadowMethodStatements.insertBefore(beforeEnd, end);
 					shadowMethodStatements.insertBefore(Jimple.v().newGotoStmt(beforeEnd), insertionPoint);
@@ -2077,6 +2123,7 @@ public class AroundWeaver {
 			final NopStmt defaultEnd;
 			Stmt lookupStmt;
 			int nextShadowID;
+			public final int shadowIDParamIndex;
 			public final Local shadowIdParamLocal;
 			public final Local bindMaskParamLocal;
 			
@@ -2830,10 +2877,14 @@ public class AroundWeaver {
 				
 				private final Set nestedInitCalls=new HashSet();
 				private final NopStmt nopAfterEnclosingLocal;
+				public final int originalSize;
+				
 				public AdviceLocalMethod(AdviceMethod adviceMethod, SootMethod method) {
 					//this.adviceMethod=adviceMethod;
 					this.sootProceedCallMethod=method;
 					this.methodBody=method.getActiveBody();			
+				
+					this.originalSize=method.getActiveBody().getUnits().size();
 					
 					debug("YYYYYYYYYYYYYYYYYYY creating ProceedCallMethod " + method);
 					
@@ -3177,7 +3228,88 @@ public class AroundWeaver {
 		}	
 	}
 	
+	public static class AdviceMethodInlineInfo {
+		
+		public int proceedInvocations=0;
+		public boolean nestedClasses=false;
+		public int originalSize=0;
+		public int applications=0;
+	}
+	public static class ProceedMethodInlineInfo {
+		public int shadowIDParamIndex=-1;
+		public Map shadowSizes;
+	}
 	public static class State {
+		private Map proceedMethods=new HashMap();
+		
+		private Map proceedMethodInlineInfos=new HashMap();
+		public ProceedMethodInlineInfo getProceedMethodInlineInfo(SootMethod method) {
+			ProceedMethodInlineInfo result=
+				(ProceedMethodInlineInfo)
+					proceedMethodInlineInfos.get(method);
+			if (result!=null)
+				return result;
+			
+			proceedMethodInlineInfos.put(method, result);
+			
+			
+			result=new 
+				ProceedMethodInlineInfo();
+			
+			AdviceMethod.ProceedMethod pm=
+				(AdviceMethod.ProceedMethod)proceedMethods.get(method);
+			
+			
+			result.shadowIDParamIndex=pm.shadowIDParamIndex;
+			result.shadowSizes=pm.shadowSizes;
+			
+			return result;
+		}
+		
+		private Map adviceMethodInlineInfos=new HashMap();
+		public AdviceMethodInlineInfo getAdviceMethodInlineInfo(SootMethod method) {
+			
+			AdviceMethodInlineInfo result=
+				(AdviceMethodInlineInfo)
+					adviceMethodInlineInfos.get(method);
+			if (result!=null)
+				return result;
+			
+			adviceMethodInlineInfos.put(method, result);
+			
+			
+			result=new 
+				AdviceMethodInlineInfo();
+			
+
+			AdviceMethod adviceMethod=
+				getAdviceMethod(method);
+			
+			if (adviceMethod==null) {
+				throw new RuntimeException("Could not find information on " + method.getName());
+			}
+			
+			if (adviceMethod.adviceLocalClasses.size()>1) {
+				result.nestedClasses=true;				
+			} else {
+				AdviceMethod.AdviceLocalClass cl=
+					(AdviceMethod.AdviceLocalClass)adviceMethod.adviceLocalClasses.values().iterator().next();
+				AdviceMethod.AdviceLocalClass.AdviceLocalMethod m=
+					(AdviceMethod.AdviceLocalClass.AdviceLocalMethod)cl.adviceLocalMethods.get(0);
+				result.proceedInvocations=m.proceedInvocations.size();
+				
+				result.originalSize=m.originalSize;
+				
+				for (Iterator it=adviceMethod.getAllProceedMethods().iterator(); it.hasNext();) {
+					AdviceMethod.ProceedMethod pm=
+						(AdviceMethod.ProceedMethod)it.next();
+					result.applications+=pm.adviceApplications.size();
+				}
+			}
+			return result;
+		}
+		
+		
 		public Set shadowMethods=new HashSet();
 		
 		private void validate() {
@@ -3195,11 +3327,11 @@ public class AroundWeaver {
 		//final private HashMap /* AdviceApplication,  */ adviceApplications = new HashMap();
 
 		
-		final private HashMap /* String, AdviceMethod */ adviceMethods = new HashMap();
+		final private HashMap /* SootMethod, AdviceMethod */ adviceMethods = new HashMap();
 		void setAdviceMethod(SootMethod adviceMethod, AdviceMethod m) {
 			adviceMethods.put(adviceMethod, m);
 		}
-		AdviceMethod getAdviceMethod(SootMethod adviceMethod) {
+		public AdviceMethod getAdviceMethod(SootMethod adviceMethod) {
 			if (!adviceMethods.containsKey(adviceMethod)) {
 				return null;
 			}
