@@ -89,6 +89,11 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     		throw new SemanticException("Intertype fields cannot be protected",position());
     	if (flags().isStatic() && host.type().toClass().flags().isInterface())
     		throw new SemanticException("Intertype fields on interfaces cannot be static");
+	if (host.type() instanceof ParsedClassType &&
+	    !GlobalAspectInfo.v().getWeavableClasses()
+	    .contains(abc.weaving.aspectinfo.AbcFactory.AbcClass((ParsedClassType) host.type())))
+	    throw new SemanticException("Host of an intertype declaration must be a weavable class");
+	    
     	return super.typeCheck(tc);
     }
 
@@ -99,6 +104,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 */
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
+		System.out.println("host type is "+ht);
 		if (ht instanceof ParsedClassType) {
 			// need to make a copy because the container has changed
 			AJTypeSystem ts = (AJTypeSystem) am.typeSystem();
@@ -121,7 +127,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			/* record instance for "this" parameter */
 			String name = UniqueID.newID("this");
 			thisParamInstance = ts.localInstance(position,Flags.NONE,host.type(),name);
-		}
+		} 
         return am.bypassChildren(this);
     }
 

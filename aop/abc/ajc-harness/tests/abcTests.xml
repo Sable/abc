@@ -8277,31 +8277,40 @@
     
    	<ajc-test dir="bugs/fieldsOnInterfaces"
 		pr="52107"
+                abccomment="this is an error for us"
 		title="declare String field on interface">
 		<compile files="StringFieldOnInterface.java">
-			<message kind="warning" line="16" text="this affected type is not exposed"/>
-         	<message kind="warning" line="17" text="this affected type is not exposed"/>
+			<message kind="error" line="16"/>
+			<message kind="error" line="17"/>
+			<ajcmessage kind="warning" line="16" text="this affected type is not exposed"/>
+         	<ajcmessage kind="warning" line="17" text="this affected type is not exposed"/>
 		</compile>	   
 	</ajc-test>
 
 	<ajc-test dir="bugs/fieldsOnInterfaces"
 		pr="52107"
+                abccomment="this is an error for us"
 		title="declare int field on interface">
 		<compile files="IntFieldOnInterface.java">
-		<message kind="warning" line="27" text="this affected type is not exposed"/>
-         	<message kind="warning" line="28" text="this affected type is not exposed"/>
+		<message kind="error" line="27"/>
+		<message kind="error" line="28"/>
+		<ajcmessage kind="warning" line="27" text="this affected type is not exposed"/>
+         	<ajcmessage kind="warning" line="28" text="this affected type is not exposed"/>
 		</compile>
 	</ajc-test>
 	
 	<ajc-test dir="bugs/fieldsOnInterfaces"
 		pr="52107"
+                abccomment="this is an error for us"
 		title="declare Object field on interface">
 		<compile files="ObjectFieldOnInterface.java">
-			<message kind="warning" line="20" text="this affected type is not exposed"/>
-         	<message kind="warning" line="21" text="this affected type is not exposed"/>
+			<message kind="error" line="20"/>
+			<message kind="error" line="21"/>
+			<ajcmessage kind="warning" line="20" text="this affected type is not exposed"/>
+         	<ajcmessage kind="warning" line="21" text="this affected type is not exposed"/>
 		</compile>
 	</ajc-test>
-	
+
 	<ajc-test dir="bugs" pr="50776"
    	 title="fail in compiling aspect with overriding method introduction with different throws clause ">
         <compile files="IntertypeDifferentThrows.java" />

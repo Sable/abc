@@ -336,6 +336,11 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			throw new SemanticException("Intertype methods cannot be protected",position());
 		if (flags().isStatic() && host.type().toClass().flags().isInterface())
 			throw new SemanticException("Cannot declare static intertype method on interface",position());
+		if (host.type() instanceof ParsedClassType &&
+		    !GlobalAspectInfo.v().getWeavableClasses()
+		    .contains(abc.weaving.aspectinfo.AbcFactory.AbcClass((ParsedClassType) host.type())))
+		    throw new SemanticException("Host of an intertype declaration must be a weavable class");
+
 		return super.typeCheck(tc);
 	}
 	
