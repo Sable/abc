@@ -9205,7 +9205,7 @@
     <ajc-test num="983" dir="abctests/bugs/declareparentsbinary"
         title="declare parents on binary classes needs to modify constructor calls 1">
        <compile files="BinaryClasses.jar,Aspect.java"/>
-       <run class="BinaryClass"/>
+       <run class="BinaryClasses"/>
     </ajc-test>
 
     <ajc-test num="984" dir="abctests/bugs/declareparentsbinary"

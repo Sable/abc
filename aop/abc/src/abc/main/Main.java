@@ -82,6 +82,7 @@ import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.weaver.DeclareParentsWeaver;
+import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.Weaver;
 
@@ -894,6 +895,10 @@ public class Main {
                 }
             }
             AbcTimer.mark("Jimplification");
+
+            // Fix up constructors in binary classes with newly declared parents
+            new DeclareParentsConstructorFixup().weave();
+            AbcTimer.mark("Fix up constructor calls");
 
             PatternMatcher.v().updateWithAllSootClasses();
             // evaluate the patterns the third time (depends on re-resolving)

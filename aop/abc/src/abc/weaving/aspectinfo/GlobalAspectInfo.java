@@ -67,6 +67,8 @@ public class GlobalAspectInfo {
     private List/*<DeclareParents>*/ dps = new ArrayList();
     private List/*<DeclarePrecedence>*/ dprs = new ArrayList();
 
+    private Collection/*<SootClass>*/ ecs; // Classes actually extended by declare parents
+
     private List /*<ClassType>*/ ctmps = new ArrayList();
 
     // Just stored in the ads list instead
@@ -218,6 +220,14 @@ public class GlobalAspectInfo {
      */
     public List getDeclarePrecedence() {
         return dprs;
+    }
+
+    public void setExtendedClasses(Collection ecs) {
+        this.ecs = ecs;
+    }
+
+    public Collection/*<SootClass>*/ getExtendedClasses() {
+        return ecs;
     }
 
     public Aspect getAspect(AbcClass cl) {

@@ -27,12 +27,14 @@ import soot.*;
 import java.util.*;
 
 /** Weave in the effects of declare parents declarations
+ *  @author Aske Simon Christensen
  *  @author Ondrej Lhotak
  */
 public class DeclareParentsWeaver {
 
     public void weave() {
         List classesToReResolve = new ArrayList();
+        Set extendedClasses = new HashSet();
 
 	Iterator dpi = GlobalAspectInfo.v().getDeclareParents().iterator();
 	while (dpi.hasNext()) {
@@ -81,10 +83,14 @@ public class DeclareParentsWeaver {
                         }
                         sc.setSuperclass(sp);
                         classesToReResolve.add(sc);
+                        extendedClasses.add(sc);
                     }
 		}
 	    }
 	}
+
+        // Record the extended classes
+        GlobalAspectInfo.v().setExtendedClasses(extendedClasses);
 
 	// Recompute the hierarchy
 	Scene.v().releaseActiveHierarchy();
