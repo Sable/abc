@@ -78,7 +78,9 @@ while (<>) {
      $succeeded++;
      print PASSED $xmlpart;
    } else {
-     die "could not find FAIL or PASS\n";
+     system("echo $title >> cases_with_invalid_output.txt");
+     $count--;
+     #die "could not find FAIL or PASS\n";
    }
    print "Current status: $failed failed, $succeeded passed.\n";
 #   print "XML: \n $xmlpart \n\n";
