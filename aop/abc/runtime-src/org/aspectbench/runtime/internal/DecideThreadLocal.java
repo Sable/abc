@@ -9,8 +9,11 @@ public class DecideThreadLocal {
 	private static boolean useThreadLocal = set(); 
 	
 	private static boolean set() {
-		// We are trying to work out whether we are on Java >= 1.2
-		
+	    if (System.getProperty(
+		  "org.aspectbench.DontUseCflowThreadLocal",
+				   "false").equals("true"))
+		return false;
+
 		String jversion = System.getProperty("java.version");
 		// Assume jversion is of the form x.y.<something> or x.y
 		// for x, y ints. Otherwise, for safety default to false
@@ -35,7 +38,19 @@ public class DecideThreadLocal {
 			int majorNumber = Integer.parseInt(major);
 			int minorNumber = Integer.parseInt(minor);
 
-			return (majorNumber > 1) || (majorNumber == 1 && minorNumber >= 2);
+			if (   (majorNumber == 1 && minorNumber < 2)
+			    || (majorNumber < 1))
+			    return false;
+
+			// We really are in version >= 1.2
+
+			if (System.getProperty(
+			      "org.aspectbench.DebugCflowThreadLocal",
+			      "false").equals("true"))
+			    System.out.println("Using cflow thread local");
+
+			return true;
+
 		} catch (NumberFormatException e) { return false; }
 	}
 	
