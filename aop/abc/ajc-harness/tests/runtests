@@ -2,4 +2,4 @@
 
 ABC_HOME=`realpath ../..`
 
-java -Xmx512M -Dabc.home=$ABC_HOME abc.testing.Main $*
+java -server -Xmx512M -Dabc.home=$ABC_HOME abc.testing.Main $*
