@@ -77,9 +77,12 @@ public class AbcExtension extends abc.main.AbcExtension
     public void initLexerKeywords(AbcLexer lexer) {
         // keyword for the "cast" pointcut extension
         lexer.addPointcutKeyword("cast", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CAST)));
+
         // keyword for the "global pointcut" extension
         lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(abc.eaj.parse.sym.GLOBAL),
-                            new Integer(lexer.pointcut_state())));    
+                            new Integer(lexer.pointcut_state())));
+
+        // Add the base keywords
         super.initLexerKeywords(lexer);
     }
 }
