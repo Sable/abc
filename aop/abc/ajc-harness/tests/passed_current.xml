@@ -303,10 +303,6 @@
         <compile files="NonNullaryAnonymous.java"></compile>
         <run class="NonNullaryAnonymous"></run>
     </ajc-test>
-<ajc-test title="Full names are dropped from inner interfaces" pr="417" keywords="from-java,purejava" dir="new">
-        <compile files="PR417a.java"></compile>
-        <run class="PR417a"></run>
-    </ajc-test>
 <ajc-test title="Making sure full names stay on static inner classes" pr="417" keywords="from-java,purejava" dir="new">
         <compile files="PR417b.java"></compile>
         <run class="PR417b"></run>
@@ -600,6 +596,10 @@
             <message line="20" kind="error"></message>
             <message line="21" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="test + and += for strings and variously typed values" keywords="from-java" dir="pureJava" abccomment="Isolated problem cases and sent BigStringLJH.java to                     Jennifer.  July 2/04 LJH">
+        <compile files="BigString.java"></compile>
+        <run class="BigString"></run>
     </ajc-test>
 <ajc-test title="test try/catch/finally statements" keywords="from-java" dir="pureJava" abccomment="j2j crashes with a stack overflow error.  Reported             to Jennifer, July 2/04 LJH  FIXED July 3/04 LJH">
         <compile files="TryCatchFinally.java"></compile>

@@ -3,6 +3,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="Full names are dropped from inner interfaces" pr="417" keywords="from-java,purejava" dir="new">
+        <compile files="PR417a.java"></compile>
+        <run class="PR417a"></run>
+    </ajc-test>
 <ajc-test title="Not binding constructor when using more than one compilation" pr="408" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
         <compile files="OuterAbstract_PR408.java"></compile>
         <compile files="ExtendsOuterAbstract_PR408.java"></compile>
@@ -44,10 +48,6 @@
             <message line="30" kind="error"></message>
             <message line="32" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="test + and += for strings and variously typed values" keywords="from-java" dir="pureJava" abccomment="Isolated problem cases and sent BigStringLJH.java to                     Jennifer.  July 2/04 LJH">
-        <compile files="BigString.java"></compile>
-        <run class="BigString"></run>
     </ajc-test>
 <ajc-test title="type and package name conflicts caught as errors (1)" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
