@@ -24,16 +24,16 @@ public class Main {
     public List/*<String>*/ polyglot_args = new ArrayList();
 
     public String classpath = System.getProperty("java.class.path");
-    public String classes_destdir = ""; //FIXME
+    public String classes_destdir = ""; // TODO: LJH - fixed with -d option?
 
     /** reset all static information so main can be called again */
     public static void reset() {
-      soot.G.reset(); // reset all of Soots global info
+      soot.G.reset(); // reset all of Soot's global info
       // TODO: add a call here to the reset method for any class that
-      //  needs staic information reset for repeated calls to main
+      //  needs static information reset for repeated calls to main
       abc.main.AbcTimer.reset();
       abc.soot.util.Restructure.reset();
-	  abc.weaving.weaver.AroundWeaver.reset();
+      abc.weaving.weaver.AroundWeaver.reset();
     }
     
     public static void main(String[] args) {
