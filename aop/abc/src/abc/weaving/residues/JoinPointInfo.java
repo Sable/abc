@@ -62,7 +62,7 @@ public class JoinPointInfo extends ContextValue {
         this.thisCV = thisCVtmp;
 
         // Likewise here
-        ContextValue targetCVtmp = sm.getThisContextValue();
+        ContextValue targetCVtmp = sm.getTargetContextValue();
         if(targetCVtmp == null) targetCVtmp = new JimpleValue(NullConstant.v());
         this.targetCV = targetCVtmp;
 
