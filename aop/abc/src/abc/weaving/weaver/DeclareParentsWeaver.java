@@ -27,8 +27,8 @@ public class DeclareParentsWeaver {
 		List/*<SootClass>*/ ints = new ArrayList();
 		Iterator isi = ((DeclareParentsImpl)dp).getInterfaces().iterator();
 		while (isi.hasNext()) {
-		    String is = (String)isi.next();
-		    ints.add(Scene.v().getSootClass(is));
+		    AbcClass is = (AbcClass)isi.next();
+		    ints.add(is.getSootClass());
 		}
 		Iterator sci = classes.iterator();
 		while (sci.hasNext()) {
@@ -45,8 +45,8 @@ public class DeclareParentsWeaver {
 		}
 	    }
 	    if (dp instanceof DeclareParentsExt) {
-		String parent = ((DeclareParentsExt)dp).getParent();
-		SootClass sp = Scene.v().getSootClass(parent);
+		AbcClass parent = ((DeclareParentsExt)dp).getParent();
+		SootClass sp = parent.getSootClass();
 		Iterator sci = classes.iterator();
 		while (sci.hasNext()) {
 		    SootClass sc = (SootClass)sci.next();

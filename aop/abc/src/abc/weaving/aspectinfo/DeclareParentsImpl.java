@@ -7,11 +7,11 @@ import java.util.*;
 
 /** A <code>declare parents</code> .. <code>implements</code> declaration. */
 public class DeclareParentsImpl extends DeclareParents {
-    List/*<String>*/ interfaces;
+    List/*<AbcClass>*/ interfaces;
 
     /** Create a <code>declare parents</code> implementing a list of interfaces.
      *  @param the classes that should implement the interfaces.
-     *  @param interfaces a list of {@link java.lang.String} objects giving the
+     *  @param interfaces a list of {@link abc.weaving.aspectinfo.AbcClass} objects giving the
      *         interfaces to be implemented.
      */
     public DeclareParentsImpl(ClassnamePattern classes, List interfaces, Aspect aspct, Position pos) {
@@ -20,9 +20,9 @@ public class DeclareParentsImpl extends DeclareParents {
     }
 
     /** Get the list of implemented interfaces.
-     *  @return a list of {@link java.lang.String} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
      */
-    public List/*<String>*/ getInterfaces() {
+    public List/*<AbcClass>*/ getInterfaces() {
 	return interfaces;
     }
 
@@ -33,8 +33,8 @@ public class DeclareParentsImpl extends DeclareParents {
 	sb.append(" implements ");
 	Iterator ii = getInterfaces().iterator();
 	while (ii.hasNext()) {
-	    String i = (String)ii.next();
-	    sb.append(i);
+	    AbcClass i = (AbcClass)ii.next();
+	    sb.append(i.getJvmName());
 	    if (ii.hasNext()) {
 		sb.append(", ");
 	    }

@@ -84,11 +84,11 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	//System.out.println("Declare parents impl");
-	List/*<String>*/ ints = new ArrayList();
+	List/*<AbcClass>*/ ints = new ArrayList();
 	Iterator ii = interfaces.iterator();
 	while (ii.hasNext()) {
 	    TypeNode i = (TypeNode)ii.next();
-	    ints.add(i.toString());
+	    ints.add(new abc.weaving.aspectinfo.AbcClass((ClassType)i.type()));
 	}
 	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsImpl
 			      (pat.makeAIClassnamePattern(), ints, current_aspect, position()));

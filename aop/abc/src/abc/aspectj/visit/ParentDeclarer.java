@@ -59,10 +59,12 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	}
 
 	if (n instanceof DeclareParentsExt) {
-	    Type object_type = typeSystem().typeForName("java.lang.Object");
 	    ClassnamePatternExpr pat = ((DeclareParentsExt)n).pat();
 	    TypeNode type = ((DeclareParentsExt)n).type();
-	    //FIXME: Check that type is a class
+	    if (!type.type().isClass()) {
+		throw new SemanticException("Type "+type+" is not an class");
+	    }
+	    //FIXME: Check that type is not an interface
 	    Iterator cti = new ArrayList(ext.hierarchy.getClassTypes()).iterator();
 	    while (cti.hasNext()) {
 		ClassType ct = (ClassType)cti.next();
@@ -70,12 +72,16 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		if (pat.matches(PatternMatcher.v(), hi_cl)) {
 		    if (ct instanceof ParsedClassType) {
 			ParsedClassType pct = (ParsedClassType)ct;
-			if (!pct.superType().equals(object_type)) {
-			    throw new SemanticException("Class "+ct+" already has a superclass");
+			/* FIXME: What are the exact type rules here?
+			if (!ts.isSubtype(type.type(), pct.superType())) {
+			    throw new SemanticException("Declared parent class "+type.type()+
+							" is not a subclass of original superclass "+pct.superType());
 			}
-			if (!type.type().isClass()) {
-			    throw new SemanticException("Type "+type+" is not an class");
+			if (ts.isSubtype(type.type(), pct)) {
+			    throw new SemanticException("Declared parent class "+type.type()+
+							" is a subclass of child class "+pct);
 			}
+			*/
 			ClassType typect = (ClassType)type.type();
 			PCNode hi_type = ext.hierarchy.insertClassAndSuperclasses(typect, false);
 			
