@@ -40,6 +40,6 @@ public class SetFieldShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-        mal.stmtAdvice.add(new StmtAdviceApplication(ad,residue,stmt));
+        mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,stmt));
     }
 }

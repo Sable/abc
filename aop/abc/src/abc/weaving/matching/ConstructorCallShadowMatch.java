@@ -51,6 +51,6 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-        mal.stmtAdvice.add(new NewStmtAdviceApplication(ad,residue,stmt));
+        mal.addStmtAdvice(new NewStmtAdviceApplication(ad,residue,stmt));
     }
 }

@@ -1,7 +1,9 @@
 package abc.weaving.matching;
 
+import soot.*;
+
 import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.residues.Residue;
+import abc.weaving.residues.*;
 
 /** The results of matching at an preinitialization shadow
  *  @author Ganesh Sittampalam
@@ -20,7 +22,11 @@ public class PreinitializationShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-	mal.preinitializationAdvice.add
+	mal.addPreinitializationAdvice
 	    (new PreinitializationAdviceApplication(ad,residue));
+    }
+
+    public ContextValue getThisContextValue(SootMethod method) {
+        return null;
     }
 }

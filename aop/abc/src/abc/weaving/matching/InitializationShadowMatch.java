@@ -20,7 +20,7 @@ public class InitializationShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-	mal.initializationAdvice.add
+	mal.addInitializationAdvice
 	    (new InitializationAdviceApplication(ad,residue));
     }
 }

@@ -19,6 +19,6 @@ public class ExecutionShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-	mal.bodyAdvice.add(new ExecutionAdviceApplication(ad,residue));
+	mal.addBodyAdvice(new ExecutionAdviceApplication(ad,residue));
     }
 }

@@ -17,7 +17,6 @@ public abstract class ShadowMatch {
 
     // FIXME: move this to subclasses(?)
     public ContextValue getThisContextValue(SootMethod method) {
-	// FIXME: check if method is static
-        return new This();
+        return method.isStatic() ? null : new This();
     }
 }

@@ -34,6 +34,6 @@ public class HandlerShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-        mal.stmtAdvice.add(new HandlerAdviceApplication(ad,residue,stmt));
+        mal.addStmtAdvice(new HandlerAdviceApplication(ad,residue,stmt));
     }
 }
