@@ -55,8 +55,8 @@ public abstract class Pointcut extends Syntax {
          SootMethod method,ShadowMatch sm)
         throws SemanticException;
 
-    /** Return a "normalized" version of this
-     *  pointcut with the following properties:
+    /** Return a "normalized" version of this pointcut.
+     *  pointcut. The result has the following properties:
      *  <ul>
      *  <li>All named pointcuts inlined
      *  <li>All locally quantified variables have fresh names
