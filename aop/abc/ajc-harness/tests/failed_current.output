@@ -26,7 +26,7 @@ org.aspectj.bridge.AbortException: Test.a: 4 < 10
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 FAIL: Test 472: "new/primitive parameters coercable to Object just like return values are" failed.
@@ -49,7 +49,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 FAIL: Test 496: "new/elaborated into testing of around on all join points" failed.
@@ -63,7 +63,7 @@ java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
@@ -91,7 +91,7 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
@@ -129,14 +129,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:644)
+	at abc.main.Main.run(Main.java:645)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:725)
-	at abc.main.Main.loadSourceRoots(Main.java:742)
-	at abc.main.Main.run(Main.java:564)
+	at abc.main.Main.findSourcesInDir(Main.java:726)
+	at abc.main.Main.loadSourceRoots(Main.java:743)
+	at abc.main.Main.run(Main.java:565)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -157,6 +157,7 @@ FAIL: Test 982: "abctests/bugs/needing declare parents to resolve inner class re
 
 Running test 983: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses.jar abctests/bugs/declareparentsbinary/Aspect.java 
+File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClass.class not found, skipping...
 Failed to find class BinaryClass
 FAIL: Test 983: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1" failed.
 
@@ -195,22 +196,22 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
 	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed.
 
 
-Running test 996: abctests/bugs/anonymous class constructed inside this(...) call
-Commandline: abc -d abctests/bugs abctests/bugs/AnonPreinit.java 
-Unexpected exception while trying to run compiled class: java.lang.VerifyError: (class: AnonPreinit, method: <init> signature: ()V) Expecting to find object/array on stack
-java.lang.VerifyError: (class: AnonPreinit, method: <init> signature: ()V) Expecting to find object/array on stack
+Running test 997: abctests/bugs/verify error with calls to outer methods from inner classes
+Commandline: abc -d abctests/bugs abctests/bugs/PatternMatcher.java 
+Unexpected exception while trying to run compiled class: java.lang.VerifyError: (class: PatternMatcher$AIMethodPattern, method: matchesExecution signature: ()Z) Accessing value from uninitialized register 2
+java.lang.VerifyError: (class: PatternMatcher$AIMethodPattern, method: matchesExecution signature: ()Z) Accessing value from uninitialized register 2
 	at java.lang.Class.getDeclaredMethods0(Native Method)
 	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
 	at java.lang.Class.getDeclaredMethod(Class.java:1254)
 	at abc.testing.TestCase.runTest(TestCase.java:383)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 996: "abctests/bugs/anonymous class constructed inside this(...) call" failed.
+FAIL: Test 997: "abctests/bugs/verify error with calls to outer methods from inner classes" failed.
 
 

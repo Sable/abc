@@ -4989,5 +4989,9 @@
 <ajc-test title="correct treatment of exceptions with interfaceinvoke" num="995" dir="abctests/bugs">
        <compile files="InterfaceExceptions.java"></compile>
     </ajc-test>
+<ajc-test title="anonymous class constructed inside this(...) call" num="996" dir="abctests/bugs">
+       <compile files="AnonPreinit.java"></compile>
+       <run class="AnonPreinit"></run>
+    </ajc-test>
  
 </suite>

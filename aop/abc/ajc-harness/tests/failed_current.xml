@@ -82,9 +82,9 @@
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
        <run class="Cast"></run>
     </ajc-test>
-<ajc-test title="anonymous class constructed inside this(...) call" num="996" dir="abctests/bugs">
-       <compile files="AnonPreinit.java"></compile>
-       <run class="AnonPreinit"></run>
+<ajc-test title="verify error with calls to outer methods from inner classes" num="997" dir="abctests/bugs">
+       <compile files="PatternMatcher.java"></compile>
+       <run class="PatternMatcher$AIMethodPattern"></run>
     </ajc-test>
  
 </suite>
