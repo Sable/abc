@@ -43,7 +43,7 @@ public class AfterReturningWeaver {
 	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
 
 	// <AspectType> aspectref;
-        Local aspectref = localgen.generateLocal( aspect.getType() );
+        Local aspectref = localgen.generateLocal( aspect.getType(), "theAspect" );
 	debug("Generated new local: " + aspectref);
 
 	// smt1:  aspectref = <AspectType>.aspectOf();

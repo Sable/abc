@@ -63,7 +63,7 @@ public class AfterThrowingWeaver {
 	//    endshadow:  nop;  
 	
         Local catchLocal = lg.generateLocal(
-	                      RefType.v("java.lang.Throwable"));
+	                      RefType.v("java.lang.Throwable"), "exception");
         CaughtExceptionRef exceptRef = Jimple.v().newCaughtExceptionRef();
         IdentityStmt idStmt = Jimple.v().newIdentityStmt(catchLocal, exceptRef);
         units.insertAfter(idStmt, goto1);
@@ -77,7 +77,7 @@ public class AfterThrowingWeaver {
 	//    endshadow:  nop;
                 
         // no params
-        Local l = lg.generateLocal(aspect.getType());
+        Local l = lg.generateLocal(aspect.getType(), "theAspect");
         AssignStmt assignStmt =  
 	  Jimple.v().
 	    newAssignStmt( l, 

@@ -174,7 +174,7 @@ public class PointcutCodeGen {
 	       StaticFieldRef sjpfieldref = 
 		  Jimple.v().newStaticFieldRef(adviceappl.sjpfield);
 	       Local sjploc = localgen.generateLocal(
-		  RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
+		  RefType.v("org.aspectj.lang.JoinPoint$StaticPart"), "sjp");
 	       Stmt assignsjp = Jimple.v().newAssignStmt(
 		   sjploc,sjpfieldref);
 	       c.addLast(assignsjp);

@@ -422,7 +422,7 @@ public class AroundWeaver {
 		if (!joinpointChain.contains(assignStmt))
 			throw new RuntimeException();
 		
-		Unit first=CopyStmtSequence(joinpointBody, begin, end, accessBody, 
+		Unit first=copyStmtSequence(joinpointBody, begin, end, accessBody, 
 				info.lookupStmt, (Local)assignStmt.getLeftOp());
 		
 		int intId=info.nextID++;
@@ -436,8 +436,12 @@ public class AroundWeaver {
 		accessStatements.remove(info.lookupStmt);
 		info.lookupStmt=lookupStmt;
 		
+		// remove any traps from the shadow
+		removeTraps(joinpointBody, begin, end);
 		// remove statements except original assignment
-		RemoveStatements(joinpointBody, begin, end, assignStmt);
+		removeStatements(joinpointBody, begin, end, assignStmt);
+		
+		cleanLocals(accessBody);
 		
 		Local lThis=joinpointBody.getThisLocal();
 		//lThis.setName("this");
@@ -535,18 +539,86 @@ public class AroundWeaver {
 
 		
 	} 
-	private static void RemoveTraps(Body body, Unit begin, Unit end) {
+	/**
+	 * Removes all traps that refer to statements between begin and end.
+	 * Throws an exception if traps partially refer to that range.
+	 * @param body
+	 * @param begin
+	 * @param end
+	 */
+	private static void removeTraps(Body body, Unit begin, Unit end) {
+		HashSet range=new HashSet();
+		
+		Chain units=body.getUnits();
+		Iterator it=units.iterator(begin);
+		if (it.hasNext())
+			it.next(); // skip begin
+		while (it.hasNext()) {
+			Unit ut=(Unit)it.next();
+			if (ut==end)
+				break;
+			range.add(ut);
+		}
+		
+		List removed=new LinkedList();
 		Chain traps=body.getTraps();
-		Iterator it=traps.iterator();
+		it=traps.iterator();
 		while (it.hasNext()){
 			Trap trap=(Trap)it.next();
-			
+			if (range.contains(trap.getBeginUnit())) {
+				if (!range.contains(trap.getEndUnit()))
+					throw new CodeGenException("partial trap in shadow");
+				
+				if (!range.contains(trap.getHandlerUnit()))
+					throw new CodeGenException("partial trap in shadow");
+					
+				removed.add(trap);					
+			} else {
+				if (range.contains(trap.getEndUnit()))
+					throw new CodeGenException("partial trap in shadow");
+
+				if (range.contains(trap.getHandlerUnit()))
+					throw new CodeGenException("partial trap in shadow");				
+			}
 		}
+		it=removed.iterator();
+		while (it.hasNext()) {
+			traps.remove(it.next());
+		}
+	}
+	/**
+	 * Removes all unused locals from the local chain
+	 * @param body
+	 */
+	private static void cleanLocals(Body body) {
+
+		Chain locals=body.getLocals();
+
+		HashSet usedLocals=new HashSet();
+		
+		 Iterator it = body.getUseAndDefBoxes().iterator();
+		 while(it.hasNext()) {
+			 ValueBox vb = (ValueBox) it.next();
+			 if(vb.getValue() instanceof Local) {
+				 usedLocals.add(vb.getValue());
+			 }			
+		 }
+	
+		List removed=new LinkedList();
+		 it = body.getLocals().iterator();
+		 while(it.hasNext()) {
+			 Local local = (Local) it.next();
+			 if (!usedLocals.contains(local))
+			 	removed.add(local);
+		 }
+		Iterator it2=removed.iterator();
+		while (it2.hasNext())
+			locals.remove(it2.next());
 	}
 	/**
 	 * Removes statements between begin and end, excluding these and skip.
 	 */
-	private static void RemoveStatements(Body body, Unit begin, Unit end, Unit skip) {
+	private static void removeStatements(Body body, Unit begin, Unit end, Unit skip) {
 		Chain units=body.getUnits();
 		List removed=new LinkedList();
 		Iterator it=units.iterator(begin);
@@ -576,7 +648,7 @@ public class AroundWeaver {
 	 * 
 	 * This is a modified version of Body.importBodyContentsFrom()
 	 * */
-	private static Unit CopyStmtSequence(Body source, Unit begin, Unit end, 
+	private static Unit copyStmtSequence(Body source, Unit begin, Unit end, 
 			Body dest, Unit insertAfter,
 				Local returnedLocal) {
 		
@@ -646,8 +718,6 @@ public class AroundWeaver {
 				// Build old <-> new mapping.
 				bindings.put(original, copy);	
     		}
-    
-    		
 		}
 
 
