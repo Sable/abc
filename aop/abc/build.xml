@@ -277,4 +277,18 @@
             <fileset dir="generated" includes="**/*" />
         </delete>
     </target>
+
+    <target name="options-doc">
+        <xslt
+            style="doc/options/usage.xsl"
+            in="src/abc/main/options/options.xml"
+            out="doc/options/usage.tex"
+        />
+        <exec executable="latex" dir="doc/options">
+            <arg value="usage.tex"/>
+        </exec>
+        <exec executable="latex" dir="doc/options">
+            <arg value="usage.tex"/>
+        </exec>
+    </target>
 </project>
