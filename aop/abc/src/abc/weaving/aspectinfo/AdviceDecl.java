@@ -14,6 +14,9 @@ public class AdviceDecl extends Syntax {
     private MethodSig impl;
     private Aspect aspect;
     private int jp,jpsp,ejp;
+    private int nformals; // the number of formals in the advice implementation
+    private int applcount=0; // the number of times this AdviceDecl matches
+                             //   (i.e. the number of static join points)
 
     private Map/*<String,Integer>*/ formal_pos_map = new HashMap();
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
@@ -30,6 +33,7 @@ public class AdviceDecl extends Syntax {
 	}
 
 	int i = 0;
+	nformals = impl.getFormals().size();
 	Iterator fi = impl.getFormals().iterator();
 	while (fi.hasNext()) {
 	    Formal f = (Formal)fi.next();
@@ -98,6 +102,21 @@ public class AdviceDecl extends Syntax {
 
     public int enclosingJoinPointPos() {
 	return ejp;
+    }
+
+    /** return number of formals (useful for determining number of args
+     *     for invokes in code generator)
+     */
+    public int numFormals() {
+         return nformals;
+    }
+
+    /** Increment the number of times this advice is applied, and return
+     *  incremented value.
+     */
+    public int incrApplCount() {
+        applcount++;
+	return(applcount);
     }
 
     public String toString() {

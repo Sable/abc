@@ -162,12 +162,12 @@ public class Main {
 		        SootMethod m = (SootMethod)mi.next();
 		        if (m.hasActiveBody())
 		        	m.retrieveActiveBody();
-	        }
-		    if (soot.options.Options.v().output_format() == 
-				soot.options.Options.output_format_class)
-                  Printer.v().write(sc, classes_destdir);
-	    	else
-	      		writeClass(sc);
+         	        }
+	   if (soot.options.Options.v().output_format() == 
+			soot.options.Options.output_format_class)
+             Printer.v().write(sc, classes_destdir);
+           else
+	     writeClass(sc);
         }
     }
 
