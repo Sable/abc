@@ -18,10 +18,12 @@ sub load {
   my $nodeset=$data->find('/suite/ajc-test');
   foreach my $node ($nodeset->get_nodelist) {
     my $str=XML::XPath::XMLParser::as_string($node);
+    my ($num)=($str=~/num=\"(\d+)\"/m);
+    $num='nonum' unless defined $num;
     my ($dir,$title)=($str=~/dir=\"(.*?)\".*title=\"(.*?)\"/m);
     ($title,$dir)=($str=~/title=\"(.*?)\".*dir=\"(.*?)\"/m) unless defined $title;
-    if(exists $result->{"$dir - $title"}) { print STDERR "duplicated: $dir - $title\n"; }
-    $result->{"$dir - $title"}=1;
+    if(exists $result->{"$num: $dir - $title"}) { print STDERR "duplicated: $num: $dir - $title\n"; }
+    $result->{"$num: $dir - $title"}=1;
   }
 }
 
