@@ -19,6 +19,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
 import soot.jimple.IntConstant;
+import soot.tagkit.ThrowCreatedByCompilerTag;
 import soot.util.Chain;
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -74,6 +75,7 @@ public class AfterThrowingWeaver {
         units.insertAfter(idStmt, goto1);
 
         ThrowStmt throwStmt = Jimple.v().newThrowStmt(exception);
+	throwStmt.addTag(new ThrowCreatedByCompilerTag());
 
 	Stmt endresidue=residue.codeGen
 	    (method,lg,units,idStmt,throwStmt,wc);

@@ -78,7 +78,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public Collection/*<String>*/ aspect_names;
     public Map/*<String,Set<String>>*/ prec_rel = new HashMap();
 
-    public ExtensionInfo(Collection jar_classes, Collection source_files) throws SemanticException {
+    public ExtensionInfo(Collection jar_classes, Collection source_files)  {
 	this.jar_classes = jar_classes;
 	this.source_files = source_files;
 	class_to_ast = new HashMap();
@@ -159,7 +159,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
 	l.add(new VisitorPass(Pass.TYPE_CHECK, job, new TypeChecker(job, ts, nf)));
 	l.add(new VisitorPass(Pass.REACH_CHECK, job, new ReachChecker(job, ts, nf)));
-	l.add(new VisitorPass(Pass.EXC_CHECK, job, new ExceptionChecker(job,ts,nf)));
+	// Exceptions are now checked after weaving, because of softening
+	// l.add(new VisitorPass(Pass.EXC_CHECK, job, new ExceptionChecker(job,ts,nf)));
 	l.add(new VisitorPass(CAST_INSERTION, job, new CastInsertionVisitor(job, ts, nf)));
 	l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
 	l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
