@@ -43,21 +43,23 @@ public class Jimplify extends OncePass {
     private Map class_to_ast;
 
     public Jimplify(Pass.ID id, Map class_to_ast) {
-	super(id);
-	this.class_to_ast = class_to_ast;
+        super(id);
+        this.class_to_ast = class_to_ast;
     }
 
     public void once() {
 
-	List classProviders = new LinkedList();
-	classProviders.add( new AbcClassProvider() );
-	classProviders.add( new CoffiClassProvider() );
-	SourceLocator.v().setClassProviders(classProviders);
+        List classProviders = new LinkedList();
+        classProviders.add( new AbcClassProvider() );
+        classProviders.add( new CoffiClassProvider() );
+        SourceLocator.v().setClassProviders(classProviders);
     }
 
     private class AbcClassProvider implements ClassProvider {
         public ClassSource find( String className ) {
-            String javaClassName = SourceLocator.v().getSourceForClass(className);
+            String javaClassName
+                = class_to_ast.containsKey(className)
+                ? className : SourceLocator.v().getSourceForClass(className);
             if( !class_to_ast.containsKey(javaClassName) ) {
                 return null;
             }
@@ -71,22 +73,24 @@ public class Jimplify extends OncePass {
         }
         public List resolve( SootClass sc ) {
             List ret;
-	    try {
-		if (abc.main.Debug.v().classResolving)
-		    System.err.println("resolving [from abc AST]: " + className );
-
-		String javaClassName = SourceLocator.v().getSourceForClass(className);
-		Node n = (Node) class_to_ast.get(javaClassName);
-		InitialResolver.v().setAst(n);
-		InitialResolver.v().resolveAST();
-		ret = InitialResolver.v().resolveFromJavaFile(sc);
-	    } catch(InternalCompilerError e) {
-		throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
-						e.position(),
-						e.getCause());
-	    } catch(Throwable e) {
-		throw new InternalCompilerError("exception while resolving "+sc.getName(),e);
-	    }
+            try {
+                if (abc.main.Debug.v().classResolving)
+                    System.err.println("resolving [from abc AST]: " + className );
+                String javaClassName
+                    = class_to_ast.containsKey(className)
+                    ? className : SourceLocator.v().getSourceForClass(className);
+                Node n = (Node) class_to_ast.get(javaClassName);
+                if(n==null) throw new InternalCompilerError("Couldn't find source AST for "+javaClassName);
+                InitialResolver.v().setAst(n);
+                InitialResolver.v().resolveAST();
+                ret = InitialResolver.v().resolveFromJavaFile(sc);
+            } catch(InternalCompilerError e) {
+                throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
+                                                e.position(),
+                                                e.getCause());
+            } catch(Throwable e) {
+                throw new InternalCompilerError("exception while resolving "+sc.getName(),e);
+            }
             return ret;
         }
     }
