@@ -19,7 +19,6 @@ foreach $dir (@benchmarks) {
 		if ($abcout =~ m/Breakdown of abc phases/) {
 			system("./runit > abc.out 2>abcerr.out");
 			$abcsize=length `cat abc.out`;
-			print " abc output size: $abcsize\n";
 			$abc=1;
 		} else {
 			print " abc compilation failed\n";
@@ -30,7 +29,6 @@ foreach $dir (@benchmarks) {
 		if ((length $ajcout)==0) {
 			system("./runit > ajc.out 2>ajcerr.out");
 			$ajcsize=length `cat ajc.out`;
-			print " ajc output size: $ajcsize\n";
 			$ajc=1;
 		} else {
 			print " ajc compilation failed\n";
@@ -40,7 +38,13 @@ foreach $dir (@benchmarks) {
 			if ((length $diff)>2000) {
 				$diff="diff too long";
 			}
-			print (((length $diff) == 0 )  ? " same output\n" : " $diff\n");
+			if ((length $diff)>0) {
+				print " abc output size: $abcsize\n";
+				print " ajc output size: $ajcsize\n";
+				print " $diff\n";
+			} else {
+				print " ok.\n";
+			}
 		}
 		system("rm -f abcc.out abc.out ajcc.out ajc.out abccerr.out ajccerr.out ajcerr.out abcerr.out");
 		chdir "..";
