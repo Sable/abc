@@ -29,9 +29,13 @@ package org.aspectbench.runtime.internal;
 import java.util.Stack;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import org.aspectbench.runtime.internal.cflowinternal.Counter;
 
-public class CFlowCounter {
+public class CflowCounterGlobal implements CflowCounterInterface {
 
+	// In the single-threaded case, the counter can be stored uniquely for the cflow:
+	public int singleThreadedCount = 0;
+	
     private Hashtable counters = new Hashtable();
     private Thread cached_thread;
     private Counter cached_counter;
@@ -39,31 +43,7 @@ public class CFlowCounter {
     private static final int COLLECT_AT = 20000;
     private static final int MIN_COLLECT_AT = 100;
 
-    private static class Counter {
-	// A simple counter class
-
-	private int c;
-
-        public Counter() {
-	    c = 0;
-	}
-
-        public void inc() {
-
-	    c = c + 1;
-	}
-
-        public void dec() {
-
-            c = c-1;
-	}
-
-        public boolean isZero() {
-            return (c == 0);
-	}
-    }
-
-    private synchronized Counter getThreadCounter() {
+    public synchronized Counter getThreadCounter() {
 
 	// Keep a counter for each thread:
 	// Adapted from org.aspectj.runtime.internal.CFlowStack
@@ -92,42 +72,6 @@ public class CFlowCounter {
             }
         }
         return cached_counter;
-    }
-
-    public void inc() {
-	getThreadCounter().inc();
-   }
-
-    public void dec() {
-	getThreadCounter().dec();
-    }
-
-    public boolean isValid() {
-	/* isValid() : check whether the cflow applies in the 
-	   current state */
-        return (!getThreadCounter().isZero());
-    }
-
-    // Getting a handle on the counter for the current thread
-    // Return an Object to ensure that the Counter class can be changed
-
-    public Object getCounter() {
-	return getThreadCounter();
-    }
-
-    // If we already have a handle on the counter (no need for a getThreadCounter()):
-    // Note: parameter will always be a return value of getCounter(), so really a Counter
-
-    public static final void incCounter(Object c) {
-	((Counter)c).inc();
-    }
-
-    public static final void decCounter(Object c) {
-	((Counter)c).dec();
-    }
-
-    public static final boolean isValidCounter(Object c) {
-	return (!((Counter)c).isZero());
     }
 
 }
