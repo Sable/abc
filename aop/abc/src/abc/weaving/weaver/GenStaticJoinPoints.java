@@ -10,12 +10,12 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
 
-/** The purpose of this class is to iterate over all AdviceApplication
+/** The purpose of this class is to iterate over all SJPInfo
  *    instances for a Class and to insert the relevant code for the 
  *    Static Join Points. 
  *
  * @author Laurie Hendren
- * @date May 11, 2004
+ * @author Ganesh Sittampalam
  */
 
 public class GenStaticJoinPoints {
@@ -85,136 +85,26 @@ public class GenStaticJoinPoints {
          if( method.isNative() ) continue;
 
 	 // get all the advice list for this method
-         MethodAdviceList adviceList = 
-	     GlobalAspectInfo.v().getAdviceList(method);
+         List/*<SJPInfo>*/ sjpInfoList = 
+	     GlobalAspectInfo.v().getSJPInfoList(method);
 
-	 // if no advice list for this method, nothing to do
-	 if ((adviceList == null) || adviceList.isEmpty())
-           { debug("No advice list for method " + method.getName());
-	     continue;
-	   }
-         
          debug("   --- BEGIN generating static join points for method " + 
 	                method.getName());
 
-	 // --- Deal with each of the four lists 
-	 if (adviceList.hasBodyAdvice())
-	    genSJPformethod(sc,units,ip,lg,
-		         method,adviceList.bodyAdvice);
+	 Iterator it=sjpInfoList.iterator();
+	 while(it.hasNext()) {
+	     SJPInfo sjpinfo=(SJPInfo) (it.next());
 
-         if (adviceList.hasInitializationAdvice())
-	    genSJPformethod(sc,units,ip,lg,
-		         method,adviceList.initializationAdvice);
-
-	 if (adviceList.hasPreinitializationAdvice())
-	    genSJPformethod(sc,units,ip,lg,
-		         method,adviceList.preinitializationAdvice);
-
-	 if (adviceList.hasStmtAdvice())
-	    genSJPforstmtlist(sc,units,ip,lg,
-		         method,adviceList.stmtAdvice);
-
-	 debug("   --- END Generating Static Join Points for method " + 
-	                    method.getName() + "\n");
-       } // for each method
-
-      debug(" --- END Generating Static Join Points for class " + 
-	                sc.getName() + "\n");
-    } // setStaticJoinPoints
-
-
-  //TODO: need to think about thisenclosingjoinpoint stuff
-  private void genSJPformethod(SootClass sc, 
-                        Chain units, Stmt ip, LocalGenerator lg,
-                        SootMethod method, 
-	                List /*<AdviceApplication>*/ adviceApplList) {
-     
-     SootField thisSJPfield = null; // set this when we make the first one
-
-     for (Iterator alistIt = adviceApplList.iterator(); alistIt.hasNext();)
-        { final AdviceApplication adviceappl = 
-	                  (AdviceApplication) alistIt.next(); 
-	  // find out if the advice method needs that static join point
-	  AbstractAdviceDecl advicedecl = adviceappl.advice;
-	  if ( advicedecl == null // a dummy advice just for SJP
-	       || advicedecl.hasJoinPointStaticPart() 
-	       || advicedecl.hasJoinPoint()) // need to create a SJP
-	    { debug("Need a SJP ");
+	     
 	      if (!factory_generated) // must generate the code for factory
 	        { debug(" --- Generating code for the factory");
                   genSJPFactory(sc, units, ip, lg);
 		  factory_generated = true; // a field to remember we have one 
 		}
-
-	      // increment counter for number of times this advice method
-	      // applies .... don't know what we will use that for yet
-	      if (advicedecl != null) 
-	         advicedecl.incrApplCount();
-
-              if (thisSJPfield == null) // haven't made one yet
-	         thisSJPfield =  
-		     makeSJPfield(sc,units,ip,lg,method,adviceappl);
-              debug("setting " + adviceappl + " to " + thisSJPfield);
-   	      adviceappl.sjpInfo.sjpfield = thisSJPfield; // store in adviceappl
-	    } // if we need a SJP
-	} // each advice for the SJP
-    } // genSJPformethodmethod 
-
-
-  private void genSJPforstmtlist(SootClass sc, 
-                        Chain units, Stmt ip, LocalGenerator lg,
-                        SootMethod method, 
-	                List /*<AdviceApplication>*/ adviceApplList) {
-     
-     // keep track of mapping from stmt -> SJP
-     IdentityHashMap SJPhashtable = new IdentityHashMap();
-
-     for (Iterator alistIt = adviceApplList.iterator(); alistIt.hasNext();)
-        { final AdviceApplication adviceappl = 
-	                  (AdviceApplication) alistIt.next(); 
-	  // find out if the advice method needs that static join point
-	  AbstractAdviceDecl advicedecl = adviceappl.advice;
-	  if (advicedecl == null  || // FIXME: is this really needed
-	      advicedecl.hasJoinPointStaticPart() ||
-	      advicedecl.hasJoinPoint()) // need to create a SJP
-	    { debug("Need a SJP ");
-	      if (!factory_generated) // must generate the code for factory
-	        { debug(" --- Generating code for the factory");
-                  genSJPFactory(sc, units, ip, lg);
-		  factory_generated = true; // a field to remember we have one 
-		}
-
-	      // increment counter for number of times this advice method
-	      // applies .... don't know what we will use that for yet
-	      if (advicedecl != null) advicedecl.incrApplCount();
-
-	      // get the stmt for the mapping
-              Stmt keystmt = null;
-	      if (adviceappl instanceof HandlerAdviceApplication)
-                 keystmt = ((HandlerAdviceApplication) adviceappl).stmt; 
-	      else if (adviceappl instanceof NewStmtAdviceApplication)
-                 keystmt = ((NewStmtAdviceApplication) adviceappl).stmt;
-              else if (adviceappl instanceof StmtAdviceApplication)
-                 keystmt = ((StmtAdviceApplication) adviceappl).stmt; 
-	      else
-	        throw new CodeGenException(
-	                  "Unknown kind of advice for inside method body: " + 
-		           adviceappl);
-	        
-	      // lookup the key stmt to see if it has a SJP yet
-	      SootField thisSJPfield;
-              if (SJPhashtable.containsKey(keystmt)) // already have one
-                 thisSJPfield = (SootField) SJPhashtable.get(keystmt);
-              else	
-	      { thisSJPfield =  
-		     makeSJPfield(sc,units,ip,lg,method,adviceappl);
-		// put it in the table
-		SJPhashtable.put(keystmt,thisSJPfield);
-               }	
-   	      adviceappl.sjpInfo.sjpfield = thisSJPfield; // store in adviceappl
-	    } // if we need a SJP
-	} // each advice for the SJP
-    } // genSJPformethodmethod 
+	      sjpinfo.sjpfield=makeSJPfield(sc,units,ip,lg,method,sjpinfo);
+	 }
+      }
+    }
 
     private void genSJPFactory(SootClass sc, Chain units, 
 	                          Stmt ip, LocalGenerator lg)
@@ -269,10 +159,10 @@ public class GenStaticJoinPoints {
 
   private SootField makeSJPfield(SootClass sc, Chain units, Stmt ip,
                          LocalGenerator lg, SootMethod method,
-			 AdviceApplication adviceappl) 
+			 SJPInfo sjpInfo) 
     { // create the name for the SJP field 
       // the kind of SJP, but made into a valid id
-      String idkind = adviceappl.sjpInfo.kind.replace('-','_');
+      String idkind = sjpInfo.kind.replace('-','_');
       // the method in which the SJP is found, but made into a valid id
       String idmethod = method.getName().replace('<','I').replace('>','I');
       // the current number of SJP in this class
@@ -295,21 +185,18 @@ public class GenStaticJoinPoints {
       // insert field into class
       sc.addField(newsjpfield);
 
-      // save field in AdviceApplication
-      adviceappl.sjpInfo.sjpfield =  newsjpfield;
-
       // put initialization for the field in clinit()
       StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(newsjpfield);
 
 
-      String sigtypeclass = adviceappl.sjpInfo.signatureTypeClass;
-      String sigtype = adviceappl.sjpInfo.signatureType;
+      String sigtypeclass = sjpInfo.signatureTypeClass;
+      String sigtype = sjpInfo.signatureType;
       debug("The class of constructor is " + sigtypeclass);
       debug("The type of constructor is " + sigtype);
-      debug("The kind is " + adviceappl.sjpInfo.kind);
-      debug("The signature is " + adviceappl.sjpInfo.signature);
-      debug("The line is " + adviceappl.sjpInfo.row + 
-  	          " and the column is " + adviceappl.sjpInfo.col);
+      debug("The kind is " + sjpInfo.kind);
+      debug("The signature is " + sjpInfo.signature);
+      debug("The line is " + sjpInfo.row + 
+  	          " and the column is " + sjpInfo.col);
 
       // get the signature object
       Local sigloc = lg.generateLocal(
@@ -327,7 +214,7 @@ public class GenStaticJoinPoints {
       Stmt makesig = Jimple.v().
 	newAssignStmt(sigloc, Jimple.v().
 	   newVirtualInvokeExpr(factory_local,sigmethod,
-	      StringConstant.v(adviceappl.sjpInfo.signature)));
+	      StringConstant.v(sjpInfo.signature)));
       debug("Made the sig creation call " + makesig);
       units.insertBefore(makesig,ip);
 
@@ -339,10 +226,10 @@ public class GenStaticJoinPoints {
 	  "makeSJP(java.lang.String,org.aspectj.lang.Signature,int,int)");
 
       ArrayList args = new ArrayList();
-      args.add(StringConstant.v(adviceappl.sjpInfo.kind));
+      args.add(StringConstant.v(sjpInfo.kind));
       args.add(sigloc);
-      args.add(IntConstant.v(adviceappl.sjpInfo.row));
-      args.add(IntConstant.v(adviceappl.sjpInfo.col));
+      args.add(IntConstant.v(sjpInfo.row));
+      args.add(IntConstant.v(sjpInfo.col));
 
       Stmt getSJP = Jimple.v().
 	newAssignStmt(sjploc, Jimple.v().

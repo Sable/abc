@@ -303,7 +303,7 @@ public class PointcutCodeGen {
 	if ( advicespec instanceof BeforeAdvice ) {
 	    WeavingContext wc=adviceappl.advice.makeWeavingContext();
 	                BeforeWeaver.doWeave(method,localgen,
-	                         adviceappl.shadowpoints,
+	                         adviceappl.shadowmatch.sp,
 			         adviceappl.residue,
 				 adviceappl.advice,
 				 wc);
@@ -312,7 +312,7 @@ public class PointcutCodeGen {
         else if ( advicespec instanceof AfterReturningAdvice ) {
 	    WeavingContext wc=adviceappl.advice.makeWeavingContext();
             AfterReturningWeaver.doWeave(method,localgen,
-					 adviceappl.shadowpoints,
+					 adviceappl.shadowmatch.sp,
 					 adviceappl.residue,
 					 adviceappl.advice,
 					 wc);
@@ -320,7 +320,7 @@ public class PointcutCodeGen {
 	else if (advicespec instanceof AfterThrowingAdvice) {
                 WeavingContext wc=adviceappl.advice.makeWeavingContext();
                 AfterThrowingWeaver.doWeave(method,localgen,
-                                            adviceappl.shadowpoints,
+                                            adviceappl.shadowmatch.sp,
                                             adviceappl.residue,
                                             adviceappl.advice,
                                             wc);
@@ -330,14 +330,14 @@ public class PointcutCodeGen {
 	    // want separate contexts, do throwing weave first
             WeavingContext wc2=adviceappl.advice.makeWeavingContext();
             AfterThrowingWeaver.doWeave(method,localgen,
-                                        adviceappl.shadowpoints,
+                                        adviceappl.shadowmatch.sp,
                                         adviceappl.residue,
                                         adviceappl.advice,
                                         wc2);
             
 	    WeavingContext wc1=adviceappl.advice.makeWeavingContext();
             AfterReturningWeaver.doWeave(method,localgen,
-					 adviceappl.shadowpoints,
+					 adviceappl.shadowmatch.sp,
 					 adviceappl.residue,
 					 adviceappl.advice,
 					 wc1);
@@ -346,7 +346,7 @@ public class PointcutCodeGen {
 	   {  
 	       WeavingContext wc=adviceappl.advice.makeWeavingContext();
 	       BeforeAfterWeaver.doWeave(method,localgen,
-					 adviceappl.shadowpoints,
+					 adviceappl.shadowmatch.sp,
 					 adviceappl.residue,
 					 adviceappl.advice,
 					 wc);

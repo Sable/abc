@@ -180,14 +180,17 @@ public class AdviceDecl extends AbstractAdviceDecl {
 		  (enclosingJoinPointPos(),
 		   RefType.v("org.aspectj.lang.JoinPoint$StaticPart"))));
 		   
-
-	if(hasJoinPoint())
+	if(hasJoinPoint()) {
 	    ret=AndResidue.construct
 		(ret,new Load
 		 (new JoinPointInfo(sm),
 		  new AdviceFormal
 		  (joinPointPos(),
 		   RefType.v("org.aspectj.lang.JoinPoint"))));
+	    // make sure the SJP info will be around later for 
+	    // the JoinPointInfo residue
+	    sm.recordSJPInfo(); 
+	}
 
 	ret=AndResidue.construct
 	    (ret,aspct.getPer().getAspectInstance(aspct,sm));

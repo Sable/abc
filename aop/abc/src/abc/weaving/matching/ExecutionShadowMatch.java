@@ -17,15 +17,30 @@ import abc.soot.util.Restructure;
  */
 public class ExecutionShadowMatch extends BodyShadowMatch {
 
-    ExecutionShadowMatch(SootMethod container) {
+    // Because this is a potential target for getEnclosing(),
+    // we want to ensure that there is a unique instance per method
+
+    private ExecutionShadowMatch(SootMethod container) {
 	super(container);
+    }
+
+    private static Hashtable/*<SootMethod,ExecutionShadowMatch>*/ esms=new Hashtable();
+    public static void reset() {
+	esms=new Hashtable();
+    }
+
+    static ExecutionShadowMatch construct(SootMethod container) {
+	if(esms.containsKey(container)) return (ExecutionShadowMatch) esms.get(container);
+	ExecutionShadowMatch esm=new ExecutionShadowMatch(container);
+	esms.put(container,esm);
+	return esm;
     }
 
     public static ExecutionShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
 	if(abc.main.Debug.v().traceMatcher) System.err.println("Execution");
 
-	return new ExecutionShadowMatch(pos.getContainer());
+	return construct(pos.getContainer());
     }
 
     public List/*<SootClass>*/ getExceptions() {

@@ -32,9 +32,13 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 	this.stmt=stmt;
     }
 
+    public Stmt getStmt() {
+	return stmt;
+    }
+
     public ShadowMatch getEnclosing() {
 	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
-	return new ExecutionShadowMatch(container);
+	return ExecutionShadowMatch.construct(container);
     }
 
 	/**

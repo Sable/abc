@@ -10,7 +10,6 @@ public class JoinPointInfo extends ContextValue {
     private abc.weaving.matching.ShadowMatch sm;
 
     public JoinPointInfo(abc.weaving.matching.ShadowMatch sm) {
-	
 	this.sm=sm;
     }
 

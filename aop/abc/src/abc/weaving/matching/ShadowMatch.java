@@ -7,6 +7,7 @@ import soot.tagkit.Host;
 import soot.util.*;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.residues.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
@@ -41,12 +42,20 @@ public abstract class ShadowMatch {
 
     private SJPInfo sjpInfo=null;
 
-    /** retrieve the sjpInfo structure */
+    /** record the sjpInfo structure if necessary */
+    public final void recordSJPInfo() {
+	if(sjpInfo!=null) return;
+	sjpInfo=makeSJPInfo();
+	GlobalAspectInfo.v().addSJPInfo(container,sjpInfo);
+    }
+
+    /** retrieve the sjpInfo structure, creating it if necessary */
     public final SJPInfo getSJPInfo() {
-	if(sjpInfo==null) sjpInfo=makeSJPInfo();
+	recordSJPInfo();
 	return sjpInfo;
     }
     
+    private boolean recorded=false;
 
     /** Add a new advice application to the appropriate bit of a 
 	method advice list */
@@ -54,21 +63,12 @@ public abstract class ShadowMatch {
 				     AbstractAdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication aa=doAddAdviceApplication(mal,ad,residue);
+	ad.incrApplCount();
 	aa.setShadowMatch(this);
-	if(ad.hasJoinPoint() || ad.hasJoinPointStaticPart()) {
-	    aa.sjpInfo=getSJPInfo();
-	}
-	if(ad.hasEnclosingJoinPoint()) {
-	    ShadowMatch enclosing=getEnclosing();
-	    aa.sjpEnclosing=enclosing.getSJPInfo();
-	    enclosing.addDummyAdviceApplication(mal);
-	}
-    }
-
-    private void addDummyAdviceApplication(MethodAdviceList mal) {
-	AdviceApplication aa=doAddAdviceApplication(mal,null,AlwaysMatch.v);
-	aa.setShadowMatch(this);
-	aa.sjpInfo=getSJPInfo();
+	if(!recorded) {
+            GlobalAspectInfo.v().addShadowMatch(container,this);
+            recorded=true;
+        }
     }
 
     protected abstract AdviceApplication doAddAdviceApplication
@@ -111,6 +111,7 @@ public abstract class ShadowMatch {
     public abc.weaving.weaver.ShadowPoints sp=null;
     public void setShadowPoints(abc.weaving.weaver.ShadowPoints sp) {
 	this.sp=sp;
+	sp.setShadowMatch(this);
     }
 
 }

@@ -10,7 +10,8 @@ import soot.*;
 
 import java.util.*;
 
-import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.matching.*;
+
 
 /** All aspect-specific information for an entire program. */
 public class GlobalAspectInfo {
@@ -348,6 +349,81 @@ public class GlobalAspectInfo {
 		("Must compute advice lists before trying to get them");
 
 	return (MethodAdviceList) adviceLists.get(m);
+    }
+
+    private Hashtable/*<SootMethod,List<SJPInfo>*/ sjpInfoLists=new Hashtable();
+    public void addSJPInfo(SootMethod method,SJPInfo sjpInfo) {
+	List/*<SJPInfo>*/ list;
+	if(sjpInfoLists.containsKey(method)) {
+	    list = (List) sjpInfoLists.get(method);
+	} else {
+	    list = new LinkedList();
+	    sjpInfoLists.put(method,list);
+	}
+	list.add(sjpInfo);
+    }
+    public List/*<SJPInfo>*/ getSJPInfoList(SootMethod method) {
+	if(sjpInfoLists.containsKey(method)) {
+	    return (List) sjpInfoLists.get(method);
+	} else {
+	    return new LinkedList();
+	}
+    }
+
+    private Hashtable/*<SootMethod,List<StmtShadowMatch>*/ stmtShadowMatchLists=new Hashtable();
+    public List/*<StmtShadowMatch>*/ getStmtShadowMatchList(SootMethod method) {
+	if(stmtShadowMatchLists.containsKey(method)) {
+	    return (List) stmtShadowMatchLists.get(method);
+	} else {
+	    return new LinkedList();
+	}
+    }
+
+    private Hashtable/*<SootMethod,ExecutionShadowMatch>*/ 
+	executionShadowMatches=new Hashtable();
+    private Hashtable/*<SootMethod,PreintializationShadowMatch>*/ 
+	preinitShadowMatches=new Hashtable();
+    private Hashtable/*<SootMethod,InitializationShadowMatch>*/ 
+	initShadowMatches=new Hashtable();
+
+
+    public ExecutionShadowMatch getExecutionShadowMatch(SootMethod method) {
+	return (ExecutionShadowMatch) executionShadowMatches.get(method);
+    }
+    public InitializationShadowMatch getInitializationShadowMatch(SootMethod method) {
+	return (InitializationShadowMatch) initShadowMatches.get(method);
+    }
+    public PreinitializationShadowMatch getPreinitializationShadowMatch(SootMethod method) {
+	return (PreinitializationShadowMatch) preinitShadowMatches.get(method);
+    }
+
+    public void addShadowMatch(SootMethod method,ShadowMatch sm) {
+	if(sm instanceof StmtShadowMatch) {
+	    List/*<StmtShadowMatch>*/ list;
+	    if(stmtShadowMatchLists.containsKey(method)) {
+		list = (List) stmtShadowMatchLists.get(method);
+	    } else {
+		list = new LinkedList();
+		stmtShadowMatchLists.put(method,list);
+	    }
+	    list.add(sm);
+	} else if(sm instanceof ExecutionShadowMatch) {
+	    if(executionShadowMatches.containsKey(method))
+		throw new InternalCompilerError
+		    ("Something tried to record two ExecutionShadowMatches for method "+method);
+	    executionShadowMatches.put(method,sm);
+	} else if(sm instanceof PreinitializationShadowMatch) {
+	    if(preinitShadowMatches.containsKey(method))
+		throw new InternalCompilerError
+		    ("Something tried to record two InitializationShadowMatches for method "+method);
+	    preinitShadowMatches.put(method,sm);
+	} else if(sm instanceof InitializationShadowMatch) {
+	    if(initShadowMatches.containsKey(method))
+		throw new InternalCompilerError
+		    ("Something tried to record two InitializationShadowMatches for method "+method);
+	    initShadowMatches.put(method,sm);
+	} else throw new InternalCompilerError
+	      ("Unknown ShadowMatch type "+sm+" for method "+method);
     }
 
     public void registerMethodCategory(MethodSig sig, int cat) {

@@ -12,7 +12,7 @@ import abc.weaving.residues.*;
  *  @date 30-Apr-04
  */
 
-public class EmptyPointcut extends LexicalPointcut{
+public class EmptyPointcut extends LexicalPointcut {
 
     public EmptyPointcut(Position pos) {
 	super(pos);

@@ -28,20 +28,8 @@ public abstract class AdviceApplication {
     /** The dynamic residue */
     public Residue residue;
 
-
-    /** information for generating the SJP - will be null if we don't need it */
-    public SJPInfo sjpInfo;
-
-    /** The enclosing SJP - will be null if we don't need it */
-    public SJPInfo sjpEnclosing;
-
-    /** where we store the begin and end points for weaving */
-    public ShadowPoints shadowpoints; // added by LJH to keep track of
-                                      // where to weave.  Is initialized
-                                      // in first pass of weaver. 
-
     public ShadowMatch shadowmatch=null;
-
+    
     public final void setShadowMatch(ShadowMatch sm) {
 	shadowmatch=sm;
     }
@@ -53,10 +41,8 @@ public abstract class AdviceApplication {
 
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"advice decl:\n");
-       	if(advice!=null) advice.debugInfo(prefix+" ",sb);
+       	advice.debugInfo(prefix+" ",sb);
 	sb.append(prefix+"residue: "+residue+"\n");
-	sb.append(prefix+"SJP info: "+sjpInfo+"\n");
-	sb.append(prefix+"enclosing SJP info: "+sjpEnclosing+"\n");
 	sb.append(prefix+"---"+"\n");
     }
 
@@ -166,8 +152,13 @@ public abstract class AdviceApplication {
 	// Identify whether we're in a constructor, and if we are identify
 	// the position of the 'this' or 'super' call
 	if(method.getName().equals(SootMethod.constructorName)) {
-	    Stmt thisOrSuper=
-	      Restructure.findInitStmt(method.getActiveBody().getUnits());
+	    Stmt thisOrSuper;
+	    try {
+		thisOrSuper=Restructure.findInitStmt(method.getActiveBody().getUnits());
+	    } catch(RuntimeException e) {
+		System.err.println("Method was "+method);
+		throw e;
+	    }
 
 	    Iterator stmtsIt=method.getActiveBody().getUnits().iterator();
 	    while(stmtsIt.hasNext()) {

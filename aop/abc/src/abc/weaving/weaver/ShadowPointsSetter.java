@@ -54,30 +54,14 @@ public class ShadowPointsSetter {
          if( method.isAbstract() ) continue;
          if( method.isNative() ) continue;
 
-	 // get all the advice list for this method
-         MethodAdviceList adviceList = 
-	     GlobalAspectInfo.v().getAdviceList(method);
+	 ExecutionShadowMatch esm
+	     =GlobalAspectInfo.v().getExecutionShadowMatch(method);
 
-	 // if no advice list for this method, nothing to do
-	 if ((adviceList == null) || adviceList.isEmpty())
-           { debug("No advice list for method " + method.getName());
-	     continue;
-	   }
+	 if(esm!=null)
+	     insertExecutionSP(method,esm);
 
-         debug("   --- BEGIN Setting ShadowPoints Pass1 for method " + 
-	                method.getName());
-
-	 // ---- we have some advice, so set things up for this method
-	 debug("Advice for method " + method.getName() + " is : \n" +
-	               adviceList);
-
-	 // --- First deal with execution pointcuts
-	 if (adviceList.hasBodyAdvice())
-	    insertBodySP(method,adviceList);
-
-	 // ---- Then deal with stmt pointcuts that are in the body
-         if (adviceList.hasStmtAdvice())
-	    insertStmtSP(method,adviceList.stmtAdvice);
+	 insertStmtSP(method,
+		      GlobalAspectInfo.v().getStmtShadowMatchList(method));
 
 	 debug("   --- END Setting ShadowPoints Pass1 for method " + 
 	                    method.getName() + "\n");
@@ -88,71 +72,27 @@ public class ShadowPointsSetter {
     } // setShadowPointsPass1
 
 
-  private void insertBodySP(SootMethod method, 
-                      MethodAdviceList methodadvicelist) {
+    private void insertExecutionSP(SootMethod method,ExecutionShadowMatch sm) {
 
-    debug("Need to transform for execution in method: " + method.getName()); 
-    List /*<AdviceApplication>*/ advicelist = methodadvicelist.bodyAdvice; 
+	debug("Need to transform for execution in method: " + method.getName()); 
 
-    // restructure returns, and insert begin and end nops
-    ShadowPoints execution_sp = restructureBody(method); 
-
-    debug("ShadowPoints are: " + execution_sp);
+	// restructure returns, and insert begin and end nops
+	sm.setShadowPoints(restructureBody(method));
+	debug("ShadowPoints are: " + sm.sp);
 	     
-    // make all execution AdviceApplications refer to the shadowpoints
-    // object just constructed.
-     for (Iterator alistIt = advicelist.iterator(); alistIt.hasNext();)
-        { final AdviceApplication execappl = 
-	     (AdviceApplication) alistIt.next(); 
-          execappl.shadowpoints = execution_sp;
-	  execution_sp.setShadowMatch(execappl.shadowmatch);
-	} // each execution advice
-  } // insertBodySP
+    }
 
-  private void insertStmtSP(SootMethod method,
-                                   List /*<AdviceApplication>*/ advicelist) {
-     // set up an empty hash table to store shadow points for pointcuts
-     //   attached to statements
-	 
-     // note use of IdentityHashMap because we want to match by ref
-     //   to keystmt
-     IdentityHashMap SPhashtable = new IdentityHashMap();
-     // iterate through all stmtAdvice ...  
-     for (Iterator stmtlist = advicelist.iterator(); stmtlist.hasNext();)
-        { final AdviceApplication stmtappl = 
-	     (AdviceApplication) stmtlist.next(); 
-	   Stmt keystmt = null;
-	   if (stmtappl instanceof HandlerAdviceApplication)
-             keystmt = ((HandlerAdviceApplication) stmtappl).stmt; 
-	   else if (stmtappl instanceof NewStmtAdviceApplication)
-             keystmt = ((NewStmtAdviceApplication) stmtappl).stmt;
-           else if (stmtappl instanceof StmtAdviceApplication)
-             keystmt = ((StmtAdviceApplication) stmtappl).stmt; 
-	   else
-	     throw new CodeGenException(
-	                  "Unknown kind of advice for inside method body: " + 
-		           stmtappl);
+    private void insertStmtSP(SootMethod method,List/*<StmtShadowMatch>*/ smList) {
 
-	   // If stmt is in Hashtable,  use SP entry assciated with it
-	   // else, introduce new nops before and after stmt and 
-	   // create new SP.
-	   if (SPhashtable.containsKey(keystmt))
-	     { debug("ShadowPoints already created, retrieve it ... ");
-	       stmtappl.shadowpoints = 
-	        (ShadowPoints) SPhashtable.get(keystmt);
-	     }
-	   else
-	     { debug("Creating a new ShadowPoints .... ");
-	       ShadowPoints sp =
-	         insertNopsAroundStmt(stmtappl,method,keystmt);
-	       // put in the AdviceApplication
-	       stmtappl.shadowpoints = sp;
-	       sp.setShadowMatch(stmtappl.shadowmatch);
-	       // put in the SPhashtable
-	       SPhashtable.put(keystmt,sp);
-	     }
-         } // for each statement
-  } // insertStmtSP
+	// iterate through all shadow matches looking for Stmt ones
+	for (Iterator it=smList.iterator(); it.hasNext();) {
+	    final StmtShadowMatch sm=(StmtShadowMatch) it.next();
+	    
+	    debug("Creating a new ShadowPoints .... ");
+	    sm.setShadowPoints(insertNopsAroundStmt(sm,method,sm.getStmt()));
+
+	} // for each statement
+    } // insertStmtSP
 
   /** Transform body of method so it has exactly one return at the end, 
    * preceeded by nop.  This nop is the end point of shadowpoints.
@@ -198,7 +138,7 @@ public class ShadowPointsSetter {
    *  be extended to include the second nop.
    */
   private ShadowPoints insertNopsAroundStmt(
-      AdviceApplication stmtappl, SootMethod method, Stmt targetstmt) {
+      StmtShadowMatch sm, SootMethod method, Stmt targetstmt) {
     Body b = method.getActiveBody();
     // use a nonPatchingChain because we want to do our own fix of branches
     // and exceptions.
@@ -211,7 +151,7 @@ public class ShadowPointsSetter {
     Stmt nextstmt = (Stmt) units.getSuccOf(targetstmt);
 
     // insert new nop stmts into body around targetstmt
-   if (stmtappl instanceof HandlerAdviceApplication)
+   if (sm instanceof HandlerShadowMatch)
      { // verify that no trap exists that starts at the targetstmt nor 
        // ends at the stmt just after the targetstmt
        for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
@@ -228,7 +168,7 @@ public class ShadowPointsSetter {
        debug("Inserting nop after identity stmt " + targetstmt); 
        return new ShadowPoints(method,startnop,null);
      }
-   else if (stmtappl instanceof NewStmtAdviceApplication)
+   else if (sm instanceof ConstructorCallShadowMatch)
      { // expecting a new, followed by an <init> (treat these as one unit)
        debug("Inserting nops around pair of stmts " + targetstmt +
 	         " ; " + nextstmt);
@@ -244,7 +184,7 @@ public class ShadowPointsSetter {
        return new ShadowPoints(method,startnop,endnop);
      }
 
-   else if (stmtappl instanceof StmtAdviceApplication)
+   else
      { debug("Inserting nops around stmt: " + targetstmt);
        units.insertBefore(startnop,targetstmt);
        targetstmt.redirectJumpsToThisTo(startnop);
@@ -258,10 +198,6 @@ public class ShadowPointsSetter {
        return new ShadowPoints(method,startnop,endnop);
      }
 
-   else
-     throw new CodeGenException(
-                 "Unknown kind of advice for inside method body: " + 
-                 stmtappl);
   } // method insertNopAroundStmt
 
     /* --------------------------- PASS 2 --------------------------*/
@@ -287,16 +223,10 @@ public class ShadowPointsSetter {
          if( method.isAbstract() ) continue;
          if( method.isNative() ) continue;
 
-	 // get all the advice list for this method
-         MethodAdviceList adviceList = 
-	     GlobalAspectInfo.v().getAdviceList(method);
-
 	 // if it has init or preinit advice list, inline body 
-	 if ((adviceList != null) && 
-	     (adviceList.hasPreinitializationAdvice() ||
-	      adviceList.hasInitializationAdvice()
-	     )
-	    )
+	 if (GlobalAspectInfo.v().getInitializationShadowMatch(method)!=null ||
+	     GlobalAspectInfo.v().getPreinitializationShadowMatch(method)!=null)
+
            { debug("Must inline body of " + method.getName());
 	     // add to list of methods to process
 	     // if returns not restructured, do it now 
@@ -315,88 +245,82 @@ public class ShadowPointsSetter {
       for (Iterator methodIt = methodlist.iterator(); methodIt.hasNext();)
 	{ // ---- process next <init> method
 	  final SootMethod method = (SootMethod) methodIt.next();
-          MethodAdviceList adviceList = 
-	     GlobalAspectInfo.v().getAdviceList(method);
+
           debug("   --- BEGIN Setting ShadowPoints Pass2 for method " + 
 	                method.getName());
-	 // --- First look at preinitialization pointcuts 
-	 if (adviceList.hasPreinitializationAdvice())
-	   insertPreinitializationSP(method,adviceList.preinitializationAdvice);
 
-	 // --- Then look at initialization pointcuts 
-	 if (adviceList.hasInitializationAdvice())
-	    insertInitializationSP(method,adviceList.initializationAdvice);
+	  // --- First look at preinitialization pointcuts 
+	  PreinitializationShadowMatch psm
+	      =GlobalAspectInfo.v().getPreinitializationShadowMatch(method);
 
-	 debug("   --- END Setting ShadowPoints Pass2 for method " + 
-	                    method.getName() + "\n");
+	  if(psm!=null) insertPreinitializationSP(method,psm);
+
+	  // --- Then look at initialization pointcuts 
+	  InitializationShadowMatch ism
+	      =GlobalAspectInfo.v().getInitializationShadowMatch(method);
+
+	  if(ism!=null) insertInitializationSP(method,ism);
+
+	  debug("   --- END Setting ShadowPoints Pass2 for method " + 
+		method.getName() + "\n");
         } // for each method
 
       debug(" --- END Setting ShadowPoints Pass2 for class " + sc.getName() + "\n");
     } // setShadowPointsPass2
 
 
-  private void insertInitializationSP(SootMethod method,
-                                   List /*<AdviceApplication>*/ advicelist) {
-     // should only be for methods called <init>
-     ShadowPoints initialization_sp = null;
-     debug("Initialization for <init> in method: " + method.getName()); 
-     // check that name is <init>, otherwise throw exception
-     if (method.getName().equals("<init>"))
-        { debug("dealing with init of <init>");
-	  Body b = method.getActiveBody();
-	  Chain units = b.getUnits().getNonPatchingChain();
-	  Stmt startnop = Jimple.v().newNopStmt();
-	  Stmt endnop = Jimple.v().newNopStmt();
-          // insert startnop just after call to <init>,  
-	  Stmt initstmt = Restructure.findInitStmt(units);
-	  units.insertAfter(startnop,initstmt);
-	  // insert endnop just after just before final ret
-	  units.insertBefore(endnop,units.getLast());
-	  initialization_sp = new ShadowPoints(method,startnop,endnop); 
-          // make all initializatin AdviceApplications refer to the
-          // shadowpoints object just constructed.
-          for (Iterator alistIt = advicelist.iterator(); alistIt.hasNext();)
-             { final AdviceApplication initappl = 
-	               (AdviceApplication) alistIt.next(); 
-                initappl.shadowpoints = initialization_sp;
-		initialization_sp.setShadowMatch(initappl.shadowmatch);
-	     } // each initialization advice
-	}
-     else
-       throw new CodeGenException("Constructor advice on non <init>"); 
-  } // insertInitializationSP
+    private void insertInitializationSP
+	(SootMethod method,InitializationShadowMatch sm) {
+	// should only be for methods called <init>
+	debug("Initialization for <init> in method: " + method.getName()); 
+	// check that name is <init>, otherwise throw exception
+	if (method.getName().equals("<init>")) {
 
+	    debug("dealing with init of <init>");
+	    Body b = method.getActiveBody();
+	    Chain units = b.getUnits().getNonPatchingChain();
+	    Stmt startnop = Jimple.v().newNopStmt();
+	    Stmt endnop = Jimple.v().newNopStmt();
 
-  private void insertPreinitializationSP(SootMethod method,
-                                   List /*<AdviceApplication>*/ advicelist) {
-     // should only be formethods called <init>
-     ShadowPoints preinitialization_sp = null;
-     debug("Preinitialization for <init> in method: " + method.getName()); 
-     // check that name is <init>, otherwise throw exception
-     if (method.getName().equals("<init>"))
-        { Body b = method.getActiveBody();
-          Chain units = b.getUnits().getNonPatchingChain();
-	  Stmt startnop = Jimple.v().newNopStmt();
-	  Stmt endnop = Jimple.v().newNopStmt();
-	  // insert startnop at beginning of method, just before first
-	  // real statement
-	  Stmt firstreal = Restructure.findFirstRealStmt(method,units); 
-	  units.insertBefore(startnop,firstreal);
-          // insert endnop just before call to <init>,  
-	  Stmt initstmt = Restructure.findInitStmt(units);
-	  units.insertBefore(endnop,initstmt);
-	  preinitialization_sp = new ShadowPoints(method,startnop,endnop); 
-          // make all preinitialization AdviceApplications refer to the
-          // shadowpoints object just constructed.
-          for (Iterator alistIt = advicelist.iterator(); alistIt.hasNext();)
-             { final AdviceApplication preinitappl = 
-	               (AdviceApplication) alistIt.next(); 
-                preinitappl.shadowpoints = preinitialization_sp;
-		preinitialization_sp.setShadowMatch(preinitappl.shadowmatch);
-	     } // each initialization advice
+	    // insert startnop just after call to <init>,  
+	    Stmt initstmt = Restructure.findInitStmt(units);
+	    units.insertAfter(startnop,initstmt);
+
+	    // insert endnop just after just before final ret
+	    units.insertBefore(endnop,units.getLast());
+
+	    sm.setShadowPoints(new ShadowPoints(method,startnop,endnop)); 
 	}
-     else
-       throw new CodeGenException("Constructor advice on non <init>"); 
+	else
+	    throw new CodeGenException("Constructor advice on non <init>"); 
+    } // insertInitializationSP
+    
+
+    private void insertPreinitializationSP
+	(SootMethod method,PreinitializationShadowMatch sm) {
+
+	// should only be for methods called <init>
+	debug("Preinitialization for <init> in method: " + method.getName()); 
+	// check that name is <init>, otherwise throw exception
+	if (method.getName().equals("<init>")) {
+	    Body b = method.getActiveBody();
+	    Chain units = b.getUnits().getNonPatchingChain();
+	    Stmt startnop = Jimple.v().newNopStmt();
+	    Stmt endnop = Jimple.v().newNopStmt();
+
+	    // insert startnop at beginning of method, just before first
+	    // real statement
+	    Stmt firstreal = Restructure.findFirstRealStmt(method,units); 
+	    units.insertBefore(startnop,firstreal);
+
+	    // insert endnop just before call to <init>,  
+	    Stmt initstmt = Restructure.findInitStmt(units);
+	    units.insertBefore(endnop,initstmt);
+	    
+	    sm.setShadowPoints(new ShadowPoints(method,startnop,endnop));
+	}
+	else
+	    throw new CodeGenException("Constructor advice on non <init>"); 
   } // insertPreinitializationSP
 
 

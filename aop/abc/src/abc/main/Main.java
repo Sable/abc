@@ -68,6 +68,7 @@ public class Main {
       abc.weaving.matching.ShadowType.reset();
       abc.weaving.weaver.AroundWeaver.reset();
       abc.weaving.matching.StmtShadowMatch.reset();
+      abc.weaving.matching.ExecutionShadowMatch.reset();
 
       v=null;
     }
@@ -602,7 +603,7 @@ public class Main {
         for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); 
             clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
-            
+
             for(Iterator methodIt=cl.getSootClass().getMethods().iterator(); 
                 methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();

@@ -64,7 +64,6 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
-	// FIXME: Does this break with arrays?
 	return new ConstructorCallShadowMatch(pos.getContainer(),current,siexpr);
     }
 

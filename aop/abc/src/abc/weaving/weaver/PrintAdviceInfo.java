@@ -85,8 +85,6 @@ public class PrintAdviceInfo {
         { final AdviceApplication adviceappl = 
 	                  (AdviceApplication) alistIt.next(); 
           debug(" ---- Advice " + adviceappl.advice);
-	  debug(" ----------  SJP " + adviceappl.sjpInfo);
-	  debug(" ----------  ESJP " + adviceappl.sjpEnclosing);
 	} // each advice for the SJP
     } // printAdviceForMethod 
 

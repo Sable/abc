@@ -968,8 +968,8 @@ public class AroundWeaver {
 			Chain joinpointStatements = joinpointBody.getUnits().getNonPatchingChain();
 			boolean bStatic = joinpointMethod.isStatic();
 	
-			Stmt begin = adviceAppl.shadowpoints.getBegin();
-			Stmt end = adviceAppl.shadowpoints.getEnd();
+			Stmt begin = adviceAppl.shadowmatch.sp.getBegin();
+			Stmt end = adviceAppl.shadowmatch.sp.getEnd();
 	
 			Local returnedLocal = null;
 			
@@ -1110,8 +1110,8 @@ public class AroundWeaver {
 			this.joinpointStatements=joinpointBody.getUnits().getNonPatchingChain();
 			
 			this.bStaticJoinPoint = joinpointMethod.isStatic();
-			this.begin = adviceAppl.shadowpoints.getBegin();
-			this.end = adviceAppl.shadowpoints.getEnd();
+			this.begin = adviceAppl.shadowmatch.sp.getBegin();
+			this.end = adviceAppl.shadowmatch.sp.getEnd();
 
 			if (bStaticJoinPoint || adviceMethod.bAlwaysStaticAccessMethod) {
 				accessMethodName = "abc$static$proceed$" + adviceMethod.adviceMethodIdentifierString;

@@ -64,7 +64,6 @@ public class ShadowPoints {
     private ShadowMatch shadowmatch=null;
     public void setShadowMatch(ShadowMatch sm) {
 	shadowmatch=sm;
-	sm.setShadowPoints(this);
     }
 
     private Local thisJoinPoint=null;
@@ -80,7 +79,8 @@ public class ShadowPoints {
 	    Type object=Scene.v().getSootClass("java.lang.Object").getType();
 	    WeavingContext wc=new WeavingContext();
 	    
-	    WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),"sjpinfo");
+	    WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
+					   "sjpinfo");
 	    Stmt bindSJPInfo
 		=new Load(new StaticJoinPointInfo(shadowmatch.getSJPInfo()),sjpVal)
 		.codeGen(container,lg,units,startJP,end,wc);
