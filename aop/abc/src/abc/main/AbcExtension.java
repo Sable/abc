@@ -81,7 +81,7 @@ public class AbcExtension
 
     /**
      * Override this method to add new joinpoints to the abc.
-     * calling the same method in the super-class to ensure
+     * Call the same method in the super-class to ensure
      * the standard joinpoints needed are loaded too.
      */
     protected List /*<ShadowType>*/ listShadowTypes()
@@ -107,7 +107,9 @@ public class AbcExtension
     }
 
     /**
-     * FIXME : write something here
+     *  Call Scene.v().addBasicClass for each runtime class that the backend might
+     *  generate code for. Derived implementations should normally make sure to call
+     *  the superclass implementation.
      */
     public void addBasicClassesToSoot()
     {
