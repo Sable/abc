@@ -15,7 +15,6 @@ public class WithinStaticInitializer extends LexicalPointcut {
     }
 
     protected Residue matchesAt(SootClass cls,SootMethod method) {
-	// FIXME: check we're in a static initializer!
 	if(!method.isStatic()) return null;
 	if(!method.getName().equals(SootMethod.staticInitializerName)) 
 	    return null;
