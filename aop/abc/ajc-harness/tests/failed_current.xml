@@ -57,16 +57,6 @@
             <message line="6" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
-       <compile files="BinaryClasses.jar,Aspect.java"></compile>
-       <run class="BinaryClass"></run>
-    </ajc-test>
-<ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
-       <compile files="BinaryClasses2.jar,Aspect.java">
-           
-           <message line="24" kind="error" file="BinaryClasses2.java"></message>
-       </compile>
-    </ajc-test>
 <ajc-test title="Matching int[].clone()" num="986" dir="abctests/bugs" abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.         Both work fine with 'call(* Object.clone())'.">
 	<compile files="IntArray.java"></compile>
 	<run class="IntArray"></run>

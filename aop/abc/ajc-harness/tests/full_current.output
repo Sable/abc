@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@12ba0c2
+creating: A@152d70d
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -599,7 +599,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@58f80e
+InterfaceAndObject$1@1284691
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2286,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@4f35d, [Ljava.lang.Object;@1057645, TwoAnonymous$3@4f35d
+calling run: TwoAnonymous$3@d51807, [Ljava.lang.Object;@1c7c33, TwoAnonymous$3@d51807
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2403,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1dd6651.foo calls Outer$Inner@685f28.mi
+Outer@21f886.foo calls Outer$Inner@436515.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@685f28.mi calls java.io.PrintStream@3f54f2.println
+Outer$Inner@436515.mi calls java.io.PrintStream@a1532b.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1dd6651.foo calls Outer$InnerRandom@162590.nextHook
+Outer@21f886.foo calls Outer$InnerRandom@e6066e.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@162590.nextHook calls Outer$InnerRandom@162590.next
+Outer$InnerRandom@e6066e.nextHook calls Outer$InnerRandom@e6066e.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1dd6651.foo calls X.nextInt
+Outer@21f886.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@cede40.foo calls Outer$Inner@1614c93.mi
+Outer@13a38a3.foo calls Outer$Inner@15c8e61.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1614c93.mi calls java.io.PrintStream@ea7eff.println
+Outer$Inner@15c8e61.mi calls java.io.PrintStream@187af15.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@cede40.foo calls Outer$InnerRandom@1379eff.nextHook
+Outer@13a38a3.foo calls Outer$InnerRandom@f7cc15.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1379eff.nextHook calls Outer$InnerRandom@1379eff.next
+Outer$InnerRandom@f7cc15.nextHook calls Outer$InnerRandom@f7cc15.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@cede40.foo calls X.nextInt
+Outer@13a38a3.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4045,7 +4045,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@3c07b2.x:=-3
+test.Test3@d2257.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4128,8 +4128,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@49d351
-o: Bar@49d351, i: 10
+o: Bar@166e169
+o: Bar@166e169, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4498,24 +4498,12 @@ Input Options [ajc]:
 
 Output Options [ajc]: 
 --------------------- 
-  -d <dir>                     Destination directory for generated files.
-  -outjar <filename>           Destination .jar file for generated files.
+  -d <dir>                       Destination directory for generated files.
+  -outjar <filename>             Destination .jar file for generated files.
 
-Warning/Error Reporting Options [ajc]: 
+Warning/Error Reporting Options [abc]: 
 -------------------------------------- 
-  -Xlint -Xlint:warning        Report Xlint (weaving-related) warnings/errors.
-  -Xlint:error                 Report Xlint errors only, not warnings.
-  -Xlint:ignore                Don't report Xlint warnings or errors . 
-  -nowarn -warn:none           Don't report normal (non-weaving-related) warnings.
-
-Utility Options [ajc]:  
-----------------------  
-  -time                        Report total times and times for each phase.
-
-Debug Options [abc]: 
--------------------- 
-  -debug <FlagName>            Set abc.main.Debug.v().FlagName to true.
-  -nodebug <FlagName>          Set abc.main.Debug.v().FlagName to false.
+  -warn-unused-advice[:{on|off}] Warn if a piece of advice doesn't apply anywhere.
 
 Advanced Options [abc]: 
 ----------------------- 
@@ -4548,14 +4536,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:658)
+	at abc.main.Main.run(Main.java:656)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:740)
-	at abc.main.Main.loadSourceRoots(Main.java:757)
-	at abc.main.Main.run(Main.java:578)
+	at abc.main.Main.findSourcesInDir(Main.java:738)
+	at abc.main.Main.loadSourceRoots(Main.java:755)
+	at abc.main.Main.run(Main.java:580)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -4723,7 +4711,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@196d95d
+LibraryAspect-defined run() for C@9f9aeb
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5049,7 +5037,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1a9fd57
+? Util.read() obj=Test@79d87d
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5068,7 +5056,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@f9520a
+? Util.read() obj=ClinitTest@e3d8f8
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5078,7 +5066,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@35eb0b
+? Util.read() obj=SuidTest@bc1080
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5281,12 +5269,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@70de7b
-Invoking command bean:  Command@1e8fba
-hello(Command@1e8fba)
-Created a PerThis aspect : Testcase2@6e2da2
-Invoking command bean:  Command@176236c
-hello again(Command@176236c)
+Created a PerThis aspect : Testcase2@1f2e3ff
+Invoking command bean:  Command@156838d
+hello(Command@156838d)
+Created a PerThis aspect : Testcase2@d6cfe7
+Invoking command bean:  Command@eb83a5
+hello again(Command@eb83a5)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5340,15 +5328,13 @@ PASS: Test 982: "abctests/bugs/needing declare parents to resolve inner class re
 
 Running test 983: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses.jar -warn-unused-advice:off abctests/bugs/declareparentsbinary/Aspect.java 
-File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/declareparentsbinary/BinaryClass.class not found, skipping...
-Failed to find class BinaryClass
-FAIL: Test 983: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1" failed.
+PASS: Test 983: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1" passed.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses2.jar -warn-unused-advice:off abctests/bugs/declareparentsbinary/Aspect.java 
-Compilation succeeded but was expected to fail.
-FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed.
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" passed.
 
 
 Running test 985: abctests/bugs/declare parents referring to an otherwise unmentioned class
@@ -5463,7 +5449,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:658)
+	at abc.main.Main.run(Main.java:656)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -5473,14 +5459,19 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:103)
 	at soot.SootResolver.resolveClass(SootResolver.java:88)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:823)
-	at abc.main.Main.run(Main.java:583)
+	at abc.main.Main.compile(Main.java:821)
+	at abc.main.Main.run(Main.java:585)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
 
-Running test 1002: abctests/bugs/doubledeclareparents/
+Running test 1002: abctests/bugs/doubledeclareparents/double declare parents
 Commandline: abc -d abctests/bugs/doubledeclareparents -warn-unused-advice:off abctests/bugs/doubledeclareparents/A.java 
-PASS: Test 1002: "abctests/bugs/doubledeclareparents/" passed.
+PASS: Test 1002: "abctests/bugs/doubledeclareparents/double declare parents" passed.
+
+
+Running test 1003: abctests/bugs/interaction of around and after returning at execution shadow
+Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundAR.java 
+PASS: Test 1003: "abctests/bugs/interaction of around and after returning at execution shadow" passed.
 
 

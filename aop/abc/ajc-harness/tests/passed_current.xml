@@ -4962,6 +4962,16 @@
 <ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
        <compile files="DeclareParentsInner.java"></compile>
     </ajc-test>
+<ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
+       <compile files="BinaryClasses.jar,Aspect.java"></compile>
+       <run class="BinaryClasses"></run>
+    </ajc-test>
+<ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
+       <compile files="BinaryClasses2.jar,Aspect.java">
+           
+           <message line="24" kind="error" file="BinaryClasses2.java"></message>
+       </compile>
+    </ajc-test>
 <ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
         <compile files="DeclareParentsRef.java"></compile>
     </ajc-test>
@@ -5018,8 +5028,12 @@
 	<compile files="B.java"></compile>
 	<compile files="A.java" classpath="."></compile>
     </ajc-test>
-<ajc-test title="" num="1002" dir="abctests/bugs/doubledeclareparents">
+<ajc-test title="double declare parents" num="1002" dir="abctests/bugs/doubledeclareparents">
          <compile files="A.java"></compile>
+    </ajc-test>
+<ajc-test title="interaction of around and after returning at execution shadow" num="1003" dir="abctests/bugs">
+         <compile files="AroundAR.java"></compile>
+         <run class="AroundAR"></run>
     </ajc-test>
  
 </suite>
