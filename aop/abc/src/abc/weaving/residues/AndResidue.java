@@ -131,18 +131,18 @@ public class AndResidue extends Residue implements BindingLink {
     public WeavingVar getAdviceFormal(WeavingVar var) {
     	WeavingVar result=null;
     	
-    	System.out.println("getAdviceFormal: " + this);
+    	//System.out.println("getAdviceFormal: " + this);
     	if (getLeftOp() instanceof BindingLink) {
-    		System.out.println(" left instanceof BindingLink");
+    		//System.out.println(" left instanceof BindingLink");
     		BindingLink link=(BindingLink)getLeftOp();
     		result=link.getAdviceFormal(var);
     	}
 		if (getRightOp() instanceof BindingLink) {
-			System.out.println(" right instanceof BindingLink");
+			//System.out.println(" right instanceof BindingLink");
     		BindingLink link=(BindingLink)getRightOp();
-    		System.out.println(" var: " + var);
+    		//System.out.println(" var: " + var);
     		WeavingVar result2=link.getAdviceFormal(result == null ? var : result);
-    		System.out.println(" result2: " + result2);
+    		//System.out.println(" result2: " + result2);
     		if (result2!=null)
     			return result2;
     	}

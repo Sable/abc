@@ -83,6 +83,9 @@ public abstract class Residue {
      * Fills the Bindings object with information of possible
      * advice-formal bindings.
      * Has to be overwritten by all Residue classes that have children.
+     * 
+     * andRoot is the outermost directly enclosing AndResidue (or null).
+     * (see implementation in AndResidue) 
      */
     public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
     }
@@ -252,7 +255,20 @@ public abstract class Residue {
     }
     public List/*ResidueBox*/ getResidueBoxes() { return new ArrayList(); }
 }
-
+/**
+ * 
+ Implemented by residues that know how one weaving var is linked to another,
+ namely Copy, Box, and And (because it may contain Copy and Box residues).
+ 
+ This is needed to determine the binding between the local and the advice-formal in residues like
+  (((bind(jimplevalue(o),polylocalvar(box:null))) && 
+  (box(polylocalvar(box:null)->polylocalvar(boxed:null)))) && 
+  (copy(polylocalvar(boxed:null)->advicearg(0:java.lang.Object)))) 
+  
+  
+  @author Sascha Kuzins
+ 
+ */
 interface BindingLink {
 	public abstract WeavingVar getAdviceFormal(WeavingVar var);
 }
