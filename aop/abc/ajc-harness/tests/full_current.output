@@ -2286,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@820195, [Ljava.lang.Object;@135eddf, TwoAnonymous$3@820195
+calling run: TwoAnonymous$3@106e093, [Ljava.lang.Object;@820195, TwoAnonymous$3@106e093
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2403,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@da7d2d.foo calls Outer$Inner@502d63.mi
+Outer@82a3f6.foo calls Outer$Inner@da7d2d.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@502d63.mi calls java.io.PrintStream@1d3c3df.println
+Outer$Inner@da7d2d.mi calls java.io.PrintStream@502d63.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@da7d2d.foo calls Outer$InnerRandom@4eb83.nextHook
+Outer@82a3f6.foo calls Outer$InnerRandom@1e070ab.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@4eb83.nextHook calls Outer$InnerRandom@4eb83.next
+Outer$InnerRandom@1e070ab.nextHook calls Outer$InnerRandom@1e070ab.next
 Outer.foo() calls Random.nextInt(..)
-Outer@da7d2d.foo calls X.nextInt
+Outer@82a3f6.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1d9bd01.foo calls Outer$Inner@7a94c.mi
+Outer@eac7a7.foo calls Outer$Inner@1d9bd01.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@7a94c.mi calls java.io.PrintStream@fbd950.println
+Outer$Inner@1d9bd01.mi calls java.io.PrintStream@7a94c.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1d9bd01.foo calls Outer$InnerRandom@785451.nextHook
+Outer@eac7a7.foo calls Outer$InnerRandom@fbd950.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@785451.nextHook calls Outer$InnerRandom@785451.next
+Outer$InnerRandom@fbd950.nextHook calls Outer$InnerRandom@fbd950.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1d9bd01.foo calls X.nextInt
+Outer@eac7a7.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
