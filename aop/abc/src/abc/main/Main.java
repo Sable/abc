@@ -78,7 +78,18 @@ public class Main {
                 System.out.println( "it's an aspect");
 		final Aspect aspect=new Aspect(new AbcClass(cl.getName()),null,null);
 		GlobalAspectInfo.v().addAspect(aspect);
-		GlobalAspectInfo.v().addAdviceDecl(new AdviceDecl(null,new SetField(null),null,aspect,null));
+		GlobalAspectInfo.v().addAdviceDecl(
+                        new AdviceDecl(
+                            new BeforeAdvice(null),
+                            new SetField(null),
+                            new MethodSig(
+                                aspect.getInstanceClass(),
+                                new AbcType( aspect.getInstanceClass().getSootClass().getType() ),
+                                "before$1",
+                                new ArrayList(),
+                                null),
+                            aspect,
+                            null));
             } else {
                 System.out.println( "it's not an aspect");
 		GlobalAspectInfo.v().addClass(new AbcClass(cl.getName()));

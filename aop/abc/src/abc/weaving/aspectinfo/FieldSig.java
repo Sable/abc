@@ -8,11 +8,11 @@ import soot.*;
 /** A field signature. */
 public class FieldSig extends Syntax {
     private AbcClass cl;
-    private Type type;
+    private AbcType type;
     private String name;
     private SootField sf;
 
-    public FieldSig(AbcClass cl, Type type, String name, Position pos) {
+    public FieldSig(AbcClass cl, AbcType type, String name, Position pos) {
 	super(pos);
 	this.cl = cl;
 	this.type = type;

@@ -6,16 +6,16 @@ import soot.*;
 
 /** Advice specification for around advice. */
 public class AroundAdvice extends AbstractAdviceSpec {
-    private Type rtype;
+    private AbcType rtype;
     private MethodSig proceed;
 
-    public AroundAdvice(Type rtype, MethodSig proceed, Position pos) {
+    public AroundAdvice(AbcType rtype, MethodSig proceed, Position pos) {
 	super(pos);
 	this.rtype = rtype;
 	this.proceed = proceed;
     }
 
-    public Type getReturnType() {
+    public AbcType getReturnType() {
 	return rtype;
     }
 

@@ -5,6 +5,7 @@ import soot.jimple.*;
 import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
+import soot.javaToJimple.LocalGenerator;
 
 public class PointcutGenerator {
 
@@ -19,36 +20,37 @@ public class PointcutGenerator {
 	    System.out.println(adviceList.toString());
 
             Body b = method.getActiveBody();
+            LocalGenerator localgen = new LocalGenerator(b);
             Chain units = b.getUnits();
-            Iterator codeIt = units.snapshotIterator();
 	    Iterator adviceIt = adviceList.iterator();
 	    Stmt stmt = null;
 	    AdviceApplication aa = null;
-            while( codeIt.hasNext() && adviceIt.hasNext()) {
-		if(stmt==null) stmt = (Stmt) codeIt.next();
-		if(aa==null) aa = (AdviceApplication) adviceIt.next();
-		if(stmt!=aa.begin) {
-		    stmt=null;
-		    continue;
-		}
+            while( adviceIt.hasNext()) {
+		aa = (AdviceApplication) adviceIt.next();
 		final AdviceDecl advicedecl=aa.advice;
-		final SootClass aspect=advicedecl.getAspect().getInstanceClass().getSootClass();
+                final AdviceSpec adviceSpec = advicedecl.getAdviceSpec();
+		final SootClass aspect=
+                    advicedecl.getAspect().getInstanceClass().getSootClass();
+                final SootMethod adviceImpl =
+                    advicedecl.getImpl().getSootMethod();
 
-		Local l = Jimple.v().newLocal( localName(), aspect.getType() );
-		b.getLocals().add(l);
-		units.insertBefore( Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList()))), stmt);
-		units.insertBefore( 
-				   Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, aspect.getMethod("before$1", new ArrayList() ) ) ), stmt );
-		aa=null;
+                if( adviceSpec instanceof BeforeAdvice ) {
+                    Local l = localgen.generateLocal( aspect.getType() );
+                    units.insertBefore( Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList()))), aa.begin);
+                    units.insertBefore( 
+                                    Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, adviceImpl ) ), aa.begin );
+                } else if( adviceSpec instanceof AfterReturningAdvice ) {
+                    throw new RuntimeException("NYI");
+                } else if( adviceSpec instanceof AfterThrowingAdvice ) {
+                    throw new RuntimeException("NYI");
+                } else if( adviceSpec instanceof AfterAdvice ) {
+                    throw new RuntimeException("NYI");
+                } else if( adviceSpec instanceof AroundAdvice ) {
+                    throw new RuntimeException("NYI");
+                } else {
+                    throw new RuntimeException("Unrecognized advice type: "+adviceSpec);
+                }
 	    }
 	}
     }
-
-
-    // TODO: get rid of this
-    static int localNum = 1;
-     private static String localName() {
-         localNum++;
-         return "aspect$"+localNum;
-     }
 }
