@@ -44,9 +44,22 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		    ClassType ct = (ClassType)cti.next();
 		    PCNode hi_cl = ext.hierarchy.getClass(ct);
 		    if (hi_cl.isWeavable() && pat.matches(PatternMatcher.v(), hi_cl)) {
+			if (ct.flags().isInterface()) {
+			    throw new SemanticException("Interface "+ct+" cannot be extended by a class",dp.position());
+			}
 			dp.addTarget(AbcFactory.AbcClass(ct));
 			if (ct instanceof ParsedClassType) {
 			    ParsedClassType pct = (ParsedClassType)ct;
+			    /* FIXME: What are the exact type rules here?
+			       if (!ts.isSubtype(type.type(), pct.superType())) {
+			       throw new SemanticException("Declared parent class "+type.type()+
+			       " is not a subclass of original superclass "+pct.superType());
+			       }
+			       if (ts.isSubtype(type.type(), pct)) {
+			       throw new SemanticException("Declared parent class "+type.type()+
+			       " is a subclass of child class "+pct);
+			       }
+			    */
 			    PCNode hi_parent = ext.hierarchy.insertClassAndSuperclasses(parentct, false);
 			    
 			    //System.err.println("Declared "+ct.fullName()+" to extend "+typect.fullName());
@@ -62,7 +75,6 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		// Extending or implementing a list of interfaces
 
 		// Change into IMPLEMENTS internally
-		boolean extend = dp.kind() == DeclareParents.EXTENDS;
 		dp.setKind(DeclareParents.IMPLEMENTS);
 
 		List/*<ClassType>*/ ints = new ArrayList();
@@ -86,9 +98,6 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		    ClassType ct = (ClassType)cti.next();
 		    PCNode hi_cl = ext.hierarchy.getClass(ct);
 		    if (hi_cl.isWeavable() && pat.matches(PatternMatcher.v(), hi_cl)) {
-			if (extend && !ct.flags().isInterface()) {
-			    throw new SemanticException("Class "+ct+" cannot be extended by interfaces",dp.position());
-			}
 			dp.addTarget(AbcFactory.AbcClass(ct));
 			if (ct instanceof ParsedClassType) {
 			    ParsedClassType pct = (ParsedClassType)ct;

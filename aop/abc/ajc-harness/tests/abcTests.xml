@@ -6215,9 +6215,10 @@
     <ajc-test num="715" dir="new"
       title="expect CE for declaration collision between subaspects instead of domination order">
         <compile files="DeclarationCollisionCE.java">
-            <message kind="error" line="10"/>
-            <message kind="error" line="20"/>
-            <message kind="error" line="27"/>
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="27"/>
+	    <message kind="error" line="20"/>
         </compile>
     </ajc-test>
     
