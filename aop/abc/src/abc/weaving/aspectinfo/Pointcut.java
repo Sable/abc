@@ -199,9 +199,32 @@ public abstract class Pointcut extends Syntax {
     // Get a list of free variables bound by this pointcut
     public abstract void getFreeVars(Set/*<String>*/ result);
 
-    // Default implementation; all subclasses should override this,
-    // otherwise cflow CSE will not work for those pointcuts.
-    // (include this comment in proper javadoc for this method?)
+    /** Attempt to unify two pointcuts. pc.unify(pc', unification)
+     *  should return true if the pointcuts can be unified, and 
+     *  set the renamings appropriately in unification. There are
+     *  two cases for unification: if unification.unifyWithFirst()
+     *  is true, then the unification should only succeed if this
+     *  pc can be renamed to pc', with the unification pointcut equal
+     *  to this. Otherwise, the unification pointcut can be anything,
+     *  as long as it can be renamed both to this and pc'.
+     *  <p>
+     *  A default implementation is provided, but all subclasses should
+     *  override this - otherwise cflow CSE will be disabled for cflow
+     *  that use these pointcuts.
+     *  <p>
+     *  Typical implementations for pointcuts that introduce no free
+     *  variables are straightforward (see the And pointcut, for example).
+     *  For pointcuts that introduce free variables, the Var.unify method
+     *  is used to actually update the renamings (see the Args pointcut).
+     *  @param otherpc the pointcut that should be unify with this
+     *  @param unification the Unification that should be set. 
+     *  @return true iff the unification is succesful. If true is returned,
+     *  then Unification.setPointcut(the unified pointcut) must have been
+     *  called in the body of unify().
+     *  @see abc.weaving.aspectinfo.AndPointcut#unify(Pointcut, Unification) AndPointcut.unify example
+     *  @see abc.weaving.aspectinfo.Var#unify(Var, Unification) Var.unify
+     *  @see abc.weaving.aspectinfo.Unification
+     */
     public boolean unify(Pointcut otherpc,Unification unification) {
 
         if (otherpc != this) return false;
