@@ -29,7 +29,7 @@ public class AfterThrowingWeaver {
 	                      AdviceApplication adviceappl)
       { aftdebug("Handling after returning: " + adviceappl);
         Body b = method.getActiveBody();
-        Chain units = b.getUnits();
+        Chain units = b.getUnits().getNonPatchingChain();
 	AdviceDecl advicedecl = adviceappl.advice;
 	AdviceSpec advicespec = advicedecl.getAdviceSpec();
 	SootClass aspect = advicedecl.getAspect().
@@ -38,21 +38,15 @@ public class AfterThrowingWeaver {
 
 	// end of shadow
 	Stmt endshadow = adviceappl.shadowpoints.getEnd();
-
         
         NopStmt nop2 = Jimple.v().newNopStmt();
+        GotoStmt goto1 = Jimple.v().newGotoStmt(nop2);
         units.insertBefore(nop2, endshadow);
+	units.insertBefore(goto1, nop2);
 
 	//have ... 
+	//    goto1:      goto nop2;
 	//    nop2:       nop;
-	//    endshadow:  nop;  
-       
-        GotoStmt goto1 = Jimple.v().newGotoStmt(endshadow);
-        units.insertAfter(goto1, nop2);
-
-	//have ... 
-	//    nop2:       nop;
-	//    goto1:      goto endshadow;
 	//    endshadow:  nop;  
 	
         Local catchLocal = lg.generateLocal(
@@ -64,9 +58,9 @@ public class AfterThrowingWeaver {
 	//have ... 
 	//    java.lang.Exception catchLocal;
 	//
-	//    nop2:       nop;  
-	//    goto1:      goto endshadow;
+	//    goto1:      goto nop2; 
 	//    idStmt:     catchLocal := @caughtexception
+	//    nop2:       nop;  
 	//    endshadow:  nop;
                 
         // no params
@@ -96,22 +90,22 @@ public class AfterThrowingWeaver {
 	//    beginshadow:   nop
 	//    begincode:     <some statement>
 	//      ....  <stuff in between>
-	//    nop2:          nop;  
 	//    goto1:         goto nop2;
 	//    idStmt:        catchLocal := @caughtexception;
 	//    assignStmt:    l = new AspectOf();
 	//    vInvokeStmt:   l.<advicemethod>();
 	//    throwStmt:     throw catchLocal;
+	//    nop2:          nop;  
 	//    endshadow:     nop;
 
         b.getTraps().
 	  add(Jimple.v().
 	      newTrap(Scene.v().getSootClass("java.lang.Throwable"), 
-              begincode, endshadow, idStmt));
+              begincode, idStmt, idStmt));
 
 	//  added 
 	//     catch java.lang.Throwable 
-	//         from begincode upto endshadow handlewith idStmt
+	//         from begincode upto idStmt handlewith idStmt
 
       } // method doWeave 
 }
