@@ -114,6 +114,7 @@ public class OptionsParser {
       if(args.top().equals("-<xsl:value-of select="."/>")
       || args.top().equals("-<xsl:value-of select="."/>:on")
       || args.top().equals("-<xsl:value-of select="."/>:true")
+      || args.top().equals("-<xsl:value-of select="."/>:yes")
       ) {
         <xsl:value-of select="$field"/> = true;
         args.shift();
@@ -121,6 +122,7 @@ public class OptionsParser {
       }
       if(args.top().equals("-<xsl:value-of select="."/>:off")
       || args.top().equals("-<xsl:value-of select="."/>:false")
+      || args.top().equals("-<xsl:value-of select="."/>:no")
       ) {
         <xsl:value-of select="$field"/> = false;
         args.shift();
