@@ -72,6 +72,10 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 			setInstance = ts.methodInstance(pos,container, accessorFlags,type,setname,argTypes, new ArrayList());
 			String getname = UniqueID.newID("get$"+name);
 			getInstance = ts.methodInstance(pos,container, accessorFlags,type,getname, new ArrayList(),new ArrayList());
+			// mangled instance needs the same setters/getters.
+			((InterTypeFieldInstance_c)mangled).getInstance = this.getInstance;
+			((InterTypeFieldInstance_c)mangled).setInstance = this.setInstance;
+			System.out.println("Creating getInstance " + getInstance + " for itfi " + this);
 		}
 	 }
 	

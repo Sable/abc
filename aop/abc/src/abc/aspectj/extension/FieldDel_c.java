@@ -45,7 +45,7 @@ public class FieldDel_c extends JL_c implements MakesAspectMethods
         
         if (f.fieldInstance() instanceof InterTypeFieldInstance_c) {
             InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) f.fieldInstance();
-            if (itfi.container().toClass().flags().isInterface())
+            if (itfi.container().toClass().flags().isInterface() && introduceFieldAccessors)
                 return itfi.getCall(nf, ts, f.target(), itfi.container());
             f = f.fieldInstance(itfi.mangled()).name(itfi.mangled().name()).targetImplicit(false);
         }

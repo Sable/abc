@@ -66,6 +66,7 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
                 unary.operator() == Unary.POST_INC ||
                 unary.operator() == Unary.PRE_DEC ||
                 unary.operator() == Unary.PRE_INC) {
+            Call getter = null, setter = null;
             if(unary.expr() instanceof Field) {
 	            Field field = (Field) unary.expr();
 	            ClassType targetType = null;
@@ -74,6 +75,12 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 	                    !ts.isAccessibleIgnorePrivileged(field.fieldInstance(), visitor.context())) {
 	                targetType = (ClassType)field.target().type();
 	                targetThis = (Expr)field.target();
+	            }
+	            // Inter-type fields need accessors, too.
+	            else if(field.fieldInstance() instanceof InterTypeFieldInstance_c) {
+	                InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) field.fieldInstance();
+	                if (!itfi.container().toClass().flags().isInterface())
+	                    return unary;
 	            }
 	            else if(field.target() instanceof HostSpecial_c) {
 	                HostSpecial_c hs = (HostSpecial_c) field.target();
@@ -92,19 +99,8 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 	            // OK, now we transform the field access into a Comma expression
 	            
 	            AspectType at = null;
-	       	    ClassType cct = (ClassType) visitor.container(); // TODO: Check container() is what we want
-	    	    while(cct != null) {
-	    	        if(AJFlags.isPrivilegedaspect(cct.flags())) {
-	    	            at = (AspectType) cct;
-	    	            break;
-	    	        }
-	    	        cct = cct.outer();
-	    	    }
-	    	    // Shouldn't happen - accessibility test thinks we're in a privileged aspect, 
-	    	    // but we failed to find a containing aspect
-	    	    if(at == null) throw new InternalCompilerError("Couldn't find enclosing aspect...");
 	    	    
-	    	    Local local_target = new Local_c(unary.position(), UniqueID.newID("local$assign$"));
+	    	    Local local_target = new Local_c(unary.position(), UniqueID.newID("local$assign"));
 	    	    local_target = (Local)local_target.type(targetType);
 	    	    List exprList = new LinkedList();
 	    	    List localsList = new LinkedList();
@@ -112,12 +108,41 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 		        Expr expr = new LocalAssign_c(unary.position(), local_target, Assign.ASSIGN, targetThis);
 		        exprList.add(expr);
 		        Binary.Operator operator = unary.operator().toString().equals("++") ? Binary.ADD : Binary.SUB;
-		        Call getter = at.getAccessorMethods().accessorGetter(nf, ts, field, targetType, local_target);
+		        
+		        if(field.fieldInstance() instanceof InterTypeFieldInstance_c) {
+	                InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) field.fieldInstance();
+	                getter = (Call)itfi.getCall(nf, ts, field.target(), itfi.container());
+		        }
+		        else {
+		       	    ClassType cct = (ClassType) visitor.container(); // TODO: Check container() is what we want
+		    	    while(cct != null) {
+		    	        if(AJFlags.isPrivilegedaspect(cct.flags())) {
+		    	            at = (AspectType) cct;
+		    	            break;
+		    	        }
+		    	        cct = cct.outer();
+		    	    }
+		    	    // Shouldn't happen - accessibility test thinks we're in a privileged aspect, 
+		    	    // but we failed to find a containing aspect
+		    	    if(at == null) throw new InternalCompilerError("Couldn't find enclosing aspect...");
+
+		    	    getter = at.getAccessorMethods().accessorGetter(nf, ts, field, targetType, local_target);
+		        }
+		        
 		        Expr result = new Binary_c(unary.position(), getter, 
 		                			operator,
 		                			new IntLit_c(unary.position(), IntLit.INT, 1));
-		        Call setter = at.getAccessorMethods().accessorSetter(nf, ts, field, targetType, local_target, result);
-	    	    if(unary.operator() == Unary.PRE_DEC || unary.operator() == Unary.PRE_INC) {
+		        
+		        if(field.fieldInstance() instanceof InterTypeFieldInstance_c) {
+	                InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) field.fieldInstance();
+	                setter = (Call)itfi.setCall(nf, ts, field.target(), itfi.container(), result);
+		        }
+		        else {
+		            if(at == null) throw new InternalCompilerError ("Couldn't find enclosing aspect - it should be there...");
+		            setter = at.getAccessorMethods().accessorSetter(nf, ts, field, targetType, local_target, result);
+		        }
+	    	    
+		        if(unary.operator() == Unary.PRE_DEC || unary.operator() == Unary.PRE_INC) {
 	    	        // Return incremented value
 	    	        exprList.add(setter);
 	    	    }
