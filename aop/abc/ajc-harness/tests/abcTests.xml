@@ -345,7 +345,14 @@
         <run class="CommentAfterClass"/>
     </ajc-test>
 
-    <ajc-test dir="new" title="handle multiple nested inner classes"
+    <ajc-test 
+      abccomment="can't find constructor for 
+                   javax.swing.JComponent.AccessibleJComponent()
+                  - works with javac
+                  - works with soot from class file
+                  - does not work with j2j
+                  - does not work with jlc, reported to Nate June 30/04 LJH"
+      dir="new" title="handle multiple nested inner classes"
       keywords="from-java">
         <compile files="InnerHell.java"/>
         <run class="InnerHell"/>
@@ -366,6 +373,10 @@
 
     <ajc-test dir="new" pr="109"
       title="checks if the class field can be used on all of the primitive types"
+      abccomment = "works for ajc, jlc 
+                    doesn't work for j2j or abc
+                    file ClassFieldOnPrimitiveTypeLJH.java sent to Jennifer
+                       June 30/04 LJH"
       keywords="from-java,purejava">
         <compile files="ClassFieldOnPrimitiveType.java"/>
         <run class="ClassFieldOnPrimitiveType"/>
