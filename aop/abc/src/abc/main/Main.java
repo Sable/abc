@@ -8,6 +8,7 @@ import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 import polyglot.frontend.Stats;
+import polyglot.types.SemanticException;
 
 import abc.aspectj.visit.PatternMatcher;
 
@@ -148,23 +149,27 @@ public class Main {
           Timers.v().totalTimer.start(); // Soot timer start
 
         // Main phases
-        AbcTimer.start(); // start the AbcTimer
+	try {
+	    AbcTimer.start(); // start the AbcTimer
 
-        initSoot();
-        AbcTimer.mark("Init. of Soot");
+	    initSoot();
+	    AbcTimer.mark("Init. of Soot");
 
-        loadJars();
-        AbcTimer.mark("Loading Jars");
+	    loadJars();
+	    AbcTimer.mark("Loading Jars");
 
-        compile(); // Timers marked inside compile()
+	    compile(); // Timers marked inside compile()
 
-        weave();   // Timers marked inside weave()
+	    weave();   // Timers marked inside weave()
 
-        optimize();
-        AbcTimer.mark("Soot Packs");
+	    optimize();
+	    AbcTimer.mark("Soot Packs");
 
-        output();
-        AbcTimer.mark("Soot Writing Output");
+	    output();
+	    AbcTimer.mark("Soot Writing Output");
+	} catch (SemanticException e) {
+	    System.out.println(e.position()+": "+e.getMessage());
+	}
 
         // Timer end stuff
         Date abcfinish = new Date(); // wall clock time finish
@@ -237,7 +242,7 @@ public class Main {
                 return new Compiler(ext);
         }
         
-    public void weave() throws CompilerFailedException {
+    public void weave() throws CompilerFailedException, SemanticException {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
         AbcTimer.mark("Declare Parents");
@@ -264,6 +269,10 @@ public class Main {
 	PatternMatcher.v().recomputeAllMatches();
         AbcTimer.mark("Recompute name pattern matches");
         
+	// Compute the precedence relation between aspects
+	GlobalAspectInfo.v().computePrecedenceRelation();
+	AbcTimer.mark("Compute precedence relation");
+
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
         
