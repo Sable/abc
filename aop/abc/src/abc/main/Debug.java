@@ -107,6 +107,7 @@ public class Debug {
     public boolean dontShareCflowStacks=false;
     public boolean debugCflowSharing=false;
     public boolean debugPointcutUnification=false;
+    public boolean debugUnweaver=false;
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance

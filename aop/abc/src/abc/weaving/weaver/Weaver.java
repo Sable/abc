@@ -64,6 +64,13 @@ public class Weaver {
             } else {
             	// add aspectOf(), hasAspect(), ...
                 weaveGenerateAspectMethods();
+                if(abc.main.Debug.v().debugUnweaver) {
+                    Unweaver unweaver = new Unweaver();
+                    unweaver.save();
+                    unitBindings = unweaver.restore();
+                    weaveAdvice();
+                    unitBindings = unweaver.restore();
+                }
                 weaveAdvice();
             }
         }
