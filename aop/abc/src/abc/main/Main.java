@@ -149,21 +149,25 @@ public class Main {
     public void output() {
 	// Write classes
 
-        Iterator/*<String>*/ wci = weavable_classes.iterator();
+		Collection classes=new ArrayList();
+		classes.addAll(weavable_classes);
+		classes.addAll(GlobalAspectInfo.v().getGeneratedClasses());
+        Iterator/*<String>*/ wci = classes.iterator();
         while (wci.hasNext()) {
             String wc = (String) wci.next();
             System.out.println("Printing out " + wc);
             SootClass sc = Scene.v().getSootClass(wc);
-	    Iterator mi = sc.getMethods().iterator();
-	    while (mi.hasNext()) {
-	        SootMethod m = (SootMethod)mi.next();
-	        m.retrieveActiveBody();
-	       }
-	    if (soot.options.Options.v().output_format() == 
-		soot.options.Options.output_format_class)
+		    Iterator mi = sc.getMethods().iterator();
+		    while (mi.hasNext()) {
+		        SootMethod m = (SootMethod)mi.next();
+		        if (m.hasActiveBody())
+		        	m.retrieveActiveBody();
+	        }
+		    if (soot.options.Options.v().output_format() == 
+				soot.options.Options.output_format_class)
                   Printer.v().write(sc, classes_destdir);
-	    else
-	      writeClass(sc);
+	    	else
+	      		writeClass(sc);
         }
     }
 

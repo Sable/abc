@@ -20,7 +20,10 @@ public class GlobalAspectInfo {
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
-
+	
+	// additional generated classes that need to be output in the end
+	private Collection/*<String>*/ generated_classes = new ArrayList();
+	
     private Map/*<String,AbcClass>*/ classes_map = new HashMap();
     private Map/*<String,Aspect>*/ aspects_map = new HashMap();
 
@@ -28,6 +31,13 @@ public class GlobalAspectInfo {
 	
     }
 
+	/** Returns the list of classes into which weaving can take place.
+		 *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
+	 */
+	public Collection getGeneratedClasses() {
+		return generated_classes;
+	}
+	
     /** Returns the list of classes into which weaving can take place.
      *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
      */

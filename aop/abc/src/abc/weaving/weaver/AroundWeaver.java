@@ -28,7 +28,7 @@ public class AroundWeaver {
 					SootMethod method,
 					LocalGenerator localgen,
 					AdviceApplication adviceappl) {
-		arddebug("Handling after returning: " + adviceappl);
+		arddebug("Handling aound: " + adviceappl);
 		Body b = method.getActiveBody();
 		Chain units = b.getUnits();
 		AdviceDecl advicedecl = adviceappl.advice;
@@ -40,14 +40,17 @@ public class AroundWeaver {
 	
 		// find out what kind of pointcut 
 		if (adviceappl instanceof StmtAdviceApplication) {
+			arddebug("found statement advice application");
 			StmtAdviceApplication stmtAdv=(StmtAdviceApplication) adviceappl;
 			if (stmtAdv.stmt instanceof AssignStmt) {
+				arddebug("found assignment statement");
 				AssignStmt assignStmt=(AssignStmt)stmtAdv.stmt;
 				Value rightOp=assignStmt.getRightOp();
-				if (rightOp instanceof InstanceFieldRef) { 
+				if (rightOp instanceof InstanceFieldRef) {
+					arddebug("found assignment from field"); 
 					InstanceFieldRef fieldRef=(InstanceFieldRef) rightOp;
 					String typeName=
-						rightOp.getType().getClass().getName();
+						rightOp.getType().toString();// .getClass().getName();
 						
 					String interfaceName="abc$get$" + typeName;
 					
@@ -59,22 +62,30 @@ public class AroundWeaver {
 					SootClass getInterface;
 					// create "get" interface if it doesn't exist
 					if (Scene.v().containsClass(interfaceName)) {
+						arddebug("found get interface");
 						getInterface=Scene.v().getSootClass(interfaceName);
 					} else {
+						arddebug("generating get interface");
 						getInterface=new SootClass(interfaceName, 
 							Modifier.INTERFACE | Modifier.PUBLIC);						
 						
 						SootMethod signature=
 							new SootMethod(methodName, getParameters, rightOp.getType(),
 									Modifier.ABSTRACT | Modifier.PUBLIC);
-						getInterface.addMethod(signature);
 						
-						Scene.v().addClass(getInterface);						 
+						getInterface.addMethod(signature);
+						//signature.setActiveBody(Jimple.v().newBody(signature));
+						
+						
+						Scene.v().addClass(getInterface);
+						
+						GlobalAspectInfo.v().getGeneratedClasses().add(interfaceName);						 
 					}
 					
 					// add interface to class if it doesn't exist.
 					// implement the "get" method
 					if (!cl.implementsInterface(interfaceName)){
+						arddebug("adding get interface to class");
 						cl.addInterface(getInterface);
 						SootMethod getMethod=new SootMethod(methodName, getParameters, rightOp.getType(),
 								Modifier.PUBLIC);
@@ -90,7 +101,9 @@ public class AroundWeaver {
 					}
 					
 					// add parameter to around() method if it doesn't exist
-					if (adviceMethod.getParameterType(0).getClass().getName().equals(interfaceName)) {
+					if (adviceMethod.getParameterCount()==0 ||
+						 !adviceMethod.getParameterType(0).toString().equals(interfaceName)) {
+						arddebug("modifying around() method");
 						List aroundParameters=adviceMethod.getParameterTypes();
 						aroundParameters.add(0, getInterface.getType());
 						adviceMethod.setParameterTypes(aroundParameters);
