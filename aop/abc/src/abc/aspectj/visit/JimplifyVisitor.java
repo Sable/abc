@@ -23,7 +23,7 @@ public class JimplifyVisitor extends NodeVisitor {
 	    res.setAst(n);
 	}
 	if (n instanceof ClassDecl) {
-	    String cname = ((ClassDecl)n).name();
+	    String cname = ((ClassDecl)n).type().fullName();
 	    res.resolveFromJavaFile(Scene.v().getSootClass(cname), soot_res);
             Scene.v().getSootClass(cname).setApplicationClass();
 	    // System.out.println("Jimplified class: "+cname);

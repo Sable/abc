@@ -18,7 +18,7 @@ public class CollectJimplifyVisitor extends NodeVisitor {
 
     public Node override(Node n) {
 	if (n instanceof ClassDecl) {
-	    String cname = ((ClassDecl)n).name();
+	    String cname = ((ClassDecl)n).type().fullName();
 	    if (Scene.v().containsClass(cname)) {
 		throw new RuntimeException("Scene already contained class "+cname);
 	    }
