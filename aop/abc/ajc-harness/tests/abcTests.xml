@@ -6294,13 +6294,13 @@
     </ajc-test>
     
     <ajc-test dir="bugs" pr="29691"
-    		title="Static inner aspects cannot reference user defined pointcuts">
+    		title="Static inner aspects cannot reference user defined pointcuts 1">
         <compile files="PcdLookup.java" />
         <run class="PcdLookup"/>
     </ajc-test>
     
     <ajc-test dir="bugs" pr="29691"
-    		title="Static inner aspects cannot reference user defined pointcuts">
+    		title="Static inner aspects cannot reference user defined pointcuts 2">
         <compile files="SoftWithin.java" />
         <run class="SoftWithin"/>
     </ajc-test>
@@ -7888,7 +7888,7 @@
     </ajc-test>
     
     <ajc-test dir="bugs/binaryCompat" pr="50641"
-      title="binary compatibility of advice method names - expect no error">
+      title="binary compatibility of advice method names - expect no error 1">
         <compile files="Main.java,TraceV1.aj"/>
         <run class="Main"/>
         <compile files="TraceV2.aj"/>
@@ -7905,7 +7905,7 @@
     
      <ajc-test dir="bugs/binaryCompat" pr="50641"
       abccomment="crash in jasmin upon second compilation. Sent to Jennifer 14/07/04. ODM"
-      title="binary compatibility of advice method names - expect no error">
+      title="binary compatibility of advice method names - expect no error 2">
         <compile files="Main.java,TraceWithInnerV1.aj"/>
         <run class="Main"/>
         <compile files="TraceWithInnerV2.aj"/>
