@@ -128,5 +128,20 @@ public class PointcutCodeGen {
 	   throw new CodeGenException ("Unsupported kind of advice: " +
 	                                 advicespec); 
       }  // method weave_one
+
+
+    /** create the invoke to call the advice body */
+    public static InvokeStmt makeAdviceInvokeStmt(Local aspectref,
+	AdviceApplication adviceappl, Chain units)
+     { AdviceDecl advicedecl = adviceappl.advice;
+       SootClass aspect = advicedecl.getAspect().
+	                          getInstanceClass().getSootClass();
+       SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
+       InvokeStmt s =  
+	    Jimple.v().
+	      newInvokeStmt( Jimple.v().
+		  newVirtualInvokeExpr( aspectref, advicemethod ) );
+       return(s);
+     }
     
 }

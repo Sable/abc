@@ -33,10 +33,8 @@ public class BeforeWeaver {
         // the traps. 
         Chain units = b.getUnits().getNonPatchingChain();
 	AdviceDecl advicedecl = adviceappl.advice;
-	AdviceSpec advicespec = advicedecl.getAdviceSpec();
 	SootClass aspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
-	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
 
 	// <AspectType> aspectref;
         Local aspectref = localgen.generateLocal( aspect.getType() );
@@ -51,9 +49,8 @@ public class BeforeWeaver {
 	debug("Generated stmt1: " + stmt1);
 
 	// stmt2:  <aspectref>.<advicemethod>();
-        InvokeStmt stmt2 =
-          Jimple.v().newInvokeStmt( 
-	    Jimple.v().newVirtualInvokeExpr( aspectref, advicemethod ) );
+        InvokeStmt stmt2 = PointcutCodeGen.makeAdviceInvokeStmt
+	                                 (aspectref,adviceappl,units);
         debug("Generated stmt2: " + stmt2);
 
 	// weave in statements just after beginning of join point shadow
@@ -61,5 +58,6 @@ public class BeforeWeaver {
 	units.insertAfter(stmt2,beginshadow);
 	units.insertAfter(stmt1,beginshadow);
       } // method doWeave 
-    
+
+
 }

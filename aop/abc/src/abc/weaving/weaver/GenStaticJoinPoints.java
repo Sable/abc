@@ -23,7 +23,7 @@ public class GenStaticJoinPoints {
     public static boolean debug = true;
 
     /** only want to generate the factory for the first SJP of a class */
-    private static boolean factory_generated = false;
+    private  boolean factory_generated = false;
 
     private static void debug(String message)
       { if (debug) System.err.println("GSJP*** " + message);
@@ -34,6 +34,41 @@ public class GenStaticJoinPoints {
     public void genStaticJoinPoints(SootClass sc) {
       debug("--- BEGIN Generating Static Join Points for class " + 
 	  sc.getName());
+
+      // no factory for this class yet
+      factory_generated = false;
+
+      SootMethod clinit;  // where we have to insert the initalizer
+      Body b;             // its body
+      Chain units;        // its units 
+      LocalGenerator lg;  // its localgen
+      Stmt ip;            // the instruction from with to insert (before)
+
+      // --- get the units and insertion point in clinit()
+      if (sc.declaresMethod("void<clinit>()"))
+        { debug("Found the clinit in which to put the SJP");
+          clinit = sc.getMethod("void <clinit>()");
+          b = clinit.retrieveActiveBody();
+          units = b.getUnits();
+          lg = new LocalGenerator(b);
+	  ip = (Stmt) units.getLast();  // should be the return stmt 
+        }
+      else
+        /* FIXME throw new CodeGenException(
+           "SJP insertion assumes a clinit existed " +
+	   "in class " + sc.getName());
+         */
+        { debug("Shouldn't have to insert a clinit");
+          clinit = new SootMethod( "<clinit>", 
+              new ArrayList(), VoidType.v(), Modifier.STATIC );
+           sc.addMethod( clinit );
+           b = Jimple.v().newBody(clinit);
+           clinit.setActiveBody(b);
+           units = b.getUnits();
+           units.addLast( Jimple.v().newReturnVoidStmt() );
+           lg = new LocalGenerator(b);
+           ip = (Stmt) units.getLast();  // should be the return stmt 
+         }
 
       // for each method in the class 
       for( Iterator methodIt = sc.getMethods().iterator(); 
@@ -58,29 +93,21 @@ public class GenStaticJoinPoints {
          
          debug("   --- BEGIN generating static join points for method " + 
 	                method.getName());
-	 SootMethod clinit = null;
-	 Body b = null;
-	 Chain units = null; // FIXME: remove
-	 LocalGenerator lg = null;
-	 Stmt ip = null;
-	 // --- get the units and insertion point in clinit()
-          if (sc.declaresMethod("void<clinit>()"))
-	    { debug("Found the clinit in which to put the SJP");
-	      clinit = sc.getMethod("void <clinit>()");
-	      b = clinit.retrieveActiveBody();
-	      units = b.getUnits();
-	      lg = new LocalGenerator(b);
-	      ip = (Stmt) units.getLast();  // should be the return stmt 
-	    }
-	  else
-	    /* FIXME throw new CodeGenException(
-		"SJP insertion assumes a clinit existed " +
-		"in class " + sc.getName());
-             */
-	     debug("Shouldn't have to insert a clinit");
 
 	 // --- Deal with each of the four lists 
 	 if (adviceList.hasBodyAdvice())
+	    genSJPmethod(sc,units,ip,lg,
+		         method,adviceList.bodyAdvice);
+
+	 if (adviceList.hasStmtAdvice())
+	    genSJPmethod(sc,units,ip,lg,
+		         method,adviceList.bodyAdvice);
+
+         if (adviceList.hasInitializationAdvice())
+	    genSJPmethod(sc,units,ip,lg,
+		         method,adviceList.bodyAdvice);
+
+	 if (adviceList.hasPreinitializationAdvice())
 	    genSJPmethod(sc,units,ip,lg,
 		         method,adviceList.bodyAdvice);
 
@@ -107,6 +134,11 @@ public class GenStaticJoinPoints {
 	  if (advicedecl.hasJoinPointStaticPart() ||
 	      advicedecl.hasJoinPoint()) // need to create a SJP
 	    { debug("Need to create a SJP ");
+	      if (!factory_generated) // must generate the code for factory
+	        { debug("Generating code for the factory");
+		  factory_generated = true;
+		}
+	      // now generate code for this SJP
 	      debug("The type of constructor is " + 
 		              adviceappl.sjpInfo.signatureType);
 	      debug("The signature is " + adviceappl.sjpInfo.signature);

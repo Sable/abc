@@ -134,17 +134,20 @@ public class ShadowPointsSetter {
 	                  "Unknown kind of advice for inside method body: " + 
 		           stmtappl);
 
+	   // FIXME: can remove after Ganesh gets line no working
 	   debug("... " + keystmt + " [" + stmtappl + "]");
+	   debug(" TAGS ... " + keystmt.getTags());
+	   debug(" Line number " + keystmt.getTag("SourceLnPosTag"));
 	   // If stmt is in Hashtable,  use SP entry assciated with it
 	   // else, introduce new nops before and after stmt and 
 	   // create new SP.
 	   if (SPhashtable.containsKey(keystmt))
-	     { debug("Already in body ");
+	     { debug("ShadowPoints already created, retrieve it ... ");
 	       stmtappl.shadowpoints = 
 	        (ShadowPoints) SPhashtable.get(keystmt);
 	     }
 	   else
-	     { debug("Creating a new ShadowPoints");
+	     { debug("Creating a new ShadowPoints .... ");
 	       ShadowPoints sp =
 	         insertNopsAroundStmt(stmtappl,method,keystmt);
 	       // put in the AdviceApplication

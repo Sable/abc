@@ -73,8 +73,7 @@ public class AfterThrowingWeaver {
 				                             new ArrayList())));
         units.insertAfter( assignStmt, idStmt);
         InvokeStmt vInvokeStmt =  
-	  Jimple.v().
-	    newInvokeStmt(Jimple.v().newVirtualInvokeExpr(l, advicemethod));
+                PointcutCodeGen.makeAdviceInvokeStmt (l,adviceappl,units);
         units.insertAfter( vInvokeStmt, assignStmt);
 
         ThrowStmt throwStmt = Jimple.v().newThrowStmt(catchLocal);

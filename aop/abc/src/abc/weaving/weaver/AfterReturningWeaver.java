@@ -49,9 +49,9 @@ public class AfterReturningWeaver {
 	debug("Generated stmt1: " + stmt1);
 
 	// stmt2:  <aspectref>.<advicemethod>();
-        InvokeStmt stmt2 =
-          Jimple.v().newInvokeStmt( 
-	    Jimple.v().newVirtualInvokeExpr( aspectref, advicemethod ) );
+        InvokeStmt stmt2 = PointcutCodeGen.makeAdviceInvokeStmt
+	                                 (aspectref,adviceappl,units);
+
         debug("Generated stmt2: " + stmt2);
 
 	// weave in statements just before end of join point shadow
