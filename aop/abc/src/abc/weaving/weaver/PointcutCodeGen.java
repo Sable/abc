@@ -9,6 +9,46 @@ import soot.javaToJimple.LocalGenerator;
 
 public class PointcutCodeGen {
 
+    public class StmtTracker {
+        public StmtTracker(Stmt b, Stmt e){
+            begin = b;
+            end = e;
+        }
+       
+        public boolean isNullBegin(){
+            if (begin == null) return true;
+            return false;
+        }
+        
+        public boolean isNullEnd(){
+            if (end == null) return true;
+            return false;
+        }
+        
+        
+        private final Stmt begin;
+        private final Stmt end;
+
+        public Stmt begin(){
+            return begin;
+        }
+
+        public Stmt end(){
+            return end;
+        }
+        
+        public String toString(){
+            StringBuffer sb = new StringBuffer();
+            sb.append("Tracker: ");
+            sb.append("Begin Stmt: ");
+            sb.append(begin);
+            sb.append(" End Stmt: ");
+            sb.append(end);
+
+            return sb.toString();
+        }
+    }
+    
     public void weaveInAspects( SootClass cl) {
         for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
             final SootMethod method = (SootMethod) methodIt.next();
@@ -24,10 +64,8 @@ public class PointcutCodeGen {
             Stmt last = null;
         
             // tracks start and end stmts
-            Stmt [] beginEndStmt = new Stmt[]{null, null};
-            final int BEGIN = 0;
-            final int END = 0;
-            
+            StmtTracker stmtTracker = new StmtTracker(null, null);
+          
             
 	        MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
             if( adviceList == null ) adviceList = new MethodAdviceList();
@@ -53,7 +91,10 @@ public class PointcutCodeGen {
 
                 if( aa instanceof StmtAdviceApplication ) {
                     StmtAdviceApplication saa = (StmtAdviceApplication) aa;
-                    beginEndStmt = handle(aspect, method, localgen, beginEndStmt[BEGIN] == null ? saa.stmt : beginEndStmt[BEGIN], beginEndStmt[END] == null ? saa.stmt : beginEndStmt[END], adviceImpl, adviceSpec);
+                    System.out.println("just before handle: "+stmtTracker);
+                    stmtTracker = handle(aspect, method, localgen, stmtTracker.isNullBegin() ? saa.stmt : stmtTracker.begin(), stmtTracker.isNullEnd() ? saa.stmt : stmtTracker.end(), adviceImpl, adviceSpec);
+                    System.out.println("just after handle: "+stmtTracker);
+                    
                 } else if( aa instanceof ExecutionAdviceApplication ) {
                     if( first == null ) {
 
@@ -124,13 +165,13 @@ public class PointcutCodeGen {
 
                         last = nop;
                     }
-                    beginEndStmt = handle(aspect, method, localgen, beginEndStmt[BEGIN] == null ? first : beginEndStmt[BEGIN], beginEndStmt[END] == null ? last : beginEndStmt[END], adviceImpl, adviceSpec);
+                    stmtTracker = handle(aspect, method, localgen, stmtTracker.isNullBegin() ? first : stmtTracker.begin(), stmtTracker.isNullEnd() ? last : stmtTracker.end(), adviceImpl, adviceSpec);
                 } else throw new RuntimeException("Unrecognized advice application");
 	    }
 	}
     }
 
-    private Stmt [] handle(
+    private StmtTracker handle(
             SootClass aspect,
             SootMethod method,
             LocalGenerator localgen,
@@ -138,7 +179,6 @@ public class PointcutCodeGen {
             Stmt end,
             SootMethod adviceImpl,
             AdviceSpec adviceSpec){
-        System.out.println("handle begin: "+begin+" handle end: "+end);
         if( adviceSpec instanceof BeforeAdvice ) {
             return handleBefore(aspect, method, localgen, begin, end, adviceImpl);
         } else if( adviceSpec instanceof AfterReturningAdvice ) {
@@ -146,8 +186,13 @@ public class PointcutCodeGen {
         } else if( adviceSpec instanceof AfterThrowingAdvice ) {
             return handleAfterThrowing(aspect, method, localgen, begin, end, adviceImpl);
         } else if( adviceSpec instanceof AfterAdvice ) {
-            handleAfterReturning(aspect, method, localgen, begin, end, adviceImpl);
-            return handleAfterThrowing(aspect, method, localgen, begin, end, adviceImpl);
+            StmtTracker afterRet = handleAfterReturning(aspect, method, localgen, begin, end, adviceImpl);
+            StmtTracker afterThrow = handleAfterThrowing(aspect, method, localgen, begin, end, adviceImpl);
+            System.out.println("afterRet: "+afterRet);
+            StmtTracker newRes = new StmtTracker(afterThrow.begin(), afterRet.end());
+            System.out.println("newRes: "+newRes);
+            
+            return newRes;
         } else if( adviceSpec instanceof AroundAdvice ) {
             throw new RuntimeException("NYI");
         } else {
@@ -155,19 +200,25 @@ public class PointcutCodeGen {
         }
     }
     
-    private Stmt [] handleBefore(SootClass aspect, SootMethod meth, LocalGenerator lg, Stmt begin, Stmt end, SootMethod adviceImpl){
+    private StmtTracker handleBefore(SootClass aspect, SootMethod meth, LocalGenerator lg, Stmt begin, Stmt end, SootMethod adviceImpl){
+        System.out.println("Handling before");
+        System.out.println("begin: "+begin+" end: "+end);
         Body b = meth.getActiveBody();
-        Chain units = b.getUnits();
+        // this non patching chain is needed so that Soot doesn't "Fix" 
+        // the traps (but it doesn't work if the pointcut is a try/catch) 
+        Chain units = b.getUnits().getNonPatchingChain();
         Local l = lg.generateLocal( aspect.getType() );
         AssignStmt newbegin =  Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList())));
         units.insertBefore( newbegin, begin);
         units.insertBefore( Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, adviceImpl ) ), begin );
-        return new Stmt [] {newbegin, end};
+        System.out.println("new begin: "+newbegin+" new end: "+end);
+        return new StmtTracker(newbegin, end);
     }
     
-    private Stmt [] handleAfterReturning(SootClass aspect, SootMethod meth, LocalGenerator lg, Stmt begin, Stmt end, SootMethod adviceImpl){
+    private StmtTracker handleAfterReturning(SootClass aspect, SootMethod meth, LocalGenerator lg, Stmt begin, Stmt end, SootMethod adviceImpl){
       
         System.out.println("Handling after returning");
+        System.out.println("begin: "+begin+" end: "+end);
         Body b = meth.getActiveBody();
         Chain units = b.getUnits();
         // no params
@@ -177,12 +228,14 @@ public class PointcutCodeGen {
         InvokeStmt invokeStmt = Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(l, adviceImpl));
         units.insertAfter( invokeStmt, assignStmt);
          
-        return new Stmt [] {begin, invokeStmt};
+        System.out.println("new begin: "+begin+" new end: "+invokeStmt);
+        return new StmtTracker(begin, invokeStmt);
     }
     
-    private Stmt [] handleAfterThrowing(SootClass aspect, SootMethod meth, LocalGenerator lg, Stmt begin, Stmt end, SootMethod adviceImpl){
+    private StmtTracker handleAfterThrowing(SootClass aspect, SootMethod meth, LocalGenerator lg, Stmt begin, Stmt end, SootMethod adviceImpl){
       
         System.out.println("Handling after throwing");
+        System.out.println("begin: "+begin+" end: "+end);
         Body b = meth.getActiveBody();
         Chain units = b.getUnits();
         
@@ -216,7 +269,8 @@ public class PointcutCodeGen {
 
         b.getTraps().add(Jimple.v().newTrap(Scene.v().getSootClass("java.lang.Throwable"), begin, nop1, idStmt));
 
-        return new Stmt[] {begin, throwStmt};
+        System.out.println("new begin: "+begin+" new end: "+throwStmt);
+        return new StmtTracker(begin, throwStmt);
     }
 
     
