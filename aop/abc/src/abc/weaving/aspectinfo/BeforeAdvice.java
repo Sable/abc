@@ -31,7 +31,6 @@ import soot.util.Chain;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
-import abc.soot.util.AfterBeforeInliner;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for before advice.

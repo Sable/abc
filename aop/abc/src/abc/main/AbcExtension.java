@@ -43,7 +43,6 @@ import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.aspectj.parse.sym;
-import abc.soot.util.AroundInliner;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
@@ -64,6 +63,7 @@ import abc.weaving.matching.SetFieldShadowType;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
+import abc.weaving.weaver.AroundInliner;
 import abc.weaving.weaver.CflowIntraAggregate;
 import abc.weaving.weaver.CflowIntraproceduralAnalysis;
 

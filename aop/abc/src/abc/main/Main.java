@@ -79,6 +79,7 @@ import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
+import abc.weaving.weaver.InterprocConstantPropagator;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.UnusedMethodsRemover;
 import abc.weaving.weaver.Weaver;
@@ -145,8 +146,8 @@ public class Main {
         abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
         abc.weaving.weaver.CflowIntraAggregate.reset();
         abc.soot.util.SwitchFolder.reset();
-        abc.soot.util.AroundInliner.reset();
-        abc.soot.util.AfterBeforeInliner.reset();
+        abc.weaving.weaver.AroundInliner.reset();
+        abc.weaving.weaver.AfterBeforeInliner.reset();
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();
         abc.weaving.weaver.WeavingState.reset();
@@ -492,6 +493,7 @@ public class Main {
                 Weaver.doInlining();
                 
                 UnusedMethodsRemover.removeUnusedMethods();
+                InterprocConstantPropagator.inlineConstantArguments();
                 
                 abortIfErrors();
 

@@ -31,9 +31,9 @@ import soot.util.Chain;
 import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.weaver.AfterBeforeInliner;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
-import abc.soot.util.AfterBeforeInliner;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after returning advice without return variable binding. 

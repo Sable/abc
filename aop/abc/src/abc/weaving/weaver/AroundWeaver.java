@@ -198,7 +198,7 @@ public class AroundWeaver {
 				locals.remove(it2.next());
 		}
 
-		private static List getParameterLocals(Body body) {
+		public static List getParameterLocals(Body body) {
 			List result = new LinkedList();
 
 			for (int i = 0; i < body.getMethod().getParameterCount(); i++) {
@@ -327,7 +327,7 @@ public class AroundWeaver {
 		/**
 		 * Creates a new InvokeExpr based on an existing one but with new arguments.
 		 */
-		private static InvokeExpr createNewInvokeExpr(InvokeExpr old, List newArgs, List newTypes) {
+		public static InvokeExpr createNewInvokeExpr(InvokeExpr old, List newArgs, List newTypes) {
 			if (newArgs.size()!=newTypes.size())
 				//throw new InternalAroundError();
 			{ // sanity check:

@@ -185,7 +185,14 @@ public class CflowIntraAggregate extends BodyTransformer {
 		if (u instanceof InvokeStmt) {
 			InvokeExpr ie = ((InvokeStmt)u).getInvokeExpr();
 			if (ie instanceof StaticInvokeExpr) {
-				SootMethod m = ie.getMethod();
+				SootMethod m;
+				try {
+				 m = ie.getMethod();
+				} catch(RuntimeException e) {
+					System.out.println("*** Method: " + b.getMethod());
+					System.out.println("*** Stmt: " + u);
+					throw e;
+				}
 				if (m.getName().equals("abc$preClinit"))
 					return true;
 			}

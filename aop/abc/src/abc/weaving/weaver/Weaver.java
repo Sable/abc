@@ -27,8 +27,6 @@ import soot.jimple.toolkits.scalar.*;
 import soot.toolkits.scalar.*;
 import java.util.*;
 
-import abc.soot.util.AfterBeforeInliner;
-import abc.soot.util.AroundInliner;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.NeverMatch;

@@ -1,9 +1,22 @@
-/*
- * Created on 08-Nov-2004
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Sascha Kuzins
  *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 package abc.weaving.weaver;
 
 import java.util.ArrayList;
@@ -19,16 +32,17 @@ import soot.SootMethod;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.util.Chain;
+import sun.misc.Perf;
 
 /**
  * @author Sascha Kuzins
  */
 public class UnusedMethodsRemover {
-
+	
 	static boolean considerInstanceMethod(String methodName) {
 		return 
 			AroundWeaver.Util.isAroundAdviceMethodName(methodName) ||
-			abc.soot.util.AfterBeforeInliner.isAdviceMethodName(methodName);
+			abc.weaving.weaver.AfterBeforeInliner.isAdviceMethodName(methodName);
 	}
 	static boolean considerStaticMethod(String methodName) {
 		return 
@@ -45,11 +59,16 @@ public class UnusedMethodsRemover {
 	}
 	
 	public static void removeUnusedMethods() {
-//		 Retrieve all bodies
-		Set methods=new HashSet();
+		while (removeUnusedMethodsPass()>0) 
+			;		
+	}
+	// returns number of removed methods
+	private static int removeUnusedMethodsPass() {
+		
+		int removedMethods=0;
+		Set calledMethods=new HashSet();
 		
         for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
-            //final AbcClass cl = (AbcClass) clIt.next();
             soot.SootClass cl=(soot.SootClass)clIt.next();
 			
             for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
@@ -58,8 +77,10 @@ public class UnusedMethodsRemover {
                 if (method.isAbstract())
                 	continue;
                 
-                if (!method.hasActiveBody())
+                if (!method.hasActiveBody()) {
+                	debug("method does not have active body!");
                 	continue;
+                }
                 
                 Body body=method.getActiveBody();
                 
@@ -71,7 +92,7 @@ public class UnusedMethodsRemover {
                 		InvokeExpr expr=stmt.getInvokeExpr();
                 		String name=expr.getMethodRef().name();
                 		if (considerMethod(name)) {// considerMethod(expr.getMethodRef().name())) {
-                			methods.add(expr.getMethodRef().toString());
+                			calledMethods.add(expr.getMethodRef().toString());
                 		}
                 	}
                 }
@@ -89,12 +110,15 @@ public class UnusedMethodsRemover {
                 String name=method.getName();
                 if ( (!method.isStatic() && considerInstanceMethod(name)) || 
                 	 (method.isStatic() && considerMethod(name) )) {
-                	if (!methods.contains(method.makeRef().toString())) {
+                	//debug("Looking at method method: " + method.toString());
+                	if (!calledMethods.contains(method.makeRef().toString())) {
                 		debug("Removing unused method: " + method.toString());
                 		cl.removeMethod(method);
+                		removedMethods++;
                 	}
                 }                
             }
-        }	
+        }
+        return removedMethods;
 	}
 }
