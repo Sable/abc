@@ -33,19 +33,21 @@ public class ErrorInfoFactory {
         if(container.getDeclaringClass().hasTag("SourceFileTag")) {
             SourceFileTag sfTag=(SourceFileTag)
                 container.getDeclaringClass().getTag("SourceFileTag");
+            String filename=sfTag.getAbsolutePath();
+            if(filename==null) filename=sfTag.getSourceFile();
             if(host.hasTag("SourceLnPosTag")) {
                 SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
-                pos=new Position(sfTag.getSourceFile(),
+                pos=new Position(filename,
                                  slpTag.startLn(),slpTag.startPos(),
                                  slpTag.endLn(),slpTag.endPos());
             } else if(host.hasTag("LineNumberTag")) {
                 LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
-                pos=new Position(sfTag.getSourceFile(),
+                pos=new Position(filename,
                                  lnTag.getLineNumber());
             } else {
                 if(abc.main.Debug.v().warnUntaggedSourceInfo)
                     System.err.println("Getting position for a untagged source line "+host);
-                pos=new Position(sfTag.getSourceFile());
+                pos=new Position(filename);
             }
         } else {
             if(abc.main.Debug.v().warnUntaggedSourceInfo)
@@ -60,19 +62,21 @@ public class ErrorInfoFactory {
         if(container.getDeclaringClass().hasTag("SourceFileTag")) {
             SourceFileTag sfTag=(SourceFileTag)
                 container.getDeclaringClass().getTag("SourceFileTag");
+            String filename=sfTag.getAbsolutePath();
+            if(filename==null) filename=sfTag.getSourceFile();
             if(host.hasTag("SourceLnPosTag")) {
                 SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
-                pos=new Position(sfTag.getSourceFile(),
+                pos=new Position(filename,
                                  slpTag.startLn(),slpTag.startPos(),
                                  slpTag.endLn(),slpTag.endPos());
             } else if(host.hasTag("LineNumberTag")) {
                 LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
-                pos=new Position(sfTag.getSourceFile(),
+                pos=new Position(filename,
                                  lnTag.getLineNumber());
             } else {
                 if(abc.main.Debug.v().warnUntaggedSourceInfo)
                     System.err.println("Getting position for a untagged source line "+host);
-                pos=new Position(sfTag.getSourceFile());
+                pos=new Position(filename);
                 message+=" in method "+container;
             }
         } else {
