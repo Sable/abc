@@ -1994,6 +1994,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="non-static advice on inner class defined inside of method body" num="358" keywords="from-resolved_10x" dir="new" abccomment="fails on use of thisJoinPoint when advice applies inside inner class;                  generates verify error. error goes away when use of thisJoinPoint is                  commented out. Emailed Ganesh. ODM 09/07/04">
+        <compile files="MethodInner.java"></compile>
+        <run class="MethodInner"></run>
+    </ajc-test>
 <ajc-test title="simple single-threaded eachcflow test (includes aspectOf)" num="359" keywords="from-resolved_10x" dir="new">
         <compile files="Client.java"></compile>
         <run class="Client"></run>

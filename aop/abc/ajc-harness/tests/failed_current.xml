@@ -37,10 +37,6 @@
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
     </ajc-test>
-<ajc-test title="non-static advice on inner class defined inside of method body" num="358" keywords="from-resolved_10x" dir="new" abccomment="fails on use of thisJoinPoint when advice applies inside inner class;                  generates verify error. error goes away when use of thisJoinPoint is                  commented out. Emailed Ganesh. ODM 09/07/04">
-        <compile files="MethodInner.java"></compile>
-        <run class="MethodInner"></run>
-    </ajc-test>
 <ajc-test title="join points exist in the execution of field initializers" num="418" keywords="from-resolved_10x" dir="new">
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
