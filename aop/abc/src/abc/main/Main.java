@@ -68,14 +68,17 @@ public class Main {
 
     public static void abcPrintVersion() 
       { G.v().out.println("Abc version " + abcVersionString);
-        G.v().out.println("Abc other stuff goes here!"); // TODO
-        // soot.Main.v().printVersion();
-        G.v().out.println("Soot version " + soot.Main.v().versionString);
-        G.v().out.println("Polyglot compiler toolkit version " + 
+        G.v().out.println("... using Soot toolkit version " + 
+                                  soot.Main.v().versionString);
+        G.v().out.println("... using Polyglot compiler toolkit version " + 
                                     new polyglot.ext.jl.Version());
-        // Polyglot version ... put that here
+        G.v().out.println("Abc copyright and license info goes here."); // TODO
       }
     
+    public static void abcPrintHelp()
+      { G.v().out.println("abc options here");
+      }
+
     public static void main(String[] args) {
         try {
             Main main = new Main(args);
@@ -97,6 +100,8 @@ public class Main {
     public void parseArgs(String[] args) throws IllegalArgumentException {
     String outputdir=".";
     boolean optflag=false;
+    if (args.length == 0)
+      abcPrintVersion();
 
     for (int i = 0 ; i < args.length ; i++) 
       { /* --------FULLY IMPLEMENTED AJC-COMPLIANT OPTIONS ----------*/
@@ -104,11 +109,11 @@ public class Main {
         //     and correspond to ajc options
             
         // TODO: -help 
-        // TODO: -version
-        // TODO: -inpath PATH
-        // TODO: -argfile File
-        // TODO: -outjar output.jar
-        if (args[i].equals("-version"))
+        if (args[i].equals("-help") || args[i].equals("--help") ||
+            args[i].equals("-h"))
+          abcPrintHelp();
+        else if (args[i].equals("-version") || args[i].equals("--version") ||
+            args[i].equals("-v")) 
           { abcPrintVersion();
           }
         else if (args[i].equals("-injars")) 
@@ -117,6 +122,9 @@ public class Main {
               }
              i--;
           } // injars 
+        // TODO: -inpath PATH
+        // TODO: -argfile File
+        // TODO: -outjar output.jar
         else if (args[i].equals("-classpath") || args[i].equals("-cp")) 
           { if (i+1 < args.length) 
               { classpath = args[i+1];
@@ -210,6 +218,19 @@ public class Main {
            
          /* -------- ABC-SPECIFIC OPTIONS, NO AJC EQUIVALENTS ----------*/
          // abc-specific options which have no ajc equivalents
+         
+         // TODO: should actually list only soot options useful for abc
+         else if (args[i].equals("-help:soot"))  // abc-specific
+           G.v().out.println(soot.options.Options.v().getUsage());
+
+        // TODO; should actually list only polyglot options useful for abc
+        else if (args[i].equals("-help:polyglot")) // abc-specific
+          { abc.aspectj.ExtensionInfo ext = 
+                new abc.aspectj.ExtensionInfo(null, null);
+            Options options = ext.getOptions();
+            options.usage(G.v().out);
+          }
+
          else if (args[i].equals("-O"))  // -O flag in abc options
            optflag=true;
 
