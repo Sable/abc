@@ -195,10 +195,6 @@
         <compile files="ExceptionNames.java"></compile>
         <run class="ExceptionNames"></run>
     </ajc-test>
-<ajc-test title="checks if the class field can be used on all of the primitive types" pr="109" keywords="from-java,purejava" dir="new" abccomment="works for ajc, jlc                      doesn't work for j2j or abc                     file ClassFieldOnPrimitiveTypeLJH.java sent to Jennifer                        June 30/04 LJH                     FIXED July 1/04 LJH">
-        <compile files="ClassFieldOnPrimitiveType.java"></compile>
-        <run class="ClassFieldOnPrimitiveType"></run>
-    </ajc-test>
 <ajc-test title="advice on a static method" pr="151" keywords="from-java" dir="new/volatileKeyword">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -302,6 +298,10 @@
 <ajc-test title="Make sure anonymous classes can have non-nullary constructors" keywords="from-java,purejava" dir="pureJava">
         <compile files="NonNullaryAnonymous.java"></compile>
         <run class="NonNullaryAnonymous"></run>
+    </ajc-test>
+<ajc-test title="Full names are dropped from inner interfaces" pr="417" keywords="from-java,purejava" dir="new">
+        <compile files="PR417a.java"></compile>
+        <run class="PR417a"></run>
     </ajc-test>
 <ajc-test title="Making sure full names stay on static inner classes" pr="417" keywords="from-java,purejava" dir="new">
         <compile files="PR417b.java"></compile>
@@ -2823,9 +2823,26 @@
         <compile options="-source,1.4" files="Asserts.java"></compile>
         <run vm="1.4" class="Asserts"></run>
     </ajc-test>
+<ajc-test title="assert coverage tests [requires 1.4]" keywords="from-14tests,purejava" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
+        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
+        <compile options="-source,1.4" files="AssertsCv.java"></compile>
+        <run vm="1.4" class="AssertsCv"></run>
+    </ajc-test>
+<ajc-test title="assert tests in introduction [requires 1.4]" keywords="from-14tests,fail-unimplemented" dir="new">
+        <compile options="-source,1.4" files="AssertInIntro.java"></compile>
+        <run vm="1.4" class="AssertInIntro"></run>
+    </ajc-test>
 <ajc-test title="various forms of package name pattern matching work" keywords="from-broken14usejavac" dir="base/test131">
         <compile files="Driver.java,p1/C1.java,p1/p2/C2.java"></compile>
         <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="assert statement in advice coverage [requires 1.4]" pr="657" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
+        <run vm="1.4" class="AssertInAdvice"></run>
+    </ajc-test>
+<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
+        <run vm="1.4" class="AssertInAdviceBug"></run>
     </ajc-test>
 <ajc-test title="CE expected when declaring fields on arrays" pr="829" keywords="tofix" dir="new">
         <compile files="ArrayFieldDeclarationCE.java">
@@ -2921,10 +2938,6 @@
 <ajc-test title="percflow code hangs compiler" pr="28702" dir="bugs">
         <compile files="CloseConnectionsCflow.java">
         </compile>
-    </ajc-test>
-<ajc-test title="assert and pertarget crashes compiler" pr="28703" dir="bugs">
-        <compile options="-source,1.4" files="EnsureOverriding.java"></compile>
-        <run vm="1.4" class="EnsureOverriding"></run>
     </ajc-test>
 <ajc-test title="Verification error tracing constructor that takes arguments" pr="28852" dir="bugs">
         <compile files="ConstructorArgTracing.java"></compile>
@@ -3160,10 +3173,6 @@
 <ajc-test title="Default method impl for interface causes internal exception." pr="40589" dir="bugs">
         <compile files="CloneMethod.java"></compile>
         <run class="CloneMethod"></run>
-    </ajc-test>
-<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
-        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
-        <run vm="1.4" class="ClassLiteralField"></run>
     </ajc-test>
 <ajc-test title="compile error expected for abstract pointcut outside abstract aspect" dir="errors" abccomment="better errors from abc. 19/07/04 ODM">
 		<compile files="AbstractPointcutCE.java">

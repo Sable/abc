@@ -3,9 +3,9 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
-<ajc-test title="Full names are dropped from inner interfaces" pr="417" keywords="from-java,purejava" dir="new">
-        <compile files="PR417a.java"></compile>
-        <run class="PR417a"></run>
+<ajc-test title="checks if the class field can be used on all of the primitive types" pr="109" keywords="from-java,purejava" dir="new" abccomment="works for ajc, jlc                      doesn't work for j2j or abc                     file ClassFieldOnPrimitiveTypeLJH.java sent to Jennifer                        June 30/04 LJH                     FIXED July 1/04 LJH">
+        <compile files="ClassFieldOnPrimitiveType.java"></compile>
+        <run class="ClassFieldOnPrimitiveType"></run>
     </ajc-test>
 <ajc-test title="Not binding constructor when using more than one compilation" pr="408" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
         <compile files="OuterAbstract_PR408.java"></compile>
@@ -575,19 +575,10 @@
             <message line="11" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="assert coverage tests [requires 1.4]" keywords="from-14tests,purejava" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile options="-source,1.4" files="AssertsCv.java"></compile>
-        <run vm="1.4" class="AssertsCv"></run>
-    </ajc-test>
 <ajc-test title="assert coverage tests in one package [requires 1.4]" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
         <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
         <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
         <run vm="1.4" class="AssertInOnePackage"></run>
-    </ajc-test>
-<ajc-test title="assert tests in introduction [requires 1.4]" keywords="from-14tests,fail-unimplemented" dir="new">
-        <compile options="-source,1.4" files="AssertInIntro.java"></compile>
-        <run vm="1.4" class="AssertInIntro"></run>
     </ajc-test>
 <ajc-test title="import of a class in the default package" pr="134" keywords="from-broken14usejavac,purejava" dir="new" abccomment="javac expects an import to have a packagename followed                   by a dot.  Polyglot has been changed to also do this and                   should also give an error.  We may temporily 'lose' this                   case until our Polygot is updated (needs a Polyglot                    more recent than July 8/04).   Ajc gives a 'cannot resolve'                   error on line 2, even though their original test case                   did not indicate an error.  July 9/04 LJH">
         <compile files="ImportFromUnnamed.java,DeclaredExcs.java">
@@ -630,14 +621,6 @@
 <ajc-test title="Referencing interfaces with import statements stars 3" pr="386" keywords="purejava,from-broken14usejavac" dir="pureJava">
         <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"></compile>
         <run class="ImportingInnerInterfacesStars3_PR386"></run>
-    </ajc-test>
-<ajc-test title="assert statement in advice coverage [requires 1.4]" pr="657" keywords="from-14tests,fail-in-eclipse" dir="new">
-        <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
-        <run vm="1.4" class="AssertInAdvice"></run>
-    </ajc-test>
-<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" keywords="from-14tests,fail-in-eclipse" dir="new">
-        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
-        <run vm="1.4" class="AssertInAdviceBug"></run>
     </ajc-test>
 <ajc-test title="declaring a private method on an inner interface" pr="823" keywords="tofix" dir="new">
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
@@ -710,6 +693,10 @@
         <compile files="CflowBinding.java">
           <message line="13" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="assert and pertarget crashes compiler" pr="28703" dir="bugs">
+        <compile options="-source,1.4" files="EnsureOverriding.java"></compile>
+        <run vm="1.4" class="EnsureOverriding"></run>
     </ajc-test>
 <ajc-test title="inter-type fields with array types" pr="29113" dir="bugs">
         <compile files="InterFieldArrays.java"></compile>
@@ -999,6 +986,10 @@
             <message line="29" kind="warning"></message>        
             <message line="30" kind="warning"></message>            
         </compile>
+    </ajc-test>
+<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
+        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
+        <run vm="1.4" class="ClassLiteralField"></run>
     </ajc-test>
 <ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only" abccomment="only type error, but ok. ODM 19/07/04">
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
