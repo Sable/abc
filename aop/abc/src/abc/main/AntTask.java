@@ -81,6 +81,13 @@ public class AntTask extends MatchingTask {
     public void setDebug(boolean arg) {
         if(arg) addArg("-g");
     }
+    public void setArgfiles(Path arg) {
+        argfiles = appendToPath(argfiles, arg);
+    }
+    public Path createArgfiles() {
+        return argfiles.createPath();
+    }
+
 
     private ArrayList args = new ArrayList();
     private void addArg( String s ) { args.add(s); }
@@ -88,6 +95,7 @@ public class AntTask extends MatchingTask {
     private Path sourceroots = new Path(project);
     private Path injars = new Path(project);
     private Path classpath = new Path(project);
+    private Path argfiles = new Path(project);
     private Path appendToPath( Path old, Path newPath ) {
         if( old == null ) return newPath;
         old.append(newPath);
@@ -98,6 +106,7 @@ public class AntTask extends MatchingTask {
             addPath("-sourceroots", sourceroots);
             addPath("-injars", injars);
             addPath("-classpath", classpath);
+            addArgfiles();
             if(DEBUG) System.out.println(args);
             Main main = new Main((String[]) args.toArray(new String[0]));
             main.run();
@@ -119,5 +128,11 @@ public class AntTask extends MatchingTask {
         if( path.size() == 0 ) return;
         addArg(option);
         addArg(path.toString());
+    }
+    public void addArgfiles() {
+        String[] af = argfiles.list();
+        for(int i = 0; i < af.length; i++) {
+            addArg("@"+project.resolveFile(af[i]).getAbsolutePath());
+        }
     }
 }
