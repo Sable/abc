@@ -5,11 +5,16 @@ import java.util.List;
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.util.SilentErrorQueue;
+import CompilerAbortedException;
 
 public class SilentMain extends abc.main.Main {
 	private SilentErrorQueue errorQueue;
 	public SilentMain(String[] args) throws IllegalArgumentException {
+	    try {
 		super(args);
+	    } catch (CompilerAbortedException e) {
+		System.exit(0);
+	    }
 	}
 	
 	protected Compiler createCompiler(ExtensionInfo ext) {
