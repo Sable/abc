@@ -503,7 +503,7 @@ ext=""
   <target name="compile-aspectj"
     description="compile an extension">
     <javac srcdir="${arcsrc}" destdir="${classes}" debug="on"
-      includes="arc/aspectj/**"
+      includes="arc/aspectj/**,arc/main/**,arc/weaving/**"
       excludes="**/qq/**,**/test/**,**/tests/**,**/runtime/**,**/doc/**">
       <classpath refid="standard.classpath"/>
     </javac>
