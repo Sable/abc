@@ -1,5 +1,11 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="nested finally blocks have interesting frame location problems" num="178" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">
+ <ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
+        <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
+            <ajcmessage line="3" kind="error"></ajcmessage>
+            <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="nested finally blocks have interesting frame location problems" num="178" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
@@ -20,12 +26,6 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH                   Still not fixed as of August 26/04,  Nate says it will                   take a while for it.">
-     <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
-        <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
-            <message line="5" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
@@ -43,6 +43,13 @@
 <ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 772, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
+    </ajc-test>
+<ajc-test title="packages in wrong place" num="979" dir="abctests/bugs/pack1">
+      <compile files="A/B.java"></compile>
+    </ajc-test>
+<ajc-test title="binding of variables inside || pointcuts" num="980" dir="abctests/bugs">
+      <compile files="BindProblem.java"></compile>
+      <run class="BindProblem"></run>
     </ajc-test>
  
 </suite>

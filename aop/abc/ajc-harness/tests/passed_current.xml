@@ -759,12 +759,6 @@
         <compile files="p1/Main2.java,p1/p2/Foo.java"></compile>
         <run class="p1.Main2"></run>
     </ajc-test>
-<ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
-        <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
-            <ajcmessage line="3" kind="error"></ajcmessage>
-            <message line="8" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="flow analysis where final variable set in another constructor" num="166" keywords="from-java,purejava" dir="pureJava">
         <compile files="ConstructorFlow.java"></compile>
         <run class="ConstructorFlow"></run>
@@ -3232,6 +3226,12 @@
             <message line="4" kind="warning"></message>
         </compile>
         <run class="DeclareWarningMain"></run>
+    </ajc-test>
+<ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH                   Still not fixed as of August 26/04,  Nate says it will                   take a while for it.">
+     <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
+        <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
+            <message line="5" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="initializer can throw so long as all constructors declare so" num="635" keywords="from-resolved_105,purejava" dir="new">
         <compile files="InitializerWithThrow.java"></compile>
