@@ -9334,4 +9334,9 @@
          <compile files="Foo.java"/>
          <run class="Foo"/>
     </ajc-test>
+    <ajc-test num="1005" dir="abctests/around/alternative" 
+         title="around with alternative binding, changed proceed">
+         <compile files="Foo.java"/>
+         <run class="Foo"/>
+    </ajc-test>
 </suite>
