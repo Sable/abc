@@ -67,6 +67,12 @@
         <run class="InnerAccess"/>
     </ajc-test>
 <ajc-test dir="pureJava"
+      title="inner classes can be built using protected constructors in super"
+      keywords="from-java">
+        <compile files="VariousConstructors.java"/>
+        <run class="VariousConstructors"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
       title="Checking character values with all the unicode chars."
       keywords="from-java">
         <compile files="CharsUnicode.java"/>
@@ -96,6 +102,12 @@
       keywords="from-java">
         <compile files="FinallyAndReturns.java"/>
         <run class="FinallyAndReturns"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="overriding methods from object in interfaces and multiple-inheritance"
+      keywords="from-java">
+        <compile files="InterfaceAndObject.java"/>
+        <run class="InterfaceAndObject"/>
     </ajc-test>
 <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
@@ -136,6 +148,12 @@
       keywords="from-java">
         <compile files="OneArmedPrimitiveTests.java"/>
         <run class="OneArmedPrimitiveTests"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Local variables in initializers should not be treated as blank final fields"
+      keywords="from-java">
+        <compile files="LocalInitializerVariableNotBlank.java"/>
+        <run class="LocalInitializerVariableNotBlank"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="invalid numeric literals"
       keywords="from-java">
@@ -806,6 +824,15 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="explicit constructor calls can throw exceptions"
+      keywords="from-errors">
+        <compile files="ExplicitConstructorThrows.java">
+            <message kind="error" line="3"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="pureJava" title="flow analysis with local types"
       keywords="from-errors,purejava">
         <compile files="InnerFlow.java">
@@ -897,12 +924,6 @@
         <compile files="MethodInner.java"/>
         <run class="MethodInner"/>
     </ajc-test>
-<ajc-test dir="new" pr="242"
-      title="generating the right throws clause for call-site advice (and around)"
-      keywords="from-resolved_10x">
-        <compile files="ComputedThrows.java"/>
-        <run class="ComputedThrows"/>
-    </ajc-test>
 <ajc-test dir="new" pr="246"
       title="advice on calls to static methods using several syntax"
       keywords="from-resolved_10x">
@@ -925,12 +946,6 @@
         <compile files="Simple.java" options="-Xlint:ignore"/>
         <run class="Simple"/>
     </ajc-test>
-<ajc-test dir="new/extraThrows" pr="259"
-      title="throws Exception clause is unnecessarily added to Driver.main method"
-      keywords="from-resolved_10x">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
 <ajc-test dir="new/beforeNotRun" pr="265" title="more aspect inheritance"
       keywords="from-resolved_10x">
         <compile files="Driver.java"/>
@@ -941,6 +956,12 @@
       keywords="from-resolved_10x">
         <compile files="EachJVMOnSelf.java"/>
         <run class="EachJVMOnSelf"/>
+    </ajc-test>
+<ajc-test dir="new"
+      title="Referring to inner classes as {super}.{inner} confused ajc."
+      keywords="from-resolved_10x">
+        <compile files="InnerClassNaming.java"/>
+        <run class="InnerClassNaming"/>
     </ajc-test>
 <ajc-test dir="new" title="Introductions on other introductions"
       keywords="from-resolved_10x">
@@ -1058,12 +1079,6 @@
       keywords="from-resolved_10x">
         <compile files="InnerMethods.java"/>
         <run class="InnerMethods"/>
-    </ajc-test>
-<ajc-test dir="new" pr="415"
-      title="No argthis was being created for calls advice."
-      keywords="from-resolved_10x">
-        <compile files="PR415.java"/>
-        <run class="PR415"/>
     </ajc-test>
 <ajc-test dir="new"
       title="within and withincode (doesn't all work due to local class name issues)"
@@ -1246,12 +1261,6 @@
         <compile files="CallTypesI.java" options="-1.4,-Xlint:ignore"/>
         <run class="CallTypesI" vm="1.4"/>
     </ajc-test>
-<ajc-test dir="new"
-      title="Unable to bind privately-introduced field name from introduced method in the same aspect"
-      keywords="from-resolved_10x">
-        <compile files="IntroducedFieldsNotBinding.java"/>
-        <run class="IntroducedFieldsNotBinding"/>
-    </ajc-test>
 <ajc-test dir="new/anonInnerClass" pr="297"
       title="anonymous inner class with aspect" keywords="from-resolved_10x">
         <compile files="Driver.java"/>
@@ -1418,48 +1427,12 @@
             <message kind="error" line="31"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new/PR600" pr="600"
-      title="AbstractMethodError for introduced methods (order 1)"
-      keywords="from-resolved_10x">
-        <compile files="Main.java,My_error.java,A.java,B.java,C.java"/>
-        <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="new/PR600" pr="600"
-      title="AbstractMethodError for introduced methods (order 2)"
-      keywords="from-resolved_10x">
-        <compile files="Main.java,My_error.java,C.java,A.java,B.java"/>
-        <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="new/PR600" pr="600"
-      title="AbstractMethodError for introduced methods (order 3)"
-      keywords="from-resolved_10x">
-        <compile files="My_error.java,A.java,B.java,C.java,Main.java"/>
-        <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="new/PR600" pr="600"
-      title="AbstractMethodError for introduced methods (order 4)"
-      keywords="from-resolved_10x">
-        <compile files="A.java,B.java,C.java,Main.java,My_error.java"/>
-        <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="new/PR600" pr="600"
-      title="AbstractMethodError for introduced methods (order 5)"
-      keywords="from-resolved_10x">
-        <compile files="A.java,B.java,Main.java,C.java,My_error.java"/>
-        <run class="Main"/>
-    </ajc-test>
 <ajc-test dir="new" title="declare error and abstract pointcuts"
       keywords="from-resolved_10x">
         <compile files="AbstractDeclare.java">
             <message kind="error" line="3"/>
             <message kind="error" line="4"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new/runtime"
-      title="Exercise runtime classes (optionally in 1.1 VM)"
-      keywords="from-resolved_10x">
-        <compile files="AllRuntime.java,TesterDriver.java"/>
-        <run class="TesterDriver"/>
     </ajc-test>
 <ajc-test dir="new"
       title="VerifyError after around advice falls off end of tryCatch"
@@ -1514,12 +1487,6 @@
       keywords="from-resolved_10x">
         <compile files="AbstractAspectUsedStatically.java"/>
         <run class="AbstractAspectUsedStatically"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="private inner interface accessible in scope when declared on outer class"
-      keywords="from-resolved_10x">
-        <compile files="DeclareAccess.java"/>
-        <run class="DeclareAccess"/>
     </ajc-test>
 <ajc-test dir="new"
       title="accessing protected superclass members in and outside CCC from body of method introduction"
@@ -1876,12 +1843,6 @@
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new"
-      title="initializer can throw so long as all constructors declare so"
-      keywords="from-resolved_105,purejava">
-        <compile files="InitializerWithThrow.java"/>
-        <run class="InitializerWithThrow"/>
-    </ajc-test>
 <ajc-test dir="pureJava"
       title="interfaces may not contain initializers (bug found by jacks)"
       keywords="from-resolved_105,purejava">
@@ -2173,10 +2134,9 @@
         </compile>
     </ajc-test>
 <ajc-test dir="new"
-      title="subtype pattern in dominates will conflict with type pattern">
-        <compile files="DominatesTypePatternCE.java">
-        	<message kind="error" line="15"/>
-        </compile>
+      title="subtype pattern in dominates should pick out aspect subtypes">
+        <compile files="DominatesTypePattern.java"/>
+        <run class="DominatesTypePattern"/>
     </ajc-test>
 <ajc-test dir="new" pr="827"
       title="after returning advice on interface and implementation constructor"
@@ -2269,12 +2229,6 @@
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
-    </ajc-test>
-<ajc-test dir="bugs" pr="29689"
-    		title="Declare precedence should not allow multiple * patterns">
-        <compile files="CircularPrecedence.java">
-            <message kind="error" line="14"/> 
-        </compile>
     </ajc-test>
 <ajc-test dir="bugs" pr="29662"
     		title="VerifyError on accessing objects not accessible to the weaver">
@@ -2378,31 +2332,6 @@
             <message kind="error" line="29"/>
             <message kind="error" line="35"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="incremental/stringliteral"   
-    	keywords="knownLimitation"
-    	title="incrementally change string size and wire in injar classes">
-        <compile staging="true" options="-incremental" 
-        	files="oneInjar.jar,twoInjar.jar"
-        	sourceroots="src"/>
-		<run class="packageOne.Main"
-			options="in packageOne.Main.main(..),
-					 before main packageOne.Main"/>
-        <inc-compile tag="20">
-        	<dir-changes updated="packageOne.Main"/>
-        </inc-compile>
-        
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main packageOne.Main"/>
-        <inc-compile tag="30">
-        	<dir-changes added="RunInjarMains"/>
-        </inc-compile>
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main InjarOneMain,
-					 before main InjarTwoMain,
-					 before main packageOne.Main"/>
     </ajc-test>
 <ajc-test dir="bugs" pr="34206" 
     	keywords="knownLimitation"
@@ -2600,73 +2529,6 @@
         	  line="17" text="handler(RuntimeException)"/>        	  
         </compile>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/classAdded" 
-    	title="expect class added in initial incremental tests" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-        	sourceroots="."/>
-        <run class="main.Main"/>
-        <inc-compile tag="20" >
-            <dir-changes added="main.Target"/>
-        </inc-compile>
-        <run class="main.Main"  skipTester="true"/>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/classRemoved" 
-    	title="expect class removed in initial incremental tests" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental" 
-        	sourceroots="."/>
-        <run class="main.Main"/>
-        <inc-compile tag="20">
-            <dir-changes removed="main.Target"/>
-        </inc-compile>
-        <run class="main.Main"/>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/classUpdated" 
-    	title="expect class updated in initial incremental tests" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-        	sourceroots="."/>
-        <run class="main.Main"/>
-        <inc-compile tag="20">
-            <dir-changes updated="main.Main"/>
-        </inc-compile>
-        <run class="main.Main"/>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/sourceAdded" 
-    	title="add file with class"
-    	comment="only expecting pickup if sourceroots"    
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-        	sourceroots="."/>
-        <run class="main.Main"/>
-        <inc-compile tag="20">
-            <dir-changes added="main.Target"/>
-        </inc-compile>
-        <inc-compile tag="30">
-            <dir-changes updated="main.Main"/>
-        </inc-compile>
-        <run class="main.Main"/>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/sourceDeleted" 
-        title="delete source file before incremental compile"
-        comment="build config should permit file deletions for incremental (sourceroots)"
-        keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-    		sourceroots="."/>
-        <run class="delete.Main"/>
-        <inc-compile tag="20">
-            <dir-changes removed="delete.DeleteMe"/>
-        	<message kind="error" line="6" file="delete/Target.java"/>
-        </inc-compile>
-        <inc-compile tag="30"/> 
-        <run class="delete.Main"/>
-    </ajc-test>
 <ajc-test dir="incremental/initialTests/expClasses" 
     	title="expected class tree" >
         <compile files="Main.java">
@@ -2674,54 +2536,11 @@
         </compile>
         <run class="Main"/>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/defaultPackage" 
-    	title="do everything in default package (sourceroots)" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-    		sourceroots="."/>
-        <run class="Main"/>
-        <inc-compile tag="20">
-            <dir-changes added="Target"/>
-        </inc-compile>
-        <run class="Target" skipTester="true"/>
-        <inc-compile tag="30">
-            <dir-changes updated="Main"/>
-        </inc-compile>
-        <run class="Main" skipTester="true"/>
-        <inc-compile tag="40"> 
-			<message kind="error" line="6" file="Main.java"/>
-        </inc-compile>
-        <inc-compile tag="50"/>
-        <run class="Main"/>
-    </ajc-test>
 <ajc-test dir="bugs/inlineAround" pr="37152"
       title="perthis and inline arounds">
         <compile files="aspect1/Base.java,aspect2/Concrete.java,p1/Main.java">
         </compile>
         <run class="p1.Main"/>
-    </ajc-test>
-<ajc-test dir="incremental/defaultPackage"
-    keywords="incremental-test"
-   	title="change sources in default package">
-        <compile 
-        	staging="true"
-        	options="-incremental" 
-        	sourceroots="src"/>
-        <run class="Main"/>
-        <inc-compile tag="20"/>
-        <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="incremental/interPackage"
-    keywords="incremental-test"
-   	title="change source">
-        <compile 
-        	staging="true"
-        	options="-incremental" 
-        	sourceroots="src"/>
-        <run class="app.Main"/>
-        <inc-compile tag="20"/>
-        <run class="app.Main"/>
     </ajc-test>
 <ajc-test dir="bugs" pr="37739"
    	 title="Unexpected Xlint:unresolvableMember warning with withincode">
@@ -2788,21 +2607,6 @@
 			<message kind="error" line="25" text="throw checked exception" />
 			<message kind="error" line="8" text="throw checked exception" />
         </compile>
-    </ajc-test>
-<ajc-test dir="incremental/stringliteral"
-    	keywords="incremental-test"
-		title="incrementally change only string literal, still expect advice">
-        <compile staging="true" options="-incremental" 
-        	sourceroots="src"/>
-		<run class="packageOne.Main"
-			options="in packageOne.Main.main(..),
-					 before main packageOne.Main"/>
-        <inc-compile tag="20">
-        	<dir-changes updated="packageOne.Main"/>
-        </inc-compile>
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main packageOne.Main"/>
     </ajc-test>
 <ajc-test dir="bugs" pr="38168" keywords="knownLimitation"
    	 title="insertion of lots of advice code can make branch offset for if too large">
@@ -2953,9 +2757,23 @@
 		</ajc-test>
 <ajc-test 
 		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared interface methods - negative">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message kind="error" file="ClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
+<ajc-test 
+		dir="bugs/interfaceLibrary"
 		title="exception clause for aspect-declared class methods - positive">
 		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"/>
 		<run class="ClassClient"/>
+		</ajc-test>
+<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared class methods - negative">
+		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
+			<message kind="error" file="ClassClientCE.java" line="5"/>
+			</compile>
 		</ajc-test>
 <ajc-test dir="bugs"
 		pr="41175"
@@ -3157,10 +2975,6 @@
 		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
         </compile>
     </ajc-test>
-<ajc-test dir="bugs" pr="46750" title="inner aspect containing declare soft">
-       <compile files="TestSoftening.java">
-       </compile>
-    </ajc-test>
 <ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in java source">
         <compile files="ParserRecoveryTestPureJava.java">
@@ -3240,11 +3054,6 @@
         	files="Main1.java"/>
         <run class="Main1"/>
     </ajc-test>
-<ajc-test dir="bugs" pr="38824"
-	      title="Anomalous handling of inter-type declarations to abstract base classes in aspectj 1.1">
-	        <compile files="AbstractBaseAndInterTypeInterface.java">
-	        </compile>
-	</ajc-test>
 <ajc-test dir="bugs/caseSensitivity" pr="42515"
       title="NPE When compiling intertype declaration">
         <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
@@ -3264,11 +3073,6 @@
       title="CatchClauseSignature has broken operation">
         <compile files="HandlerSig.java"/>
         <run class="HandlerSig"/>
-    </ajc-test>
-<ajc-test dir="new" pr="42668"
-   	 title="after returning with parameter: matching rules">
-        <compile files="AfterReturningParamMatching.java" />
-        <run class="AfterReturningParamMatching"/>
     </ajc-test>
 <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect no error">

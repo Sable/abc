@@ -548,15 +548,6 @@
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="explicit constructor calls can throw exceptions"
-      keywords="from-errors">
-        <compile files="ExplicitConstructorThrows.java">
-            <message kind="error" line="3"/>
-            <message kind="error" line="12"/>
-            <message kind="error" line="18"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" pr="664" title="bad proceed args good error messages"
       keywords="from-errors">
         <compile files="ProceedArgsCE.java">
@@ -644,6 +635,12 @@
             <message kind="error" line="10"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new"
+      title="subtype pattern in dominates will conflict with type pattern">
+        <compile files="DominatesTypePatternCE.java">
+        	<message kind="error" line="15"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="new" pr="832"
       title="after throwing advice with non-throwable formal">
         <compile files="AfterThrowingNonThrowable.java">
@@ -666,6 +663,12 @@
       title="introducing final fields and checking errors">
         <compile files="Introducer.java,Receiver.java,UserCf.java">
             <message kind="error" line="6"/>        
+        </compile>
+    </ajc-test>
+<ajc-test dir="bugs" pr="29689"
+    		title="Declare precedence should not allow multiple * patterns">
+        <compile files="CircularPrecedence.java">
+            <message kind="error" line="14"/> 
         </compile>
     </ajc-test>
 <ajc-test dir="errors"  keywords="error"
@@ -720,26 +723,6 @@
             <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
-<ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
-    	comment="ajde has same errors, different wording"
-      title="CLE: no sourceroot specified for incremental">
-        <compile badInput="true" options="-incremental">
-            <message kind="error" text="no sources specified"/>
-            <message kind="error" text="specify a source root"/>
-            <message kind="abort" text="Usage"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
-    	comment="ajde has same errors, different wording"
-      title="CLE: file specified with incremental">
-        <compile badInput="true" files="ErrorTest.java"
-        	options="-incremental">
-            <message kind="error" text="incremental mode only handles source files using -sourceroots"/>
-            <message kind="error" text="no sources specified"/>
-            <message kind="error" text="specify a source root"/>
-            <message kind="abort" text="Usage"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="bugs" pr="39460"
    	 title="Missing import crashes compiler">
         <compile files="MissingImport.java">
@@ -771,20 +754,6 @@
 			files="Client.java" 
 			classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
 			<message kind="error" line="9"/>
-			</compile>
-		</ajc-test>
-<ajc-test 
-		dir="bugs/interfaceLibrary"
-		title="exception clause for aspect-declared interface methods - negative">
-		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
-			<message kind="error" file="ClientCE.java" line="5"/>
-			</compile>
-		</ajc-test>
-<ajc-test 
-		dir="bugs/interfaceLibrary"
-		title="exception clause for aspect-declared class methods - negative">
-		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
-			<message kind="error" file="ClassClientCE.java" line="5"/>
 			</compile>
 		</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"

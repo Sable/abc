@@ -638,6 +638,15 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="explicit constructor calls can throw exceptions"
+      keywords="from-errors">
+        <compile files="ExplicitConstructorThrows.java">
+            <message kind="error" line="3"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="pureJava" title="flow analysis with local types"
       keywords="from-errors,purejava">
         <compile files="InnerFlow.java">
@@ -1044,12 +1053,6 @@
             <message kind="error" line="27"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new"
-      title="subtype pattern in dominates will conflict with type pattern">
-        <compile files="DominatesTypePatternCE.java">
-        	<message kind="error" line="15"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new" pr="851"
       title="prohibit declaring new aspect constructor with arguments">
         <compile files="DeclareAspectConstructorCE.java">
@@ -1100,12 +1103,6 @@
       title="privileged access to code outside the control of the compiler">
         <compile files="PrivilegeBeyondScope.java" options="-Xlint:warning">
 		  <message kind="warning" line="23"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="bugs" pr="29689"
-    		title="Declare precedence should not allow multiple * patterns">
-        <compile files="CircularPrecedence.java">
-            <message kind="error" line="14"/> 
         </compile>
     </ajc-test>
 <ajc-test dir="bugs" pr="30026" 
@@ -1226,42 +1223,6 @@
         	<message kind="error" file="app/MainExecStartLines.java"
         	  line="17" text="handler(RuntimeException)"/>        	  
         </compile>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/sourceDeleted" 
-        title="delete source file before incremental compile"
-        comment="build config should permit file deletions for incremental (sourceroots)"
-        keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-    		sourceroots="."/>
-        <run class="delete.Main"/>
-        <inc-compile tag="20">
-            <dir-changes removed="delete.DeleteMe"/>
-        	<message kind="error" line="6" file="delete/Target.java"/>
-        </inc-compile>
-        <inc-compile tag="30"/> 
-        <run class="delete.Main"/>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/defaultPackage" 
-    	title="do everything in default package (sourceroots)" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-    		sourceroots="."/>
-        <run class="Main"/>
-        <inc-compile tag="20">
-            <dir-changes added="Target"/>
-        </inc-compile>
-        <run class="Target" skipTester="true"/>
-        <inc-compile tag="30">
-            <dir-changes updated="Main"/>
-        </inc-compile>
-        <run class="Main" skipTester="true"/>
-        <inc-compile tag="40"> 
-			<message kind="error" line="6" file="Main.java"/>
-        </inc-compile>
-        <inc-compile tag="50"/>
-        <run class="Main"/>
     </ajc-test>
 <ajc-test dir="harness" 
         title="setting -warn:constructorName works">
@@ -1402,6 +1363,20 @@
 			classpath="aspectedInterfaceOnly.jar">
 			<message kind="error" line="0" text="LibraryAspect"/>
 			<message kind="error" line="9" text="LibraryInterface"/>
+			</compile>
+		</ajc-test>
+<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared interface methods - negative">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message kind="error" file="ClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
+<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared class methods - negative">
+		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
+			<message kind="error" file="ClassClientCE.java" line="5"/>
 			</compile>
 		</ajc-test>
 <ajc-test dir="bugs/interfaceLibrary"

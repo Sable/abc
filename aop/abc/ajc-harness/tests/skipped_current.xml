@@ -35,6 +35,141 @@
         </compile>
         <run class="ReturnCastProceed" vm="1.4"/>
     </ajc-test>
+<ajc-test dir="incremental/stringliteral"   
+    	keywords="knownLimitation"
+    	title="incrementally change string size and wire in injar classes">
+        <compile staging="true" options="-incremental" 
+        	files="oneInjar.jar,twoInjar.jar"
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+        
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="30">
+        	<dir-changes added="RunInjarMains"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main InjarOneMain,
+					 before main InjarTwoMain,
+					 before main packageOne.Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/initialTests/classAdded" 
+    	title="expect class added in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20" >
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"  skipTester="true"/>
+    </ajc-test>
+<ajc-test dir="incremental/initialTests/classRemoved" 
+    	title="expect class removed in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental" 
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes removed="main.Target"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/initialTests/classUpdated" 
+    	title="expect class updated in initial incremental tests" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/initialTests/sourceAdded" 
+    	title="add file with class"
+    	comment="only expecting pickup if sourceroots"    
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+        	sourceroots="."/>
+        <run class="main.Main"/>
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"/>
+        </inc-compile>
+        <inc-compile tag="30">
+            <dir-changes updated="main.Main"/>
+        </inc-compile>
+        <run class="main.Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/initialTests/sourceDeleted" 
+        title="delete source file before incremental compile"
+        comment="build config should permit file deletions for incremental (sourceroots)"
+        keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="."/>
+        <run class="delete.Main"/>
+        <inc-compile tag="20">
+            <dir-changes removed="delete.DeleteMe"/>
+        	<message kind="error" line="6" file="delete/Target.java"/>
+        </inc-compile>
+        <inc-compile tag="30"/> 
+        <run class="delete.Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/initialTests/defaultPackage" 
+    	title="do everything in default package (sourceroots)" 
+    	keywords="incremental-test" >
+        <compile staging="true" 
+        	options="-incremental"
+    		sourceroots="."/>
+        <run class="Main"/>
+        <inc-compile tag="20">
+            <dir-changes added="Target"/>
+        </inc-compile>
+        <run class="Target" skipTester="true"/>
+        <inc-compile tag="30">
+            <dir-changes updated="Main"/>
+        </inc-compile>
+        <run class="Main" skipTester="true"/>
+        <inc-compile tag="40"> 
+			<message kind="error" line="6" file="Main.java"/>
+        </inc-compile>
+        <inc-compile tag="50"/>
+        <run class="Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/defaultPackage"
+    keywords="incremental-test"
+   	title="change sources in default package">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="Main"/>
+        <inc-compile tag="20"/>
+        <run class="Main"/>
+    </ajc-test>
+<ajc-test dir="incremental/interPackage"
+    keywords="incremental-test"
+   	title="change source">
+        <compile 
+        	staging="true"
+        	options="-incremental" 
+        	sourceroots="src"/>
+        <run class="app.Main"/>
+        <inc-compile tag="20"/>
+        <run class="app.Main"/>
+    </ajc-test>
 <ajc-test dir="harness" 
     	keywords="command-line-error,knownLimitation"
     	comment="can't test -help: has to abort, but returns 0, normal status"    
@@ -52,5 +187,40 @@
             <message kind="error" text="bad sourceroot"/>
             <message kind="abort" text="Usage"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
+    	comment="ajde has same errors, different wording"
+      title="CLE: no sourceroot specified for incremental">
+        <compile badInput="true" options="-incremental">
+            <message kind="error" text="no sources specified"/>
+            <message kind="error" text="specify a source root"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
+    	comment="ajde has same errors, different wording"
+      title="CLE: file specified with incremental">
+        <compile badInput="true" files="ErrorTest.java"
+        	options="-incremental">
+            <message kind="error" text="incremental mode only handles source files using -sourceroots"/>
+            <message kind="error" text="no sources specified"/>
+            <message kind="error" text="specify a source root"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="incremental/stringliteral"
+    	keywords="incremental-test"
+		title="incrementally change only string literal, still expect advice">
+        <compile staging="true" options="-incremental" 
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
     </ajc-test>
 </suite> 
