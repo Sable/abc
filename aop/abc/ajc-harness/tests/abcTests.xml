@@ -1070,7 +1070,9 @@
     <ajc-test num="129" dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
       abccomment="jlc doesn't report expected error.
-                  Reported to Nate on July 1/04.  LJH"
+                  Reported to Nate on July 1/04.  LJH
+                  Still a problem with Polyglot 1.3. Entered onto
+                  bugzilla. 17/08/04 ODM"
       keywords="from-java">
       <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="pkg1/Main.java,pkg2/Foo.java">
@@ -2415,13 +2417,15 @@
       title="good error for bad field and inner class references"
       abccomment="not pure java July 5/04 LJH
                   polyglot does not find this error, sent to Nate,
-                       July 5/04 LJH"
+                       July 5/04 LJH Fixed in Polyglot 1.3. Not reporting
+                      the error on line 3 is deliberate in abc: it overrides
+                      both I1 and I2, so there is no conflict. ODM 18/08/04"
       keywords="from-errors,purejava">
-      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="BadReferences.java">
-            <message kind="error" line="3"/>
-            <message kind="error" line="5"/>
-        </compile>
+            <ajcmessage kind="error" line="3"/>
+            <ajcmessage kind="error" line="5"/>
+            <message kind="error" line="5"/> 
+       </compile>
     </ajc-test>
 
     <ajc-test num="266" dir="errors" title="errors in aspect inheritance - 1"
