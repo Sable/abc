@@ -22,6 +22,7 @@ import soot.Value;
 import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
+import soot.jimple.FieldRef;
 import soot.jimple.IdentityStmt;import soot.jimple.InstanceFieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
@@ -31,6 +32,17 @@ import soot.jimple.ReturnStmt;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.util.Chain;
+import soot.tagkit.*;
+import soot.baf.*;
+import soot.jimple.*;
+import soot.toolkits.graph.*;
+import soot.*;
+import soot.util.*;
+import java.util.*;
+import java.io.*;
+import soot.toolkits.scalar.*;
+import soot.options.*;
+import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AroundAdvice;
@@ -74,22 +86,22 @@ public class AroundWeaver {
 			public int hashCode() {
 				return className.hashCode()+interfaceName.hashCode();
 			}
-
 		}
 		public static class AccessMethodInfo {
-			HashMap /*String, Integer*/ fieldIDs=new HashMap();
+			//HashMap /*String, Integer*/ fieldIDs=new HashMap();
 			
 			List targets=new LinkedList();
 			List lookupValues=new LinkedList();
 			Unit defaultTarget;
+			Stmt lookupStmt;
 			int nextID;
+			Local idParamLocal;
 			
-			
-			public boolean implementsField(String field) {
+			/*public boolean implementsField(String field) {
 				return fieldIDs.containsKey(field);
-			}
+			}*/
 		}
-		HashMap /*ClassInterfacePair, AccessMethodInfo*/ accessInterfacesGet=new HashMap();
+		private HashMap /*ClassInterfacePair, AccessMethodInfo*/ accessInterfacesGet=new HashMap();
 		
 		/*public boolean hasInterface(String className, String interfaceName) {
 			ClassInterfacePair key=new ClassInterfacePair(className, interfaceName);
@@ -102,6 +114,10 @@ public class AroundWeaver {
 			}
 			return (AccessMethodInfo)accessInterfacesGet.get(key);
 		}
+		public int getUniqueID() {
+			return currentUniqueID++;
+		}
+		int currentUniqueID;
 	}
 	public static State state=new State();
 
@@ -136,33 +152,35 @@ public class AroundWeaver {
 			//stmtAdv.
 			//advicedecl.
 			// is it an assignment?
-			if (stmtAdv.stmt instanceof AssignStmt) {
+			if (adviceappl.sjpInfo.kind.equals("field-get")) {
+				arddebug("found field-get");
+				if (!(stmtAdv.stmt instanceof AssignStmt)) {
+					throw new RuntimeException(); // TODO: 
+				}
 				arddebug("found assignment statement");
 				AssignStmt assignStmt=(AssignStmt)stmtAdv.stmt;
 				
 				Value rightOp=assignStmt.getRightOp();
 				Value leftOp=assignStmt.getLeftOp();
 				// is it a field access?
-				boolean bGetInstance=rightOp instanceof InstanceFieldRef;
+				/*boolean bGetInstance=rightOp instanceof InstanceFieldRef;
 				boolean bGetStatic=rightOp instanceof StaticFieldRef;
 				boolean bSetInstance=leftOp instanceof InstanceFieldRef;
 				boolean bSetStatic=leftOp instanceof StaticFieldRef;
 				boolean bGet=bGetInstance || bGetStatic;
-				boolean bStatic=bGetStatic || bSetStatic;
-				if (bGetInstance || bGetStatic || bSetInstance || bSetStatic) { 
-					weaveGetSet(
-						cl,
-						localgen,
-						cl2,
-						units,
-						theAspect,
-						adviceMethod,
-						assignStmt,
-						bGet ? rightOp : leftOp, 
-						bGet,  
-						bStatic
-						 );
-				}				
+				boolean bStatic=bGetStatic || bSetStatic;*/
+				 
+				weaveGetSet(
+					adviceappl,
+					cl,
+					localgen,
+					method,
+					theAspect,
+					adviceMethod,
+					assignStmt,
+					true // bGet  
+					 );
+								
 			} else {
 				arddebug("NYI: type of stmt advice application " + adviceappl);
 			}			
@@ -174,20 +192,23 @@ public class AroundWeaver {
 	} // method doWeave 
 
 	private static void weaveGetSet(
+		AdviceApplication adviceAppl,
 		SootClass cl,
 		LocalGenerator localgen,
-		SootClass cl2,
-		Chain units,
+		SootMethod method,
 		SootClass theAspect,
 		SootMethod adviceMethod,
 		AssignStmt assignStmt,
-		Value accessFieldRef, boolean bGet, boolean bStatic) {
+		boolean bGet) {
 		
 		boolean bSet=!bGet;
-		boolean bDynamic=!bStatic;
+		//boolean bDynamic=!bStatic;
 		
-		InstanceFieldRef fieldRef=(InstanceFieldRef) accessFieldRef;
-		arddebug("found field access: " + fieldRef.getField().getName());
+		
+		Chain units=method.getActiveBody().getUnits();
+		
+		//InstanceFieldRef fieldRef=(InstanceFieldRef) accessFieldRef;
+		//arddebug("found field access: " + fieldRef.getField().getName());
 		
 		Type adviceReturnType=adviceMethod.getReturnType();
 		Type accessInterfaceType=adviceReturnType;
@@ -211,11 +232,11 @@ public class AroundWeaver {
 		SootMethod accessMethod;
 		// create "get" interface if it doesn't exist
 		if (Scene.v().containsClass(interfaceName)) {
-			arddebug("found access interface");
+			arddebug("found access interface in scene");
 			accessInterface=Scene.v().getSootClass(interfaceName);
 			accessMethod=accessInterface.getMethodByName(methodName);
 		} else {
-			arddebug("generating access interface");
+			arddebug("generating access interface for scene");
 			accessInterface=new SootClass(interfaceName, 
 				Modifier.INTERFACE | Modifier.PUBLIC);						
 			
@@ -237,7 +258,7 @@ public class AroundWeaver {
 		}
 		
 		// create list of fields of this type
-		Collection /*SootField */ relevantFields=new LinkedList();
+		/*Collection relevantFields=new LinkedList();
 		int fieldIndex=0; // will store index of current field
 		{
 			int i=0;
@@ -255,80 +276,429 @@ public class AroundWeaver {
 					i++;								
 				}							
 			}
-		}
-		
-		
-		
-		// add interface to class if it doesn't exist.
-		// implement the "get" method
-		if (!cl.implementsInterface(interfaceName)){
-			implementInterface(
-				cl,
-				accessFieldRef,
-				fieldRef,
-				methodName,
-				accessMethodParameters,
-				accessInterface,
-				relevantFields,
-				bGet, 
-				bStatic);
-			
-			
-		}
-		
-		// add parameters to around() method if it doesn't exist
+		}*/
+						
 		// and replace proceed with call to get-interface
 		if (adviceMethod.getParameterCount()==0 ||
 			 !adviceMethod.getParameterType(0).toString().equals(interfaceName)) {
 			modifyAdviceMethod(adviceMethod, accessInterface, accessMethod, 
-			    fieldRef.getType(),
 				accessInterfaceType,
-				bGet, bStatic
+				bGet
 				);
 		}
 	
-		arddebug("replacing field access with call to advice method");
-		Local aspectref = localgen.generateLocal( theAspect.getType() );
-	 	//smt1:  aspectref = <AspectType>.aspectOf();
-     	AssignStmt stmt1 =  
-	   		Jimple.v().newAssignStmt( 
-		   		aspectref, 
-		   			Jimple.v().newStaticInvokeExpr(
-		      			theAspect.getMethod("aspectOf", new ArrayList())));
-		 arddebug("Generated stmt1: " + stmt1);
-	
-	 	units.insertBefore(stmt1,assignStmt);
-	 
-	    IdentityStmt id=(IdentityStmt) units.getFirst();
-	    List params=new LinkedList();
-	    params.add(id.getLeftOp());
-	    params.add(IntConstant.v(fieldIndex));
-	    if (bSet) {
-	    	// replace assignment to field with assignment to local
-	    	Local lVal=localgen.generateLocal(fieldRef.getType());
-	    	assignStmt.setLeftOp(lVal);
-	    	params.add(lVal);
-	    }
-	 	InvokeExpr invokeEx=
-	 		Jimple.v().newVirtualInvokeExpr( aspectref, adviceMethod, params);
-	 	
-	 	if (bGet) {
-			assignStmt.setRightOp(invokeEx);
-	 	} else {
-	 		InvokeStmt invokeStmt=Jimple.v().newInvokeStmt(invokeEx);
-	 		units.insertAfter(invokeStmt, assignStmt);
-	 	}
+
+		implementInterface(
+			theAspect,
+			method,
+			adviceAppl,
+			assignStmt,
+			 cl,
+			 methodName,
+			 interfaceName,
+			 accessMethodParameters,
+			 accessInterface,
+			 bGet);
 		
 	}
+	
+	private static void implementInterface(
+		SootClass theAspect,
+		SootMethod method,
+		AdviceApplication adviceAppl,
+		AssignStmt assignStmt,
+		SootClass cl,
+		String accessMethodName,
+		String interfaceName,
+		List accessParameters,
+		SootClass accessInterface,
+		boolean bGet) {
+		
+	
+		boolean bSet=!bGet;
+	
+		Chain units=method.getActiveBody().getUnits();
+		
+		SootMethod adviceMethod=adviceAppl.advice.getImpl().getSootMethod();
+		
+	
+		// add interface to class if it doesn't exist.
+		// add the method with arguments and identitiy statements
+		SootMethod localGetMethod=null;
+		Body accessBody=null;
+		Chain accessStatements=null;
+		
+		State.AccessMethodInfo info=state.getMethodInfo(cl.getName(), interfaceName);
+		
+		if (cl.implementsInterface(interfaceName)){
+			arddebug("found interface " + interfaceName + " in class: " + cl.getName());
+			SootClass cl2=cl;
+			localGetMethod=cl2.getMethodByName(accessMethodName);
+			accessBody=localGetMethod.getActiveBody();
+			accessStatements=accessBody.getUnits();
+		} else {
+			arddebug("adding interface " + interfaceName + " to class " + cl.getName());
+			
+			cl.addInterface(accessInterface);
+	
+			Type returnType;
+			if (bGet) {
+				returnType=adviceMethod.getReturnType() ;
+			} else {
+				returnType=VoidType.v();
+			}
+			
+			// create new method					
+			localGetMethod=new SootMethod(
+				accessMethodName, accessParameters, returnType ,
+					Modifier.PUBLIC);
+		
+			accessBody=Jimple.v().newBody(localGetMethod);
+		
+			localGetMethod.setActiveBody(accessBody);
+			arddebug("adding method " + localGetMethod.getName() + " to class " + cl.getName());
+			cl.addMethod(localGetMethod);
+			
+			accessStatements=accessBody.getUnits();
+	
+			// generate this := @this
+			LocalGenerator lg=new LocalGenerator(accessBody);
+			Local lThis=lg.generateLocal(cl.getType());
+			accessStatements.addFirst(
+				Jimple.v().newIdentityStmt(lThis, 
+					Jimple.v().newThisRef(
+						RefType.v(cl))));
+			lThis.setName("this");
+			//getBody.getThisLocal();
+			// $i0 := @parameter0: int;
+			info.idParamLocal=lg.generateLocal(IntType.v());
+			Stmt paramIdStmt=Jimple.v().newIdentityStmt(info.idParamLocal, 
+			Jimple.v().newParameterRef(IntType.v(),0));
+			accessStatements.insertAfter(paramIdStmt,
+				 accessStatements.getFirst());
+			Local p3=null;
+			Stmt lastIDStmt=paramIdStmt;
+			/*if (bSet) {
+				p3=lg.generateLocal(accessFieldReference.getType());
+				Stmt valueIdStmt=Jimple.v().newIdentityStmt(p3, 
+					Jimple.v().newParameterRef(
+						accessFieldReference.getType(),1));
+				statements.insertAfter(valueIdStmt,
+					 paramIdStmt);		
 
+				lastIDStmt=valueIdStmt;	
+			}*/
+		
+			// generate exception code (default target)
+			SootClass exception=Scene.v().getSootClass("java.lang.RuntimeException");	
+			Local ex=lg.generateLocal(exception.getType());
+			Stmt newExceptStmt = Jimple.v().newAssignStmt( ex, Jimple.v().newNewExpr( exception.getType() ) );
+			Stmt initEx=Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( ex, exception.getMethod( "<init>", new ArrayList()))) ;
+			Stmt throwStmt=Jimple.v().newThrowStmt(ex);
+			accessStatements.add(newExceptStmt);
+			accessStatements.add(initEx);
+			accessStatements.add(throwStmt);
+			info.defaultTarget=newExceptStmt;
+			
+			// just generate a nop for now.
+			info.lookupStmt=Jimple.v().newNopStmt();
+			
+			accessStatements.insertAfter(info.lookupStmt, lastIDStmt);		
+		}
+		
+		//adviceAppl;
+		
+		SootMethod joinpointMethod=method;
+		Body joinpointBody=joinpointMethod.getActiveBody();
+		
+		Chain joinpointChain=joinpointBody.getUnits();		
+		
+		Stmt begin=adviceAppl.shadowpoints.getBegin();
+		Stmt end=adviceAppl.shadowpoints.getEnd();
+		
+		if (!joinpointChain.contains(assignStmt))
+			throw new RuntimeException();
+		
+		Unit first=CopyStmtSequence(joinpointBody, begin, end, accessBody, 
+				info.lookupStmt, (Local)assignStmt.getLeftOp());
+		
+		int intId=info.nextID++;
+		info.lookupValues.add(IntConstant.v(intId));
+		info.targets.add(first);
+		
+		// generate new lookup statement and replace the old one
+		Stmt lookupStmt=Jimple.v().newLookupSwitchStmt(info.idParamLocal, 
+			info.lookupValues, info.targets, info.defaultTarget);
+		accessStatements.insertAfter(lookupStmt, info.lookupStmt);
+		accessStatements.remove(info.lookupStmt);
+		info.lookupStmt=lookupStmt;
+		
+		// remove statements except original assignment
+		RemoveStatements(joinpointBody, begin, end, assignStmt);
+		
+		Local lThis=joinpointBody.getThisLocal();
+		lThis.setName("this");
+		
+		LocalGenerator localgen=new LocalGenerator(joinpointBody);	
+		
+		arddebug("replacing former code with call to advice method");
+		// add another this id statement.
+		// why? have to keep this code independent of the rest of the method.
+		/*Local lThis=localgen.generateLocal(cl.getType());
+					units.insertBefore(
+						Jimple.v().newIdentityStmt(lThis, 
+							Jimple.v().newThisRef(
+								RefType.v(cl))), assignStmt);
+								*/
+		Local aspectref = localgen.generateLocal( theAspect.getType() );
+		//smt1:  aspectref = <AspectType>.aspectOf();
+		AssignStmt stmt1 =  
+			Jimple.v().newAssignStmt( 
+				aspectref, 
+					Jimple.v().newStaticInvokeExpr(
+						theAspect.getMethod("aspectOf", new ArrayList())));
+		arddebug("Generated stmt1: " + stmt1);
+
+		units.insertBefore(stmt1,assignStmt);
+ 
+		//IdentityStmt id=(IdentityStmt) units.getFirst();
+		List params=new LinkedList();
+		params.add(lThis);//id.getLeftOp());
+		params.add(IntConstant.v(intId));
+		/*if (bSet) {
+				// replace assignment to field with assignment to local
+			Local lVal=localgen.generateLocal(fieldRef.getType());
+			assignStmt.setLeftOp(lVal);
+			params.add(lVal);
+		}*/
+		InvokeExpr invokeEx=
+			Jimple.v().newVirtualInvokeExpr( aspectref, adviceMethod, params);
+
+		if (bGet) {
+			assignStmt.setRightOp(invokeEx);
+		} else {
+			InvokeStmt invokeStmt=Jimple.v().newInvokeStmt(invokeEx);
+			units.insertAfter(invokeStmt, assignStmt);
+		}
+		
+	
+		/*Iterator it=relevantFields.iterator();
+		int fieldID=0;
+		while (it.hasNext()) {
+			SootField field=(SootField)it.next();
+			lookupValues.add(IntConstant.v(fieldID));
+	
+			// generate field access
+			if (bGet) {								
+				Local l=lg.generateLocal(fieldRef.getType());
+				Stmt getStmt=Jimple.v().newAssignStmt(l, 
+						Jimple.v().newInstanceFieldRef(lThis ,field));			
+				statements.add(getStmt);
+				ReturnStmt returnStmt=Jimple.v().newReturnStmt(l);	
+				statements.add(returnStmt);
+				targets.add(getStmt);		
+			} else {
+				Stmt setStmt=Jimple.v().newAssignStmt( 
+					Jimple.v().newInstanceFieldRef(lThis ,field), p3);
+				statements.add(setStmt);
+				//ReturnStmt returnStmt=;	
+				statements.add(Jimple.v().newReturnVoidStmt());
+				targets.add(setStmt);
+			}
+			fieldID++;
+		}*/
+		
+	
+		//Local l=lg.generateLocal(fieldRef.getType());
+		//ReturnStmt returnStmt=Jimple.v().newReturnStmt(l);	
+		//adviceChain.add(returnStmt);
+		//throw RuntimeException()
+		/*
+		
+	
+	
+												
+	
+		// return
+	
+		//returnStmt.setOp(IntConstant.v());
+		statements.insertAfter(lookupStmt, lastIDStmt);
+		
+		
+		
+		*/
+		
+		
+
+		
+	} 
+	/**
+	 * Removes statements between begin and end, excluding these and skip.
+	 */
+	private static void RemoveStatements(Body body, Unit begin, Unit end, Unit skip) {
+		Chain units=body.getUnits();
+		List removed=new LinkedList();
+		Iterator it=units.iterator(begin);
+		if (it.hasNext())
+			it.next(); // skip begin
+		while (it.hasNext()) {
+			Unit ut=(Unit)it.next();
+			if (ut==end)
+				break;
+			
+			if (ut!=skip) {
+				removed.add(ut);
+			}
+		}
+		Iterator it2=removed.iterator();
+		while (it2.hasNext())
+			units.remove(it2.next());
+	}
+	/**Copies a sequence of statements from one method to another.
+	 * Copied units exclude begin and end.
+	 * Returns first inserted unit in the destination method.
+	 * 
+	 * If returnedLocal is not null, the corresponding new local is returned after the 
+	 * copy of the block.
+	 * 
+	 * This is a modified version of Body.importBodyContentsFrom()
+	 * */
+	private static Unit CopyStmtSequence(Body source, Unit begin, Unit end, 
+			Body dest, Unit insertAfter,
+				Local returnedLocal) {
+		
+		Local lThisSource=source.getThisLocal();
+		Local lThisDest=dest.getThisLocal();			
+		
+		HashMap bindings = new HashMap();
+
+		Iterator it = source.getUnits().iterator(begin);
+		if (it.hasNext())
+			it.next(); // skip begin
+
+		Chain unitChain=dest.getUnits();
+		
+		Unit firstCopy=null;
+		// Clone units in body's statement list 
+		while(it.hasNext()) {
+			Unit original = (Unit) it.next();
+			if (original==end)
+				break;
+				
+			Unit copy = (Unit) original.clone();
+     
+			// Add cloned unit to our unitChain.
+			unitChain.insertAfter(copy, insertAfter);
+			insertAfter=copy;
+			if (firstCopy==null)
+				firstCopy=copy;
+			// Build old <-> new map to be able to patch up references to other units 
+			// within the cloned units. (these are still refering to the original
+			// unit objects).
+			bindings.put(original, copy);
+		}
+
+		Chain trapChain=dest.getTraps();
+		
+		// Clone trap units.
+		it = source.getTraps().iterator();
+		while(it.hasNext()) {
+			Trap original = (Trap) it.next();
+			Trap copy = (Trap) original.clone();
+    
+			// Add cloned unit to our trap list.
+			trapChain.addLast(copy);
+
+			// Store old <-> new mapping.
+			bindings.put(original, copy);
+		}
+
+
+		Chain localChain=dest.getLocals();
+
+		// Clone local units.
+		it = source.getLocals().iterator();
+		while(it.hasNext()) {
+			Local original = (Local) it.next();
+			Local copy = (Local) original.clone();
+    
+    		if (original==lThisSource) {
+				bindings.put(lThisSource, lThisDest);
+    		} else {
+				copy.setName(copy.getName() + "abc" + state.getUniqueID());
+				// Add cloned unit to our trap list.
+				localChain.addLast(copy);
+
+				// Build old <-> new mapping.
+				bindings.put(original, copy);	
+    		}
+    
+    		
+		}
+
+
+
+		// Patch up references within units using our (old <-> new) map.
+		it = dest.getAllUnitBoxes().iterator();
+		while(it.hasNext()) {
+			UnitBox box = (UnitBox) it.next();
+			Unit newObject, oldObject = box.getUnit();
+    
+			// if we have a reference to an old object, replace it 
+			// it's clone.
+			if( (newObject = (Unit)  bindings.get(oldObject)) != null )
+				box.setUnit(newObject);
+        
+		}        
+
+		// backpatching all local variables.
+		it = dest.getUseAndDefBoxes().iterator();
+		while(it.hasNext()) {
+			ValueBox vb = (ValueBox) it.next();
+			if(vb.getValue() instanceof Local) {
+				Local oldLocal=(Local)vb.getValue();
+				Local newLocal=(Local) bindings.get(oldLocal);
+				
+				if (newLocal!=null)
+					vb.setValue(newLocal);
+			}
+				
+		}
+
+		if (returnedLocal!=null) {
+			Local newLocal=(Local)bindings.get(returnedLocal);
+			if (newLocal==null)
+				throw new RuntimeException();
+			
+			ReturnStmt returnStmt=Jimple.v().newReturnStmt(newLocal);	
+			unitChain.insertAfter(returnStmt, insertAfter);
+			insertAfter=returnStmt;
+		}
+		
+//		rename all locals that were newly introduced 
+		 /*it = dest.getUseAndDefBoxes().iterator();
+		 while(it.hasNext()) {
+			 ValueBox vb = (ValueBox) it.next();
+			 if(vb.getValue() instanceof Local) {
+				 Value newLocal=(Value) bindings.get(vb.getValue());
+				 if (newLocal!=null) {
+				 	Local local=(Local)vb.getValue();
+				 	local.setName(local.getName() + "_abc_" + state.getUniqueID()); 
+					vb.setValue(local);
+				 }					 
+			 }
+			
+		 }*/
+		
+		return firstCopy;
+	}
+	
 	private static void modifyAdviceMethod(
 		SootMethod adviceMethod,
 		SootClass accessInterface,
 		SootMethod accessMethod,
-		Type fieldType,
 		Type accessInterfaceType,
-		boolean bGet,
-		boolean bStatic) {
+		boolean bGet) {
 		
 		boolean bSet=!bGet;
 			
@@ -336,9 +706,9 @@ public class AroundWeaver {
 		arddebug("modifying advice method: " + adviceMethod.toString());
 		List aroundParameters=adviceMethod.getParameterTypes();
 		// params are added in reverse order...
-		if (bSet) {
+		/*if (bSet) {
 			aroundParameters.add(0, fieldType);	
-		}
+		}*/
 		aroundParameters.add(0, IntType.v());
 		aroundParameters.add(0, accessInterface.getType());		
 		adviceMethod.setParameterTypes(aroundParameters);
@@ -358,12 +728,12 @@ public class AroundWeaver {
 		statements.insertAfter(fieldIDStmt, intRefIDstmt);
 		// id for third param (value for set operation)
 		Local l3=null;
-		if (bSet) {
+		/*if (bSet) {
 			l3=localgen2.generateLocal(fieldType);
 			Stmt valueIDStmt=Jimple.v().newIdentityStmt(l3, 
 					Jimple.v().newParameterRef(fieldType,2));
 			statements.insertAfter(valueIDStmt, fieldIDStmt);
-		}
+		}*/
 		List proceedParams=new LinkedList();
 		
 		proceedParams.add(l2);
@@ -406,119 +776,5 @@ public class AroundWeaver {
 		}
 	}
 
-	private static void implementInterface(
-		SootClass cl,
-		Value accessFieldReference,
-		InstanceFieldRef fieldRef,
-		String methodName,
-		List accessParameters,
-		SootClass accessInterface,
-		Collection relevantFields,
-		boolean bGet,
-		boolean bStatic) {
-		arddebug("adding interface to class");
-		
-		boolean bSet=!bGet;
-		
-		cl.addInterface(accessInterface);
-		
-		Type returnType;
-		if (bGet) {
-			returnType=accessInterface.getType() ;
-		} else {
-			returnType=VoidType.v();
-		}
-			
-		// create new method					
-		SootMethod localGetMethod=new SootMethod(
-			methodName, accessParameters, returnType ,
-				Modifier.PUBLIC);
-		
-		Body getBody=Jimple.v().newBody(localGetMethod);
-		
-		localGetMethod.setActiveBody(getBody);
-		cl.addMethod(localGetMethod);
-		
-		Chain statements=getBody.getUnits();
-		
-		// generate this := @this
-		LocalGenerator lg=new LocalGenerator(getBody);
-		Local lThis=lg.generateLocal(cl.getType());
-		statements.addFirst(
-			Jimple.v().newIdentityStmt(lThis, 
-				Jimple.v().newThisRef(
-					RefType.v(cl))));
-		//getBody.getThisLocal();
-		// $i0 := @parameter0: int;
-		Local p2=lg.generateLocal(IntType.v());
-		Stmt paramIdStmt=Jimple.v().newIdentityStmt(p2, 
-		Jimple.v().newParameterRef(IntType.v(),0));
-		statements.insertAfter(paramIdStmt,
-			 statements.getFirst());
-		Local p3=null;
-		Stmt lastIDStmt=paramIdStmt;
-		if (bSet) {
-			p3=lg.generateLocal(accessFieldReference.getType());
-			Stmt valueIdStmt=Jimple.v().newIdentityStmt(p3, 
-				Jimple.v().newParameterRef(
-					accessFieldReference.getType(),1));
-			statements.insertAfter(valueIdStmt,
-				 paramIdStmt);		
-			
-			lastIDStmt=valueIdStmt;	
-		}
-								
-		List lookupValues= new LinkedList();
-		List targets= new LinkedList();
-		Unit defaultTarget;
-		
-		Iterator it=relevantFields.iterator();
-		int fieldID=0;
-		while (it.hasNext()) {
-			SootField field=(SootField)it.next();
-			lookupValues.add(IntConstant.v(fieldID));
-		
-			// generate field access
-			if (bGet) {								
-				Local l=lg.generateLocal(fieldRef.getType());
-				Stmt getStmt=Jimple.v().newAssignStmt(l, 
-						Jimple.v().newInstanceFieldRef(lThis ,field));			
-				statements.add(getStmt);
-				ReturnStmt returnStmt=Jimple.v().newReturnStmt(l);	
-				statements.add(returnStmt);
-				targets.add(getStmt);		
-			} else {
-				Stmt setStmt=Jimple.v().newAssignStmt( 
-					Jimple.v().newInstanceFieldRef(lThis ,field), p3);
-				statements.add(setStmt);
-				//ReturnStmt returnStmt=;	
-				statements.add(Jimple.v().newReturnVoidStmt());
-				targets.add(setStmt);
-			}
-			fieldID++;
-		}
-		
-		//Local l=lg.generateLocal(fieldRef.getType());
-		//ReturnStmt returnStmt=Jimple.v().newReturnStmt(l);	
-		//adviceChain.add(returnStmt);
-		//throw RuntimeException()
-		SootClass exception=Scene.v().getSootClass("java.lang.RuntimeException");
-		Local ex=lg.generateLocal(exception.getType());
-		Stmt newExceptStmt = Jimple.v().newAssignStmt( ex, Jimple.v().newNewExpr( exception.getType() ) );
-		Stmt initEx=Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( ex, exception.getMethod( "<init>", new ArrayList()))) ;
-		Stmt throwStmt=Jimple.v().newThrowStmt(ex);
-		statements.add(newExceptStmt);
-		statements.add(initEx);
-		statements.add(throwStmt);
-		defaultTarget=newExceptStmt;
-		
-		
-		Stmt lookupStmt=Jimple.v().newLookupSwitchStmt(p2, 
-			lookupValues, targets, defaultTarget);												
-		
-		// return
-		
-		//returnStmt.setOp(IntConstant.v());
-		statements.insertAfter(lookupStmt, lastIDStmt);
-	} 
+	
 }
