@@ -7,7 +7,7 @@ import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 
-public class AspectGenerator {
+public class AspectCodeGen {
 
     public void fillInAspect( SootClass cl ) {
         System.out.println( "filling in aspect "+cl );

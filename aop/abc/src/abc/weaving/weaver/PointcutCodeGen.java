@@ -7,7 +7,7 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import soot.javaToJimple.LocalGenerator;
 
-public class PointcutGenerator {
+public class PointcutCodeGen {
 
     public void weaveInAspects( SootClass cl) {
         for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
