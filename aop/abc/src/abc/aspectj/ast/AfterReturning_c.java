@@ -18,10 +18,7 @@ public class AfterReturning_c extends AdviceSpec_c
                             Formal returnResult,
                             TypeNode voidn)
     {
-	    super(pos);
-        this.formals = formals;
-        this.returnType = voidn;
-        this.returnVal = returnResult;
+	super(pos, formals, voidn, returnResult);
     }
     
 	//	string representation for error messages

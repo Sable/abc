@@ -16,9 +16,7 @@ public class Before_c extends AdviceSpec_c
                     List formals,
                     TypeNode voidn)
     {
-	    super(pos);
-        this.formals = formals;
-        this.returnType = voidn;
+	super(pos, formals, voidn, null);
     }
 
 	// string representation for error messages

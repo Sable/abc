@@ -15,10 +15,31 @@ public class AdviceSpec_c extends Node_c implements AdviceSpec
     protected TypeNode returnType;
     protected Formal returnVal;
 
-	public AdviceSpec_c(Position pos) {
+    public AdviceSpec_c(Position pos, List formals, TypeNode returnType, Formal returnVal) {
         super(pos);
-        this.formals = null;
-	    this.returnType = null;
+        this.formals = formals;
+	this.returnType = returnType;
+	this.returnVal = returnVal;
+    }
+
+    protected AdviceSpec_c reconstruct(List formals, TypeNode returnType, Formal returnVal) {
+	if (!CollectionUtil.equals(formals, this.formals) ||
+	    returnType != this.returnType ||
+	    returnVal != this.returnVal) {
+	    AdviceSpec_c n = (AdviceSpec_c) copy();
+	    n.formals = formals; //FIXME: Copy list?
+	    n.returnType = returnType;
+	    n.returnVal = returnVal;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	List formals = (List) visitList(this.formals, v);
+	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+	Formal returnVal = (Formal) visitChild(this.returnVal, v);
+	return reconstruct(formals, returnType, returnVal);
     }
 
     public List formals() {

@@ -16,10 +16,7 @@ public class AfterThrowing_c extends AdviceSpec_c
                            Formal exc,
                            TypeNode voidn)
     {
-	    super(pos);
-        this.formals = formals;
-        this.returnType = voidn;
-        this.returnVal = exc;
+	super(pos, formals, voidn, exc);
     }
 
 	//	string representation for error messages

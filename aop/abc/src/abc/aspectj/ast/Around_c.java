@@ -16,9 +16,7 @@ public class Around_c extends AdviceSpec_c
 		    TypeNode returnType,
 		    List formals)
     {
-		super(pos);
-    	this.formals = formals;
-		this.returnType = returnType;
+	super(pos, formals, returnType, null);
     }
     
     // string representation for error messages
