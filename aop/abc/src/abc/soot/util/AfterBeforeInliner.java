@@ -52,7 +52,7 @@ public class AfterBeforeInliner extends AdviceInliner {
 		shadowMethods.add(m);
 	}
 	
-	public boolean isAdviceMethodName(String name) {
+	public static boolean isAdviceMethodName(String name) {
 		return name.startsWith("before$") || name.startsWith("after$") ||
 		name.startsWith("afterReturning$") ||
 		name.startsWith("afterThrowing$");

@@ -102,6 +102,9 @@ public class Debug {
     public boolean aroundInliner = false;
     public boolean afterBeforeInliner=false;
 
+    public boolean unusedMethodsRemover=false;
+    
+    
     public boolean doValidate=false;  // validate jimple
     // dump CFG as dot plot, doValidate must also be true to enable it
     public boolean doValidateDumpCFG=false;
@@ -120,6 +123,7 @@ public class Debug {
     public boolean nullCheckElim=true;
     public boolean allowDynamicTests = false;
     public boolean switchFolder = true;
+    
     
     
     public boolean traceAntTask=false;

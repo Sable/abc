@@ -29,7 +29,6 @@
 package abc.main;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,14 +39,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.LinkedList;
-
-import java.io.*;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
-import polyglot.frontend.Pass;
 import polyglot.frontend.Job;
+import polyglot.frontend.Pass;
 import polyglot.main.Options;
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
@@ -59,8 +55,6 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Timers;
-import soot.Transform;
-import soot.Value;
 import soot.javaToJimple.AbstractJBBFactory;
 import soot.javaToJimple.AbstractJimpleBodyBuilder;
 import soot.javaToJimple.AccessFieldJBB;
@@ -72,20 +66,22 @@ import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
 import abc.aspectj.visit.NoSourceJob;
 import abc.aspectj.visit.OncePass;
 import abc.aspectj.visit.PatternMatcher;
+import abc.main.options.ArgList;
+import abc.main.options.OptionsParser;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AspectJExceptionChecker;
 import abc.weaving.aspectinfo.AbcClass;
-import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.DeclareParents;
-import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.DeclareParentsExt;
-import abc.weaving.weaver.DeclareParentsWeaver;
+import abc.weaving.aspectinfo.DeclareParentsImpl;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
+import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.IntertypeAdjuster;
+import abc.weaving.weaver.UnusedMethodsRemover;
 import abc.weaving.weaver.Weaver;
-import abc.main.options.*;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -493,6 +489,8 @@ public class Main {
                 }
                 
                 Weaver.doInlining();
+                
+                UnusedMethodsRemover.removeUnusedMethods();
                 
                 abortIfErrors();
 
