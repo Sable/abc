@@ -7,17 +7,19 @@ import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
 import polyglot.ast.Expr;
-import polyglot.types.Flags;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
-import polyglot.visit.PrettyPrinter;
+
+import polyglot.visit.*;
+import polyglot.types.*;
 
 import polyglot.ext.jl.ast.FieldDecl_c;
 
+import abc.aspectj.visit.*;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
-                                  implements IntertypeFieldDecl
+    implements IntertypeFieldDecl, ContainsAspectInfo
 {
     protected TypeNode host;
 
@@ -29,6 +31,14 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
                                 Expr init) {
 	super(pos,flags,type,name,init);
 	this.host = host;
+    }
+
+    public NodeVisitor addMembersEnter(AddMemberVisitor am) {
+	Type ht = host.type();
+	if (ht instanceof ParsedClassType) {
+	    ((ParsedClassType)ht).addField(fieldInstance());
+	}
+        return am.bypassChildren(this);
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
@@ -48,11 +58,14 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
         w.write(";");
     }
 
+    public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
+	abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
+	    (gai.getClass(host.type().toString()),
+	     AspectInfoHarvester.toAbcType(type().type()),
+	     name(),
+	     null);
+	abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
+	    (fs, current_aspect, position());
+	gai.addIntertypeFieldDecl(ifd);
+    }
 }
-	
-
-	
-
-     
-
-

@@ -24,8 +24,8 @@ import java.io.*;
  */
 public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
-	public static final polyglot.frontend.Pass.ID ASPECT_METHODS = new polyglot.frontend.Pass.ID("aspect-methods");
-	public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
+    public static final polyglot.frontend.Pass.ID ASPECT_METHODS = new polyglot.frontend.Pass.ID("aspect-methods");
+    public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
 	
     public static final polyglot.frontend.Pass.ID BUILD_HIERARCHY = new polyglot.frontend.Pass.ID("build-hierarchy");
     public static final polyglot.frontend.Pass.ID EVALUATE_PATTERNS = new polyglot.frontend.Pass.ID("evaluate-patterns");
@@ -116,8 +116,6 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
 
-        l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf, weavable_classes)));
-
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	
@@ -125,6 +123,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 		l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
    // to test the above:
    // l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+        l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf, weavable_classes)));
         
 	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
 	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor()));

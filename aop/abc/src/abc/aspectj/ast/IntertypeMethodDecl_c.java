@@ -6,16 +6,19 @@ import java.util.List;
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
-import polyglot.types.Flags;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
-import polyglot.visit.PrettyPrinter;
+
+import polyglot.visit.*;
+import polyglot.types.*;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
 
+import abc.aspectj.visit.*;
+
 public class IntertypeMethodDecl_c extends MethodDecl_c
-                                   implements IntertypeMethodDecl
+    implements IntertypeMethodDecl, ContainsAspectInfo
 {
     protected TypeNode host;
 
@@ -30,6 +33,14 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	super(pos,flags,returnType,
               name,formals,throwTypes,body);
 	this.host = host;
+    }
+
+    public NodeVisitor addMembersEnter(AddMemberVisitor am) {
+	Type ht = host.type();
+	if (ht instanceof ParsedClassType) {
+	    ((ParsedClassType)ht).addMethod(methodInstance());
+	}
+        return am.bypassChildren(this);
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
@@ -83,6 +94,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	}
 
 	w.end();
+
+    }
+
+    public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 
     }
 }
