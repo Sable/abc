@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -34,4 +36,13 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
 	printSubExpr(right, false, w, tr);
     }
 
+    public boolean matches(PCNode context, PCNode cl) {
+	if (op == COND_OR) {
+	    return left.matches(context, cl) || right.matches(context, cl);
+	}
+	if (op == COND_AND) {
+	    return left.matches(context, cl) && right.matches(context, cl);
+	}
+	throw new RuntimeException("Illegal CPE op");
+    }
 }

@@ -249,7 +249,6 @@ terminal Token PC_NOT;
 terminal Token PC_ANDAND;
 terminal Token PC_OROR;
 terminal Token PC_PLUS;
-terminal Token PC_PLUSDOT;
 terminal Token IDENTIFIERPATTERN;
 non terminal AspectDecl aspect_declaration;
 non terminal PerClause perclause_opt;
@@ -2085,11 +2084,13 @@ name_pattern ::=
            RESULT = parser.nf.DotNamePattern(parser.pos(a,b),a,b);
         
                                              :}
- |  name_pattern:a PC_DOTDOT simple_name_pattern:b {:
-                                                   Grm.parserTrace("name_pattern is np ..  snp");
-           RESULT = parser.nf.DotDotNamePattern(parser.pos(a,b),a,b);
+ |  name_pattern:a PC_DOTDOT:b simple_name_pattern:c {:
+                                                     Grm.parserTrace("name_pattern is np ..  snp");
+	   // Create a DotNamePattern with a DotDot on its left.
+	   DotDotNamePattern dotdot = parser.nf.DotDotNamePattern(parser.pos(a,b),a);
+           RESULT = parser.nf.DotNamePattern(parser.pos(a,c),dotdot,c);
         
-                                                   :};
+                                                     :};
 
 simple_name_pattern ::=
     IDENTIFIERPATTERN:a {:
@@ -2228,20 +2229,33 @@ aspectj_reserved_identifier ::=
                     :};
 
 classtype_dot_id ::=
-    name_pattern:a {:
-                   Grm.parserTrace("classtype_dot_id is a name_pattern");
+    simple_name_pattern:b {:
+                          Grm.parserTrace("classtype_dot_id is a name_pattern");
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(b),null,b);
+       
+                          :}
+ |  name_pattern:a DOT simple_name_pattern:b {:
+                                             Grm.parserTrace("classtype_dot_id is a name_pattern");
 	  TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
                                 parser.nf.RTPName(parser.pos(a),a,null)); // dodgy!
-          RESULT = parser.nf.ClassTypeDotId(parser.pos(a),aa,null);
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(a),aa,b);
        
-                   :}
- |  name_pattern:a PC_PLUSDOT simple_name_pattern:b {:
-                                                    Grm.parserTrace("classtype_dot_id is np + . snp");
+                                             :}
+ |  name_pattern:a PC_DOTDOT simple_name_pattern:b {:
+                                                   Grm.parserTrace("classtype_dot_id is a name_pattern");
+	  TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
+                                parser.nf.RTPName(parser.pos(a),
+				 parser.nf.DotDotNamePattern(parser.pos(a),a),null)); // dodgy?
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(a),aa,b);
+       
+                                                   :}
+ |  name_pattern:a PLUS DOT simple_name_pattern:b {:
+                                                  Grm.parserTrace("classtype_dot_id is np + . snp");
           TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
                                 parser.nf.RTPSubName(parser.pos(a),a,null));
           RESULT = parser.nf.ClassTypeDotId(parser.pos(a,b),aa,b);
        
-                                                    :}
+                                                  :}
  |  LPAREN:x type_pattern_expr:a RPAREN DOT simple_name_pattern:b {:
                                                                   Grm.parserTrace("classtype_dot_id is (tpe) . snp");
           RESULT = parser.nf.ClassTypeDotId(parser.pos(x,b),a,b);
@@ -2261,13 +2275,21 @@ classtype_dot_new ::=
            RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
         
                              :}
- |  name_pattern:a PC_PLUSDOT NEW:y {:
-                                    Grm.parserTrace("classtype_dot_new is np + . NEW");
+ |  name_pattern:a PC_DOTDOT NEW:y {:
+                                   Grm.parserTrace("classtype_dot_new is np . NEW");
+	   TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
+				parser.nf.RTPName(parser.pos(a),
+				parser.nf.DotDotNamePattern(parser.pos(a),a),null));
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
+        
+                                   :}
+ |  name_pattern:a PLUS DOT NEW:y {:
+                                  Grm.parserTrace("classtype_dot_new is np + . NEW");
            TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
                                 parser.nf.RTPSubName(parser.pos(a),a,null));
            RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
         
-                                    :}
+                                  :}
  |  LPAREN:x type_pattern_expr:a RPAREN DOT NEW:y {:
                                                   Grm.parserTrace("(tpe) . new");
           RESULT = parser.nf.ClassTypeDotNew(parser.pos(x,y),a);
@@ -2321,14 +2343,19 @@ basic_type_pattern ::=
            Grm.parserTrace("VOID type");
           TypeNode vn = parser.nf.CanonicalTypeNode(parser.pos(a),
                                                     parser.ts.Void());
-          RESULT = parser.nf.TPEType(parser.pos(a),vn);
+          RESULT = parser.nf.TPEType(parser.pos(a),vn, null);
        
            :}
  |  primitive_type:a {:
                      Grm.parserTrace("basic_type_pattern is just a primitive_type");
-          RESULT = parser.nf.TPEType(parser.pos(a),a);
+          RESULT = parser.nf.TPEType(parser.pos(a),a, null);
        
                      :}
+ |  primitive_type:a dims:b {:
+                            Grm.parserTrace("basic_type_pattern is just a primitive_type");
+          RESULT = parser.nf.TPEType(parser.pos(a),a, b);
+       
+                            :}
  |  reference_type_pattern:a {:
                              Grm.parserTrace("basic_type_pattern is a reference_type_pattern");
           RESULT = parser.nf.TPERefTypePat(parser.pos(a),a);

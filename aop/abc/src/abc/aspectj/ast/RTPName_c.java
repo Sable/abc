@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -30,6 +32,14 @@ public class RTPName_c extends Node_c
 	    for (int i = 0; i < dims.intValue(); i++) 
 		w.write("[]");
 	}
+    }
+
+    public boolean matchesClass(PCNode context, PCNode cl) {
+	return dims == null && pat.match(context).contains(cl);
+    }
+
+    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
+	return dims != null && dims.intValue() == dim && pat.match(context).contains(cl);
     }
 
 }

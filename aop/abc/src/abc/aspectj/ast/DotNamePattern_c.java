@@ -1,12 +1,15 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
 import polyglot.util.*;
 import polyglot.visit.*;
-import java.util.*;
 
+import java.util.*;
+import java.util.regex.*;
 
 public class DotNamePattern_c extends NamePattern_c 
                               implements DotNamePattern
@@ -26,4 +29,15 @@ public class DotNamePattern_c extends NamePattern_c
 	print(last,w,tr);
     }
 
+    public Set/*<PCNode>*/ match(PCNode context) {
+	Set/*<PCNode>*/ init_matches = init.match(context);
+	Set/*<PCNode>*/ result = new HashSet();
+	Pattern lp = Pattern.compile(((SimpleNamePattern_c)last).pat);
+	Iterator imi = init_matches.iterator();
+	while (imi.hasNext()) {
+	    PCNode im = (PCNode)imi.next();
+	    result.add(im.matchClass(lp));
+	}
+	return result;
+    }
 }

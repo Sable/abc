@@ -303,9 +303,8 @@ public class AspectJNodeFactory_c
     }
 
     public DotDotNamePattern DotDotNamePattern(Position pos,
-					       NamePattern init,
-					       SimpleNamePattern last) {
-	return new DotDotNamePattern_c(pos,init,last);
+					       NamePattern init) {
+	return new DotDotNamePattern_c(pos,init);
     }
 
     public CPEBinary CPEBinary(Position pos,
@@ -340,8 +339,8 @@ public class AspectJNodeFactory_c
 	return new TPENot_c(pos,expr);
     }
 
-    public TPEType TPEType(Position pos, TypeNode type) {
-	return new TPEType_c(pos,type);
+    public TPEType TPEType(Position pos, TypeNode type, Integer dims) {
+	return new TPEType_c(pos,type,dims);
     }
 
     public TPERefTypePat TPERefTypePat(Position pos, RefTypePattern pat) {

@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -23,6 +25,10 @@ public class CPEName_c extends ClassnamePatternExpr_c
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	print(pat,w,tr);
+    }
+
+    public boolean matches(PCNode context, PCNode cl) {
+	return pat.match(context).contains(cl);
     }
 
 }

@@ -9,7 +9,7 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
-public class TypePatternExpr_c extends Node_c 
+public abstract class TypePatternExpr_c extends Node_c 
                                implements TypePatternExpr
 {
 

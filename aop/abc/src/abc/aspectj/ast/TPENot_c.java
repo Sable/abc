@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -25,4 +27,19 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
         printSubExpr(tpe, true, w, tr);
     }
 
+    public boolean matchesClass(PCNode context, PCNode cl) {
+	return !tpe.matchesClass(context, cl);
+    }
+
+    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
+	return !tpe.matchesClassArray(context, cl, dim);
+    }
+
+    public boolean matchesPrimitive(String prim) {
+	return !tpe.matchesPrimitive(prim);
+    }
+
+    public boolean matchesPrimitiveArray(String prim, int dim) {
+	return !tpe.matchesPrimitiveArray(prim, dim);
+    };
 }

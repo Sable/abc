@@ -9,7 +9,7 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
-public class NamePattern_c extends Node_c implements NamePattern
+public abstract class NamePattern_c extends Node_c implements NamePattern
 {
 
     public NamePattern_c(Position pos) {

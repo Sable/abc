@@ -28,6 +28,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
 
+    public static final polyglot.frontend.Pass.ID GOING_TO_JIMPLIFY = new polyglot.frontend.Pass.ID("going-to-jimplify");
     public static final polyglot.frontend.Pass.ID JIMPLIFY = new polyglot.frontend.Pass.ID("jimplify");
 
     static {
@@ -85,6 +86,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
+	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
 	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor()));
 
 	if (compiler.serializeClassInfo()) {

@@ -724,7 +724,6 @@ SingleCharacter = [^\r\n\'\\]
   "!"                            { return op(sym.PC_NOT); }
   "&&"                           { return op(sym.PC_ANDAND); }
   "||"                           { return op(sym.PC_OROR); }
-  "+."                           { return op(sym.PC_PLUSDOT); }
   "+"                            { return op(sym.PC_PLUS); }
 
 

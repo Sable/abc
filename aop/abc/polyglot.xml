@@ -522,7 +522,7 @@ ext=""
 
  
   <target name="aspectj-jar" depends="aspectj">
-    <jar jarfile="${lib}/skel.jar" basedir="${classes}" includes="polyglot/ext/aspectj/**"/>
+    <jar jarfile="${lib}/arc.jar" basedir="${classes}" includes="arc/aspectj/**"/>
   </target>
 
   <target name="param" depends="jl">
@@ -709,6 +709,14 @@ ext=""
         <exclude name="polyglot/ext/skel/**"/>
         <exclude name="**/tests"/>
         <exclude name="**/test"/>
+      </packageset>
+    </javadoc>
+  </target>
+
+  <target name="aspectj-javadoc" depends="jl">
+    <javadoc sourcepath="${polyglot}" destdir="doc/api">
+      <packageset dir="${src}" defaultexcludes="yes">
+        <include name="arc/**"/>
       </packageset>
     </javadoc>
   </target>

@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -24,5 +26,10 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
 	w.write("!");
         printSubExpr(cpe, true, w, tr);
     }
+
+    public boolean matches(PCNode context, PCNode cl) {
+	return !cpe.matches(context, cl);
+    }
+
 
 }

@@ -1,5 +1,7 @@
 package arc.aspectj.ast;
 
+import arc.aspectj.visit.*;
+
 import polyglot.ast.*;
 
 import polyglot.types.*;
@@ -32,6 +34,46 @@ public class TPEBinary_c extends TypePatternExpr_c
 	w.write(op.toString());
 	w.allowBreak(2, " ");
 	printSubExpr(right, false, w, tr);
+    }
+
+    public boolean matchesClass(PCNode context, PCNode cl) {
+	if (op == COND_OR) {
+	    return left.matchesClass(context, cl) || right.matchesClass(context, cl);
+	}
+	if (op == COND_AND) {
+	    return left.matchesClass(context, cl) && right.matchesClass(context, cl);
+	}
+	throw new RuntimeException("Illegal CPE op");
+    }
+
+    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
+	if (op == COND_OR) {
+	    return left.matchesClassArray(context, cl, dim) || right.matchesClassArray(context, cl, dim);
+	}
+	if (op == COND_AND) {
+	    return left.matchesClassArray(context, cl, dim) && right.matchesClassArray(context, cl, dim);
+	}
+	throw new RuntimeException("Illegal CPE op");
+    }
+
+    public boolean matchesPrimitive(String prim) {
+	if (op == COND_OR) {
+	    return left.matchesPrimitive(prim) || right.matchesPrimitive(prim);
+	}
+	if (op == COND_AND) {
+	    return left.matchesPrimitive(prim) && right.matchesPrimitive(prim);
+	}
+	throw new RuntimeException("Illegal CPE op");
+    }
+
+    public boolean matchesPrimitiveArray(String prim, int dim) {
+	if (op == COND_OR) {
+	    return left.matchesPrimitiveArray(prim, dim) || right.matchesPrimitiveArray(prim, dim);
+	}
+	if (op == COND_AND) {
+	    return left.matchesPrimitiveArray(prim, dim) && right.matchesPrimitiveArray(prim, dim);
+	}
+	throw new RuntimeException("Illegal CPE op");
     }
 
 }

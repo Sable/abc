@@ -182,7 +182,7 @@ public interface AspectJNodeFactory
 
     DotNamePattern DotNamePattern(Position pos, NamePattern init, SimpleNamePattern last);
 
-    DotDotNamePattern DotDotNamePattern(Position pos, NamePattern init, SimpleNamePattern last);
+    DotDotNamePattern DotDotNamePattern(Position pos, NamePattern init);
 
     CPEBinary CPEBinary(Position pos,
 		        ClassnamePatternExpr left,
@@ -202,7 +202,7 @@ public interface AspectJNodeFactory
 
     TPENot TPENot(Position pos, TypePatternExpr tpe);
 
-    TPEType TPEType(Position pos, TypeNode type);
+    TPEType TPEType(Position pos, TypeNode type, Integer dims);
 
     TPERefTypePat TPERefTypePat(Position pos, RefTypePattern pat);
 
