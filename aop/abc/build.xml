@@ -20,7 +20,7 @@
     </target>
     
     <target name="runtime-jar" depends="settings,runtime">
-        <jar destfile="lib/aspectjrt.jar">
+        <jar destfile="lib/abc-runtime.jar">
             <fileset dir="runtime-classes"/>
         </jar>
     </target>
