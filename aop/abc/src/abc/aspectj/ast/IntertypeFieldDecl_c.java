@@ -15,6 +15,7 @@ import polyglot.ast.Node;
 import polyglot.ast.Assign;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Call;
+import polyglot.ast.Cast;
 import polyglot.ast.Special;
 
 import polyglot.util.CodeWriter;
@@ -152,10 +153,13 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			throwTypes.add(ttn);
 		}
 		
-		Return ret = nf.Return(init().position(),init());
+		Cast cast = nf.Cast(position(),type(),init());
+		cast = (Cast) cast.type(type().type());
+		
+		Return ret = nf.Return(init().position(),cast);
 		Block body = nf.Block(init().position(),ret);
 		
-		TypeNode rettype = nf.CanonicalTypeNode(position(),init().type());
+		TypeNode rettype = nf.CanonicalTypeNode(position(),type().type());
 		
 		Flags fs = Flags.PUBLIC.set(Flags.STATIC);
 		
@@ -165,7 +169,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		if (!(flags().isStatic()))
 			argtypes.add(thisParamInstance.type());
 		List exctypes = init().throwTypes(ts);
-		initmi = ts.methodInstance(position(),fieldInstance().container(),fs,init().type(),name,argtypes,exctypes);
+		initmi = ts.methodInstance(position(),fieldInstance().container(),fs,type().type(),name,argtypes,exctypes);
 		md = md.methodInstance(initmi);
 
 		initm = md;

@@ -100,6 +100,7 @@ public class AspectMethods extends NodeVisitor {
 		return this;
 	 }
 	 
+
     public Node leave(Node parent, Node old, Node n, NodeVisitor v) {
  
 /* intertype declarations: */

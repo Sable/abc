@@ -229,24 +229,26 @@ public class IntertypeAdjuster {
 		modifiers |= Modifier.STATIC; // the originating method is static
 		modifiers &= ~Modifier.PRIVATE;
 		modifiers &= ~Modifier.PROTECTED;
-            
-	    // Create the method
-	    SootMethod sm = new SootMethod( 
-					  method.getName(),
-					  parms,
-					  retType,
-					  modifiers );
-
-		for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
-			final SootClass exception = (SootClass) exceptionIt.next();
-			sm.addException( exception );
-		}
-		
-		sm.setSource(method.getSootMethod().getSource());
-		
-		sc.addMethod(sm);
-
-		return sm;
+        
+        if (!Modifier.isAbstract(modifiers)) {
+		    // Create the method
+		    SootMethod sm = new SootMethod( 
+						  method.getName(),
+						  parms,
+						  retType,
+						  modifiers );
+	
+			for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+				final SootClass exception = (SootClass) exceptionIt.next();
+				sm.addException( exception );
+			}
+			
+			sm.setSource(method.getSootMethod().getSource());
+			
+			sc.addMethod(sm);
+	
+			return sm;
+        } else return null;
 	}
 	
     private void addTargetMethod( IntertypeMethodDecl imd, SootMethod implMethod) {
