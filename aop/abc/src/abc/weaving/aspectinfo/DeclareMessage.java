@@ -24,7 +24,6 @@ public class DeclareMessage extends AbstractAdviceDecl {
     private final int[] polyglot_sev = { ErrorInfo.WARNING, ErrorInfo.SEMANTIC_ERROR };
 
     private int severity;
-    private Pointcut pc;
     private String message;
     private Aspect aspct;
 
@@ -32,7 +31,6 @@ public class DeclareMessage extends AbstractAdviceDecl {
 	super(null,pc,new ArrayList(),pos);
 	this.aspct=aspct;
 	this.severity = severity;
-	this.pc = pc;
 	this.message = message;
     }
 
@@ -52,11 +50,6 @@ public class DeclareMessage extends AbstractAdviceDecl {
      */
     public String getSeverityName() {
 	return sev_name[severity];
-    }
-
-    /** Get the pointcut to check for matches. */
-    public Pointcut getPointcut() {
-	return pc;
     }
 
     /** Get the message to give if the pointcut matches anything. */

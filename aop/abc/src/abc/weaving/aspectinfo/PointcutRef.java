@@ -58,7 +58,8 @@ public class PointcutRef extends Pointcut {
 			     SootClass cls,
 			     SootMethod method,
 			     ShadowMatch sm) {
-	throw new RuntimeException("named pointcuts not handled yet");
+	throw new InternalCompilerError
+	    ("PointcutRef should have been inlined by now",getPosition());
     }
 
     protected Pointcut inline(Hashtable renameEnv,
