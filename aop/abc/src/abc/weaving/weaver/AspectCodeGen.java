@@ -210,14 +210,19 @@ public class AspectCodeGen {
         SootMethod clinit;
 
 	// if there is no clinit method already, create one
-        if( !cl.declaresMethod( "void <clinit>()" ) ) {
+        if( !cl.declaresMethod( "void <clinit>()" ) ) 
+	   throw new CodeGenException("should always be one here");
+
+	   /*
+	   {
 	    debug("There is no clinit, must build one");
             clinit = new SootMethod( "<clinit>", new ArrayList(), VoidType.v(), Modifier.STATIC );
             cl.addMethod( clinit );
             b = Jimple.v().newBody(clinit);
             clinit.setActiveBody(b);
             b.getUnits().addLast( Jimple.v().newReturnVoidStmt() );
-        }
+            }
+	    */
 
 	debug("getting clinit");
         clinit = cl.getMethod("void <clinit>()");
@@ -235,6 +240,7 @@ public class AspectCodeGen {
 	    // insert a call to postClinit() just before each return
             if( s instanceof ReturnVoidStmt ) 
 	      { // make a nop stmt which we will goto
+		debug("LJH - inserting before return");
 	        Stmt nop = Jimple.v().newNopStmt();	
 		// postClinit(); 
 		Stmt invokepostClinit =

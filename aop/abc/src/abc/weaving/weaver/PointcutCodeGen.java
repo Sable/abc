@@ -137,10 +137,24 @@ public class PointcutCodeGen {
        SootClass aspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
        SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
-       InvokeStmt s =  
-	    Jimple.v().
-	      newInvokeStmt( Jimple.v().
+       InvokeStmt s;
+       int nformals = advicedecl.numFormals();
+       // if there are no formals for the advicemethod
+       if (nformals == 0)
+          s = Jimple.v().
+	        newInvokeStmt( Jimple.v().
 		  newVirtualInvokeExpr( aspectref, advicemethod ) );
+       else // have to fill in a bunch of formals
+         /* { formalsdone = new boolean[nformals+1];
+	   formalsdone[0] = true;  // won't use this index
+
+	   // try to fill in all the formals
+	   //if (advicedecl 
+
+	 } */
+	 throw new 
+	   CodeGenException("case not handled yet in making invoke to " +
+	                        advicemethod.getName());
        return(s);
      }
     

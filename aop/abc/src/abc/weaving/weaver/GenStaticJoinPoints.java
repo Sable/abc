@@ -45,7 +45,7 @@ public class GenStaticJoinPoints {
       Stmt ip;            // the instruction from with to insert (before)
 
       // --- get the units and insertion point in clinit()
-      if (sc.declaresMethod("void<clinit>()"))
+      if (sc.declaresMethod("void <clinit>()"))
         { debug("Found the clinit in which to put the SJP");
           clinit = sc.getMethod("void <clinit>()");
           b = clinit.retrieveActiveBody();
@@ -54,10 +54,10 @@ public class GenStaticJoinPoints {
 	  ip = (Stmt) units.getLast();  // should be the return stmt 
         }
       else
-        /* FIXME throw new CodeGenException(
+        throw new CodeGenException(
            "SJP insertion assumes a clinit existed " +
 	   "in class " + sc.getName());
-         */
+      /*
         { debug("Shouldn't have to insert a clinit");
           clinit = new SootMethod( "<clinit>", 
               new ArrayList(), VoidType.v(), Modifier.STATIC );
@@ -69,6 +69,7 @@ public class GenStaticJoinPoints {
            lg = new LocalGenerator(b);
            ip = (Stmt) units.getLast();  // should be the return stmt 
          }
+	 */
 
       // for each method in the class 
       for( Iterator methodIt = sc.getMethods().iterator(); 
