@@ -29,7 +29,7 @@ import java.io.*;
  * @author Ondrej Lhotak
  */
 public class AntTask extends MatchingTask {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
     private void debug(String s) {
         if(DEBUG) System.err.println(s);
     }
