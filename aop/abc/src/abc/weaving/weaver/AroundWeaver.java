@@ -52,6 +52,7 @@ import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
 import soot.jimple.Constant;
 import soot.jimple.FieldRef;
+import soot.jimple.ArrayRef;
 import soot.jimple.GotoStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
@@ -1835,9 +1836,16 @@ public class AroundWeaver {
 								// get
 								returnedLocal = (Local) leftOp;
 								
-							} else if ((leftOp instanceof FieldRef && rightOp instanceof Local) ||	
-									   (leftOp instanceof FieldRef && rightOp instanceof Constant)) {
-								// set
+							} else if (leftOp instanceof FieldRef || leftOp instanceof ArrayRef) {
+							    // This is some kind of set. AspectJ pointcuts only allow for setfield,
+							    // but extenders might want things like ArrayRefs here too. Should check
+							    // the Jimple grammar to see if anything else would make sense here.
+
+							        if(!(rightOp instanceof Local || rightOp instanceof Constant)) {
+								        // violates the Jimple grammar
+ 								        throw new InternalAroundError();
+       	                                                        }
+
 								
 								// special case: with return type object, set() returns null.
 								if (getAdviceReturnType().equals(objectType)) {
@@ -1846,7 +1854,13 @@ public class AroundWeaver {
 									Stmt s=Jimple.v().newAssignStmt(l, NullConstant.v());
 									shadowMethodStatements.insertAfter(s, begin);
 									returnedLocal=l;
-								}			
+								} else {
+								    // This should be unreachable, because set advice only matches
+								    // if the return type of the advice is void or if the return type
+								    // is Object. In the former case the weaver should not be looking
+								    // for a return value.
+								    throw new InternalAroundError();
+								}
 							} else {
 								// unexpected statement type
 								throw new InternalAroundError();
