@@ -91,6 +91,57 @@ public abstract class AdviceApplication {
 	}
     }
 
+    public static void doMethod(GlobalAspectInfo info,
+				SootClass cls,
+				SootMethod method,
+				Hashtable ret) {
+	// FIXME: Replace this call with one to the partial 
+	// transformer;
+	// Iterate through body to find "new", decide if we have a 
+	// pointcut 
+	// that might match it, and add the class to the list if so
+	// Either that or pre-compute the list of all classes that our
+	// pointcuts could match
+	
+	HashMap m=new HashMap();
+	m.put("enabled","true");
+	(new soot.jimple.toolkits.base.JimpleConstructorFolder())
+	    .transform(method.getActiveBody(),"jtp.jcf",m);
+	
+	MethodAdviceList mal=new MethodAdviceList();
+	
+	// Do whole body shadows
+	doStatement(info,mal,cls,method,new WholeMethodPosition(method));
+	
+	// Do statement shadows
+	Chain stmtsChain=method.getActiveBody().getUnits();
+	Stmt current,next;
+	
+	if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
+	    for(current=(Stmt) stmtsChain.getFirst();
+		current!=null;
+		current=next) {
+		next=(Stmt) stmtsChain.getSuccOf(current);
+		doStatement(info,mal,cls,method,new StmtMethodPosition(current));
+		doStatement(info,mal,cls,method,new NewStmtMethodPosition(current,next));
+	    }
+	}
+	
+	// Do exception handler shadows
+	Chain trapsChain=method.getActiveBody().getTraps();
+	Trap currentTrap;
+	
+	if(!trapsChain.isEmpty()) {
+	    for(currentTrap=(Trap) trapsChain.getFirst();
+		currentTrap!=null;
+		currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
+		
+		doStatement(info,mal,cls,method,new TrapMethodPosition(currentTrap));
+	}
+	
+	ret.put(method,mal);
+    }
+
     public static Hashtable computeAdviceLists(GlobalAspectInfo info) {
 	Iterator clsIt;
 
@@ -104,59 +155,31 @@ public abstract class AdviceApplication {
 	    SootClass sootCls = cls.getSootClass();
 	    Iterator methodIt;
 
+	    boolean hasclinit=false;
+
 	    for(methodIt=sootCls.methodIterator();methodIt.hasNext();) {
 
 		final SootMethod method = (SootMethod) methodIt.next();
+		if(method.getName().equals(SootMethod.staticInitializerName))
+		    hasclinit=true;
 
 		if(method.isAbstract()) continue;
 		if(method.isNative()) continue;
-		System.out.println("Processing a method");
-		// FIXME: Replace this call with one to the partial 
-		// transformer;
-		// Iterate through body to find "new", decide if we have a 
-		// pointcut 
-		// that might match it, and add the class to the list if so
-		// Either that or pre-compute the list of all classes that our
-		// pointcuts could match
 
-		HashMap m=new HashMap();
-		m.put("enabled","true");
-		(new soot.jimple.toolkits.base.JimpleConstructorFolder())
-		    .transform(method.getActiveBody(),"jtp.jcf",m);
+		doMethod(info,sootCls,method,ret);
+	    }
+	    if(!hasclinit) {
+		SootMethod clinit = new SootMethod
+		    (SootMethod.staticInitializerName,
+		     new ArrayList(),
+		     VoidType.v(),
+		     Modifier.STATIC);
+		sootCls.addMethod(clinit);
+		Body b = Jimple.v().newBody(clinit);
+		clinit.setActiveBody(b);
+		b.getUnits().addLast( Jimple.v().newReturnVoidStmt() );
 
-		MethodAdviceList mal=new MethodAdviceList();
-
-		// Do whole body shadows
-		doStatement(info,mal,sootCls,method,new WholeMethodPosition(method));
-
-		// Do statement shadows
-		Chain stmtsChain=method.getActiveBody().getUnits();
-		Stmt current,next;
-
-		if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
-		    for(current=(Stmt) stmtsChain.getFirst();
-			current!=null;
-			current=next) {
-			next=(Stmt) stmtsChain.getSuccOf(current);
-			doStatement(info,mal,sootCls,method,new StmtMethodPosition(current));
-			doStatement(info,mal,sootCls,method,new NewStmtMethodPosition(current,next));
-		    }
-		}
-
-		// Do exception handler shadows
-		Chain trapsChain=method.getActiveBody().getTraps();
-		Trap currentTrap;
-
-		if(!trapsChain.isEmpty()) {
-		    for(currentTrap=(Trap) trapsChain.getFirst();
-			currentTrap!=null;
-			currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
-			
-			doStatement(info,mal,sootCls,method,new TrapMethodPosition(currentTrap));
-		}
-
-		ret.put(method,mal);
-		System.out.println("Done processing");
+		doMethod(info,sootCls,clinit,ret);
 	    }
 	}
 	return ret;
