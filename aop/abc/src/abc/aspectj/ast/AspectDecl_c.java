@@ -51,6 +51,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	           AspectJFlags.aspect(privileged ? AspectJFlags.privileged(flags): flags),
 	           name,superClass,interfaces,body);
          this.per = per;
+	 this.per_object = per instanceof PerThis || per instanceof PerTarget;
     }
     
     /**
@@ -59,21 +60,20 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	* if it is a per-object associated aspect, it takes one parameter of type Object, otherwise none
 	*/
     private MethodDecl aspectOf(NodeFactory nf,AspectJTypeSystem ts) {
-		TypeNode tn = nf.AmbTypeNode(position(),name());
-		Expr nl = nf.NullLit(position());
-		Block bl = nf.Block(position()).append(nf.Return(position(),nl));
+	TypeNode tn = nf.AmbTypeNode(position(),name());
+	Expr nl = nf.NullLit(position());
+	Block bl = nf.Block(position()).append(nf.Return(position(),nl));
 				
-		TypeNode nab = nf.CanonicalTypeNode(position(),ts.NoAspectBound());
-		List args = new LinkedList();
-		if (per instanceof PerThis || per instanceof PerTarget) {
-			TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object());
-			polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam");
-			args.add(f);
-			per_object = true;
-		}
-		List thrws = new LinkedList(); thrws.add(nab);
-		MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl); 
-		return md; 
+	TypeNode nab = nf.CanonicalTypeNode(position(),ts.NoAspectBound());
+	List args = new LinkedList();
+	if (per_object) {
+	    TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object());
+	    polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam");
+	    args.add(f);
+	}
+	List thrws = new LinkedList(); thrws.add(nab);
+	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl); 
+	return md; 
     }
     
     /**
@@ -85,6 +85,11 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
     	Block bl = nf.Block(position()).append(nf.Return(position(),b));
     	
     	List args = new LinkedList();
+	if (per_object) {
+	    TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object());
+	    polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam");
+	    args.add(f);
+	}
     	List thrws = new LinkedList();
     	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),bool,"hasAspect",args,thrws,bl);
     	return md;
@@ -97,7 +102,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	public NodeVisitor buildTypesEnter(TypeBuilder tb) throws SemanticException {
 		if (!flags().isAbstract()) {
 		    NodeFactory nf = tb.nodeFactory();
-		    AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();      
+		    AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();
 		    MethodDecl aspectOf = aspectOf(nf,ts);
 		    MethodDecl hasAspect = hasAspect(nf,ts);
 		    body = body().addMember(aspectOf).addMember(hasAspect); 
