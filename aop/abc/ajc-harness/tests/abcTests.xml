@@ -8489,9 +8489,12 @@
 	<ajc-test num="930" dir="bugs/serialVersionUID" 
 	    title="SUID: Around closure execution advice (-Xlint:ignore)" comment="OK because ignoring warnings"
 		pr="41181">
-		<compile files="Test.java, Util.java"/>
+		<compile files="Test.java, Util.java">
+		</compile>
         <run class="Test"/>
-		<compile files="Test.java, Util.java, AroundClosureExecutionAdvice.aj" options="-Xlint:ignore"/>
+		<compile files="Test.java, Util.java, AroundClosureExecutionAdvice.aj" options="-Xlint:ignore">
+		<message kind="warning"/>
+		</compile>
         <run class="Util" options="-fail"/>
 	</ajc-test>
 

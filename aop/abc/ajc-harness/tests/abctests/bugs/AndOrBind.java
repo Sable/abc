@@ -2,7 +2,7 @@ import org.aspectj.testing.Tester;
 
 aspect Aspect { 
  
-after(Ant a) returning:     
+after(MyAnt a) returning:     
      call (void Command.step(..)) &&  
       (target(PickUp) || target(Drop))  &&  
       args(a) 
@@ -10,14 +10,14 @@ after(Ant a) returning:
            Tester.event("<combined"); 
         } 
  
-after(Ant a) returning:     
+after(MyAnt a) returning:     
      call (void Command.step(..)) &&  
     target(PickUp)  && args(a) 
 	{ 
            Tester.event("<pickup"); 
  	} 
  
-after(Ant a) returning:     
+after(MyAnt a) returning:     
      call (void Command.step(..)) &&  
      target(Drop)  && args(a) 
 	 { 
@@ -26,18 +26,18 @@ after(Ant a) returning:
  
 } 
  
-class Ant {} 
+class MyAnt {} 
  
 abstract class Command { 
-    public abstract void step(Ant a); 
+    public abstract void step(MyAnt a); 
 } 
  
 class PickUp extends Command {  
-    public void step(Ant a) {} 
+    public void step(MyAnt a) {} 
 } 
  
 class Drop extends Command {  
-    public void step(Ant a) {} 
+    public void step(MyAnt a) {} 
 } 
  
 public class AndOrBind { 
@@ -45,7 +45,7 @@ public class AndOrBind {
     public static void main(String[] args) { 
 	Command c1 = new PickUp(); 
 	Command c2 = new Drop(); 
-	Ant a = new Ant(); 
+	MyAnt a = new MyAnt(); 
         c1.step(a); 
 	Tester.expectEvent("<combined");
 	Tester.expectEvent("<pickup");
