@@ -28,12 +28,16 @@ import polyglot.ext.jl.ast.ClassDecl_c;
 import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.types.AspectJTypeSystem;
 
+import abc.aspectj.visit.ContainsAspectInfo;
+
+import abc.weaving.aspectinfo.*;
+
 /**
  * A <code>AspectDecl</code> is the definition of an aspect, abstract aspect,
  * or privileged. It may be a public or other top-level aspect, or an inner
  * named aspect.
  */
-public class AspectDecl_c extends ClassDecl_c implements AspectDecl
+public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAspectInfo
 {
     
     protected PerClause per;
@@ -103,5 +107,10 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl
 			w.write(" {");
 		}
 
-
+    public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	Per p = (per == null ? new Singleton(position()) : per.makeAIPer());
+	AbcClass cl = gai.getClass(type().fullName());
+	Aspect a = new Aspect(cl, p, position());
+	gai.addAspect(a);
+    }
 }

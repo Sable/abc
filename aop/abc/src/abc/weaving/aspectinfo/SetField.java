@@ -4,11 +4,10 @@ import soot.*;
 import soot.jimple.*;
 
 /** Handler for <code>set</code> shadow pointcut. */
-public class SetField extends AbstractPointcut {
+public class SetField extends AbstractShadowPointcutHandler {
     private FieldPattern pattern;
 
     public SetField(FieldPattern pattern) {
-	super(null);
 	this.pattern = pattern;
     }
 
@@ -26,4 +25,7 @@ public class SetField extends AbstractPointcut {
 	//	return getPattern().matchesField(fr.getField());
     }
 
+    public String toString() {
+	return "set("+pattern+")";
+    }
 }

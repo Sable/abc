@@ -22,4 +22,8 @@ public class AbcClass {
 	}
 	return sc;
     }
+
+    public String toString() {
+	return name;
+    }
 }

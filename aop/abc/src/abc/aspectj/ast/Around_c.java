@@ -63,4 +63,9 @@ public class Around_c extends AdviceSpec_c
         w.end();
     }
 
+    public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
+	abc.weaving.aspectinfo.AbcType rtype = abc.aspectj.visit.AspectInfoHarvester.toAbcType(returnType.type());
+	abc.weaving.aspectinfo.MethodSig proceed = null;//FIXME: What is the proceed method
+	return new abc.weaving.aspectinfo.AroundAdvice(rtype, proceed, position());
+    }
 }

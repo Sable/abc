@@ -35,19 +35,23 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
 
+    public static final polyglot.frontend.Pass.ID HARVEST_ASPECT_INFO = new polyglot.frontend.Pass.ID("harvest");
+
     public static final polyglot.frontend.Pass.ID GOING_TO_JIMPLIFY = new polyglot.frontend.Pass.ID("going-to-jimplify");
     public static final polyglot.frontend.Pass.ID JIMPLIFY = new polyglot.frontend.Pass.ID("jimplify");
 
+    public Collection weavable_classes;
     public PCStructure hierarchy;
     public PatternMatcher pattern_matcher;
 
-    // For temporary compatibility
-    public ExtensionInfo() {
-	this(new PCStructure());
-    }
-
-    public ExtensionInfo(PCStructure hierarchy) {
-	this.hierarchy = hierarchy;
+    public ExtensionInfo(Collection weavable_classes) {
+	this.weavable_classes = weavable_classes;
+	hierarchy = new PCStructure();
+	Iterator ci = weavable_classes.iterator();
+	while (ci.hasNext()) {
+	    String cname = (String)ci.next();
+	    hierarchy.insertFullName(cname, true, true);
+	}
 	this.pattern_matcher = new PatternMatcher(hierarchy);
     }
 
@@ -111,6 +115,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
+
+        l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf, weavable_classes)));
 
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));

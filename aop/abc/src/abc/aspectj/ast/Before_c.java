@@ -59,4 +59,7 @@ public class Before_c extends AdviceSpec_c
 
     }
 
+    public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
+	return new abc.weaving.aspectinfo.BeforeAdvice(position());
+    }
 }

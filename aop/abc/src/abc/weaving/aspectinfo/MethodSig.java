@@ -16,7 +16,7 @@ public class MethodSig extends Syntax {
     private SootMethod sm;
 
     /** Create a method signature.
-     *  @param params a list of {@link abc.weaving.aspectinfo.Type} objects
+     *  @param params a list of {@link abc.weaving.aspectinfo.AbcType} objects
      */
     public MethodSig(AbcClass cl, AbcType rtype, String name, List params, Position pos) {
 	super(pos);
@@ -39,5 +39,25 @@ public class MethodSig extends Syntax {
 	    sm = sc.getMethod(name, spt);
 	}
 	return sm;
+    }
+
+    public String toString() {
+	StringBuffer sb = new StringBuffer();
+	sb.append(rtype);
+	sb.append(" ");
+	sb.append(cl);
+	sb.append(".");
+	sb.append(name);
+	sb.append("(");
+	Iterator pi = params.iterator();
+	while (pi.hasNext()) {
+	    AbcType p = (AbcType)pi.next();
+	    sb.append(p);
+	    if (pi.hasNext()) {
+		sb.append(", ");
+	    }
+	}
+	sb.append(")");
+	return sb.toString();
     }
 }

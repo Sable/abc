@@ -25,5 +25,6 @@ public interface TypePatternExpr extends Node
     public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim);
 
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException;
+
 }
 

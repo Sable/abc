@@ -74,6 +74,13 @@ public class AfterReturning_c extends AdviceSpec_c
         w.end();
     }
     
+    public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
+	if (returnVal == null) {
+	    return new abc.weaving.aspectinfo.AfterReturningAdvice(position());
+	} else {
+	    return new abc.weaving.aspectinfo.AfterReturningArgAdvice(position());
+	}
+    }
 
 }
 

@@ -61,4 +61,9 @@ public class ConstructorPattern_c extends Node_c
 	   print(throwpat,w,tr);
        }
     }
+
+    public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern() {
+	//TODO
+	return null;
+    }
 }

@@ -22,4 +22,8 @@ public class IsSingleton_c extends PerClause_c implements IsSingleton
         w.write("issingleton()"); // ajc requires the brackets
     }
 
+    public abc.weaving.aspectinfo.Per makeAIPer() {
+	return new abc.weaving.aspectinfo.Singleton(position());
+    }
+
 }

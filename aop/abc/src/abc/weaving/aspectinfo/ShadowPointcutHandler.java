@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import soot.*;
+import soot.jimple.*;
 
 /** Handler for an instance of a specific kind of shadow pointcut.
  *  Each joinpoint shadow will have one shadow type, so there will be
@@ -9,4 +10,6 @@ import soot.*;
  */
 public interface ShadowPointcutHandler {
     public ShadowType getShadowType();
+
+    public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt);
 }

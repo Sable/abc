@@ -17,6 +17,9 @@ public class GlobalAspectInfo {
     private List/*<IntertypeFieldDecl>*/ ifds = new ArrayList();
     private List/*<AdviceDecl>*/ ads = new ArrayList();
 
+    private Map/*<String,AbcClass>*/ classes_map = new HashMap();
+    private Map/*<String,Aspect>*/ aspects_map = new HashMap();
+
     public GlobalAspectInfo() {
 	
     }
@@ -56,12 +59,22 @@ public class GlobalAspectInfo {
 	return ads;
     }
 
+    public AbcClass getClass(String name) {
+	return (AbcClass)classes_map.get(name);
+    }
+
+    public Aspect getAspect(String name) {
+	return (Aspect)aspects_map.get(name);
+    }
+
     public void addClass(AbcClass cl) {
 	classes.add(cl);
+	classes_map.put(cl.getName(),cl);
     }
 
     public void addAspect(Aspect aspect) {
 	aspects.add(aspect);
+	aspects_map.put(aspect.getInstanceClass().getName(),aspect);
     }
 
     public void addIntertypeMethodDecl(IntertypeMethodDecl imd) {
@@ -74,6 +87,25 @@ public class GlobalAspectInfo {
 
     public void addAdviceDecl(AdviceDecl ad) {
 	ads.add(ad);
+    }
+
+    public void print(java.io.PrintStream p) {
+	printList(p, classes, "Classes:");
+	printList(p, aspects, "Aspects:");
+	printList(p, imds, "Intertype method decls:");
+	printList(p, ifds, "Intertype field decls:");
+	printList(p, ads, "Advice decls:");
+    }
+
+    private void printList(java.io.PrintStream p, List l, String name) {
+	p.println(name);
+	p.println("----------");
+	Iterator li = l.iterator();
+	while (li.hasNext()) {
+	    Object elem = li.next();
+	    p.println(elem);
+	}
+	p.println();
     }
 
 

@@ -9,7 +9,7 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
-public class AdviceSpec_c extends Node_c implements AdviceSpec
+public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
 {
     protected List formals;
     protected TypeNode returnType;

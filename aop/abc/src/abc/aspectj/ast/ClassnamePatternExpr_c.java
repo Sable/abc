@@ -34,4 +34,8 @@ public abstract class ClassnamePatternExpr_c extends Node_c
         }
     }
 
+    public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern() {
+	//TODO
+	return null;
+    }
 }

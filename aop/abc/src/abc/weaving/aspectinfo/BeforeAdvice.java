@@ -9,4 +9,8 @@ public class BeforeAdvice extends AbstractAdviceSpec {
     public BeforeAdvice(Position pos) {
 	super(pos);
     }
+
+    public String toString() {
+	return "before()";
+    }
 }

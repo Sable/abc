@@ -9,7 +9,7 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
-public class Pointcut_c extends Node_c implements Pointcut
+public abstract class Pointcut_c extends Node_c implements Pointcut
 {
 
     public Pointcut_c(Position pos) {
@@ -58,5 +58,11 @@ public class Pointcut_c extends Node_c implements Pointcut
 																		l.position());
 		}
    }
+
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	// TODO
+	return null;
+    }
+
 }
 

@@ -34,7 +34,7 @@ public class Main {
 	// TODO: Resolve java classes
 
 	// Invoke polyglot
-	ExtensionInfo ext = new abc.aspectj.ExtensionInfo();
+	ExtensionInfo ext = new abc.aspectj.ExtensionInfo(weavable_classes);
 	Options options = ext.getOptions();
         options.assertions = true;
 	options.serialize_type_info = false;
@@ -48,7 +48,10 @@ public class Main {
 
 	// We should now have all classes as jimple
 	
-        generateDummyGAI();
+	// Output the aspect info
+	GlobalAspectInfo.v().print(System.err);
+
+        //generateDummyGAI();
 
         Weaver weaver = new Weaver();
         weaver.weave();
@@ -81,7 +84,7 @@ public class Main {
 		GlobalAspectInfo.v().addAdviceDecl(
                         new AdviceDecl(
                             new BeforeAdvice(null),
-                            new SetField(null),
+                            new ShadowPointcut(new SetField(null),null),
                             new MethodSig(
                                 aspect.getInstanceClass(),
                                 new AbcType( aspect.getInstanceClass().getSootClass().getType() ),

@@ -25,4 +25,7 @@ public class PerThis_c extends PerClause_c implements PerThis
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Per makeAIPer() {
+	return new abc.weaving.aspectinfo.PerThis(pc.makeAIPointcut(),position());
+    }
 }

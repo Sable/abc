@@ -49,5 +49,9 @@ public class FieldPattern_c extends Node_c
 
     }
 
+    public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern() {
+	//TODO
+	return null;
+    }
 
 }

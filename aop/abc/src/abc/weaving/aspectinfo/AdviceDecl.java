@@ -44,4 +44,8 @@ public class AdviceDecl extends Syntax {
     public Aspect getAspect() {
 	return aspect;
     }
+
+    public String toString() {
+	return "(in aspect "+aspect.getInstanceClass().getName()+") "+spec+": "+pc+" >> "+impl+" <<";
+    }
 }

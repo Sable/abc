@@ -77,4 +77,11 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
 			return result;
 		}
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	if (op == PCBinary.COND_AND) {
+	    return new abc.weaving.aspectinfo.AndPointcut(left.makeAIPointcut(),right.makeAIPointcut(), position());
+	} else {
+	    return new abc.weaving.aspectinfo.OrPointcut(left.makeAIPointcut(),right.makeAIPointcut(), position());
+	}
+    }
 }

@@ -23,4 +23,8 @@ public class Aspect extends Syntax {
     public Per getPer() {
 	return per;
     }
+
+    public String toString() {
+	return "aspect "+cl.getName()+" "+per;
+    }
 }

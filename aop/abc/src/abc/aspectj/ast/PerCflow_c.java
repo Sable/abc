@@ -24,4 +24,8 @@ public class PerCflow_c extends PerClause_c implements PerCflow
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Per makeAIPer() {
+	return new abc.weaving.aspectinfo.PerCflow(pc.makeAIPointcut(),position());
+    }
+
 }

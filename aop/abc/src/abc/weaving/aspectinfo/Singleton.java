@@ -9,4 +9,8 @@ public class Singleton extends AbstractPer {
     public Singleton(Position pos) {
 	super(pos);
     }
+
+    public String toString() {
+	return "issingleton";
+    }
 }

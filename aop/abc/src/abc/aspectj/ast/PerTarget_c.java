@@ -24,4 +24,7 @@ public class PerTarget_c extends PerClause_c implements PerTarget
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Per makeAIPer() {
+	return new abc.weaving.aspectinfo.PerTarget(pc.makeAIPointcut(),position());
+    }
 }

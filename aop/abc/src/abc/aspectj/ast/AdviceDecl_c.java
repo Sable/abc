@@ -49,8 +49,14 @@ import abc.aspectj.ast.AdviceFormal_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 
+import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.ContainsAspectInfo;
+
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.Aspect;
+
 public class AdviceDecl_c extends MethodDecl_c
-                          implements AdviceDecl
+    implements AdviceDecl, ContainsAspectInfo
 {
     protected AdviceSpec spec;
     protected Pointcut pc;
@@ -384,6 +390,18 @@ public class AdviceDecl_c extends MethodDecl_c
 
 			w.end();
 		}
+
+    public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	abc.weaving.aspectinfo.AdviceDecl ad =
+	    new abc.weaving.aspectinfo.AdviceDecl
+	    (spec.makeAIAdviceSpec(),
+	     pc.makeAIPointcut(),
+	     AspectInfoHarvester.makeMethodSig(this),
+	     current_aspect,
+	     position());
+	gai.addAdviceDecl(ad);
+    }
+    
 }
 	
 

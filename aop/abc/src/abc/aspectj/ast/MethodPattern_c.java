@@ -68,4 +68,9 @@ public class MethodPattern_c extends Node_c
        }
        w.end();
     }
+
+    public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern() {
+	//TODO
+	return null;
+    }
 }
