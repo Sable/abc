@@ -1,0 +1,2 @@
+#!/bin/csh
+abc $* +soot -d . -soot telecom_all/*.java 
