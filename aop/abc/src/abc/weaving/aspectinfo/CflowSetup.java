@@ -131,6 +131,8 @@ public class CflowSetup extends AbstractAdviceDecl {
         private boolean mustbox;
         private Local loc=null;
 
+        public void resetForReweaving() { loc=null; }
+        
         public CflowSetupBound(int pos,Type type,boolean mustbox) {
             this.pos=pos;
             this.type=type;

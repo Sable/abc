@@ -37,7 +37,10 @@ public class Copy extends Residue {
 	this.from=from;
 	this.to=to;
     }
-
+    public void resetForReweaving() {
+    	from.resetForReweaving();
+    	to.resetForReweaving();
+    }
     public String toString() {
 	return "copy("+from+"->"+to+")";
     }

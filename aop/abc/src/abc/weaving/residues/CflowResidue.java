@@ -45,6 +45,13 @@ public class CflowResidue extends Residue {
         this.useCounter=setup.useCounter();
     }
 
+    public void resetForReweaving() {
+    	for(Iterator it=vars.iterator();it.hasNext();) {
+    		WeavingVar variable=(WeavingVar)it.next();
+    		variable.resetForReweaving();
+    	}
+    }
+    
    public static void debug(String message)
      { if (abc.main.Debug.v().residueCodeGen) 
           System.err.println("RCG: "+message);

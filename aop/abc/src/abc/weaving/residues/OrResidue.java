@@ -58,6 +58,10 @@ public class OrResidue extends Residue {
         return "("+getLeftOp()+") || ("+getRightOp()+")";
     }
 
+    public void resetForReweaving() {
+    	left.getResidue().resetForReweaving();
+    	right.getResidue().resetForReweaving();
+    }
     /** Private constructor to force use of smart constructor */
     private OrResidue(Residue left,Residue right) {
         this.left.setResidue(left);

@@ -39,6 +39,8 @@ public class SingleValueVar extends WeavingVar {
     public Type type;
     public Value value;
 
+    public void resetForReweaving() {}
+    
     public SingleValueVar(Type type) {
 	this.type=type;
     }

@@ -20,6 +20,7 @@
 package abc.weaving.residues;
 
 import java.util.*;
+
 import soot.*;
 import soot.util.Chain;
 import soot.jimple.*;
@@ -41,6 +42,15 @@ public class IfResidue extends Residue {
 	this.args=args;
     }
 
+
+    public void resetForReweaving() {
+    	for(Iterator it=args.iterator();it.hasNext();) {
+    		WeavingVar variable=(WeavingVar)it.next();
+    		variable.resetForReweaving();
+    	}
+    }
+
+    
     public static IfResidue construct(SootMethod impl,List args) {
 	return new IfResidue(impl,args);
     }

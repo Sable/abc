@@ -119,8 +119,11 @@ public class Unweaver {
             {
             	Set intfs=new HashSet(cl.getInterfaces());
             	intfs.removeAll((HashSet)classToInterfaces.get(cl));
-            	for (Iterator iIt=intfs.iterator(); iIt.hasNext();)
-            		cl.removeInterface((SootClass)iIt.next());
+            	for (Iterator iIt=intfs.iterator(); iIt.hasNext();) {
+            		SootClass intf=(SootClass)iIt.next();
+            		debug( "removing "+ intf +" from cl " + cl );
+            		cl.removeInterface(intf);
+            	}
             }
         }
         // remove added classes
@@ -129,6 +132,7 @@ public class Unweaver {
         	cls.removeAll(applicationClasses);
         	for (Iterator it=cls.iterator(); it.hasNext();) {
         		SootClass cl=(SootClass)it.next();
+        		debug( "removing class "+ cl);
         		Scene.v().removeClass(cl);
         	}
         }

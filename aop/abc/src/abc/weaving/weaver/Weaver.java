@@ -25,6 +25,7 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import java.util.*;
+
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
@@ -55,7 +56,26 @@ public class Weaver {
     	return unitBindings;
     }
     
- 
+    static public void resetResiduesForReweaving() {
+    	debug("resetResiduesForReweaving");
+    	for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                final SootMethod method = (SootMethod) methodIt.next();
+            
+                MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
+                if (adviceList!=null) {			
+                	debug("found advice list for " + method);
+                	Iterator appIt=adviceList.allAdvice().iterator();
+                	while (appIt.hasNext()) {
+                		AdviceApplication appl=(AdviceApplication)appIt.next();
+                		debug(" " + appl.getResidue());
+                		appl.getResidue().resetForReweaving();
+                	}
+                }
+            }
+        }
+    }
         static public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
@@ -78,14 +98,22 @@ public class Weaver {
                 if(abc.main.Debug.v().debugUnweaver) {
                     Unweaver unweaver = new Unweaver();
                     unweaver.save();
+                    debug("unweaver saved state");
                     unitBindings = unweaver.restore();
+                    debug("unweaver restored state");
                     AroundWeaver.reset();
+                    resetResiduesForReweaving();
                     weaveAdvice();
+                    debug("after weaveAdvice");
+                    //if (true==true) return; ///
                     unitBindings = unweaver.restore();
+                    debug("unweaver restored state (2)");
                     AroundWeaver.reset();
+                    resetResiduesForReweaving();
                     //throw new RuntimeException("just a test");
                 }
                 weaveAdvice();
+                debug("after weaveAdvice (2)");
             }
         }
 

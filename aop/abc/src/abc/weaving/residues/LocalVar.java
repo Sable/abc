@@ -49,9 +49,18 @@ public class LocalVar extends WeavingVar {
     public String toString() {
 	return "localvar("+name+":"+type+")";
     }
+    
+    public void resetForReweaving() {loc=null;}
 
     public Stmt set(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val) {
-	if(loc==null) loc = localgen.generateLocal(type,"pointcutlocal");	
+	if(loc==null) 
+		loc = localgen.generateLocal(type,"pointcutlocal");
+	else {
+		//Local l=(Local)abc.weaving.weaver.Weaver.getUnitBindings().get(loc);
+		//if (l!=null)
+		//	loc=l;
+	}
+	
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
 	units.insertAfter(assignStmt,begin);
 	return assignStmt;
@@ -63,6 +72,10 @@ public class LocalVar extends WeavingVar {
 		("Internal error: someone tried to read from a variable bound "
 		 +"to a pointcut local before it was written");
 
+	//Local l=(Local)abc.weaving.weaver.Weaver.getUnitBindings().get(loc);
+	//if (l!=null)
+	//	return l;
+	//else
 	return loc;
     }
 

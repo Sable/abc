@@ -57,4 +57,5 @@ public abstract class WeavingVar {
 	return false;
     }
     
+    public abstract void resetForReweaving();
 }

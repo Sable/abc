@@ -46,10 +46,18 @@ public class PolyLocalVar extends WeavingVar {
     public String toString() {
 	return "polylocalvar("+name+":"+type+")";
     }
+    
+    public void resetForReweaving() { loc=null; }
 
     public Stmt set(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val) {
 	type=val.getType();
-	if(loc==null) loc = localgen.generateLocal(type,"pointcutlocal");	
+	if(loc==null) 
+		loc = localgen.generateLocal(type,"pointcutlocal");
+	else {
+		//Local l=(Local)abc.weaving.weaver.Weaver.getUnitBindings().get(loc);
+		//if (l!=null)
+		//	loc=l;
+	}
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
 	units.insertAfter(assignStmt,begin);
 	return assignStmt;
@@ -61,7 +69,11 @@ public class PolyLocalVar extends WeavingVar {
 		("Internal error: someone tried to read from a variable bound "
 		 +"to a polymorphic local before it was written");
 
-	return loc;
+	Local l=(Local)abc.weaving.weaver.Weaver.getUnitBindings().get(loc);
+	//if (l!=null)
+	//	return l;
+	// else
+		return loc;
     }
 
     public boolean hasType() {

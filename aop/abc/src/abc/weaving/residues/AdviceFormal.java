@@ -44,6 +44,8 @@ public class AdviceFormal extends WeavingVar {
         this.pos=pos;
         this.type=type;
     }
+    
+    public void resetForReweaving() {loc=null;}
 
     public String toString() {
         return "advicearg("+pos+":"+type+")";

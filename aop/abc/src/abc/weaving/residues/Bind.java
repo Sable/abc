@@ -43,6 +43,8 @@ public class Bind extends Residue {
 	this.variable=variable;
     }
 
+    public void resetForReweaving() {variable.resetForReweaving();}
+    
     // FIXME : restructure WeavingVars and delegate this all to that. In fact,
     // redesign ContextValue/WeavingVar structure so it's all uniform.
     // I *think* the type parameter is redundant except in the case of CflowSetup

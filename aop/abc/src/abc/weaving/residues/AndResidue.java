@@ -58,6 +58,11 @@ public class AndResidue extends Residue {
         return "("+getLeftOp()+") && ("+getRightOp()+")";
     }
 
+    public void resetForReweaving() {
+    	left.getResidue().resetForReweaving();
+    	right.getResidue().resetForReweaving();
+    }
+    
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
                         Chain units,Stmt begin,Stmt fail,boolean sense,
                         WeavingContext wc) {
