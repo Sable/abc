@@ -81,9 +81,11 @@ public class OrResidue extends Residue {
         if(sense) {
             // want to fall through if either left or right succeeds, otherwise jump to fail
             Stmt nopStmt=Jimple.v().newNopStmt();
+	    if(abc.main.Debug.v().tagResidueCode)
+		nopStmt.addTag(new soot.tagkit.StringTag("^^ nop for or residue: "+this));
             // if left succeeds, goto nop stmt, otherwise fall through
             Stmt middle=getLeftOp().codeGen(method,localgen,units,begin,nopStmt,false,wc);
-            // if right succeeds fall through, otherwise then jump to fail
+            // if right succeeds fall through, otherwise jump to fail
             Stmt end=getRightOp().codeGen(method,localgen,units,middle,fail,true,wc);
             // make fall through statement be the nop to catch the left residue succeeding
             units.insertAfter(nopStmt,end);

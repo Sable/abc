@@ -68,6 +68,8 @@ public class AndResidue extends Residue {
         } else {
             // want to jump to fail if both left and right succeed, otherwise fall through
             Stmt nopStmt=Jimple.v().newNopStmt();
+	    if(abc.main.Debug.v().tagResidueCode)
+		nopStmt.addTag(new soot.tagkit.StringTag("^^ nop for and residue: "+this));
             // if left succeeds, drop through, otherwise goto nop stmt
             Stmt middle=getLeftOp().codeGen(method,localgen,units,begin,nopStmt,true,wc);
             // if right succeeds then jump to fail, otherwise fall through

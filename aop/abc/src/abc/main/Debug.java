@@ -82,6 +82,8 @@ public class Debug {
     public boolean pointcutCodeGen=false; // main pointcut generator
     public boolean printAdviceInfo=false; // dumps advice info
     public boolean residueCodeGen=false;
+    public boolean tagResidueCode=false; // add tags to some residue statements 
+                                         // to help with debugging
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
@@ -112,6 +114,7 @@ public class Debug {
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
+    public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before
     public boolean java13=false; // java 1.3 semantics
     // information about whether nested comments should be allowed
     public boolean allowNestedComments = false;

@@ -3856,6 +3856,7 @@
                   (see ajc bug database: 72245,72335);
                   duplicated as 41801"
       keywords="from-resolved_10x">
+        <abckeywords><skip/></abckeywords>
         <compile files="FieldInitializerJoinPoints.java"/>
         <run class="FieldInitializerJoinPoints"/>
     </ajc-test>
