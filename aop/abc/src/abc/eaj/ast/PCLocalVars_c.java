@@ -123,7 +123,7 @@ public class PCLocalVars_c extends Pointcut_c
     public Context enterScope(Context c)
     {
         Context nc = super.enterScope(c);
-        nc = nc.pushBlock();
+        nc = nc.pushStatic();
 
         Formal f;
         Iterator i = formals.iterator();
