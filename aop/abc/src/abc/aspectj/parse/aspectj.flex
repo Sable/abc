@@ -432,7 +432,7 @@ import java.math.BigInteger;
     return new EOF(pos(), sym.EOF);
 %eofval}
 
-%state COMMENT
+%state NESTABLECOMMENT, NONNESTABLECOMMENT
 
 /* From Chapter 3 of the JLS: */
 
@@ -563,7 +563,10 @@ OctalEscape = \\ [0-7]
 
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
     /* 3.7 Comments */
-	"/*"                           { yybegin(COMMENT); 
+	"/*"                       { if(abc.main.Debug.v().allowNestedComments) 
+						yybegin(NESTABLECOMMENT);
+				     else 
+						yybegin(NONNESTABLECOMMENT); 
                                      inComment = true; 
                                      comment_count = comment_count + 1; 
                                    }
@@ -866,26 +869,27 @@ OctalEscape = \\ [0-7]
   {IdentifierPattern}      { return id_pattern(); }
 }	
 
-<COMMENT> { 
-  "*/"				{ 
-	  					if(abc.main.Debug.v().allowNestedComments) {
-	  						comment_count = comment_count - 1; 
-		 			   		if (comment_count < 0) 
-	                        	eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
+<NESTABLECOMMENT> { 
+  "*/"			{ 
+				comment_count = comment_count - 1; 
+		 	   	if (comment_count < 0) 
+	                	       	eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
 	                        if (comment_count == 0) {
-                            	inComment = false;
-    		                    returnFromStringChar(); 
-                            }
-	                    }
-	  					else {
-	  						inComment = false;
-	  						returnFromStringChar();
-	  					}
-	                }
+                            		inComment = false;
+    		            	       	returnFromStringChar(); 
+                            	}
+			}
   "/*"              { 
-  						if(abc.main.Debug.v().allowNestedComments) 
-  							comment_count = comment_count + 1; 
-  					}
+				comment_count = comment_count + 1; 
+		    }
+  .|\n                           { /* ignore */ }
+}
+
+<NONNESTABLECOMMENT> { 
+  "*/"				{ 
+					inComment = false;
+					returnFromStringChar();
+				}
   .|\n                           { /* ignore */ }
 }
 
