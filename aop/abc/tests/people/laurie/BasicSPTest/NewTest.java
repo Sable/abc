@@ -75,11 +75,11 @@ class NewTestExt extends NewTest {
   // whole body is a try-catch
   public void f(int x)
     { try
-        { a = x;
+        { a = x/0;
 	}
       catch (Exception e)
         { a = 1;
-	}
+        }
     }
 
   // branch to first instruction in body
