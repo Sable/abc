@@ -96,7 +96,7 @@ public class CleanAspectMembers extends NodeVisitor {
 			}
 	    }
 	 
-	 	/*
+	 
 	    if (cd.type().toClass().flags().isInterface()) {
 	    	List mis = cd.type().toClass().methods();
 	    	for (Iterator miss = mis.iterator(); miss.hasNext(); ) {
@@ -134,7 +134,7 @@ public class CleanAspectMembers extends NodeVisitor {
 	    			}
 	    		}
 	    	}
-	    } */
+	    } 
 	    return nf.ClassDecl(cd.position(), cd.flags(), cd.name(), cd.superClass(), cd.interfaces(),
 				nf.ClassBody(cd.body().position(), newmembers))
 		.type(pct);
