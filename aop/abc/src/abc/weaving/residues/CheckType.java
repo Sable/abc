@@ -1,6 +1,7 @@
 package abc.weaving.residues;
 
 import soot.Type;
+import soot.PrimType;
 import soot.Value;
 import soot.Local;
 import soot.SootMethod;
@@ -39,16 +40,21 @@ public class CheckType extends AbstractResidue {
 			WeavingContext wc) {
 	Value v=value.getSootValue(method,localgen);
 	Local io=localgen.generateLocal(BooleanType.v(),"checkType");
+	if(type instanceof PrimType) {
+	    if(type.equals(v.getType())) return begin;
+	    else {
+		Stmt abort=Jimple.v().newGotoStmt(fail);
+		units.insertAfter(abort,begin);
+		return abort;
+	    }
+	}
 	Stmt instancetest
 	    =Jimple.v().newAssignStmt(io,Jimple.v().newInstanceOfExpr(v,type));
 	Stmt abort=Jimple.v().newIfStmt
 	    (Jimple.v().newEqExpr(io,IntConstant.v(0)),fail);
 	units.insertAfter(instancetest,begin);
-	if(false)	return instancetest;
-	else {
-	    units.insertAfter(abort,instancetest);
-	    return abort;
-	}
+	units.insertAfter(abort,instancetest);
+	return abort;
     }
 
 }
