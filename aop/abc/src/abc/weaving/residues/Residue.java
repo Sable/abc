@@ -74,7 +74,9 @@ public abstract class Residue {
     /** Must provide a toString method */
     public abstract String toString();
 
-    public void resetForReweaving() { System.out.println("resetForWeaving: " + this.getClass().getName());}
+    public void resetForReweaving() { 
+    	//System.out.println("resetForWeaving: " + this.getClass().getName());
+    	}
     
     /**
      * Fills the Bindings object with information of possible
