@@ -371,6 +371,7 @@ public class TestCase {
 			            // Not sure if this can occur - surely main() must be public for compilation to succeed.
 			            // Still, need to catch it...
 			            System.err.println("Illegal access attempted: " + e.getMessage());
+			            e.printStackTrace();
 			            failTest();
 			            return;
 			        } catch (InvocationTargetException e) {
