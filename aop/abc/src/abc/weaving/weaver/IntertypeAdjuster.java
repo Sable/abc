@@ -168,6 +168,10 @@ public class IntertypeAdjuster {
 		addTargetMethod(imd,implMethod);
 	}
 	
+	/** return the relevant sootMethod that implements this IMD.
+	 *  the imd implementation stub has been added by the front end already,
+	 *  so we only look it up.
+	 */
 	private SootMethod addImplMethod( IntertypeMethodDecl imd ) {
 		
 		MethodSig method = imd.getImpl();
@@ -179,36 +183,13 @@ public class IntertypeAdjuster {
 			final AbcType formalType = ((Formal) formalIt.next()).getType();
 			parms.add(formalType.getSootType());
 		}
-
+ 
 		int modifiers = method.getModifiers();
-		modifiers |= Modifier.PUBLIC;
-		modifiers |= Modifier.STATIC; // the originating method is static
-		modifiers &= ~Modifier.PRIVATE;
-		modifiers &= ~Modifier.PROTECTED;
 		
-        
-        if (!Modifier.isAbstract(modifiers)) {
-		    // Create the method
-		    SootMethod sm = new SootMethod( 
-						  method.getName(),
-						  parms,
-						  retType,
-						  modifiers );
-	
-			for( Iterator exceptionIt = method.getSootExceptions().iterator(); exceptionIt.hasNext(); ) {
-				final SootClass exception = (SootClass) exceptionIt.next();
-				sm.addException( exception );
-			}
-			
-			sm.setSource(method.getSootMethod().getSource());
-			
-			sc.addMethod(sm);
-			
-			// System.out.println("real name is: " + MethodCategory.getName(sm));
-			// System.out.println("added impl method " + sm);
-
-			return sm;
-        } else  return null;
+        if (!Modifier.isAbstract(modifiers)) 
+           return sc.getMethod(method.getName(),parms);
+        else return null;
+         
 	}
 	
     private void addTargetMethod( IntertypeMethodDecl imd, SootMethod implMethod) {

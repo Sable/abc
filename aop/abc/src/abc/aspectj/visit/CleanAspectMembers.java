@@ -106,8 +106,8 @@ public class CleanAspectMembers extends NodeVisitor {
 			if (m instanceof IntertypeMethodDecl) {
 				IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) m;
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
-			//	if (!(itmd.host().type().toClass().flags().isInterface()))
-			//		hostType.methods().remove(itmd.itMethodInstance);
+			    // if (!(itmd.host().type().toClass().flags().isInterface()))
+				//	hostType.methods().remove(itmd.itMethodInstance);
 				if (!itmd.flags().isAbstract()) // || (itmd.host().type().toClass().flags().isInterface()))
 					newmembers.add(itmd);
 			} else
