@@ -264,6 +264,10 @@ public class PatternMatcher {
 	    this.pattern = pattern;
 	}
 
+	public ClassnamePatternExpr getPattern() {
+	    return pattern;
+	}
+
 	public boolean matchesClass(SootClass sc) {
 	    boolean matches = PatternMatcher.this.matchesClass(pattern, sc);
 	    if (abc.main.Debug.v().patternMatches) {
@@ -274,6 +278,10 @@ public class PatternMatcher {
 
 	public String toString() {
 	    return pattern.toString();
+	}
+
+	public boolean equivalent(abc.weaving.aspectinfo.ClassnamePattern otherpat) {
+	    return pattern.equivalent(otherpat.getPattern());
 	}
     }
 
@@ -288,6 +296,10 @@ public class PatternMatcher {
 	    this.pattern = pattern;
 	}
 
+	public TypePatternExpr getPattern() {
+	    return pattern;
+	}
+
 	public boolean matchesType(Type t) {
 	    boolean matches = PatternMatcher.this.matchesType(pattern, t.toString());
 	    if (abc.main.Debug.v().patternMatches) {
@@ -299,6 +311,11 @@ public class PatternMatcher {
 	public String toString() {
 	    return pattern.toString();
 	}
+
+	public boolean equivalent(abc.weaving.aspectinfo.TypePattern p) {
+	    return pattern.equivalent(p.getPattern());
+	}
+
     }
 
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern(MethodPattern pattern) {
@@ -310,6 +327,10 @@ public class PatternMatcher {
 
 	public AIMethodPattern(MethodPattern pattern) {
 	    this.pattern = pattern;
+	}
+
+	public MethodPattern getPattern() {
+	    return pattern;
 	}
 
 	public boolean matchesMethod(SootMethod method) {
@@ -339,6 +360,10 @@ public class PatternMatcher {
 	public String toString() {
 	    return pattern.toString();
 	}
+
+	public boolean equivalent(abc.weaving.aspectinfo.MethodPattern otherpat) {
+	    return pattern.equivalent(otherpat.getPattern());
+	}
     }
 
     public abc.weaving.aspectinfo.FieldPattern makeAIFieldPattern(FieldPattern pattern) {
@@ -351,6 +376,10 @@ public class PatternMatcher {
 
 	public AIFieldPattern(FieldPattern pattern) {
 	    this.pattern = pattern;
+	}
+
+	public FieldPattern getPattern() {
+	    return pattern;
 	}
 
 	public boolean matchesField(SootField sf) {
@@ -380,6 +409,10 @@ public class PatternMatcher {
 	public String toString() {
 	    return pattern.toString();
 	}
+
+	public boolean equivalent(abc.weaving.aspectinfo.FieldPattern otherpat) {
+	    return pattern.equivalent(otherpat.getPattern());
+	}
     }
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern(ConstructorPattern pattern) {
@@ -392,6 +425,10 @@ public class PatternMatcher {
 
 	public AIConstructorPattern(ConstructorPattern pattern) {
 	    this.pattern = pattern;
+	}
+
+	public ConstructorPattern getPattern() {
+	    return pattern;
 	}
 
 	public boolean matchesConstructor(SootMethod method) {
@@ -407,6 +444,10 @@ public class PatternMatcher {
 	}
 	public String toString() {
 	    return pattern.toString();
+	}
+
+	public boolean equivalent(abc.weaving.aspectinfo.ConstructorPattern otherpat) {
+	    return pattern.equivalent(otherpat.getPattern());
 	}
     }
 
