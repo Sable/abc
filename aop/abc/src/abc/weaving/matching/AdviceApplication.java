@@ -20,7 +20,7 @@ public abstract class AdviceApplication {
 
     public static class SJPInfo {
 	public String kind;            // first parameter to makeSJP
-	public String signatureTypeClass; // name of class containing following method
+	public String signatureTypeClass; // type returned by call following 
 	public String signatureType;   // name of method to call for second parameter
         public String signature;       // parameter for call in second parameter
         public int row;                // row
