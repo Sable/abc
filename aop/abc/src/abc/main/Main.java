@@ -855,7 +855,6 @@ public class Main {
 
             if (!Debug.v().testITDsOnly) {
                 // Make sure that all the standard AspectJ shadow types are loaded
-                AJShadows.load();
                 AbcTimer.mark("Load shadow types");
 
                 // for each shadow in each weavable class, compute list of applicable advice
