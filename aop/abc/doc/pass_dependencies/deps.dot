@@ -1,0 +1,353 @@
+digraph G {
+    //rotate="90";
+    //size="16.5x11.5";
+ //   size="11.5x16.5";
+    //size="11.5x16.5";
+    //page="11.5x16.5";
+    size="8,10";
+
+    // local dep: style=dashed
+    // global dep: style=bold
+    // barrier after: peripheries=2
+
+    node [shape="box"];
+    subgraph clusterPolyglot
+    {
+        ANON_ITDS;
+        ADD_MEMBERS;
+        BUILD_HIERARCHY;
+        BUILD_TYPES;
+        CLEAN_SIGS;
+        DECLARE_PARENTS;
+        DISAM;
+        INIT_CHECK;
+        FWD_REF_CHECK;
+        CHECK_DEPENDS;
+        CONSTRUCTOR_CHECK;
+        COMPUTE_PRECEDENCE_RELATION;
+        EVALUATE_PATTERNS_AGAIN;
+        EVALUATE_PATTERNS;
+        INIT_CHECK;
+        PARSE;
+        REACH_CHECK;
+        EXIT_CHECK;
+        CHECK_PACKAGE_NAMES;
+        PRE_OUTPUT_ALL;
+        JAR_CHECK;
+        INTERFACE_ITDS;
+        SOURCE_CLASSES;
+        COLLECT_ASPECT_NAMES;
+        CLEAN_DECLARE;
+        TYPE_CHECK;
+        INIT_CLASSES;
+        CLEAN_SUPER;
+        CLEAN_SIGS_FIRST;
+
+    };
+
+    subgraph clusterAspectInfo {
+        CLEAN_MEMBERS;
+        HARVEST_ASPECT_INFO;
+        ASPECT_REFLECTION_REWRITE;
+        ASPECT_REFLECTION_INSPECT;
+        ASPECT_METHODS;
+        MANGLE_NAMES;
+        MANGLE_NAME_COMPONENTS;
+    };
+
+    ComputeAdviceLists;
+
+
+    subgraph clusterFoo {
+        SAVE_AST;
+        FOLD;
+        CAST_INSERTION;
+        STRICTFP_PROP;
+        Bar [shape=point];
+    };
+    subgraph clusterJimple2 {
+        Jimplification;
+    };
+    subgraph clusterBackend {
+        COLLECT_JIMPLIFY_CLASSES;
+        SootResolveWeavableClasses;
+        DeclareParentsWeaver;
+        ReResolving;
+        EvaluatePatternsAThirdTime;
+        BuildAspectHierarchy;
+        //EvaluatePatternsAThirdTime;
+    //};
+    //subgraph clusterJimple {
+        //Jimplification;
+        IntertypeAdjusterInitialisers;
+        IntertypeAdjusterAdjust;
+        GenerateAspectMethods;
+    };
+
+    subgraph clusterCleanup {
+        RemoveFakeFields;
+        jtp_uce;
+    };
+    subgraph clusterOpt {
+        jop_cse ->
+        jop_cp ->
+        jop_cpf ->
+        jop_cbf ->
+
+        jop_nullcheckelim ->
+        jop_cflowaggregate ->
+        jop_cflowintra ->
+
+        jop_dae ->
+        jop_uce1 ->
+        jop_ubf1 ->
+        jop_uce2 ->
+        jop_ubf2 ->
+        jop_ule;
+
+    };
+    DoneWeaving -> jtp_uce;
+    jtp_uce -> WriteOutput;
+
+    RemoveFakeFields -> jop_cse;
+    DoneWeaving -> jop_cse;
+    jop_ule -> WriteOutput;
+
+    IntertypeAdjusterAdjust -> IntertypeAdjusterInitialisers [style=invis];
+
+    STRICTFP_PROP -> Bar;
+    CAST_INSERTION -> Bar;
+    SAVE_AST -> Bar;
+    Bar -> Jimplification;
+
+
+    
+
+    STRICTFP_PROP -> HARVEST_ASPECT_INFO;
+
+    BuildAspectHierarchy -> ComputeAdviceLists;
+
+    SAVE_AST -> Jimplification;
+    
+
+    REACH_CHECK -> PRE_OUTPUT_ALL;
+    JAR_CHECK -> PRE_OUTPUT_ALL;
+    FWD_REF_CHECK -> PRE_OUTPUT_ALL;
+    CHECK_PACKAGE_NAMES -> PRE_OUTPUT_ALL;
+    CONSTRUCTOR_CHECK -> PRE_OUTPUT_ALL;
+    INIT_CHECK -> PRE_OUTPUT_ALL;
+    EXIT_CHECK -> PRE_OUTPUT_ALL;
+
+    PRE_OUTPUT_ALL -> COLLECT_JIMPLIFY_CLASSES;
+
+    //CAST_INSERTION -> ASPECT_METHODS;
+
+    ParseArgs ->
+    AddJarsToClassPath ->
+    InitSoot ->
+    LoadJars ->
+    LoadSourceRoots;
+    LoadJars ->
+    INIT_CLASSES;
+
+    INIT_CLASSES -> BUILD_HIERARCHY;
+
+    LoadSourceRoots -> PARSE;
+    ParseArgs -> PARSE;
+
+
+    PARSE ->
+    BUILD_TYPES ->
+    CLEAN_SUPER ->
+    CLEAN_SIGS_FIRST -> DECLARE_PARENTS -> CLEAN_SIGS_FIRST;
+    CLEAN_SIGS_FIRST -> CLEAN_DECLARE [style=dashed];
+    CLEAN_SIGS_FIRST -> COLLECT_ASPECT_NAMES [style=dashed];
+    CLEAN_SIGS_FIRST -> BUILD_HIERARCHY [style=dashed];
+    BUILD_HIERARCHY -> CHECK_PACKAGE_NAMES [style=bold];
+    BUILD_HIERARCHY -> EVALUATE_PATTERNS [style=bold];
+    EVALUATE_PATTERNS -> DECLARE_PARENTS [style=bold];
+    CLEAN_DECLARE -> DECLARE_PARENTS [style=dashed];
+    DECLARE_PARENTS -> EVALUATE_PATTERNS_AGAIN [style=bold];
+    BUILD_HIERARCHY -> EVALUATE_PATTERNS_AGAIN [style=bold];
+    BUILD_TYPES [peripheries=2];
+    CLEAN_SUPER [peripheries=2];
+    BUILD_HIERARCHY [peripheries=2];
+    EVALUATE_PATTERNS [peripheries=2];
+    DECLARE_PARENTS [peripheries=2];
+    EVALUATE_PATTERNS_AGAIN [peripheries=2];
+
+
+
+    COMPUTE_PRECEDENCE_RELATION [peripheries=2];
+    COMPUTE_PRECEDENCE_RELATION -> ADD_MEMBERS;
+    COMPUTE_PRECEDENCE_RELATION -> INTERFACE_ITDS;
+    COMPUTE_PRECEDENCE_RELATION -> ANON_ITDS;
+    COMPUTE_PRECEDENCE_RELATION -> IntertypeAdjusterAdjust;
+    COMPUTE_PRECEDENCE_RELATION -> ComputeAdviceLists;
+
+    STRICTFP_PROP -> ComputeAdviceLists;
+    STRICTFP_PROP -> Jimplification;
+
+    COLLECT_ASPECT_NAMES -> COMPUTE_PRECEDENCE_RELATION [style=bold];
+    EVALUATE_PATTERNS_AGAIN -> COMPUTE_PRECEDENCE_RELATION [style=bold];
+    
+    DECLARE_PARENTS -> CLEAN_SIGS [style=bold];
+    CLEAN_SUPER -> CLEAN_SIGS [style=bold];
+
+    CLEAN_SIGS -> ADD_MEMBERS [style=dashed];
+
+    ADD_MEMBERS -> INTERFACE_ITDS [style=bold];
+    BUILD_HIERARCHY -> INTERFACE_ITDS [style=bold];
+    DECLARE_PARENTS -> INTERFACE_ITDS [style=bold];
+
+    BUILD_TYPES -> SOURCE_CLASSES [style=bold];
+    CLEAN_SIGS -> ANON_ITDS [style=dashed];
+
+    ADD_MEMBERS -> DISAM [style=bold];
+    INTERFACE_ITDS -> DISAM [style=bold];
+    ANON_ITDS -> DISAM [style=bold];
+
+    DISAM -> FOLD [style=bold];
+    DISAM -> TYPE_CHECK [style=dashed];
+    PARSE -> REACH_CHECK [style=dashed];
+    FOLD -> CAST_INSERTION [style=dashed];
+    TYPE_CHECK -> CAST_INSERTION [style=dashed];
+
+
+    //CHECK_DEPENDS -> TYPE_CHECK [style=bold];
+
+    BUILD_TYPES -> STRICTFP_PROP [style=dashed];
+    PARSE -> EXIT_CHECK [style=dashed];
+    DISAM -> INIT_CHECK [style=dashed];
+    TYPE_CHECK -> CONSTRUCTOR_CHECK [style=dashed];
+    DISAM -> FWD_REF_CHECK [style=dashed];
+    INTERFACE_ITDS -> FWD_REF_CHECK [style=bold];
+    ANON_ITDS -> FWD_REF_CHECK [style=bold];
+    JAR_CHECK [peripheries=2];
+    INTERFACE_ITDS -> JAR_CHECK [style=bold];
+    ANON_ITDS -> JAR_CHECK [style=bold];
+
+    SOURCE_CLASSES -> JAR_CHECK [style=bold];
+
+    CHECK_DEPENDS [peripheries=2];
+    TYPE_CHECK -> CHECK_DEPENDS [style=bold];
+
+    // PRE_OUTPUT_ALL is an empty pass used to delimit some range of passes
+    // to be repeated, so it depends on everything before it
+    CHECK_DEPENDS -> PRE_OUTPUT_ALL [style=bold];
+    // SAVE_AST needs to be outside the range of passes that spawn new jobs
+    DISAM -> SAVE_AST [style=dashed];
+
+    MANGLE_NAME_COMPONENTS [peripheries=2];
+    MANGLE_NAMES [peripheries=2];
+
+    TYPE_CHECK -> MANGLE_NAME_COMPONENTS [style=bold];
+    MANGLE_NAME_COMPONENTS -> MANGLE_NAMES [style=bold];
+
+    DISAM -> ASPECT_REFLECTION_INSPECT [style=dashed];
+    ASPECT_REFLECTION_INSPECT -> ASPECT_REFLECTION_REWRITE [style=dashed];
+    ASPECT_METHODS [peripheries=2];
+    ASPECT_REFLECTION_REWRITE -> ASPECT_METHODS [style=dashed];
+    MANGLE_NAMES -> ASPECT_METHODS [style=bold];
+
+    // might be global; should test it to make sure it's local
+    ASPECT_METHODS -> HARVEST_ASPECT_INFO [style=dashed];
+
+    ASPECT_METHODS -> CLEAN_MEMBERS [style=bold];
+    HARVEST_ASPECT_INFO -> CLEAN_MEMBERS [style=dashed];
+
+    COLLECT_JIMPLIFY_CLASSES [peripheries=2];
+
+    // COLLECT_JIMPLIFY_CLASSES dependes on whatever is before it
+    CLEAN_MEMBERS -> COLLECT_JIMPLIFY_CLASSES [style=dashed];
+    CLEAN_SIGS;
+
+    ADD_MEMBERS [peripheries=2];
+    INTERFACE_ITDS;
+    SOURCE_CLASSES;
+    ANON_ITDS [peripheries=2];
+
+    DISAM [peripheries=2];
+
+    COLLECT_JIMPLIFY_CLASSES -> SootResolveWeavableClasses;
+    COLLECT_ASPECT_NAMES -> BuildAspectHierarchy;
+    HARVEST_ASPECT_INFO -> BuildAspectHierarchy;
+    SootResolveWeavableClasses -> BuildAspectHierarchy;
+    SootResolveWeavableClasses -> DeclareParentsWeaver;
+    DECLARE_PARENTS -> DeclareParentsWeaver;
+    DeclareParentsWeaver -> ReResolving;
+    ReResolving -> IntertypeAdjusterAdjust;
+    HARVEST_ASPECT_INFO -> IntertypeAdjusterAdjust;
+    ASPECT_METHODS -> IntertypeAdjusterAdjust;
+    DeclareParentsWeaver -> IntertypeAdjusterAdjust;
+    ReResolving -> Jimplification;
+    IntertypeAdjusterAdjust -> Jimplification;
+    DeclareParentsWeaver -> Jimplification;
+    COLLECT_JIMPLIFY_CLASSES -> Jimplification;
+    CAST_INSERTION -> COLLECT_JIMPLIFY_CLASSES;
+
+    ReResolving -> EvaluatePatternsAThirdTime;
+
+    Jimplification -> IntertypeAdjusterInitialisers;
+    HARVEST_ASPECT_INFO -> IntertypeAdjusterInitialisers;
+    IntertypeAdjusterAdjust -> IntertypeAdjusterInitialisers;
+
+    HARVEST_ASPECT_INFO -> ComputeAdviceLists;
+    IntertypeAdjusterInitialisers -> ComputeAdviceLists;
+    Jimplification -> ComputeAdviceLists;
+
+    BuildAspectHierarchy -> GenerateAspectMethods;
+    HARVEST_ASPECT_INFO -> GenerateAspectMethods;
+    Jimplification -> GenerateAspectMethods;
+    subgraph clusterAdviceWeave {
+        SetShadowPointsPass1;
+        GenStaticJoinPoints;
+        WeaveInAspectsPass1;
+        SetShadowPointsPass2;
+        WeaveInAspectsPass2;
+        WeaveInAroundAdviceExecutionsPass;
+    }
+
+    //ComputeAdviceLists -> GenerateAspectMethods;
+
+    DeclareParentsWeaver -> BuildAspectHierarchy;
+    EvaluatePatternsAThirdTime -> ComputeAdviceLists;
+
+
+    ComputeAdviceLists -> SetShadowPointsPass1 [style=dashed];
+    ComputeAdviceLists -> GenStaticJoinPoints [style=dashed];
+    SetShadowPointsPass1 -> WeaveInAspectsPass1 [style=dashed];
+    GenStaticJoinPoints -> WeaveInAspectsPass1 [style=dashed];
+    WeaveInAspectsPass1 -> SetShadowPointsPass2 [style=dashed];
+    SetShadowPointsPass2 -> WeaveInAspectsPass2 [style=dashed];
+
+    WeaveInAspectsPass2 -> WeaveInAroundAdviceExecutionsPass [style=bold];
+
+    WeaveInAroundAdviceExecutionsPass -> DoneWeaving;
+
+    ComputeAdviceLists -> RemoveFakeFields;
+
+    DoneWeaving -> CheckExceptions;
+
+    DoneWeaving -> Validate;
+
+    DoneWeaving -> jtp_uce;
+
+    CAST_INSERTION -> Jimplification;
+    
+    RemoveFakeFields -> WriteOutput;
+    RemoveFakeFields -> jtp_uce;
+    RemoveFakeFields -> Validate;
+
+    GenerateAspectMethods -> DoneWeaving;
+    
+    DoneWeaving [shape=point];
+    PRE_OUTPUT_ALL [shape=point];
+
+    jtp_uce -> Validate;
+    CheckExceptions -> jop_cse;
+    jtp_uce -> WriteOutput;
+
+}
+
+
