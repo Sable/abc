@@ -300,6 +300,7 @@
 
     <ajc-test dir="base/test121"
       title="advises on introduced methods and constructors"
+      abccomment="test extra parameters introduced by ITDs. Fixed ODM Jul 5"
       keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
@@ -383,7 +384,10 @@
     </ajc-test>
 
     <ajc-test dir="base/test135"
-      title="proper values for thisJoinPoint attributes" keywords="from-base">
+      title="proper values for thisJoinPoint attributes" 
+      abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.
+                  Now seems to fail on construction of joinpoint data. ODM"
+      keywords="from-base">
         <compile
           files="Driver.java,JoinPointFields.java,TopFoo.java,pack/PackFoo.java,pack/JoinPointFields.java,pack/PackJoinPointFields.java"/>
         <run class="test135.Driver"/>
@@ -1753,11 +1757,16 @@
 
     <ajc-test dir="errors"
       title="reasonable error for crosscut reference with no formals specified"
+      abccomment="abc gives one more message due to poor error recovery in parser. ODM July 5,2003"
       keywords="from-errors">
         <compile files="NoFormalsCrosscut.java">
+            <ajcmessage kind="error" line="6"/>
+            <ajcmessage kind="error" line="7"/>
+            <ajcmessage kind="error" line="8"/>
             <message kind="error" line="6"/>
             <message kind="error" line="7"/>
             <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -1839,9 +1848,11 @@
 
     <ajc-test dir="errors" pr="213"
       title="mismatched parens on advice (wasn't binding Tester)"
+      abccomment="difference in line number between abc and ajc message. ODM July 5, 2004"
       keywords="from-errors">
         <compile files="MismatchedParens.java">
-            <message kind="error" line="16"/>
+            <ajcmessage kind="error" line="16"/>
+            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1888,7 +1899,8 @@
 
     <ajc-test dir="errors"
       title="eachobject: only zero-argument constructors allowed in an aspect"
-      abccomment="Exception from weaver; Frontend should report error - AGS 1/7/04"
+      abccomment="Exception from weaver; Frontend should report error - AGS 1/7/04
+                  Fixed - Oege 5/7/04"
       keywords="from-errors,fail-unimplemented">
         <compile files="AspectsCantHaveYesArgumentConstructors.java">
             <message kind="error" line="8"/>
@@ -1964,6 +1976,8 @@
 
     <ajc-test dir="new"
       title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]"
+      abccomment="Polyglot fails to check special modifier restrictions for interfaces.
+                  ODM 5/7/04"
       keywords="from-errors">
         <compile files="StrictFpCErr1.java">
             <message kind="error" line="3"/>
@@ -2042,9 +2056,11 @@
 
     <ajc-test dir="errors" pr="385"
       title="disallow defining more than one pointcut with the same name"
+      abccomment="ajc reports an error at both locations, abc just at the last one. ODM July 5, 2004"
       keywords="from-errors,fail-unimplemented">
         <compile files="OverloadedPointcuts.java">
-            <message kind="error" line="4"/>
+            <ajcmessage kind="error" line="4"/>
+            <ajcmessage kind="error" line="5"/>
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
@@ -2215,12 +2231,15 @@
 
     <ajc-test dir="errors"
       title="Binds the pointcut formals to member variables instead of pointcut formals."
+      abccomment="abc catches the errors, but it doesn't do warnings yet. ODM July 5, 2004"
       keywords="from-errors">
         <compile files="PointcutFormals.java" options="-Xlint:warning">
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="warning" line="16"/>
+            <ajcmessage kind="warning" line="17"/>
             <message kind="error" line="14"/>
-            <message kind="error" line="15"/>
-            <message kind="warning" line="16"/>
-            <message kind="warning" line="17"/>
+            <message kind="error" line="15"/>    
         </compile>
     </ajc-test>
 
@@ -2262,14 +2281,20 @@
 
     <ajc-test dir="errors"
       title="good error for field name instead of type name"
+      abccomment="Polyglot bails out after the first four, but if we comment those out, the others are caught.
+                  ODM July 5, 2004."
       keywords="from-errors">
         <compile files="BadTypeName.java">
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="4"/>
+            <ajcmessage kind="error" line="6"/>
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="12"/>
             <message kind="error" line="2"/>
             <message kind="error" line="4"/>
             <message kind="error" line="6"/>
             <message kind="error" line="8"/>
-            <message kind="error" line="10"/>
-            <message kind="error" line="12"/>
         </compile>
     </ajc-test>
 
@@ -2294,19 +2319,30 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="errors in aspect inheritance - 2"
+      abccomment="More accurate messages from abc. ODM July 5, 2004"
          keywords="from-errors">
         <compile files="AspectInheritance2.java">
-            <message kind="error" line="8"/>
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="26"/>
+            <ajcmessage kind="error" line="30"/>
             <message kind="error" line="16"/>
+            <message kind="error" line="15"/>
             <message kind="error" line="20"/>
-            <message kind="error" line="26"/>
-            <message kind="error" line="30"/>
+            <message kind="error" line="24"/>
+            <message kind="error" line="23"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors" title="errors in aspect inheritance - 3"
+      abccomment="ajc fails to find an additional error involving unbound
+                  pointcut formals at line 15. ODM July 5, 2004"
       keywords="from-errors">
         <compile files="AspectInheritance3.java">
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="24"/>
+            <message kind="error" line="15"/>
             <message kind="error" line="19"/>
             <message kind="error" line="24"/>
         </compile>
