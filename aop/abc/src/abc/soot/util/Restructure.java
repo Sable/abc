@@ -490,6 +490,16 @@ public class Restructure {
 		
 	}
 
+	/**
+	 * This class helps implement boxing.
+	 * It assigns integer IDs to the simple Java types and
+	 * one ID to all the reference types.
+	 * 
+	 * It contains methods to retrieve the boxing classes of simple types
+	 * and their value methods (intVal() etc.) 
+	 * 
+	 * @author Sascha Kuzins 
+	 */
 	public static class JavaTypeInfo {
 		public final static int booleanType=0;
 		public final static int byteType=1;
@@ -653,7 +663,12 @@ public class Restructure {
 			}*/
 		} 			
 	}
-
+	/**
+	 * Retrieves the identity statement of the argument at position arg
+	 * @param method
+	 * @param arg
+	 * @return
+	 */
 	public static IdentityStmt getParameterIdentityStatement(SootMethod method, int arg) {
 		if (arg>=method.getParameterCount())
 			throw new RuntimeException();
