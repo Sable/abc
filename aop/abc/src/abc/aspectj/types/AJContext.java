@@ -36,6 +36,8 @@ public interface AJContext extends Context {
 /* intertype declarations */
 	ClassType hostClass();
 	
+	Context pushAspect(AspectType ct);
+	
 	/** enter an intertype decl */
 	Context pushHost(ClassType ct, boolean declaredStatic); 
 	
@@ -66,6 +68,7 @@ public interface AJContext extends Context {
 	
 	/** was the ITD itself declared static? */
 	boolean explicitlyStatic();
+	
 	
 /* advice */
 

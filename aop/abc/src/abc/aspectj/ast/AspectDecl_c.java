@@ -65,6 +65,7 @@ import abc.aspectj.extension.AJClassDecl_c;
 
 import abc.aspectj.types.AJFlags;
 import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectType;
 
 import abc.aspectj.visit.AJTypeBuilder;
@@ -250,11 +251,16 @@ public class AspectDecl_c extends AJClassDecl_c
 	public Context enterScope(Node child, Context c) {
 			if (child == this.per ) {
 				TypeSystem ts = c.typeSystem();
-				c = c.pushClass(type, ts.staticTarget(type).toClass());
+				c = ((AJContext)c).pushAspect((AspectType) type);
+				// c = c.pushClass(type, ts.staticTarget(type).toClass());
 				return child.enterScope(c);
 			}
 			return super.enterScope(child, c);
 		}
+		
+	public Context enterScope(Context c) {
+		return ((AJContext)c).pushAspect((AspectType) type);
+	}
 	
 	public void prettyPrintHeader(CodeWriter w, PrettyPrinter tr) {
 		

@@ -68,6 +68,7 @@ public class AJContext_c extends Context_c implements AJContext {
     protected Collection cflowMustBind;
     protected boolean inIf;
     protected int cflowDepth;
+    protected AspectType currentAspect;
     
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
@@ -81,6 +82,7 @@ public class AJContext_c extends Context_c implements AJContext {
 		inCflow = false;
 		inIf = false;
 		cflowMustBind = null;
+		currentAspect = null;
 		cflowDepth = 0;
 	}
 	
@@ -409,23 +411,14 @@ public class AJContext_c extends Context_c implements AJContext {
 			  return result;
 	}
 	
+	public Context pushAspect(AspectType type) {
+		AJContext_c nc = (AJContext_c) pushClass(type, ts.staticTarget(type).toClass());
+		nc.currentAspect = type;
+		return nc;
+	}
 
 	public AspectType currentAspect() {
-	    ClassType cur = currentClass();
-	    while(cur != null) {
-		    if(cur instanceof AspectType) {
-		        return (AspectType) cur;
-		    }
-		    try {
-		        cur = (ClassType)cur.container();
-		    } catch (ClassCastException e) {
-		        // If we can't cast to ClassType, then the container is a ReferenceType but not a MemberInstance.
-		        // Is this possible? Classes and Aspects are member instances, what else do we expect? FIXME
-		        System.err.println("Couldn't cast " + cur + " to ClassType, it " + (cur instanceof MemberInstance ? "is" : "isn't") + " a member instance.");
-		        break;
-		    }
-	    }
-	    return null;
+		return currentAspect;
 	}
 	
 	private static final Collection TOPICS = 
