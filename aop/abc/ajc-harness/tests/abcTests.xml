@@ -6951,7 +6951,10 @@
     
    <ajc-test num="789" dir="new/options11"  pr="36329"
    	  comment="the line number might change, we're really interested only in the files here"
+	  abccomment="this is testing binary aspects from jars and is not
+	              supported by abc.  LJH August 23/04"
       title="The compiler crashes when using aspect libraries created without using -noweave">
+        <abckeywords> <skip/></abckeywords>
         <compile files="Main.java,injar.jar,Aspect.java,aspectlib1.jar,aspectlib2.jar">
             <message kind="error" line="0"/>
         </compile>
