@@ -9346,4 +9346,9 @@
          </compile>
          <run class="Foo"/>
     </ajc-test>
+    <ajc-test num="1007" dir="abctests/bugs"
+         title="make sure we get valid jimple for perthis/pertarget bind methods">
+         <compile files="PerTarget.java" options="-debug,doValidate"/>
+         <run class="PerTarget"/>
+    </ajc-test>
 </suite>
