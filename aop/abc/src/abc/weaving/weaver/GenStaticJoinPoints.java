@@ -257,7 +257,6 @@ public class GenStaticJoinPoints {
 	debug("tags attached to class are : " + sc.getTags());
 	SourceFileTag sft = (SourceFileTag) sc.getTag("SourceFileTag");
 	debug("sourcefilename of sc : " + sft);
-	// FIXME: should be sourcefile, how to get this info??
         args.add(StringConstant.v(sft.getSourceFile())); 
         args.add(javaclass);
          Stmt initfactory = Jimple.v().

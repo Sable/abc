@@ -7,19 +7,24 @@ import soot.Local;
 import soot.RefType;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Type;
 import soot.jimple.Jimple;
 import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import soot.util.HashChain;
+import abc.weaving.aspectinfo.AbcType;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AfterAdvice;
 import abc.weaving.aspectinfo.AfterReturningAdvice;
+import abc.weaving.aspectinfo.AfterReturningArgAdvice;
 import abc.weaving.aspectinfo.AfterThrowingAdvice;
+import abc.weaving.aspectinfo.AfterThrowingArgAdvice;
 import abc.weaving.aspectinfo.AroundAdvice;
 import abc.weaving.aspectinfo.BeforeAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.Formal;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 
@@ -132,7 +137,8 @@ public class PointcutCodeGen {
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
 	if ( advicespec instanceof BeforeAdvice ) 
            BeforeWeaver.doWeave(method, localgen, adviceappl);
-        else if ( advicespec instanceof AfterReturningAdvice ) 
+        else if ( advicespec instanceof AfterReturningAdvice  ||
+	          advicespec instanceof AfterReturningArgAdvice ) 
            AfterReturningWeaver.doWeave(method, localgen, adviceappl);
 	else if ( advicespec instanceof AfterThrowingAdvice )
 	   AfterThrowingWeaver.doWeave(method, localgen, adviceappl);
@@ -209,8 +215,26 @@ public class PointcutCodeGen {
 	       formalsdone[position] = true;
 	     }
 
-	   // now the other ones
-	   // TODO: need to fill in
+	   //  ------------ now the other ones ----------------
+	   // if it has an after returning parameter
+	   AdviceSpec advicespec = advicedecl.getAdviceSpec();
+	   if (advicespec instanceof AfterReturningArgAdvice)
+	     // we have to fill in the param for the return value
+	     { Formal formal = 
+	        ((AfterReturningArgAdvice) advicespec).getFormal(); 
+	       String formalname = formal.getName();
+	       AbcType abctype = formal.getType();
+	       Type formaltype = abctype.getSootType();
+	       int position = advicedecl.getFormalIndex(formalname);
+	       debug("After returning formal is at position " +
+		   position + " has name " + formalname + " and type " +
+                   formaltype);
+
+	      // indicate that this one is done
+	      formalsdone[position] = true;
+	     }
+
+	   // TODO: need to fill in params for target, args and so on
 	   boolean alldone = true;
 	   for (int i = 0; i<formalsdone.length; i++) 
 	     alldone = alldone && formalsdone[i];

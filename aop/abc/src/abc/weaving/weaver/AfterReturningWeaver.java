@@ -56,7 +56,7 @@ public class AfterReturningWeaver {
 
 	// stmt2:  <aspectref>.<advicemethod>();
         Chain stmts2 = PointcutCodeGen.makeAdviceInvokeStmt
-	                             (aspectref,adviceappl,units,localgen);
+                            (aspectref,adviceappl,units,localgen);
         debug("Generated stmts2: " + stmts2);
 
 	// weave in statements just before end of join point shadow
