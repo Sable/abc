@@ -11,6 +11,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="DEPRECATED: introductions" num="10" keywords="from-base" dir="base/test103">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="before constructors -- one file" num="11" keywords="from-base" dir="base/test104">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -82,6 +86,14 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="advises on introduced methods and constructors" num="28" keywords="from-base" dir="base/test121" abccomment="test extra parameters introduced by ITDs. Fixed ODM Jul 5">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="DEPRECATED: Method introduction into interface implemented by abstract class" num="29" keywords="from-base" dir="base/test122">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="Crossing super calls in constructors" num="30" keywords="from-base" dir="base/test123">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -99,6 +111,14 @@
         <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="advice uses its own formals to get actuals" num="34" keywords="from-base" dir="base/test127">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="DEPRECATED:  introduce weaves can use this" num="35" keywords="from-base" dir="base/test128">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="DEPRECATED: introduce of abstract methods works" num="36" keywords="from-base" dir="base/test129">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
@@ -135,6 +155,10 @@
         <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="inner aspects and around" num="45" keywords="from-base" dir="base/test139">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="aspect inheritance and advice, introduction" num="46" keywords="from-base" dir="base/test140">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
@@ -1797,6 +1821,18 @@
             <message line="19" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="initial tests for new introduction style" num="320" keywords="from-design" dir="design/intro">
+        <compile files="Simple.java"></compile>
+        <run class="Simple"></run>
+    </ajc-test>
+<ajc-test title="overriding of introduced methods and accessibility" num="321" keywords="from-design" dir="design/intro">
+        <compile files="Overriding.java"></compile>
+        <run class="Overriding"></run>
+    </ajc-test>
+<ajc-test title="within and introductions behaves correctly" num="322" keywords="from-design" dir="design/intro">
+        <compile files="Within.java"></compile>
+        <run class="Within"></run>
+    </ajc-test>
 <ajc-test title="introduction of static methods and fields on classes and interfaces" num="323" keywords="from-design,knownLimitation" dir="design/intro" abccomment="abc does not implement static intertype fields on interfaces, either. ODM 07/07/04">
         <compile files="Statics.java">
            <message line="46" kind="error"></message>
@@ -1805,6 +1841,10 @@
            <message line="51" kind="error"></message>
         </compile>
         <ajcrun class="Statics"></ajcrun>
+    </ajc-test>
+<ajc-test title="correct inheritance of multiple concrete methods" pr="570" num="324" keywords="from-design" dir="design/intro">
+        <compile files="MultiInheritCP.java"></compile>
+        <run class="MultiInheritCP"></run>
     </ajc-test>
 <ajc-test title="errors in inheritance of multiple concrete methods 1" pr="570" num="325" keywords="from-design" dir="abctests/design/intro" abccomment="abc bails out early, split into several cases. ODM 08/07/04">
         <compile files="MultiInheritCF1.java">
@@ -1866,6 +1906,10 @@
             <message line="8" kind="error"></message> 
        </compile>
     </ajc-test>
+<ajc-test title="declared exceptions are checked correctly on intros" num="331" dir="design/intro">
+        <compile files="ExceptionsCP.java"></compile>
+        <run class="ExceptionsCP"></run>
+    </ajc-test>
 <ajc-test title="Joinpoint is not created for foo(String) when before() advice is present." num="332" keywords="from-design" dir="design/reflect">
         <compile files="SimpleAround1.java"></compile>
         <run class="SimpleAround1"></run>
@@ -1897,6 +1941,10 @@
 <ajc-test title="field from implemented interface not found in advice" pr="96" num="339" keywords="from-resolved_10x" dir="new">
         <compile files="FieldFromImplementsNotFound.java"></compile>
         <run class="FieldFromImplementsNotFound"></run>
+    </ajc-test>
+<ajc-test title="make sure advice affects introduced methods and constructors" num="340" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnIntroduced.java"></compile>
+        <run class="AdviceOnIntroduced"></run>
     </ajc-test>
 <ajc-test title="new around construct" num="341" keywords="from-resolved_10x" dir="new">
         <compile files="AroundAdvice.java"></compile>
@@ -1940,6 +1988,10 @@
 <ajc-test title="introduction fails on class with an inner class that extends or implements something" pr="129" num="350" keywords="from-resolved_10x" dir="new">
         <compile files="IntroductionFailsWithInnerClass.java"></compile>
         <run class="IntroductionFailsWithInnerClass"></run>
+    </ajc-test>
+<ajc-test title="checks that methods are introduced on the topmost class implemented" pr="126" num="351" keywords="from-resolved_10x" dir="new">
+        <compile files="TopmostImplements.java"></compile>
+        <run class="TopmostImplements"></run>
     </ajc-test>
 <ajc-test title="a couple different returns from around advice" pr="140" num="352" keywords="from-resolved_10x" dir="new/arndAdvRet">
         <compile files="Driver.java"></compile>
@@ -2057,6 +2109,10 @@
         <compile files="AdviceOnAdvice.java"></compile>
         <run class="AdviceOnAdvice"></run>
     </ajc-test>
+<ajc-test title="Introductions on other introductions" num="381" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroOnIntro.java"></compile>
+        <run class="IntroOnIntro"></run>
+    </ajc-test>
 <ajc-test title="Putting advice on array constructors." num="382" keywords="from-resolved_10x" dir="new">
         <compile files="Orleans.java"></compile>
         <run class="Orleans"></run>
@@ -2097,6 +2153,10 @@
         <compile files="AroundCallsArgs.java"></compile>
         <run class="AroundCallsArgs"></run>
     </ajc-test>
+<ajc-test title="Ensures introduction methods can have advice placed on them" num="393" keywords="from-resolved_10x" dir="new">
+        <compile files="Dominates.java"></compile>
+        <run class="Dominates"></run>
+    </ajc-test>
 <ajc-test title="No boolean appearing in the 'if' clause for around advice with eachJVM()" pr="355" num="394" keywords="from-resolved_10x" dir="new">
         <compile files="PR355.java"></compile>
         <run class="PR355"></run>
@@ -2132,6 +2192,14 @@
 <ajc-test title="Confused referring to instance variables and locals" pr="191" num="402" keywords="from-resolved_10x" dir="new">
         <compile files="ScopesAndFields_PR191.java"></compile>
         <run class="ScopesAndFields_PR191"></run>
+    </ajc-test>
+<ajc-test title="Parsing C+ expressions without parens in super introductions." num="403" keywords="from-resolved_10x" dir="new">
+        <compile files="ParsingSubtypesIntroductions.java"></compile>
+        <run class="ParsingSubtypesIntroductions"></run>
+    </ajc-test>
+<ajc-test title="Introducing methods on classes that implements inner-interfaces with +implements." num="404" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="IntroducingMethodsOnPlusImplementedInterfaces.java"></compile>
+        <run class="IntroducingMethodsOnPlusImplementedInterfaces"></run>
     </ajc-test>
 <ajc-test title="Methods with the same name are generated when abstract aspects extend another abstract aspect." pr="464" num="405" keywords="from-resolved_10x" dir="new">
         <compile files="AbstractAspectsExtendingAbstractAspectsGeneratesMethodsWithTheSameName_PR464.java"></compile>
@@ -2177,13 +2245,25 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="implements and extends are introduced before methods and fields" num="415" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroOrder.java"></compile>
+        <run class="IntroOrder"></run>
+    </ajc-test>
 <ajc-test title="a static/inner aspect of a inner class of an aspect is pulled to the top level as static" num="416" keywords="from-resolved_10x" dir="new">
         <compile files="StaticInnerAspect.java"></compile>
         <run class="StaticInnerAspect"></run>
     </ajc-test>
+<ajc-test title="Crashes with privileged aspect." num="417" keywords="from-resolved_10x" dir="new">
+        <compile files="Privileged.java"></compile>
+        <run class="Privileged"></run>
+    </ajc-test>
 <ajc-test title="join points exist in the execution of field initializers" num="41801" keywords="from-resolved_10x" dir="abctests/new" abccomment="cloned from 418">
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
+    </ajc-test>
+<ajc-test title="privileged aspects" num="419" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
+        <run class="main.Main"></run>
     </ajc-test>
 <ajc-test title="advice on field gets in privileged aspects" num="420" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnPrivileged.java"></compile>
@@ -2216,6 +2296,10 @@
 <ajc-test title="Checking formal matching as in Roeder's bug in 0.7b10" num="427" keywords="from-resolved_10x" dir="new">
         <compile files="FormalMatching.java"></compile>
         <run class="FormalMatching"></run>
+    </ajc-test>
+<ajc-test title="Introducing synchronized methods on interfaces." num="428" keywords="from-resolved_10x" dir="new">
+        <compile files="SynchronizedMethodsOnInterfaces.java"></compile>
+        <run class="SynchronizedMethodsOnInterfaces"></run>
     </ajc-test>
 <ajc-test title="The pointcut params (..,int..) is not recognizing (Object,int,Object)." num="429" keywords="from-resolved_10x" dir="new">
         <compile files="Params.java"></compile>
@@ -2273,13 +2357,29 @@
         <compile files="Finals.java"></compile>
         <run class="Finals"></run>
     </ajc-test>
+<ajc-test title="Method introductions" num="443" keywords="from-resolved_10x" dir="new">
+        <compile files="MethodIntroductions.java"></compile>
+        <run class="MethodIntroductions"></run>
+    </ajc-test>
+<ajc-test title="Putting an introduced method on each interface" num="444" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroducedMethodsOnEachInterface.java"></compile>
+        <run class="IntroducedMethodsOnEachInterface"></run>
+    </ajc-test>
 <ajc-test title="Extending interfaces" num="445" keywords="from-resolved_10x" dir="new">
         <compile files="BindingInterfaces.java"></compile>
         <run class="BindingInterfaces"></run>
     </ajc-test>
+<ajc-test title="Introducing private methods on interfaces" num="446" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroducingPrivateMethodsOnInterfaces.java"></compile>
+        <run class="IntroducingPrivateMethodsOnInterfaces"></run>
+    </ajc-test>
 <ajc-test title="Issuing errors for assigning variables thisJoinPoint -- not assigning thisJoinPoint." num="447" keywords="from-resolved_10x" dir="new">
         <compile files="ThisJoinPointAssignments.java"></compile>
         <run class="ThisJoinPointAssignments"></run>
+    </ajc-test>
+<ajc-test title="Static references inside of introduced bodies get bound correctly." num="448" keywords="from-resolved_10x" dir="new">
+        <compile files="StaticIntroducedReferences.java"></compile>
+        <run class="StaticIntroducedReferences"></run>
     </ajc-test>
 <ajc-test title="cflow and object creations [of eachcflow]" pr="307" num="449" keywords="from-resolved_10x" dir="new/cflowObjectCreations">
         <compile files="Driver.java"></compile>
@@ -2485,6 +2585,10 @@
         <compile files="NonAlphaSignaturePatternCE.java"></compile>
         <run class="NonAlphaSignaturePatternCE"></run>
     </ajc-test>
+<ajc-test title="Unable to bind privately-introduced field name from introduced method in the same aspect" num="502" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroducedFieldsNotBinding.java"></compile>
+        <run class="IntroducedFieldsNotBinding"></run>
+    </ajc-test>
 <ajc-test title="anonymous inner class with aspect" pr="297" num="503" keywords="from-resolved_10x" dir="new/anonInnerClass">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -2508,6 +2612,14 @@
 <ajc-test title="InternalCompilerError in JpPlan when args alone" num="509" keywords="from-resolved_10x" dir="new">
         <compile files="ArgsAlone.java"></compile>
         <run class="ArgsAlone"></run>
+    </ajc-test>
+<ajc-test title="compile error using pcd if() with advice on introduced methods." pr="527" num="510" keywords="from-resolved_10x" dir="new">
+        <compile files="PR527.java"></compile>
+        <run class="PR527"></run>
+    </ajc-test>
+<ajc-test title="compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" pr="528" num="511" keywords="from-resolved_10x" dir="new">
+        <compile files="PR528.java"></compile>
+        <run class="PR528"></run>
     </ajc-test>
 <ajc-test title="aspect as member of interface" pr="534" num="512" keywords="from-resolved_10x" dir="new">
         <compile files="AspectInInterfaceCP.java"></compile>
@@ -2555,6 +2667,10 @@
         <compile files="AdviceThrowsCp.java"></compile>
         <run class="AdviceThrowsCp"></run>
     </ajc-test>
+<ajc-test title="potential method conflicts with introductions and interfaces and PR#561" pr="570" num="522" keywords="from-resolved_10x" dir="new">
+        <compile files="MethodConflictsCP.java"></compile>
+        <run class="MethodConflictsCP"></run>
+    </ajc-test>
 <ajc-test title="illegal method conflicts with introductions and interfaces and PR#561" pr="570" num="523" keywords="from-resolved_10x" dir="new" abccomment="abc gives one error for one mistake, and ajc gives several. ODM 11/08/04">
         <compile files="MethodConflictsCF.java">
             <ajcmessage line="8" kind="error"></ajcmessage>
@@ -2579,9 +2695,21 @@
         <compile files="ThisInIntroFieldInit.java"></compile>
         <run class="ThisInIntroFieldInit"></run>
     </ajc-test>
+<ajc-test title="Introduced type unavailable to cast expressions in introduced methods" num="529" keywords="from-resolved_10x" dir="new/introTypeMissing">
+        <compile files="Cast.java,TargetClass.java,Util.java"></compile>
+        <run class="Cast"></run>
+    </ajc-test>
+<ajc-test title="Introduced type unavailable to qualified new expressions in introduced methods" num="530" keywords="from-resolved_10x" dir="new/introTypeMissing">
+        <compile files="Inner.java,TargetClass.java,Util.java"></compile>
+        <run class="Inner"></run>
+    </ajc-test>
 <ajc-test title="Introduced type unavailable to cast expressions in introduced field initializers" num="531" keywords="from-resolved_10x" dir="new/introTypeMissing">
         <compile files="CastInFieldInit.java,TargetClass.java,Util.java"></compile>
         <run class="CastInFieldInit"></run>
+    </ajc-test>
+<ajc-test title="Aspect type unavailable to qualified new expressions in body of introduced methods" num="532" keywords="from-resolved_10x" dir="new/introTypeMissing">
+        <compile files="AspectInIntroducedMethod.java"></compile>
+        <run class="AspectInIntroducedMethod"></run>
     </ajc-test>
 <ajc-test title="Introduced type unavailable to instanceof expressions in introduced methods" num="533" keywords="from-resolved_10x,knownLimitation" dir="new/introTypeMissing" abccomment="ajc seems to think foo instanceof int is OK!">
         <compile files="InstanceOf.java,TargetClass.java,Util.java">
@@ -2624,11 +2752,35 @@
             <message line="31" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 1)" pr="600" num="539" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="Main.java,My_error.java,A.java,B.java,C.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 2)" pr="600" num="540" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="Main.java,My_error.java,C.java,A.java,B.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 3)" pr="600" num="541" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="My_error.java,A.java,B.java,C.java,Main.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 4)" pr="600" num="542" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="A.java,B.java,C.java,Main.java,My_error.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 5)" pr="600" num="543" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="A.java,B.java,Main.java,C.java,My_error.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
 <ajc-test title="declare error and abstract pointcuts" num="544" keywords="from-resolved_10x" dir="new">
         <compile files="AbstractDeclare.java">
             <message line="3" kind="error"></message>
             <message line="4" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="Exercise runtime classes (optionally in 1.1 VM)" num="545" keywords="from-resolved_10x" dir="new/runtime">
+        <compile files="AllRuntime.java,TesterDriver.java"></compile>
+        <run class="TesterDriver"></run>
     </ajc-test>
 <ajc-test title="VerifyError after around advice falls off end of tryCatch" num="546" keywords="from-resolved_10x" dir="new" abccomment="we only generate the warning at the join point, not the advice location.                   This should be fixed when we have multi-position errors.">
         <compile files="TryOffEnd.java">
@@ -2738,6 +2890,14 @@
         <compile files="AroundVoid.java"></compile>
         <run class="AroundVoid"></run>
     </ajc-test>
+<ajc-test title="Overriding method implementations using introduction on interfaces" pr="654" num="569" keywords="from-resolved_10x,fail-unimplemented" dir="new">
+        <compile options="-Xlint:ignore" files="IntroductionsOverriding.java"></compile>
+        <run class="IntroductionsOverriding"></run>
+    </ajc-test>
+<ajc-test title="more coverage for around and concrete methods on interfaces" pr="654" num="570" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="MultiAndAround.java"></compile>
+        <run class="MultiAndAround"></run>
+    </ajc-test>
 <ajc-test title="invalid number and type of proceed arguments" num="571" keywords="from-resolved_10x" dir="new">
         <compile files="InvalidProceedArgsCE.java">
             <message line="10" kind="error"></message>
@@ -2785,6 +2945,10 @@
 <ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
         <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
         <run class="driver.PR555"></run>
+    </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
@@ -2836,6 +3000,18 @@
         <compile files="PR584.java"></compile>
         <run class="PR584"></run>
     </ajc-test>
+<ajc-test title="subaspect method declaration on superaspect inner interface (names)" pr="685" num="590" keywords="from-resolved_104" dir="new">
+        <compile files="InnerInterfaceNames.java"></compile>
+        <run class="InnerInterfaceNames"></run>
+    </ajc-test>
+<ajc-test title="subaspect method declaration on superaspect inner interface (access)" pr="685" num="591" keywords="from-resolved_104" dir="new">
+        <compile files="InnerInterfaceAccess.java"></compile>
+        <run class="InnerInterfaceAccess"></run>
+    </ajc-test>
+<ajc-test title="subaspect method declaration on superaspect inner interface (types)" pr="685" num="592" keywords="from-resolved_104" dir="new">
+        <compile files="InnerInterfaceTypes.java,InnerInterfaceTypesHelper.java"></compile>
+        <run class="InnerInterfaceTypes"></run>
+    </ajc-test>
 <ajc-test title="around AST type XXX" pr="691" num="593" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="PR691.java"></compile>
         <run class="PR691"></run>
@@ -2851,6 +3027,14 @@
 <ajc-test title="changing this in around's proceed reported by Rich Price" num="596" keywords="from-resolved_104" dir="new">
         <compile options="-1.4" files="AroundChangeThis.java"></compile>
         <run class="AroundChangeThis"></run>
+    </ajc-test>
+<ajc-test title="default package for aspect introductions is not the current package" pr="548" num="597" keywords="from-resolved_10rc3,from-resolved_104" dir="new">
+        <compile files="introductionPackage/two/C.java,introductionPackage/one/C.java,introductionPackage/one/Aspect.java,introductionPackage/one/TestAspect.java"></compile>
+        <run class="one.TestAspect"></run>
+    </ajc-test>
+<ajc-test title="anon class written to wrong directory" pr="569" num="598" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
+        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
+        <run class="a.IntroAnon"></run>
     </ajc-test>
 <ajc-test title="unqualified transitive pointcut references not resolved" pr="603" num="599" keywords="from-resolved_104" dir="new">
         <compile files="PointcutQualification.java"></compile>
@@ -3214,6 +3398,10 @@
         <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
         <run vm="1.4" class="AssertInOnePackage"></run>
     </ajc-test>
+<ajc-test title="assert tests in introduction [requires 1.4]" num="668" keywords="from-14tests,fail-unimplemented" dir="new">
+        <compile options="-source,1.4" files="AssertInIntro.java"></compile>
+        <run vm="1.4" class="AssertInIntro"></run>
+    </ajc-test>
 <ajc-test title="various forms of package name pattern matching work" num="672" keywords="from-broken14usejavac" dir="base/test131">
         <compile files="Driver.java,p1/C1.java,p1/p2/C2.java"></compile>
         <run class="Driver"></run>
@@ -3229,6 +3417,14 @@
 <ajc-test title="assert statement in advice coverage [requires 1.4]" pr="657" num="682" keywords="from-14tests,fail-in-eclipse" dir="new">
         <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
         <run vm="1.4" class="AssertInAdvice"></run>
+    </ajc-test>
+<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
+        <run vm="1.4" class="AssertInAdviceBug"></run>
+    </ajc-test>
+<ajc-test title="declaring a private method on an inner interface" pr="823" num="684" keywords="tofix" dir="new">
+        <compile files="PrivateMethodOnInnerInterface.java"></compile>
+        <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
 <ajc-test title="CE expected when declaring fields on arrays" pr="829" num="685" keywords="tofix" dir="new">
         <compile files="ArrayFieldDeclarationCE.java">
@@ -3310,6 +3506,10 @@
         <compile files="AnonymousSelfReference.java"></compile>
         <run class="AnonymousSelfReference"></run>
     </ajc-test>
+<ajc-test title="self-reference from (aspect-declared) method-local class" pr="776" num="713" dir="new">
+        <compile files="MethodSelfReference.java"></compile>
+        <run class="MethodSelfReference"></run>
+    </ajc-test>
 <ajc-test title="expect CE for unterminated declare error" num="714" dir="new" abccomment="the ajc error is much nicer than the abc one">
         <compile files="UnterminatedDeclareErrorCE.java">
             <ajcmessage line="4" kind="error"></ajcmessage>
@@ -3324,6 +3524,10 @@
             <ajcmessage line="27" kind="error"></ajcmessage>
 	    <message line="20" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="subtype pattern in dominates should pick out aspect subtypes" num="716" dir="new">
+        <compile files="DominatesTypePattern.java"></compile>
+        <run class="DominatesTypePattern"></run>
     </ajc-test>
 <ajc-test title="subtype pattern in dominates will conflict with type pattern" num="717" dir="new">
         <compile files="DominatesTypePatternCE.java">
@@ -3384,6 +3588,14 @@
         <compile files="ConstructorArgTracing.java"></compile>
         <run class="ConstructorArgTracing"></run>
     </ajc-test>
+<ajc-test title="declared exceptions in inter-type decls" pr="29106" num="731" dir="bugs">
+        <compile files="ExceptionsOnInters.java"></compile>
+        <run class="ExceptionsOnInters"></run>
+    </ajc-test>
+<ajc-test title="inter-type fields with array types" pr="29113" num="733" dir="bugs">
+        <compile files="InterFieldArrays.java"></compile>
+        <run class="InterFieldArrays"></run>
+    </ajc-test>
 <ajc-test title="checking around join point for advice return type - numeric" pr="838" num="735" dir="new" abccomment="we just report the error in one place">
         <compile files="AroundNumericCastCE.java">
             <ajcmessage line="12" kind="error"></ajcmessage>
@@ -3397,6 +3609,12 @@
             <ajcmessage line="11" kind="error"></ajcmessage>
             <ajcmessage line="29" kind="error"></ajcmessage>
         </compile>
+    </ajc-test>
+<ajc-test title="declaring method on superclass and subclass" pr="852" num="737" dir="new/PR852">
+        <compile files="aspectPack/Aspect.java,target/SubClass.java,target/SuperClass.java">
+          <dir-changes added="target.SubClass,target.SuperClass"></dir-changes>
+        </compile>
+        <run class="aspectPack.Aspect"></run>
     </ajc-test>
 <ajc-test title="privileged access to code outside the control of the compiler" pr="906" num="739" dir="bugs">
         <compile options="-Xlint:warning" files="PrivilegeBeyondScope.java">
@@ -3438,6 +3656,10 @@
 <ajc-test title="aspect static initializers should run before instance constructed" pr="804" num="748" keywords="tofix" dir="new">
         <compile files="AspectStaticInit.java"></compile>
         <run class="AspectStaticInit"></run>
+    </ajc-test>
+<ajc-test title="super call in intertype method declaration body causes VerifyError" pr="29959" num="749" dir="bugs">
+        <compile files="SuperToIntro.java"></compile>
+        <run class="SuperToIntro"></run>
     </ajc-test>
 <ajc-test title="Error with certain combination of advice" pr="30168" num="750" dir="bugs/crashes">
         <compile files="test/Test3.java"></compile>
@@ -3572,6 +3794,14 @@
 			<message line="20" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="inter-type declaration bug with abstract classes" pr="36046" num="773" dir="bugs/interAbstract">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="Inter type declaration to base class not seen by derived class" pr="35725" num="774" dir="bugs/interInherit">
+        <compile files="a_impl/AImpl.java,a_impl/Af.java,a_intf/A.java,b_impl/BImpl.java,b_intf/B.java"></compile>
+        <run class="b_impl.BImpl"></run>
+    </ajc-test>
 <ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents">
         <compile files="Driver.java">
         <message line="29" kind="warning"></message>
@@ -3583,10 +3813,26 @@
             <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="options -injars checking declare parents interactions" pr="35865" num="777" dir="options/injars/simple">
+        <compile options="!eclipse" files="DecParents.java,main.jar"></compile>
+        <run class="DecParents"></run>
+    </ajc-test>
+<ajc-test title="IllegalAccessError while accessing introduced variable / 1.1rc1" pr="36110" num="778" dir="bugs/interSpecials">
+        <compile files="p1/C.java,p2/A1.java"></compile>
+        <run class="p2.A1"></run>
+    </ajc-test>
+<ajc-test title="testing that assert works like .class" pr="36110" num="779" dir="bugs/interSpecials">
+        <compile options="-source,1.4" files="p1/C.java,p2/A2.java"></compile>
+        <run vm="1.4" class="p2.A2"></run>
+    </ajc-test>
 <ajc-test title="implemented abstract pointcut" pr="36736" num="780" dir="new">
         <compile files="AbstractImplementedPointcut.java">
             <message line="14" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="privileged aspect main verify error" pr="36673" num="781" dir="new/verifyError">
+        <compile files="Privilege.java"></compile>
+        <run class="Privilege"></run>
     </ajc-test>
 <ajc-test title="Internal compiler error with thisJoinPoint.getStaticPart()" pr="36564" num="782" dir="bugs">
         <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"></compile>
@@ -3854,6 +4100,10 @@
         <compile files="SwitchInAround.java"></compile>
         <run class="SwitchInAround"></run>
     </ajc-test>
+<ajc-test title="ajc stack trace on declaring hashcode() method in aspect" pr="39993" num="838" dir="bugs">
+        <compile files="OverridingInterfaceObjectMethod.java"></compile>
+        <run class="OverridingInterfaceObjectMethod"></run>
+    </ajc-test>
 <ajc-test title="using super in method introduced on interface with multiple supertypes" num="839" dir="bugs">
         <compile files="MultipleSuperCf.java">
         	<message line="14" kind="error"></message>
@@ -3864,6 +4114,10 @@
         	<message line="16" kind="warning"></message>
         </compile>
         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Default method impl for interface causes internal exception." pr="40589" num="842" dir="bugs">
+        <compile files="CloneMethod.java"></compile>
+        <run class="CloneMethod"></run>
     </ajc-test>
 <ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" num="843" dir="bugs">
         <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
@@ -3913,6 +4167,10 @@
 			<message text="call ICanGetSomething.getSomething" line="38" kind="warning"></message>
 		</compile>
 	</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - baseline" num="849" dir="new/interfaceLibrary">
+		<compile files="lib/LibraryInterface.java,       Client.java,       LibraryAspect.java"></compile>
+		<run class="Client"></run>
+		</ajc-test>
 <ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar" num="852" dir="new/interfaceLibrary" comment="prove aspect is required even if interface is woven" abccomment="only one error, but ok. ODM 27/07/04">
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar">
 			<ajcmessage text="LibraryAspect" line="0" kind="error"></ajcmessage>
@@ -3930,10 +4188,18 @@
 			<message line="9" kind="error"></message>
 			</compile>
 		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - positive" num="857" dir="bugs/interfaceLibrary" abccomment="problem with loosing exception clauses on newly created soot methods. emailed abc list 19/07/04. ODM">
+		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
+		<run class="Client"></run>
+		</ajc-test>
 <ajc-test title="exception clause for aspect-declared interface methods - negative" num="858" dir="bugs/interfaceLibrary">
 		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
 			<message line="5" kind="error" file="ClientCE.java"></message>
 			</compile>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - positive" num="859" dir="bugs/interfaceLibrary">
+		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"></compile>
+		<run class="ClassClient"></run>
 		</ajc-test>
 <ajc-test title="exception clause for aspect-declared class methods - negative" num="860" dir="bugs/interfaceLibrary">
 		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
@@ -4082,6 +4348,10 @@
         </compile>
   		<run class="AfterThrowingCtor"></run>
     </ajc-test>
+<ajc-test title="Introduced abstract method on interface not implemented by subtype (weave altogether)" pr="49784" num="900" dir="bugs/abstractMethods">
+        <compile files="interface/C.java,interface/A.java,interface/B.java"></compile>
+        <run class="C"></run>
+    </ajc-test>
 <ajc-test title="Introduced abstract method on interface not implemented by subtype (injars)" pr="49784" num="901" dir="bugs/abstractMethods">
        <compile files="interface/C.java,interface/jars/AandB.jar"> 
             <message line="1" kind="error"></message>
@@ -4092,6 +4362,10 @@
         	<ajcmessage line="9" kind="error"></ajcmessage>
                 <message line="4" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on abstract class with introduced concrete method (single source file)" pr="49784" num="904" dir="bugs/abstractMethods">
+        <compile files="singlesource/C1.java"></compile>
+        <run class="C1"></run>
     </ajc-test>
 <ajc-test title="Introduced abstract method on abstract class with existing concrete method (single source file)" pr="49784" num="905" dir="bugs/abstractMethods">
         <compile files="singlesource/C2.java"></compile>
@@ -4111,6 +4385,11 @@
 <ajc-test title="aspect declares interface method (public abstract)" pr="49784" num="908" dir="bugs/interAbstract" comment="working in 1.1.1 - keep with others?">
         <compile files="InterfaceMethodDeclarationFull.java"></compile>
         <run class="InterfaceMethodDeclarationFull"></run>
+    </ajc-test>
+<ajc-test title="Use class implementing interface via aspect (weave all together)" pr="43972" num="910" dir="bugs/interfaceDefinition">
+        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java,              Main.java"></compile>
+        <run class="pack.InterfaceDefinition"></run>
+        <run class="Main"></run>
     </ajc-test>
 <ajc-test title="Erroneous exception conversion" pr="44587" num="912" dir="bugs">
         <compile files="ErroneousExceptionConversion.java">
@@ -4695,6 +4974,10 @@
     </ajc-test>
 <ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
         <compile files="DeclareParentsRef.java"></compile>
+    </ajc-test>
+<ajc-test title="method intertype onto inner class" num="987" dir="abctests/bugs" abccomment="abc fails in generation of accessors; ajc fails                     at runtime">
+	<compile files="QualThis.java"></compile>
+	<run class="QualThis"></run>
     </ajc-test>
 <ajc-test title="separate compilation and references to compile time constants" num="988" dir="abctests/bugs">
         <compile files="ConstantInit.java"></compile>
