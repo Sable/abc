@@ -5586,14 +5586,13 @@
       title="CE for ambiguous type reference (two files in package)"
       abccomment="jlc doesn't find error when two classes in same package
                   have same name.  Reported to Nate July 6/04. LJH
-                  Has been fixed in polyglot, but gives error on a different
-                  line."
+                  Still not fixed as of August 26/04,  Nate says it will
+                  take a while for it."
       keywords="from-resolved_105,purejava">
      <abckeywords> <nate/> <laurie/> </abckeywords>
         <compile
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
-            <ajcmessage kind="error" line="5"/>
-            <message kind="error" line="3"/>
+            <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 
