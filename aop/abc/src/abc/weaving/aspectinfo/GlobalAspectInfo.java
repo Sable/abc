@@ -3,6 +3,7 @@ package abc.weaving.aspectinfo;
 import abc.aspectj.visit.PCStructure;
 
 import polyglot.util.Position;
+import polyglot.util.ErrorInfo;
 import polyglot.types.SemanticException;
 import polyglot.types.ClassType;
 import polyglot.util.InternalCompilerError;
@@ -35,10 +36,6 @@ public class GlobalAspectInfo {
     
     private List/*<IntertypeFieldDecl>*/ ifds = new LinkedList(); // because we want to add at the front
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
-    private List/*<SuperDispatch>*/ spds = new ArrayList();
-    private List/*<SuperFieldGet>*/ spfgs = new ArrayList();
-    private List/*<SuperFieldSet>*/ spfss = new ArrayList();
-    private List/*<QualThis>*/ qtss = new ArrayList();
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AbstractAdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
@@ -68,6 +65,8 @@ public class GlobalAspectInfo {
     private Map/*<FieldSig,String>*/ field_real_names = new HashMap();
     private Map/*<FieldSig,AbcClass>*/ field_real_classes = new HashMap();
     private Map/*<MethodSig,FieldSig>*/ accessor_of_field = new HashMap();
+    
+    private List /*<ErrorInfo>*/nonWeavableClassErrors = new ArrayList();
    	
     /** This method builds the aspect_visibility structure,
      *  which is a mapping from classes and abstract aspects to
@@ -127,34 +126,6 @@ public class GlobalAspectInfo {
 	return ifds;
     }
     
-    /** Returns the list of all super dispatch methods.
-     * @return a list of {@link abc.weaving.aspectinfo.SuperDispatch} objects.
-     */
-    public List getSuperDispatches() {
-    	return spds;
-    }
-    
-	/** Returns the list of all super field getter methods.
-	 * @return a list of {@link abc.weaving.aspectinfo.SuperFieldGet} objects.
-	 */
-	public List getSuperFieldGetters() {
-		return spfgs;
-	}
-	
-	/** Returns the list of all qualified this references
-	* @return a list of {@link abc.weaving.aspectinfo.QualThis} objects.
-	*/
-	public List getQualThiss() {
-		return qtss;
-	}
-	
-	/** Returns the list of all super field getter methods.
-	 * @return a list of {@link abc.weaving.aspectinfo.SuperFieldSet} objects.
-	*/
-	public List getSuperFieldSetters() {
-		return spfss;
-	}
-
     /** Returns the list of all intertype method declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeMethodDecl} objects.
      */
@@ -174,6 +145,15 @@ public class GlobalAspectInfo {
      */
     public List getAdviceDecls() {
 	return ads;
+    }
+    
+    /** Returns the list of errors about classes which are not currently being woven, but which we would
+     * really need to insert accessor methods into. This is populated in the AJTypeSystem and added to
+     * the error queue in AspectDecl.typeCheck().
+     * @return a list of <code>ErrorInfo</code> objects
+     */
+    public List getNonWeavableClassErrors() {
+        return nonWeavableClassErrors;
     }
 
     /** Returns the list of all pointcut declarations.
@@ -236,22 +216,6 @@ public class GlobalAspectInfo {
 	imds.add(imd);
     }
     
-    public void addSuperDispatches(List sds) {
-    	spds.addAll(sds);
-    }
-    
-    public void addSuperFieldGetters(List sfds) {
-    	spfgs.addAll(sfds);
-    }
-    
-    public void addSuperFieldSetters(List sfds) {
-    	spfss.addAll(sfds);
-    }
-
-	public void addQualThiss(List qts) {
-		qtss.addAll(qts);
-	}
-	
     public void addIntertypeConstructorDecl(IntertypeConstructorDecl imd) {
 	icds.add(imd);
     }
@@ -287,6 +251,10 @@ public class GlobalAspectInfo {
 
 	public void addClassToMakePublic(ClassType c) {
 	    ctmps.add(c);
+	}
+	
+	public void addClassNotWeavableError(ErrorInfo ei) {
+	    nonWeavableClassErrors.add(ei);
 	}
 	
     public void print(java.io.PrintStream p) {

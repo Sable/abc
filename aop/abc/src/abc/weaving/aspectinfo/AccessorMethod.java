@@ -3,6 +3,7 @@
  */
 package abc.weaving.aspectinfo;
 
+import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 
 import polyglot.types.ClassType;
@@ -27,6 +28,15 @@ public abstract class AccessorMethod {
         this.name = name;
         this.target = target;
         this.position = pos;
+
+        // As there is no way to generate a compiler error/warning from here, add it to a
+        // list of errors. The closest instance of AspectDecl on the stack will generate 
+        // the messages.
+        if(!GlobalAspectInfo.v().getWeavableClasses().contains(target)) {
+            GlobalAspectInfo.v().addClassNotWeavableError(new ErrorInfo(ErrorInfo.WARNING, 
+                    "Need to weave into class " + target + ", but it is not weavable. " +
+                    "Execution of compiled code will probably fail.", position));
+        }
     }
     
     /**

@@ -10,8 +10,8 @@ import polyglot.frontend.Source;
 
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
+import polyglot.util.ErrorInfo;
 import polyglot.types.*;
-import polyglot.ext.jl.types.ParsedClassType_c;
 
 import polyglot.ast.Typed;
 

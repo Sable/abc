@@ -24,6 +24,7 @@ import polyglot.ast.TypeNode;
 import polyglot.types.Flags;
 import polyglot.util.Position;
 import polyglot.util.CodeWriter;
+import polyglot.util.ErrorInfo;
 
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
@@ -336,6 +337,12 @@ public class AspectDecl_c extends ClassDecl_c
         
         cd.type().flags(cd.flags().Public());
 
+        // add errors generaced by accessor methods to error queue
+		for(Iterator it = GlobalAspectInfo.v().getNonWeavableClassErrors().iterator(); it.hasNext(); ) {
+		    visitor.job().compiler().errorQueue().enqueue((ErrorInfo)it.next());
+		}
+		GlobalAspectInfo.v().getNonWeavableClassErrors().clear();
+        
         return cd.addAspectMembers(nf, ts).flags(cd.flags().Public());
     }
 }
