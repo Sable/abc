@@ -323,11 +323,17 @@ public class AspectCodeGen {
                  " with kind " + perkind);
 
         String perInterfaceName = aname + "$abc$Per" + perkind;
-        String perGetName = perInterfaceName + "Get";
-        String perSetName = perInterfaceName + "Set";
-        String perFieldName = perInterfaceName + "Field"; 
+        // create name of field/get/set with _ instead of .  
+        String getSetFieldName = aname.replace('.','_') + "$abc$Per" + perkind;
+
+        String perGetName = getSetFieldName + "Get";
+        String perSetName = getSetFieldName + "Set";
+        String perFieldName = getSetFieldName + "Field"; 
 
         debug("perInterfaceName is " + perInterfaceName);
+        debug("perGetName is" + perGetName);
+        debug("perSetName is" + perSetName);
+        debug("perFieldName is" + perFieldName);
 
         // generate the interface
         SootClass inter =
@@ -367,6 +373,8 @@ public class AspectCodeGen {
       { // make the new interface 
         SootClass inter = new SootClass(interfaceName,
                               Modifier.INTERFACE | Modifier.PUBLIC);
+        debug("adding " + interfaceName);
+        debug("name from SootClass is " + inter.getName());
         inter.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
         
         // add the getter
