@@ -59,6 +59,7 @@ public class Main {
     public Collection/*<String>*/ aspect_sources = new ArrayList();
     public Collection/*<String>*/ jar_classes = new ArrayList();
     public Collection/*<String>*/ in_jars = new ArrayList();
+    public Collection/*<String>*/ source_roots = new ArrayList();
 
     public List/*<String>*/ soot_args = new ArrayList();
     public List/*<String>*/ polyglot_args = new ArrayList();
@@ -159,13 +160,17 @@ public class Main {
         else if (args[i].equals("-injars")) 
           {
             // a class-path-delimiter separated list should follow -injars
-            if(i + 1 < args.length){
-                String[] jars = args[i + 1].split(System.getProperty("path.separator"));
-                i++;
-                for(int j = 0; j < jars.length; j++) {
-                    // Do we need a sanity check here? !jars[j].equals("") or something like that?
-                    in_jars.add(jars[j]);
-                }
+            i++;
+            if(i < args.length){
+                parsePath(args[i], in_jars);
+            } else throw new IllegalArgumentException("Missing argument to " + args[i]);
+          } // injars 
+        else if (args[i].equals("-sourceroots")) 
+          {
+            // a class-path-delimiter separated list should follow -sourceroots
+            i++;
+            if(i < args.length){
+                parsePath(args[i], source_roots);
             } else throw new IllegalArgumentException("Missing argument to " + args[i]);
           } // injars 
         // TODO: -inpath PATH
@@ -439,6 +444,8 @@ public class Main {
 			AbcTimer.mark("Init. of Soot");
 
 			loadJars();
+			loadSourceRoots();
+                        System.out.println( aspect_sources );
 			AbcTimer.mark("Loading Jars");
 
 			// if something to compile
@@ -578,6 +585,31 @@ public class Main {
 
 	Scene.v().loadBasicClasses();
 
+    }
+
+    private void findSourcesInDir(String dir, Collection sources) throws IllegalArgumentException {
+        File file = new File(dir);
+        File[] files = file.listFiles();
+        if( files == null ) {
+            throw new IllegalArgumentException( "Sourceroot "+dir+" is not a directory");
+        }
+        for( int i = 0; i < files.length; i++ ) {
+            if(files[i].isDirectory()) findSourcesInDir(files[i].getAbsolutePath(), sources);
+            else {
+                String fileName = files[i].getAbsolutePath();
+                if( fileName.endsWith(".java") || fileName.endsWith(".aj") ) {
+                    sources.add(fileName);
+                }
+            }
+        }
+    }
+    public void loadSourceRoots() throws IllegalArgumentException {
+    // Load the classes in all given roots
+    Iterator rooti = source_roots.iterator();
+    while (rooti.hasNext()) {
+        String root = (String)rooti.next();
+        findSourcesInDir(root, aspect_sources);
+      }
     }
 
     public void loadJars() throws CompilerFailedException {
@@ -830,5 +862,13 @@ public class Main {
         }
 
         return extensionInfoInstance;
+    }
+    /** Parse a path.separator separated path into the separate directories. */
+    private void parsePath(String path, Collection paths) {
+        String[] jars = path.split(System.getProperty("path.separator"));
+        for(int j = 0; j < jars.length; j++) {
+            // Do we need a sanity check here? !jars[j].equals("") or something like that?
+            paths.add(jars[j]);
+        }
     }
 }
