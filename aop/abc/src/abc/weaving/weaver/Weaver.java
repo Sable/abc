@@ -61,7 +61,7 @@ public class Weaver {
 	ShadowPointsSetter sg = new ShadowPointsSetter();
         PointcutCodeGen pg = new PointcutCodeGen();
 	GenStaticJoinPoints gsjp = new GenStaticJoinPoints();
-	/*
+	
         for( Iterator clIt = 
 	         GlobalAspectInfo.v().getWeavableClasses().iterator(); 
 		 clIt.hasNext(); ) {
@@ -94,7 +94,7 @@ public class Weaver {
 	    debug("--------- FINISHED WEAVING OF CLASS >>>>> " + 
 		  scl.getName() + "\n");
 	} // each class
-	*/
+	
       AbcTimer.mark("Weaving advice");
     } // method weave
 } // class Weaver
