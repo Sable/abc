@@ -47,11 +47,14 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
+import soot.tagkit.Tag;
 import soot.util.Chain;
 import abc.main.Debug;
 import abc.main.Main;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
+import abc.soot.util.RedirectedExceptionSpecTag;
+import abc.soot.util.DisableExceptionCheckTag;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
@@ -586,6 +589,7 @@ public class AroundWeaver {
 					// create new method					
 					sootAccessMethod = new SootMethod(accessMethodName, new LinkedList(), getAdviceReturnType(), Modifier.PUBLIC);
 				}
+				sootAccessMethod.addTag(new DisableExceptionCheckTag());
 				Body accessBody = Jimple.v().newBody(sootAccessMethod);
 
 				sootAccessMethod.setActiveBody(accessBody);
@@ -827,7 +831,22 @@ public class AroundWeaver {
 							
 							accessMethodStatements.insertBefore(switchTarget, first);
 						}
+
 						updateSavedReferencesToStatements(localMap);
+
+						// Construct a tag to place on the invokes that are put in place of the removed
+						// statements
+
+						List newstmts=new LinkedList();
+						Chain units=joinpointBody.getUnits();
+						Stmt s=(Stmt) units.getSuccOf(begin);
+						while(s!=end) {
+						    newstmts.add(localMap.get(s));
+						    s=(Stmt) units.getSuccOf(s);
+						}
+						Tag redirectExceptions=new RedirectedExceptionSpecTag(accessMethodBody,newstmts);
+						
+						
 					//}
 					{ // remove old shadow
 						// remove any traps from the shadow before removing the shadow
@@ -886,7 +905,8 @@ public class AroundWeaver {
 						skipDynamicActuals,
 						shadowID,
 						wc,
-						failPoint);
+						failPoint,
+						redirectExceptions);
 					
 					joinpointStatements.insertAfter(
 						Jimple.v().newAssignStmt(bindMaskLocal, IntConstant.v(0))
@@ -911,7 +931,8 @@ public class AroundWeaver {
 						lThis = joinpointBody.getThisLocal();
 		
 					makeAdviceInvokation(bindMaskLocal,returnedLocal, dynamicActuals, 
-						 (bUseClosureObject ? lClosure : lThis), shadowID, failPoint, wc);
+							     (bUseClosureObject ? lClosure : lThis), shadowID, failPoint, wc,
+							     new DisableExceptionCheckTag());
 						
 					if (abc.main.Debug.v().aroundWeaver)
 						AccessMethod.this.sootAccessMethod.getActiveBody().validate();
@@ -1243,7 +1264,8 @@ public class AroundWeaver {
 					List dynamicActuals,
 					int shadowID,
 					WeavingContext wc,
-					Stmt failPoint) {
+					Stmt failPoint,
+                                        Tag attachToInvoke) {
 					LocalGeneratorEx localgen = new LocalGeneratorEx(joinpointBody);	
 					
 					joinpointStatements.insertBefore(failPoint, end);
@@ -1281,6 +1303,7 @@ public class AroundWeaver {
 								skipAdvice = Jimple.v().newInvokeStmt(directInvoke);
 								joinpointStatements.insertAfter(skipAdvice, failPoint);
 							}
+							skipAdvice.addTag(attachToInvoke);
 							directInvokationStmts.add(skipAdvice);
 						}
 					}
@@ -1417,7 +1440,7 @@ public class AroundWeaver {
 					return l;
 				}
 								
-				private void makeAdviceInvokation(Local bindMaskLocal, Local returnedLocal, List dynamicActuals, Local lThis, int shadowID, Stmt insertionPoint, WeavingContext wc) {
+			        private void makeAdviceInvokation(Local bindMaskLocal, Local returnedLocal, List dynamicActuals, Local lThis, int shadowID, Stmt insertionPoint, WeavingContext wc,Tag attachToInvoke) {
 					LocalGeneratorEx lg = new LocalGeneratorEx(joinpointBody);
 					Chain invokeStmts = adviceAppl.advice.makeAdviceExecutionStmts(adviceAppl, lg, wc);
 					
@@ -1489,6 +1512,7 @@ public class AroundWeaver {
 						Restructure.insertBoxingCast(joinpointMethod.getActiveBody(), assign, true);
 						invokeStmt = assign;
 					}
+					invokeStmt.addTag(attachToInvoke);
 					Stmt beforeEnd=Jimple.v().newNopStmt();
 					joinpointStatements.insertBefore(beforeEnd, end);
 					joinpointStatements.insertBefore(Jimple.v().newGotoStmt(beforeEnd), insertionPoint);

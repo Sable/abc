@@ -23,6 +23,7 @@ import polyglot.util.Position;
 
 import abc.aspectj.visit.PatternMatcher;
 import abc.polyglot.util.ErrorInfoFactory;
+import abc.soot.util.AspectJExceptionChecker;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.matching.StmtShadowMatch;
 import abc.weaving.weaver.*;
@@ -708,7 +709,7 @@ public class Main {
     }
 
     public void checkExceptions() {
-        ExceptionChecker exccheck=new ExceptionChecker(new GotCheckedExceptionError());
+        ExceptionChecker exccheck=new AspectJExceptionChecker(new GotCheckedExceptionError());
         HashMap options=new HashMap();
         options.put("enabled","true");
 
