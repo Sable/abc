@@ -75,14 +75,14 @@ public class Debug {
     public boolean unweaver=false;  // saving and restoring jimple bodies
     public boolean cflowAnalysis=false;  // analysis of cflows
     public boolean cflowIntraAnalysis=true; // intraprocedural cflow analysis
-    
+
     public boolean aspectCodeGen=false; // inserting stuff into aspect class
     public boolean genStaticJoinPoints=false; // collect and gen SJP
     public boolean shadowPointsSetter=false; // collect shadow points
     public boolean pointcutCodeGen=false; // main pointcut generator
     public boolean printAdviceInfo=false; // dumps advice info
     public boolean residueCodeGen=false;
-    public boolean tagResidueCode=false; // add tags to some residue statements 
+    public boolean tagResidueCode=false; // add tags to some residue statements
                                          // to help with debugging
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
@@ -114,6 +114,7 @@ public class Debug {
     public boolean dontWeaveAfterAnalysis=false;
     public boolean checkCflowOpt=false;
     public boolean dontRemovePushPop=false;
+    public boolean nullCheckElim=true;
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance

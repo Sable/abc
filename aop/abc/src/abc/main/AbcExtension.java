@@ -121,39 +121,41 @@ public class AbcExtension
         PackManager.v().getPack("jtp")
             .add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));
 
-        // Add a null check eliminator that knows about abc specific stuff
-        NullCheckEliminator.AnalysisFactory f
-            =new NullCheckEliminator.AnalysisFactory() {
-                public BranchedRefVarsAnalysis newAnalysis
-                    (soot.toolkits.graph.UnitGraph g) {
-                        return new BranchedRefVarsAnalysis(g) {
-                            public boolean isAlwaysNonNull(Value v) {
-                                if(super.isAlwaysNonNull(v)) return true;
-                                if(v instanceof InvokeExpr) {
-                                    InvokeExpr ie=(InvokeExpr) v;
-                                    SootMethodRef m=ie.getMethodRef();
-                                    if(m.name().equals("makeJP") &&
-                                            m.declaringClass().getName().equals
-                                            ("org.aspectbench.runtime.reflect.Factory"))
-                                        return true;
-                                    if(m.name().equals("getStack")
-                                       || m.name().equals("getCounter"))
-                                        if (m.declaringClass().getName().equals
-                                            ("org.aspectbench.runtime.internal.CFlowStack") ||
-                                            m.declaringClass().getName().equals
-                                            ("org.aspectbench.runtime.internal.CFlowCounter"))
-                                            return true;
-                                }
-                                return false;
-                            }
-                        };
-                    }
-            };
-        // want this to run before Dead assignment eliminiation
-        PackManager.v()
-            .getPack("jop")
-            .insertBefore(new Transform("jop.nullcheckelim", new NullCheckEliminator(f)),
-                          "jop.dae");
+        if(Debug.v().nullCheckElim) {
+            // Add a null check eliminator that knows about abc specific stuff
+            NullCheckEliminator.AnalysisFactory f
+                =new NullCheckEliminator.AnalysisFactory() {
+                        public BranchedRefVarsAnalysis newAnalysis
+                            (soot.toolkits.graph.UnitGraph g) {
+                            return new BranchedRefVarsAnalysis(g) {
+                                    public boolean isAlwaysNonNull(Value v) {
+                                        if(super.isAlwaysNonNull(v)) return true;
+                                        if(v instanceof InvokeExpr) {
+                                            InvokeExpr ie=(InvokeExpr) v;
+                                            SootMethodRef m=ie.getMethodRef();
+                                            if(m.name().equals("makeJP") &&
+                                               m.declaringClass().getName().equals
+                                               ("org.aspectbench.runtime.reflect.Factory"))
+                                                return true;
+                                            if(m.name().equals("getStack")
+                                               || m.name().equals("getCounter"))
+                                                if (m.declaringClass().getName().equals
+                                                    ("org.aspectbench.runtime.internal.CFlowStack") ||
+                                                    m.declaringClass().getName().equals
+                                                    ("org.aspectbench.runtime.internal.CFlowCounter"))
+                                                    return true;
+                                        }
+                                        return false;
+                                    }
+                                };
+                        }
+                    };
+            // want this to run before Dead assignment eliminiation
+            PackManager.v()
+                .getPack("jop")
+                .insertBefore(new Transform("jop.nullcheckelim", new NullCheckEliminator(f)),
+                              "jop.dae");
+        }
 
         if (Debug.v().cflowIntraAnalysis) {
             // Cflow Intraprocedural Analysis
