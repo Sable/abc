@@ -1,5 +1,7 @@
 package abc.weaving.matching;
 
+import soot.*;
+
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
 
@@ -13,6 +15,7 @@ public class InitializationShadowMatch extends ShadowMatch {
 
     public static InitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
+	if(!((WholeMethodPosition) pos).container.getName().equals(SootMethod.constructorName)) return null;
 	return new InitializationShadowMatch();
     }
 

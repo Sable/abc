@@ -15,6 +15,7 @@ public class PreinitializationShadowMatch extends ShadowMatch {
 
     public static PreinitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
+	if(!((WholeMethodPosition) pos).container.getName().equals(SootMethod.constructorName)) return null;
 	return new PreinitializationShadowMatch();
     }
 
