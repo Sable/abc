@@ -1,5 +1,7 @@
 package abc.eaj.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 
 import polyglot.util.Position;
@@ -45,4 +47,13 @@ public class Cast extends ShadowPointcut
 	    return (pattern.equivalent(((Cast)otherpc).getPattern()));
 	} else return false;
     }
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof Cast) {
+			return (pattern.equivalent(((Cast)otherpc).getPattern()));
+		} else return false;
+	}
+
 }
