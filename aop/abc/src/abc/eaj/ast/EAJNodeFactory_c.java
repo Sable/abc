@@ -15,6 +15,11 @@ public class EAJNodeFactory_c extends AspectJNodeFactory_c
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.
 
+    public PCCast PCCast(Position pos, TypePatternExpr type_pattern)
+    {
+        return new PCCast_c(pos, type_pattern);
+    }
+
     public PCLocalVars PCLocalVars(Position pos, List varlist, Pointcut pointcut)
     {
         return new PCLocalVars_c(pos, varlist, pointcut);

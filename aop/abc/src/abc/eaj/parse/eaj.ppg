@@ -18,13 +18,23 @@ parser Grm extends abc.aspectj.parse.Grm {:
 :};
 
 
+// new tokens
+
+terminal Token PC_CAST;
+
 start with goal;
 
 extend basic_pointcut_expr ::=
 
-        PRIVATE LPAREN formal_parameter_list_opt:a RPAREN LPAREN pointcut_expr:b RPAREN
+        PRIVATE:x LPAREN formal_parameter_list_opt:a RPAREN LPAREN pointcut_expr:b RPAREN:y
         {:
             Grm.parserTrace("PRIVATE formal_parameter_list, pointcut_expr");
-            RESULT = parser.nf.PCLocalVars(parser.pos(a), a, b);
+            RESULT = parser.nf.PCLocalVars(parser.pos(x,y), a, b);
+        :}
+    |
+        PC_CAST:x LPAREN type_pattern_expr:a RPAREN:y
+        {:
+            Grm.parserTrace("CAST pointcut");
+            RESULT = parser.nf.PCCast(parser.pos(x,y), a);
         :}
     ;

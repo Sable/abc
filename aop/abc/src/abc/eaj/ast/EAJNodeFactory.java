@@ -11,5 +11,6 @@ import java.util.*;
 public interface EAJNodeFactory extends AspectJNodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
 
+    public PCCast PCCast(Position pos, TypePatternExpr type_pattern);
     public PCLocalVars PCLocalVars(Position pos, List varlist, Pointcut pointcut);
 }

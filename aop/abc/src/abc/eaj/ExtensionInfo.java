@@ -1,7 +1,7 @@
 package abc.eaj;
 
 import polyglot.lex.Lexer;
-import abc.aspectj.parse.Lexer_c;
+import abc.eaj.parse.Lexer_c;
 import abc.eaj.parse.Grm;
 import abc.eaj.ast.*;
 import abc.eaj.types.*;
@@ -47,10 +47,11 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
         return new EAJTypeSystem_c();
     }
 
-//    public List passes(Job job) {
-//        List passes = super.passes(job);
-//        // TODO: add passes as needed by your compiler
-//        return passes;
-//    }
+    public List passes(Job job) {
+        // shouldn't really be here:
+        abc.eaj.weaving.matching.CastShadowType.register();
+
+        return super.passes(job);
+    }
 
 }
