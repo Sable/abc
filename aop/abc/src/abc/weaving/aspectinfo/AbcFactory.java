@@ -10,6 +10,10 @@ import soot.SootClass;
 
 import java.util.*;
 
+/** 
+ *  @author Aske Simon Christensen
+ */
+
 public class AbcFactory {
     private static Resolver resolver;
 

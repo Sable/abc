@@ -9,7 +9,9 @@ import abc.aspectj.visit.PCStructure;
 import soot.Scene;
 import soot.SootClass;
 
-/** A Java class handled by the ABC compiler. */
+/** A Java class handled by the ABC compiler. 
+ *  @author Aske Simon Christensen
+ */
 public class AbcClass {
     private String java_name;
     private String jvm_name;

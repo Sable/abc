@@ -6,7 +6,9 @@ import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
-/** A Java type handled by the ABC compiler. */
+/** A Java type handled by the ABC compiler. 
+ *  @author Aske Simon Christensen
+ */
 public class AbcType {
     private soot.Type st;
     private polyglot.types.Type pt;

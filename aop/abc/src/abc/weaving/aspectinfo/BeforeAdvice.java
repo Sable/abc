@@ -14,7 +14,10 @@ import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.*;
 import abc.soot.util.LocalGeneratorEx;
 
-/** Advice specification for before advice. */
+/** Advice specification for before advice. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class BeforeAdvice extends AbstractAdviceSpec {
     public BeforeAdvice(Position pos) {
 	super(pos);

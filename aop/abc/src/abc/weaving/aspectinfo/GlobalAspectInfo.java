@@ -15,7 +15,10 @@ import java.util.*;
 import abc.weaving.matching.*;
 
 
-/** All aspect-specific information for an entire program. */
+/** All aspect-specific information for an entire program. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class GlobalAspectInfo {
     private GlobalAspectInfo() {}
     private static GlobalAspectInfo instance = new GlobalAspectInfo();

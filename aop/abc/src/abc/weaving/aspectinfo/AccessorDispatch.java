@@ -1,7 +1,3 @@
-/*
- * Created on Jul 21, 2004
- *
- */
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
@@ -40,7 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author pavel
+ * @author Pavel Avgustinov
  *
  * Class representing an accessor method for a field - given the appropriate information, it
  * constructs a public method in the appropriate class, with the appropriate type, taking

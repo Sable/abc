@@ -1,6 +1,3 @@
-/*
- * Created on Jul 21, 2004
- */
 package abc.weaving.aspectinfo;
 
 import polyglot.util.ErrorInfo;
@@ -14,7 +11,7 @@ import java.util.ArrayList;
 import soot.Modifier;
 
 /**
- * @author pavel
+ * @author Pavel Avgustinov
  *
  * Abstract class representing a generic accessor method - Set, Get or Dispatch. It stores
  * all important information about a method, i.e. name, type, argument types, containing class

@@ -1,6 +1,3 @@
-/*
- * Created on Jul 28, 2004
- */
 package abc.weaving.aspectinfo;
 
 import soot.SootMethod;
@@ -12,7 +9,7 @@ import java.util.ArrayList;
 import soot.Modifier;
 
 /**
- * @author pavel
+ * @author Pavel Avgustinov
  */
 public class AccessorQualSpecial extends AccessorMethod {
     MethodInstance mi;
