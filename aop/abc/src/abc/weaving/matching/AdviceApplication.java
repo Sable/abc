@@ -136,24 +136,19 @@ public abstract class AdviceApplication {
                         residue=AndResidue.construct
                             (residue,pc.matchesAt(we,cls,method,sm));
 
-                    if(!NeverMatch.neverMatches(residue))
-                        residue=AndResidue.construct
-                            (residue,ad.postResidue(sm));
-
                     // Mostly this is just to eliminate advice at shadow points
                     // where it can't apply - e.g. after advice at handlers
-                    // ajc gives a warning if we throw away a match here;
-                    // we probably should too. (FIXME)
                     // In the case of AfterReturningArg it does generate a real
                     // residue, but this may go away if we put the return value
                     // in the shadowpoints.
-                    // Note that since the AdviceSpec for DeclareMessage is null,
-                    // this needs to come after the postResidue above. This will
-                    // probably change in future.
 
                     if(!NeverMatch.neverMatches(residue))
                         residue=AndResidue.construct
                             (residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
+
+                    if(!NeverMatch.neverMatches(residue))
+                        residue=AndResidue.construct
+                            (residue,ad.postResidue(sm));
 
                     if(abc.main.Debug.v().showPointcutMatching
                        && !NeverMatch.neverMatches(residue))
@@ -167,13 +162,13 @@ public abstract class AdviceApplication {
                          e.position()==null
                          ? ad.getPosition()
                          : e.position(),
-                         e.getCause());
-            } catch(Throwable e) {
-                throw new InternalCompilerError
-                    ("Error during matching",
-                     ad.getPosition(),
-                     e);
-            }
+                         e);
+                } catch(Throwable e) {
+                    throw new InternalCompilerError
+                        ("Error during matching",
+                         ad.getPosition(),
+                         e);
+                }
             }
             mal.flush();
         }

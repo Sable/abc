@@ -178,6 +178,8 @@ public class AdviceDecl extends AbstractAdviceDecl {
                   sm.getContainer(),
                   sm.getHost()));
 
+            return NeverMatch.v();
+
         }
 
         Residue ret=AlwaysMatch.v();

@@ -7418,14 +7418,15 @@
     </ajc-test>
 
     <ajc-test num="825" dir="bugs/handlers" pr="37898" keywords="knownLimitation"
-                abccomment="we only report the error at the join point shadow, not the advice body too"
+                abccomment="we only report the error at the join point shadow, not the advice 
+                            body too."
 		title="advice on handler join points should not throw unpermitted checked exceptions">
         <compile files="ExceptionCheckCE.java">
 			<ajcmessage kind="warning" line="8" text="expected"/>
 			<ajcmessage kind="error" line="25" text="throw checked exception" />
 			<ajcmessage kind="error" line="8" text="throw checked exception" />
-			<message kind="warning" line="8" text="expected"/>
 			<message kind="error" line="8" />
+			<message kind="warning" line="8" text="expected"/>
         </compile>
     </ajc-test>
 

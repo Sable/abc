@@ -218,6 +218,10 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
         if(a instanceof DeclareSoft && b instanceof DeclareSoft)
             return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
 
+        // We don't care about precedence since these won't ever get woven
+        if(a instanceof DeclareMessage && b instanceof DeclareMessage)
+            return GlobalAspectInfo.PRECEDENCE_NONE;
+
         throw new InternalCompilerError
             ("case not handled when comparing "+a+" and "+b);
     }
@@ -228,6 +232,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
         else if(d instanceof PerTargetSetup) return 4;
         else if(d instanceof AdviceDecl) return 2;
         else if(d instanceof DeclareSoft) return 5; //FIXME: no idea where this should go
+        else if(d instanceof DeclareMessage) return 6;
         else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
                                              d.getPosition());
     }

@@ -26,11 +26,13 @@ import polyglot.util.Position;
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 
+import soot.SootMethod;
 import soot.util.Chain;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.Weaver;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
 
@@ -50,10 +52,12 @@ public class DeclareMessage extends AbstractAdviceDecl {
     private String message;
 
     public DeclareMessage(int severity, Pointcut pc, String message, Aspect aspct, Position pos) {
-        super(aspct,null,pc,new ArrayList(),pos);
+        super(aspct,new MessageAdvice(),pc,new ArrayList(),pos);
         this.severity = severity;
         this.message = message;
     }
+
+
 
     /** Get the severity of the message.
      *  @return either {@link WARNING} or {@link ERROR}.
@@ -90,10 +94,29 @@ public class DeclareMessage extends AbstractAdviceDecl {
 
     public WeavingContext makeWeavingContext() {
         throw new InternalCompilerError
-            ("declare warning/error should never make it past the matcher");
+            ("declare warning/error cannot be woven");
+    }
+
+    public static class MessageAdvice implements AdviceSpec {
+        public boolean isAfter() { return false; }
+        public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
+            return AlwaysMatch.v();
+        }
+        public void weave(SootMethod method,
+                          LocalGeneratorEx localgen,
+                          AdviceApplication adviceappl) {
+
+            if(Weaver.finalWeave && !NeverMatch.neverMatches(adviceappl.getResidue()))
+                ((DeclareMessage) adviceappl.advice).generateMessage(adviceappl.shadowmatch);
+
+        }
     }
 
     public Residue postResidue(ShadowMatch sm) {
+        return AlwaysMatch.v();
+    }
+
+    public void generateMessage(ShadowMatch sm) {
         if(abc.main.Main.v()==null) throw new InternalCompilerError("main was null");
         if(abc.main.Main.v().error_queue==null) throw new InternalCompilerError("no error queue");
         abc.main.Main.v().error_queue.enqueue
@@ -102,13 +125,11 @@ public class DeclareMessage extends AbstractAdviceDecl {
               message,
               sm.getContainer(),
               sm.getHost()));
-
-        return NeverMatch.v();
     }
 
     public Chain makeAdviceExecutionStmts
         (AdviceApplication aa,LocalGeneratorEx localgen,WeavingContext wc) {
         throw new InternalCompilerError
-            ("declare warning/error should never make it past the matcher");
+            ("declare warning/error cannot be woven");
     }
 }

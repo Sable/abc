@@ -83,56 +83,56 @@ public class Bind extends Residue {
     public String toString() {
         return "bind("+value+","+variable+")";
     }
-	
 
-	/**
-	 * If this Bind binds an advice-formal,
-	 * add the binding to the Bindings object
-	 */
-	public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
-		WeavingVar target=variable;
-		if (!(target instanceof AdviceFormal)) {
-			target=((BindingLink)andRoot).getAdviceFormal(target);
-			if (!(target instanceof AdviceFormal)) {
-				throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
-			}
-		}
-			
-		AdviceFormal formal = (AdviceFormal) target;
-		Value val = value.getSootValue();
-		if (val instanceof Local) {
-			Local local = (Local) val;
-			//debug(" Binding: " + local.getName() + " => " + formal.pos);
-			
-			bindings.set(formal.pos, local);
-		} else {
-			throw new InternalError(
-			"Expecting bound values to be of type Local: "
-				+ val
-				+ " (came from: "
-				+ this
-				+ ")");
-		}
-	}
-	
-	/**
-	 * Replace this Bind with a BindMaskResidue containing this Bind 
-	 * if appropriate.
-	 */
-	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
-		//if (variable instanceof AdviceFormal) {
-			//AdviceFormal formal = (AdviceFormal) variable;
-			Value val = value.getSootValue();
-			//if (val instanceof Local) {
-			Local local = (Local) val;
-			int index=bindings.lastIndexOf(local);
-			int mask=bindings.getMaskValue(local, index);
-			if (mask!=0) { 				
-				return new BindMaskResidue(this, bindingsMaskLocal, mask);
-			}
-		//}	
-		return this;
-	}
+
+        /**
+         * If this Bind binds an advice-formal,
+         * add the binding to the Bindings object
+         */
+        public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+                WeavingVar target=variable;
+                if (!(target instanceof AdviceFormal)) {
+                        target=((BindingLink)andRoot).getAdviceFormal(target);
+                        if (!(target instanceof AdviceFormal)) {
+                                throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
+                        }
+                }
+
+                AdviceFormal formal = (AdviceFormal) target;
+                Value val = value.getSootValue();
+                if (val instanceof Local) {
+                        Local local = (Local) val;
+                        //debug(" Binding: " + local.getName() + " => " + formal.pos);
+
+                        bindings.set(formal.pos, local);
+                } else {
+                        throw new InternalError(
+                        "Expecting bound values to be of type Local: "
+                                + val
+                                + " (came from: "
+                                + this
+                                + ")");
+                }
+        }
+
+        /**
+         * Replace this Bind with a BindMaskResidue containing this Bind
+         * if appropriate.
+         */
+        public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+                //if (variable instanceof AdviceFormal) {
+                        //AdviceFormal formal = (AdviceFormal) variable;
+                        Value val = value.getSootValue();
+                        //if (val instanceof Local) {
+                        Local local = (Local) val;
+                        int index=bindings.lastIndexOf(local);
+                        int mask=bindings.getMaskValue(local, index);
+                        if (mask!=0) {
+                                return new BindMaskResidue(this, bindingsMaskLocal, mask);
+                        }
+                //}
+                return this;
+        }
 
         public Stmt codeGen(
                 SootMethod method,
@@ -152,8 +152,13 @@ public class Bind extends Residue {
 
                 Type to=variable.getType();
                 Type from=val.getType();
-
-                if(from.equals(to))
+                boolean castneeded=true;
+                if(from.equals(to)) castneeded=false;
+                if(castneeded && !(from instanceof PrimType) && !(to instanceof PrimType)) {
+                    FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
+                    if(hier.canStoreType(from,to)) castneeded=false;
+                }
+                if(!castneeded)
                     set=variable.set(localgen,units,begin,wc,val);
                 else
                     set=variable.set

@@ -75,7 +75,7 @@ public class Weaver {
                     while (appIt.hasNext()) {
                         AdviceApplication appl=(AdviceApplication)appIt.next();
                         appl.setResidue(
-                        		appl.getResidue().resetForReweaving());
+                                        appl.getResidue().resetForReweaving());
                     }
                 }
             }
@@ -107,7 +107,10 @@ public class Weaver {
 
     }
 
+    public static boolean finalWeave;
+
         static public void weave() {
+            finalWeave=false;
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
                 weaveGenerateAspectMethods();
@@ -116,6 +119,7 @@ public class Weaver {
                 unitBindings = unweaver.restore();
 
                 // We could do several passes, but for now, just do one.
+                if(abc.main.Debug.v().dontWeaveAfterAnalysis) finalWeave=true;
                 weaveAdvice();
                 CflowAnalysisBridge cfab = new CflowAnalysisBridge();
                 cfab.run();
@@ -123,6 +127,7 @@ public class Weaver {
                     unitBindings = unweaver.restore();
                     AroundWeaver.reset();
                     resetForReweaving();
+                    finalWeave=true;
                     weaveAdvice();
                 }
             } else {
@@ -145,6 +150,7 @@ public class Weaver {
                     resetForReweaving();
                     //throw new RuntimeException("just a test");
                 }
+                finalWeave=true;
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
