@@ -36,6 +36,7 @@ public class Debug {
     public boolean genStaticJoinPoints=false; // collect and gen SJP
     public boolean shadowPointsSetter=false; // collect shadow points
     public boolean pointcutCodeGen=false; // main pointcut generator
+    public boolean printAdviceInfo=false; // dumps advice info
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
