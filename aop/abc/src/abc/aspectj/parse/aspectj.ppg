@@ -1382,5 +1382,9 @@ type_id_star ::=
          {: Grm.parserTrace("A type pointcut parameter");
             RESULT =parser.nf.AmbTypeOrLocal(parser.pos(a),a);
          :}
+    |  type:a PC_PLUS
+         {: Grm.parserTrace("A type pointcut parameter with a plus");
+            RESULT =parser.nf.AmbTypeOrLocal(parser.pos(a),a);
+         :}
     ;
 

@@ -53,7 +53,7 @@ public class Main {
             Main main = new Main(args);
             main.run();
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             System.out.println("Illegal arguments: "+e.getMessage());
             System.exit(1);
         } catch (CompilerFailedException e) {

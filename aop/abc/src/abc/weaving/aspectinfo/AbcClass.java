@@ -40,7 +40,6 @@ public class AbcClass {
     public String getJvmName() {
 	if (jvm_name == null) {
 	    jvm_name = soot.javaToJimple.Util.getSootType(polyglot_type).toString();
-	    polyglot_type = null;
 	}
 	return jvm_name;
     }

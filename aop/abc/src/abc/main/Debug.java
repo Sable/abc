@@ -34,6 +34,7 @@ public class Debug {
     public boolean namePatternProcessing=false;
     public boolean declareParents=false;
     public boolean classKinds=false;
+    public boolean classResolving=false;
 
     public boolean showNormalizedPointcuts=false;
     public boolean showResidues=false;

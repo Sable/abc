@@ -37,7 +37,8 @@ public class Jimplify extends AbstractPass {
 	    //   called,  please also move the timer code with it. LJH
 	    for( Iterator classNameIt = class_to_ast.keySet().iterator(); classNameIt.hasNext(); ) {
 	        final String className = (String) classNameIt.next();
-		//System.err.println("Resolving class "+className);
+		if (abc.main.Debug.v().classResolving)
+		    System.err.println("Resolving class "+className);
 		SootResolver.v().resolveClassAndSupportClasses(className);
 	    }
 
@@ -64,8 +65,8 @@ public class Jimplify extends AbstractPass {
             super(className);
         }
         public void resolve( SootClass sc ) {
-            if(soot.options.Options.v().verbose())
-                G.v().out.println("resolving [from abc AST]: " + className );
+	    if (abc.main.Debug.v().classResolving)
+		System.err.println("resolving [from abc AST]: " + className );
 
             String javaClassName = SourceLocator.v().getSourceForClass(className);
             Node n = (Node) class_to_ast.get(javaClassName);
