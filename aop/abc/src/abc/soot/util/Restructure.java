@@ -4,16 +4,23 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
+import abc.weaving.weaver.AroundWeaver;
 import soot.jimple.toolkits.scalar.*;
 import java.util.*;
+
 import abc.weaving.weaver.CodeGenException;
 
-/** This class contains a variety of helper methods to restructure Soot
+
+
+/** This class contains a variety of help
+import abc.weaving.weaver.AroundWeaver.InternalError;
+er methods to restructure Soot
  *    method Bodies.
  *
  * @author Laurie Hendren
  * @author Ondrej Lhotak
  * @author Jennifer Lhotak
+ * @author Sascha Kuzins
  * @date May 18, 2004
  */
 
@@ -400,6 +407,291 @@ public class Restructure {
 	thiscopies.put(m,l);
 	return l;
     }
+	
+	/**
+	 * Sanity check for methods.
+	 * Checks for:
+	 * 	- @this identity statement as the first statement
+	 *  - parameter identity statements in the right order for all parameters
+	 * @param method
+	 */
+	public static void validateMethod(SootMethod method) {
+		debug("validating " + method.getName());
+		
+		if (method.isAbstract())
+			return;
+		
+		Body body=method.getActiveBody();
+		Chain units=body.getUnits().getNonPatchingChain();
+		List params=method.getParameterTypes();
+		
+		Iterator itUnits=units.iterator();
+		if (!method.isStatic()) {
+			Stmt first=(Stmt)itUnits.next();		
+			
+			IdentityStmt id=(IdentityStmt) first;
+			Local local=(Local)id.getLeftOp();
+			ThisRef ref=(ThisRef)id.getRightOp();
+			if (!ref.getType().equals(method.getDeclaringClass().getType()))
+				throw new RuntimeException();
+			
+			if (!local.getType().equals(method.getDeclaringClass().getType()))
+				throw new RuntimeException();
+			
+		}	
+		
+		Iterator it=params.iterator();
+		int i=0;
+		while (it.hasNext()) {
+			Type type=(Type)it.next();
+			Stmt stmt=(Stmt)itUnits.next();
+			IdentityStmt id=(IdentityStmt)stmt;
+			Local local=(Local)id.getLeftOp();
+			ParameterRef ref=(ParameterRef)id.getRightOp();
+		
+			debug("  parameter " + i + ": " + type.toString() + ":" + local.getName());		
+			
+			if (!Type.toMachineType(local.getType()).equals(Type.toMachineType(type))) {
+				debug("type mismatch: local: " + local.getType() + " param: " + type);
+				throw new RuntimeException();
+			}
+			if (ref.getIndex()!=i++) {
+				throw new RuntimeException();
+			}
+			if (!ref.getType().equals(type)) {
+				throw new RuntimeException();
+			}				
+		}
+		
+	}
+
+	public static class JavaTypeInfo {
+		public final static int booleanType=0;
+		public final static int byteType=1;
+		public final static int shortType=2;
+		public final static int charType=3;
+		public final static int intType=4;
+		public final static int longType=5;
+		public final static int floatType=6;
+		public final static int doubleType=7;
+		public final static int refType=8;
+		public final static int typeCount=9;
+		
+		public static int sootTypeToInt(Type type) {
+			if (type.equals(IntType.v()))
+				return intType;
+			else if (type.equals(BooleanType.v())) 
+				return booleanType;
+			else if (type.equals(ByteType.v())) 
+				return byteType;
+			else if (type.equals(ShortType.v())) 
+							return shortType;
+			else if (type.equals(CharType.v())) 
+							return charType;
+			else if (type.equals(LongType.v())) 
+							return longType;
+			else if (type.equals(FloatType.v())) 
+							return floatType;
+			else if (type.equals(DoubleType.v())) 
+							return doubleType;
+			else 
+				return refType;
+		}
+		public static Value getDefaultValue(Type type) {
+			if (type.equals(IntType.v()))
+				return IntConstant.v(0);
+			else if (type.equals(BooleanType.v())) 
+				return IntConstant.v(0); 
+			else if (type.equals(ByteType.v())) 
+				return IntConstant.v(0); ///
+			else if (type.equals(ShortType.v())) 
+				return IntConstant.v(0); ///
+			else if (type.equals(CharType.v())) 
+				return IntConstant.v(0); ///
+			else if (type.equals(LongType.v())) 
+				return LongConstant.v(0);
+			else if (type.equals(FloatType.v())) 
+				return FloatConstant.v(0.0f);
+			else if (type.equals(DoubleType.v())) 
+				return DoubleConstant.v(0.0);
+			else 
+				return NullConstant.v();
+		}
+		public static SootClass getBoxingClass(Type type) {
+			if (type.equals(IntType.v()))
+				return Scene.v().getSootClass("java.lang.Integer");
+			else if (type.equals(BooleanType.v())) 
+				return Scene.v().getSootClass("java.lang.Boolean");
+			else if (type.equals(ByteType.v())) 
+				return Scene.v().getSootClass("java.lang.Byte");
+			else if (type.equals(ShortType.v())) 
+				return Scene.v().getSootClass("java.lang.Short");
+			else if (type.equals(CharType.v())) 
+				return Scene.v().getSootClass("java.lang.Character");
+			else if (type.equals(LongType.v())) 
+				return Scene.v().getSootClass("java.lang.Long");
+			else if (type.equals(FloatType.v())) 
+				return Scene.v().getSootClass("java.lang.Float");
+			else if (type.equals(DoubleType.v())) 
+				return Scene.v().getSootClass("java.lang.Double");
+			else 
+				throw new RuntimeException();
+		}
+		public static String getBoxingClassMethodName(Type type) {	
+			if (type.equals(IntType.v()))
+				return "intValue";
+			else if (type.equals(BooleanType.v())) 
+				return "booleanValue";
+			else if (type.equals(ByteType.v())) 
+				return "byteValue";
+			else if (type.equals(ShortType.v())) 
+				return "shortValue";
+			else if (type.equals(CharType.v())) 
+				return "charValue";
+			else if (type.equals(LongType.v())) 
+				return "longValue";
+			else if (type.equals(FloatType.v())) 
+				return "floatValue";
+			else if (type.equals(DoubleType.v())) 
+				return "doubleValue";
+			else 
+				throw new RuntimeException();
+		}
+	}
+
+	/**
+	 * Converts the assignment statement into a sequence 
+	 * of statements performing a typecast.
+	 * Boxes/unboxes if the assignment is from/to an Object to/from a simple type. 
+	 * @param body
+	 * @param stmt
+	 */
+	public static void insertBoxingCast(Body body, AssignStmt stmt) {
+		ValueBox source=stmt.getRightOpBox();
+		Value targetVal=stmt.getLeftOp();
+		Type targetType=stmt.getLeftOp().getType();
+		Chain units=body.getUnits().getNonPatchingChain();
+		Type sourceType=source.getValue().getType();
+		if (!sourceType.equals(targetType)) {
+			LocalGeneratorEx localgen=new LocalGeneratorEx(body);
+			Local castLocal=localgen.generateLocal(sourceType, "castTmp");
+			debug("cast: source has type " + sourceType.toString());
+			debug("cast: target has type " + targetType.toString());
+			stmt.setLeftOp(castLocal);
+			
+			AssignStmt tmpStmt=Jimple.v().newAssignStmt(targetVal, targetVal /*dummy*/);
+			units.insertAfter(tmpStmt, stmt);
+						
+			Value castedExpr;
+			//debug("boxing: source " + sourceType + " target " + targetType);
+			// boxing
+			if (JavaTypeInfo.sootTypeToInt(sourceType)!=JavaTypeInfo.refType &&
+				targetType.equals(Scene.v().getSootClass("java.lang.Object").getType())) {
+				SootClass boxClass=JavaTypeInfo.getBoxingClass(sourceType);	
+				 Local box=localgen.generateLocal(boxClass.getType(), "box");
+				 Stmt newAssignStmt = Jimple.v().newAssignStmt( box, Jimple.v().newNewExpr( boxClass.getType() ) );
+				 List initParams=new LinkedList();
+				 initParams.add(sourceType);
+				 Stmt initBox=Jimple.v().newInvokeStmt( 
+				 	Jimple.v().newSpecialInvokeExpr( box, boxClass.getMethod( "<init>", initParams), 
+				 			castLocal)) ;
+				units.insertBefore(newAssignStmt, tmpStmt);
+				units.insertBefore(initBox, tmpStmt);
+				castedExpr=box;
+			} else if /*unboxing*/
+				(JavaTypeInfo.sootTypeToInt(targetType)!=JavaTypeInfo.refType &&
+					sourceType.equals(Scene.v().getSootClass("java.lang.Object").getType())	){ 
+				SootClass boxClass=JavaTypeInfo.getBoxingClass(targetType);	
+				Local box=localgen.generateLocal(boxClass.getType(), "box");
+				Stmt newAssignStmt=Jimple.v().newAssignStmt(box, 
+					Jimple.v().newCastExpr(castLocal, boxClass.getType()));
+				SootMethod method=boxClass.getMethodByName(
+					JavaTypeInfo.getBoxingClassMethodName(targetType));
+				castedExpr=Jimple.v().newVirtualInvokeExpr(box, 
+						 method);		
+				units.insertBefore(newAssignStmt, tmpStmt);						
+			} else { // normal cast
+				CastExpr castExpr=Jimple.v().newCastExpr(castLocal,targetType);
+				castedExpr=castExpr;	
+			}
+			
+			tmpStmt.setRightOp(castedExpr);
+		//	Jimple.v().newCastExpr()
+			/*
+			if (stmt instanceof AssignStmt) {
+				source.setValue(castedExpr);
+			} else {
+				Local tmpLocal=localgen.generateLocal(targetType, "castTarget");
+				AssignStmt tmpStmt2=Jimple.v().newAssignStmt(tmpLocal, castedExpr);
+				units.insertBefore(tmpStmt2, stmt);
+				source.setValue(tmpLocal);
+			}*/
+		} 			
+	}
+
+	public static IdentityStmt getParameterIdentityStatement(SootMethod method, int arg) {
+		if (arg>=method.getParameterCount())
+			throw new RuntimeException();
+		Chain units=method.getActiveBody().getUnits().getNonPatchingChain();
+		Iterator it=units.iterator();
+		while (it.hasNext()) {
+			Stmt stmt=(Stmt)it.next();
+			if (stmt instanceof IdentityStmt) {
+				IdentityStmt ids=(IdentityStmt)stmt;
+				if (ids.getRightOp() instanceof ParameterRef) {
+					ParameterRef paramRef=(ParameterRef)ids.getRightOp();
+					if (paramRef.getIndex()==arg)
+						return ids;
+					
+				} else if (ids.getRightOp() instanceof ThisRef) {
+					
+				} else 
+					throw new RuntimeException();
+			} else
+				throw new RuntimeException();
+		}
+		throw new RuntimeException();
+	}
+	/**
+	 * Adds a new parameter to a method and creates the matching identity statement
+	 * @param method
+	 * @param type
+	 * @param suggestedName
+	 * @return
+	 */
+	public static Local addParameterToMethod(SootMethod method, Type type, String suggestedName) {
+		//validateMethod(method);
+		Body body=method.getActiveBody();
+		Chain units=body.getUnits().getNonPatchingChain();
+		List params=method.getParameterTypes();
+		
+		IdentityStmt lastIDStmt=null;
+		if (params.isEmpty()) {
+			if (units.isEmpty()) {
+				if (!method.isStatic())
+					throw new RuntimeException();
+			} else {
+				lastIDStmt=(IdentityStmt)units.getFirst();
+				if (! (lastIDStmt.getRightOp() instanceof ThisRef))
+					if (!method.isStatic())
+						throw new RuntimeException();
+			}
+		} else {
+		//	debug("param id: " + (params.size()-1));
+			lastIDStmt=Restructure.getParameterIdentityStatement(method, params.size()-1);
+		}
+		params.add(type);
+		method.setParameterTypes(params);
+		LocalGeneratorEx lg=new LocalGeneratorEx(body);
+		Local l=lg.generateLocal(type, suggestedName);
+		IdentityStmt newIDStmt=Jimple.v().newIdentityStmt(l, 
+			Jimple.v().newParameterRef(type, params.size()-1));
+		if (lastIDStmt==null)
+			units.addFirst(newIDStmt);
+		else
+			units.insertAfter(newIDStmt, lastIDStmt);
+		return l;		
+	}	
 	
 
 } // class Restructure
