@@ -1458,6 +1458,8 @@
 
     <ajc-test dir="pureJava"
       title="nested finally blocks have interesting frame location problems"
+      abccomment="jlc finds an error of return expected, but should
+                  compile without error.  Reported to Nate July 2/04 LJH"
       keywords="from-java">
         <compile files="NestedFinally.java"/>
         <run class="NestedFinally"/>
@@ -1465,9 +1467,13 @@
 
     <ajc-test dir="pureJava"
       title="suggested by jacks 3.7-15 all comments must be closed"
+      abccomment="we report missing end of comment at end of file 
+                  whereas ajc reports it at the beginning of the
+                  comment.  I think our error is fine.  July 2/04 LJH"
       keywords="from-java,purejava">
         <compile files="OpenComment.java">
-            <message kind="error" line="7"/>
+            <ajcmessage kind="error" line="7"/>
+            <message kind="error" line="10"/>
         </compile>
     </ajc-test>
 
