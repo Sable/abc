@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +34,8 @@ import abc.weaving.residues.Residue;
 
 /** A pointcut designator representing a set of joinpoint shadows
  *  at which the pointcut will match.
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
  */
 public abstract class ShadowPointcut extends Pointcut {
     public final Residue matchesAt(WeavingEnv env,

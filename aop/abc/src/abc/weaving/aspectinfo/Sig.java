@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +25,9 @@ import soot.*;
 
 import java.util.*;
 
-/** A method or field signature. */
+/** A method or field signature. 
+ *  @author Aske Simon Christensen
+ */
 public abstract class Sig extends Syntax {
     public Sig(Position pos) {
 	super(pos);

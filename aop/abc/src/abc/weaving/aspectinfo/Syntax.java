@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +21,9 @@ package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
-/** Base class for anything that corresponds to some syntax in the program. */
+/** Base class for anything that corresponds to some syntax in the program. 
+ *  @author Aske Simon Christensen
+ */
 public class Syntax {
     private Position pos;
 

@@ -1,5 +1,7 @@
 /* Abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,9 +29,10 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** Handler for <code>this</code> condition pointcut with a 
-    universal pattern argument. 
+ *  universal pattern argument. 
+ *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
- *  @date 04-May-04
+ *  @author Damien Sereni
  */
 public class ThisAny extends DynamicValuePointcut {
 

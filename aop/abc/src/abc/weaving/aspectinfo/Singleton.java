@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +26,10 @@ import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.*;
 
 
-/** A <code>singleton</code> per clause. */
+/** A <code>singleton</code> per clause. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class Singleton extends Per {
     public Singleton(Position pos) {
 	super(pos);

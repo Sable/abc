@@ -1,4 +1,7 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +27,11 @@ import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.*;
 
-/** Handler for <code>target</code> condition pointcut with a variable argument. */
+/** Handler for <code>target</code> condition pointcut with a variable argument. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ *  @author Damien Sereni
+ */
 public class TargetVar extends TargetAny {
     private Var var;
 
