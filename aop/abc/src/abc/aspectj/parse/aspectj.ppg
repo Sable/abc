@@ -1,4 +1,4 @@
-include "../../../../../polyglot-1.2.0-src/src/polyglot/ext/jl/parse/java12.cup"
+include "java12.cup"
 
 package abc.aspectj.parse;
 
