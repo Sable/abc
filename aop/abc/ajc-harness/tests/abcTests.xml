@@ -9277,4 +9277,15 @@
        <compile files="AndOrBind.java"/>
        <run class="AndOrBind"/>
     </ajc-test>
+
+    <ajc-test num="995" dir="abctests/bugs"
+        title="correct treatment of exceptions with interfaceinvoke">
+       <compile files="InterfaceExceptions.java"/>
+    </ajc-test>
+
+    <ajc-test num="996" dir="abctests/bugs"
+        title="anonymous class constructed inside this(...) call">
+       <compile files="AnonPreinit.java"/>
+       <run class="AnonPreinit"/>
+    </ajc-test>
 </suite>
