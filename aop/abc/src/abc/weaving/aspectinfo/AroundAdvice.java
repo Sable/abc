@@ -102,7 +102,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     				if (!(shadowType instanceof PrimType && adviceType instanceof PrimType))
     					throw new RuntimeException("Can't convert between primitive type and reference type");
     				
-    				if (!Restructure.JavaTypeInfo.isWideningCast(adviceType, shadowType))
+    				if (!Restructure.JavaTypeInfo.isSimpleWideningConversion(adviceType, shadowType))
     					throw new RuntimeException("Illegal narrowing cast");
     			} else {
     				if (hier.canStoreType(adviceType, shadowType)) {
@@ -110,7 +110,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     				} else 
     					throw new RuntimeException("Advice return type can't be converted");
     			}
-    			if (Restructure.JavaTypeInfo.isImpossibleConversion(shadowType, adviceType))
+    			if (Restructure.JavaTypeInfo.isForbiddenConversion(shadowType, adviceType))
     				throw new RuntimeException("Incompatible types");
     		}
     	}

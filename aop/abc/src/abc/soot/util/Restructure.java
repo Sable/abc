@@ -577,11 +577,11 @@ public class Restructure {
 		/*
 		 * This table is from Java in a Nutshell 3rd edition, page 28
 		 * X - same type
-		 * N - not allowed
-		 * Y - allowed implicitly
-		 * C - needs explicit cast
+		 * N - forbidden conversion
+		 * Y - widening conversion
+		 * C - narrowing conversion
 		 */
-		private final static char [][] casts =
+		private final static char [][] simple_conversions =
 			{ 
 				{ 'X', 'N', 'N', 'N', 'N', 'N', 'N', 'N'},
 				{ 'N', 'X', 'Y', 'C', 'Y', 'Y', 'Y', 'Y'},
@@ -592,7 +592,7 @@ public class Restructure {
 				{ 'N', 'C', 'C', 'C', 'C', 'C', 'X', 'Y'},
 				{ 'N', 'C', 'C', 'C', 'C', 'C', 'C', 'X'}
 			};
-		public static char getSimpleTypeCastInfo(Type from, Type to) {
+		public static char getSimpleTypeConversionInfo(Type from, Type to) {
 			int f=sootTypeToInt(from);
 			if (!isSimpleType(f))
 				throw new RuntimeException();
@@ -600,10 +600,10 @@ public class Restructure {
 			if (!isSimpleType(t))
 				throw new RuntimeException();
 			
-			if (casts[longType][intType]!='C')
-				throw new RuntimeException();
+			//if (simple_conversions[longType][intType]!='C')
+			//	throw new RuntimeException();
 			
-			return casts[f][t];
+			return simple_conversions[f][t];
 		}
 		
 		public static boolean isSimpleType(Type t) {
@@ -613,8 +613,8 @@ public class Restructure {
 		public static boolean isSimpleType(int type) {
 			return type!=refType;
 		}
-		public static boolean isWideningCast(Type from, Type to) {
-			char c=getSimpleTypeCastInfo(from, to);
+		public static boolean isSimpleWideningConversion(Type from, Type to) {
+			char c=getSimpleTypeConversionInfo(from, to);
 			return c=='Y' || c=='X'; 
 		}
 		// returns if the classes contain a method with the same name and signature 
@@ -655,8 +655,8 @@ public class Restructure {
 		 * The #numbers in the code indicate the bullet point to which the test 
 		 * refers.
 		 */
-		// TODO: how about AnySubType?
-		public static boolean isImpossibleConversion(Type from, Type to) {
+		public static boolean isForbiddenConversion(Type from, Type to) {
+			// AnySubType is only used for points-to analysis
 			if (from instanceof AnySubType) throw new RuntimeException();
 			if (to instanceof AnySubType) throw new RuntimeException();
 			
@@ -675,25 +675,27 @@ public class Restructure {
 				return true;
 			
 			if (isSimpleType(from) && isSimpleType(to))
-				return isImpossibleCastSimple(from, to); // #5,6
+				return isForbiddenSimpleConversion(from, to); // #5,6
 			
-			// At this stage, they are not both simple types.
+			
+			// At this stage, they are not both simple types.			
 			// #1, #2
 			if (isSimpleType(from) || isSimpleType(to))
 				return true;
 			
 			if (!(from instanceof RefType && to instanceof RefType)) {
-				Type objectType=Scene.v().getSootClass("java.lang.Object").getType();
+				// not both are reftypes
+				
 				// #12,13
 				if (from instanceof ArrayType && to instanceof RefType &&
-					! (to.equals(objectType) || 
+					! (		to.equals(RefType.v("java.lang.Object")) || 
 							to.equals(RefType.v("java.io.Serializable")) ||
 							to.equals(RefType.v("java.lang.Cloneable")) )) 
 					return true; // cast from array to non-object reftype
 				
 				// #9
 				if (to instanceof ArrayType && from instanceof RefType &&
-						!from.equals(objectType)) 
+						!from.equals(RefType.v("java.lang.Object"))) 
 					return true; // cast from non-object reftype to array
 				
 				
@@ -701,11 +703,9 @@ public class Restructure {
 				if (to instanceof ArrayType && from instanceof ArrayType) {
 				 	ArrayType ato=(ArrayType)to;
 				 	ArrayType afrom=(ArrayType)from;
-				 	if (isImpossibleConversion(afrom.baseType, ato.baseType))
-				 		return true;
-					return false; 
-				}
-				
+				 	return 
+						isForbiddenConversion(afrom.baseType, ato.baseType);				 		 
+				}				
 				
 				return false;
 			}
@@ -745,15 +745,12 @@ public class Restructure {
 				hier.isSubclass(rTo.getSootClass(), rFrom.getSootClass())) 
 				return false;
 			else
-				return true;					
+				return true;
 		}
-		public static boolean isImpossibleCastSimple(Type from, Type to) {
-			char c=getSimpleTypeCastInfo(from, to);
+		public static boolean isForbiddenSimpleConversion(Type from, Type to) {
+			char c=getSimpleTypeConversionInfo(from, to);
 			return c=='N';
 		}
-		/*public static boolean canBeInstanceOf(Type source, Type target) {
-			
-		}*/
 		
 		public static int sootTypeToInt(Type type) {
 			if (type.equals(IntType.v()))

@@ -44,7 +44,7 @@ public class CheckType extends Residue {
 	    // the right thing to do in this context
 	    // attempts to create a test case crash ajc, which makes things hard
 
-	    if (Restructure.JavaTypeInfo.isWideningCast(from, to))
+	    if (Restructure.JavaTypeInfo.isSimpleWideningConversion(from, to))
 	    	return AlwaysMatch.v;
     
 	    return NeverMatch.v;
@@ -79,7 +79,7 @@ public class CheckType extends Residue {
 	    // This is because if ajc treats null differently if it 
 	    // eliminates the static type check than if it doesn't.
 	    
-	    if (Restructure.JavaTypeInfo.isImpossibleConversion(from, to))
+	    if (Restructure.JavaTypeInfo.isForbiddenConversion(from, to))
 	    	return NeverMatch.v;
 
 	}

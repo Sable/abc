@@ -2540,6 +2540,15 @@ public class AroundWeaver {
 			if (!proceedSootMethods.contains(sootAdviceMethod)) 
 				proceedSootMethods.add(sootAdviceMethod);
 			
+			if (Debug.v().aroundWeaver){
+				debug("QQQQQQQQQQQQQQ Methods for advice-method" + sootAdviceMethod + "\n");
+				for (Iterator it=proceedSootMethods.iterator();it.hasNext();) {
+					SootMethod m=(SootMethod)it.next();
+					debug(" " + m);
+					
+				}
+			}
+			
 			//	Add all the proceed classes				
 			for (Iterator it=proceedSootMethods.iterator();it.hasNext();) {
 				SootMethod m=(SootMethod)it.next();
