@@ -61,11 +61,6 @@ public class PCLocalVars_c extends Pointcut_c
         w.write(")");
     }
 
-    public List formals()
-    {
-        return formals;
-    }
-
     public PCLocalVars_c(Position pos, List formals, Pointcut pointcut)
     {
         super(pos);
@@ -167,7 +162,7 @@ public class PCLocalVars_c extends Pointcut_c
         // ones and the new local ones (scoping lexically)
 
         HashSet present = new HashSet();
-        LinkedList newformals = new LinkedList(formals());
+        LinkedList newformals = new LinkedList(formals);
 
         // make a set of the new formal names
         Iterator i = newformals.iterator();

@@ -6,6 +6,4 @@ import java.util.List;
 
 public interface PCLocalVars extends Pointcut, MakesAspectMethods
 {
-    // get a list of the new local formals
-    List /*<Formal>*/ formals();
 }
