@@ -39,27 +39,34 @@ public class Unweaver {
             System.err.println("UNWEAVER ***** " + message);
     }	
 
-    Map savedBodies;
-    Map classToMethods;
+    Map/*SootMethod->Body*/ savedBodies;
+    Map/*SootMethod->List/Type/*/ savedParameters;
+    Map/*SootClass->Collection/SootMethod/*/ classToMethods;
+    Map/*SootClass->Collection/SootField/*/ classToFields;
 
     /** Save Jimple bodies of all weavable classes to be restored later. */
     public void save() {
         savedBodies = new HashMap();
         classToMethods = new HashMap();
+        classToFields = new HashMap();
+        savedParameters = new HashMap();
         for( Iterator abcClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
             final AbcClass abcClass = (AbcClass) abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
             classToMethods.put( cl, new HashSet() );
+            classToFields.put( cl, new HashSet() );
             debug( "saving "+cl );
             for( Iterator mIt = cl.getMethods().iterator(); mIt.hasNext(); ) {
                 final SootMethod m = (SootMethod) mIt.next();
                 if( m.hasActiveBody() ) {
-                    debug( "saving body of "+m );
                     savedBodies.put( m, m.getActiveBody() );
-                } else {
-                    debug( ""+m+" has no active body" );
                 }
+                savedParameters.put(m, m.getParameterTypes());
                 ((Collection)classToMethods.get(cl)).add(m);
+            }
+            for( Iterator fIt = cl.getFields().iterator(); fIt.hasNext(); ) {
+                final SootField f = (SootField) fIt.next();
+                ((Collection)classToFields.get(cl)).add(f);
             }
         }
     }
@@ -74,17 +81,26 @@ public class Unweaver {
             Map newBindings = 
                 newBody.importBodyContentsFrom((Body)savedBodies.get(m));
             m.setActiveBody(newBody);
+            m.setParameterTypes((List)savedParameters.get(m));
             ret.putAll( newBindings );
         }
         for( Iterator abcClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
             final AbcClass abcClass = (AbcClass) abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
             Collection methods = (Collection) classToMethods.get(cl);
-            for( Iterator mIt = cl.getMethods().iterator(); mIt.hasNext(); ) {
+            for( Iterator mIt = new ArrayList(cl.getMethods()).iterator(); mIt.hasNext(); ) {
                 final SootMethod m = (SootMethod) mIt.next();
                 if( !methods.contains(m) ) {
                     debug( "removing "+m+" from cl" );
                     cl.removeMethod(m);
+                }
+            }
+            Collection fields = (Collection) classToFields.get(cl);
+            for( Iterator fIt = new ArrayList(cl.getFields()).iterator(); fIt.hasNext(); ) {
+                final SootField f = (SootField) fIt.next();
+                if( !fields.contains(f) ) {
+                    debug( "removing "+f+" from cl" );
+                    cl.removeField(f);
                 }
             }
         }

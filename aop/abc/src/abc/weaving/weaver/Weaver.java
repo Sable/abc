@@ -59,6 +59,7 @@ public class Weaver {
                 CflowAnalysisBridge cfab = new CflowAnalysisBridge();
                 cfab.run();
                 unitBindings = unweaver.restore();
+                AroundWeaver.reset();
                 weaveAdvice();
 
             } else {
@@ -68,8 +69,10 @@ public class Weaver {
                     Unweaver unweaver = new Unweaver();
                     unweaver.save();
                     unitBindings = unweaver.restore();
+                    AroundWeaver.reset();
                     weaveAdvice();
                     unitBindings = unweaver.restore();
+                    AroundWeaver.reset();
                 }
                 weaveAdvice();
             }
