@@ -562,6 +562,15 @@
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="explicit constructor calls can throw exceptions"
+      keywords="from-errors">
+        <compile files="ExplicitConstructorThrows.java">
+            <message kind="error" line="3"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors" pr="664" title="bad proceed args good error messages"
       keywords="from-errors">
         <compile files="ProceedArgsCE.java">
@@ -827,15 +836,6 @@
 			<message kind="error" file="ClassClientCE.java" line="5"/>
 			</compile>
 		</ajc-test>
-<ajc-test dir="bugs/moreInterfaceLibrary"
-		pr="41123"
-		title="Weaving failure when using injars (on classpath)">
-		<compile
-			files="model/BusObj.java,model/MonitorBusObj.java"
-			classpath="lib.jar">
-		    <message kind="error" line="3"/>
-		</compile>
-	</ajc-test>
 <ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in advice">
         <compile files="ParserRecoveryTest.java">

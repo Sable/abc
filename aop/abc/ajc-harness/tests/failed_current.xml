@@ -1,6 +1,11 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
+ <ajc-test dir="base/test103" title="DEPRECATED: introductions"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+<ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
       keywords="from-base,knownLimitation">
         <compile files="Driver.java"/>
         <run class="Driver"/>
@@ -27,26 +32,15 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="new" title="handle multiple nested inner classes"
-      keywords="from-java">
-        <compile files="InnerHell.java"/>
-        <run class="InnerHell"/>
-    </ajc-test>
-<ajc-test dir="new" pr="109"
-      title="checks if the class field can be used on all of the primitive types"
-      keywords="from-java,purejava">
-        <compile files="ClassFieldOnPrimitiveType.java"/>
-        <run class="ClassFieldOnPrimitiveType"/>
-    </ajc-test>
 <ajc-test dir="new/innerConsSyntax" pr="192"
       title="inner constructor syntax causes compile error" keywords="from-java">
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="new" title="order of type declarations shouldn't matter"
+<ajc-test dir="pureJava" title="Cast binds tighter than equality tests"
       keywords="from-java">
-        <compile files="OrderOfTypes.java"/>
-        <run class="OrderOfTypes"/>
+        <compile files="CastAndBinary.java"/>
+        <run class="CastAndBinary"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="inner classes accessing outers and some more inner class names"
@@ -54,11 +48,25 @@
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
     </ajc-test>
-<ajc-test dir="pureJava"
-      title="Checking character values with all the unicode chars."
+<ajc-test dir="pureJava" pr="421"
+      title="More thourough test of static members using full names"
       keywords="from-java">
-        <compile files="CharsUnicode.java"/>
-        <run class="CharsUnicode"/>
+        <compile
+          files="Statics.java,StaticMembers_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
+        <run class="StaticMembers_PR421"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="421"
+      title="More thourough test of static members using imports"
+      keywords="from-java">
+        <compile
+          files="Statics.java,StaticMembersImports_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
+        <run class="StaticMembersImports_PR421"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Not lifting types correctly with bytes and shorts with ternary ops"
+      keywords="from-java">
+        <compile files="TernaryPrimitiveOps.java"/>
+        <run class="TernaryPrimitiveOps"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
       keywords="from-java,purejava">
@@ -780,20 +788,16 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="explicit constructor calls can throw exceptions"
-      keywords="from-errors">
-        <compile files="ExplicitConstructorThrows.java">
-            <message kind="error" line="3"/>
-            <message kind="error" line="12"/>
-            <message kind="error" line="18"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="pureJava" title="flow analysis with local types"
       keywords="from-errors,purejava">
         <compile files="InnerFlow.java">
             <message kind="error" line="5"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="design/intro"
+      title="initial tests for new introduction style" keywords="from-design">
+        <compile files="Simple.java"/>
+        <run class="Simple"/>
     </ajc-test>
 <ajc-test dir="design/intro"
       title="introduction of static methods and fields on classes and interfaces"
@@ -925,6 +929,12 @@
         <compile files="CatchAdvice.java"/>
         <run class="CatchAdvice"/>
     </ajc-test>
+<ajc-test dir="new" pr="208"
+      title="! modifier and char in pointcut (no longer an error)"
+      keywords="from-resolved_10x">
+        <compile files="NotCharInPointcut.java"/>
+        <run class="NotCharInPointcut"/>
+    </ajc-test>
 <ajc-test dir="new" title="Ensuring backdoor methods are produced."
       keywords="from-resolved_10x">
         <compile files="BackdoorMethods.java"/>
@@ -1016,10 +1026,10 @@
         <run class="CallsToArray"/>
     </ajc-test>
 <ajc-test dir="new"
-      title="work nicely with inner class method look-up rules and call-site advice"
+      title="Null pointer on gets advice showing the case causing the error"
       keywords="from-resolved_10x">
-        <compile files="InnerMethods.java"/>
-        <run class="InnerMethods"/>
+        <compile files="NullPointerOnGetsSimple.java"/>
+        <run class="NullPointerOnGetsSimple"/>
     </ajc-test>
 <ajc-test dir="new"
       title="within and withincode (doesn't all work due to local class name issues)"
@@ -1048,6 +1058,12 @@
       keywords="from-resolved_10x">
         <compile files="MethodIntroductions.java"/>
         <run class="MethodIntroductions"/>
+    </ajc-test>
+<ajc-test dir="new"
+      title="After advice isn't being woven into after throwing advice"
+      keywords="from-resolved_10x">
+        <compile files="AfterThrowingNotWoven.java"/>
+        <run class="AfterThrowingNotWoven"/>
     </ajc-test>
 <ajc-test dir="new" title="Throwing an EmptyStackException."
       keywords="from-resolved_10x">
@@ -1189,6 +1205,12 @@
       keywords="from-resolved_10x">
         <compile files="CallTypesI.java" options="-1.4,-Xlint:ignore"/>
         <run class="CallTypesI" vm="1.4"/>
+    </ajc-test>
+<ajc-test dir="new"
+      title="Unable to bind privately-introduced field name from introduced method in the same aspect"
+      keywords="from-resolved_10x">
+        <compile files="IntroducedFieldsNotBinding.java"/>
+        <run class="IntroducedFieldsNotBinding"/>
     </ajc-test>
 <ajc-test dir="new/anonInnerClass" pr="297"
       title="anonymous inner class with aspect" keywords="from-resolved_10x">
@@ -1345,6 +1367,12 @@
             <message kind="error" line="3"/>
             <message kind="error" line="4"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="new/runtime"
+      title="Exercise runtime classes (optionally in 1.1 VM)"
+      keywords="from-resolved_10x">
+        <compile files="AllRuntime.java,TesterDriver.java"/>
+        <run class="TesterDriver"/>
     </ajc-test>
 <ajc-test dir="new"
       title="VerifyError after around advice falls off end of tryCatch"
@@ -1672,11 +1700,6 @@
             <message kind="error" line="15"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new/pr728" pr="728" title="file order in type searching"
-      keywords="from-resolved_105">
-        <compile files="AnotherClass.java,Interface.java"/>
-        <run class="AnotherClass"/>
-    </ajc-test>
 <ajc-test dir="pureJava" pr="728"
       title="interface using preceding subinterface in its definition"
       keywords="from-resolved_105,purejava">
@@ -1741,12 +1764,6 @@
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message kind="error" line="5"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new"
-      title="initializer can throw so long as all constructors declare so"
-      keywords="from-resolved_105,purejava">
-        <compile files="InitializerWithThrow.java"/>
-        <run class="InitializerWithThrow"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="interfaces may not contain initializers (bug found by jacks)"
@@ -1824,6 +1841,12 @@
       keywords="from-resolved_105">
         <compile files="IndeterminateHandlerArg.java"/>
         <run class="IndeterminateHandlerArg"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Locals inside other locals, ordering of processing [eh]"
+      keywords="from-resolved_105">
+        <compile files="LocalInners2.java"/>
+        <run class="LocalInners2"/>
     </ajc-test>
 <ajc-test dir="new/nolang" pr="762"
 	  title="Compiling java.lang.Object with ajc yields non-verifying bytecode"
@@ -2130,6 +2153,21 @@
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
     </ajc-test>
+<ajc-test dir="new/finalfield" pr="28974"
+      title="introducing final fields (simple)">
+        <compile files="Introducer.java,Receiver.java,User1.java"/>
+        <run class="User1"/>
+    </ajc-test>
+<ajc-test dir="new/finalfield" pr="28974"
+      title="introducing final fields and using as constants">
+        <compile files="Introducer.java,Receiver.java,User2.java"/>
+        <run class="User2"/>
+    </ajc-test>
+<ajc-test dir="bugs" pr="29691"
+    		title="Static inner aspects cannot reference user defined pointcuts">
+        <compile files="SoftWithin.java" />
+        <run class="SoftWithin"/>
+    </ajc-test>
 <ajc-test dir="bugs" pr="29662"
     		title="VerifyError on accessing objects not accessible to the weaver">
         <compile files="AroundAccess.java">
@@ -2329,12 +2367,6 @@
             <message kind="error" line="0"/>
         </compile>
    </ajc-test>
-<ajc-test dir="new"
-      comment="this is a pureJava test, but we always want to run it"
-      title="arrays via Class.forName()">
-        <compile files="ClassForName.java"/>
-        <run class="ClassForName"/>
-    </ajc-test>
 <ajc-test dir="new/binaryWarnings/src" pr="37020"
    	 title="declare warnings on main">
         <compile files="aspects/MainWarnings.java,app/Main.java">
@@ -2681,6 +2713,15 @@
 		</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"
 		pr="41123"
+		title="Weaving failure when using injars (on classpath)">
+		<compile
+			files="model/BusObj.java,model/MonitorBusObj.java"
+			classpath="lib.jar">
+		    <message kind="error" line="3"/>
+		</compile>
+	</ajc-test>
+<ajc-test dir="bugs/moreInterfaceLibrary"
+		pr="41123"
 		title="Weaving failure when using injars (actual injars)">
 		<compile
 			files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
@@ -2758,6 +2799,12 @@
         	<message kind="error" line="20" text="incompatible type"/>
         </compile>
     </ajc-test>
+<ajc-test dir="bugs" pr="49250"
+      title="alias getCause for getWrappedThrowable in SoftException">
+        <compile files="GetCauseOnSoftException.java" options="-Xlint:warning">
+        </compile>
+        <run vm="1.3" class="GetCauseOnSoftException"/>
+    </ajc-test>
 <ajc-test dir="bugs" pr="48522"
       title="Declare soft softening other exception types">
         <compile files="SofteningTooMuch.java">
@@ -2831,6 +2878,10 @@
         <compile files="SimpleTracing.java" classpath="." options="-verbose">
 		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="bugs" pr="46750" title="inner aspect containing declare soft">
+       <compile files="TestSoftening.java">
+       </compile>
     </ajc-test>
 <ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in java source">
@@ -2925,11 +2976,6 @@
 			<message kind="warning" line="10" text="String as first"/>
         </compile>
         <run class="SubtypeConstructorCW"/>
-    </ajc-test>
-<ajc-test dir="bugs" pr="50570"
-      title="CatchClauseSignature has broken operation">
-        <compile files="HandlerSig.java"/>
-        <run class="HandlerSig"/>
     </ajc-test>
 <ajc-test dir="bugs/binaryCompat" pr="50641"
       title="binary compatibility of advice method names - expect no error">
