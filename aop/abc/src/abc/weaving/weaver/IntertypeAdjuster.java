@@ -4,6 +4,8 @@ import soot.util.*;
 import soot.jimple.*;
 import java.util.*;
 
+import polyglot.util.UniqueID;
+
 import com.sun.rsasign.s;
 
 import abc.weaving.aspectinfo.*;
@@ -27,12 +29,11 @@ public class IntertypeAdjuster {
         	final SuperDispatch sd = (SuperDispatch) spdIt.next();
         	addSuperDispatch( sd );
         }
-        /*
     //  generate accessors for qualifier.this
     	for( Iterator qtsIt = GlobalAspectInfo.v().getQualThiss().iterator(); qtsIt.hasNext(); ) {
     		final QualThis qts = (QualThis) qtsIt.next();
     		addQualThis( qts );
-    	} */
+    	} 
     // 	weave in intertype methods
         for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
             final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
@@ -51,6 +52,7 @@ public class IntertypeAdjuster {
     }
     
 	private void addQualThis( QualThis qts ) {
+			System.out.println("add qualified this method: "+qts.getMethod().getName()+" to "+qts.getTarget());
 	   // the signature of the method that we should generate
 	   		MethodSig method = qts.getMethod();  		
 	   // 	create a new method for the dispatch
@@ -63,27 +65,87 @@ public class IntertypeAdjuster {
 									 parms,
 									 retType,
 									 modifiers );
+		// 	add method to the target class
+			SootClass sc = qts.getTarget().getSootClass();
+			sc.addMethod(sm);
 	   //	create a body
 		   	Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
 		   	Chain ls = b.getLocals();
 		   	PatchingChain ss = b.getUnits();
-		   	
-	   //  	target of the field reference is "this : targetType"
-	   	   	SootClass scQualifier = qts.getQualifier().getSootClass();
-		   	ThisRef thisref = Jimple.v().newThisRef(scQualifier.getType());
-		   	Local v = Jimple.v().newLocal("this$",scQualifier.getType()); ls.add(v);
-		   	IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
-	   // 	return the value
-		   	ReturnStmt stmt = Jimple.v().newReturnStmt(v); 
-		   	ss.add(stmt);
-	   // 	add method to the target class
-		   	qts.getTarget().getSootClass().addMethod(sm);				  
-
-
+		//  make sure we have a thislocal
+			ThisRef tr = Jimple.v().newThisRef(sc.getType());
+			Local thisloc = Jimple.v().newLocal("thisloc",sc.getType()); ls.add(thisloc);
+			IdentityStmt ids = Jimple.v().newIdentityStmt(thisloc,tr); ss.add(ids);
+	   //   do the real work...   	
+		   	Local v = getThis(b, qts.getQualifier().getSootClass().getType());   
+	   //   and return the value...
+	   		ReturnStmt ret = Jimple.v().newReturnStmt(v); ss.add(ret);
+	   
 	   //  	This is an accessor method for reading a field
 	   //   MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
 	   //	MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(), 0,0);
 	   }
+	   
+	   /** return a local that contains "qualifier.this", adding the relevant statements to the body. 
+	    *  This code is adapted from JavaToJimple.JimpleBodyBuilder.
+	    */ 
+	   private Local getThis(Body b, Type sootType){
+			// if need this just return it
+			if (b.getThisLocal().getType().equals(sootType)) 
+				return b.getThisLocal();
+        
+			// otherwise get this$0 for one level up
+			SootClass classToInvoke = ((soot.RefType)b.getThisLocal().getType()).getSootClass();
+			SootField outerThisField = classToInvoke.getFieldByName("this$0");
+			Local t1 = Jimple.v().newLocal("this$0$loc",outerThisField.getType());
+			b.getLocals().add(t1);
+			        
+			FieldRef fieldRef = soot.jimple.Jimple.v().newInstanceFieldRef(b.getThisLocal(), outerThisField);
+			AssignStmt fieldAssignStmt = soot.jimple.Jimple.v().newAssignStmt(t1, fieldRef);
+			b.getUnits().add(fieldAssignStmt);
+              
+			// otherwise make a new access method
+			soot.Local t2 = t1;
+			while (!t2.getType().equals(sootType)){
+				//System.out.println("t2 type: "+t2.getType());
+				classToInvoke = ((soot.RefType)t2.getType()).getSootClass();
+				// make an access method and add it to that class for accessing 
+				// its private this$0 field
+				SootMethod methToInvoke = makeOuterThisAccessMethod(classToInvoke);
+				// invoke that method
+				Local t3 = Jimple.v().newLocal("invoke$loc",methToInvoke.getReturnType()); b.getLocals().add(t3);
+				InvokeExpr ie = Jimple.v().newVirtualInvokeExpr(t2,methToInvoke);
+				AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(t3, ie); b.getUnits().add(rStmt);
+				// ready for next iteration		
+				t2 = t3;
+			}
+			return t2;        
+		}
+    
+		private soot.SootMethod makeOuterThisAccessMethod(soot.SootClass classToInvoke){
+			// create the method
+			String name = UniqueID.newID("access$this$0$");
+			ArrayList paramTypes = new ArrayList();
+			soot.SootMethod meth = new soot.SootMethod(name, paramTypes, classToInvoke.getFieldByName("this$0").getType(), soot.Modifier.PUBLIC);
+			// add to target class
+			classToInvoke.addMethod(meth);
+			// now fill in the body
+			Body b = Jimple.v().newBody(); meth.setActiveBody(b);
+			Chain ss = b.getUnits(); Chain ls = b.getLocals();
+			// generate local for "this"
+			SootField sf = classToInvoke.getFieldByName("this$0");
+			ThisRef thiz = Jimple.v().newThisRef(classToInvoke.getType());
+			Local thizloc = Jimple.v().newLocal("this$loc",classToInvoke.getType()); ls.add(thizloc);
+			IdentityStmt ids = Jimple.v().newIdentityStmt(thizloc,thiz); ss.add(ids);
+			// assign res = this.this$0
+			FieldRef fr = Jimple.v().newInstanceFieldRef(thizloc,classToInvoke.getFieldByName("this$0")); 
+			Local res = Jimple.v().newLocal("result",sf.getType()); ls.add(res);
+			AssignStmt astmt = Jimple.v().newAssignStmt(res,fr); ss.add(astmt);
+			// return res
+			ReturnStmt ret = Jimple.v().newReturnStmt(res); ss.add(ret);	
+			return meth;
+		}
+    
     private void addSuperFieldGetter( SuperFieldGet sfd ) {
     // 	the field that we wish to access, in the superclass of sd.target()
     	FieldSig field = sfd.getFieldSig();
@@ -256,6 +318,7 @@ public class IntertypeAdjuster {
 	}
 	
 	private SootMethod addImplMethod( IntertypeMethodDecl imd ) {
+		
 		MethodSig method = imd.getImpl();
         
 		SootClass sc = method.getDeclaringClass().getSootClass();
@@ -271,6 +334,7 @@ public class IntertypeAdjuster {
 		modifiers |= Modifier.STATIC; // the originating method is static
 		modifiers &= ~Modifier.PRIVATE;
 		modifiers &= ~Modifier.PROTECTED;
+		
         
         if (!Modifier.isAbstract(modifiers)) {
 		    // Create the method
@@ -288,9 +352,10 @@ public class IntertypeAdjuster {
 			sm.setSource(method.getSootMethod().getSource());
 			
 			sc.addMethod(sm);
+			
 	
 			return sm;
-        } else return null;
+        } else  return null;
 	}
 	
     private void addTargetMethod( IntertypeMethodDecl imd, SootMethod implMethod) {
