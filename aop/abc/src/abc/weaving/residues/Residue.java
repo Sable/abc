@@ -34,7 +34,7 @@ import abc.weaving.weaver.WeavingContext;
 
 /** The base class defining dynamic residues of pointcuts
  *  @author Ganesh Sittampalam
- */ 
+ */
 
 public abstract class Residue {
     /** Generate the code for this dynamic residue.
@@ -43,18 +43,28 @@ public abstract class Residue {
      *  @param units The chain the code is being inserted into
      *  @param begin Code will be inserted just after this statement
      *  @param sense If this is false, inverts the meaning of failure and success for the residue
-     *  @param fail  If the residue "fails", the inserted code will jump to this point; 
+     *  @param fail  If the residue "fails", the inserted code will jump to this point;
      *               otherwise it will fall through
      *  @param wc    The weaving context
+     *  @return The last statement that was inserted into the chain (or begin if nothing was).
      *  @author Ganesh Sittampalam
      */
     public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
                                  Chain units,Stmt begin,Stmt fail,boolean sense,
                                  WeavingContext wc);
 
+    /** This is a helper method for codeGen; it is called when an implementation of
+     *  codeGen considers that the residue has succeeded, but hasn't yet considered
+     *  the sense parameter. If sense is true, then the method just returns begin.
+     *  If sense is false, then it inserts a jump to the fail point after begin.
+     *  @param units The chain the code is being inserted into
+     *  @param begin Any extra code will be inserted just after this statement
+     *  @param fail The place to jump if sense is false
+     *  @param sense Indicates the sense of the residue
+     */
     protected static Stmt succeed(Chain units,Stmt begin,Stmt fail,boolean sense) {
         if(sense) return begin;
-        else 		{
+        else            {
             Stmt jump=Jimple.v().newGotoStmt(fail);
             units.insertAfter(jump,begin);
             return jump;
@@ -66,15 +76,15 @@ public abstract class Residue {
 
     /**
      * Fills the Bindings object with information of possible
-     * advice-formal bindings. 
+     * advice-formal bindings.
      * Has to be overwritten by all Residue classes that have children.
      */
     public void getAdviceFormalBindings(Bindings bindings) {
     }
 
     /**
-     * Returns residue that replaces the old residue. 
-     * This way, BindMaskResidue is inserted throughout the tree in the 
+     * Returns residue that replaces the old residue.
+     * This way, BindMaskResidue is inserted throughout the tree in the
      * appropriate places.
      * Has to be overridden by all Residue classes that have children.
      */
@@ -83,14 +93,14 @@ public abstract class Residue {
     }
 
     /**
-     * 
+     *
      * @author Sascha Kuzins
      *
      * Represents the possible bindings of locals to advice-formals.
      */
     public static class Bindings {
         /*Bindings(int maxSize) {
-        	arrayList.ensureCapacity(maxSize);
+                arrayList.ensureCapacity(maxSize);
         }*/
         /**
          * Add binding of Local local to advice-formal at position pos.
@@ -104,14 +114,14 @@ public abstract class Residue {
                 arrayList.set(pos, new LinkedList());
             } else {
                 //if (!ambiguous) {
-                //	debug("  (ambiguous variable binding)");
+                //      debug("  (ambiguous variable binding)");
                 ambiguous=true;
                 //}
             }
             ((List)arrayList.get(pos)).add(local);
         }
         /**
-         * Find last index of advice-formal which is bound to local 
+         * Find last index of advice-formal which is bound to local
          */
         public int lastIndexOf(Local local) {
             for (int i=arrayList.size()-1;i>=0;i--) {
@@ -139,7 +149,7 @@ public abstract class Residue {
         public int getMaskValue(Local local, int i) {
             //int i=lastIndexOf(local);
             //if (i==-1)
-            //	throw new RuntimeException();
+            //  throw new RuntimeException();
             int pos=bitPositions[i];
             //System.out.println("pos: " + pos);
             List list=localsFromIndex(i);
@@ -155,7 +165,7 @@ public abstract class Residue {
         }
         /**
          * Sets the bits of the mask which belong to
-         * the advice-formal at position index 
+         * the advice-formal at position index
          */
         public int getMaskBits(int index) {
             int mask=0;
@@ -168,7 +178,7 @@ public abstract class Residue {
             return mask;
         }
         /**
-         * Position of the bits of the mask that belong to 
+         * Position of the bits of the mask that belong to
          * the advice-formal at position index
          */
         public int getMaskPos(int index) {
