@@ -18,10 +18,16 @@ import abc.weaving.weaver.WeavingContext;
  */ 
 
 public abstract class Residue {
-    /** Generate the code for this dynamic residue and insert it into
-     *  "units", starting just after "begin". Jump to "fail" if the residue
-     *  fails. Return the final statement that was inserted. If "sense" is
-     *  false, reverse the sense of the test.
+    /** Generate the code for this dynamic residue.
+     *  @param method The method the code is being inserted into
+     *  @param localgen A local generator for the method
+     *  @param units The chain the code is being inserted into
+     *  @param begin Code will be inserted just after this statement
+     *  @param sense If this is false, inverts the meaning of failure and success for the residue
+     *  @param fail  If the residue "fails", the inserted code will jump to this point; 
+     *               otherwise it will fall through
+     *  @param wc    The weaving context
+     *  @author Ganesh Sittampalam
      */
     public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
 				 Chain units,Stmt begin,Stmt fail,boolean sense,

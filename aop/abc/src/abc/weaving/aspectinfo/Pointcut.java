@@ -12,7 +12,8 @@ import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
 import polyglot.types.SemanticException;
 
-/** A pointcut designator.
+/** This is the base class for pointcut designators.
+ *  A pointcut designator is primarily responsible for 
  *  @author Ganesh Sittampalam
  */
 public abstract class Pointcut extends Syntax {
@@ -39,8 +40,6 @@ public abstract class Pointcut extends Syntax {
      *  Converted to DNF
      *  All cflows/cflowbelows have been "registered" as separate pointcuts
      */
-    // Ought to lift local variables to one block at
-    // the top and cache the weaving env or something
     public static Pointcut normalize(Pointcut pc,
 				     List/*<Formal>*/ formals,
 				     Aspect context) {

@@ -48,17 +48,16 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 
 	if(normalized) this.pc=pc; else this.origpc=pc;
 	this.formals=formals;
-
-	if (spec instanceof AbstractAdviceSpec) {
-	    ((AbstractAdviceSpec)spec).setAdvice(this);
-	}
     }
 
     public AdviceSpec getAdviceSpec() {
 	return spec;
     }
 
-    /** Returns the aspect of this advice decl */
+    /** Every advice declaration is associated with a particular aspect.
+     *  This method returns the aspect.
+     *  @author Ganesh Sittampalam
+     */
     public Aspect getAspect() {
 	return aspct;
     }
@@ -71,12 +70,24 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 	}
     }
 
+    /** Make an exact copy of this advice declaration, but change the aspect to the given one.
+     *  This is needed to implement aspect inheritance, because that defines that advice defined
+     *  in a base aspect is treated as occurring once in each derived aspect. 
+     *  @author Ganesh Sittampalam
+     */
     public AbstractAdviceDecl makeCopyInAspect(Aspect newaspct) {
 	AbstractAdviceDecl n=(AbstractAdviceDecl) this.clone();
 	n.aspct=newaspct;
 	return n;
     }
 
+    /** Pointcuts come in normalized and unnormalized versions.
+     *  (See {@link Pointcut.normalize}). An advice declaration can be constructed with
+     *  the unnormalized version, in which case it is necessary to call this method
+     *  before trying to use it for anything pointcut related. It is an error to call
+     *  this method if the pointcut has already been normalized.
+     *  @author Ganesh Sittampalam
+     */
     public void preprocess() {
 	if(pc!=null) throw new InternalCompilerError
 			 ("Trying to call preprocess on an already normalized advice decl "+this);
@@ -122,6 +133,16 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 	return AlwaysMatch.v;
     }
 
+    /** Produce a chain containing the statements to execute this piece of advice.
+     *  If execution reaches the beginning of the chain, then the advice definitely
+     *  applies.
+     *  @param adviceappl The advice application structure.
+     *  @param localgen   A local variable generator for the method body being woven into
+     *  @param wc         The weaving context
+     *  @author Ganesh Sittampalam
+     */
+     // document why we need adviceappl. Should we switch to the insertAfter model
+     // everything else uses?
     public abstract Chain makeAdviceExecutionStmts
 	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc);
 

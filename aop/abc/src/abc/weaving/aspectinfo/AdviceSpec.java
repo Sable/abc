@@ -9,7 +9,10 @@ import abc.soot.util.LocalGeneratorEx;
 
 /** An advice specification. */
 public interface AdviceSpec {
-    public AbstractAdviceDecl getAdvice();
+    
+    /** Is this advice spec for "after" advice? 
+     *  This affects the precedence of the advice.
+     */
     public boolean isAfter();
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm);
 
