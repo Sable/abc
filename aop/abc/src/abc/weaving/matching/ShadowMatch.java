@@ -67,6 +67,7 @@ public abstract class ShadowMatch {
 
     private void addDummyAdviceApplication(MethodAdviceList mal) {
 	AdviceApplication aa=doAddAdviceApplication(mal,null,AlwaysMatch.v);
+	aa.setShadowMatch(this);
 	aa.sjpInfo=getSJPInfo();
     }
 

@@ -127,6 +127,9 @@ public abstract class AbstractAdviceDecl extends Syntax {
      *     conflict between the two advice decls.
      */
     public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
+
+	// FIXME : remove this once we no longer have DummyAdviceApplications
+	if(a==null || b==null) return GlobalAspectInfo.PRECEDENCE_NONE;
 	
 	// FIXME : what happens when we merge cflow stacks?
 	if(!a.getAspect().getName().equals(b.getAspect().getName()))
