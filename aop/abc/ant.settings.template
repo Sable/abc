@@ -1,5 +1,10 @@
 ## Location of Polyglot classes jar
 polyglot.loc=${user.home}/polyglot-1.2.0.jar
+#polyglot.loc=${user.home}/polyglot-1.2.0-src/classes
+
+## Location of Polyglot cup-classes (if not included in Polyglot jar)
+polyglot.cupclasses.loc=
+#polyglot.cupclasses.loc=${user.home}/polyglot-1.2.0-src/cup-classes
 
 ## Location of JFlex classes jar
 jflex.loc=${user.home}/JFlex.jar
