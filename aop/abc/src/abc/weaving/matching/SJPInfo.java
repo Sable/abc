@@ -6,6 +6,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.*;
 import soot.tagkit.SourceLnPosTag;
+import soot.tagkit.ParamNamesTag;
 import soot.tagkit.Host;
 import abc.weaving.aspectinfo.MethodCategory;
 
@@ -65,12 +66,19 @@ public class SJPInfo {
 	    sb.append(':');
 	}
 	sb.append('-');
-	// FIXME: we make up names here; should we try to get them right?
-	// What does ajc runtime actually do with them?
-	int n=method.getParameterCount();
-	for(int i=0;i<n;i++) {
-	    sb.append("arg"+i);
-	    sb.append(':');
+	if(method.hasTag("ParamNamesTag")) {
+	    List names=((ParamNamesTag) (method.getTag("ParamNamesTag"))).getNames();
+	    it=names.iterator();
+	    while(it.hasNext()) {
+		sb.append((String) (it.next()));
+		sb.append(':');
+	    }
+	} else {
+	    int n=method.getParameterCount();
+	    for(int i=0;i<n;i++) {
+		sb.append("arg"+i);
+		sb.append(':');
+	    }
 	}
 	sb.append('-');
 	it=method.getExceptions().iterator();
@@ -103,12 +111,19 @@ public class SJPInfo {
 	    sb.append(':');
 	}
 	sb.append('-');
-	// FIXME: we make up names here; should we try to get them right?
-	// What does ajc runtime actually do with them?
-	int n=method.getParameterCount();
-	for(int i=0;i<n;i++) {
-	    sb.append("arg"+i);
-	    sb.append(':');
+	if(method.hasTag("ParamNamesTag")) {
+	    List names=((ParamNamesTag) (method.getTag("ParamNamesTag"))).getNames();
+	    it=names.iterator();
+	    while(it.hasNext()) {
+		sb.append((String) (it.next()));
+		sb.append(':');
+	    }
+	} else {
+	    int n=method.getParameterCount();
+	    for(int i=0;i<n;i++) {
+		sb.append("arg"+i);
+		sb.append(':');
+	    }
 	}
 	sb.append('-');
 	it=method.getExceptions().iterator();
