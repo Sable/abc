@@ -36,12 +36,6 @@ public class WithinMethod extends LexicalPointcut {
 	return "withinmethod("+pattern+")";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof WithinMethod) {
-	    return pattern.equivalent(((WithinMethod)otherpc).getPattern());
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

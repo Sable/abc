@@ -40,19 +40,13 @@ public class ArgAny extends ArgPattern {
 
     public void getFreeVars(Set/*<Var>*/ result) {}
 
-    public boolean equals(Object o) {
-	if (o instanceof ArgAny) {
-	    return true;
-	} else return false;
-    }
-
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
 	 */
 	public boolean equivalent(ArgPattern p, Hashtable renaming) {
 		if (p instanceof ArgAny) {
 			//FIXME ArgAny.equivalent(ArgType, ren) returns true; is this OK?
+			System.out.println(p);
 			return true;
 		} else return false;
 	}

@@ -25,12 +25,6 @@ public class ClassInitialization extends ShadowPointcut {
 	return "classinitialization()";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof ClassInitialization) {
-	    return true;
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -35,14 +35,6 @@ public class ConstructorCall extends ShadowPointcut {
 	return "constructorcall("+pattern+")";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof ConstructorCall) {
-	    return pattern.equivalent(((ConstructorCall)otherpc).getPattern());
-	} else return false;
-    }
-
-
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

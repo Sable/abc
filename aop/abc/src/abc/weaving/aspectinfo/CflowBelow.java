@@ -75,7 +75,7 @@ public class CflowBelow extends Pointcut {
 	Iterator it=actuals.iterator();
 	while(it.hasNext()) {
 		Var setupvar = (Var) it.next();
-		Var inlinedvar = (Var) renaming.get(setupvar.getName());
+		Var inlinedvar = (Var) renaming.get(setupvar);
 		if (inlinedvar == null) {
 			throw new RuntimeException("Internal error: Could not find variable "+
 					setupvar.getName() + " in cflow renaming");
@@ -87,12 +87,6 @@ public class CflowBelow extends Pointcut {
 
     public void getFreeVars(Set result) {
 	pc.getFreeVars(result);
-    }
-
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof CflowBelow) {
-	    return pc.equivalent(((CflowBelow)otherpc).getPointcut());
-	} else return false;
     }
 
 	/* (non-Javadoc)

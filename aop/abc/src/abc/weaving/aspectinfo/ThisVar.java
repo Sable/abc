@@ -43,12 +43,6 @@ public class ThisVar extends ThisAny {
 	result.add(var.getName());
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof ThisVar) {
-	    Var othervar = ((ThisVar)otherpc).getVar();
-	    return (othervar.equals(var));
-	} else return false;
-    }
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

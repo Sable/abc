@@ -184,9 +184,7 @@ public abstract class Pointcut extends Syntax {
      *  Not defined as equals() is we may want it to return true
      *  for pointcuts that would not be considered equal */
 
-    public abstract boolean equivalent(Pointcut otherpc);
-
 	public abstract boolean equivalent(Pointcut otherpc, 
-									   Hashtable/*<String,Var>*/ renaming);
+									   Hashtable/*<Var,Var>*/ renaming);
 
 }

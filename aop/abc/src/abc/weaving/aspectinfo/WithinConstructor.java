@@ -37,14 +37,6 @@ public class WithinConstructor extends LexicalPointcut {
 	return "withinconstructor("+pattern+")";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof WithinConstructor) {
-	    return pattern.equivalent(((WithinConstructor)otherpc).getPattern());
-	} else return false;
-    }
-
-
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

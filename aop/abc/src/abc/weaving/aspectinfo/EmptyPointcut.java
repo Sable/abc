@@ -28,12 +28,6 @@ public class EmptyPointcut extends LexicalPointcut {
 	return "empty";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof EmptyPointcut) {
-	    return true;
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

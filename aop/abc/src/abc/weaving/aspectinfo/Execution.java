@@ -25,12 +25,6 @@ public class Execution extends ShadowPointcut {
 	return "execution()";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof Execution) {
-	    return true;
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -62,15 +62,31 @@ public class GlobalCflowSetupFactory {
 			this.it = CfsStore.cfsStore.iterator();
 		}
 		
+		private static Hashtable/*<Var,Var>*/ 
+						inversemap(Hashtable/*<Var,Var>*/ renaming) {
+			Hashtable/*<Var,Var>*/ newrenaming = new Hashtable();
+			Enumeration enum = renaming.keys();
+			while (enum.hasMoreElements()) {
+				Var k = (Var)enum.nextElement();
+				Var e = (Var)renaming.get(k);
+				newrenaming.put(e, k);	
+			}
+			return newrenaming;
+		}
+		
 		public boolean hasNext() {
 			while (it.hasNext()) {
 				CflowEntry cfe = (CflowEntry)it.next();
 				Hashtable/*<String,Var>*/ renaming = new Hashtable();
 				
 				if (cfe.getPc().equivalent(pc, renaming)) {
-					cfsc = new
-						CflowSetupContainer(cfe.getCfs(), false, renaming);
-					return true;
+					// Check that we can go the other way: 
+					// quick fix for the problem of subclasses and equivalent():
+					if (pc.equivalent(cfe.getPc(), inversemap(renaming))) {
+						cfsc = new
+							CflowSetupContainer(cfe.getCfs(), false, renaming);
+						return true;						
+					}
 				}
 			}
 			return false;
@@ -188,12 +204,12 @@ public class GlobalCflowSetupFactory {
 		// The substitution should be the identity map on the free vars in the pc,
 		// rather than just the empty map 
 		
-		Hashtable/*<String,Var>*/ newrename = new Hashtable();
+		Hashtable/*<Var,Var>*/ newrename = new Hashtable();
 		
 		Iterator fvs = ncfs.getActuals().iterator();
 		while (fvs.hasNext()) {
 			Var fv = (Var)fvs.next();
-			newrename.put(fv.getName(), fv);
+			newrename.put(fv, fv);
 		}
 		
 	return new CflowSetupContainer(ncfs, true, newrename);

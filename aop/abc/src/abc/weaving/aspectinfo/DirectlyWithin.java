@@ -23,21 +23,10 @@ public class DirectlyWithin extends Within {
 	return null;
     }
     
-    
-    
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
 	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof DirectlyWithin) {
-			return getPattern().equivalent(((DirectlyWithin)otherpc).getPattern());
-		} else return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean equivalent(Pointcut otherpc) {
 		if (otherpc instanceof DirectlyWithin) {
 			return getPattern().equivalent(((DirectlyWithin)otherpc).getPattern());
 		} else return false;

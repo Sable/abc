@@ -38,12 +38,6 @@ public class GetField extends ShadowPointcut {
 	return "get("+pattern+")";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof GetField) {
-	    return pattern.equivalent(((GetField)otherpc).getPattern());
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

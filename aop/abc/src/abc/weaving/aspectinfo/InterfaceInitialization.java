@@ -34,12 +34,6 @@ public class InterfaceInitialization extends ShadowPointcut {
 	return "interfaceinitialization()";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof InterfaceInitialization) {
-	    return pattern.equivalent(((InterfaceInitialization)otherpc).getPattern());
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -65,12 +65,6 @@ public class NotPointcut extends Pointcut {
 	pc.getFreeVars(result);
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof NotPointcut) {
-	    return pc.equivalent(((NotPointcut)otherpc).getPointcut());
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

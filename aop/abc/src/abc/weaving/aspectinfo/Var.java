@@ -38,12 +38,12 @@ public class Var extends Syntax {
      * previous binding, or the existing binding is the one we would have added) 
      * The new binding is added to the mapping */
 
-	public boolean canRenameTo(Var other, Hashtable/*<String,Var>*/ renaming) {
-		if (renaming.containsKey(name)) {
-			Var previous = (Var)renaming.get(name);
+	public boolean canRenameTo(Var other, Hashtable/*<Var,Var>*/ renaming) {
+		if (renaming.containsKey(this)) {
+			Var previous = (Var)renaming.get(this);
 			return previous.equals(other);
 		} else {
-			renaming.put(name, other);
+			renaming.put(this, other);
 			return true;
 		}
 	}

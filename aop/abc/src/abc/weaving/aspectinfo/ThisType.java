@@ -30,14 +30,6 @@ public class ThisType extends ThisAny {
 	return CheckType.construct(cv,type.getSootType());
     }
 
-
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof ThisType) {
-	    AbcType othertype = ((ThisType)otherpc).getType();
-	    return (othertype.equals(type));
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -35,12 +35,6 @@ public class SetField extends ShadowPointcut {
 	return "set("+pattern+")";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof SetField) {
-	    return pattern.equivalent(((SetField)otherpc).getPattern());
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

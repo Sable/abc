@@ -73,7 +73,7 @@ public class Cflow extends Pointcut {
 	Iterator it=actuals.iterator();
 	while(it.hasNext()) {
 		Var setupvar = (Var) it.next();
-		Var inlinedvar = (Var) renaming.get(setupvar.getName());
+		Var inlinedvar = (Var) renaming.get(setupvar);
 		if (inlinedvar == null) {
 			throw new RuntimeException("Internal error: Could not find variable "+
 					setupvar.getName() + " in cflow renaming");
@@ -87,12 +87,6 @@ public class Cflow extends Pointcut {
 	pc.getFreeVars(result);
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-		if (otherpc instanceof Cflow) {
-			return pc.equivalent(((Cflow)otherpc).getPointcut());
-		} else return false;
-    }
-	
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -74,13 +74,6 @@ public class OrPointcut extends Pointcut {
 	pc2.getFreeVars(result);
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof OrPointcut) {
-	    return (   (pc1.equivalent(((OrPointcut)otherpc).getLeftPointcut()))
-		    && (pc2.equivalent(((OrPointcut)otherpc).getRightPointcut())));
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

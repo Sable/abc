@@ -27,12 +27,6 @@ public class WithinStaticInitializer extends LexicalPointcut {
 	return "withinstaticinitializer()";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof WithinStaticInitializer) {
-	    return true;
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -145,13 +145,6 @@ public class Args extends DynamicValuePointcut {
 	    ((ArgPattern) (it.next())).getFreeVars(result);
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof Args) {
-	    List/*<ArgPattern>*/otherargs = ((Args)otherpc).getArgs();
-	    return args.equals(otherargs);
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

@@ -24,12 +24,6 @@ public class WithinAdvice extends LexicalPointcut {
 	return "withinadvice()";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof WithinAdvice) {
-	    return true;
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

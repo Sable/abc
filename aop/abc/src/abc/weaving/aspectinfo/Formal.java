@@ -45,23 +45,24 @@ public class Formal extends Syntax {
 	return type.hashCode();
     }
     
-    public boolean canRenameTo(Formal f, Hashtable/*<String, Var>*/ renaming) {    	
+    public boolean canRenameTo(Formal f, Hashtable/*<Var, Var>*/ renaming) {    	
     	if (type.equals(f.getType())) {
-    		if (renaming.containsKey(name)) {
-    			Var previous = (Var)renaming.get(name);
+    		// NOTE: the renaming maps Vars to Vars as this is what we need later
+    		// Formals are NEVER added to the renaming, we only check that there already
+    		// is a corresponding entry
+    		// Var objects are compared by name, so it is OK to create two new Vars for the
+    		// test
+    		// TODO Check that it is OK that Formal.canRenameTo does not add bindings
+    		
+    		Var thisv = new Var(name, getPosition());
+    		Var otherv = new Var(f.getName(), f.getPosition());
+    		
+    		if (renaming.containsKey(thisv)) {
+    			Var previous = (Var)renaming.get(thisv);
     			if (previous.getName().equals(f.getName())) {
     				return true;
-    			} else return false;
-    		} else {
-    			// Construct a new Var with name f.name to map to
-    			// FIXME Is it OK to create a new var in Formal.canRenameTo if necessary?
-    			// Note: Will only ever do this if a local var is declared in a pc but not 
-    			// actually used. Does this ever happen? 
-    			// This should mean that the new var never gets used anyway...
-    			Var newvar = new Var(f.getName(), f.getPosition());
-    			renaming.put(name, newvar);
-    			return true;
-    		}
-    	} else return false;
+    			} else return false; // Existing match, wrong name 
+    		} else return false;     // No match
+    		} else return false;     // Wrong type
     }
 }

@@ -121,12 +121,6 @@ public class PointcutRef extends Pointcut {
 	    ("PointcutRef should have been inlined by now",getPosition());
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	throw new InternalCompilerError
-	    ("PointcutRef should have been inlined by now (equivalent(pc))",
-	     getPosition());
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

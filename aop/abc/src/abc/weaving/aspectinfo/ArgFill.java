@@ -31,14 +31,6 @@ public class ArgFill extends ArgPattern {
 
     public void getFreeVars(Set/*<Var>*/ result) {}
 
-    public boolean equals(Object o) {
-	if (o instanceof ArgFill) {
-	    return true;
-	} else return false;
-    }
-    
-    
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
 	 */

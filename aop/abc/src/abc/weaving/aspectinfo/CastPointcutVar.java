@@ -70,13 +70,6 @@ public class CastPointcutVar extends Pointcut {
 	result.add(to.getName());
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof CastPointcutVar) {
-	    return (   (from.equals(((CastPointcutVar)otherpc).getFrom()))
-		    && (  to.equals(((CastPointcutVar)otherpc).getTo())));
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */

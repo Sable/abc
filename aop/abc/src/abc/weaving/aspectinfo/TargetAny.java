@@ -34,12 +34,6 @@ public class TargetAny extends DynamicValuePointcut {
 	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<Var>*/ result) {}
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof TargetAny) {
-	    return true;
-	} else return false;
-    }
-
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
