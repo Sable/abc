@@ -155,7 +155,7 @@ public class GenStaticJoinPoints {
 	debug("tags attached to class are : " + sc.getTags());
 	SourceFileTag sft = (SourceFileTag) sc.getTag("SourceFileTag");
 	debug("sourcefilename of sc : " + sft);
-        args.add(StringConstant.v(sft.getSourceFile())); 
+        args.add(StringConstant.v(sft==null ? "<Unknown>" : sft.getSourceFile())); 
         args.add(javaclass);
          Stmt initfactory = Jimple.v().
 		     newInvokeStmt( Jimple.v().
@@ -169,6 +169,7 @@ public class GenStaticJoinPoints {
                          LocalGenerator lg, SootMethod method,
 			 SJPInfo sjpInfo) 
     { // look for interfaces in the right place
+	// FIXME: shouldn't know about the extension in the base code
       String classpath = sjpInfo.kind.equals("cast") ? "abc.lang.reflect." : "org.aspectj.lang.reflect.";
             
       // create the name for the SJP field 
