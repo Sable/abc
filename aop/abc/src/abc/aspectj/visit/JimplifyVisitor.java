@@ -1,5 +1,5 @@
 
-package polyglot.ext.aspectj.visit;
+package arc.aspectj.visit;
 
 import polyglot.ast.*;
 import polyglot.visit.*;

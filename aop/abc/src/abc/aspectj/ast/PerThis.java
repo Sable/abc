@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 /**
  * A <code>PerThis</code> represents the perthis of an aspect

@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 
 public interface DeclareParentsExt extends DeclareDecl

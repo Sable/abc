@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj;
+package arc.aspectj;
 
 import polyglot.main.Report;
 

@@ -1,5 +1,5 @@
 
-package polyglot.ext.aspectj.types;
+package arc.aspectj.types;
 
 import java.util.List;
 import polyglot.types.ParsedClassType;

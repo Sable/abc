@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.parse;
+package arc.aspectj.parse;
 
 import polyglot.ast.*;
 import polyglot.lex.*;
@@ -12,10 +12,10 @@ import polyglot.ext.jl.parse.Name;
 import soot.javaToJimple.jj.DPosition;
 import java.util.*;
 import polyglot.ast.Assert;
-import polyglot.ext.aspectj.types.AspectJTypeSystem;
-import polyglot.ext.aspectj.ast.AspectJNodeFactory;
+import arc.aspectj.types.AspectJTypeSystem;
+import arc.aspectj.ast.AspectJNodeFactory;
 import polyglot.ext.jl.parse.Name;
-import polyglot.ext.aspectj.ast.*;
+import arc.aspectj.ast.*;
 
 parser Grm extends soot.javaToJimple.jj.parse.Grm {:
 

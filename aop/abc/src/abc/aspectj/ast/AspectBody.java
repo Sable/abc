@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 import java.util.List;
 import polyglot.ast.ClassBody;

@@ -1,11 +1,11 @@
-package polyglot.ext.aspectj;
+package arc.aspectj;
 
 import polyglot.lex.Lexer;
-import polyglot.ext.aspectj.parse.Lexer_c;
-import polyglot.ext.aspectj.parse.Grm;
-import polyglot.ext.aspectj.ast.*;
-import polyglot.ext.aspectj.types.*;
-import polyglot.ext.aspectj.visit.*;
+import arc.aspectj.parse.Lexer_c;
+import arc.aspectj.parse.Grm;
+import arc.aspectj.ast.*;
+import arc.aspectj.types.*;
+import arc.aspectj.visit.*;
 
 import polyglot.ast.*;
 import polyglot.types.*;

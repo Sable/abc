@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 import polyglot.ast.*;
 
@@ -7,7 +7,7 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-import polyglot.ext.aspectj.ast.IsSingleton;
+import arc.aspectj.ast.IsSingleton;
 
 public class IsSingleton_c extends PerClause_c implements IsSingleton
 {

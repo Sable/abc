@@ -1,10 +1,10 @@
-package polyglot.ext.aspectj.types;
+package arc.aspectj.types;
 
 import java.util.List;
 import polyglot.util.Position;
 import polyglot.types.*;
 import polyglot.frontend.Source;
-import polyglot.ext.aspectj.types.AspectJFlags;
+import arc.aspectj.types.AspectJFlags;
 
 import soot.javaToJimple.jj.types.JjTypeSystem_c;
 

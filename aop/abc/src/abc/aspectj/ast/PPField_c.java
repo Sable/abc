@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 import polyglot.ast.*;
 import polyglot.types.*;

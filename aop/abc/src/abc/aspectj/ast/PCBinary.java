@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 import polyglot.util.Enum;
 import polyglot.ast.Precedence;

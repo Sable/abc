@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +21,7 @@ import polyglot.types.LocalInstance;
 import polyglot.types.MethodInstance;
 import polyglot.ext.jl.ast.MethodDecl_c;
 
-import polyglot.ext.aspectj.types.AspectJTypeSystem;
+import arc.aspectj.types.AspectJTypeSystem;
 
 public class AdviceDecl_c extends MethodDecl_c
                           implements AdviceDecl

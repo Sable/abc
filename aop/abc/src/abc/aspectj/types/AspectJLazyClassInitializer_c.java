@@ -1,5 +1,5 @@
 
-package polyglot.ext.aspectj.types;
+package arc.aspectj.types;
 
 import polyglot.types.TypeSystem;
 import polyglot.ext.jl.types.LazyClassInitializer_c;

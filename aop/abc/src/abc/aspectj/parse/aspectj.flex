@@ -31,7 +31,7 @@
    For a production quality application (e.g. a Java compiler) 
    this could be optimized */
 
-package polyglot.ext.aspectj.parse;
+package arc.aspectj.parse;
 
 import java_cup.runtime.Symbol;
 import polyglot.lex.*;

@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.types;
+package arc.aspectj.types;
 
 import polyglot.types.ClassType;
 import soot.javaToJimple.jj.types.JjTypeSystem;

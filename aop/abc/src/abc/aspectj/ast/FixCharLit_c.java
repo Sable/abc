@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 import polyglot.ext.jl.ast.CharLit_c;
 import polyglot.ast.*;

@@ -1,4 +1,4 @@
-package polyglot.ext.aspectj.ast;
+package arc.aspectj.ast;
 
 /**
  * A <code>PerTarget</code> represents the per-clause of an aspect
