@@ -33,20 +33,23 @@ public class Bind extends AbstractResidue {
     public String toString() {
 	return "bind("+value+","+variable+")";
     }
-
-    public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
-			WeavingContext wc) {
-
-	Type type=variable.getType();
-	Local loc=localgen.generateLocal(type,"bind");
-	Stmt castStmt=Jimple.v().newAssignStmt
-	    (loc,Jimple.v().newCastExpr
-	     (value.getSootValue(method,localgen),type));
-	variable.set(wc,loc);
-	units.insertAfter(castStmt,begin);
-	return castStmt;
-    }
-
+	public Stmt codeGen(
+		SootMethod method,
+		LocalGeneratorEx localgen,
+		Chain units,
+		Stmt begin,
+		Stmt fail,
+		WeavingContext wc) {
+	
+		Type type = variable.getType();
+		Local loc = localgen.generateLocal(type, "bind");
+		Stmt castStmt =
+			Jimple.v().newAssignStmt(
+				loc,
+				Jimple.v().newCastExpr(value.getSootValue(method, localgen), type));
+		variable.set(wc, loc);
+		units.insertAfter(castStmt, begin);
+		return castStmt;
+	}
 
 }
