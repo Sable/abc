@@ -71,6 +71,7 @@ public class MethodPattern_c extends Node_c
 
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern() {
 	//TODO
+	System.out.println("FIXME: Producing a null method pattern in "+getClass());
 	return null;
     }
 }

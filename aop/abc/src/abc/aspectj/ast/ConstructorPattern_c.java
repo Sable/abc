@@ -64,6 +64,7 @@ public class ConstructorPattern_c extends Node_c
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern() {
 	//TODO
+	System.out.println("FIXME: Producing a null constructor pattern in "+getClass());
 	return null;
     }
 }
