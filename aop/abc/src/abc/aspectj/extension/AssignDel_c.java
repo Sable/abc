@@ -9,13 +9,23 @@ import polyglot.util.UniqueID;
 import abc.aspectj.ast.*;
 import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
-import polyglot.types.ClassType;
+import polyglot.types.*;
+import polyglot.visit.*;
 
 import java.util.List;
 import java.util.LinkedList;
 
 public class AssignDel_c extends JL_c implements MakesAspectMethods
 {
+	
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		AJContext ajc = (AJContext) tc.context();
+		Assign a = (Assign) node();
+		if (ajc.inIf() && (a.left() instanceof Local))
+			throw new SemanticException("Cannot assign to a local within a pointcut.", node().position());
+		return node().typeCheck(tc);
+	}
+	
     public void aspectMethodsEnter(AspectMethods visitor)
     {
         visitor.pushLhs(((Assign) node()).left());

@@ -119,8 +119,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			if (pht.flags().isInterface()) {
 				newFlags = newFlags.Abstract();
 				if (origflags.isAbstract()) {
-					newFlags = newFlags.Public();
-					origflags = origflags.Public();
+					newFlags = newFlags.clear(Flags.PRIVATE).Public();
+					origflags = origflags.clear(Flags.PRIVATE).Public();
 				}
 			}
 			MethodInstance mi = ts.interTypeMethodInstance(position(), identifier,
@@ -221,7 +221,15 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			   if (! ts.isAccessible(mj, mi.container().toClass())) {
 				   continue;
 			   }
-
+			/*	MethodInstance mi2; // = mi.flags(mi.origFlags().clear(Flags.PRIVATE).Public());
+				MethodInstance mj2;
+				if (mj instanceof InterTypeMethodInstance_c) {
+					InterTypeMethodInstance_c mji = (InterTypeMethodInstance_c) mj;
+				    mj2 = mj.flags(mji.origFlags());
+				}
+				else
+					{mj2 = mj;} */
+				
 			   ts.checkOverride(mi, mj);
 		   }
 	}

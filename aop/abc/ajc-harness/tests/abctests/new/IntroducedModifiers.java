@@ -19,11 +19,13 @@ public class IntroducedModifiers {
 
         //XXX this name depends on implementation details for field intro on interfaces
         //changed this to use abc rather than ajc naming
+        
         try {
             f = C.class.getField("A$iField$9");
         } catch (NoSuchFieldException e) {
             f = C.class.getField("iField");
-        }
+	    } 
+
         Tester.check(Modifier.isVolatile(f.getModifiers()), "volatile");
         Tester.check(Modifier.isTransient(f.getModifiers()), "transient");
 

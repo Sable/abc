@@ -741,12 +741,14 @@ public class IntertypeAdjuster {
     	if (ifd1.getAspect() == ifd2.getAspect())
     		return ifd1.getPosition().line() < ifd2.getPosition().line();
     	else { int cmp = GlobalAspectInfo.v().getPrecedence(ifd1.getAspect(),ifd2.getAspect()) ;
+    		/*// this appears to generate nondeterministic behaviour, due
+    		   // to iteration over a set or map. commented out for now...
     			if (cmp == GlobalAspectInfo.PRECEDENCE_NONE)
 			       abc.main.Main.v().error_queue.enqueue(new polyglot.util.ErrorInfo(
 														   polyglot.util.ErrorInfo.WARNING,
 														   "Unspecified order with intertype initialiser at "+ ifd1.getPosition() +
 														   "(consider using a precedence declaration).",
-														   ifd2.getPosition()));
+														   ifd2.getPosition())); */
     		   return (cmp == GlobalAspectInfo.PRECEDENCE_FIRST);
     	}
     }

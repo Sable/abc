@@ -3083,12 +3083,8 @@
     </ajc-test>
 
     <ajc-test num="320" dir="design/intro"
-      title="initial tests for new introduction style" keywords="from-design"
-      abccomment="we signal itd inits without a specific order">
-        <compile files="Simple.java">
-            <message kind="warning" line="67"/>
-            <message kind="warning" line="67"/>
-        </compile>
+      title="initial tests for new introduction style" keywords="from-design">
+        <compile files="Simple.java"/>
         <run class="Simple"/>
     </ajc-test>
 
@@ -4463,8 +4459,10 @@
     <ajc-test num="50601" dir="abctests/new"
       title="functional modifiers work correctly with introduced members"
       abccomment="test depends on implementation-specific naming convention, via reflection.
-                  Cloned from 506. ODM 11/08/04"
+                  Cloned from 506. ODM 11/08/04. Impossible to get this right
+                  for abc, because the field name depends on the name generator."
       keywords="from-resolved_10x">
+      <abckeywords> <skip/> </abckeywords>
         <compile files="IntroducedModifiers.java"/>
         <run class="IntroducedModifiers"/>
     </ajc-test>
@@ -5055,11 +5053,8 @@
 
     <ajc-test num="580" dir="new" pr="555"
       title="inner classes of privileged aspects cannot see target class private members"
-      abccomment="we give a warning about unspecified init order. ODM 12/08/04"
       keywords="from-resolved_10rc3">
-        <compile files="InnerClassInPrivilegedAspect.java">
-             <message kind="warning" line="109"/>
-        </compile>
+        <compile files="InnerClassInPrivilegedAspect.java"/>
         <run class="InnerClassInPrivilegedAspect"/>
     </ajc-test>
 
@@ -6038,10 +6033,13 @@
     </ajc-test>
     
     <ajc-test num="692" dir="new" pr="889"
+      abccomment="abc gives two errors, but ok. ODM 13/08/04"
       title="after returning advice on interface constructor - error">
         <compile files="AfterReturningInterfaceConstructorCE.java">
-        	<message kind="error" line="26"/>
-        	<message kind="warning" line="30"/>
+        	<ajcmessage kind="error" line="26"/>
+        	<ajcmessage kind="warning" line="30"/>
+                <message kind="error" line="26"/>
+                <message kind="error" line="26"/>
         </compile>
     </ajc-test>
 
