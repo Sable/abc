@@ -108,8 +108,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
     public ContextValue getReturningContextValue() {
 
 	if(container.getName().equals(SootMethod.staticInitializerName) ||
-	   container.getName().equals(SootMethod.constructorName) ||
-	   MethodCategory.adviceBody(container)) 
+	   container.getName().equals(SootMethod.constructorName))
 	    return super.getReturningContextValue();  // null value
 
 	Stmt nop=Restructure.restructureReturn(container);
