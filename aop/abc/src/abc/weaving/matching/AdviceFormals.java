@@ -4,13 +4,12 @@ import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 
-/** Handle named pointcut variables corresponding to advice formals
+/** A weaving environment that can handle named pointcut variables 
+ *  corresponding to formal arguments to a piece of advice
  *  @author Ganesh Sittampalam
- *  @date 04-May-04
  */
 
 public class AdviceFormals implements WeavingEnv {
-    // FIXME: need to abstract away from AdviceDecl to handle cflow with binders etc
     private AdviceDecl ad;
 
     public AdviceFormals(AdviceDecl ad) {

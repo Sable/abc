@@ -3,9 +3,8 @@ package abc.weaving.matching;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 
-/** for initialization pointcuts
+/** For initialization pointcuts
  *  @author Ganesh Sittampalam
- *  @date 29-Apr-04
  */
 public class ClassInitializationAdviceApplication extends ConstructorAdviceApplication {
     public ClassInitializationAdviceApplication(AbstractAdviceDecl advice,Residue residue) {

@@ -5,6 +5,9 @@ import soot.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.Residue;
 
+/** Advice applying at an execution shadow
+ *  @author Ganesh Sittampalam
+ */
 public class ExecutionAdviceApplication extends AdviceApplication {
 	
     public ExecutionAdviceApplication(AbstractAdviceDecl advice,Residue residue) {

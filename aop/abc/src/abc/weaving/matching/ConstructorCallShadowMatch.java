@@ -15,7 +15,6 @@ import abc.weaving.residues.JimpleValue;
 
 /** The results of matching at a new+constructor call shadow
  *  @author Ganesh Sittampalam
- *  @date 05-May-04
  */
 public class ConstructorCallShadowMatch extends StmtShadowMatch {
     private Stmt next;

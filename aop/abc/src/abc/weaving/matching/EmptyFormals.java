@@ -4,9 +4,9 @@ import polyglot.util.InternalCompilerError;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 
-/** Handle named pointcut variables in contexts where they aren't supported
+/** An empty weaving environment, for use in contexts where named pointcut
+ *  variables aren't supported.
  *  @author Ganesh Sittampalam
- *  @date 04-May-04
  */
 
 public class EmptyFormals implements WeavingEnv {

@@ -4,9 +4,8 @@ import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 
-/** Handle named pointcut variables corresponding to locals
+/** A weaving environment that handles locally scoped named pointcut variables
  *  @author Ganesh Sittampalam
- *  @date 04-May-04
  */
 
 public class LocalsDecl implements WeavingEnv {

@@ -10,7 +10,6 @@ import abc.weaving.residues.Residue;
 
 /** The results of matching at an class initialization shadow
  *  @author Ganesh Sittampalam
- *  @date 05-May-04
  */
 public class ClassInitializationShadowMatch extends BodyShadowMatch {
 

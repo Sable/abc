@@ -12,7 +12,7 @@ import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
 
-/** The results of matching at a field get
+/** A get field join point shadow.
  *  @author Ganesh Sittampalam
  *  @author Oege de Moor
  */

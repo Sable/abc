@@ -10,7 +10,9 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.residues.*;
 
 
-/** A "body" shadow match
+/** A base class for shadow types that are associated with the whole body 
+ *  or a section of it (i.e. execution and [pre]initialisation shadows), 
+ *  rather than with a specific jimple statement.
  *  @author Ganesh Sittampalam
  */
 

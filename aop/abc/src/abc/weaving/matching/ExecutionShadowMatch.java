@@ -11,7 +11,7 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 import abc.soot.util.Restructure;
 
-/** The results of matching at an execution shadow.
+/** An execution join point shadow.
  *  abc does a front-end transformation that means that static initialization
  *  and advice execution join point shadows are also treated as execution shadows
  *  @author Ganesh Sittampalam
