@@ -220,7 +220,7 @@ public class Main {
           { abcPrintVersion();
                 throw new CompilerAbortedException("Acted on -version option.");
           }
-        else if (args[i].equals("-injars"))
+        else if (args[i].equals("-injars")||args[i].equals("-inpath"))
           {
             // a class-path-delimiter separated list should follow -injars
             i++;
@@ -235,8 +235,7 @@ public class Main {
             if(i < args.length){
                 parsePath(args[i], source_roots);
             } else throw new IllegalArgumentException("Missing argument to " + args[i]);
-          } // injars
-        // TODO: -inpath PATH
+          } // sourceroots
         // TODO: -argfile File
         // TODO: -outjar output.jar
         else if (args[i].equals("-classpath") || args[i].equals("-cp"))
