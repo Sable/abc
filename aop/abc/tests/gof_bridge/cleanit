@@ -1,0 +1,2 @@
+#!/bin/csh
+/bin/rm  examples/bridge/aspectj/*.class 
