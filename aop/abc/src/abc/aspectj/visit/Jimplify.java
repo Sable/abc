@@ -16,8 +16,6 @@ import abc.main.AbcTimer;
 public class Jimplify extends OncePass {
     private Map class_to_ast;
 
-    private InitialResolver res = SootResolver.v().getInitSourceResolver();
-
     public Jimplify(Pass.ID id, Map class_to_ast) {
 	super(id);
 	this.class_to_ast = class_to_ast;
@@ -58,15 +56,16 @@ public class Jimplify extends OncePass {
         AbcClassSource( String className ) {
             super(className);
         }
-        public void resolve( SootClass sc ) {
+        public List resolve( SootClass sc ) {
+            List ret;
 	    try {
 		if (abc.main.Debug.v().classResolving)
 		    System.err.println("resolving [from abc AST]: " + className );
 
 		String javaClassName = SourceLocator.v().getSourceForClass(className);
 		Node n = (Node) class_to_ast.get(javaClassName);
-		res.setAst(n);
-		res.resolveFromJavaFile(sc);
+		InitialResolver.v().setAst(n);
+		ret = InitialResolver.v().resolveFromJavaFile(sc);
 		sc.setApplicationClass();
 	    } catch(InternalCompilerError e) {
 		throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
@@ -75,6 +74,7 @@ public class Jimplify extends OncePass {
 	    } catch(Throwable e) {
 		throw new InternalCompilerError("exception while resolving "+sc.getName(),e);
 	    }
+            return ret;
         }
     }
 }
