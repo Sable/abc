@@ -107,8 +107,8 @@ public class CflowAnalysisBridge {
                     if( cfr.setup() != stack ) continue;
                     debug("found a residue");
                     if( abc.main.Debug.v().checkCflowOpt ) {
-                        rb.setResidue(new OptimizationCheckResidue(
-                                    rb.getResidue(), false));
+                        rb.setResidue(AndResidue.construct(rb.getResidue(),
+                                    new AssertResidue("never: "+rb.getResidue().toString())));
                     } else {
                         rb.setResidue(NeverMatch.v());
                     }
@@ -124,16 +124,19 @@ public class CflowAnalysisBridge {
                     if( cfr.setup() != stack ) continue;
                     debug("found a residue");
                     if( abc.main.Debug.v().checkCflowOpt ) {
-                        rb.setResidue(new OptimizationCheckResidue(
-                                    rb.getResidue(), true));
+                        rb.setResidue(OrResidue.construct(rb.getResidue(),
+                                    new AssertResidue("always: "+rb.getResidue().toString())));
                     } else {
                         rb.setResidue(AlwaysMatch.v());
                     }
                 }
             }
-            for( Iterator shIt = bddcfs.unnecessaryShadows(); shIt.hasNext(); ) {
-                final Shadow sh = (Shadow) shIt.next();
-                sh.aa().setResidue(NeverMatch.v());
+            if( !abc.main.Debug.v().dontRemovePushPop 
+            &&  !abc.main.Debug.v().checkCflowOpt ) {
+                for( Iterator shIt = bddcfs.unnecessaryShadows(); shIt.hasNext(); ) {
+                    final Shadow sh = (Shadow) shIt.next();
+                    sh.aa().setResidue(NeverMatch.v());
+                }
             }
         }
 
@@ -178,6 +181,7 @@ public class CflowAnalysisBridge {
     }
     private void processCflowSetup( final AdviceApplication aa ) {
         final CflowSetup cfs = (CflowSetup) aa.advice;
+        if( !cfs.getFormals().isEmpty() ) return;
         StackInfo si = stackInfo(cfs);
         final boolean unconditional = (aa.getResidue() instanceof AlwaysMatch);
         Shadow sh = new Shadow() {

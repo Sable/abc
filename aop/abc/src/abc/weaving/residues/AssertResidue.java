@@ -25,61 +25,51 @@ import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
-import abc.soot.util.Restructure;
 import java.util.*;
 
-/** A dynamic residue that checks that the output of some other residue is
- * either always true or always false. The intended use is to insert this
- * residue as a result of an optimization which determines that another
- * residue will always succeed or fail, to check the correctness of the
- * analysis.
+/** A dynamic residue that throws an exception when tested. The intended use
+ * is as an assertion failure. To check that a residue r is always true,
+ * generate r or assert. To check that r is always false, generate r and assert.
  *  @author Ondrej Lhotak
  */
-public class OptimizationCheckResidue extends Residue {
-    private ResidueBox childBox = new ResidueBox();
-    private boolean alwaysTrue;
-
-    /**
-     * @param child The residue whose result will be checked
-     * @param alwaysTrue If true, the child should always return true. If
-     * false, the child should always return false.
-     **/
-    public OptimizationCheckResidue(Residue child, boolean alwaysTrue) {
-        childBox.setResidue(child);
-        this.alwaysTrue = alwaysTrue;
+public class AssertResidue extends Residue {
+    private String message;
+    public AssertResidue() {
     }
 
-    private Residue child() {
-        return childBox.getResidue();
-    }
-
-    public Residue resetForReweaving() {
-        childBox.setResidue(child().resetForReweaving());
-        return this;
+    public AssertResidue(String message) {
+        this.message = message;
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
                         Chain units,Stmt begin,Stmt fail,boolean sense,
                         WeavingContext wc) {
 
-        Stmt nopStmt = Jimple.v().newNopStmt();
-        units.insertAfter(nopStmt, begin);
-        begin = child().codeGen(method, localgen, units, begin, nopStmt, !alwaysTrue, wc);
         Local excLocal = localgen.generateLocal(RefType.v("java.lang.RuntimeException"), "checkLocal");
         Stmt newStmt = Jimple.v().newAssignStmt(excLocal,
                 Jimple.v().newNewExpr(RefType.v("java.lang.RuntimeException")));
         units.insertAfter(newStmt, begin);
-        Stmt throwStmt = Jimple.v().newThrowStmt(excLocal);
-        units.insertAfter(throwStmt, newStmt);
-        if(sense != alwaysTrue) {
-            Stmt gotoStmt = Jimple.v().newGotoStmt(fail);
-            units.insertAfter(gotoStmt, nopStmt);
-            return gotoStmt;
+        ArrayList args = new ArrayList();
+        ArrayList types = new ArrayList();
+        if(message != null) {
+            args.add(StringConstant.v(message));
+            types.add(RefType.v("java.lang.String"));
         }
-        return nopStmt;
+        Stmt initStmt = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(
+                    excLocal, Scene.v().makeMethodRef(
+                        RefType.v("java.lang.RuntimeException").getSootClass(),
+                        "<init>",
+                        types,
+                        VoidType.v(),
+                        false ),
+                    args));
+        units.insertAfter(initStmt, newStmt);
+        Stmt throwStmt = Jimple.v().newThrowStmt(excLocal);
+        units.insertAfter(throwStmt, initStmt);
+        return throwStmt;
     }
 
     public String toString() {
-        return "check"+alwaysTrue+"("+child()+")";
+        return "assert";
     }
 }
