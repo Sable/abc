@@ -163,8 +163,6 @@ public class CflowResidue extends Residue {
         	last = to.set(localgen, units, last, wc, res);
         }
 
-		*/
-
         }
 
         debug("done with cflow codegen");
