@@ -106,10 +106,6 @@
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
     </ajc-test>
-<ajc-test title="within and withincode (doesn't all work due to local class name issues)" num="439" keywords="from-resolved_10x" dir="new">
-        <compile files="WithinInners.java"></compile>
-        <run class="WithinInners"></run>
-    </ajc-test>
 <ajc-test title="around advice on calls within inner classes (including protected method calls) 2" num="441" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4" files="AroundInnerCalls.java"></compile>
         <run class="AroundInnerCalls"></run>
@@ -150,10 +146,6 @@
 <ajc-test title="target type matching with messy interface hierarchies" num="499" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4,-Xlint:ignore" files="CallTypesI.java"></compile>
         <run vm="1.4" class="CallTypesI"></run>
-    </ajc-test>
-<ajc-test title="anonymous inner class with aspect" pr="297" num="503" keywords="from-resolved_10x" dir="new/anonInnerClass">
-        <compile files="Driver.java"></compile>
-        <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="interfaces as mixins with introduction" num="505" keywords="from-resolved_10x" dir="design/intro" abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04">
         <compile files="Interfaces.java"></compile>
