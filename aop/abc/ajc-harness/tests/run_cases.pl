@@ -9,7 +9,7 @@ if ($argc<1) {
   print 
 "Usage: run_cases.pl [-list [-xml]] [-timeajc [-cutoff SECONDS]] XMLFILE [DIR-FILTER [TITLE-FILTER]] 
 Runs the cases listed in XMLFILE individually. 
-Outputs passed.xml and failed.xml.
+Outputs passed.xml, skipped.xml and failed.xml.
 " ;
 exit(0);
 }
@@ -65,7 +65,7 @@ $arg++;
 
 my $failed=0;
 my $succeeded=0; #sanity
-
+my $skipped=0;
 
 my $xmlprefix="<!DOCTYPE suite SYSTEM \"../tests/ajcTestSuite.dtd\"> \n <suite> \n ";
 my $xmlsuffix="</suite> \n";
@@ -77,8 +77,10 @@ if ($skiptests) {
 	
 	open(FAILED, "> failed.xml") or die "cannot open failed.xml";
 	open(PASSED, "> passed.xml") or die "cannot open passed.xml";
+	open(SKIPPED, "> skipped.xml") or die "cannot open skipped.xml";
 	print FAILED $xmlprefix;
 	print PASSED $xmlprefix;
+	print SKIPPED $xmlprefix;
 	open(TIMES, "> times.txt") or die "cannot open times.txt";
 }
 
@@ -147,10 +149,16 @@ sub do_case {
      system("cat tmp.output >> failed.output");
      system("cat tmp.xml >> tmp.output");
      system("mv tmp.output $dir/$filename");
-     system("echo '*.output' > $dir/.cvsignore") unless -f "$dir/.cvsignore";
+     system("echo '*.output' > $dir/.cvsignore");
      $failed++;
      print FAILED "$xmlpart\n";
    } elsif ($out =~ m/\nPASS/gs) {
+   	print $out;
+   	if ($out =~ m/\(1 skipped\)/gs) {
+   		print "Skipped.\n";
+		$skipped++;
+		print SKIPPED "$xmlpart\n";
+   	} else {
      print "Passed. ";
      system("rm -f $dir/$filename");
      $succeeded++;
@@ -168,13 +176,14 @@ sub do_case {
 	 #printf TIMES "  abc: " . timestr($t1) . " ajc: " . timestr($t2) . " \n";
        }
      }
+    }
    } else {
      system("echo $title >> cases_with_invalid_output.txt");
      $count--;
      #die "could not find FAIL or PASS\n";
      $countinvalid++;
    }
-   print "Current status: $failed failed, $succeeded passed.\n";
+   print "Current status: $failed failed, $succeeded passed, $skipped skipped.\n";
 }
 
 open(INPUT, "< $inputfile") || die "can't open input file"; 
@@ -192,7 +201,7 @@ $file =~ s/<ajc-test[^>]+dir=\"([^\"]*)\"[^>]+title=\"([^\"]*)\"[^>]*>.*?<\/ajc-
 if ($skiptests) {
 
 } else {
-	print "Tests: $count\nFailed: $failed\nPassed: $succeeded\n";
+	print "Tests: $count\nFailed: $failed\nPassed: $succeeded\nSkipped: $skipped\n";
 	
 	if ($countinvalid > 0 ) {
 	  print "Tests with invalid output: $countinvalid.\n";
@@ -200,12 +209,13 @@ if ($skiptests) {
 	
 	print FAILED $xmlsuffix;
 	print PASSED $xmlsuffix;
-	
-	$succeeded+$failed==$count || die "i can't count!\n";
-
+	print SKIPPED $xmlsuffix;
 	close TIMES;
 	
 	system("cat times.txt | sort > tmptimes.txt; cp tmptimes.txt times.txt");
+	
+	$succeeded+$failed+$skipped==$count || die "i can't count!\n";
+	
 }
 
 # s/<ajc-test[^>]+dir=\"([^\"]*)\"[^>]+title=\"([^\"]*)\"[^>]*>.*?<\/ajc-test>/do_case($1,$2,$&)/sge
