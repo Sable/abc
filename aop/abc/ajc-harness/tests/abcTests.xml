@@ -6314,7 +6314,8 @@
     <ajc-test dir="bugs" pr="906"
       title="privileged access to code outside the control of the compiler">
         <compile files="PrivilegeBeyondScope.java" options="-Xlint:warning">
-		  <message kind="warning" line="23"/>
+		  <ajcmessage kind="warning" line="23"/>
+		  <message kind="error" line="23"/>
         </compile>
     </ajc-test>    
 
