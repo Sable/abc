@@ -240,3 +240,12 @@ Compilation succeeded but was expected to fail.
 FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed.
 
 
+Running test 986: abctests/bugs/Matching int[].clone()
+Commandline: abc -d abctests/bugs abctests/bugs/IntArray.java 
+Compilation produced an unexpected number of errors: 2, should be 0
+Actual errors found: 
+Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error.
+Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error.
+FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
+
+
