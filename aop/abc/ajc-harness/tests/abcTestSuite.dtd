@@ -5,7 +5,7 @@
    <!ELEMENT suite (ajc-test*)>
    <!ATTLIST suite suiteDir CDATA #IMPLIED >
 
-   <!ELEMENT ajc-test (compile, (compile | inc-compile | run | ajcrun | abckeywords )*)>
+   <!ELEMENT ajc-test ((abckeywords)*, compile, (compile | inc-compile | run | ajcrun | abckeywords )*)>
    <!ATTLIST ajc-test title CDATA #REQUIRED >
    <!ATTLIST ajc-test dir CDATA #REQUIRED >
    <!ATTLIST ajc-test pr CDATA #IMPLIED >
@@ -46,7 +46,7 @@
    <!ATTLIST ajcrun errStreamIsError CDATA #IMPLIED >
    <!ATTLIST ajcrun outStreamIsError CDATA #IMPLIED >
 
-   <!ELEMENT abckeywords (ganesh | aske | oege | laurie | sascha | pavel | julian | jennifer | abclimitation | introductions | polyglot | soot)*>
+   <!ELEMENT abckeywords (ganesh | aske | oege | laurie | sascha | pavel | julian | jennifer | nate | abclimitation | introductions | polyglot | soot)*>
    
    <!ELEMENT ganesh EMPTY>
    <!ELEMENT aske EMPTY>
@@ -56,6 +56,7 @@
    <!ELEMENT pavel EMPTY>
    <!ELEMENT julian EMPTY>
    <!ELEMENT jennifer EMPTY>
+   <!ELEMENT nate EMPTY>
    <!ELEMENT abclimitation EMPTY>
    <!ELEMENT introductions EMPTY>
    <!ELEMENT polyglot EMPTY>
