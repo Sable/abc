@@ -386,4 +386,40 @@ source="1.4"
             <arg line="aspectj5_ppg.cup"/>
         </java>
     </target>
+	<target name="aspectj5-parser-exp" depends="settings">
+	        <mkdir dir="generated/abc/aspectj5/parse"/>
+	        <java classname="JFlex.Main"
+	            fork="true"
+	            dir="."
+	            failonerror="true"
+	        >
+	            <classpath>
+	                <pathelement location="${jflex.loc}"/>
+	            </classpath>
+	            <arg line="-d generated/abc/aspectj5/parse src/abc/aspectj5/parse/aspectj5.flex"/>
+	        </java>
+	        <java classname="ppg.PPG"
+	            fork="true"
+	            dir="src/abc/aspectj5/parse"
+	            failonerror="true"
+	            output="generated/abc/aspectj5/parse/aspectj5exp_ppg.cup"
+	        >
+	            <classpath>
+	                <pathelement location="${polyglot.loc}"/>
+	                <pathelement location="${polyglot.cupclasses.loc}"/>
+	            </classpath>
+	            <arg line="aspectj5exp.ppg"/>
+	        </java>
+	        <java classname="java_cup.Main"
+	            fork="true"
+	            dir="generated/abc/aspectj5/parse"
+	            failonerror="true"
+	        >
+	            <classpath>
+	                <pathelement location="${polyglot.loc}"/>
+	                <pathelement location="${polyglot.cupclasses.loc}"/>
+	            </classpath>
+	            <arg line="aspectj5exp_ppg.cup"/>
+	        </java>
+	    </target>
 </project>
