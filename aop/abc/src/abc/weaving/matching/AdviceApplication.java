@@ -49,6 +49,9 @@ public abstract class AdviceApplication {
 	this.setResidue(residue);
     }
 
+    /** Add some information about the advice application to a string
+     *  buffer, starting each line with the given prefix
+     */
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"advice decl:\n");
        	advice.debugInfo(prefix+" ",sb);

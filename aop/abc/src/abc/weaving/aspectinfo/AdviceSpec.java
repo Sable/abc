@@ -12,5 +12,13 @@ public interface AdviceSpec {
     public AbstractAdviceDecl getAdvice();
     public boolean isAfter();
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm);
-    public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl);
+
+    /** Weave a specific advice application into the given method
+     *  using the given local generator. The AdviceSpec is used to
+     *  dispatch to the correct weaving method for the advice type.
+     *  @author Ganesh Sittampalam
+     */
+    public void weave(SootMethod method,
+		      LocalGeneratorEx localgen,
+		      AdviceApplication adviceappl);
 }
