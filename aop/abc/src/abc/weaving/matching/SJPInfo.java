@@ -55,7 +55,7 @@ public class SJPInfo {
 	sb.append('-');
 	sb.append(MethodCategory.getName(method));
 	sb.append('-');
-	sb.append(MethodCategory.getClassName(method));
+	sb.append(MethodCategory.getClass(method).getName());
 	sb.append('-');
 	// FIXME: use MethodCategory to ignore extra parameters
 	Iterator it=method.getParameterTypes().iterator();

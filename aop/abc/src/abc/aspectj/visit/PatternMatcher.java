@@ -136,6 +136,36 @@ public class PatternMatcher {
 	return pattern.matches(this, cl_node);
     }
 
+    public boolean matchesClassWithMethod(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType) {
+	Set seen = new HashSet();
+	LinkedList worklist = new LinkedList();
+	worklist.add(base_sc);
+	while (!worklist.isEmpty()) {
+	    SootClass sc = (SootClass)worklist.removeFirst();
+	    if (!seen.contains(sc)) {
+		//System.err.println(sc+": "+matchesClass(pattern, sc)+" ");
+		//Iterator mi = sc.getMethods().iterator();
+		//while (mi.hasNext()) {
+		//    SootMethod m = (SootMethod)mi.next();
+		//    System.err.println(m);
+		//}
+		if (sc.declaresMethod(name, parameterTypes, returnType) && matchesClass(pattern, sc)) {
+		    return true;
+		}
+		seen.add(sc);
+		if (sc.hasSuperclass()) {
+		    worklist.add(sc.getSuperclass());
+		}
+		Iterator ini = sc.getInterfaces().iterator();
+		while (ini.hasNext()) {
+		    SootClass in = (SootClass)ini.next();
+		    worklist.add(in);
+		}
+	    }
+	}
+	return false;
+    }
+
     public boolean matchesType(TypePatternExpr pattern, String type) {
 	//System.out.println("Matching type pattern "+pattern+" on "+pattern.position()+" to "+type+"...");
 	int dim = 0;
@@ -282,19 +312,20 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesMethod(SootMethod method) {
-	    // Get the real method, where it is declared
-	    // Takes care of 1.3/1.4 differences in call signatures
-	    method = method.getDeclaringClass().getMethod(method.getSubSignature());
-
 	    String name = MethodCategory.getName(method);
-	    SootClass realcl = Scene.v().getSootClass(MethodCategory.getClassName(method));//FIXME
+	    SootClass realcl = MethodCategory.getClass(method);
+	    LinkedList/*<soot.Type>*/ ftypes = new LinkedList(method.getParameterTypes());
+	    int skip_first = MethodCategory.getSkipFirst(method);
+	    int skip_last = MethodCategory.getSkipLast(method);
+	    while (skip_first-- > 0) ftypes.removeFirst();
+	    while (skip_last-- > 0) ftypes.removeLast();
 	    boolean matches =
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
-		matchesClass(pattern.getName().base(), realcl) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
 		matchesFormals(pattern.getFormals(), method) &&
-		matchesThrows(pattern.getThrowspats(), method.getExceptions());
+		matchesThrows(pattern.getThrowspats(), method.getExceptions()) &&
+		matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, method.getReturnType());
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching method pattern "+pattern+" against "+method+": "+matches);
 	    }
@@ -335,9 +366,9 @@ public class PatternMatcher {
 		return false;
 	    }
 	    String name = MethodCategory.getName(sm);
-	    String classname = MethodCategory.getClassName(sm);
+	    SootClass realcl = MethodCategory.getClass(sm);
 	    //FIXME: This will not work for inner classes
-	    SootField sf = Scene.v().getSootClass(classname).getField(name);
+	    SootField sf = realcl.getField(name);
 	    return matchesField(sf);
 	}
 

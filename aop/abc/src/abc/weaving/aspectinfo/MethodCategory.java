@@ -251,21 +251,21 @@ public class MethodCategory {
 	}
     }
 
-    public static String getClassName(SootMethod m) {
+    public static SootClass getClass(SootMethod m) {
 	AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.MethodSig(m));
 	if (real_class == null) {
-	    return m.getDeclaringClass().getName();
+	    return m.getDeclaringClass();
 	} else {
-	    return real_class.getJvmName();
+	    return real_class.getSootClass();
 	}
     }
 
-    public static String getClassName(MethodSig m) {
+    public static SootClass getClass(MethodSig m) {
 	AbcClass real_class = GlobalAspectInfo.v().getRealClass(m);
 	if (real_class == null) {
-	    return m.getDeclaringClass().getJvmName();
+	    return m.getDeclaringClass().getSootClass();
 	} else {
-	    return real_class.getJvmName();
+	    return real_class.getSootClass();
 	}
     }
 
