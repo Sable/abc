@@ -355,6 +355,7 @@ public class AroundWeaver {
 					break;
 	
 				Unit copy = (Unit) original.clone();
+				copy.addAllTagsOf(original);
 	
 				// Add cloned unit to our unitChain.
 				unitChain.insertAfter(copy, insertAfter);
