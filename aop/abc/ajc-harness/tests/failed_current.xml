@@ -1306,10 +1306,15 @@
     </ajc-test>
 <ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" dir="bugs/IfPerThis">
         <compile files="Testcase1.java">
-        	<message text="if() pointcut designator cannot be used directly in a per clause" line="15" kind="error"></message>
-        	<message text="if() pointcut designator cannot be used directly in a per clause" line="23" kind="error"></message>
-        	<message text="if() pointcut designator cannot be used directly in a per clause" line="25" kind="error"></message>
-        	<message text="if() pointcut designator cannot be used directly in a per clause" line="27" kind="error"></message>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="15" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="23" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="25" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="27" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" pr="62458" dir="bugs/IfPerThis">
+        <compile files="Testcase3.java">
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="2" kind="error"></ajcmessage>
         </compile>
     </ajc-test>
  
