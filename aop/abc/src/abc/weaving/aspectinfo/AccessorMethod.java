@@ -32,7 +32,7 @@ public abstract class AccessorMethod {
         // As there is no way to generate a compiler error/warning from here, add it to a
         // list of errors. The closest instance of AspectDecl on the stack will generate 
         // the messages.
-        if(!GlobalAspectInfo.v().getWeavableClasses().contains(target)) {
+        if(!GlobalAspectInfo.v().getWeavableClasses().contains(AbcFactory.AbcClass(target))) {
             GlobalAspectInfo.v().addClassNotWeavableError(new ErrorInfo(ErrorInfo.WARNING, 
                     "Need to weave into class " + target + ", but it is not weavable. " +
                     "Execution of compiled code will probably fail.", position));
