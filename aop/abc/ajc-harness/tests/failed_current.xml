@@ -5,7 +5,7 @@
         <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
         <run class="ConstructorNotFound_PR408"></run>
     </ajc-test>
-<ajc-test title="Default constructors have same access as their enclosing type" num="129" keywords="from-java" dir="pureJava/innerDefaultConstructors" abccomment="jlc doesn't report expected error.                   Reported to Nate on July 1/04.  LJH">
+<ajc-test title="Default constructors have same access as their enclosing type" num="129" keywords="from-java" dir="pureJava/innerDefaultConstructors" abccomment="jlc doesn't report expected error.                   Reported to Nate on July 1/04.  LJH                   Still a problem with Polyglot 1.3. Entered onto                   bugzilla. 17/08/04 ODM">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="pkg1/Main.java,pkg2/Foo.java">
             <message line="6" kind="error"></message>
@@ -43,34 +43,6 @@
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
     </ajc-test>
-<ajc-test title="good error for bad field and inner class references" num="265" keywords="from-errors,purejava" dir="errors" abccomment="not pure java July 5/04 LJH                   polyglot does not find this error, sent to Nate,                        July 5/04 LJH">
-      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
-        <compile files="BadReferences.java">
-            <message line="3" kind="error"></message>
-            <message line="5" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="class and interface extension" num="285" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="jlc not catching missing return statements">
-        <compile options="!eclipse" files="BadExtension.java">
-            <message line="7" kind="error"></message>
-            <message line="9" kind="error"></message>
-            <message line="16" kind="error"></message>
-            <message line="17" kind="error"></message>
-            <message line="18" kind="error"></message>
-            <message line="19" kind="error"></message>
-            <message line="21" kind="error"></message>
-            <message line="35" kind="error"></message>
-            <message line="38" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="parse-time illegal modifiers" num="307" keywords="from-errors,purejava" dir="errors" abccomment="Third error not found by jlc, file Modifiers1LJH.java                   sent to Nate.  July 6/04 LJH">
-      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
-        <compile files="Modifiers1.java">
-            <message line="2" kind="error"></message>
-            <message line="3" kind="error"></message>
-            <message line="6" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="non-static advice on inner class defined inside of method body" num="358" keywords="from-resolved_10x" dir="new" abccomment="fails on use of thisJoinPoint when advice applies inside inner class;                  generates verify error. error goes away when use of thisJoinPoint is                  commented out. Emailed Ganesh. ODM 09/07/04">
         <compile files="MethodInner.java"></compile>
         <run class="MethodInner"></run>
@@ -87,17 +59,9 @@
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
     </ajc-test>
-<ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOrdering.java"></compile>
-        <run class="AdviceOrdering"></run>
-    </ajc-test>
 <ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
         <compile files="ObjectForInt.java"></compile>
         <run class="ObjectForInt"></run>
-    </ajc-test>
-<ajc-test title="Reception based on strictfp modifier" num="478" keywords="from-resolved_10x" dir="new">
-        <compile files="StrictFpReceptions.java"></compile>
-        <run class="StrictFpReceptions"></run>
     </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
@@ -111,10 +75,6 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="after returning advice order" pr="694" num="572" keywords="from-resolved_10x" dir="new">
-        <compile files="Cricket.java"></compile>
-        <run class="Cricket"></run>
-    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
@@ -125,10 +85,6 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
-	    <compile files="java/lang/Object.java,java/lang/String.java">
-	    </compile>
-	</ajc-test>
 <ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
@@ -160,132 +116,18 @@
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
         <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
-<ajc-test title="after returning advice on interface and implementation constructor" pr="827" num="718" keywords="tofix" dir="new" abccomment="use of before keyword inside an aspect; skip this                   when the test harness no longer reports errors where the                   command-line invocation doesn't (are we resetting the lexer                   state?)">
-        <compile files="AfterReturningConstructor.java"></compile>
-        <run class="AfterReturningConstructor"></run>
-    </ajc-test>
-<ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="we should accept implements instead of extends">
-        <compile files="DeclareClassImplementsClass.java">
-        </compile>
-    </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="declare soft and throw statements" pr="34925" num="772" dir="bugs">
+<ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 77201, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
 <ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
-    </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround" abccomment="we only report the warning in one location">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-                <ajcmessage line="102" kind="warning"></ajcmessage>
-        	<ajcmessage line="124" kind="warning"></ajcmessage>
-        	<ajcmessage line="138" kind="warning"></ajcmessage>
-            <message line="102" kind="warning"></message>
-        	<message line="124" kind="warning"></message>
-        </compile>
-        <run class="cap.OptionList"></run>
-    </ajc-test>
-<ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
-        <compile files="TryFinallyInAround.java"></compile>
-        <run class="TryFinallyInAround"></run>
-    </ajc-test>
-<ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors">
-        <compile files="Joinpoints101.jar,DecErrors.aj">
-         
-          <message line="10" kind="error"></message><message line="11" kind="error"></message>
-          <message line="12" kind="error"></message><message line="13" kind="error"></message>
-          <message line="14" kind="error"></message>
-
-          <message line="16" kind="error"></message><message line="17" kind="error"></message>
-          <message line="18" kind="error"></message><message line="19" kind="error"></message>
-          <message line="20" kind="error"></message>
- 
-          <message line="22" kind="error"></message><message line="23" kind="error"></message>
-          <message line="24" kind="error"></message><message line="25" kind="error"></message>
-          <message line="26" kind="error"></message>
- 
-          <message line="28" kind="error"></message><message line="29" kind="error"></message>
-          <message line="30" kind="error"></message><message line="31" kind="error"></message>
-          <message line="32" kind="error"></message>
-  
-          <message line="34" kind="error"></message><message line="35" kind="error"></message>
-          <message line="36" kind="error"></message><message line="37" kind="error"></message>
-          <message line="38" kind="error"></message>
- 
-          <message line="40" kind="error"></message><message line="41" kind="error"></message>
-          <message line="42" kind="error"></message><message line="43" kind="error"></message>
-          <message line="44" kind="error"></message>
-          
-          <message line="46" kind="error"></message><message line="47" kind="error"></message>
-          <message line="48" kind="error"></message><message line="49" kind="error"></message>
-          <message line="50" kind="error"></message>
- 
-          <message line="52" kind="error"></message><message line="53" kind="error"></message>
-          <message line="54" kind="error"></message><message line="55" kind="error"></message>
-          <message line="56" kind="error"></message>
-  
-          <message line="58" kind="error"></message><message line="59" kind="error"></message>
-          <message line="60" kind="error"></message><message line="61" kind="error"></message>
-          <message line="62" kind="error"></message>
- 
-          <message line="64" kind="error"></message><message line="65" kind="error"></message>
-          <message line="66" kind="error"></message><message line="67" kind="error"></message>
-          <message line="68" kind="error"></message>
-          
-          <message line="70" kind="error"></message><message line="71" kind="error"></message>
-          <message line="72" kind="error"></message><message line="73" kind="error"></message>
-          <message line="74" kind="error"></message>
- 
-          <message line="76" kind="error"></message><message line="77" kind="error"></message>
-          <message line="78" kind="error"></message><message line="79" kind="error"></message>
-          <message line="80" kind="error"></message>
-  
-          <message line="82" kind="error"></message><message line="83" kind="error"></message>
-          <message line="84" kind="error"></message><message line="85" kind="error"></message>
-          <message line="86" kind="error"></message>
- 
-          <message line="88" kind="error"></message><message line="89" kind="error"></message>
-          <message line="90" kind="error"></message><message line="91" kind="error"></message>
-          <message line="92" kind="error"></message>
-          
-          <message line="94" kind="error"></message><message line="95" kind="error"></message>
-          <message line="96" kind="error"></message><message line="97" kind="error"></message>
-          <message line="98" kind="error"></message>
- 
-          <message line="100" kind="error"></message><message line="101" kind="error"></message>
-          <message line="102" kind="error"></message><message line="103" kind="error"></message>
-          <message line="104" kind="error"></message>
-  
-          <message line="106" kind="error"></message><message line="107" kind="error"></message>
-          <message line="108" kind="error"></message><message line="109" kind="error"></message>
-          <message line="110" kind="error"></message>
- 
-          <message line="112" kind="error"></message><message line="113" kind="error"></message>
-          <message line="114" kind="error"></message><message line="115" kind="error"></message>
-          <message line="116" kind="error"></message>
-          
-          <message line="118" kind="error"></message><message line="119" kind="error"></message>
-          <message line="120" kind="error"></message><message line="121" kind="error"></message>
-          <message line="122" kind="error"></message>
-  
-          <message line="124" kind="error"></message><message line="125" kind="error"></message>
-          <message line="126" kind="error"></message><message line="127" kind="error"></message>
-          <message line="128" kind="error"></message>
- 
-          <message line="130" kind="error"></message>
-          
-        </compile>
-    </ajc-test>
-<ajc-test title="error message for constructor-execution pcd" pr="60936" num="970" dir="bugs">
-        <compile files="InterfaceConstructor.java">
-          <message text="no interface constructor-execution join point" line="10" kind="warning"></message>
-        </compile>
     </ajc-test>
  
 </suite>

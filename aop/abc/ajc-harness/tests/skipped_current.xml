@@ -153,6 +153,11 @@
         <compile files="Main.java,injar.jar,Aspect.java" aspectpath="aspectlib1.jar,aspectlib2.jar"></compile>
         
     </ajc-test>
+<ajc-test title="after returning advice on interface and implementation constructor" pr="827" num="71801" keywords="tofix" dir="new" abccomment="abc doesn't support 'before' as an identifier inside an aspect.                 Cloned test case with different identifier name. PA">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="AfterReturningConstructor.java"></compile>
+        <run class="AfterReturningConstructor"></run>
+    </ajc-test>
 <ajc-test title="Verify error on non-Throwable in declare soft" pr="28921" num="732" dir="bugs">
     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
         <compile options="-Xlint:warning" files="DeclareSoftCf.java">
@@ -207,6 +212,22 @@
         <abckeywords><skip></skip></abckeywords>
         <compile files="AspectInitError.java"></compile>
         <run class="AspectInitError"></run>
+    </ajc-test>
+<ajc-test title="declare soft and throw statements" pr="34925" num="772" dir="bugs" abccomment="bug in test itself.                   brackets around type in declare soft. Java does not                   allow bracketing of types (because of confusion with                   casts), and abc sticks to that. Cloned to 77201.                   ODM 17/08/04">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="ConvertToUnchecked.java"></compile>
+        <run class="ConvertToUnchecked"></run>
+    </ajc-test>
+<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="78401" dir="bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
+      <abckeywords><skip></skip></abckeywords>
+        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
+                <ajcmessage line="102" kind="warning"></ajcmessage>
+        	<ajcmessage line="124" kind="warning"></ajcmessage>
+        	<ajcmessage line="138" kind="warning"></ajcmessage>
+                <message line="102" kind="warning"></message>
+        	<message line="124" kind="warning"></message>
+        </compile>
+        <run class="cap.OptionList"></run>
     </ajc-test>
 <ajc-test title="expect class added in initial incremental tests" num="798" keywords="incremental-test" dir="incremental/initialTests/classAdded">
         <compile staging="true" sourceroots="." options="-incremental"></compile>
