@@ -120,6 +120,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			Flags newFlags = flags();
 			if (pht.flags().isInterface()) {
 				newFlags = newFlags.Abstract();
+				if (origflags.isAbstract()) {
+					newFlags = newFlags.Public();
+					origflags = origflags.Public();
+				}
 			}
 			MethodInstance mi = ts.interTypeMethodInstance(position(), identifier,
 		                                	               	(ClassType) methodInstance().container(),
