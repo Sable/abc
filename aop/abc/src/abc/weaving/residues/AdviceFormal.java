@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL; 
- * if not, write to the Free Software Foundation, Inc., 
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -30,10 +30,10 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 
-/** A weaving variable that represents a formal 
+/** A weaving variable that represents a formal
  *  parameter to be passed to an advice body
  *  @author Ganesh Sittampalam
- */ 
+ */
 
 public class AdviceFormal extends WeavingVar {
     public int pos;
@@ -41,39 +41,39 @@ public class AdviceFormal extends WeavingVar {
     private Local loc=null;
 
     public AdviceFormal(int pos,Type type) {
-	this.pos=pos;
-	this.type=type;
+        this.pos=pos;
+        this.type=type;
     }
 
     public String toString() {
-	return "advicearg("+pos+":"+type+")";
+        return "advicearg("+pos+":"+type+")";
     }
 
     public Stmt set(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val) {
-	if(abc.main.Debug.v().showAdviceFormalSets)
-	    System.out.println("Setting argument "+pos+" to "+val+" in "+wc);
-	if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
-	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
-	units.insertAfter(assignStmt,begin);
-	((AdviceWeavingContext) wc).arglist.setElementAt(loc,pos);
-	return assignStmt;
+        if(abc.main.Debug.v().showAdviceFormalSets)
+            System.out.println("Setting argument "+pos+" to "+val+" in "+wc);
+        if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
+        Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
+        units.insertAfter(assignStmt,begin);
+        ((AdviceWeavingContext) wc).arglist.setElementAt(loc,pos);
+        return assignStmt;
     }
 
     public Local get() {
-	if(loc==null) 
-	    throw new InternalCompilerError
-		("Someone tried to read from a variable bound "
-		 +"to an advice formal before it was written: "+this);
+        if(loc==null)
+            throw new InternalCompilerError
+                ("Someone tried to read from a variable bound "
+                 +"to an advice formal before it was written: "+this);
 
-	return loc;
+        return loc;
     }
 
     public boolean hasType() {
-	return true;
+        return true;
     }
 
     public Type getType() {
-	return type;
+        return type;
     }
 
 }
