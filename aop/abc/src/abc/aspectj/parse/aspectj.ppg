@@ -1337,6 +1337,10 @@ formal_pattern ::=
          {: Grm.parserTrace("DOT DOT formal pattern");
             RESULT = parser.nf.DotDotFormalPattern(parser.pos(a));
          :}
+    |  DOT DOT:a
+         {: Grm.parserTrace("DOT DOT formal pattern - separate dots");
+            RESULT = parser.nf.DotDotFormalPattern(parser.pos(a));
+         :}
     |  type_pattern_expr:a 
          {: Grm.parserTrace("A type pattern formal pattern");
             RESULT = parser.nf.TypeFormalPattern(parser.pos(a),a);
