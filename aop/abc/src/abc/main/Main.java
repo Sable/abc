@@ -2,6 +2,8 @@
 package abc.main;
 
 import soot.*;
+import soot.util.*;
+import soot.xml.*;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
@@ -11,6 +13,7 @@ import abc.weaving.weaver.*;
 import abc.weaving.aspectinfo.*;
 
 import java.util.*;
+import java.io.*;
 
 public class Main {
     public Collection/*<String>*/ aspect_sources = new ArrayList();
@@ -146,55 +149,89 @@ public class Main {
         Iterator/*<String>*/ wci = weavable_classes.iterator();
         while (wci.hasNext()) {
             String wc = (String) wci.next();
-            System.out.println(wc);
+            System.out.println("Printing out " + wc);
             SootClass sc = Scene.v().getSootClass(wc);
 	    Iterator mi = sc.getMethods().iterator();
 	    while (mi.hasNext()) {
-		SootMethod m = (SootMethod)mi.next();
-		m.retrieveActiveBody();
-	    }
-            Printer.v().write(sc, classes_destdir);
+	        SootMethod m = (SootMethod)mi.next();
+	        m.retrieveActiveBody();
+	       }
+	    if (soot.options.Options.v().output_format() == 
+		soot.options.Options.output_format_class)
+                  Printer.v().write(sc, classes_destdir);
+	    else
+	      writeClass(sc);
         }
     }
 
-    // Dummy code to be removed when matcher builds real GAI info
-    // Redundant now, I hope!
-    /* 
-    public static void generateDummyGAI() {
-        for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
-            final SootClass cl = (SootClass) clIt.next();
-            G.v().out.println( "generating dummy gai: "+cl.toString() );
-            if( isAspect(cl) ) {
-                System.out.println( "it's an aspect");
-		final Aspect aspect=new Aspect(new AbcClass(cl.getName()),null,null);
-		GlobalAspectInfo.v().addAspect(aspect);
-		GlobalAspectInfo.v().addAdviceDecl(
-                        new AdviceDecl(
-                            new BeforeAdvice(null),
-                            new ShadowPointcut(new SetField(null),null),
-                            new MethodSig(
-				0,
-                                aspect.getInstanceClass(),
-                                new AbcType( aspect.getInstanceClass().getSootClass().getType() ),
-                                "before$1",
-                                new ArrayList(),
-                                new ArrayList(),
-                                null),
-                            aspect,
-			    -1,-1,-1,
-                            null));
-            } else {
-                System.out.println( "it's not an aspect");
-		GlobalAspectInfo.v().addClass(new AbcClass(cl.getName()));
+
+    private void writeClass(SootClass c) {
+        final int format = soot.options.Options.v().output_format();
+        if( format == soot.options.Options.output_format_none ) return;
+        if( format == soot.options.Options.output_format_dava ) return;
+
+        FileOutputStream streamOut = null;
+        PrintWriter writerOut = null;
+        boolean noOutputFile = false;
+
+        String fileName = SourceLocator.v().getFileNameFor(c, format);
+
+        if (format != soot.options.Options.output_format_class) {
+            try {
+                streamOut = new FileOutputStream(fileName);
+                writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
+                G.v().out.println( "Writing to "+fileName );
+            } catch (IOException e) {
+                G.v().out.println("Cannot output file " + fileName);
             }
-        }   
-    }
-    */
-    private static boolean isAspect( SootClass cl ) {
-	if( cl.getName().equals( "Aspect" ) ) return true;
-	return false;
-    }
+        }
 
+        if (soot.options.Options.v().xml_attributes()) {
+            Printer.v().setOption(Printer.ADD_JIMPLE_LN);
+        }
+        switch (format) {
+            case soot.options.Options.output_format_jasmin :
+                if (c.containsBafBody())
+                    new soot.baf.JasminClass(c).print(writerOut);
+                else
+                    new soot.jimple.JasminClass(c).print(writerOut);
+                break;
+            case soot.options.Options.output_format_jimp :
+            case soot.options.Options.output_format_shimp :
+            case soot.options.Options.output_format_b :
+            case soot.options.Options.output_format_grimp :
+                Printer.v().setOption(Printer.USE_ABBREVIATIONS);
+                Printer.v().printTo(c, writerOut);
+                break;
+            case soot.options.Options.output_format_baf :
+            case soot.options.Options.output_format_jimple :
+            case soot.options.Options.output_format_shimple :
+            case soot.options.Options.output_format_grimple :
+                writerOut =
+                    new PrintWriter(
+                        new EscapedWriter(new OutputStreamWriter(streamOut)));
+                Printer.v().printTo(c, writerOut);
+                break;
+            case soot.options.Options.output_format_class :
+                Printer.v().write(c, SourceLocator.v().getOutputDir());
+                break;
+            case soot.options.Options.output_format_xml :
+                writerOut =
+                    new PrintWriter(
+                        new EscapedWriter(new OutputStreamWriter(streamOut)));
+                XMLPrinter.v().printJimpleStyleTo(c, writerOut);
+                break;
+            default :
+                throw new RuntimeException();
+        }
 
-    
+        if (format != soot.options.Options.output_format_class) {
+            try {
+                writerOut.flush();
+                streamOut.close();
+            } catch (IOException e) {
+                G.v().out.println("Cannot close output file " + fileName);
+            }
+        }
+    }
 }
