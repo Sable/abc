@@ -23,40 +23,69 @@ public class Weaver {
       { if (abc.main.Debug.v().weaverDriver) 
 	  System.err.println("WEAVER DRIVER ***** " + message);
       }	
+    private Map unitBindings = new HashMap();
+    private static boolean doCflowOptimization = true;
 	public void weave() {
+            if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
+            if( doCflowOptimization ) {
+                weaveIntertype();
+                weaveGenerateAspectMethods();
+                Unweaver unweaver = new Unweaver();
+                unweaver.save();
+                unitBindings = unweaver.restore();
+
+                // We could do several passes, but for now, just do one.
+                weaveAdvice();
+                CflowAnalysisBridge cfab = new CflowAnalysisBridge();
+                cfab.run();
+                unitBindings = unweaver.restore();
+                weaveAdvice();
+
+            } else {
+                weaveIntertype();
+                weaveGenerateAspectMethods();
+                weaveAdvice();
+            }
+        }
+	public void weaveIntertype() {
 		// Generate intertype methods and fields
 		debug("Generating intertype methods and fields ....");
 		IntertypeGenerator ig = new IntertypeGenerator();
 		//  --- Intertype methods
-		for (Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext();) {
-			final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
+		for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
+		    final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
 			ig.addMethod(imd);
 		}
 		// --- Intertype fields
-		for (Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext();) {
-			final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
+		for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
+		    final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
 			ig.addField(ifd);
 		}
 	
 		AbcTimer.mark("Intertype weave");
 	
+        }
+	public void weaveGenerateAspectMethods() {
 		// Generate methods inside aspects needed for code gen and bodies of
 		//   methods not filled in by front-end (i.e. aspectOf())
 		debug("Generating extra code in aspects");
 		AspectCodeGen ag = new AspectCodeGen();
-		for (Iterator asIt = GlobalAspectInfo.v().getAspects().iterator(); asIt.hasNext();) {
-			final Aspect as = (Aspect) asIt.next();
+		for( Iterator asIt = GlobalAspectInfo.v().getAspects().iterator(); asIt.hasNext(); ) {
+		    final Aspect as = (Aspect) asIt.next();
 			ag.fillInAspect(as);
 		}
 	
 		AbcTimer.mark("Add aspect code");
-	
-		ShadowPointsSetter sg = new ShadowPointsSetter();
+
+        }
+	public void weaveAdvice() {
+		ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
 		PointcutCodeGen pg = new PointcutCodeGen();
 		GenStaticJoinPoints gsjp = new GenStaticJoinPoints();
 	
-		for (Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext();) {
-			final AbcClass cl = (AbcClass) clIt.next();
+		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+	
+		    final AbcClass cl = (AbcClass) clIt.next();
 			final SootClass scl = cl.getSootClass();
 	
 			debug("--------- STARTING WEAVING OF CLASS >>>>> " + scl.getName());
@@ -81,7 +110,7 @@ public class Weaver {
 			sg.setShadowPointsPass2(scl);
 			// then do the weaving
 			pg.weaveInAspectsPass(scl, 2);
-	
+
 			debug("--------- FINISHED WEAVING OF CLASS >>>>> " + scl.getName() + "\n");
 		} // each class
 		

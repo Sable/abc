@@ -30,6 +30,14 @@ import abc.soot.util.*;
 public class ShadowPointsSetter {
 
 
+    private Map unitBindings = null;
+    public ShadowPointsSetter(Map unitBindings) {
+        this.unitBindings = unitBindings;
+    }
+    public ShadowPointsSetter() {
+        this.unitBindings = new HashMap();
+    }
+
     private static void debug(String message)
       { if (abc.main.Debug.v().shadowPointsSetter) 
 	   System.err.println("SPS*** " + message);
@@ -82,14 +90,19 @@ public class ShadowPointsSetter {
 	     
     }
 
+    private Stmt rebind(Stmt s) {
+        Stmt ret = (Stmt) unitBindings.get(s);
+        if( ret != null ) return ret;
+        return s;
+    }
     private void insertStmtSP(SootMethod method,List/*<StmtShadowMatch>*/ smList) {
 
 	// iterate through all shadow matches looking for Stmt ones
-	for (Iterator it=smList.iterator(); it.hasNext();) {
-	    final StmtShadowMatch sm=(StmtShadowMatch) it.next();
+	for( Iterator smIt = smList.iterator(); smIt.hasNext(); ) {
+	    final StmtShadowMatch sm = (StmtShadowMatch) smIt.next();
 	    
 	    debug("Creating a new ShadowPoints .... ");
-	    sm.setShadowPoints(insertNopsAroundStmt(sm,method,sm.getStmt()));
+	    sm.setShadowPoints(insertNopsAroundStmt(sm,method,rebind(sm.getStmt())));
 
 	} // for each statement
     } // insertStmtSP
