@@ -55,7 +55,7 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 		} else mangled = this;  // no mangling
 		// 		create setters and getters if needed
 		if (container.toClass().flags().isInterface()) {
-			Flags accessorFlags = Flags.PUBLIC;
+			Flags accessorFlags = Flags.PUBLIC.set(Flags.ABSTRACT);
 			if (flags.isStatic())
 				accessorFlags = accessorFlags.set(Flags.STATIC);
 			List argTypes = new ArrayList();
@@ -85,6 +85,10 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 	
 	public MethodInstance getSet() {
 		return setInstance;
+	}
+	
+	public Flags origFlags() {
+		return flags();
 	}
 	
 	public Expr getCall(AspectJNodeFactory nf, AspectJTypeSystem ts, Receiver target, ReferenceType container) {

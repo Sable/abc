@@ -28,9 +28,14 @@ public class InterTypeMethodInstance_c
 
 	protected ClassType origin;
 	protected MethodInstance mangled;
+	protected Flags origFlags;
 	
 	public ClassType origin() {
 		return origin;
+	}
+	
+	public Flags origFlags() {
+		return origFlags;
 	}
 
 	
@@ -44,6 +49,7 @@ public class InterTypeMethodInstance_c
 		ClassType origin,
 		ReferenceType container,
 		Flags flags,
+		Flags origFlags,
 		Type returnType,
 		String name,
 		List formalTypes,
@@ -58,6 +64,7 @@ public class InterTypeMethodInstance_c
 			formalTypes,
 			excTypes);
 		this.origin = origin;
+		this.origFlags = origFlags;
 //		prepare for later transformation to mangled form:
 		if (flags.isPrivate() || flags.isPackage()){
 			Flags newFlags = flags.clearPrivate().set(Flags.PUBLIC);
@@ -67,6 +74,7 @@ public class InterTypeMethodInstance_c
 		} else mangled = this;  // no mangling
 	}
 	
+
 	/** fix up the mangled instance to agree with super type */
 	public void setMangle(AspectJTypeSystem ts) {
 		if (container.superType() != null) {

@@ -65,7 +65,7 @@ public class AJCall_c extends Call_c implements Call {
 	  } else // test whether this a call to an instance method of an ITHost 
 	  		if (ts.refHostOfITD(c,null,mi)) {
 	  			TypeNode tn = nf.CanonicalTypeNode(position(),c.hostClass()).type(c.hostClass());
-	  			r = nf.hostSpecial(position(),Special.THIS,tn).type(c.hostClass());
+	  			r = nf.hostSpecial(position(),Special.THIS,tn,c.hostClass()).type(c.hostClass());
 	  		} else {
 			  // The method is non-static, so we must prepend with "this", but we
 			  // need to determine if the "this" should be qualified.  Get the
@@ -85,7 +85,7 @@ public class AJCall_c extends Call_c implements Call {
 
 	  // we call typeCheck on the receiver too.
 	  r = (Receiver)r.typeCheck(tc);
-	  return this.targetImplicit(true).target(r).typeCheck(tc);
+	  return this.target(r).typeCheck(tc);
   }
 
 }

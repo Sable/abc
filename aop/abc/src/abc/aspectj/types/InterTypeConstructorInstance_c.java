@@ -68,6 +68,10 @@ public class InterTypeConstructorInstance_c
 	}
 	
 	
+	public Flags origFlags() {
+		return flags();
+	}
+	
 	public void setMangle(AspectJTypeSystem ts) {
 		// to be filled in!
 	}

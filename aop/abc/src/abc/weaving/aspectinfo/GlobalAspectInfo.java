@@ -28,7 +28,7 @@ public class GlobalAspectInfo {
 
     private List/*<AbcClass>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();
-    private List/*<IntertypeFieldDecl>*/ ifds = new ArrayList();
+    private List/*<IntertypeFieldDecl>*/ ifds = new LinkedList(); // because we want to add at the front
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
     private List/*<SuperDispatch>*/ spds = new ArrayList();
     private List/*<SuperFieldGet>*/ spfgs = new ArrayList();
@@ -246,7 +246,7 @@ public class GlobalAspectInfo {
     }
 
     public void addIntertypeFieldDecl(IntertypeFieldDecl ifd) {
-	ifds.add(ifd);
+	ifds.add(0,ifd); // order is important, because of initialisers
     }
 
     public void addIntertypeMethodDecl(IntertypeMethodDecl imd) {

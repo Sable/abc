@@ -40,7 +40,7 @@ public class AJSpecial_c extends Special_c implements Special {
 		} else {
 			// this is a host special
 			AspectJNodeFactory nf = (AspectJNodeFactory) ar.nodeFactory();
-			HostSpecial_c hs = (HostSpecial_c) nf.hostSpecial(position,kind,qualifier);
+			HostSpecial_c hs = (HostSpecial_c) nf.hostSpecial(position,kind,qualifier,((AJContext)c).hostClass());
 			return hs.type(type()).disambiguate(ar);
 		}
 	}

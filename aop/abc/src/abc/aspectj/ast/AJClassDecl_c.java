@@ -55,6 +55,7 @@ public class AJClassDecl_c extends ClassDecl_c {
 		super(pos, flags, name, superClass, interfaces, body);
 	}
 	
+	
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 			if (ar.kind() == AmbiguityRemover.SIGNATURES) {
 				// make sure that the inStaticContext flag of the class is 
@@ -66,7 +67,7 @@ public class AJClassDecl_c extends ClassDecl_c {
 				return this;
 			}
 			return super.disambiguate(ar);
-	}
+	} 
 
 	public void addSuperDependencies(ClassType ct,Job job) throws SemanticException {        
 			Stack s = new Stack();

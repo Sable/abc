@@ -189,7 +189,7 @@ public class IntertypeAdjuster {
     }
     
 	private void addSuperFieldSetter( SuperFieldSet sfd ) {
-			System.out.println("adding super field set" + sfd.getName() + " to "+sfd.getTarget());
+		//	System.out.println("adding super field set" + sfd.getName() + " to "+sfd.getTarget());
 		// 	the field that we wish to access, in the superclass of sd.target()
 			FieldSig field = sfd.getFieldSig();
     	
@@ -566,6 +566,7 @@ public class IntertypeAdjuster {
                         field.getType().getSootType(),
                         modifiers );
                 childClass.addField(newField);
+                // System.out.println("adding field "+newField+ " with modifiers "  + Modifier.toString(modifiers) + " to class "+childClass);
                 
                 // Add the accessor methods and their implementation to the implementing class
                 getMethod(ifd.getGetter(),newField,childClass);

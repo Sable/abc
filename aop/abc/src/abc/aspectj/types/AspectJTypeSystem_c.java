@@ -1,10 +1,15 @@
 package abc.aspectj.types;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Stack;
+import java.util.Iterator;
+
+import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import polyglot.types.*;
-import polyglot.ast.Typed;
 
+import polyglot.ast.Typed;
 
 import abc.aspectj.ast.AdviceSpec;
 import abc.aspectj.types.AspectJFlags;
@@ -82,7 +87,7 @@ public class AspectJTypeSystem_c
 	}
 	
 	public MethodInstance interTypeMethodInstance(Position pos,ClassType origin,
-													ReferenceType container, Flags flags,
+													ReferenceType container, Flags flags, Flags oflags,
 													Type returnType, String name,
 													List argTypes, List excTypes){
 		assert_(origin);
@@ -90,7 +95,7 @@ public class AspectJTypeSystem_c
 		assert_(returnType);
 		assert_(argTypes);
 		assert_(excTypes);
-		return new InterTypeMethodInstance_c(this, pos, origin, container, flags,
+		return new InterTypeMethodInstance_c(this, pos, origin, container, flags, oflags,
 		  										returnType, name, argTypes, excTypes);
 														
 	}
@@ -177,5 +182,105 @@ public class AspectJTypeSystem_c
 		checkAccessFlags(f);
 		}
 
+
+		/**
+		   * Requires: all type arguments are canonical.
+		   *
+		   * Returns the fieldMatch named 'name' defined on 'type' visible from
+		   * currrClass.  If no such field may be found, returns a fieldmatch
+		   * with an error explaining why. name and currClass may be null, in which case
+		   * they will not restrict the output.
+		   * 
+		   * This needs to be overridden for AspectJ because it is possible for
+		   * the currClass to have multiple fields by the desired name, introduced
+		   * by different aspects, that have different accessibility characteristics. 
+		   **/
+		
+		  public FieldInstance findField(ReferenceType container, String name,
+									 ClassType currClass) throws SemanticException {
+			  	assert_(container);
+			  	if (container == null) {
+				  	throw new InternalCompilerError("Cannot access field \"" + name +
+					  	"\" within a null container type.");
+			  	}
+
+			  	List /*FieldInstance*/ fis = findFields(container, name);
+			 	List acceptable = new ArrayList();
+			 
+			  	for (Iterator fisit = fis.iterator(); fisit.hasNext() ; ) {
+			  		FieldInstance fi= (FieldInstance) fisit.next();
+			  		if (isAccessible(fi,currClass))
+			  			acceptable.add(fi);
+			  	}
+			  
+			  	if (acceptable.size() == 0){
+				  	throw new SemanticException("Cannot access " + name + " in " + container + " from " + currClass + ".");
+			 	 }
+				if (acceptable.size() > 1) {
+					throw new SemanticException("Ambiguous reference to " + name + " - multiple fields in " + container);
+			  	}
+			  	return (FieldInstance) acceptable.get(0);
+		  	}
+
+		  public List /*FieldInstance*/ findFields(ReferenceType container, String name)
+										 throws SemanticException {
+			  assert_(container);
+
+			  	if (container == null) {
+				  throw new InternalCompilerError("Cannot access field \"" + name +
+					  "\" within a null container type.");
+			  	}
+
+				List result = new ArrayList();
+			  	Stack s = new Stack();
+			  	s.push(container);
+
+			  	while (! s.isEmpty()) {
+				  	Type t = (Type) s.pop();
+
+			  		if (! t.isReference()) {
+				  		throw new SemanticException("Cannot access a field in " +
+				  											" non-reference type " + t + ".");
+			  		}
+
+				  	ReferenceType rt = t.toReference();
+
+					result.addAll(fieldsNamed(rt.fields(),name));
+
+					if (result.size() > 0)
+						return result;
+		
+				  	if (rt.isClass()) {
+					  	// Need to check interfaces for static fields.
+					  	ClassType ct = rt.toClass();
+
+					  	for (Iterator i = ct.interfaces().iterator(); i.hasNext(); ) {
+						  	Type it = (Type) i.next();
+						  	s.push(it);
+					  	}
+				  	}
+
+				  	if (rt.superType() != null) {
+					  	s.push(rt.superType());
+				  	}
+		  	}
+
+			if (result.size() == 0)
+		  			throw new NoMemberException(NoMemberException.FIELD, 
+										  "Field \"" + name +
+						  "\" not found in type \"" +
+										  container + "\".");
+			return result;
+	}
+	
+		private List fieldsNamed(List fieldInstances, String name){
+			List result = new ArrayList();
+			for (Iterator fit = fieldInstances.iterator(); fit.hasNext(); ) {
+				FieldInstance fi = (FieldInstance) fit.next();
+				if (fi.name().equals(name)) 
+					result.add(fi);
+			}
+			return result;
+		}
 
 }

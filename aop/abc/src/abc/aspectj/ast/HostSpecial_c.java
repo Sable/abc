@@ -6,6 +6,9 @@
  */
 package abc.aspectj.ast;
 
+import polyglot.util.CodeWriter;
+import polyglot.visit.PrettyPrinter;
+
 import polyglot.ast.Special;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Special.Kind;
@@ -20,6 +23,8 @@ import polyglot.visit.TypeChecker;
 import polyglot.ext.jl.ast.Special_c;
 import polyglot.util.Position;
 
+import polyglot.types.Type;
+
 import abc.aspectj.types.AJContext;
 
 /**
@@ -28,9 +33,11 @@ import abc.aspectj.types.AJContext;
  */
 public class HostSpecial_c extends Special_c implements Special {
 
+	Type host;
 	
-	public HostSpecial_c(Position pos, Kind kind, TypeNode qualifier) {
+	public HostSpecial_c(Position pos, Kind kind, TypeNode qualifier,Type host) {
 		super(pos, kind, qualifier);
+		this.host = host;
 	}
 	
 
@@ -78,4 +85,13 @@ public class HostSpecial_c extends Special_c implements Special {
 		   return this;
 	   }
 
+	/** Write the expression to an output file. */
+	  public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
+	  if (qualifier != null) {
+		  print(qualifier, w, tr);
+		  w.write(".");
+	  }
+
+	  w.write("host"+host+ kind.toString());
+	  }
 }

@@ -94,12 +94,18 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {
+			ParsedClassType pht = (ParsedClassType) ht;
+			
 			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
 			
+			Flags newFlags = flags();
+			if (pht.flags().isInterface())
+				newFlags = newFlags.set(Flags.ABSTRACT);
 			MethodInstance mi = ts.interTypeMethodInstance(position(),
 		                                	               	(ClassType) methodInstance().container(),
 		                                               		(ReferenceType)ht,
-		                                              		methodInstance().flags(),
+		                                               		newFlags,
+		                                              		flags(),
 		                                               		methodInstance().returnType(),
 		                                               		methodInstance().name(),
 		                                               		methodInstance().formalTypes(),
@@ -116,7 +122,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		    //           insert current (and watch the error message later)
 		    //   - if not, insert current
 		    
-		    ParsedClassType pht = (ParsedClassType) ht;
+		 
 		    if (pht.hasMethod(mi)) {
 		    	List mis = pht.methods(mi.name(),mi.formalTypes());
 		    	boolean added = false;
@@ -129,15 +135,16 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		    			}
 		    			else if (methodInstance().container().descendsFrom(itdminst.origin())) {
 		    				// the super ITD is replaced by the current one
-		    				pht.methods().remove(minst);
-		    				if (!added) {pht.methods().add(mi); added=true;} 
-		    			} else if (!added) {pht.methods().add(mi); added=true; } 
+		    				pht.methods().remove(minst); 
+		    				if (!added) {pht.methods().add(mi);  added=true;} 
+		    			 } 
+		    			else if (!added) { pht.methods().add(mi); added=true; } 
 		    		}
+		    		else if (!added) {pht.methods().add(mi); added = true; } 
 		    	}
-		    } else pht.addMethod(mi);
+		    } else {pht.addMethod(mi); } 
 	    	
-	    	// System.out.println("METHODS OF "+ht+"ARE "+ ((ParsedClassType) ht).methods());
-	    	
+    	
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
 	    	
 	    	/* record instance for "this" parameter */

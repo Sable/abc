@@ -469,8 +469,8 @@ public class AspectJNodeFactory_c
 		return n;
 	}
 	     
-	public Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer) {
-		Special n = new HostSpecial_c(pos, kind, outer);
+	public Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer, Type host) {
+		Special n = new HostSpecial_c(pos, kind, outer, host);
 		return n;
 	}
 	

@@ -3,6 +3,8 @@ package abc.aspectj.types;
 
 import polyglot.types.ClassType;
 import polyglot.types.MemberInstance;
+import polyglot.types.Flags;
+
 import abc.aspectj.types.AspectJTypeSystem;
 
 /**
@@ -16,5 +18,7 @@ public interface InterTypeMemberInstance extends MemberInstance {
 	
 	/** set the mangled instance */
 	void setMangle(AspectJTypeSystem ts);
+	
+	Flags origFlags();
 	
 }

@@ -200,8 +200,9 @@ public class AspectMethods extends NodeVisitor {
 		if (n instanceof HostSpecial_c) {
 			HostSpecial_c hs = (HostSpecial_c) n;
 			IntertypeDecl id = (IntertypeDecl) itd.peek();
-			if (hs.kind() == Special.THIS) 
-				if (hs.qualifier() == null || (hs.qualifier() != null && hs.qualifier().type() != id.host().type()))
+			if (hs.kind() == Special.THIS) {
+				if (
+				    hs.qualifier() == null || (hs.qualifier() != null && hs.qualifier().type() == id.host().type()))
 					return id.thisReference(nf,ts);
 			 	else {
 					return id.getSupers().qualThis(nf,ts,
@@ -209,6 +210,7 @@ public class AspectMethods extends NodeVisitor {
 								id.thisReference(nf,ts),
 								hs.qualifier().type().toClass());
 				}
+			}
 			else return n;
 		}
 /* advice: */

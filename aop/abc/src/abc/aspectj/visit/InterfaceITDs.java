@@ -37,12 +37,12 @@ public class InterfaceITDs extends NodeVisitor {
 		 List methods = cd.type().methods();
 		 List fields = cd.type().fields();
 		 List constructors = cd.type().constructors();
-		 for (Iterator inIt = cd.interfaces().iterator(); inIt.hasNext(); ) {
-		 	ClassType interf = ((TypeNode) inIt.next()).type().toClass();
+		 for (Iterator inIt = cd.type().interfaces().iterator(); inIt.hasNext(); ) {
+		 	ClassType interf = ((ClassType) inIt.next());
 			for (Iterator mit = interf.methods().iterator(); mit.hasNext(); ) {
 				 MethodInstance mi = (MethodInstance) mit.next();
 				 if (mi instanceof InterTypeMemberInstance) 
-				 	methods.add(mi.container(cd.type()));
+				 	methods.add(mi.container(cd.type()).flags(((InterTypeMemberInstance)mi).origFlags()));
 			}
 			for (Iterator fit = interf.fields().iterator(); fit.hasNext(); ) {
 				FieldInstance fi = (FieldInstance) fit.next();
@@ -52,12 +52,27 @@ public class InterfaceITDs extends NodeVisitor {
 			for (Iterator cit = interf.constructors().iterator(); cit.hasNext(); ) {
 				ConstructorInstance ci = (ConstructorInstance) cit.next();
 				if (ci instanceof InterTypeMemberInstance)
-					constructors.add(ci);
+					constructors.add(ci.container(cd.type()));
 			}
 		 }
 	 }
 	 return this;
 	}
+	
+/*
+	public Node leave(Node old, Node n, NodeVisitor v) {
+		if (n instanceof ClassDecl) {
+			ClassDecl cd = (ClassDecl) n;
+			System.out.println("class= "+cd.name());
+			System.out.println("methods="+cd.type().toClass().methods());
+			System.out.println("fields="+cd.type().toClass().fields());
+			System.out.println("constructors="+cd.type().toClass().constructors());
+			
+		}
+		return n;
+	}
+	*/
+
 
 
 }

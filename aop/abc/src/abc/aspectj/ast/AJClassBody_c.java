@@ -70,6 +70,9 @@ public class AJClassBody_c extends ClassBody_c {
 		            ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
 		            !(cj instanceof InterTypeMemberInstance) && 
 		            cj.flags().isPrivate())) ||
+		        // ok to have two ITDs that cannot see each other -- refine this to packages etc.
+		          ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate() &&
+		             cj instanceof InterTypeMemberInstance && cj.flags().isPrivate() )) ||
 		       // also ok to have a duplicate in an interface
 		            (ci instanceof InterTypeMemberInstance && 
 		             !(cj instanceof InterTypeMemberInstance) &&

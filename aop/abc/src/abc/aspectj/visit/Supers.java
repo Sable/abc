@@ -150,14 +150,17 @@ public class Supers {
 	 }
 
    public Call superFieldGetter(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
-	   String supername = UniqueID.newID("get$super$"+f.name());
-	   FieldInstance fi = f.fieldInstance();
-	   superFieldGets.add(new SuperFieldGetter(supername,fi,target,f.position()));
+	   	String supername = UniqueID.newID("get$super$"+f.name());
+	   	FieldInstance fi = f.fieldInstance();
+	   	superFieldGets.add(new SuperFieldGetter(supername,fi,target,f.position()));
 	   
 	   // create the call
-	   Call c = nf.Call(f.position(),targetThis,supername);
-	   MethodInstance mi = ts.methodInstance(f.position(),target,Flags.PUBLIC,fi.type(),supername,new LinkedList(),new LinkedList());
-	   c = (Call) c.methodInstance(mi).type(fi.type());
+	   	Call c = nf.Call(f.position(),targetThis,supername);
+		Flags flags = Flags.PUBLIC;
+		if (target.flags().isInterface())
+	   		flags = flags.set(Flags.ABSTRACT);
+	   	MethodInstance mi = ts.methodInstance(f.position(),target,flags,fi.type(),supername,new LinkedList(),new LinkedList());
+	   	c = (Call) c.methodInstance(mi).type(fi.type());
 	   
 	   return c;
    }
@@ -171,7 +174,10 @@ public class Supers {
 		 // create the call
 		 Call c = nf.Call(f.position(),targetThis,supername,value);
 		 List argTypes = new ArrayList(); argTypes.add(fi.type());
-		 MethodInstance mi = ts.methodInstance(f.position(),target,Flags.PUBLIC,fi.type(),supername,argTypes,new LinkedList());
+		 Flags flags = Flags.PUBLIC;
+		 if (target.flags().isInterface())
+		 	flags = flags.set(Flags.ABSTRACT);
+		 MethodInstance mi = ts.methodInstance(f.position(),target,flags,fi.type(),supername,argTypes,new LinkedList());
 		 c = (Call) c.methodInstance(mi).type(fi.type());
 	   
 		 return c;

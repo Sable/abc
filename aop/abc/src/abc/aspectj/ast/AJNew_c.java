@@ -79,12 +79,12 @@ public class AJNew_c extends New_c implements New {
 													name + "\".", position());
 					Expr q;
 					if (outer.equals(ajc.hostClass())) {
-						q = ajnf.hostSpecial(position(),Special.THIS,null);
+						q = ajnf.hostSpecial(position(),Special.THIS,null,ajc.hostClass());
 					}
 					else {
 						q = ajnf.hostSpecial(position(), Special.THIS,
 									nf.CanonicalTypeNode(position(),
-														 outer));
+														 outer),ajc.hostClass());
 					}
 					return qualifier(q);
 				}		
