@@ -333,6 +333,9 @@ public class Restructure {
                     debug("inlinee goto target: "+((GotoStmt)inlineeStmt).getTarget());
                     ((GotoStmt)oldStmtsToNew.get(inlineeStmt)).setTarget((Stmt)oldStmtsToNew.get(((GotoStmt)inlineeStmt).getTarget()));
                 }
+                else if (inlineeStmt instanceof IfStmt){
+                    ((IfStmt)oldStmtsToNew.get(inlineeStmt)).setTarget((Stmt)oldStmtsToNew.get(((IfStmt)inlineeStmt).getTarget()));
+                }
                        
             }
                 
