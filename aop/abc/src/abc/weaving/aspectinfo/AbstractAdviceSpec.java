@@ -8,17 +8,17 @@ import soot.*;
  *  Useful when implementing advice specifications.
  */
 public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {
-    private AdviceDecl advice;
+    private AbstractAdviceDecl advice;
 
     public AbstractAdviceSpec(Position pos) {
 	super(pos);
     }
 
-    void setAdvice(AdviceDecl advice) {
+    void setAdvice(AbstractAdviceDecl advice) {
 	this.advice = advice;
     }
 
-    public AdviceDecl getAdvice() {
+    public AbstractAdviceDecl getAdvice() {
 	return advice;
     }
 

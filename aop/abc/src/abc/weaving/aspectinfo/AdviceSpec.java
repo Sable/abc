@@ -10,7 +10,7 @@ import abc.weaving.residues.Residue;
 
 /** An advice specification. */
 public interface AdviceSpec {
-    public AdviceDecl getAdvice();
+    public AbstractAdviceDecl getAdvice();
 
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm);
 }

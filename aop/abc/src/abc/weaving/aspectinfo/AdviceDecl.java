@@ -8,13 +8,11 @@ import soot.*;
 import java.util.*;
 
 /** An advice declaration. */
-public class AdviceDecl extends Syntax {
-    private AdviceSpec spec;
-    private Pointcut pc;
+public class AdviceDecl extends AbstractAdviceDecl {
+
     private MethodSig impl;
     private Aspect aspect;
     private int jp,jpsp,ejp;
-    private Position pos;
 
     private int nformals; // the number of formals in the advice implementation
     private int applcount=0; // the number of times this AdviceDecl matches
@@ -24,19 +22,12 @@ public class AdviceDecl extends Syntax {
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
 
     public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, int jp, int jpsp, int ejp, Position pos) {
-	super(pos);
-	this.spec = spec;
-	this.pc = pc;
+	super(spec,pc,pos);
 	this.impl = impl;
 	this.aspect = aspect;
 	this.jp = jp;
 	this.jpsp = jpsp;
 	this.ejp = ejp;
-	this.pos = pos;
-
-	if (spec instanceof AbstractAdviceSpec) {
-	    ((AbstractAdviceSpec)spec).setAdvice(this);
-	}
 
 	int i = 0;
 	nformals = impl.getFormals().size();
