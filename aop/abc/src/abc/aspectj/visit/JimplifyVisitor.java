@@ -14,7 +14,10 @@ import abc.main.AbcTimer;
 public class JimplifyVisitor extends NodeVisitor {
     private Collection classes;
     private PCStructure hierarchy;
-    static private InitialResolver res = SootResolver.v().getInitSourceResolver();
+
+
+    static private InitialResolver res = 
+                SootResolver.v().getInitSourceResolver();
     static private Map classToAST = new HashMap();
     static private Node currentAST = null;
 
@@ -24,6 +27,15 @@ public class JimplifyVisitor extends NodeVisitor {
         classProviders.add( new CoffiClassProvider() );
         SourceLocator.v().setClassProviders(classProviders);
     }
+
+    /** to rerun abc */
+    // FIXME: needs to be updated when JimplifyVisitor is redone
+    static public void reset() {
+      InitialResolver res = SootResolver.v().getInitSourceResolver();
+      classToAST = new HashMap();
+      currentAST = null;
+    }
+
 
     public JimplifyVisitor(Collection classes, PCStructure hierarchy) {
 	this.classes = classes;
