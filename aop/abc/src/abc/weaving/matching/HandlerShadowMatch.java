@@ -43,7 +43,7 @@ public class HandlerShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("exception-handler","CatchClauseSignature","makeCatchClauseSig",
-	     SJPInfo.makeHandlerSigData(container,sootexc),stmt);
+	     SJPInfo.makeHandlerSigData(container,sootexc,stmt),stmt);
     }
 
     public AdviceApplication  doAddAdviceApplication

@@ -146,13 +146,29 @@ public class SJPInfo {
 	return sb.toString();
     }
 
-    public static String makeHandlerSigData(SootMethod container,SootClass sootexc) {
+    public static String makeHandlerSigData
+	(SootMethod container,SootClass sootexc,Stmt stmt) {
+
 	StringBuffer sb=new StringBuffer();
 	sb.append("0--");
 	sb.append(container.getDeclaringClass().getName());
 	sb.append('-');
 	sb.append(sootexc.getName());
-	sb.append("-<missing>-");
+	sb.append("-");
+	if(stmt.hasTag("ParamNamesTag")) {
+	    List names=((ParamNamesTag) (stmt.getTag("ParamNamesTag"))).getNames();
+	    Iterator it=names.iterator();
+	    if(!it.hasNext())
+		throw new InternalCompilerError
+		    ("Catch clause identity statement with zero-length "
+		     +"parameter name list");
+	    sb.append((String) (it.next()));
+	    if(it.hasNext())
+		throw new InternalCompilerError
+		    ("Catch clause identity statement with parameter name list "
+		     +"of >1 length");
+	} else sb.append("<missing>");
+	sb.append("-");
 	return sb.toString();
     }
 
