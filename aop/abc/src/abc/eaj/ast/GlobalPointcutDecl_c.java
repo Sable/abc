@@ -39,10 +39,10 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
                                   implements GlobalPointcutDecl
 {
     ClassnamePatternExpr aspect_pattern; // aspects that match this pattern
-    // Pointcut pc;                         // should conjoin this pointcut
-    //                                     // with the pointcut for each piece of
-    //                                     // advice in the matching aspect
-    // String name;
+                                         // should conjoin a reference to
+                                         // this global pointcut with
+                                         // with the pointcut for each piece
+                                         // of advice in a matching aspect
 
     public GlobalPointcutDecl_c(Position pos,
                                 ClassnamePatternExpr aspect_pattern,
