@@ -114,12 +114,6 @@ public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
         return postDelDeclareDecl(e);
     }
 
-    /* override Unary delegation
-     */
-    protected JL delUnaryImpl() {
-        return new UnaryDel_c();
-    }
-    
     public final JL delDeclareParents() {
         JL e = delDeclareParentsImpl();
 
