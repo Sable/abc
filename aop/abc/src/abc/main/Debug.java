@@ -52,6 +52,7 @@ public class Debug {
     
     public boolean weaverDriver=false;  // main driver for weaver
     public boolean unweaver=false;  // saving and restoring jimple bodies
+    public boolean cflowAnalysis=false;  // analysis of cflows
     public boolean aspectCodeGen=false; // inserting stuff into aspect class
     public boolean genStaticJoinPoints=false; // collect and gen SJP
     public boolean shadowPointsSetter=false; // collect shadow points
