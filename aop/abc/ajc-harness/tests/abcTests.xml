@@ -8854,10 +8854,93 @@
     </ajc-test>
 	
 	<ajc-test num="963" dir="bugs/tooManyErrors"
-    	pr="58679"
+    	pr="58679" abccomment="abc stops after 100 errors, ajc after 101. Nothing
+	             interesting in this test case. PA"
 		title="Regression from 1.1: NPE in CompilationResult">
         <compile files="Joinpoints101.jar,DecErrors.aj">
          
+          <ajcmessage kind="error" line="10"/><ajcmessage kind="error" line="11"/>
+          <ajcmessage kind="error" line="12"/><ajcmessage kind="error" line="13"/>
+          <ajcmessage kind="error" line="14"/>
+
+          <ajcmessage kind="error" line="16"/><ajcmessage kind="error" line="17"/>
+          <ajcmessage kind="error" line="18"/><ajcmessage kind="error" line="19"/>
+          <ajcmessage kind="error" line="20"/>
+ 
+          <ajcmessage kind="error" line="22"/><ajcmessage kind="error" line="23"/>
+          <ajcmessage kind="error" line="24"/><ajcmessage kind="error" line="25"/>
+          <ajcmessage kind="error" line="26"/>
+ 
+          <ajcmessage kind="error" line="28"/><ajcmessage kind="error" line="29"/>
+          <ajcmessage kind="error" line="30"/><ajcmessage kind="error" line="31"/>
+          <ajcmessage kind="error" line="32"/>
+  
+          <ajcmessage kind="error" line="34"/><ajcmessage kind="error" line="35"/>
+          <ajcmessage kind="error" line="36"/><ajcmessage kind="error" line="37"/>
+          <ajcmessage kind="error" line="38"/>
+ 
+          <ajcmessage kind="error" line="40"/><ajcmessage kind="error" line="41"/>
+          <ajcmessage kind="error" line="42"/><ajcmessage kind="error" line="43"/>
+          <ajcmessage kind="error" line="44"/>
+          
+          <ajcmessage kind="error" line="46"/><ajcmessage kind="error" line="47"/>
+          <ajcmessage kind="error" line="48"/><ajcmessage kind="error" line="49"/>
+          <ajcmessage kind="error" line="50"/>
+ 
+          <ajcmessage kind="error" line="52"/><ajcmessage kind="error" line="53"/>
+          <ajcmessage kind="error" line="54"/><ajcmessage kind="error" line="55"/>
+          <ajcmessage kind="error" line="56"/>
+  
+          <ajcmessage kind="error" line="58"/><ajcmessage kind="error" line="59"/>
+          <ajcmessage kind="error" line="60"/><ajcmessage kind="error" line="61"/>
+          <ajcmessage kind="error" line="62"/>
+ 
+          <ajcmessage kind="error" line="64"/><ajcmessage kind="error" line="65"/>
+          <ajcmessage kind="error" line="66"/><ajcmessage kind="error" line="67"/>
+          <ajcmessage kind="error" line="68"/>
+          
+          <ajcmessage kind="error" line="70"/><ajcmessage kind="error" line="71"/>
+          <ajcmessage kind="error" line="72"/><ajcmessage kind="error" line="73"/>
+          <ajcmessage kind="error" line="74"/>
+ 
+          <ajcmessage kind="error" line="76"/><ajcmessage kind="error" line="77"/>
+          <ajcmessage kind="error" line="78"/><ajcmessage kind="error" line="79"/>
+          <ajcmessage kind="error" line="80"/>
+  
+          <ajcmessage kind="error" line="82"/><ajcmessage kind="error" line="83"/>
+          <ajcmessage kind="error" line="84"/><ajcmessage kind="error" line="85"/>
+          <ajcmessage kind="error" line="86"/>
+ 
+          <ajcmessage kind="error" line="88"/><ajcmessage kind="error" line="89"/>
+          <ajcmessage kind="error" line="90"/><ajcmessage kind="error" line="91"/>
+          <ajcmessage kind="error" line="92"/>
+          
+          <ajcmessage kind="error" line="94"/><ajcmessage kind="error" line="95"/>
+          <ajcmessage kind="error" line="96"/><ajcmessage kind="error" line="97"/>
+          <ajcmessage kind="error" line="98"/>
+ 
+          <ajcmessage kind="error" line="100"/><ajcmessage kind="error" line="101"/>
+          <ajcmessage kind="error" line="102"/><ajcmessage kind="error" line="103"/>
+          <ajcmessage kind="error" line="104"/>
+  
+          <ajcmessage kind="error" line="106"/><ajcmessage kind="error" line="107"/>
+          <ajcmessage kind="error" line="108"/><ajcmessage kind="error" line="109"/>
+          <ajcmessage kind="error" line="110"/>
+ 
+          <ajcmessage kind="error" line="112"/><ajcmessage kind="error" line="113"/>
+          <ajcmessage kind="error" line="114"/><ajcmessage kind="error" line="115"/>
+          <ajcmessage kind="error" line="116"/>
+          
+          <ajcmessage kind="error" line="118"/><ajcmessage kind="error" line="119"/>
+          <ajcmessage kind="error" line="120"/><ajcmessage kind="error" line="121"/>
+          <ajcmessage kind="error" line="122"/>
+  
+          <ajcmessage kind="error" line="124"/><ajcmessage kind="error" line="125"/>
+          <ajcmessage kind="error" line="126"/><ajcmessage kind="error" line="127"/>
+          <ajcmessage kind="error" line="128"/>
+ 
+          <ajcmessage kind="error" line="130"/>
+          
           <message kind="error" line="10"/><message kind="error" line="11"/>
           <message kind="error" line="12"/><message kind="error" line="13"/>
           <message kind="error" line="14"/>
@@ -8937,9 +9020,6 @@
           <message kind="error" line="124"/><message kind="error" line="125"/>
           <message kind="error" line="126"/><message kind="error" line="127"/>
           <message kind="error" line="128"/>
- 
-          <message kind="error" line="130"/>
-          
         </compile>
     </ajc-test>
     
