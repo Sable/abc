@@ -125,6 +125,9 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 			    Iterator incti = ints.iterator();
 			    while (incti.hasNext()) {
 				ClassType inct = (ClassType)incti.next();
+                                if (ts.isSubtype(inct, ct)) {
+                                    throw new SemanticException("Interface "+ct+" cannot extend subinterface "+inct,dp.position());
+                                }
 				PCNode hi_in = ext.hierarchy.insertClassAndSuperclasses(inct, false);
 				
 				//System.err.println("Declared "+ct.fullName()+" to implement "+inct.fullName());
