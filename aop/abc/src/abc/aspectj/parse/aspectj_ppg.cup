@@ -1743,21 +1743,26 @@ declare_declaration ::=
 pointcut_declaration ::=
     modifiers_opt:a POINTCUT IDENTIFIER:b LPAREN formal_parameter_list_opt:c RPAREN SEMICOLON:e {:
                                                                                                 Grm.parserTrace("abstract pointcut declaration");
+         TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
+                                                        parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  null);
+                                                  null,
+                                                  voidn);
         RESULT = pcd;
      
                                                                                                 :}
  |  modifiers_opt:a POINTCUT IDENTIFIER:b LPAREN formal_parameter_list_opt:c RPAREN COLON pointcut_expr:d SEMICOLON:e {:
                                                                                                                       Grm.parserTrace("non-abstract pointcut declaration");
+        TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
+                                                        parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  d);
+                                                  d, voidn);
         RESULT = pcd;
      
                                                                                                                       :};

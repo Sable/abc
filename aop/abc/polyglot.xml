@@ -30,7 +30,7 @@
     <pathelement location="${classes}"/>
     <pathelement location="${lib}/java_cup.jar"/>
     <pathelement location="${lib}/JFlex.jar"/>
-    <pathelement location="/home/aske/jar/sootclasses-2.1.0-custom.jar"/>
+    <pathelement location="/home/oege/jar/sootclasses-2.1.0-custom.jar"/>
   </path>
 
   <target name="configure" description="Configure Polyglot"

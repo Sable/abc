@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Collections;
 
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
@@ -15,8 +14,6 @@ import polyglot.ast.Block;
 import polyglot.ast.Formal;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Node;
-import polyglot.ast.MethodDecl;
-import polyglot.ast.CodeDecl;
 
 import polyglot.types.Flags;
 import polyglot.types.Context;
@@ -33,7 +30,6 @@ import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
-
 
 import arc.aspectj.types.AspectJTypeSystem;
 
@@ -102,43 +98,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	}
 
 	
-    public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-		w.begin(0);
-		w.write(flags.translate());
-
-        print(spec,w,tr);
-
-		w.begin(0);
-
-        if (! throwTypes.isEmpty()) {
-	    	w.allowBreak(6);
-	    	w.write("throws ");
-
-	    	for (Iterator i = throwTypes.iterator(); i.hasNext(); ) {
-	      	  	TypeNode tn = (TypeNode) i.next();
-				print(tn, w, tr);
-	
-				if (i.hasNext()) {
-		   	 		w.write(",");
-		   	 		w.allowBreak(4, " ");
-				}
-	    	}
-		}
-
-		w.end();
-
-		w.write(":");
-
-		w.allowBreak(0);
-
-		print(pc, w, tr);
-	
-		if (body != null) 
-	 	   printSubStmt(body, w, tr);
-		else w.write(";");
-
-		w.end();
-    }
+    
     
     /** Type checking of proceed: keep track of the methodInstance for the current proceed
      *  the ProceedCall will query this information via the proceedInstance() 
@@ -155,16 +115,19 @@ public class AdviceDecl_c extends MethodDecl_c
 	}
 
 	public Context enterScope(Context c) {
-		if (mi == null)
-			System.out.println("method instance of advice is null");
-			
 		Context nc = super.enterScope(c);
 		
 		// inside an advice body, thisJoinPoint is in scope, but nowhere else in an aspect
 		AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
-	    LocalInstance jp = ts.localInstance(position(), Flags.FINAL, ts.JoinPoint(), "thisJoinPoint");
+	    LocalInstance jp = ts.localInstance(position(), 
+	                                                                Flags.FINAL, 
+	                                                                ts.JoinPoint(), 
+                                                                    "thisJoinPoint");
 		nc.addVariable(jp);
-		LocalInstance sjp = ts.localInstance(position(), Flags.FINAL, ts.JoinPointStaticPart(), "thisJoinPointStaticPart");
+		LocalInstance sjp = ts.localInstance(position(), 
+		                                                              Flags.FINAL, 
+		                                                              ts.JoinPointStaticPart(), 
+                                                                      "thisJoinPointStaticPart");
 		nc.addVariable(sjp);
 						
 		if (spec instanceof Around)
@@ -245,6 +208,44 @@ public class AdviceDecl_c extends MethodDecl_c
 		return ((AspectJTypeSystem)ts).adviceInstance(position(),
 								       ct, flags, returnType.type(), name,
 								       argTypes, excTypes,spec);
+	}
+		
+	public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
+			w.begin(0);
+			w.write(flags.translate());
+
+			print(spec,w,tr);
+
+			w.begin(0);
+
+			if (! throwTypes.isEmpty()) {
+				w.allowBreak(6);
+				w.write("throws ");
+
+				for (Iterator i = throwTypes.iterator(); i.hasNext(); ) {
+					TypeNode tn = (TypeNode) i.next();
+					print(tn, w, tr);
+	
+					if (i.hasNext()) {
+						w.write(",");
+						w.allowBreak(4, " ");
+					}
+				}
+			}
+
+			w.end();
+
+			w.write(":");
+
+			w.allowBreak(0);
+
+			print(pc, w, tr);
+	
+			if (body != null) 
+			   printSubStmt(body, w, tr);
+			else w.write(";");
+
+			w.end();
 		}
 }
 	

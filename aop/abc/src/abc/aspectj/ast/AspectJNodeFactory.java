@@ -66,7 +66,8 @@ public interface AspectJNodeFactory
                               Flags flags,
                               String name,
                               List formals,
-                              Pointcut pc);
+                              Pointcut pc,
+                              TypeNode voidn);
 
     AdviceDecl AdviceDecl(Position pos,
                       Flags flags,

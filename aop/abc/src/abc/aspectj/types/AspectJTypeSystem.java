@@ -22,5 +22,10 @@ public interface AspectJTypeSystem extends JjTypeSystem {
 											ReferenceType container, Flags flags,
 							Type returnType, String name,
 							List argTypes, List excTypes, AdviceSpec spec);
+
+	public MethodInstance pointcutInstance(Position pos,
+											ReferenceType container, Flags flags,
+											Type returnType, String name,
+											List argTypes, List excTypes);
 							
 }

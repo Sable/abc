@@ -65,8 +65,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
 	l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
-	l.add(new VisitorPass(CLEAN_DECLARE, job,
-                              new AmbiguityRemover(job, ts, nf, DeclareParentsAmbiguityRemover.DECLARE)));
+	//	l.add(new VisitorPass(CLEAN_DECLARE, job,
+        //                      new AmbiguityRemover(job, ts, nf, DeclareParentsAmbiguityRemover.DECLARE)));
 	l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));
 	l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));

@@ -26,7 +26,7 @@ public class AspectJTypeSystem_c
 	}
     
     // weeding out the wrong flags on aspects
-	protected final Flags ASPECT_FLAGS = AspectJFlags.privileged(AspectJFlags.aspect(ACCESS_FLAGS));
+	protected final Flags ASPECT_FLAGS = AspectJFlags.privileged(AspectJFlags.aspect(ACCESS_FLAGS.Abstract()));
  
 	public void checkTopLevelClassFlags(Flags f) throws SemanticException {
 		    if (AspectJFlags.isAspect(f)) {
@@ -40,8 +40,8 @@ public class AspectJTypeSystem_c
     		
 	public MethodInstance adviceInstance(Position pos,
 										ReferenceType container, Flags flags,
-						Type returnType, String name,
-						List argTypes, List excTypes, AdviceSpec spec) {
+										Type returnType, String name,
+										List argTypes, List excTypes, AdviceSpec spec) {
 
 		   assert_(container);
 		   assert_(returnType);
@@ -50,7 +50,19 @@ public class AspectJTypeSystem_c
 	   return new AdviceInstance_c(this, pos, container, flags,
 					   returnType, name, argTypes, excTypes,spec);
 	}	
-    			
+   
+	public MethodInstance pointcutInstance(Position pos,
+											ReferenceType container, Flags flags,
+											Type returnType, String name,
+											List argTypes, List excTypes) {
+
+			   assert_(container);
+			   assert_(returnType);
+			   assert_(argTypes);
+			   assert_(excTypes);
+		   return new PointcutInstance_c(this, pos, container, flags,
+						   returnType, name, argTypes, excTypes);
+		}	
 	
 
 }

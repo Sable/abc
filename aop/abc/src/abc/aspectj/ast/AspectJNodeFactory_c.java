@@ -105,8 +105,9 @@ public class AspectJNodeFactory_c
                                      Flags flags,
                                      String name,
                                      List formals,
-                                     Pointcut pc) {
-        PointcutDecl n = new PointcutDecl_c(pos,flags,name,formals,pc);
+                                     Pointcut pc,
+                                     TypeNode voidn ) {
+        PointcutDecl n = new PointcutDecl_c(pos,flags,name,formals,pc,voidn);
         return n;
     }
 

@@ -402,11 +402,14 @@ pointcut_declaration ::=
              LPAREN formal_parameter_list_opt:c RPAREN SEMICOLON:e
      /* must check that modifiers include ABSTRACT */
      {: Grm.parserTrace("abstract pointcut declaration");
+         TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
+                                                        parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  null);
+                                                  null,
+                                                  voidn);
         RESULT = pcd;
      :}
   |  modifiers_opt:a POINTCUT IDENTIFIER:b 
@@ -414,11 +417,13 @@ pointcut_declaration ::=
              COLON pointcut_expr:d SEMICOLON:e 
      /* must check that modifiers DO NOT include ABSTRACT */
      {: Grm.parserTrace("non-abstract pointcut declaration");
+        TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
+                                                        parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  d);
+                                                  d, voidn);
         RESULT = pcd;
      :}
   ;
@@ -709,7 +714,7 @@ basic_pointcut_expr ::=
        {: Grm.parserTrace("ARGS pointcut");
           RESULT = parser.nf.PCArgs(parser.pos(x,y),a);
        :}   
-   // verify that only ids are allowed as args 
+   // for named pointcuts, ajc allows only * or fully-defined type/id
    | name:n LPAREN formal_pattern_list_opt:a RPAREN:y
        {: Grm.parserTrace("pointcut application of " + n);
           RESULT = parser.nf.PCName(parser.pos(n,y),n,a);

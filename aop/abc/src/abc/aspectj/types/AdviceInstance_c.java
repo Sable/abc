@@ -25,9 +25,9 @@ public class AdviceInstance_c extends MethodInstance_c {
 	protected AdviceInstance_c() { }
 
 	public AdviceInstance_c(TypeSystem ts, Position pos,
-				 			ReferenceType container,
-						 Flags flags, Type returnType, String name,
-				 List formalTypes, List excTypes, AdviceSpec spec) {
+				 								ReferenceType container,
+						 						Flags flags, Type returnType, String name,
+				 								List formalTypes, List excTypes, AdviceSpec spec) {
  	    super(ts,pos,container,flags,returnType,name,formalTypes,excTypes);
  		this.spec = spec;
  	}	
