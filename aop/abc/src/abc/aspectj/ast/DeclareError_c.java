@@ -7,8 +7,13 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.visit.ContainsAspectInfo;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.DeclareMessage;
+
 public class DeclareError_c extends DeclareDecl_c 
-                            implements DeclareError
+    implements DeclareError, ContainsAspectInfo
 {
 
     Pointcut pc;
@@ -29,6 +34,15 @@ public class DeclareError_c extends DeclareDecl_c
         w.write(" : ");
         w.write("\""+text+"\"");
         w.write(";");
+    }
+
+    public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	gai.addDeclareMessage(new DeclareMessage
+			      (DeclareMessage.ERROR,
+			       pc.makeAIPointcut(),
+			       text,
+			       current_aspect,
+			       position()));
     }
 
 }

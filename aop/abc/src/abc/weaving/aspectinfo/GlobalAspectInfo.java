@@ -37,6 +37,7 @@ public class GlobalAspectInfo {
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
     private List/*<DeclareParents>*/ dps = new ArrayList();
     private List/*<DeclarePrecedence>*/ dprs = new ArrayList();
+    private List/*<DeclareMessage>*/ dms = new ArrayList();
 	
 	// additional generated classes that need to be output in the end
 	//private Collection/*<String>*/ generated_classes = new ArrayList();
@@ -151,6 +152,13 @@ public class GlobalAspectInfo {
 	return dprs;
     }
 
+    /** Returns the list of all <code>declare warning</code> and <code>declare error</code> declarations.
+     *  @return a list of {@link abc.weaving.aspectinfo.DeclareMessage} objects.
+     */
+    public List getDeclareMessages() {
+	return dms;
+    }
+
     public AbcClass getClass(String name) {
 	return (AbcClass)classes_map.get(name);
     }
@@ -211,6 +219,10 @@ public class GlobalAspectInfo {
 
     public void addDeclarePrecedence(DeclarePrecedence dpr) {
 	dprs.add(dpr);
+    }
+
+    public void addDeclareMessage(DeclareMessage dm) {
+	dms.add(dm);
     }
 
     public void print(java.io.PrintStream p) {
