@@ -9299,4 +9299,9 @@
         title="declare parents causes interface to implement itself">
 	<compile files="foo2/Foo.java"/>
     </ajc-test>
+
+    <ajc-test num="999" dir="abctests/bugs/declareparentsprotectedaccessinnerclasses"
+        title="declare parents/protected access/inner classes">
+	<compile files="A.java,bar/C.java"/>
+    </ajc-test>
 </suite>
