@@ -1,2 +1,2 @@
 #!/bin/csh
-/bin/rm $* DCM/*.class DCM/handleMetrics/*.class certrevsim/*.class jsim/*/*.class 
+/bin/rm $* DCM/*.class DCM/handleGC/*.class DCM/handleMetrics/*.class certrevsim/*.class jsim/*/*.class 
