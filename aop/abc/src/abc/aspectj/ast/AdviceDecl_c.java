@@ -69,7 +69,7 @@ import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
 import polyglot.visit.CFGBuilder;
 
-import polyglot.ext.jl.ast.MethodDecl_c;
+import abc.aspectj.extension.AJMethodDecl_c;
 
 import abc.aspectj.ast.AdviceFormal_c;
 
@@ -100,7 +100,7 @@ import abc.weaving.aspectinfo.AbcFactory;
  *  @author Oege de Moor
  *  @author Aske Simon Christensen
  */
-public class AdviceDecl_c extends MethodDecl_c
+public class AdviceDecl_c extends AJMethodDecl_c
     implements AdviceDecl, ContainsAspectInfo, MakesAspectMethods
 {
 	/** advice specification 

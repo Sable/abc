@@ -35,8 +35,12 @@ import polyglot.types.ClassType;
 import polyglot.types.ConstructorInstance;
 
 import polyglot.visit.TypeChecker;
+import polyglot.visit.AmbiguityRemover;
+
 
 import polyglot.ast.Node;
+import polyglot.ast.ClassDecl;
+import polyglot.ast.ClassMember;
 
 import polyglot.ext.jl.ast.ClassBody_c;
 import polyglot.util.Position;
@@ -46,6 +50,9 @@ import polyglot.types.MemberInstance;
 import polyglot.types.MethodInstance;
 import polyglot.types.FieldInstance;
 import polyglot.types.Context;
+
+import polyglot.frontend.Job;
+import polyglot.frontend.Pass;
 
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
@@ -57,6 +64,7 @@ import abc.aspectj.types.PointcutInstance_c;
 import abc.aspectj.types.AJContext;
 
 import abc.aspectj.visit.AspectMethods;
+import abc.aspectj.visit.AJAmbiguityRemover;
 
 import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.IntertypeMethodDecl_c;
@@ -72,6 +80,8 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 	public AJClassBody_c(Position pos, List members) {
 		super(pos, members);
 	}
+	
+	
 	
 	protected void duplicateConstructorCheck(TypeChecker tc) throws SemanticException {
 		duplicateConstructorCheck(tc.context().currentClass());

@@ -60,7 +60,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID ASPECT_METHODS = new polyglot.frontend.Pass.ID("aspect-methods");
     public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
 	
-	public static final polyglot.frontend.Pass.ID CLEAN_SIGS_FIRST = new polyglot.frontend.Pass.ID("clean-sigs-first");
+	public static final polyglot.frontend.Pass.ID CLEAN_CLASSES = new polyglot.frontend.Pass.ID("clean-classes");
     public static final polyglot.frontend.Pass.ID COLLECT_ASPECT_NAMES = new polyglot.frontend.Pass.ID("collect-aspect-names");
     public static final polyglot.frontend.Pass.ID BUILD_HIERARCHY = new polyglot.frontend.Pass.ID("build-hierarchy");
     public static final polyglot.frontend.Pass.ID HIERARCHY_BUILT = new polyglot.frontend.Pass.ID("hierarchy-built");
@@ -212,7 +212,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     protected void passes_patterns_and_parents(List l, Job job)
     {
     	// Disambiguate inner/outer classes
-		l.add(new VisitorPass(CLEAN_SIGS_FIRST,job, new AmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
+		l.add(new VisitorPass(CLEAN_CLASSES,job, new AJAmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
         // Disambiguate parents in declare parents
         l.add(new VisitorPass(CLEAN_DECLARE, job,
                               new DeclareParentsAmbiguityRemover(job, ts, nf))); 

@@ -956,6 +956,7 @@ public abstract class AJAbstractExtFactory_c extends AbstractExtFactory_c
         return postExtAJClassBody(e);
     }
 
+		 
     public final Ext extAJClassDecl() {
         Ext e = extAJClassDeclImpl();
 

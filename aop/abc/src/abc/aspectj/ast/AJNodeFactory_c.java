@@ -779,6 +779,13 @@ public class AJNodeFactory_c
         n = (ClassBody)n.del(delFactory.delAJClassBody());
         return n;
     }
+    
+    public MethodDecl MethodDecl(Position pos, Flags flags, TypeNode tn, String name, List args, List throwtypes, Block body) {
+    	MethodDecl n = new AJMethodDecl_c(pos,flags,tn,name,args,throwtypes,body);
+		// n = (MethodDecl)n.ext(extFactory.extAJMethodDecl());
+		// n = (MethodDecl)n.del(delFactory.delAJMethodDecl());
+		return n;
+    }
    
    
     public ClassDecl ClassDecl(

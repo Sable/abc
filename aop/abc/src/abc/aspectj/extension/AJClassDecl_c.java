@@ -61,6 +61,7 @@ import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AspectType;
 import abc.aspectj.visit.AspectMethods;
+import abc.aspectj.visit.AJAmbiguityRemover;
 
 /**
  * @author oege
@@ -110,6 +111,8 @@ public class AJClassDecl_c extends ClassDecl_c
 			}
 			return super.disambiguate(ar);
 	} 
+	
+	
 
 	public void addSuperDependencies(ClassType ct,Job job) throws SemanticException {        
 			Stack s = new Stack();
