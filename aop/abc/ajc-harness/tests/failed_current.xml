@@ -6,11 +6,6 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="base/test119" title="Local declarations in advise bodies"
-      keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
 <ajc-test dir="base/test135"
       title="proper values for thisJoinPoint attributes" 
       abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.  
@@ -26,95 +21,6 @@
       keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="pureJava/anonInnerClass" pr="294"
-      title="anonymous inner class" keywords="from-java">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="State is passed correctly across nested annonymous inners"
-      keywords="from-java">
-        <compile files="NestedInners.java"/>
-        <run class="NestedInners"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="various anonymous inner classes plus super types tests"
-      keywords="from-java">
-        <compile files="InnerSuper.java"/>
-        <run class="InnerSuper"/>
-    </ajc-test>
-<ajc-test dir="pureJava/abstractInner"
-      title="Abstract inner classes across package boundaries"
-      keywords="from-java">
-        <compile files="C.java,pkg/A.java"/>
-        <run class="C"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="inner classes accessing outers and some more inner class names"
-      abccomment="works outside of testHarness, but gets a
-            reflection error from inside testHarness, may be fixed with
-            new test harness. LJH  
-            FIXED July 2/04 LJH"
-      keywords="from-java">
-        <compile files="InnerAccess.java"/>
-        <run class="InnerAccess"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="inner classes can be built using protected constructors in super"
-      keywords="from-java">
-        <compile files="VariousConstructors.java"/>
-        <run class="VariousConstructors"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="check that nested constructions of local classes work"
-      keywords="from-java,purejava">
-        <compile files="NestedConstructionsOfLocalClasses.java"/>
-        <run class="NestedConstructionsOfLocalClasses"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Make sure anonymous classes can have non-nullary constructors"
-      keywords="from-java,purejava">
-        <compile files="NonNullaryAnonymous.java"/>
-        <run class="NonNullaryAnonymous"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="421"
-      title="More thourough test of static members using full names"
-      keywords="from-java">
-        <compile
-          files="Statics.java,StaticMembers_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
-        <run class="StaticMembers_PR421"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="421"
-      title="More thourough test of static members using imports"
-      keywords="from-java">
-        <compile
-          files="Statics.java,StaticMembersImports_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
-        <run class="StaticMembersImports_PR421"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Getting confused when looking up method signatures"
-      keywords="from-java">
-        <compile files="MethodSigs.java"/>
-        <run class="MethodSigs"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Fully qualifying inner classes within annonymous classes causes problems."
-      keywords="from-java">
-        <compile files="InnerClassesInAnnonymousClasses.java"/>
-        <run class="InnerClassesInAnnonymousClasses"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'"
-      keywords="from-java">
-        <compile files="MisplacedThisInAnnonymousInnerClasses.java"/>
-        <run class="MisplacedThisInAnnonymousInnerClasses"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Not looking up methods inside of anonymous declarations correctly."
-      keywords="from-java">
-        <compile files="AnonymousMethodLookup.java"/>
-        <run class="AnonymousMethodLookup"/>
     </ajc-test>
 <ajc-test dir="new" pr="408"
       title="Not binding constructor when using more than one compilation"
@@ -133,12 +39,6 @@
         <run class="ConstructorNotFound_PR408"/>
     </ajc-test>
 <ajc-test dir="pureJava"
-      title="folding fields set to anonymous instances containing self-references"
-      keywords="from-java">
-        <compile files="AnonFolding.java"/>
-        <run class="AnonFolding"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
       title="overriding methods from object in interfaces and multiple-inheritance"
       abccomment="Polyglot bug in checking class conformance. Entered into bugzilla
                   07/07/04. Don't forget to make corresponding changes in 
@@ -146,12 +46,6 @@
       keywords="from-java">
         <compile files="InterfaceAndObject.java"/>
         <run class="InterfaceAndObject"/>
-    </ajc-test>
-<ajc-test dir="pureJava/innerTypeModifiers"
-      title="Inner types must generate classfiles with only Public/Default access flags."
-      keywords="from-java">
-        <compile files="pkg1/Main.java,pkg2/Foo.java"/>
-        <run class="pkg1.Main"/>
     </ajc-test>
 <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
@@ -238,12 +132,6 @@
         <compile files="BigString.java"/>
         <run class="BigString"/>
     </ajc-test>
-<ajc-test dir="pureJava" pr="547"
-      title="local types can be bound in the signatures of other local types"
-      keywords="from-resolved_10rc3,from-java">
-        <compile files="LocalInners.java"/>
-        <run class="LocalInners"/>
-    </ajc-test>
 <ajc-test dir="new" title="Error expected for constructor in interfaces"
       abccomment="ajc only finds errors on lines 2 and 8. 
                   another example of jlc crashing after error detection.
@@ -288,19 +176,6 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava/nameConflicts"
-      title="type and package name conflicts are resolved happily (1a)"
-      keywords="from-java,purejava">
-        <compile files="p1/Main1.java,p1/Foo.java,p1/p2.java"/>
-        <run class="p1.Main1"/>
-    </ajc-test>
-<ajc-test dir="pureJava/nameConflicts"
-      title="(fails in USEJAVAC) type and package name conflicts are resolved happily (1b)"
-      keywords="from-java,purejava">
-        <compile files="p1.java,p1/p2/Foo.java"/>
-        <compile files="p1/Main1.java,p1/Foo.java,p1/p2.java"/>
-        <run class="p1.Main1"/>
-    </ajc-test>
-<ajc-test dir="pureJava/nameConflicts"
       title="type and package name conflicts caught as errors (1)"
       abccomment="this is missing in jlc, but it seems less important
                   than other problems, so won't report it to Nate 
@@ -309,18 +184,6 @@
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <message kind="error" line="3"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="flow analysis where final variable set in another constructor"
-      keywords="from-java,purejava">
-        <compile files="ConstructorFlow.java"/>
-        <run class="ConstructorFlow"/>
-    </ajc-test>
-<ajc-test dir="new" pr="584"
-      title="Can construct inner classes using qualified expressions"
-      keywords="from-java,purejava">
-        <compile files="PR584.java"/>
-        <run class="PR584"/>
     </ajc-test>
 <ajc-test dir="new/packagePrefix" pr="574"
       title="classes that are package prefixes are illegal"
@@ -331,14 +194,6 @@
                options="!eclipse">
             <message kind="error" line="2"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new/introTypeMissing"
-      title="valid type expressions for introduced type testing"
-      abccomment="problem in j2j, won't compile, reported to Jennifer
-                   on July 2/04, LJH"
-      keywords="from-java,purejava">
-        <compile files="TargetClass.java,Util.java"/>
-        <run class="TargetClass"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="suggested by Jacks 15.28-qualified-namestr tests"
@@ -366,11 +221,6 @@
         <compile files="NestedFinally.java"/>
         <run class="NestedFinally"/>
     </ajc-test>
-<ajc-test dir="pureJava" title="anonymous inner classes with inner types"
-      keywords="from-java">
-        <compile files="AnonymousWithInner.java"/>
-        <run class="AnonymousWithInner"/>
-    </ajc-test>
 <ajc-test dir="new/subaspects" pr="647"
       title="concrete aspect unable to access abstract package-private method in parent for overriding"
       abccomment = "error not detected by jlc, reported to Nate July 3/04 LJH"
@@ -383,10 +233,14 @@
             <message kind="error" line="27"/>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava" title="anonymous explicit inner constructors"
-      keywords="from-java,purejava">
-        <compile files="QualifiedNewCP.java"/>
-        <run class="QualifiedNewCP"/>
+<ajc-test dir="pureJava" pr="680"
+      abccomment="Probably a j2j error, reported to Jennifer July 3/04 LJH"
+      title="interfaces with non-explicitly static inner classes"
+      keywords="from-java">
+        <compile files="InterfaceAndInnerHelper.java"/>
+        <compile files="InterfaceAndInner.java"
+        	includeClassesDir="true"/>
+        <run class="InterfaceAndInner"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="private super access in inners"
       abccomment="runs fine when not in harness, July 5/04 LJH"
@@ -645,12 +499,6 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="new"
-      title="call points within block inner classes are doubled"
-      keywords="from-resolved_10x">
-        <compile files="DoubledCalls.java"/>
-        <run class="DoubledCalls"/>
-    </ajc-test>
 <ajc-test dir="new" title="Compiler can compile correct strictfp modifiers"
       keywords="from-resolved_10x">
         <compile files="StrictFpCompile.java"/>
@@ -695,12 +543,6 @@
         <run class="AbstractAspectsExtendingAbstractAspectsGeneratesMethodsWithTheSameName_PR464"
         />
     </ajc-test>
-<ajc-test dir="new"
-      title="Make sure that names of lifted local classes are right when referenced in call-site advice"
-      keywords="from-resolved_10x">
-        <compile files="CallsAndLocalClasses.java"/>
-        <run class="CallsAndLocalClasses"/>
-    </ajc-test>
 <ajc-test dir="new" title="holding onto proceed calls in a closure-like way"
       keywords="from-resolved_10x,knownLimitation">
         <compile files="HoldProceed.java"/>
@@ -741,11 +583,6 @@
         <compile files="AdviceOnPrivileged.java"/>
         <run class="AdviceOnPrivileged"/>
     </ajc-test>
-<ajc-test dir="new" title="Two anonymous classes in the same scope"
-      keywords="from-resolved_10x">
-        <compile files="TwoAnonymous.java"/>
-        <run class="TwoAnonymous"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="basic tests for initializer and staticinitializer PCDs"
       keywords="from-resolved_10x">
@@ -773,12 +610,6 @@
 <ajc-test dir="new"
       title="around advice on calls within inner classes (including protected method calls)"
       keywords="from-resolved_10x">
-        <compile files="AroundInnerCalls13.java" options="-1.3"/>
-        <run class="AroundInnerCalls13"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="around advice on calls within inner classes (including protected method calls)"
-      keywords="from-resolved_10x">
         <compile files="AroundInnerCalls.java" options="-1.4"/>
         <run class="AroundInnerCalls"/>
     </ajc-test>
@@ -791,21 +622,6 @@
       keywords="from-resolved_10x">
         <compile files="MethodIntroductions.java"/>
         <run class="MethodIntroductions"/>
-    </ajc-test>
-<ajc-test dir="new" title="Putting an introduced method on each interface"
-      keywords="from-resolved_10x">
-        <compile files="IntroducedMethodsOnEachInterface.java"/>
-        <run class="IntroducedMethodsOnEachInterface"/>
-    </ajc-test>
-<ajc-test dir="new" title="Extending interfaces"
-      keywords="from-resolved_10x">
-        <compile files="BindingInterfaces.java"/>
-        <run class="BindingInterfaces"/>
-    </ajc-test>
-<ajc-test dir="new" title="Throwing an EmptyStackException."
-      keywords="from-resolved_10x">
-        <compile files="EmptyStack.java"/>
-        <run class="EmptyStack"/>
     </ajc-test>
 <ajc-test dir="new/perThis"
 	    title="check that MightHaveAspect interface is created correctly for an aspect in deep package"
@@ -938,12 +754,6 @@
         <compile files="CallTypesI.java" options="-1.4,-Xlint:ignore"/>
         <run class="CallTypesI" vm="1.4"/>
     </ajc-test>
-<ajc-test dir="new"
-      title="Unable to bind privately-introduced field name from introduced method in the same aspect"
-      keywords="from-resolved_10x">
-        <compile files="IntroducedFieldsNotBinding.java"/>
-        <run class="IntroducedFieldsNotBinding"/>
-    </ajc-test>
 <ajc-test dir="new/anonInnerClass" pr="297"
       title="anonymous inner class with aspect" keywords="from-resolved_10x">
         <compile files="Driver.java"/>
@@ -1031,18 +841,6 @@
         <run class="driver.PrivilegedAspect"/>
     </ajc-test>
 <ajc-test dir="new/introTypeMissing"
-      title="this available in introduced field initializers"
-      keywords="from-resolved_10x">
-        <compile files="ThisInIntroFieldInit.java"/>
-        <run class="ThisInIntroFieldInit"/>
-    </ajc-test>
-<ajc-test dir="new/introTypeMissing"
-      title="Introduced type unavailable to cast expressions in introduced field initializers"
-      keywords="from-resolved_10x">
-        <compile files="CastInFieldInit.java,TargetClass.java,Util.java"/>
-        <run class="CastInFieldInit"/>
-    </ajc-test>
-<ajc-test dir="new/introTypeMissing"
       title="Introduced type unavailable to instanceof expressions in introduced methods"
       keywords="from-resolved_10x,knownLimitation">
         <compile files="InstanceOf.java,TargetClass.java,Util.java">
@@ -1055,12 +853,6 @@
             <message kind="error" line="25"/>
             <message kind="error" line="26"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new/introTypeMissing"
-      title="Introduced type unavailable to qualified new expressions in introduced field initializers"
-      keywords="from-resolved_10x">
-        <compile files="InnerInFieldInit.java,TargetClass.java,Util.java"/>
-        <run class="InnerInFieldInit"/>
     </ajc-test>
 <ajc-test dir="new"
       title="enclosing join point not exported properly in pre-initialization join point"
@@ -1170,12 +962,6 @@
         <run class="Proxy"/>
     </ajc-test>
 <ajc-test dir="new/aroundinner" pr="620"
-      title="aroundInner 3 - around advice inner class running proceed and writing field"
-      keywords="from-resolved_10x">
-        <compile files="Minimal.java,Common.java"/>
-        <run class="Minimal"/>
-    </ajc-test>
-<ajc-test dir="new/aroundinner" pr="620"
       title="aroundInner 4 - around advice inner Thread subclass running proceed and writing field"
       keywords="from-resolved_10x">
         <compile files="ThreadSub.java,Common.java"/>
@@ -1263,35 +1049,11 @@
         <compile files="PR573.java"/>
         <run class="PR573"/>
     </ajc-test>
-<ajc-test dir="new" pr="573"
-      title="pertarget stack overflow getting name of anonymous (Object) class"
-      keywords="from-resolved_10rc3">
-        <compile files="PR573_1.java"/>
-        <run class="PR573_1"/>
-    </ajc-test>
-<ajc-test dir="new" pr="573"
-      title="pertarget runtime stack overflow (getting name of anonymous (Object) class?)"
-      keywords="from-resolved_10rc3">
-        <compile files="PR573_2.java"/>
-        <run class="PR573_2"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="PR584 Can construct inner classes using qualified expressions"
-      keywords="from-resolved_10rc3,purejava">
-        <compile files="PR584.java"/>
-        <run class="PR584"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="changing this in around's proceed reported by Rich Price"
       keywords="from-resolved_104">
         <compile files="AroundChangeThis.java" options="-1.4"/>
         <run class="AroundChangeThis"/>
-    </ajc-test>
-<ajc-test dir="new/PR569" pr="569"
-      title="anon class written to wrong directory" 
-   keywords="from-resolved_104,from-resolved_104">
-        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"/>
-        <run class="a.IntroAnon"/>
     </ajc-test>
 <ajc-test dir="new" pr="619"
       title="indirect use outside aspect of undefined abstract pointcut"
@@ -1306,6 +1068,12 @@
       keywords="from-resolved_104">
         <compile files="AroundCall.java"/>
         <run class="AroundCall"/>
+    </ajc-test>
+<ajc-test dir="new" pr="660" title="name binding in around cflow - 2"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      keywords="from-resolved_104">
+        <compile files="ArgsInCflow2.java"/>
+        <run class="ArgsInCflow2"/>
     </ajc-test>
 <ajc-test dir="new" pr="677"
       title="around name-binding in cflows using factorial"
@@ -1355,18 +1123,6 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" pr="737"
-      title="no circularity errors simply because of inners (1)"
-      keywords="from-resolved_105,purejava">
-        <compile files="circle/Test1CP.java"/>
-        <run class="circle.Test1CP"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="737"
-      title="no circularity errors simply because of inners (2)"
-      keywords="from-resolved_105,purejava">
-        <compile files="circle/Test2CP.java"/>
-        <run class="circle.Test2CP"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="737"
       title="should have circular inheritance errors (1)"
       abccomment="works for abc, but with 1 more error message (ok),
                   causes jlc not to terminate.  Reported to Nate July 7/04
@@ -1396,24 +1152,6 @@
             <message kind="error" line="15"/>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava" pr="728"
-      title="interface using preceding subinterface in its definition"
-      abccomment="in abc get IncompatibleClassChangeError. Example sent
-                  to Jennifer.  July 6/04 LJH"
-      keywords="from-resolved_105,purejava">
-        <abckeywords> <jennifer/> <laurie/> </abckeywords>
-        <compile files="ParentUsingChild.java"/>
-        <run class="ParentUsingChild"/>
-    </ajc-test>
-<ajc-test dir="new" pr="645"
-      title="Parent interface using public inner interface of child in same file"
-      abccomment="in abc get IncompatibleClassChangeError. Example sent
-                  to Jennifer.  July 6/04 LJH"
-      keywords="from-resolved_105,purejava">
-        <abckeywords> <jennifer/> <laurie/> </abckeywords>
-        <compile files="ParentInterfaceUsingChildInnerInterface.java"/>
-        <run class="ParentInterfaceUsingChildInnerInterface"/>
-    </ajc-test>
 <ajc-test dir="errors"
       title="a type is not allowed to extend or implement its own innner type"
       abccomment="jlc does not catch error, reported to Nate July 6/04 LJH"
@@ -1422,12 +1160,6 @@
         <compile files="NestedInterfaceTest.java">
             <message kind="error" line="1"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="739"
-      title="final local variables may be accessed from inner class"
-      keywords="from-resolved_105,purejava">
-        <compile files="LocalsFromInnerCP.java"/>
-        <run class="LocalsFromInnerCP"/>
     </ajc-test>
 <ajc-test dir="new"
       title="package typepattern with no packages (in default package)"
@@ -1450,13 +1182,6 @@
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message kind="error" line="5"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new" pr="755"
-      title="ajc dies on cflow into field init anon class see knownbugs.txt"
-      keywords="from-resolved_105">
-        <compile files="CflowOfFieldInitAnonMethods.java" options="!eclipse">
-        </compile>
-        <run class="CflowOfFieldInitAnonMethods" options="!eclipse"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="initializers must be able to complete normally (found by jacks)"
@@ -1532,20 +1257,6 @@
         <compile files="IndeterminateHandlerArg.java"/>
         <run class="IndeterminateHandlerArg"/>
     </ajc-test>
-<ajc-test dir="pureJava"
-      title="Locals inside other locals, ordering of processing [eh]"
-      abccomment="Verify error in abc and j2j (when --app used).
-                  Reported to Jennifer, July 1/04 LJH, Fixed July 2/04"
-      keywords="from-resolved_105">
-        <compile files="LocalInners2.java"/>
-        <run class="LocalInners2"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="752"
-      title="subclass access to enclosing super class private members"
-      keywords="from-resolved_105,purejava,fail-unimplemented">
-        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"/>
-        <run class="SubclassAccessToEnclosingSuperClassPrivate"/>
-    </ajc-test>
 <ajc-test dir="new/nolang" pr="762"
 	  title="Compiling java.lang.Object with ajc yields non-verifying bytecode"
 	  keywords="from-resolved_105"
@@ -1553,30 +1264,12 @@
 	    <compile files="java/lang/Object.java,java/lang/String.java">
 	    </compile>
 	</ajc-test>
-<ajc-test dir="new"
-      title="method-local class defined in around return statement"
-      keywords="from-resolved_105">
-        <compile files="MethodLocalAroundReturns.java"/>
-        <run class="MethodLocalAroundReturns"/>
-    </ajc-test>
 <ajc-test dir="new" title="CE expected for assignment to arg in if pcd"
       keywords="from-resolved_105">
         <compile files="IfPCDAssignmentCE.java">
             <message kind="error" line="16"/>
             <message kind="error" line="20"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new" title="accessing private members in outer types"
-      keywords="from-resolved_105">
-        <compile files="FieldInnerAccess.java"/>
-        <run class="FieldInnerAccess"/>
-    </ajc-test>
-<ajc-test dir="new" pr="601"
-      title="VerifyError if nested sync returning result"
-      comment="XXX inconsistent behavior?"
-      keywords="from-resolved_10final,purejava">
-        <compile files="NestedSyncWithResult.java"/>
-        <run class="NestedSyncWithResult"/>
     </ajc-test>
 <ajc-test dir="new" pr="853"
       title="declare interface extends class">
@@ -1758,11 +1451,6 @@
         	options="!eclipse"/>
         <run class="Main"/>
     </ajc-test>
-<ajc-test dir="new" pr="774"
-      title="interface self-reference in anonymous instance">
-        <compile files="AnonymousSelfReference.java"/>
-        <run class="AnonymousSelfReference"/>
-    </ajc-test>
 <ajc-test dir="new" pr="776"
       title="self-reference from (aspect-declared) method-local class">
         <compile files="MethodSelfReference.java"/>
@@ -1895,11 +1583,6 @@
     		title="Negation of if pointcut does not work">
         <compile files="NotIf.java"/>
         <run class="NotIf"/>
-    </ajc-test>
-<ajc-test dir="bugs" pr="32463" 
-    		title="ajc reports error when encountering static declaration of nested classes">
-        <compile files="WeaveLocal.java"/>
-        <run class="WeaveLocal"/>
     </ajc-test>
 <ajc-test dir="bugs/interfaceNames" pr="32421" 
     		title="can't resolve nested public interfaces (also PR#32399)">
@@ -2611,17 +2294,6 @@
         	files="Main.java">
         	<message kind="error" line="3"/>
        </compile>
-    </ajc-test>
-<ajc-test dir="bugs/interfaceDefinition" 
-    	pr="43972"
-    	title="Use class implementing interface via aspect (weave all together)">
-        <compile 
-        	files="pack/DefineInterface.java,
-        		   pack/InterfaceDefinition.java,
-        		   pack/MyInterface.java,
-        		   Main.java"/>
-        <run class="pack.InterfaceDefinition"/>
-        <run class="Main"/>
     </ajc-test>
 <ajc-test dir="bugs/interfaceDefinition" 
     	pr="43972"
