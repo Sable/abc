@@ -107,7 +107,7 @@ public class AccessorMethods {
     public Call accessorGetter(AJNodeFactory nf, AJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
         String accessorName;
         FieldInstance fi = f.fieldInstance();
-        AccessorMethod am = (AccessorMethod)findExistingAccessor(dispatchers, fi);
+        AccessorMethod am = (AccessorMethod)findExistingAccessor(getters, fi);
         if(am != null && target.equals(am.getTarget())) {
             // we already have an accessor for that member
             accessorName = am.getName();
@@ -145,7 +145,7 @@ public class AccessorMethods {
             Expr targetThis, Expr value) {
         String accessorName;
         FieldInstance fi = f.fieldInstance();
-        AccessorMethod am = (AccessorMethod)findExistingAccessor(dispatchers, fi);
+        AccessorMethod am = (AccessorMethod)findExistingAccessor(setters, fi);
         if(am != null && target.equals(am.getTarget())) {
             // we already have an accessor for that member
             accessorName = am.getName();
