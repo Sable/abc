@@ -9310,4 +9310,9 @@
 	<compile files="B.java"/>
 	<compile classpath="." files="A.java"/>
     </ajc-test>
+
+    <ajc-test num="1001" dir="abctests/bugs"
+         title="resolving anonymous classes inside classes with dollar signs">
+         <compile files="ExtraAnon.java"/>
+    </ajc-test>
 </suite>
