@@ -45,12 +45,7 @@ public class AbcMain {
 				currentArgs.add(0, "-cp");
 				currentCP = cp;
 			}
-			currentArgs.add(0, "-soot");
-			currentArgs.add(0, currentCP);
-			currentArgs.add(0, "-cp");
-			currentArgs.add(0, "+soot");
 			currentArgs.toArray(this.args = new String[currentArgs.size()]);
-			int i=0;
     	}
     }
     public static class CompilationFailedException extends Exception {
