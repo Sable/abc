@@ -1,5 +1,10 @@
 public class Bug {
   // no static initializer in Bug
+  // but the ajc compiler seems to create an empty one,  and then the advice
+  // in the StaticInit aspect below matches this inserted empty clinit().
+  // Is that the desired/expected behaviour?   I would have thought that
+  // a clinit() method only appears in a class when there things to be put
+  // in it?   Certainly javac does not create one.
 }
 
 class BugExt extends Bug {

@@ -93,7 +93,10 @@ aspect ConstructorAspects {
           !within(ConstructorAspects);
 
   // before advice
-  before () : !within(ConstructorAspects) {
+  before () : !within(ConstructorAspects) && 
+              (allconstrpreinitializations()  ||
+	      allconstrinitializations() ||
+	      allconstrexecutions() ) {
 	      message(
 		  "BEFORE: " +  thisJoinPointStaticPart.getSourceLocation() + 
 		  " " +thisJoinPointStaticPart.toLongString()); 
@@ -101,7 +104,11 @@ aspect ConstructorAspects {
 	      }
 
   // after advice
-  after () returning : !within(ConstructorAspects) {
+  after () returning : !within(ConstructorAspects) &&
+              (allconstrpreinitializations() ||
+	      allconstrinitializations() ||
+	      allconstrexecutions() )
+	      {
               aspectnesting--;
 	      message(
 		  "AFTER: " +  thisJoinPointStaticPart.getSourceLocation() + 
