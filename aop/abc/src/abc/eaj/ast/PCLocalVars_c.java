@@ -40,7 +40,7 @@ public class PCLocalVars_c extends Pointcut_c
     protected Pointcut pc;
 
     public Set pcRefs() {
-        return new HashSet();
+        return pc.pcRefs();
     }
 
     public String toString()
@@ -95,7 +95,7 @@ public class PCLocalVars_c extends Pointcut_c
 
     public Precedence precedence()
     {
-        return pc.precedence();
+        return Precedence.LITERAL;
     }
 
     public Collection mayBind() throws SemanticException
