@@ -25,6 +25,7 @@ import polyglot.visit.*;
 import polyglot.types.*;
 
 import abc.aspectj.extension.AJClassDecl_c;
+import abc.aspectj.extension.AJNew_c;
 
 import abc.aspectj.ExtensionInfo;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -85,7 +86,11 @@ public class HierarchyBuilder extends NodeVisitor {
 	    
 	}
 	if (n instanceof New && ((New)n).body() != null) {
-	    ParsedClassType ct = ((New)n).anonType();
+        AJNew_c ajn = (AJNew_c) n;
+        if(ajn.hierarchyBuilt())
+            return this;
+        ajn.setHierarchyBuilt();
+	    ParsedClassType ct = ajn.anonType();
 	    ext.hierarchy.insertClassAndSuperclasses(ct, true);
 	    GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
 	    if (abc.main.Debug.v().classKinds) {

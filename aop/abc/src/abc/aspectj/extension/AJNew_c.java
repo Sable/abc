@@ -57,7 +57,8 @@ import polyglot.util.Position;
  */
 public class AJNew_c extends New_c implements New, MakesAspectMethods {
 
-	
+    protected boolean hierarchyBuilt = false;
+    
 	public AJNew_c(
 		Position pos,
 		Expr qualifier,
@@ -67,7 +68,15 @@ public class AJNew_c extends New_c implements New, MakesAspectMethods {
 		super(pos, qualifier, tn, arguments, body);
 	}
 
-	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
+    public boolean hierarchyBuilt() {
+        return hierarchyBuilt;
+    }
+    
+    public void setHierarchyBuilt() {
+        hierarchyBuilt=true;
+    }
+
+    public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		if (ar.kind() != AmbiguityRemover.ALL) {
 			return this;
 		}

@@ -55,7 +55,7 @@ public class GlobalAspectInfo {
     public static final int PRECEDENCE_SECOND = 2;
     public static final int PRECEDENCE_CONFLICT = 3;
 
-    private List/*<AbcClass>*/ classes = new ArrayList();
+    private Set/*<AbcClass>*/ classes = new LinkedHashSet();
     private List/*<Aspect>*/ aspects = new ArrayList();
     private Set/*<AbcClass>*/ wovenclasses = new HashSet(); // classes that ITDs have been woven into
     
@@ -133,7 +133,7 @@ public class GlobalAspectInfo {
     /** Returns the list of classes into which weaving can take place.
      *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
      */
-    public List getWeavableClasses() {
+    public Set getWeavableClasses() {
 	return classes;
     }
 
@@ -223,6 +223,9 @@ public class GlobalAspectInfo {
     }
     
     public void addWeavableClass(AbcClass cl) {
+        if(classes.contains(cl)) {
+            throw new InternalCompilerError("Attempted to add duplicate anonymous weavable class");
+        }
 	classes.add(cl);
     }
 
@@ -284,7 +287,7 @@ public class GlobalAspectInfo {
 	
     public void print(java.io.PrintStream p) {
 	p.println();
-	printList(p, classes, "Classes:");
+	printSet(p, classes, "Classes:");
 	printList(p, aspects, "Aspects:");
 	printList(p, ifds, "Intertype field decls:");
 	printList(p, imds, "Intertype method decls:");
@@ -296,16 +299,26 @@ public class GlobalAspectInfo {
     }
 
     private void printList(java.io.PrintStream p, List l, String name) {
-	p.println(name);
-	p.println("------------------------------------------".substring(0,name.length()));
-	Iterator li = l.iterator();
-	while (li.hasNext()) {
-	    Object elem = li.next();
-	    p.println(elem);
-	}
-	p.println();
+        p.println(name);
+        p.println("------------------------------------------".substring(0,name.length()));
+        Iterator li = l.iterator();
+        while (li.hasNext()) {
+            Object elem = li.next();
+            p.println(elem);
+        }
+        p.println();
     }
 
+    private void printSet(java.io.PrintStream p, Set s, String name) {
+        p.println(name);
+        p.println("------------------------------------------".substring(0,name.length()));
+        Iterator li = s.iterator();
+        while (li.hasNext()) {
+            Object elem = li.next();
+            p.println(elem);
+        }
+        p.println();
+    }
 
     private Map/*<Aspect,Set<Aspect>>*/ prec_rel = new HashMap();
 
