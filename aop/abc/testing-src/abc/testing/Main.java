@@ -155,7 +155,7 @@ public class Main {
 		 */
 		if(dirFilter != null) {
 			if(dir.indexOf(dirFilter) == -1) {
-				stdout.println("Skipping case \"" + dir + "/" + title + "\" as it doesn't match the directory filter.");
+			    //				stdout.println("Skipping case \"" + dir + "/" + title + "\" as it doesn't match the directory filter.");
 				// skipped++; don't count tests not matching filters
 				return;
 			}
@@ -163,7 +163,7 @@ public class Main {
 		
 		if(titleFilter != null) {
 			if(title.indexOf(titleFilter) == -1) {
-				stdout.println("Skipping case \""+ dir + "/" + title + "\" as it doesn't match the title filter.");
+			    //				stdout.println("Skipping case \""+ dir + "/" + title + "\" as it doesn't match the title filter.");
 				// skipped++; don't count tests not matching filters
 				return;
 			}
