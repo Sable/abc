@@ -18,6 +18,7 @@ import polyglot.types.*;
 import polyglot.ext.jl.ast.FieldDecl_c;
 
 import abc.aspectj.visit.*;
+import abc.aspectj.types.AspectJTypeSystem;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo
@@ -72,7 +73,13 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		System.out.println("Intertype field decl "+ht+"."+name());
 		if (ht instanceof ParsedClassType) {
 			// need to make a copy because the container has changed
-			FieldInstance fi = fieldInstance().container((ReferenceType)ht);
+			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
+			
+			FieldInstance fi = ts.interTypeFieldInstance(position(),(ClassType) fieldInstance().container(), // origin
+			                                                                                                (ReferenceType) ht, 
+			                                                                                                fieldInstance().flags(),
+																											fieldInstance().type(),
+																											fieldInstance().name());
 	   	 	((ParsedClassType)ht).addField(fi);
 		}
         return am.bypassChildren(this);

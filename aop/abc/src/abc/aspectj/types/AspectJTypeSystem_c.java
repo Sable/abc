@@ -72,9 +72,20 @@ public class AspectJTypeSystem_c
 						   returnType, name, argTypes, excTypes);
 		}	
 	
-	
-	// privileged aspects can access anything: override accessibility test in super
+		public FieldInstance interTypeFieldInstance(
+		                                  Position pos, ClassType origin,
+										  ReferenceType container, Flags flags,
+							  Type type, String name) {
+			   assert_(container);
+			   assert_(type);
+		   return new InterTypeFieldInstance_c(this, pos, origin, container, flags, type, name);
+	}
+		   
     protected boolean isAccessible(MemberInstance mi, ClassType ctc) {
+    	// private ITDs are accessible only from the originating aspect
+    	if (mi instanceof InterTypeMemberInstance && mi.flags().isPrivate())
+    		return ctc.equalsImpl(((InterTypeMemberInstance) mi).origin());
+    	// privileged aspects can access anything
     	if (AspectJFlags.isAspect(ctc.flags()) && AspectJFlags.isPrivileged(ctc.flags()))
     		return true;
     	else return super.isAccessible(mi,ctc);
