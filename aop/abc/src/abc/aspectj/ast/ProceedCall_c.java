@@ -1,6 +1,7 @@
 
 package abc.aspectj.ast;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import polyglot.types.SemanticException;
 import polyglot.types.MethodInstance;
 import polyglot.types.CodeInstance;
 
+import polyglot.visit.CFGBuilder;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
 
@@ -93,9 +95,9 @@ public class ProceedCall_c extends Call_c
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
                                        AspectJTypeSystem ts)
         {
-        		ProceedCall pc = (ProceedCall) this.copy();
+                ProceedCall pc = (ProceedCall) this.copy();
+                pc = (ProceedCall) pc.methodInstance(pc.methodInstance().throwTypes(new ArrayList()));
+ 
                 return pc.proceedMethod(visitor.proceed(),visitor.advice());
         }
-        
-        
 }

@@ -220,7 +220,7 @@ public class AdviceDecl_c extends MethodDecl_c
 			ret = nf.Return(position(),dummy);
 		}
 		Block bl = nf.Block(position()).append(ret);
-		List thrws = new LinkedList(throwTypes()); 
+		List thrws = new LinkedList(/*throwTypes()*/); 
 		String name = UniqueID.newID("proceed");
 		MethodDecl md = nf.MethodDecl(position(),
 						Flags.PUBLIC.set(Flags.FINAL).Static()
@@ -229,7 +229,7 @@ public class AdviceDecl_c extends MethodDecl_c
 						      Flags.PUBLIC.set(Flags.FINAL).Static()
 						      , tn.type(), name,
 						      new ArrayList(methodInstance().formalTypes()),
-						      new ArrayList(throwTypes()));
+						      new ArrayList(/*methodInstance().throwTypes()*/));
 		((ParsedClassType)methodInstance().container()).addMethod(mi);
 		md = md.methodInstance(mi);
 		((Around)spec).setProceed(md);
@@ -346,8 +346,11 @@ public class AdviceDecl_c extends MethodDecl_c
 		LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
 		nc.addVariable(ejpsp);
 		
-		if (spec instanceof Around)
-			proceedInstance = methodInstance().name("proceed").flags(flags().Public().Static());
+		if (spec instanceof Around){
+		    LinkedList l = new LinkedList();
+		    l.add(ts.Throwable());
+		    proceedInstance = methodInstance().name("proceed").flags(flags().Public().Static()).throwTypes(l);
+		}
 		else
 		    proceedInstance = null;
 		scope = nc;
