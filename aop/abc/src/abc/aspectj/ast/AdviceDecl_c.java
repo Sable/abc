@@ -224,13 +224,15 @@ public class AdviceDecl_c extends MethodDecl_c
     public MethodDecl methodDecl(AspectJNodeFactory nf,
     															AspectJTypeSystem ts) {
     	List newformals = new LinkedList(formals());
+    	List newformalTypes = new LinkedList(formals());
 	// Add enclosing joinpoint here
     	if (hasJoinPointStaticPart()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
     		Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
-		LocalInstance li = thisJoinPointStaticPartInstance(ts);
-		jpsp = jpsp.localInstance(li);
+		    LocalInstance li = thisJoinPointStaticPartInstance(ts);
+		    jpsp = jpsp.localInstance(li);
     		newformals.add(jpsp);
+    		newformalTypes.add(ts.JoinPointStaticPart());
     	}
     	if (hasJoinPoint()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
@@ -238,10 +240,12 @@ public class AdviceDecl_c extends MethodDecl_c
 		    LocalInstance li = thisJoinPointInstance(ts);
 		    jp = jp.localInstance(li);
     		newformals.add(jp);
+    		newformalTypes.add(ts.JoinPoint());
     	}
     	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc);
+    	MethodInstance mi = md.methodInstance().formalTypes(newformalTypes);
 	//nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,newformals,throwTypes(),body());
-    	return md;
+    	return md.methodInstance(mi);
     }
 
     /** Type checking of proceed: keep track of the methodInstance for the current proceed
