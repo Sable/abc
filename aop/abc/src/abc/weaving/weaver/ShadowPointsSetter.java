@@ -3,6 +3,7 @@ package abc.weaving.weaver;
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
+import soot.javaToJimple.LocalGenerator;
 import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
@@ -20,6 +21,8 @@ import abc.weaving.weaver.*;
  *    these markers to see where to insert code.
  *
  * @author Laurie Hendren
+ * @author Ondrej Lhotak
+ * @author Jennifer Lhotak
  * @date May 3, 2004
  */
 
@@ -29,7 +32,7 @@ public class ShadowPointsSetter {
     public static boolean debug = true;
 
     private static void spsdebug(String message)
-      { if (debug) System.err.println("SPS***" + message);
+      { if (debug) System.err.println("SPS*** " + message);
       }	
 
     /** Set all ShadowPoints for AdviceApplications in class sc. */
@@ -84,22 +87,13 @@ public class ShadowPointsSetter {
 
   private void insertBodySP(SootMethod method, 
                             List /*<AdviceApplication>*/ advicelist) {
-    ShadowPoints execution_sp = null;
-    // transform body of method so it 
-    // has exactly one return at the end, preceeded by nop.  This
-    // nop is the end point of shadowpoints.
+
     spsdebug("Need to transform for execution in method: " + method.getName()); 
-	     
-    // now look for beginning of shadow point.  If it is a method,
-    // beginning is a new nop inserted at the beginning of method
-    // body.    If it is a constructor, it is a new nop inserted
-    // right after the call to <init> in the body.    Assuming 
-    // we get code from a Java compiler, and there is only one
-    // <init>.
-    if (method.getName().equals("<init>"))
-      spsdebug("Need to insert after call to <init>");
-    else
-      spsdebug("Need to insert at beginning of method.");  	     
+
+    // restructure returns, and insert begin and end nops
+    ShadowPoints execution_sp = restructureBody(method); 
+    spsdebug("Restructured method looks like: \n" + method);
+    spsdebug("ShadowPoints are: " + execution_sp);
 	     
     // make all execution AdviceApplications refer to the shadowpoints
     // object just constructed.
@@ -125,8 +119,6 @@ public class ShadowPointsSetter {
        // throw new CodeGenException("Constructor advice on non <init>"); 
        spsdebug("Ignoring preinit advice on method " + method.getName());
   } // insertConstructorSP
-
-
 
   private void insertStmtSP(SootMethod method,
                                    List /*<AdviceApplication>*/ advicelist) {
@@ -156,7 +148,115 @@ public class ShadowPointsSetter {
 	    // else, introduce new nops before and after stmt and 
 	    // create new SP.
 	      
-	  } // for each statement
+         } // for each statement
   } // insertStmtSP
+
+  /** Transform body of method so it has exactly one return at the end, 
+   * preceeded by nop.  This nop is the end point of shadowpoints.
+   * Also insert begin nop either at beginning of body (for methods) or
+   * just after <init> call (for constructors). 
+   * Return the ShadowPoints object containing new begin and end.
+   */
+  private ShadowPoints restructureBody(SootMethod method) {
+    Body b = method.getActiveBody();
+    LocalGenerator localgen = new LocalGenerator(b);
+    Chain units = b.getUnits();
+     
+    // Here we move all returns to the end, and set up first and last
+    Stmt first = (Stmt) units.getFirst();
+    Stmt last = (Stmt) units.getLast();
+
+    Local ret = null;
+    if( last instanceof ReturnStmt ) 
+      { ReturnStmt lastRet = (ReturnStmt) last;
+	Value op = lastRet.getOp();
+        if (op instanceof Local) // return(<local>)
+          ret = (Local) op; // remember this local
+	else if (op instanceof Constant) // return(<constant>)
+	  { // change to ret := <constant>; return(ret); 
+	    Type returnType = method.getReturnType();
+	    ret = localgen.generateLocal(returnType);
+	    units.insertBefore(Jimple.v().newAssignStmt(ret,op),lastRet); 
+            lastRet.setOp(ret);
+	  }
+	else
+	  throw new CodeGenException(
+	                  "Expecting return of <local> or <constant>");
+      } 
+    else if( last instanceof ReturnVoidStmt ) 
+      { // do nothing 
+      } 
+    else 
+      { Type returnType = method.getReturnType();
+        ret = localgen.generateLocal(returnType);
+        units.insertAfter( Jimple.v().newReturnStmt(ret), last );
+      }
+
+    // now the last stmt should always be return ret; or return;
+    if( units.getLast() instanceof ReturnStmt ) 
+      { ReturnStmt lastRet = (ReturnStmt) units.getLast();
+        if( lastRet.getOp() != ret ) 
+           throw new CodeGenException("Expecting last stmt to Return ret");
+      }  
+    else if ( !(units.getLast() instanceof ReturnVoidStmt ) ) 
+      { throw new CodeGenException(
+	           "Last stmt should be ReturnStmt or ReturnVoidStmt");
+      }
+
+    // insert the nop just before the return stmt
+    Stmt endnop = Jimple.v().newNopStmt();
+    units.insertBefore( endnop, units.getLast() );
+
+    // update any traps to end at nop
+    for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
+      { final Trap tr = (Trap) trIt.next();
+        if( tr.getEndUnit() == units.getLast() ) 
+	  tr.setEndUnit(endnop);  
+       }
+
+    // Look for returns in the middle of the method
+    Iterator it = units.snapshotIterator();
+    while( it.hasNext() ) 
+      { Stmt u = (Stmt) it.next();
+        if( u == units.getLast() ) continue;
+        if( u instanceof ReturnStmt ) 
+	  { ReturnStmt ur = (ReturnStmt) u;
+            units.insertBefore( 
+		Jimple.v().newAssignStmt( ret, ur.getOp() ), ur );
+           }
+        if( u instanceof ReturnVoidStmt  || u instanceof ReturnStmt) 
+	  { Stmt gotoStmt = Jimple.v().newGotoStmt(endnop);
+            units.swapWith( u, gotoStmt );
+            for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
+	      { final Trap tr = (Trap) trIt.next();
+                for( Iterator boxIt = tr.getUnitBoxes().iterator(); 
+		    boxIt.hasNext(); ) 
+		  { final UnitBox box = (UnitBox) boxIt.next();
+                    if( box.getUnit() == u ) 
+                      box.setUnit( gotoStmt );
+                  } // each box in trap 
+              } // each trap
+	  } // if return stmt
+      } // each stmt in body
+
+
+    // now look for beginning of shadow point.  If it is a method,
+    // beginning is a new nop inserted at the beginning of method
+    // body.    If it is a constructor, it is a new nop inserted
+    // right after the call to <init> in the body.    Assuming 
+    // we get code from a Java compiler, and there is only one
+    // <init>.
+    if (method.getName().equals("<init>"))
+      spsdebug("Need to insert after call to <init>");
+    else
+      spsdebug("Need to insert at beginning of method.");  	     
+
+    // now insert a nop for the beginning
+    // TODO: must check for <init> and put it just after <init> call
+    Stmt startnop = Jimple.v().newNopStmt();
+    units.insertBefore(startnop,first);
+
+    return new ShadowPoints(startnop,endnop);
+  } // method restructureBody 
 
 } // class ShadowPointsSetter

@@ -57,7 +57,7 @@ public class Weaver {
         PointcutCodeGen pg = new PointcutCodeGen();
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
-            pg.weaveInAspects(cl.getSootClass());
+            // TODO: pg.weaveInAspects(cl.getSootClass());
         }
     }
 }

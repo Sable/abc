@@ -26,9 +26,9 @@ public class ShadowPoints {
 
  /** Should always get references to NopStmts */
  public ShadowPoints(Stmt b, Stmt e){
-    if (b != null) 
+    if (b == null) 
       throw new CodeGenException("Beginning of shadow point must be non-null");
-    if (e != null) 
+    if (e == null) 
       throw new CodeGenException("Ending of shadow point must be non-null");
     if (!(b instanceof NopStmt))
       throw new CodeGenException("Beginning of shadow point must be NopStmt");

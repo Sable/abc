@@ -7,17 +7,45 @@ import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 
+
+/** Adds fields and methods to classes reprsenting aspects.
+ *   @author Jennifer Lhotak 
+ *   @author Ondrej Lhotak
+ *   @author Laurie Hendren
+ *   @date April 30, 2004 
+ */
+
 public class AspectCodeGen {
+      /** set to false to disable debugging messages for AspectCodeGen */
+      public static boolean debug = true;
 
+      private static void acgdebug(String message)
+        { if (debug) System.err.println("ACG*** " + message); }
+
+
+    /** top-level call to fill in aspect with fields and methods */
     public void fillInAspect( SootClass cl ) {
-        System.out.println( "filling in aspect "+cl );
+        acgdebug("--- BEGIN filling in aspect "+cl );
 
+	// add public static final ajc$perSingletonInstance field
+	acgdebug(" ... adding ajc$perSingletonInstance");
         SootField instance = new SootField( "ajc$perSingletonInstance", 
 	    cl.getType(), Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL );
         cl.addField( instance );
+
+	// front end has put aspectOf method, fill in body
+	acgdebug(" ... adding aspectOf body");
         generateAspectOfBody(cl);
-        generateClinitBody(cl);
+
+	// front end has put hasAspect method, fill in body
+	acgdebug(" ... adding hasAspect body");
         generateHasAspectBody(cl);
+
+	// add appropriate init code to clinit(), create one if none exists
+	acgdebug(" ... handling clinit()");
+        generateClinitBody(cl);
+
+        acgdebug( "--- END filling in aspect "+cl +"\n" );
     }
 
     private void generateAspectOfBody( SootClass cl ) {
@@ -50,13 +78,7 @@ public class AspectCodeGen {
 
     private void generateHasAspectBody(SootClass cl){
         SootMethod hasAspect;
-        if (!cl.declaresMethod("boolean hasAspect()")){
-            hasAspect = new SootMethod("hasAspect", new ArrayList(), BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
-            cl.addMethod(hasAspect);
-        }
-        else {
-            hasAspect = cl.getMethodByName("hasAspect");
-        }
+        hasAspect = cl.getMethodByName("hasAspect");
 
         Body b = Jimple.v().newBody(hasAspect);
         hasAspect.setActiveBody(b);
@@ -71,7 +93,8 @@ public class AspectCodeGen {
         units.addLast( Jimple.v().newAssignStmt( r0, ref));
         ReturnStmt ret0 = Jimple.v().newReturnStmt( IntConstant.v(0) );
 
-        units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( r0, NullConstant.v() ), ret0 ));
+        units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( r0, 
+		          NullConstant.v() ), ret0 ));
         
         units.addLast( Jimple.v().newReturnStmt( IntConstant.v(1) ) );
 
@@ -86,7 +109,6 @@ public class AspectCodeGen {
 
         Local r0 = Jimple.v().newLocal("r0", cl.getType());
         b.getLocals().add(r0);
-	System.out.println("getting clinit");
 
         Chain units = b.getUnits();
         units.addLast( Jimple.v().newAssignStmt( r0, Jimple.v().newNewExpr( cl.getType() ) ) );
@@ -98,7 +120,7 @@ public class AspectCodeGen {
         SootMethod clinit;
 
         if( !cl.declaresMethod( "void <clinit>()" ) ) {
-	    System.out.println("There is no clinit, must build one");
+	    acgdebug("There is no clinit, must build one");
             clinit = new SootMethod( "<clinit>", new ArrayList(), VoidType.v(), Modifier.STATIC );
             cl.addMethod( clinit );
             b = Jimple.v().newBody(clinit);
@@ -106,7 +128,7 @@ public class AspectCodeGen {
             b.getUnits().addLast( Jimple.v().newReturnVoidStmt() );
         }
 
-	System.out.println("getting clinit");
+	acgdebug("getting clinit");
         clinit = cl.getMethod("void <clinit>()");
 
         units = clinit.retrieveActiveBody().getUnits();
