@@ -386,7 +386,7 @@
     <ajc-test dir="base/test135"
       title="proper values for thisJoinPoint attributes" 
       abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.
-                  Now seems to fail on construction of joinpoint data. ODM"
+                  Now seems to fail because of advice & aspect inheritance. ODM"
       keywords="from-base">
         <compile
           files="Driver.java,JoinPointFields.java,TopFoo.java,pack/PackFoo.java,pack/JoinPointFields.java,pack/PackJoinPointFields.java"/>
@@ -2365,6 +2365,7 @@
 
     <ajc-test dir="errors"
       title="circular dominates leading to irresolvable advice precedence"
+      abccomment="Correct error, but thrown as a RuntimeException. ODM July 7, 2004"
       keywords="from-errors">
         <compile files="CircularDominates.java">
             <message kind="error" line="12"/>
@@ -2391,9 +2392,12 @@
 
     <ajc-test dir="errors"
       title="StackOverFlowException with circular +implements's."
+      abccomment="Not an ideal error location, but ok for now. ODM July 7, 2004"
       keywords="from-errors">
         <compile files="CircularPlusImplementsIntros.java">
-            <message kind="error" line="19"/>
+            <ajcmessage kind="error" line="19"/>
+            <message kind="error" line="7"/>
+            <message kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -2415,12 +2419,14 @@
 
     <ajc-test dir="errors" pr="388"
       title="two classes with the same fully-qualified names [eachjvm]"
+      abccomment="Bogus test, as it contains a syntax error that causes abc to bail out. ODM July 7, 2004"
       keywords="from-errors"
       comment="XXX error not flagging initial type">
         <compile files="DuplicatedNames.java">
-            <message kind="error" line="3"/>
-            <message kind="error" line="5"/>
-            <message kind="error" line="7"/>
+            <ajcmessage kind="error" line="3"/>
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="7"/>
+            <ajcmessage kind="error" line="9"/>
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
@@ -2468,13 +2474,14 @@
 	<!-- we're not implementing this error check in 1.1 -->
     <ajc-test dir="errors"
       title="checking the contra-variant errors for typing of proceed"
+      abccomment="Still not implemented in ajc 1.2. abc is happy too. ODM July 7, 2004"
       keywords="from-errors,knownLimitation">
         <compile files="BadAround.java">
-            <message kind="error" line="12"/>
-            <message kind="error" line="15"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="19"/>
-            <message kind="error" line="22"/>
+            <ajcmessage kind="error" line="12"/>
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="22"/>
         </compile>
     </ajc-test>
 
