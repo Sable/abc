@@ -234,14 +234,19 @@
         <run class="Driver"/>
     </ajc-test>
 
-	<!-- we're not implementing static inter-type fields on interfaces in 1.1 -->
+   <!-- we're not implementing static inter-type fields on interfaces in 1.1 -->
     <ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
+      abccomment="ajc 1.2 still does not implement static IT fields and neither does abc. ODM 4/7/04"
       keywords="from-base,knownLimitation">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
+        <compile files="Driver.java">
+          <ajcmessage kind="ignore"/>
+          <message kind="error" line="97"/>  
+        </compile>
+        <!-- <run class="Driver"/> -->
     </ajc-test>
 
     <ajc-test dir="base/test118" title="DEPRECATED: Introduce of constructors"
+      abccomment="this fails because we don't match I.new(..) correctly. ODM 4/7/04"
       keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
@@ -376,7 +381,9 @@
     </ajc-test>
 
     <ajc-test dir="base/test140"
-      title="aspect inheritance and advice, introduction" keywords="from-base">
+      title="aspect inheritance and advice, introduction" 
+      abc-comment="Fails due to use of advice in abstract aspect. ODM 04/07/04"
+      keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
@@ -3969,6 +3976,7 @@
     </ajc-test>
 
     <ajc-test dir="design/intro" title="interfaces as mixins with introduction"
+      abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04"
       keywords="from-resolved_10x">
         <compile files="Interfaces.java"/>
         <run class="Interfaces"/>
