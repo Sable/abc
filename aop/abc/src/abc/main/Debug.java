@@ -63,7 +63,7 @@ public class Debug {
     public boolean debugPointcutNormalization=false;
     
     // information about whether nested comments should be allowed
-    public boolean noNestedComments = false;
+    public boolean allowNestedComments = false;
 
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher

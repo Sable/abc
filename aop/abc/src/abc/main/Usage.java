@@ -45,8 +45,8 @@ public class Usage {
     "\n"+
     "General Options [ajc]: \n" +
     "---------------------- \n" +
-    "  -h -help --help        Print options.  \n" +
-    "  -v -version --version  Print abc, Soot and Polyglot versions."
+    "  -h -help --help              Print options.  \n" +
+    "  -v -version --version        Print abc, Soot and Polyglot versions."
     );
   }
 
@@ -55,8 +55,8 @@ public class Usage {
     "\n" +
     "Input Options [ajc]: \n" +
     "-------------------- \n" +
-    "  -injars  <jarList>     Use classes in <jarList> as source.\n" +
-    "  -classpath -cp         Class path of zip/jar and directories."
+    "  -injars  <jarList>           Use classes in <jarList> as source.\n" +
+    "  -classpath -cp               Class path of zip/jar and directories."
     );
   }
 
@@ -65,7 +65,7 @@ public class Usage {
     "\n" + 
     "Output Options [ajc]: \n" +
     "--------------------- \n" +
-    "  -d <dir>               Destination directory for generated files."
+    "  -d <dir>                     Destination directory for generated files."
     );
   }
 
@@ -74,10 +74,10 @@ public class Usage {
     "\n" + 
     "Warning/Error Reporting Options [ajc]: \n" +
     "-------------------------------------- \n" +
-    "  -Xlint -Xlint:warning  Report Xlint (weaving-related) warnings/errors.\n" +
-    "  -Xlint:error           Report Xlint errors only, not warnings.\n" +
-    "  -Xlint:ignore          Don't report Xlint warnings or errors . \n" +
-    "  -nowarn -warn:none     Don't report normal (non-weaving-related) warnings."
+    "  -Xlint -Xlint:warning        Report Xlint (weaving-related) warnings/errors.\n" +
+    "  -Xlint:error                 Report Xlint errors only, not warnings.\n" +
+    "  -Xlint:ignore                Don't report Xlint warnings or errors . \n" +
+    "  -nowarn -warn:none           Don't report normal (non-weaving-related) warnings."
     // "-help:warn [abc]"
    );
   }
@@ -87,7 +87,7 @@ public class Usage {
     "\n" + 
     "Utility Options [ajc]:  \n" +
     "----------------------  \n" +
-    "  -time                  Report total times and times for each phase."
+    "  -time                        Report total times and times for each phase."
     );
   }
 
@@ -96,8 +96,8 @@ public class Usage {
     "\n" +
     "Debug Options [abc]: \n" +
     "-------------------- \n" +
-    "  -debug <FlagName>      Set abc.main.Debug.v().FlagName to true.\n" +
-    "  -nodebug <FlagName>    Set abc.main.Debug.v().FlagName to false."
+    "  -debug <FlagName>            Set abc.main.Debug.v().FlagName to true.\n" +
+    "  -nodebug <FlagName>          Set abc.main.Debug.v().FlagName to false."
     // "-help:debug       [abc]"
     );
   }
@@ -107,7 +107,7 @@ public class Usage {
     "\n" +
     "Advanced Options [abc]: \n" +
     "----------------------- \n" +
-    "  -noNestedComments      Disable support for nested comments."
+    "  -nested-comments[:{on|off}]  Specify whether to allow nested comments."
     );
   }
 
@@ -116,9 +116,9 @@ public class Usage {
     "\n" +
     "Optimization Options [abc]: \n" +
     "--------------------------- \n" +
-    "  -O0                    Disable all optimizations.\n" +
-    "  -O, -O1                Enable basic optimizations on generated code.\n" +
-    "                         (this is the default setting)"
+    "  -O0                          Disable all optimizations.\n" +
+    "  -O, -O1                      Enable basic optimizations on generated code.\n" +
+    "                               (this is the default setting)"
     );
   }
 

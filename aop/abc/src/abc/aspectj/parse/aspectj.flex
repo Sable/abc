@@ -868,11 +868,7 @@ OctalEscape = \\ [0-7]
 
 <COMMENT> { 
   "*/"				{ 
-	  					if(abc.main.Debug.v().noNestedComments) {
-	  						inComment = false;
-	  						returnFromStringChar();
-	  					}
-	  					else {
+	  					if(abc.main.Debug.v().allowNestedComments) {
 	  						comment_count = comment_count - 1; 
 		 			   		if (comment_count < 0) 
 	                        	eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
@@ -880,10 +876,14 @@ OctalEscape = \\ [0-7]
                             	inComment = false;
     		                    returnFromStringChar(); 
                             }
-	                    } 
+	                    }
+	  					else {
+	  						inComment = false;
+	  						returnFromStringChar();
+	  					}
 	                }
   "/*"              { 
-  						if(!abc.main.Debug.v().noNestedComments) 
+  						if(abc.main.Debug.v().allowNestedComments) 
   							comment_count = comment_count + 1; 
   					}
   .|\n                           { /* ignore */ }

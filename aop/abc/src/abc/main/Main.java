@@ -258,10 +258,15 @@ public class Main {
            // don't report unresolved imports 
            { // nothing to do, because we don't do it anyway.
            }
-         else if (args[i].equals("-noNestedComments"))
+         else if (args[i].equals("-nested-comments") || args[i].equals("-nested-comments:true")
+                 || args[i].equals("-nested-comments:on"))
          {
-             //disallow nested comments for this compiler run
-             abc.main.Debug.v().noNestedComments = true;
+             //allow nested comments for this compiler run
+             abc.main.Debug.v().allowNestedComments = true;
+         }
+         else if(args[i].equals("-nested-comments:false") || args[i].equals("-nested-comments:off"))
+         {
+             abc.main.Debug.v().allowNestedComments = false;
          }
          else if (args[i].equals("-time"))
            { abc.main.Debug.v().abcTimer=true;
