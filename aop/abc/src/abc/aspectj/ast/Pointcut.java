@@ -1,5 +1,8 @@
 package arc.aspectj.ast;
 
+import java.util.List;
+import java.util.Collection;
+
 import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.visit.*;
@@ -12,6 +15,10 @@ public interface Pointcut extends Node
 
     void printSubExpr(Pointcut pc, boolean associative,
                       CodeWriter w, PrettyPrinter pp);
+                      
+     Collection mayBind() throws SemanticException;
+     Collection mustBind();
+	 void checkFormals(List formals) throws SemanticException;
 }
 
 

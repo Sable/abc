@@ -24,7 +24,8 @@ import polyglot.ext.jl.ast.TypeNode_c;
 
 public class AmbTypeOrLocal_c extends Node_c implements AmbTypeOrLocal {
 	TypeNode type; // an identifier that is an advice formal, or a type, or *
-	                             // * is represented by type==null
+	                             // * is initially represented by type==null
+	                             // disambiguation makes it a TPEUniversal
 	
 	public AmbTypeOrLocal_c(Position pos,TypeNode type) {
 		super(pos);
@@ -58,8 +59,7 @@ public class AmbTypeOrLocal_c extends Node_c implements AmbTypeOrLocal {
 	 	}
 	 	if (type != null)
 	 	    return type;
-	 	 else return ar.nodeFactory().CanonicalTypeNode(position(),
-	 	                            ar.typeSystem().Null());
+	 	 else return ((AspectJNodeFactory) ar.nodeFactory()).TPEUniversal(position());
 	  }
 	  
 

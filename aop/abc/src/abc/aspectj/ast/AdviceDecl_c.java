@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
@@ -110,6 +111,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		return reconstruct(returnType, formals, throwTypes, body, spec, pc);
 	}
 
+/* ajc treats pointcuts as static contexts 
    public Context enterScope(Node child, Context c) {
    	    Context nc = super.enterScope(child,c);
    	    if (child==pc) // pointcuts should be treated as a static context
@@ -117,6 +119,7 @@ public class AdviceDecl_c extends MethodDecl_c
    	    else
    	    	return nc;
    }
+*/
 	
 	 public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
 		 if (ar.kind() == AmbiguityRemover.SUPER) {
@@ -190,6 +193,9 @@ public class AdviceDecl_c extends MethodDecl_c
 				throw new SemanticException("type \"" + t + "\" is not a subclass of \" +" +					                        ts.Throwable() + "\".", spec.returnVal().type().position());
 			}
 		}
+		
+		pc.checkFormals(formals);
+	  
 		return this;
 	}
 	

@@ -55,5 +55,26 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
 		return reconstruct(left,right);
 	}
 
+	public Collection mayBind() throws SemanticException {
+		Collection result = left.mayBind();
+		Collection result2 = right.mayBind();
+  		for (Iterator i = result2.iterator(); i.hasNext(); ) {
+			String pat = (String) i.next();
+		    if (op == PCBinary.COND_AND && result.contains(pat))
+			    throw new SemanticException("Repeated binding of \""+ pat +"\".",
+																			   position()); // somewhat inaccurate position info
+		    else result.add(pat);
+		}
+		return result;
+	}
+   
+		public Collection mustBind() {
+			Collection result = left.mustBind();
+			if (op == PCBinary.COND_AND)
+				result.addAll(right.mustBind());
+			else if (op == PCBinary.COND_OR)
+			    result.retainAll(right.mustBind());
+			return result;
+		}
 
 }

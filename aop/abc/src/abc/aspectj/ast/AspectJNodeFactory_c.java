@@ -269,11 +269,11 @@ public class AspectJNodeFactory_c
 	return new PCWithin_c(pos,pat);
     }
 
-    public PCThis PCThis(Position pos, ClassnamePatternExpr pat) {
+    public PCThis PCThis(Position pos, AmbTypeOrLocal pat) {
 	return new PCThis_c(pos,pat);
     }
 
-    public PCTarget PCTarget(Position pos, ClassnamePatternExpr pat) {
+    public PCTarget PCTarget(Position pos, AmbTypeOrLocal pat) {
 	return new PCTarget_c(pos,pat);
     }
 

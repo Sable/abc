@@ -44,4 +44,13 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
         w.write(")");
     }
 
+
+	public Collection mayBind() throws SemanticException {
+		return pc.mayBind();
+	}
+   
+	public Collection mustBind() {
+	 	return pc.mustBind();
+	}
+
 }

@@ -188,16 +188,6 @@ public class PCName_c extends Pointcut_c implements PCName
 									 target.position());
 	   } 
 
-       // get list of argument types
-	   List argTypes = new ArrayList(args.size());
-	   for (Iterator i = args.iterator(); i.hasNext(); ) {
-		 Object e =  i.next();
-		 if (e instanceof Local)
-		    argTypes.add(((Local)e).type());
-		 else if (e instanceof TypeNode)
-		    argTypes.add(((TypeNode)e).type());
-	   }
-
        // find nearest enclosing pointcut declaration of the right name, and compute its type
 	   MethodInstance mi;
 	   ClassType ct;
@@ -214,24 +204,24 @@ public class PCName_c extends Pointcut_c implements PCName
        List formalTypes = mi.formalTypes();
        
        // check the arguments, NullType matches anything
-       if (argTypes.size() != formalTypes.size()) {
+       if (args.size() != formalTypes.size()) {
        		throw new SemanticException("Wrong number of arguments to pointcut," +
-       		                                                         " expected " + formalTypes.size(), position());
+       		                                                         " expected " + formalTypes.size() + ".", position());
        }
-       Iterator a = argTypes.iterator();
+       
        Iterator an = args.iterator(); // just to report the error in the right place
        for (Iterator b = formalTypes.iterator(); b.hasNext();  ) {
-       	    Type argtype = (Type)a.next();
        	    Node arg = (Node)an.next();
        	    Type formaltype = (Type)b.next();
-       	    if (! (argtype instanceof NullType)) 
+       	    if (! (arg instanceof TPEUniversal)){
+       	        Type argtype = ((Typed)arg).type();
        	        if (!ts.isImplicitCastValid(argtype,formaltype))
        	        		throw new SemanticException("Wrong argument type "+argtype+
-       	        	                                                             " expected " + formaltype ,arg.position()); 
+       	        	                                                             " expected " + formaltype + "." ,arg.position()); 
+       	    }
        }
-      
 	   return this.pointcutInstance(mi);
-	 }	
+	}
 	 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write(name+"(");

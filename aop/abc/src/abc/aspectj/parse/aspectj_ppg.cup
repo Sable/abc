@@ -2056,21 +2056,21 @@ basic_pointcut_expr ::=
           RESULT = parser.nf.PCIf(parser.pos(x,y),a);
        
                                          :}
- |  PC_THIS:x LPAREN classname_pattern_expr:a RPAREN:y {:
-                                                       Grm.parserTrace("THIS pointcut");
+ |  PC_THIS:x LPAREN type_id_star:a RPAREN:y {:
+                                             Grm.parserTrace("THIS pointcut");
           RESULT = parser.nf.PCThis(parser.pos(x,y),a);
        
-                                                       :}
- |  PC_TARGET:x LPAREN classname_pattern_expr:a RPAREN:y {:
-                                                         Grm.parserTrace("TARGET pointcut");
+                                             :}
+ |  PC_TARGET:x LPAREN type_id_star:a RPAREN:y {:
+                                               Grm.parserTrace("TARGET pointcut");
           RESULT = parser.nf.PCTarget(parser.pos(x,y),a);
        
-                                                         :}
- |  PC_ARGS:x LPAREN formal_pattern_list_opt:a RPAREN:y {:
-                                                        Grm.parserTrace("ARGS pointcut");
+                                               :}
+ |  PC_ARGS:x LPAREN type_id_star_list_opt:a RPAREN:y {:
+                                                      Grm.parserTrace("ARGS pointcut");
           RESULT = parser.nf.PCArgs(parser.pos(x,y),a);
        
-                                                        :}
+                                                      :}
  |  name:a LPAREN type_id_star_list_opt:b RPAREN:y {:
                                                    RESULT = parser.nf.PCName(parser.pos(a,y),
                 a.prefix == null ? null : a.prefix.toReceiver(),

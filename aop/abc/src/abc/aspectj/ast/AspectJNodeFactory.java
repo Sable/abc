@@ -169,9 +169,9 @@ public interface AspectJNodeFactory
 
     PCWithin PCWithin(Position pos, ClassnamePatternExpr pat);
 
-    PCThis PCThis(Position pos, ClassnamePatternExpr pat);
+    PCThis PCThis(Position pos, AmbTypeOrLocal pat);
 
-    PCTarget PCTarget(Position pos, ClassnamePatternExpr pat);
+    PCTarget PCTarget(Position pos, AmbTypeOrLocal pat);
 
     PCArgs PCArgs(Position pos, List pats);
 

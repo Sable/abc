@@ -42,5 +42,18 @@ public class PCNot_c extends Pointcut_c implements PCNot
 		 return reconstruct(pc);
 	}
 
+	public Collection mayBind() throws SemanticException {
+		Collection result = new HashSet();
+		Collection pcmaybind = pc.mayBind();
+		for (Iterator i = pcmaybind.iterator(); i.hasNext(); ) {
+			Local l = (Local) i.next();
+			throw new SemanticException("Cannot bind variable under negation",l.position());
+		}
+		return result;
+	}
+   
+	public Collection mustBind() {
+		return new HashSet();
+	}
 
 }

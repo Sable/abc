@@ -32,4 +32,27 @@ public class Pointcut_c extends Node_c implements Pointcut
             printBlock(pc, w, pp);
         }
     }
+    
+   public Collection mayBind()  throws SemanticException {
+   	    return new HashSet();
+   }
+   
+   public Collection mustBind() {
+   		return new HashSet();
+   }
+  
+   public void checkFormals(List formals) throws SemanticException {
+   		Collection maybind = mayBind();   // check for repeated bindings
+   		
+   		// now look for undefined formals
+   		Collection mustbind = mustBind();
+   		
+	 	for (Iterator nb = formals.iterator(); nb.hasNext(); ) {
+			   Formal l = (Formal) nb.next();
+			   if (!(mustbind.contains(l.name())))
+			   	   throw new SemanticException("Formal \""+ l.name() + "\" may be unbound in pointcut.",
+																		l.position());
+		}
+   }
 }
+

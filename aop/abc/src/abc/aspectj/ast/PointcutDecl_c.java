@@ -81,6 +81,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 		}
 		
 		
+/* ajc treats pointcuts as static
 	public Context enterScope(Node child, Context c) {
 		   Context nc = super.enterScope(child,c);
 		   if (child==pc) // pointcuts should be treated as a static context
@@ -88,6 +89,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 		   else
 			   return nc;
 	  }
+*/
 
 	
 	public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
@@ -166,6 +168,9 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 	   }
 		   overrideMethodCheck(tc);
 
+	  if (pc != null)
+	  	pc.checkFormals(formals);
+	  	
 	   return this;
 	}
 
