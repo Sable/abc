@@ -82,7 +82,7 @@ public class IntertypeAdjuster {
 
 	   //  	This is an accessor method for reading a field
 	   //   MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-	   //	MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+	   //	MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(), 0,0);
 	   }
     private void addSuperFieldGetter( SuperFieldGet sfd ) {
     // 	the field that we wish to access, in the superclass of sd.target()
@@ -123,7 +123,8 @@ public class IntertypeAdjuster {
 
 		// This is an accessor method for reading a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(),
+							0,0);
     }
     
 	private void addSuperFieldSetter( SuperFieldSet sfd ) {
@@ -170,7 +171,8 @@ public class IntertypeAdjuster {
 
 		// This is an accessor method for reading a field
 			MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-			MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+			MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(),
+								0,0);
 		}
     
 
@@ -390,7 +392,8 @@ public class IntertypeAdjuster {
 		
 				// This is a stub for an intertype method decl
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
-				MethodCategory.registerRealNameAndClass(sm, method.getName(), method.getDeclaringClass().getName());
+				MethodCategory.registerRealNameAndClass(sm, method.getName(), method.getDeclaringClass().getName(),
+									0,0); //FIXME: Extra formals?
 	}
 	
 	
@@ -434,7 +437,8 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 		// This is an accessor method for reading a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(),
+							0,0);
 	    return sm;
 	}
 	
@@ -462,7 +466,8 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 		// This is an accessor method for writing a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(),
+							0,0);
 		return sm;
 	}
 	
@@ -635,6 +640,8 @@ public class IntertypeAdjuster {
 		
 		// This is a stub for an intertype constructor decl
 		MethodCategory.register(sm, MethodCategory.INTERTYPE_CONSTRUCTOR_DELEGATOR);
+		MethodCategory.registerRealNameAndClass(sm, "<init>", scTarget.getName(),
+							0,0); //FIXME: Extra formals?
 	}
 	
 

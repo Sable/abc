@@ -174,7 +174,12 @@ public class PatternMatcher {
 	return true;
     }
 
-    public boolean matchesFormals(List/*<FormalPattern>*/ fpats, List/*<soot.Type>*/ ftypes) {
+    public boolean matchesFormals(List/*<FormalPattern>*/ fpats, soot.SootMethod method) {
+	LinkedList/*<soot.Type>*/ ftypes = new LinkedList(method.getParameterTypes());
+	int skip_first = MethodCategory.getSkipFirst(method);
+	int skip_last = MethodCategory.getSkipLast(method);
+	while (skip_first-- > 0) ftypes.removeFirst();
+	while (skip_last-- > 0) ftypes.removeLast();
 	return matchesFormals(fpats, 0, ftypes, 0);
     }
 
@@ -276,7 +281,7 @@ public class PatternMatcher {
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
 		matchesClass(pattern.getName().base(), classname) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
-		matchesFormals(pattern.getFormals(), method.getParameterTypes()) &&
+		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	}
 	public String toString() {
@@ -346,7 +351,7 @@ public class PatternMatcher {
 	    return
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
-		matchesFormals(pattern.getFormals(), method.getParameterTypes()) &&
+		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	}
 	public String toString() {

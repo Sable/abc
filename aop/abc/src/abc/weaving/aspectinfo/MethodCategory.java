@@ -199,28 +199,48 @@ public class MethodCategory {
 
     // REAL NAME REGISTRATION
 
-    public static void registerRealNameAndClass(String sig, String real_name, String real_class) {
-	GlobalAspectInfo.v().registerRealNameAndClass(sig, real_name, d2d(real_class));
+    public static void registerRealNameAndClass(String sig,
+						String real_name, String real_class,
+						int skip_first, int skip_last) {
+	GlobalAspectInfo.v().registerRealNameAndClass(sig,
+						      real_name, d2d(real_class),
+						      skip_first, skip_last);
     }
 
-    public static void registerRealNameAndClass(SootMethod m, String real_name, String real_class) {
-	registerRealNameAndClass(signature(m), real_name, real_class);
+    public static void registerRealNameAndClass(SootMethod m,
+						String real_name, String real_class,
+						int skip_first, int skip_last) {
+	registerRealNameAndClass(signature(m),
+				 real_name, real_class,
+				 skip_first, skip_last);
     }
 
-    public static void registerRealNameAndClass(MethodDecl m, String real_name, String real_class) {
+    public static void registerRealNameAndClass(MethodDecl m,
+						String real_name, String real_class,
+						int skip_first, int skip_last) {
 	try {
-	    registerRealNameAndClass(signature(m, (ParsedClassType)m.methodInstance().container()), real_name, real_class);
+	    registerRealNameAndClass(signature(m, (ParsedClassType)m.methodInstance().container()),
+				     real_name, real_class,
+				     skip_first, skip_last);
 	} catch (ClassCastException e) {
 	    throw new RuntimeException("Tried to register name and class of method "+m.name()+" in unnamed class");
 	}
     }
 
-    public static void registerRealNameAndClass(MethodDecl m, ParsedClassType container, String real_name, String real_class) {
-	registerRealNameAndClass(signature(m, container), real_name, real_class);
+    public static void registerRealNameAndClass(MethodDecl m, ParsedClassType container,
+						String real_name, String real_class,
+						int skip_first, int skip_last) {
+	registerRealNameAndClass(signature(m, container),
+				 real_name, real_class,
+				 skip_first, skip_last);
     }
 
-    public static void registerRealNameAndClass(MethodSig m, String real_name, String real_class) {
-	registerRealNameAndClass(signature(m), real_name, real_class);
+    public static void registerRealNameAndClass(MethodSig m,
+						String real_name, String real_class,
+						int skip_first, int skip_last) {
+	registerRealNameAndClass(signature(m),
+				 real_name, real_class,
+				 skip_first, skip_last);
     }
 
     // REAL NAME QUERY
@@ -259,6 +279,14 @@ public class MethodCategory {
 	} else {
 	    return real_class;
 	}
+    }
+
+    public static int getSkipFirst(SootMethod m) {
+	return GlobalAspectInfo.v().getSkipFirst(signature(m));
+    }
+
+    public static int getSkipLast(SootMethod m) {
+	return GlobalAspectInfo.v().getSkipLast(signature(m));
     }
 
     // SIGNATURE CALCULATION METHODS

@@ -51,6 +51,8 @@ public class GlobalAspectInfo {
     private Map/*<String,Integer>*/ method_categories = new HashMap();
     private Map/*<String,String>*/ method_real_names = new HashMap();
     private Map/*<String,String>*/ method_real_classes = new HashMap();
+    private Map/*<String,Integer>*/ method_skip_first = new HashMap();
+    private Map/*<String,Integer>*/ method_skip_last = new HashMap();
 
     public GlobalAspectInfo() {
 	
@@ -415,10 +417,13 @@ public class GlobalAspectInfo {
 	}
     }
 
-    public void registerRealNameAndClass(String sig, String real_name, String real_class) {
+    public void registerRealNameAndClass(String sig, String real_name, String real_class,
+					 int skip_first, int skip_last) {
 	//System.out.println("Method registered: "+sig+" ("+cat+")");
 	method_real_names.put(sig, real_name);
 	method_real_classes.put(sig, real_class);
+	method_skip_first.put(sig, new Integer(skip_first));
+	method_skip_last.put(sig, new Integer(skip_last));
     }
 
     public String getRealName(String sig) {
@@ -427,6 +432,14 @@ public class GlobalAspectInfo {
 
     public String getRealClass(String sig) {
 	return (String)method_real_classes.get(sig);
+    }
+
+    public int getSkipFirst(String sig) {
+	return ((Integer)method_skip_first.get(sig)).intValue();
+    }
+
+    public int getSkipLast(String sig) {
+	return ((Integer)method_skip_last.get(sig)).intValue();
     }
 
 }

@@ -558,11 +558,14 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 			}
 		}
 		abc.weaving.aspectinfo.MethodSig body = AspectInfoHarvester.convertSig(aiBody);
-		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
-		MethodCategory.registerRealNameAndClass(body, "<init>", host.toString());
 		abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
     		(target, current_aspect,mod, formalTypes, exc, qualifier, kind, arguments, body, position());
 		gai.addIntertypeConstructorDecl(icd);
+
+		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
+		// FIXME: First argument is this, right?
+		MethodCategory.registerRealNameAndClass(body, "<init>", host.toString(),
+							1,0);
 	}
     
 }
