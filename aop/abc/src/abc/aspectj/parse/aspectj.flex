@@ -544,9 +544,9 @@ SingleCharacter = [^\r\n\'\\]
                                     return key(sym.PERTHIS); 
                                   }
   "proceed"                       { return key(sym.PROCEED); }
-  "thisEnclosingJoinPointStaticPart"  { return key(sym.THISENCLOSINGJOINPOINTSTATICPART); }
+ /*  "thisEnclosingJoinPointStaticPart"  { return key(sym.THISENCLOSINGJOINPOINTSTATICPART); }
   "thisJoinPoint"                 { return key(sym.THISJOINPOINT); }
-  "thisJoinPointStaticPart"       { return key(sym.THISJOINPOINTSTATICPART); } 
+  "thisJoinPointStaticPart"       { return key(sym.THISJOINPOINTSTATICPART); } */
 }
 
 
