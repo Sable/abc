@@ -294,6 +294,14 @@ public class Main {
             {
                 abc.main.Debug.v().allowNestedComments = false;
             }
+            else if(args.top().equals("-warn-unused-advice") || args.top().equals("-warn-unused-advice:true")
+                    ||args.top().equals("-warn-unused-advice:on")) {
+                abc.main.Debug.v().warnUnusedAdvice = true;
+            }
+            else if(args.top().equals("-warn-unused-advice:false")
+                    ||args.top().equals("-warn-unused-advice:off")) {
+                abc.main.Debug.v().warnUnusedAdvice = false;
+            }
             else if (args.top().equals("-time"))
             { abc.main.Debug.v().abcTimer=true;
                 abc.main.Debug.v().polyglotTimer=true;
@@ -921,13 +929,16 @@ public class Main {
                     System.err.println("--- END ADVICE LISTS ---");
                 }
 
-                for(Iterator adviceIt=GlobalAspectInfo.v().getAdviceDecls().iterator();
-                    adviceIt.hasNext();) {
-                    final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
+                if(abc.main.Debug.v().warnUnusedAdvice) {
+                    for(Iterator adviceIt=GlobalAspectInfo.v().getAdviceDecls().iterator();
+                        adviceIt.hasNext();) {
+                        final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
 
-                    if(ad instanceof AdviceDecl && ad.getApplCount()==0)
-                        error_queue.enqueue(ErrorInfo.WARNING,"Advice declaration doesn't apply anywhere",
-                                            ad.getPosition());
+                        if(ad instanceof AdviceDecl && ad.getApplCount()==0)
+                            error_queue.enqueue(ErrorInfo.WARNING,
+                                                "Advice declaration doesn't apply anywhere",
+                                                ad.getPosition());
+                    }
                 }
 
                 //Weaver weaver = new Weaver();
