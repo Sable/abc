@@ -18,14 +18,18 @@ public class MethodAdviceList {
     /** Advice that would apply inside the body, i.e. most other joinpoints */
     public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
 
-    /** initialization or pre-initialization joinpoints, trigger inlining of this() calls */
-    public List/*<AdviceApplication>*/ constructorAdvice=new LinkedList();
+    /** pre-initialization joinpoints */
+    public List/*<AdviceApplication>*/ preinitializationAdvice=new LinkedList();
+
+    /** initialization joinpoints, trigger inlining of this() calls */
+    public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
 
     /** returns true if there is no advice */
     public boolean isEmpty() { 
         return(bodyAdvice.isEmpty() && 
 	       stmtAdvice.isEmpty() &&
-	       constructorAdvice.isEmpty());
+	       initializationAdvice.isEmpty() &&
+               preinitializationAdvice.isEmpty());
     }
 
     /** returns true if there is any body advice */
@@ -38,14 +42,21 @@ public class MethodAdviceList {
       return !stmtAdvice.isEmpty();
     }
 
-    /** returns true if there is any constructor advice */
-    public boolean hasConstructorAdvice() {
-      return !constructorAdvice.isEmpty();
+    /** returns true if there is any initialization advice */
+    public boolean hasInitializationAdvice() {
+      return !initializationAdvice.isEmpty();
     }
+
+    /** returns true if there is any preinitialization advice */
+    public boolean hasPreinitializationAdvice() {
+      return !preinitializationAdvice.isEmpty();
+    }
+
 
     public String toString() {
 	return "body advice: "+bodyAdvice+"\n"
 	    +"statement advice: "+stmtAdvice+"\n"
-	    +"constructor advice: "+constructorAdvice+"\n";
+	    +"preinitialization advice: "+preinitializationAdvice+"\n"
+	    +"initialization advice: "+initializationAdvice+"\n";
     }
 }
