@@ -166,18 +166,35 @@ public class AspectJTypeSystem_c
     	return false;
     }
     
-    public boolean refHostOfITD(AJContext c, Typed qualifier, MemberInstance mi) {
-	   return c.inInterType() && 
-	               (  (qualifier == null && mi==null) ||
-	                  (qualifier != null && c.hostClass().hasEnclosingInstance(qualifier.type().toClass())) ||
-	                   hostHasMember(c,mi)) ;
-	   /*
-	   !(!c.inInterType() 
-					|| c.staticInterType()      // not so sure about this
-					|| (c.nested() && qualifier == null) // and this
-					|| (c.inInterType() && qualifier != null && 
-						c.currentClass().hasEnclosingInstance(qualifier.type().toClass())));   */
+    public boolean refHostOfITD(AJContext c, MemberInstance mi) {    	
+	   return c.inInterType() && hostHasMember(c,mi) ;
     }
+    
+    
+    public boolean hostEnclosingInstance(ClassType current, ClassType aspct, ClassType qualifier,ClassType host) {
+    	if (current == aspct)
+    		return host.hasEnclosingInstance(qualifier);
+    	else return (current == qualifier)
+                    ||
+                    (current.outer() != null && hostEnclosingInstance(current.outer(),aspct,qualifier,host));
+    }               
+	
+	public boolean refHostOfITD(AJContext c, Typed qualifier) {
+		
+		/* if (qualifier == null)
+			return !c.nested();
+		else
+			return hostEnclosingInstance(c.currentClass(),
+			                             c.hostScope().currentClass(), 
+			                             qualifier.type().toClass(), 
+			                             c.hostClass()); */
+	
+		return c.inInterType() && 
+			   // !c.staticInterType() &&  I
+			   !(qualifier==null && c.nested()) &&
+			   !(qualifier != null && c.currentClass().hasEnclosingInstance(qualifier.type().toClass()));
+	}
+    
     
 	public Context createContext() {
 	   return new AJContext_c(this);

@@ -7,6 +7,7 @@ import soot.jimple.*;
 import soot.util.*;
 import soot.tagkit.SourceLnPosTag;
 import soot.tagkit.Host;
+import abc.weaving.aspectinfo.MethodCategory;
 
 
 public class SJPInfo {
@@ -52,10 +53,11 @@ public class SJPInfo {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());
 	sb.append('-');
-	sb.append(method.getName());
+	sb.append(MethodCategory.getName(method));
 	sb.append('-');
-	sb.append(method.getDeclaringClass().getName());
+	sb.append(MethodCategory.getClassName(method));
 	sb.append('-');
+	// FIXME: use MethodCategory to ignore extra parameters
 	Iterator it=method.getParameterTypes().iterator();
 	while(it.hasNext()) {
 	    Type type=(Type) (it.next());

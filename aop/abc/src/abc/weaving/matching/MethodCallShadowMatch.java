@@ -79,7 +79,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	    // calls described in 'invokespecial' in the JVM spec
 
 	    // We already know it is not a <init>
-	    if(!method.isPrivate()) {
+	    if(!method.isPrivate() && !method.isStatic()) {
 		SootClass declaringclass=method.getDeclaringClass();
 		SootClass currentclass=pos.getContainer().getDeclaringClass();
 		// FIXME: temporary until Soot gets fixed

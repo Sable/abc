@@ -34,7 +34,7 @@ public class AJSpecial_c extends Special_c implements Special {
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
 		AspectJTypeSystem ts = (AspectJTypeSystem) ar.typeSystem();
-		if (!(ts.refHostOfITD(c,qualifier(),null))) {		       
+		if (!(ts.refHostOfITD(c,qualifier()))) {		       
 			// this is an ordinary special
 			return super.disambiguate(ar);
 		} else {

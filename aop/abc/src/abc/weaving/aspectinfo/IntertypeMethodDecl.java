@@ -9,11 +9,13 @@ import soot.*;
 public class IntertypeMethodDecl extends InAspect {
     private MethodSig target;
     private MethodSig impl;
+    private String origName;
 
-    public IntertypeMethodDecl(MethodSig target, MethodSig impl, Aspect aspct, Position pos) {
+    public IntertypeMethodDecl(MethodSig target, MethodSig impl, Aspect aspct, String origName, Position pos) {
 	super(aspct, pos);
 	this.target = target;
 	this.impl = impl;
+	this.origName = origName;
     }
 
     /** Get the method signature that this intertype method declaration
@@ -28,6 +30,10 @@ public class IntertypeMethodDecl extends InAspect {
      */
     public MethodSig getImpl() {
 	return impl;
+    }
+    
+    public String getOrigName() {
+    	return origName;
     }
 
     public String toString() {

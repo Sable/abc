@@ -63,7 +63,7 @@ public class AJCall_c extends Call_c implements Call {
 	  if (mi.flags().isStatic()) {
 	  	r = nf.CanonicalTypeNode(position(), mi.container()).type(mi.container());
 	  } else // test whether this a call to an instance method of an ITHost 
-	  		if (ts.refHostOfITD(c,null,mi)) {
+	  		if (ts.refHostOfITD(c,mi)) {
 	  			TypeNode tn = nf.CanonicalTypeNode(position(),c.hostClass()).type(c.hostClass());
 	  			r = nf.hostSpecial(position(),Special.THIS,tn,c.hostClass()).type(c.hostClass());
 	  		} else {

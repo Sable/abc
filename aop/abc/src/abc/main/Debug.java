@@ -48,6 +48,8 @@ public class Debug {
     public boolean traceMatcher=false;
 
     // Weaver
+    public boolean testITDsOnly = false; // will skip advice weaving
+    
     public boolean weaverDriver=false;  // main driver for weaver
     public boolean aspectCodeGen=false; // inserting stuff into aspect class
     public boolean genStaticJoinPoints=false; // collect and gen SJP

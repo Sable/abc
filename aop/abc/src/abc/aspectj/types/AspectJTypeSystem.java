@@ -49,5 +49,6 @@ public interface AspectJTypeSystem extends JjTypeSystem {
 													ClassType container, Flags flags,
 													List argTypes, List excTypes);
 
-	public boolean refHostOfITD(AJContext c, Typed qualifier, MemberInstance mi); 							              
+	public boolean refHostOfITD(AJContext c, MemberInstance mi); 	
+	public boolean refHostOfITD(AJContext c, Typed qualifier); 						              
 }

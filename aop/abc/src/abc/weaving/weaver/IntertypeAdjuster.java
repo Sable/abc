@@ -447,7 +447,9 @@ public class IntertypeAdjuster {
 			
 			sc.addMethod(sm);
 			
-	
+			// System.out.println("real name is: " + MethodCategory.getName(sm));
+			// System.out.println("added impl method " + sm);
+
 			return sm;
         } else  return null;
 	}
@@ -465,10 +467,10 @@ public class IntertypeAdjuster {
 				   && implementors.contains(childClass.getSuperclass()) )
 					   continue;
 
-                   createTargetMethod(implMethod,method,childClass,imd.getAspect(),sc);
+                   createTargetMethod(implMethod,method,childClass,imd.getAspect(),sc,imd.getOrigName());
 				  
 			   }
-		   } else createTargetMethod(implMethod,method,sc, imd.getAspect(),null);
+		   } else createTargetMethod(implMethod,method,sc, imd.getAspect(),null,imd.getOrigName());
     }
     
     
@@ -479,7 +481,8 @@ public class IntertypeAdjuster {
 		MethodSig method,
 		SootClass sc,
 		Aspect origin,
-		SootClass intftarget) {	
+		SootClass intftarget,
+		String originalName) {	
 			// System.out.println("added method "+ method.getName() + " to class " + sc);
 		        Type retType = method.getReturnType().getSootType();
 		        List parms = new ArrayList();
@@ -558,9 +561,10 @@ public class IntertypeAdjuster {
 					}
 				}
 		
+				// System.out.println("added target method "+method);
 				// This is a stub for an intertype method decl
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
-				MethodCategory.registerRealNameAndClass(sm, method.getName(), method.getDeclaringClass().getJavaName(),
+				MethodCategory.registerRealNameAndClass(sm, originalName, method.getDeclaringClass().getJavaName(),
 									0,0); //FIXME: Extra formals?
 	}
 		

@@ -326,7 +326,7 @@ public class Main {
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
                 if( !method.isConcrete() ) continue;
-                System.out.println("retrieve "+method+ " from "+cl);
+                // System.out.println("retrieve "+method+ " from "+cl);
                 method.retrieveActiveBody();
             }
         }
@@ -335,33 +335,35 @@ public class Main {
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
 
-        // Make sure that all the standard AspectJ shadow types are loaded
-        AspectJShadows.load();
-        AbcTimer.mark("Load shadow types");
-
-        GlobalAspectInfo.v().computeAdviceLists();
-        AbcTimer.mark("Compute advice lists");
-
-        if(Debug.v().matcherTest) {
-            System.err.println("--- BEGIN ADVICE LISTS ---");
-            // print out matching information for testing purposes
-            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-                final AbcClass cl = (AbcClass) clIt.next();
-                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-                    final SootMethod method = (SootMethod) methodIt.next();
-                    final StringBuffer sb=new StringBuffer(1000);
-                    sb.append("method: "+method.getSignature()+"\n");
-                    GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
-                    System.err.println(sb.toString());
-                }
-            }
-            System.err.println("--- END ADVICE LISTS ---");
+        if (!Debug.v().testITDsOnly) {
+	        // Make sure that all the standard AspectJ shadow types are loaded
+	        AspectJShadows.load();
+	        AbcTimer.mark("Load shadow types");
+	
+	        GlobalAspectInfo.v().computeAdviceLists();
+	        AbcTimer.mark("Compute advice lists");
+	
+	        if(Debug.v().matcherTest) {
+	            System.err.println("--- BEGIN ADVICE LISTS ---");
+	            // print out matching information for testing purposes
+	            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+	                final AbcClass cl = (AbcClass) clIt.next();
+	                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+	                    final SootMethod method = (SootMethod) methodIt.next();
+	                    final StringBuffer sb=new StringBuffer(1000);
+	                    sb.append("method: "+method.getSignature()+"\n");
+	                    GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
+	                    System.err.println(sb.toString());
+	                }
+	            }
+	            System.err.println("--- END ADVICE LISTS ---");
+	        }
+	
+	        //generateDummyGAI();
+	
+	        Weaver weaver = new Weaver();
+	        weaver.weave(); // timer marks inside weave() */
         }
-
-        //generateDummyGAI();
-
-        Weaver weaver = new Weaver();
-        weaver.weave(); // timer marks inside weave()
     }
 
     public void validate() {
@@ -380,4 +382,5 @@ public class Main {
       PackManager.v().writeOutput();
     }
 
+	
 }

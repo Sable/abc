@@ -39,7 +39,7 @@ public class AJConstructorCall_c
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
 		AspectJTypeSystem ts = (AspectJTypeSystem) ar.typeSystem();
-		if (!ts.refHostOfITD(c,qualifier(),null)) {		       
+		if (!ts.refHostOfITD(c,qualifier())) {		       
 				// this is an ordinary constructor call
 				return super.disambiguate(ar);
 		} else {

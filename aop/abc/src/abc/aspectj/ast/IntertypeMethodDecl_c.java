@@ -361,16 +361,16 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	     exc,
 	     null);
 	abc.weaving.aspectinfo.IntertypeMethodDecl imd = new abc.weaving.aspectinfo.IntertypeMethodDecl
-	    (target, impl, current_aspect, position());
+	    (target, impl, current_aspect, originalName, position());
 	gai.addIntertypeMethodDecl(imd);
 	gai.addSuperDispatches(supers.supercalls(gai));
 	gai.addSuperFieldGetters(supers.superfieldgetters(gai));
 	gai.addSuperFieldSetters(supers.superfieldsetters(gai));
 	gai.addQualThiss(supers.qualthiss(gai));
 
-	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
-	MethodCategory.registerRealNameAndClass(this, originalName, current_aspect.toString(),
-						(flags().isStatic()?0:1),0);
+	MethodCategory.register(impl, MethodCategory.INTERTYPE_METHOD_SOURCE);
+	MethodCategory.registerRealNameAndClass(impl, originalName, host.type().toString(),
+						(origflags.isStatic()?0:1),0);
     }
     
     public Supers getSupers() {

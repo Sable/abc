@@ -396,11 +396,11 @@ SingleCharacter = [^\r\n\'\\]
   "catch"                        { return key(sym.CATCH); }
   "char"                         { return key(sym.CHAR); }
   "class"                        { if (!lastTokenWasDot) {
-					yybegin(YYINITIAL);
+  									 	yybegin(YYINITIAL);
                                    	nestingStack.push(
                                       		new NestingState(
                                          	curlyBraceLevel, savedState));
-                                   	savedState = YYINITIAL;
+                                   		savedState = YYINITIAL;
                                    }
                                    return key(sym.CLASS); 
                                  }
