@@ -1,0 +1,2 @@
+public aspect IsSingleton issingleton {
+}
