@@ -5,7 +5,7 @@ public aspect Aspect {
       System.out.println(" at " + thisJoinPointStaticPart.getSourceLocation());
     }
 
-  after () : !within(Aspect) 
+  after ()  : !within(Aspect) && !handler(*)
     { System.out.print("AFTER " + thisJoinPointStaticPart.toLongString()); 
       System.out.println(" at " + thisJoinPointStaticPart.getSourceLocation());
     }
