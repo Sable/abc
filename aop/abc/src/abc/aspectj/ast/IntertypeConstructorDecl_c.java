@@ -649,7 +649,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 
 		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
 		// FIXME: First argument is this, right?
-		MethodCategory.registerRealNameAndClass(body, "<init>", current_aspect.getInstanceClass(),
+		MethodCategory.registerRealNameAndClass(body, AbcFactory.modifiers(flags()), "<init>", current_aspect.getInstanceClass(),
 							1,0);
 	}
     

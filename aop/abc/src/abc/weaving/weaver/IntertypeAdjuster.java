@@ -186,7 +186,7 @@ public class IntertypeAdjuster {
 
 		// This is an accessor method for reading a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass(),
+		MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), field.getDeclaringClass(),
 							0,0);
     }
     
@@ -234,7 +234,7 @@ public class IntertypeAdjuster {
 
 		// This is an accessor method for reading a field
 			MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-			MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass(),
+			MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), field.getDeclaringClass(),
 								0,0);
 		}
     
@@ -564,7 +564,7 @@ public class IntertypeAdjuster {
 				// System.out.println("added target method "+method);
 				// This is a stub for an intertype method decl
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
-				MethodCategory.registerRealNameAndClass(sm, originalName, method.getDeclaringClass(),
+				MethodCategory.registerRealNameAndClass(sm, method.getModifiers(), originalName, method.getDeclaringClass(),
 									0,0); //FIXME: Extra formals?
 	}
 		
@@ -650,7 +650,7 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 		// This is an accessor method for reading a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), AbcFactory.AbcClass(field.getDeclaringClass()),
+		MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), AbcFactory.AbcClass(field.getDeclaringClass()),
 							0,0);
 	    return sm;
 	}
@@ -679,7 +679,7 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 		// This is an accessor method for writing a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), AbcFactory.AbcClass(field.getDeclaringClass()),
+		MethodCategory.registerRealNameAndClass(sm, field.getModifiers(), field.getName(), AbcFactory.AbcClass(field.getDeclaringClass()),
 							0,0);
 		return sm;
 	}
@@ -906,7 +906,7 @@ public class IntertypeAdjuster {
 		
 		// This is a stub for an intertype constructor decl
 		MethodCategory.register(sm, MethodCategory.INTERTYPE_CONSTRUCTOR_DELEGATOR);
-		MethodCategory.registerRealNameAndClass(sm, "<init>", AbcFactory.AbcClass(scTarget),
+		MethodCategory.registerRealNameAndClass(sm, icd.getModifiers(), "<init>", AbcFactory.AbcClass(scTarget),
 							0,Modifier.isPublic(icd.getModifiers()) ? 0 : 1);//FIXME: Extra formals?
 	}
 	

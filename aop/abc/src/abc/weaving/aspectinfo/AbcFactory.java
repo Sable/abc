@@ -26,6 +26,10 @@ public class AbcFactory {
 	return new AbcClass(sc);
     }
 
+    public static int modifiers(polyglot.types.Flags mods) {
+	return soot.javaToJimple.Util.getModifier(mods);
+    }
+
     public static MethodSig MethodSig(polyglot.ast.MethodDecl m) {
 	return MethodSig(m, (polyglot.types.ClassType)m.methodInstance().container());
     }

@@ -52,6 +52,7 @@ public class GlobalAspectInfo {
     private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();
 
     private Map/*<MethodSig,Integer>*/ method_categories = new HashMap();
+    private Map/*<MethodSig,Integer>*/ method_real_mods = new HashMap();
     private Map/*<MethodSig,String>*/ method_real_names = new HashMap();
     private Map/*<MethodSig,AbcClass>*/ method_real_classes = new HashMap();
     private Map/*<MethodSig,Integer>*/ method_skip_first = new HashMap();
@@ -365,13 +366,22 @@ public class GlobalAspectInfo {
 	}
     }
 
-    public void registerRealNameAndClass(MethodSig sig, String real_name, AbcClass real_class,
+    public void registerRealNameAndClass(MethodSig sig, int mods, String real_name, AbcClass real_class,
 					 int skip_first, int skip_last) {
 	//System.out.println("Method registered: "+sig+" ("+cat+")");
+	method_real_mods.put(sig, new Integer(mods));
 	method_real_names.put(sig, real_name);
 	method_real_classes.put(sig, real_class);
 	method_skip_first.put(sig, new Integer(skip_first));
 	method_skip_last.put(sig, new Integer(skip_last));
+    }
+
+    public int getRealModifiers(MethodSig sig, int defmods) {
+	if (method_real_mods.containsKey(sig)) {
+	    return ((Integer)method_real_mods.get(sig)).intValue();
+	} else {
+	    return defmods;
+	}
     }
 
     public String getRealName(MethodSig sig) {

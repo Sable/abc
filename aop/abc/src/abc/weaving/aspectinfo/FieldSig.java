@@ -6,7 +6,7 @@ import polyglot.util.Position;
 import soot.*;
 
 /** A field signature. */
-public class FieldSig extends Syntax {
+public class FieldSig extends Sig {
     private int mod;
     private AbcClass cl;
     private AbcType type;
@@ -37,6 +37,10 @@ public class FieldSig extends Syntax {
 	return name;
     }
 
+    public ClassMember getSootMember() {
+	return getSootField();
+    }
+
     public SootField getSootField() {
 	if (sf == null) {
 	    SootClass sc = cl.getSootClass();
@@ -50,11 +54,11 @@ public class FieldSig extends Syntax {
 	return Modifier.toString(mod)+" "+type+" "+cl+"."+name;
     }
 
+    /** Checks whether the two field signatures refer to the same field. */
     public boolean equals(Object other) {
 	if (!(other instanceof FieldSig)) return false;
 	FieldSig os = (FieldSig)other;
 	return
-	    mod == os.mod &&
 	    cl.equals(os.cl) &&
 	    type.equals(os.type) &&
 	    name.equals(os.name);

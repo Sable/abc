@@ -369,7 +369,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addQualThiss(supers.qualthiss(gai));
 
 	MethodCategory.register(impl, MethodCategory.INTERTYPE_METHOD_SOURCE);
-	MethodCategory.registerRealNameAndClass(impl, originalName, AbcFactory.AbcClass((ClassType)host.type()),
+	MethodCategory.registerRealNameAndClass(impl, AbcFactory.modifiers(origflags), originalName, AbcFactory.AbcClass((ClassType)host.type()),
 						(origflags.isStatic()?0:1),0);
     }
     

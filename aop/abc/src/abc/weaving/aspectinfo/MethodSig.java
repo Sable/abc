@@ -8,7 +8,7 @@ import soot.*;
 import java.util.*;
 
 /** A method signature. */
-public class MethodSig extends Syntax {
+public class MethodSig extends Sig {
     private int mod;
     private AbcClass cl;
     private AbcType rtype;
@@ -70,6 +70,10 @@ public class MethodSig extends Syntax {
 	return sexc;
     }
 
+    public ClassMember getSootMember() {
+	return getSootMethod();
+    }
+
     public SootMethod getSootMethod() {
 	if (sm == null) {
 	    SootClass sc = cl.getSootClass();
@@ -120,22 +124,21 @@ public class MethodSig extends Syntax {
 	return sb.toString();
     }
 
+    /** Checks whether the two method signatures refer to the same method. */
     public boolean equals(Object other) {
 	if (!(other instanceof MethodSig)) return false;
 	MethodSig os = (MethodSig)other;
 	//System.err.print("Comparing "+this+" against "+os+": ");
 	boolean result =
-	    mod == os.mod &&
 	    cl.equals(os.cl) &&
 	    rtype.equals(os.rtype) &&
 	    name.equals(os.name) &&
-	    formals.equals(os.formals) &&
-	    exc.equals(os.exc);
+	    formals.equals(os.formals);
 	//System.err.println(result);
 	return result;
     }
 
     public int hashCode() {
-	return mod+cl.hashCode()+rtype.hashCode()+name.hashCode()+formals.hashCode()+exc.hashCode();
+	return cl.hashCode()+rtype.hashCode()+name.hashCode()+formals.hashCode();
     }
 }

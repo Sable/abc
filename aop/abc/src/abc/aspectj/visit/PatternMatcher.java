@@ -189,16 +189,15 @@ public class PatternMatcher {
 	}
     }
 
-    public boolean matchesModifiers(List /*<ModifierPattern>*/ modps, soot.ClassMember thing) {
-	int thing_mods = thing.getModifiers();
+    public boolean matchesModifiers(List /*<ModifierPattern>*/ modps, int mods) {
 	Iterator modpi = modps.iterator();
 	while (modpi.hasNext()) {
 	    ModifierPattern modp = (ModifierPattern)modpi.next();
-	    int mods = soot.javaToJimple.Util.getModifier(modp.modifier());
+	    int pmods = soot.javaToJimple.Util.getModifier(modp.modifier());
 	    if (modp.positive()) {
-		if ((mods & thing_mods) == 0) return false;
+		if ((pmods & mods) == 0) return false;
 	    } else {
-		if ((mods & thing_mods) != 0) return false;
+		if ((pmods & mods) != 0) return false;
 	    }
 	}
 	return true;
@@ -312,22 +311,25 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesMethod(SootMethod method) {
+	    int mods = MethodCategory.getModifiers(method);
 	    String name = MethodCategory.getName(method);
 	    SootClass realcl = MethodCategory.getClass(method);
 	    LinkedList/*<soot.Type>*/ ftypes = new LinkedList(method.getParameterTypes());
 	    int skip_first = MethodCategory.getSkipFirst(method);
 	    int skip_last = MethodCategory.getSkipLast(method);
+	    //System.out.println("Real name: "+name+" "+skip_first+" "+skip_last);
 	    while (skip_first-- > 0) ftypes.removeFirst();
 	    while (skip_last-- > 0) ftypes.removeLast();
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), method) &&
+		matchesModifiers(pattern.getModifiers(), mods) &&
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions()) &&
-		matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, method.getReturnType());
+		(matchesClass(pattern.getName().base(), realcl) ||
+		 matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, method.getReturnType()));
 	    if (abc.main.Debug.v().patternMatches) {
-		System.err.println("Matching method pattern "+pattern+" against "+method+": "+matches);
+		System.err.println("Matching method pattern "+pattern+" against ("+mods+" "+realcl+"."+name+") "+method+": "+matches);
 	    }
 	    return matches;
 	}
@@ -350,7 +352,7 @@ public class PatternMatcher {
 
 	public boolean matchesField(SootField sf) {
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), sf) &&
+		matchesModifiers(pattern.getModifiers(), sf.getModifiers()) &&
 		matchesType(pattern.getType(), sf.getType().toString()) &&
 		matchesClass(pattern.getName().base(), sf.getDeclaringClass()) &&
 		pattern.getName().name().getPattern().matcher(sf.getName()).matches();
@@ -391,7 +393,7 @@ public class PatternMatcher {
 
 	public boolean matchesConstructor(SootMethod method) {
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), method) &&
+		matchesModifiers(pattern.getModifiers(), method.getModifiers()) &&
 		matchesClass(pattern.getName().base(), method.getDeclaringClass()) &&
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());

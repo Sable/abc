@@ -7,6 +7,7 @@ import soot.Type;
 
 import polyglot.ast.MethodDecl;
 import polyglot.types.ClassType;
+import polyglot.types.Flags;
 
 import java.util.*;
 
@@ -200,38 +201,54 @@ public class MethodCategory {
     // REAL NAME REGISTRATION
 
     public static void registerRealNameAndClass(MethodSig sig,
+						int mods,
 						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
 	GlobalAspectInfo.v().registerRealNameAndClass(sig,
+						      mods,
 						      real_name, real_class,
 						      skip_first, skip_last);
     }
 
     public static void registerRealNameAndClass(SootMethod m,
+						int mods,
 						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
 	registerRealNameAndClass(AbcFactory.MethodSig(m),
+				 mods,
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
 
     public static void registerRealNameAndClass(MethodDecl m,
+						Flags mods,
 						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
 	registerRealNameAndClass(AbcFactory.MethodSig(m),
+				 AbcFactory.modifiers(mods),
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
 
     public static void registerRealNameAndClass(MethodDecl m, ClassType container,
+						Flags mods,
 						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
 	registerRealNameAndClass(AbcFactory.MethodSig(m, container),
+				 AbcFactory.modifiers(mods),
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
 
     // REAL NAME QUERY
+
+    public static int getModifiers(SootMethod m) {
+	return GlobalAspectInfo.v().getRealModifiers(AbcFactory.MethodSig(m), m.getModifiers());
+    }
+
+    public static int getModifiers(MethodSig m) {
+	return GlobalAspectInfo.v().getRealModifiers(m, m.getModifiers());
+    }
 
     public static String getName(SootMethod m) {
 	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.MethodSig(m));
