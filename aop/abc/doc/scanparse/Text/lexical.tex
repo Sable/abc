@@ -45,7 +45,7 @@ Whereas the {\sc Java} and {\sc Aspect} modes are very similar, basically
 differing only on the keywords recognized, the {\sc Pointcut} mode
 has a completely different lexical structure.   
 In Figure \ref{FIG:LexExample},  the lexical scopes for pointcuts are
-shown by the boxes nexted inside the Aspect.   There are four contexts in
+shown by the boxes nested inside the Aspect.   There are four contexts in
 which pointcut scopes occur, as follows:
 
 \begin{description}
@@ -53,7 +53,7 @@ which pointcut scopes occur, as follows:
 The header of an aspect
 declaration ends with an an optional per clause.  A per clause consists
 of either the keyword {\bf issingleton} or  a parenthesized pointcut
-expression preceeded by one of the kewords {\bf percflow}, 
+expression preceded by one of the keywords {\bf percflow}, 
 {\bf percflowbelow}, {\bf pertarget} or {\bf perthis}.    
 A {\sc Pointcut} scope starts after one of the per keywords and ends at
 the matching closing parenthesis that surrounds the pointcut.   Figure
@@ -86,7 +86,7 @@ ordinary Java classes.
 \item[Pointcut Context \#4 - header of an advice declaration:]
 
 Advice declarations have a pointcut expression in their header.
-All such pointcuts will be preceeded by one of the keywords
+All such pointcuts will be preceded by one of the keywords
 {\bf before}, {\bf after} or {\bf around}.    For example, in
 Figure \ref{FIG:LexExample},  a pointcut follows an {\bf after} keyword.
 The pointcut ends before the body of the pointcut begins, signalled by
@@ -130,7 +130,7 @@ entered has {\sc Aspect} mode.
 At the bottom of Figure \ref{FIG:LexExample} we give the declaration of
 a nested class called {\em NestedClass}.   Note that inside the class
 declaration is in {\sc Java} mode,  so the keywords recognized are those
-corresonding to {\sc Java} mode (i.e. Java keywords plus {\bf aspect},
+corresponding to {\sc Java} mode (i.e. Java keywords plus {\bf aspect},
 {\bf privileged} and {\bf pointcut}).    Thus, in the example,  
 {\em before} and {\em after} are considered identifiers, not keywords.   
 Note that this use of
@@ -199,7 +199,7 @@ structure, namely:
 {\tt[ IdPat("*if*"), op(".."), IdPat("*while*") ] }.
  
 \subsubsection{Tokens in pointcuts}
-Since the Java lexical structure clearly doen't match the pointcut
+Since the Java lexical structure clearly doesn't match the pointcut
 language very well,  a completely different lexical structure is
 defined for pointcuts.   This can be summarized as follows.
 
@@ -231,11 +231,11 @@ using the same regular expression as in {\sc Java} mode, namely:
 {\tt Identifier = [:jletter:][:jletterdigit:]*}
 
 \noindent
-Identifer patterns are recognized as:
+Identifier patterns are recognized as:
 
 {\tt IdentifierPattern = ( "*" | [:jletter:] ) ( "*" | [:jletterdigit:] )*}
 
-Since identifiers and identifer patterns are used in pointcuts to
+Since identifiers and identifier patterns are used in pointcuts to
 specify names that may occur anywhere, including Java code that has
 been defined in a library,  it is possible that a pattern might want
 to refer to something with the same name as one of the extra keywords.
@@ -248,7 +248,7 @@ explicitly allowed as one alternative of the rule for
 \begin{comment}
 \subsection{Implementing the Lexical Analysis}
 
-Polyglot's  JFlex-based  scanner for the base Java langauge has three states:
+Polyglot's  JFlex-based  scanner for the base Java language has three states:
 \begin{description}
 \item[{\sc YYInitial}:]  This is the initial state for the scanner, and
 it corresponds to all tokens except for strings and character literals.

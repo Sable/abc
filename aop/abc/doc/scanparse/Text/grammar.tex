@@ -1,9 +1,14 @@
 In this section we outline the grammar of AspectJ.   If you have a colour
 version of this document,  you will see that all references to
-productions in the original Java grammar are given in red.    In terms of the
-polyglot implementation, all red productions are part of the base Java grammar.
+productions in the original Java grammar are given in red.   The base
+Java  grammar was originally developed by Scott Ananian and is distributed
+with Polyglot.   In terms of the
+polyglot implementation, all red productions are part of the base Java 
+grammar, whereas the blue productions are those that are added as part
+of {\tt abc}'s AspectJ grammar.
 
-This grammar is LALR(1) with no shift-reduce or reduce-reduce conflicts.
+The {\tt abc} AspectJ grammar is LALR(1) with no shift-reduce or 
+reduce-reduce conflicts.
 In order to achieve this conflict-free grammar there are several places
 where a slightly too large language is specified, and these are places
 where further weeding must be used to weed out invalid programs.
