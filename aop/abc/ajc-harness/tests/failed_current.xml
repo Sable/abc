@@ -27,17 +27,6 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="base/test137"
-      title="operations on private and protected aspect members (++, -- in partciular)"
-      keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="base/test138" title="only register things once"
-      keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
 <ajc-test dir="base/test140"
       title="aspect inheritance and advice, introduction" keywords="from-base">
         <compile files="Driver.java"/>
@@ -81,11 +70,22 @@
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
     </ajc-test>
+<ajc-test dir="pureJava" title="Testing ternary operations."
+      keywords="from-java">
+        <compile files="MultiTernaryOps.java"/>
+        <run class="MultiTernaryOps"/>
+    </ajc-test>
 <ajc-test dir="pureJava"
       title="Checking character values with all the unicode chars."
       keywords="from-java">
         <compile files="CharsUnicode.java"/>
         <run class="CharsUnicode"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Not lifting types correctly with bytes and shorts with ternary ops"
+      keywords="from-java">
+        <compile files="TernaryPrimitiveOps.java"/>
+        <run class="TernaryPrimitiveOps"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
       keywords="from-java,purejava">

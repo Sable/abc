@@ -172,6 +172,17 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
+<ajc-test dir="base/test137"
+      title="operations on private and protected aspect members (++, -- in partciular)"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+<ajc-test dir="base/test138" title="only register things once"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
 <ajc-test dir="base/test139" title="inner aspects and around"
       keywords="from-base">
         <compile files="Driver.java"/>
@@ -395,11 +406,6 @@
         <compile files="Main.java,Java.java"/>
         <run class="conflictingPackageNamesWithPackages.Main"/>
     </ajc-test>
-<ajc-test dir="pureJava" title="Testing ternary operations."
-      keywords="from-java">
-        <compile files="MultiTernaryOps.java"/>
-        <run class="MultiTernaryOps"/>
-    </ajc-test>
 <ajc-test dir="pureJava" title="Lifting locals in switch statements."
       keywords="from-java">
         <compile files="SwitchStmtLocals.java"/>
@@ -487,12 +493,6 @@
         <compile files="Main.java,C.java,D.java"
         	includeClassesDir="true"/>
         <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Not lifting types correctly with bytes and shorts with ternary ops"
-      keywords="from-java">
-        <compile files="TernaryPrimitiveOps.java"/>
-        <run class="TernaryPrimitiveOps"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="Not looking up methods inside of anonymous declarations correctly."
