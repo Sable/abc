@@ -385,8 +385,8 @@
 
     <ajc-test dir="base/test135"
       title="proper values for thisJoinPoint attributes" 
-      abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.
-                  Now seems to fail because of advice & aspect inheritance. ODM"
+      abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.  
+                  Now seems to fail because of advice and aspect inheritance. ODM"
       keywords="from-base">
         <compile
           files="Driver.java,JoinPointFields.java,TopFoo.java,pack/PackFoo.java,pack/JoinPointFields.java,pack/PackJoinPointFields.java"/>
@@ -1001,6 +1001,9 @@
 
     <ajc-test dir="pureJava"
       title="overriding methods from object in interfaces and multiple-inheritance"
+      abccomment="Polyglot bug in checking class conformance. Entered into bugzilla
+                  07/07/04. Don't forget to make corresponding changes in 
+                  AspectJTypeSystem_c.java when it's been fixed. ODM"
       keywords="from-java">
         <compile files="InterfaceAndObject.java"/>
         <run class="InterfaceAndObject"/>
@@ -1960,10 +1963,13 @@
     </ajc-test>
 
     <ajc-test dir="errors"
+      abccomment="abc also reports an error for typechecking. ODM 07/07/04"
       title="Not generating an error for using new as a method name"
       keywords="from-errors">
         <compile files="New.java">
+            <ajcmessage kind="error" line="12"/>
             <message kind="error" line="12"/>
+            <message kind="error" line="13"/>
         </compile>
     </ajc-test>
 
@@ -2022,7 +2028,8 @@
                   javac does on the Java part of the benchmark.  Note
                   that this is NOT a purejava benchmark, but has an
                   aspect in it, dispite what the keyword says.
-                  July 4/04 LJH"
+                  July 4/04 LJH Polyglot now continues further, so we catch
+                  more of the errors July 7/04 ODM"
       keywords="from-errors,purejava">
         <compile files="AccessingInstanceFieldsStatically.java">
             <ajcmessage kind="error" line="15"/>
@@ -2035,14 +2042,23 @@
             <ajcmessage kind="error" line="38"/>
             <ajcmessage kind="error" line="39"/>
             <message kind="error" line="30"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="18"/>
+            <message kind="error" line="26"/>
+            <message kind="error" line="39"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors" pr="95"
       title="stack overflow with recursive crosscut specifier"
+      abccomment="abc continues with type error. ODM 07/07/04"
       keywords="from-errors">
         <compile files="RecursiveCCutSpecifier.java">
+            <ajcmessage kind="error" line="10"/>
             <message kind="error" line="10"/>
+            <message kind="error" line="12"/>
         </compile>
     </ajc-test>
 
@@ -2056,20 +2072,26 @@
 
     <ajc-test dir="errors" pr="385"
       title="disallow defining more than one pointcut with the same name"
-      abccomment="ajc reports an error at both locations, abc just at the last one. ODM July 5, 2004"
+      abccomment="ajc reports an error at both locations, abc 
+                  gives two for the last location. ODM 07/07/04"
       keywords="from-errors,fail-unimplemented">
         <compile files="OverloadedPointcuts.java">
             <ajcmessage kind="error" line="4"/>
             <ajcmessage kind="error" line="5"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors"
       title="pre 0.7 introduction form outside aspect body causes an EmptyStackException"
+      abccomment="abc gives further error after parse error. ODM 07/07/04"
       keywords="from-errors">
         <compile files="BadIntroduction.java">
+            <ajcmessage kind="error" line="3"/>
             <message kind="error" line="3"/>
+            <message kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -2082,25 +2104,34 @@
 
     <ajc-test dir="errors"
       title="a before() clause at the class-level causes an EmptyStackException"
+      abccomment="abc gives type error after parser error. ODM 07/07/04"
       keywords="from-errors">
         <compile files="TopLevelBefore.java">
+            <ajcmessage kind="error" line="3"/>
             <message kind="error" line="3"/>
+            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors"
       title="an after() clause at the class-level causes an EmptyStackException"
+      abccomment="abc gives type error after parse error. ODM 07/07/04"
       keywords="from-errors">
         <compile files="TopLevelAfter.java">
+            <ajcmessage kind="error" line="3"/>
             <message kind="error" line="3"/>
+            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors"
       title="an around() clause at the class-level causes an EmptyStackException"
+      abccomment="abc gives type error after parse error. ODM 07/07/04"
       keywords="from-errors">
         <compile files="TopLevelAround.java">
+            <ajcmessage kind="error" line="3"/>
             <message kind="error" line="3"/>
+            <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
@@ -2170,10 +2201,24 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when there're stray dots"
-      abccomment=" Seems ok now July 7/04 LJH"
+      abccomment="javac,ajc and abc all give errors on all the lines.
+                  July 3/04 LJH. Polyglot now goes a bit further and also
+                  reports a type error. July 07/04 ODM"
       keywords="from-errors,purejava">
         <compile files="StrayDot.java">
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="12"/>
+            <ajcmessage kind="error" line="13"/>
+            <ajcmessage kind="error" line="14"/>
             <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="14"/>
+            <message kind="error" line="15"/>
         </compile>
     </ajc-test>
 
@@ -2305,9 +2350,12 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="errors in aspect inheritance - 1"
+      abccomment="abc gives a further error message. ODM July 7,2004"
       keywords="from-errors">
         <compile files="AspectInheritance1.java">
+            <ajcmessage kind="error" line="17"/>
             <message kind="error" line="17"/>
+            <message kind="error" line="15"/>
         </compile>
     </ajc-test>
 
@@ -2325,6 +2373,7 @@
             <message kind="error" line="20"/>
             <message kind="error" line="24"/>
             <message kind="error" line="23"/>
+            <message kind="error" line="30"/>
         </compile>
     </ajc-test>
 
@@ -2426,9 +2475,12 @@
 
     <ajc-test dir="errors" pr="396"
       title="Undefined pointcuts were throwing exceptions in 07b11 [callsto]"
+      abccomment="An extra error from abc after the first parse error. ODM 07/07/04"
       keywords="from-errors">
         <compile files="UndefinedPointCut_PR396.java">
+            <ajcmessage kind="error" line="8"/>
             <message kind="error" line="8"/>
+            <message kind="error" line="9"/>
         </compile>
     </ajc-test>
 
@@ -2502,18 +2554,76 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="errors" title="multiple conflicting introductions"
+<ajc-test dir="abctests/errors" title="multiple conflicting introductions 1"
+      abccomment="abc bails out earlier, split into several cases. ODM July 7"
       keywords="from-errors">
-        <compile files="MultipleIntros.java">
-            <message kind="error" line="5"/>
+        <compile files="MultipleIntros1.java">
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="22"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
             <message kind="error" line="16"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="19"/>
-            <message kind="error" line="22"/>
-            <message kind="error" line="27"/>
-            <message kind="error" line="30"/>
         </compile>
     </ajc-test>
+<ajc-test dir="abctests/errors" title="multiple conflicting introductions 2"
+      abccomment="abc bails out earlier, split into several cases. ODM July 7"
+      keywords="from-errors">
+        <compile files="MultipleIntros2.java">
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="22"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+            <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/errors" title="multiple conflicting introductions 3"
+      abccomment="abc bails out earlier, split into several cases. ODM July 7"
+      keywords="from-errors">
+        <compile files="MultipleIntros3.java">
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="22"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+            <message kind="error" line="27"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/errors" title="multiple conflicting introductions 4"
+      abccomment="abc bails out earlier, cloned to expose each error. ODM July 7"
+      keywords="from-errors">
+        <compile files="MultipleIntros4.java">
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="22"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+            <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/errors" title="multiple conflicting introductions 5"
+  abccomment="abc bails out earlier, cloned to expose each error. ODM July 7"
+      keywords="from-errors">
+        <compile files="MultipleIntros5.java">
+            <ajcmessage kind="error" line="5"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="22"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+        </compile>
+    </ajc-test>
+
 
     <ajc-test dir="errors" title="types in throws clauses"
       keywords="from-errors,purejava">
@@ -2549,19 +2659,23 @@
 
     <ajc-test dir="errors"
       title="should give an error for introducing two members with the same name"
+      abccomment="abc pinpoints one cause of all four ajc messages. ODM 07/07/04"
       keywords="from-errors">
-        <compile files="TwoIntros.java">
-            <message kind="error" line="10"/>
+        <compile files="TwoIntros1.java">
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="16"/>
             <message kind="error" line="14"/>
-            <message kind="error" line="16"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="errors"
       title="wimpy test for undeclared and uncaught exceptions"
+      abccomment="abc bails out after reachability fails. ODM 07/07/04"
       keywords="from-errors">
         <compile files="UndeclaredThrows.java">
-            <message kind="error" line="12"/>
+            <ajcmessage kind="error" line="12"/>
+            <ajcmessage kind="error" line="18"/>
             <message kind="error" line="18"/>
         </compile>
     </ajc-test>
@@ -2623,31 +2737,36 @@
 
     <ajc-test dir="new"
       title="Given non-matching TypePattern, CE flags use of non-introduced method rather than failure to introduce"
+      abccomment="abc gives precise root of the problem. ODM 07/07/04"
       keywords="from-errors">
         <compile
           files="typepatternmatch/pack1/IntroErrorLocation.java,typepatternmatch/pack2/TargetClass.java">
-            <message kind="error" line="28"
+            <ajcmessage kind="error" line="28"
               file="pack1/IntroErrorLocation.java"
               text="TargetClass cannot be resolved"/>
-            <message kind="warning" line="33"
+            <ajcmessage kind="warning" line="33"
               file="pack1/IntroErrorLocation.java"
               text="no match for this type name: TargetClass"/>
-            <message kind="error" line="39"
+            <ajcmessage kind="error" line="39"
               file="pack1/IntroErrorLocation.java"
               text="undefined for the type TargetClass"/>
+            <message kind="error"
+              file="pack1/IntroErrorLocation.java" line="28"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="new" pr="457"
       title="Compiler should suggest using aspect when advice, pointcuts, or introduction is in a class"
+      abccomment="Good message from abc. ODM 07/07/04"
       keywords="from-errors,poorErrorMessages">
         <compile files="RecognizeAspectCE.java">
-            <message kind="error" line="3"  
+            <ajcmessage kind="error" line="3"  
             	file="RecognizeAspectCE.java"
             	text="Syntax error"/>
-            <message kind="error" line="6"  
+            <ajcmessage kind="error" line="6"  
             	file="RecognizeAspectCE.java"
             	text="Syntax error"/>
+            <message kind="error" line="6"/>
         </compile>
     </ajc-test>
 
@@ -2661,7 +2780,9 @@
 
     <ajc-test dir="pureJava" title="illegal forward reference"
       abccomment="jlc gets error (but on line 14), however abc
-                  doesn't find it.  Reported to Oege July 5/04 LJH"
+                  doesn't find it.  Reported to Oege July 5/04 LJH.
+                  jlc gets the error, but only via javac. Has this
+                  been reported to the Polyglot folks? ODM 07/07/04"
       keywords="from-errors,purejava">
         <compile files="IllegalForwardReference.java">
             <message kind="error" line="9"/>
@@ -2802,6 +2923,8 @@
 
     <ajc-test dir="new" pr="494"
       title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public"
+      abccomment="abc gets most of these, but some of the messages are wrong. This is related to the class conformance
+                  check bug that I reported to polyglot today. 07/07/04"
       keywords="from-errors">
         <compile files="IntroduceInnerInterfaceCF.java" options="-Xlint:ignore">
             <message kind="error" line="18"/>
@@ -2891,9 +3014,14 @@
 	<!-- we're not implementing static inter-type fields on interfaces in 1.1 -->
     <ajc-test dir="design/intro"
       title="introduction of static methods and fields on classes and interfaces"
+      abccomment="abc does not implement static intertype fields on interfaces, either. ODM 07/07/04"
       keywords="from-design,knownLimitation">
-        <compile files="Statics.java"/>
-        <run class="Statics"/>
+        <compile files="Statics.java">
+           <message kind="error" line="46"/>
+           <message kind="error" line="49"/>
+           <message kind="error" line="51"/>
+        </compile>
+        <ajcrun class="Statics"/>
     </ajc-test>
 
     <ajc-test dir="design/intro" pr="570"
@@ -7375,13 +7503,17 @@
 
 	<ajc-test dir="bugs"
 		title="Appropriate message for 'after() thowing(Throwable th)' syntax error"
+         abccomment="Polyglot continues beyond parse errors and throws another problem. ODM 07/07/04"
 		pr="49638"
 		>
 		<compile 
 			files="AfterThrowingAdviceSyntaxError.java" >
+			<ajcmessage kind="error" line="21" />
+			<ajcmessage kind="error" line="23" />
 			<message kind="error" line="21" />
 			<message kind="error" line="23" />
-		</compile>
+                        <message kind="error" line="22" />
+                </compile>
 	</ajc-test>
 
    <ajc-test dir="bugs/faultingInSource" pr="46671"
@@ -7397,9 +7529,12 @@
     </ajc-test>
     
      <ajc-test dir="bugs" pr="45663"
+      abccomment="Polyglot continues beyond parse, and thus has another error. ODM 07/07/04"
       title="Bad parser error recovery in advice">
         <compile files="ParserRecoveryTest.java">
-		  <message kind="error" line="7"/>
+		  <ajcmessage kind="error" line="7"/>
+                  <message kind="error" line="7"/>
+                  <message kind="error" line="4"/>
         </compile>
     </ajc-test>   
     
