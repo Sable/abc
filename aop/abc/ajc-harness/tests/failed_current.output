@@ -1,6 +1,41 @@
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
 Commandline: abc -d pureJava pureJava/NestedFinally.java 
-Abc started on Sat Aug 28 02:16:48 BST 2004
+Abc started on Sun Aug 29 02:16:49 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token NestedFinally
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token key
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token try
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token y
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token try
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token finally
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token finally
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token y
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token key
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
@@ -9,32 +44,274 @@ FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location 
 
 Running test 418: new/join points exist in the execution of field initializers
 Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Abc started on Sat Aug 28 02:20:10 BST 2004
+Abc started on Sun Aug 29 02:20:10 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token jcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token kcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token lcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token mcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ncount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ocount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token qcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token nMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token oMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token qMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token final
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token j
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token k
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token final
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token l
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token switch
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token case
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token l
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token System
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token err
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token println
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token l
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token n
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token p
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token q
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token final
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token n
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token n
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token final
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token p
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token p
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token q
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token q
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token jcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token kcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token lcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token mcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ncount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ocount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token qcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token nMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token oMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token qMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token mumble
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token fp
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token System
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token err
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token println
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token fp
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token l
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token j
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token jcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token k
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token kcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token l
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token lcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token mcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token n
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ncount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ocount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token p
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token pcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token set
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token q
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token qcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token n
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token nMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token oMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token p
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token pMcount
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token q
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FieldInitializerJoinPoints
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token qMcount
 Transforming FieldInitializerJoinPoints... 
 Transforming A... 
-Abc finished on Sat Aug 28 02:20:11 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Sun Aug 29 02:20:12 BST 2004. ( 0 min. 1 sec. )
 ================================================
 Breakdown of abc phases  (total: 1156 millisec.)
 ------------------------------------------------
 [ 50.692% ] Init. of Soot:  586
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 16.696% ] Polyglot phases:  193
-[ 11.505% ] Soot resolving:  133
+[ 15.917% ] Polyglot phases:  184
+[ 11.419% ] Soot resolving:  132
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.087% ] Intertype Adjuster:  1
-[ 01.557% ] Retrieving bodies:  18
-[ 07.353% ] Update pattern matcher:  85
-[ 00.087% ] Weave Initializers:  1
+[ 01.471% ] Retrieving bodies:  17
+[ 07.872% ] Update pattern matcher:  91
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
 [ 01.211% ] Compute advice lists:  14
-[ 00.087% ] Add aspect code:  1
+[ 00.000% ] Add aspect code:  0
 [ 00.087% ] Weaving advice:  1
 [ 00.087% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.488% ] Soot Packs:  75
-[ 04.066% ] Soot Writing Output:  47
+[ 06.574% ] Soot Packs:  76
+[ 04.585% ] Soot Writing Output:  53
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail ncount: 0 < 1
@@ -56,34 +333,107 @@ FAIL: Test 418: "new/join points exist in the execution of field initializers" f
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-Abc started on Sat Aug 28 02:21:27 BST 2004
+Abc started on Sun Aug 29 02:21:28 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ObjectForInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token go
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token a
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token beforeA
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token intValue
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token a
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token go
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token a
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token a
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token a
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Integer
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token beforeA
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token fooCut
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token target
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token fooCut
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token beforeA
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Integer
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token around
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token fooCut
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token proceed
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Integer
 Transforming ObjectForInt... 
 Transforming Test... 
 Transforming A... 
 Transforming Abc$proceed$A$around$1397... 
-Abc finished on Sat Aug 28 02:21:28 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Sun Aug 29 02:21:29 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 970 millisec.)
+Breakdown of abc phases  (total: 974 millisec.)
 ------------------------------------------------
-[ 57.320% ] Init. of Soot:  556
+[ 53.799% ] Init. of Soot:  524
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 14.948% ] Polyglot phases:  145
-[ 09.897% ] Soot resolving:  96
+[ 19.199% ] Polyglot phases:  187
+[ 09.754% ] Soot resolving:  95
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.825% ] Retrieving bodies:  8
-[ 07.423% ] Update pattern matcher:  72
+[ 00.821% ] Retrieving bodies:  8
+[ 07.392% ] Update pattern matcher:  72
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.619% ] Compute advice lists:  6
+[ 00.513% ] Compute advice lists:  5
 [ 00.000% ] Add aspect code:  0
-[ 00.928% ] Weaving advice:  9
+[ 00.308% ] Weaving advice:  3
 [ 00.103% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 04.639% ] Soot Packs:  45
-[ 03.299% ] Soot Writing Output:  32
+[ 04.620% ] Soot Packs:  45
+[ 03.491% ] Soot Writing Output:  34
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
@@ -105,35 +455,184 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-Abc started on Sat Aug 28 02:21:57 BST 2004
+Abc started on Sun Aug 29 02:21:57 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token java
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token util
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AroundAll
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkLog
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token extends
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token SuperC
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token final
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token final
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token y
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Integer
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token valueOf
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token intValue
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token y
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token SuperC
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token SuperC
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token expectedSteps
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token List
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token logList
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ArrayList
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token printLog
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token for
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Iterator
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token logList
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token iterator
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token hasNext
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token System
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token out
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token println
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token next
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token checkLog
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token expectedSteps
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token logList
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token toArray
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token checkEqual
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token logList
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token expectedSteps
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token logList
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token add
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token boolean
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token around
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token if
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 3 for token test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token within
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token initialization
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token preinitialization
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token thisJoinPoint
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ret
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token proceed
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token log
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token thisJoinPoint
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ret
 Transforming AroundAll... 
 Transforming C... 
 Transforming SuperC... 
 Transforming A... 
 Transforming Abc$proceed$A$around$1601... 
-Abc finished on Sat Aug 28 02:22:00 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Aug 29 02:22:00 BST 2004. ( 0 min. 2 sec. )
 ================================================
-Breakdown of abc phases  (total: 2647 millisec.)
+Breakdown of abc phases  (total: 2672 millisec.)
 ------------------------------------------------
-[ 21.798% ] Init. of Soot:  577
+[ 21.295% ] Init. of Soot:  569
 [ 00.000% ] Loading Jars:  0
-[ 00.038% ] Create polyglot compiler:  1
-[ 20.929% ] Polyglot phases:  554
-[ 06.385% ] Soot resolving:  169
+[ 00.037% ] Create polyglot compiler:  1
+[ 08.084% ] Polyglot phases:  216
+[ 20.097% ] Soot resolving:  537
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.038% ] Intertype Adjuster:  1
-[ 01.322% ] Retrieving bodies:  35
-[ 02.040% ] Update pattern matcher:  54
-[ 00.416% ] Weave Initializers:  11
+[ 00.037% ] Intertype Adjuster:  1
+[ 01.347% ] Retrieving bodies:  36
+[ 02.058% ] Update pattern matcher:  55
+[ 00.037% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.642% ] Compute advice lists:  17
-[ 00.000% ] Add aspect code:  0
-[ 13.223% ] Weaving advice:  350
-[ 00.113% ] Exceptions check:  3
+[ 01.010% ] Compute advice lists:  27
+[ 00.037% ] Add aspect code:  1
+[ 13.061% ] Weaving advice:  349
+[ 00.075% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 23.083% ] Soot Packs:  611
-[ 09.974% ] Soot Writing Output:  264
+[ 23.353% ] Soot Packs:  624
+[ 09.469% ] Soot Writing Output:  253
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 126
@@ -158,35 +657,158 @@ FAIL: Test 496: "new/elaborated into testing of around on all join points" faile
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-Abc started on Sat Aug 28 02:23:27 BST 2004
+Abc started on Sun Aug 29 02:23:26 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token SuperInIntroduction
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Sub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token sb
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getClone
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token sb
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token sb
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getSuperClone
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token sb
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token protected
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token protectedInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token protected
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token protectedIntMethod
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token protectedInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token defaultInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token defaultIntMethod
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token defaultInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Sub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token extends
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Sub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token protectedInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token protectedIntMethod
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token protectedInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token protectedIntMethod
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token defaultInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token defaultIntMethod
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token defaultInt
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token defaultIntMethod
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getClone
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token try
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token clone
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token catch
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token CloneNotSupportedException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getSuperClone
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token try
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ObjectSub
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token clone
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token catch
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token CloneNotSupportedException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token return
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token result
 Transforming SuperInIntroduction... 
 Transforming Super... 
 Transforming Sub... 
 Transforming ObjectSub... 
 Transforming A... 
-Abc finished on Sat Aug 28 02:23:28 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Sun Aug 29 02:23:27 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1085 millisec.)
+Breakdown of abc phases  (total: 1086 millisec.)
 ------------------------------------------------
-[ 51.705% ] Init. of Soot:  561
+[ 51.289% ] Init. of Soot:  557
 [ 00.000% ] Loading Jars:  0
 [ 00.092% ] Create polyglot compiler:  1
-[ 16.774% ] Polyglot phases:  182
-[ 10.230% ] Soot resolving:  111
+[ 17.035% ] Polyglot phases:  185
+[ 10.129% ] Soot resolving:  110
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.092% ] Intertype Adjuster:  1
-[ 01.935% ] Retrieving bodies:  21
-[ 04.424% ] Update pattern matcher:  48
-[ 00.000% ] Weave Initializers:  0
+[ 01.473% ] Retrieving bodies:  16
+[ 05.617% ] Update pattern matcher:  61
+[ 00.092% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.553% ] Compute advice lists:  6
-[ 00.000% ] Add aspect code:  0
+[ 00.460% ] Compute advice lists:  5
+[ 00.092% ] Add aspect code:  1
 [ 00.092% ] Weaving advice:  1
 [ 00.092% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.124% ] Soot Packs:  99
-[ 04.885% ] Soot Writing Output:  53
+[ 07.919% ] Soot Packs:  86
+[ 05.525% ] Soot Writing Output:  60
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
 java.lang.reflect.InvocationTargetException
@@ -206,32 +828,44 @@ FAIL: Test 555: "new/accessing protected superclass members in and outside CCC f
 
 Running test 634: new/CE for ambiguous type reference (two files in package)
 Commandline: abc -d new new/ambiguousClass/AmbiguousReferent.java new/ambiguousClass/AmbiguousClassReference.java 
-Abc started on Sat Aug 28 02:25:06 BST 2004
+Abc started on Sun Aug 29 02:25:02 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token package
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ambiguousClass
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AmbiguousReferent
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token package
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ambiguousClass
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AmbiguousClassReference
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AmbiguousReferent
 Transforming ambiguousClass.AmbiguousClassReference... 
 Transforming ambiguousClass.AmbiguousReferent... 
-Abc finished on Sat Aug 28 02:25:07 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Sun Aug 29 02:25:03 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 816 millisec.)
+Breakdown of abc phases  (total: 800 millisec.)
 ------------------------------------------------
-[ 72.304% ] Init. of Soot:  590
+[ 72.875% ] Init. of Soot:  583
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 17.647% ] Polyglot phases:  144
-[ 00.123% ] Soot resolving:  1
+[ 17.000% ] Polyglot phases:  136
+[ 00.125% ] Soot resolving:  1
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.123% ] Intertype Adjuster:  1
-[ 00.123% ] Retrieving bodies:  1
-[ 06.495% ] Update pattern matcher:  53
-[ 00.000% ] Weave Initializers:  0
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.250% ] Retrieving bodies:  2
+[ 06.750% ] Update pattern matcher:  54
+[ 00.125% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.123% ] Compute advice lists:  1
+[ 00.125% ] Compute advice lists:  1
 [ 00.000% ] Add aspect code:  0
-[ 00.123% ] Weaving advice:  1
+[ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 01.838% ] Soot Packs:  15
-[ 01.103% ] Soot Writing Output:  9
+[ 01.750% ] Soot Packs:  14
+[ 01.000% ] Soot Writing Output:  8
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" failed.
@@ -239,36 +873,172 @@ FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" fai
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
 Commandline: abc -d abctests/new abctests/new/test/TypePat.java 
-Abc started on Sat Aug 28 02:25:16 BST 2004
+Abc started on Sun Aug 29 02:25:12 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token package
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token test
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token java
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token util
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token TypePat
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkAndClearEvents
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Map
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token HashMap
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token put
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token for
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Iterator
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token entrySet
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token iterator
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token hasNext
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Map
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Entry
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Map
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Entry
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token i
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token next
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getKey
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkAndClearEvents
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token r
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token event
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token r
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token checkAndClearEvents
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token event
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token InnerA
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token event
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token thisJoinPoint
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getSignature
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token toShortString
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token C
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token A
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token TypePat
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token within
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token TypePat
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token within
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token TypePat
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token event
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token thisJoinPoint
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getSignature
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token toShortString
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token checkCall
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token call
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token checkCall
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token within
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token TypePat
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token within
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token InnerA
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token event
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token thisJoinPoint
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getSignature
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token toShortString
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token before
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token checkCall
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token target
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Map
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Entry
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token event
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token thisJoinPoint
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token getSignature
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token toShortString
 Transforming test.TypePat... 
 Transforming test.TypePat$1... 
 Transforming test.TypePat$Inner... 
 Transforming test.TypePat$InnerA... 
 Transforming test.C... 
 Transforming test.A... 
-Abc finished on Sat Aug 28 02:25:18 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Sun Aug 29 02:25:14 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1748 millisec.)
+Breakdown of abc phases  (total: 1717 millisec.)
 ------------------------------------------------
-[ 54.291% ] Init. of Soot:  949
+[ 34.013% ] Init. of Soot:  584
 [ 00.000% ] Loading Jars:  0
-[ 00.057% ] Create polyglot compiler:  1
-[ 11.270% ] Polyglot phases:  197
-[ 08.238% ] Soot resolving:  144
+[ 00.000% ] Create polyglot compiler:  0
+[ 11.765% ] Polyglot phases:  202
+[ 08.503% ] Soot resolving:  146
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.057% ] Intertype Adjuster:  1
-[ 01.201% ] Retrieving bodies:  21
-[ 03.490% ] Update pattern matcher:  61
-[ 00.458% ] Weave Initializers:  8
+[ 00.058% ] Intertype Adjuster:  1
+[ 01.165% ] Retrieving bodies:  20
+[ 24.228% ] Update pattern matcher:  416
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.201% ] Compute advice lists:  21
-[ 00.057% ] Add aspect code:  1
-[ 00.973% ] Weaving advice:  17
-[ 00.114% ] Exceptions check:  2
+[ 01.514% ] Compute advice lists:  26
+[ 00.058% ] Add aspect code:  1
+[ 00.932% ] Weaving advice:  16
+[ 00.116% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 09.840% ] Soot Packs:  172
-[ 08.753% ] Soot Writing Output:  153
+[ 09.319% ] Soot Packs:  160
+[ 08.328% ] Soot Writing Output:  143
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "A.before2: C.foo()" not found]
@@ -294,10 +1064,275 @@ FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ke
 
 Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertInOnePackage.java 
-Abc started on Sat Aug 28 02:27:09 BST 2004
+Abc started on Sun Aug 29 02:27:08 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AssertInOnePackage
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token turnOnAssertions
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token runTests
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token turnOnAssertions
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ClassLoader
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AssertInOnePackage
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getClassLoader
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cl
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token setClassAssertionStatus
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token runTests
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token StaticInitializerOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token StaticInitializerOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pre
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pre
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOnHelperI
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOffHelperI
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSubOn
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSubOff
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token boolean
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token shouldThrow
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token message
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token r
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token r
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pre
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token boolean
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token threw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token try
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token r
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token catch
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token AssertionError
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token threw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token threw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token shouldThrow
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token message
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token r
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token post
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Runnable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token pre
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token run
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token post
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token StaticInitializerOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token StaticInitializerOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token ConstructorOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOnHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOffHelper
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token interface
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOnHelperI
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token interface
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token InnerStaticInitializerOffHelperI
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Inner
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSuperOn
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSubOn
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSubOn
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token extends
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSuperOn
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSuperOff
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSubOff
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSubOff
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token extends
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token CycleSuperOff
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token int
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token x
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token assert
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:543)
+	at abc.main.Main.run(Main.java:557)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -306,41 +1341,88 @@ Caused by: java.util.NoSuchElementException: No such class: InnerStaticInitializ
 	at abc.aspectj.visit.PCStructure.insertClassAndSuperclasses(PCStructure.java:163)
 	at abc.aspectj.visit.PCStructure.updateWithAllSootClasses(PCStructure.java:178)
 	at abc.aspectj.visit.PatternMatcher.updateWithAllSootClasses(PatternMatcher.java:125)
-	at abc.main.Main.weave(Main.java:748)
-	at abc.main.Main.run(Main.java:487)
+	at abc.main.Main.weave(Main.java:765)
+	at abc.main.Main.run(Main.java:501)
 	... 3 more
 FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" failed.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs bugs/Finalizer.java 
-Abc started on Sat Aug 28 02:28:19 BST 2004
+Abc started on Sun Aug 29 02:28:04 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Finalizer
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Finalizer
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token np
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Finalizer
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token np
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token finalize
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throws
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Throwable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token FinalizeContract
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token finalizeCall
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token this
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token this
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token execution
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token finalize
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token around
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Object
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token throws
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Throwable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token finalizeCall
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token o
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token finalize
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token proceed
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token o
 Transforming Finalizer... 
 Transforming FinalizeContract... 
 Transforming Abc$proceed$FinalizeContract$around$2595... 
-Abc finished on Sat Aug 28 02:28:20 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Sun Aug 29 02:28:05 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 891 millisec.)
+Breakdown of abc phases  (total: 801 millisec.)
 ------------------------------------------------
-[ 66.667% ] Init. of Soot:  594
+[ 67.541% ] Init. of Soot:  541
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 17.508% ] Polyglot phases:  156
-[ 00.112% ] Soot resolving:  1
-[ 00.561% ] Resolve class names:  5
+[ 17.728% ] Polyglot phases:  142
+[ 00.125% ] Soot resolving:  1
+[ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.122% ] Retrieving bodies:  10
-[ 06.173% ] Update pattern matcher:  55
+[ 00.499% ] Retrieving bodies:  4
+[ 03.995% ] Update pattern matcher:  32
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.224% ] Compute advice lists:  2
-[ 00.112% ] Add aspect code:  1
-[ 00.224% ] Weaving advice:  2
-[ 00.000% ] Exceptions check:  0
+[ 00.250% ] Compute advice lists:  2
+[ 00.125% ] Add aspect code:  1
+[ 00.250% ] Weaving advice:  2
+[ 00.125% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 04.377% ] Soot Packs:  39
-[ 02.918% ] Soot Writing Output:  26
+[ 06.617% ] Soot Packs:  53
+[ 02.747% ] Soot Writing Output:  22
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
@@ -348,7 +1430,102 @@ FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 Running test 77201: abctests/bugs/declare soft and throw statements
 Commandline: abc -d abctests/bugs abctests/bugs/ConvertToUnchecked.java 
-Abc started on Sat Aug 28 02:28:39 BST 2004
+Abc started on Sun Aug 29 02:28:19 BST 2004
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token org
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token aspectj
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token testing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token import
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token java
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token io
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token ConvertToUnchecked
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token main
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token args
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token try
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token Tester
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token check
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token catch
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token PersistenceException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token pe
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token module
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token within
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token Foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token after
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token throwing
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token module
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token throw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token PersistenceException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token e
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 2 for token declare
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token soft
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 6 for token module
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token PersistenceException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token extends
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token RuntimeException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Throwable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cause
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token PersistenceException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Throwable
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cause
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cause
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token cause
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Root
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Root
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throws
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token class
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token extends
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Root
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token Foo
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token String
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token super
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token s
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getFile
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token File
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token f
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getFile
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token static
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token File
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token getFile
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throws
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token IOException
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token public
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token void
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token m
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token throw
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token new
+J/AJ/PC/PCIE: 0/2/6/3, currernt state: 0 for token IOException
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
