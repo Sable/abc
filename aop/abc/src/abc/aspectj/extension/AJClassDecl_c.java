@@ -51,6 +51,7 @@ public class AJClassDecl_c extends ClassDecl_c
 {
 
 	protected boolean superDisambiguated = false;
+	protected boolean hierarchyBuilt = false;
 	
 	/**
 	 * @param pos
@@ -70,6 +71,13 @@ public class AJClassDecl_c extends ClassDecl_c
 		super(pos, flags, name, superClass, interfaces, body);
 	}
 	
+	public boolean hierarchyBuilt() {
+		return hierarchyBuilt;
+	}
+	
+	public void setHierarchyBuilt() {
+		hierarchyBuilt=true;
+	}
 	
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 			if (ar.kind() == AmbiguityRemover.SIGNATURES) {

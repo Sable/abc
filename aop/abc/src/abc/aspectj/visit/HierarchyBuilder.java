@@ -5,6 +5,8 @@ import polyglot.ast.*;
 import polyglot.visit.*;
 import polyglot.types.*;
 
+import abc.aspectj.extension.AJClassDecl_c;
+
 import abc.aspectj.ExtensionInfo;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcFactory;
@@ -28,6 +30,11 @@ public class HierarchyBuilder extends NodeVisitor {
     public NodeVisitor enter(Node n) {
 	boolean debug = abc.main.Debug.v().classKinds;
 	if (n instanceof ClassDecl) {
+		System.out.println("n.getClass()"+n.getClass());
+		AJClassDecl_c ajcn = (AJClassDecl_c) n;
+		if (ajcn.hierarchyBuilt())
+			return this;
+		ajcn.setHierarchyBuilt();
 	    ParsedClassType ct = ((ClassDecl)n).type();
 	    ext.hierarchy.insertClassAndSuperclasses(ct, true);
 	    String java_name = ct.fullName();

@@ -41,7 +41,7 @@ import polyglot.types.Type;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.AddMemberVisitor;
 
-import polyglot.ext.jl.ast.ClassDecl_c;
+import abc.aspectj.extension.AJClassDecl_c;
 
 import abc.aspectj.types.AJFlags;
 import abc.aspectj.types.AJTypeSystem;
@@ -59,7 +59,7 @@ import abc.weaving.aspectinfo.*;
  * or privileged. It may be a public or other top-level aspect, or an inner
  * named aspect.
  */
-public class AspectDecl_c extends ClassDecl_c
+public class AspectDecl_c extends AJClassDecl_c
                           implements AspectDecl,
                                      ContainsAspectInfo,
                                      MakesAspectMethods
