@@ -42,8 +42,8 @@ public abstract class AdviceApplication {
 		    ShadowType st=(ShadowType) shadowIt.next();
 		    
 		    Residue residue=pc.matchesAt(st,cls,method,pos);
-		    
-		    if(NeverMatch.neverMatches(residue)) {
+
+		    if(!NeverMatch.neverMatches(residue)) {
 			st.addAdviceApplication(mal,ad,residue,pos);
 		    }
 		}
