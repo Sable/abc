@@ -6,6 +6,7 @@ import soot.util.*;
 
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
+import abc.weaving.weaver.*;
 import java.util.*;
 
 /** The data structure the pointcut matcher computes */
