@@ -25,7 +25,12 @@ import polyglot.ast.Receiver;
 import polyglot.ast.Binary;
 
 import polyglot.visit.NodeVisitor;
+import polyglot.visit.ContextVisitor;
 
+import polyglot.frontend.Job;
+import polyglot.main.Report;
+
+import polyglot.types.Context;
 import polyglot.types.TypeSystem;
 import polyglot.types.ParsedClassType;
 
@@ -53,7 +58,7 @@ import abc.aspectj.types.InterTypeConstructorInstance_c;
 
 import polyglot.visit.ContextVisitor;
 
-public class AspectMethods extends NodeVisitor {
+public class AspectMethods extends ContextVisitor {
 
     private Stack /* List MethodDecl */ methods; // method declaration lists, one for each classdecl
     private Stack /* List Formal */ formals; // pointcut formals for generating if-methods
@@ -69,8 +74,8 @@ public class AspectMethods extends NodeVisitor {
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
 	
-	public AspectMethods(NodeFactory nf, TypeSystem ts) {
-		super();
+	public AspectMethods(Job job, NodeFactory nf, TypeSystem ts) {
+		super(job, ts, nf);
 		this.nf = (AspectJNodeFactory) nf;
 		this.ts = (AspectJTypeSystem) ts;
 		this.methods = new Stack();
@@ -214,22 +219,43 @@ public class AspectMethods extends NodeVisitor {
 	pcifs.pop();
     }
 	
-	public NodeVisitor enter(Node n)
-        {
-                JL del = n.del();
-                if (del instanceof MakesAspectMethods) {
-                        ((MakesAspectMethods) del).aspectMethodsEnter(this);
-                }
+    public NodeVisitor enter(Node parent, Node n) {
+        // The following code is needed to build the context information:
+        if (Report.should_report(Report.visit, 5))
+    	    Report.report(5, "enter(" + n + ")");
+
+        AspectMethods v = this;
+
+        Context c = this.enterScope(parent, n);
+
+        if (c != this.context) {
+            v = (AspectMethods) this.copy();
+            v.context = c;
+            v.outer = this;
+            v.error = false;
+        }
+        
+        // Code to handle aspect methods:
+        JL del = n.del();
+        if (del instanceof MakesAspectMethods) {
+                ((MakesAspectMethods) del).aspectMethodsEnter(this);
+        }
 		if (del instanceof CflowDepth) {
 		    cflowdepth++;
 		    ((CflowDepth) del).recordCflowDepth(cflowdepth);
 		}
-                return this;
-        }
-	 
-        public Node leave(Node parent, Node old, Node n, NodeVisitor v)
-        {
-                JL del = n.del();
+		
+		// This call is how traversal works for ContextVisitors.
+	    return v.superSuperEnter(parent, n);
+    }
+ 
+    public NodeVisitor superSuperEnter(Node parent, Node n) {
+        return super.superEnter(parent, n);
+    }
+    
+    public Node leave(Node parent, Node old, Node n, NodeVisitor v)
+    {
+        JL del = n.del();
 		if (del instanceof CflowDepth) {
 		    cflowdepth--;
 		}              
