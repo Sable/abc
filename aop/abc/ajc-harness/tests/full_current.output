@@ -15,7 +15,40 @@ PASS: Test 9: "base/test102/this redirection in non-static before methods" passe
 
 Running test 10: base/test103/DEPRECATED: introductions
 Commandline: abc -d base/test103 -warn-unused-advice:off base/test103/Driver.java 
-PASS: Test 10: "base/test103/DEPRECATED: introductions" passed.
+Failed to define or resolve class Foo from base/test103 Length: 1209
+java.lang.ClassFormatError: Foo (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Pos.<init>(Driver.java)
+	at Driver.test(Driver.java:11)
+	at Driver.main(Driver.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Foo
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Foo
+	at Pos.<init>(Driver.java)
+	at Driver.test(Driver.java:11)
+	at Driver.main(Driver.java:6)
+	... 7 more
+FAIL: Test 10: "base/test103/DEPRECATED: introductions" failed.
 
 
 Running test 11: base/test104/before constructors -- one file
@@ -106,16 +139,68 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@1d964b7
-init at initialization(A())
-init at initialization(Foo(int))
-external before advise on execution(void Foo.introducedNonStaticMethod())
-PASS: Test 28: "base/test121/advises on introduced methods and constructors" passed.
+Failed to define or resolve class A from base/test121 Length: 3133
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
+	at java.lang.Class.getDeclaredMethod(Class.java:1254)
+	at abc.testing.TestCase.runTest(TestCase.java:383)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Unexpected exception while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.NoClassDefFoundError: A
+	at java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
+	at java.lang.Class.getDeclaredMethod(Class.java:1254)
+	at abc.testing.TestCase.runTest(TestCase.java:383)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 28: "base/test121/advises on introduced methods and constructors" failed.
 
 
 Running test 29: base/test122/DEPRECATED: Method introduction into interface implemented by abstract class
 Commandline: abc -d base/test122 -warn-unused-advice:off base/test122/Driver.java 
-PASS: Test 29: "base/test122/DEPRECATED: Method introduction into interface implemented by abstract class" passed.
+Failed to define or resolve class Aspect from base/test122 Length: 828
+java.lang.ClassFormatError: Aspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C1.m(Driver.java)
+	at Driver.test(Driver.java:8)
+	at Driver.main(Driver.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Aspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Aspect
+	at C1.m(Driver.java)
+	at Driver.test(Driver.java:8)
+	at Driver.main(Driver.java:4)
+	... 7 more
+FAIL: Test 29: "base/test122/DEPRECATED: Method introduction into interface implemented by abstract class" failed.
 
 
 Running test 30: base/test123/Crossing super calls in constructors
@@ -145,12 +230,78 @@ PASS: Test 34: "base/test127/advice uses its own formals to get actuals" passed.
 
 Running test 35: base/test128/DEPRECATED:  introduce weaves can use this
 Commandline: abc -d base/test128 -warn-unused-advice:off base/test128/Driver.java 
-PASS: Test 35: "base/test128/DEPRECATED:  introduce weaves can use this" passed.
+Failed to define or resolve class A from base/test128 Length: 821
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.A$foo$119(Driver.java)
+	at Driver.test(Driver.java:8)
+	at Driver.main(Driver.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.A$foo$119(Driver.java)
+	at Driver.test(Driver.java:8)
+	at Driver.main(Driver.java:4)
+	... 7 more
+FAIL: Test 35: "base/test128/DEPRECATED:  introduce weaves can use this" failed.
 
 
 Running test 36: base/test129/DEPRECATED: introduce of abstract methods works
 Commandline: abc -d base/test129 -warn-unused-advice:off base/test129/Driver.java 
-PASS: Test 36: "base/test129/DEPRECATED: introduce of abstract methods works" passed.
+Failed to define or resolve class A from base/test129 Length: 926
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.A$foo$126(Driver.java)
+	at Driver.test(Driver.java:8)
+	at Driver.main(Driver.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.A$foo$126(Driver.java)
+	at Driver.test(Driver.java:8)
+	at Driver.main(Driver.java:4)
+	... 7 more
+FAIL: Test 36: "base/test129/DEPRECATED: introduce of abstract methods works" failed.
 
 
 Running test 37: base/test130/multiple arounds successfully intercept and return own values
@@ -209,7 +360,30 @@ PASS: Test 45: "base/test139/inner aspects and around" passed.
 
 Running test 46: base/test140/aspect inheritance and advice, introduction
 Commandline: abc -d base/test140 -warn-unused-advice:off base/test140/Driver.java 
-PASS: Test 46: "base/test140/aspect inheritance and advice, introduction" passed.
+Failed to define or resolve class A1 from base/test140 Length: 862
+java.lang.ClassFormatError: A1 (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
+	at java.lang.Class.getDeclaredMethod(Class.java:1254)
+	at abc.testing.TestCase.runTest(TestCase.java:383)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Unexpected exception while trying to run compiled class: java.lang.NoClassDefFoundError: A1
+java.lang.NoClassDefFoundError: A1
+	at java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
+	at java.lang.Class.getDeclaredMethod(Class.java:1254)
+	at abc.testing.TestCase.runTest(TestCase.java:383)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 46: "base/test140/aspect inheritance and advice, introduction" failed.
 
 
 Running test 47: base/test141/thisResultObject for primitives
@@ -599,7 +773,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@59aa0e
+InterfaceAndObject$1@6e736d
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -1763,17 +1937,110 @@ PASS: Test 319: "errors/bad proceed args good error messages" passed.
 
 Running test 320: design/intro/initial tests for new introduction style
 Commandline: abc -d design/intro -warn-unused-advice:off design/intro/Simple.java 
-PASS: Test 320: "design/intro/initial tests for new introduction style" passed.
+Failed to define or resolve class A from design/intro Length: 3236
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.<init>(Simple.java:23)
+	at Simple.main(Simple.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.<init>(Simple.java:23)
+	at Simple.main(Simple.java:5)
+	... 7 more
+FAIL: Test 320: "design/intro/initial tests for new introduction style" failed.
 
 
 Running test 321: design/intro/overriding of introduced methods and accessibility
 Commandline: abc -d design/intro -warn-unused-advice:off design/intro/Overriding.java 
-PASS: Test 321: "design/intro/overriding of introduced methods and accessibility" passed.
+Failed to define or resolve class A2 from design/intro Length: 844
+java.lang.ClassFormatError: A2 (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.A2$m$391(Overriding.java)
+	at Overriding.main(Overriding.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A2
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A2
+	at C.A2$m$391(Overriding.java)
+	at Overriding.main(Overriding.java:7)
+	... 7 more
+FAIL: Test 321: "design/intro/overriding of introduced methods and accessibility" failed.
 
 
 Running test 322: design/intro/within and introductions behaves correctly
 Commandline: abc -d design/intro -warn-unused-advice:off design/intro/Within.java 
-PASS: Test 322: "design/intro/within and introductions behaves correctly" passed.
+Failed to define or resolve class A1 from design/intro Length: 2003
+java.lang.ClassFormatError: A1 (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.A1$mi$418(Within.java)
+	at Within.main(Within.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A1
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A1
+	at C.A1$mi$418(Within.java)
+	at Within.main(Within.java:6)
+	... 7 more
+FAIL: Test 322: "design/intro/within and introductions behaves correctly" failed.
 
 
 Running test 323: design/intro/introduction of static methods and fields on classes and interfaces
@@ -1784,7 +2051,38 @@ PASS: Test 323: "design/intro/introduction of static methods and fields on class
 
 Running test 324: design/intro/correct inheritance of multiple concrete methods
 Commandline: abc -d design/intro -warn-unused-advice:off design/intro/MultiInheritCP.java 
-PASS: Test 324: "design/intro/correct inheritance of multiple concrete methods" passed.
+Failed to define or resolve class A from design/intro Length: 1518
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.toString(MultiInheritCP.java)
+	at MultiInheritCP.main(MultiInheritCP.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.toString(MultiInheritCP.java)
+	at MultiInheritCP.main(MultiInheritCP.java:7)
+	... 7 more
+FAIL: Test 324: "design/intro/correct inheritance of multiple concrete methods" failed.
 
 
 Running test 325: abctests/design/intro/errors in inheritance of multiple concrete methods 1
@@ -1825,7 +2123,38 @@ PASS: Test 330: "abctests/design/intro/declared exceptions are checked correctly
 
 Running test 331: design/intro/declared exceptions are checked correctly on intros
 Commandline: abc -d design/intro -warn-unused-advice:off design/intro/ExceptionsCP.java 
-PASS: Test 331: "design/intro/declared exceptions are checked correctly on intros" passed.
+Failed to define or resolve class A from design/intro Length: 830
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.foo(ExceptionsCP.java)
+	at ExceptionsCP.main(ExceptionsCP.java:9)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.foo(ExceptionsCP.java)
+	at ExceptionsCP.main(ExceptionsCP.java:9)
+	... 7 more
+FAIL: Test 331: "design/intro/declared exceptions are checked correctly on intros" failed.
 
 
 Running test 332: design/reflect/Joinpoint is not created for foo(String) when before() advice is present.
@@ -1870,7 +2199,19 @@ PASS: Test 339: "new/field from implemented interface not found in advice" passe
 
 Running test 340: new/make sure advice affects introduced methods and constructors
 Commandline: abc -d new -warn-unused-advice:off new/AdviceOnIntroduced.java 
-PASS: Test 340: "new/make sure advice affects introduced methods and constructors" passed.
+Failed to define or resolve class AdviceOnIntroduced from new Length: 1317
+java.lang.ClassFormatError: AdviceOnIntroduced (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at abc.testing.TestCase.runTest(TestCase.java:380)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Failed to find class AdviceOnIntroduced
+FAIL: Test 340: "new/make sure advice affects introduced methods and constructors" failed.
 
 
 Running test 341: new/new around construct
@@ -1930,7 +2271,40 @@ PASS: Test 350: "new/introduction fails on class with an inner class that extend
 
 Running test 351: new/checks that methods are introduced on the topmost class implemented
 Commandline: abc -d new -warn-unused-advice:off new/TopmostImplements.java 
-PASS: Test 351: "new/checks that methods are introduced on the topmost class implemented" passed.
+Failed to define or resolve class Introducer from new Length: 935
+java.lang.ClassFormatError: Introducer (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at B.m1(TopmostImplements.java)
+	at TopmostImplements.test(TopmostImplements.java:24)
+	at TopmostImplements.main(TopmostImplements.java:8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Introducer
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Introducer
+	at B.m1(TopmostImplements.java)
+	at TopmostImplements.test(TopmostImplements.java:24)
+	at TopmostImplements.main(TopmostImplements.java:8)
+	... 7 more
+FAIL: Test 351: "new/checks that methods are introduced on the topmost class implemented" failed.
 
 
 Running test 352: new/arndAdvRet/a couple different returns from around advice
@@ -2084,7 +2458,38 @@ PASS: Test 380: "new/Advice on advice" passed.
 
 Running test 381: new/Introductions on other introductions
 Commandline: abc -d new -warn-unused-advice:off new/IntroOnIntro.java 
-PASS: Test 381: "new/Introductions on other introductions" passed.
+Failed to define or resolve class Aspect1 from new Length: 1465
+java.lang.ClassFormatError: Aspect1 (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Class1.getName(IntroOnIntro.java)
+	at IntroOnIntro.main(IntroOnIntro.java:8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Aspect1
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Aspect1
+	at Class1.getName(IntroOnIntro.java)
+	at IntroOnIntro.main(IntroOnIntro.java:8)
+	... 7 more
+FAIL: Test 381: "new/Introductions on other introductions" failed.
 
 
 Running test 382: new/Putting advice on array constructors.
@@ -2139,7 +2544,40 @@ PASS: Test 392: "new/many this's into around advice on calls" passed.
 
 Running test 393: new/Ensures introduction methods can have advice placed on them
 Commandline: abc -d new -warn-unused-advice:off new/Dominates.java 
-PASS: Test 393: "new/Ensures introduction methods can have advice placed on them" passed.
+Failed to define or resolve class Aspect1 from new Length: 800
+java.lang.ClassFormatError: Aspect1 (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A.run(Dominates.java)
+	at Dominates.go(Dominates.java:26)
+	at Dominates.main(Dominates.java:22)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Aspect1
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Aspect1
+	at A.run(Dominates.java)
+	at Dominates.go(Dominates.java:26)
+	at Dominates.main(Dominates.java:22)
+	... 7 more
+FAIL: Test 393: "new/Ensures introduction methods can have advice placed on them" failed.
 
 
 Running test 394: new/No boolean appearing in the 'if' clause for around advice with eachJVM()
@@ -2189,13 +2627,79 @@ PASS: Test 402: "new/Confused referring to instance variables and locals" passed
 
 Running test 403: new/Parsing C+ expressions without parens in super introductions.
 Commandline: abc -d new -warn-unused-advice:off new/ParsingSubtypesIntroductions.java 
-PASS: Test 403: "new/Parsing C+ expressions without parens in super introductions." passed.
+Failed to define or resolve class A from new Length: 909
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.i(ParsingSubtypesIntroductions.java)
+	at ParsingSubtypesIntroductions.realMain(ParsingSubtypesIntroductions.java:9)
+	at ParsingSubtypesIntroductions.main(ParsingSubtypesIntroductions.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.i(ParsingSubtypesIntroductions.java)
+	at ParsingSubtypesIntroductions.realMain(ParsingSubtypesIntroductions.java:9)
+	at ParsingSubtypesIntroductions.main(ParsingSubtypesIntroductions.java:4)
+	... 7 more
+FAIL: Test 403: "new/Parsing C+ expressions without parens in super introductions." failed.
 
 
 Running test 404: new/Introducing methods on classes that implements inner-interfaces with +implements.
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroducingMethodsOnPlusImplementedInterfaces.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-PASS: Test 404: "new/Introducing methods on classes that implements inner-interfaces with +implements." passed.
+Failed to define or resolve class A from new Length: 979
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at D.f(IntroducingMethodsOnPlusImplementedInterfaces.java)
+	at IntroducingMethodsOnPlusImplementedInterfaces.realMain(IntroducingMethodsOnPlusImplementedInterfaces.java:7)
+	at IntroducingMethodsOnPlusImplementedInterfaces.main(IntroducingMethodsOnPlusImplementedInterfaces.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at D.f(IntroducingMethodsOnPlusImplementedInterfaces.java)
+	at IntroducingMethodsOnPlusImplementedInterfaces.realMain(IntroducingMethodsOnPlusImplementedInterfaces.java:7)
+	at IntroducingMethodsOnPlusImplementedInterfaces.main(IntroducingMethodsOnPlusImplementedInterfaces.java:4)
+	... 7 more
+FAIL: Test 404: "new/Introducing methods on classes that implements inner-interfaces with +implements." failed.
 
 
 Running test 405: new/Methods with the same name are generated when abstract aspects extend another abstract aspect.
@@ -2253,7 +2757,38 @@ PASS: Test 414: "new/innerAspectAccess/inner aspects can't access outer pointcut
 
 Running test 415: new/implements and extends are introduced before methods and fields
 Commandline: abc -d new -warn-unused-advice:off new/IntroOrder.java 
-PASS: Test 415: "new/implements and extends are introduced before methods and fields" passed.
+Failed to define or resolve class Persist from new Length: 687
+java.lang.ClassFormatError: Persist (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Class1.setPersistor(IntroOrder.java)
+	at IntroOrder.main(IntroOrder.java:9)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Persist
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Persist
+	at Class1.setPersistor(IntroOrder.java)
+	at IntroOrder.main(IntroOrder.java:9)
+	... 7 more
+FAIL: Test 415: "new/implements and extends are introduced before methods and fields" failed.
 
 
 Running test 416: new/a static/inner aspect of a inner class of an aspect is pulled to the top level as static
@@ -2263,7 +2798,40 @@ PASS: Test 416: "new/a static/inner aspect of a inner class of an aspect is pull
 
 Running test 417: new/Crashes with privileged aspect.
 Commandline: abc -d new -warn-unused-advice:off new/Privileged.java 
-PASS: Test 417: "new/Crashes with privileged aspect." passed.
+Failed to define or resolve class PrivilegedAspect from new Length: 960
+java.lang.ClassFormatError: PrivilegedAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at OtherClass.foo(Privileged.java)
+	at Privileged.go(Privileged.java:23)
+	at Privileged.main(Privileged.java:14)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: PrivilegedAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: PrivilegedAspect
+	at OtherClass.foo(Privileged.java)
+	at Privileged.go(Privileged.java:23)
+	at Privileged.main(Privileged.java:14)
+	... 7 more
+FAIL: Test 417: "new/Crashes with privileged aspect." failed.
 
 
 Running test 41801: abctests/new/join points exist in the execution of field initializers
@@ -2273,8 +2841,38 @@ PASS: Test 41801: "abctests/new/join points exist in the execution of field init
 
 Running test 419: new/privilegedAspects/privileged aspects
 Commandline: abc -d new/privilegedAspects -warn-unused-advice:off new/privilegedAspects/main/Main.java new/privilegedAspects/fish/PrivateClass.java new/privilegedAspects/fish/B.java new/privilegedAspects/fowl/C.java new/privilegedAspects/fowl/D.java 
-B's private::2
-PASS: Test 419: "new/privilegedAspects/privileged aspects" passed.
+Failed to define or resolve class fish.A from new/privilegedAspects Length: 1845
+java.lang.ClassFormatError: fish/A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at fish.PrivateClass.fooA(PrivateClass.java)
+	at main.Main.main(Main.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: fish/A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: fish/A
+	at fish.PrivateClass.fooA(PrivateClass.java)
+	at main.Main.main(Main.java:6)
+	... 7 more
+FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed.
 
 
 Running test 420: new/advice on field gets in privileged aspects
@@ -2286,7 +2884,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@209a25, [Ljava.lang.Object;@67fb68, TwoAnonymous$3@209a25
+calling run: TwoAnonymous$3@808f96, [Ljava.lang.Object;@52eb2a, TwoAnonymous$3@808f96
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2337,7 +2935,48 @@ PASS: Test 427: "new/Checking formal matching as in Roeder's bug in 0.7b10" pass
 
 Running test 428: new/Introducing synchronized methods on interfaces.
 Commandline: abc -d new -warn-unused-advice:off new/SynchronizedMethodsOnInterfaces.java 
-PASS: Test 428: "new/Introducing synchronized methods on interfaces." passed.
+Failed to define or resolve class AspectI from new Length: 940
+java.lang.ClassFormatError: AspectI (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at D.method(SynchronizedMethodsOnInterfaces.java)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at SynchronizedMethodsOnInterfaces.method(SynchronizedMethodsOnInterfaces.java:18)
+	at SynchronizedMethodsOnInterfaces.realMain(SynchronizedMethodsOnInterfaces.java:12)
+	at SynchronizedMethodsOnInterfaces.main(SynchronizedMethodsOnInterfaces.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Test failed, compiled class behaved incorrectly
+Message: fail java.lang.reflect.InvocationTargetException
+org.aspectj.bridge.AbortException: java.lang.reflect.InvocationTargetException
+	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
+	at org.aspectj.testing.Tester.handle(Tester.java:963)
+	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
+	at org.aspectj.testing.Tester.check(Tester.java:204)
+	at SynchronizedMethodsOnInterfaces.method(SynchronizedMethodsOnInterfaces.java:20)
+	at SynchronizedMethodsOnInterfaces.realMain(SynchronizedMethodsOnInterfaces.java:12)
+	at SynchronizedMethodsOnInterfaces.main(SynchronizedMethodsOnInterfaces.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 428: "new/Introducing synchronized methods on interfaces." failed.
 
 
 Running test 429: new/The pointcut params (..,int..) is not recognizing (Object,int,Object).
@@ -2403,32 +3042,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@a1e6d5.foo calls Outer$Inner@139b381.mi
+Outer@13f811c.foo calls Outer$Inner@35830a.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@139b381.mi calls java.io.PrintStream@137fca2.println
+Outer$Inner@35830a.mi calls java.io.PrintStream@12e32c4.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@a1e6d5.foo calls Outer$InnerRandom@869240.nextHook
+Outer@13f811c.foo calls Outer$InnerRandom@338160.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@869240.nextHook calls Outer$InnerRandom@869240.next
+Outer$InnerRandom@338160.nextHook calls Outer$InnerRandom@338160.next
 Outer.foo() calls Random.nextInt(..)
-Outer@a1e6d5.foo calls X.nextInt
+Outer@13f811c.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@167acd5.foo calls Outer$Inner@18408fc.mi
+Outer@47211.foo calls Outer$Inner@1dceb56.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@18408fc.mi calls java.io.PrintStream@169fd12.println
+Outer$Inner@1dceb56.mi calls java.io.PrintStream@de7de8.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@167acd5.foo calls Outer$InnerRandom@165c009.nextHook
+Outer@47211.foo calls Outer$InnerRandom@11c39fa.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@165c009.nextHook calls Outer$InnerRandom@165c009.next
+Outer$InnerRandom@11c39fa.nextHook calls Outer$InnerRandom@11c39fa.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@167acd5.foo calls X.nextInt
+Outer@47211.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2439,12 +3078,78 @@ PASS: Test 442: "new/Arguments to runNext should be final when needed" passed.
 
 Running test 443: new/Method introductions
 Commandline: abc -d new -warn-unused-advice:off new/MethodIntroductions.java 
-PASS: Test 443: "new/Method introductions" passed.
+Failed to define or resolve class Introducer from new Length: 1687
+java.lang.ClassFormatError: Introducer (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at ExtendsAbstractSuper.foo(MethodIntroductions.java)
+	at MethodIntroductions.realMain(MethodIntroductions.java:14)
+	at MethodIntroductions.main(MethodIntroductions.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Introducer
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Introducer
+	at ExtendsAbstractSuper.foo(MethodIntroductions.java)
+	at MethodIntroductions.realMain(MethodIntroductions.java:14)
+	at MethodIntroductions.main(MethodIntroductions.java:4)
+	... 7 more
+FAIL: Test 443: "new/Method introductions" failed.
 
 
 Running test 444: new/Putting an introduced method on each interface
 Commandline: abc -d new -warn-unused-advice:off new/IntroducedMethodsOnEachInterface.java 
-PASS: Test 444: "new/Putting an introduced method on each interface" passed.
+Failed to define or resolve class A from new Length: 1130
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at B.j(IntroducedMethodsOnEachInterface.java)
+	at IntroducedMethodsOnEachInterface.realMain(IntroducedMethodsOnEachInterface.java:15)
+	at IntroducedMethodsOnEachInterface.main(IntroducedMethodsOnEachInterface.java:4)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at B.j(IntroducedMethodsOnEachInterface.java)
+	at IntroducedMethodsOnEachInterface.realMain(IntroducedMethodsOnEachInterface.java:15)
+	at IntroducedMethodsOnEachInterface.main(IntroducedMethodsOnEachInterface.java:4)
+	... 7 more
+FAIL: Test 444: "new/Putting an introduced method on each interface" failed.
 
 
 Running test 445: new/Extending interfaces
@@ -2454,7 +3159,36 @@ PASS: Test 445: "new/Extending interfaces" passed.
 
 Running test 446: new/Introducing private methods on interfaces
 Commandline: abc -d new -warn-unused-advice:off new/IntroducingPrivateMethodsOnInterfaces.java 
-PASS: Test 446: "new/Introducing private methods on interfaces" passed.
+Failed to define or resolve class AA from new Length: 3284
+java.lang.ClassFormatError: AA (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at IntroducingPrivateMethodsOnInterfaces.main(IntroducingPrivateMethodsOnInterfaces.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: AA
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: AA
+	at IntroducingPrivateMethodsOnInterfaces.main(IntroducingPrivateMethodsOnInterfaces.java:5)
+	... 7 more
+FAIL: Test 446: "new/Introducing private methods on interfaces" failed.
 
 
 Running test 447: new/Issuing errors for assigning variables thisJoinPoint -- not assigning thisJoinPoint.
@@ -2464,7 +3198,36 @@ PASS: Test 447: "new/Issuing errors for assigning variables thisJoinPoint -- not
 
 Running test 448: new/Static references inside of introduced bodies get bound correctly.
 Commandline: abc -d new -warn-unused-advice:off new/StaticIntroducedReferences.java 
-PASS: Test 448: "new/Static references inside of introduced bodies get bound correctly." passed.
+Failed to define or resolve class A from new Length: 892
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at StaticIntroducedReferences.main(StaticIntroducedReferences.java)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at StaticIntroducedReferences.main(StaticIntroducedReferences.java)
+	... 7 more
+FAIL: Test 448: "new/Static references inside of introduced bodies get bound correctly." failed.
 
 
 Running test 449: new/cflowObjectCreations/cflow and object creations [of eachcflow]
@@ -2759,8 +3522,38 @@ PASS: Test 501: "new/Compiler incorrectly flagging *1 (non-alphabetic start to s
 
 Running test 502: new/Unable to bind privately-introduced field name from introduced method in the same aspect
 Commandline: abc -d new -warn-unused-advice:off new/IntroducedFieldsNotBinding.java 
-running: 1
-PASS: Test 502: "new/Unable to bind privately-introduced field name from introduced method in the same aspect" passed.
+Failed to define or resolve class A from new Length: 1774
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at TargetClass.<init>(IntroducedFieldsNotBinding.java:18)
+	at IntroducedFieldsNotBinding.main(IntroducedFieldsNotBinding.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at TargetClass.<init>(IntroducedFieldsNotBinding.java:18)
+	at IntroducedFieldsNotBinding.main(IntroducedFieldsNotBinding.java:7)
+	... 7 more
+FAIL: Test 502: "new/Unable to bind privately-introduced field name from introduced method in the same aspect" failed.
 
 
 Running test 503: new/anonInnerClass/anonymous inner class with aspect
@@ -2795,12 +3588,74 @@ PASS: Test 509: "new/InternalCompilerError in JpPlan when args alone" passed.
 
 Running test 510: new/compile error using pcd if() with advice on introduced methods.
 Commandline: abc -d new -warn-unused-advice:off new/PR527.java 
-PASS: Test 510: "new/compile error using pcd if() with advice on introduced methods." passed.
+Failed to define or resolve class A from new Length: 1587
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.run(PR527.java:23)
+	at PR527.main(PR527.java:9)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.run(PR527.java:23)
+	at PR527.main(PR527.java:9)
+	... 7 more
+FAIL: Test 510: "new/compile error using pcd if() with advice on introduced methods." failed.
 
 
 Running test 511: new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface
 Commandline: abc -d new -warn-unused-advice:off new/PR528.java 
-PASS: Test 511: "new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" passed.
+Failed to define or resolve class A from new Length: 1786
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.trigger(PR528.java)
+	at PR528.main(PR528.java:15)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.trigger(PR528.java)
+	at PR528.main(PR528.java:15)
+	... 7 more
+FAIL: Test 511: "new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface" failed.
 
 
 Running test 512: new/aspect as member of interface
@@ -2874,7 +3729,38 @@ PASS: Test 521: "new/advice throws clauses must be compatible with joinpoints th
 
 Running test 522: new/potential method conflicts with introductions and interfaces and PR#561
 Commandline: abc -d new -warn-unused-advice:off new/MethodConflictsCP.java 
-PASS: Test 522: "new/potential method conflicts with introductions and interfaces and PR#561" passed.
+Failed to define or resolve class I1$BODY from new Length: 1234
+java.lang.ClassFormatError: I1$BODY (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.m1(MethodConflictsCP.java)
+	at MethodConflictsCP.main(MethodConflictsCP.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: I1$BODY
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: I1$BODY
+	at C.m1(MethodConflictsCP.java)
+	at MethodConflictsCP.main(MethodConflictsCP.java:7)
+	... 7 more
+FAIL: Test 522: "new/potential method conflicts with introductions and interfaces and PR#561" failed.
 
 
 Running test 523: new/illegal method conflicts with introductions and interfaces and PR#561
@@ -2905,12 +3791,74 @@ PASS: Test 528: "new/introTypeMissing/this available in introduced field initial
 
 Running test 529: new/introTypeMissing/Introduced type unavailable to cast expressions in introduced methods
 Commandline: abc -d new/introTypeMissing -warn-unused-advice:off new/introTypeMissing/Cast.java new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-PASS: Test 529: "new/introTypeMissing/Introduced type unavailable to cast expressions in introduced methods" passed.
+Failed to define or resolve class CastAspect from new/introTypeMissing Length: 1963
+java.lang.ClassFormatError: CastAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at TargetClass.introducedCast(TargetClass.java)
+	at Cast.main(Cast.java:8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: CastAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: CastAspect
+	at TargetClass.introducedCast(TargetClass.java)
+	at Cast.main(Cast.java:8)
+	... 7 more
+FAIL: Test 529: "new/introTypeMissing/Introduced type unavailable to cast expressions in introduced methods" failed.
 
 
 Running test 530: new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced methods
 Commandline: abc -d new/introTypeMissing -warn-unused-advice:off new/introTypeMissing/Inner.java new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-PASS: Test 530: "new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced methods" passed.
+Failed to define or resolve class InstanceOfAspect from new/introTypeMissing Length: 1482
+java.lang.ClassFormatError: InstanceOfAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at TargetClass.inner(TargetClass.java)
+	at Inner.main(Inner.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: InstanceOfAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: InstanceOfAspect
+	at TargetClass.inner(TargetClass.java)
+	at Inner.main(Inner.java:6)
+	... 7 more
+FAIL: Test 530: "new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced methods" failed.
 
 
 Running test 531: new/introTypeMissing/Introduced type unavailable to cast expressions in introduced field initializers
@@ -2920,7 +3868,38 @@ PASS: Test 531: "new/introTypeMissing/Introduced type unavailable to cast expres
 
 Running test 532: new/introTypeMissing/Aspect type unavailable to qualified new expressions in body of introduced methods
 Commandline: abc -d new/introTypeMissing -warn-unused-advice:off new/introTypeMissing/AspectInIntroducedMethod.java 
-PASS: Test 532: "new/introTypeMissing/Aspect type unavailable to qualified new expressions in body of introduced methods" passed.
+Failed to define or resolve class A from new/introTypeMissing Length: 1192
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at TargetClass.addMethod(AspectInIntroducedMethod.java)
+	at AspectInIntroducedMethod.main(AspectInIntroducedMethod.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at TargetClass.addMethod(AspectInIntroducedMethod.java)
+	at AspectInIntroducedMethod.main(AspectInIntroducedMethod.java:6)
+	... 7 more
+FAIL: Test 532: "new/introTypeMissing/Aspect type unavailable to qualified new expressions in body of introduced methods" failed.
 
 
 Running test 533: new/introTypeMissing/Introduced type unavailable to instanceof expressions in introduced methods
@@ -2960,52 +3939,182 @@ PASS: Test 538: "new/after advice on static method with pcd if() using result th
 
 Running test 539: new/PR600/AbstractMethodError for introduced methods (order 1)
 Commandline: abc -d new/PR600 -warn-unused-advice:off new/PR600/Main.java new/PR600/My_error.java new/PR600/A.java new/PR600/B.java new/PR600/C.java 
-	Call received  by: A
-	Call forwarded to: B
-	Call received  by: B
-	Call forwarded to: C
-Hurray! The call has been received by C!
-PASS: Test 539: "new/PR600/AbstractMethodError for introduced methods (order 1)" passed.
+Failed to define or resolve class My_error from new/PR600 Length: 2499
+java.lang.ClassFormatError: My_error (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: My_error
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: My_error
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	... 7 more
+FAIL: Test 539: "new/PR600/AbstractMethodError for introduced methods (order 1)" failed.
 
 
 Running test 540: new/PR600/AbstractMethodError for introduced methods (order 2)
 Commandline: abc -d new/PR600 -warn-unused-advice:off new/PR600/Main.java new/PR600/My_error.java new/PR600/C.java new/PR600/A.java new/PR600/B.java 
-	Call received  by: A
-	Call forwarded to: B
-	Call received  by: B
-	Call forwarded to: C
-Hurray! The call has been received by C!
-PASS: Test 540: "new/PR600/AbstractMethodError for introduced methods (order 2)" passed.
+Failed to define or resolve class My_error from new/PR600 Length: 2499
+java.lang.ClassFormatError: My_error (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: My_error
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: My_error
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	... 7 more
+FAIL: Test 540: "new/PR600/AbstractMethodError for introduced methods (order 2)" failed.
 
 
 Running test 541: new/PR600/AbstractMethodError for introduced methods (order 3)
 Commandline: abc -d new/PR600 -warn-unused-advice:off new/PR600/My_error.java new/PR600/A.java new/PR600/B.java new/PR600/C.java new/PR600/Main.java 
-	Call received  by: A
-	Call forwarded to: B
-	Call received  by: B
-	Call forwarded to: C
-Hurray! The call has been received by C!
-PASS: Test 541: "new/PR600/AbstractMethodError for introduced methods (order 3)" passed.
+Failed to define or resolve class My_error from new/PR600 Length: 2499
+java.lang.ClassFormatError: My_error (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: My_error
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: My_error
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	... 7 more
+FAIL: Test 541: "new/PR600/AbstractMethodError for introduced methods (order 3)" failed.
 
 
 Running test 542: new/PR600/AbstractMethodError for introduced methods (order 4)
 Commandline: abc -d new/PR600 -warn-unused-advice:off new/PR600/A.java new/PR600/B.java new/PR600/C.java new/PR600/Main.java new/PR600/My_error.java 
-	Call received  by: A
-	Call forwarded to: B
-	Call received  by: B
-	Call forwarded to: C
-Hurray! The call has been received by C!
-PASS: Test 542: "new/PR600/AbstractMethodError for introduced methods (order 4)" passed.
+Failed to define or resolve class My_error from new/PR600 Length: 2499
+java.lang.ClassFormatError: My_error (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: My_error
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: My_error
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	... 7 more
+FAIL: Test 542: "new/PR600/AbstractMethodError for introduced methods (order 4)" failed.
 
 
 Running test 543: new/PR600/AbstractMethodError for introduced methods (order 5)
 Commandline: abc -d new/PR600 -warn-unused-advice:off new/PR600/A.java new/PR600/B.java new/PR600/Main.java new/PR600/C.java new/PR600/My_error.java 
-	Call received  by: A
-	Call forwarded to: B
-	Call received  by: B
-	Call forwarded to: C
-Hurray! The call has been received by C!
-PASS: Test 543: "new/PR600/AbstractMethodError for introduced methods (order 5)" passed.
+Failed to define or resolve class My_error from new/PR600 Length: 2499
+java.lang.ClassFormatError: My_error (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: My_error
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: My_error
+	at A.<init>(A.java:1)
+	at Main.main(Main.java:5)
+	... 7 more
+FAIL: Test 543: "new/PR600/AbstractMethodError for introduced methods (order 5)" failed.
 
 
 Running test 544: new/declare error and abstract pointcuts
@@ -3016,7 +4125,34 @@ PASS: Test 544: "new/declare error and abstract pointcuts" passed.
 
 Running test 545: new/runtime/Exercise runtime classes (optionally in 1.1 VM)
 Commandline: abc -d new/runtime -warn-unused-advice:off new/runtime/AllRuntime.java new/runtime/TesterDriver.java 
-PASS: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" passed.
+Failed to define or resolve class A from new/runtime Length: 13459
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at TesterDriver.<clinit>(TesterDriver.java)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Unexpected exception while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.NoClassDefFoundError: A
+	at TesterDriver.<clinit>(TesterDriver.java)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" failed.
 
 
 Running test 546: new/VerifyError after around advice falls off end of tryCatch
@@ -3069,19 +4205,26 @@ PASS: Test 554: "new/private inner interface accessible in scope when declared o
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new -warn-unused-advice:off new/SuperInIntroduction.java 
-InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:394)
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <A: ObjectSub getClone(ObjectSub)>
+polyglot.util.InternalCompilerError: Exception while processing <A: ObjectSub getClone(ObjectSub)>
+	at abc.main.Main.weave(Main.java:823)
+	at abc.main.Main.run(Main.java:482)
+	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
-	at Sub.getInt(SuperInIntroduction.java)
-	at SuperInIntroduction.main(SuperInIntroduction.java:6)
-	... 7 more
+Caused by: java.lang.NullPointerException
+	at soot.jimple.toolkits.base.Zonation.<init>(Zonation.java:68)
+	at soot.jimple.toolkits.base.Aggregator.internalTransform(Aggregator.java:64)
+	at soot.BodyTransformer.transform(BodyTransformer.java:51)
+	at soot.Transform.apply(Transform.java:104)
+	at soot.JavaToJimpleBodyPack.applyPhaseOptions(JavaToJimpleBodyPack.java:63)
+	at soot.JavaToJimpleBodyPack.internalApply(JavaToJimpleBodyPack.java:92)
+	at soot.Pack.apply(Pack.java:120)
+	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:53)
+	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
+	at soot.SootMethod.retrieveActiveBody(SootMethod.java:304)
+	at abc.main.Main.weave(Main.java:819)
+	... 4 more
 FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed.
 
 
@@ -3156,13 +4299,83 @@ PASS: Test 568: "new/unreachable code generated by around advice on the executio
 Running test 569: new/Overriding method implementations using introduction on interfaces
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/IntroductionsOverriding.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-PASS: Test 569: "new/Overriding method implementations using introduction on interfaces" passed.
+Failed to define or resolve class A from new Length: 3146
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at IntroductionsOverriding.main(IntroductionsOverriding.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at IntroductionsOverriding.main(IntroductionsOverriding.java:6)
+	... 7 more
+FAIL: Test 569: "new/Overriding method implementations using introduction on interfaces" failed.
 
 
 Running test 570: new/more coverage for around and concrete methods on interfaces
 Commandline: abc -d new -warn-unused-advice:off -Xlint:ignore new/MultiAndAround.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-PASS: Test 570: "new/more coverage for around and concrete methods on interfaces" passed.
+Failed to define or resolve class Intro from new Length: 1482
+java.lang.ClassFormatError: Intro (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Base.base1(MultiAndAround.java)
+	at MultiAndAround.abc$static$proceed$A$around$2082(MultiAndAround.java:14)
+	at A.around$2082(MultiAndAround.java:59)
+	at MultiAndAround.abc$static$proceed$A$around$2081(MultiAndAround.java)
+	at A.around$2081(MultiAndAround.java:55)
+	at MultiAndAround.exercise(MultiAndAround.java:13)
+	at MultiAndAround.main(MultiAndAround.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Intro
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Intro
+	at Base.base1(MultiAndAround.java)
+	at MultiAndAround.abc$static$proceed$A$around$2082(MultiAndAround.java:14)
+	at A.around$2082(MultiAndAround.java:59)
+	at MultiAndAround.abc$static$proceed$A$around$2081(MultiAndAround.java)
+	at A.around$2081(MultiAndAround.java:55)
+	at MultiAndAround.exercise(MultiAndAround.java:13)
+	at MultiAndAround.main(MultiAndAround.java:5)
+	... 7 more
+FAIL: Test 570: "new/more coverage for around and concrete methods on interfaces" failed.
 
 
 Running test 571: new/invalid number and type of proceed arguments
@@ -3214,7 +4427,38 @@ PASS: Test 579: "new/privilegedAspects/access to private members from privileged
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
 Commandline: abc -d new -warn-unused-advice:off new/InnerClassInPrivilegedAspect.java 
-PASS: Test 580: "new/inner classes of privileged aspects cannot see target class private members" passed.
+Failed to define or resolve class PrivilegedAspectAround from new Length: 2806
+java.lang.ClassFormatError: PrivilegedAspectAround (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Target.<clinit>(InnerClassInPrivilegedAspect.java)
+	at InnerClassInPrivilegedAspect.main(InnerClassInPrivilegedAspect.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: PrivilegedAspectAround
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: PrivilegedAspectAround
+	at Target.<clinit>(InnerClassInPrivilegedAspect.java)
+	at InnerClassInPrivilegedAspect.main(InnerClassInPrivilegedAspect.java:7)
+	... 7 more
+FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed.
 
 
 Running test 581: new/packageAccessPR556/aspects should get package access outside the file
@@ -3265,17 +4509,110 @@ PASS: Test 589: "new/PR584 Can construct inner classes using qualified expressio
 
 Running test 590: new/subaspect method declaration on superaspect inner interface (names)
 Commandline: abc -d new -warn-unused-advice:off new/InnerInterfaceNames.java 
-PASS: Test 590: "new/subaspect method declaration on superaspect inner interface (names)" passed.
+Failed to define or resolve class ConcreteAspect from new Length: 912
+java.lang.ClassFormatError: ConcreteAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.getThis(InnerInterfaceNames.java)
+	at InnerInterfaceNames.main(InnerInterfaceNames.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: ConcreteAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: ConcreteAspect
+	at C.getThis(InnerInterfaceNames.java)
+	at InnerInterfaceNames.main(InnerInterfaceNames.java:7)
+	... 7 more
+FAIL: Test 590: "new/subaspect method declaration on superaspect inner interface (names)" failed.
 
 
 Running test 591: new/subaspect method declaration on superaspect inner interface (access)
 Commandline: abc -d new -warn-unused-advice:off new/InnerInterfaceAccess.java 
-PASS: Test 591: "new/subaspect method declaration on superaspect inner interface (access)" passed.
+Failed to define or resolve class ConcreteAspect from new Length: 913
+java.lang.ClassFormatError: ConcreteAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.getThis(InnerInterfaceAccess.java)
+	at InnerInterfaceAccess.main(InnerInterfaceAccess.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: ConcreteAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: ConcreteAspect
+	at C.getThis(InnerInterfaceAccess.java)
+	at InnerInterfaceAccess.main(InnerInterfaceAccess.java:6)
+	... 7 more
+FAIL: Test 591: "new/subaspect method declaration on superaspect inner interface (access)" failed.
 
 
 Running test 592: new/subaspect method declaration on superaspect inner interface (types)
 Commandline: abc -d new -warn-unused-advice:off new/InnerInterfaceTypes.java new/InnerInterfaceTypesHelper.java 
-PASS: Test 592: "new/subaspect method declaration on superaspect inner interface (types)" passed.
+Failed to define or resolve class ConcreteAspect from new Length: 965
+java.lang.ClassFormatError: ConcreteAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.getThis(InnerInterfaceTypes.java)
+	at InnerInterfaceTypes.main(InnerInterfaceTypes.java:8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: ConcreteAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: ConcreteAspect
+	at C.getThis(InnerInterfaceTypes.java)
+	at InnerInterfaceTypes.main(InnerInterfaceTypes.java:8)
+	... 7 more
+FAIL: Test 592: "new/subaspect method declaration on superaspect inner interface (types)" failed.
 
 
 Running test 593: new/around AST type XXX
@@ -3300,12 +4637,74 @@ PASS: Test 596: "new/changing this in around's proceed reported by Rich Price" p
 
 Running test 597: new/default package for aspect introductions is not the current package
 Commandline: abc -d new -warn-unused-advice:off new/introductionPackage/two/C.java new/introductionPackage/one/C.java new/introductionPackage/one/Aspect.java new/introductionPackage/one/TestAspect.java 
-PASS: Test 597: "new/default package for aspect introductions is not the current package" passed.
+Failed to define or resolve class one.Aspect from new Length: 2575
+java.lang.ClassFormatError: one/Aspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at one.C.foo(C.java)
+	at one.TestAspect.main(TestAspect.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: one/Aspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: one/Aspect
+	at one.C.foo(C.java)
+	at one.TestAspect.main(TestAspect.java:7)
+	... 7 more
+FAIL: Test 597: "new/default package for aspect introductions is not the current package" failed.
 
 
 Running test 598: new/PR569/anon class written to wrong directory
 Commandline: abc -d new/PR569 -warn-unused-advice:off new/PR569/a/IntroAnon.java new/PR569/a/MyInterface.java new/PR569/b/Dest.java 
-PASS: Test 598: "new/PR569/anon class written to wrong directory" passed.
+Failed to define or resolve class a.IntroAnon$MI from new/PR569 Length: 1106
+java.lang.ClassFormatError: a/IntroAnon$MI (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at b.Dest.foo(Dest.java)
+	at a.IntroAnon.main(a:17)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: a/IntroAnon$MI
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: a/IntroAnon$MI
+	at b.Dest.foo(Dest.java)
+	at a.IntroAnon.main(a:17)
+	... 7 more
+FAIL: Test 598: "new/PR569/anon class written to wrong directory" failed.
 
 
 Running test 599: new/unqualified transitive pointcut references not resolved
@@ -3718,7 +5117,40 @@ PASS: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" p
 
 Running test 668: new/assert tests in introduction [requires 1.4]
 Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInIntro.java 
-PASS: Test 668: "new/assert tests in introduction [requires 1.4]" passed.
+Failed to define or resolve class A from new Length: 1335
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.A$foo$2403(AssertInIntro.java)
+	at AssertInIntro.runTests(AssertInIntro.java:19)
+	at AssertInIntro.main(AssertInIntro.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.A$foo$2403(AssertInIntro.java)
+	at AssertInIntro.runTests(AssertInIntro.java:19)
+	at AssertInIntro.main(AssertInIntro.java:7)
+	... 7 more
+FAIL: Test 668: "new/assert tests in introduction [requires 1.4]" failed.
 
 
 Running test 672: base/test131/various forms of package name pattern matching work
@@ -3739,12 +5171,72 @@ PASS: Test 682: "new/assert statement in advice coverage [requires 1.4]" passed.
 
 Running test 683: new/assert statement in advice  [requires 1.4]
 Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdviceBug.java 
-PASS: Test 683: "new/assert statement in advice  [requires 1.4]" passed.
+Failed to define or resolve class Test from new Length: 1788
+java.lang.ClassFormatError: Test (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at AssertInAdviceBug.main(AssertInAdviceBug.java:28)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Test
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Test
+	at AssertInAdviceBug.main(AssertInAdviceBug.java:28)
+	... 7 more
+FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed.
 
 
 Running test 684: new/declaring a private method on an inner interface
 Commandline: abc -d new -warn-unused-advice:off new/PrivateMethodOnInnerInterface.java 
-PASS: Test 684: "new/declaring a private method on an inner interface" passed.
+Failed to define or resolve class B from new Length: 942
+java.lang.ClassFormatError: B (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.<init>(PrivateMethodOnInnerInterface.java:15)
+	at PrivateMethodOnInnerInterface.main(PrivateMethodOnInnerInterface.java:8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: B
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: B
+	at C.<init>(PrivateMethodOnInnerInterface.java:15)
+	at PrivateMethodOnInnerInterface.main(PrivateMethodOnInnerInterface.java:8)
+	... 7 more
+FAIL: Test 684: "new/declaring a private method on an inner interface" failed.
 
 
 Running test 685: new/CE expected when declaring fields on arrays
@@ -3854,7 +5346,38 @@ PASS: Test 712: "new/interface self-reference in anonymous instance" passed.
 
 Running test 713: new/self-reference from (aspect-declared) method-local class
 Commandline: abc -d new -warn-unused-advice:off new/MethodSelfReference.java 
-PASS: Test 713: "new/self-reference from (aspect-declared) method-local class" passed.
+Failed to define or resolve class A from new Length: 1143
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at MethodSelfReference$1.A$start$2493(MethodSelfReference.java)
+	at MethodSelfReference.main(MethodSelfReference.java:8)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at MethodSelfReference$1.A$start$2493(MethodSelfReference.java)
+	at MethodSelfReference.main(MethodSelfReference.java:8)
+	... 7 more
+FAIL: Test 713: "new/self-reference from (aspect-declared) method-local class" failed.
 
 
 Running test 714: new/expect CE for unterminated declare error
@@ -3871,7 +5394,38 @@ PASS: Test 715: "new/expect CE for declaration collision between subaspects inst
 
 Running test 716: new/subtype pattern in dominates should pick out aspect subtypes
 Commandline: abc -d new -warn-unused-advice:off new/DominatesTypePattern.java 
-PASS: Test 716: "new/subtype pattern in dominates should pick out aspect subtypes" passed.
+Failed to define or resolve class AA from new Length: 385
+java.lang.ClassFormatError: AA (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.method(DominatesTypePattern.java)
+	at DominatesTypePattern.main(DominatesTypePattern.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: AA
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: AA
+	at C.method(DominatesTypePattern.java)
+	at DominatesTypePattern.main(DominatesTypePattern.java:6)
+	... 7 more
+FAIL: Test 716: "new/subtype pattern in dominates should pick out aspect subtypes" failed.
 
 
 Running test 717: new/subtype pattern in dominates will conflict with type pattern
@@ -3954,13 +5508,74 @@ PASS: Test 730: "bugs/Verification error tracing constructor that takes argument
 
 Running test 731: bugs/declared exceptions in inter-type decls
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ExceptionsOnInters.java 
-BombException: KABOOM
-PASS: Test 731: "bugs/declared exceptions in inter-type decls" passed.
+Failed to define or resolve class Bomb from bugs Length: 935
+java.lang.ClassFormatError: Bomb (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at ExceptionsOnInters.bomb(ExceptionsOnInters.java)
+	at ExceptionsOnInters.main(ExceptionsOnInters.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Bomb
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Bomb
+	at ExceptionsOnInters.bomb(ExceptionsOnInters.java)
+	at ExceptionsOnInters.main(ExceptionsOnInters.java:6)
+	... 7 more
+FAIL: Test 731: "bugs/declared exceptions in inter-type decls" failed.
 
 
 Running test 733: bugs/inter-type fields with array types
 Commandline: abc -d bugs -warn-unused-advice:off bugs/InterFieldArrays.java 
-PASS: Test 733: "bugs/inter-type fields with array types" passed.
+Failed to define or resolve class Bar from bugs Length: 1632
+java.lang.ClassFormatError: Bar (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Foo.<init>(InterFieldArrays.java:20)
+	at InterFieldArrays.main(InterFieldArrays.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Bar
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Bar
+	at Foo.<init>(InterFieldArrays.java:20)
+	at InterFieldArrays.main(InterFieldArrays.java:5)
+	... 7 more
+FAIL: Test 733: "bugs/inter-type fields with array types" failed.
 
 
 Running test 735: new/checking around join point for advice return type - numeric
@@ -3977,9 +5592,19 @@ PASS: Test 736: "new/void around advice without proceed" passed.
 
 Running test 737: new/PR852/declaring method on superclass and subclass
 Commandline: abc -d new/PR852 -warn-unused-advice:off new/PR852/aspectPack/Aspect.java new/PR852/target/SubClass.java new/PR852/target/SuperClass.java 
-SuperClass ok
-SubClass ok
-PASS: Test 737: "new/PR852/declaring method on superclass and subclass" passed.
+Failed to define or resolve class aspectPack.Aspect from new/PR852 Length: 1407
+java.lang.ClassFormatError: aspectPack/Aspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at abc.testing.TestCase.runTest(TestCase.java:380)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Failed to find class aspectPack.Aspect
+FAIL: Test 737: "new/PR852/declaring method on superclass and subclass" failed.
 
 
 Running test 739: bugs/privileged access to code outside the control of the compiler
@@ -4040,12 +5665,43 @@ PASS: Test 748: "new/aspect static initializers should run before instance const
 
 Running test 749: bugs/super call in intertype method declaration body causes VerifyError
 Commandline: abc -d bugs -warn-unused-advice:off bugs/SuperToIntro.java 
-PASS: Test 749: "bugs/super call in intertype method declaration body causes VerifyError" passed.
+Failed to define or resolve class Foo from bugs Length: 1618
+java.lang.ClassFormatError: Foo (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at B.Foo$foo$2586(SuperToIntro.java)
+	at SuperToIntro.main(SuperToIntro.java:23)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Foo
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Foo
+	at B.Foo$foo$2586(SuperToIntro.java)
+	at SuperToIntro.main(SuperToIntro.java:23)
+	... 7 more
+FAIL: Test 749: "bugs/super call in intertype method declaration body causes VerifyError" failed.
 
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@f42ff8.x:=-3
+test.Test3@1077e42.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4128,8 +5784,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@121407a
-o: Bar@121407a, i: 10
+o: Bar@1b1e2f6
+o: Bar@1b1e2f6, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4173,15 +5829,75 @@ FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed.
 
 Running test 773: bugs/interAbstract/inter-type declaration bug with abstract classes
 Commandline: abc -d bugs/interAbstract -warn-unused-advice:off bugs/interAbstract/Driver.java 
-0
-PASS: Test 773: "bugs/interAbstract/inter-type declaration bug with abstract classes" passed.
+Failed to define or resolve class ExecutionMonitor from bugs/interAbstract Length: 998
+java.lang.ClassFormatError: ExecutionMonitor (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at Base.getExecutions(Driver.java)
+	at Driver.main(Driver.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: ExecutionMonitor
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: ExecutionMonitor
+	at Base.getExecutions(Driver.java)
+	at Driver.main(Driver.java:7)
+	... 7 more
+FAIL: Test 773: "bugs/interAbstract/inter-type declaration bug with abstract classes" failed.
 
 
 Running test 774: bugs/interInherit/Inter type declaration to base class not seen by derived class
 Commandline: abc -d bugs/interInherit -warn-unused-advice:off bugs/interInherit/a_impl/AImpl.java bugs/interInherit/a_impl/Af.java bugs/interInherit/a_intf/A.java bugs/interInherit/b_impl/BImpl.java bugs/interInherit/b_intf/B.java 
 g called
-f called
-PASS: Test 774: "bugs/interInherit/Inter type declaration to base class not seen by derived class" passed.
+Failed to define or resolve class a_impl.Af from bugs/interInherit Length: 1040
+java.lang.ClassFormatError: a_impl/Af (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at a_impl.AImpl.f(AImpl.java)
+	at b_impl.BImpl.main(BImpl.java:18)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: a_impl/Af
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: a_impl/Af
+	at a_impl.AImpl.f(AImpl.java)
+	at b_impl.BImpl.main(BImpl.java:18)
+	... 7 more
+FAIL: Test 774: "bugs/interInherit/Inter type declaration to base class not seen by derived class" failed.
 
 
 Running test 775: new/declareParents/Declare parents with intermediate ancestor
@@ -4198,20 +5914,91 @@ PASS: Test 776: "new/declareParents/Declare parents removing ancestor" passed.
 
 Running test 777: options/injars/simple/options -injars checking declare parents interactions
 Commandline: abc -d options/injars/simple -injars options/injars/simple/main.jar -warn-unused-advice:off options/injars/simple/DecParents.java 
-Main: foo
-PASS: Test 777: "options/injars/simple/options -injars checking declare parents interactions" passed.
+Failed to define or resolve class DecParents from options/injars/simple Length: 1445
+java.lang.ClassFormatError: DecParents (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at abc.testing.TestCase.runTest(TestCase.java:380)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Failed to find class DecParents
+FAIL: Test 777: "options/injars/simple/options -injars checking declare parents interactions" failed.
 
 
 Running test 778: bugs/interSpecials/IllegalAccessError while accessing introduced variable / 1.1rc1
 Commandline: abc -d bugs/interSpecials -warn-unused-advice:off bugs/interSpecials/p1/C.java bugs/interSpecials/p2/A1.java 
-class: class p1.C
-class: class p1.C
-PASS: Test 778: "bugs/interSpecials/IllegalAccessError while accessing introduced variable / 1.1rc1" passed.
+Failed to define or resolve class p2.InterClass from bugs/interSpecials Length: 2048
+java.lang.ClassFormatError: p2/InterClass (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at p1.C.p2$InterClass$foo$2658(C.java)
+	at p2.A1.main(A1.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: p2/InterClass
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: p2/InterClass
+	at p1.C.p2$InterClass$foo$2658(C.java)
+	at p2.A1.main(A1.java:7)
+	... 7 more
+FAIL: Test 778: "bugs/interSpecials/IllegalAccessError while accessing introduced variable / 1.1rc1" failed.
 
 
 Running test 779: bugs/interSpecials/testing that assert works like .class
 Commandline: abc -d bugs/interSpecials -warn-unused-advice:off -source 1.4 bugs/interSpecials/p1/C.java bugs/interSpecials/p2/A2.java 
-PASS: Test 779: "bugs/interSpecials/testing that assert works like .class" passed.
+Failed to define or resolve class p2.InterClass from bugs/interSpecials Length: 1721
+java.lang.ClassFormatError: p2/InterClass (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at p1.C.p2$InterClass$foo$2663(C.java)
+	at p2.A2.main(A2.java:6)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: p2/InterClass
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: p2/InterClass
+	at p1.C.p2$InterClass$foo$2663(C.java)
+	at p2.A2.main(A2.java:6)
+	... 7 more
+FAIL: Test 779: "bugs/interSpecials/testing that assert works like .class" failed.
 
 
 Running test 780: new/implemented abstract pointcut
@@ -4222,7 +6009,38 @@ PASS: Test 780: "new/implemented abstract pointcut" passed.
 
 Running test 781: new/verifyError/privileged aspect main verify error
 Commandline: abc -d new/verifyError -warn-unused-advice:off new/verifyError/Privilege.java 
-PASS: Test 781: "new/verifyError/privileged aspect main verify error" passed.
+Failed to define or resolve class A from new/verifyError Length: 1217
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.<clinit>(Privilege.java)
+	at Privilege.main(Privilege.java:20)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.<clinit>(Privilege.java)
+	at Privilege.main(Privilege.java:20)
+	... 7 more
+FAIL: Test 781: "new/verifyError/privileged aspect main verify error" failed.
 
 
 Running test 782: bugs/Internal compiler error with thisJoinPoint.getStaticPart()
@@ -4654,7 +6472,38 @@ PASS: Test 837: "bugs/switch statement in aspects crashes weaving" passed.
 
 Running test 838: bugs/ajc stack trace on declaring hashcode() method in aspect
 Commandline: abc -d bugs -warn-unused-advice:off bugs/OverridingInterfaceObjectMethod.java 
-PASS: Test 838: "bugs/ajc stack trace on declaring hashcode() method in aspect" passed.
+Failed to define or resolve class IdentifiableAspect from bugs Length: 1642
+java.lang.ClassFormatError: IdentifiableAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.<init>(OverridingInterfaceObjectMethod.java:16)
+	at OverridingInterfaceObjectMethod.main(OverridingInterfaceObjectMethod.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: IdentifiableAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: IdentifiableAspect
+	at C.<init>(OverridingInterfaceObjectMethod.java:16)
+	at OverridingInterfaceObjectMethod.main(OverridingInterfaceObjectMethod.java:7)
+	... 7 more
+FAIL: Test 838: "bugs/ajc stack trace on declaring hashcode() method in aspect" failed.
 
 
 Running test 839: bugs/using super in method introduced on interface with multiple supertypes
@@ -4673,8 +6522,36 @@ PASS: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .ja
 
 Running test 842: bugs/Default method impl for interface causes internal exception.
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CloneMethod.java 
-... done.
-PASS: Test 842: "bugs/Default method impl for interface causes internal exception." passed.
+Failed to define or resolve class AspectA from bugs Length: 1381
+java.lang.ClassFormatError: AspectA (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at CloneMethod.main(CloneMethod.java:53)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: AspectA
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: AspectA
+	at CloneMethod.main(CloneMethod.java:53)
+	... 7 more
+FAIL: Test 842: "bugs/Default method impl for interface causes internal exception." failed.
 
 
 Running test 843: bugs/Class Literals as non final fields (also assert, and this$0)
@@ -4714,8 +6591,38 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1b243ce
-PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
+Failed to define or resolve class LibraryAspect from new/interfaceLibrary Length: 1408
+java.lang.ClassFormatError: LibraryAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.run(Client.java)
+	at Client.main(Client.java:5)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: LibraryAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: LibraryAspect
+	at C.run(Client.java)
+	at Client.main(Client.java:5)
+	... 7 more
+FAIL: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" failed.
 
 
 Running test 852: new/interfaceLibrary/aspect-declared interface members in libraries - aspectedInterfaceOnly.jar
@@ -4738,7 +6645,38 @@ PASS: Test 854: "new/interfaceLibrary/aspect-declared interface members in libra
 
 Running test 857: bugs/interfaceLibrary/exception clause for aspect-declared interface methods - positive
 Commandline: abc -d bugs/interfaceLibrary -warn-unused-advice:off bugs/interfaceLibrary/Client.java bugs/interfaceLibrary/LibraryAspect.java bugs/interfaceLibrary/lib/LibraryInterface.java 
-PASS: Test 857: "bugs/interfaceLibrary/exception clause for aspect-declared interface methods - positive" passed.
+Failed to define or resolve class LibraryAspect from bugs/interfaceLibrary Length: 1366
+java.lang.ClassFormatError: LibraryAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.run(Client.java)
+	at Client.main(Client.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: LibraryAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: LibraryAspect
+	at C.run(Client.java)
+	at Client.main(Client.java:7)
+	... 7 more
+FAIL: Test 857: "bugs/interfaceLibrary/exception clause for aspect-declared interface methods - positive" failed.
 
 
 Running test 858: bugs/interfaceLibrary/exception clause for aspect-declared interface methods - negative
@@ -4749,7 +6687,38 @@ PASS: Test 858: "bugs/interfaceLibrary/exception clause for aspect-declared inte
 
 Running test 859: bugs/interfaceLibrary/exception clause for aspect-declared class methods - positive
 Commandline: abc -d bugs/interfaceLibrary -warn-unused-advice:off bugs/interfaceLibrary/ClassClient.java bugs/interfaceLibrary/LibraryClassAspect.java bugs/interfaceLibrary/lib/LibraryClass.java 
-PASS: Test 859: "bugs/interfaceLibrary/exception clause for aspect-declared class methods - positive" passed.
+Failed to define or resolve class LibraryClassAspect from bugs/interfaceLibrary Length: 1387
+java.lang.ClassFormatError: LibraryClassAspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at lib.LibraryClass.run(LibraryClass.java)
+	at ClassClient.main(ClassClient.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: LibraryClassAspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: LibraryClassAspect
+	at lib.LibraryClass.run(LibraryClass.java)
+	at ClassClient.main(ClassClient.java:7)
+	... 7 more
+FAIL: Test 859: "bugs/interfaceLibrary/exception clause for aspect-declared class methods - positive" failed.
 
 
 Running test 860: bugs/interfaceLibrary/exception clause for aspect-declared class methods - negative
@@ -4900,7 +6869,36 @@ PASS: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-t
 
 Running test 900: bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (weave altogether)
 Commandline: abc -d bugs/abstractMethods -warn-unused-advice:off bugs/abstractMethods/interface/C.java bugs/abstractMethods/interface/A.java bugs/abstractMethods/interface/B.java 
-PASS: Test 900: "bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (weave altogether)" passed.
+Failed to define or resolve class A from bugs/abstractMethods Length: 852
+java.lang.ClassFormatError: A (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C.main(C.java:3)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A
+	at C.main(C.java:3)
+	... 7 more
+FAIL: Test 900: "bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (weave altogether)" failed.
 
 
 Running test 901: bugs/abstractMethods/Introduced abstract method on interface not implemented by subtype (injars)
@@ -4917,7 +6915,40 @@ PASS: Test 903: "bugs/abstractMethods/Introduced abstract method on abstract cla
 
 Running test 904: bugs/abstractMethods/Introduced abstract method on abstract class with introduced concrete method (single source file)
 Commandline: abc -d bugs/abstractMethods -warn-unused-advice:off bugs/abstractMethods/singlesource/C1.java 
-PASS: Test 904: "bugs/abstractMethods/Introduced abstract method on abstract class with introduced concrete method (single source file)" passed.
+Failed to define or resolve class A1 from bugs/abstractMethods Length: 785
+java.lang.ClassFormatError: A1 (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at C1.A1$m$2853(C1.java)
+	at A.doit(C1.java:6)
+	at C1.main(C1.java:11)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: A1
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: A1
+	at C1.A1$m$2853(C1.java)
+	at A.doit(C1.java:6)
+	at C1.main(C1.java:11)
+	... 7 more
+FAIL: Test 904: "bugs/abstractMethods/Introduced abstract method on abstract class with introduced concrete method (single source file)" failed.
 
 
 Running test 905: bugs/abstractMethods/Introduced abstract method on abstract class with existing concrete method (single source file)
@@ -4943,8 +6974,36 @@ PASS: Test 908: "bugs/interAbstract/aspect declares interface method (public abs
 
 Running test 910: bugs/interfaceDefinition/Use class implementing interface via aspect (weave all together)
 Commandline: abc -d bugs/interfaceDefinition -warn-unused-advice:off bugs/interfaceDefinition/pack/DefineInterface.java bugs/interfaceDefinition/pack/InterfaceDefinition.java bugs/interfaceDefinition/pack/MyInterface.java bugs/interfaceDefinition/Main.java 
-hello
-PASS: Test 910: "bugs/interfaceDefinition/Use class implementing interface via aspect (weave all together)" passed.
+Failed to define or resolve class pack.DefineInterface from bugs/interfaceDefinition Length: 1027
+java.lang.ClassFormatError: pack/DefineInterface (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at pack.InterfaceDefinition.main(InterfaceDefinition.java:7)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: pack/DefineInterface
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: pack/DefineInterface
+	at pack.InterfaceDefinition.main(InterfaceDefinition.java:7)
+	... 7 more
+FAIL: Test 910: "bugs/interfaceDefinition/Use class implementing interface via aspect (weave all together)" failed.
 
 
 Running test 912: bugs/Erroneous exception conversion
@@ -5040,7 +7099,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@130af7a
+? Util.read() obj=Test@19ba1a3
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5059,7 +7118,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@191d51c
+? Util.read() obj=ClinitTest@518f25
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5069,7 +7128,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@f671c6
+? Util.read() obj=SuidTest@1dfadaf
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5272,12 +7331,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@38bd7d
-Invoking command bean:  Command@12089de
-hello(Command@12089de)
-Created a PerThis aspect : Testcase2@13b7e9c
-Invoking command bean:  Command@f55d6e
-hello again(Command@f55d6e)
+Created a PerThis aspect : Testcase2@3652d1
+Invoking command bean:  Command@77321e
+hello(Command@77321e)
+Created a PerThis aspect : Testcase2@17b7df8
+Invoking command bean:  Command@8b4971
+hello again(Command@8b4971)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5356,7 +7415,38 @@ FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
 
 Running test 987: abctests/bugs/method intertype onto inner class
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/QualThis.java 
-PASS: Test 987: "abctests/bugs/method intertype onto inner class" passed.
+Failed to define or resolve class Aspect from abctests/bugs Length: 1080
+java.lang.ClassFormatError: Aspect (Repetitive method name/signature)
+	at java.lang.ClassLoader.defineClass0(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
+	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:800)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
+	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
+	at A$B.Aspect$foo$2994(QualThis.java)
+	at QualThis.main(QualThis.java:22)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: Aspect
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:394)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.NoClassDefFoundError: Aspect
+	at A$B.Aspect$foo$2994(QualThis.java)
+	at QualThis.main(QualThis.java:22)
+	... 7 more
+FAIL: Test 987: "abctests/bugs/method intertype onto inner class" failed.
 
 
 Running test 988: abctests/bugs/separate compilation and references to compile time constants
