@@ -60,7 +60,7 @@ public abstract class ShadowMatch {
 
     public ContextValue getThisContextValue() {
         if(container.isStatic()) return null;
-	return new JimpleValue(Restructure.makeThisCopy(container));
+	return new JimpleValue(Restructure.getThisCopy(container));
     }
 
     // no sensible default

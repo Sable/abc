@@ -373,7 +373,7 @@ public class Restructure {
 
     private static Map/*<SootMethod,Local>*/ thiscopies=new Hashtable();
 
-    public static Local makeThisCopy(SootMethod m) {
+    public static Local getThisCopy(SootMethod m) {
 	if(thiscopies.containsKey(m)) return ((Local) thiscopies.get(m));
 	
 	Body b=m.getActiveBody();
