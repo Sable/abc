@@ -20,4 +20,6 @@ public interface ShadowType {
 				     MethodPosition pos);
 
     public ContextValue getThisContextValue(SootMethod method);
+
+    public static final boolean debugResidues = false;
 }

@@ -49,7 +49,7 @@ public abstract class AdviceApplication {
 		    if(st.couldMatch(pos)) {
 			Residue residue=pc.matchesAt(we,st,cls,method,pos);
 			
-			System.out.println("residue: "+residue);
+			if(ShadowType.debugResidues) System.out.println("residue: "+residue);
 			
 			if(!NeverMatch.neverMatches(residue))
 			    st.addAdviceApplication(mal,ad,residue,pos);

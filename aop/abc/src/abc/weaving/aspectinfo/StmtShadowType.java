@@ -18,7 +18,7 @@ public class StmtShadowType extends AbstractShadowType {
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos) {
-	System.out.println("pos: "+pos.getClass());
+	if(debugResidues) System.out.println("pos: "+pos.getClass());
 	mal.stmtAdvice.add
 	    (new StmtAdviceApplication
 	     (ad,
