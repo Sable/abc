@@ -5,6 +5,8 @@ import polyglot.util.Position;
 
 import soot.*;
 
+import java.util.*;
+
 /** An advice declaration. */
 public class AdviceDecl extends Syntax {
     private AdviceSpec spec;
@@ -12,6 +14,8 @@ public class AdviceDecl extends Syntax {
     private MethodSig impl;
     private Aspect aspect;
     private int jp,jpsp,ejp;
+
+    private Map/*<String,Integer>*/ formal_map = new HashMap();
 
     public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, int jp, int jpsp, int ejp, Position pos) {
 	super(pos);
@@ -23,6 +27,21 @@ public class AdviceDecl extends Syntax {
 	if (spec instanceof AbstractAdviceSpec) {
 	    ((AbstractAdviceSpec)spec).setAdvice(this);
 	}
+
+	int i = 0;
+	Iterator fi = impl.getFormals().iterator();
+	while (fi.hasNext()) {
+	    Formal f = (Formal)fi.next();
+	    formal_map.put(f.getName(), new Integer(i++));
+	}
+    }
+
+    public int getFormalIndex(String name) {
+	Integer i = (Integer)formal_map.get(name);
+	if (i == null) {
+	    throw new RuntimeException("Advice formal "+name+" not found");
+	}
+	return i.intValue();
     }
 
     public AdviceSpec getAdviceSpec() {
