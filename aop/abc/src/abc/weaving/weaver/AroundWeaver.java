@@ -1297,7 +1297,7 @@ public class AroundWeaver {
 					info.adviceMethodInvokationStmts.add(bindings.get(old));// replace with new
 				}
 				// this is only necessary if proceed calls are ever part of a shadow,
-				// for example if the advice body were to be matched by an execution pointcut. 
+				// for example if the advice body were to be matched by an adviceexecution pointcut. 
 				// TODO: does this kind of thing ever happen?
 				if (info.interfaceInvokationStmts.contains(old)) {
 					info.interfaceInvokationStmts.remove(old);
@@ -1922,7 +1922,7 @@ public class AroundWeaver {
 		debug("found " + adviceAppl.sjpInfo.kind);
 		if (!(stmtAdv.stmt instanceof AssignStmt)) {
 			throw new CodeGenException(
-				"StmtAdviceApplication.stmt is expected to be instanceof AssignStmt"); // TODO: 
+				"StmtAdviceApplication.stmt is expected to be instanceof AssignStmt");  
 		}
 		debug("found assignment statement");
 		AssignStmt assignStmt=(AssignStmt)stmtAdv.stmt;				
