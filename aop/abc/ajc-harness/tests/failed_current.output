@@ -201,9 +201,9 @@ Caused by: java.lang.RuntimeException: Warning: Bad use of primitive type at $f0
 	at soot.Body.checkTypes(Body.java:583)
 	at soot.Body.validate(Body.java:208)
 	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
-	at soot.PackManager.runBodyPacks(PackManager.java:549)
-	at soot.PackManager.runBodyPacks(PackManager.java:369)
-	at soot.PackManager.runPacks(PackManager.java:313)
+	at soot.PackManager.runBodyPacks(PackManager.java:551)
+	at soot.PackManager.runBodyPacks(PackManager.java:371)
+	at soot.PackManager.runPacks(PackManager.java:315)
 	at abc.main.Main.optimize(Main.java:947)
 	at abc.main.Main.run(Main.java:508)
 	... 3 more
