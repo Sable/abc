@@ -13,6 +13,16 @@
             <message line="3" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="package typepattern with no packages (in default package)" keywords="from-resolved_105,knownLimitation" dir="new">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint" files="TypeNames.java">
+            <message line="34" kind="warning"></message>
+            <message line="39" kind="warning"></message>
+            <message line="43" kind="warning"></message>
+            <message line="47" kind="warning"></message>
+        </compile>
+        <run class="TypeNames"></run>
+    </ajc-test>
 <ajc-test title="VerifyError if nested sync returning result" pr="601" keywords="from-resolved_10final,purejava" dir="new" comment="XXX inconsistent behavior?" abccomment="skipping since javac can't pass this either">
         <compile files="NestedSyncWithResult.java"></compile>
         <run class="NestedSyncWithResult"></run>
@@ -32,9 +42,53 @@
         </compile>
         <run vm="1.4" class="ReturnCastProceed"></run>
     </ajc-test>
+<ajc-test title="options -warn:deprecation" dir="options/deprecated">
+      <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!eclipse,-warn:deprecation" files="WarnDeprecated.java,OldStuff.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint args()" keywords="lint" dir="options">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeArgsPCD.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint declare parent" keywords="lint" dir="options">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeDeclareParent.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint target()" keywords="lint" dir="options">
+      <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeTargetPCD.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="options -Xlint this()" keywords="lint" dir="options">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="!Xlint" files="XLintTypeThisPCD.java">
+            <message line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="testing new options" dir="new/options11" comment="XXX not validated correct yet">
         <compile files="Main.java,injar.jar,Aspect.java" aspectpath="aspectlib1.jar,aspectlib2.jar"></compile>
         
+    </ajc-test>
+<ajc-test title="Verify error on non-Throwable in declare soft" pr="28921" dir="bugs">
+    <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint:warning" files="DeclareSoftCf.java">
+		  <message line="28" kind="warning"></message>
+		  <message line="29" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="unmatched type name in a declare parents should result in a warning in -Xlint mode" keywords="tofix" dir="new">
+     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint" files="MissingTypeInDeclareParents.java">
+            <message line="20" kind="warning"></message>
+        </compile>
+        <run class="MissingTypeInDeclareParents"></run>
     </ajc-test>
 <ajc-test title="incrementally change string size and wire in injar classes" keywords="knownLimitation" dir="incremental/stringliteral">
         <compile staging="true" sourceroots="src" options="-incremental" files="oneInjar.jar,twoInjar.jar"></compile>
@@ -138,6 +192,24 @@
             <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
+<ajc-test title="setting -warn:constructorName works" dir="harness">
+         <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-warn:constructorName" files="ConstructorNameWarning.java">
+        	<message text="constructor name" line="5" kind="warning"></message>
+    	</compile>
+    </ajc-test>
+<ajc-test title="valid XLintWarningTest file, default level of warning" dir="harness">
+        <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile files="XLintWarningTest.java">
+        	<message text="Xlint:invalidAbsoluteTypeName" line="5" kind="warning"></message> 
+        </compile>
+    </ajc-test>
+<ajc-test title="XLint:error promotes XLint warnings to error" dir="harness">
+    <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-Xlint:error" files="XLintWarningTest.java">
+        	<message text="Xlint:invalidAbsoluteTypeName" line="5" kind="error"></message> 
+        </compile>
+    </ajc-test>
 <ajc-test title="incrementally change only string literal, still expect advice" keywords="incremental-test" dir="incremental/stringliteral">
         <compile staging="true" sourceroots="src" options="-incremental"></compile>
 		<run options="in packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
@@ -145,6 +217,14 @@
         	<dir-changes updated="packageOne.Main"></dir-changes>
         </inc-compile>
 		<run options="in longer packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
+    </ajc-test>
+<ajc-test title="-nowarn suppresses declare warnings" pr="38134" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
+        <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-nowarn" files="WarningTest.java"></compile>
+    </ajc-test>
+<ajc-test title="-warn:none suppresses declare warnings" pr="38134" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
+        <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+        <compile options="-warn:none" files="WarningTest.java"></compile>
     </ajc-test>
 <ajc-test title="Compiler crashes in jar and cflow (with .jar)" pr="39462" dir="bugs/cflowAndJar" comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj" abccomment="aspectpath tests should be skipped. ODM 16/07/04">
         <abckeywords> <skip></skip> </abckeywords>
@@ -196,6 +276,12 @@
 		<compile files="model/BusObj.java,model/MonitorBusObj.java" aspectpath="lib.jar">
 		</compile>
 	</ajc-test>
+<ajc-test title="Weaving failure when using injars (on classpath)" pr="41123" dir="bugs/moreInterfaceLibrary" abccomment="test with aspect in a jar - not supported by abc. ODM 27/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="model/BusObj.java,model/MonitorBusObj.java" classpath="lib.jar">
+		    <message line="3" kind="error"></message>
+		</compile>
+	</ajc-test>
 <ajc-test title="Weaving failure when using injars (actual injars)" pr="41123" dir="bugs/moreInterfaceLibrary" abccomment="abc doesn't support weaving aspects from jars - error irrelevant. ODM 19/07/04">
         <abckeywords> <skip></skip> </abckeywords>
 		<compile files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
@@ -209,6 +295,34 @@
 <ajc-test title="zip and jar suffixes for extdirs entries" pr="42574" dir="bugs/extdirs" abccomment="Skipping this case as we're not sure what the extdirs option          is meant to do. PA/AGS">
 		<abckeywords> <skip></skip> </abckeywords>
 		<compile files="extdirs-src/main/Main.java" extdirs="lib/lowercase"></compile>
+	</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type" pr="41952" dir="bugs">
+         <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+		<compile options="-1.3" files="DeclaringTypeWarning.java">
+			<message text="declaring type" line="6" kind="warning">
+				<source line="12" file="DeclaringTypeWarning.java"></source>
+			</message>
+			<message text="declaring type" line="6" kind="warning">
+				<source line="14" file="DeclaringTypeWarning.java"></source>
+			</message>			
+		</compile>
+		</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint:ignore)" pr="41952" dir="bugs">
+                <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+		<compile options="-Xlint:ignore,-1.4" files="DeclaringTypeWarning.java">
+            <message line="12" kind="warning"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.4)" pr="41952" dir="bugs">
+                <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
+		<compile options="-1.4" files="DeclaringTypeWarning.java">
+			<message text="declaring type" line="6" kind="warning">
+				<source line="14" file="DeclaringTypeWarning.java"></source>
+			</message>
+			<message text="declare warning" line="12" kind="warning">
+				<source line="19" file="DeclaringTypeWarning.java"></source>
+			</message>
+		</compile>
 	</ajc-test>
 <ajc-test title="Introduced abstract method on abstract class not implemented by subtype" pr="49784" dir="bugs/abstractMethods">
         <compile files="abstractClass/C.java" aspectpath="abstractClass/jars/AandB.jar">

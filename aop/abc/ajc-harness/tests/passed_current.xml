@@ -2776,6 +2776,10 @@
         <compile files="IndeterminateArg.java"></compile>
         <run class="IndeterminateArg"></run>
     </ajc-test>
+<ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
+        <compile files="IndeterminateHandlerArg.java"></compile>
+        <run class="IndeterminateHandlerArg"></run>
+    </ajc-test>
 <ajc-test title="Locals inside other locals, ordering of processing [eh]" keywords="from-resolved_105" dir="pureJava" abccomment="Verify error in abc and j2j (when --app used).                   Reported to Jennifer, July 1/04 LJH, Fixed July 2/04">
         <compile files="LocalInners2.java"></compile>
         <run class="LocalInners2"></run>
@@ -3157,6 +3161,10 @@
         <compile files="CloneMethod.java"></compile>
         <run class="CloneMethod"></run>
     </ajc-test>
+<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
+        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
+        <run vm="1.4" class="ClassLiteralField"></run>
+    </ajc-test>
 <ajc-test title="compile error expected for abstract pointcut outside abstract aspect" dir="errors" abccomment="better errors from abc. 19/07/04 ODM">
 		<compile files="AbstractPointcutCE.java">
 			<ajcmessage line="5" kind="error"></ajcmessage>
@@ -3205,6 +3213,13 @@
 		<compile files="lib/LibraryInterface.java,       Client.java,       LibraryAspect.java"></compile>
 		<run class="Client"></run>
 		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar" dir="new/interfaceLibrary" comment="prove aspect is required even if interface is woven" abccomment="only one error, but ok. ODM 27/07/04">
+		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar">
+			<ajcmessage text="LibraryAspect" line="0" kind="error"></ajcmessage>
+			<ajcmessage text="LibraryInterface" line="9" kind="error"></ajcmessage>
+	                <message text="LibraryInterface" line="9" kind="error"></message>
+			</compile>
+		</ajc-test>
 <ajc-test title="exception clause for aspect-declared interface methods - positive" dir="bugs/interfaceLibrary" abccomment="problem with loosing exception clauses on newly created soot methods. emailed abc list 19/07/04. ODM">
 		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
 		<run class="Client"></run>
@@ -3223,7 +3238,7 @@
 			<message line="5" kind="error" file="ClassClientCE.java"></message>
 			</compile>
 		</ajc-test>
-<ajc-test title="reflective check of declared exceptions from aspect-declared methods" pr="41175" dir="bugs" abccomment="soot seems to loose declared exceptions on new methods. mailed abc list. 19/07/04 ODM.">
+<ajc-test title="reflective check of declared exceptions from aspect-declared methods" pr="41175" dir="bugs" abccomment="soot seems to loose declared exceptions on new methods. mailed abc list. 19/07/04 ODM.                             Jennifer found it is due to Jasmin; she will fix. 27/07/04 ODM">
 		<compile files="DeclaredExceptions.java"></compile>
 		<run class="DeclaredExceptions"></run>
 		</ajc-test>
@@ -3317,7 +3332,7 @@
         </compile>
     </ajc-test>
 <ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)" pr="41952" dir="bugs">
-		<compile options="-Xlint:ignore,-1.3" files="DeclaringTypeWarning.java">
+       		<compile options="-Xlint:ignore,-1.3" files="DeclaringTypeWarning.java">
 		</compile>
 	</ajc-test>
 <ajc-test title="Appropriate message for 'after() thowing(Throwable th)' syntax error" pr="49638" dir="bugs" abccomment="Polyglot continues beyond parse errors and throws another problem. ODM 07/07/04">

@@ -515,15 +515,6 @@
             <message line="15" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="package typepattern with no packages (in default package)" keywords="from-resolved_105,knownLimitation" dir="new">
-        <compile options="-Xlint" files="TypeNames.java">
-            <message line="34" kind="warning"></message>
-            <message line="39" kind="warning"></message>
-            <message line="43" kind="warning"></message>
-            <message line="47" kind="warning"></message>
-        </compile>
-        <run class="TypeNames"></run>
-    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
@@ -562,10 +553,6 @@
             <message line="70" kind="error"></message>
             <message line="72" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="binding handler args with indeterminate prefix and suffix" pr="764" keywords="from-resolved_105" dir="new">
-        <compile files="IndeterminateHandlerArg.java"></compile>
-        <run class="IndeterminateHandlerArg"></run>
     </ajc-test>
 <ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
 	    <compile files="java/lang/Object.java,java/lang/String.java">
@@ -664,31 +651,6 @@
         <compile files="AfterReturningInterfaceConstructor.java"></compile>
         <run class="AfterReturningInterfaceConstructor"></run>
     </ajc-test>
-<ajc-test title="options -warn:deprecation" dir="options/deprecated">
-        <compile options="!eclipse,-warn:deprecation" files="WarnDeprecated.java,OldStuff.java">
-            <message line="10" kind="warning"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="options -Xlint args()" keywords="lint" dir="options">
-        <compile options="!Xlint" files="XLintTypeArgsPCD.java">
-            <message line="10" kind="warning"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="options -Xlint declare parent" keywords="lint" dir="options">
-        <compile options="!Xlint" files="XLintTypeDeclareParent.java">
-            <message line="10" kind="warning"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="options -Xlint target()" keywords="lint" dir="options">
-        <compile options="!Xlint" files="XLintTypeTargetPCD.java">
-            <message line="10" kind="warning"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="options -Xlint this()" keywords="lint" dir="options">
-        <compile options="!Xlint" files="XLintTypeThisPCD.java">
-            <message line="10" kind="warning"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="options negative -Xlint args()" keywords="lint" dir="options">
         <compile options="-Xlint:ignore" files="XLintTypeArgsPCD.java"></compile>
     </ajc-test>
@@ -749,21 +711,9 @@
           <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Verify error on non-Throwable in declare soft" pr="28921" dir="bugs">
-        <compile options="-Xlint:warning" files="DeclareSoftCf.java">
-		  <message line="28" kind="warning"></message>
-		  <message line="29" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="inter-type fields with array types" pr="29113" dir="bugs">
         <compile files="InterFieldArrays.java"></compile>
         <run class="InterFieldArrays"></run>
-    </ajc-test>
-<ajc-test title="unmatched type name in a declare parents should result in a warning in -Xlint mode" keywords="tofix" dir="new">
-        <compile options="-Xlint" files="MissingTypeInDeclareParents.java">
-            <message line="20" kind="warning"></message>
-        </compile>
-        <run class="MissingTypeInDeclareParents"></run>
     </ajc-test>
 <ajc-test title="checking around join point for advice return type - numeric" pr="838" dir="new">
         <compile files="AroundNumericCastCE.java">
@@ -1016,21 +966,6 @@
         </compile>
         <run class="Big"></run>
     </ajc-test>
-<ajc-test title="setting -warn:constructorName works" dir="harness">
-        <compile options="-warn:constructorName" files="ConstructorNameWarning.java">
-        	<message text="constructor name" line="5" kind="warning"></message>
-    	</compile>
-    </ajc-test>
-<ajc-test title="valid XLintWarningTest file, default level of warning" dir="harness">
-        <compile files="XLintWarningTest.java">
-        	<message text="Xlint:invalidAbsoluteTypeName" line="5" kind="warning"></message> 
-        </compile>
-    </ajc-test>
-<ajc-test title="XLint:error promotes XLint warnings to error" dir="harness">
-        <compile options="-Xlint:error" files="XLintWarningTest.java">
-        	<message text="Xlint:invalidAbsoluteTypeName" line="5" kind="error"></message> 
-        </compile>
-    </ajc-test>
 <ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" keywords="knownLimitation" dir="new/binaryWarnings/src">
         <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
         	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
@@ -1050,17 +985,11 @@
 			<message text="throw checked exception" line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="-nowarn suppresses declare warnings" pr="38134" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
-        <compile options="-nowarn" files="WarningTest.java"></compile>
-    </ajc-test>
-<ajc-test title="-warn:none suppresses declare warnings" pr="38134" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
-        <compile options="-warn:none" files="WarningTest.java"></compile>
-    </ajc-test>
 <ajc-test title="can not resolve this member warning" pr="38212" dir="bugs/accessMethods">
         <compile files="p1/Base.java,p2/Derived.java"></compile>
         <run class="p2.Derived"></run>
     </ajc-test>
-<ajc-test title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" pr="39458" dir="bugs">
+<ajc-test title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" pr="39458" dir="bugs" abccomment="awaiting Pavel's implementation of privileged. ODM 27/09/04">
         <compile files="NewVoid.java">
             <message line="17" kind="error"></message>        
             <message line="20" kind="error"></message>        
@@ -1071,16 +1000,6 @@
             <message line="30" kind="warning"></message>            
         </compile>
     </ajc-test>
-<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
-        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
-        <run vm="1.4" class="ClassLiteralField"></run>
-    </ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar" dir="new/interfaceLibrary" comment="prove aspect is required even if interface is woven">
-		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar">
-			<message text="LibraryAspect" line="0" kind="error"></message>
-			<message text="LibraryInterface" line="9" kind="error"></message>
-			</compile>
-		</ajc-test>
 <ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only" abccomment="only type error, but ok. ODM 19/07/04">
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
 			<ajcmessage line="9" kind="error"></ajcmessage>
@@ -1093,12 +1012,6 @@
                         <message line="14" kind="error"></message>
 			</compile>
 		</ajc-test>
-<ajc-test title="Weaving failure when using injars (on classpath)" pr="41123" dir="bugs/moreInterfaceLibrary" abccomment="need to have aspectjrt.jar on classpath by                           default">
-		<compile files="model/BusObj.java,model/MonitorBusObj.java" classpath="lib.jar">
-		    <ajcmessage line="3" kind="error"></ajcmessage>
-		    <message line="3" kind="error"></message>
-		</compile>
-	</ajc-test>
 <ajc-test title="NPE in concretization error path" pr="43033" keywords="poorErrorMessages" dir="bugs/concretizeNpe" abccomment="parse error location ok. ODM 19/07/04">
 		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
 		
@@ -1110,31 +1023,6 @@
 <ajc-test title="priviledged aspects calling methods from advice" pr="42711" dir="bugs/privilege/packageProtected" abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04"> 
         <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
     </ajc-test>
-<ajc-test title="XLint warning for call PCD's using subtype of defining type" pr="41952" dir="bugs">
-		<compile options="-1.3" files="DeclaringTypeWarning.java">
-			<message text="declaring type" line="6" kind="warning">
-				<source line="12" file="DeclaringTypeWarning.java"></source>
-			</message>
-			<message text="declaring type" line="6" kind="warning">
-				<source line="14" file="DeclaringTypeWarning.java"></source>
-			</message>			
-		</compile>
-		</ajc-test>
-<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint:ignore)" pr="41952" dir="bugs">
-		<compile options="-Xlint:ignore,-1.4" files="DeclaringTypeWarning.java">
-            <message line="12" kind="warning"></message>
-		</compile>
-	</ajc-test>
-<ajc-test title="XLint warning for call PCD's using subtype of defining type (-1.4)" pr="41952" dir="bugs">
-		<compile options="-1.4" files="DeclaringTypeWarning.java">
-			<message text="declaring type" line="6" kind="warning">
-				<source line="14" file="DeclaringTypeWarning.java"></source>
-			</message>
-			<message text="declare warning" line="12" kind="warning">
-				<source line="19" file="DeclaringTypeWarning.java"></source>
-			</message>
-		</compile>
-	</ajc-test>
 <ajc-test title="Ensure we don't look for source on the classpath when binary not found" pr="46671" dir="bugs/faultingInSource">
         <compile options="-verbose" files="SimpleTracing.java" classpath=".">
 		  <message text="no match for this type name: SampleClass" line="4" kind="warning"></message>
