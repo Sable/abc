@@ -51,7 +51,9 @@ import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AroundAdvice;
 import abc.weaving.aspectinfo.Formal;
 import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ConstructorAdviceApplication;
 import abc.weaving.matching.ExecutionAdviceApplication;
+import abc.weaving.matching.NewStmtAdviceApplication;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.residues.AdviceFormal;
 import abc.weaving.residues.AlwaysMatch;
@@ -59,6 +61,7 @@ import abc.weaving.residues.AndResidue;
 import abc.weaving.residues.AspectOf;
 import abc.weaving.residues.Bind;
 import abc.weaving.residues.Box;
+import abc.weaving.residues.CflowResidue;
 import abc.weaving.residues.CheckType;
 import abc.weaving.residues.Copy;
 import abc.weaving.residues.HasAspect;
@@ -476,8 +479,11 @@ public class AroundWeaver {
 				//JasminClass
 				insertAfter = returnStmt;
 			} else {
-				if (!dest.getMethod().getReturnType().equals(VoidType.v()))
-					throw new InternalError();
+				if (!dest.getMethod().getReturnType().equals(VoidType.v())) {					
+					throw new InternalError(
+						"destination method: " + dest.getMethod() + 
+						"\nsource method: " + source.getMethod());
+				}
 	
 				ReturnVoidStmt returnStmt = Jimple.v().newReturnVoidStmt();
 				unitChain.insertAfter(returnStmt, insertAfter);
@@ -897,14 +903,25 @@ public class AroundWeaver {
 	
 			Local returnedLocal = null;
 	
-			StmtAdviceApplication stmtAppl = null;
-			if (adviceAppl instanceof StmtAdviceApplication)
-				stmtAppl = (StmtAdviceApplication) adviceAppl;
-	
+			Stmt applStmt=null;
+			{				
+				if (adviceAppl instanceof StmtAdviceApplication) {
+					StmtAdviceApplication stmtAppl = (StmtAdviceApplication) adviceAppl;
+					applStmt=stmtAppl.stmt;	
+				} else if (adviceAppl instanceof NewStmtAdviceApplication) {
+					NewStmtAdviceApplication stmtAppl = (NewStmtAdviceApplication) adviceAppl;
+					applStmt=stmtAppl.stmt;
+				} else {
+					// TODO: add support for HandlerAdviceApplication, 
+				}
+			}
+			
 			Type objectType=Scene.v().getRefType("java.lang.Object");
 	
-			if (adviceAppl instanceof ExecutionAdviceApplication) {
-				ExecutionAdviceApplication ea = (ExecutionAdviceApplication) adviceAppl;
+			if (adviceAppl instanceof ExecutionAdviceApplication || 
+				adviceAppl instanceof ConstructorAdviceApplication) {
+				//ExecutionAdviceApplication ea = (ExecutionAdviceApplication) adviceAppl;
+				
 				//if (joinpointMethod.getName().startsWith("around$"))
 				//	throw new CodeGenException("Execution pointcut matching advice method.");
 	
@@ -922,7 +939,17 @@ public class AroundWeaver {
 					}
 				}
 				if (joinpointMethod.getReturnType().equals(VoidType.v())) {
-	
+					if (
+						! adviceMethod.getReturnType().equals(VoidType.v())					 
+						) { 
+						// make dummy local to be returned. assign default value.
+						LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
+						Local l=lg.generateLocal(adviceMethod.getReturnType(), "returnedLocal");
+						Stmt s=Jimple.v().newAssignStmt(l, 
+							Restructure.JavaTypeInfo.getDefaultValue(adviceMethod.getReturnType()));
+						joinpointStatements.insertAfter(s, begin);
+						returnedLocal=l;			
+					}
 				} else {
 					ReturnStmt returnStmt;
 					try {
@@ -933,8 +960,8 @@ public class AroundWeaver {
 					returnedLocal = (Local) returnStmt.getOp();
 					// TODO: could return constant?
 				}
-			} else if (stmtAppl.stmt instanceof AssignStmt) {
-				AssignStmt assignStmt = (AssignStmt) stmtAppl.stmt;
+			} else if (applStmt instanceof AssignStmt) {
+				AssignStmt assignStmt = (AssignStmt) applStmt;
 				Value leftOp = assignStmt.getLeftOp();
 				Value rightOp = assignStmt.getRightOp();
 				if (leftOp instanceof Local) {
@@ -957,8 +984,8 @@ public class AroundWeaver {
 					// unexpected statement type
 					throw new InternalError();
 				}
-			} else if (stmtAppl.stmt instanceof InvokeStmt) {
-				InvokeStmt invStmt=(InvokeStmt)stmtAppl.stmt;
+			} else if (applStmt instanceof InvokeStmt) {
+				InvokeStmt invStmt=(InvokeStmt)applStmt;
 				
 				// if advice method is non-void, we have to return something
 				// TODO: type checking to throw out invalid cases?
@@ -1776,12 +1803,12 @@ public class AroundWeaver {
 			}
 		}
 		private void assignCorrectParametersToLocals(
-		List context,
-		int[] argIndex,
-		Stmt first,
-		HashMap bindings,
-		ArrayList staticBindings) {
-		{
+			List context,
+			int[] argIndex,
+			Stmt first,
+			HashMap bindings,
+			ArrayList staticBindings) {
+		
 			// Assign the correct access parameters to the locals 
 			Stmt insertionPoint = (Stmt) first;
 			Stmt skippedCase = Jimple.v().newNopStmt();
@@ -1794,8 +1821,9 @@ public class AroundWeaver {
 			statements.insertBefore(gotoStmt, insertionPoint);
 			statements.insertBefore(skippedCase, insertionPoint);
 			statements.insertBefore(neverBoundCase, insertionPoint);
-			for (int i = 0; i < context.size(); i++) {
-				Local actual = (Local) context.get(i);
+			int i=0;
+			for (Iterator it=context.iterator(); it.hasNext(); i++) {
+				Local actual = (Local) it.next(); // context.get(i);
 				Local actual2 = (Local) bindings.get(actual);
 				if (!body.getLocals().contains(actual2))
 					throw new InternalError();
@@ -1836,7 +1864,7 @@ public class AroundWeaver {
 				}
 			}
 		}
-	}
+	
 
 		public final AdviceMethod adviceMethod;
 		public final SootClass joinpointClass;
@@ -2167,8 +2195,10 @@ public class AroundWeaver {
 			List l = getBindList(((OrResidue) r).getLeftOp());
 			l.addAll(getBindList(((OrResidue) r).getRightOp()));
 			return l;
+		} else if (r instanceof CflowResidue) {
+			
 		} else {
-			throw new InternalError();
+			throw new InternalError("Unknown residue type: " + r.getClass().getName());
 		}
 		return new LinkedList();
 	}
