@@ -19,6 +19,7 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeMethodInstance_c;
+import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.*;
 
 public class IntertypeMethodDecl_c extends MethodDecl_c
@@ -110,6 +111,17 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		if (flags().isProtected())
 			throw new SemanticException("Intertype methods cannot be protected",position());
 		return super.typeCheck(tc);
+	}
+	
+	/**
+	 * @author Oege de Moor
+	 * record the host type in the environment, for checking of this and super
+	 */
+	
+	public Context enterScope(Context c) {
+		AJContext nc = (AJContext) super.enterScope(c).pushStatic(); // intertype method decls are static
+		TypeSystem ts = nc.typeSystem();
+		return nc.pushHost(ts.staticTarget(host.type()).toClass());
 	}
 		
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {

@@ -115,4 +115,8 @@ public class AspectJTypeSystem_c
     		return true;
     	else return super.isAccessible(mi,ctc);
     }
+    
+	public Context createContext() {
+	   return new AJContext_c(this);
+	}
 }

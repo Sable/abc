@@ -271,6 +271,8 @@ public interface AspectJNodeFactory
     ArgStar ArgStar(Position pos);
 
     ArgDotDot ArgDotDot(Position pos);
+    
+	Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer);
 }
 
 

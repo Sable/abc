@@ -455,6 +455,17 @@ public class AspectJNodeFactory_c
     public ArgDotDot ArgDotDot(Position pos) {
 	return new ArgDotDot_c(pos);
     }
+    
+	public Special Special(Position pos, Special.Kind kind, TypeNode outer) {
+		   Special n = new AJSpecial_c(pos, kind, outer);
+		   return n;
+	   }
+	   
+ 
+	public Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer) {
+			Special n = new HostSpecial_c(pos, kind, outer);
+			return n;
+	}
     // TODO:  Implement factory methods for new AST ndes.
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.
