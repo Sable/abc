@@ -17,13 +17,14 @@ public abstract class AbstractAfterAdvice extends AbstractAdviceSpec {
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
 	if(sm.supportsAfter()) return AlwaysMatch.v;
 	// FIXME: should be a multi-position error
-	abc.main.Main.v().error_queue.enqueue
-	    (ErrorInfoFactory.newErrorInfo
-	     (ErrorInfo.WARNING,
-	      sm.joinpointName()+" join points do not support after advice, but some advice from aspect "
-	      +ad.getAspect()+" would otherwise apply here",
-	      sm.getContainer(),
-	      sm.getHost()));
+	if(ad instanceof AdviceDecl)
+	    abc.main.Main.v().error_queue.enqueue
+		(ErrorInfoFactory.newErrorInfo
+		 (ErrorInfo.WARNING,
+		  sm.joinpointName()+" join points do not support after advice, but some advice from aspect "
+		  +ad.getAspect().getName()+" would otherwise apply here",
+		  sm.getContainer(),
+		  sm.getHost()));
 	      
 	return null;
     }
