@@ -1,2 +1,2 @@
 #!/bin/csh
-abc $* +soot -d . -soot certrevsim/*.java jsim/*/*.java lib/aspects/*/*.java
+java -Xmx256M abc.main.Main $* +soot -d . -soot certrevsim/*.java jsim/*/*.java lib/aspects/*/*.java
