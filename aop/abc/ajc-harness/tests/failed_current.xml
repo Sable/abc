@@ -431,10 +431,6 @@
         <compile files="TryAndProceed.java"></compile>
         <run class="TryAndProceed"></run>
     </ajc-test>
-<ajc-test title="thisJoinPoint{Static} not visible in if() pcd of named pointcut" keywords="from-resolved_10x" dir="new">
-        <compile files="IfPCDExprJoinPointVisibleCE.java"></compile>
-        <run class="IfPCDExprJoinPointVisibleCE"></run>
-    </ajc-test>
 <ajc-test title="pcd if() expression visibility at compile-time  (minimal operation)" keywords="from-resolved_10x" dir="new">
         <compile options="-Xlint:ignore" files="IfPCDExprVisibility.java"></compile>
         <run class="IfPCDExprVisibility"></run>
@@ -628,10 +624,6 @@
             <message line="32" kind="error"></message>
             <message line="43" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="pertarget stack overflow getting name of anonymous (Interface) class" pr="573" keywords="from-resolved_10rc3" dir="new">
-        <compile files="PR573.java"></compile>
-        <run class="PR573"></run>
     </ajc-test>
 <ajc-test title="indirect use outside aspect of undefined abstract pointcut" pr="619" keywords="from-resolved_104" dir="new">
         <compile files="AbstractPointcutIndirectCE.java">
@@ -1367,10 +1359,6 @@
 		    <message text="no checked exceptions" line="2" kind="error"></message>
 		</compile>
 	</ajc-test>
-<ajc-test title="Interaction between pointcut binding and declare parents" pr="42993" dir="bugs">
-        <compile files="ParentsAndPointcuts.java"></compile>
-        <run class="ParentsAndPointcuts"></run>
-    </ajc-test>
 <ajc-test title="NPE in concretization error path" pr="43033" keywords="poorErrorMessages" dir="bugs/concretizeNpe">
 		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
 		

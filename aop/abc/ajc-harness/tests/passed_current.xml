@@ -2083,6 +2083,10 @@
         <compile files="MemberInitializationsAfterExplicitConstructorCallsCoverage.java"></compile>
         <run class="MemberInitializationsAfterExplicitConstructorCallsCoverage"></run>
     </ajc-test>
+<ajc-test title="thisJoinPoint{Static} not visible in if() pcd of named pointcut" keywords="from-resolved_10x" dir="new">
+        <compile files="IfPCDExprJoinPointVisibleCE.java"></compile>
+        <run class="IfPCDExprJoinPointVisibleCE"></run>
+    </ajc-test>
 <ajc-test title="pcd if() NPE in compiler when unwinding assignment in pcd if(expr)" keywords="from-resolved_10x" dir="new">
         <compile files="IfPCDExprAssignUnparseFailure.java"></compile>
         <run class="IfPCDExprAssignUnparseFailure"></run>
@@ -2331,6 +2335,10 @@
 <ajc-test title="compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" pr="560" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR560.java"></compile>
         <run class="PR560"></run>
+    </ajc-test>
+<ajc-test title="pertarget stack overflow getting name of anonymous (Interface) class" pr="573" keywords="from-resolved_10rc3" dir="new">
+        <compile files="PR573.java"></compile>
+        <run class="PR573"></run>
     </ajc-test>
 <ajc-test title="pertarget stack overflow getting name of anonymous (Object) class" pr="573" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR573_1.java"></compile>
@@ -2954,6 +2962,10 @@
 		<compile files="aspects/Softener.aj,test/NoSoftener.java"></compile>
 		<run class="test.NoSoftener"></run>
 	</ajc-test>
+<ajc-test title="Interaction between pointcut binding and declare parents" pr="42993" dir="bugs">
+        <compile files="ParentsAndPointcuts.java"></compile>
+        <run class="ParentsAndPointcuts"></run>
+    </ajc-test>
 <ajc-test title="Non-functional concretezation of ReferencePointcut" pr="43194" dir="bugs">
         <compile files="AdviceInteraction.java"></compile>
         <run class="AdviceInteraction"></run>
