@@ -71,12 +71,11 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
         return null;
     }
 
-    // ajc doesn't support this, but we do
-    /*
+    // around on preinit leads to verification errors
+    // if the super(...) call has any arguments
     public boolean supportsAround() {
 	return false;
     }
-    */
 
     public String joinpointName() {
 	return "preinitialization";
