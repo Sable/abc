@@ -99,6 +99,15 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
+<ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
+      abccomment="ajc 1.2 still does not implement static IT fields and neither does abc. ODM 4/7/04"
+      keywords="from-base,knownLimitation">
+        <compile files="Driver.java">
+          <ajcmessage kind="ignore"/>
+          <message kind="error" line="97"/>  
+        </compile>
+        
+    </ajc-test>
 <ajc-test dir="base/test119" title="Local declarations in advise bodies"
       keywords="from-base">
         <compile files="Driver.java"/>
@@ -266,6 +275,16 @@
     </ajc-test>
 <ajc-test dir="new/volatileKeyword" pr="151"
       title="advice on a static method" keywords="from-java">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+<ajc-test dir="new/innerConsSyntax" pr="192"
+      title="inner constructor syntax causes compile error" keywords="from-java"
+      abccomment="fails for abc, 
+                    classCastException in ConstructorCallShadowMatch
+                  works for soot,j2j,jlc,javac and ajc
+                  file DriverLJH.java sent to Ganesh June 30/04  LJH "
+    >
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
@@ -598,6 +617,18 @@
         </compile>
         <ajcrun class="KeywordAspect" />
     </ajc-test>
+<ajc-test dir="pureJava"
+      abccomment = "abc doesn't allow keywords, added error. LJH "
+      title="Using 'pointcut' as identifier is legal TODO"
+      keywords="from-java,purejava">
+        <compile files="KeywordPointcut.java">
+          <message kind="error" line="7" />
+          <message kind="error" line="8"/> 
+          <message kind="error" line="9"/> 
+           <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordPointcut"/>
+    </ajc-test>
 <ajc-test dir="pureJava" title="Conflicting inner classes with interfaces."
       keywords="from-java">
         <compile files="PR413.java"/>
@@ -784,7 +815,7 @@
     </ajc-test>
 <ajc-test dir="pureJava" title="test try/catch/finally statements"
       abccomment="j2j crashes with a stack overflow error.  Reported
-            to Jennifer, July 2/04 LJH"
+            to Jennifer, July 2/04 LJH  FIXED July 3/04 LJH"
       keywords="from-java">
         <compile files="TryCatchFinally.java"/>
         <run class="TryCatchFinally"/>
@@ -803,7 +834,9 @@
     </ajc-test>
 <ajc-test dir="new" title="Error expected for field of type void"
       abccomment="causes jlc to crash when it finds the 3rd error.
-                   Reported to Nate July 2/04 LJH"
+                   Reported to Nate July 2/04 LJH
+                   Fixed in jlc, but still a problem in abc, must
+                   investigate July 4/04 LJH"
       keywords="from-java,purejava">
         <compile files="VoidField.java">
             <message kind="error" line="2"/>
@@ -897,7 +930,8 @@
 <ajc-test dir="new/introTypeMissing"
       title="enclosing class may be used as this qualifier in inner class"
       abccomment="j2j can't handle this, example sent to Jennifer, 
-                   July 2/04.  LJH"
+                   July 2/04.  LJH
+                  FIXED July 4/04 LJH"
       keywords="from-java">
         <compile files="TargetClassCP.java,Util.java"/>
         <run class="TargetClassCP"/>
@@ -1201,6 +1235,28 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="Accessing instance fields and instance methods statically."
+      abccomment="all errors,  but it is completely reasonable to report
+                  only the non-statement error on line 30.  This is what
+                  javac does on the Java part of the benchmark.  Note
+                  that this is NOT a purejava benchmark, but has an
+                  aspect in it, dispite what the keyword says.
+                  July 4/04 LJH"
+      keywords="from-errors,purejava">
+        <compile files="AccessingInstanceFieldsStatically.java">
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="26"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+            <ajcmessage kind="error" line="38"/>
+            <ajcmessage kind="error" line="39"/>
+            <message kind="error" line="30"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors" pr="95"
       title="stack overflow with recursive crosscut specifier"
       keywords="from-errors">
@@ -1249,6 +1305,25 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
+      abccomment="javac report on line 9, as done ajc and abc.  July 4/04 LJH"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadCast.java"
+               options="!eclipse">
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="10"/>
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when the closing brace is reversed"
+      abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="ClosingBrace.java"
+               options="!eclipse">
+            <ajcmessage kind="error" line="11"/>
+            <message kind="error" line="12"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors"
       title="Crashes when a method name is missing in a call -- e.g. 'System.out.();'"
       keywords="from-errors,purejava">
@@ -1273,6 +1348,39 @@
       keywords="from-errors,purejava">
         <compile files="FinalStatic.java">
             <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when two dots appear instead of one"
+      keywords="from-errors,purejava">
+        <compile files="TwoDots.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when there're stray dots"
+      abccomment="javac,ajc and abc all give errors on all the lines.
+                  July 3/04 LJH"
+      keywords="from-errors,purejava">
+        <compile files="StrayDot.java">
+            <ajcmessage kind="error" line="9"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Stray characters cause a crash"
+      abccomment="syntax errors from abc perfectly reasonable
+                   July 4/04 LJH"
+      comment="XXX public class in wrong file"
+      keywords="from-errors,purejava">
+        <compile files="StraySlash.java">
+            <ajcmessage kind="error" line="9"/>
+            <message kind="error" line="9" />
+            <message kind="error" line="10" />
+            <message kind="error" line="15" />
+            <message kind="error" line="16" />
         </compile>
     </ajc-test>
 <ajc-test dir="errors" title="Colon instead of a semi-colon causes a crash"
@@ -1497,11 +1605,6 @@
       keywords="from-design">
         <compile files="Overriding.java"/>
         <run class="Overriding"/>
-    </ajc-test>
-<ajc-test dir="design/intro"
-      title="within and introductions behaves correctly" keywords="from-design">
-        <compile files="Within.java"/>
-        <run class="Within"/>
     </ajc-test>
 <ajc-test dir="design/intro" pr="570"
       title="correct inheritance of multiple concrete methods"
@@ -2187,6 +2290,12 @@
         <run class="MethodConflictsCP"/>
     </ajc-test>
 <ajc-test dir="new"
+      title="cflow alone with around produces compiler bcg StackOverflowError"
+      keywords="from-resolved_10x">
+        <compile files="CflowAlone.java"/>
+        <run class="CflowAlone"/>
+    </ajc-test>
+<ajc-test dir="new"
       title="get/set join points run for complex assignment operators (+=, etc.) (working)"
       keywords="from-resolved_10x">
         <compile files="AssignOps.java"/>
@@ -2315,6 +2424,13 @@
             <message kind="error" line="3"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new"
+      title="unreachable code generated by around advice on the execution of void methods"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      keywords="from-resolved_10x">
+        <compile files="AroundVoid.java"/>
+        <run class="AroundVoid"/>
+    </ajc-test>
 <ajc-test dir="new" pr="694" title="after returning advice order"
       keywords="from-resolved_10x">
         <compile files="Cricket.java"/>
@@ -2391,6 +2507,26 @@
       keywords="from-resolved_104">
         <compile files="InnerInterfaceTypes.java,InnerInterfaceTypesHelper.java"/>
         <run class="InnerInterfaceTypes"/>
+    </ajc-test>
+<ajc-test dir="new" pr="691" title="around AST type XXX"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      keywords="from-resolved_104">
+        <compile files="PR691.java"/>
+        <run class="PR691"/>
+    </ajc-test>
+<ajc-test dir="new" pr="687"
+      title="around all execution with double assignment in initializer (simple)"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      keywords="from-resolved_104">
+        <compile files="AroundDoubleAssignment.java"/>
+        <run class="AroundDoubleAssignment"/>
+    </ajc-test>
+<ajc-test dir="new" pr="687"
+      title="around all execution with double assignment in initializer (coverage)"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      keywords="from-resolved_104">
+        <compile files="AroundDoubleAssignmentC.java"/>
+        <run class="AroundDoubleAssignmentC"/>
     </ajc-test>
 <ajc-test dir="new/PR569" pr="569"
       title="anon class written to wrong directory" 
@@ -2499,6 +2635,13 @@
         <compile files="CflowOfFieldInitAnonMethods.java" options="!eclipse">
         </compile>
         <run class="CflowOfFieldInitAnonMethods" options="!eclipse"/>
+    </ajc-test>
+<ajc-test dir="new"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      title="bad interaction with after returning, around and void methods (from Rich Price)"
+      keywords="from-resolved_105">
+        <compile files="AfterReturningResult.java"/>
+        <run class="AfterReturningResult"/>
     </ajc-test>
 <ajc-test dir="new" pr="771" title="static initializer member name"
       keywords="from-resolved_105">
@@ -2808,6 +2951,12 @@
         <compile files="UnfoundConstructor.java">
         	<message kind="error" line="25"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="new" pr="29934"
+      title="can't apply around advice to the execution of around advice"
+      keywords="from-resolved_10x">
+        <compile files="CflowCycles.java"/>
+        <run class="CflowCycles"/>
     </ajc-test>
 <ajc-test dir="errors"  
     		title="type not imported in around advice">
@@ -3130,6 +3279,12 @@
 	        <compile files="AbstractBaseAndInterTypeInterface.java">
 	        </compile>
 	</ajc-test>
+<ajc-test dir="bugs/caseSensitivity" pr="42515"
+      title="NPE When compiling intertype declaration">
+        <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
+		  <message kind="error" line="4"/>
+        </compile>
+  </ajc-test>
 <ajc-test dir="bugs" pr="50570"
       title="CatchClauseSignature has broken operation">
         <compile files="HandlerSig.java"/>
@@ -3139,5 +3294,12 @@
    	 title="after returning with parameter: matching rules">
         <compile files="AfterReturningParamMatching.java" />
         <run class="AfterReturningParamMatching"/>
+    </ajc-test>
+<ajc-test dir="bugs/binaryCompat" pr="50641"
+      title="binary compatibility of advice method names - expect error">
+        <compile files="Main.java,TraceV1.aj"/>
+        <run class="Main"/>
+        <compile files="TraceRE.aj"/>
+        <run class="Main"/>
     </ajc-test>
 </suite> 

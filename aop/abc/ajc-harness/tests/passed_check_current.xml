@@ -1,6 +1,15 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
+ <ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
+      abccomment="ajc 1.2 still does not implement static IT fields and neither does abc. ODM 4/7/04"
+      keywords="from-base,knownLimitation">
+        <compile files="Driver.java">
+          <ajcmessage kind="ignore"/>
+          <message kind="error" line="97"/>  
+        </compile>
+        
+    </ajc-test>
+<ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
       abccomment="abc doesn't allow keywords 
                       need to allow for syntax error. LJH "
       keywords="from-java,purejava">
@@ -13,6 +22,18 @@
           <ajcmessage kind="ignore" />
         </compile>
         <ajcrun class="KeywordAspect" />
+    </ajc-test>
+<ajc-test dir="pureJava"
+      abccomment = "abc doesn't allow keywords, added error. LJH "
+      title="Using 'pointcut' as identifier is legal TODO"
+      keywords="from-java,purejava">
+        <compile files="KeywordPointcut.java">
+          <message kind="error" line="7" />
+          <message kind="error" line="8"/> 
+          <message kind="error" line="9"/> 
+           <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordPointcut"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="return;;; is not really legal"
       keywords="from-java,purejava"
@@ -58,7 +79,9 @@
     </ajc-test>
 <ajc-test dir="new" title="Error expected for field of type void"
       abccomment="causes jlc to crash when it finds the 3rd error.
-                   Reported to Nate July 2/04 LJH"
+                   Reported to Nate July 2/04 LJH
+                   Fixed in jlc, but still a problem in abc, must
+                   investigate July 4/04 LJH"
       keywords="from-java,purejava">
         <compile files="VoidField.java">
             <message kind="error" line="2"/>
@@ -354,6 +377,28 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors"
+      title="Accessing instance fields and instance methods statically."
+      abccomment="all errors,  but it is completely reasonable to report
+                  only the non-statement error on line 30.  This is what
+                  javac does on the Java part of the benchmark.  Note
+                  that this is NOT a purejava benchmark, but has an
+                  aspect in it, dispite what the keyword says.
+                  July 4/04 LJH"
+      keywords="from-errors,purejava">
+        <compile files="AccessingInstanceFieldsStatically.java">
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="26"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="30"/>
+            <ajcmessage kind="error" line="38"/>
+            <ajcmessage kind="error" line="39"/>
+            <message kind="error" line="30"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors" pr="95"
       title="stack overflow with recursive crosscut specifier"
       keywords="from-errors">
@@ -402,6 +447,25 @@
             <message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
+      abccomment="javac report on line 9, as done ajc and abc.  July 4/04 LJH"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="BadCast.java"
+               options="!eclipse">
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="10"/>
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when the closing brace is reversed"
+      abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH"
+      keywords="from-errors,purejava,messages-vary">
+        <compile files="ClosingBrace.java"
+               options="!eclipse">
+            <ajcmessage kind="error" line="11"/>
+            <message kind="error" line="12"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors"
       title="Crashes when a method name is missing in a call -- e.g. 'System.out.();'"
       keywords="from-errors,purejava">
@@ -426,6 +490,39 @@
       keywords="from-errors,purejava">
         <compile files="FinalStatic.java">
             <message kind="error" line="13"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when two dots appear instead of one"
+      keywords="from-errors,purejava">
+        <compile files="TwoDots.java">
+            <message kind="error" line="9"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Crashes when there're stray dots"
+      abccomment="javac,ajc and abc all give errors on all the lines.
+                  July 3/04 LJH"
+      keywords="from-errors,purejava">
+        <compile files="StrayDot.java">
+            <ajcmessage kind="error" line="9"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="10"/>
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors" title="Stray characters cause a crash"
+      abccomment="syntax errors from abc perfectly reasonable
+                   July 4/04 LJH"
+      comment="XXX public class in wrong file"
+      keywords="from-errors,purejava">
+        <compile files="StraySlash.java">
+            <ajcmessage kind="error" line="9"/>
+            <message kind="error" line="9" />
+            <message kind="error" line="10" />
+            <message kind="error" line="15" />
+            <message kind="error" line="16" />
         </compile>
     </ajc-test>
 <ajc-test dir="errors" title="Colon instead of a semi-colon causes a crash"
@@ -923,4 +1020,10 @@
         	<message kind="error" line="9"/>
         </compile>
     </ajc-test>
+<ajc-test dir="bugs/caseSensitivity" pr="42515"
+      title="NPE When compiling intertype declaration">
+        <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
+		  <message kind="error" line="4"/>
+        </compile>
+  </ajc-test>
 </suite> 

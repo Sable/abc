@@ -1,20 +1,6 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="pureJava"
-      abccomment = "abc doesn't allow keywords, added error. LJH "
-      title="Using 'pointcut' as identifier is legal TODO"
-      keywords="from-java,purejava">
-        <compile files="KeywordPointcut.java">
-          <message kind="error" line="7" />
-          <message kind="error" line="10"/> 
-          <message kind="error" line="13"/> 
-          <message kind="error" line="14"/> 
-          <message kind="error" line="18"/> 
-           <ajcmessage kind="ignore" />
-        </compile>
-        <ajcrun class="KeywordPointcut"/>
-    </ajc-test>
-<ajc-test dir="pureJava/innerDefaultConstructors"
+ <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
       abccomment="jlc doesn't report expected error.
                   Reported to Nate on July 1/04.  LJH"
@@ -261,21 +247,6 @@
             <message kind="error" line="3"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="Accessing instance fields and instance methods statically."
-      keywords="from-errors,purejava">
-        <compile files="AccessingInstanceFieldsStatically.java">
-            <message kind="error" line="15"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="26"/>
-            <message kind="error" line="27"/>
-            <message kind="error" line="30"/>
-            <message kind="error" line="38"/>
-            <message kind="error" line="39"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" pr="385"
       title="disallow defining more than one pointcut with the same name"
       keywords="from-errors,fail-unimplemented">
@@ -288,48 +259,6 @@
       keywords="from-errors,fail-unimplemented">
         <compile files="ClassExtendingAspect.java">
             <message kind="error" line="19"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
-      keywords="from-errors,purejava,messages-vary">
-        <compile files="BadCast.java"
-               options="!eclipse">
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when the closing brace is reversed"
-      keywords="from-errors,purejava,messages-vary">
-        <compile files="ClosingBrace.java"
-               options="!eclipse">
-            <message kind="error" line="11"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when two dots appear instead of one"
-      abccomment="javac,ajc and abc all give errors on all the lines.
-                  July 3/04 LJH"
-      keywords="from-errors,purejava">
-        <compile files="TwoDots.java">
-            <ajcmessage kind="error" line="9"/>
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-            <message kind="error" line="11"/>
-            <message kind="error" line="12"/>
-            <message kind="error" line="13"/>
-            <message kind="error" line="14"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when there're stray dots"
-      keywords="from-errors,purejava">
-        <compile files="StrayDot.java">
-            <message kind="error" line="9"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Stray characters cause a crash"
-      comment="XXX public class in wrong file"
-      keywords="from-errors,purejava">
-        <compile files="StraySlash.java">
-            <message kind="error" line="9"/>
         </compile>
     </ajc-test>
 <ajc-test dir="errors"
@@ -1494,12 +1423,6 @@
         	<message kind="error" line="3"/>
        </compile>
     </ajc-test>
-<ajc-test dir="bugs/caseSensitivity" pr="42515"
-      title="NPE When compiling intertype declaration">
-        <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
-		  <message kind="error" line="4"/>
-        </compile>
-  </ajc-test>
 <ajc-test dir="bugs" 
 		pr="49295"
 		title="declare warning on subtype constructor">

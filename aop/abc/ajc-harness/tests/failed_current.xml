@@ -1,11 +1,7 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
-      keywords="from-base,knownLimitation">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="base/test118" title="DEPRECATED: Introduce of constructors"
+ <ajc-test dir="base/test118" title="DEPRECATED: Introduce of constructors"
+      abccomment="this fails because we don't match I.new(..) correctly. ODM 4/7/04"
       keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
@@ -23,17 +19,9 @@
         <run class="test135.Driver"/>
     </ajc-test>
 <ajc-test dir="base/test140"
-      title="aspect inheritance and advice, introduction" keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="new/innerConsSyntax" pr="192"
-      title="inner constructor syntax causes compile error" keywords="from-java"
-      abccomment="fails for abc, 
-                    classCastException in ConstructorCallShadowMatch
-                  works for soot,j2j,jlc,javac and ajc
-                  file DriverLJH.java sent to Ganesh June 30/04  LJH "
-    >
+      title="aspect inheritance and advice, introduction" 
+      abccomment="Fails due to use of advice in abstract aspect. ODM 04/07/04"
+      keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
@@ -44,20 +32,6 @@
       keywords="from-java">
         <compile files="CharsUnicode.java"/>
         <run class="CharsUnicode"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      abccomment = "abc doesn't allow keywords, added error. LJH "
-      title="Using 'pointcut' as identifier is legal TODO"
-      keywords="from-java,purejava">
-        <compile files="KeywordPointcut.java">
-          <message kind="error" line="7" />
-          <message kind="error" line="10"/> 
-          <message kind="error" line="13"/> 
-          <message kind="error" line="14"/> 
-          <message kind="error" line="18"/> 
-           <ajcmessage kind="ignore" />
-        </compile>
-        <ajcrun class="KeywordPointcut"/>
     </ajc-test>
 <ajc-test dir="new" pr="408"
       title="Not binding constructor when using more than one compilation"
@@ -385,21 +359,6 @@
             <message kind="error" line="3"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="Accessing instance fields and instance methods statically."
-      keywords="from-errors,purejava">
-        <compile files="AccessingInstanceFieldsStatically.java">
-            <message kind="error" line="15"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="26"/>
-            <message kind="error" line="27"/>
-            <message kind="error" line="30"/>
-            <message kind="error" line="38"/>
-            <message kind="error" line="39"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" pr="385"
       title="disallow defining more than one pointcut with the same name"
       keywords="from-errors,fail-unimplemented">
@@ -412,48 +371,6 @@
       keywords="from-errors,fail-unimplemented">
         <compile files="ClassExtendingAspect.java">
             <message kind="error" line="19"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when a cast of the form )int) appears"
-      keywords="from-errors,purejava,messages-vary">
-        <compile files="BadCast.java"
-               options="!eclipse">
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when the closing brace is reversed"
-      keywords="from-errors,purejava,messages-vary">
-        <compile files="ClosingBrace.java"
-               options="!eclipse">
-            <message kind="error" line="11"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when two dots appear instead of one"
-      abccomment="javac,ajc and abc all give errors on all the lines.
-                  July 3/04 LJH"
-      keywords="from-errors,purejava">
-        <compile files="TwoDots.java">
-            <ajcmessage kind="error" line="9"/>
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-            <message kind="error" line="11"/>
-            <message kind="error" line="12"/>
-            <message kind="error" line="13"/>
-            <message kind="error" line="14"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Crashes when there're stray dots"
-      keywords="from-errors,purejava">
-        <compile files="StrayDot.java">
-            <message kind="error" line="9"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" title="Stray characters cause a crash"
-      comment="XXX public class in wrong file"
-      keywords="from-errors,purejava">
-        <compile files="StraySlash.java">
-            <message kind="error" line="9"/>
         </compile>
     </ajc-test>
 <ajc-test dir="errors"
@@ -782,6 +699,11 @@
         <compile files="InnerFlow.java">
             <message kind="error" line="5"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="design/intro"
+      title="within and introductions behaves correctly" keywords="from-design">
+        <compile files="Within.java"/>
+        <run class="Within"/>
     </ajc-test>
 <ajc-test dir="design/intro"
       title="introduction of static methods and fields on classes and interfaces"
@@ -1185,6 +1107,7 @@
         <run class="PR335"/>
     </ajc-test>
 <ajc-test dir="design/intro" title="interfaces as mixins with introduction"
+      abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04"
       keywords="from-resolved_10x">
         <compile files="Interfaces.java"/>
         <run class="Interfaces"/>
@@ -1257,12 +1180,6 @@
         <compile
           files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"/>
         <run class="driver.PrivilegedAspect"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="cflow alone with around produces compiler bcg StackOverflowError"
-      keywords="from-resolved_10x">
-        <compile files="CflowAlone.java"/>
-        <run class="CflowAlone"/>
     </ajc-test>
 <ajc-test dir="new/introTypeMissing"
       title="Introduced type unavailable to instanceof expressions in introduced methods"
@@ -1411,13 +1328,6 @@
         <compile files="MultiDispatchCp.java"/>
         <run class="MultiDispatchCp"/>
     </ajc-test>
-<ajc-test dir="new"
-      title="unreachable code generated by around advice on the execution of void methods"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      keywords="from-resolved_10x">
-        <compile files="AroundVoid.java"/>
-        <run class="AroundVoid"/>
-    </ajc-test>
 <ajc-test dir="new" pr="654"
       title="Overriding method implementations using introduction on interfaces"
       keywords="from-resolved_10x,fail-unimplemented">
@@ -1498,26 +1408,6 @@
       keywords="from-resolved_10rc3">
         <compile files="PR573.java"/>
         <run class="PR573"/>
-    </ajc-test>
-<ajc-test dir="new" pr="691" title="around AST type XXX"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      keywords="from-resolved_104">
-        <compile files="PR691.java"/>
-        <run class="PR691"/>
-    </ajc-test>
-<ajc-test dir="new" pr="687"
-      title="around all execution with double assignment in initializer (simple)"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      keywords="from-resolved_104">
-        <compile files="AroundDoubleAssignment.java"/>
-        <run class="AroundDoubleAssignment"/>
-    </ajc-test>
-<ajc-test dir="new" pr="687"
-      title="around all execution with double assignment in initializer (coverage)"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      keywords="from-resolved_104">
-        <compile files="AroundDoubleAssignmentC.java"/>
-        <run class="AroundDoubleAssignmentC"/>
     </ajc-test>
 <ajc-test dir="new"
       title="changing this in around's proceed reported by Rich Price"
@@ -1741,13 +1631,6 @@
       keywords="from-resolved_105">
         <compile files="StaticTypeInIf.java"/>
         <run class="StaticTypeInIf"/>
-    </ajc-test>
-<ajc-test dir="new"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      title="bad interaction with after returning, around and void methods (from Rich Price)"
-      keywords="from-resolved_105">
-        <compile files="AfterReturningResult.java"/>
-        <run class="AfterReturningResult"/>
     </ajc-test>
 <ajc-test dir="new"
       title="type pattern matching for inner classes (from Ken Horn)"
@@ -2142,12 +2025,6 @@
             <message kind="warning" line="39" text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())"/>
             <message kind="warning" line="74" text="adviceExecution() &amp;&amp; within(A)"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new" pr="29934"
-      title="can't apply around advice to the execution of around advice"
-      keywords="from-resolved_10x">
-        <compile files="CflowCycles.java"/>
-        <run class="CflowCycles"/>
     </ajc-test>
 <ajc-test dir="new"
       title="incompatible advice throws clause are a compile-time error"
@@ -2863,12 +2740,6 @@
         	files="Main1.java"/>
         <run class="Main1"/>
     </ajc-test>
-<ajc-test dir="bugs/caseSensitivity" pr="42515"
-      title="NPE When compiling intertype declaration">
-        <compile files="uniqueId/Numbered.java,uniqueId/Bug.aj">
-		  <message kind="error" line="4"/>
-        </compile>
-  </ajc-test>
 <ajc-test dir="bugs" 
 		pr="49295"
 		title="declare warning on subtype constructor">
@@ -2883,13 +2754,6 @@
         <compile files="Main.java,TraceV1.aj"/>
         <run class="Main"/>
         <compile files="TraceV2.aj"/>
-        <run class="Main"/>
-    </ajc-test>
-<ajc-test dir="bugs/binaryCompat" pr="50641"
-      title="binary compatibility of advice method names - expect error">
-        <compile files="Main.java,TraceV1.aj"/>
-        <run class="Main"/>
-        <compile files="TraceRE.aj"/>
         <run class="Main"/>
     </ajc-test>
 <ajc-test dir="bugs/binaryCompat" pr="50641"
