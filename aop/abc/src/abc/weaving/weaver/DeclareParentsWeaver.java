@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +27,7 @@ import soot.*;
 import java.util.*;
 
 /** Weave in the effects of declare parents declarations
- *  @author Aske Simon Christensen
+ *  @author Ondrej Lhotak
  */
 public class DeclareParentsWeaver {
 
@@ -57,10 +58,7 @@ public class DeclareParentsWeaver {
 		    while (sii.hasNext()) {
 			SootClass si = (SootClass)sii.next();
 			// Make the class implement the interface
-                        Hierarchy h = Scene.v().getActiveHierarchy();
-                        boolean already = sc.isInterface() ?
-                            (sc.equals(si) || h.isInterfaceSubinterfaceOf(sc, si)) :
-                            h.getImplementersOf(si).contains(sc);
+                        boolean already = sc.equals(si) || sc.getInterfaces().contains(si);
 			if (!already) {
                             if (abc.main.Debug.v().declareParents) {
                                 System.out.println(sc+" implements "+si);
@@ -78,8 +76,18 @@ public class DeclareParentsWeaver {
 		while (sci.hasNext()) {
 		    SootClass sc = (SootClass)sci.next();
 		    // Make the class extend the parent
-                    Hierarchy h = Scene.v().getActiveHierarchy();
-                    boolean already = h.isClassSubclassOfIncluding(sc, sp);
+                    boolean already = false;
+                    SootClass superclassCheck = sc;
+                    while(true) {
+                        if( superclassCheck.equals(sc) ) {
+                            already = true;
+                            break;
+                        }
+                        if( !superclassCheck.hasSuperclass() ) break;
+                        SootClass newSuperclassCheck = superclassCheck.getSuperclass();
+                        if( newSuperclassCheck.equals(superclassCheck) ) break;
+                        superclassCheck = newSuperclassCheck;
+                    }
                     if (!already) {
                         if (abc.main.Debug.v().declareParents) {
                             System.out.println(sc+" extends "+sp);
