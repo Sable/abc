@@ -27,8 +27,8 @@ public class ProceedCall_c extends Call_c implements ProceedCall {
 
 	private MethodDecl proceedDecl;
 	
-	public ProceedCall_c(Position pos, List arguments) {
-		super(pos,null,"proceed",arguments);		         	
+	public ProceedCall_c(Position pos, Receiver recv, List arguments) {
+		super(pos,recv,"proceed",arguments);		         	
     }
     
     public ProceedCall_c(Call c) {

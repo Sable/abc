@@ -440,8 +440,8 @@ public class AspectJNodeFactory_c
         return new FixCharLit_c(pos,value);
     }
 
-	public ProceedCall ProceedCall(Position pos, List arguments) {
-		return new ProceedCall_c(pos,arguments);
+	public ProceedCall ProceedCall(Position pos, Receiver recv, List arguments) {
+		return new ProceedCall_c(pos,recv,arguments);
 	}
 	
 	public AmbTypeOrLocal AmbTypeOrLocal(Position pos,TypeNode type) {

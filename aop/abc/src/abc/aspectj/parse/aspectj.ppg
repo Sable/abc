@@ -165,7 +165,7 @@ extend type_declaration ::=   // class | interface | aspect
 /* add the possibility of a call to proceed as a method_invocation */
 extend method_invocation ::=
      PROCEED:a LPAREN argument_list_opt:b RPAREN:d
-       {: RESULT = parser.nf.ProceedCall(parser.pos(a,d),b);
+       {: RESULT = parser.nf.ProceedCall(parser.pos(a,d),parser.nf.This(parser.pos(a)),b);
        :}  
   ;
 

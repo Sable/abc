@@ -264,7 +264,7 @@ public interface AspectJNodeFactory
 
     CharLit CharLit(Position pos, char value);
     
-    ProceedCall ProceedCall(Position pos,List arguments);
+    ProceedCall ProceedCall(Position pos,Receiver recv,List arguments);
     
     AmbTypeOrLocal AmbTypeOrLocal(Position pos,TypeNode type);
 
