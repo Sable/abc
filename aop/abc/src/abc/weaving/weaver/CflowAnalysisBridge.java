@@ -46,7 +46,7 @@ public class CflowAnalysisBridge {
     }
 
     private Map/*CflowSetup, StackInfo*/ stackInfoMap = new HashMap();
-    private Map/*Stmt, Load*/ joinPointStmtMap = new HashMap();
+    private Map/*Local, Load*/ joinPointLocalMap = new HashMap();
 
     public void run() {
 
@@ -77,7 +77,7 @@ public class CflowAnalysisBridge {
         JoinPointAnalysis jpa = new JoinPointAnalysis( 
             RefType.v("org.aspectj.lang.JoinPoint"),
             Scene.v().getSootClass("org.aspectbench.runtime.reflect.JoinPointImpl") );
-        jpa.setup(new HashSet(joinPointStmtMap.keySet()));
+        jpa.setup(new HashSet(joinPointLocalMap.keySet()));
 
 
         debug("running paddle");
@@ -121,8 +121,8 @@ public class CflowAnalysisBridge {
 
         debug("getting join point analysis result");
         for( Iterator optimizableIt = jpa.getResult().iterator(); optimizableIt.hasNext(); ) {
-            final Stmt optimizable = (Stmt) optimizableIt.next();
-            Load load = (Load) joinPointStmtMap.get(optimizable);
+            final Local optimizable = (Local) optimizableIt.next();
+            Load load = (Load) joinPointLocalMap.get(optimizable);
             if( load != null ) load.makeStatic();
         }
 
@@ -148,7 +148,7 @@ public class CflowAnalysisBridge {
                     si.stmtMap.put(cfr.getIsValidStmt(), aa);
                 } else if( rb.getResidue() instanceof Load) {
                     Load load = (Load) rb.getResidue();
-                    joinPointStmtMap.put(load.getJoinPointStmt(), load);
+                    joinPointLocalMap.put(load.variable.get(), load);
                 }
             }
         }
