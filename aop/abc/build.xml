@@ -179,7 +179,7 @@
             <fileset dir="runtime-classes" includes="**/*.class" />
             <fileset dir="classes" includes="**/*.class" />
             <fileset dir="lib" includes="**/*.jar" />
-            <fileset dir="ajc-harness/classes" inclues="**/*.class" />
+            <fileset dir="ajc-harness/classes" includes="**/*.class" />
             <fileset dir="ajc-harness/lib" includes="abc-tests.jar" />
         </delete>
     </target>
