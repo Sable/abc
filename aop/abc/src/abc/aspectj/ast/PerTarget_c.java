@@ -23,6 +23,21 @@ public class PerTarget_c extends PerClause_c implements PerTarget
         print(pc, w, tr);
         w.write(")");
     }
+    
+	protected PerTarget_c reconstruct(Pointcut pc) {
+		if (pc != this.pc ) {
+			PerTarget_c n = (PerTarget_c) copy();
+			n.pc = pc;
+			return n;
+		}
+		return this;
+	}
+
+
+	public Node visitChildren(NodeVisitor v) {
+		Pointcut pc = (Pointcut) visitChild(this.pc, v);
+		return reconstruct(pc);
+	}
 
     public abc.weaving.aspectinfo.Per makeAIPer() {
 	return new abc.weaving.aspectinfo.PerTarget(pc.makeAIPointcut(),position());

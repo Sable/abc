@@ -43,7 +43,7 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
 	   TypeSystem ts = tc.typeSystem();
 	   Context c = tc.context();
 
-		if (pat instanceof TPEUniversal)
+		if (pat instanceof ArgStar)
 			return this;
 		
 		if (! (((Typed)pat).type() instanceof ReferenceType))

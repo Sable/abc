@@ -159,4 +159,23 @@ public class AspectJTypeSystem_c
 	public Context createContext() {
 	   return new AJContext_c(this);
 	}
+	
+	/** All flags allowed for a member class. */
+	 protected final Flags MEMBER_CLASS_FLAGS = TOP_LEVEL_CLASS_FLAGS.Static().set(AspectJFlags.ASPECTCLASS);
+
+	 public void checkMemberClassFlags(Flags f) throws SemanticException {
+			if (! f.clear(MEMBER_CLASS_FLAGS).equals(Flags.NONE)) {
+			throw new SemanticException(
+			"Cannot declare a member class with flag(s) " +
+			f.clear(MEMBER_CLASS_FLAGS) + ".");
+		}
+
+			if (f.isFinal() && f.isInterface()) {
+				throw new SemanticException("Cannot declare a final interface.");
+			}
+
+		checkAccessFlags(f);
+		}
+
+
 }

@@ -690,6 +690,7 @@ public class IntertypeAdjuster {
 		//  the first argument is "this"
 		List bodyArgs = new ArrayList(eiArgs);
 		bodyArgs.add(0,thisLoc);
+		System.out.println("getting method "+icd.getBody());
 		SootMethod bodyMethod = icd.getBody().getSootMethod();
 		Expr bodyExpr = Jimple.v().newStaticInvokeExpr(bodyMethod,bodyArgs);
 		InvokeStmt body = Jimple.v().newInvokeStmt(bodyExpr);

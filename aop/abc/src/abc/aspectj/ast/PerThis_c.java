@@ -24,6 +24,22 @@ public class PerThis_c extends PerClause_c implements PerThis
         print(pc, w, tr);
         w.write(")");
     }
+    
+	protected PerThis_c reconstruct(Pointcut pc) {
+		if (pc != this.pc ) {
+			PerThis_c n = (PerThis_c) copy();
+			n.pc = pc;
+			return n;
+		}
+		return this;
+	}
+
+
+	public Node visitChildren(NodeVisitor v) {
+		Pointcut pc = (Pointcut) visitChild(this.pc, v);
+		return reconstruct(pc);
+	}
+
 
     public abc.weaving.aspectinfo.Per makeAIPer() {
 	return new abc.weaving.aspectinfo.PerThis(pc.makeAIPointcut(),position());

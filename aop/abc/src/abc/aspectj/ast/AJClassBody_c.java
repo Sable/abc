@@ -70,10 +70,14 @@ public class AJClassBody_c extends ClassBody_c {
 		            ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
 		            !(cj instanceof InterTypeMemberInstance) && 
 		            cj.flags().isPrivate())) ||
-		            // also ok to have a duplicate in an interface
+		       // also ok to have a duplicate in an interface
 		            (ci instanceof InterTypeMemberInstance && 
 		             !(cj instanceof InterTypeMemberInstance) &&
-		             ci.container().toClass().flags().isInterface());
+		             ci.container().toClass().flags().isInterface()) ||
+		       // and subaspects override their super-aspect
+		            (ci instanceof InterTypeMemberInstance &&
+		             cj instanceof InterTypeMemberInstance &&
+		             ((InterTypeMemberInstance) ci).origin().descendsFrom(((InterTypeMemberInstance) cj).origin()));
 	}
 	
 	protected void duplicateFieldCheck(TypeChecker tc) throws SemanticException {

@@ -77,7 +77,7 @@ public class InterTypeConstructorInstance_c
 	public ConstructorCall mangledCall(ConstructorCall cc, AspectJNodeFactory nf, AspectJTypeSystem ts) {
 		if (flags().isPrivate() || flags.isPackage()) {
 			Expr nl = nf.NullLit(cc.position());
-			nl.type(mangleType);
+			nl = nl.type(mangleType);
 			List args = new LinkedList(cc.arguments());
 			args.add(nl);
 			ConstructorCall nc = cc.arguments(args);
@@ -89,7 +89,7 @@ public class InterTypeConstructorInstance_c
 		New nc;
 		if (flags().isPrivate() || flags().isPackage()) {
 			Expr nl = nf.NullLit(cc.position());
-			nl.type(mangleType);
+			nl = nl.type(mangleType);
 			List args = new LinkedList(cc.arguments());
 			args.add(nl);
 		 	nc = cc.arguments(args);

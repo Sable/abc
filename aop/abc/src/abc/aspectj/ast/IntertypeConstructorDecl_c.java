@@ -53,6 +53,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	  	                 		Block body) {
 	super(pos,flags,name,formals,throwTypes,body);
 	this.host = host;
+	this.supers = new Supers();
     }
 
 	public TypeNode host() {
@@ -250,7 +251,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		// build the methodinstance
 		List argTypes = new LinkedList(constructorInstance().formalTypes());
 		List excTypes = Ei.throwTypes(ts);
-		MethodInstance mi = ts.methodInstance(position,constructorInstance().container(),flags,Ei.type(),name,argTypes,excTypes);
+		MethodInstance mi = ts.methodInstance(position,itConstructorInstance.origin(),flags,Ei.type(),name,argTypes,excTypes);
 		
 		// build the declaration
 		TypeNode rettype = nf.CanonicalTypeNode(position,mi.returnType());
@@ -331,7 +332,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		List argTypes = new LinkedList();
 		buildATypes(nf, newFormals, actuals, argTypes);
 		List excTypes = throwTypes(ts);
-		MethodInstance mi = ts.methodInstance(position,constructorInstance().container(),flags,ts.Void(),name,argTypes,excTypes);
+		MethodInstance mi = ts.methodInstance(position,itConstructorInstance.origin(),flags,ts.Void(),name,argTypes,excTypes);
 		
 		// build the declaration
 		TypeNode rettype = nf.CanonicalTypeNode(position,mi.returnType());
@@ -561,6 +562,10 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
     		(target, current_aspect,mod, formalTypes, exc, qualifier, kind, arguments, body, position());
 		gai.addIntertypeConstructorDecl(icd);
+		gai.addSuperDispatches(supers.supercalls(gai));
+		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
+		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
+		gai.addQualThiss(supers.qualthiss(gai));
 
 		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
 		// FIXME: First argument is this, right?

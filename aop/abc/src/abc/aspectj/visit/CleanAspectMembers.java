@@ -5,7 +5,9 @@ import polyglot.ast.*;
 import polyglot.visit.*;
 import polyglot.types.ParsedClassType;
 import polyglot.types.ReferenceType;
-
+import polyglot.types.MethodInstance;
+import polyglot.types.Type;
+import polyglot.types.Flags;
 
 import abc.aspectj.ast.*;
 
@@ -80,12 +82,34 @@ public class CleanAspectMembers extends NodeVisitor {
 			if (m instanceof IntertypeMethodDecl) {
 				IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) m;
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
-				hostType.methods().remove(itmd.itMethodInstance);
-				if (!itmd.flags().isAbstract())
+				if (!(itmd.host().type().toClass().flags().isInterface()))
+					hostType.methods().remove(itmd.itMethodInstance);
+				if (!itmd.flags().isAbstract() || (itmd.host().type().toClass().flags().isInterface()))
 					newmembers.add(itmd);
 			} else
 		    	newmembers.add(m);
-		}
+			}
+	    }
+	    if (cd.type().toClass().flags().isInterface()) {
+	    	List mis = cd.type().toClass().methods();
+	    	for (Iterator miss = mis.iterator(); miss.hasNext(); ) {
+	    		MethodInstance mii = (MethodInstance) miss.next();
+	    		if (mii instanceof InterTypeMethodInstance_c && !(cd.type().toClass().hasMethod(mii))) {
+	    			Block b = nf.Block(mii.position());
+	    			List formals = new LinkedList(); int index = 0;
+	    			for (Iterator formalit = mii.formalTypes().iterator(); formalit.hasNext();) {
+	    				Type t = (Type) formalit.next();
+	    				Formal f = nf.Formal(mii.position(),Flags.NONE,nf.CanonicalTypeNode(mii.position(),t),"a"+index);
+	    				formals.add(f);
+	    				index++;
+	    			}
+	    			MethodDecl md = nf.MethodDecl(mii.position(),mii.flags().set(Flags.ABSTRACT),
+	    			                    nf.CanonicalTypeNode(mii.position(),mii.returnType()),mii.name(),
+	    								formals,mii.throwTypes(),b);
+	    			md = md.methodInstance(mii);
+	    			newmembers.add(md);
+	    		}
+	    	}
 	    }
 	    return nf.ClassDecl(cd.position(), cd.flags(), cd.name(), cd.superClass(), cd.interfaces(),
 				nf.ClassBody(cd.body().position(), newmembers))

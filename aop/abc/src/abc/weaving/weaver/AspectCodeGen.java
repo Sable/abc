@@ -78,6 +78,8 @@ public class AspectCodeGen {
      */
     private void generateSingletonAspectOfBody( SootClass cl ) {
       // get the body of aspectOf
+      if (Modifier.isAbstract(cl.getModifiers()))
+      	return;
       SootMethod aspectOf = cl.getMethodByName( "aspectOf" );
       Body b = Jimple.v().newBody(aspectOf);
       aspectOf.setActiveBody(b);
@@ -156,6 +158,8 @@ public class AspectCodeGen {
     private void generateSingletonHasAspectBody(SootClass cl){
       // get body
       SootMethod hasAspect;
+      if (Modifier.isAbstract(cl.getModifiers()))
+      	return;
       hasAspect = cl.getMethodByName("hasAspect");
       Body b = Jimple.v().newBody(hasAspect);
       hasAspect.setActiveBody(b);

@@ -4,6 +4,8 @@ package abc.aspectj.ast;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import polyglot.util.CollectionUtil;
+import polyglot.util.TypedList;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
@@ -12,6 +14,7 @@ import polyglot.ast.NodeFactory;
 import polyglot.ast.ClassDecl;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Expr;
+import polyglot.ast.ClassBody;
 
 import polyglot.types.Flags;
 import polyglot.util.Position;
@@ -111,6 +114,29 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		return super.buildTypesEnter(tb);     
 	} 
 		
+	protected AspectDecl_c reconstruct(TypeNode superClass, List interfaces, PerClause per, ClassBody body) {
+		   if (superClass != this.superClass || ! CollectionUtil.equals(interfaces, this.interfaces) || 
+		        per != this.per || body != this.body) {
+			   AspectDecl_c n = (AspectDecl_c) copy();
+			   n.superClass = superClass;
+			   n.interfaces = TypedList.copyAndCheck(interfaces, TypeNode.class, true);
+			   n.per = per;
+			   n.body = body;
+			   return n;
+		   }
+
+		   return this;
+	   }
+
+
+	public Node visitChildren(NodeVisitor v) {
+		TypeNode superClass = (TypeNode) visitChild(this.superClass, v);
+		List interfaces = visitList(this.interfaces, v);
+		PerClause per = (PerClause) visitChild(this.per,v);
+		ClassBody body = (ClassBody) visitChild(this.body, v);
+		return reconstruct(superClass, interfaces, per, body);
+	}
+	
 	public void prettyPrintHeader(CodeWriter w, PrettyPrinter tr) {
 		
 		    // need to overwrite, because ClassDecl_c only knows of interfaces and classes

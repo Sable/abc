@@ -18,6 +18,21 @@ public class PerCflow_c extends PerClause_c implements PerCflow
         this.pc = pc;
     }
 
+	protected PerCflow_c reconstruct(Pointcut pc) {
+		if (pc != this.pc ) {
+			PerCflow_c n = (PerCflow_c) copy();
+			n.pc = pc;
+			return n;
+		}
+		return this;
+	}
+
+
+	public Node visitChildren(NodeVisitor v) {
+		Pointcut pc = (Pointcut) visitChild(this.pc, v);
+		return reconstruct(pc);
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("percflow (");
         print(pc, w, tr);
