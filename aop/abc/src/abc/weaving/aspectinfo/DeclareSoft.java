@@ -17,7 +17,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
     private Aspect aspct;
 
     public DeclareSoft(AbcType exc, Pointcut pc, Aspect aspct, Position pos) {
-	super(new SoftenAdvice((RefType) exc.getSootType(),pos),
+	super(new SoftenAdvice(exc,pos),
 	      pc, new ArrayList(), pos);
 	this.aspct=aspct;
 	this.exc = exc;
@@ -25,9 +25,9 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
     // static because otherwise we can't use it in the constructor call of the super class
     public static class SoftenAdvice extends AfterThrowingAdvice {
-	RefType exc;
+	AbcType exc;
 
-	public SoftenAdvice(RefType exc, Position pos) {
+	public SoftenAdvice(AbcType exc, Position pos) {
 	    super(pos);
 	    this.exc=exc;
 	}
@@ -41,7 +41,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
 	// case in the weaver for after throwing advice
 
 	public RefType getCatchType() {
-	    return exc;
+	    return ((RefType) exc.getSootType());
 	}
 
 	public void bindException(WeavingContext wc,AbstractAdviceDecl ad,Local exception) {
