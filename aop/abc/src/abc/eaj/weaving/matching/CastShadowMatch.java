@@ -67,8 +67,9 @@ public class CastShadowMatch extends StmtShadowMatch
 
     public SJPInfo makeSJPInfo()
     {
-        throw new InternalCompilerError("Can't use joinpoint reflection " +
-                        "for a cast - ajc runtime does not support it");
+        return new SJPInfo
+          ("cast", "CastSignature", "makeCastSig",
+           ExtendedSJPInfo.makeCastSigData(container, cast_to), stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

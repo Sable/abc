@@ -123,23 +123,23 @@ public class GenStaticJoinPoints {
         // make sure the Factory class is loaded in Soot
         if (!factory_loaded)
           {  Scene.v().loadClassAndSupport(
-	             "org.aspectj.runtime.reflect.Factory");
+	             "abc.runtime.reflect.AbcFactory");
              factory_loaded = true;
            }
 
         // factory_local = new Factory;
         factory_local =  
-        lg.generateLocal(RefType.v("org.aspectj.runtime.reflect.Factory"));
+        lg.generateLocal(RefType.v("abc.runtime.reflect.AbcFactory"));
         Stmt newfactory = Jimple.v().
         newAssignStmt(factory_local, 
 			Jimple.v().newNewExpr(
-			  RefType.v("org.aspectj.runtime.reflect.Factory")));
+			  RefType.v("abc.runtime.reflect.AbcFactory")));
         debug("Generating newfactory " + newfactory);
         units.insertBefore(newfactory,ip);
                   
         // factory_local.<init>("sourcefile",javaclass);
         SootClass fc = Scene.v().
-	     getSootClass("org.aspectj.runtime.reflect.Factory");
+	     getSootClass("abc.runtime.reflect.AbcFactory");
         SootMethod finit = 
 	     fc.getMethod(
 			 "void <init>(java.lang.String,java.lang.Class)");
@@ -160,7 +160,10 @@ public class GenStaticJoinPoints {
   private SootField makeSJPfield(SootClass sc, Chain units, Stmt ip,
                          LocalGenerator lg, SootMethod method,
 			 SJPInfo sjpInfo) 
-    { // create the name for the SJP field 
+    { // look for interfaces in the right place
+      String classpath = sjpInfo.kind.equals("cast") ? "abc.lang.reflect." : "org.aspectj.lang.reflect.";
+            
+      // create the name for the SJP field 
       // the kind of SJP, but made into a valid id
       String idkind = sjpInfo.kind.replace('-','_');
       // the method in which the SJP is found, but made into a valid id
@@ -200,14 +203,14 @@ public class GenStaticJoinPoints {
 
       // get the signature object
       Local sigloc = lg.generateLocal(
-	  RefType.v("org.aspectj.lang.reflect."+sigtypeclass));
+	  RefType.v(classpath+sigtypeclass));
 
       SootClass fc = Scene.v().
-	     getSootClass("org.aspectj.runtime.reflect.Factory");
+	     getSootClass("abc.runtime.reflect.AbcFactory");
       debug("Got the factory class: " + fc);
 
       SootMethod sigmethod = fc.getMethod(
-	     "org.aspectj.lang.reflect." + sigtypeclass + 
+	     classpath + sigtypeclass + 
 	     " " + sigtype + "(java.lang.String)");
       debug("Got the sig builder method: " + sigmethod);
 

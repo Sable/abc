@@ -17,7 +17,7 @@ package org.aspectj.runtime.reflect;
 import org.aspectj.lang.*;
 import org.aspectj.lang.reflect.*;
 
-public final class Factory {    
+public class Factory {    
     Class lexicalClass;
     ClassLoader lookupClassLoader;
     String filename;
