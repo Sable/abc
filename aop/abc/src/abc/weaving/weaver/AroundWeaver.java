@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.IntType;
@@ -46,6 +47,8 @@ import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
+import abc.main.Main;
+import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbcClass;
@@ -1284,10 +1287,16 @@ public class AroundWeaver {
 			}
 			
 			this.adviceMethod=adviceMethodInfo;
-						
 			
+			final boolean bExecutionAdvice =	
+						adviceAppl instanceof ExecutionAdviceApplication;
+						
+			final boolean bExecutionWeavingIntoSelf=
+					bExecutionAdvice &&
+						 adviceMethodInfo.method.equals(joinpointMethod);
+						 
 			if (adviceMethodInfo.bHasBeenWovenInto || 
-					adviceMethodInfo.method.equals(joinpointMethod))
+					 bExecutionWeavingIntoSelf)
 				this.bUseClosureObject=true;
 			else
 				this.bUseClosureObject=false;// true;//true;//false;
@@ -1295,10 +1304,13 @@ public class AroundWeaver {
 			debug("CLOSURE: " + (bUseClosureObject ? "Using closure" : "Not using closure"));
 
 			if (bUseClosureObject) {
-				debug("Warning: using closure object. This may impact performance."); // TODO: proper warning
+				Main.v().error_queue.enqueue(
+					ErrorInfo.WARNING, "Using closure object. This may impact performance.");
 			}
 			
-			if (Util.isAroundAdviceMethod(joinpointMethod)) {
+			// if the target is an around-advice method, 
+			// make sure proceed has been generated for that method.
+			if (bExecutionAdvice && Util.isAroundAdviceMethod(joinpointMethod)) {
 				AdviceMethod adviceMethodWovenInto = state.getAdviceMethod(joinpointMethod);
 				if (adviceMethodWovenInto == null) {
 					adviceMethodWovenInto = new AdviceMethod(method, null);
@@ -2022,7 +2034,7 @@ public class AroundWeaver {
 
 			adviceMethodIdentifierString = mangledAspectName + "$" + method.getName();
 
-			interfaceName = "abc$access$" + adviceMethodIdentifierString;
+			interfaceName = "Abc$access$" + adviceMethodIdentifierString;
 
 			dynamicAccessMethodName = "abc$proceed$" + adviceMethodIdentifierString;
 			;
@@ -2554,7 +2566,7 @@ public class AroundWeaver {
 		adviceApplication.doWeave();
 		
 		if (abc.main.Debug.v().aroundWeaver) {
-			//	state.validate(); // TODO: don't leave this on!
+				state.validate(); // TODO: don't leave this on!
 		}
 		//	validate();	
 	}
