@@ -153,6 +153,10 @@ public class TestCase {
 					// As we removed some options, there might be empty elements in arrOptions - they throw
 					// off abc. Need to remove them...
 					arrOptions = compactArray(arrOptions);
+
+					// At the moment, the xml file specifies jars that are to be passed with -injars in the
+					// "files" attribute of the compilation, so we have to pick out all jars and pass them
+					// separately.
 					String[] arrFiles = (files == "") ? new String[0] : files.split(",");
 					String[] arrJars = new String[arrFiles.length];
 					for(int j = 0; j < arrFiles.length; j++) {
@@ -178,25 +182,25 @@ public class TestCase {
 					}
 					// Combine flag and file arguments into a single array
 					String[] args;
-					int offset;
 					if(arrJars.length == 0) {
 					    args = new String[2 + arrOptions.length + arrFiles.length]; //2 extra options for -d dir
 						args[0] = "-d";
 						args[1] = dir;
-						offset = 2;
+						System.arraycopy(arrOptions, 0, args, 2, arrOptions.length);
+						System.arraycopy(arrFiles, 0, args, arrOptions.length + 2, arrFiles.length);
 					}
 					else {
-					    args = new String[3 + arrJars.length + arrOptions.length + arrFiles.length];
-					    args[0] = "-injars";
-					    for(int j = 0; j < arrJars.length; j++) {
-					        args[j+1] = arrJars[j];
+					    args = new String[4 + arrOptions.length + arrFiles.length];
+						args[0] = "-d";
+						args[1] = dir;
+					    args[2] = "-injars";
+					    args[3] = arrJars[0];
+					    for(int j = 1; j < arrJars.length; j++) {
+					        args[3] += System.getProperty("path.separator") + arrJars[j];
 					    }
-					    args[arrJars.length + 1] = "-d";
-					    args[arrJars.length + 2] = dir;
-					    offset = arrJars.length + 3;
+						System.arraycopy(arrOptions, 0, args, 4, arrOptions.length);
+						System.arraycopy(arrFiles, 0, args, arrOptions.length + 4, arrFiles.length);
 					}
-					System.arraycopy(arrOptions, 0, args, offset, arrOptions.length);
-					System.arraycopy(arrFiles, 0, args, arrOptions.length + offset, arrFiles.length);
 					
 					// Handle additional classpath elements gracefully, i.e. add them to existing CP rather than
 					// overwriting it. One specific condition is that if the <compile tag has the includeClassesDir
