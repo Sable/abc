@@ -141,45 +141,45 @@ public class CFlowStack {
     // Stack operations if we already know the stack for the current thread
     // Only gets passed return values of getStack(), so all OK
 
-    public void pushInstanceStack(Object obj, Object stack) {
+    public static final void pushInstanceStack(Object obj, Object stack) {
         ((Stack)stack).push(new CFlow(obj));
     }
 
-    public void pushStack(Object[] obj, Object stack) {
+    public static final void pushStack(Object[] obj, Object stack) {
         ((Stack)stack).push(new CFlowPlusState(obj));
     }
 
-    public void popStack(Object stack) {
+    public static final void popStack(Object stack) {
         ((Stack)stack).pop();
     }
 
-    public Object peekStack(Object stack) {
+    public static final Object peekStack(Object stack) {
         if (((Stack)stack).isEmpty()) throw new org.aspectj.lang.NoAspectBoundException();
         return (Object)((Stack)stack).peek();
     }
     
-    public Object getTopStack(int index, Object stack) {
+    public static final Object getTopStack(int index, Object stack) {
         CFlow cf = peekCFlowStack(stack);
         return (null == cf ? null : cf.get(index));
     }
 
-    public Object peekInstanceStack(Object stack) {
+    public static final Object peekInstanceStack(Object stack) {
     	CFlow cf = peekCFlowStack(stack);
     	if (cf != null ) return cf.getAspect();
     	else throw new NoAspectBoundException();
     }
 
-    public CFlow peekCFlowStack(Object stack) {
+    public static final CFlow peekCFlowStack(Object stack) {
         if (((Stack)stack).isEmpty()) return null;
         return (CFlow)((Stack)stack).peek();
     }
 
-    public CFlow peekTopCFlowStack(Object stack) {
+    public static final CFlow peekTopCFlowStack(Object stack) {
         if (((Stack)stack).isEmpty()) return null;
         return (CFlow)((Stack)stack).elementAt(0);
     }
 
-    public boolean isValidStack(Object stack) {
+    public static final boolean isValidStack(Object stack) {
         return !((Stack)stack).isEmpty();
     }
 

@@ -121,15 +121,15 @@ public class CFlowCounter {
     // If we already have a handle on the counter (no need for a getThreadCounter()):
     // Note: parameter will always be a return value of getCounter(), so really a Counter
 
-    public void incCounter(Object c) {
+    public static final void incCounter(Object c) {
 	((Counter)c).inc();
     }
 
-    public void decCounter(Object c) {
+    public static final void decCounter(Object c) {
 	((Counter)c).dec();
     }
 
-    public boolean isValidCounter(Object c) {
+    public static final boolean isValidCounter(Object c) {
 	return (!((Counter)c).isZero());
     }
 
