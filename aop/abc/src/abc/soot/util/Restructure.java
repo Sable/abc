@@ -258,6 +258,7 @@ public class Restructure {
                     
                     if (idStmt.getRightOp() instanceof ThisRef) {
                         Stmt newThis = Jimple.v().newAssignStmt((Local)oldLocalsToNew.get(idStmt.getLeftOp()), origIdStmt.getLeftOp());         
+                        newThis.addAllTagsOf(idStmt);
                         containerUnits.insertBefore(newThis, invokeStmt);
                         oldStmtsToNew.put(inlineeStmt, newThis);
                     }
@@ -272,11 +273,13 @@ public class Restructure {
                             }
                         }
                        
+                        newInlinee.addAllTagsOf(inlineeStmt);
                         containerUnits.insertBefore(newInlinee, invokeStmt);
                         oldStmtsToNew.put(inlineeStmt, newInlinee);
                     }
                     else if (idStmt.getRightOp() instanceof ParameterRef) {
                         Stmt newParam = Jimple.v().newAssignStmt((Local)oldLocalsToNew.get(idStmt.getLeftOp()), specInvokeExpr.getArg(((ParameterRef)idStmt.getRightOp()).getIndex()));         
+                        newParam.addAllTagsOf(idStmt);
                         containerUnits.insertBefore(newParam, invokeStmt);
                         oldStmtsToNew.put(inlineeStmt, newParam);
                     }
@@ -286,6 +289,7 @@ public class Restructure {
                 // from a constructor)
                 else if (inlineeStmt instanceof ReturnVoidStmt){
                     Stmt newRet = Jimple.v().newGotoStmt((Stmt)containerUnits.getSuccOf(invokeStmt));
+                    newRet.addAllTagsOf(inlineeStmt);
                     containerUnits.insertBefore(newRet, invokeStmt);
                     debug("adding to stmt map: "+inlineeStmt+" and "+newRet);
                     oldStmtsToNew.put(inlineeStmt, newRet);
@@ -301,7 +305,7 @@ public class Restructure {
                         }
                     }
 
-                       
+                    newInlinee.addAllTagsOf(inlineeStmt);   
                     containerUnits.insertBefore(newInlinee, invokeStmt);
                     oldStmtsToNew.put(inlineeStmt, newInlinee);
                 }
