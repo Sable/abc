@@ -26,8 +26,6 @@ public class Main {
     public String classpath = System.getProperty("java.class.path");
     public String classes_destdir = ""; //FIXME
     
-    public Compiler compiler;
-
     public static void main(String[] args) {
 	try {
 	    Main main = new Main(args);
@@ -114,7 +112,7 @@ public class Main {
 		// FIXME: Use updated source set?
 	    }
 	    Options.global = options;
-	    compiler = new Compiler(ext);
+	    Compiler compiler = createCompiler(ext);
 	    if (!compiler.compile(aspect_sources)) {
 		throw new CompilerFailedException("Compiler failed.");
 	    }
@@ -126,6 +124,10 @@ public class Main {
 	// GlobalAspectInfo.v().print(System.err);
     }
 
+	protected Compiler createCompiler(ExtensionInfo ext) {
+		return new Compiler(ext);
+	}
+	
     public void weave() throws CompilerFailedException {
         // Adjust Soot types for intertype decls
         new IntertypeAdjuster().adjust();
