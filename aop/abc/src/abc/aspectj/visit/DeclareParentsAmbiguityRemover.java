@@ -2,9 +2,11 @@
 package abc.aspectj.visit;
 
 import polyglot.ast.Node;
+import polyglot.ast.ClassMember;
 import polyglot.ast.NodeFactory;
 import polyglot.types.TypeSystem;
 import polyglot.frontend.Job;
+import polyglot.visit.NodeVisitor;
 import polyglot.visit.ContextVisitor;
 import polyglot.types.SemanticException;
 
@@ -17,7 +19,14 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
         super(job, ts, nf);
     }
 
-    public Node leaveCall(Node n) throws SemanticException {
+    protected NodeVisitor enterCall(Node n) throws SemanticException {
+	if (n instanceof ClassMember && !(n instanceof DeclareParentsExt || n instanceof DeclareParentsImpl)) {
+	    return bypass(n);
+	}
+	return this;
+    }
+
+    protected Node leaveCall(Node n) throws SemanticException {
 	if (n instanceof DeclareParentsExt) {
 	    return ((DeclareParentsExt)n).disambiguate(this);
 	}
