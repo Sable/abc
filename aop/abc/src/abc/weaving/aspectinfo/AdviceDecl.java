@@ -279,7 +279,8 @@ public class AdviceDecl extends AbstractAdviceDecl {
     	List ret = new ArrayList();
     	for (Iterator procs = proceeds.iterator(); procs.hasNext(); ) {
     		MethodSig ms = (MethodSig) procs.next();
-    		// special treatment for around, because the signature may have changed
+    		// special treatment for around:
+    		// ignore the signature because it may have changed
     		if (ms.getName().startsWith("around$")) {
     			SootClass sc = ms.getDeclaringClass().getSootClass();
     			SootMethod method=sc.getMethodByName(ms.getName());
