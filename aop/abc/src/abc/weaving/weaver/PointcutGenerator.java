@@ -31,6 +31,7 @@ public class PointcutGenerator {
                 final AdviceSpec adviceSpec = advicedecl.getAdviceSpec();
 		final SootClass aspect=
                     advicedecl.getAspect().getInstanceClass().getSootClass();
+        System.out.println("JENNIFER: advicedecl: "+advicedecl+" impl: "+advicedecl.getImpl().getClass());
                 final SootMethod adviceImpl =
                     advicedecl.getImpl().getSootMethod();
 
@@ -46,7 +47,9 @@ public class PointcutGenerator {
                     handleAfterThrowing(aspect, method, localgen, aa, adviceImpl);
                     //throw new RuntimeException("NYI");
                 } else if( adviceSpec instanceof AfterAdvice ) {
-                    throw new RuntimeException("NYI");
+                    handleAfterReturning(aspect, method, localgen, aa, adviceImpl);
+                    handleAfterThrowing(aspect, method, localgen, aa, adviceImpl);
+                    //throw new RuntimeException("NYI");
                 } else if( adviceSpec instanceof AroundAdvice ) {
                     throw new RuntimeException("NYI");
                 } else {
@@ -106,4 +109,6 @@ public class PointcutGenerator {
         b.getTraps().add(Jimple.v().newTrap(Scene.v().getSootClass("java.lang.Throwable"), aa.begin, nop1, idStmt));
 
     }
+
+    
 }
