@@ -1187,6 +1187,8 @@
     </ajc-test>
 
     <ajc-test dir="pureJava"
+      abccomment = "Isolated expressions that break and sent BigOpsLJH and
+                     BigOpsLJHshort to Jennifer.  July 2/04  LJH" 
       title="test the unops and binops with various values" keywords="from-java">
         <compile files="BigOps.java"/>
         <run class="BigOps"/>
@@ -1194,12 +1196,16 @@
 
     <ajc-test dir="pureJava"
       title="test + and += for strings and variously typed values"
+      abccomment = "Isolated problem cases and sent BigStringLJH.java to
+                    Jennifer.  July 2/04 LJH"
       keywords="from-java">
         <compile files="BigString.java"/>
         <run class="BigString"/>
     </ajc-test>
 
     <ajc-test dir="pureJava" title="test try/catch/finally statements"
+      abccomment="j2j crashes with a stack overflow error.  Reported
+            to Jennifer, July 2/04 LJH"
       keywords="from-java">
         <compile files="TryCatchFinally.java"/>
         <run class="TryCatchFinally"/>
@@ -1221,6 +1227,8 @@
     </ajc-test>
 
     <ajc-test dir="new" title="Error expected for field of type void"
+      abccomment="causes jlc to crash when it finds the 3rd error.
+                   Reported to Nate July 2/04 LJH"
       keywords="from-java,purejava">
         <compile files="VoidField.java">
             <message kind="error" line="2"/>
@@ -1230,10 +1238,16 @@
     </ajc-test>
 
     <ajc-test dir="new" title="Error expected for constructor in interfaces"
+      abccomment="ajc only finds errors on lines 2 and 8. 
+                  another example of jlc crashing after error detection.
+                  July 2/04 LJH" 
       keywords="from-java,purejava">
+
         <compile files="InterfaceConstructor.java">
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="6"/>
+            <ajcmessage kind="error" line="8"/>
             <message kind="error" line="2"/>
-            <message kind="error" line="6"/>
             <message kind="error" line="8"/>
         </compile>
     </ajc-test>
@@ -1248,18 +1262,29 @@
 
     <ajc-test dir="new" pr="567"
       title="cyclic interface inheritance not detected if no classes implement the interfaces"
+      abccomment="Only one error message required, matches what javac does. 
+                  July 2/04 LJH"
       keywords="from-java,purejava,messages-vary">
         <compile files="CyclicInterfaceInheritance.java" 
                options="!eclipse">
-            <message kind="error" line="14"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="15"/>
             <message kind="error" line="15"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="new" pr="567" title="cyclic class inheritance"
+      abccomment="There are two kinds of errors in this program, one
+        due to cyclic inheritance and one due to missing bodies of the
+        constructors.  Abc finds the missing bodies, ajc finds the
+        cyclic inheritance.   If the bodies are fixed to have a body then
+        abc finds the cyclic inheritance and gives a fine error
+        message.  LJH July 2/04" 
       keywords="from-java,purejava">
         <compile files="CyclicClassInheritance.java">
-            <message kind="error" line="11"/>
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="12"/>
+            <message kind="error" line="8"/>
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
