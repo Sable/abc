@@ -261,7 +261,7 @@ public class CflowSetup extends AbstractAdviceDecl {
             } while(cl.declaresFieldByName(name));
 
             SootClass stackClass=Scene.v()
-                .getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+                .getSootClass("org.aspectbench.runtime.internal.CFlowStack");
             RefType stackType=stackClass.getType();
 
             SootField cflowStackF=new SootField(name,stackType,
@@ -317,7 +317,7 @@ public class CflowSetup extends AbstractAdviceDecl {
             } while(cl.declaresFieldByName(name));
 
             SootClass counterClass=Scene.v()
-                .getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
+                .getSootClass("org.aspectbench.runtime.internal.CFlowCounter");
             RefType counterType=counterClass.getType();
 
             SootField cflowCounterF=new SootField(name,counterType,
@@ -360,7 +360,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
             Chain c=new HashChain();
             SootClass counterClass=Scene.v()
-                .getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
+                .getSootClass("org.aspectbench.runtime.internal.CFlowCounter");
             Local cflowCounter=localgen.generateLocal(counterClass.getType(),"cflowcounter");
 
             if (cswc.doBefore) {
@@ -406,7 +406,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 
             SootClass stackClass=Scene.v()
-                .getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+                .getSootClass("org.aspectbench.runtime.internal.CFlowStack");
 
             ArrayList types=new ArrayList(1);
             types.add(ArrayType.v(object,1));
@@ -423,7 +423,7 @@ public class CflowSetup extends AbstractAdviceDecl {
         } else {
             Chain c=new HashChain();
             SootClass stackClass=Scene.v()
-                .getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+                .getSootClass("org.aspectbench.runtime.internal.CFlowStack");
             SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v(),false);
             Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
             c.addLast(Jimple.v().newAssignStmt

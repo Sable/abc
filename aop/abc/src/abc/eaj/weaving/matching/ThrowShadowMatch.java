@@ -90,7 +90,7 @@ public class ThrowShadowMatch extends StmtShadowMatch
     {
         return new SJPInfo
           ("throw",
-           "uk.ac.ox.comlab.abc.eaj.lang.reflect.ThrowSignature",
+           "org.aspectbench.eaj.lang.reflect.ThrowSignature",
            "makeThrowSig",
            ExtendedSJPInfo.makeThrowSigData(container, throw_type), stmt);
     }

@@ -96,7 +96,7 @@ public class CastShadowMatch extends StmtShadowMatch
     {
         return new SJPInfo
           ("cast",
-           "uk.ac.ox.comlab.abc.eaj.lang.reflect.CastSignature",
+           "org.aspectbench.eaj.lang.reflect.CastSignature",
            "makeCastSig",
            ExtendedSJPInfo.makeCastSigData(container, cast_to), stmt);
     }

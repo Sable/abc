@@ -134,14 +134,14 @@ public class AbcExtension
                                     SootMethodRef m=ie.getMethodRef();
                                     if(m.name().equals("makeJP") &&
                                             m.declaringClass().getName().equals
-                                            ("uk.ac.ox.comlab.abc.runtime.reflect.Factory"))
+                                            ("org.aspectbench.runtime.reflect.Factory"))
                                         return true;
                                     if(m.name().equals("getStack")
                                        || m.name().equals("getCounter"))
                                         if (m.declaringClass().getName().equals
-                                            ("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack") ||
+                                            ("org.aspectbench.runtime.internal.CFlowStack") ||
                                             m.declaringClass().getName().equals
-                                            ("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter"))
+                                            ("org.aspectbench.runtime.internal.CFlowCounter"))
                                             return true;
                                 }
                                 return false;
@@ -182,9 +182,9 @@ public class AbcExtension
      */
     public void addBasicClassesToSoot()
     {
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack",
+        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowStack",
                                 SootClass.SIGNATURES);
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.reflect.Factory",
+        Scene.v().addBasicClass("org.aspectbench.runtime.reflect.Factory",
                                 SootClass.SIGNATURES);
         Scene.v().addBasicClass("org.aspectj.lang.JoinPoint",
                                 SootClass.HIERARCHY);
@@ -194,7 +194,7 @@ public class AbcExtension
                                 SootClass.SIGNATURES);
         Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException",
                                 SootClass.SIGNATURES);
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter",
+        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowCounter",
                                 SootClass.SIGNATURES);
     }
 
@@ -202,7 +202,7 @@ public class AbcExtension
      *  StaticJoinPoint objects.
      */
     public String runtimeSJPFactoryClass() {
-        return "uk.ac.ox.comlab.abc.runtime.reflect.Factory";
+        return "org.aspectbench.runtime.reflect.Factory";
     }
 
     /**

@@ -171,7 +171,7 @@ public class ShadowPoints {
 	
 	// FIXME: Should this class be delegated to the extension too?
 	SootClass factoryclass=Scene.v().getSootClass
-	    ("uk.ac.ox.comlab.abc.runtime.reflect.Factory");
+	    ("org.aspectbench.runtime.reflect.Factory");
 	
 	Stmt makeJP=Jimple.v().newAssignStmt
 	    (getThisJoinPoint(),

@@ -63,12 +63,12 @@ public class AbcExtension extends abc.main.AbcExtension
     {
         super.addBasicClassesToSoot();
 
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory",
+        Scene.v().addBasicClass("org.aspectbench.eaj.runtime.reflect.EajFactory",
                                 SootClass.SIGNATURES);
     }
 
     public String runtimeSJPFactoryClass() {
-        return "uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory";
+        return "org.aspectbench.eaj.runtime.reflect.EajFactory";
     }
 
     /* (non-Javadoc)

@@ -52,13 +52,13 @@ public class CflowIntraAggregate extends BodyTransformer {
 	private SootClass cflowStackClass() {
 		if (cflowStackClassV == null)
 			cflowStackClassV = Scene.v().getSootClass
-			("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+			("org.aspectbench.runtime.internal.CFlowStack");
 		return cflowStackClassV;
 	}
 	private SootClass cflowCounterClass() {
 		if (cflowCounterClassV == null)
 			cflowCounterClassV = Scene.v().getSootClass
-			("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
+			("org.aspectbench.runtime.internal.CFlowCounter");
 		return cflowCounterClassV;
 	}
 

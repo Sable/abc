@@ -56,9 +56,9 @@ public class CflowResidue extends Residue {
 	 /* Load counter counter or stack class, depending on useCounter */
 
 	 if (useCounter) { 
-	     return Scene.v().getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
+	     return Scene.v().getSootClass("org.aspectbench.runtime.internal.CFlowCounter");
 		 } else {
-	     return Scene.v().getSootClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+	     return Scene.v().getSootClass("org.aspectbench.runtime.internal.CFlowStack");
 		 }
      }
 

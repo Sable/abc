@@ -1,0 +1,45 @@
+/* *******************************************************************
+ * Copyright (c) 1999-2001 Xerox Corporation, 
+ *               2002 Palo Alto Research Center, Incorporated (PARC).
+ * All rights reserved. 
+ * This program and the accompanying materials are made available 
+ * under the terms of the Common Public License v1.0 
+ * which accompanies this distribution and is available at 
+ * http://www.eclipse.org/legal/cpl-v10.html 
+ *  
+ * Contributors: 
+ *     Xerox/PARC     initial implementation
+ * ******************************************************************/
+
+
+package org.aspectbench.eaj.runtime.reflect;
+
+import org.aspectbench.eaj.lang.reflect.*;
+import org.aspectbench.runtime.reflect.Factory;
+
+public class EajFactory extends Factory
+{
+    Class lexicalClass;
+    ClassLoader lookupClassLoader;
+    String filename;
+
+    public EajFactory(String filename, Class lexicalClass)
+    {
+        super(filename, lexicalClass);
+        this.filename = filename;
+        this.lexicalClass = lexicalClass;
+        lookupClassLoader = lexicalClass.getClassLoader();
+    }
+    
+    public CastSignature makeCastSig(String stringRep) {
+        CastSignatureImpl ret = new CastSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+    
+    public ThrowSignature makeThrowSig(String stringRep) {
+        ThrowSignatureImpl ret = new ThrowSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+}
