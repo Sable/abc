@@ -28,39 +28,53 @@
 
 package abc.main;
 
-import soot.*;
-import soot.util.*;
-import soot.xml.*;
-
-import soot.tagkit.SourceFileTag;
-import soot.tagkit.SourceLnPosTag;
-import soot.jimple.Stmt;
-import soot.jimple.toolkits.base.ExceptionChecker;
-import soot.jimple.toolkits.base.ExceptionCheckerError;
-import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
-import soot.javaToJimple.*;
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
-import polyglot.frontend.Stats;
 import polyglot.types.SemanticException;
-import polyglot.util.InternalCompilerError;
-import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
-import polyglot.util.Position;
-
+import polyglot.util.ErrorQueue;
+import polyglot.util.InternalCompilerError;
+import soot.G;
+import soot.PackManager;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Timers;
+import soot.Transform;
+import soot.Value;
+import soot.javaToJimple.AbstractJBBFactory;
+import soot.javaToJimple.AbstractJimpleBodyBuilder;
+import soot.javaToJimple.AccessFieldJBB;
+import soot.javaToJimple.InitialResolver;
+import soot.javaToJimple.JimpleBodyBuilder;
+import soot.jimple.toolkits.base.ExceptionChecker;
+import soot.jimple.toolkits.base.ExceptionCheckerError;
+import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
+import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import abc.aspectj.visit.PatternMatcher;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AspectJExceptionChecker;
-import abc.weaving.matching.StmtAdviceApplication;
-import abc.weaving.matching.StmtShadowMatch;
-import abc.weaving.weaver.*;
-import abc.weaving.aspectinfo.*;
-
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.*;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.CflowIntraAggregate;
+import abc.weaving.weaver.CflowIntraproceduralAnalysis;
+import abc.weaving.weaver.DeclareParentsWeaver;
+import abc.weaving.weaver.IntertypeAdjuster;
+import abc.weaving.weaver.Weaver;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -592,6 +606,9 @@ public class Main {
             throw new IllegalArgumentException("Soot usage error");
         }
 
+        PackManager.v().getPack("jtp").add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));
+
+        
         InitialResolver.v().setJBBFactory(new AbstractJBBFactory(){
             protected AbstractJimpleBodyBuilder createJimpleBodyBuilder(){
                 JimpleBodyBuilder jbb = new JimpleBodyBuilder();

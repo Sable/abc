@@ -70,10 +70,10 @@ import soot.tagkit.Tag;
 import soot.util.Chain;
 import abc.main.Debug;
 import abc.main.Main;
-import abc.soot.util.LocalGeneratorEx;
-import abc.soot.util.Restructure;
-import abc.soot.util.RedirectedExceptionSpecTag;
 import abc.soot.util.DisableExceptionCheckTag;
+import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.RedirectedExceptionSpecTag;
+import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
@@ -87,6 +87,7 @@ import abc.weaving.matching.HandlerAdviceApplication;
 import abc.weaving.matching.NewStmtAdviceApplication;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.residues.AspectOf;
 import abc.weaving.residues.Residue;
 
 /** Handle around weaving.
@@ -351,7 +352,7 @@ public class AroundWeaver {
 		debug("Weaving advice application: " + adviceAppl);
 		if (abc.main.Debug.v().aroundWeaver) {
 			// uncomment to skip around weaving (for debugging)
-			//if (shadowClass!=null)	return;
+			// if (shadowClass!=null)	return;
 			//throw new RuntimeException();
 		}
 		
@@ -551,7 +552,7 @@ public class AroundWeaver {
 			
 			final boolean bAlwaysUseClosures;
 			if (Debug.v().aroundWeaver)	{
-				bAlwaysUseClosures=false;//true;//false; // change this to suit your debugging needs...
+				bAlwaysUseClosures=true;//true;//false; // change this to suit your debugging needs...
 			} else {
 				bAlwaysUseClosures=false; // don't change this!
 			}
@@ -784,7 +785,10 @@ public class AroundWeaver {
 							//debug(Util.printMethod(shadowMethod));
 						}
 
-						context=findLocalsGoingIn(shadowMethodBody, begin, end, returnedLocal);
+						context=findLocalsGoingIn(shadowMethodBody, begin, end); 
+								
+						
+						
 						{ // print debug information
 							
 							debug(" Method: " + shadowMethod.toString());
@@ -801,11 +805,7 @@ public class AroundWeaver {
 						validateShadow(shadowMethodBody, begin, end);
 									 
 						
-						if (bUseClosureObject) {
-							closureClass=generateClosure( 
-									interfaceInfo.abstractProceedMethod.getName(), 
-									sootProceedMethod, context);
-						}
+						
 						
 						List contextActuals;
 						
@@ -833,6 +833,11 @@ public class AroundWeaver {
 							argIndex=AdviceMethod.this.modifyAdviceMethod(context,ProceedMethod.this, contextActualsBox, bStaticProceedMethod, bUseClosureObject);
 							contextActuals=(List)contextActualsBox.object;
 							skipDynamicActuals=contextActuals;
+						}
+						if (bUseClosureObject) {
+							closureClass=generateClosure( 
+									interfaceInfo.abstractProceedMethod.getName(), 
+									sootProceedMethod, context);
 						}
 						// copy shadow into access method with a return returning the relevant local.
 						Stmt first;
@@ -918,8 +923,14 @@ public class AroundWeaver {
 							LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
 							bindMaskLocal=lg.generateLocal(IntType.v(), "bindMask");			
 						}
+						
+						debug("Residue before modification: " + adviceAppl.getResidue());
+						
 						adviceAppl.setResidue(
 								adviceAppl.getResidue().restructureToCreateBindingsMask(bindMaskLocal, bindings));
+						
+						debug("Residue after modification: " + adviceAppl.getResidue());
+						
 					//}
 					
 					Stmt endResidue=weaveDynamicResidue(
@@ -1220,7 +1231,7 @@ public class AroundWeaver {
 				 * @param begin
 				 * @param end
 				 */
-				private List findLocalsGoingIn(Body body, Stmt begin, Stmt end, Local additionallyUsed) {
+				private List findLocalsGoingIn(Body body, Stmt begin, Stmt end) {
 					Chain statements = body.getUnits().getNonPatchingChain();
 			
 					if (!statements.contains(begin))
@@ -1230,9 +1241,7 @@ public class AroundWeaver {
 						throw new InternalAroundError();
 			
 					Set usedInside = new HashSet();
-					if (additionallyUsed!=null)
-						usedInside.add(additionallyUsed);
-						
+					
 					Set definedOutside = new HashSet();
 			
 					boolean insideRange = false;
@@ -1297,7 +1306,11 @@ public class AroundWeaver {
 					    (shadowMethod, localgen, shadowMethodStatements, begin, failPoint, true, wc);
 					
 					// debug("weaving residue: " + adviceAppl.residue);
-					if (!(adviceAppl.getResidue() instanceof AlwaysMatch)) {
+					if (adviceAppl.getResidue() instanceof AlwaysMatch //||
+						//adviceAppl.getResidue() instanceof AspectOf
+							)  { ///TODO: work out proper solution with ganesh!!!!!
+						// can't fail
+					} else {
 						InvokeExpr directInvoke;
 						List directParams = new LinkedList();
 						
@@ -1418,6 +1431,11 @@ public class AroundWeaver {
 						}
 					}
 					
+					if (targetProceedMethod.getParameterCount()!=invokeLocals.size()) {						
+						throw new InternalAroundError(
+								"proceed method: " + targetProceedMethod.getSignature() +
+								" invoke locals: " + invokeLocals);
+					}
 					
 					InvokeExpr invEx=Jimple.v().newStaticInvokeExpr(targetProceedMethod.makeRef(), invokeLocals);
 					if (getAdviceReturnType().equals(VoidType.v())) {
@@ -1592,19 +1610,20 @@ public class AroundWeaver {
 							} catch (Exception ex) {
 								throw new InternalAroundError("Expecting return statement after shadow " + "for execution advice in non-void method");
 							}
-							if (returnStmt.getOp() instanceof Local) {
-								returnedLocal = (Local) returnStmt.getOp();
-							} else { 
-								// Some other value. This may never occur...
-								// it seems some earlier stage ensures it's always a local.
-								// anyways. make local to be returned.
-								LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
-								Local l=lg.generateLocal(getAdviceReturnType(), "returnedLocal");
-								Stmt s=Jimple.v().newAssignStmt(l, 
-									returnStmt.getOp());
-								shadowMethodStatements.insertBefore(s, end);
-								returnedLocal=l;	
-							}
+			
+						
+							// Create a new local inside the shadow.
+							// Assign the return value to that local, 
+							// and then return the local.
+							LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
+							Local l=lg.generateLocal(
+									shadowMethod.getReturnType(), "returnedLocal");
+							Stmt s=Jimple.v().newAssignStmt(l, 
+								returnStmt.getOp());
+							returnStmt.setOp(l);
+							shadowMethodStatements.insertBefore(s, end);
+							returnedLocal=l;	
+
 							
 						}
 					} else if (adviceAppl instanceof HandlerAdviceApplication) {
@@ -2551,11 +2570,11 @@ public class AroundWeaver {
 						AdviceLocalMethod.NestedInitCall nc=
 							(AdviceLocalMethod.NestedInitCall)it0.next();
 						
-						if (addedAdviceParameterLocals.size()!=nc.proceedClass.addedFields.size())
+						if (addedAdviceParameterLocals.size()!=nc.adviceLocalClass.addedFields.size())
 							throw new InternalAroundError();
 						
 						Iterator it=addedAdviceParameterLocals.iterator();
-						Iterator it1=nc.proceedClass.addedFields.iterator();
+						Iterator it1=nc.adviceLocalClass.addedFields.iterator();
 						while (it.hasNext()) {
 							Local l=(Local)it.next();
 							SootField f=(SootField)it1.next();
@@ -2594,11 +2613,11 @@ public class AroundWeaver {
 							final Local baseLocal) {
 						super();
 						this.statement = statement;
-						this.proceedClass = proceedClass;
+						this.adviceLocalClass = proceedClass;
 						this.baseLocal=baseLocal;
 					}
 					public final Stmt statement;
-					public final AdviceLocalClass proceedClass;
+					public final AdviceLocalClass adviceLocalClass;
 					public final Local baseLocal;
 				}
 				private Local interfaceLocal;
