@@ -28,7 +28,6 @@ import polyglot.util.UniqueID;
 import polyglot.util.InternalCompilerError;
 
 import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
 import abc.aspectj.types.AspectType;
 
 /**

@@ -19,14 +19,23 @@
 
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-import java.util.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.*;
-import abc.main.AbcTimer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import soot.Body;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootMethod;
+import soot.jimple.Jimple;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /** Saves all method bodies so that they can be unwoven after weaving.
  * @author Ondrej Lhotak

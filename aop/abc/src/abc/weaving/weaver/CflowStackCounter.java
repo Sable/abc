@@ -20,7 +20,6 @@
 package abc.weaving.weaver;
 import abc.weaving.matching.*;
 import abc.weaving.aspectinfo.*;
-import abc.weaving.residues.*;
 import soot.*;
 import java.util.*;
 

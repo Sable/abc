@@ -25,14 +25,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import soot.*;
 import soot.Body;
 import soot.Scene;
+import soot.SootClass;
 import soot.SootMethod;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.util.Chain;
-import sun.misc.Perf;
+import abc.weaving.weaver.around.Util;
 
 /**
  * @author Sascha Kuzins
@@ -41,12 +41,12 @@ public class UnusedMethodsRemover {
 	
 	static boolean considerInstanceMethod(String methodName) {
 		return 
-			AroundWeaver.Util.isAroundAdviceMethodName(methodName) ||
+			Util.isAroundAdviceMethodName(methodName) ||
 			abc.weaving.weaver.AfterBeforeInliner.isAdviceMethodName(methodName);
 	}
 	static boolean considerStaticMethod(String methodName) {
 		return 
-		AroundWeaver.Util.isProceedMethodName(methodName) ||
+		Util.isProceedMethodName(methodName) ||
 		methodName.startsWith("proceed$") ||
 		methodName.startsWith("if$");
 	}

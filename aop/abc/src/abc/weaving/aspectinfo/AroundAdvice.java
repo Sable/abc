@@ -30,7 +30,7 @@ import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.Restructure;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
-import abc.weaving.weaver.AroundWeaver;
+import abc.weaving.weaver.around.AroundWeaver;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for around advice.
@@ -151,6 +151,6 @@ public class AroundAdvice extends AbstractAdviceSpec {
         }
 
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
-        AroundWeaver.doWeave(method.getDeclaringClass(),method,localgen,adviceappl);
+        AroundWeaver.v().doWeave(method.getDeclaringClass(),method,localgen,adviceappl);
     }
 }

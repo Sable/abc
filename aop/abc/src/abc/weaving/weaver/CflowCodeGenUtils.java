@@ -27,7 +27,6 @@ import java.util.*;
 
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
-import abc.weaving.residues.*;
 import abc.main.Debug;
 
 /**

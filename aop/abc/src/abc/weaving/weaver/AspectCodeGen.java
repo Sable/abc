@@ -29,7 +29,7 @@ import polyglot.util.InternalCompilerError;
 
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
+
 
 /** Adds fields and methods to classes representing aspects.
  *   @author Jennifer Lhotak

@@ -174,6 +174,8 @@ public class Restructure {
 	  }
       }
 
+   // This caching is not safe because around lifts shadows out of their bodies,
+   // in which case the restructuring should be redone for subsequent applications.
   //private static Map/*<Body,Stmt>*/ returns=new Hashtable();
 
   /** Given a SootMethod, restructure its body so that the body ends

@@ -20,19 +20,27 @@
 
 package abc.weaving.weaver;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import polyglot.util.InternalCompilerError;
-
-import soot.*;
-import soot.tagkit.*;
-import soot.util.*;
-import soot.jimple.*;
+import soot.Body;
+import soot.Local;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Value;
 import soot.javaToJimple.LocalGenerator;
-
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.*;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.jimple.StringConstant;
+import soot.tagkit.SourceFileTag;
+import soot.util.Chain;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.SJPInfo;
 
 /** The purpose of this class is to iterate over all SJPInfo
  *    instances for a Class and to insert the relevant code for the 

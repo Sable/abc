@@ -19,14 +19,14 @@
 
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-import soot.javaToJimple.LocalGenerator;
-import java.util.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.*;
+import java.util.Iterator;
+import java.util.List;
+
+import soot.SootClass;
+import soot.SootMethod;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
 
 /** The purpose of this class is to iterate over all AdviceApplication
  *    instances for a Class and to print the key information, including

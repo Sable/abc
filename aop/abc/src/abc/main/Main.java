@@ -140,7 +140,7 @@ public class Main {
         abc.weaving.aspectinfo.AbcFactory.reset();
         abc.weaving.aspectinfo.GlobalAspectInfo.reset();
         abc.weaving.weaver.Weaver.reset();
-        abc.weaving.weaver.AroundWeaver.reset();
+        abc.weaving.weaver.around.AroundWeaver.reset();
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();

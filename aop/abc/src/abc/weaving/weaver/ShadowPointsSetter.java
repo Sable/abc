@@ -22,18 +22,30 @@
 
 package abc.weaving.weaver;
 
-import java.util.*;
-
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import polyglot.util.InternalCompilerError;
-
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.*;
-import abc.soot.util.*;
+import soot.Body;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Trap;
+import soot.VoidType;
+import soot.jimple.InvokeStmt;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
+import soot.util.Chain;
+import abc.soot.util.Restructure;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.ClassInitializationShadowMatch;
+import abc.weaving.matching.ConstructorCallShadowMatch;
+import abc.weaving.matching.ExecutionShadowMatch;
+import abc.weaving.matching.HandlerShadowMatch;
+import abc.weaving.matching.PreinitializationShadowMatch;
+import abc.weaving.matching.StmtShadowMatch;
 
 /** The purpose of this class is to iterate over all AdviceApplication
  *    instances and initialize their ShadowPoints.   

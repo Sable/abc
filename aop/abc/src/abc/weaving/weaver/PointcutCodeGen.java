@@ -35,10 +35,8 @@ import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.SootClass;
 import soot.SootMethod;
-import soot.jimple.parser.node.ADivBinop;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AroundAdvice;
@@ -47,6 +45,8 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.residues.NeverMatch;
+import abc.weaving.weaver.around.AroundWeaver;
+import abc.weaving.weaver.around.Util;
 
 /** Weave in the code for pointcut invocation
  *  @author Laurie Hendren
@@ -296,10 +296,10 @@ public class PointcutCodeGen {
         private boolean checkForAroundAdviceExecution(final SootMethod targetMethod, final AdviceApplication execappl) {
         	
         	 SootMethod targetAdviceMethod=null;
-        	 if (AroundWeaver.Util.isAroundAdviceMethod(targetMethod))
+        	 if (Util.isAroundAdviceMethod(targetMethod))
         	 	targetAdviceMethod=targetMethod;
         	 else 
-        	 	targetAdviceMethod=AroundWeaver.state.getEnclosingAroundAdviceMethod(targetMethod);
+        	 	targetAdviceMethod=AroundWeaver.v().getEnclosingAroundAdviceMethod(targetMethod);
         	
                 if (targetAdviceMethod!=null) {                		
                         if (execappl.advice instanceof AdviceDecl) {
@@ -307,7 +307,7 @@ public class PointcutCodeGen {
                                 AdviceSpec adviceSpec =adviceDecl.getAdviceSpec();
                                 if (adviceSpec instanceof AroundAdvice) {
                                         SootMethod adviceMethod = adviceDecl.getImpl().getSootMethod();
-                                        if (!AroundWeaver.Util.isAroundAdviceMethod(adviceMethod))
+                                        if (!Util.isAroundAdviceMethod(adviceMethod))
                                                 throw new RuntimeException("Expecting around advice method names to start with 'around$'");
 
                                         debug("Advice method " + adviceMethod + " applies to advice method " + targetAdviceMethod + "(adviceexecution)");
@@ -339,7 +339,7 @@ public class PointcutCodeGen {
                 Chain units=method.getActiveBody().getUnits();
                 ShadowPoints sp=adviceappl.shadowmatch.sp;
                 if (!units.contains(sp.getBegin())) {
-                        debug("method: \n" + AroundWeaver.Util.printMethod(method));
+                        debug("method: \n" + Util.printMethod(method));
                         throw new InternalCompilerError(
                                 "Appl: " + adviceappl +
                                 " Method body of " + method +

@@ -21,18 +21,11 @@
 
 package abc.weaving.weaver;
 
-import java.util.*;
-
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-
 import polyglot.util.InternalCompilerError;
-
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.*;
-import abc.soot.util.LocalGeneratorEx;
+import soot.SootMethod;
+import soot.jimple.NopStmt;
+import soot.jimple.Stmt;
+import abc.weaving.matching.ShadowMatch;
 
 /** A data structure to keep track of the beginning and end points
  * of a pointcut shadow.   Once created, the beginning and end points

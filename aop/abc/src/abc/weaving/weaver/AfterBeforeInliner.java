@@ -24,8 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import abc.weaving.weaver.AdviceInliner.IfMethodInlineOptions;
-
 import soot.Body;
 import soot.SootMethod;
 import soot.jimple.InvokeExpr;

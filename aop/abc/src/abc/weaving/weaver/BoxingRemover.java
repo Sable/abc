@@ -20,33 +20,34 @@
 package abc.weaving.weaver;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.BodyTransformer;
-import soot.JimpleBodyPack;
 import soot.Local;
+import soot.PackManager;
 import soot.PrimType;
-import soot.Scene;
+import soot.RefType;
 import soot.SootMethod;
+import soot.Transform;
+import soot.Type;
+import soot.Value;
 import soot.ValueBox;
 import soot.jimple.AssignStmt;
-import soot.jimple.InvokeExpr;
+import soot.jimple.CastExpr;
+import soot.jimple.InvokeStmt;
+import soot.jimple.Jimple;
+import soot.jimple.NewExpr;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
-import soot.jimple.*;
-import soot.*;
-import java.util.*;
-
-import polyglot.util.InternalCompilerError;
 
 /**
  * @author Sascha Kuzins

@@ -20,7 +20,7 @@
 package abc.weaving.weaver;
 
 import java.util.Vector;
-import java.util.Hashtable;
+
 import soot.Local;
 
 /** Keep track of the "weaving context" for

@@ -16,32 +16,19 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+package abc.weaving.weaver.around;
 
-/*
- * Created on 01-Nov-2004
- *
- */
-package abc.soot.util;
+import polyglot.util.InternalCompilerError;
 
-import soot.tagkit.AttributeValueException;
-import soot.tagkit.Tag;
 
-/**
- * @author Sascha Kuzins
- */
-
-public class AroundShadowInfoTag implements Tag {
-	public final static String name="AroundShadowInfoTag";
-    
-    public String getName() {
-	return name;
-    }
-
-    public byte[] getValue() {
-	throw new AttributeValueException();
-    }
-    public AroundShadowInfoTag(abc.weaving.weaver.around.AroundWeaver.ShadowInlineInfo shadowInfo) {
-    	this.shadowInfo=shadowInfo;
-    }
-    public final abc.weaving.weaver.around.AroundWeaver.ShadowInlineInfo shadowInfo;
+class InternalAroundError extends InternalCompilerError {
+	InternalAroundError(String message) {
+		super("ARD around weaver internal error: " + message);
+	}
+	InternalAroundError(String message, Throwable cause) {
+		super("ARD around weaver internal error: " + message, cause);
+	}
+	InternalAroundError() {
+		super("ARD around weaver internal error");
+	}	
 }

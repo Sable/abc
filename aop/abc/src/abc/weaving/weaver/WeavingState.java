@@ -19,10 +19,11 @@
 
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.jimple.*;
-import java.util.*;
-import abc.weaving.residues.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import soot.Local;
+import abc.weaving.residues.JoinPointInfo;
 
 /** State used during weaving that needs to be reset for reweaving.
  * @author Ondrej Lhotak

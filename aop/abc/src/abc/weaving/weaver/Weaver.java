@@ -21,23 +21,32 @@
 
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.jimple.*;
-import soot.jimple.toolkits.scalar.*;
-import soot.toolkits.scalar.*;
-import java.util.*;
-
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.residues.NeverMatch;
-import abc.weaving.weaver.*;
-import abc.main.AbcTimer;
-import abc.main.Debug;
-import abc.main.Options;
-import abc.main.options.OptionsParser;
-import abc.main.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import polyglot.util.InternalCompilerError;
+import soot.Body;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.Unit;
+import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
+import soot.jimple.toolkits.scalar.CopyPropagator;
+import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
+import soot.toolkits.scalar.UnusedLocalEliminator;
+import abc.main.AbcTimer;
+import abc.main.Debug;
+import abc.main.options.OptionsParser;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.DeclareMessage;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.residues.NeverMatch;
+import abc.weaving.weaver.around.AroundWeaver;
 
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
@@ -182,13 +191,13 @@ public class Weaver {
             	Weaver.runAfterBeforeInliner();
         }
         public static void runAroundInliner() {
-        	for( Iterator mIt = AroundWeaver.state.shadowMethods.iterator(); mIt.hasNext(); ) {
+        	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
         	}
         }
         public static void runBoxingRemover() {
-        	for( Iterator mIt = AroundWeaver.state.shadowMethods.iterator(); mIt.hasNext(); ) {
+        	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		BoxingRemover.v().transform(m.getActiveBody());
         	}

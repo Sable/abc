@@ -43,6 +43,7 @@ import soot.jimple.ParameterRef;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.util.Chain;
+import abc.weaving.weaver.around.Util;
 
 /**
  * @author Sascha Kuzins
@@ -50,12 +51,12 @@ import soot.util.Chain;
 public class InterprocConstantPropagator {
 	static boolean considerInstanceMethod(String methodName) {
 		return 
-			AroundWeaver.Util.isAroundAdviceMethodName(methodName) ||
+			Util.isAroundAdviceMethodName(methodName) ||
 			abc.weaving.weaver.AfterBeforeInliner.isAdviceMethodName(methodName);
 	}
 	static boolean considerStaticMethod(String methodName) {
 		return 
-		AroundWeaver.Util.isProceedMethodName(methodName) ||
+		Util.isProceedMethodName(methodName) ||
 		methodName.startsWith("proceed$");
 	}
 	static boolean considerMethod(String methodName) {
@@ -178,7 +179,7 @@ public class InterprocConstantPropagator {
 			List newTypes=new ArrayList(ref.parameterTypes());
 			newArgs.remove(id);
 			newTypes.remove(id);
-			InvokeExpr newExpr=AroundWeaver.Util.createNewInvokeExpr(expr, newArgs, newTypes);
+			InvokeExpr newExpr=Util.createNewInvokeExpr(expr, newArgs, newTypes);
 			return newExpr;
 		}
 		// removes the argument at position id.

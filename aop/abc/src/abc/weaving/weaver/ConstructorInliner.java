@@ -22,18 +22,14 @@
 
 package abc.weaving.weaver;
 
-import java.util.*;
+import java.util.Iterator;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-
-import polyglot.util.InternalCompilerError;
-
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.*;
-import abc.soot.util.*;
+import soot.SootClass;
+import soot.SootMethod;
+import abc.soot.util.Restructure;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.MethodAdviceList;
 
 /** Inlines constructor calls in constructors with initialization and
  * preinitialization advice.

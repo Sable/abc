@@ -19,29 +19,20 @@
 
 package abc.weaving.weaver;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 import soot.Body;
-import soot.BodyTransformer;
 import soot.SootMethod;
-import soot.jimple.AssignStmt;
-import soot.jimple.FieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
-import soot.jimple.StmtBody;
-import soot.jimple.toolkits.invoke.AccessManager;
-import soot.jimple.toolkits.invoke.InlinerSafetyManager;
-import soot.jimple.toolkits.invoke.SiteInliner;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
-import soot.util.Chain;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.SwitchFolder;
+import abc.weaving.weaver.around.AroundWeaver;
+import abc.weaving.weaver.around.Util;
 /**
  * @author Sascha Kuzins
  *
@@ -104,7 +95,7 @@ public class AroundInliner extends AdviceInliner {
 		
 		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
 			SootMethod method=expr.getMethod();
-			if (!AroundWeaver.Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
+			if (!Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
 				return false;
 			
 			debug("Trying to inline advice method " + method);
@@ -116,7 +107,7 @@ public class AroundInliner extends AdviceInliner {
 			
 			
 			AroundWeaver.AdviceMethodInlineInfo info=
-					AroundWeaver.state.getAdviceMethodInlineInfo(method);
+					AroundWeaver.v().getAdviceMethodInlineInfo(method);
 			
 			int accessViolations=getAccessViolationCount(container, method);
 			if (accessViolations!=0) {
@@ -158,7 +149,7 @@ public class AroundInliner extends AdviceInliner {
 		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
 			SootMethod method=expr.getMethod();
 			
-			if (!AroundWeaver.Util.isProceedMethodName(expr.getMethodRef().name()))
+			if (!Util.isProceedMethodName(expr.getMethodRef().name()))
 				return false;
 			
 			if (!method.isStatic())
@@ -176,7 +167,7 @@ public class AroundInliner extends AdviceInliner {
 			
 						
 			AroundWeaver.ProceedMethodInlineInfo info=					
-				AroundWeaver.state.getProceedMethodInlineInfo(method);
+				AroundWeaver.v().getProceedMethodInlineInfo(method);
 			
 			AroundWeaver.ShadowInlineInfo shadowInfo=null;
 			debug("Proceed method: " + method);
