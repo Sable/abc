@@ -43,7 +43,7 @@ public class HostSpecial_c extends Special_c implements Special {
 
 		   if (qualifier == null) {
 			   // an unqualified "this" or "super"
-			   t = c.hostClass(); // use the hostClass rather than superClass
+			   t = c.hostClass(); // use the hostClass rather than currentClass
 		   }
 		   else {    
 		   if (! qualifier.type().isClass()) {

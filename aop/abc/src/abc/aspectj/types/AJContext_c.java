@@ -19,7 +19,8 @@ public class AJContext_c extends Context_c implements AJContext {
 		
 	protected ClassType host; // the host of the intertype decl
 	protected boolean nested; // an inner class in an interType decl
-
+    protected boolean declaredStatic; // intertype decl declared static?
+    
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
 		host = null;
@@ -28,6 +29,10 @@ public class AJContext_c extends Context_c implements AJContext {
 	
 	public boolean inInterType() {
 		return host != null;
+	}
+	
+	public boolean staticInterType() {
+		return inInterType() && declaredStatic;
 	}
 	
 	public boolean nested() {
@@ -44,10 +49,11 @@ public class AJContext_c extends Context_c implements AJContext {
 		return r;
 	}
 	
-	public Context pushHost(ClassType t) {
+	public Context pushHost(ClassType t, boolean declaredStatic) {
 		AJContext_c c = (AJContext_c) super.push();
 		c.host = t;
 		nested = false;
+		this.declaredStatic = declaredStatic;
 		staticContext = true; 
 		return c;
 	}

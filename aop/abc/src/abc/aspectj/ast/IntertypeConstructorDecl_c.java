@@ -99,7 +99,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	*/
 	public IntertypeConstructorDecl accessChange(AspectJNodeFactory nf, AspectJTypeSystem ts) {
 		if (flags().isPrivate() || flags().isPackage()) {
-			System.out.println("it's private or package");
 			ParsedClassType ht = (ParsedClassType) host.type();
 			ht.fields().remove(itConstructorInstance); // remove old instance from host type    		
 			ConstructorInstance mmi = itConstructorInstance.mangled();  // retrieve the mangled instance 		
@@ -237,7 +236,8 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	public Context enterScope(Context c) {
 			AJContext nc = (AJContext) super.enterScope(c);
 			TypeSystem ts = nc.typeSystem();
-			return nc.pushHost(ts.staticTarget(host.type()).toClass());
+			return nc.pushHost(ts.staticTarget(host.type()).toClass(),
+												flags().isStatic());
     }
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {

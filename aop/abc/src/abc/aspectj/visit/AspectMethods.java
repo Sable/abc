@@ -96,6 +96,13 @@ public class AspectMethods extends NodeVisitor {
 				InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) f.fieldInstance();
 				return f.fieldInstance(itfi.mangled()).name(itfi.mangled().name());
 			}
+			if (f.target() instanceof HostSpecial_c) {
+				HostSpecial_c hs = (HostSpecial_c) f.target();
+				if (hs.kind() == Special.SUPER) {
+					IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) itmethod.peek();
+					return itmd.superField(nf,ts,f);
+				}
+			}
 			return n;
 		}
 		if (n instanceof IntertypeFieldDecl_c) {
@@ -108,6 +115,14 @@ public class AspectMethods extends NodeVisitor {
 				InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) c.methodInstance();
 				return c.methodInstance(itmi.mangled()).name(itmi.mangled().name());
 			}
+			if (c.target() instanceof HostSpecial_c) {
+				HostSpecial_c hs = (HostSpecial_c) c.target();
+				if (hs.kind() == Special.SUPER) {
+					IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) itmethod.peek();
+					return itmd.superCall(nf,ts,c);
+				}
+			}
+			return n;
 		}
 		if (n instanceof IntertypeMethodDecl_c) {
 			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
@@ -115,7 +130,6 @@ public class AspectMethods extends NodeVisitor {
 		}
 		if (n instanceof ConstructorCall) {
 				ConstructorCall cc = (ConstructorCall) n;
-				System.out.println(cc);
 				if (cc.constructorInstance() instanceof InterTypeConstructorInstance_c) {
 					InterTypeConstructorInstance_c itcd = (InterTypeConstructorInstance_c) cc.constructorInstance();
 					return itcd.mangledCall(cc,nf,ts);
@@ -123,7 +137,6 @@ public class AspectMethods extends NodeVisitor {
 			}
 		if (n instanceof New) {
 				New cc = (New) n;
-				System.out.println(cc);
 				if (cc.constructorInstance() instanceof InterTypeConstructorInstance_c) {
 					InterTypeConstructorInstance_c itcd = (InterTypeConstructorInstance_c) cc.constructorInstance();
 					return itcd.mangledNew(cc,nf,ts);

@@ -199,8 +199,8 @@ public abstract class AdviceApplication {
 	    }
 
 	    if(!hasclinit) {
-	        System.out.println("Don't have a clinit");
-		System.out.println("Inserting " + SootMethod.staticInitializerName);
+	      // System.out.println("Don't have a clinit");
+		// System.out.println("Inserting " + SootMethod.staticInitializerName);
 		SootMethod clinit = new SootMethod
 		    (SootMethod.staticInitializerName,
 		     new ArrayList(),

@@ -25,7 +25,7 @@ public class CollectJimplifyVisitor extends NodeVisitor {
 	    SootClass sc = new SootClass(cname);
 	    Scene.v().addClass(sc);
 	    classes.add(cname);
-	    System.out.println("Jimplify class: "+cname);
+	    // System.out.println("Jimplify class: "+cname);
 	}
 	return null;
     }

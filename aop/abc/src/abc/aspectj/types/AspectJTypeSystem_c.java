@@ -3,9 +3,7 @@ package abc.aspectj.types;
 import java.util.List;
 import polyglot.util.Position;
 import polyglot.types.*;
-import polyglot.frontend.Source;
 
-import polyglot.ast.Expr;
 
 import abc.aspectj.ast.AdviceSpec;
 import abc.aspectj.types.AspectJFlags;

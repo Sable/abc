@@ -140,11 +140,12 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	public Context enterScope(Context c) {
 			AJContext nc = (AJContext) super.enterScope(c);
 			TypeSystem ts = nc.typeSystem();
-			return nc.pushHost(ts.staticTarget(host.type()).toClass());
+			return nc.pushHost(ts.staticTarget(host.type()).toClass(),
+												flags().isStatic());
 	}
 	
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
-		System.out.println("IFD host: "+host.toString());
+		// System.out.println("IFD host: "+host.toString());
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
 	  			  	(AspectInfoHarvester.convertModifiers(flags()),
 	   				gai.getClass(host.toString()),

@@ -32,7 +32,7 @@ public class CleanAspectMembers extends NodeVisitor {
     public Node leave(Node old, Node n, NodeVisitor v) {
 	if (n instanceof AdviceDecl) {
 	    AdviceDecl ad = (AdviceDecl)n;
-	    System.out.println("Cleaning out an advice declaration");
+	    // System.out.println("Cleaning out an advice declaration");
 	    return nf.MethodDecl(ad.position(), ad.flags(), ad.returnType(), ad.name(),
 				 ad.formals(), ad.throwTypes(), ad.body())
 		.methodInstance(ad.methodInstance());
@@ -51,7 +51,7 @@ public class CleanAspectMembers extends NodeVisitor {
 		if (m instanceof IntertypeFieldDecl ||
 		    m instanceof DeclareDecl ||
 		    m instanceof PointcutDecl) {
-		    System.out.println("Cleaning out a node of type "+m.getClass());
+		    // System.out.println("Cleaning out a node of type "+m.getClass());
 		    if (m instanceof IntertypeFieldDecl) {
 		    	IntertypeFieldDecl itfd = (IntertypeFieldDecl) m;
 		    	ParsedClassType hostType = (ParsedClassType)itfd.host().type();

@@ -17,6 +17,8 @@ public class GlobalAspectInfo {
     private List/*<Aspect>*/ aspects = new ArrayList();
     private List/*<IntertypeFieldDecl>*/ ifds = new ArrayList();
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
+    private List/*<SuperDispatch>*/ spds = new ArrayList();
+    private List/*<SuperFieldDispatch>*/ spfds = new ArrayList();
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
@@ -58,6 +60,20 @@ public class GlobalAspectInfo {
     public List getIntertypeFieldDecls() {
 	return ifds;
     }
+    
+    /** Returns the list of all super dispatch methods.
+     * @return a list of {@link abc.weaving.aspectinfo.SuperDispatch} objects.
+     */
+    public List getSuperDispatches() {
+    	return spds;
+    }
+    
+	/** Returns the list of all super dispatch methods.
+	 * @return a list of {@link abc.weaving.aspectinfo.SuperFieldDispatch} objects.
+	 */
+	public List getSuperFieldDispatches() {
+		return spfds;
+	}
 
     /** Returns the list of all intertype method declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeMethodDecl} objects.
@@ -115,6 +131,14 @@ public class GlobalAspectInfo {
 
     public void addIntertypeMethodDecl(IntertypeMethodDecl imd) {
 	imds.add(imd);
+    }
+    
+    public void addSuperDispatches(List sds) {
+    	spds.addAll(sds);
+    }
+    
+    public void addSuperFieldDispatches(List sfds) {
+    	spfds.addAll(sfds);
     }
 
     public void addIntertypeConstructorDecl(IntertypeConstructorDecl imd) {

@@ -121,7 +121,7 @@ public class Main {
 	}
 
 	// Output the aspect info
-	GlobalAspectInfo.v().print(System.err);
+	// GlobalAspectInfo.v().print(System.err);
     }
 
     public void weave() throws CompilerFailedException {
@@ -174,7 +174,7 @@ public class Main {
         Iterator/*<String>*/ wci = classes.iterator();
         while (wci.hasNext()) {
             String wc = (String) wci.next();
-            System.out.println("Printing out " + wc);
+            // System.out.println("Printing out " + wc);
             SootClass sc = Scene.v().getSootClass(wc);
 		    Iterator mi = sc.getMethods().iterator();
 		    while (mi.hasNext()) {

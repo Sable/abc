@@ -33,6 +33,7 @@ public class AJSpecial_c extends Special_c implements Special {
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
 		if (!c.inInterType() 
+			|| c.staticInterType()      
 		    || (c.nested() && qualifier() == null)
 		    || (c.inInterType() && qualifier() != null && 
 		    	c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))) {		       
