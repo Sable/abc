@@ -135,12 +135,12 @@ public class Main {
 				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 				curFile = new BufferedWriter(new FileWriter("failed.xml"));
-				String tmp = xFile.plug("BODY", xFailed).toString(true);
+				tmp = xFile.plug("BODY", xFailed).toString(true);
 				tmp.replaceAll("&", "&amp;");
 				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 				curFile = new BufferedWriter(new FileWriter("skipped.xml"));
-				String tmp = xFile.plug("BODY", xSkipped).toString(true);
+				tmp = xFile.plug("BODY", xSkipped).toString(true);
 				tmp.replaceAll("&", "&amp;");
 				curFile.write(tmp);
 				curFile.flush(); curFile.close();
