@@ -63,6 +63,9 @@ public class AdviceDecl_c extends MethodDecl_c
     protected boolean hasJoinPoint;
     protected boolean hasJoinPointStaticPart;
     protected boolean hasEnclosingJoinpoint;
+
+    protected LocalInstance thisJoinPointInstance;
+    protected LocalInstance thisJoinPointStaticPartInstance;
     
     // if the returnVal of "after returning" or "after throwing" is
     // specified, make it an additional parameter to the advice body
@@ -225,15 +228,15 @@ public class AdviceDecl_c extends MethodDecl_c
     	if (hasJoinPointStaticPart()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
     		Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
-		LocalInstance li = ts.localInstance(position(),Flags.FINAL,tn.type(),"thisJoinPointStaticPart");
+		LocalInstance li = thisJoinPointStaticPartInstance(ts);
 		jpsp = jpsp.localInstance(li);
     		newformals.add(jpsp);
     	}
     	if (hasJoinPoint()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
     		Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
-		LocalInstance li = ts.localInstance(position(),Flags.FINAL,tn.type(),"thisJoinPoint");
-		jp = jp.localInstance(li);
+		    LocalInstance li = thisJoinPointInstance(ts);
+		    jp = jp.localInstance(li);
     		newformals.add(jp);
     	}
     	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc);
@@ -255,20 +258,26 @@ public class AdviceDecl_c extends MethodDecl_c
 		else return proceedInstance(c.pop());
 	}
 
+    private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
+    	if (thisJoinPointInstance==null)
+    		thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
+    	return thisJoinPointInstance;
+    }
+    
+	private LocalInstance thisJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+		 if (thisJoinPointStaticPartInstance==null)
+			 thisJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisJoinPointStaticPart");
+		 return thisJoinPointStaticPartInstance;
+	 }
+	 
 	public Context enterScope(Context c) {
 		Context nc = super.enterScope(c);
 		
 		// inside an advice body, thisJoinPoint is in scope, but nowhere else in an aspect
 		AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
-		LocalInstance jp = ts.localInstance(position(), 
-	                                                                Flags.FINAL, 
-	                                                                ts.JoinPoint(), 
-                                                                    "thisJoinPoint");
+		LocalInstance jp = thisJoinPointInstance(ts);
 		nc.addVariable(jp);
-		LocalInstance sjp = ts.localInstance(position(), 
-		                                                              Flags.FINAL, 
-		                                                              ts.JoinPointStaticPart(), 
-                                                                      "thisJoinPointStaticPart");
+		LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
 		nc.addVariable(sjp);
 		
 		if (spec instanceof Around)
