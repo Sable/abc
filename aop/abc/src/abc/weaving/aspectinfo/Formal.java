@@ -29,4 +29,14 @@ public class Formal extends Syntax {
     public String toString() {
 	return type+" "+name;
     }
+
+    public boolean equals(Object other) {
+	if (!(other instanceof Formal)) return false;
+	Formal of = (Formal)other;
+	return type.equals(of.type);
+    }
+
+    public int hashCode() {
+	return type.hashCode();
+    }
 }

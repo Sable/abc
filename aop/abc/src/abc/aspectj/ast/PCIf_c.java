@@ -11,6 +11,7 @@ import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
 
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.AbcFactory;
 
 public class PCIf_c extends Pointcut_c implements PCIf
 {
@@ -118,7 +119,7 @@ public class PCIf_c extends Pointcut_c implements PCIf
 	    vars.add(new abc.weaving.aspectinfo.Var(f.name(), f.position()));
 	}
 	return new abc.weaving.aspectinfo.If
-	    (vars, AspectInfoHarvester.makeMethodSig(methodDecl),position);
+	    (vars, AbcFactory.MethodSig(methodDecl),position);
     }
 
 }

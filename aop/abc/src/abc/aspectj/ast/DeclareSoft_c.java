@@ -12,6 +12,8 @@ import abc.aspectj.visit.AspectInfoHarvester;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 public class DeclareSoft_c extends DeclareDecl_c 
     implements DeclareSoft, ContainsAspectInfo
 {
@@ -54,7 +56,7 @@ public class DeclareSoft_c extends DeclareDecl_c
 
     public void update(GlobalAspectInfo gai, Aspect currrent_aspect) {
 	abc.weaving.aspectinfo.DeclareSoft ds = new abc.weaving.aspectinfo.DeclareSoft
-	    (AspectInfoHarvester.toAbcType(type.type()),
+	    (AbcFactory.AbcType(type.type()),
 	     pc.makeAIPointcut(),
 	     currrent_aspect,
 	     position());

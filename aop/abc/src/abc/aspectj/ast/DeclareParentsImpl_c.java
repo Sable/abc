@@ -12,6 +12,8 @@ import java.util.*;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 public class DeclareParentsImpl_c extends DeclareDecl_c 
     implements DeclareParentsImpl, ContainsAspectInfo
 {
@@ -88,7 +90,7 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	Iterator ii = interfaces.iterator();
 	while (ii.hasNext()) {
 	    TypeNode i = (TypeNode)ii.next();
-	    ints.add(new abc.weaving.aspectinfo.AbcClass((ClassType)i.type()));
+	    ints.add(AbcFactory.AbcClass((ClassType)i.type()));
 	}
 	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsImpl
 			      (pat.makeAIClassnamePattern(), ints, current_aspect, position()));

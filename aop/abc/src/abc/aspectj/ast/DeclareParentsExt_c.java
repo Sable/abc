@@ -14,6 +14,8 @@ import java.util.*;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 public class DeclareParentsExt_c extends DeclareDecl_c 
     implements DeclareParentsExt, ContainsAspectInfo
 {
@@ -72,7 +74,7 @@ public class DeclareParentsExt_c extends DeclareDecl_c
 	//System.out.println("Declare parents ext");
 	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsExt
 			      (pat.makeAIClassnamePattern(),
-			       new abc.weaving.aspectinfo.AbcClass((ClassType)type.type()),
+			       AbcFactory.AbcClass((ClassType)type.type()),
 			       current_aspect,
 			       position()));
     }

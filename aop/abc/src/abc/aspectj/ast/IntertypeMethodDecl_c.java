@@ -37,6 +37,7 @@ import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.FieldSig;
 
+import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
 
 public class IntertypeMethodDecl_c extends MethodDecl_c
@@ -335,7 +336,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	Iterator fi = formals().iterator();
 	while (fi.hasNext()) {
 	    Formal f = (Formal)fi.next();
-	    formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f.type().type()),
+	    formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f.type().type()),
 							  f.name(), f.position()));
 	}
 	List exc = new ArrayList();
@@ -347,7 +348,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	abc.weaving.aspectinfo.MethodSig impl = new abc.weaving.aspectinfo.MethodSig
 	    (AspectInfoHarvester.convertModifiers(flags()),
 	     current_aspect.getInstanceClass(),
-	     AspectInfoHarvester.toAbcType(returnType().type()),
+	     AbcFactory.AbcType(returnType().type()),
 	     name(),
 	     formals,
 	     exc,
@@ -355,7 +356,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
 	    (AspectInfoHarvester.convertModifiers(origflags),
 	     gai.getClass(host.type()),
-	     AspectInfoHarvester.toAbcType(returnType().type()),
+	     AbcFactory.AbcType(returnType().type()),
 	     name(),
 	     formals,
 	     exc,
@@ -369,7 +370,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addQualThiss(supers.qualthiss(gai));
 
 	MethodCategory.register(impl, MethodCategory.INTERTYPE_METHOD_SOURCE);
-	MethodCategory.registerRealNameAndClass(impl, originalName, host.type().toString(),
+	MethodCategory.registerRealNameAndClass(impl, originalName, AbcFactory.AbcClass((ClassType)host.type()),
 						(origflags.isStatic()?0:1),0);
     }
     

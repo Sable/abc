@@ -9,7 +9,7 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.NodeFactory_c;
 
-import abc.aspectj.visit.AspectInfoHarvester;
+import abc.weaving.aspectinfo.AbcFactory;
 
 public class AfterReturning_c extends AdviceSpec_c 
                               implements AfterReturning
@@ -81,7 +81,7 @@ public class AfterReturning_c extends AdviceSpec_c
 	    return new abc.weaving.aspectinfo.AfterReturningAdvice(position());
 	} else {
 	    abc.weaving.aspectinfo.Formal f = new abc.weaving.aspectinfo.Formal
-		(AspectInfoHarvester.toAbcType(returnVal.type().type()),
+		(AbcFactory.AbcType(returnVal.type().type()),
 		 returnVal.name(),
 		 returnVal.position());
 	    return new abc.weaving.aspectinfo.AfterReturningArgAdvice(f, position());

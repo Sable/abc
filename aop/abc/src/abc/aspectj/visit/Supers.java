@@ -24,6 +24,8 @@ import polyglot.types.Flags;
 import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.types.AspectJTypeSystem;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 /**
  * Data structure for recording all "super" accesses.
  * @author Oege de Moor
@@ -53,7 +55,7 @@ public class Supers {
 			while (fi.hasNext()) {
 				Type f = (Type)fi.next();
 				String fname = "a$"+i; i++;
-				formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f),
+				formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f),
 													  fname, f.position()));
 			}
 			List exc = new ArrayList();
@@ -67,7 +69,7 @@ public class Supers {
 							new abc.weaving.aspectinfo.MethodSig(
 								AspectInfoHarvester.convertModifiers(mi.flags()),
 									gai.getClass(mi.container()),
-									AspectInfoHarvester.toAbcType(mi.returnType()),
+									AbcFactory.AbcType(mi.returnType()),
 									mi.name(),
 									formals,
 									exc,
@@ -114,7 +116,7 @@ public class Supers {
 			return new abc.weaving.aspectinfo.SuperFieldGet(
 					 new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
 							gai.getClass(fi.container()),   // the containing aspect
-							AspectInfoHarvester.toAbcType(fi.type()),
+							AbcFactory.AbcType(fi.type()),
 							fi.name(), 
 							position),
 							name,
@@ -141,7 +143,7 @@ public class Supers {
 			  return new abc.weaving.aspectinfo.SuperFieldSet(
 					   new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
 							  gai.getClass(fi.container()),   // the containing aspect
-							  AspectInfoHarvester.toAbcType(fi.type()),
+							  AbcFactory.AbcType(fi.type()),
 							  fi.name(), 
 							  position),
 							  name,
@@ -224,7 +226,7 @@ public class Supers {
 			while (fi.hasNext()) {
 				Type f = (Type)fi.next();
 				String fname = "a$"+i; i++;
-				formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f),
+				formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f),
 													  fname, f.position()));
 			}
 			List exc = new ArrayList();
@@ -237,7 +239,7 @@ public class Supers {
 							new abc.weaving.aspectinfo.MethodSig(
 								AspectInfoHarvester.convertModifiers(mi.flags()),
 									gai.getClass(mi.container()),
-									AspectInfoHarvester.toAbcType(mi.returnType()),
+									AbcFactory.AbcType(mi.returnType()),
 									mi.name(),
 									formals,
 									exc,

@@ -35,6 +35,7 @@ import abc.aspectj.visit.*;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 
+import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
 
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
@@ -613,7 +614,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		int index = 0;
 		while (fi.hasNext()) {
     		Type f = (Type) fi.next();
-    		formalTypes.add(AspectInfoHarvester.toAbcType(f));
+    		formalTypes.add(AbcFactory.AbcType(f));
 			index++;
 		}
 		List exc = new ArrayList();
@@ -649,7 +650,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 
 		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
 		// FIXME: First argument is this, right?
-		MethodCategory.registerRealNameAndClass(body, "<init>", current_aspect.toString(),
+		MethodCategory.registerRealNameAndClass(body, "<init>", current_aspect.getInstanceClass(),
 							1,0);
 	}
     

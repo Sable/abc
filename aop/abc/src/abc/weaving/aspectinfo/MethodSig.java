@@ -119,4 +119,45 @@ public class MethodSig extends Syntax {
 	}
 	return sb.toString();
     }
+
+    private boolean compareFormals(List a, List b) {
+	Iterator ai = a.iterator();
+	Iterator bi = b.iterator();
+	while (ai.hasNext() && bi.hasNext()) {
+	    Formal af = (Formal)ai.next();
+	    Formal bf = (Formal)bi.next();
+	    if (!af.getType().equals(bf.getType())) return false;
+	}
+	return !ai.hasNext() && !bi.hasNext();
+    }
+
+    private boolean compareExceptions(List a, List b) {
+	Iterator ai = a.iterator();
+	Iterator bi = b.iterator();
+	while (ai.hasNext() && bi.hasNext()) {
+	    String af = (String)ai.next();
+	    String bf = (String)bi.next();
+	    if (!af.equals(bf)) return false;
+	}
+	return !ai.hasNext() && !bi.hasNext();
+    }
+
+    public boolean equals(Object other) {
+	if (!(other instanceof MethodSig)) return false;
+	MethodSig os = (MethodSig)other;
+	//System.err.print("Comparing "+this+" against "+os+": ");
+	boolean result =
+	    mod == os.mod &&
+	    cl.equals(os.cl) &&
+	    rtype.equals(os.rtype) &&
+	    name.equals(os.name) &&
+	    compareFormals(formals, os.formals) &&
+	    compareExceptions(exc, os.exc);
+	//System.err.println(result);
+	return result;
+    }
+
+    public int hashCode() {
+	return mod+cl.hashCode()+rtype.hashCode()+name.hashCode()+formals.hashCode()+exc.hashCode();
+    }
 }

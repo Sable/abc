@@ -49,4 +49,14 @@ public class FieldSig extends Syntax {
     public String toString() {
 	return Modifier.toString(mod)+" "+type+" "+cl+"."+name;
     }
+
+    public boolean equals(Object other) {
+	if (!(other instanceof FieldSig)) return false;
+	FieldSig os = (FieldSig)other;
+	return
+	    mod == os.mod &&
+	    cl.equals(os.cl) &&
+	    type.equals(os.type) &&
+	    name.equals(os.name);
+    }
 }

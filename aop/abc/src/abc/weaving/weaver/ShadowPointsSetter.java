@@ -207,6 +207,7 @@ public class ShadowPointsSetter {
     // create the beginning and ending nop statements
     Stmt startnop = Jimple.v().newNopStmt();
     Stmt endnop = Jimple.v().newNopStmt();
+    //System.err.println("Target statement in "+method+": "+targetstmt);
     Stmt nextstmt = (Stmt) units.getSuccOf(targetstmt);
 
     // insert new nop stmts into body around targetstmt

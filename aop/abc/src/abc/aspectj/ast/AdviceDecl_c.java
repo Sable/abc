@@ -56,6 +56,7 @@ import abc.aspectj.visit.ContainsAspectInfo;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.AbcFactory;
 
 public class AdviceDecl_c extends MethodDecl_c
     implements AdviceDecl, ContainsAspectInfo
@@ -474,7 +475,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	    new abc.weaving.aspectinfo.AdviceDecl
 	    (spec.makeAIAdviceSpec(),
 	     pc.makeAIPointcut(),
-	     AspectInfoHarvester.makeMethodSig(this),
+	     AbcFactory.MethodSig(this),
 	     current_aspect,
 	     jp, jpsp, ejp,
 	     position());

@@ -8,6 +8,7 @@ import polyglot.visit.*;
 import java.util.*;
 
 import abc.aspectj.visit.AspectInfoHarvester;
+import abc.weaving.aspectinfo.AbcFactory;
 
 public class PCTarget_c extends Pointcut_c implements PCTarget
 {
@@ -83,7 +84,7 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
 		 position());
 	} else if (pat instanceof TypeNode) {
 	    return new abc.weaving.aspectinfo.TargetType
-		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type()),
+		 (AbcFactory.AbcType(((TypeNode)pat).type()),
 		  position());
 	} else if (pat instanceof ArgStar) {
 	    return new abc.weaving.aspectinfo.TargetAny(position());

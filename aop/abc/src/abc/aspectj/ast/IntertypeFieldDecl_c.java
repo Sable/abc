@@ -32,6 +32,7 @@ import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
+import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
@@ -308,7 +309,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
 	  			  	(AspectInfoHarvester.convertModifiers(flags()),
 	   				gai.getClass(host.type()),
-	     			AspectInfoHarvester.toAbcType(type().type()),
+	     			AbcFactory.AbcType(type().type()),
 	     			name(),
 	     			null);
 	    Call c = (Call) init();
@@ -319,7 +320,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			Iterator fi = mi.formalTypes().iterator(); int i = 0;
 			while (fi.hasNext()) {
 				Type f = (Type)fi.next();
-				formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f),
+				formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f),
 						   "a"+i, position()));
 				i++;
 			}
@@ -332,7 +333,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			initSig = new abc.weaving.aspectinfo.MethodSig
 				(AspectInfoHarvester.convertModifiers(mi.flags()),
 				 current_aspect.getInstanceClass(),
-				 AspectInfoHarvester.toAbcType(mi.returnType()),
+				 AbcFactory.AbcType(mi.returnType()),
 				 mi.name(),
 				 formals,
 				 exc,

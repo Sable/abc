@@ -3,6 +3,7 @@ package abc.aspectj.ast;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Iterator;
 import polyglot.util.CollectionUtil;
 import polyglot.util.TypedList;
@@ -200,9 +201,31 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	Aspect a = new Aspect(cl, p, position());
 	gai.addAspect(a);
 		    
-	String this_type = this.type().toString();
-	String aspectOf = this_type+" "+this_type+".aspectOf("+(per_object?"java.lang.Object":"")+")";
-	String hasAspect = "boolean "+this_type+".hasAspect("+(per_object?"java.lang.Object":"")+")";
+	List fl = new ArrayList();
+	if (per_object) {
+	    fl.add(new Formal(AbcFactory.AbcType(soot.RefType.v("java.lang.Object")), "obj", position()));
+	}
+
+	List el = new ArrayList();
+	// FIXME: Do these methods declare any exceptions?
+
+	MethodSig aspectOf = new MethodSig
+	    (soot.Modifier.PUBLIC | soot.Modifier.STATIC,
+	     cl,
+	     AbcFactory.AbcType(type()),
+	     "aspectOf",
+	     fl,
+	     el,
+	     position());
+	MethodSig hasAspect = new MethodSig
+	    (soot.Modifier.PUBLIC | soot.Modifier.STATIC,
+	     cl,
+	     AbcFactory.AbcType(soot.BooleanType.v()),
+	     "hasAspect",
+	     fl,
+	     el,
+	     position());
+
 	MethodCategory.register(aspectOf, MethodCategory.ASPECT_INSTANCE);
 	MethodCategory.register(hasAspect, MethodCategory.ASPECT_INSTANCE);
     }

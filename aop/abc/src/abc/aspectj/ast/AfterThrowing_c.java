@@ -7,7 +7,7 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-import abc.aspectj.visit.AspectInfoHarvester;
+import abc.weaving.aspectinfo.AbcFactory;
 
 public class AfterThrowing_c extends AdviceSpec_c 
                              implements AfterThrowing
@@ -80,7 +80,7 @@ public class AfterThrowing_c extends AdviceSpec_c
 	    return new abc.weaving.aspectinfo.AfterThrowingAdvice(position());
 	} else {
 	    abc.weaving.aspectinfo.Formal f = new abc.weaving.aspectinfo.Formal
-		(AspectInfoHarvester.toAbcType(returnVal.type().type()),
+		(AbcFactory.AbcType(returnVal.type().type()),
 		 returnVal.name(),
 		 returnVal.position());
 	    return new abc.weaving.aspectinfo.AfterThrowingArgAdvice(f, position());

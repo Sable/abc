@@ -7,6 +7,8 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 public class Around_c extends AdviceSpec_c 
                               implements Around
 {
@@ -72,8 +74,8 @@ public class Around_c extends AdviceSpec_c
     }
 
     public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
-	abc.weaving.aspectinfo.AbcType rtype = abc.aspectj.visit.AspectInfoHarvester.toAbcType(returnType.type());
-	abc.weaving.aspectinfo.MethodSig psig = abc.aspectj.visit.AspectInfoHarvester.makeMethodSig(proceed);
+	abc.weaving.aspectinfo.AbcType rtype = AbcFactory.AbcType(returnType.type());
+	abc.weaving.aspectinfo.MethodSig psig = AbcFactory.MethodSig(proceed);
 	return new abc.weaving.aspectinfo.AroundAdvice(rtype, psig, position());
     }
 }

@@ -9,7 +9,7 @@ import polyglot.util.InternalCompilerError;
 
 import abc.aspectj.ExtensionInfo;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.AbcFactory;
 
 import java.util.*;
 
@@ -40,7 +40,7 @@ public class InitClasses extends AbstractPass {
 			throw new InternalCompilerError("Class type of jar class was null");
 		    }
 		    ext.hierarchy.insertClassAndSuperclasses(ct, true);
-		    GlobalAspectInfo.v().addClass(new AbcClass(ct));
+		    GlobalAspectInfo.v().addClass(AbcFactory.AbcClass(ct));
 		}
 
 		GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);

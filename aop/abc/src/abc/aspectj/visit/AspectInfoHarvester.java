@@ -44,10 +44,6 @@ public class AspectInfoHarvester extends ContextVisitor {
 	return super.enter(parent, n);
     }
 
-    public static AbcType toAbcType(polyglot.types.Type t) {
-	return new AbcType(soot.javaToJimple.Util.getSootType(t));
-    }
-
     public static int convertModifiers(Flags flags) {
 	return soot.javaToJimple.Util.getModifier(flags);
     }
@@ -66,7 +62,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 	    if (n instanceof Local) {
 		ap = new abc.weaving.aspectinfo.ArgVar(new Var(((Local)n).name(), n.position()), n.position());
 	    } else if (n instanceof TypeNode) {
-		ap = new abc.weaving.aspectinfo.ArgType(toAbcType(((TypeNode)n).type()), n.position());
+		ap = new abc.weaving.aspectinfo.ArgType(AbcFactory.AbcType(((TypeNode)n).type()), n.position());
 	    } else if (n instanceof ArgStar) {
 		ap = new abc.weaving.aspectinfo.ArgAny(n.position());
 	    } else if (n instanceof ArgDotDot) {
@@ -84,40 +80,21 @@ public class AspectInfoHarvester extends ContextVisitor {
 	Iterator mdfi = pformals.iterator();
 	while (mdfi.hasNext()) {
 	    polyglot.ast.Formal mdf = (polyglot.ast.Formal)mdfi.next();
-	    formals.add(new abc.weaving.aspectinfo.Formal(toAbcType((polyglot.types.Type)mdf.type().type()),
+	    formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType((polyglot.types.Type)mdf.type().type()),
 							  mdf.name(), mdf.position()));
 	}
 	return formals;
     }
 
-    public static MethodSig makeMethodSig(MethodDecl md) {
-	ReferenceType mcc = md.methodInstance().container();
-	if (!(mcc instanceof ParsedClassType)) {
-	    throw new RuntimeException("Error in aspect info generation: Method is not in a named class");
-	}
-	int mod = convertModifiers(md.flags());
-	AbcClass cl = GlobalAspectInfo.v().getClass(mcc);
-	AbcType rtype = toAbcType(md.returnType().type());
-	String name = md.name();
-	List formals = convertFormals(md.formals());
-	List exc = new ArrayList();
-	Iterator ti = md.throwTypes().iterator();
-	while (ti.hasNext()) {
-	    TypeNode t = (TypeNode)ti.next();
-	    exc.add(t.type().toString());
-	}
-	return new MethodSig(mod, cl, rtype, name, formals, exc, md.position());
-    }
-    
     public static MethodSig convertSig(MethodInstance mi) {
-    if (mi==null)
-    	return null;
+	if (mi==null)
+	    return null;
 	List formals = new ArrayList();
 	Iterator fi = mi.formalTypes().iterator(); 
 	int index = 0;
 	while (fi.hasNext()) {
 	    Type ft = (Type)fi.next();
-	    formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(ft),"a"+index, mi.position()));
+	    formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(ft),"a"+index, mi.position()));
 	    index++;
 	}
 	List exc = new ArrayList();
@@ -127,7 +104,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 	    exc.add(t.toString());
 	}
 	AbcClass container = GlobalAspectInfo.v().getClass(mi.container());
-	AbcType returnType = AspectInfoHarvester.toAbcType(mi.returnType());
+	AbcType returnType = AbcFactory.AbcType(mi.returnType());
 	int mod = AspectInfoHarvester.convertModifiers(mi.flags());
 	return new MethodSig (mod,container,returnType,mi.name(),formals,exc,mi.position());	
     }

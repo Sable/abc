@@ -55,11 +55,11 @@ public class GlobalAspectInfo {
     private Map/*<String,Set<PointcutDecl>>*/ pc_map = new HashMap();
     private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();
 
-    private Map/*<String,Integer>*/ method_categories = new HashMap();
-    private Map/*<String,String>*/ method_real_names = new HashMap();
-    private Map/*<String,String>*/ method_real_classes = new HashMap();
-    private Map/*<String,Integer>*/ method_skip_first = new HashMap();
-    private Map/*<String,Integer>*/ method_skip_last = new HashMap();
+    private Map/*<MethodSig,Integer>*/ method_categories = new HashMap();
+    private Map/*<MethodSig,String>*/ method_real_names = new HashMap();
+    private Map/*<MethodSig,AbcClass>*/ method_real_classes = new HashMap();
+    private Map/*<MethodSig,Integer>*/ method_skip_first = new HashMap();
+    private Map/*<MethodSig,Integer>*/ method_skip_last = new HashMap();
     
     
     public void resolveClassNames() {
@@ -385,12 +385,12 @@ public class GlobalAspectInfo {
 	return (MethodAdviceList) adviceLists.get(m);
     }
 
-    public void registerMethodCategory(String sig, int cat) {
+    public void registerMethodCategory(MethodSig sig, int cat) {
 	//System.out.println("Method registered: "+sig+" ("+cat+")");
 	method_categories.put(sig, new Integer(cat));
     }
 
-    public int getMethodCategory(String sig) {
+    public int getMethodCategory(MethodSig sig) {
 	if (method_categories.containsKey(sig)) {
 	    return ((Integer)method_categories.get(sig)).intValue();
 	} else {
@@ -398,7 +398,7 @@ public class GlobalAspectInfo {
 	}
     }
 
-    public void registerRealNameAndClass(String sig, String real_name, String real_class,
+    public void registerRealNameAndClass(MethodSig sig, String real_name, AbcClass real_class,
 					 int skip_first, int skip_last) {
 	//System.out.println("Method registered: "+sig+" ("+cat+")");
 	method_real_names.put(sig, real_name);
@@ -407,15 +407,15 @@ public class GlobalAspectInfo {
 	method_skip_last.put(sig, new Integer(skip_last));
     }
 
-    public String getRealName(String sig) {
+    public String getRealName(MethodSig sig) {
 	return (String)method_real_names.get(sig);
     }
 
-    public String getRealClass(String sig) {
-	return (String)method_real_classes.get(sig);
+    public AbcClass getRealClass(MethodSig sig) {
+	return (AbcClass)method_real_classes.get(sig);
     }
 
-    public int getSkipFirst(String sig) {
+    public int getSkipFirst(MethodSig sig) {
 	if (method_skip_first.containsKey(sig)) {
 	    return ((Integer)method_skip_first.get(sig)).intValue();
 	} else {
@@ -423,7 +423,7 @@ public class GlobalAspectInfo {
 	}
     }
 
-    public int getSkipLast(String sig) {
+    public int getSkipLast(MethodSig sig) {
 	if (method_skip_last.containsKey(sig)) {
 	    return ((Integer)method_skip_last.get(sig)).intValue();
 	} else {

@@ -1,11 +1,12 @@
 
 package abc.weaving.aspectinfo;
 
+import soot.SootClass;
 import soot.SootMethod;
 import soot.Type;
 
 import polyglot.ast.MethodDecl;
-import polyglot.types.ParsedClassType;
+import polyglot.types.ClassType;
 
 import java.util.*;
 
@@ -171,43 +172,35 @@ public class MethodCategory {
     // CATEGORY QUERY
 
     public static int getCategory(SootMethod m) {
-	return GlobalAspectInfo.v().getMethodCategory(signature(m));
+	return GlobalAspectInfo.v().getMethodCategory(AbcFactory.MethodSig(m));
     }
 
     public static int getCategory(MethodSig m) {
-	return GlobalAspectInfo.v().getMethodCategory(signature(m));
+	return GlobalAspectInfo.v().getMethodCategory(m);
     }
 
     // REGISTRATION METHODS
 
-    public static void register(String sig, int cat) {
+    public static void register(MethodSig sig, int cat) {
 	GlobalAspectInfo.v().registerMethodCategory(sig, cat);
     }
 
     public static void register(SootMethod m, int cat) {
-	register(signature(m), cat);
+	register(AbcFactory.MethodSig(m), cat);
     }
 
     public static void register(MethodDecl m, int cat) {
-	try {
-	    register(signature(m, (ParsedClassType)m.methodInstance().container()), cat);
-	} catch (ClassCastException e) {
-	    throw new RuntimeException("Tried to register category of method "+m.name()+" in unnamed class");
-	}
+	register(AbcFactory.MethodSig(m), cat);
     }
 
-    public static void register(MethodDecl m, ParsedClassType container, int cat) {
-	register(signature(m, container), cat);
-    }
-
-    public static void register(MethodSig m, int cat) {
-	register(signature(m), cat);
+    public static void register(MethodDecl m, ClassType container, int cat) {
+	register(AbcFactory.MethodSig(m, container), cat);
     }
 
     // REAL NAME REGISTRATION
 
-    public static void registerRealNameAndClass(String sig,
-						String real_name, String real_class,
+    public static void registerRealNameAndClass(MethodSig sig,
+						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
 	GlobalAspectInfo.v().registerRealNameAndClass(sig,
 						      real_name, real_class,
@@ -215,37 +208,25 @@ public class MethodCategory {
     }
 
     public static void registerRealNameAndClass(SootMethod m,
-						String real_name, String real_class,
+						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
-	registerRealNameAndClass(signature(m),
+	registerRealNameAndClass(AbcFactory.MethodSig(m),
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
 
     public static void registerRealNameAndClass(MethodDecl m,
-						String real_name, String real_class,
+						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
-	try {
-	    registerRealNameAndClass(signature(m, (ParsedClassType)m.methodInstance().container()),
-				     real_name, real_class,
-				     skip_first, skip_last);
-	} catch (ClassCastException e) {
-	    throw new RuntimeException("Tried to register name and class of method "+m.name()+" in unnamed class");
-	}
-    }
-
-    public static void registerRealNameAndClass(MethodDecl m, ParsedClassType container,
-						String real_name, String real_class,
-						int skip_first, int skip_last) {
-	registerRealNameAndClass(signature(m, container),
+	registerRealNameAndClass(AbcFactory.MethodSig(m),
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
 
-    public static void registerRealNameAndClass(MethodSig m,
-						String real_name, String real_class,
+    public static void registerRealNameAndClass(MethodDecl m, ClassType container,
+						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
-	registerRealNameAndClass(signature(m),
+	registerRealNameAndClass(AbcFactory.MethodSig(m, container),
 				 real_name, real_class,
 				 skip_first, skip_last);
     }
@@ -253,7 +234,7 @@ public class MethodCategory {
     // REAL NAME QUERY
 
     public static String getName(SootMethod m) {
-	String real_name = GlobalAspectInfo.v().getRealName(signature(m));
+	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.MethodSig(m));
 	if (real_name == null) {
 	    return m.getName().toString();
 	} else {
@@ -262,7 +243,7 @@ public class MethodCategory {
     }
 
     public static String getName(MethodSig m) {
-	String real_name = GlobalAspectInfo.v().getRealName(signature(m));
+	String real_name = GlobalAspectInfo.v().getRealName(m);
 	if (real_name == null) {
 	    return m.getName().toString();
 	} else {
@@ -271,96 +252,29 @@ public class MethodCategory {
     }
 
     public static String getClassName(SootMethod m) {
-	String real_class = GlobalAspectInfo.v().getRealClass(signature(m));
+	AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.MethodSig(m));
 	if (real_class == null) {
 	    return m.getDeclaringClass().getName();
 	} else {
-	    return real_class;
+	    return real_class.getJvmName();
 	}
     }
 
     public static String getClassName(MethodSig m) {
-	String real_class = GlobalAspectInfo.v().getRealClass(signature(m));
+	AbcClass real_class = GlobalAspectInfo.v().getRealClass(m);
 	if (real_class == null) {
 	    return m.getDeclaringClass().getJvmName();
 	} else {
-	    return real_class;
+	    return real_class.getJvmName();
 	}
     }
 
     public static int getSkipFirst(SootMethod m) {
-	return GlobalAspectInfo.v().getSkipFirst(signature(m));
+	return GlobalAspectInfo.v().getSkipFirst(AbcFactory.MethodSig(m));
     }
 
     public static int getSkipLast(SootMethod m) {
-	return GlobalAspectInfo.v().getSkipLast(signature(m));
+	return GlobalAspectInfo.v().getSkipLast(AbcFactory.MethodSig(m));
     }
-
-    // SIGNATURE CALCULATION METHODS
-
-    private static String signature(SootMethod m) {
-	StringBuffer sb = new StringBuffer();
-	sb.append(d2d(m.getReturnType()));
-	sb.append(" ");
-	sb.append(d2d(m.getDeclaringClass()));
-	sb.append(".");
-	sb.append(m.getName());
-	sb.append("(");
-	Iterator pti = m.getParameterTypes().iterator();
-	while (pti.hasNext()) {
-	    Type pt = (Type)pti.next();
-	    sb.append(d2d(pt));
-	    if (pti.hasNext()) {
-		sb.append(",");
-	    }
-	}
-	sb.append(")");
-	return sb.toString();
-    }
-
-    private static String signature(MethodDecl m, ParsedClassType container) {
-	StringBuffer sb = new StringBuffer();
-	sb.append(d2d(m.returnType()));
-	sb.append(" ");
-	sb.append(d2d(container.fullName()));
-	sb.append(".");
-	sb.append(m.name());
-	sb.append("(");
-	Iterator fi = m.formals().iterator();
-	while (fi.hasNext()) {
-	    polyglot.ast.Formal f = (polyglot.ast.Formal)fi.next();
-	    sb.append(d2d(f.type()));
-	    if (fi.hasNext()) {
-		sb.append(",");
-	    }
-	}
-	sb.append(")");
-	return sb.toString();
-    }
-
-    private static String signature(MethodSig m) {
-	StringBuffer sb = new StringBuffer();
-	sb.append(d2d(m.getReturnType()));
-	sb.append(" ");
-	sb.append(d2d(m.getDeclaringClass()));
-	sb.append(".");
-	sb.append(m.getName());
-	sb.append("(");
-	Iterator fi = m.getFormals().iterator();
-	while (fi.hasNext()) {
-	    Formal f = (Formal)fi.next();
-	    sb.append(d2d(f.getType()));
-	    if (fi.hasNext()) {
-		sb.append(",");
-	    }
-	}
-	sb.append(")");
-	return sb.toString();
-    }
-
-    private static String d2d(Object type) {
-	return type.toString().replace('$','.');
-    }
-
 
 }
