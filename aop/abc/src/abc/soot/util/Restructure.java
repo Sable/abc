@@ -399,6 +399,9 @@ public class Restructure {
 		IdentityStmt istmt=(IdentityStmt) stmt;
 		if(istmt.getRightOp() instanceof ThisRef) {
 		    Value tr=istmt.getLeftOp();
+		    do { 
+			stmt=(Stmt) units.getSuccOf(stmt); 
+		    } while(stmt instanceof IdentityStmt);
 		    units.insertAfter(Jimple.v().newAssignStmt(l,tr),stmt);
 		    break;
 		}
