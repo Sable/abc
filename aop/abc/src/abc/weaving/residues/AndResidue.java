@@ -2,7 +2,7 @@ package abc.weaving.residues;
 
 import soot.Local;
 import soot.SootMethod;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
@@ -30,10 +30,24 @@ public class AndResidue extends Residue {
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,WeavingContext wc) {
-
-	Stmt middle=left.codeGen(method,localgen,units,begin,fail,wc);
-	return right.codeGen(method,localgen,units,middle,fail,wc);
+			Chain units,Stmt begin,Stmt fail,boolean sense,
+			WeavingContext wc) {
+	if(sense) {
+	    // want to fall through if both left and right succeed, otherwise jump to fail
+	    Stmt middle=left.codeGen(method,localgen,units,begin,fail,true,wc);
+	    return right.codeGen(method,localgen,units,middle,fail,true,wc);
+	} else {
+	    // want to jump to fail if both left and right succeed, otherwise fall through
+	    Stmt nopStmt=Jimple.v().newNopStmt();
+	    // if left succeeds, drop through, otherwise goto nop stmt
+	    Stmt middle=left.codeGen(method,localgen,units,begin,nopStmt,true,wc);
+	    // if right succeeds then jump to fail, otherwise fall through
+	    Stmt end=right.codeGen(method,localgen,units,middle,fail,false,wc);
+	    // make fall through statement be the nop to catch the left residue failing
+	    units.insertAfter(nopStmt,end);
+	    return nopStmt;
+	}
+	    
     }
 
     /** Private constructor to force use of smart constructor */

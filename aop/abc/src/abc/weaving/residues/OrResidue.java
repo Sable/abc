@@ -46,18 +46,23 @@ public class OrResidue extends Residue {
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
+			Chain units,Stmt begin,Stmt fail,boolean sense,
 			WeavingContext wc) {
-
-	Stmt nopStmt1=Jimple.v().newNopStmt();
-	Stmt leftResidueEnd=left.codeGen(method,localgen,units,begin,nopStmt1,wc);
-	Stmt nopStmt2=Jimple.v().newNopStmt();
-	Stmt succeedEarly=Jimple.v().newGotoStmt(nopStmt2);
-	units.insertAfter(succeedEarly,leftResidueEnd);
-	units.insertAfter(nopStmt1,succeedEarly);
-	Stmt rightResidueEnd=right.codeGen(method,localgen,units,nopStmt1,fail,wc);
-	units.insertAfter(nopStmt2,rightResidueEnd);
-	return nopStmt2;
+	if(sense) {
+	    // want to fall through if either left or right succeeds, otherwise jump to fail
+	    Stmt nopStmt=Jimple.v().newNopStmt();
+	    // if left succeeds, goto nop stmt, otherwise fall through
+	    Stmt middle=left.codeGen(method,localgen,units,begin,nopStmt,false,wc);
+	    // if right succeeds fall through, otherwise then jump to fail
+	    Stmt end=right.codeGen(method,localgen,units,middle,fail,true,wc);
+	    // make fall through statement be the nop to catch the left residue succeeding
+	    units.insertAfter(nopStmt,end);
+	    return nopStmt;
+	} else {
+	    // want to jump to fail if either left or right succeeds, otherwise fall through
+	    Stmt middle=left.codeGen(method,localgen,units,begin,fail,false,wc);
+	    return right.codeGen(method,localgen,units,middle,fail,false,wc);
+	}
     }
 
 	public void getAdviceFormalBindings(Bindings bindings) {

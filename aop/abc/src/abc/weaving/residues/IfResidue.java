@@ -30,7 +30,7 @@ public class IfResidue extends Residue {
 
     public Stmt codeGen
 	(SootMethod method,LocalGeneratorEx localgen,
-	 Chain units,Stmt begin,Stmt fail,
+	 Chain units,Stmt begin,Stmt fail,boolean sense,
 	 WeavingContext wc) {
 
 	List actuals=new Vector(args.size());
@@ -40,7 +40,10 @@ public class IfResidue extends Residue {
 	Local ifresult=localgen.generateLocal(BooleanType.v(),"ifresult");
 	InvokeExpr ifcall=Jimple.v().newStaticInvokeExpr(impl,actuals);
 	AssignStmt assign=Jimple.v().newAssignStmt(ifresult,ifcall);
-	IfStmt abort=Jimple.v().newIfStmt(Jimple.v().newEqExpr(ifresult,IntConstant.v(0)),fail);
+	Expr test;
+	if(sense) test=Jimple.v().newEqExpr(ifresult,IntConstant.v(0));
+	else test=Jimple.v().newNeExpr(ifresult,IntConstant.v(0));
+	IfStmt abort=Jimple.v().newIfStmt(test,fail);
 	units.insertAfter(assign,begin);
 	units.insertAfter(abort,assign);
 	return abort;

@@ -31,7 +31,15 @@ public class Load extends Residue {
 		Chain units,
 		Stmt begin,
 		Stmt fail,
+		boolean sense,
 		WeavingContext wc) {
+
+	    if(!sense) {
+		Stmt jump=Jimple.v().newGotoStmt(fail);
+		units.insertAfter(jump,begin);
+		return jump;
+	    }
+
 	    if(value instanceof JoinPointInfo) 
 		begin=((JoinPointInfo) value).doInit(localgen,units,begin);
 	    return variable.set(localgen,units,begin,wc,value.getSootValue());

@@ -36,11 +36,12 @@ public class BindMaskResidue extends Residue {
 	 * generates the Bind code. 
 	 * 
 	 */
-	public Stmt codeGen(SootMethod method, LocalGeneratorEx localgen, Chain units, Stmt begin, Stmt fail, WeavingContext wc) {
+	public Stmt codeGen(SootMethod method, LocalGeneratorEx localgen, Chain units, Stmt begin, Stmt fail, 
+			    boolean sense, WeavingContext wc) {
 		AssignStmt as=Jimple.v().newAssignStmt(
 			bindMaskLocal, Jimple.v().newOrExpr(bindMaskLocal, IntConstant.v(mask)));
 		units.insertAfter(as, begin);
-		return op.codeGen(method, localgen, units, as, fail, wc);
+		return op.codeGen(method, localgen, units, as, fail, sense, wc);
 	}
 
 	/* 

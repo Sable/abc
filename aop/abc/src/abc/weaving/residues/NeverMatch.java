@@ -28,8 +28,11 @@ public class NeverMatch extends Residue {
 
     // this ought not to get called
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
+			Chain units,Stmt begin,Stmt fail,boolean sense,
 			WeavingContext wc) {
+
+	if(!sense) return begin;
+
 	Stmt abort=Jimple.v().newGotoStmt(fail);
 	units.insertAfter(abort,begin);
 	return abort;

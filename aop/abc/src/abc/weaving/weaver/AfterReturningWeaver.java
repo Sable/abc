@@ -49,7 +49,7 @@ public class AfterReturningWeaver {
 
 	debug("generating residue code");
 	Stmt endresidue=residue.codeGen
-	    (method,localgen,units,prevstmt,failpoint,wc);
+	    (method,localgen,units,prevstmt,failpoint,true,wc);
 
 	debug("making advice execution statements");
         Chain stmts = advicedecl.makeAdviceExecutionStmts(localgen,wc);

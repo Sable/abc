@@ -64,8 +64,15 @@ public class Bind extends Residue {
 		Chain units,
 		Stmt begin,
 		Stmt fail,
+		boolean sense,
 		WeavingContext wc) {
 	
+	    if(!sense) {
+		Stmt jump=Jimple.v().newGotoStmt(fail);
+		units.insertAfter(jump,begin);
+		return jump;
+	    }
+
 		Value val=value.getSootValue();
 		if(!variable.hasType())
 		    // PolyLocalVar

@@ -78,7 +78,7 @@ public class AfterThrowingWeaver {
 	throwStmt.addTag(new ThrowCreatedByCompilerTag());
 
 	Stmt endresidue=residue.codeGen
-	    (method,lg,units,idStmt,throwStmt,wc);
+	    (method,lg,units,idStmt,throwStmt,true,wc);
 
 	//have ... 
 	//    java.lang.Exception exception;

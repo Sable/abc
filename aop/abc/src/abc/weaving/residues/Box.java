@@ -27,9 +27,15 @@ public class Box extends Residue {
 
     public Stmt codeGen
 	(SootMethod method,LocalGeneratorEx localgen,
-	 Chain units,Stmt begin,Stmt fail,
+	 Chain units,Stmt begin,Stmt fail,boolean sense,
 	 WeavingContext wc) {
 	
+	if(!sense) {
+	    Stmt jump=Jimple.v().newGotoStmt(fail);
+	    units.insertAfter(jump,begin);
+	    return jump;
+	}
+
 	Type type=from.getType();
 	if(type instanceof PrimType) {
 	    SootClass boxClass=Restructure.JavaTypeInfo.getBoxingClass(type);

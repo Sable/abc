@@ -85,7 +85,7 @@ public class ShadowPoints {
 				       "sjpinfo");
 	Stmt bindSJPInfo
 	    =new Load(new StaticJoinPointInfo(shadowmatch.getSJPInfo()),sjpVal)
-	    .codeGen(container,lg,units,start,null,wc);
+	    .codeGen(container,lg,units,start,null,true,wc);
 	
 	WeavingVar thisVal=new LocalVar(object,"thisval");
 	ContextValue thisCV=shadowmatch.getThisContextValue();
@@ -94,7 +94,7 @@ public class ShadowPoints {
 	if(thisCV==null) thisCV=new JimpleValue(NullConstant.v());
 	Stmt bindThis=Bind
 	    .construct(thisCV,object,thisVal)
-	    .codeGen(container,lg,units,bindSJPInfo,end,wc);
+	    .codeGen(container,lg,units,bindSJPInfo,end,true,wc);
 	
 	WeavingVar targetVal=new LocalVar(object,"targetval");
 	ContextValue targetCV=shadowmatch.getTargetContextValue();
@@ -102,7 +102,7 @@ public class ShadowPoints {
 	if(targetCV==null) targetCV=new JimpleValue(NullConstant.v());
 	Stmt bindTarget=Bind
 	    .construct(targetCV,object,targetVal)
-	    .codeGen(container,lg,units,bindThis,end,wc);
+	    .codeGen(container,lg,units,bindThis,end,true,wc);
 	
 	Local argsVal=lg.generateLocal(ArrayType.v(object,1),"argsvals");
 	
@@ -120,7 +120,7 @@ public class ShadowPoints {
 	    WeavingVar argVal=new LocalVar(object,"argval");
 	    Stmt bindArg=Bind
 		.construct(argCV,object,argVal)
-		.codeGen(container,lg,units,last,end,wc);
+		.codeGen(container,lg,units,last,end,true,wc);
 	    
 	    last=Jimple.v().newAssignStmt
 		(Jimple.v().newArrayRef(argsVal,IntConstant.v(i)),

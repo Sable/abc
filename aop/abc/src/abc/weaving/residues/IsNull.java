@@ -24,12 +24,14 @@ public class IsNull extends Residue {
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
+			Chain units,Stmt begin,Stmt fail,boolean sense,
 			WeavingContext wc) {
 
 	Value v=value.getSootValue();
-	Stmt abort=Jimple.v().newIfStmt
-	    (Jimple.v().newNeExpr(v,NullConstant.v()),fail);
+	Expr test;
+	if(sense) test=Jimple.v().newNeExpr(v,NullConstant.v());
+	else test=Jimple.v().newEqExpr(v,NullConstant.v());
+	Stmt abort=Jimple.v().newIfStmt(test,fail);
 	units.insertAfter(abort,begin);
 	return abort;
     }

@@ -23,7 +23,7 @@ public abstract class Residue {
      *  fails. Return the final statement that was inserted.
      */
     public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-				 Chain units,Stmt begin,Stmt fail,
+				 Chain units,Stmt begin,Stmt fail,boolean sense,
 				 WeavingContext wc);
 
     /** Must provide a toString method */

@@ -644,7 +644,8 @@ public class AroundWeaver {
 			//joinpointStatements.insertBefore(beforeFailPoint, failPoint);
 
 			// weave in residue
-			Stmt endResidue = adviceAppl.residue.codeGen(joinpointMethod, localgen, joinpointStatements, begin, failPoint, wc);
+			Stmt endResidue = adviceAppl.residue.codeGen
+			    (joinpointMethod, localgen, joinpointStatements, begin, failPoint, true, wc);
 			
 			//((AdviceWeavingContext) wc).arglist.get()
 

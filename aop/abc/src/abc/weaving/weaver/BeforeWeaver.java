@@ -52,7 +52,7 @@ public class BeforeWeaver {
 
 	// weave in residue
 	Stmt endresidue=residue.codeGen
-	    (method,localgen,units,beginshadow,failpoint,wc);
+	    (method,localgen,units,beginshadow,failpoint,true,wc);
 
         Chain stmts = advicedecl.makeAdviceExecutionStmts(localgen,wc);
 

@@ -1,10 +1,8 @@
 package abc.weaving.residues;
 
 import soot.*;
-import soot.jimple.Jimple;
 import soot.util.Chain;
-import soot.jimple.Stmt;
-import soot.jimple.IntConstant;
+import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
@@ -87,15 +85,17 @@ public class CheckType extends Residue {
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
+			Chain units,Stmt begin,Stmt fail,boolean sense,
 			WeavingContext wc) {
 
 	Value v=value.getSootValue();
 	Local io=localgen.generateLocal(BooleanType.v(),"checkType");
 	Stmt instancetest
 	    =Jimple.v().newAssignStmt(io,Jimple.v().newInstanceOfExpr(v,type));
-	Stmt abort=Jimple.v().newIfStmt
-	    (Jimple.v().newEqExpr(io,IntConstant.v(0)),fail);
+	Expr test;
+	if(sense) test=Jimple.v().newEqExpr(io,IntConstant.v(0));
+	else test=Jimple.v().newNeExpr(io,IntConstant.v(0));
+	Stmt abort=Jimple.v().newIfStmt(test,fail);
 	units.insertAfter(instancetest,begin);
 	units.insertAfter(abort,instancetest);
 	return abort;

@@ -2,7 +2,7 @@ package abc.weaving.residues;
 
 import soot.SootMethod;
 import soot.util.Chain;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
@@ -24,9 +24,14 @@ public class AlwaysMatch extends Residue {
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,WeavingContext wc) {
+			Chain units,Stmt begin,Stmt fail,boolean sense,
+			WeavingContext wc) {
 
-	return begin;
+	if(sense) return begin;
+
+	Stmt abort=Jimple.v().newGotoStmt(fail);
+	units.insertAfter(abort,begin);
+	return abort;
     }
 
 }

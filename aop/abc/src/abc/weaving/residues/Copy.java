@@ -1,7 +1,7 @@
 package abc.weaving.residues;
 
 import soot.*;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.util.Chain;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
@@ -25,9 +25,14 @@ public class Copy extends Residue {
 
     public Stmt codeGen
 	(SootMethod method,LocalGeneratorEx localgen,
-	 Chain units,Stmt begin,Stmt fail,
+	 Chain units,Stmt begin,Stmt fail,boolean sense,
 	 WeavingContext wc) {
 
+	if(!sense) {
+	    Stmt jump=Jimple.v().newGotoStmt(fail);
+	    units.insertAfter(jump,begin);
+	    return jump;
+	}
 	return to.set(localgen,units,begin,wc,from.get());
     }
 }

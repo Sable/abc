@@ -49,7 +49,7 @@ public class CflowResidue extends Residue {
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
+			Chain units,Stmt begin,Stmt fail,boolean sense,
 			WeavingContext wc) {
 
 	/* Generate the code for checking that the cflow applies and 
@@ -81,14 +81,15 @@ public class CflowResidue extends Residue {
 	units.insertAfter(checkvalid,getstackorcounter);
 
 	debug("generating abort");
-	Stmt abort=Jimple.v().newIfStmt
-	    (Jimple.v().newEqExpr(isvalid,IntConstant.v(0)),
-	     fail);
+	Expr test;
+	if(sense) test=Jimple.v().newEqExpr(isvalid,IntConstant.v(0));
+	else test=Jimple.v().newNeExpr(isvalid,IntConstant.v(0));
+	Stmt abort=Jimple.v().newIfStmt(test,fail);
 	units.insertAfter(abort,checkvalid);
 
         Stmt last = abort;
 
-        if (!useCounter) {
+        if (sense && !useCounter) {
 
 	debug("setting up to get bound values");
 	ArrayList getargs=new ArrayList(1);
