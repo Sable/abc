@@ -120,7 +120,6 @@ public class Weaver {
                 unitBindings = unweaver.restore();
                 AroundWeaver.reset();
                 resetForReweaving();
-                resetForReweaving();
                 weaveAdvice();
 
             } else {
@@ -134,14 +133,12 @@ public class Weaver {
                     debug("unweaver restored state");
                     AroundWeaver.reset();
                     resetForReweaving();
-                    resetForReweaving();
                     weaveAdvice();
                     debug("after weaveAdvice");
                     //if (true==true) return; ///
                     unitBindings = unweaver.restore();
                     debug("unweaver restored state (2)");
                     AroundWeaver.reset();
-                    resetForReweaving();
                     resetForReweaving();
                     //throw new RuntimeException("just a test");
                 }
