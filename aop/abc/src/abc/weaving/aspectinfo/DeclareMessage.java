@@ -170,10 +170,6 @@ public class DeclareMessage extends AbstractAdviceDecl {
                     message,
                     sm.getContainer(),
                     sm.getHost());
-        System.out.println( "container: "+sm.getContainer());
-        System.out.println( "hose: "+sm.getHost());
-        System.out.println( "position line: "+ei.getPosition().line());
-        System.out.println( "position: "+ei.getPosition());
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         debug("making q");
         StdErrorQueue eq = new StdErrorQueue(new PrintStream(baos), 1, "abc");
