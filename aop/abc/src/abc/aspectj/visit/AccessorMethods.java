@@ -44,17 +44,8 @@ import abc.weaving.aspectinfo.AccessorQualSpecial;
  * Dispatchers are a public wrapper around methods that wouldn't normally be visible. They take the same
  * arguments as the method they're wrapped around, and return the same type.
  * 
- * In this class, we maintain lists of the accessor methods of all three types.
- * 
- * The intended way of using this is:
- * (a) Inherit to customise the class to your needs - usually at least override 'tag'. If more sophisticated
- * 			behaviour is needed, override some of AccessorGet, AccessorSet, AccessorDispatch and the
- * 			corresponding create*Object() method in this class to use the new classes.
- * (b) Keep an instance of the extended class in AspectType (or some other such object)
- * (c) In a pass over the AST, in the leave method of relevant nodes, add calls to needsAccessor()
- * (d) If that returns true, return the result of accessor{Dispatch|Getter|Setter}, as appropriate 
- * (e) At some point later, probably in the InterTypeAdjuster run, add the accessor method declarations
- * 		to the respective classes using the methods defined in AccessorMethod, i.e. call addAllSootMethods().
+ * In this class, we maintain lists of the accessor methods of all three types, plus accessor methods for
+ * qualified 'this' references.
  */
 public class AccessorMethods {
     /**
