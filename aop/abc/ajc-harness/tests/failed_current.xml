@@ -336,10 +336,6 @@
         <compile files="p1/Base.java,p2/Derived.java"></compile>
         <run class="p2.Derived"></run>
     </ajc-test>
-<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
-        <compile files="PrivilegedParsing.java"></compile>
-        <run class="PrivilegedParsing"></run>
-    </ajc-test>
 <ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" num="898" dir="bugs" abccomment="ITD field initialisers should not appear in the exec jps of host constructors, but                     they do appear in initialisation jps of the same. Need to discuss with Ganesh.                     ODM 19/07/04">
         <compile files="AfterThrowingCtor.java">
         </compile>

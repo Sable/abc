@@ -4025,6 +4025,10 @@
 		  <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
+        <compile files="PrivilegedParsing.java"></compile>
+        <run class="PrivilegedParsing"></run>
+    </ajc-test>
 <ajc-test title="Introduced abstract method on interface not implemented by subtype (weave altogether)" pr="49784" num="900" dir="bugs/abstractMethods">
         <compile files="interface/C.java,interface/A.java,interface/B.java"></compile>
         <run class="C"></run>
