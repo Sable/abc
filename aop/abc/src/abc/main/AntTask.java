@@ -29,7 +29,7 @@ import java.io.*;
  * @author Ondrej Lhotak
  */
 public class AntTask extends MatchingTask {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public void setHelp(boolean arg) {
         if(arg) addArg("-help");
     }
@@ -95,8 +95,11 @@ public class AntTask extends MatchingTask {
     }
     public void setIncremental(boolean arg) {
         if(arg) {
-            throw new BuildException("abc does not support incremental compilation of aspects");
+            throw new BuildException("abc does not support incremental compilation of aspects.");
         }
+    }
+    public void setSourceRootCopyFilter(String arg) {
+        System.err.println("Warning: Ignoring unsupported option SourceRootCopyFilter.");
     }
 
     private ArrayList args = new ArrayList();
@@ -118,6 +121,7 @@ public class AntTask extends MatchingTask {
             addPath("-injars", injars);
             addPath("-classpath", classpath);
             addArgfiles();
+            addSrc();
             if(DEBUG) System.out.println(args);
             Main main = new Main((String[]) args.toArray(new String[0]));
             main.run();
@@ -131,7 +135,7 @@ public class AntTask extends MatchingTask {
             System.out.println(e.getMessage());
             System.exit(5);
         } catch( Exception e ) {
-            if(DEBUG) e.printStackTrace();
+            e.printStackTrace();
             throw new BuildException(e);
         }
     }
