@@ -44,20 +44,22 @@ public class Weaver {
             ag.fillInAspect(as.getInstanceClass().getSootClass());
         }
 
-	// Set all ShadowPoints for each AdviceApplication
 	ShadowPointsSetter sg = new ShadowPointsSetter();
+        PointcutCodeGen pg = new PointcutCodeGen();
+
         for( Iterator clIt = 
 	         GlobalAspectInfo.v().getWeavableClasses().iterator(); 
 		 clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
-            sg.setShadowPoints(cl.getSootClass());
-	}
+	    final SootClass scl = cl.getSootClass();
 
-        // Weave in code to call advice corresponding to each AdviceApplication
-        PointcutCodeGen pg = new PointcutCodeGen();
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-            final AbcClass cl = (AbcClass) clIt.next();
-            // TODO: pg.weaveInAspects(cl.getSootClass());
-        }
-    }
-}
+	    // pass one, do not handle initialization and preinitialization
+            sg.setShadowPointsPass1(scl);
+            pg.weaveInAspectsPass1(scl);
+	    // pass two, handle initializaiton and preinititalization
+	    sg.setShadowPointsPass2(scl);
+	    // TODO: pg.weaveInAspectsPass2(scl);
+	} // each class
+
+    } // method weave
+} // class Weaver
