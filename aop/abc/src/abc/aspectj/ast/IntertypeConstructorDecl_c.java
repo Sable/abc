@@ -34,6 +34,7 @@ import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
+import abc.aspectj.types.AspectType;
 
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
@@ -440,11 +441,12 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
         Context c = tc.context();
         TypeSystem ts = tc.typeSystem();
 
-        ClassType ct = c.currentClass();
+        // hostClass in lieu of currentClass
+        ClassType ct = ((AJContext) c).hostClass();
 
 		if (ct.flags().isInterface()) {
 	    	throw new SemanticException(
-			"Cannot declare an intertype constructor inside an interface.",
+			"Cannot declare an intertype constructor on an interface.",
 			position());
 		}
 		
@@ -455,7 +457,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 
         if (ct.isAnonymous()) {
 	    throw new SemanticException(
-		"Cannot declare an intertype constructor inside an anonymous class.",
+		"Cannot declare an intertype constructor on an anonymous class.",
 		position());
         }
 
@@ -496,6 +498,10 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
             }
         }
 
+		if ((ct instanceof AspectType) &&
+					constructorInstance().formalTypes().size() > 0)
+					throw new SemanticException("Aspects can only have nullary constructors",position());
+					
         return this;
     }
 

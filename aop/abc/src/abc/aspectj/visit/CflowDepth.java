@@ -1,6 +1,8 @@
 package abc.aspectj.visit;
 
+import polyglot.ast.Node;
 
 public interface CflowDepth {
-    public void recordCflowDepth(int depth);
+    public Node recordCflowDepth(int depth);
+    public int getCflowDepth(); // for debugging
 }

@@ -31,8 +31,14 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 		return true;
 	}
 	
-    public void recordCflowDepth(int depth) {
-	this.depth=depth;
+    public Node recordCflowDepth(int depth) {
+    	PCCflow_c n = (PCCflow_c) copy();
+	    n.depth=depth;
+	    return n;
+    }
+    
+    public int getCflowDepth() {
+    	return depth;
     }
     
 	/** Reconstruct the pointcut. */
@@ -52,6 +58,11 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 		 return reconstruct(pc);
     }
 
+	public Context enterScope(Context c) {
+		Context nc = super.enterScope(c);
+		 return ((AJContext) nc).pushCflow(mustBind());
+	} 
+	  
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 			AJContext c = (AJContext) tc.context();
 			if (c.inDeclare())
@@ -76,7 +87,7 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if(depth==-1) throw new InternalCompilerError
-			  ("Depth of cflow should have been recorded by now");
+			  ("Depth of cflow should have been recorded by now. This= " + this + " at  " + position());
 	return new abc.weaving.aspectinfo.Cflow
 	    (pc.makeAIPointcut(),position(),depth);
     }

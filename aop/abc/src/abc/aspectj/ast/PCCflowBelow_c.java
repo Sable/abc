@@ -29,10 +29,16 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 	public boolean isDynamic() {
 		return true;
 	}
-	
-    public void recordCflowDepth(int depth) {
-	this.depth=depth;
-    }
+	    
+	public Node recordCflowDepth(int depth) {
+		 PCCflowBelow_c n = (PCCflowBelow_c) copy();
+		 n.depth=depth;
+		 return n;
+	 }
+	 
+	 public int getCflowDepth() {
+	 	return depth;
+	 }
 
     /** Reconstruct the pointcut. */
     protected PCCflowBelow_c reconstruct(Pointcut pc) {
@@ -52,11 +58,16 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-	w.write("cflowbelow(");
+		w.write("cflowbelow(");
         print(pc, w, tr);
         w.write(")");
     }
     
+	public Context enterScope(Context c) {
+		Context nc = super.enterScope(c);
+		return ((AJContext) nc).pushCflow(mustBind());
+	}
+	  
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 			AJContext c = (AJContext) tc.context();
 			if (c.inDeclare())
@@ -74,7 +85,7 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if(depth==-1) throw new InternalCompilerError
-			  ("Depth of cflow should have been recorded by now");	
+			  ("Depth of cflow should have been recorded by now. This= "+this + " at "+position());	
 	return new abc.weaving.aspectinfo.CflowBelow
 	    (pc.makeAIPointcut(),position(),depth);
     }

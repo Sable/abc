@@ -248,7 +248,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 				   throw new SemanticException("Cannot refer to an abstract pointcut inside a concrete aspect.",
 												position());
 	    if (pci.transDynamic() && c.inDeclare())
-	    	throw new SemanticException("Cannot refer to a dynamic pointcut inside a declare statement.",position());
+	    	throw new SemanticException("Pointcut \"" + name()+"\" requires a dynamic test and cannot be used inside a \"declare\" statement.",position());
       	return this;
 	}
 	 

@@ -17,7 +17,16 @@ public class LocalDel_c extends JL_c implements MakesAspectMethods,
 {
    
      
-   
+     public Node typeCheck(TypeChecker tc) throws SemanticException {
+     	 AJContext ajc =(AJContext) tc.context();
+     	 if (ajc.inCflow() && ajc.inIf()) {
+     	 	Local m = (Local) node();
+     	 	if (! ajc.getCflowMustBind().contains(m.name()))
+     	 		throw new SemanticException("Local "+m.name()+" is not bound within enclosing cflow: it cannot be used within if(..)",node().position());
+     	 }
+     	 return node().typeCheck(tc);
+     } 
+        
     public void aspectMethodsEnter(AspectMethods visitor)
     {
         // do nothing

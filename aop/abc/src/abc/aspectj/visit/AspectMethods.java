@@ -53,6 +53,7 @@ import abc.aspectj.ast.AspectDecl_c;
 import abc.aspectj.ast.MakesAspectMethods;
 
 import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
@@ -88,6 +89,7 @@ public class AspectMethods extends ContextVisitor {
 		this.itd = new Stack();
 		this.lhss = new Stack();
 		this.pcifs = new Stack();
+		this.cflowdepth = -1;
 	}
 
         public void pushClass()
@@ -227,19 +229,13 @@ public class AspectMethods extends ContextVisitor {
         if (del instanceof MakesAspectMethods) {
                 ((MakesAspectMethods) del).aspectMethodsEnter(this);
         }
-		if (del instanceof CflowDepth) {
-		    cflowdepth++;
-		    ((CflowDepth) del).recordCflowDepth(cflowdepth);
-		}
 		return this;
-		
     }
  
 	protected Node leaveCall(Node old, Node n, NodeVisitor v)  throws SemanticException {
-		JL del = n.del();
-		if (del instanceof CflowDepth) {
-			cflowdepth--;
-		}              
+		JL del = n.del();    
+		if (del instanceof CflowDepth)
+		   n = ((CflowDepth) del).recordCflowDepth(((AJContext)context()).cflowDepth());
 		if (del instanceof MakesAspectMethods) {
 					 n = ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
 				}

@@ -1,6 +1,7 @@
 
 package abc.aspectj.types;
 
+import java.util.Collection;
 import polyglot.types.ClassType;
 import polyglot.types.Type;
 import polyglot.types.Context;
@@ -70,5 +71,24 @@ public interface AJContext extends Context {
 	
 	/** Get enclosing aspect, or null */
 	public AspectType currentAspect();
+
+/* other pointcut stuff */
+
+	/** mark entry of cflow pointcut expr */
+	AJContext pushCflow(Collection mustBind);
 	
+	/** mark entry of if pointcut expr */
+	AJContext pushIf();
+	
+	/** inside a cflow? */
+	boolean inCflow();
+	
+	/** get the names of variables that are bound in the smallest enclosing cflow */
+	Collection getCflowMustBind();
+	
+	/** nesting level of cflows (for codegen) */
+	int cflowDepth();
+	
+	/** inside an if pointcut? */
+	boolean inIf();
 }

@@ -64,6 +64,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
 
+	public static final polyglot.frontend.Pass.ID ASPECT_PREPARE = new polyglot.frontend.Pass.ID("aspect-prepare");
     public static final polyglot.frontend.Pass.ID HARVEST_ASPECT_INFO = new polyglot.frontend.Pass.ID("harvest");
     public static final polyglot.frontend.Pass.ID CLEAN_MEMBERS = new polyglot.frontend.Pass.ID("clean-members");
 
@@ -250,7 +251,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
         // add new methods for proceed and if-pointcuts, and turn advice into methods
         l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(job,nf,ts)));
-
+        l.add(new GlobalBarrierPass(ASPECT_PREPARE,job));
+        
         // to test the above:
         // l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
         l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf)));

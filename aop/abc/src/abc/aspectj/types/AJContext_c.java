@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.Collection;
 
 import polyglot.util.InternalCompilerError;
 
@@ -39,6 +40,10 @@ public class AJContext_c extends Context_c implements AJContext {
     protected boolean isAdvice;
     protected boolean isAround;
     protected MethodInstance proceed;
+    protected boolean inCflow;
+    protected Collection cflowMustBind;
+    protected boolean inIf;
+    protected int cflowDepth;
     
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
@@ -48,6 +53,10 @@ public class AJContext_c extends Context_c implements AJContext {
 		isAdvice = false;
 		isAround = false;
 		proceed = null;
+		inCflow = false;
+		inIf = false;
+		cflowMustBind = null;
+		cflowDepth = 0;
 	}
 	
 	
@@ -61,6 +70,35 @@ public class AJContext_c extends Context_c implements AJContext {
 		return indeclare;
 	}
 	
+	public AJContext pushCflow(Collection mustBind) {
+		AJContext_c c = (AJContext_c) push();
+		c.inCflow = true;
+		c.cflowMustBind = mustBind;
+		c.cflowDepth = cflowDepth+1;
+		return c;
+	}
+	
+	public boolean inCflow() {
+		return inCflow;
+	}
+	
+	public Collection getCflowMustBind() {
+		return cflowMustBind;
+	}
+	
+	public int cflowDepth() {
+		return cflowDepth;
+	}
+	
+	public AJContext pushIf() {
+		AJContext_c c = (AJContext_c) push();
+		c.inIf = true;
+		return c;
+	}
+	
+	public boolean inIf() {
+		return inIf;
+	}
 	
 	public AJContext pushAdvice(boolean isAround) {
 		AJContext_c c = (AJContext_c) super.push();

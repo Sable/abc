@@ -66,11 +66,10 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	   return reconstruct(expr);
 	}
 
-    
 	/** Type check the pointcut. */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		TypeSystem ts = tc.typeSystem();
-
+        
 		AJContext c = (AJContext) tc.context();
 		if (c.inDeclare())
 			throw new SemanticException("if(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
@@ -222,7 +221,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 
 
     public Context enterScope(Context c) {
-    	AJContext ajc = (AJContext) c.pushStatic();
+    	AJContext ajc = ((AJContext) c.pushStatic()).pushIf();
 		AJTypeSystem ts = (AJTypeSystem)ajc.typeSystem();
 		LocalInstance jp = thisJoinPointInstance(ts);
 		ajc.addVariable(jp);
