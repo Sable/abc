@@ -103,9 +103,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
   
   /** in intertype declarations with an interface host, one can
    *  make calls of the form "super.foo()" - these then have to
-   *  be resolved in the super-interfaces of the host. It is an
-   *  error when there is more than one candidate found in the
-   *  set of interfaces.
+   *  be resolved in the super-interfaces of the host. 
    */
   public Node typeCheck(TypeChecker tc) throws SemanticException {
   	AJContext ajc = (AJContext) tc.context();
@@ -115,30 +113,52 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
   	    target instanceof HostSpecial_c) {
   		HostSpecial_c hs = (HostSpecial_c) target;
   		if (hs.kind() == Special.SUPER) {
-			List argTypes = new ArrayList(this.arguments.size());
-			for (Iterator i = this.arguments.iterator(); i.hasNext(); ) {
-				Expr e = (Expr) i.next();
-				argTypes.add(e.type());
-			}
-			List candidates = new ArrayList(); // perhaps this should be a set
-			ClassType itf = null;
-  			for (Iterator itfs = ajc.hostClass().interfaces().iterator(); itfs.hasNext(); ) {
-  				itf = (ClassType) itfs.next();
-  				MethodInstance mi;
-  				try { mi = ts.findMethod(itf,name(),argTypes,ajc.currentClass());
-  				} catch (SemanticException e) { continue; }
-  				candidates.add(mi);
-  			}
-  			if (candidates.size() > 1)
-  				throw new SemanticException("Ambiguous use of super in intertype declaration",position());
-  			if (candidates.size() == 0)
-  				return super.typeCheck(tc);
-  			MethodInstance mi = (MethodInstance) candidates.get(0);
 			
-			Call_c call = (Call_c)this.target(hs.type(itf)).methodInstance(mi).type(mi.returnType());
-		
-			System.out.println("target ="+call.target()+" of type "+call.target().type());
-		    return call;
+			 List argTypes = new ArrayList(this.arguments.size());
+
+			 for (Iterator i = this.arguments.iterator(); i.hasNext(); ) {
+				 Expr e = (Expr) i.next();
+				 argTypes.add(e.type());
+			 }
+
+			 if (this.target == null) {
+				 return this.typeCheckNullTarget(tc, argTypes);
+			 }
+
+			 ReferenceType targetType = this.findTargetType();
+			 MethodInstance mi = ts.findMethod(targetType, 
+											   this.name, 
+											   argTypes, 
+											   ajc.currentClass());
+        
+        
+			 /* This call is in a static context if and only if
+			  * the target (possibly implicit) is a type node.
+			  */
+			 boolean staticContext = (this.target instanceof TypeNode);
+
+
+			 if (staticContext && !mi.flags().isStatic()) {
+				 throw new SemanticException("Cannot call non-static method " + this.name
+									   + " of " + targetType + " in static "
+									   + "context.", this.position());
+			 }
+
+             /* don't do this test for AspectJ
+			 // If the target is super, but the method is abstract, then complain.
+			 if (this.target instanceof Special && 
+				 ((Special)this.target).kind() == Special.SUPER &&
+				 mi.flags().isAbstract()) {
+					 throw new SemanticException("Cannot call an abstract method " +
+									"of the super class", this.position());            
+			 } */
+			 
+			 // If we found a method, the call must type check, so no need to check
+			 // the arguments here.
+        
+			 Call_c call = (Call_c)this.methodInstance(mi).type(mi.returnType());
+			 // call.checkConsistency(ajc);
+			 return call;
   		}
   	    }
   	return super.typeCheck(tc);
