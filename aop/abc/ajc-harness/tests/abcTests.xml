@@ -6877,7 +6877,9 @@
     </ajc-test>
 
     <ajc-test dir="harness" keywords="command-line-error"
-      title="CLE: no sources">
+      title="CLE: no sources" abccomment="abc fails this test because
+      when invoked without sources, it runs through and does nothing,
+      while ajc aborts with an error.">
         <compile badInput="true">
             <message kind="error" text="no sources"/>
             <message kind="abort" text="Usage"/>
