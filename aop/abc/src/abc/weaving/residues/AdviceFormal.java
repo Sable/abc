@@ -1,5 +1,6 @@
 package abc.weaving.residues;
 
+import polyglot.util.InternalCompilerError;
 import soot.Value;
 import soot.Local;
 import soot.Type;
@@ -39,9 +40,9 @@ public class AdviceFormal extends WeavingVar {
 
     public Local get() {
 	if(loc==null) 
-	    throw new RuntimeException
-		("Internal error: someone tried to read from a variable bound "
-		 +"to an advice formal before it was written");
+	    throw new InternalCompilerError
+		("Someone tried to read from a variable bound "
+		 +"to an advice formal before it was written: "+this);
 
 	return loc;
     }

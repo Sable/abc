@@ -10,7 +10,8 @@
         />
     </target>
 
-    <target name="jars" depends="abc-jar,runtime-jar,harness-jar,testing-jar"/>
+    <target name="jars" 
+            depends="abc-jar,runtime-jar,harness-jar,testing-jar,complete-jar"/>
 
     <target name="abc-jar" depends="settings,abc">
         <jar destfile="lib/abc.jar">
@@ -80,6 +81,16 @@
             </classpath>
         </javac>
     </target>
+
+   <target name="complete-jar" depends="abc-jar">
+        <jar destfile="lib/abc-complete.jar">
+            <fileset dir="classes"/>
+            <zipfileset src="${polyglot.loc}"/>
+            <zipfileset src="${polyglot.cupclasses.loc}"/>
+            <zipfileset src="${soot.loc}"/>
+            <zipfileset src="${jasmin.loc}"/>
+        </jar>
+   </target>
 
     <target name="abc" depends="settings,flex-translator,cup-translator">
         <mkdir dir="classes"/>

@@ -1,9 +1,9 @@
 public class Test {
-   void foo() throws TestException {
+   void foo() {
       throw new TestException();
    }
 
-   public static void main(String[] args)  {
+   public static void main(String[] args) {
       new Test().foo();
    }
 
@@ -13,11 +13,18 @@ class TestException extends Exception {
 
 }
 
-/*
-aspect Aspect {
+
+
+abstract aspect Aspect {
 
    declare soft: TestException: execution(void foo());
 
       
 }
-*/
+
+aspect Aspect2 extends Aspect {
+}
+
+aspect Aspect3 extends Aspect {
+}
+
