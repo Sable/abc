@@ -718,6 +718,8 @@ public class AroundWeaver {
 			}			
 			return arrayList;
 		}
+		// this is not used anymore. arguments bound by cflow are not 
+		// changeable and are thus not needed in the list.
 		private static void verifyBindings(ArrayList bindings) {
 			int i=0;
 			for (Iterator it=bindings.iterator(); it.hasNext();i++) {
@@ -794,7 +796,7 @@ public class AroundWeaver {
 
 		
 			ArrayList staticBindings = getStaticBinding();
-			verifyBindings(staticBindings);
+			//verifyBindings(staticBindings);
 		
 			Stmt failPoint = Jimple.v().newNopStmt();
 			WeavingContext wc = PointcutCodeGen.makeWeavingContext(adviceAppl);
@@ -913,6 +915,11 @@ public class AroundWeaver {
 				adviceAppl instanceof ConstructorAdviceApplication) {
 				//ExecutionAdviceApplication ea = (ExecutionAdviceApplication) adviceAppl;
 				
+				if (adviceAppl instanceof ConstructorAdviceApplication) {
+					if (!joinpointMethod.getReturnType().equals(VoidType.v()))
+						throw new InternalError("Constructor must have void return type: " + 
+							joinpointMethod);
+				}
 				//if (joinpointMethod.getName().startsWith("around$"))
 				//	throw new CodeGenException("Execution pointcut matching advice method.");
 	
