@@ -1,9 +1,12 @@
 
 package abc.aspectj.visit;
 
+
 import polyglot.ast.Node;
 import polyglot.ast.ClassMember;
 import polyglot.ast.NodeFactory;
+import polyglot.ast.ClassDecl;
+
 import polyglot.types.TypeSystem;
 import polyglot.frontend.Job;
 import polyglot.visit.NodeVisitor;
@@ -13,6 +16,7 @@ import polyglot.types.SemanticException;
 import abc.aspectj.ast.DeclareParentsExt;
 import abc.aspectj.ast.DeclareParentsImpl;
 
+
 public class DeclareParentsAmbiguityRemover extends ContextVisitor {
 
     public DeclareParentsAmbiguityRemover(Job job, TypeSystem ts, NodeFactory nf) {
@@ -20,9 +24,10 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
     }
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
-	if (n instanceof ClassMember && !(n instanceof DeclareParentsExt || n instanceof DeclareParentsImpl)) {
+	if (n instanceof ClassMember && !(n instanceof ClassDecl) &&
+		!(n instanceof DeclareParentsExt || n instanceof DeclareParentsImpl)) {
 	    return this.bypassChildren(n);
-	}
+	} 
 	return this;
     }
 

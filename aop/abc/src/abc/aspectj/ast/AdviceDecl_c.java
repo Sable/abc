@@ -274,8 +274,9 @@ public class AdviceDecl_c extends MethodDecl_c
 			newformals.add(jp);
 			newformalTypes.add(ts.JoinPoint());
 		}
-    	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc);
-    	MethodInstance mi = md.methodInstance().formalTypes(newformalTypes);
+		Flags f = this.flags().set(Flags.FINAL);
+    	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc).flags(f);
+    	MethodInstance mi = md.methodInstance().formalTypes(newformalTypes).flags(f);
 	//nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,newformals,throwTypes(),body());
     	return md.methodInstance(mi);
     }
