@@ -400,11 +400,18 @@ SingleCharacter = [^\r\n\'\\]
   "catch"                        { return key(sym.CATCH); }
   "char"                         { return key(sym.CHAR); }
   "class"                        { if (!lastTokenWasDot) {
-  									 	yybegin(YYINITIAL);
+  									// if in ASPECTJ state, stay there
+  										int newSavedState=
+  											savedState == 
+  												IN_ASPECTJ ? IN_ASPECTJ : IN_JAVA;
+  										int newState=
+  											savedState == 
+  												IN_ASPECTJ ? ASPECTJ : YYINITIAL;  										
+  									 	yybegin(newState);
                                    	nestingStack.push(
                                       		new NestingState(
                                          	curlyBraceLevel, savedState));
-                                   		savedState = YYINITIAL;
+                                   		savedState = newSavedState;
                                    }
                                    return key(sym.CLASS); 
                                  }
