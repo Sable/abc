@@ -109,7 +109,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@194c3f0
+creating: A@88ddb9
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -699,44 +699,7 @@ PASS: Test 140: "pureJava/Primitives that special case for a constant arm should
 
 Running test 141: pureJava/Parenthesized true and false don't parse
 Commandline: abc -d pureJava pureJava/ParenKeywords.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:620)
-	at abc.testing.TestCase.runTest(TestCase.java:287)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.ClassCastException: polyglot.visit.InitChecker$1
-	at polyglot.visit.InitChecker.check(InitChecker.java:748)
-	at polyglot.visit.DataFlow.post(DataFlow.java:717)
-	at polyglot.visit.DataFlow.dataflow(DataFlow.java:404)
-	at polyglot.visit.DataFlow.leaveCall(DataFlow.java:687)
-	at polyglot.visit.InitChecker.leaveCall(InitChecker.java:317)
-	at polyglot.visit.ErrorHandlingVisitor.leaveCall(ErrorHandlingVisitor.java:127)
-	at polyglot.visit.ErrorHandlingVisitor.leave(ErrorHandlingVisitor.java:251)
-	at polyglot.visit.DataFlow.leave(DataFlow.java:677)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:131)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
-	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:205)
-	at polyglot.ext.jl.ast.ClassBody_c.visitChildren(ClassBody_c.java:61)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
-	at polyglot.ext.jl.ast.ClassDecl_c.visitChildren(ClassDecl_c.java:132)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
-	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
-	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:205)
-	at polyglot.ext.jl.ast.SourceFile_c.visitChildren(SourceFile_c.java:108)
-	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
-	at polyglot.ext.jl.ast.Node_c.visit(Node_c.java:152)
-	at polyglot.frontend.VisitorPass.run(VisitorPass.java:48)
-	at polyglot.frontend.AbstractExtensionInfo.runPass(AbstractExtensionInfo.java:286)
-	at polyglot.frontend.AbstractExtensionInfo.runToPass(AbstractExtensionInfo.java:222)
-	at polyglot.frontend.AbstractExtensionInfo.runAllPasses(AbstractExtensionInfo.java:190)
-	at polyglot.frontend.AbstractExtensionInfo.runToCompletion(AbstractExtensionInfo.java:109)
-	at polyglot.frontend.Compiler.compile(Compiler.java:95)
-	at abc.main.Main.compile(Main.java:764)
-	at abc.main.Main.run(Main.java:545)
-	... 3 more
-FAIL: Test 141: "pureJava/Parenthesized true and false don't parse" failed.
+PASS: Test 141: "pureJava/Parenthesized true and false don't parse" passed.
 
 
 Running test 142: pureJava/Field sets to public fields of private fields of enclosing types
@@ -2346,7 +2309,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@150d441, [Ljava.lang.Object;@19f2c64, TwoAnonymous$3@150d441
+calling run: TwoAnonymous$3@1544983, [Ljava.lang.Object;@a63c3d, TwoAnonymous$3@1544983
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2463,32 +2426,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@32046e.foo calls Outer$Inner@1c0e86d.mi
+Outer@13fdb8a.foo calls Outer$Inner@1668143.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1c0e86d.mi calls java.io.PrintStream@1db5015.println
+Outer$Inner@1668143.mi calls java.io.PrintStream@b08ccb.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@32046e.foo calls Outer$InnerRandom@750efb.nextHook
+Outer@13fdb8a.foo calls Outer$InnerRandom@c89452.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@750efb.nextHook calls Outer$InnerRandom@750efb.next
+Outer$InnerRandom@c89452.nextHook calls Outer$InnerRandom@c89452.next
 Outer.foo() calls Random.nextInt(..)
-Outer@32046e.foo calls X.nextInt
+Outer@13fdb8a.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1597f6b.foo calls Outer$Inner@bc8911.mi
+Outer@10438f7.foo calls Outer$Inner@37f631.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@bc8911.mi calls java.io.PrintStream@1cad416.println
+Outer$Inner@37f631.mi calls java.io.PrintStream@41c84.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1597f6b.foo calls Outer$InnerRandom@12a05c9.nextHook
+Outer@10438f7.foo calls Outer$InnerRandom@1ec2238.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@12a05c9.nextHook calls Outer$InnerRandom@12a05c9.next
+Outer$InnerRandom@1ec2238.nextHook calls Outer$InnerRandom@1ec2238.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1597f6b.foo calls X.nextInt
+Outer@10438f7.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4157,7 +4120,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@180b562.x:=-3
+test.Test3@1d715c5.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4240,8 +4203,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@1c6900f
-o: Bar@1c6900f, i: 10
+o: Bar@126a97a
+o: Bar@126a97a, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4835,7 +4798,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1ac15e4
+LibraryAspect-defined run() for C@1f4be97
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5161,7 +5124,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@c6f637
+? Util.read() obj=Test@cd4642
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5180,7 +5143,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1138ba1
+? Util.read() obj=ClinitTest@1793824
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5190,7 +5153,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@8d2525
+? Util.read() obj=SuidTest@1daed9b
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5397,12 +5360,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@189c13f
-Invoking command bean:  Command@ee36de
-hello(Command@ee36de)
-Created a PerThis aspect : Testcase2@154307a
-Invoking command bean:  Command@3ab6fd
-hello again(Command@3ab6fd)
+Created a PerThis aspect : Testcase2@1dd4b
+Invoking command bean:  Command@6785b4
+hello(Command@6785b4)
+Created a PerThis aspect : Testcase2@7afc04
+Invoking command bean:  Command@377a3e
+hello again(Command@377a3e)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 

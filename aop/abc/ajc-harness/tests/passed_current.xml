@@ -580,6 +580,10 @@
         <compile files="OneArmedPrimitiveTests.java"></compile>
         <run class="OneArmedPrimitiveTests"></run>
     </ajc-test>
+<ajc-test title="Parenthesized true and false don't parse" num="141" keywords="from-java" dir="pureJava">
+        <compile files="ParenKeywords.java"></compile>
+        <run class="ParenKeywords"></run>
+    </ajc-test>
 <ajc-test title="Field sets to public fields of private fields of enclosing types" num="142" keywords="from-java" dir="pureJava">
         <compile files="InnerFieldRef.java"></compile>
         <run class="InnerFieldRef"></run>
