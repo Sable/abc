@@ -2053,13 +2053,10 @@
     <ajc-test num="231" dir="new"
       title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]"
       abccomment="Polyglot fails to check special modifier restrictions for interfaces.
-                  ODM 5/7/04. This has been fixed and abc now finds an error
-                  that escapes ajc. ODM 26/07/04"
+                  ODM 5/7/04. This has been fixed. ODM 11/08/04"
       keywords="from-errors">
         <compile files="StrictFpCErr1.java">
-            <ajcmessage kind="error" line="3"/>
-            <message kind="error" line="1"/>
-            <message kind="error" line="3"/> 
+            <message kind="error" line="3"/>
        </compile>
     </ajc-test>
 
@@ -4585,10 +4582,12 @@
 
     <ajc-test num="523" dir="new" pr="570"
       title="illegal method conflicts with introductions and interfaces and PR#561"
+      abccomment="abc gives one error for one mistake, and ajc gives several. ODM 11/08/04"
       keywords="from-resolved_10x">
         <compile files="MethodConflictsCF.java">
-            <message kind="error" line="8"/>
-            <message kind="error" line="20"/>
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="28"/>
             <message kind="error" line="28"/>
         </compile>
     </ajc-test>  
@@ -4805,15 +4804,18 @@
 
    <ajc-test num="549" dir="new/subaspects" pr="647"
       title="concrete aspect unable to access abstract package-private pointcut in parent for overriding"
+      abccomment = "abc bails out early, but ok. ODM 11/08/04"
       keywords="from-resolved_10x"
        comment="XXX getting error - confirm line numbers">
         <compile files="parent/ParentCE.java,child/ChildCE.java">
-            <message kind="error" file="child/ChildCE.java" line="21"/>
-            <message kind="error" file="child/ChildCE.java" line="31"/>
-            <message kind="error" file="parent/ParentCE.java" line="8"/>
-            <message kind="error" file="parent/ParentCE.java" line="10"/>
-            <message kind="error" file="parent/ParentCE.java" line="12"/>
+            <ajcmessage kind="error" file="child/ChildCE.java" line="21"/>
+            <ajcmessage kind="error" file="child/ChildCE.java" line="31"/>
+            <ajcmessage kind="error" file="parent/ParentCE.java" line="8"/>
+            <ajcmessage kind="error" file="parent/ParentCE.java" line="10"/>
+            <ajcmessage kind="error" file="parent/ParentCE.java" line="12"/>
+            <ajcmessage kind="error" file="parent/ParentCE.java" line="22"/>
             <message kind="error" file="parent/ParentCE.java" line="22"/>
+            <message kind="error" file="child/ChildCE.java" line="31"/>
         </compile>
     </ajc-test>
 
