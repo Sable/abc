@@ -538,7 +538,7 @@ public class TestCase {
 		            printErrors(errors);
 		            return false;
 		        }
-		        System.err.println("Error position is null; assuming error matches. Error message: " + ei.getMessage());
+		        System.err.println("Error position is null; assuming error matches current expected error with no line number. Error message: " + ei.getMessage());
 		        System.err.println("WARNING: This test was probably not really passed!!");
 		        continue;
 		    }
