@@ -56,7 +56,7 @@ public abstract class Pointcut extends Syntax {
         throws SemanticException;
 
     /** Return a "normalized" version of this pointcut.
-     *  pointcut. The result has the following properties:
+     *  The result has the following properties:
      *  <ul>
      *  <li>All named pointcuts inlined
      *  <li>All locally quantified variables have fresh names
