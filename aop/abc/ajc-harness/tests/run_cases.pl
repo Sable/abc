@@ -27,7 +27,12 @@ if ($ARGV[$arg] eq "-list") {
 	
 }
 
-my $inputfile=$ARGV[$arg];
+my $inputfile;
+if ($argc>$arg) {
+ 	$inputfile=$ARGV[$arg];
+} else {
+	die "must specify input file";
+}
 $arg++;
 
 my $dirfilter="";
@@ -132,6 +137,9 @@ open(INPUT, "< $inputfile") || die "can't open input file";
 my $file;
 while (<INPUT>) {
   $file .= $_;
+}
+if (!$file) {
+	die "invalid input file '$inputfile'";
 }
 
 $file =~ s/<ajc-test[^>]+dir=\"([^\"]*)\"[^>]+title=\"([^\"]*)\"[^>]*>.*?<\/ajc-test>/do_case($1,$2,$&)/sge;
