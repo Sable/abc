@@ -39,11 +39,7 @@ public class If extends Pointcut {
     public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm) {
 	List/*<WeavingVar>*/ args=new LinkedList();
 	Iterator it=vars.iterator();
-	while(it.hasNext()) {
-	    Var v=(Var) it.next();
-	    System.out.println(v.toString());
-	    args.add(we.getWeavingVar(v));
-	}
+	while(it.hasNext()) args.add(we.getWeavingVar((Var) it.next()));
 	return new IfResidue(impl.getSootMethod(),args);
     }
 
