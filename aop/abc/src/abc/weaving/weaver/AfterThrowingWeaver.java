@@ -44,6 +44,9 @@ public class AfterThrowingWeaver {
       { debug("Handling after throwing: " + adviceappl);
         Body b = method.getActiveBody();
         Chain units = b.getUnits().getNonPatchingChain();
+
+	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
+
 	AdviceDecl advicedecl = adviceappl.advice;
 	AdviceSpec advicespec = advicedecl.getAdviceSpec();
 	SootClass aspect = advicedecl.getAspect().
@@ -69,6 +72,11 @@ public class AfterThrowingWeaver {
         IdentityStmt idStmt = Jimple.v().newIdentityStmt(exception, exceptRef);
         units.insertAfter(idStmt, goto1);
 
+        ThrowStmt throwStmt = Jimple.v().newThrowStmt(exception);
+
+	Stmt endresidue=adviceappl.residue.codeGen
+	    (method,lg,units,idStmt,throwStmt,wc);
+
 	//have ... 
 	//    java.lang.Exception exception;
 	//
@@ -86,14 +94,13 @@ public class AfterThrowingWeaver {
 		           Jimple.v().
 			     newStaticInvokeExpr(aspect.getMethod("aspectOf",
 				                             new ArrayList())));
-        units.insertAfter( assignStmt, idStmt);
+        units.insertAfter( assignStmt, endresidue);
 
-        ThrowStmt throwStmt = Jimple.v().newThrowStmt(exception);
         units.insertAfter(throwStmt, assignStmt);
 
         Chain invokestmts =  
                 PointcutCodeGen.makeAdviceInvokeStmt 
-		                      (theAspect,adviceappl,units,lg);
+		                      (theAspect,adviceappl,units,lg,wc);
 	for (Iterator stmtlist = invokestmts.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
 	    units.insertBefore(nextstmt,throwStmt);

@@ -2,6 +2,7 @@ package abc.weaving.weaver;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Vector;
 
 import soot.Body;
 import soot.Local;
@@ -36,6 +37,21 @@ public class BeforeWeaver {
         // this non patching chain is needed so that Soot doesn't "Fix" 
         // the traps. 
         Chain units = b.getUnits().getNonPatchingChain();
+
+	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
+
+	// find location to weave in statements, 
+	// just after beginning of join point shadow
+	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
+	Stmt followingstmt = (Stmt) units.getSuccOf(beginshadow);
+
+	Stmt failpoint = Jimple.v().newNopStmt();
+	units.insertBefore(failpoint,followingstmt);
+
+	// weave in residue
+	Stmt endresidue=adviceappl.residue.codeGen
+	    (method,localgen,units,beginshadow,failpoint,wc);
+
 	AdviceDecl advicedecl = adviceappl.advice;
 	SootClass aspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
@@ -54,17 +70,15 @@ public class BeforeWeaver {
 
 	// stmt2:  <aspectref>.<advicemethod>();
         Chain stmts2 = PointcutCodeGen.makeAdviceInvokeStmt
-	                       (aspectref,adviceappl,units,localgen);
+	    (aspectref,adviceappl,units,localgen,wc);
         debug("Generated stmts2: " + stmts2);
-
-	// weave in statements just after beginning of join point shadow
-	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
-	Stmt followingstmt = (Stmt) units.getSuccOf(beginshadow);
-	units.insertAfter(stmt1,beginshadow);
+	
+	units.insertAfter(stmt1,endresidue);
 	for (Iterator stmtlist = stmts2.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
-	    units.insertBefore(nextstmt,followingstmt);
+	  units.insertBefore(nextstmt,failpoint);
 	  }
+
       } // method doWeave 
 
 }

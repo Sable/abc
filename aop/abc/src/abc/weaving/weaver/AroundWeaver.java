@@ -1260,9 +1260,10 @@ public class AroundWeaver {
  	
  	
  		// generate basic invoke statement (to advice method) and preparatory stmts
+		// FIXME
 		Chain invokeStmts =  
 					PointcutCodeGen.makeAdviceInvokeStmt 
-										  (aspectref,adviceAppl,joinpointStatements,localgen);
+										  (aspectref,adviceAppl,joinpointStatements,localgen,null);
 
 		// copy all the statements before the actual call into the shadow
 		InvokeExpr invokeEx= ((InvokeStmt)invokeStmts.getLast()).getInvokeExpr();

@@ -35,12 +35,26 @@ public class AfterReturningWeaver {
 	                      AdviceApplication adviceappl)
       { debug("Handling after returning: " + adviceappl);
         Body b = method.getActiveBody();
-        Chain units = b.getUnits();
+	// Use the non-patching chain to stop soot "fixing" up the jumps
+        Chain units = b.getUnits().getNonPatchingChain();
+
+	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
+	
+	Stmt endshadow = adviceappl.shadowpoints.getEnd();
+	Stmt prevstmt = (Stmt) units.getPredOf(endshadow);
+
+	Stmt failpoint = Jimple.v().newNopStmt();
+	units.insertBefore(failpoint,endshadow);
+
+	Stmt endresidue=adviceappl.residue.codeGen
+	    (method,localgen,units,prevstmt,failpoint,wc);
+
 	AdviceDecl advicedecl = adviceappl.advice;
 	AdviceSpec advicespec = advicedecl.getAdviceSpec();
 	SootClass aspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
 	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
+
 
 	// <AspectType> aspectref;
         Local aspectref = localgen.generateLocal( aspect.getType(), "theAspect" );
@@ -55,16 +69,17 @@ public class AfterReturningWeaver {
 	debug("Generated stmt1: " + stmt1);
 
 	// stmt2:  <aspectref>.<advicemethod>();
+
         Chain stmts2 = PointcutCodeGen.makeAdviceInvokeStmt
-                            (aspectref,adviceappl,units,localgen);
+                            (aspectref,adviceappl,units,localgen,wc);
         debug("Generated stmts2: " + stmts2);
 
 	// weave in statements just before end of join point shadow
-	Stmt endshadow = adviceappl.shadowpoints.getEnd();
-	units.insertBefore(stmt1,endshadow);
+
+	units.insertAfter(stmt1,endresidue);
 	for (Iterator stmtlist = stmts2.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
-	    units.insertBefore(nextstmt,endshadow);
+	    units.insertBefore(nextstmt,failpoint);
 	  }
       } // method doWeave 
 
