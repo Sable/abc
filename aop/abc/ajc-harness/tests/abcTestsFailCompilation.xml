@@ -1,0 +1,25 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+
+<suite>
+    <ajc-test dir="pureJava" title="return;;; is not really legal"
+      keywords="from-java,purejava">
+        <compile files="ReachableEmpty.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="abc"
+      title="syntax error aspect2 instead of aspect"
+      keywords="from-abc">
+        <compile files="Simple2.java">
+            <message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
+
+
+</suite>

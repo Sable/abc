@@ -19,5 +19,15 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="pureJava" title="return;;; is not really legal"
+      keywords="from-java,purejava">
+        <compile files="ReachableEmpty.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="9"/>
+            <message kind="error" line="13"/>
+            <message kind="error" line="17"/>
+        </compile>
+    </ajc-test>
+
 
 </suite>
