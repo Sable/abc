@@ -104,5 +104,7 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 		}
 	}
 	private static int nextUniqueID=0;
-
+	public static void reset() {
+		nextUniqueID=0;
+	}
 }

@@ -15,6 +15,8 @@ import polyglot.util.ErrorInfo;
 
 import abc.aspectj.visit.PatternMatcher;
 
+import abc.weaving.matching.StmtAdviceApplication;
+import abc.weaving.matching.StmtShadowMatch;
 import abc.weaving.weaver.*;
 import abc.weaving.aspectinfo.*;
 
@@ -46,6 +48,7 @@ public class Main {
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.matching.ShadowType.reset();
       abc.weaving.weaver.AroundWeaver.reset();
+      abc.weaving.matching.StmtShadowMatch.reset();
     }
     
     public static void main(String[] args) {
