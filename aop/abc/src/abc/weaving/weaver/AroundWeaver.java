@@ -48,6 +48,7 @@ import com.sun.rsasign.i;
 import soot.toolkits.scalar.*;
 import soot.options.*;
 import sun.security.action.GetLongAction;
+import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
@@ -342,13 +343,13 @@ public class AroundWeaver {
 	public static void doWeave(
 					SootClass joinpointClass,
 					SootMethod joinpointMethod,
-					LocalGenerator localgen,
+					LocalGeneratorEx localgen,
 					AdviceApplication adviceAppl) {
 		debug("Handling aound: " + adviceAppl);
 		
 		Body joinpointBody = joinpointMethod.getActiveBody();
 		boolean bStatic=joinpointMethod.isStatic();
-		Chain joinpointStatements = joinpointBody.getUnits();
+		Chain joinpointStatements = joinpointBody.getUnits().getNonPatchingChain();
 		AdviceDecl adviceDecl = adviceAppl.advice;
 		AdviceSpec adviceSpec = adviceDecl.getAdviceSpec();
 		AroundAdvice aroundSpec = (AroundAdvice) adviceSpec;
@@ -495,7 +496,7 @@ public class AroundWeaver {
 
 			accessMethodInfo.method=accessMethod;
 
-			Chain accessStatements=accessBody.getUnits();
+			Chain accessStatements=accessBody.getUnits().getNonPatchingChain();
 
 			// generate this := @this
 			LocalGeneratorEx lg=new LocalGeneratorEx(accessBody);
@@ -732,7 +733,7 @@ public class AroundWeaver {
 		ValueBox source=stmt.getRightOpBox();
 		Value targetVal=stmt.getLeftOp();
 		Type targetType=stmt.getLeftOp().getType();
-		Chain units=body.getUnits();
+		Chain units=body.getUnits().getNonPatchingChain();
 		Type sourceType=source.getValue().getType();
 		if (!sourceType.equals(targetType)) {
 			LocalGeneratorEx localgen=new LocalGeneratorEx(body);
@@ -791,7 +792,7 @@ public class AroundWeaver {
 		} 			
 	}	
 	private static void insertCast(Body body, Stmt stmt, ValueBox source, Type targetType) {
-		Chain units=body.getUnits();
+		Chain units=body.getUnits().getNonPatchingChain();
 		if (!source.getValue().getType().equals(targetType)) {
 			LocalGeneratorEx localgen=new LocalGeneratorEx(body);
 			Local castLocal=localgen.generateLocal(source.getValue().getType(), "castTmp");
@@ -842,7 +843,7 @@ public class AroundWeaver {
 	private static IdentityStmt getParameterIdentityStatement(SootMethod method, int arg) {
 		if (arg>=method.getParameterCount())
 			throw new InternalError();
-		Chain units=method.getActiveBody().getUnits();
+		Chain units=method.getActiveBody().getUnits().getNonPatchingChain();
 		Iterator it=units.iterator();
 		while (it.hasNext()) {
 			Stmt stmt=(Stmt)it.next();
@@ -865,7 +866,7 @@ public class AroundWeaver {
 	private static Local addParameterToMethod(SootMethod method, Type type, String suggestedName) {
 		//validateMethod(method);
 		Body body=method.getActiveBody();
-		Chain units=body.getUnits();
+		Chain units=body.getUnits().getNonPatchingChain();
 		List params=method.getParameterTypes();
 		
 		IdentityStmt lastIDStmt=null;
@@ -910,7 +911,7 @@ public class AroundWeaver {
 		String accessMethodName=accessMethod.getName();
 		
 		Body accessBody=accessMethod.getActiveBody();
-		Chain accessStatements=accessBody.getUnits();
+		Chain accessStatements=accessBody.getUnits().getNonPatchingChain();
 		
 		boolean bStatic=joinpointMethod.isStatic();
 	
@@ -924,7 +925,7 @@ public class AroundWeaver {
 		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(interfaceName);
 		
 		Body joinpointBody=joinpointMethod.getActiveBody();
-		Chain joinpointChain=joinpointBody.getUnits();		
+		Chain joinpointChain=joinpointBody.getUnits().getNonPatchingChain();		
 		
 		Stmt begin=adviceAppl.shadowpoints.getBegin();
 		Stmt end=adviceAppl.shadowpoints.getEnd();
@@ -1127,7 +1128,7 @@ public class AroundWeaver {
 			}
 		}
 		Body adviceBody=adviceMethod.getActiveBody();
-		Chain adviceStatements=adviceBody.getUnits();
+		Chain adviceStatements=adviceBody.getUnits().getNonPatchingChain();
 		List addedParameterLocals=new LinkedList();
 		{ // Add the new parameters to the advice method 
 		  // and keep track of the newly created locals corresponding to the parameters.
@@ -1247,7 +1248,34 @@ public class AroundWeaver {
 			lThis=joinpointBody.getThisLocal();
 		//lThis.setName("this");
 		
-		LocalGeneratorEx localgen=new LocalGeneratorEx(joinpointBody);	
+		WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceAppl);
+		LocalGeneratorEx localgen=new LocalGeneratorEx(joinpointBody);
+		Stmt failPoint = Jimple.v().newNopStmt();
+		Stmt endResidue;
+		{
+			// weave in dynamic residue
+			
+//			find location to weave in statements, 
+			// just after beginning of join point shadow
+			Stmt beginshadow = adviceAppl.shadowpoints.getBegin();
+			Stmt endshadow=adviceAppl.shadowpoints.getEnd();
+			//Stmt followingstmt = (Stmt) joinpointStatements.getSuccOf(beginshadow);
+			
+			joinpointStatements.insertBefore(failPoint,endshadow);
+		
+			// weave in residue
+			endResidue=adviceAppl.residue.codeGen
+				(joinpointMethod,localgen,joinpointStatements,beginshadow,failPoint,wc);
+			
+			joinpointStatements.insertBefore(Jimple.v().newGotoStmt(endshadow), failPoint);
+			
+			//if (assignStmt)
+			/*InvokeExpr directInvoke=
+				Jimple.v().
+			 accessMethod*/				
+		}
+		
+			
 		
 		// aspectOf() call		
 		Local aspectref = localgen.generateLocal( theAspect.getType(), "theAspect" );
@@ -1260,10 +1288,10 @@ public class AroundWeaver {
  	
  	
  		// generate basic invoke statement (to advice method) and preparatory stmts
-		// FIXME
 		Chain invokeStmts =  
 					PointcutCodeGen.makeAdviceInvokeStmt 
-										  (aspectref,adviceAppl,joinpointStatements,localgen,null);
+										  (aspectref,adviceAppl,joinpointStatements,localgen,
+										  		wc);
 
 		// copy all the statements before the actual call into the shadow
 		InvokeExpr invokeEx= ((InvokeStmt)invokeStmts.getLast()).getInvokeExpr();
@@ -1287,7 +1315,7 @@ public class AroundWeaver {
 		} else {
 			params.add(IntConstant.v(0));
 		}
-		// and add the original parameters
+		// and add the original parameters (dynamic args)
 		params.addAll(0, invokeEx.getArgs());
 		{
 			Value[] parameters=new Value[interfaceInfo.dynamicArguments.size()];
@@ -1371,7 +1399,7 @@ public class AroundWeaver {
 			return;
 		
 		Body body=method.getActiveBody();
-		Chain units=body.getUnits();
+		Chain units=body.getUnits().getNonPatchingChain();
 		List params=method.getParameterTypes();
 		
 		Iterator itUnits=units.iterator();
@@ -1424,7 +1452,7 @@ public class AroundWeaver {
 	private static void removeTraps(Body body, Unit begin, Unit end) {
 		HashSet range=new HashSet();
 		
-		Chain units=body.getUnits();
+		Chain units=body.getUnits().getNonPatchingChain();
 		Iterator it=units.iterator(begin);
 		if (it.hasNext())
 			it.next(); // skip begin
@@ -1599,7 +1627,7 @@ public class AroundWeaver {
 	 * Removes statements between begin and end, excluding these and skip.
 	 */
 	private static void removeStatements(Body body, Unit begin, Unit end, Unit skip) {
-		Chain units=body.getUnits();
+		Chain units=body.getUnits().getNonPatchingChain();
 		List removed=new LinkedList();
 		Iterator it=units.iterator(begin);
 		if (it.hasNext())
@@ -1663,11 +1691,11 @@ public class AroundWeaver {
 		HashMap bindings = new HashMap();
 		//HashMap boxes=new HashMap();
 		
-		Iterator it = source.getUnits().iterator(begin);
+		Iterator it = source.getUnits().getNonPatchingChain().iterator(begin);
 		if (it.hasNext())
 			it.next(); // skip begin
 
-		Chain unitChain=dest.getUnits();
+		Chain unitChain=dest.getUnits().getNonPatchingChain();
 		
 		Unit firstCopy=null;
 		// Clone units in body's statement list 
@@ -1821,7 +1849,7 @@ public class AroundWeaver {
 		validateMethod(adviceMethod);
 		
 		Body aroundBody=adviceMethod.getActiveBody();
-		Chain statements=aroundBody.getUnits();
+		Chain statements=aroundBody.getUnits().getNonPatchingChain();
 		
 		List adviceMethodParameters=adviceMethod.getParameterTypes();
 		

@@ -7,7 +7,7 @@ import soot.SootMethod;
 import soot.util.Chain;
 import soot.jimple.Stmt;
 import soot.jimple.Jimple;
-import abc.weaving.weaver.LocalGeneratorEx;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
 /** Bind a context value to a local or argument

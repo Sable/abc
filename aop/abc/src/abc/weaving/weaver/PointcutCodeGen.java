@@ -14,6 +14,7 @@ import soot.jimple.StaticFieldRef;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import soot.util.HashChain;
+import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbcType;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;

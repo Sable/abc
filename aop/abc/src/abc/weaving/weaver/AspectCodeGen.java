@@ -3,6 +3,8 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import java.util.*;
+
+import abc.soot.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 

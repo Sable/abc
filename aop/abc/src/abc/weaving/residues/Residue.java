@@ -4,7 +4,7 @@ import java.util.Vector;
 import soot.SootMethod;
 import soot.util.Chain;
 import soot.jimple.Stmt;
-import abc.weaving.weaver.LocalGeneratorEx;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
 /** The interface defining dynamic residues of pointcuts

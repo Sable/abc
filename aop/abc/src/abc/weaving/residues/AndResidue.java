@@ -3,7 +3,7 @@ package abc.weaving.residues;
 import soot.SootMethod;
 import soot.util.Chain;
 import soot.jimple.Stmt;
-import abc.weaving.weaver.LocalGeneratorEx;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
 /** Conjunction of two residues

@@ -12,6 +12,7 @@ import soot.jimple.AssignStmt;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.util.Chain;
+import abc.soot.util.*;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.matching.AdviceApplication;
 

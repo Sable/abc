@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package abc.weaving.weaver;
+package abc.soot.util;
 
 import java.util.Iterator;
 

@@ -2,7 +2,7 @@ package abc.weaving.residues;
 
 import soot.Value;
 import soot.SootMethod;
-import abc.weaving.weaver.LocalGeneratorEx;
+import abc.soot.util.LocalGeneratorEx;
 
 
 /** A context value that comes directly from a 

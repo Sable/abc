@@ -4,7 +4,6 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
-import abc.weaving.weaver.LocalGeneratorEx;
 import soot.jimple.toolkits.scalar.*;
 import java.util.*;
 import abc.weaving.weaver.CodeGenException;

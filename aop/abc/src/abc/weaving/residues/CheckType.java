@@ -9,7 +9,7 @@ import soot.jimple.Jimple;
 import soot.util.Chain;
 import soot.jimple.Stmt;
 import soot.jimple.IntConstant;
-import abc.weaving.weaver.LocalGeneratorEx;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
 /** Check the type of a context value
