@@ -9181,5 +9181,24 @@
        <compile files="DeclareParentsInner.java"/>
     </ajc-test>
 
+    <ajc-test num="983" dir="abctests/bugs/declareparentsbinary"
+        title="declare parents on binary classes needs to modify constructor calls 1">
+       <compile files="BinaryClasses.jar,Aspect.java"/>
+       <run class="BinaryClass"/>
+    </ajc-test>
+
+    <ajc-test num="984" dir="abctests/bugs/declareparentsbinary"
+        title="declare parents on binary classes needs to modify constructor calls 2">
+       <compile files="BinaryClasses2.jar,Aspect.java">
+           <!-- actual error location may need changing -->
+           <message kind="error" file="BinaryClasses2.java" line="24"/>
+       </compile>
+    </ajc-test>
+
+    <ajc-test num="985" dir="abctests/bugs"
+        title="declare parents referring to an otherwise unmentioned class">
+        <compile files="DeclareParentsRef.java"/>
+    </ajc-test>
+
 </suite>
 
