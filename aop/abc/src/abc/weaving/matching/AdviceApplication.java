@@ -15,13 +15,13 @@ import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
 import java.util.*;
 
-/** The data structure the pointcut matcher computes */
-/*  @author Ganesh Sittampalam                       */
-/*  @date 23-Apr-04                                  */
+/** The data structure the pointcut matcher computes. One of these is
+ *  constructed for each piece of advice at each shadow where it might apply.
+ *  @author Ganesh Sittampalam
+ */
 public abstract class AdviceApplication {
 
-    /** The advice to be applied. If null, indicates 'dummy' advice, currently just used for
-     *  thisEnclosingJoinPointStaticPart hook points.
+    /** The advice to be applied. 
      */
     public AbstractAdviceDecl advice;
 
@@ -72,71 +72,63 @@ public abstract class AdviceApplication {
 	    
 	    ShadowType st=(ShadowType) shadowIt.next();
 	    ShadowMatch sm=st.matchesAt(pos);
+
+	    if(sm==null) continue;
 	    
-	    if(sm!=null) {
+	    Iterator adviceIt;
 
-		Iterator adviceIt;
-		for(adviceIt=info.getAdviceDecls().iterator();
-		    adviceIt.hasNext();) {
-		    final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
+	    for(adviceIt=info.getAdviceDecls().iterator();
+		adviceIt.hasNext();) {
+		final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
 
-	    	    Pointcut pc=ad.getPointcut();
-		    WeavingEnv we=ad.getWeavingEnv();
+		Pointcut pc=ad.getPointcut();
+		WeavingEnv we=ad.getWeavingEnv();
 
-		    if(abc.main.Debug.v().showPointcutMatching)
-			System.out.println("Matching "+pc+" at "+sm);
+		if(abc.main.Debug.v().showPointcutMatching)
+		    System.out.println("Matching "+pc+" at "+sm);
 
-		    // FIXME: remove the null check once everything is properly 
-		    // implemented
-		    if(pc!=null) {
-			// manual short-circuit logic
-			Residue residue=AlwaysMatch.v;
+		// manual short-circuit logic
+		Residue residue=AlwaysMatch.v;
 
-			if(!NeverMatch.neverMatches(residue))
-			    residue=AndResidue.construct
-				(residue,ad.preResidue(sm));
+		if(!NeverMatch.neverMatches(residue))
+		    residue=AndResidue.construct
+			(residue,ad.preResidue(sm));
 
-			if(!NeverMatch.neverMatches(residue))
-			    residue=AndResidue.construct
-				(residue,pc.matchesAt(we,cls,method,sm));
+		if(!NeverMatch.neverMatches(residue))
+		    residue=AndResidue.construct
+			(residue,pc.matchesAt(we,cls,method,sm));
 
-			if(!NeverMatch.neverMatches(residue))
-			    residue=AndResidue.construct
-				(residue,ad.postResidue(sm));
+		if(!NeverMatch.neverMatches(residue))
+		    residue=AndResidue.construct
+			(residue,ad.postResidue(sm));
 
-			// Mostly this is just to eliminate advice at shadow points
-			// where it can't apply - e.g. after advice at handlers
-			// ajc gives a warning if we throw away a match here; 
-			// we probably should too. (FIXME)
-			// In the case of AfterReturningArg it does generate a real 
-			// residue, but this may go away if we put the return value
-			// in the shadowpoints.
-			// Note that since the AdviceSpec for DeclareMessage is null,
-			// this needs to come after the postResidue above. This will
-			// probably change in future.
+		// Mostly this is just to eliminate advice at shadow points
+		// where it can't apply - e.g. after advice at handlers
+		// ajc gives a warning if we throw away a match here; 
+		// we probably should too. (FIXME)
+		// In the case of AfterReturningArg it does generate a real 
+		// residue, but this may go away if we put the return value
+		// in the shadowpoints.
+		// Note that since the AdviceSpec for DeclareMessage is null,
+		// this needs to come after the postResidue above. This will
+		// probably change in future.
 
-			if(!NeverMatch.neverMatches(residue))
-			    residue=AndResidue.construct
-				(residue,ad.getAdviceSpec().matchesAt(we,sm));
+		if(!NeverMatch.neverMatches(residue))
+		    residue=AndResidue.construct
+			(residue,ad.getAdviceSpec().matchesAt(we,sm));
 
-			if(abc.main.Debug.v().showPointcutMatching
-			   && !NeverMatch.neverMatches(residue)) 
-			    System.out.println("residue: "+residue);
+		if(abc.main.Debug.v().showPointcutMatching
+		   && !NeverMatch.neverMatches(residue)) 
+		    System.out.println("residue: "+residue);
 			
-			if(!NeverMatch.neverMatches(residue))
-			    sm.addAdviceApplication(mal,ad,residue);
-			
-		    } else {
-			if(abc.main.Debug.v().matcherWarnUnimplemented)
-			    System.err.println("Got a null pointcut");
-		    }
-		}
+		if(!NeverMatch.neverMatches(residue))
+		    sm.addAdviceApplication(mal,ad,residue);
 	    }
 	    mal.flush();
 	}
     }
 
-    public static void doMethod(GlobalAspectInfo info,
+    private static void doMethod(GlobalAspectInfo info,
 				SootClass cls,
 				SootMethod method,
 				Hashtable ret) 
@@ -231,6 +223,9 @@ public abstract class AdviceApplication {
 	ret.put(method,mal);
     }
 
+    /** Construct a hash table mapping each concrete {@link soot.SootMethod} 
+     *  in each weaveable class to a {@link MethodAdviceList} for that method.
+     */
     public static Hashtable computeAdviceLists(GlobalAspectInfo info)
 	throws SemanticException
     {

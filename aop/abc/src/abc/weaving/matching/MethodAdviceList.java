@@ -13,11 +13,9 @@ import polyglot.util.ErrorQueue;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 
-/** The list(s) of advice applying to a method
+/** The lists of {@link AdviceApplication} structures applying to a method
  *  @author Ganesh Sittampalam
  *  @author Laurie Hendren 
- *       (added "isEmpty and has* methods", May 4, 2004)
- *  @date 28-Apr-04
  */
 public class MethodAdviceList {
 
@@ -62,6 +60,12 @@ public class MethodAdviceList {
 	}
     }
 
+    /** {@link AdviceApplication} structures are added to the list
+     *  for one shadow, then the next etc. At each shadow, they need to
+     *  be sorted in precedence order, so we sort them as they are added.
+     *  This method should be called after each shadow to add the sorted
+     *  list for that shadow to the main list for the method.
+     */
     public void flush() {
 	bodyAdvice.addAll(bodyAdviceP);
 	stmtAdvice.addAll(stmtAdviceP);
