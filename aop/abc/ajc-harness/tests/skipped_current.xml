@@ -148,17 +148,25 @@
         </compile>
         <run class="Test"></run>
     </ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - interfaceOnly.jar" dir="new/interfaceLibrary" comment="prove that LibraryAspect is required">
+<ajc-test title="aspect-declared interface members in libraries - interfaceOnly.jar" dir="new/interfaceLibrary" comment="prove that LibraryAspect is required" abccomment="don't do aspectpath. ODM 19/07/04">
 		<compile files="Client.java" aspectpath="interfaceOnly.jar">
 			<message line="5" kind="error"></message>
 			</compile>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectOnly.jar" dir="new/interfaceLibrary">
+<ajc-test title="aspect-declared interface members in libraries - aspectOnly.jar" dir="new/interfaceLibrary" abccomment="don't do aspectpath. ODM 19/07/04">
 		<compile files="lib/LibraryInterface.java,      Client.java" aspectpath="aspectOnly.jar"></compile>
+            <abckeywords> <skip></skip> </abckeywords>
 		<run class="Client"></run>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="can weave to create library, and then weave clients">
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="can weave to create library, and then weave clients" abccomment="abc doesn't support aspect path. ODM 19/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar" aspectpath="aspectOnly.jar"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="works if source aspect and binary classpath woven with aspect?             should NOT warn about affected type not since affected type is already woven?" abccomment="abc doesn't support aspectpath. ODM 19/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="Client.java,LibraryAspect.java" classpath="aspectedInterfaceOnly.jar"></compile>
+			
 		<run class="Client"></run>
 		</ajc-test>
 <ajc-test title="exception clause for aspect-declared interface methods - positive binary" pr="41175" dir="bugs/interfaceLibrary">
@@ -183,6 +191,12 @@
 		<compile files="model/BusObj.java,model/MonitorBusObj.java" aspectpath="lib.jar">
 		</compile>
 	</ajc-test>
+<ajc-test title="Weaving failure when using injars (actual injars)" pr="41123" dir="bugs/moreInterfaceLibrary" abccomment="abc doesn't support weaving aspects from jars - error irrelevant. ODM 19/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+		<compile files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
+		    <message line="3" kind="error"></message>
+		</compile>
+	</ajc-test>
 <ajc-test title="(using aspectpath) percflow aspects compiled from jars share one instance for all entry points" pr="41359" dir="bugs/perCflowAndJar">
 		<compile files="PerCFlowCompileFromJarTest.java" aspectpath="lib.jar"></compile>
 		<run class="PerCFlowCompileFromJarTest"></run>
@@ -199,6 +213,21 @@
 <ajc-test title="Introduced abstract method on interface not implemented by subtype (aspectpath)" pr="49784" dir="bugs/abstractMethods">
         <compile files="interface/C.java" aspectpath="interface/jars/AandB.jar"></compile>
         <run class="C"></run>
+    </ajc-test>
+<ajc-test title="Use class implementing interface via aspect (not woven together)" pr="43972" dir="bugs/interfaceDefinition" abccomment="abc doesn't do separate compilation. ODM 19/07/04 ">
+        <abckeywords> <skip></skip> </abckeywords>
+        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java"></compile>
+        <run class="pack.InterfaceDefinition"></run>
+        <compile includeClassesDir="true" files="Main.java">
+        	<message line="3" kind="error"></message>
+       </compile>
+    </ajc-test>
+<ajc-test title="Use class implementing interface via aspect (only one implementer)" pr="43972" dir="bugs/interfaceDefinition" abccomment="don't do separate compilation. ODM 19/07/04">
+     <abckeywords> <skip></skip> </abckeywords>
+        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java"></compile>
+        <run class="pack.InterfaceDefinition"></run>
+        <compile includeClassesDir="true" files="Main1.java"></compile>
+        <run class="Main1"></run>
     </ajc-test>
 <ajc-test title="binary compatibility of advice method names - expect no error 1" pr="50641" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
         <compile files="Main.java,TraceV1.aj"></compile>

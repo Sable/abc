@@ -278,10 +278,6 @@
         <compile files="HierarchyIntroductions.java"></compile>
         <run class="HierarchyIntroductions"></run>
     </ajc-test>
-<ajc-test title="advice and package visibility" pr="106" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="packagevisibility/PackagesAndAdvice.java,packagevisibility/testPackage/Class1.java,packagevisibility/testPackage/Class2.java"></compile>
-        <run class="packagevisibility.PackagesAndAdvice"></run>
-    </ajc-test>
 <ajc-test title="non-static advice on inner class defined inside of method body" keywords="from-resolved_10x" dir="new" abccomment="fails on use of thisJoinPoint when advice applies inside inner class;                  generates verify error. error goes away when use of thisJoinPoint is                  commented out. Emailed Ganesh. ODM 09/07/04">
         <compile files="MethodInner.java"></compile>
         <run class="MethodInner"></run>
@@ -301,10 +297,6 @@
 <ajc-test title="test after throwing advice in several ways" keywords="from-resolved_10x" dir="new" abccomment="the usual problem with around and exception checker. ODM 09/07/04">
         <compile files="AfterThrowing.java"></compile>
         <run class="AfterThrowing"></run>
-    </ajc-test>
-<ajc-test title="calls: calls(...)" keywords="from-resolved_10x" dir="design/calls">
-        <compile options="-Xlint:ignore" files="Simple.java"></compile>
-        <run class="Simple"></run>
     </ajc-test>
 <ajc-test title="throws Exception clause is unnecessarily added to Driver.main method" pr="259" keywords="from-resolved_10x" dir="new/extraThrows">
         <compile files="Driver.java"></compile>
@@ -350,10 +342,6 @@
         <compile files="InitializerTest.java"></compile>
         <run class="InitializerTest"></run>
     </ajc-test>
-<ajc-test title="some method accessibility tests, particularly package-protected and inheritance" keywords="from-resolved_10x" dir="new/access">
-        <compile files="Test1.java,pc/C.java,psub/SubC.java,psub/A.java"></compile>
-        <run class="Test1"></run>
-    </ajc-test>
 <ajc-test title="calls advice on array objects causes error in code generation" keywords="from-resolved_10x" dir="new">
         <compile files="CallsToArray.java"></compile>
         <run class="CallsToArray"></run>
@@ -366,18 +354,10 @@
         <compile options="-1.4" files="AroundInnerCalls.java"></compile>
         <run class="AroundInnerCalls"></run>
     </ajc-test>
-<ajc-test title="Arguments to runNext should be final when needed" keywords="from-resolved_10x" dir="new">
-        <compile files="Finals.java"></compile>
-        <run class="Finals"></run>
-    </ajc-test>
 <ajc-test title="Method introductions" keywords="from-resolved_10x" dir="new">
         <compile files="MethodIntroductions.java"></compile>
         <run class="MethodIntroductions"></run>
     </ajc-test>
-<ajc-test title="check that MightHaveAspect interface is created correctly for an aspect in deep package" keywords="from-resolved_10x" dir="new/perThis">
-	      <compile files="p/EachObjectTarget.java,the/deep/pkg/EachObjectInDeepPackage.java"></compile>
-	      <run class="p.EachObjectTarget"></run>
-	</ajc-test>
 <ajc-test title="different version of aspect inheritance, particularly empty pointcuts and abstract cflows [eachcflow]" keywords="from-resolved_10x,fail-unimplemented" dir="new">
         <compile files="AspectInheritance.java"></compile>
         <run class="AspectInheritance"></run>
@@ -442,10 +422,6 @@
 <ajc-test title="elaborated into testing of around on all join points" pr="490" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
-    </ajc-test>
-<ajc-test title="type name hygiene when code comes from aspects in different packages" keywords="from-resolved_10x" dir="new">
-        <compile files="typeNameConflicts/Driver.java,typeNameConflicts/p1/C.java,typeNameConflicts/aspects/A.java"></compile>
-        <run class="typeNameConflicts.Driver"></run>
     </ajc-test>
 <ajc-test title="target type matching with messy interface hierarchies" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4,-Xlint:ignore" files="CallTypesI.java"></compile>
@@ -560,10 +536,6 @@
             <message line="22" kind="error" file="parent/ParentCE.java"></message>
         </compile>
     </ajc-test>
-<ajc-test title="inner, outer, and outside-package subaspects of an aspect with abstract protected-, public-, and default-access pointcuts" pr="647" keywords="from-resolved_10x" dir="new/subaspects">
-        <compile files="parent/SubAspectVisibility.java,parent/ForeignChildHelper.java,child/ForeignChildAspect.java"></compile>
-        <run class="parent.SubAspectVisibility"></run>
-    </ajc-test>
 <ajc-test title="private inner interface accessible in scope when declared on outer class" keywords="from-resolved_10x" dir="new" abccomment="likely the polyglot class conformance check bug too                     July 8/04 LJH">
         <compile files="DeclareAccess.java"></compile>
         <run class="DeclareAccess"></run>
@@ -571,26 +543,6 @@
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
-    </ajc-test>
-<ajc-test title="aroundInner 1 - around advice inner Thread subclass running proceed but not writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
-        <compile files="ThreadNoField.java,Common.java"></compile>
-        <run class="ThreadNoField"></run>
-    </ajc-test>
-<ajc-test title="aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
-        <compile files="Proxy.java,Common.java"></compile>
-        <run class="Proxy"></run>
-    </ajc-test>
-<ajc-test title="aroundInner 4 - around advice inner Thread subclass running proceed and writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
-        <compile files="ThreadSub.java,Common.java"></compile>
-        <run class="ThreadSub"></run>
-    </ajc-test>
-<ajc-test title="aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
-        <compile files="RunnableSub.java,Common.java"></compile>
-        <run class="RunnableSub"></run>
-    </ajc-test>
-<ajc-test title="Named local class closing over proceed invocation" pr="636" keywords="from-resolved_10x" dir="new">
-        <compile files="LocalClassClosingOverProceed.java"></compile>
-        <run class="LocalClassClosingOverProceed"></run>
     </ajc-test>
 <ajc-test title="Overriding method implementations using introduction on interfaces" pr="654" keywords="from-resolved_10x,fail-unimplemented" dir="new">
         <compile options="-Xlint:ignore" files="IntroductionsOverriding.java"></compile>
@@ -719,10 +671,6 @@
             <message line="13" kind="error"></message>
             <message line="21" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="The dynamic type, not the static one, should be used in if pcds" keywords="from-resolved_105" dir="new">
-        <compile files="StaticTypeInIf.java"></compile>
-        <run class="StaticTypeInIf"></run>
     </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" keywords="from-resolved_105" dir="new">
         <compile files="TypePat.java"></compile>
@@ -1074,10 +1022,6 @@
         <compile options="!eclipse" files="DecParents.java,main.jar"></compile>
         <run class="DecParents"></run>
     </ajc-test>
-<ajc-test title="IllegalAccessError while accessing introduced variable / 1.1rc1" pr="36110" dir="bugs/interSpecials">
-        <compile files="p1/C.java,p2/A1.java"></compile>
-        <run class="p2.A1"></run>
-    </ajc-test>
 <ajc-test title="testing that assert works like .class" pr="36110" dir="bugs/interSpecials">
         <compile options="-source,1.4" files="p1/C.java,p2/A2.java"></compile>
         <run vm="1.4" class="p2.A2"></run>
@@ -1285,25 +1229,28 @@
         <compile files="OverridingInterfaceObjectMethod.java"></compile>
         <run class="OverridingInterfaceObjectMethod"></run>
     </ajc-test>
-<ajc-test title="Default method impl for interface causes internal exception." pr="40589" dir="bugs">
-        <compile files="CloneMethod.java"></compile>
-        <run class="CloneMethod"></run>
-    </ajc-test>
 <ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
         <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
         <run vm="1.4" class="ClassLiteralField"></run>
     </ajc-test>
-<ajc-test title="compile error expected for abstract pointcut outside abstract aspect" dir="errors">
+<ajc-test title="compile error expected for abstract pointcut outside abstract aspect" dir="errors" abccomment="better errors from abc. 19/07/04 ODM">
 		<compile files="AbstractPointcutCE.java">
-			<message line="5" kind="error"></message>
-			<message line="10" kind="error"></message>
+			<ajcmessage line="5" kind="error"></ajcmessage>
+			<ajcmessage line="10" kind="error"></ajcmessage>
+                        <message line="5" kind="error"></message>
+			<message line="4" kind="error"></message>
+                        <message line="9" kind="error"></message>
 		</compile>
 	</ajc-test>
-<ajc-test title="compile error expected for interface pointcuts" pr="40814" dir="bugs">
+<ajc-test title="compile error expected for interface pointcuts" pr="40814" dir="bugs" abccomment="an extra message from abc. ODM 19/07/04">
 		<compile files="AbstractPointcutCE.java">
-			<message line="7" kind="error"></message>
+			<ajcmessage line="7" kind="error"></ajcmessage>
+			<ajcmessage line="11" kind="error"></ajcmessage>		
+			<ajcmessage line="15" kind="error"></ajcmessage>
+	                <message line="7" kind="error"></message>
 			<message line="11" kind="error"></message>		
 			<message line="15" kind="error"></message>
+                        <message line="14" kind="error"></message>
 		</compile>
 	</ajc-test>
 <ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar" dir="new/interfaceLibrary" comment="prove aspect is required even if interface is woven">
@@ -1312,26 +1259,19 @@
 			<message text="LibraryInterface" line="9" kind="error"></message>
 			</compile>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only">
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only" abccomment="only type error, but ok. ODM 19/07/04">
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
-			<message line="9" kind="error"></message>
-			</compile>
+			<ajcmessage line="9" kind="error"></ajcmessage>
+			<message line="14" kind="error"></message>
+                        </compile>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run">
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run" abccomment="abc bails out after type checking, but ok. ODM 19/07/04">
 		<compile files="Client.java" classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
-			<message line="9" kind="error"></message>
+			<ajcmessage line="9" kind="error"></ajcmessage>
+                        <message line="14" kind="error"></message>
 			</compile>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="works if source aspect and binary classpath woven with aspect?             should NOT warn about affected type not since affected type is already woven?">
-		<compile files="Client.java,LibraryAspect.java" classpath="aspectedInterfaceOnly.jar"></compile>
-			
-		<run class="Client"></run>
-		</ajc-test>
-<ajc-test title="exception clause for aspect-declared class methods - positive" dir="bugs/interfaceLibrary">
-		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"></compile>
-		<run class="ClassClient"></run>
-		</ajc-test>
-<ajc-test title="reflective check of declared exceptions from aspect-declared methods" pr="41175" dir="bugs">
+<ajc-test title="reflective check of declared exceptions from aspect-declared methods" pr="41175" dir="bugs" abccomment="soot seems to loose declared exceptions on new methods. mailed abc list. 19/07/04 ODM.">
 		<compile files="DeclaredExceptions.java"></compile>
 		<run class="DeclaredExceptions"></run>
 		</ajc-test>
@@ -1339,60 +1279,41 @@
 		<compile files="model/BusObj.java,model/MonitorBusObj.java" classpath="lib.jar">
 		    <ajcmessage line="3" kind="error"></ajcmessage>
 		    <message line="3" kind="error"></message>
-		    <message line="6" kind="error"></message>
 		</compile>
 	</ajc-test>
-<ajc-test title="Weaving failure when using injars (actual injars)" pr="41123" dir="bugs/moreInterfaceLibrary">
-		<compile files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
-		    <message line="3" kind="error"></message>
-		</compile>
-	</ajc-test>
-<ajc-test title="throw derivative pointcuts not advised" pr="42539" dir="bugs/throwsSignature">
-		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
-		    <message text="throws both" line="5" kind="warning"></message>
-		    <message text="throws Exception" line="5" kind="error"></message>
-		    <message text="throws both" line="7" kind="warning"></message>
-		</compile>
-	</ajc-test>
-<ajc-test title="declare error fails on pointcuts composed from multiple classes" pr="42740" dir="bugs/declareBinding">
-		<compile files="SampleExceptionHandling1.java">
-		    <message text="no checked exceptions" line="2" kind="error"></message>
-		</compile>
-	</ajc-test>
-<ajc-test title="NPE in concretization error path" pr="43033" keywords="poorErrorMessages" dir="bugs/concretizeNpe">
+<ajc-test title="NPE in concretization error path" pr="43033" keywords="poorErrorMessages" dir="bugs/concretizeNpe" abccomment="parse error location ok. ODM 19/07/04">
 		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
 		
-		  <message line="12" kind="error"></message>		
-		  <message line="13" kind="error"></message>
+		  <ajcmessage line="12" kind="error"></ajcmessage>		
+		  <ajcmessage line="13" kind="error"></ajcmessage>
+                  <message line="13" kind="error"></message>
 		</compile>
 	</ajc-test>
-<ajc-test title="priviledged aspects calling methods from advice" pr="42711" dir="bugs/privilege/packageProtected"> 
+<ajc-test title="priviledged aspects calling methods from advice" pr="42711" dir="bugs/privilege/packageProtected" abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04"> 
         <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
     </ajc-test>
-<ajc-test title="No error on overloaded pointcuts in class" pr="49457" dir="bugs">
+<ajc-test title="No error on overloaded pointcuts in class" pr="49457" dir="bugs" abccomment="abc messages differ but ok. ODM 19/07/04">
         <compile files="OverloadedPointcutsInClass.java">
-        	<message text="duplicate pointcut name: pc1" line="3" kind="error"></message>
-        	<message text="duplicate pointcut name: pc1" line="4" kind="error"></message>
-        	<message text="duplicate pointcut name: pc2" line="6" kind="error"></message>
-        	<message text="duplicate pointcut name: pc2" line="7" kind="error"></message>
+        	<ajcmessage text="duplicate pointcut name: pc1" line="3" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc1" line="4" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc2" line="6" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc2" line="7" kind="error"></ajcmessage>
+                <message line="6" kind="error"></message>
+        	<message line="7" kind="error"></message>
+                <message line="4" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="No error on overloaded pointcuts unless binding variables" pr="49457" dir="bugs">
+<ajc-test title="No error on overloaded pointcuts unless binding variables" pr="49457" dir="bugs" abccomment="abc text different but ok. ODM 19/07/04">
         <compile files="OverloadedPointcutsInAspect.java">
-        	<message text="duplicate pointcut name: pc" line="15" kind="error"></message>
-        	<message text="duplicate pointcut name: pc" line="16" kind="error"></message>
-        	<message text="incompatible type" line="18" kind="error"></message>
-        	<message text="incompatible type" line="20" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="static method introduction on interfaces, should not be allowed" pr="47754" dir="bugs">
-        <compile files="StaticInterfaceMethods.java">
-		  <message text="methods in interfaces cannot be declared static" line="7" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="External pointcut refs not resolved if named pointcut used by declare" pr="45184" dir="bugs">
-        <compile files="DeclareErrorNamedPointcutCE.java">
- 	        <message text="ref" line="10" kind="error"></message>
+        	<ajcmessage text="duplicate pointcut name: pc" line="15" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc" line="16" kind="error"></ajcmessage>
+        	<ajcmessage text="incompatible type" line="18" kind="error"></ajcmessage>
+        	<ajcmessage text="incompatible type" line="20" kind="error"></ajcmessage>
+                <message line="15" kind="error"></message>
+        	<message line="16" kind="error"></message>
+        	<message line="18" kind="error"></message>
+        	<message line="20" kind="error"></message>
+                <message line="16" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="XLint warning for call PCD's using subtype of defining type" pr="41952" dir="bugs">
@@ -1425,37 +1346,20 @@
 		  <message text="no match for this type name: SampleClass" line="4" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Bad parser error recovery in java source" pr="45663" dir="bugs" abccomment="error on line 8 is not reported by abc, but it is                   ok.  July 6/04 LJH">
-        <compile files="ParserRecoveryTestPureJava.java">
-		  <ajcmessage line="6" kind="error"></ajcmessage>
-		  <ajcmessage line="8" kind="error"></ajcmessage>
-		  <message line="6" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" dir="bugs">
+<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" dir="bugs" abccomment="Awaiting Pavel's implementation of privileged. ODM 19/07/04">
         <compile files="PrivilegedParsing.java"></compile>
         <run class="PrivilegedParsing"></run>
     </ajc-test>
-<ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" dir="bugs">
+<ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" dir="bugs" abccomment="ITD field initialisers should not appear in the exec jps of host constructors, but                     they do appear in initialisation jps of the same. Need to discuss with Ganesh.                     ODM 19/07/04">
         <compile files="AfterThrowingCtor.java">
         </compile>
   		<run class="AfterThrowingCtor"></run>
     </ajc-test>
-<ajc-test title="aspect declares interface method (abstract)" pr="49784" dir="bugs/interAbstract">
+<ajc-test title="aspect declares interface method (abstract)" pr="49784" dir="bugs/interAbstract" abccomment="I believe this to be an ajc bug. The program makes perfect sense,                             it compiles fine, and the test runs ok. ODM 19/07/4">
         <compile files="InterfaceMethodDeclarationAbstract.java">
-        	<message text="must implement" line="40" kind="error"></message>
+        	<ajcmessage text="must implement" line="40" kind="error"></ajcmessage>
         </compile>
+        <run class="InterfaceMethodDeclarationAbstract"></run>
     </ajc-test>
-<ajc-test title="Use class implementing interface via aspect (not woven together)" pr="43972" dir="bugs/interfaceDefinition">
-        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java"></compile>
-        <run class="pack.InterfaceDefinition"></run>
-        <compile includeClassesDir="true" files="Main.java">
-        	<message line="3" kind="error"></message>
-       </compile>
-    </ajc-test>
-<ajc-test title="mail list VerifyError with protected access" dir="bugs/protectedvf" abccomment="Need to make all aspects public prior to jimplification.                      ODM 16/07/04">
-		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"></compile>
-		<run class="main.Driver"></run>
-	</ajc-test>
  
 </suite>
