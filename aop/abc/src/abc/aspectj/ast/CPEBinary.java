@@ -3,6 +3,11 @@ package abc.aspectj.ast;
 import polyglot.util.Enum;
 import polyglot.ast.Precedence;
 
+
+/** binary operators on classname pattern expressions.
+ * 
+ * @author Oege de Moor
+ */
 public interface CPEBinary extends ClassnamePatternExpr
 {
 

@@ -9,6 +9,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** a (class+) ClassnamePatternExpr that matches all subclasses.
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
 public class CPESubName_c extends ClassnamePatternExpr_c 
     implements CPESubName, ContainsNamePattern
 {

@@ -11,6 +11,10 @@ import polyglot.ext.jl.ast.Term_c;
 
 import abc.aspectj.types.AJContext;
 
+/** base class for "declare X" declarations.
+ * 
+ * @author Oege de Moor
+ */
 public class DeclareDecl_c extends Term_c implements DeclareDecl
 {
 

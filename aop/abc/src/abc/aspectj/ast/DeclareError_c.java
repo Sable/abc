@@ -12,6 +12,13 @@ import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.DeclareMessage;
 
+/**
+ * declare error : pointcut : message
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
+
 public class DeclareError_c extends DeclareDecl_c 
     implements DeclareError, ContainsAspectInfo
 {

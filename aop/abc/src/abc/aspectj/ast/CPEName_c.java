@@ -9,6 +9,10 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** ClassnamePatternExpr that is just a name pattern.
+ * 
+ * @author Oege de Moor
+ */
 public class CPEName_c extends ClassnamePatternExpr_c 
     implements CPEName, ContainsNamePattern
 {

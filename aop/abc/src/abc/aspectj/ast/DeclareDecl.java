@@ -4,9 +4,11 @@ import polyglot.ast.ClassMember;
 
 /**
  * A <code>DeclareDecl</code> represents a declare declaration.
+ * 
+ * @author Oege de Moor
  */
 
 public interface DeclareDecl extends ClassMember
 {
-    /* new stuff to be added */
+
 }

@@ -9,6 +9,10 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** binary operators on classname pattern expressions.
+ * 
+ * @author Oege de Moor
+ */
 public class CPEBinary_c extends ClassnamePatternExpr_c 
                          implements CPEBinary
 {

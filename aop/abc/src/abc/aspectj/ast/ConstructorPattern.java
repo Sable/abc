@@ -4,9 +4,12 @@ import polyglot.ast.Node;
 
 import java.util.*;
 
+/** patterns to capture constructor joinpoints.
+ * 
+ * @author Oege de Moor
+ */
 public interface ConstructorPattern extends MethodConstructorPattern
 {
-    /* new stuff to be added */
 
     public List/*<ModifierPattern>*/ getModifiers();
     public ClassTypeDotNew getName();

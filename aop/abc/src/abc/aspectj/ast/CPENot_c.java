@@ -9,6 +9,10 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** negation of a ClassnamePatternExpr.
+ * 
+ * @author Oege de Moor
+ */
 public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
 {
     protected ClassnamePatternExpr cpe;

@@ -9,6 +9,12 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** ClassnamePatternExpr that matches anything.
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ */
+
 public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUniversal
 {
     private List excludes = new ArrayList();

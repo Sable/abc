@@ -15,6 +15,11 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import abc.weaving.aspectinfo.AbcFactory;
 
+/** declare parents : pat extends parents
+ * 
+ * @author Aske Simon Christensen
+ * @author Oege de Moor
+ */
 public class DeclareParents_c extends DeclareDecl_c 
     implements DeclareParents, ContainsAspectInfo
 {

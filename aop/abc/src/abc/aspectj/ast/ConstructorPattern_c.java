@@ -11,6 +11,10 @@ import polyglot.ext.jl.ast.Node_c;
 
 import abc.aspectj.visit.*;
 
+/** patterns to capture constructor joinpoints.
+ * 
+ * @author Oege de Moor
+ */
 public class ConstructorPattern_c extends Node_c 
                                   implements  ConstructorPattern
 {
