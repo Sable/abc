@@ -90,6 +90,9 @@ public class AntTask extends MatchingTask {
     public void setOutjar(File arg) {
         addArg( "-outjar", arg.getAbsolutePath());
     }
+    public Path createSrc() {
+        return src.createPath();
+    }
 
     private ArrayList args = new ArrayList();
     private void addArg( String s ) { args.add(s); }
@@ -98,6 +101,7 @@ public class AntTask extends MatchingTask {
     private Path injars = new Path(project);
     private Path classpath = new Path(project);
     private Path argfiles = new Path(project);
+    private Path src = new Path(project);
     private Path appendToPath( Path old, Path newPath ) {
         if( old == null ) return newPath;
         old.append(newPath);
@@ -135,6 +139,21 @@ public class AntTask extends MatchingTask {
         String[] af = argfiles.list();
         for(int i = 0; i < af.length; i++) {
             addArg("@"+project.resolveFile(af[i]).getAbsolutePath());
+        }
+    }
+
+
+    public void addSrc() {
+        String[] srcs = src.list();
+        for(int i = 0; i < srcs.length; i++) {
+            File dir = project.resolveFile(srcs[i]);
+            String[] files = getDirectoryScanner(dir).getIncludedFiles(); 
+            for(int j = 0; j < files.length; j++) {
+                File f = new File(dir, files[j]);
+                if( files[j].endsWith(".java") || files[j].endsWith(".aj") ) {
+                    addArg(f.getAbsolutePath());
+                }
+            }
         }
     }
 }
