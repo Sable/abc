@@ -7,8 +7,13 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.visit.ContainsAspectInfo;
+import abc.aspectj.visit.AspectInfoHarvester;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.Aspect;
+
 public class DeclareSoft_c extends DeclareDecl_c 
-                           implements DeclareSoft
+    implements DeclareSoft, ContainsAspectInfo
 {
 
     TypeNode type;
@@ -29,6 +34,15 @@ public class DeclareSoft_c extends DeclareDecl_c
         w.write(" : ");
         print(pc, w, tr);
         w.write(";");
+    }
+
+    public void update(GlobalAspectInfo gai, Aspect currrent_aspect) {
+	abc.weaving.aspectinfo.DeclareSoft ds = new abc.weaving.aspectinfo.DeclareSoft
+	    (AspectInfoHarvester.toAbcType(type.type()),
+	     pc.makeAIPointcut(),
+	     currrent_aspect,
+	     position());
+	gai.addDeclareSoft(ds);
     }
 
 }
