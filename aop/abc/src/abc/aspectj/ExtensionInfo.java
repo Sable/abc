@@ -118,7 +118,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	// add new methods for proceed and if-pointcuts, and turn advice into methods
 		l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
    // to test the above:
-   //		l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+   // l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
         
 	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
 	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor()));

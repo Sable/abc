@@ -23,6 +23,7 @@ import polyglot.ast.Return;
 import polyglot.ast.IntLit;
 import polyglot.ast.CharLit;
 import polyglot.ast.FloatLit;
+import polyglot.ast.Local;
 
 
 import polyglot.types.Flags;
@@ -53,7 +54,9 @@ public class AdviceDecl_c extends MethodDecl_c
 {
     protected AdviceSpec spec;
     protected Pointcut pc;
- 
+  	protected boolean hasJoinPoint;
+  	protected boolean hasJoinPointStaticPart;
+  	
     
     // if the returnVal of "after returning" or "after throwing" is
     // specified, make it an additional parameter to the advice body
@@ -195,10 +198,36 @@ public class AdviceDecl_c extends MethodDecl_c
     } else return null;
     }
     
+    
+    public boolean hasJoinPointStaticPart() {
+    	return hasJoinPointStaticPart;
+    }
+    
+    public boolean hasJoinPoint() {
+    	return hasJoinPoint;
+    }
+    
+    public void joinpointFormals(Local n) {
+    	hasJoinPoint = hasJoinPoint || (n.name() =="thisJoinPoint");
+    	hasJoinPointStaticPart = hasJoinPointStaticPart || (n.name() =="thisJoinPointStaticPart");
+    }
+    
     public MethodDecl methodDecl(AspectJNodeFactory nf,
     															AspectJTypeSystem ts) {
     	String name = UniqueID.newID(spec.kind());
-    	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,formals(),throwTypes(),body());
+    	List newformals = new LinkedList(formals());
+    	if (hasJoinPointStaticPart()) {
+    		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
+    		Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
+    		newformals.add(jpsp);
+    	}
+    	if (hasJoinPoint()) {
+    		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
+    		Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
+    		newformals.add(jp);
+    	}
+    	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,
+    	                                                            newformals,throwTypes(),body());
     	return md;
     }
     

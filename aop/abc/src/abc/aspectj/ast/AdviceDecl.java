@@ -1,6 +1,8 @@
 package abc.aspectj.ast;
 
 import polyglot.ast.MethodDecl;
+import polyglot.ast.Local;
+
 import abc.aspectj.types.AspectJTypeSystem;
 
 
@@ -10,5 +12,7 @@ public interface AdviceDecl extends MethodDecl
    
    	MethodDecl proceedDecl(AspectJNodeFactory nf,AspectJTypeSystem ts);
    	MethodDecl methodDecl(AspectJNodeFactory nf,AspectJTypeSystem ts);
-   	
+   	void joinpointFormals(Local n);
+   	boolean hasJoinPoint();
+   	boolean hasJoinPointStaticPart();
 }

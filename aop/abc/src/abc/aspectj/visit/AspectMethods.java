@@ -10,6 +10,7 @@ import polyglot.ast.Node;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.ClassDecl;
 import polyglot.ast.NodeFactory;
+import polyglot.ast.Local;
 
 import polyglot.visit.NodeVisitor;
 
@@ -29,6 +30,7 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* List MethodDecl */ methods; // method declaration lists, one for each classdecl
     private Stack /* List Formal */ formals; // pointcut formals for generating if-methods
     private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
+    private Stack /* List AdviceDecl */ advices;
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
@@ -40,6 +42,7 @@ public class AspectMethods extends NodeVisitor {
 		this.methods = new Stack();
 		this.formals = new Stack();
 		this.proceeds = new Stack();
+		this.advices = new Stack();
 	}
 	
 	public NodeVisitor enter(Node n) {
@@ -54,11 +57,18 @@ public class AspectMethods extends NodeVisitor {
 			MethodDecl md = ad.proceedDecl(nf,ts);
 			proceeds.push(md);
 			formals.push(ad.formals());
+			advices.push(ad);
 		}
 		return this;
 	 }
 	 
     public Node leave(Node parent, Node old, Node n, NodeVisitor v) {
+    	if (! (advices.isEmpty()) && n instanceof Local) {
+    		Local m = (Local) n;
+    		AdviceDecl currentAdvice = (AdviceDecl) advices.peek();
+    		currentAdvice.joinpointFormals(m);
+    		return n;
+    	}
 		if (n instanceof PCIf) {
 			PCIf ifpcd = (PCIf) n;
 			MethodDecl md = ifpcd.exprMethod(nf,ts,(List) formals.peek()); // construct method for expression in if(..)
@@ -67,6 +77,7 @@ public class AspectMethods extends NodeVisitor {
 		}
 		if (n instanceof AdviceDecl) {
 			formals.pop();
+			advices.pop();
 			MethodDecl md = (MethodDecl) proceeds.pop(); // returns null if not around
 			if (md != null) 
 			  ((List)methods.peek()).add(md);
