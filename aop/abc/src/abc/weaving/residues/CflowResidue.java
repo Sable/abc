@@ -31,9 +31,9 @@ public class CflowResidue extends Residue {
 	 /* Load counter counter or stack class, depending on useCounter */
 
 	 if (useCounter) { 
-	     return Scene.v().getSootClass("abc.runtime.internal.CFlowCounter");
+	     return Scene.v().loadClassAndSupport("abc.runtime.internal.CFlowCounter");
 		 } else {
-	     return Scene.v().getSootClass("org.aspectj.runtime.internal.CFlowStack");
+	     return Scene.v().loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
 		 }
      }
 
