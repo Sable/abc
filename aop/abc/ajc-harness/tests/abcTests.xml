@@ -8124,52 +8124,102 @@
     </ajc-test>
     
     <ajc-test num="926" dir="bugs" pr="51320"
-   	 title="ClasscastException on concretization of if(false) 1">
+   	 title="ClasscastException on concretization of if(false) 1"
+         abccomment="abc does indirect checks in later phase, and bails out too early,
+                     hence cloned this test. ODM 10/8/04">
         <compile files="DecwClassCastException.java">
         
          <!-- These are the illegal PCDs against a deow -->
+ <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="29" text="if() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="39" text="this() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="41" text="this() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="43" text="target() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="45" text="target() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="47" text="args() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="49" text="args() pointcut designator cannot be used"/>
          <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
-         <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
-         
          <message kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
-         <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
-         
          <message kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
-         <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
-         
          <message kind="error" line="39" text="this() pointcut designator cannot be used"/>
-         <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
-         
          <message kind="error" line="43" text="target() pointcut designator cannot be used"/>
-         <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
-         
          <message kind="error" line="47" text="args() pointcut designator cannot be used"/>
+        </compile>
+    </ajc-test>
+
+  <ajc-test num="92601" dir="abctests/bugs" pr="51320"
+         abccomment="cloned from 926"
+   	 title="ClasscastException on concretization of if(false) 1-1">
+        <compile files="DecwClassCastExceptionIndirect.java">
+        
+         <!-- These are the illegal PCDs against a deow -->
+         <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
+         <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
+         <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
+         <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
+         <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
          <message kind="error" line="49" text="args() pointcut designator cannot be used"/>
-         
         </compile>
     </ajc-test>
 	
 	 <ajc-test num="927" dir="bugs" pr="51320"
-   	 	title="ClasscastException on concretization of if(false) 2">
+   	 	title="ClasscastException on concretization of if(false) 2-1">
         <compile files="DeclareSoftDynamicPCDs.java">
         
          <!-- These are the illegal PCDs against a deow -->
-         <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
-         <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="27" text="if() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="29" text="if() pointcut designator cannot be used"/>
          
+         <ajcmessage kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="39" text="this() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="41" text="this() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="43" text="target() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="45" text="target() pointcut designator cannot be used"/>
+         
+         <ajcmessage kind="error" line="47" text="args() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="49" text="args() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
          <message kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
-         <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
          
          <message kind="error" line="35" text="cflowbelow() pointcut designator cannot be used"/>
-         <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
-         
          <message kind="error" line="39" text="this() pointcut designator cannot be used"/>
-         <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
          
          <message kind="error" line="43" text="target() pointcut designator cannot be used"/>
-         <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
          
          <message kind="error" line="47" text="args() pointcut designator cannot be used"/>
+        </compile>
+    </ajc-test>
+
+    	 <ajc-test num="92701" dir="abctests/bugs" pr="51320"
+   	 	title="ClasscastException on concretization of if(false) 2-2">
+        <compile files="DeclareSoftDynamicPCDsIndirect.java">
+        
+         <!-- These are the illegal PCDs against a deow -->
+         <message kind="error" line="29" text="if() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="37" text="cflowbelow() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="41" text="this() pointcut designator cannot be used"/>
+         
+         <message kind="error" line="45" text="target() pointcut designator cannot be used"/>
+         
          <message kind="error" line="49" text="args() pointcut designator cannot be used"/>
          
         </compile>
