@@ -18,6 +18,10 @@ import polyglot.ast.Assert;
  * This program is released under the terms of the GPL; see the file
  * COPYING for more details.  There is NO WARRANTY on this code.
  *
+ * As a special exception, C. Scott Ananian additionally permits the use of
+ * this modified version of the parser, distributed with Polyglot, under
+ * the terms of the LGPL.
+ *
  * extended to support Java 1.4 (assert keyword).
  */
 
@@ -402,6 +406,11 @@ compilation_unit ::=
             {: RESULT = parser.nf.SourceFile(new Position(parser.lexer.file()),
 					     a, b, c);
 	    :}
+    |   error
+        type_declarations_opt:c
+            {: RESULT = parser.nf.SourceFile(new Position(parser.lexer.file()),
+					     null, Collections.EMPTY_LIST, c);
+	    :}
         ;
 package_declaration_opt ::=
                     // PackageNode
@@ -595,6 +604,10 @@ class_body_declaration ::=
                l.add(parser.nf.Initializer(parser.pos(a), Flags.NONE, a));
                RESULT = l; :}
     |   SEMICOLON
+            {: RESULT = Collections.EMPTY_LIST; :}
+    |   error SEMICOLON:a
+            {: RESULT = Collections.EMPTY_LIST; :}
+    |   error LBRACE:a
             {: RESULT = Collections.EMPTY_LIST; :}
     ;
 class_member_declaration ::=
@@ -887,6 +900,10 @@ block ::=
                     // Block
         LBRACE:n block_statements_opt:a RBRACE:d
             {: RESULT = parser.nf.Block(parser.pos(n, d), a); :}
+    |
+        error RBRACE:d
+            {: RESULT = parser.nf.Block(parser.pos(d),
+                                        Collections.EMPTY_LIST); :}
     ;
 block_statements_opt ::=
                     // List of Stmt
@@ -947,6 +964,8 @@ statement ::=
             {: RESULT = a; :}
     |   for_statement:a
             {: RESULT = a; :}
+    |   error SEMICOLON:a
+            {: RESULT = parser.nf.Empty(parser.pos(a)); :}
     ;
 statement_no_short_if ::=
                     // Stmt
