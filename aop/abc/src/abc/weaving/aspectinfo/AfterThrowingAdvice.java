@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +36,10 @@ import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.ShadowPoints;
 import abc.soot.util.LocalGeneratorEx;
 
-/** Advice specification for after throwing advice without exception variable binding. */
+/** Advice specification for after throwing advice without exception variable binding. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class AfterThrowingAdvice extends AbstractAfterAdvice {
     public AfterThrowingAdvice(Position pos) {
 	super(pos);

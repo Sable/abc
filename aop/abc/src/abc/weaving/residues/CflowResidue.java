@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +30,10 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import java.util.*;
 
+/** A dynamic residue for cflow and cflow below
+ *  @author Ganesh Sittampalam
+ *  @author Damien Sereni
+ */
 public class CflowResidue extends Residue {
     private CflowSetup setup;
     private List/*<WeavingVar>*/ vars;

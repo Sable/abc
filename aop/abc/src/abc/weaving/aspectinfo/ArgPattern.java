@@ -1,4 +1,7 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +27,11 @@ import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** A pattern for a single argument. */
+/** A pattern for a single argument. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ *  @author Damien Sereni
+ */
 public abstract class ArgPattern extends Syntax {
     public ArgPattern(Position pos) {
 	super(pos);

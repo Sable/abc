@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +26,8 @@ import soot.*;
 
 /** Skeleton implementation of the {@link abc.weaving.aspectinfo.AdviceSpec} interface.
  *  Useful when implementing advice specifications.
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
  */
 public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {
 
