@@ -44,46 +44,50 @@ public class InterfaceITDs extends OncePass {
 				if (ctype.flags().isInterface())
 					continue;
 				// System.out.println("processing "+ctype);
-				Stack interfaces = new Stack();
-				Set visited = new HashSet();
-				interfaces.addAll(ctype.interfaces());
-				while(!(interfaces.isEmpty())) {
-					ClassType interf = ((ClassType) interfaces.pop());
-					if (visited.contains(interf))
-								continue;
-					visited.add(interf);
-					// System.out.println("ctype="+ctype+" intrf="+interf);
-							
-					// does the super type of ctype also implement this interface?
-					// if so, we'll add it to the super type instead
-					if (ctype.superType() != null)
-						if (ctype.superType().descendsFrom(interf)) 
-							continue; 
-					//	also add ITDS in the interfaces that interf extends
-					interfaces.addAll(interf.interfaces()); 
-					for (Iterator mit = interf.methods().iterator(); mit.hasNext(); ) {
-						MethodInstance mi = (MethodInstance) mit.next();
-						if (mi instanceof InterTypeMemberInstance) {
-							abc.aspectj.ast.IntertypeMethodDecl_c.overrideITDmethod(ctype,
-											   mi.container(ctype).flags(((InterTypeMemberInstance)mi).origFlags()));
-				 	
-						}
-					}
-					for (Iterator fit = interf.fields().iterator(); fit.hasNext(); ) {
-						FieldInstance fi = (FieldInstance) fit.next();
-						if (fi instanceof InterTypeMemberInstance) {
-							abc.aspectj.ast.IntertypeFieldDecl_c.overrideITDField(ctype,fi);
-						}	
-					}
-					for (Iterator cit = interf.constructors().iterator(); cit.hasNext(); ) {
-						ConstructorInstance ci = (ConstructorInstance) cit.next();
-						if (ci instanceof InterTypeMemberInstance) {
-							abc.aspectj.ast.IntertypeConstructorDecl_c.overrideITDconstructor(ctype,
-											 ci.container(ctype).flags(((InterTypeMemberInstance)ci).origFlags()));
-						}
-					}
-				}
+				process(ctype);
 		 	}
+	}
+
+	public static void process(ClassType ctype) {
+		Stack interfaces = new Stack();
+		Set visited = new HashSet();
+		interfaces.addAll(ctype.interfaces());
+		while(!(interfaces.isEmpty())) {
+			ClassType interf = ((ClassType) interfaces.pop());
+			if (visited.contains(interf))
+						continue;
+			visited.add(interf);
+			// System.out.println("ctype="+ctype+" intrf="+interf);
+					
+			// does the super type of ctype also implement this interface?
+			// if so, we'll add it to the super type instead
+			if (ctype.superType() != null)
+				if (ctype.superType().descendsFrom(interf)) 
+					continue; 
+			//	also add ITDS in the interfaces that interf extends
+			interfaces.addAll(interf.interfaces()); 
+			for (Iterator mit = interf.methods().iterator(); mit.hasNext(); ) {
+				MethodInstance mi = (MethodInstance) mit.next();
+				if (mi instanceof InterTypeMemberInstance) {
+					abc.aspectj.ast.IntertypeMethodDecl_c.overrideITDmethod(ctype,
+									   mi.container(ctype).flags(((InterTypeMemberInstance)mi).origFlags()));
+		 	
+				}
+			}
+			for (Iterator fit = interf.fields().iterator(); fit.hasNext(); ) {
+				FieldInstance fi = (FieldInstance) fit.next();
+				if (fi instanceof InterTypeMemberInstance) {
+					abc.aspectj.ast.IntertypeFieldDecl_c.overrideITDField(ctype,fi);
+				}	
+			}
+			for (Iterator cit = interf.constructors().iterator(); cit.hasNext(); ) {
+				ConstructorInstance ci = (ConstructorInstance) cit.next();
+				if (ci instanceof InterTypeMemberInstance) {
+					abc.aspectj.ast.IntertypeConstructorDecl_c.overrideITDconstructor(ctype,
+									 ci.container(ctype).flags(((InterTypeMemberInstance)ci).origFlags()));
+				}
+			}
+		}
 	}
 
 

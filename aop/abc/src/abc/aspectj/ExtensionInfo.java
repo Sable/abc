@@ -35,6 +35,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID ASPECT_METHODS = new polyglot.frontend.Pass.ID("aspect-methods");
     public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
 	
+	public static final polyglot.frontend.Pass.ID CLEAN_SIGS_FIRST = new polyglot.frontend.Pass.ID("clean-sigs-first");
     public static final polyglot.frontend.Pass.ID COLLECT_ASPECT_NAMES = new polyglot.frontend.Pass.ID("collect-aspect-names");
     public static final polyglot.frontend.Pass.ID BUILD_HIERARCHY = new polyglot.frontend.Pass.ID("build-hierarchy");
     public static final polyglot.frontend.Pass.ID HIERARCHY_BUILT = new polyglot.frontend.Pass.ID("hierarchy-built");
@@ -51,6 +52,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID PRECEDENCE_COMPUTED = new polyglot.frontend.Pass.ID("precedence-computed");
    
     public static final polyglot.frontend.Pass.ID INTERFACE_ITDS = new polyglot.frontend.Pass.ID("interface-itds");
+    public static final polyglot.frontend.Pass.ID ANON_ITDS = new polyglot.frontend.Pass.ID("anon-itds");
     public static final polyglot.frontend.Pass.ID SOURCE_CLASSES = new polyglot.frontend.Pass.ID("source-classes");
     public static final polyglot.frontend.Pass.ID INTERFACE_ITDS_ALL = new polyglot.frontend.Pass.ID("interface-itds-all");
 	public static final polyglot.frontend.Pass.ID JAR_CHECK = new polyglot.frontend.Pass.ID("jar-check");
@@ -179,11 +181,12 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
                              new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
         l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
-        l.add(new VisitorPass(Pass.CLEAN_SIGS,job, new AmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
+       
     }
 
     protected void passes_patterns_and_parents(List l, Job job)
     {
+		l.add(new VisitorPass(CLEAN_SIGS_FIRST,job, new AmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
         // Pattern and declare parents stuff
         l.add(new VisitorPass(CLEAN_DECLARE, job,
                               new DeclareParentsAmbiguityRemover(job, ts, nf)));
@@ -286,6 +289,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     {
         l.add(new InterfaceITDs(INTERFACE_ITDS));
         l.add(new VisitorPass(SOURCE_CLASSES, job, new SourceClasses()));
+        l.add(new VisitorPass(ANON_ITDS,job,new AnonBodyITDs(job,ts,nf)));
         l.add(new GlobalBarrierPass(INTERFACE_ITDS_ALL,job));
     }
 

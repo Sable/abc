@@ -6838,7 +6838,7 @@
          abccomment="we only report the warning in one location"
       title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds">
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-            <ajcmessage kind="warning" line="102"/>
+                <ajcmessage kind="warning" line="102"/>
         	<ajcmessage kind="warning" line="124"/>
         	<ajcmessage kind="warning" line="138"/>
             <message kind="warning" line="102"/>
