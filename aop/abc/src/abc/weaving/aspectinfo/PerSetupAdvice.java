@@ -21,5 +21,9 @@ public abstract class PerSetupAdvice extends AbstractAdviceDecl {
 	return new EmptyFormals();
     }
 
+    public String toString() {
+	return "setup advice for "+getAspect();
+    }
+
 
 }
