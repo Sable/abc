@@ -16,6 +16,10 @@ public class ErrorInfoFactory {
 		pos=new Position(sfTag.getSourceFile(),
 				 slpTag.startLn(),slpTag.startPos(),
 				 slpTag.endLn(),slpTag.endPos());
+	    } else if(host.hasTag("LineNumberTag")) {
+		LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
+		pos=new Position(sfTag.getSourceFile(),
+				 lnTag.getLineNumber());
 	    } else {
 		if(abc.main.Debug.v().warnUntaggedSourceInfo)
 		    System.err.println("Getting position for a untagged source line "+host);

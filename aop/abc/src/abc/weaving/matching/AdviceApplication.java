@@ -6,6 +6,7 @@ import polyglot.util.InternalCompilerError;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
+import soot.tagkit.SourceLnPosTag;
 
 import abc.soot.util.InPreinitializationTag;
 import abc.soot.util.Restructure;
@@ -266,7 +267,12 @@ public abstract class AdviceApplication {
 		sootCls.addMethod(clinit);
 		Body b = Jimple.v().newBody(clinit);
 		clinit.setActiveBody(b);
-		b.getUnits().addLast( Jimple.v().newReturnVoidStmt() );
+		Stmt retvoid=Jimple.v().newReturnVoidStmt();
+		if(sootCls.hasTag("SourceLnPosTag")) {
+		    retvoid.addTag(sootCls.getTag("SourceLnPosTag"));
+		    clinit.addTag(sootCls.getTag("SourceLnPosTag"));
+		}
+		b.getUnits().addLast(retvoid);
 
 		doMethod(info,sootCls,clinit,ret);
 	    }

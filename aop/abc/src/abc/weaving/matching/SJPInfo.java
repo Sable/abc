@@ -5,9 +5,7 @@ import polyglot.util.InternalCompilerError;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
-import soot.tagkit.SourceLnPosTag;
-import soot.tagkit.ParamNamesTag;
-import soot.tagkit.Host;
+import soot.tagkit.*;
 import abc.weaving.aspectinfo.MethodCategory;
 
 
@@ -32,6 +30,10 @@ public class SJPInfo {
 	    SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
 	    this.row=slpTag.startLn();
 	    this.col=slpTag.startPos();
+	} else if(host.hasTag("LineNumberTag")) {
+	    LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
+	    this.row=lnTag.getLineNumber();
+	    this.col=-1;
 	} else {
 	    this.row=-1;
 	    this.col=-1;

@@ -137,8 +137,16 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	   
     }
 
+    public boolean supportsAround() {
+	if(isStaticInitializer() && container.getDeclaringClass().isInterface()) return false;
+	return true;
+    }
+
     public String joinpointName() {
-	if(isStaticInitializer()) return "staticinitialization";
+	if(isStaticInitializer()) 
+	    return container.getDeclaringClass().isInterface() 
+		? "interface static initialization" 
+		: "static initialization";
 	if(isConstructor()) return "constructor execution";
 	if(isAdviceBody()) return "advice execution";
 	return "method execution";
