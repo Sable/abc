@@ -109,7 +109,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@1a6542
+creating: A@76ba57
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -602,7 +602,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@ce0ae2
+InterfaceAndObject$1@19152f
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2309,7 +2309,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1382754, [Ljava.lang.Object;@19e2ca2, TwoAnonymous$3@1382754
+calling run: TwoAnonymous$3@11e840e, [Ljava.lang.Object;@6fd58f, TwoAnonymous$3@11e840e
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2426,32 +2426,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@efdc37.foo calls Outer$Inner@162d3ad.mi
+Outer@1e67fa5.foo calls Outer$Inner@1c656b8.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@162d3ad.mi calls java.io.PrintStream@13709b8.println
+Outer$Inner@1c656b8.mi calls java.io.PrintStream@677a21.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@efdc37.foo calls Outer$InnerRandom@1c5fdc4.nextHook
+Outer@1e67fa5.foo calls Outer$InnerRandom@1c67334.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1c5fdc4.nextHook calls Outer$InnerRandom@1c5fdc4.next
+Outer$InnerRandom@1c67334.nextHook calls Outer$InnerRandom@1c67334.next
 Outer.foo() calls Random.nextInt(..)
-Outer@efdc37.foo calls X.nextInt
+Outer@1e67fa5.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1723cec.foo calls Outer$Inner@fdc55d.mi
+Outer@1111562.foo calls Outer$Inner@92d88d.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@fdc55d.mi calls java.io.PrintStream@a88d63.println
+Outer$Inner@92d88d.mi calls java.io.PrintStream@c74bbf.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1723cec.foo calls Outer$InnerRandom@1da933c.nextHook
+Outer@1111562.foo calls Outer$InnerRandom@3dec13.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1da933c.nextHook calls Outer$InnerRandom@1da933c.next
+Outer$InnerRandom@3dec13.nextHook calls Outer$InnerRandom@3dec13.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1723cec.foo calls X.nextInt
+Outer@1111562.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4106,7 +4106,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@11765f5.x:=-3
+test.Test3@2cbc82.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4189,8 +4189,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@104185b
-o: Bar@104185b, i: 10
+o: Bar@d30a35
+o: Bar@d30a35, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4784,7 +4784,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@2681c2
+LibraryAspect-defined run() for C@13f21d5
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5110,7 +5110,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@16708e9
+? Util.read() obj=Test@2b5b77
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5129,7 +5129,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@950d1
+? Util.read() obj=ClinitTest@4e5d0e
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5139,7 +5139,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@135b2a5
+? Util.read() obj=SuidTest@657951
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5346,12 +5346,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@486b14
-Invoking command bean:  Command@6e0cf7
-hello(Command@6e0cf7)
-Created a PerThis aspect : Testcase2@115480b
-Invoking command bean:  Command@2d0533
-hello again(Command@2d0533)
+Created a PerThis aspect : Testcase2@15184a3
+Invoking command bean:  Command@db247a
+hello(Command@db247a)
+Created a PerThis aspect : Testcase2@137fd6b
+Invoking command bean:  Command@de8fea
+hello again(Command@de8fea)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5382,28 +5382,10 @@ PASS: Test 978: "abctests/bugs/cflowbelow in abstract aspects" passed.
 
 Running test 979: abctests/bugs/pack1/packages in wrong place
 Commandline: abc -d abctests/bugs/pack1 abctests/bugs/pack1/A/B.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: exception while resolving C.B
-polyglot.util.InternalCompilerError: exception while resolving C.B
-	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:88)
-	at soot.SootResolver.bringToHierarchy(SootResolver.java:147)
-	at soot.SootResolver.bringToSignatures(SootResolver.java:171)
-	at soot.SootResolver.bringToBodies(SootResolver.java:213)
-	at soot.SootResolver.processResolveWorklist(SootResolver.java:102)
-	at soot.SootResolver.resolveClass(SootResolver.java:88)
-	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:794)
-	at abc.main.Main.run(Main.java:568)
-	at abc.testing.TestCase.runTest(TestCase.java:287)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.StringIndexOutOfBoundsException: String index out of range: -1
-	at java.lang.String.substring(String.java:1438)
-	at java.lang.String.substring(String.java:1411)
-	at soot.javaToJimple.InitialResolver.createClassToSourceMap(InitialResolver.java:173)
-	at soot.javaToJimple.InitialResolver.resolveAST(InitialResolver.java:144)
-	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:81)
-	... 11 more
-FAIL: Test 979: "abctests/bugs/pack1/packages in wrong place" failed.
+Error position is null; assuming error matches current expected error with no line number. Error message: class C.B cannot be defined in file abctests/bugs/pack1/A/B.java
+WARNING: This test was probably not really passed!!
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 979: "abctests/bugs/pack1/packages in wrong place" passed.
 
 
 Running test 980: abctests/bugs/binding of variables inside || pointcuts
@@ -5462,5 +5444,15 @@ Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at abctests/bugs/ConstantUse.java:6,8-28: Case label must be an integral constant.
 FAIL: Test 988: "abctests/bugs/separate compilation and references to compile time constants" failed.
+
+
+Running test 989: abctests/bugs/lifting if out of cflow, with correct parameters
+Commandline: abc -d abctests/bugs abctests/bugs/CflowIf.java 
+PASS: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters" passed.
+
+
+Running test 990: abctests/bugs/lifting if out of cflow, with correct parameters 2
+Commandline: abc -d abctests/bugs abctests/bugs/CflowIf2.java 
+PASS: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" passed.
 
 

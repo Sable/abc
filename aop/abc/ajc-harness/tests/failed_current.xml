@@ -65,9 +65,6 @@
             <message line="6" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="packages in wrong place" num="979" dir="abctests/bugs/pack1">
-      <compile files="A/B.java"></compile>
-    </ajc-test>
 <ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
        <compile files="DeclareParentsInner.java"></compile>
     </ajc-test>

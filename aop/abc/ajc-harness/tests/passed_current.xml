@@ -4940,6 +4940,11 @@
           <compile files="AbstractPrec1.java"></compile>
           <run class="AbstractPrec1"></run>
     </ajc-test>
+<ajc-test title="packages in wrong place" num="979" dir="abctests/bugs/pack1">
+      <compile files="A/B.java">
+         <message kind="error"></message>
+      </compile>
+    </ajc-test>
 <ajc-test title="binding of variables inside || pointcuts" num="980" dir="abctests/bugs">
       <compile files="BindProblem.java"></compile>
       <run class="BindProblem"></run>
@@ -4953,6 +4958,14 @@
 <ajc-test title="method intertype onto inner class" num="987" dir="abctests/bugs" abccomment="abc fails in generation of accessors; ajc fails                     at runtime">
 	<compile files="QualThis.java"></compile>
 	<run class="QualThis"></run>
+    </ajc-test>
+<ajc-test title="lifting if out of cflow, with correct parameters" num="989" dir="abctests/bugs">
+        <compile files="CflowIf.java"></compile>
+        <run class="CflowIf"></run>
+    </ajc-test>
+<ajc-test title="lifting if out of cflow, with correct parameters 2" num="990" dir="abctests/bugs">
+	<compile files="CflowIf2.java"></compile>
+	<run class="CflowIf2"></run>
     </ajc-test>
  
 </suite>
