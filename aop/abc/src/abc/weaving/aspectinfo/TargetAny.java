@@ -28,7 +28,7 @@ import polyglot.util.Position;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** Handler for <code>target</code> condition pointcut with a universal pattern argument. 
+/** Handler for <code>target</code> condition pointcut with a universal pattern argument.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
@@ -36,39 +36,39 @@ import abc.weaving.residues.*;
 public class TargetAny extends DynamicValuePointcut {
 
     public TargetAny(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     public final Residue matchesAt(WeavingEnv we,
-				   SootClass cls,
-				   SootMethod method,
-				   ShadowMatch sm) {
-	ContextValue cv=sm.getTargetContextValue();
-	if(cv==null) return null;
-	return matchesAt(we,cv);
+                                   SootClass cls,
+                                   SootMethod method,
+                                   ShadowMatch sm) {
+        ContextValue cv=sm.getTargetContextValue();
+        if(cv==null) return null;
+        return matchesAt(we,cv);
     }
 
     protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
-	return AlwaysMatch.v;
+        return AlwaysMatch.v;
     }
 
     public String toString() {
-	return "target(*)";
+        return "target(*)";
     }
     public void registerSetupAdvice
-	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<Var>*/ result) {}
 
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+        /* (non-Javadoc)
+         * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
+         */
+        public boolean unify(Pointcut otherpc, Unification unification) {
 
-		if (otherpc.getClass() == this.getClass()) {
-			unification.setPointcut(this);
-			return true;
-		} else // Do the right thing if otherpc was a local vars pc
-			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
+                if (otherpc.getClass() == this.getClass()) {
+                        unification.setPointcut(this);
+                        return true;
+                } else // Do the right thing if otherpc was a local vars pc
+                        return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
-	}
+        }
 }

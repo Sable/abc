@@ -39,26 +39,26 @@ import abc.weaving.residues.Residue;
  */
 public abstract class ShadowPointcut extends Pointcut {
     public final Residue matchesAt(WeavingEnv env,
-				   SootClass cls,
-				   SootMethod method,
-				   ShadowMatch sm) {
-	return matchesAt(sm);
+                                   SootClass cls,
+                                   SootMethod method,
+                                   ShadowMatch sm) {
+        return matchesAt(sm);
     }
 
     public ShadowPointcut(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     /** Shadow pointcuts just need to know the ShadowMatch */
     protected abstract Residue matchesAt(ShadowMatch sm);
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv,
-			      Aspect context) {
-	return this;
+                              Hashtable typeEnv,
+                              Aspect context) {
+        return this;
     }
 
     public void registerSetupAdvice
-	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<Var>*/ result) {}
 }

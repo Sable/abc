@@ -115,15 +115,15 @@ public class GlobalPointcuts extends ContextVisitor
 
         if (pass == CONJOIN && n instanceof EAJAdviceDecl) {
             EAJAdviceDecl adviceDecl = (EAJAdviceDecl) n;
-            PCNode aspect = PCStructure.v().getClass(context().currentClass());
+            PCNode aspct = PCStructure.v().getClass(context().currentClass());
 
-            return applyMatchingGlobals(aspect, adviceDecl);
+            return applyMatchingGlobals(aspct, adviceDecl);
         }
 
         return n;
     }
 
-    protected EAJAdviceDecl applyMatchingGlobals(PCNode aspect,
+    protected EAJAdviceDecl applyMatchingGlobals(PCNode aspct,
                                                  EAJAdviceDecl ad)
     {
         Iterator i = globalpcs.keySet().iterator();
@@ -131,7 +131,7 @@ public class GlobalPointcuts extends ContextVisitor
         while (i.hasNext()) {
             ClassnamePatternExpr pattern = (ClassnamePatternExpr) i.next();
 
-            if (pattern.matches(PatternMatcher.v(), aspect)) {
+            if (pattern.matches(PatternMatcher.v(), aspct)) {
                 Pointcut global = (Pointcut) globalpcs.get(pattern);
                 ad = ad.conjoinPointcutWith(this, global);
             }

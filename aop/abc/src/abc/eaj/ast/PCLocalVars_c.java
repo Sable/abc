@@ -38,9 +38,9 @@ public class PCLocalVars_c extends Pointcut_c
 {
     protected List formals;
     protected Pointcut pointcut;
-    
+
     public Set pcRefs() {
-    	return new HashSet();
+        return new HashSet();
     }
 
     public String toString()
@@ -169,7 +169,7 @@ public class PCLocalVars_c extends Pointcut_c
                                 position()
                    ));
         }
-        
+
         return new abc.weaving.aspectinfo.LocalPointcutVars(
                                pointcut.makeAIPointcut(), wfs, position());
     }
@@ -202,7 +202,7 @@ public class PCLocalVars_c extends Pointcut_c
     }
 
     public boolean isDynamic() {
-	return pointcut.isDynamic();
+        return pointcut.isDynamic();
     }
 
 

@@ -34,13 +34,13 @@ import polyglot.types.SemanticException;
 /** This is the base class for pointcut designators; it is constructed by the frontend.
  *  A pointcut designator is primarily responsible for calculating the residue for itself
  *  at a given join point shadow.
- * 
+ *
  *  @author Ganesh Sittampalam
  */
 public abstract class Pointcut extends Syntax {
 
     public Pointcut(Position pos) {
-	super(pos);
+        super(pos);
     }
 
     /** Force subclasses to define toString */
@@ -50,9 +50,9 @@ public abstract class Pointcut extends Syntax {
      *  produce a residue
      */
     public abstract Residue matchesAt
-	(WeavingEnv env,SootClass cls,
-	 SootMethod method,ShadowMatch sm)
-	throws SemanticException;
+        (WeavingEnv env,SootClass cls,
+         SootMethod method,ShadowMatch sm)
+        throws SemanticException;
 
     /** Return a "normalized" version of this
      *  pointcut; with the following properties:
@@ -62,144 +62,144 @@ public abstract class Pointcut extends Syntax {
      *  All cflows/cflowbelows have been "registered" as separate pointcuts
      */
     public static Pointcut normalize(Pointcut pc,
-				     List/*<Formal>*/ formals,
-				     Aspect context) {
+                                     List/*<Formal>*/ formals,
+                                     Aspect context) {
 
-	Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
-	Hashtable/*<String,AbcType>*/ typeEnv=new Hashtable();
+        Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
+        Hashtable/*<String,AbcType>*/ typeEnv=new Hashtable();
 
-	if(formals!=null) {
-	    Iterator it=formals.iterator();
-	    while(it.hasNext()) {
-		Formal f=(Formal) it.next();
-		if(f.getName()==null)
-		    throw new InternalCompilerError("formal with null name: "+f);
-		if(f.getType()==null)
-		    throw new InternalCompilerError("formal with null type: "+f);
-		typeEnv.put(f.getName(),f.getType());
-	    }
-	}
+        if(formals!=null) {
+            Iterator it=formals.iterator();
+            while(it.hasNext()) {
+                Formal f=(Formal) it.next();
+                if(f.getName()==null)
+                    throw new InternalCompilerError("formal with null name: "+f);
+                if(f.getType()==null)
+                    throw new InternalCompilerError("formal with null type: "+f);
+                typeEnv.put(f.getName(),f.getType());
+            }
+        }
 
-	Pointcut inlined=pc.inline(renameEnv,typeEnv,context);
+        Pointcut inlined=pc.inline(renameEnv,typeEnv,context);
 
-	Pointcut ret=inlined.dnf().makePointcut(pc.getPosition());
+        Pointcut ret=inlined.dnf().makePointcut(pc.getPosition());
 
-	if(abc.main.Debug.v().showNormalizedPointcuts)
-	    System.err.println("normalized pointcut: "+ret);
+        if(abc.main.Debug.v().showNormalizedPointcuts)
+            System.err.println("normalized pointcut: "+ret);
 
-	ret.registerSetupAdvice(context,typeEnv);
-	return ret;
+        ret.registerSetupAdvice(context,typeEnv);
+        return ret;
     }
 
     protected final static class DNF {
-	private List/*<Formal>*/ formals;
-	private List/*<List<Pointcut>>*/ disjuncts;
+        private List/*<Formal>*/ formals;
+        private List/*<List<Pointcut>>*/ disjuncts;
 
-	public DNF(Pointcut pc) {
-	    formals=new ArrayList();
-	    disjuncts=new ArrayList();
-	    List conjuncts=new ArrayList(1);
-	    conjuncts.add(pc);
-	    disjuncts.add(conjuncts);
-	}
+        public DNF(Pointcut pc) {
+            formals=new ArrayList();
+            disjuncts=new ArrayList();
+            List conjuncts=new ArrayList(1);
+            conjuncts.add(pc);
+            disjuncts.add(conjuncts);
+        }
 
-	public static DNF or(DNF dnf1,DNF dnf2) {
-	    dnf1.formals.addAll(dnf2.formals);
-	    dnf1.disjuncts.addAll(dnf2.disjuncts);
-	    return dnf1;
-	}
+        public static DNF or(DNF dnf1,DNF dnf2) {
+            dnf1.formals.addAll(dnf2.formals);
+            dnf1.disjuncts.addAll(dnf2.disjuncts);
+            return dnf1;
+        }
 
-	public static DNF declare(DNF dnf,List formals) {
-	    dnf.formals.addAll(formals);
-	    return dnf;
-	}
+        public static DNF declare(DNF dnf,List formals) {
+            dnf.formals.addAll(formals);
+            return dnf;
+        }
 
-	private DNF() {
-	}
+        private DNF() {
+        }
 
-	public static DNF and(DNF dnf1,DNF dnf2) {
-	    DNF res=new DNF();
-	    res.formals=dnf1.formals;
-	    res.formals.addAll(dnf2.formals);
+        public static DNF and(DNF dnf1,DNF dnf2) {
+            DNF res=new DNF();
+            res.formals=dnf1.formals;
+            res.formals.addAll(dnf2.formals);
 
-	    res.disjuncts=new ArrayList(dnf1.disjuncts.size()*dnf2.disjuncts.size());
+            res.disjuncts=new ArrayList(dnf1.disjuncts.size()*dnf2.disjuncts.size());
 
-	    Iterator left=dnf1.disjuncts.iterator();
-	    while(left.hasNext()) {
-		final List/*<Pointcut>*/ leftConjuncts=(List) left.next();
-		Iterator right=dnf2.disjuncts.iterator();
-		while(right.hasNext()) {
-		    final List/*<Pointcut>*/ rightConjuncts=(List) right.next();
-                    
-		    List conjuncts=new ArrayList(leftConjuncts.size()+rightConjuncts.size());
-		    conjuncts.addAll(leftConjuncts);
-		    conjuncts.addAll(rightConjuncts);
-		    res.disjuncts.add(conjuncts);
-		}
-	    }
-	    return res;
-	}
+            Iterator left=dnf1.disjuncts.iterator();
+            while(left.hasNext()) {
+                final List/*<Pointcut>*/ leftConjuncts=(List) left.next();
+                Iterator right=dnf2.disjuncts.iterator();
+                while(right.hasNext()) {
+                    final List/*<Pointcut>*/ rightConjuncts=(List) right.next();
 
-	private static Pointcut makeConjuncts(List/*<Pointcut>*/ conjuncts,Position pos) {
-	    Iterator it=conjuncts.iterator();
-	    Pointcut res=new FullPointcut(pos);
-	    Pointcut ifs=new FullPointcut(pos);
-	    while(it.hasNext()) {
-		Pointcut cur=(Pointcut) it.next();
-		// a "not" might have a nested if, and since it can't bind anything 
-		// moving it can't matter
-		if(cur instanceof If || cur instanceof NotPointcut) 
-		    ifs=AndPointcut.construct(ifs,cur,pos);
-		else res=AndPointcut.construct(res,cur,pos);
-	    }
-	    return AndPointcut.construct(res,ifs,pos);
-	}
+                    List conjuncts=new ArrayList(leftConjuncts.size()+rightConjuncts.size());
+                    conjuncts.addAll(leftConjuncts);
+                    conjuncts.addAll(rightConjuncts);
+                    res.disjuncts.add(conjuncts);
+                }
+            }
+            return res;
+        }
 
-	private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/ disjuncts,Position pos) {
-	    Iterator it=disjuncts.iterator();
-	    Pointcut res=new EmptyPointcut(pos);
-	    while(it.hasNext()) {
-		res=OrPointcut.construct(res,makeConjuncts((List) it.next(),pos),pos);
-	    }
-	    return res;
-	}
+        private static Pointcut makeConjuncts(List/*<Pointcut>*/ conjuncts,Position pos) {
+            Iterator it=conjuncts.iterator();
+            Pointcut res=new FullPointcut(pos);
+            Pointcut ifs=new FullPointcut(pos);
+            while(it.hasNext()) {
+                Pointcut cur=(Pointcut) it.next();
+                // a "not" might have a nested if, and since it can't bind anything
+                // moving it can't matter
+                if(cur instanceof If || cur instanceof NotPointcut)
+                    ifs=AndPointcut.construct(ifs,cur,pos);
+                else res=AndPointcut.construct(res,cur,pos);
+            }
+            return AndPointcut.construct(res,ifs,pos);
+        }
 
-	public Pointcut makePointcut(Position pos) {
-	    Pointcut pc=makeDisjuncts(disjuncts,pos);
-	    if(!formals.isEmpty())
-		pc=new LocalPointcutVars(pc,formals,pos);
-	    return pc;
-	}
+        private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/ disjuncts,Position pos) {
+            Iterator it=disjuncts.iterator();
+            Pointcut res=new EmptyPointcut(pos);
+            while(it.hasNext()) {
+                res=OrPointcut.construct(res,makeConjuncts((List) it.next(),pos),pos);
+            }
+            return res;
+        }
+
+        public Pointcut makePointcut(Position pos) {
+            Pointcut pc=makeDisjuncts(disjuncts,pos);
+            if(!formals.isEmpty())
+                pc=new LocalPointcutVars(pc,formals,pos);
+            return pc;
+        }
     }
 
     /** This method should be overridden in any derived class that has pointcut children */
     protected DNF dnf() {
-	return new DNF(this);
+        return new DNF(this);
     }
 
-    /** Inlining should remove all PointcutRefs, 
+    /** Inlining should remove all PointcutRefs,
      *  and return a pointcut that is alpha-renamed
      */
     protected abstract Pointcut inline
-	(Hashtable/*<String,Var>*/ renameEnv,
-	 Hashtable/*<String,AbcType>*/ typeEnv,
-	 Aspect context);
+        (Hashtable/*<String,Var>*/ renameEnv,
+         Hashtable/*<String,AbcType>*/ typeEnv,
+         Aspect context);
 
     private static int freshVarNum=0;
     /** Return a freshly named pointcut variable */
     public static String freshVar() {
-	return "pcvar$"+(freshVarNum++);
+        return "pcvar$"+(freshVarNum++);
     }
 
-    // changed to protected since other people shouldn't need to call it, 
+    // changed to protected since other people shouldn't need to call it,
     // but I can't be bothered to change the modifiers on the subclasses
     protected abstract void registerSetupAdvice
-	(Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap);
+        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap);
 
     // Get a list of free variables bound by this pointcut
     public abstract void getFreeVars(Set/*<String>*/ result);
 
-	public abstract boolean unify(Pointcut otherpc,
-								  Unification unification);
-	
+        public abstract boolean unify(Pointcut otherpc,
+                                                                  Unification unification);
+
 }
