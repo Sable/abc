@@ -1,1 +1,4 @@
 *.output
+*.class
+*.jimple
+sootOutput

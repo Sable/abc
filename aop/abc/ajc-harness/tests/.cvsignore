@@ -1,0 +1,5 @@
+*.output
+failed.xml
+passed.xml
+tmp.xml
+cases_with_invalid_output.txt
