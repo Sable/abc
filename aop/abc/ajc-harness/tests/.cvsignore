@@ -5,3 +5,7 @@ tmp.xml
 cases_with_invalid_output.txt
 times.txt
 tmptimes.txt
+failed_check.xml
+passed_check.xml
+skipped.xml
+
