@@ -146,6 +146,7 @@ public class AroundWeaver {
 		public static class InterfaceInfo {
 			public Set interfaceInvokationStmts=new HashSet();
 			public Set adviceMethodInvokationStmts=new HashSet();
+			public Set directInvokationStmts=new HashSet();
 			//public HashMap /*InvokeExpr, ValueBox*/ invokationBoxes=new HashMap();
 			List /*Type*/ dynamicArguments=new LinkedList();
 			
@@ -175,6 +176,7 @@ public class AroundWeaver {
 					return (AccessMethodInfo)accessMethodImplementations.get(className);
 				}
 			}
+			
 			private HashMap /*String, AccessMethodInfo*/ accessMethodImplementations=new HashMap();	
 			private HashMap /*String, AccessMethodInfo*/ accessMethodImplementationsStatic=new HashMap();			
 		}
@@ -238,7 +240,7 @@ public class AroundWeaver {
 				
 				Stmt dynamicInvoke;
 			}			  
-			public List proceedInvokations=new LinkedList();
+			private List proceedInvokations=new LinkedList();
 		}
 		private HashMap /* String, AdviceMethodInfo */ adviceMethods=new HashMap();
 		AdviceMethodInfo getAdviceMethodInfo(String aspectName, String adviceMethodName) {
@@ -882,6 +884,23 @@ public class AroundWeaver {
 				i++;
  			} 			
  		}
+ 		
+ 		List dynamicActuals=new LinkedList();
+		{
+			Value[] parameters=new Value[interfaceInfo.dynamicArguments.size()];
+	
+			for (int i=0; i<argIndex.length; i++) {
+				parameters[argIndex[i]]=generatedLocals[i];	
+			}
+			for (int i=0; i<parameters.length; i++) {
+				if (parameters[i]==null) {
+					parameters[i]=Restructure.JavaTypeInfo.getDefaultValue((Type)interfaceInfo.dynamicArguments.get(i));	
+				}	
+				dynamicActuals.add(parameters[i]);
+			}			
+		}
+ 		
+ 		
 		Local targetLocal;
  		{ // create a local for the target
 			LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
@@ -898,6 +917,16 @@ public class AroundWeaver {
 			}
 			joinpointStatements.insertBefore(s, stmtAppl.shadowpoints.getBegin());
  		}
+ 		Local interfaceLocal=null;
+ 		if (!bStatic) {
+			LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
+			
+			interfaceLocal=lg.generateLocal(accessInterface.getType(), "closureType");
+			AssignStmt s=Jimple.v().newAssignStmt(interfaceLocal, 
+				Jimple.v().newCastExpr(Restructure.getThisCopy(joinpointMethod),
+							accessInterface.getType()));
+			joinpointStatements.insertBefore(s, begin);
+ 		}
 
 		// create list of default values for the added arguments
 		List addedDynArgs=new LinkedList();
@@ -910,6 +939,18 @@ public class AroundWeaver {
 		}
 		{ // modify all existing advice method invokations by adding the default parameters
 			Iterator it=interfaceInfo.adviceMethodInvokationStmts.iterator();
+			while (it.hasNext()) {
+				Stmt stmt=(Stmt)it.next();
+				//addEmptyDynamicParameters(method, addedDynArgs, accessMethodName);
+				InvokeExpr invoke=(InvokeExpr)stmt.getInvokeExprBox().getValue();
+				List newParams=invoke.getArgs();
+				newParams.addAll(addedDynArgs); /// should we do deep copy?	
+				InvokeExpr newInvoke=createNewInvokeExpr(invoke, newParams);
+				stmt.getInvokeExprBox().setValue(newInvoke);						
+			}
+		}
+		{ // modify all existing direct interface invokations by adding the default parameters
+			Iterator it=interfaceInfo.directInvokationStmts.iterator();
 			while (it.hasNext()) {
 				Stmt stmt=(Stmt)it.next();
 				//addEmptyDynamicParameters(method, addedDynArgs, accessMethodName);
@@ -1037,8 +1078,8 @@ public class AroundWeaver {
 		cleanLocals(accessBody);
 		
 		Local lThis=null;
-		if (!joinpointMethod.isStatic())
-			lThis=joinpointBody.getThisLocal();
+		if (!bStatic)
+			lThis=Restructure.getThisCopy(joinpointMethod); //joinpointBody.getThisLocal();
 		//lThis.setName("this");
 		
 		WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceAppl);
@@ -1054,16 +1095,45 @@ public class AroundWeaver {
 			Stmt endshadow=adviceAppl.shadowpoints.getEnd();
 			//Stmt followingstmt = (Stmt) joinpointStatements.getSuccOf(beginshadow);
 			
+			
 			joinpointStatements.insertBefore(failPoint,endshadow);
+			NopStmt nop=Jimple.v().newNopStmt();
+			joinpointStatements.insertBefore(nop, failPoint);
+			
 		
 			// weave in residue
 			endResidue=adviceAppl.residue.codeGen
 				(joinpointMethod,localgen,joinpointStatements,beginshadow,failPoint,wc);
+			//removeStatements(joinpointBody, beginshadow, endResidue, null);
+			joinpointStatements.insertBefore(Jimple.v().newGotoStmt(endshadow), nop);
 			
-			joinpointStatements.insertBefore(Jimple.v().newGotoStmt(endshadow), failPoint);
+			InvokeExpr directInvoke;
+			List directParams=new LinkedList();
+			directParams.add(targetLocal);
+			directParams.add(IntConstant.v(shadowID));
+			directParams.addAll(dynamicActuals);
+			if (bStatic) {
+				directInvoke=Jimple.v().newStaticInvokeExpr(accessMethod, directParams);
+			} else {
+				// TODO: can this call be replaced with an InvokeSpecial?
+				directInvoke=Jimple.v().newInterfaceInvokeExpr(
+					Restructure.getThisCopy(joinpointMethod), abstractAccessMethod, directParams);
+			}
+
+			if (returnedLocal!=null) {				
+				AssignStmt assign=Jimple.v().newAssignStmt(returnedLocal, directInvoke);
+				joinpointStatements.insertAfter(assign, failPoint);
+				Restructure.insertBoxingCast(joinpointBody, assign);
+				interfaceInfo.directInvokationStmts.add(assign);
+			} else {
+				Stmt skipAdvice;
+				skipAdvice=Jimple.v().newInvokeStmt(directInvoke);
+				joinpointStatements.insertAfter(skipAdvice, failPoint);
+				interfaceInfo.directInvokationStmts.add(skipAdvice);
+			}
 			
-			//if (assignStmt)
-			/*InvokeExpr directInvoke=
+			//skipAdvice
+			/*
 				Jimple.v().
 			 accessMethod*/				
 		}
@@ -1096,10 +1166,10 @@ public class AroundWeaver {
 		
 		// we need to add some of our own parameters to the invokation
 		List params=new LinkedList();
-		if (lThis==null) {
+		if (interfaceLocal==null) {
 			params.add(NullConstant.v());
 		} else {
-			params.add(lThis); // pass the closure
+			params.add(interfaceLocal); // pass the closure
 		}
 		params.add(targetLocal);
 		params.add(IntConstant.v(shadowID));
@@ -1108,21 +1178,11 @@ public class AroundWeaver {
 		} else {
 			params.add(IntConstant.v(0));
 		}
-		// and add the original parameters (dynamic args)
+		// and add the original parameters 
 		params.addAll(0, invokeEx.getArgs());
-		{
-			Value[] parameters=new Value[interfaceInfo.dynamicArguments.size()];
-			
-			for (int i=0; i<argIndex.length; i++) {
-				parameters[argIndex[i]]=generatedLocals[i];	
-			}
-			for (int i=0; i<parameters.length; i++) {
-				if (parameters[i]==null) {
-					parameters[i]=Restructure.JavaTypeInfo.getDefaultValue((Type)interfaceInfo.dynamicArguments.get(i));	
-				}	
-				params.add(parameters[i]);
-			}			
-		}
+		
+		
+		params.addAll(dynamicActuals);
 		
 		
 		// generate a new invoke expression to replace the old one
@@ -1180,7 +1240,11 @@ public class AroundWeaver {
 				if (info.interfaceInvokationStmts.contains(old)) {
 					info.interfaceInvokationStmts.remove(old);
 					info.interfaceInvokationStmts.add(bindings.get(old));// replace with new
-				}				
+				}
+				if (info.directInvokationStmts.contains(old)) {
+					info.directInvokationStmts.remove(old);
+					info.directInvokationStmts.add(bindings.get(old));
+				}
 			}			
 		}
 	}
@@ -1423,12 +1487,17 @@ public class AroundWeaver {
 				Local returnedLocal, ObjectBox resultingFirstCopy) {
 		
 		Local lThisSource=null;
-		if (!source.getMethod().isStatic())
+		Local lThisCopySource=null;
+		if (!source.getMethod().isStatic()) {
 			lThisSource=source.getThisLocal();
+			lThisCopySource=Restructure.getThisCopy(source.getMethod());
+		}
 		
 		Local lThisDest=null;
+		Local lThisCopyDest=null;
 		if (!dest.getMethod().isStatic()) {
 			lThisDest=dest.getThisLocal();
+			lThisCopyDest=Restructure.getThisCopy(dest.getMethod());
 		}			
 		
 		HashMap bindings = new HashMap();
@@ -1487,6 +1556,8 @@ public class AroundWeaver {
     
     		if (original==lThisSource) {
 				bindings.put(lThisSource, lThisDest);
+    		} else if (original==lThisCopySource) {
+				bindings.put(lThisCopySource, lThisCopyDest);
     		} else {
 				//copy.setName(copy.getName() + "$abc$" + state.getUniqueID());
 				setLocalName(destLocals, copy, original.getName()); // TODO: can comment this line out in release build
