@@ -253,6 +253,9 @@ public class AdviceDecl extends AbstractAdviceDecl {
             (Jimple.v().newVirtualInvokeExpr
              (awc.aspectinstance,advicemethod.makeRef(),awc.arglist)
              );
+        if(abc.main.Debug.v().tagResidueCode)
+            s.addTag(new soot.tagkit.StringTag
+                     ("^^ invocation of advice body - residue: "+adviceappl.getResidue()));
         c.addLast(s);
         return (c);
 
