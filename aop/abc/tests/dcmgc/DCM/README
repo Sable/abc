@@ -1,0 +1,82 @@
+/* ------------------------------------------------------------------------
+ * Dynamic Coupling Metrics implemented using AspectJ
+ * Copyright (C) 2004 Laurie Hendren, McGill University
+ *
+ * This code is based on the ideas presented in:
+ *     Y. Hassoun, R. Johnson, S. Counsell  A Dynamic Runtime Coupling Metric
+ *     for Meta-Level Architectures
+ *     Proc. 8th European Conference on Software Maintenance and Reengineering,
+ *     Tampere, Finland, March 2004 (CSMR 2004). 
+ *
+ * and computes the same metric as the code available at:
+ *    http://www.dcs.bbk.ac.uk/~yhassoun/downloads/Interceptor.java
+ *    http://www.dcs.bbk.ac.uk/~yhassoun/downloads/ClassRelationship.java
+ *
+ * However, the code is completely rewritten from the original to use a
+ * much lighter weight data collection mechanism,  and to include the
+ * possibility of accounting for objects being freed by the GC.
+ *
+ * ---------------------------------------------------------------------
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+How to use the code:
+
+   1.  Decide on the files you wish to instrument.
+
+   2.  For the class definition containing the main entry point,
+       <main>.java,  create a file <main>.properties which gives
+       a mapping of classnames in your application to their static
+       coupling metric.   If you do not define such a file,  all static
+       values will be assumed to be zero.   If you do not include all
+       classes in your .properties list,  then any missing class will
+       be given a static value of 0.
+
+
+   3.  Compile using ajc 1.1 or later,  using
+
+    ajc <yourjavafiles> DCM/*.java DCM/handleMetrics/*.java
+
+        -or-
+
+    ajc <yourjavafiles> DCM/*.java DCM/handleMetrics/*.java DCM/handleGC/*.java
+
+    For the first case,  the metrics will not account for objects dying due
+    to garbage collection.   For the second case objects will die when
+    the finalize method is called on them due to GC,  and the metrics will
+    only be computed using live objects.
+
+   4.  run using java <main>, and a summary report will be written at the
+         exit of main giving the dynamic coupling metric for each class,
+         and the total.
+
+   5.  What you might want to change,
+         DCM/Pointcuts.java   defines which constructors and methods
+           to include in the computation of DCM.    The pointcuts,
+           as given will include all constructors and calls in the
+           code provided in <yourjavafiles> as in the <ajc> command. 
+           This should be the usual case.
+
+         DCM/handleMetrics/Metrics.java
+            you can redefine the value for dumpinterval,
+                 -1 :  only dump results at end of run (DEFAULT)
+                  1 :  dump at each time step (plus some debugging info)
+                k>1 :  dump each k time steps (no debugging info)
+
+         DCM/handleGC/AllocFree.java
+            you can redefine the value for gcinterval,
+                 -1 :  only explicitly call gc when the VM triggers it (DEFAULT)
+                k>1 :  explicitly call the gc every k allocations

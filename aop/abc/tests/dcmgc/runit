@@ -1,0 +1,4 @@
+#!/bin/csh
+java certrevsim.Simulator 30 1000 90 5 60 1 1
+
+
