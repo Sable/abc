@@ -28,6 +28,7 @@ import soot.SootMethodRef;
 import soot.SootField;
 import soot.SootFieldRef;
 import soot.Type;
+import soot.tagkit.Host;
 
 import polyglot.ast.MethodDecl;
 import polyglot.types.ClassType;
@@ -499,8 +500,9 @@ public class MethodCategory {
 	/* don't weave if this is a synthetic field introduced by normal Java compilation.
 	 */
 	public static boolean weaveSetGet(SootField sfs) {
-		return !((GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(sfs)) == null) &&
-		         (sfs.getName().indexOf('$') != -1));
+	    return !((GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(sfs)) == null) &&
+	    //		         (sfs.getName().indexOf('$') != -1));
+		     sfs.hasTag("SyntheticTag"));
 	}
 
     // FIXME: Temporary stub
