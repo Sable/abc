@@ -25,4 +25,8 @@ public class AroundAdvice extends AbstractAdviceSpec {
     public MethodSig getProceedImpl() {
 	return proceed;
     }
+
+    public String toString() {
+	return rtype+" around";
+    }
 }

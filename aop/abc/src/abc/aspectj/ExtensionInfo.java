@@ -28,6 +28,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
 	
     public static final polyglot.frontend.Pass.ID BUILD_HIERARCHY = new polyglot.frontend.Pass.ID("build-hierarchy");
+    public static final polyglot.frontend.Pass.ID HIERARCHY_BUILT = new polyglot.frontend.Pass.ID("hierarchy-built");
     public static final polyglot.frontend.Pass.ID EVALUATE_PATTERNS = new polyglot.frontend.Pass.ID("evaluate-patterns");
     public static final polyglot.frontend.Pass.ID TEST_PATTERNS = new polyglot.frontend.Pass.ID("test-patterns");
 
@@ -93,50 +94,52 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new ParserPass(Pass.PARSE,compiler,job));
         
     
-	    l.add(new VisitorPass(Pass.BUILD_TYPES, job, new TypeBuilder(job, ts, nf))); 
-		l.add(new GlobalBarrierPass(Pass.BUILD_TYPES_ALL, job));
-		l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
-	                           new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
-		l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
+	l.add(new VisitorPass(Pass.BUILD_TYPES, job, new TypeBuilder(job, ts, nf))); 
+	l.add(new GlobalBarrierPass(Pass.BUILD_TYPES_ALL, job));
+	l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
+			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
+	l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
 
 	// Pattern and declare parents stuff
 	//	l.add(new VisitorPass(CLEAN_DECLARE, job,
         //                      new AmbiguityRemover(job, ts, nf, DeclareParentsAmbiguityRemover.DECLARE)));
-		l.add(new VisitorPass(BUILD_HIERARCHY, job, new HierarchyBuilder(hierarchy)));
-		l.add(new VisitorPass(EVALUATE_PATTERNS, job, new NamePatternEvaluator(this)));
-		l.add(new VisitorPass(TEST_PATTERNS, job, new PatternTester(this)));
-
-		l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
-		                         new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));
+	l.add(new VisitorPass(BUILD_HIERARCHY, job, new HierarchyBuilder(hierarchy, weavable_classes)));
+	l.add(new GlobalBarrierPass(HIERARCHY_BUILT, job));
+	l.add(new VisitorPass(EVALUATE_PATTERNS, job, new NamePatternEvaluator(this)));
+	l.add(new VisitorPass(TEST_PATTERNS, job, new PatternTester(this)));
+	
+	l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
+			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));
     
-		l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));
-		l.add(new GlobalBarrierPass(Pass.ADD_MEMBERS_ALL, job));
-
-		l.add(new VisitorPass(Pass.DISAM, job,
+	l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));
+	l.add(new GlobalBarrierPass(Pass.ADD_MEMBERS_ALL, job));
+	
+	l.add(new VisitorPass(Pass.DISAM, job,
 			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.ALL)));
-		l.add(new BarrierPass(Pass.DISAM_ALL, job));
-		l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
+	l.add(new BarrierPass(Pass.DISAM_ALL, job));
+	l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
         l.add(new VisitorPass(Pass.TYPE_CHECK, job, new TypeChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.REACH_CHECK, job, new ReachChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.EXC_CHECK, job, new ExceptionChecker(ts, compiler.errorQueue())));
-		l.add(new VisitorPass(CAST_INSERTION, job, new CastInsertionVisitor(job, ts, nf)));
+	l.add(new VisitorPass(CAST_INSERTION, job, new CastInsertionVisitor(job, ts, nf)));
         l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
 
-		l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
-		l.add(new SaveASTVisitor(SAVE_AST, job, this));
+	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
+	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	
-		// add new methods for proceed and if-pointcuts, and turn advice into methods
-		l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
-   		// to test the above:
-   		// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
-        l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf, weavable_classes)));
-		l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf)));
+	// add new methods for proceed and if-pointcuts, and turn advice into methods
+	l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
+
+	// to test the above:
+	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+        l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf)));
+	l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf)));
         
-		l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job, new CollectJimplifyVisitor(jimplify_classes)));
-		l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
-		l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor(jimplify_classes)));
+	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job, new CollectJimplifyVisitor(jimplify_classes)));
+	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
+	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor(jimplify_classes)));
 
 	if (compiler.serializeClassInfo()) {
 	    l.add(new VisitorPass(Pass.SERIALIZE,

@@ -9,4 +9,8 @@ public class AfterThrowingAdvice extends AbstractAdviceSpec {
     public AfterThrowingAdvice(Position pos) {
 	super(pos);
     }
+
+    public String toString() {
+	return "after throwing";
+    }
 }

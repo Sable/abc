@@ -9,4 +9,8 @@ public class AfterReturningArgAdvice extends AbstractAdviceSpec {
     public AfterReturningArgAdvice(Position pos) {
 	super(pos);
     }
+
+    public String toString() {
+	return "after returning arg";
+    }
 }

@@ -17,14 +17,9 @@ public class AspectInfoHarvester extends ContextVisitor {
     private String current_aspect_name;
     private Aspect current_aspect;
 
-    public AspectInfoHarvester(Job job, TypeSystem ts, NodeFactory nf, Collection/*<String>*/ classes) {
+    public AspectInfoHarvester(Job job, TypeSystem ts, NodeFactory nf) {
 	super(job, ts, nf);
 	gai = GlobalAspectInfo.v();
-	Iterator ci = classes.iterator();
-	while (ci.hasNext()) {
-	    String cname = (String)ci.next();
-	    gai.addClass(new AbcClass(cname));
-	}
     }
 
     public NodeVisitor enter(Node parent, Node n) {

@@ -13,39 +13,111 @@ import abc.weaving.aspectinfo.*;
 import java.util.*;
 
 public class Main {
+    public Collection/*<String>*/ aspect_sources = new ArrayList();
+    public Collection/*<String>*/ weavable_classes = new ArrayList();
+    public Collection/*<String>*/ in_jars = new ArrayList();
+
+    public List/*<String>*/ soot_args = new ArrayList();
+    public List/*<String>*/ polyglot_args = new ArrayList();
+
+    public String classpath = System.getProperty("java.class.path");
+    public String classes_destdir = ""; //FIXME
+
     public static void main(String[] args) {
-	// Parse args to find aware and self-contained classes.
-
-	String classpath = System.getProperty("java.class.path");
-	//System.out.println(classpath);
-
-        Collection/*<String>*/ aspect_sources = Arrays.asList(args); //FIXME
-        Collection/*<String>*/ java_sources = new ArrayList(); //FIXME
-        String classes_destdir = ""; //FIXME
-        Collection/*<String>*/ weavable_classes = new ArrayList(); //FIXME
-        for (int i = 0; i < args.length; i++) {
-            System.out.println(args[i]);
-            weavable_classes.add(args[i].substring(0, args[i].lastIndexOf('.')));
-        }
-
-	Scene.v().setSootClassPath(classpath);
-	//Scene.v().loadClassAndSupport("java.lang.Object");
-
-	// TODO: Resolve java classes
-
-	// Invoke polyglot
-	ExtensionInfo ext = new abc.aspectj.ExtensionInfo(weavable_classes);
-	Options options = ext.getOptions();
-        options.assertions = true;
-	options.serialize_type_info = false;
-	options.classpath = classpath;
-	Options.global = options;
-	Compiler compiler = new Compiler(ext);
-	if (!compiler.compile(aspect_sources)) {
-	    System.out.println("Compiler failed.");
+	try {
+	    Main main = new Main(args);
+	    main.run();
+	} catch (IllegalArgumentException e) {
+	    System.out.println("Illegal arguments: "+e.getMessage());
+	    System.exit(1);
+	} catch (CompilerFailedException e) {
+	    System.out.println(e.getMessage());
 	    System.exit(5);
 	}
+    }
 
+    public Main(String[] args) throws IllegalArgumentException {
+	parseArgs(args);
+    }
+
+    public void parseArgs(String[] args) throws IllegalArgumentException {
+	for (int i = 0 ; i < args.length ; i++) {
+	    if (args[i].equals("+soot")) {
+		while (++i < args.length && !args[i].equals("-soot")) {
+		    soot_args.add(args[i]);
+		}
+	    } else if (args[i].equals("+polyglot")) {
+		while (++i < args.length && !args[i].equals("-polyglot")) {
+		    polyglot_args.add(args[i]);
+		}
+	    } else if (args[i].equals("-injars")) {
+		while (++i < args.length && !args[i].startsWith("-")) {
+		    in_jars.add(args[i]);
+		}
+		i--;
+	    } else if (args[i].equals("-classpath") || args[i].equals("-cp")) {
+		if (i+1 < args.length) {
+		    classpath = args[i+1];
+		    i++;
+		} else {
+		    throw new IllegalArgumentException("Missing argument to "+args[i]);
+		}
+	    } else if (args[i].startsWith("-")) {
+		throw new IllegalArgumentException("Unknown option "+args[i]);
+	    } else {
+		aspect_sources.add(args[i]);
+	    }
+	}
+    }
+
+    public void run() throws CompilerFailedException {
+	initSoot();
+	loadJars();
+	compile();
+	weave();
+	output();
+    }
+
+    public void initSoot() throws IllegalArgumentException {
+	Scene.v().setSootClassPath(classpath);
+	String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
+	if (!soot.options.Options.v().parse(soot_argv)) {
+	    throw new IllegalArgumentException("Soot usage error");
+	}
+    }
+
+    public void loadJars() throws CompilerFailedException {
+	// TODO
+    }
+
+    public void compile() throws CompilerFailedException, IllegalArgumentException {
+	// Invoke polyglot
+	try {
+	    ExtensionInfo ext = new abc.aspectj.ExtensionInfo(weavable_classes);
+	    Options options = ext.getOptions();
+	    options.assertions = true;
+	    options.serialize_type_info = false;
+	    options.classpath = classpath;
+	    if (polyglot_args.size() > 0) {
+		String[] polyglot_argv = (String[]) polyglot_args.toArray(new String[0]);
+		Set sources = new HashSet(aspect_sources);
+		options.parseCommandLine(polyglot_argv, sources);
+		// FIXME: Use updated source set?
+	    }
+	    Options.global = options;
+	    Compiler compiler = new Compiler(ext);
+	    if (!compiler.compile(aspect_sources)) {
+		throw new CompilerFailedException("Compiler failed.");
+	    }
+	} catch (polyglot.main.UsageError e) {
+	    throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
+	}
+
+	// Output the aspect info
+	GlobalAspectInfo.v().print(System.err);
+    }
+
+    public void weave() throws CompilerFailedException {
         // Adjust Soot types for intertype decls
         new IntertypeAdjuster().adjust();
 
@@ -62,14 +134,13 @@ public class Main {
 
         GlobalAspectInfo.v().computeAdviceLists();
 	
-	// Output the aspect info
-	GlobalAspectInfo.v().print(System.err);
-
         //generateDummyGAI();
 
         Weaver weaver = new Weaver();
         weaver.weave();
+    }
 
+    public void output() {
 	// Write classes
 
         Iterator/*<String>*/ wci = weavable_classes.iterator();

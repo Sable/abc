@@ -11,6 +11,6 @@ public class BeforeAdvice extends AbstractAdviceSpec {
     }
 
     public String toString() {
-	return "before()";
+	return "before";
     }
 }
