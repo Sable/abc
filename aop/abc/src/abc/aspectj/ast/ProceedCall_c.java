@@ -36,7 +36,7 @@ public class ProceedCall_c extends Call_c implements ProceedCall {
     }
     
     public ProceedCall proceedMethod(MethodDecl md) {
-    	return (ProceedCall) name(md.name());
+    	return (ProceedCall) name(md.name()).methodInstance(md.methodInstance());
     }
     
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
