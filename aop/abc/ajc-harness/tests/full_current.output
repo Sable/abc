@@ -85,9 +85,6 @@ PASS: Test 23: "base/test116/empty and singular patterns on modifiers and throws
 
 Running test 24: base/test117/DEPRECATED: introduce of variables
 Commandline: abc -d base/test117 base/test117/Driver.java 
-Creating getInstance method public abstract int get$a$62() for itfi field int a
-Creating getInstance method public abstract int get$d$66() for itfi field int d
-Creating getInstance method public static abstract int get$c$70() for itfi field public static final int c
 Compilation failed with 1 errors, which were matched and verified against the expected errors.
 PASS: Test 24: "base/test117/DEPRECATED: introduce of variables" passed.
 
@@ -109,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@180dc79
+creating: A@70c836
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -602,7 +599,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@1df8d93
+InterfaceAndObject$1@1eb9c1e
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -1485,8 +1482,10 @@ PASS: Test 273: "errors/Should signal an error when we need an exposed value but
 
 Running test 274: errors/StackOverFlowException with circular +implements's.
 Commandline: abc -d errors errors/CircularPlusImplementsIntros.java 
-Compilation failed with 2 errors, which were matched and verified against the expected errors.
-PASS: Test 274: "errors/StackOverFlowException with circular +implements's." passed.
+Compilation produced an unexpected number of errors: 1, should be 2
+Actual errors found: 
+Semantic Error at errors/CircularPlusImplementsIntros.java:19,4-36: Interface J cannot extend subinterface I
+FAIL: Test 274: "errors/StackOverFlowException with circular +implements's." failed.
 
 
 Running test 275: errors/Introducing protected methods is causing a crash
@@ -1766,7 +1765,6 @@ PASS: Test 319: "errors/bad proceed args good error messages" passed.
 
 Running test 320: design/intro/initial tests for new introduction style
 Commandline: abc -d design/intro design/intro/Simple.java 
-Creating getInstance method public abstract java.lang.String get$idata$341() for itfi field public java.lang.String idata
 PASS: Test 320: "design/intro/initial tests for new introduction style" passed.
 
 
@@ -1782,9 +1780,6 @@ PASS: Test 322: "design/intro/within and introductions behaves correctly" passed
 
 Running test 323: design/intro/introduction of static methods and fields on classes and interfaces
 Commandline: abc -d design/intro design/intro/Statics.java 
-Creating getInstance method public static abstract int get$count$445() for itfi field static int count
-Creating getInstance method public static abstract int get$count$451() for itfi field static int count
-Creating getInstance method public static abstract int get$count$455() for itfi field static int count
 Compilation failed with 4 errors, which were matched and verified against the expected errors.
 PASS: Test 323: "design/intro/introduction of static methods and fields on classes and interfaces" passed.
 
@@ -2089,8 +2084,6 @@ PASS: Test 380: "new/Advice on advice" passed.
 
 Running test 381: new/Introductions on other introductions
 Commandline: abc -d new new/IntroOnIntro.java 
-Creating getInstance method public abstract java.lang.String get$my_manager$662() for itfi field private java.lang.String my_manager
-Creating getInstance method public abstract java.lang.String get$m$666() for itfi field java.lang.String m
 PASS: Test 381: "new/Introductions on other introductions" passed.
 
 
@@ -2260,7 +2253,6 @@ PASS: Test 414: "new/innerAspectAccess/inner aspects can't access outer pointcut
 
 Running test 415: new/implements and extends are introduced before methods and fields
 Commandline: abc -d new new/IntroOrder.java 
-Creating getInstance method public abstract Persistor get$persistor$797() for itfi field private Persistor persistor
 PASS: Test 415: "new/implements and extends are introduced before methods and fields" passed.
 
 
@@ -2309,7 +2301,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@13ac767, [Ljava.lang.Object;@1f965e1, TwoAnonymous$3@13ac767
+calling run: TwoAnonymous$3@1ce8d3c, [Ljava.lang.Object;@19a8a26, TwoAnonymous$3@1ce8d3c
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2426,32 +2418,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@12d9493.foo calls Outer$Inner@17574d7.mi
+Outer@149b980.foo calls Outer$Inner@131b77a.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@17574d7.mi calls java.io.PrintStream@49e798.println
+Outer$Inner@131b77a.mi calls java.io.PrintStream@104b782.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@12d9493.foo calls Outer$InnerRandom@9dafe3.nextHook
+Outer@149b980.foo calls Outer$InnerRandom@1a9ef1f.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@9dafe3.nextHook calls Outer$InnerRandom@9dafe3.next
+Outer$InnerRandom@1a9ef1f.nextHook calls Outer$InnerRandom@1a9ef1f.next
 Outer.foo() calls Random.nextInt(..)
-Outer@12d9493.foo calls X.nextInt
+Outer@149b980.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@43c141.foo calls Outer$Inner@449dd2.mi
+Outer@185522.foo calls Outer$Inner@17d3475.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@449dd2.mi calls java.io.PrintStream@d563e0.println
+Outer$Inner@17d3475.mi calls java.io.PrintStream@ff2ca9.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@43c141.foo calls Outer$InnerRandom@1903ff8.nextHook
+Outer@185522.foo calls Outer$InnerRandom@cd38e4.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1903ff8.nextHook calls Outer$InnerRandom@1903ff8.next
+Outer$InnerRandom@cd38e4.nextHook calls Outer$InnerRandom@cd38e4.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@43c141.foo calls X.nextInt
+Outer@185522.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2741,7 +2733,6 @@ PASS: Test 494: "new/!within and !this handling for callee-side call points" pas
 
 Running test 495: new/innerInterfaces/private inner interfaces and bytecode visibility
 Commandline: abc -d new/innerInterfaces new/innerInterfaces/p/Driver.java new/innerInterfaces/p/InnerTest.java new/innerInterfaces/other/Test.java 
-Creating getInstance method public abstract int get$count$1597() for itfi field private int count
 PASS: Test 495: "new/innerInterfaces/private inner interfaces and bytecode visibility" passed.
 
 
@@ -2814,10 +2805,6 @@ PASS: Test 504: "new/Arguments are not being passed in to calls advice" passed.
 
 Running test 505: design/intro/interfaces as mixins with introduction
 Commandline: abc -d design/intro design/intro/Interfaces.java 
-Creating getInstance method public abstract java.lang.String get$instanceField$1662() for itfi field public java.lang.String instanceField
-Creating getInstance method public abstract java.lang.String get$instanceField$1666() for itfi field public java.lang.String instanceField
-Creating getInstance method public abstract java.lang.String get$privateField$1670() for itfi field private java.lang.String privateField
-Creating getInstance method public abstract java.lang.String get$privateField$1674() for itfi field private java.lang.String privateField
 PASS: Test 505: "design/intro/interfaces as mixins with introduction" passed.
 
 
@@ -3003,7 +2990,6 @@ PASS: Test 538: "new/after advice on static method with pcd if() using result th
 
 Running test 539: new/PR600/AbstractMethodError for introduced methods (order 1)
 Commandline: abc -d new/PR600 new/PR600/Main.java new/PR600/My_error.java new/PR600/A.java new/PR600/B.java new/PR600/C.java 
-Creating getInstance method public abstract My_error.Queue get$next$1896() for itfi field My_error.Queue next
 	Call received  by: A
 	Call forwarded to: B
 	Call received  by: B
@@ -3014,7 +3000,6 @@ PASS: Test 539: "new/PR600/AbstractMethodError for introduced methods (order 1)"
 
 Running test 540: new/PR600/AbstractMethodError for introduced methods (order 2)
 Commandline: abc -d new/PR600 new/PR600/Main.java new/PR600/My_error.java new/PR600/C.java new/PR600/A.java new/PR600/B.java 
-Creating getInstance method public abstract My_error.Queue get$next$1911() for itfi field My_error.Queue next
 	Call received  by: A
 	Call forwarded to: B
 	Call received  by: B
@@ -3025,7 +3010,6 @@ PASS: Test 540: "new/PR600/AbstractMethodError for introduced methods (order 2)"
 
 Running test 541: new/PR600/AbstractMethodError for introduced methods (order 3)
 Commandline: abc -d new/PR600 new/PR600/My_error.java new/PR600/A.java new/PR600/B.java new/PR600/C.java new/PR600/Main.java 
-Creating getInstance method public abstract My_error.Queue get$next$1926() for itfi field My_error.Queue next
 	Call received  by: A
 	Call forwarded to: B
 	Call received  by: B
@@ -3036,7 +3020,6 @@ PASS: Test 541: "new/PR600/AbstractMethodError for introduced methods (order 3)"
 
 Running test 542: new/PR600/AbstractMethodError for introduced methods (order 4)
 Commandline: abc -d new/PR600 new/PR600/A.java new/PR600/B.java new/PR600/C.java new/PR600/Main.java new/PR600/My_error.java 
-Creating getInstance method public abstract My_error.Queue get$next$1941() for itfi field My_error.Queue next
 	Call received  by: A
 	Call forwarded to: B
 	Call received  by: B
@@ -3047,7 +3030,6 @@ PASS: Test 542: "new/PR600/AbstractMethodError for introduced methods (order 4)"
 
 Running test 543: new/PR600/AbstractMethodError for introduced methods (order 5)
 Commandline: abc -d new/PR600 new/PR600/A.java new/PR600/B.java new/PR600/Main.java new/PR600/C.java new/PR600/My_error.java 
-Creating getInstance method public abstract My_error.Queue get$next$1956() for itfi field My_error.Queue next
 	Call received  by: A
 	Call forwarded to: B
 	Call received  by: B
@@ -3166,7 +3148,6 @@ PASS: Test 561: "new/aroundinner/aroundInner 4 - around advice inner Thread subc
 
 Running test 562: new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface
 Commandline: abc -d new/aroundinner new/aroundinner/RunnableSub.java new/aroundinner/Common.java 
-Creating getInstance method public abstract int get$result$2041() for itfi field int result
 PASS: Test 562: "new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" passed.
 
 
@@ -3598,7 +3579,6 @@ PASS: Test 638: "pureJava/initializers must be able to complete normally (found 
 
 Running test 639: new/Incrementing interface-introduced field
 Commandline: abc -d new new/IntroducedFieldInc.java 
-Creating getInstance method public abstract int get$count$2291() for itfi field public int count
 PASS: Test 639: "new/Incrementing interface-introduced field" passed.
 
 
@@ -3841,13 +3821,11 @@ PASS: Test 690: "new/crashes given method in declared method" passed.
 
 Running test 691: new/after returning advice on interface constructor
 Commandline: abc -d new new/AfterReturningInterfaceConstructor.java 
-Creating getInstance method public abstract int get$i$2463() for itfi field int i
 PASS: Test 691: "new/after returning advice on interface constructor" passed.
 
 
 Running test 692: new/after returning advice on interface constructor - error
 Commandline: abc -d new new/AfterReturningInterfaceConstructorCE.java 
-Creating getInstance method public abstract int get$i$2470() for itfi field int i
 Compilation failed with 3 errors, which were matched and verified against the expected errors.
 PASS: Test 692: "new/after returning advice on interface constructor - error" passed.
 
@@ -3901,13 +3879,11 @@ PASS: Test 710: "options/injars/simple/options -injars" passed.
 
 Running test 712: new/interface self-reference in anonymous instance
 Commandline: abc -d new new/AnonymousSelfReference.java 
-Creating getInstance method public abstract java.lang.Runnable get$runnable$2483() for itfi field java.lang.Runnable runnable
 PASS: Test 712: "new/interface self-reference in anonymous instance" passed.
 
 
 Running test 713: new/self-reference from (aspect-declared) method-local class
 Commandline: abc -d new new/MethodSelfReference.java 
-Creating getInstance method public abstract java.lang.Runnable get$runnable$2491() for itfi field java.lang.Runnable runnable
 PASS: Test 713: "new/self-reference from (aspect-declared) method-local class" passed.
 
 
@@ -3970,8 +3946,8 @@ PASS: Test 723: "new/declare class extends interface" passed.
 
 Running test 724: new/declare class implements class
 Commandline: abc -d new new/DeclareClassImplementsClass.java 
-Compilation failed with 1 errors, which were matched and verified against the expected errors.
-PASS: Test 724: "new/declare class implements class" passed.
+Compilation succeeded but was expected to fail.
+FAIL: Test 724: "new/declare class implements class" failed.
 
 
 Running test 725: new/declare interface implements interface
@@ -4106,7 +4082,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@20acde.x:=-3
+test.Test3@a749dc.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4189,8 +4165,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@79f98
-o: Bar@79f98, i: 10
+o: Bar@c086f0
+o: Bar@c086f0, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4608,14 +4584,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:643)
+	at abc.main.Main.run(Main.java:647)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:724)
-	at abc.main.Main.loadSourceRoots(Main.java:741)
-	at abc.main.Main.run(Main.java:563)
+	at abc.main.Main.findSourcesInDir(Main.java:728)
+	at abc.main.Main.loadSourceRoots(Main.java:745)
+	at abc.main.Main.run(Main.java:567)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -4723,7 +4699,6 @@ PASS: Test 837: "bugs/switch statement in aspects crashes weaving" passed.
 
 Running test 838: bugs/ajc stack trace on declaring hashcode() method in aspect
 Commandline: abc -d bugs bugs/OverridingInterfaceObjectMethod.java 
-Creating getInstance method public abstract Id get$id$2736() for itfi field private Id id
 PASS: Test 838: "bugs/ajc stack trace on declaring hashcode() method in aspect" passed.
 
 
@@ -4784,7 +4759,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@181ee66
+LibraryAspect-defined run() for C@1314a70
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5110,7 +5085,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1e7a879
+? Util.read() obj=Test@d62164
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5129,7 +5104,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@ee6543
+? Util.read() obj=ClinitTest@171cc56
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5139,7 +5114,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@197bc0c
+? Util.read() obj=SuidTest@ec1dab
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5167,21 +5142,18 @@ PASS: Test 941: "bugs/serialVersionUID/SUID: Declare implements Serializable (co
 
 Running test 945: bugs/fieldsOnInterfaces/declare String field on interface
 Commandline: abc -d bugs/fieldsOnInterfaces bugs/fieldsOnInterfaces/StringFieldOnInterface.java 
-Creating getInstance method public abstract java.lang.String get$name$2918() for itfi field public java.lang.String name
 Compilation failed with 2 errors, which were matched and verified against the expected errors.
 PASS: Test 945: "bugs/fieldsOnInterfaces/declare String field on interface" passed.
 
 
 Running test 946: bugs/fieldsOnInterfaces/declare int field on interface
 Commandline: abc -d bugs/fieldsOnInterfaces bugs/fieldsOnInterfaces/IntFieldOnInterface.java 
-Creating getInstance method public abstract int get$name$2925() for itfi field public int name
 Compilation failed with 2 errors, which were matched and verified against the expected errors.
 PASS: Test 946: "bugs/fieldsOnInterfaces/declare int field on interface" passed.
 
 
 Running test 947: bugs/fieldsOnInterfaces/declare Object field on interface
 Commandline: abc -d bugs/fieldsOnInterfaces bugs/fieldsOnInterfaces/ObjectFieldOnInterface.java 
-Creating getInstance method public abstract java.lang.Object get$object$2932() for itfi field public java.lang.Object object
 Compilation failed with 2 errors, which were matched and verified against the expected errors.
 PASS: Test 947: "bugs/fieldsOnInterfaces/declare Object field on interface" passed.
 
@@ -5216,7 +5188,6 @@ PASS: Test 953: "bugs/Introduce Unknown Type to class causes Null pointer except
 
 Running test 957: bugs/Private members introduced via an interface are visible to the class
 Commandline: abc -d bugs bugs/VisiblePrivateInterfaceITDs.java 
-Creating getInstance method public abstract int get$x$2948() for itfi field private int x
 Compilation failed with 1 errors, which were matched and verified against the expected errors.
 PASS: Test 957: "bugs/Private members introduced via an interface are visible to the class" passed.
 
@@ -5346,12 +5317,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@fc9cca
-Invoking command bean:  Command@99cdc6
-hello(Command@99cdc6)
-Created a PerThis aspect : Testcase2@194bdf8
-Invoking command bean:  Command@43f3f4
-hello again(Command@43f3f4)
+Created a PerThis aspect : Testcase2@1a9a949
+Invoking command bean:  Command@1a91c60
+hello(Command@1a91c60)
+Created a PerThis aspect : Testcase2@1860d89
+Invoking command bean:  Command@1e29f2d
+hello again(Command@1e29f2d)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5455,14 +5426,8 @@ PASS: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 
 
 Running test 991: abctests/bugs/declare parents causes interface to implement itself
 Commandline: abc -d abctests/bugs abctests/bugs/foo/Foo.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:643)
-	at abc.testing.TestCase.runTest(TestCase.java:287)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.StackOverflowError
-FAIL: Test 991: "abctests/bugs/declare parents causes interface to implement itself" failed.
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 991: "abctests/bugs/declare parents causes interface to implement itself" passed.
 
 
 Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment

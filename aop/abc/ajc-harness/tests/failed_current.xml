@@ -10,6 +10,13 @@
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
     </ajc-test>
+<ajc-test title="StackOverFlowException with circular +implements's." num="274" keywords="from-errors" dir="errors" abccomment="Not an ideal error location, but ok for now. ODM July 7, 2004">
+        <compile files="CircularPlusImplementsIntros.java">
+            <ajcmessage line="19" kind="error"></ajcmessage>
+            <message line="7" kind="error"></message>
+            <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="join points exist in the execution of field initializers" num="418" keywords="from-resolved_10x" dir="new">
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
@@ -29,6 +36,11 @@
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
+    </ajc-test>
+<ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="the file itself says it expects an error, and we give it.                   ODM 18/08/04">
+        <compile files="DeclareClassImplementsClass.java">
+          <message line="10" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
@@ -81,9 +93,6 @@
 <ajc-test title="Matching int[].clone()" num="986" dir="abctests/bugs" abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.         Both work fine with 'call(* Object.clone())'.">
 	<compile files="IntArray.java"></compile>
 	<run class="IntArray"></run>
-    </ajc-test>
-<ajc-test title="declare parents causes interface to implement itself" num="991" dir="abctests/bugs">
-	<compile files="foo/Foo.java"></compile>
     </ajc-test>
 <ajc-test title="cast pointcut can interact badly with jimple type assignment" num="992" dir="abctests/bugs">
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>

@@ -1421,13 +1421,6 @@
             <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="StackOverFlowException with circular +implements's." num="274" keywords="from-errors" dir="errors" abccomment="Not an ideal error location, but ok for now. ODM July 7, 2004">
-        <compile files="CircularPlusImplementsIntros.java">
-            <ajcmessage line="19" kind="error"></ajcmessage>
-            <message line="7" kind="error"></message>
-            <message line="8" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="Introducing protected methods is causing a crash" num="275" keywords="from-errors" dir="errors">
         <compile files="ProtectedIntro.java">
             <message line="14" kind="error"></message>
@@ -3552,11 +3545,6 @@
         <compile files="DeclareClassExtendsInterface.java">
         </compile>
     </ajc-test>
-<ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="the file itself says it expects an error, and we give it.                   ODM 18/08/04">
-        <compile files="DeclareClassImplementsClass.java">
-          <message line="10" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="declare interface implements interface" pr="853" num="725" dir="new" abccomment="we already accept implements instead of extends here">
         <compile files="DeclareInterfaceImplementsInterface.java">
         </compile>
@@ -4971,6 +4959,11 @@
 <ajc-test title="lifting if out of cflow, with correct parameters 2" num="990" dir="abctests/bugs">
 	<compile files="CflowIf2.java"></compile>
 	<run class="CflowIf2"></run>
+    </ajc-test>
+<ajc-test title="declare parents causes interface to implement itself" num="991" dir="abctests/bugs">
+	<compile files="foo/Foo.java">
+	    <message line="6" kind="error" file="foo/Foo.java"></message>
+	</compile>
     </ajc-test>
  
 </suite>
