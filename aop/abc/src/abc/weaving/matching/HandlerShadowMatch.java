@@ -5,6 +5,7 @@ import soot.jimple.*;
 
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.residues.ContextValue;
 
 /** The results of matching at a handler shadow
  *  @author Ganesh Sittampalam
@@ -46,5 +47,9 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 
     public boolean supportsAfter() {
 	return false;
+    }
+
+    public ContextValue getTargetContextValue() {
+	return null;
     }
 }

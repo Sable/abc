@@ -21,8 +21,4 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 	return new ExecutionShadowMatch(container);
     }
 
-    public ContextValue getTargetContextValue() {
-	// remove when subclasses implement it
-	throw new RuntimeException("No target context value implemented "+this);
-    }
 }

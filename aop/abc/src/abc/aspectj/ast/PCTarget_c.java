@@ -78,19 +78,15 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (pat instanceof Local) {
-	    return new abc.weaving.aspectinfo.OtherPointcut
-		(new abc.weaving.aspectinfo.TargetVar
-		 (new abc.weaving.aspectinfo.Var(((Local)pat).name(),((Local)pat).position())),
+	    return new abc.weaving.aspectinfo.TargetVar
+		(new abc.weaving.aspectinfo.Var(((Local)pat).name(),((Local)pat).position()),
 		 position());
 	} else if (pat instanceof TypeNode) {
-	    return new abc.weaving.aspectinfo.OtherPointcut
-		(new abc.weaving.aspectinfo.TargetType
-		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type())),
-		 position());
+	    return new abc.weaving.aspectinfo.TargetType
+		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type()),
+		  position());
 	} else if (pat instanceof ArgStar) {
-	    return new abc.weaving.aspectinfo.OtherPointcut
-		(new abc.weaving.aspectinfo.TargetAny(),
-		 position());
+	    return new abc.weaving.aspectinfo.TargetAny(position());
 	} else {
 	    throw new RuntimeException("Unexpected pattern in target pointcut: "+pat);
 	}

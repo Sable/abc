@@ -5,6 +5,8 @@ import soot.jimple.*;
 
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.JimpleValue;
 
 /** The results of matching at a field get
  *  @author Ganesh Sittampalam
@@ -51,4 +53,12 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	mal.addStmtAdvice(aa);
 	return aa;
     }
+
+    public ContextValue getTargetContextValue() {
+	FieldRef fr=(FieldRef) (((AssignStmt) stmt).getRightOp());
+	if(!(fr instanceof InstanceFieldRef)) return null;
+	InstanceFieldRef ifr=(InstanceFieldRef) fr;
+	return new JimpleValue(ifr.getBase());
+    }
+
 }

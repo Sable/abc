@@ -5,6 +5,8 @@ import soot.jimple.*;
 
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.JimpleValue;
 
 /** The results of matching at a new+constructor call shadow
  *  @author Ganesh Sittampalam
@@ -58,5 +60,9 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	NewStmtAdviceApplication aa=new NewStmtAdviceApplication(ad,residue,stmt);
 	mal.addStmtAdvice(aa);
 	return aa;
+    }
+
+    public ContextValue getTargetContextValue() {
+	return new JimpleValue(((AssignStmt) stmt).getLeftOp());
     }
 }

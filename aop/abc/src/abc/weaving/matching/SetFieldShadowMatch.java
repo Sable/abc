@@ -5,6 +5,8 @@ import soot.jimple.*;
 
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.JimpleValue;
 
 /** The results of matching at a field set
  *  @author Ganesh Sittampalam
@@ -48,6 +50,13 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
 	mal.addStmtAdvice(aa);
 	return aa;
+    }
+
+    public ContextValue getTargetContextValue() {
+	FieldRef fr=(FieldRef) (((AssignStmt) stmt).getLeftOp());
+	if(!(fr instanceof InstanceFieldRef)) return null;
+	InstanceFieldRef ifr=(InstanceFieldRef) fr;
+	return new JimpleValue(ifr.getBase());
     }
 
 }
