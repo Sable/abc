@@ -5068,5 +5068,11 @@
          <compile files="Dollar$Method3.java"></compile>
          <run class="Dollar$Method3"></run>
     </ajc-test>
+<ajc-test title="circular pointcuts" num="1013" dir="abctests/bugs">
+         <compile files="TestAspect.java">
+            <message line="11" kind="error"></message>
+            <message line="12" kind="error"></message>
+         </compile>
+    </ajc-test>
  
 </suite>

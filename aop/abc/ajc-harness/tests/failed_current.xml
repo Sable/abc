@@ -72,8 +72,12 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
-<ajc-test title="circular pointcuts" num="1013" dir="abctests/bugs">
-         <compile files="TestAspect.java"></compile>
+<ajc-test title="interaction of named pointcuts and nested cflow" num="1014" dir="abctests/bugs">
+         <compile files="CflowInliningDepth.java"></compile>
+         <run class="CflowInliningDepth"></run>
+    </ajc-test>
+<ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
+         <compile files="PrecedenceSort.java"></compile>
     </ajc-test>
  
 </suite>
