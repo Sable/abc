@@ -328,7 +328,8 @@ public class PatternMatcher {
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions()) &&
 		(matchesClass(pattern.getName().base(), realcl) ||
-		 matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, method.getReturnType()));
+		 (!Modifier.isStatic(mods) &&  
+		  matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, method.getReturnType())));
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching method pattern "+pattern+" against ("+mods+" "+realcl+"."+name+") "+method+": "+matches);
 	    }
