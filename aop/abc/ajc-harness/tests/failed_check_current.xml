@@ -569,6 +569,21 @@
             <message kind="error" line="11"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new" pr="134"
+      title="import of a class in the default package"
+      abccomment="javac expects an import to have a packagename followed
+                  by a dot.  Polyglot has been changed to also do this and
+                  should also give an error.  We may temporily 'lose' this
+                  case until our Polygot is updated (needs a Polyglot 
+                  more recent than July 8/04).   Ajc gives a 'cannot resolve'
+                  error on line 2, even though their original test case
+                  did not indicate an error.  July 9/04 LJH" 
+      keywords="from-broken14usejavac,purejava">
+        <compile files="ImportFromUnnamed.java,DeclaredExcs.java">
+          <message kind="error" line="2"/>
+        </compile>
+        <ajcrun class="ImportFromUnnamed"/>
+    </ajc-test>
 <ajc-test dir="options/deprecated" 
       title="options -warn:deprecation">
         <compile files="WarnDeprecated.java,OldStuff.java"

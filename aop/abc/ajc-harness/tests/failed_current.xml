@@ -975,6 +975,8 @@
     </ajc-test>
 <ajc-test dir="new"
       title="private inner interface accessible in scope when declared on outer class"
+      abccomment="likely the polyglot class conformance check bug too
+                    July 8/04 LJH"
       keywords="from-resolved_10x">
         <compile files="DeclareAccess.java"/>
         <run class="DeclareAccess"/>
@@ -1357,9 +1359,18 @@
     </ajc-test>
 <ajc-test dir="new" pr="134"
       title="import of a class in the default package"
+      abccomment="javac expects an import to have a packagename followed
+                  by a dot.  Polyglot has been changed to also do this and
+                  should also give an error.  We may temporily 'lose' this
+                  case until our Polygot is updated (needs a Polyglot 
+                  more recent than July 8/04).   Ajc gives a 'cannot resolve'
+                  error on line 2, even though their original test case
+                  did not indicate an error.  July 9/04 LJH" 
       keywords="from-broken14usejavac,purejava">
-        <compile files="ImportFromUnnamed.java,DeclaredExcs.java"/>
-        <run class="ImportFromUnnamed"/>
+        <compile files="ImportFromUnnamed.java,DeclaredExcs.java">
+          <message kind="error" line="2"/>
+        </compile>
+        <ajcrun class="ImportFromUnnamed"/>
     </ajc-test>
 <ajc-test dir="pureJava" pr="386"
       title="Referencing static interfaces with import statements"
@@ -1440,6 +1451,10 @@
         <run class="AfterReturningInterfaceConstructor"/>
     </ajc-test>
 <ajc-test dir="bugs" pr="909"
+      abccomment="LJH - the Soot -O option breaks on this one,  with
+                   creating code with a bad stack height.  Comments in
+                   the benchmark indicate that is it intended to cause
+                   an error like this. LJH  July 10/04"
       title="using instance as class reference to constant field"
       comment="XXX need to verify run">
         <compile files="InstanceAsClassRefToConstant.java"/>

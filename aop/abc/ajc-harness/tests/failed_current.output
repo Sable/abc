@@ -1,4 +1,4 @@
-Abc started on Sat Jul 10 02:32:38 BST 2004
+Abc started on Sun Jul 11 02:32:37 BST 2004
 Transforming C111... 
 Transforming A1... 
 Transforming C12... 
@@ -14,7 +14,7 @@ Transforming Cleaf12...
 Transforming I11... 
 Transforming Cleaf111... 
 Transforming Driver... 
-Abc finished on Sat Jul 10 02:32:42 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 02:32:41 BST 2004. ( 0 min. 4 sec. )
 FAIL: DEPRECATED: Introduce of constructors()
 [  1] FAIL: JavaRun(JavaRun(Driver))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -23,14 +23,14 @@ FAIL: DEPRECATED: Introduce of constructors()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 02:34:19 BST 2004
+Abc started on Sun Jul 11 02:34:18 BST 2004
 Transforming test135.pack.JoinPointFields... 
 Transforming test135.JoinPointFields... 
 Transforming test135.TopFoo... 
 Transforming test135.pack.PackJoinPointFields... 
 Transforming test135.Driver... 
 Transforming test135.pack.PackFoo... 
-Abc finished on Sat Jul 10 02:34:24 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 02:34:23 BST 2004. ( 0 min. 5 sec. )
 FAIL: proper values for thisJoinPoint attributes()
 [  1] FAIL: JavaRun(JavaRun(test135.Driver))
 [  1] MessageHolder:  (3 info)  (10 fail) 
@@ -48,7 +48,7 @@ FAIL: proper values for thisJoinPoint attributes()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 02:34:53 BST 2004
+Abc started on Sun Jul 11 02:34:52 BST 2004
 FAIL: aspect inheritance and advice, introduction()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -98,12 +98,12 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:37:59 BST 2004
+Abc started on Sun Jul 11 02:37:59 BST 2004
 Transforming pkg.A... 
 Transforming pkg.A$B... 
 Transforming C... 
 Transforming C$1... 
-Abc finished on Sat Jul 10 02:38:02 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 02:38:02 BST 2004. ( 0 min. 3 sec. )
 FAIL: Abstract inner classes across package boundaries()
 [  1] FAIL: JavaRun(JavaRun(C))
 [  1] --- thrown: pkg/A (Illegal Class name "pkg.A")
@@ -124,7 +124,7 @@ java.lang.ClassFormatError: pkg/A (Illegal Class name "pkg.A")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:38:34 BST 2004
+Abc started on Sun Jul 11 02:38:34 BST 2004
 FAIL: Full names are dropped from inner interfaces()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -190,7 +190,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 02:38:52 BST 2004
+Abc started on Sun Jul 11 02:38:52 BST 2004
 FAIL: More thourough test of static members using full names()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(6 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -248,7 +248,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 02:39:00 BST 2004
+Abc started on Sun Jul 11 02:39:00 BST 2004
 FAIL: More thourough test of static members using imports()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(6 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -306,11 +306,11 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 02:45:09 BST 2004
+Abc started on Sun Jul 11 02:45:11 BST 2004
 Transforming OuterAbstract_PR408... 
 Transforming OuterAbstract_PR408$InnerAbstract... 
-Abc finished on Sat Jul 10 02:45:12 BST 2004. ( 0 min. 3 sec. )
-Abc started on Sat Jul 10 02:45:13 BST 2004
+Abc finished on Sun Jul 11 02:45:14 BST 2004. ( 0 min. 3 sec. )
+Abc started on Sun Jul 11 02:45:14 BST 2004
 FAIL: Not binding constructor when using more than one compilation()
 [  1] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  1] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -321,7 +321,7 @@ FAIL: Not binding constructor when using more than one compilation()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:45:48 BST 2004
+Abc started on Sun Jul 11 02:45:50 BST 2004
 FAIL: overriding methods from object in interfaces and multiple-inheritance()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -338,12 +338,12 @@ FAIL: overriding methods from object in interfaces and multiple-inheritance()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:46:22 BST 2004
+Abc started on Sun Jul 11 02:46:24 BST 2004
 Transforming pkg1.Main... 
 Transforming pkg1.Main$Noo... 
 Transforming pkg2.Foo... 
 Transforming pkg2.Foo$Goo... 
-Abc finished on Sat Jul 10 02:46:25 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 02:46:27 BST 2004. ( 0 min. 2 sec. )
 FAIL: Inner types must generate classfiles with only Public/Default access fla...
 [  1] FAIL: JavaRun(JavaRun(pkg1.Main))
 [  1] --- thrown: pkg1/Main (Illegal Class name "pkg1.Main$Noo")
@@ -358,11 +358,11 @@ java.lang.ClassFormatError: pkg1/Main (Illegal Class name "pkg1.Main$Noo")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:46:27 BST 2004
+Abc started on Sun Jul 11 02:46:29 BST 2004
 Transforming pkg1.Main... 
 Transforming pkg2.Foo... 
 Transforming pkg2.Foo$Goo... 
-Abc finished on Sat Jul 10 02:46:30 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 02:46:32 BST 2004. ( 0 min. 2 sec. )
 FAIL: Default constructors have same access as their enclosing type()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -371,7 +371,7 @@ FAIL: Default constructors have same access as their enclosing type()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:46:44 BST 2004
+Abc started on Sun Jul 11 02:46:46 BST 2004
 FAIL: packages and generated inner types (for I.class)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -413,7 +413,7 @@ java.util.NoSuchElementException: No such class: p.I$1
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:46:50 BST 2004
+Abc started on Sun Jul 11 02:46:51 BST 2004
 FAIL: A.this exprs match by exact type matching()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 fail)  (1 abort) 
@@ -470,11 +470,11 @@ java.lang.RuntimeException: No field this$0 in class C$D
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 02:46:58 BST 2004
+Abc started on Sun Jul 11 02:47:00 BST 2004
 Transforming protectedFieldRefInInner.Main... 
 Transforming protectedFieldRefInInner.p1.C... 
 Transforming protectedFieldRefInInner.Main$Inner... 
-Abc finished on Sat Jul 10 02:47:02 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 02:47:03 BST 2004. ( 0 min. 3 sec. )
 FAIL: Inners can reference protected fields of their outer's super.()
 [  1] FAIL: JavaRun(JavaRun(protectedFieldRefInInner.Main))
 [  1] --- thrown: protectedFieldRefInInner/Main (Illegal Class name "protectedFieldRefInInner.Main")
@@ -489,9 +489,9 @@ java.lang.ClassFormatError: protectedFieldRefInInner/Main (Illegal Class name "p
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:47:24 BST 2004
+Abc started on Sun Jul 11 02:47:26 BST 2004
 Transforming OneArmedPrimitiveTests... 
-Abc finished on Sat Jul 10 02:47:32 BST 2004. ( 0 min. 7 sec. )
+Abc finished on Sun Jul 11 02:47:34 BST 2004. ( 0 min. 7 sec. )
 FAIL: Primitives that special case for a constant arm should work()
 [  1] FAIL: JavaRun(JavaRun(OneArmedPrimitiveTests))
 [  1] MessageHolder:  (3 info)  (16 fail) 
@@ -515,7 +515,7 @@ FAIL: Primitives that special case for a constant arm should work()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 9 seconds
-Abc started on Sat Jul 10 02:48:21 BST 2004
+Abc started on Sun Jul 11 02:48:22 BST 2004
 FAIL: invalid numeric literals()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 18 messages))
 [  0] MessageHolder:  (6 info)  (6 error)  (24 fail) 
@@ -559,9 +559,9 @@ FAIL: invalid numeric literals()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:48:29 BST 2004
+Abc started on Sun Jul 11 02:48:30 BST 2004
 Transforming BigOps... 
-Abc finished on Sat Jul 10 02:50:15 BST 2004. ( 1 min. 46 sec. )
+Abc finished on Sun Jul 11 02:50:17 BST 2004. ( 1 min. 46 sec. )
 FAIL: test the unops and binops with various values()
 [  1] FAIL: JavaRun(JavaRun(BigOps))
 [  1] MessageHolder:  (3 info)  (16 fail) 
@@ -585,9 +585,9 @@ FAIL: test the unops and binops with various values()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 107 seconds
-Abc started on Sat Jul 10 02:50:17 BST 2004
+Abc started on Sun Jul 11 02:50:19 BST 2004
 Transforming BigString... 
-Abc finished on Sat Jul 10 02:50:55 BST 2004. ( 0 min. 37 sec. )
+Abc finished on Sun Jul 11 02:50:57 BST 2004. ( 0 min. 37 sec. )
 FAIL: test + and += for strings and variously typed values()
 [  1] FAIL: JavaRun(JavaRun(BigString))
 [  1] MessageHolder:  (3 info)  (34 fail) 
@@ -628,8 +628,8 @@ FAIL: test + and += for strings and variously typed values()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 38 seconds
-Abc started on Sat Jul 10 02:51:20 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 39 seconds
+Abc started on Sun Jul 11 02:51:23 BST 2004
 FAIL: Error expected for constructor in interfaces()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (3 error)  (1 fail) 
@@ -640,7 +640,7 @@ FAIL: Error expected for constructor in interfaces()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:51:36 BST 2004
+Abc started on Sun Jul 11 02:51:38 BST 2004
 FAIL: Type names are not expressions on their own()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 21 messages))
 [  0] MessageHolder:  (6 info)  (22 error)  (1 fail) 
@@ -651,12 +651,12 @@ FAIL: Type names are not expressions on their own()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:51:40 BST 2004
+Abc started on Sun Jul 11 02:51:42 BST 2004
 Transforming p1.Main1... 
 Transforming p1.p2... 
 Transforming p1.p2$Foo... 
 Transforming p1.Foo... 
-Abc finished on Sat Jul 10 02:51:44 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 02:51:46 BST 2004. ( 0 min. 3 sec. )
 FAIL: type and package name conflicts are resolved happily (1a)()
 [  1] FAIL: JavaRun(JavaRun(p1.Main1))
 [  1] --- thrown: p1/Main1 (Illegal Class name "p1.p2")
@@ -671,17 +671,17 @@ java.lang.ClassFormatError: p1/Main1 (Illegal Class name "p1.p2")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:51:46 BST 2004
+Abc started on Sun Jul 11 02:51:48 BST 2004
 Transforming p1.p2.Foo... 
 Transforming p1... 
 Transforming p1$Foo... 
-Abc finished on Sat Jul 10 02:51:49 BST 2004. ( 0 min. 2 sec. )
-Abc started on Sat Jul 10 02:51:49 BST 2004
+Abc finished on Sun Jul 11 02:51:51 BST 2004. ( 0 min. 2 sec. )
+Abc started on Sun Jul 11 02:51:51 BST 2004
 Transforming p1.Main1... 
 Transforming p1.Foo... 
 Transforming p1.p2... 
 Transforming p1.p2$Foo... 
-Abc finished on Sat Jul 10 02:51:50 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Sun Jul 11 02:51:53 BST 2004. ( 0 min. 1 sec. )
 FAIL: (fails in USEJAVAC) type and package name conflicts are resolved happily...
 [  2] FAIL: JavaRun(JavaRun(p1.Main1))
 [  2] --- thrown: p1/Main1 (Illegal Class name "p1.p2")
@@ -696,13 +696,13 @@ java.lang.ClassFormatError: p1/Main1 (Illegal Class name "p1.p2")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 02:51:58 BST 2004
+Abc started on Sun Jul 11 02:52:01 BST 2004
 Transforming p1.p2.Foo... 
 Transforming p1.Main1... 
 Transforming p1.Foo... 
 Transforming p1.p2... 
 Transforming p1.p2$Foo... 
-Abc finished on Sat Jul 10 02:52:02 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 02:52:04 BST 2004. ( 0 min. 3 sec. )
 FAIL: type and package name conflicts caught as errors (1)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(4 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -711,7 +711,7 @@ FAIL: type and package name conflicts caught as errors (1)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:52:37 BST 2004
+Abc started on Sun Jul 11 02:52:40 BST 2004
 FAIL: classes that are package prefixes are illegal()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 2 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -723,7 +723,7 @@ FAIL: classes that are package prefixes are illegal()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 02:53:05 BST 2004
+Abc started on Sun Jul 11 02:53:07 BST 2004
 FAIL: suggested by Jacks 15.28-qualified-namestr tests()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (1 fail) 
@@ -734,7 +734,7 @@ FAIL: suggested by Jacks 15.28-qualified-namestr tests()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:53:09 BST 2004
+Abc started on Sun Jul 11 02:53:11 BST 2004
 FAIL: nested finally blocks have interesting frame location problems()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -745,7 +745,7 @@ FAIL: nested finally blocks have interesting frame location problems()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:53:52 BST 2004
+Abc started on Sun Jul 11 02:53:55 BST 2004
 FAIL: concrete aspect unable to access abstract package-private method in pare...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 2 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -754,12 +754,12 @@ FAIL: concrete aspect unable to access abstract package-private method in pare..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 02:54:45 BST 2004
+Abc started on Sun Jul 11 02:54:47 BST 2004
 Transforming PrivateSuperInnerAccess... 
 Transforming Outer... 
 Transforming Outer$B... 
 Transforming Outer$C... 
-Abc finished on Sat Jul 10 02:54:48 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 02:54:50 BST 2004. ( 0 min. 3 sec. )
 FAIL: private super access in inners()
 [  1] FAIL: JavaRun(JavaRun(PrivateSuperInnerAccess))
 [  1] --- thrown: tried to access field Outer$B.x from class Outer$C
@@ -775,9 +775,9 @@ java.lang.IllegalAccessError: tried to access field Outer$B.x from class Outer$C
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:55:21 BST 2004
+Abc started on Sun Jul 11 02:55:24 BST 2004
 Transforming Ops... 
-Abc finished on Sat Jul 10 02:55:30 BST 2004. ( 0 min. 8 sec. )
+Abc finished on Sun Jul 11 02:55:32 BST 2004. ( 0 min. 8 sec. )
 FAIL: Operands work correctly()
 [  1] FAIL: JavaRun(JavaRun(Ops))
 [  1] MessageHolder:  (3 info)  (10 fail) 
@@ -795,7 +795,7 @@ FAIL: Operands work correctly()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 10 seconds
-Abc started on Sat Jul 10 02:56:33 BST 2004
+Abc started on Sun Jul 11 02:56:35 BST 2004
 Transforming AroundReturnType... 
 Transforming A... 
 Transforming abc$access$A$around$1... 
@@ -867,7 +867,7 @@ java.lang.RuntimeException: invalid fromType java.lang.Integer
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 02:57:25 BST 2004
+Abc started on Sun Jul 11 02:57:27 BST 2004
 FAIL: Wrong strictfp keyword usage in interface function prototype [TODO: move...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (1 fail) 
@@ -878,7 +878,7 @@ FAIL: Wrong strictfp keyword usage in interface function prototype [TODO: move..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:57:58 BST 2004
+Abc started on Sun Jul 11 02:58:00 BST 2004
 FAIL: disallow defining more than one pointcut with the same name()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (3 error)  (1 fail) 
@@ -887,14 +887,14 @@ FAIL: disallow defining more than one pointcut with the same name()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 02:59:52 BST 2004
+Abc started on Sun Jul 11 02:59:55 BST 2004
 Transforming I1... 
 Transforming I1$Inner... 
 Transforming C... 
 Transforming I2... 
 Transforming I2$Inner... 
 Transforming BadReferences... 
-Abc finished on Sat Jul 10 02:59:56 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 02:59:58 BST 2004. ( 0 min. 3 sec. )
 FAIL: good error for bad field and inner class references()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -904,7 +904,7 @@ FAIL: good error for bad field and inner class references()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:00:18 BST 2004
+Abc started on Sun Jul 11 03:00:21 BST 2004
 FAIL: circular dominates leading to irresolvable advice precedence()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (4 fail)  (1 abort) 
@@ -957,7 +957,7 @@ java.lang.RuntimeException: Precedence conflict
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:01:19 BST 2004
+Abc started on Sun Jul 11 03:01:22 BST 2004
 FAIL: class and interface extension()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 9 messages))
 [  0] MessageHolder:  (6 info)  (7 error)  (16 fail) 
@@ -1006,7 +1006,7 @@ MessageHolder:  (1 debug)  (1 fail)  (1 abort)
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 0 seconds
-Abc started on Sat Jul 10 03:02:48 BST 2004
+Abc started on Sun Jul 11 03:02:50 BST 2004
 FAIL: protected accessibility()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 9 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (10 fail) 
@@ -1026,7 +1026,7 @@ FAIL: protected accessibility()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:02:52 BST 2004
+Abc started on Sun Jul 11 03:02:55 BST 2004
 FAIL: parse-time illegal modifiers()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -1036,7 +1036,7 @@ FAIL: parse-time illegal modifiers()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:03:12 BST 2004
+Abc started on Sun Jul 11 03:03:15 BST 2004
 FAIL: good errors (and not too many) for missing members()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 7 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (8 fail) 
@@ -1055,7 +1055,7 @@ FAIL: good errors (and not too many) for missing members()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:03:20 BST 2004
+Abc started on Sun Jul 11 03:03:23 BST 2004
 FAIL: introduced inner interfaces - compile should fail to bind interface name...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 9 messages))
 [  0] MessageHolder:  (6 info)  (8 error)  (17 fail) 
@@ -1098,7 +1098,7 @@ import org.aspectj.testing.Tester;
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:04:17 BST 2004
+Abc started on Sun Jul 11 03:04:20 BST 2004
 FAIL: errors in inheritance of multiple concrete methods()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 6 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (8 fail) 
@@ -1120,7 +1120,7 @@ required: java.lang.String
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:04:21 BST 2004
+Abc started on Sun Jul 11 03:04:24 BST 2004
 FAIL: declared exceptions are checked correctly on intros (errors)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1129,7 +1129,7 @@ FAIL: declared exceptions are checked correctly on intros (errors)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:04:45 BST 2004
+Abc started on Sun Jul 11 03:04:48 BST 2004
 FAIL: eachobject: eachobject(receptions(...)) [eachobject]()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (4 error)  (4 fail) 
@@ -1149,7 +1149,7 @@ FAIL: eachobject: eachobject(receptions(...)) [eachobject]()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:04:50 BST 2004
+Abc started on Sun Jul 11 03:04:53 BST 2004
 FAIL: Checking new joinpoints()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -1195,7 +1195,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:04:57 BST 2004
+Abc started on Sun Jul 11 03:05:00 BST 2004
 FAIL: eachobject: simple test [eachobject] (still)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -1212,7 +1212,7 @@ FAIL: eachobject: simple test [eachobject] (still)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:05:42 BST 2004
+Abc started on Sun Jul 11 03:05:45 BST 2004
 FAIL: introducing extends and implements()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -1227,7 +1227,7 @@ FAIL: introducing extends and implements()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:05:53 BST 2004
+Abc started on Sun Jul 11 03:05:55 BST 2004
 Transforming packagevisibility.testPackage.Class2... 
 Transforming packagevisibility.testPackage.Class2$1... 
 Transforming packagevisibility.PackagesAndAdvice... 
@@ -1235,7 +1235,7 @@ Transforming packagevisibility.A...
 Transforming packagevisibility.testPackage.Class1... 
 Transforming packagevisibility.A1... 
 Transforming abc$access$packagevisibility_d_A$around$0... 
-Abc finished on Sat Jul 10 03:05:57 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:06:00 BST 2004. ( 0 min. 4 sec. )
 FAIL: advice and package visibility()
 [  1] FAIL: JavaRun(JavaRun(packagevisibility.PackagesAndAdvice))
 [  1] --- thrown: packagevisibility/testPackage/Class2 (Illegal Class name "packagevisibility.testPackage.Class2$1")
@@ -1258,12 +1258,12 @@ java.lang.ClassFormatError: packagevisibility/testPackage/Class2 (Illegal Class 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:07:15 BST 2004
+Abc started on Sun Jul 11 03:07:18 BST 2004
 Transforming A... 
 Transforming MethodInner... 
 Transforming C... 
 Transforming C$1Inner... 
-Abc finished on Sat Jul 10 03:07:19 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:07:22 BST 2004. ( 0 min. 4 sec. )
 before: execution(int C.foo())
 FAIL: non-static advice on inner class defined inside of method body()
 [  1] FAIL: JavaRun(JavaRun(MethodInner))
@@ -1287,7 +1287,7 @@ java.lang.ClassFormatError: C$1Inner (Repetitive field name/signature)
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:07:35 BST 2004
+Abc started on Sun Jul 11 03:07:38 BST 2004
 FAIL: generating the right throws clause for call-site advice (and around)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1298,7 +1298,7 @@ ComputedThrows.java:6:0 The exception java.lang.Exception must be either caught 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:07:41 BST 2004
+Abc started on Sun Jul 11 03:07:43 BST 2004
 FAIL: advice on calls to static methods using several syntax()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1309,7 +1309,7 @@ FAIL: advice on calls to static methods using several syntax()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:07:45 BST 2004
+Abc started on Sun Jul 11 03:07:48 BST 2004
 FAIL: , PR#249, PR#250 advice on constructor sites()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1321,7 +1321,7 @@ import java.rmi.*;
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:07:49 BST 2004
+Abc started on Sun Jul 11 03:07:52 BST 2004
 FAIL: test after throwing advice in several ways()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -1336,12 +1336,12 @@ AfterThrowing.java:20:0 The exception AfterThrowing$MyException must be either c
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:08:03 BST 2004
+Abc started on Sun Jul 11 03:08:05 BST 2004
 Transforming SubC... 
 Transforming A... 
 Transforming Simple... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:08:09 BST 2004. ( 0 min. 6 sec. )
+Abc finished on Sun Jul 11 03:08:11 BST 2004. ( 0 min. 5 sec. )
 FAIL: calls: calls(...)()
 [  1] FAIL: JavaRun(JavaRun(Simple))
 [  1] MessageHolder:  (3 info)  (2 fail) 
@@ -1351,7 +1351,7 @@ FAIL: calls: calls(...)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:08:11 BST 2004
+Abc started on Sun Jul 11 03:08:14 BST 2004
 FAIL: throws Exception clause is unnecessarily added to Driver.main method()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1362,7 +1362,7 @@ Driver.java:18:0 The exception java.lang.Exception must be either caught or decl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:08:36 BST 2004
+Abc started on Sun Jul 11 03:08:39 BST 2004
 FAIL: more aspect inheritance()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -1409,8 +1409,8 @@ java.lang.RuntimeException: couldn't find method
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:10:10 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
+Abc started on Sun Jul 11 03:10:13 BST 2004
 FAIL: Compiler can compile correct strictfp modifiers()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1421,10 +1421,10 @@ FAIL: Compiler can compile correct strictfp modifiers()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:10:27 BST 2004
+Abc started on Sun Jul 11 03:10:31 BST 2004
 Transforming CatchAdvice... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:10:32 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:10:35 BST 2004. ( 0 min. 4 sec. )
 FAIL: advice on catch clauses()
 [  1] FAIL: JavaRun(JavaRun(CatchAdvice))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -1433,7 +1433,7 @@ FAIL: advice on catch clauses()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:11:24 BST 2004
+Abc started on Sun Jul 11 03:11:28 BST 2004
 FAIL: Ensuring backdoor methods are produced.()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1444,7 +1444,7 @@ FAIL: Ensuring backdoor methods are produced.()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:11:29 BST 2004
+Abc started on Sun Jul 11 03:11:32 BST 2004
 FAIL: no duplicate advice methods in abstract aspects()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -1490,7 +1490,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:11:34 BST 2004
+Abc started on Sun Jul 11 03:11:38 BST 2004
 FAIL: no duplicate advice methods in abstract aspects extended()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -1535,8 +1535,8 @@ java.lang.RuntimeException: couldn't find method
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:12:09 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
+Abc started on Sun Jul 11 03:12:12 BST 2004
 FAIL: Parsing C+ expressions without parens in super introductions.()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -1550,7 +1550,7 @@ FAIL: Parsing C+ expressions without parens in super introductions.()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:12:19 BST 2004
+Abc started on Sun Jul 11 03:12:22 BST 2004
 FAIL: Methods with the same name are generated when abstract aspects extend an...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -1596,7 +1596,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:12:53 BST 2004
+Abc started on Sun Jul 11 03:12:56 BST 2004
 next paramType: A
 meth param types: []
 FAIL: holding onto proceed calls in a closure-like way()
@@ -1609,7 +1609,7 @@ HoldProceed.java:17:0 The exception java.lang.Exception must be either caught or
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:12:59 BST 2004
+Abc started on Sun Jul 11 03:13:03 BST 2004
 FAIL: basic test of declare soft()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1620,13 +1620,13 @@ FAIL: basic test of declare soft()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:13:10 BST 2004
+Abc started on Sun Jul 11 03:13:13 BST 2004
 Transforming CannotReferenceSuper... 
 Transforming CannotReferenceSuper$A... 
 Transforming CannotReferenceSuper$A$AA... 
 Transforming CannotReferenceSuper$B... 
 Transforming CannotReferenceSuper$B$BB... 
-Abc finished on Sat Jul 10 03:13:14 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:13:17 BST 2004. ( 0 min. 3 sec. )
 FAIL: Cannot bind a name.()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -1635,10 +1635,10 @@ FAIL: Cannot bind a name.()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:13:41 BST 2004
+Abc started on Sun Jul 11 03:13:44 BST 2004
 Transforming A... 
 Transforming FieldInitializerJoinPoints... 
-Abc finished on Sat Jul 10 03:13:45 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:13:49 BST 2004. ( 0 min. 4 sec. )
 FAIL: join points exist in the execution of field initializers()
 [  1] FAIL: JavaRun(JavaRun(FieldInitializerJoinPoints))
 [  1] MessageHolder:  (3 info)  (2 fail) 
@@ -1648,7 +1648,7 @@ FAIL: join points exist in the execution of field initializers()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:13:48 BST 2004
+Abc started on Sun Jul 11 03:13:51 BST 2004
 FAIL: privileged aspects()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(5 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -1698,7 +1698,7 @@ java.lang.RuntimeException: couldn't find type: fish.PrivateClass (is your soot-
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:13:52 BST 2004
+Abc started on Sun Jul 11 03:13:56 BST 2004
 FAIL: advice on field gets in privileged aspects()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1709,13 +1709,13 @@ FAIL: advice on field gets in privileged aspects()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:14:03 BST 2004
+Abc started on Sun Jul 11 03:14:07 BST 2004
 Transforming SubC... 
 Transforming InitializerTest... 
 Transforming A... 
 Transforming I... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:14:08 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:14:11 BST 2004. ( 0 min. 4 sec. )
 FAIL: basic tests for initializer and staticinitializer PCDs()
 [  1] FAIL: JavaRun(JavaRun(InitializerTest))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -1724,13 +1724,13 @@ FAIL: basic tests for initializer and staticinitializer PCDs()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:14:17 BST 2004
+Abc started on Sun Jul 11 03:14:20 BST 2004
 Transforming psub.SubC... 
 Transforming pc.C... 
 Transforming psub.A... 
 Transforming psub.A$Marker... 
 Transforming Test1... 
-Abc finished on Sat Jul 10 03:14:21 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:14:24 BST 2004. ( 0 min. 4 sec. )
 FAIL: some method accessibility tests, particularly package-protected and inhe...
 [  1] FAIL: JavaRun(JavaRun(Test1))
 [  1] --- thrown: psub/A$Marker (Illegal Class name "psub.A")
@@ -1752,7 +1752,7 @@ java.lang.ClassFormatError: psub/A$Marker (Illegal Class name "psub.A")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:15:01 BST 2004
+Abc started on Sun Jul 11 03:15:04 BST 2004
 FAIL: calls advice on array objects causes error in code generation()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1763,7 +1763,7 @@ CallsToArray.java:6:0 The exception java.lang.CloneNotSupportedException must be
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:15:59 BST 2004
+Abc started on Sun Jul 11 03:16:02 BST 2004
 Transforming WithinInners... 
 Transforming C... 
 Transforming C$1... 
@@ -1771,7 +1771,7 @@ Transforming C$1Inner...
 Transforming A... 
 Transforming abc$access$A$around$1... 
 Transforming abc$access$A$around$4... 
-Abc finished on Sat Jul 10 03:16:04 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:16:07 BST 2004. ( 0 min. 4 sec. )
 TEXT
 write( String )
 text
@@ -1784,7 +1784,7 @@ FAIL: within and withincode (doesn't all work due to local class name issues)()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Sat Jul 10 03:16:14 BST 2004
+Abc started on Sun Jul 11 03:16:17 BST 2004
 Transforming AroundInnerCalls... 
 Transforming Outer... 
 Transforming Outer$1... 
@@ -1792,7 +1792,7 @@ Transforming Outer$InnerRandom...
 Transforming Outer$Inner... 
 Transforming A... 
 Transforming abc$access$A$around$0... 
-Abc finished on Sat Jul 10 03:16:20 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:16:23 BST 2004. ( 0 min. 5 sec. )
 Outer.foo() calls Outer.Inner.mi()
 Outer@19ab9c5.foo calls Outer$Inner@11a74ef.mi
 Outer.Inner.mi() calls PrintStream.println(..)
@@ -1813,7 +1813,7 @@ FAIL: around advice on calls within inner classes (including protected method ..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:16:22 BST 2004
+Abc started on Sun Jul 11 03:16:25 BST 2004
 next paramType: Aspect
 meth param types: []
 next paramType: java.lang.String[]
@@ -1870,7 +1870,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:16:27 BST 2004
+Abc started on Sun Jul 11 03:16:30 BST 2004
 Transforming ExtendsAbstractSuper... 
 Transforming ExtendsAbstractSuperNoIntro... 
 Transforming MethodIntroductions... 
@@ -1886,7 +1886,7 @@ Transforming Super...
 Transforming ExtendsExtendsAbstractSuper... 
 Transforming I... 
 Transforming AbstractSuper... 
-Abc finished on Sat Jul 10 03:16:32 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:16:35 BST 2004. ( 0 min. 4 sec. )
 FAIL: Method introductions()
 [  1] FAIL: JavaRun(JavaRun(MethodIntroductions))
 [  1] --- thrown: null
@@ -1902,11 +1902,11 @@ java.lang.IncompatibleClassChangeError
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:17:40 BST 2004
+Abc started on Sun Jul 11 03:17:43 BST 2004
 Transforming the.deep.pkg.Aspect... 
 Transforming p.EachObjectTarget... 
 Transforming the.deep.pkg.Aspect$abc$PerTarget... 
-Abc finished on Sat Jul 10 03:17:44 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:17:47 BST 2004. ( 0 min. 3 sec. )
 FAIL: check that MightHaveAspect interface is created correctly for an aspect ...
 [  1] FAIL: JavaRun(JavaRun(p.EachObjectTarget))
 [  1] --- thrown: tried to access class the.deep.pkg.Aspect from class p.EachObjectTarget
@@ -1922,7 +1922,7 @@ java.lang.IllegalAccessError: tried to access class the.deep.pkg.Aspect from cla
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:18:06 BST 2004
+Abc started on Sun Jul 11 03:18:09 BST 2004
 FAIL: different version of aspect inheritance, particularly empty pointcuts an...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -1933,7 +1933,7 @@ FAIL: different version of aspect inheritance, particularly empty pointcuts an..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:18:53 BST 2004
+Abc started on Sun Jul 11 03:18:56 BST 2004
 FAIL: Crashing when looking up the type of array members.()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (6 error)  (6 fail) 
@@ -1959,7 +1959,7 @@ ArrayCasts.java:24:0 The exception java.lang.CloneNotSupportedException must be 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:18:59 BST 2004
+Abc started on Sun Jul 11 03:19:02 BST 2004
 FAIL: PostfixExprs to various synthetic things are fixed correctly [eachobject]()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (13 error)  (13 fail) 
@@ -2006,7 +2006,7 @@ FAIL: PostfixExprs to various synthetic things are fixed correctly [eachobject](
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:19:11 BST 2004
+Abc started on Sun Jul 11 03:19:14 BST 2004
 FAIL: advice on an inherited method()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (4 error)  (4 fail) 
@@ -2029,7 +2029,7 @@ import org.aspectj.lang.*;
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:19:22 BST 2004
+Abc started on Sun Jul 11 03:19:25 BST 2004
 FAIL: various declared exception permutations()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -2043,7 +2043,7 @@ DeclaredExcs.java:46:0 The exception java.lang.Exception must be either caught o
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:19:29 BST 2004
+Abc started on Sun Jul 11 03:19:32 BST 2004
 Transforming C2... 
 Transforming A1... 
 Transforming A2... 
@@ -2059,7 +2059,7 @@ Transforming C4...
 Transforming AdviceOrdering... 
 Transforming A3... 
 Transforming abc$access$A$around$1... 
-Abc finished on Sat Jul 10 03:19:34 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:19:37 BST 2004. ( 0 min. 5 sec. )
 FAIL: ordering of advice kinds as well as cflow and dominates()
 [  1] FAIL: JavaRun(JavaRun(AdviceOrdering))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -2068,13 +2068,13 @@ FAIL: ordering of advice kinds as well as cflow and dominates()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:19:37 BST 2004
+Abc started on Sun Jul 11 03:19:40 BST 2004
 Transforming I... 
 Transforming C... 
 Transforming A... 
 Transforming OddConstructors... 
 Transforming OddConstructors$B... 
-Abc finished on Sat Jul 10 03:19:41 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:19:44 BST 2004. ( 0 min. 4 sec. )
 FAIL: advice on default constructor for a class only referenced via reflection()
 [  1] FAIL: JavaRun(JavaRun(OddConstructors))
 [  1] MessageHolder:  (3 info)  (2 fail) 
@@ -2084,12 +2084,12 @@ FAIL: advice on default constructor for a class only referenced via reflection()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:19:51 BST 2004
+Abc started on Sun Jul 11 03:19:54 BST 2004
 Transforming A... 
 Transforming ObjectForInt... 
 Transforming Test... 
 Transforming abc$access$A$around$1... 
-Abc finished on Sat Jul 10 03:19:55 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:19:58 BST 2004. ( 0 min. 4 sec. )
 FAIL: primitive parameters coercable to Object just like return values are()
 [  1] FAIL: JavaRun(JavaRun(ObjectForInt))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -2100,7 +2100,7 @@ FAIL: primitive parameters coercable to Object just like return values are()
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:19:57 BST 2004
+Abc started on Sun Jul 11 03:20:00 BST 2004
 Transforming I... 
 Transforming D1... 
 Transforming A... 
@@ -2109,7 +2109,7 @@ Transforming C...
 Transforming E... 
 Transforming D0... 
 Transforming MethodSignatures... 
-Abc finished on Sat Jul 10 03:20:03 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:20:06 BST 2004. ( 0 min. 5 sec. )
 FAIL: Does the matrix coverage thing for the new method signatures()
 [  1] FAIL: JavaRun(JavaRun(MethodSignatures))
 [  1] MessageHolder:  (3 info)  (3 fail) 
@@ -2122,13 +2122,13 @@ FAIL: Does the matrix coverage thing for the new method signatures()
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:20:20 BST 2004
+Abc started on Sun Jul 11 03:20:23 BST 2004
 Transforming C2... 
 Transforming A... 
 Transforming CallTypes... 
 Transforming C1... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:20:25 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:20:28 BST 2004. ( 0 min. 4 sec. )
 FAIL: correct types of parameters at call-sites()
 [  1] FAIL: JavaRun(JavaRun(CallTypes))
 [  1] MessageHolder:  (3 info)  (2 fail) 
@@ -2138,7 +2138,7 @@ FAIL: correct types of parameters at call-sites()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:20:28 BST 2004
+Abc started on Sun Jul 11 03:20:31 BST 2004
 FAIL: Joinpoints are showing up on intermediate call sites()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -2149,12 +2149,12 @@ FAIL: Joinpoints are showing up on intermediate call sites()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:20:32 BST 2004
+Abc started on Sun Jul 11 03:20:35 BST 2004
 Transforming StrictClassAbstract... 
 Transforming StrictClass... 
 Transforming StrictFpWatcher... 
 Transforming StrictFpReceptions... 
-Abc finished on Sat Jul 10 03:20:36 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:20:39 BST 2004. ( 0 min. 4 sec. )
 FAIL: Reception based on strictfp modifier()
 [  1] FAIL: JavaRun(JavaRun(StrictFpReceptions))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -2163,7 +2163,7 @@ FAIL: Reception based on strictfp modifier()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:20:53 BST 2004
+Abc started on Sun Jul 11 03:20:56 BST 2004
 FAIL: inheritance, around advice and abstract pointcuts [eachobject] (still)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -2177,7 +2177,7 @@ FAIL: inheritance, around advice and abstract pointcuts [eachobject] (still)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:20:57 BST 2004
+Abc started on Sun Jul 11 03:21:00 BST 2004
 FAIL: Priviledged aspect methods are missing for privates. [eachobject]()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (34 error)  (34 fail) 
@@ -2287,7 +2287,7 @@ FAIL: Priviledged aspect methods are missing for privates. [eachobject]()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:21:02 BST 2004
+Abc started on Sun Jul 11 03:21:05 BST 2004
 FAIL: exceptions thrown and caught in advice, particularly try+proceed()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -2301,7 +2301,7 @@ FAIL: exceptions thrown and caught in advice, particularly try+proceed()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:21:27 BST 2004
+Abc started on Sun Jul 11 03:21:30 BST 2004
 FAIL: thisJoinPoint{Static} not visible in if() pcd of named pointcut()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -2316,7 +2316,7 @@ FAIL: thisJoinPoint{Static} not visible in if() pcd of named pointcut()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:21:31 BST 2004
+Abc started on Sun Jul 11 03:21:34 BST 2004
 FAIL: pcd if() expression visibility at compile-time  (minimal operation)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (6 info)  (6 error)  (6 fail) 
@@ -2342,12 +2342,12 @@ FAIL: pcd if() expression visibility at compile-time  (minimal operation)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:22:11 BST 2004
+Abc started on Sun Jul 11 03:22:14 BST 2004
 Transforming p.Driver... 
 Transforming other.Test... 
 Transforming p.InnerTest... 
 Transforming p.InnerTest$Inner... 
-Abc finished on Sat Jul 10 03:22:15 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:22:18 BST 2004. ( 0 min. 3 sec. )
 FAIL: private inner interfaces and bytecode visibility()
 [  1] FAIL: JavaRun(JavaRun(p.Driver))
 [  1] --- thrown: p/InnerTest$Inner (Illegal Class name "p.InnerTest")
@@ -2374,13 +2374,13 @@ java.lang.ClassFormatError: p/InnerTest$Inner (Illegal Class name "p.InnerTest")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:22:18 BST 2004
+Abc started on Sun Jul 11 03:22:21 BST 2004
 Transforming A... 
 Transforming AroundAll... 
 Transforming SuperC... 
 Transforming C... 
 Transforming abc$access$A$around$0... 
-Abc finished on Sat Jul 10 03:22:25 BST 2004. ( 0 min. 6 sec. )
+Abc finished on Sun Jul 11 03:22:28 BST 2004. ( 0 min. 6 sec. )
 FAIL: elaborated into testing of around on all join points()
 [  1] FAIL: JavaRun(JavaRun(AroundAll))
 [  1] --- thrown: (class: C, method: <init> signature: (Ljava/lang/String;)V) Expecting to find object/array on stack
@@ -2398,8 +2398,8 @@ java.lang.VerifyError: (class: C, method: <init> signature: (Ljava/lang/String;)
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 8 seconds
-Abc started on Sat Jul 10 03:22:27 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
+Abc started on Sun Jul 11 03:22:30 BST 2004
 Transforming typeNameConflicts.Driver... 
 Transforming typeNameConflicts.Driver$Entry... 
 Transforming typeNameConflicts.Driver$1... 
@@ -2408,7 +2408,7 @@ Transforming typeNameConflicts.p1.C...
 Transforming typeNameConflicts.p1.C$Inner... 
 Transforming typeNameConflicts.p1.C$1... 
 Transforming typeNameConflicts.aspects.A... 
-Abc finished on Sat Jul 10 03:22:31 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:22:34 BST 2004. ( 0 min. 4 sec. )
 FAIL: type name hygiene when code comes from aspects in different packages()
 [  1] FAIL: JavaRun(JavaRun(typeNameConflicts.Driver))
 [  1] --- thrown: typeNameConflicts/Driver (Illegal Class name "typeNameConflicts.Driver")
@@ -2425,7 +2425,7 @@ java.lang.ClassFormatError: typeNameConflicts/Driver (Illegal Class name "typeNa
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:22:40 BST 2004
+Abc started on Sun Jul 11 03:22:43 BST 2004
 Transforming C0... 
 Transforming C1b... 
 Transforming I0... 
@@ -2434,7 +2434,7 @@ Transforming I1b...
 Transforming A... 
 Transforming C1a... 
 Transforming CallTypesI... 
-Abc finished on Sat Jul 10 03:22:46 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:22:49 BST 2004. ( 0 min. 5 sec. )
 FAIL: target type matching with messy interface hierarchies()
 [  1] FAIL: JavaRun(JavaRun(CallTypesI))
 [  1] MessageHolder:  (3 info)  (2 fail) 
@@ -2444,13 +2444,13 @@ FAIL: target type matching with messy interface hierarchies()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:23:09 BST 2004
+Abc started on Sun Jul 11 03:23:12 BST 2004
 Transforming I... 
 Transforming Driver... 
 Transforming Test... 
 Transforming Test$1... 
 Transforming A... 
-Abc finished on Sat Jul 10 03:23:13 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:23:16 BST 2004. ( 0 min. 3 sec. )
 FAIL: anonymous inner class with aspect()
 [  1] FAIL: JavaRun(JavaRun(Driver))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -2459,7 +2459,7 @@ FAIL: anonymous inner class with aspect()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:23:15 BST 2004
+Abc started on Sun Jul 11 03:23:18 BST 2004
 FAIL: Arguments are not being passed in to calls advice()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -2501,7 +2501,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:23:21 BST 2004
+Abc started on Sun Jul 11 03:23:24 BST 2004
 Transforming SubC... 
 Transforming I... 
 Transforming A3... 
@@ -2510,7 +2510,7 @@ Transforming SubI...
 Transforming Interfaces... 
 Transforming C... 
 Transforming A1... 
-Abc finished on Sat Jul 10 03:23:26 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:23:29 BST 2004. ( 0 min. 5 sec. )
 FAIL: interfaces as mixins with introduction()
 [  1] FAIL: JavaRun(JavaRun(Interfaces))
 [  1] MessageHolder:  (3 info)  (3 fail) 
@@ -2521,12 +2521,12 @@ FAIL: interfaces as mixins with introduction()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:23:28 BST 2004
+Abc started on Sun Jul 11 03:23:31 BST 2004
 Transforming I... 
 Transforming A... 
 Transforming C... 
 Transforming IntroducedModifiers... 
-Abc finished on Sat Jul 10 03:23:33 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:23:36 BST 2004. ( 0 min. 4 sec. )
 FAIL: functional modifiers work correctly with introduced members()
 [  1] FAIL: JavaRun(JavaRun(IntroducedModifiers))
 [  1] --- thrown: iField
@@ -2542,14 +2542,14 @@ java.lang.NoSuchFieldException: iField
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:24:04 BST 2004
+Abc started on Sun Jul 11 03:24:07 BST 2004
 Transforming A... 
 Transforming A$I... 
 Transforming C... 
 Transforming PR528... 
 Transforming B... 
 Transforming abc$access$B$around$3... 
-Abc finished on Sat Jul 10 03:24:09 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:24:12 BST 2004. ( 0 min. 4 sec. )
 FAIL: compile errors boolean using cflow and unimplemented method using around...
 [  1] FAIL: JavaRun(JavaRun(PR528))
 [  1] --- thrown: null
@@ -2567,12 +2567,12 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:24:17 BST 2004
+Abc started on Sun Jul 11 03:24:20 BST 2004
 Transforming PR535... 
 Transforming C... 
 Transforming A... 
 Transforming abc$access$A$around$0... 
-Abc finished on Sat Jul 10 03:24:21 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:24:24 BST 2004. ( 0 min. 4 sec. )
 FAIL: missing method name to synthetic invocation()
 [  1] FAIL: JavaRun(JavaRun(PR535))
 [  1] --- thrown: null
@@ -2589,7 +2589,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:24:47 BST 2004
+Abc started on Sun Jul 11 03:24:50 BST 2004
 FAIL: introduced inner interfaces accessible inside aspect()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -2602,13 +2602,13 @@ import org.aspectj.testing.Tester;
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:24:51 BST 2004
+Abc started on Sun Jul 11 03:24:54 BST 2004
 Transforming Const... 
 Transforming NegativeSourceLocation... 
 Transforming TargetClass... 
 Transforming Signal... 
 Transforming Aspect... 
-Abc finished on Sat Jul 10 03:24:58 BST 2004. ( 0 min. 6 sec. )
+Abc finished on Sun Jul 11 03:25:01 BST 2004. ( 0 min. 6 sec. )
 FAIL: validate (enclosing) join point and source locations()
 [  1] FAIL: JavaRun(JavaRun(NegativeSourceLocation))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -2617,7 +2617,7 @@ FAIL: validate (enclosing) join point and source locations()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 8 seconds
-Abc started on Sat Jul 10 03:25:07 BST 2004
+Abc started on Sun Jul 11 03:25:10 BST 2004
 FAIL: advice formals produce errors just like method formals()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 4 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (4 fail) 
@@ -2631,7 +2631,7 @@ FAIL: advice formals produce errors just like method formals()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:25:11 BST 2004
+Abc started on Sun Jul 11 03:25:14 BST 2004
 FAIL: advice throws clauses must be compatible with joinpoints they apply to()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -2713,7 +2713,7 @@ java.lang.ClassCastException: polyglot.ext.jl.ast.CanonicalTypeNode_c
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:25:22 BST 2004
+Abc started on Sun Jul 11 03:25:25 BST 2004
 FAIL: illegal method conflicts with introductions and interfaces and PR#561()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (4 fail) 
@@ -2727,7 +2727,7 @@ FAIL: illegal method conflicts with introductions and interfaces and PR#561()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:25:26 BST 2004
+Abc started on Sun Jul 11 03:25:29 BST 2004
 FAIL: AspectOf available for different aspect types()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (7 error)  (7 fail) 
@@ -2756,7 +2756,7 @@ FAIL: AspectOf available for different aspect types()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:25:32 BST 2004
+Abc started on Sun Jul 11 03:25:35 BST 2004
 FAIL: access to all members of class and inner class from privileged aspect()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(4 paths))
 [  0] MessageHolder:  (6 info)  (48 error)  (48 fail) 
@@ -2908,7 +2908,7 @@ FAIL: access to all members of class and inner class from privileged aspect()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:26:29 BST 2004
+Abc started on Sun Jul 11 03:26:32 BST 2004
 FAIL: Introduced type unavailable to instanceof expressions in introduced meth...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths 8 messages))
 [  0] MessageHolder:  (6 info)  (9 error)  (1 fail) 
@@ -2919,10 +2919,10 @@ FAIL: Introduced type unavailable to instanceof expressions in introduced meth..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:26:50 BST 2004
+Abc started on Sun Jul 11 03:26:53 BST 2004
 Transforming PreInitialization... 
 Transforming A... 
-Abc finished on Sat Jul 10 03:26:54 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:26:57 BST 2004. ( 0 min. 3 sec. )
 FAIL: enclosing join point not exported properly in pre-initialization join po...
 [  1] FAIL: JavaRun(JavaRun(PreInitialization))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -2931,7 +2931,7 @@ FAIL: enclosing join point not exported properly in pre-initialization join po..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:26:56 BST 2004
+Abc started on Sun Jul 11 03:26:59 BST 2004
 FAIL: after advice on static method with pcd if() using result()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (3 fail)  (1 abort) 
@@ -2984,7 +2984,7 @@ java.lang.RuntimeException: Internal error: someone tried to read from a variabl
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:27:02 BST 2004
+Abc started on Sun Jul 11 03:27:05 BST 2004
 FAIL: after advice on static method with pcd if() using result through pointcut()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (3 fail) 
@@ -2997,13 +2997,13 @@ FAIL: after advice on static method with pcd if() using result through pointcut(
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:27:37 BST 2004
+Abc started on Sun Jul 11 03:27:40 BST 2004
 Transforming GetErr... 
 Transforming AbstractDeclare... 
 Transforming C... 
 Transforming CallErr... 
 Transforming BaseErr... 
-Abc finished on Sat Jul 10 03:27:41 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:27:44 BST 2004. ( 0 min. 3 sec. )
 FAIL: declare error and abstract pointcuts()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -3013,10 +3013,10 @@ FAIL: declare error and abstract pointcuts()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:28:01 BST 2004
+Abc started on Sun Jul 11 03:28:05 BST 2004
 Transforming TryOffEnd... 
 Transforming A... 
-Abc finished on Sat Jul 10 03:28:05 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:28:09 BST 2004. ( 0 min. 3 sec. )
 FAIL: VerifyError after around advice falls off end of tryCatch()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -3026,9 +3026,9 @@ FAIL: VerifyError after around advice falls off end of tryCatch()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:28:14 BST 2004
+Abc started on Sun Jul 11 03:28:17 BST 2004
 Transforming PrivatePointcutCE... 
-Abc finished on Sat Jul 10 03:28:17 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:28:20 BST 2004. ( 0 min. 2 sec. )
 FAIL: aspect with private abstract pointcut()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -3037,7 +3037,7 @@ FAIL: aspect with private abstract pointcut()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:28:19 BST 2004
+Abc started on Sun Jul 11 03:28:22 BST 2004
 FAIL: concrete aspect unable to access abstract package-private pointcut in pa...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 6 messages))
 [  0] MessageHolder:  (6 info)  (4 error)  (10 fail) 
@@ -3065,8 +3065,8 @@ package child;
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:28:23 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
+Abc started on Sun Jul 11 03:28:26 BST 2004
 FAIL: inner, outer, and outside-package subaspects of an aspect with abstract ...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3116,7 +3116,7 @@ java.lang.RuntimeException: couldn't find type: child.ForeignChildAspect (is you
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:28:28 BST 2004
+Abc started on Sun Jul 11 03:28:31 BST 2004
 FAIL: inner subaspects of an aspect with private pointcut()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3162,7 +3162,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:28:33 BST 2004
+Abc started on Sun Jul 11 03:28:36 BST 2004
 FAIL: outer subaspects of an aspect with private pointcut()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3208,7 +3208,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:28:39 BST 2004
+Abc started on Sun Jul 11 03:28:42 BST 2004
 FAIL: abstract aspect used statically should not cause instantiation of advice...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3254,7 +3254,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:28:44 BST 2004
+Abc started on Sun Jul 11 03:28:47 BST 2004
 FAIL: private inner interface accessible in scope when declared on outer class()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -3265,7 +3265,7 @@ FAIL: private inner interface accessible in scope when declared on outer class()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:28:48 BST 2004
+Abc started on Sun Jul 11 03:28:52 BST 2004
 FAIL: accessing protected superclass members in and outside CCC from body of m...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3315,7 +3315,7 @@ java.lang.RuntimeException: not declared: super$clone$10
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:29:04 BST 2004
+Abc started on Sun Jul 11 03:29:07 BST 2004
 next paramType: Aspect
 meth param types: []
 Transforming Aspect... 
@@ -3324,7 +3324,7 @@ Transforming Common...
 Transforming ThreadNoField... 
 Transforming Aspect$1... 
 Transforming abc$access$Aspect$around$0... 
-Abc finished on Sat Jul 10 03:29:08 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:29:12 BST 2004. ( 0 min. 4 sec. )
 FAIL: aroundInner 1 - around advice inner Thread subclass running proceed but ...
 [  1] FAIL: JavaRun(JavaRun(ThreadNoField))
 [  1] --- thrown: (class: Aspect$1, method: run signature: ()V) Incompatible argument to function
@@ -3341,7 +3341,7 @@ java.lang.VerifyError: (class: Aspect$1, method: run signature: ()V) Incompatibl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:29:11 BST 2004
+Abc started on Sun Jul 11 03:29:14 BST 2004
 next paramType: Aspect
 meth param types: []
 Transforming Aspect... 
@@ -3351,7 +3351,7 @@ Transforming Aspect$Proxy...
 Transforming Common... 
 Transforming Aspect$1... 
 Transforming abc$access$Aspect$around$0... 
-Abc finished on Sat Jul 10 03:29:15 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:29:19 BST 2004. ( 0 min. 4 sec. )
 FAIL: aroundInner 2 - around advice inner Runnable running proceed and writing...
 [  1] FAIL: JavaRun(JavaRun(Proxy))
 [  1] --- thrown: (class: Aspect$1, method: run signature: ()V) Incompatible argument to function
@@ -3368,7 +3368,7 @@ java.lang.VerifyError: (class: Aspect$1, method: run signature: ()V) Incompatibl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:29:25 BST 2004
+Abc started on Sun Jul 11 03:29:28 BST 2004
 next paramType: Aspect
 meth param types: []
 Transforming Aspect... 
@@ -3378,7 +3378,7 @@ Transforming ThreadSubclass...
 Transforming Common... 
 Transforming ThreadSub... 
 Transforming abc$access$Aspect$around$0... 
-Abc finished on Sat Jul 10 03:29:29 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:29:33 BST 2004. ( 0 min. 4 sec. )
 FAIL: aroundInner 4 - around advice inner Thread subclass running proceed and ...
 [  1] FAIL: JavaRun(JavaRun(ThreadSub))
 [  1] --- thrown: (class: Aspect$1, method: run signature: ()V) Incompatible argument to function
@@ -3395,7 +3395,7 @@ java.lang.VerifyError: (class: Aspect$1, method: run signature: ()V) Incompatibl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:29:32 BST 2004
+Abc started on Sun Jul 11 03:29:35 BST 2004
 next paramType: Aspect
 meth param types: []
 Transforming Aspect... 
@@ -3405,7 +3405,7 @@ Transforming Common...
 Transforming Aspect$1... 
 Transforming Target... 
 Transforming abc$access$Aspect$around$1... 
-Abc finished on Sat Jul 10 03:29:36 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:29:40 BST 2004. ( 0 min. 4 sec. )
 FAIL: aroundInner 5 - around advice inner Runnable (subinterface) running proc...
 [  1] FAIL: JavaRun(JavaRun(RunnableSub))
 [  1] --- thrown: (class: Aspect$1, method: run signature: ()V) Incompatible argument to function
@@ -3422,7 +3422,7 @@ java.lang.VerifyError: (class: Aspect$1, method: run signature: ()V) Incompatibl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:29:39 BST 2004
+Abc started on Sun Jul 11 03:29:42 BST 2004
 FAIL: Named local class closing over proceed invocation()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -3433,13 +3433,13 @@ FAIL: Named local class closing over proceed invocation()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:29:54 BST 2004
+Abc started on Sun Jul 11 03:29:57 BST 2004
 Transforming MultiExec... 
 Transforming MultiDispatchCp... 
 Transforming MultiCall... 
 Transforming C... 
 Transforming Multi... 
-Abc finished on Sat Jul 10 03:29:58 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:30:01 BST 2004. ( 0 min. 4 sec. )
 FAIL: multi-dispatch implemented through around + args()
 [  1] FAIL: JavaRun(JavaRun(MultiDispatchCp))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -3451,7 +3451,7 @@ FAIL: multi-dispatch implemented through around + args()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:30:11 BST 2004
+Abc started on Sun Jul 11 03:30:15 BST 2004
 FAIL: Overriding method implementations using introduction on interfaces()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -3466,7 +3466,7 @@ FAIL: Overriding method implementations using introduction on interfaces()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:30:16 BST 2004
+Abc started on Sun Jul 11 03:30:19 BST 2004
 FAIL: more coverage for around and concrete methods on interfaces()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -3480,7 +3480,7 @@ FAIL: more coverage for around and concrete methods on interfaces()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:30:35 BST 2004
+Abc started on Sun Jul 11 03:30:38 BST 2004
 FAIL: after returning advice param()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3530,7 +3530,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:31:14 BST 2004
+Abc started on Sun Jul 11 03:31:18 BST 2004
 FAIL: access to private members from privileged aspect()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths))
 [  0] MessageHolder:  (6 info)  (8 error)  (8 fail) 
@@ -3564,7 +3564,7 @@ FAIL: access to private members from privileged aspect()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:31:20 BST 2004
+Abc started on Sun Jul 11 03:31:23 BST 2004
 FAIL: inner classes of privileged aspects cannot see target class private memb...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -3575,7 +3575,7 @@ FAIL: inner classes of privileged aspects cannot see target class private memb..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:31:31 BST 2004
+Abc started on Sun Jul 11 03:31:34 BST 2004
 FAIL: subclass advice not run for join points selected by superclass cflow-bas...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (18 error)  (18 fail) 
@@ -3637,7 +3637,7 @@ FAIL: subclass advice not run for join points selected by superclass cflow-bas..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:31:35 BST 2004
+Abc started on Sun Jul 11 03:31:38 BST 2004
 FAIL: more issues with abstract aspects and cflow pointcuts()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3687,7 +3687,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:31:41 BST 2004
+Abc started on Sun Jul 11 03:31:45 BST 2004
 FAIL: compile fails for aspect derived from percflow base aspect unless pointc...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3735,7 +3735,7 @@ java.lang.RuntimeException: couldn't find method
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:31:47 BST 2004
+Abc started on Sun Jul 11 03:31:50 BST 2004
 FAIL: cyclic pointcut definitions()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 5 messages))
 [  0] MessageHolder:  (6 info)  (6 fail)  (1 abort) 
@@ -3756,13 +3756,13 @@ java.lang.StackOverflowError
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:31:53 BST 2004
+Abc started on Sun Jul 11 03:31:57 BST 2004
 Transforming A... 
 Transforming PR573... 
 Transforming PR573$1... 
 Transforming Interface... 
 Transforming A$abc$PerTarget... 
-Abc finished on Sat Jul 10 03:31:57 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:32:01 BST 2004. ( 0 min. 4 sec. )
 FAIL: pertarget stack overflow getting name of anonymous (Interface) class()
 [  1] FAIL: JavaRun(JavaRun(PR573))
 [  1] --- thrown: Interface (Illegal field modifiers: 0x82)
@@ -3790,14 +3790,14 @@ java.lang.ClassFormatError: Interface (Illegal field modifiers: 0x82)
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Sat Jul 10 03:32:58 BST 2004
+Abc started on Sun Jul 11 03:33:02 BST 2004
 Transforming SubC... 
 Transforming C... 
 Transforming A... 
 Transforming AroundChangeThis... 
 Transforming abc$access$A$around$1... 
 Transforming abc$access$A$around$0... 
-Abc finished on Sat Jul 10 03:33:03 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:33:06 BST 2004. ( 0 min. 4 sec. )
 FAIL: changing this in around's proceed reported by Rich Price()
 [  1] FAIL: JavaRun(JavaRun(AroundChangeThis))
 [  1] MessageHolder:  (4 info)  (1 fail) 
@@ -3816,13 +3816,13 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:33:12 BST 2004
+Abc started on Sun Jul 11 03:33:15 BST 2004
 Transforming b.Dest... 
 Transforming a.MyInterface... 
 Transforming a.IntroAnon... 
 Transforming a.IntroAnon$MI... 
 Transforming a.IntroAnon$1... 
-Abc finished on Sat Jul 10 03:33:16 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:33:19 BST 2004. ( 0 min. 3 sec. )
 FAIL: anon class written to wrong directory()
 [  1] FAIL: JavaRun(JavaRun(a.IntroAnon))
 [  1] --- thrown: a/IntroAnon (Illegal Class name "a.IntroAnon")
@@ -3837,10 +3837,10 @@ java.lang.ClassFormatError: a/IntroAnon (Illegal Class name "a.IntroAnon")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:33:41 BST 2004
+Abc started on Sun Jul 11 03:33:44 BST 2004
 Transforming AbstractPointcutIndirectCE... 
 Transforming AbstractPointcutUser... 
-Abc finished on Sat Jul 10 03:33:44 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:33:48 BST 2004. ( 0 min. 3 sec. )
 FAIL: indirect use outside aspect of undefined abstract pointcut()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -3850,7 +3850,7 @@ FAIL: indirect use outside aspect of undefined abstract pointcut()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:34:00 BST 2004
+Abc started on Sun Jul 11 03:34:03 BST 2004
 FAIL: name binding in around cflow()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -3894,12 +3894,12 @@ java.lang.RuntimeException: Semantic error: cyclic graph (adviceexecution): <Tes
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:34:12 BST 2004
+Abc started on Sun Jul 11 03:34:16 BST 2004
 Transforming A... 
 Transforming FactorialCflow... 
 Transforming abc$access$A$around$1... 
 Transforming abc$access$A$around$0... 
-Abc finished on Sat Jul 10 03:34:18 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:34:21 BST 2004. ( 0 min. 5 sec. )
 FAIL: around name-binding in cflows using factorial()
 [  1] FAIL: JavaRun(JavaRun(FactorialCflow))
 [  1] --- thrown: null
@@ -3915,7 +3915,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:34:24 BST 2004
+Abc started on Sun Jul 11 03:34:28 BST 2004
 FAIL: incrementing objects, arrays CE()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (6 error)  (4 fail) 
@@ -3935,7 +3935,7 @@ FAIL: incrementing objects, arrays CE()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:34:39 BST 2004
+Abc started on Sun Jul 11 03:34:43 BST 2004
 Transforming TargetObjectReplacement... 
 Transforming Foo... 
 Transforming A... 
@@ -3943,7 +3943,7 @@ Transforming abc$access$A$around$0...
 Transforming abc$access$A$around$1... 
 Transforming abc$access$A$around$2... 
 Transforming abc$access$A$around$3... 
-Abc finished on Sat Jul 10 03:34:44 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:34:47 BST 2004. ( 0 min. 4 sec. )
 FAIL: replacing this or target in around advice()
 [  1] FAIL: JavaRun(JavaRun(TargetObjectReplacement))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -3952,7 +3952,7 @@ FAIL: replacing this or target in around advice()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:34:46 BST 2004
+Abc started on Sun Jul 11 03:34:49 BST 2004
 FAIL: after returning from initialization and after executing constructor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (4 error)  (4 fail) 
@@ -3972,7 +3972,7 @@ FAIL: after returning from initialization and after executing constructor()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:34:51 BST 2004
+Abc started on Sun Jul 11 03:34:55 BST 2004
 FAIL: after returning from initialization causes ExceptionInInitializer in asp...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (4 error)  (4 fail) 
@@ -3992,7 +3992,7 @@ FAIL: after returning from initialization causes ExceptionInInitializer in asp..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:34:57 BST 2004
+Abc started on Sun Jul 11 03:35:01 BST 2004
 FAIL: name binding in before cflow containing cflowbelow()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (3 fail)  (1 abort) 
@@ -4084,13 +4084,13 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:35:01 BST 2004
+Abc started on Sun Jul 11 03:35:05 BST 2004
 Transforming circle.Test1CP... 
 Transforming circle.Type... 
 Transforming circle.Type$Reflexive... 
 Transforming circle.Base... 
 Transforming circle.Type$Concrete... 
-Abc finished on Sat Jul 10 03:35:04 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:35:08 BST 2004. ( 0 min. 3 sec. )
 FAIL: no circularity errors simply because of inners (1)()
 [  1] FAIL: JavaRun(JavaRun(circle.Test1CP))
 [  1] --- thrown: circle/Type$Reflexive (Illegal Class name "circle.Type")
@@ -4117,14 +4117,14 @@ java.lang.ClassFormatError: circle/Type$Reflexive (Illegal Class name "circle.Ty
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:35:07 BST 2004
+Abc started on Sun Jul 11 03:35:10 BST 2004
 Transforming circle.Test2CP... 
 Transforming circle.Type... 
 Transforming circle.Type$Reflexive... 
 Transforming circle.Base... 
 Transforming circle.Base$I... 
 Transforming circle.Type$Concrete... 
-Abc finished on Sat Jul 10 03:35:10 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:35:13 BST 2004. ( 0 min. 2 sec. )
 FAIL: no circularity errors simply because of inners (2)()
 [  1] FAIL: JavaRun(JavaRun(circle.Test2CP))
 [  1] --- thrown: circle/Base (Illegal Class name "circle.Base$I")
@@ -4145,7 +4145,7 @@ java.lang.ClassFormatError: circle/Base (Illegal Class name "circle.Base$I")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:35:12 BST 2004
+Abc started on Sun Jul 11 03:35:16 BST 2004
 FAIL: should have circular inheritance errors (1)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 4 messages))
 [  0] MessageHolder:  (6 info)  (3 error)  (5 fail) 
@@ -4162,14 +4162,14 @@ FAIL: should have circular inheritance errors (1)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:35:16 BST 2004
+Abc started on Sun Jul 11 03:35:19 BST 2004
 Transforming circle.Derived... 
 Transforming circle.Test2CF... 
 Transforming circle.Type... 
 Transforming circle.Type$Reflexive... 
 Transforming circle.Base... 
 Transforming circle.Base$I... 
-Abc finished on Sat Jul 10 03:35:19 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:35:22 BST 2004. ( 0 min. 2 sec. )
 FAIL: should have circular inheritance errors (2)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 3 messages))
 [  0] MessageHolder:  (8 info)  (3 fail) 
@@ -4180,10 +4180,10 @@ FAIL: should have circular inheritance errors (2)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:35:41 BST 2004
+Abc started on Sun Jul 11 03:35:44 BST 2004
 Transforming NestedInterfaceTest... 
 Transforming NestedInterfaceTest$Const... 
-Abc finished on Sat Jul 10 03:35:43 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:35:47 BST 2004. ( 0 min. 2 sec. )
 FAIL: a type is not allowed to extend or implement its own innner type()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -4191,14 +4191,14 @@ FAIL: a type is not allowed to extend or implement its own innner type()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
 *** Option -Xlint ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:36:23 BST 2004
+Abc started on Sun Jul 11 03:36:27 BST 2004
 Transforming MySuffix... 
 Transforming Suffix... 
 Transforming A... 
 Transforming TypeNames... 
-Abc finished on Sat Jul 10 03:36:27 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:36:30 BST 2004. ( 0 min. 3 sec. )
 FAIL: package typepattern with no packages (in default package)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 4 messages))
 [  0] MessageHolder:  (8 info)  (4 fail) 
@@ -4210,10 +4210,10 @@ FAIL: package typepattern with no packages (in default package)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:36:29 BST 2004
+Abc started on Sun Jul 11 03:36:33 BST 2004
 Transforming ambiguousClass.AmbiguousClassReference... 
 Transforming ambiguousClass.AmbiguousReferent... 
-Abc finished on Sat Jul 10 03:36:32 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:36:36 BST 2004. ( 0 min. 2 sec. )
 FAIL: CE for ambiguous type reference (two files in package)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -4222,9 +4222,9 @@ FAIL: CE for ambiguous type reference (two files in package)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:36:52 BST 2004
+Abc started on Sun Jul 11 03:36:55 BST 2004
 Transforming InitializerFlowCf... 
-Abc finished on Sat Jul 10 03:36:54 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:36:58 BST 2004. ( 0 min. 2 sec. )
 FAIL: initializers must be able to complete normally (found by jacks)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -4234,11 +4234,11 @@ FAIL: initializers must be able to complete normally (found by jacks)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:36:57 BST 2004
+Abc started on Sun Jul 11 03:37:00 BST 2004
 Transforming IntroducedFieldInc... 
 Transforming I... 
 Transforming A... 
-Abc finished on Sat Jul 10 03:37:01 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:37:04 BST 2004. ( 0 min. 3 sec. )
 FAIL: Incrementing interface-introduced field()
 [  1] FAIL: JavaRun(JavaRun(IntroducedFieldInc))
 [  1] MessageHolder:  (3 info)  (4 fail) 
@@ -4250,7 +4250,7 @@ FAIL: Incrementing interface-introduced field()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:37:03 BST 2004
+Abc started on Sun Jul 11 03:37:07 BST 2004
 FAIL: more tests of super alone()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (4 error)  (2 fail) 
@@ -4264,7 +4264,7 @@ FAIL: more tests of super alone()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:37:07 BST 2004
+Abc started on Sun Jul 11 03:37:11 BST 2004
 FAIL: The dynamic type, not the static one, should be used in if pcds()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -4314,14 +4314,14 @@ java.lang.RuntimeException: Internal error: someone tried to read from a variabl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:37:20 BST 2004
+Abc started on Sun Jul 11 03:37:23 BST 2004
 Transforming test.A... 
 Transforming test.TypePat... 
 Transforming test.TypePat$Inner... 
 Transforming test.TypePat$InnerA... 
 Transforming test.TypePat$1... 
 Transforming test.C... 
-Abc finished on Sat Jul 10 03:37:25 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:37:29 BST 2004. ( 0 min. 5 sec. )
 FAIL: type pattern matching for inner classes (from Ken Horn)()
 [  1] FAIL: JavaRun(JavaRun(test.TypePat))
 [  1] --- thrown: test/TypePat (Illegal Class name "test.TypePat$1")
@@ -4336,7 +4336,7 @@ java.lang.ClassFormatError: test/TypePat (Illegal Class name "test.TypePat$1")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:37:39 BST 2004
+Abc started on Sun Jul 11 03:37:43 BST 2004
 FAIL: binding args with indeterminate prefix and suffix()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -4380,7 +4380,7 @@ polyglot.util.InternalCompilerError: /usr/local/src/abc-dev/ajc-harness/tests/ne
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:37:46 BST 2004
+Abc started on Sun Jul 11 03:37:50 BST 2004
 FAIL: flag errors when binding args with indeterminate prefix and suffix()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 4 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (5 fail) 
@@ -4395,14 +4395,14 @@ FAIL: flag errors when binding args with indeterminate prefix and suffix()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:37:52 BST 2004
+Abc started on Sun Jul 11 03:37:55 BST 2004
 Transforming A... 
 Transforming Safe... 
 Transforming T... 
 Transforming IndeterminateArgType... 
 Transforming STarget... 
 Transforming OTarget... 
-Abc finished on Sat Jul 10 03:37:58 BST 2004. ( 0 min. 6 sec. )
+Abc finished on Sun Jul 11 03:38:02 BST 2004. ( 0 min. 6 sec. )
 FAIL: check arg types with indeterminate prefix and suffix()
 [  1] FAIL: JavaRun(JavaRun(IndeterminateArgType))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -4413,11 +4413,11 @@ FAIL: check arg types with indeterminate prefix and suffix()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:38:17 BST 2004
+Abc started on Sun Jul 11 03:38:21 BST 2004
 Transforming A... 
 Transforming IndeterminateHandlerArg... 
 Transforming IndeterminateHandlerArg$1... 
-Abc finished on Sat Jul 10 03:38:22 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:38:26 BST 2004. ( 0 min. 5 sec. )
 FAIL: binding handler args with indeterminate prefix and suffix()
 [  1] FAIL: JavaRun(JavaRun(IndeterminateHandlerArg))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -4428,7 +4428,7 @@ FAIL: binding handler args with indeterminate prefix and suffix()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:38:38 BST 2004
+Abc started on Sun Jul 11 03:38:42 BST 2004
 FAIL: Compiling java.lang.Object with ajc yields non-verifying bytecode()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -4444,11 +4444,11 @@ java.lang.StackOverflowError
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:38:50 BST 2004
+Abc started on Sun Jul 11 03:38:53 BST 2004
 Transforming A... 
 Transforming C... 
 Transforming IfPCDAssignmentCE... 
-Abc finished on Sat Jul 10 03:38:53 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:38:57 BST 2004. ( 0 min. 3 sec. )
 FAIL: CE expected for assignment to arg in if pcd()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -4458,11 +4458,11 @@ FAIL: CE expected for assignment to arg in if pcd()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:39:22 BST 2004
+Abc started on Sun Jul 11 03:39:26 BST 2004
 Transforming I... 
 Transforming A... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:39:25 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:39:29 BST 2004. ( 0 min. 3 sec. )
 FAIL: declare interface extends class()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -4471,7 +4471,7 @@ FAIL: declare interface extends class()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:39:31 BST 2004
+Abc started on Sun Jul 11 03:39:35 BST 2004
 FAIL: assert flow()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 options 1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -4480,7 +4480,7 @@ FAIL: assert flow()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:39:50 BST 2004
+Abc started on Sun Jul 11 03:39:54 BST 2004
 Transforming AssertTest... 
 Transforming AssertTest$InnerInitFailure... 
 Transforming AssertTest$1... 
@@ -4493,7 +4493,7 @@ Transforming AssertTest$MyInnerError...
 Transforming AssertTest$InnerFieldInitFailure... 
 Transforming StringWrapper... 
 Transforming AssertTest$InnerInstanceTester... 
-Abc finished on Sat Jul 10 03:39:58 BST 2004. ( 0 min. 7 sec. )
+Abc finished on Sun Jul 11 03:40:02 BST 2004. ( 0 min. 7 sec. )
 FAIL: assert coverage tests [requires 1.4]()
 [  1] FAIL: JavaRun(JavaRun(AssertsCv))
 [  1] MessageHolder:  (4 info)  (1 fail) 
@@ -4512,7 +4512,7 @@ java.lang.AssertionError
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 8 seconds
-Abc started on Sat Jul 10 03:40:00 BST 2004
+Abc started on Sun Jul 11 03:40:04 BST 2004
 Transforming CycleSubOff... 
 Transforming AssertInOnePackage... 
 Transforming InnerStaticInitializerOnHelper... 
@@ -4541,7 +4541,7 @@ Transforming InnerStaticInitializerOffHelper$Inner...
 Transforming StaticInitializerOffHelper... 
 Transforming AssertInOnePackage$9... 
 Transforming AssertInOnePackage$10... 
-Abc finished on Sat Jul 10 03:40:06 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:40:10 BST 2004. ( 0 min. 5 sec. )
 FAIL: assert coverage tests in one package [requires 1.4]()
 [  1] FAIL: JavaRun(JavaRun(AssertInOnePackage))
 [  1] MessageHolder:  (3 info)  (6 fail) 
@@ -4555,11 +4555,11 @@ FAIL: assert coverage tests in one package [requires 1.4]()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:40:09 BST 2004
+Abc started on Sun Jul 11 03:40:13 BST 2004
 Transforming A... 
 Transforming AssertInIntro... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:40:13 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:40:17 BST 2004. ( 0 min. 4 sec. )
 FAIL: assert tests in introduction [requires 1.4]()
 [  1] FAIL: JavaRun(JavaRun(AssertInIntro))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -4568,27 +4568,28 @@ FAIL: assert tests in introduction [requires 1.4]()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:40:26 BST 2004
+Abc started on Sun Jul 11 03:40:30 BST 2004
 FAIL: import of a class in the default package()
-[  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
-[  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
-[  0] [fail   0]: fail at 0:0 unexpected message: error at import org.aspectj.testing.Tester;
+[  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 1 messages))
+[  0] MessageHolder:  (6 info)  (2 error)  (3 fail) 
+[  0] [fail   0]: fail at 0:0 missing message: error at 2 null
+[  0] [fail   1]: fail at 0:0 unexpected message: error at import org.aspectj.testing.Tester;
      ^^
 DeclaredExcs.java:40:0 The exception java.lang.Exception must be either caught or declared to be thrown
-[  0] [fail   1]: fail at 0:0 unexpected message: error at import org.aspectj.testing.Tester;
+[  0] [fail   2]: fail at 0:0 unexpected message: error at import org.aspectj.testing.Tester;
      ^^
 DeclaredExcs.java:46:0 The exception java.lang.Exception must be either caught or declared to be thrown
 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:40:32 BST 2004
+Abc started on Sun Jul 11 03:40:37 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Sat Jul 10 03:40:35 BST 2004. ( 0 min. 2 sec. )
-Abc started on Sat Jul 10 03:40:35 BST 2004
+Abc finished on Sun Jul 11 03:40:39 BST 2004. ( 0 min. 2 sec. )
+Abc started on Sun Jul 11 03:40:39 BST 2004
 FAIL: Referencing static interfaces with import statements()
 [  1] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  1] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -4605,13 +4606,13 @@ FAIL: Referencing static interfaces with import statements()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:40:37 BST 2004
+Abc started on Sun Jul 11 03:40:42 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Sat Jul 10 03:40:40 BST 2004. ( 0 min. 2 sec. )
-Abc started on Sat Jul 10 03:40:40 BST 2004
+Abc finished on Sun Jul 11 03:40:45 BST 2004. ( 0 min. 2 sec. )
+Abc started on Sun Jul 11 03:40:45 BST 2004
 FAIL: Referencing static interfaces with import statements stars()
 [  1] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  1] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -4628,13 +4629,13 @@ FAIL: Referencing static interfaces with import statements stars()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:40:43 BST 2004
+Abc started on Sun Jul 11 03:40:47 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Sat Jul 10 03:40:46 BST 2004. ( 0 min. 2 sec. )
-Abc started on Sat Jul 10 03:40:46 BST 2004
+Abc finished on Sun Jul 11 03:40:50 BST 2004. ( 0 min. 2 sec. )
+Abc started on Sun Jul 11 03:40:50 BST 2004
 FAIL: Referencing static interfaces with import statements stars 2()
 [  1] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  1] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -4648,13 +4649,13 @@ FAIL: Referencing static interfaces with import statements stars 2()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:40:48 BST 2004
+Abc started on Sun Jul 11 03:40:53 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Sat Jul 10 03:40:51 BST 2004. ( 0 min. 2 sec. )
-Abc started on Sat Jul 10 03:40:51 BST 2004
+Abc finished on Sun Jul 11 03:40:55 BST 2004. ( 0 min. 2 sec. )
+Abc started on Sun Jul 11 03:40:55 BST 2004
 FAIL: Referencing static interfaces with import statements stars 3()
 [  1] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  1] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -4665,7 +4666,7 @@ FAIL: Referencing static interfaces with import statements stars 3()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:41:00 BST 2004
+Abc started on Sun Jul 11 03:41:04 BST 2004
 FAIL: Referencing interfaces with import statements stars()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -4676,7 +4677,7 @@ FAIL: Referencing interfaces with import statements stars()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:41:04 BST 2004
+Abc started on Sun Jul 11 03:41:09 BST 2004
 FAIL: Referencing interfaces with import statements stars 2()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -4687,7 +4688,7 @@ FAIL: Referencing interfaces with import statements stars 2()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:41:08 BST 2004
+Abc started on Sun Jul 11 03:41:13 BST 2004
 FAIL: Referencing interfaces with import statements stars 3()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -4698,7 +4699,7 @@ FAIL: Referencing interfaces with import statements stars 3()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:41:13 BST 2004
+Abc started on Sun Jul 11 03:41:17 BST 2004
 Transforming Test... 
 Transforming AssertInAdvice... 
 Transforming abc$access$Test$around$9... 
@@ -4707,7 +4708,7 @@ Transforming abc$access$Test$around$11...
 Transforming abc$access$Test$around$3... 
 Transforming abc$access$Test$around$4... 
 Transforming abc$access$Test$around$5... 
-Abc finished on Sat Jul 10 03:41:19 BST 2004. ( 0 min. 6 sec. )
+Abc finished on Sun Jul 11 03:41:23 BST 2004. ( 0 min. 6 sec. )
 FAIL: assert statement in advice coverage [requires 1.4]()
 [  1] FAIL: JavaRun(JavaRun(AssertInAdvice))
 [  1] MessageHolder:  (3 info)  (24 fail) 
@@ -4739,11 +4740,11 @@ FAIL: assert statement in advice coverage [requires 1.4]()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:41:21 BST 2004
+Abc started on Sun Jul 11 03:41:26 BST 2004
 Transforming AssertInAdviceBug... 
 Transforming Test... 
 Transforming abc$access$Test$around$1... 
-Abc finished on Sat Jul 10 03:41:26 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:41:31 BST 2004. ( 0 min. 4 sec. )
 FAIL: assert statement in advice  [requires 1.4]()
 [  1] FAIL: JavaRun(JavaRun(AssertInAdviceBug))
 [  1] MessageHolder:  (3 info)  (3 fail) 
@@ -4754,14 +4755,14 @@ FAIL: assert statement in advice  [requires 1.4]()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:41:29 BST 2004
+Abc started on Sun Jul 11 03:41:33 BST 2004
 Transforming A... 
 Transforming PrivateMethodOnInnerInterface... 
 Transforming C... 
 Transforming A$J... 
 Transforming B... 
 Transforming A$I... 
-Abc finished on Sat Jul 10 03:41:33 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:41:37 BST 2004. ( 0 min. 3 sec. )
 FAIL: declaring a private method on an inner interface()
 [  1] FAIL: JavaRun(JavaRun(PrivateMethodOnInnerInterface))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -4770,14 +4771,14 @@ FAIL: declaring a private method on an inner interface()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:42:01 BST 2004
+Abc started on Sun Jul 11 03:42:05 BST 2004
 Transforming D... 
 Transforming A... 
 Transforming F... 
 Transforming SourceLocationWithinExprHard... 
 Transforming E... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:42:05 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:42:09 BST 2004. ( 0 min. 4 sec. )
 FAIL: source locations within expressions (hard case of constructor start)()
 [  1] FAIL: JavaRun(JavaRun(SourceLocationWithinExprHard))
 [  1] MessageHolder:  (3 info)  (1 fail) 
@@ -4786,12 +4787,12 @@ FAIL: source locations within expressions (hard case of constructor start)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:42:12 BST 2004
+Abc started on Sun Jul 11 03:42:17 BST 2004
 Transforming I... 
 Transforming C... 
 Transforming A... 
 Transforming AfterReturningInterfaceConstructor... 
-Abc finished on Sat Jul 10 03:42:16 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:42:21 BST 2004. ( 0 min. 3 sec. )
 FAIL: after returning advice on interface constructor()
 [  1] FAIL: JavaRun(JavaRun(AfterReturningInterfaceConstructor))
 [  1] MessageHolder:  (3 info)  (2 fail) 
@@ -4801,10 +4802,10 @@ FAIL: after returning advice on interface constructor()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:42:42 BST 2004
+Abc started on Sun Jul 11 03:42:46 BST 2004
 Transforming CWithLongConst... 
-Transforming TestCase... 
 Transforming InstanceAsClassRefToConstant... 
+Transforming TestCase... 
 Transforming A... 
 FAIL: using instance as class reference to constant field()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
@@ -4946,10 +4947,10 @@ Method: main
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -warn:deprecation ignored:  warning flags not implemented yet.
-Abc started on Sat Jul 10 03:42:48 BST 2004
+Abc started on Sun Jul 11 03:42:52 BST 2004
 Transforming OldStuff... 
 Transforming WarnDeprecated... 
-Abc finished on Sat Jul 10 03:42:50 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:42:55 BST 2004. ( 0 min. 2 sec. )
 FAIL: options -warn:deprecation()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 options 2 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -4959,7 +4960,7 @@ FAIL: options -warn:deprecation()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -Xlint ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:42:58 BST 2004
+Abc started on Sun Jul 11 03:43:03 BST 2004
 FAIL: options -Xlint args()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -4973,13 +4974,13 @@ FAIL: options -Xlint args()()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:43:10 BST 2004
+Abc started on Sun Jul 11 03:43:15 BST 2004
 Transforming XLintTypeDeclareParent... 
 Transforming D... 
 Transforming E... 
 Transforming C... 
 Transforming F... 
-Abc finished on Sat Jul 10 03:43:13 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:43:18 BST 2004. ( 0 min. 3 sec. )
 FAIL: options -Xlint declare parent()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -4989,7 +4990,7 @@ FAIL: options -Xlint declare parent()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -Xlint ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:43:15 BST 2004
+Abc started on Sun Jul 11 03:43:20 BST 2004
 FAIL: options -Xlint target()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -5002,7 +5003,7 @@ FAIL: options -Xlint target()()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:43:20 BST 2004
+Abc started on Sun Jul 11 03:43:24 BST 2004
 FAIL: options -Xlint this()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -5016,7 +5017,7 @@ class E {}
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:43:23 BST 2004
+Abc started on Sun Jul 11 03:43:28 BST 2004
 FAIL: options negative -Xlint args()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5029,7 +5030,7 @@ FAIL: options negative -Xlint args()()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:43:33 BST 2004
+Abc started on Sun Jul 11 03:43:38 BST 2004
 FAIL: options negative -Xlint target()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5041,7 +5042,7 @@ FAIL: options negative -Xlint target()()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:43:37 BST 2004
+Abc started on Sun Jul 11 03:43:42 BST 2004
 FAIL: options negative -Xlint this()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5053,7 +5054,7 @@ class E {}
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:43:47 BST 2004
+Abc started on Sun Jul 11 03:43:52 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/options/injars/simple/Simple.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/options/injars/simple/Simple.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/options/injars/simple/Simple.java
@@ -5122,7 +5123,7 @@ java.lang.RuntimeException: couldn't find type: Simple (is your soot-class-path 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:44:00 BST 2004
+Abc started on Sun Jul 11 03:44:04 BST 2004
 FAIL: self-reference from (aspect-declared) method-local class()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5133,7 +5134,7 @@ FAIL: self-reference from (aspect-declared) method-local class()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:44:04 BST 2004
+Abc started on Sun Jul 11 03:44:09 BST 2004
 FAIL: expect CE for unterminated declare error()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (3 fail) 
@@ -5150,7 +5151,7 @@ FAIL: expect CE for unterminated declare error()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:44:09 BST 2004
+Abc started on Sun Jul 11 03:44:13 BST 2004
 FAIL: expect CE for declaration collision between subaspects instead of domina...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (4 fail) 
@@ -5164,7 +5165,7 @@ FAIL: expect CE for declaration collision between subaspects instead of domina..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:44:13 BST 2004
+Abc started on Sun Jul 11 03:44:17 BST 2004
 FAIL: subtype pattern in dominates should pick out aspect subtypes()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5175,7 +5176,7 @@ FAIL: subtype pattern in dominates should pick out aspect subtypes()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:44:21 BST 2004
+Abc started on Sun Jul 11 03:44:26 BST 2004
 FAIL: after returning advice on interface and implementation constructor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5186,10 +5187,10 @@ FAIL: after returning advice on interface and implementation constructor()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:44:36 BST 2004
+Abc started on Sun Jul 11 03:44:41 BST 2004
 Transforming A... 
 Transforming B... 
-Abc finished on Sat Jul 10 03:44:39 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:44:44 BST 2004. ( 0 min. 3 sec. )
 FAIL: prohibit declaring new aspect constructor with arguments()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -5198,10 +5199,10 @@ FAIL: prohibit declaring new aspect constructor with arguments()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:44:41 BST 2004
+Abc started on Sun Jul 11 03:44:46 BST 2004
 Transforming A... 
 Transforming B... 
-Abc finished on Sat Jul 10 03:44:44 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:44:49 BST 2004. ( 0 min. 3 sec. )
 FAIL: prohibit declaring only aspect constructor with arguments()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -5210,7 +5211,7 @@ FAIL: prohibit declaring only aspect constructor with arguments()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:44:47 BST 2004
+Abc started on Sun Jul 11 03:44:52 BST 2004
 FAIL: declare class extends interface()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5223,7 +5224,7 @@ FAIL: declare class extends interface()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:44:51 BST 2004
+Abc started on Sun Jul 11 03:44:55 BST 2004
 FAIL: declare class implements class()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -5234,7 +5235,7 @@ FAIL: declare class implements class()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:45:00 BST 2004
+Abc started on Sun Jul 11 03:45:05 BST 2004
 FAIL: if and cflow arg binding()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 fail)  (1 abort) 
@@ -5282,9 +5283,9 @@ polyglot.util.InternalCompilerError: /usr/local/src/abc-dev/ajc-harness/tests/ne
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -Xlint:warning ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:45:43 BST 2004
+Abc started on Sun Jul 11 03:45:49 BST 2004
 FAIL: Verify error on non-Throwable in declare soft()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (3 fail)  (1 abort) 
@@ -5332,7 +5333,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:45:49 BST 2004
+Abc started on Sun Jul 11 03:45:55 BST 2004
 Expr: { ... }
 FAIL: inter-type fields with array types()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
@@ -5388,11 +5389,11 @@ java.lang.RuntimeException: Unhandled Expression:
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -Xlint ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:45:56 BST 2004
+Abc started on Sun Jul 11 03:46:01 BST 2004
 Transforming A... 
 Transforming MissingTypeInDeclareParents... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:46:00 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:46:05 BST 2004. ( 0 min. 3 sec. )
 FAIL: unmatched type name in a declare parents should result in a warning in -...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -5401,11 +5402,11 @@ FAIL: unmatched type name in a declare parents should result in a warning in -..
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:46:03 BST 2004
+Abc started on Sun Jul 11 03:46:07 BST 2004
 Transforming AroundNumericCastCE... 
 Transforming AroundNumericCastCE$Selector... 
 Transforming abc$access$AroundNumericCastCE$Selector$around$0... 
-Abc finished on Sat Jul 10 03:46:07 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:46:12 BST 2004. ( 0 min. 4 sec. )
 FAIL: checking around join point for advice return type - numeric()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -5414,8 +5415,8 @@ FAIL: checking around join point for advice return type - numeric()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:46:09 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
+Abc started on Sun Jul 11 03:46:15 BST 2004
 Transforming VoidAround... 
 Transforming A... 
 Transforming C... 
@@ -5735,7 +5736,7 @@ Method: main
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:46:23 BST 2004
+Abc started on Sun Jul 11 03:46:28 BST 2004
 FAIL: declaring method on superclass and subclass()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths))
 [  0] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -5753,7 +5754,7 @@ FAIL: declaring method on superclass and subclass()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
 *** Option -Xlint:warning ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:46:28 BST 2004
+Abc started on Sun Jul 11 03:46:33 BST 2004
 FAIL: privileged access to code outside the control of the compiler()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -5765,18 +5766,18 @@ FAIL: privileged access to code outside the control of the compiler()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:46:32 BST 2004
+Abc started on Sun Jul 11 03:46:38 BST 2004
 Transforming pack.C... 
-Abc finished on Sat Jul 10 03:46:35 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:46:41 BST 2004. ( 0 min. 3 sec. )
 FAIL: import any inner from interface implementor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (5 info)  (1 fail) 
-[  0] [fail   0]: fail at 0:0 at end, expected file was not added "pack/ImportInnerFromInterfaceImplementor.class" in /tmp/SandboxUUk9gl/classes
+[  0] [fail   0]: fail at 0:0 at end, expected file was not added "pack/ImportInnerFromInterfaceImplementor.class" in /tmp/SandboxXhDiiV/classes
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:47:15 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
+Abc started on Sun Jul 11 03:47:20 BST 2004
 FAIL: VerifyError on accessing objects not accessible to the weaver()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -5858,7 +5859,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:47:26 BST 2004
+Abc started on Sun Jul 11 03:47:33 BST 2004
 FAIL: super call in intertype method declaration body causes VerifyError()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -5932,7 +5933,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:47:46 BST 2004
+Abc started on Sun Jul 11 03:47:53 BST 2004
 FAIL: problems with finalize call()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 fail)  (1 abort) 
@@ -6015,7 +6016,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:47:51 BST 2004
+Abc started on Sun Jul 11 03:47:57 BST 2004
 FAIL: Negation of if pointcut does not work()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -6067,7 +6068,7 @@ java.lang.RuntimeException: Internal error: someone tried to read from a variabl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:48:11 BST 2004
+Abc started on Sun Jul 11 03:48:17 BST 2004
 FAIL: can't resolve nested public interfaces (also PR#32399)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -6166,11 +6167,11 @@ java.lang.NullPointerException
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:48:31 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
+Abc started on Sun Jul 11 03:48:37 BST 2004
 Transforming A... 
 Transforming DeclareWarningEmpty... 
-Abc finished on Sat Jul 10 03:48:34 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:48:40 BST 2004. ( 0 min. 3 sec. )
 FAIL: omnibus declare warning context with no initializer/constructor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 warning)  (2 fail) 
@@ -6182,10 +6183,10 @@ DeclareWarningEmpty.java:0:0 1 - staticinitialization(DeclareWarningEmpty) in me
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:48:37 BST 2004
+Abc started on Sun Jul 11 03:48:43 BST 2004
 Transforming A... 
 Transforming DeclareWarning... 
-Abc finished on Sat Jul 10 03:48:42 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:48:48 BST 2004. ( 0 min. 4 sec. )
 FAIL: omnibus declare warning context()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 16 messages))
 [  0] MessageHolder:  (8 info)  (16 warning)  (16 fail) 
@@ -6225,7 +6226,7 @@ DeclareWarning.java:74:0 adviceExecution() && within(A)
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:48:52 BST 2004
+Abc started on Sun Jul 11 03:48:58 BST 2004
 FAIL: incompatible advice throws clause are a compile-time error()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 10 messages))
 [  0] MessageHolder:  (6 info)  (11 fail)  (1 abort) 
@@ -6317,7 +6318,7 @@ java.lang.ClassCastException: polyglot.ext.jl.ast.CanonicalTypeNode_c
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:48:56 BST 2004
+Abc started on Sun Jul 11 03:49:03 BST 2004
 FAIL: cflow binding issues with ignoring state()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -6359,7 +6360,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:49:03 BST 2004
+Abc started on Sun Jul 11 03:49:09 BST 2004
 FAIL: cflow binding -- original weaver crash()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -6401,13 +6402,13 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:49:21 BST 2004
+Abc started on Sun Jul 11 03:49:26 BST 2004
 Transforming ArgsInCflowCf... 
 Transforming Test... 
 Transforming abc$access$Test$around$2... 
 Transforming abc$access$Test$around$1... 
 Transforming abc$access$Test$around$0... 
-Abc finished on Sat Jul 10 03:49:25 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:49:31 BST 2004. ( 0 min. 4 sec. )
 FAIL: illegal name binding in around cflow()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (8 info)  (3 fail) 
@@ -6417,11 +6418,11 @@ FAIL: illegal name binding in around cflow()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:49:28 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
+Abc started on Sun Jul 11 03:49:34 BST 2004
 Transforming AspectInitError... 
 Transforming Watchcall... 
-Abc finished on Sat Jul 10 03:49:32 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:49:38 BST 2004. ( 0 min. 4 sec. )
 FAIL: before():execution(new(..)) does not throw NoAspectBoundException()
 [  1] FAIL: JavaRun(JavaRun(AspectInitError))
 [  1] --- thrown: Exception while initializing Watchcall: org.aspectj.lang.NoAspectBoundException: Watchcall
@@ -6463,7 +6464,7 @@ Caused by: org.aspectj.lang.NoAspectBoundException: Watchcall
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:49:35 BST 2004
+Abc started on Sun Jul 11 03:49:41 BST 2004
 FAIL: declare soft and throw statements()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -6473,8 +6474,8 @@ FAIL: declare soft and throw statements()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:49:42 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
+Abc started on Sun Jul 11 03:49:47 BST 2004
 FAIL: inter-type declaration bug with abstract classes()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -6485,7 +6486,7 @@ FAIL: inter-type declaration bug with abstract classes()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:49:52 BST 2004
+Abc started on Sun Jul 11 03:49:57 BST 2004
 FAIL: Declare parents with intermediate ancestor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (2 error)  (2 fail) 
@@ -6498,8 +6499,8 @@ FAIL: Declare parents with intermediate ancestor()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:49:56 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
+Abc started on Sun Jul 11 03:50:01 BST 2004
 Transforming IllegalAdoption... 
 Transforming IllegalAdoption$C... 
 Transforming IllegalAdoption$A... 
@@ -6507,7 +6508,7 @@ Transforming IllegalAdoption$E...
 Transforming IllegalAdoption$B... 
 Transforming IllegalAdoption$D... 
 Transforming IllegalAdoption$Adoption... 
-Abc finished on Sat Jul 10 03:49:59 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:50:05 BST 2004. ( 0 min. 3 sec. )
 FAIL: Declare parents removing ancestor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -6516,7 +6517,7 @@ FAIL: Declare parents removing ancestor()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:50:02 BST 2004
+Abc started on Sun Jul 11 03:50:07 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/options/injars/simple/DecParents.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/options/injars/simple/DecParents.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/options/injars/simple/DecParents.java
@@ -6585,12 +6586,12 @@ java.lang.RuntimeException: couldn't find type: DecParents (is your soot-class-p
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:50:05 BST 2004
+Abc started on Sun Jul 11 03:50:11 BST 2004
 Transforming p1.C... 
 Transforming p2.InterClass... 
 Transforming p2.A1... 
 Transforming abc$access$p2_d_InterClass$around$1... 
-Abc finished on Sat Jul 10 03:50:09 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:50:14 BST 2004. ( 0 min. 3 sec. )
 FAIL: IllegalAccessError while accessing introduced variable / 1.1rc1()
 [  1] FAIL: JavaRun(JavaRun(p2.A1))
 [  1] --- thrown: tried to access class p2.InterClass from class p1.C
@@ -6605,13 +6606,13 @@ java.lang.IllegalAccessError: tried to access class p2.InterClass from class p1.
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:50:12 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
+Abc started on Sun Jul 11 03:50:17 BST 2004
 Transforming p1.C... 
 Transforming p2.A2... 
 Transforming p2.InterClass... 
 Transforming abc$access$p2_d_InterClass$around$1... 
-Abc finished on Sat Jul 10 03:50:15 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:50:21 BST 2004. ( 0 min. 3 sec. )
 FAIL: testing that assert works like .class()
 [  1] FAIL: JavaRun(JavaRun(p2.A2))
 [  1] --- thrown: p2/InterClass (Illegal Field name "class$p2.InterClass")
@@ -6632,8 +6633,8 @@ java.lang.ClassFormatError: p2/InterClass (Illegal Field name "class$p2.InterCla
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:50:22 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
+Abc started on Sun Jul 11 03:50:27 BST 2004
 FAIL: privileged aspect main verify error()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -6649,8 +6650,8 @@ FAIL: privileged aspect main verify error()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:50:27 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
+Abc started on Sun Jul 11 03:50:31 BST 2004
 FAIL: Internal compiler error with thisJoinPoint.getStaticPart()()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -6738,7 +6739,7 @@ java.lang.ClassCastException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:50:38 BST 2004
+Abc started on Sun Jul 11 03:50:43 BST 2004
 FAIL: Ajc 1.1 rc1 java.lang.VerifyError with messy arounds()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (27 error)  (30 fail) 
@@ -6830,13 +6831,13 @@ import java.util.*;
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:50:45 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
+Abc started on Sun Jul 11 03:50:49 BST 2004
 Transforming A... 
 Transforming TryFinallyInAround... 
 Transforming C... 
 Transforming abc$access$A$around$0... 
-Abc finished on Sat Jul 10 03:50:51 BST 2004. ( 0 min. 5 sec. )
+Abc finished on Sun Jul 11 03:50:54 BST 2004. ( 0 min. 5 sec. )
 FAIL: try/finally in around advice (same as ...messy arounds?)()
 [  1] FAIL: JavaRun(JavaRun(TryFinallyInAround))
 [  1] --- thrown: null
@@ -6852,14 +6853,14 @@ java.lang.NullPointerException
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 7 seconds
-Abc started on Sat Jul 10 03:51:00 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
+Abc started on Sun Jul 11 03:51:04 BST 2004
 Transforming EmptyInterfaceCE... 
 Transforming C... 
 Transforming Log... 
 Transforming Log$LoggedType... 
 Transforming abc$access$Log: not supported by cvs2svn $around$0... 
-Abc finished on Sat Jul 10 03:51:05 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:51:08 BST 2004. ( 0 min. 4 sec. )
 FAIL: can't put around advice on interface static initializer()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -6869,10 +6870,10 @@ FAIL: can't put around advice on interface static initializer()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:51:08 BST 2004
+Abc started on Sun Jul 11 03:51:10 BST 2004
 Transforming TestAjc... 
 Transforming CflowConcrete... 
-Abc finished on Sat Jul 10 03:51:12 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:51:15 BST 2004. ( 0 min. 4 sec. )
 FAIL: cflow concretization causing assertion failure()
 [  1] FAIL: JavaRun(JavaRun(CflowConcrete))
 [  1] --- thrown: null
@@ -6888,7 +6889,7 @@ java.lang.NullPointerException
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:51:15 BST 2004
+Abc started on Sun Jul 11 03:51:18 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/options11/Main.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/options11/Main.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/options11/Aspect.java
@@ -6936,12 +6937,12 @@ java.lang.RuntimeException: couldn't find type: Main (is your soot-class-path se
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 03:51:36 BST 2004
+Abc started on Sun Jul 11 03:51:39 BST 2004
 Transforming aspects.MainWarnings... 
 Transforming app.Main... 
 Transforming app.C... 
 Transforming app.D... 
-Abc finished on Sat Jul 10 03:51:40 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:51:43 BST 2004. ( 0 min. 3 sec. )
 FAIL: declare warnings on main()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 18 messages))
 [  0] MessageHolder:  (8 info)  (18 warning)  (16 fail) 
@@ -6984,7 +6985,7 @@ app/Main.java:50:0 preinitialization(app.C.new())
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:51:43 BST 2004
+Abc started on Sun Jul 11 03:51:45 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainWarnings.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainWarnings.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainWarnings.java
@@ -7070,7 +7071,7 @@ java.lang.RuntimeException: couldn't find type: MainWarnings (is your soot-class
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:51:47 BST 2004
+Abc started on Sun Jul 11 03:51:49 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainWarnings.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainWarnings.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainWarnings.java
@@ -7156,7 +7157,7 @@ java.lang.RuntimeException: couldn't find type: MainWarnings (is your soot-class
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:51:50 BST 2004
+Abc started on Sun Jul 11 03:51:52 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java
@@ -7226,7 +7227,7 @@ java.lang.RuntimeException: couldn't find type: MainExecStartLinesErrors (is you
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:51:54 BST 2004
+Abc started on Sun Jul 11 03:51:56 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java
@@ -7296,9 +7297,9 @@ java.lang.RuntimeException: couldn't find type: MainExecStartLinesErrors (is you
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:51:57 BST 2004
+Abc started on Sun Jul 11 03:51:59 BST 2004
 Transforming Main... 
-Abc finished on Sat Jul 10 03:52:00 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:52:02 BST 2004. ( 0 min. 2 sec. )
 FAIL: expected class tree()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (5 info)  (1 fail) 
@@ -7307,7 +7308,7 @@ FAIL: expected class tree()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:52:03 BST 2004
+Abc started on Sun Jul 11 03:52:04 BST 2004
 Transforming p1.C... 
 Transforming p1.Main... 
 Transforming aspect1.Base... 
@@ -7315,7 +7316,7 @@ Transforming aspect1.Helper...
 Transforming aspect1.Base$Inner... 
 Transforming aspect2.Concrete... 
 Transforming aspect2.Concrete$abc$PerThis... 
-Abc finished on Sat Jul 10 03:52:07 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 03:52:09 BST 2004. ( 0 min. 4 sec. )
 FAIL: perthis and inline arounds()
 [  1] FAIL: JavaRun(JavaRun(p1.Main))
 [  1] --- thrown: (class: p1/Main, method: main signature: ([Ljava/lang/String;)V) Expecting to find object/array on stack
@@ -7328,8 +7329,8 @@ java.lang.VerifyError: (class: p1/Main, method: main signature: ([Ljava/lang/Str
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 03:52:38 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
+Abc started on Sun Jul 11 03:52:38 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/lines/A.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/lines/A.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/lines/A.java
@@ -7403,9 +7404,9 @@ java.lang.RuntimeException: couldn't find type: A (is your soot-class-path set p
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
 *** Option -warn:constructorName ignored:  warning flags not implemented yet.
-Abc started on Sat Jul 10 03:52:42 BST 2004
+Abc started on Sun Jul 11 03:52:41 BST 2004
 Transforming ConstructorNameWarning... 
-Abc finished on Sat Jul 10 03:52:44 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 03:52:44 BST 2004. ( 0 min. 2 sec. )
 FAIL: setting -warn:constructorName works()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -7414,9 +7415,9 @@ FAIL: setting -warn:constructorName works()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:52:47 BST 2004
+Abc started on Sun Jul 11 03:52:47 BST 2004
 Transforming XLintWarningTest... 
-Abc finished on Sat Jul 10 03:52:50 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:52:50 BST 2004. ( 0 min. 3 sec. )
 FAIL: valid XLintWarningTest file, default level of warning()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -7426,9 +7427,9 @@ FAIL: valid XLintWarningTest file, default level of warning()
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -Xlint:error ignored: abc does not yet support Xlint
-Abc started on Sat Jul 10 03:53:00 BST 2004
+Abc started on Sun Jul 11 03:52:59 BST 2004
 Transforming XLintWarningTest... 
-Abc finished on Sat Jul 10 03:53:03 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:53:03 BST 2004. ( 0 min. 3 sec. )
 FAIL: XLint:error promotes XLint warnings to error()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -7437,7 +7438,7 @@ FAIL: XLint:error promotes XLint warnings to error()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:53:13 BST 2004
+Abc started on Sun Jul 11 03:53:12 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java
@@ -7506,7 +7507,7 @@ java.lang.RuntimeException: couldn't find type: ConstructorExecutionWarning (is 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:53:16 BST 2004
+Abc started on Sun Jul 11 03:53:15 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java
@@ -7575,7 +7576,7 @@ java.lang.RuntimeException: couldn't find type: ConstructorExecutionWarning (is 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:53:19 BST 2004
+Abc started on Sun Jul 11 03:53:18 BST 2004
 FAIL: advice on handler join points should not throw unpermitted checked excep...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (1 warning)  (1 error)  (3 fail) 
@@ -7589,10 +7590,10 @@ ExceptionCheckCE.java:8:0 Advice from aspect A applies here, and throws exceptio
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -nowarn ignored: warnings not disabled.
-Abc started on Sat Jul 10 03:53:37 BST 2004
+Abc started on Sun Jul 11 03:53:36 BST 2004
 Transforming WarningTest... 
 Transforming WarningTest$A... 
-Abc finished on Sat Jul 10 03:53:41 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:53:40 BST 2004. ( 0 min. 3 sec. )
 FAIL: -nowarn suppresses declare warnings()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (8 info)  (1 warning)  (1 fail) 
@@ -7602,12 +7603,12 @@ WarningTest.java:14:0 warning
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
 *** Option -warn:none ignored:  warning flags not implemented yet.
-Abc started on Sat Jul 10 03:53:43 BST 2004
+Abc started on Sun Jul 11 03:53:43 BST 2004
 Transforming WarningTest... 
 Transforming WarningTest$A... 
-Abc finished on Sat Jul 10 03:53:47 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:53:47 BST 2004. ( 0 min. 3 sec. )
 FAIL: -warn:none suppresses declare warnings()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths))
 [  0] MessageHolder:  (8 info)  (1 warning)  (1 fail) 
@@ -7618,12 +7619,12 @@ WarningTest.java:14:0 warning
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:56:36 BST 2004
+Abc started on Sun Jul 11 03:56:43 BST 2004
 Transforming p2.Derived... 
 Transforming p2.Derived$A... 
 Transforming p2.Derived$Inner... 
 Transforming p1.Base... 
-Abc finished on Sat Jul 10 03:56:39 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:56:47 BST 2004. ( 0 min. 4 sec. )
 FAIL: can not resolve this member warning()
 [  1] FAIL: JavaRun(JavaRun(p2.Derived))
 [  1] --- thrown: p2/Derived (Illegal Class name "p2.Derived")
@@ -7638,7 +7639,7 @@ java.lang.ClassFormatError: p2/Derived (Illegal Class name "p2.Derived")
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 03:56:48 BST 2004
+Abc started on Sun Jul 11 03:56:56 BST 2004
 FAIL: Compiler crash in ajc 1.1 - terrible error for inaccessible constructor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 6 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (8 fail) 
@@ -7657,56 +7658,154 @@ FAIL: Compiler crash in ajc 1.1 - terrible error for inaccessible constructor()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:56:56 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
+Abc started on Sun Jul 11 03:57:04 BST 2004
+Transforming FFDC... 
+Transforming NewSwitch... 
 FAIL: NPE in bcel.LazyMethodGen when delegating from one ctor to a second that...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
-[  0] [fail   0]: fail at 0:0 unexpected message: abort ABORT -- (NullPointerException) null
-null
-java.lang.NullPointerException
-	at soot.jimple.internal.JGotoStmt.toString(JGotoStmt.java:70)
-	at java.lang.String.valueOf(String.java:2131)
-	at java.lang.StringBuffer.append(StringBuffer.java:370)
-	at abc.soot.util.Restructure.findInitStmt(Restructure.java:74)
-	at abc.soot.util.Restructure.inlineThisCall(Restructure.java:261)
-	at abc.weaving.weaver.ShadowPointsSetter.setShadowPointsPass2(ShadowPointsSetter.java:238)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:81)
-	at abc.main.Main.weave(Main.java:583)
-	at abc.main.Main.run(Main.java:397)
+[  0] [fail   0]: fail at 0:0 unexpected message: abort ABORT -- (RuntimeException) Negative Stack height has been attained: 
+StackHeight: -1
+At instruction:store.r r2
+Block:
+Block 3:
+[preds: ] [succs: ]
+store.r r2;
+staticinvoke <FFDC: FFDC aspectOf()>;
+load.r r0;
+load.r r2;
+virtualinvoke <FFDC: void afterThrowing$0(java.lang.Object,java.lang.Throwable)>;
+load.r r2;
+athrow;
+
+
+Method: <init>
+<NewSwitch: void <init>()>
+Negative Stack height has been attained: 
+StackHeight: -1
+At instruction:store.r r2
+Block:
+Block 3:
+[preds: ] [succs: ]
+store.r r2;
+staticinvoke <FFDC: FFDC aspectOf()>;
+load.r r0;
+load.r r2;
+virtualinvoke <FFDC: void afterThrowing$0(java.lang.Object,java.lang.Throwable)>;
+load.r r2;
+athrow;
+
+
+Method: <init>
+<NewSwitch: void <init>()>
+java.lang.RuntimeException: Negative Stack height has been attained: 
+StackHeight: -1
+At instruction:store.r r2
+Block:
+Block 3:
+[preds: ] [succs: ]
+store.r r2;
+staticinvoke <FFDC: FFDC aspectOf()>;
+load.r r0;
+load.r r2;
+virtualinvoke <FFDC: void afterThrowing$0(java.lang.Object,java.lang.Throwable)>;
+load.r r2;
+athrow;
+
+
+Method: <init>
+<NewSwitch: void <init>()>
+	at soot.baf.JasminClass.calculateStackHeight(JasminClass.java:2154)
+	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:646)
+	at soot.baf.JasminClass.emitMethod(JasminClass.java:420)
+	at soot.baf.JasminClass.<init>(JasminClass.java:327)
+	at soot.Printer.write(Printer.java:265)
+	at soot.PackManager.writeClass(PackManager.java:598)
+	at soot.PackManager.writeOutput(PackManager.java:358)
+	at soot.PackManager.writeOutput(PackManager.java:311)
+	at abc.main.Main.output(Main.java:643)
+	at abc.main.Main.run(Main.java:415)
 	at abc.bridge.AbcMain.compile(AbcMain.java:13)
 	at abc.bridge.AbcCompiler.compile(AbcCompiler.java:71)
 	at abc.bridge.AbcBuildManager.performCompilation(AbcBuildManager.java:86)
 	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.doBuild(AjBuildManager.java:125)
 	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:70)
 	at abc.bridge.AbcCommand.doCommand(AbcCommand.java:100)
-	at abc.bridge.AbcCommand.runCommand(AbcCommand.java:51)
-    (... 18 lines...)
-[  0] [abort   0]: abort ABORT -- (NullPointerException) null
-null
-java.lang.NullPointerException
-	at soot.jimple.internal.JGotoStmt.toString(JGotoStmt.java:70)
-	at java.lang.String.valueOf(String.java:2131)
-	at java.lang.StringBuffer.append(StringBuffer.java:370)
-	at abc.soot.util.Restructure.findInitStmt(Restructure.java:74)
-	at abc.soot.util.Restructure.inlineThisCall(Restructure.java:261)
-	at abc.weaving.weaver.ShadowPointsSetter.setShadowPointsPass2(ShadowPointsSetter.java:238)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:81)
-	at abc.main.Main.weave(Main.java:583)
-	at abc.main.Main.run(Main.java:397)
+	at abc.bridge.AbcCommand.runCommand(AbcCommand.java:    (... 18 lines...)
+[  0] [abort   0]: abort ABORT -- (RuntimeException) Negative Stack height has been attained: 
+StackHeight: -1
+At instruction:store.r r2
+Block:
+Block 3:
+[preds: ] [succs: ]
+store.r r2;
+staticinvoke <FFDC: FFDC aspectOf()>;
+load.r r0;
+load.r r2;
+virtualinvoke <FFDC: void afterThrowing$0(java.lang.Object,java.lang.Throwable)>;
+load.r r2;
+athrow;
+
+
+Method: <init>
+<NewSwitch: void <init>()>
+Negative Stack height has been attained: 
+StackHeight: -1
+At instruction:store.r r2
+Block:
+Block 3:
+[preds: ] [succs: ]
+store.r r2;
+staticinvoke <FFDC: FFDC aspectOf()>;
+load.r r0;
+load.r r2;
+virtualinvoke <FFDC: void afterThrowing$0(java.lang.Object,java.lang.Throwable)>;
+load.r r2;
+athrow;
+
+
+Method: <init>
+<NewSwitch: void <init>()>
+java.lang.RuntimeException: Negative Stack height has been attained: 
+StackHeight: -1
+At instruction:store.r r2
+Block:
+Block 3:
+[preds: ] [succs: ]
+store.r r2;
+staticinvoke <FFDC: FFDC aspectOf()>;
+load.r r0;
+load.r r2;
+virtualinvoke <FFDC: void afterThrowing$0(java.lang.Object,java.lang.Throwable)>;
+load.r r2;
+athrow;
+
+
+Method: <init>
+<NewSwitch: void <init>()>
+	at soot.baf.JasminClass.calculateStackHeight(JasminClass.java:2154)
+	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:646)
+	at soot.baf.JasminClass.emitMethod(JasminClass.java:420)
+	at soot.baf.JasminClass.<init>(JasminClass.java:327)
+	at soot.Printer.write(Printer.java:265)
+	at soot.PackManager.writeClass(PackManager.java:598)
+	at soot.PackManager.writeOutput(PackManager.java:358)
+	at soot.PackManager.writeOutput(PackManager.java:311)
+	at abc.main.Main.output(Main.java:643)
+	at abc.main.Main.run(Main.java:415)
 	at abc.bridge.AbcMain.compile(AbcMain.java:13)
 	at abc.bridge.AbcCompiler.compile(AbcCompiler.java:71)
 	at abc.bridge.AbcBuildManager.performCompilation(AbcBuildManager.java:86)
 	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.doBuild(AjBuildManager.java:125)
 	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:70)
 	at abc.bridge.AbcCommand.doCommand(AbcCommand.java:100)
-	at abc.bridge.AbcCommand.runCommand(AbcCommand.java:51)
-    (... 18 lines...)
+	at abc.bridge.AbcCommand.runCommand(AbcCommand.java:    (... 18 lines...)
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:57:08 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
+Abc started on Sun Jul 11 03:57:17 BST 2004
 FAIL: ajc stack trace on declaring hashcode() method in aspect()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -7716,12 +7815,12 @@ FAIL: ajc stack trace on declaring hashcode() method in aspect()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:57:16 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
+Abc started on Sun Jul 11 03:57:25 BST 2004
 Transforming Test... 
 Transforming TestAspect... 
 Transforming AbstractAspect... 
-Abc finished on Sat Jul 10 03:57:20 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:57:29 BST 2004. ( 0 min. 3 sec. )
 FAIL: Compiler crashes in jar and cflow (with no .jar)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -7739,7 +7838,7 @@ FAIL: Compiler crashes in jar and cflow (with .jar)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 03:57:25 BST 2004
+Abc started on Sun Jul 11 03:57:34 BST 2004
 FAIL: Default method impl for interface causes internal exception.()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (1 fail)  (1 abort) 
@@ -7789,7 +7888,7 @@ java.lang.RuntimeException: not declared: super$clone$2
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:57:30 BST 2004
+Abc started on Sun Jul 11 03:57:39 BST 2004
 FAIL: Class Literals as non final fields (also assert, and this$0)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 options 1 paths))
 [  0] MessageHolder:  (6 info)  (8 error)  (8 fail) 
@@ -7821,7 +7920,7 @@ ClassLiteralField.java:0:0 unexpected get in method <ClassLiteralField: void <cl
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:57:36 BST 2004
+Abc started on Sun Jul 11 03:57:45 BST 2004
 FAIL: compile error expected for abstract pointcut outside abstract aspect()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (3 error)  (3 fail) 
@@ -7840,7 +7939,7 @@ FAIL: compile error expected for abstract pointcut outside abstract aspect()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 03:57:51 BST 2004
+Abc started on Sun Jul 11 03:58:00 BST 2004
 FAIL: compile error expected for interface pointcuts()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (4 error)  (1 fail) 
@@ -7880,7 +7979,7 @@ java.lang.ClassNotFoundException: Client
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 03:58:12 BST 2004
+Abc started on Sun Jul 11 03:58:21 BST 2004
 FAIL: aspect-declared interface members in libraries - aspectedInterfaceOnly.j...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (3 fail) 
@@ -7913,7 +8012,7 @@ java.lang.ClassNotFoundException: Client
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 03:58:27 BST 2004
+Abc started on Sun Jul 11 03:58:36 BST 2004
 FAIL: aspect-declared interface members in libraries - aspectedInterfaceOnly.j...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -7926,12 +8025,12 @@ public class Client {
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:58:43 BST 2004
+Abc started on Sun Jul 11 03:58:52 BST 2004
 Transforming LibraryClassAspect... 
 Transforming lib.LibraryClass... 
 Transforming ClassClient... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:58:46 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:58:55 BST 2004. ( 0 min. 3 sec. )
 FAIL: exception clause for aspect-declared class methods - positive()
 [  1] FAIL: JavaRun(JavaRun(ClassClient))
 [  1] --- thrown: tried to access class LibraryClassAspect from class lib.LibraryClass
@@ -7947,12 +8046,12 @@ java.lang.IllegalAccessError: tried to access class LibraryClassAspect from clas
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:58:54 BST 2004
+Abc started on Sun Jul 11 03:59:03 BST 2004
 Transforming I... 
 Transforming DeclaredExceptions... 
 Transforming A... 
 Transforming C... 
-Abc finished on Sat Jul 10 03:58:58 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:59:07 BST 2004. ( 0 min. 3 sec. )
 FAIL: reflective check of declared exceptions from aspect-declared methods()
 [  1] FAIL: JavaRun(JavaRun(DeclaredExceptions))
 [  1] MessageHolder:  (4 info)  (1 fail) 
@@ -8023,10 +8122,10 @@ FAIL: exception clause for aspect-declared class methods - negative binary()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 03:59:19 BST 2004
+Abc started on Sun Jul 11 03:59:28 BST 2004
 Transforming model.MonitorBusObj... 
 Transforming model.BusObj... 
-Abc finished on Sat Jul 10 03:59:22 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 03:59:31 BST 2004. ( 0 min. 2 sec. )
 FAIL: Weaving failure when using injars (on classpath)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -8036,7 +8135,7 @@ FAIL: Weaving failure when using injars (on classpath)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:59:25 BST 2004
+Abc started on Sun Jul 11 03:59:34 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/moreInterfaceLibrary/model/BusObj.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/moreInterfaceLibrary/model/MonitorBusObj.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/moreInterfaceLibrary/model/BusObj.java
@@ -8152,7 +8251,7 @@ java.lang.ClassNotFoundException: PerCFlowCompileFromJarTest
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 03:59:37 BST 2004
+Abc started on Sun Jul 11 03:59:46 BST 2004
 FAIL: throw derivative pointcuts not advised()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 3 messages))
 [  0] MessageHolder:  (6 info)  (1 warning)  (1 error)  (1 fail) 
@@ -8161,7 +8260,7 @@ FAIL: throw derivative pointcuts not advised()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:59:48 BST 2004
+Abc started on Sun Jul 11 03:59:57 BST 2004
 FAIL: declare error fails on pointcuts composed from multiple classes()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -8173,7 +8272,7 @@ SampleExceptionHandling1.java:0:0 no checked exceptions in method <SampleExcepti
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 03:59:53 BST 2004
+Abc started on Sun Jul 11 04:00:02 BST 2004
 FAIL: declare error fails on pointcuts composed from multiple classes()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths))
 [  0] MessageHolder:  (6 info)  (1 error)  (1 fail) 
@@ -8184,7 +8283,7 @@ test/NoSoftener.java:25:0 The exception java.lang.NoSuchMethodException must be 
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 03:59:59 BST 2004
+Abc started on Sun Jul 11 04:00:08 BST 2004
 Transforming Key... 
 Transforming ContainerLoader... 
 Transforming ActiveContainer... 
@@ -8194,7 +8293,7 @@ Transforming AbstractCaching$Key...
 Transforming ParentsAndPointcuts... 
 Transforming ContainerDescriptor... 
 Transforming AspectBug$abc$PerThis... 
-Abc finished on Sat Jul 10 04:00:03 BST 2004. ( 0 min. 4 sec. )
+Abc finished on Sun Jul 11 04:00:12 BST 2004. ( 0 min. 4 sec. )
 FAIL: Interaction between pointcut binding and declare parents()
 [  1] FAIL: JavaRun(JavaRun(ParentsAndPointcuts))
 [  1] --- thrown: AbstractCaching$Key (Illegal field modifiers: 0x82)
@@ -8221,7 +8320,7 @@ java.lang.ClassFormatError: AbstractCaching$Key (Illegal field modifiers: 0x82)
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 04:00:11 BST 2004
+Abc started on Sun Jul 11 04:00:21 BST 2004
 FAIL: NPE in concretization error path()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (3 fail) 
@@ -8235,7 +8334,7 @@ package model;
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 04:00:25 BST 2004
+Abc started on Sun Jul 11 04:00:34 BST 2004
 FAIL: priviledged aspects calling methods from advice()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(3 paths))
 [  0] MessageHolder:  (6 info)  (28 error)  (28 fail) 
@@ -8327,7 +8426,7 @@ FAIL: priviledged aspects calling methods from advice()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 04:00:30 BST 2004
+Abc started on Sun Jul 11 04:00:39 BST 2004
 FAIL: No error on overloaded pointcuts in class()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 4 messages))
 [  0] MessageHolder:  (6 info)  (3 error)  (7 fail) 
@@ -8348,7 +8447,7 @@ FAIL: No error on overloaded pointcuts in class()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 04:00:34 BST 2004
+Abc started on Sun Jul 11 04:00:43 BST 2004
 FAIL: No error on overloaded pointcuts unless binding variables()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 4 messages))
 [  0] MessageHolder:  (6 info)  (5 error)  (9 fail) 
@@ -8375,7 +8474,7 @@ FAIL: No error on overloaded pointcuts unless binding variables()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 04:00:45 BST 2004
+Abc started on Sun Jul 11 04:00:54 BST 2004
 FAIL: Declare soft softening other exception types()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -8387,10 +8486,10 @@ SofteningTooMuch.java:6:0 The exception java.lang.Exception must be either caugh
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 04:00:50 BST 2004
+Abc started on Sun Jul 11 04:00:59 BST 2004
 Transforming A... 
 Transforming StaticInterfaceMethods... 
-Abc finished on Sat Jul 10 04:00:53 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Sun Jul 11 04:01:02 BST 2004. ( 0 min. 3 sec. )
 FAIL: static method introduction on interfaces, should not be allowed()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -8399,7 +8498,7 @@ FAIL: static method introduction on interfaces, should not be allowed()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 04:00:55 BST 2004
+Abc started on Sun Jul 11 04:01:04 BST 2004
 FAIL: External pointcut refs not resolved if named pointcut used by declare()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -8412,13 +8511,13 @@ DeclareErrorNamedPointcutCE.java:0:0 ref in method <C: void run()>
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
 *** Option -1.3 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Sat Jul 10 04:01:00 BST 2004
+Abc started on Sun Jul 11 04:01:10 BST 2004
 Transforming D... 
 Transforming DeclaringTypeWarning... 
 Transforming C... 
 Transforming A... 
 Transforming B... 
-Abc finished on Sat Jul 10 04:01:04 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:01:13 BST 2004. ( 0 min. 3 sec. )
 FAIL: XLint warning for call PCD's using subtype of defining type()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -8432,13 +8531,13 @@ FAIL: XLint warning for call PCD's using subtype of defining type()
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Sat Jul 10 04:01:12 BST 2004
+Abc started on Sun Jul 11 04:01:21 BST 2004
 Transforming D... 
 Transforming B... 
 Transforming A... 
 Transforming DeclaringTypeWarning... 
 Transforming C... 
-Abc finished on Sat Jul 10 04:01:15 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:01:25 BST 2004. ( 0 min. 3 sec. )
 FAIL: XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint...
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(2 options 1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -8448,13 +8547,13 @@ FAIL: XLint warning for call PCD's using subtype of defining type (-1.4 -Xlint..
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Sat Jul 10 04:01:18 BST 2004
+Abc started on Sun Jul 11 04:01:27 BST 2004
 Transforming D... 
 Transforming DeclaringTypeWarning... 
 Transforming C... 
 Transforming A... 
 Transforming B... 
-Abc finished on Sat Jul 10 04:01:21 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:01:30 BST 2004. ( 0 min. 3 sec. )
 FAIL: XLint warning for call PCD's using subtype of defining type (-1.4)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 options 1 paths 2 messages))
 [  0] MessageHolder:  (8 info)  (2 fail) 
@@ -8475,7 +8574,7 @@ FAIL: Ensure we don't look for source on the classpath when binary not found()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 04:01:39 BST 2004
+Abc started on Sun Jul 11 04:01:49 BST 2004
 FAIL: Bad parser error recovery in java source()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (2 error)  (1 fail) 
@@ -8486,7 +8585,7 @@ FAIL: Bad parser error recovery in java source()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
-Abc started on Sat Jul 10 04:01:43 BST 2004
+Abc started on Sun Jul 11 04:01:53 BST 2004
 FAIL: compiler issues error on inner aspects when privilieged()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths))
 [  0] MessageHolder:  (6 info)  (4 error)  (4 fail) 
@@ -8506,12 +8605,12 @@ FAIL: compiler issues error on inner aspects when privilieged()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 04:01:48 BST 2004
+Abc started on Sun Jul 11 04:01:57 BST 2004
 Transforming Foo1... 
 Transforming AfterThrowingCtor... 
 Transforming AfterThrowingCtor$AdviceRanException... 
 Transforming Foo... 
-Abc finished on Sat Jul 10 04:01:51 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:02:01 BST 2004. ( 0 min. 3 sec. )
 FAIL: After throwing advice on ctors doesn't execute for inter-type decl field...
 [  1] FAIL: JavaRun(JavaRun(AfterThrowingCtor))
 [  1] --- thrown: null
@@ -8537,7 +8636,7 @@ FAIL: Introduced abstract method on abstract class not implemented by subtype()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 04:02:02 BST 2004
+Abc started on Sun Jul 11 04:02:12 BST 2004
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/abstractMethods/interface/C.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/abstractMethods/interface/C.java
 Warning: the following soot-classpath entry is not a supported archive file (must be .zip or .jar): /usr/local/src/abc-dev/ajc-harness/tests/bugs/abstractMethods/interface/C.java
@@ -8625,7 +8724,7 @@ java.lang.ClassNotFoundException: C
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 1 seconds
-Abc started on Sat Jul 10 04:02:23 BST 2004
+Abc started on Sun Jul 11 04:02:33 BST 2004
 FAIL: aspect declares interface method (no modifiers)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (2 fail) 
@@ -8636,13 +8735,13 @@ FAIL: aspect declares interface method (no modifiers)()
 
 
 
-FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 3 seconds
-Abc started on Sat Jul 10 04:02:28 BST 2004
+FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 2 seconds
+Abc started on Sun Jul 11 04:02:37 BST 2004
 Transforming I... 
 Transforming InterfaceMethodDeclarationAbstract... 
 Transforming C... 
 Transforming A... 
-Abc finished on Sat Jul 10 04:02:31 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:02:41 BST 2004. ( 0 min. 3 sec. )
 FAIL: aspect declares interface method (abstract)()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 1 messages))
 [  0] MessageHolder:  (8 info)  (1 fail) 
@@ -8651,12 +8750,12 @@ FAIL: aspect declares interface method (abstract)()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 04:02:40 BST 2004
+Abc started on Sun Jul 11 04:02:50 BST 2004
 Transforming pack.InterfaceDefinition... 
 Transforming pack.InterfaceDefinition$C... 
 Transforming pack.MyInterface... 
 Transforming pack.DefineInterface... 
-Abc finished on Sat Jul 10 04:02:44 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:02:54 BST 2004. ( 0 min. 3 sec. )
 FAIL: Use class implementing interface via aspect (not woven together)()
 [  1] FAIL: JavaRun(JavaRun(pack.InterfaceDefinition))
 [  1] --- thrown: pack/InterfaceDefinition (Illegal Class name "pack.InterfaceDefinition")
@@ -8671,13 +8770,13 @@ java.lang.ClassFormatError: pack/InterfaceDefinition (Illegal Class name "pack.I
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 04:02:46 BST 2004
+Abc started on Sun Jul 11 04:02:56 BST 2004
 Transforming pack.InterfaceDefinition... 
 Transforming pack.InterfaceDefinition$C... 
 Transforming pack.MyInterface... 
 Transforming Main... 
 Transforming pack.DefineInterface... 
-Abc finished on Sat Jul 10 04:02:50 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:03:00 BST 2004. ( 0 min. 3 sec. )
 FAIL: Use class implementing interface via aspect (weave all together)()
 [  1] FAIL: JavaRun(JavaRun(pack.InterfaceDefinition))
 [  1] --- thrown: pack/InterfaceDefinition (Illegal Class name "pack.InterfaceDefinition")
@@ -8692,12 +8791,12 @@ java.lang.ClassFormatError: pack/InterfaceDefinition (Illegal Class name "pack.I
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 04:02:53 BST 2004
+Abc started on Sun Jul 11 04:03:02 BST 2004
 Transforming pack.InterfaceDefinition... 
 Transforming pack.InterfaceDefinition$C... 
 Transforming pack.MyInterface... 
 Transforming pack.DefineInterface... 
-Abc finished on Sat Jul 10 04:02:57 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:03:06 BST 2004. ( 0 min. 3 sec. )
 FAIL: Use class implementing interface via aspect (only one implementer)()
 [  1] FAIL: JavaRun(JavaRun(pack.InterfaceDefinition))
 [  1] --- thrown: pack/InterfaceDefinition (Illegal Class name "pack.InterfaceDefinition")
@@ -8712,7 +8811,7 @@ java.lang.ClassFormatError: pack/InterfaceDefinition (Illegal Class name "pack.I
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 04:03:22 BST 2004
+Abc started on Sun Jul 11 04:03:32 BST 2004
 FAIL: declare warning on subtype constructor()
 [  0] FAIL: CompilerRun(CompilerRun.Spec AbcCommand(1 paths 2 messages))
 [  0] MessageHolder:  (6 info)  (1 error)  (3 fail) 
@@ -8725,16 +8824,16 @@ FAIL: declare warning on subtype constructor()
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 4 seconds
-Abc started on Sat Jul 10 04:03:42 BST 2004
+Abc started on Sun Jul 11 04:03:52 BST 2004
 Transforming Main... 
 Transforming Trace... 
-Abc finished on Sat Jul 10 04:03:46 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:03:56 BST 2004. ( 0 min. 3 sec. )
 enter
 hello world
 exit
-Abc started on Sat Jul 10 04:03:46 BST 2004
+Abc started on Sun Jul 11 04:03:56 BST 2004
 Transforming Trace... 
-Abc finished on Sat Jul 10 04:03:47 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Sun Jul 11 04:03:56 BST 2004. ( 0 min. 0 sec. )
 FAIL: binary compatibility of advice method names - expect no error()
 [  3] FAIL: JavaRun(JavaRun(Main))
 [  3] --- thrown: Trace.before$0()V
@@ -8750,20 +8849,20 @@ java.lang.NoSuchMethodError: Trace.before$0()V
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 5 seconds
-Abc started on Sat Jul 10 04:03:56 BST 2004
+Abc started on Sun Jul 11 04:04:06 BST 2004
 Transforming Main... 
 Transforming Trace... 
 Transforming Trace$InnerTrace... 
-Abc finished on Sat Jul 10 04:04:00 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:04:10 BST 2004. ( 0 min. 3 sec. )
 Inner enter
 enter
 hello world
 Inner exit
 exit
-Abc started on Sat Jul 10 04:04:00 BST 2004
+Abc started on Sun Jul 11 04:04:10 BST 2004
 Transforming Trace... 
 Transforming Trace$InnerTrace... 
-Abc finished on Sat Jul 10 04:04:01 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Sun Jul 11 04:04:11 BST 2004. ( 0 min. 0 sec. )
 FAIL: binary compatibility of advice method names - expect no error()
 [  3] FAIL: JavaRun(JavaRun(Main))
 [  3] --- thrown: Trace$InnerTrace.afterThrowing$3()V
@@ -8779,12 +8878,12 @@ java.lang.NoSuchMethodError: Trace$InnerTrace.afterThrowing$3()V
 
 
 FAIL Suite.Spec(/usr/local/src/abc-dev/ajc-harness/tests) 1 tests (1 failed) 6 seconds
-Abc started on Sat Jul 10 04:04:03 BST 2004
+Abc started on Sun Jul 11 04:04:13 BST 2004
 Transforming main.Driver... 
 Transforming main.p2.AbstractTest... 
 Transforming main.p1.ConcreteTest... 
 Transforming abc$access$main_d_p1_d_ConcreteTest$around$0... 
-Abc finished on Sat Jul 10 04:04:07 BST 2004. ( 0 min. 3 sec. )
+Abc finished on Sun Jul 11 04:04:17 BST 2004. ( 0 min. 3 sec. )
 FAIL: mail list VerifyError with protected access()
 [  1] FAIL: JavaRun(JavaRun(main.Driver))
 [  1] --- thrown: tried to access class main.p1.ConcreteTest from class main.Driver
