@@ -1,0 +1,243 @@
+\documentclass{article}
+\usepackage{a4wide}
+
+
+\newcommand\abc{abc}
+
+\title{The dynamic residue language in \abc}
+\author{Ganesh Sittampalam}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document describes the current state of the dynamic residue language.
+It was last checked for accuracy on October 6, 2004. The author freely
+acknowledges that there are many things that could have been done better
+(especially with the benefit of hindsight). In particular the number of ways
+in which values can get copied from place to place is a bit of a mess.
+\end{abstract}
+
+
+\section{Introduction}
+Some pointcuts cannot be completely evaluated at compile-time, and
+thus runtime code has to be inserted to decide whether the relevant
+advice should be run or not. \abc uses a little language of {\em dynamic
+residues} to communicate information about what code should be inserted
+from the pointcut matcher to the weaver. The reasons for having this
+language are:
+\begin{itemize}
+\item
+To abstract the details of the specific runtime code that is generated from
+the pointcut matcher.
+\item
+To provide the around weaver with information it needs to correctly
+handle \verb|proceed| calls.
+\item
+To provide a structure that can be improved to eliminate some runtime
+checks in the light of analysis results.
+\end{itemize}
+At runtime, the code generated from a dynamic residue does two things:
+\begin{itemize}
+\item
+Decides whether or not the associated piece of advice should execute.
+\item
+Grabs or constructs values using runtime information such as the current value
+of \verb|this|, the receiver at the join point or arguments being passed to a
+method call. These values are used for a variety of purposes, including
+checking their type and passing them as parameters to advice bodies.
+\end{itemize}
+
+Dynamic residues are also used to indicate that a pointcut always succeeds
+or always fails; in a sense these are the extremes of the range of 
+possibilities the language can represent.
+
+The structure of the language roughly mirrors the structure of pointcuts.
+In particular, use of and, or and not in a pointcut will directly translate
+into the same operators in the residue language, except any instances
+of ``this always matches'' or ``this never matches'' as operands of these
+logical operators are always collapsed into the simpler equivalent.
+
+\section{Language overview}
+The base of the language is the abstract \verb|Residue| class; all dynamic
+residues extend this class directly or indirectly. Dynamic residues are
+constructed inside the pointcut matcher, mainly by the \verb|matchesAt|
+method of each pointcut class, but also in a few other places 
+(see Section~\ref{constructing}). The pointcut matcher knows how to 
+construct residues, and to test whether a residue can never match or not,
+but apart from that it makes no calls to the internals of the residue
+hierarchy. 
+
+The key method that each residue must provide is the \verb|codeGen| method,
+which will be called by the weaver to insert the appropriate runtime code.
+
+\subsection{Weaving contexts}
+
+As mentioned above, the dynamic residue language is responsible for grabbing
+values that are available at runtime, possibly doing some processing on 
+them, and using them for various purposes.
+Some of these purposes, such as testing the type, are purely internal to
+the residue language. Others, such as passing the value to an advice body
+involve communication with the weaver, which is accomplished using the
+{\em weaving context}. The dynamic residue knows where to get a value
+{\em from}, the weaving context gives it somewhere to copy it {\em to}.
+To put it another way, the dynamic residue varies depending on the pointcut,
+and the weaving context varies depending on the type of advice
+(although the advice does have some influence on the residue, see
+Section~\ref{constructing}).
+The two come
+together when the weaving method of a specific type of advice constructs a
+weaving context and passes it to the \verb|codeGen| method of the 
+associated dynamic residue.
+
+Weaving contexts are defined by the \verb|abc.weaving.weaver.WeavingContext|
+hierarchy. The base class is in fact completely empty and just used to provide
+some basic type safety, or for types of advice which do not need to communicate
+any information to the residue.
+
+\subsubsection{``BeforeAfter'' advice}
+
+TODO: Explain how weaving contexts are used to choose the phase.
+
+\subsection{Weaving variables}
+
+Weaving variables, part of the \verb|abc.weaving.residues.WeavingVar|
+hierarchy, act as placeholders in the residue that indicate where values
+should be put. They store information like ``it should go in the 3rd parameter
+to the advice body''; at weaving time the weaving context indicates how to
+put it there. 
+
+Some weaving variables are just used internally and don't
+need the weaving context at all.
+The ones that do need it are used with specific types of advice
+and are will expect a specific kind of weaving context to be passed to them.
+
+Here is a comprehensive list of weaving variable types, with associated
+weaving context, if any.
+\begin{itemize}
+\item \verb|AdviceFormal| : Specifies the nth formal parameter
+to the advice body that the current residue applies to. Requires
+a \verb|AdviceWeavingContext| as the weaving context.
+\item \verb|SingleValueVar| : For the bookkeeping advice for
+perthis and pertarget aspects,
+just one weaving variable is needed (to pass either this or target to
+the code that instantiates the aspect). Requires a 
+\verb|SingleValueWeavingContext|.
+\item \verb|CflowSetup.CflowSetupBound| : The bookkeeping advice for
+cflow pointcuts binds values from the inner pointcut to be stored on a stack.
+This variable indicates a position in the vector of values that will be saved.
+Requires a \verb|CflowSetup.CflowSetupWeavingContext|.
+\item \verb|LocalVar| : Used internally during residue computation. Doesn't
+need a weaving context.
+\item \verb|PolyLocalVar| : Like a LocalVar, but you don't have to specify
+its type when constructing it. Doesn't need a weaving context.
+\end{itemize}
+
+\subsection{Control flow}
+
+\subsection{Context values}
+
+\begin{itemize}
+\item \verb|JimpleValue| : This is the most common kind of context value.
+It holds a reference to some value in the Jimple code, 
+usually a local variable. Each of the types of join point shadow 
+(implemented by an instance of the \verb|ShadowMatch| class) returns 
+these if appropriate for use with this, target and args pointcuts.
+\item \verb|JoinPointInfo| : This context value generates code
+to construct a JoinPoint object at runtime. In fact, a special strategy
+is used for these objects; they are expensive to construct and there is no 
+need to do so more than once at any given join point. Therefore, a single
+local variable is used for each join point; this variable is initialised
+to null at the beginning of a join point (before any advice runs). At each
+point where this ContextValue is used, code is generated to construct a real
+object if the value is still null. Currently, the interface to context values
+doesn't provide any means for code to be inserted, so this is special-cased
+in the \verb|Load| residue.
+\item \verb|StaticJoinPointInfo| : JoinPoint.StaticPart data is generated once
+in the static initializer of each class and stored in a field. This context
+value simply provides a reference to that field.
+\end{itemize}
+
+\section{List of residues}
+
+\subsection{Static residues}
+\begin{itemize}
+\item \verb|AlwaysMatch|
+\item \verb|NeverMatch|
+\end{itemize}
+
+\subsection{Logical connectives}
+\begin{itemize}
+\item \verb|AndResidue|
+\item \verb|OrResidue|
+\item \verb|NotResidue|
+\end{itemize}
+
+\subsection{General dynamic tests}
+\begin{itemize}
+\item \verb|CheckType|
+\item \verb|IsNull|
+\end{itemize}
+
+\subsection{Aspect binding}
+\begin{itemize}
+\item \verb|HasAspect|
+\item \verb|AspectOf|
+\end{itemize}
+
+\subsection{Binding etc}
+\begin{itemize}
+\item \verb|Bind|
+\item \verb|Load|
+\item \verb|Copy|
+\end{itemize}
+
+\subsection{Signalling}
+\begin{itemize}
+\item \verb|SetResidue|
+\item \verb|TestResidue|
+\end{itemize}
+
+\subsection{Dynamic pointcuts}
+\begin{itemize}
+\item \verb|IfResidue|
+\item \verb|CflowResidue|
+\end{itemize}
+
+\subsection{Miscellaneous}
+\begin{itemize}
+\item \verb|BindMaskResidue|
+\end{itemize}
+
+
+\section{Dynamic residue construction}
+\label{constructing}
+
+In some cases residues are built by direct calls to constructors,
+and in others by calls to smart constructors that do some analysis before
+deciding precisely what residue to construct.
+
+For any given piece of advice, four components go into the residue at each 
+shadow. The components are calculated in sequence and if any evaluates to
+\verb|NeverMatch|, matching that piece of advice at that shadow is aborted.
+
+\begin{itemize}
+\item Pre-residue for advice type. For example, used by advice in per aspects
+to check for a current instance of the aspect.
+\item Residue from pointcut.
+\item Post-residue for advice type. For example, used to bind the current
+aspect for the purposes of advice invocation.
+\item Residue from advice spec (before, after etc). Used to disable certain
+combinations of advice spec and shadow type, and to bind values for after
+returning advice.
+\end{itemize}
+
+\subsection{Residues created by each pointcut}
+
+\begin{itemize}
+\item ...
+\end{itemize}
+
+
+
+\end{document}
