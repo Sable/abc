@@ -172,7 +172,7 @@ public class PointcutCodeGen {
 	       debug("The index for hasJoinPointStaticPart is " + position);
 	       // FIXME: should really be ref to static field for SJP
 	       StaticFieldRef sjpfieldref = 
-		  Jimple.v().newStaticFieldRef(adviceappl.sjpfield);
+		  Jimple.v().newStaticFieldRef(adviceappl.sjpInfo.sjpfield);
 	       Local sjploc = localgen.generateLocal(
 		  RefType.v("org.aspectj.lang.JoinPoint$StaticPart"), "sjp");
 	       Stmt assignsjp = Jimple.v().newAssignStmt(
