@@ -29,8 +29,6 @@ public class Abcexer1NodeFactory_c extends AJNodeFactory_c
 	}
 	public Surround Surround(Position pos, List formals, TypeNode voidn) {
 		Surround n = new Surround_c(pos,formals,voidn);
-       //n = (Before)n.ext(extFactory.extBefore());
-       //n = (Before)n.del(delFactory.delBefore());
 		return n;
    }
 }

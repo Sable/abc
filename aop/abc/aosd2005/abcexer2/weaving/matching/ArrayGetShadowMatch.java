@@ -85,7 +85,7 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
 
 	// Set the left hand side of the assignment as the joinpoint return value.
 	// This is always a local.
-	// is this correct?
+
 	public ContextValue getReturningContextValue() {
         return new JimpleValue( (Immediate)  (Local) ((AssignStmt) stmt).getLeftOp()  );
     }

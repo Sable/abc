@@ -26,7 +26,6 @@ public class ExtendedSJPInfo  extends AbcSJPInfo implements SJPInfo {
         sb.append("-");     // an arrayget has no associated name-part
         sb.append(container.getDeclaringClass().getName());
         sb.append('-');
-        //sb.append(AbcSJPInfo.getTypeString(cast_to));
         sb.append('-');
         return sb.toString();
     } 

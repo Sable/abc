@@ -33,16 +33,12 @@ public class SurroundAdviceDecl_c extends AdviceDecl_c
 		this.afterBody=afterBody;
 	}
 	
-	public AdviceSpec spec() { return (AdviceSpec)spec;}//.copy(); }
-	public Pointcut pc() { return (Pointcut)pc;}//.copy(); }
-	public Block afterBody() { return (Block) afterBody;}//.copy(); }
+	public AdviceSpec spec() { return (AdviceSpec)spec;}
+	public Pointcut pc() { return (Pointcut)pc;}
+	public Block afterBody() { return (Block) afterBody;}
 	
 	public AdviceDecl getBeforeAdviceDecl(AJNodeFactory nf, TypeSystem ts) {
 		Surround spec=(Surround)this.spec;
-		
-		//AdviceDecl result=nodeFactory.AdviceDecl(position(), flags(), 
-		//		spec,//.getBeforeSpec(nodeFactory),
-		//		throwTypes(), pc(), body());
 		
 		SurroundAdviceDecl_c result=(SurroundAdviceDecl_c)this.copy();
 		result.spec=spec.getBeforeSpec(nf);
@@ -62,7 +58,7 @@ public class SurroundAdviceDecl_c extends AdviceDecl_c
 				this.methodInstance().position(), 
 				this.methodInstance().container(), 
 				this.methodInstance().flags(),  
-				this.methodInstance().returnType(), "foobar", 
+				this.methodInstance().returnType(), "surroundAfter", 
 				this.methodInstance().formalTypes(), 
 				this.methodInstance().throwTypes() ));
 		
@@ -87,20 +83,10 @@ public class SurroundAdviceDecl_c extends AdviceDecl_c
 		return (SurroundAdviceDecl_c) super.reconstruct(returnType, formals, throwTypes, body, spec, retval, pc);
 	}
 
-	/*public Node visitChildren(NodeVisitor v) {
-		Node n = super.visitChildren(v);
-
-		Block afterBody = (Block) visitChild(
-				this.afterBody, v);
-
-		return reconstruct(n., afterBody, pc);
-	}*/
 	public Node visitChildren(NodeVisitor v) {	
 		TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 		List formals = visitList(this.formals, v);
 		List throwTypes = visitList(this.throwTypes, v);
-		//AdviceSpec spec = (AdviceSpec) visitChild(this.spec, v);
-		// FIXME: visiting spec gives duplicate errors!!
 		AdviceFormal retval = (AdviceFormal) visitChild(this.retval,v);
 		Pointcut pc = (Pointcut) visitChild(this.pc,v);
 		Block body = (Block) visitChild(this.body, v);

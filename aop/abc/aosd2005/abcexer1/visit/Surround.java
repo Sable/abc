@@ -52,12 +52,18 @@ public class Surround extends ContextVisitor {
     }
 	public Node leave(Node parent,  Node old, Node n, NodeVisitor v) {
 		n = super.leave(old, n, v);
-		if (n instanceof AspectBody) { // leaving the aspect?
+		if (n instanceof SurroundAdviceDecl) {
+			// Turn any surround advice decl into a piece of before advice.
+			// Also store a reference for later after advice generation
+			SurroundAdviceDecl decl=(SurroundAdviceDecl)n;
+			getAfterAdviceList().add(0, decl); // reverse order			
+			return decl.getBeforeAdviceDecl(nodeFactory, ts);			
+		} else if (n instanceof AspectBody) { // leaving the aspect?
 			// generate and add all pieces of after advice
 			AspectBody oldBody=(AspectBody)n;
 			List members=new LinkedList(oldBody.members());
 			
-			int line=Integer.MAX_VALUE / 2; /// HACK!!!
+			int line=Integer.MAX_VALUE / 2; 
 			for (Iterator it=getAfterAdviceList().iterator();it.hasNext();) {
 				SurroundAdviceDecl decl=(SurroundAdviceDecl)it.next();
 				
@@ -67,7 +73,7 @@ public class Surround extends ContextVisitor {
 				newDecl=(AdviceDecl)newDecl.position(new Position(decl.position().file(), 
 						line++, 
 						0
-						)); ///
+						)); 
 				
 				members.add(newDecl);
 			}
@@ -75,13 +81,8 @@ public class Surround extends ContextVisitor {
 			
 			AspectBody aspectBody=nodeFactory.AspectBody(oldBody.position(), members);			
 			return aspectBody;
-		} else if (n instanceof SurroundAdviceDecl) {
-			// Turn any surround advice decl into a piece of before advice.
-			// Also store a reference for later after advice generation
-			SurroundAdviceDecl decl=(SurroundAdviceDecl)n;
-			getAfterAdviceList().add(0, decl); // reverse order
-			return decl.getBeforeAdviceDecl(nodeFactory, ts);
-		}
+		} 
+		
         return n;
     }
 }
