@@ -26,7 +26,7 @@ public class HierarchyBuilder extends NodeVisitor {
 	    ParsedClassType ct = ((ClassDecl)n).type();
 	    String java_name = ct.fullName();
 	    if (ct.kind() == ClassType.ANONYMOUS || ct.kind() == ClassType.LOCAL) {
-		GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type()));
+		GlobalAspectInfo.v().addClass(new AbcClass(ct));
 		if (debug) System.err.println("Local class: "+java_name);
 	    } else if (ct.kind() == ClassType.MEMBER) {
 		ReferenceType cont = ct.container();
@@ -36,22 +36,30 @@ public class HierarchyBuilder extends NodeVisitor {
 		    PCNode pc = hierarchy.insertClass(java_name, true);
 		    setParents(pc, ct);
 		    weavable_classes.add(jvm_name);
-		    GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type(), java_name));
+		    GlobalAspectInfo.v().addClass(new AbcClass(ct, java_name));
 		    seen_classes_name.put(ct, jvm_name);
 		    if (debug) System.err.println("Visible inner class: "+java_name+" ("+jvm_name+")");
 		} else {
-		    GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type()));
+		    GlobalAspectInfo.v().addClass(new AbcClass(ct));
 		    if (debug) System.err.println("Invisible inner class: "+java_name);
 		}
 	    } else if (ct.kind() == ClassType.TOP_LEVEL) {
 		PCNode pc = hierarchy.insertClass(java_name, true);
 		setParents(pc, ct);
 		weavable_classes.add(java_name);
-		GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type(), java_name));
+		GlobalAspectInfo.v().addClass(new AbcClass(ct, java_name));
 		seen_classes_name.put(ct, java_name);
 		if (debug) System.err.println("Toplevel class: "+java_name);
 	    }
 	    
+	}
+	if (n instanceof New && ((New)n).body() != null) {
+	    ParsedClassType ct = ((New)n).anonType();
+	    GlobalAspectInfo.v().addClass(new AbcClass(ct));
+	    if (abc.main.Debug.v().classKinds) {
+		String java_name = ct.fullName();
+		System.err.println("Anonymous class: "+java_name);
+	    }
 	}
 	return this;
     }

@@ -132,7 +132,7 @@ public class PatternMatcher {
     }
 
     public boolean matchesClass(ClassnamePatternExpr pattern, String cl) {
-	PCNode cl_node = hierarchy.getClass(cl);
+	PCNode cl_node = hierarchy.getClassOrDummy(cl);
 	return pattern.matches(this, cl_node);
     }
 
@@ -150,7 +150,7 @@ public class PatternMatcher {
 		return pattern.matchesPrimitiveArray(this, type, dim);
 	    }
 	} else {
-	    PCNode cl_node = hierarchy.getClass(type);
+	    PCNode cl_node = hierarchy.getClassOrDummy(type);
 	    if (dim == 0) {
 		return pattern.matchesClass(this, cl_node);
 	    } else {

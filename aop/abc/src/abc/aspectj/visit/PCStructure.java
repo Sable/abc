@@ -11,10 +11,12 @@ import soot.*;
 
 public class PCStructure {
     PCNode root;
+    PCNode dummy;
     Map/*<String,PCNode>*/ classes;
 
     public PCStructure() {
 	root = new PCNode(null, null, this);
+	dummy = new PCNode(null, null, this);
 	classes = new HashMap();
     }
 
@@ -38,6 +40,14 @@ public class PCStructure {
 	String java_name = full_name.replace('$','.');
 	if (!classes.containsKey(java_name)) {
 	    throw new NoSuchElementException("No such class: "+full_name);
+	}
+	return (PCNode)classes.get(java_name);
+    }
+
+    public PCNode getClassOrDummy(String full_name) {
+	String java_name = full_name.replace('$','.');
+	if (!classes.containsKey(java_name)) {
+	    return dummy;
 	}
 	return (PCNode)classes.get(java_name);
     }

@@ -55,7 +55,7 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 				    throw new SemanticException("Type "+in+" is not a class");
 				}
 				ClassType inct = (ClassType)in.type();
-				PCNode hi_in = hierarchy.getClass(inct.fullName());
+				PCNode hi_in = hierarchy.insertClass(inct.fullName(), false);
 				
 				//System.err.println("Declared "+cl+" to implement "+inct.fullName());
 				
@@ -92,7 +92,7 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 				throw new SemanticException("Type "+type+" is not an class");
 			    }
 			    ClassType typect = (ClassType)type.type();
-			    PCNode hi_type = hierarchy.getClass(typect.fullName());
+			    PCNode hi_type = hierarchy.insertClass(typect.fullName(), false);
 			    
 			    //System.err.println("Declared "+cl+" to extend "+typect.fullName());
 			    
