@@ -60,6 +60,8 @@ public class TestCase {
 	
 	XML xTest;
 	
+	String testNumber;
+	
 	boolean failed = true;
 	
 	PrintStream currentOut;
@@ -68,6 +70,12 @@ public class TestCase {
 		xTest = xml;
 		dir = xTest.select("/abc:ajc-test/@dir")[0].text();
 		title = xTest.select("/abc:ajc-test/@title")[0].text();
+		try {
+		    // leading space so we can concat it easier with other strings while maintaining readability
+		    testNumber = " " + xTest.select("/abc:ajc-test/@num")[0].text();
+		} catch (Exception e) {
+		    testNumber = "";
+		}
 	}
 	
 	protected void log(String str) {
@@ -97,7 +105,7 @@ public class TestCase {
 			// me others who store static information about stdout/stderr.
 			SilentMain.reset();
 	
-			System.out.println("Running test " + dir + "/" + title);
+			System.out.println("Running test" + testNumber + ": " + dir + "/" + title);
 			
 		    /* We are only interested in <compile or <run children of <ajc-test, but there may be multiple
 		     * occurrences of each, and the order is important - we need to process them in document order.
@@ -637,7 +645,7 @@ public class TestCase {
 	}
 	
 	protected void failTest() {
-	    Main.stdout.println("FAIL: " + dir + ": Test \"" + title + "\" failed.");
+	    Main.stdout.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed.");
 	    System.err.println("FAIL: Test \"" + dir + "/" + title + "\" failed");
 	    Main.xFailed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
 	            	Main.xFailed.plug("NEXT", xTest));
@@ -646,7 +654,7 @@ public class TestCase {
 	}
 	
 	protected void passTest() {
-	    Main.stdout.println("PASS: " + dir + ": Test \"" + title + "\" passed.");
+	    Main.stdout.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed.");
 	    System.out.println("PASS: " + dir + ": Test \"" + title + "\" passed.");
 	    Main.xPassed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
             	Main.xPassed.plug("NEXT", xTest));
