@@ -11,6 +11,8 @@ import soot.Local;
 import soot.MethodSource;
 import soot.SootField;
 import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.SootFieldRef;
 import soot.Type;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbcFactory;
@@ -61,8 +63,8 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
         
         //otherwise get this$0 from one level up
         soot.SootClass classToInvoke = ((soot.RefType)b.getThisLocal().getType()).getSootClass();
-        soot.SootField outerThisField = classToInvoke.getFieldByName("this$0");
-        Local t1 = Jimple.v().newLocal(UniqueID.newID("this$0$loc"), outerThisField.getType());
+        soot.SootFieldRef outerThisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType()); 
+        Local t1 = Jimple.v().newLocal(UniqueID.newID("this$0$loc"), outerThisField.type());
         b.getLocals().add(t1);
         
         FieldRef fieldRef = Jimple.v().newInstanceFieldRef(b.getThisLocal(), outerThisField);
@@ -74,9 +76,9 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
         while(!t2.getType().equals(sootType)) {
             classToInvoke = ((soot.RefType)t2.getType()).getSootClass();
             // create an accessor method for the private this$0 field in that class
-            SootMethod methToInvoke = makeOuterThisAccessMethod(classToInvoke);
+            SootMethodRef methToInvoke = makeOuterThisAccessMethod(classToInvoke);
             // invoke it
-            Local t3 = Jimple.v().newLocal(UniqueID.newID("invoke$loc"), methToInvoke.getReturnType());
+            Local t3 = Jimple.v().newLocal(UniqueID.newID("invoke$loc"), methToInvoke.returnType());
             b.getLocals().add(t3);
             InvokeExpr ie = Jimple.v().newVirtualInvokeExpr(t2, methToInvoke);
             AssignStmt rStmt = Jimple.v().newAssignStmt(t3, ie);
@@ -87,29 +89,30 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
         return t2;
     }
     
-	private soot.SootMethod makeOuterThisAccessMethod(soot.SootClass classToInvoke){
+	private soot.SootMethodRef makeOuterThisAccessMethod(soot.SootClass classToInvoke){
 		// create the method
 		String name = UniqueID.newID("access$this$0$");
 		ArrayList paramTypes = new ArrayList();
-		SootMethod meth = new SootMethod(name, paramTypes, classToInvoke.getFieldByName("this$0").getType(), soot.Modifier.PUBLIC);
+		SootMethod meth = new SootMethod(name, paramTypes, classToInvoke.getType(), soot.Modifier.PUBLIC);
 		//	add to target class
 		classToInvoke.addMethod(meth);
 		// now fill in the body
 		Body b = Jimple.v().newBody(meth); meth.setActiveBody(b);
 		Chain ss = b.getUnits(); Chain ls = b.getLocals();
 		// generate local for "this"
-		SootField sf = classToInvoke.getFieldByName("this$0");
+		SootFieldRef sf = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType());
 		ThisRef thiz = Jimple.v().newThisRef(classToInvoke.getType());
 		Local thizloc = Jimple.v().newLocal("this$loc",classToInvoke.getType()); ls.add(thizloc);
 		IdentityStmt ids = Jimple.v().newIdentityStmt(thizloc,thiz); ss.add(ids);
 		// assign res = this.this$0
-		FieldRef fr = Jimple.v().newInstanceFieldRef(thizloc,classToInvoke.getFieldByName("this$0")); 
-		Local res = Jimple.v().newLocal("result",sf.getType()); ls.add(res);
+		SootFieldRef thisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType());
+		FieldRef fr = Jimple.v().newInstanceFieldRef(thizloc, thisField); 
+		Local res = Jimple.v().newLocal("result",sf.type()); ls.add(res);
 		AssignStmt astmt = Jimple.v().newAssignStmt(res,fr); ss.add(astmt);
 		// return res
 		ReturnStmt ret = Jimple.v().newReturnStmt(res); ss.add(ret);	
 		
-		return meth;
+		return meth.makeRef();
 	}
 
 }
