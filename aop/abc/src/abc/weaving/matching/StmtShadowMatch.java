@@ -41,109 +41,109 @@ public abstract class StmtShadowMatch extends ShadowMatch {
     protected Stmt stmt;
 
     protected StmtShadowMatch(SootMethod container,Stmt stmt) {
-	super(container);
-	this.stmt=stmt;
+        super(container);
+        this.stmt=stmt;
     }
 
     public Stmt getStmt() {
-	return stmt;
+        return stmt;
     }
 
     public ShadowMatch getEnclosing() {
-	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
-	return ExecutionShadowMatch.construct(container);
+        if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
+        return ExecutionShadowMatch.construct(container);
     }
 
     public ContextValue getThisContextValue() {
-	try {
-	    if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return null;
-	} catch(Throwable e) {
-	    throw new InternalCompilerError("NPE while looking for tags on stmt "+stmt,e);
-	}
-	return super.getThisContextValue();
+        try {
+            if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return null;
+        } catch(NullPointerException e) {
+            throw new InternalCompilerError("NPE while looking for tags on stmt "+stmt,e);
+        }
+        return super.getThisContextValue();
     }
 
-	/**
-	 * Lazily replaces the arguments of the invokeExpr of stmt with
-	 * unique locals and inserts assignment statements before stmt,
-	 * assigning the original values to the locals.
-	 * Needed for around().
-	 * @param method
-	 * @param stmt
-	 */
-	public static void makeArgumentsUniqueLocals(SootMethod method, Stmt stmt) {
-		InvokeExpr invokeEx=stmt.getInvokeExpr();
-		
-		SootMethodRef invokedMethod=invokeEx.getMethodRef();
-		List parameterTypes=invokedMethod.parameterTypes();
-		
-		boolean bDoModify=false;	
-		{
-			
-			Set args=new HashSet(); 
-			Iterator it=invokeEx.getArgs().iterator();
-			Iterator itType=parameterTypes.iterator();				
-			while (it.hasNext()) {
-				Type type=(Type)itType.next();
-				Value val=(Value)it.next();
-				if (!(val instanceof Local)) {
-					bDoModify=true;
-					break;
-				} else {
-					Local l=(Local)val;
-					if (args.contains(val)) {
-						bDoModify=true;
-						break;
-					}
-					// The local must have the type of the formal of the method.
-					// 
-					if (!l.getType().equals(type)) {
-						bDoModify=true;
-						break;
-					}
-					args.add(val);
-				}
-			}
-			} 
-		if (bDoModify) {
-			Body body=method.getActiveBody();
-			Chain statements=body.getUnits().getNonPatchingChain();
+        /**
+         * Lazily replaces the arguments of the invokeExpr of stmt with
+         * unique locals and inserts assignment statements before stmt,
+         * assigning the original values to the locals.
+         * Needed for around().
+         * @param method
+         * @param stmt
+         */
+        public static void makeArgumentsUniqueLocals(SootMethod method, Stmt stmt) {
+                InvokeExpr invokeEx=stmt.getInvokeExpr();
 
-			// If this is a new+constructor pair, we want to put the moved stuff before
-			// the new
-		        if(stmt instanceof InvokeStmt &&
-			   ((InvokeStmt) stmt).getInvokeExpr()
-			   .getMethodRef().name().equals(SootMethod.constructorName)) {
-			    
-			    Stmt prev=(Stmt) statements.getPredOf(stmt);
+                SootMethodRef invokedMethod=invokeEx.getMethodRef();
+                List parameterTypes=invokedMethod.parameterTypes();
 
-			    if(prev instanceof AssignStmt && 
-			       ((AssignStmt) prev).getRightOp() instanceof NewExpr)
-				stmt=prev;
-			}
+                boolean bDoModify=false;
+                {
 
-			LocalGeneratorEx lg=new LocalGeneratorEx(body);
-			NopStmt nop=Jimple.v().newNopStmt();
-			statements.insertBefore(nop, stmt);
-			stmt.redirectJumpsToThisTo(nop);
-		
-			Iterator it=parameterTypes.iterator();
-			for (int i=0; i<invokeEx.getArgCount(); i++) {
-				Type type=(Type)it.next();
-				Value val=invokeEx.getArg(i);
-				Local l=soot.jimple.Jimple.v().newLocal("uniqueArgLocal" + (nextUniqueID++), 
-					type);
-				body.getLocals().add(l);
-				//lg.generateLocal(type,
-				//		"uniqueArgLocal" + (nextUniqueID++));
-				AssignStmt as=Jimple.v().newAssignStmt(l,val);
-				statements.insertBefore(as, stmt);
-				invokeEx.getArgBox(i).setValue(l);
-			}
-		}
-	}
-	private static int nextUniqueID=0;
-	public static void reset() {
-		nextUniqueID=0;
-	}
+                        Set args=new HashSet();
+                        Iterator it=invokeEx.getArgs().iterator();
+                        Iterator itType=parameterTypes.iterator();
+                        while (it.hasNext()) {
+                                Type type=(Type)itType.next();
+                                Value val=(Value)it.next();
+                                if (!(val instanceof Local)) {
+                                        bDoModify=true;
+                                        break;
+                                } else {
+                                        Local l=(Local)val;
+                                        if (args.contains(val)) {
+                                                bDoModify=true;
+                                                break;
+                                        }
+                                        // The local must have the type of the formal of the method.
+                                        //
+                                        if (!l.getType().equals(type)) {
+                                                bDoModify=true;
+                                                break;
+                                        }
+                                        args.add(val);
+                                }
+                        }
+                        }
+                if (bDoModify) {
+                        Body body=method.getActiveBody();
+                        Chain statements=body.getUnits().getNonPatchingChain();
+
+                        // If this is a new+constructor pair, we want to put the moved stuff before
+                        // the new
+                        if(stmt instanceof InvokeStmt &&
+                           ((InvokeStmt) stmt).getInvokeExpr()
+                           .getMethodRef().name().equals(SootMethod.constructorName)) {
+
+                            Stmt prev=(Stmt) statements.getPredOf(stmt);
+
+                            if(prev instanceof AssignStmt &&
+                               ((AssignStmt) prev).getRightOp() instanceof NewExpr)
+                                stmt=prev;
+                        }
+
+                        LocalGeneratorEx lg=new LocalGeneratorEx(body);
+                        NopStmt nop=Jimple.v().newNopStmt();
+                        statements.insertBefore(nop, stmt);
+                        stmt.redirectJumpsToThisTo(nop);
+
+                        Iterator it=parameterTypes.iterator();
+                        for (int i=0; i<invokeEx.getArgCount(); i++) {
+                                Type type=(Type)it.next();
+                                Value val=invokeEx.getArg(i);
+                                Local l=soot.jimple.Jimple.v().newLocal("uniqueArgLocal" + (nextUniqueID++),
+                                        type);
+                                body.getLocals().add(l);
+                                //lg.generateLocal(type,
+                                //              "uniqueArgLocal" + (nextUniqueID++));
+                                AssignStmt as=Jimple.v().newAssignStmt(l,val);
+                                statements.insertBefore(as, stmt);
+                                invokeEx.getArgBox(i).setValue(l);
+                        }
+                }
+        }
+        private static int nextUniqueID=0;
+        public static void reset() {
+                nextUniqueID=0;
+        }
 }
