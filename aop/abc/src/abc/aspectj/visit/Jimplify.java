@@ -36,7 +36,7 @@ public class Jimplify extends AbstractPass {
 	    // NOTE: if you move where the resolveClassAndSupportClasses is
 	    //   called,  please also move the timer code with it. LJH
 	    for( Iterator classNameIt = class_to_ast.keySet().iterator(); classNameIt.hasNext(); ) {
-		final String className = (String) classNameIt.next();
+	        final String className = (String) classNameIt.next();
 		//System.err.println("Resolving class "+className);
 		SootResolver.v().resolveClassAndSupportClasses(className);
 	    }
@@ -51,7 +51,8 @@ public class Jimplify extends AbstractPass {
 
     private class AbcClassProvider implements ClassProvider {
         public ClassSource find( String className ) {
-            if( !class_to_ast.containsKey(className) ) {
+            String javaClassName = SourceLocator.v().getSourceForClass(className);
+            if( !class_to_ast.containsKey(javaClassName) ) {
                 return null;
             }
             return new AbcClassSource(className);
@@ -66,7 +67,8 @@ public class Jimplify extends AbstractPass {
             if(soot.options.Options.v().verbose())
                 G.v().out.println("resolving [from abc AST]: " + className );
 
-            Node n = (Node) class_to_ast.get(className);
+            String javaClassName = SourceLocator.v().getSourceForClass(className);
+            Node n = (Node) class_to_ast.get(javaClassName);
 	    res.setAst(n);
 	    res.resolveFromJavaFile(sc);
             sc.setApplicationClass();
