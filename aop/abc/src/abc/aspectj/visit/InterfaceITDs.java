@@ -97,7 +97,8 @@ public class InterfaceITDs extends NodeVisitor {
 			for (Iterator cit = interf.constructors().iterator(); cit.hasNext(); ) {
 				ConstructorInstance ci = (ConstructorInstance) cit.next();
 				if (ci instanceof InterTypeMemberInstance)
-					constructors.add(ci.container(cd.type()));
+					abc.aspectj.ast.IntertypeConstructorDecl_c.overrideITDconstructor(cd.type(),
+					         ci.container(cd.type()).flags(((InterTypeMemberInstance)ci).origFlags()));
 			}
 		 }
 	 }

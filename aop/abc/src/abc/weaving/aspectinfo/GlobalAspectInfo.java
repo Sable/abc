@@ -30,6 +30,7 @@ public class GlobalAspectInfo {
 
     private List/*<AbcClass>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();
+    
     private List/*<IntertypeFieldDecl>*/ ifds = new LinkedList(); // because we want to add at the front
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
     private List/*<SuperDispatch>*/ spds = new ArrayList();
@@ -65,6 +66,7 @@ public class GlobalAspectInfo {
     private Map/*<MethodSig,FieldSig>*/ accessor_of_field = new HashMap();
     
    
+   	
     
     public void buildAspectHierarchy() {
 	// Build the aspect hierarchy

@@ -192,7 +192,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		} catch (SemanticException e) {};
 		pht.methods().add(mi);
 		if ((mj != null) && 
-		    // !zaps(mi,mj) &&
+		    !zaps(mi,mj) &&
 		    (!mj.container().equals(pht)) && 
 		    fromInterface(mi) && !comparable(mj.container().toClass(),mi.interfaceTarget())) {
 			if (mj instanceof InterTypeMethodInstance_c) {
