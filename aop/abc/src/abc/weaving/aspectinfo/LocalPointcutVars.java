@@ -73,6 +73,7 @@ public class LocalPointcutVars extends Pointcut {
 	List/*<Formal>*/ newFormals=new ArrayList(formals.size());
 
 	Hashtable newRenameEnv=new Hashtable(renameEnv);
+	Hashtable newTypeEnv=new Hashtable(typeEnv);
 
 	Iterator it=formals.iterator();
 	while(it.hasNext()) {
@@ -82,9 +83,10 @@ public class LocalPointcutVars extends Pointcut {
 	    newFormals.add(new Formal(old.getType(),newName,old.getPosition()));
 
 	    newRenameEnv.put(old.getName(),new Var(newName,old.getPosition()));
+	    newTypeEnv.put(old.getName(),old.getType());
 	}
 	
-	Pointcut pc=this.pc.inline(newRenameEnv,typeEnv,context,cflowdepth);
+	Pointcut pc=this.pc.inline(newRenameEnv,newTypeEnv,context,cflowdepth);
 	if(pc==this.pc) return this;
 	else return new LocalPointcutVars(pc,newFormals,getPosition());
     }
