@@ -294,18 +294,6 @@ public class AroundWeaver {
 			}
 		}
 
-		private static boolean isBaseClass(SootClass baseClass, SootClass subClass) {
-			SootClass sub = subClass;
-		
-			while (sub.hasSuperclass()) {
-				SootClass superClass = sub.getSuperclass();
-				if (superClass.equals(baseClass))
-					return true;
-		
-				sub = superClass;
-			}
-			return false;
-		}
 	}
 	public static class AdviceApplicationInfo {
 		/**Copies a sequence of statements from one method to another.
@@ -1208,7 +1196,7 @@ public class AroundWeaver {
 				while (!bAddSuperToNewMethod && it.hasNext()) {
 					String className = (String) it.next();
 					SootClass cl = Scene.v().getSootClass(className);
-					if (Util.isBaseClass(cl, newAccessClass)) {
+					if (Restructure.isBaseClass(cl, newAccessClass)) {
 						bAddSuperToNewMethod = true;
 					}
 				}
@@ -1223,11 +1211,11 @@ public class AroundWeaver {
 				SootClass cl = Scene.v().getSootClass(className);
 				// if the class is a sub-class of the new class or 
 				// if this is the new class and we need to add a super to the new class
-				if (Util.isBaseClass(newAccessClass, cl) || 
+				if (Restructure.isBaseClass(newAccessClass, cl) || 
 					(className.equals(newAccessClass.getName()) && bAddSuperToNewMethod)) {
 					if (accessInfo.superCallTarget == null
 						|| // if the class has no super() call 
-						Util.isBaseClass(accessInfo.superCallTarget, newAccessClass)) { // or if it's invalid
+						Restructure.isBaseClass(accessInfo.superCallTarget, newAccessClass)) { // or if it's invalid
 	
 						// generate new super() call
 						Body body = accessInfo.method.getActiveBody();
@@ -1908,10 +1896,12 @@ public class AroundWeaver {
 			statements.insertBefore(gotoStmt, insertionPoint);
 			statements.insertBefore(skippedCase, insertionPoint);
 			statements.insertBefore(neverBoundCase, insertionPoint);
-			
+			NopStmt afterDefault=Jimple.v().newNopStmt();
+			statements.insertAfter(afterDefault, nonSkippedCase);
+						
 			Local maskLocal=lg.generateLocal(IntType.v(), "maskLocal");
 			
-			Set generatedSwitchStmtsIDs=new HashSet();
+			Set defaultLocals=new HashSet();
 
 			// Process the bindings.
 			// The order is important.
@@ -1929,31 +1919,31 @@ public class AroundWeaver {
 						Restructure.insertBoxingCast(method.getActiveBody(), s, true);
 						/// allow boxing?
 					} else {	
-						NopStmt afterDefault=Jimple.v().newNopStmt();
-						statements.insertAfter(afterDefault, nonSkippedCase);
+						
 						// first do all the dynamic assignments.
 						// the switch statement then overwrites the actual bindings.
 						// this is to prevent a quadratic growth of the switch statement size.
 						//TODO: for the case n=2, an optimization would be good.
 						{
-							NopStmt nop=Jimple.v().newNopStmt();
-							statements.insertAfter(nop, nonSkippedCase);
+							//NopStmt nop=Jimple.v().newNopStmt();
+							//statements.insertAfter(nop, nonSkippedCase);
 							for (Iterator itl=localsFromIndex.iterator(); itl.hasNext();) {
 								Local l=(Local)itl.next();
 								int id=context.indexOf(l);
 								if (id==-1) {
 									debug(" skipped local: " + l);
-								} else {
+								} else if (!defaultLocals.contains(l)){
+									defaultLocals.add(l);
 									Local paramLocal = (Local) dynParamLocals.get(argIndex[id]);
 									Local actual3=(Local)localMap.get(l);
 									AssignStmt s = Jimple.v().newAssignStmt(actual3, paramLocal);
-									statements.insertBefore(s, nop);
+									statements.insertBefore(s, afterDefault);
 									Restructure.insertBoxingCast(method.getActiveBody(), s, true);
 								}
 							}
 						}
 						
-						generatedSwitchStmtsIDs.add(new Integer(index));
+						//generatedSwitchStmtsIDs.add(new Integer(index));
 						int mask=bindings.getMaskBits(index);
 						AssignStmt as=Jimple.v().newAssignStmt(
 							maskLocal, Jimple.v().newAndExpr( skipParamLocal, IntConstant.v(mask)  ));

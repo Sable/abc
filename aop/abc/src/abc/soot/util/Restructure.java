@@ -639,7 +639,6 @@ public class Restructure {
 				throw new RuntimeException();
 		}
 	}
-
 	/**
 	 * Converts the assignment statement into a sequence 
 	 * of statements performing a typecast.
@@ -653,7 +652,14 @@ public class Restructure {
 		Type targetType=stmt.getLeftOp().getType();
 		Chain units=body.getUnits().getNonPatchingChain();
 		Type sourceType=source.getValue().getType();
-		if (!sourceType.equals(targetType)) {
+		if (!sourceType.equals(targetType) && 
+			  !(sourceType instanceof RefType &&
+				targetType instanceof RefType &&
+				isBaseClass(((RefType)targetType).getSootClass(), 
+							((RefType)sourceType).getSootClass()))) {
+				
+			
+			
 			LocalGeneratorEx localgen=new LocalGeneratorEx(body);
 			Local castLocal=localgen.generateLocal(sourceType, "castTmp");
 			debug("cast: source has type " + sourceType.toString());
@@ -778,6 +784,19 @@ public class Restructure {
 		else
 			units.insertAfter(newIDStmt, lastIDStmt);
 		return l;		
+	}
+
+	public static boolean isBaseClass(SootClass baseClass, SootClass subClass) {
+		SootClass sub = subClass;
+	
+		while (sub.hasSuperclass()) {
+			SootClass superClass = sub.getSuperclass();
+			if (superClass.equals(baseClass))
+				return true;
+	
+			sub = superClass;
+		}
+		return false;
 	}	
 	
 
