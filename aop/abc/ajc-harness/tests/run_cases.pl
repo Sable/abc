@@ -66,6 +66,8 @@ $arg++;
 my $failed=0;
 my $succeeded=0; #sanity
 my $skipped=0;
+my $failedWithCheckedMessage=0;
+my $succeededWithCheckedMessage=0;
 
 my $xmlprefix="<!DOCTYPE suite SYSTEM \"../tests/ajcTestSuite.dtd\"> \n <suite> \n ";
 my $xmlsuffix="</suite> \n";
@@ -77,9 +79,13 @@ if ($skiptests) {
 	
 	open(FAILED, "> failed.xml") or die "cannot open failed.xml";
 	open(PASSED, "> passed.xml") or die "cannot open passed.xml";
+	open(FAILED_CHECK, "> failed_check.xml") or die "cannot open failed.xml";
+	open(PASSED_CHECK, "> passed_check.xml") or die "cannot open passed.xml";
 	open(SKIPPED, "> skipped.xml") or die "cannot open skipped.xml";
 	print FAILED $xmlprefix;
 	print PASSED $xmlprefix;
+	print FAILED_CHECK $xmlprefix;
+	print PASSED_CHECK $xmlprefix;
 	print SKIPPED $xmlprefix;
 	open(TIMES, "> times.txt") or die "cannot open times.txt";
 }
@@ -91,6 +97,11 @@ sub do_case {
   my $dir=$_[0];
   my $title=$_[1];
   my $xmlpart=$_[2];
+ 
+  my $checksMessage=0; 
+  if ($xmlpart =~ m/<message kind=/gs) {
+  	$checksMessage=1;
+  }
 
   if ((length $dirfilter) > 0) {
     if ($dir !~ m/$dirfilter/) {
@@ -152,6 +163,10 @@ sub do_case {
      system("echo '*.output' > $dir/.cvsignore");
      $failed++;
      print FAILED "$xmlpart\n";
+     if ($checksMessage) {
+	   	 $failedWithCheckedMessage++;
+	   	 print FAILED_CHECK "$xmlpart\n";
+	 }
    } elsif ($out =~ m/\nPASS/gs) {
    	print $out;
    	if ($out =~ m/\(1 skipped\)/gs) {
@@ -159,6 +174,10 @@ sub do_case {
 		$skipped++;
 		print SKIPPED "$xmlpart\n";
    	} else {
+   	 if ($checksMessage) {
+	   	 $succeededWithCheckedMessage++;
+	   	 print PASSED_CHECK "$xmlpart\n";
+	 }
      print "Passed. ";
      system("rm -f $dir/$filename");
      $succeeded++;
@@ -183,7 +202,7 @@ sub do_case {
      #die "could not find FAIL or PASS\n";
      $countinvalid++;
    }
-   print "Current status: $failed failed, $succeeded passed, $skipped skipped.\n";
+   print "Current status: $failed failed (check: $failedWithCheckedMessage), $succeeded passed (check: $succeededWithCheckedMessage), $skipped skipped.\n";
 }
 
 open(INPUT, "< $inputfile") || die "can't open input file"; 
@@ -201,7 +220,7 @@ $file =~ s/<ajc-test[^>]+dir=\"([^\"]*)\"[^>]+title=\"([^\"]*)\"[^>]*>.*?<\/ajc-
 if ($skiptests) {
 
 } else {
-	print "Tests: $count\nFailed: $failed\nPassed: $succeeded\nSkipped: $skipped\n";
+	print "Tests: $count\n";#Failed: $failed\nPassed: $succeeded\nSkipped: $skipped\n";
 	
 	if ($countinvalid > 0 ) {
 	  print "Tests with invalid output: $countinvalid.\n";
@@ -209,6 +228,8 @@ if ($skiptests) {
 	
 	print FAILED $xmlsuffix;
 	print PASSED $xmlsuffix;
+	print FAILED_CHECK $xmlsuffix;
+	print PASSED_CHECK $xmlsuffix;
 	print SKIPPED $xmlsuffix;
 	close TIMES;
 	
