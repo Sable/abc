@@ -53,7 +53,6 @@ public class Weaver {
 	         GlobalAspectInfo.v().getAspects().iterator(); 
 		 asIt.hasNext(); ) {
             final Aspect as = (Aspect) asIt.next();
-//            ag.fillInAspect(as.getInstanceClass().getSootClass());
             ag.fillInAspect(as);
         }
 

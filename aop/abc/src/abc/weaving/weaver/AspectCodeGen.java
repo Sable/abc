@@ -321,52 +321,355 @@ public class AspectCodeGen {
         String perInterfaceName = aname + "$abc$Per" + perkind;
         String perGetName = perInterfaceName + "Get";
         String perSetName = perInterfaceName + "Set";
+        String perFieldName = perInterfaceName + "Field"; 
 
         debug("perInterfaceName is " + perInterfaceName);
 
         // generate the interface
-        genPerInterface(aname, perInterfaceName, perGetName, perSetName);
+        SootClass inter =
+          genPerInterface(cl, perInterfaceName, perGetName, perSetName);
+
+        // add implementation of interface to all weavable classes
+        genPerInterfaceImpl(cl, inter, perGetName, perSetName, perFieldName);
 
         // front end has put aspectOf method, fill in body
         debug(" ... adding aspectOf body");
-        genPerAspectOfBody(cl, aname, perInterfaceName, perGetName);
+        genPerAspectOfBody(cl, inter, perGetName);
 
         // front end has put hasAspect method, fill in body
         debug(" ... adding hasAspect body");
-        genPerHasAspectBody(cl, perInterfaceName, perGetName);
+        genPerHasAspectBody(cl, inter, perGetName);
 
         // generate the per Object bind method
         debug("... adding per Object bind method");
-        genPerObjectBindMethod(cl, perInterfaceName, perGetName, perSetName);
+        genPerObjectBindMethod(cl, inter, perGetName, perSetName, perkind);
 
         debug( "--- END filling in per aspect "+ aname +
                         " with kind " + perkind +"\n" );
       }
 
-    // make interface 
-    private void genPerInterface(String aspectName, String interfaceName,
-                                      String getName, String setName)
-      {
+    /** make interface for per instance */
+    private static SootClass genPerInterface( SootClass aclass, 
+                      String interfaceName, String getName, String setName)
+      { // make the new interface 
+        SootClass inter = new SootClass(interfaceName,
+                              Modifier.INTERFACE | Modifier.PUBLIC);
+        inter.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
+        
+        // add the getter
+        SootMethod getter = new SootMethod ( getName, 
+                                 new LinkedList(), 
+                                 aclass.getType(),
+                                 Modifier.ABSTRACT | Modifier.PUBLIC);
+        inter.addMethod(getter);
+
+        // add the setter
+        ArrayList param = new ArrayList();
+        param.add(aclass.getType());
+        SootMethod setter = new SootMethod ( setName,
+                                 param,
+                                 VoidType.v(),
+                                 Modifier.ABSTRACT | Modifier.PUBLIC);
+        inter.addMethod(setter);
     
+        // add to the new interface to the scene as application class
+        Scene.v().addClass(inter); 
+        inter.setApplicationClass();
+        return(inter);
       }
 
-    // fill in body of <AspectName> aspectOf (java.lang.Object)
-    private void genPerAspectOfBody(SootClass cl, 
-                      String aspectName, String interfaceName, String getName)
-      {
+    /** add implements interface and accessor methods to all weavable classes */
+    private void genPerInterfaceImpl(SootClass aclass, SootClass inter,
+                                        String getName, String setName,
+                                        String fieldName)
+      { // TODO: right now doing ALL weavable classes as ajc does, should
+        // be able to improve upon that with some analysis.  LJH 
+        for( Iterator clIt = 
+	         GlobalAspectInfo.v().getWeavableClasses().iterator(); 
+		 clIt.hasNext(); ) 
+          { final AbcClass cl = (AbcClass) clIt.next();
+	    final SootClass scl = cl.getSootClass();
+            debug("Adding " + inter.getName() + " to " + scl.getName());
+
+            // add the implements
+            scl.addInterface(inter); 
+
+            // add the new field
+            SootField perfield = new SootField(fieldName,
+                                  aclass.getType(),
+                                  Modifier.PRIVATE | Modifier.TRANSIENT);
+            scl.addField(perfield);
+
+
+            // add the getter --------------------------------
+            SootMethod getter = new SootMethod ( getName, 
+                                 new LinkedList(), 
+                                 aclass.getType(),
+                                 Modifier.PUBLIC);
+            Body getbody = Jimple.v().newBody(getter);
+            getter.setActiveBody(getbody);
+            Chain getunits = getbody.getUnits().getNonPatchingChain();
+            LocalGeneratorEx lgetter = new LocalGeneratorEx(getbody);
+
+            // gen needed locals
+            Local getthis = lgetter.generateLocal(scl.getType(),"this");
+            Local gfieldloc = lgetter.generateLocal(aclass.getType(),
+                                                               "fieldloc"); 
+            // create the statements
+            Stmt idstmt = Jimple.v().newIdentityStmt(getthis,
+                    Jimple.v().newThisRef(RefType.v(scl)));
+            FieldRef fieldref = Jimple.v().
+                                  newInstanceFieldRef(getthis,perfield);
+            Stmt fieldassign = Jimple.v().newAssignStmt(gfieldloc,fieldref);
+            Stmt returnstmt = Jimple.v().newReturnStmt(gfieldloc);
+
+            // insert statements into chain
+            getunits.addLast(idstmt);
+            getunits.addLast(fieldassign);
+            getunits.addLast(returnstmt);
+            
+            // add the method
+            scl.addMethod(getter);
+
+            // add the setter -------------------------------------
+            ArrayList param = new ArrayList();
+            param.add(aclass.getType());
+            SootMethod setter = new SootMethod ( setName,
+                                 param,
+                                 VoidType.v(),
+                                 Modifier.PUBLIC);
+
+            Body setbody = Jimple.v().newBody(setter);
+            setter.setActiveBody(setbody);
+            Chain setunits = setbody.getUnits().getNonPatchingChain();
+            LocalGeneratorEx lsetter = new LocalGeneratorEx(setbody);
+
+            // gen needed locals
+            Local setthis = lsetter.generateLocal(scl.getType(),"this");
+            Local sfieldloc = lsetter.generateLocal(
+                                              aclass.getType(),"fieldloc"); 
+
+            // create the statements
+            Stmt idstmt1 = Jimple.v().newIdentityStmt(setthis,
+                               Jimple.v().newThisRef(RefType.v(scl)));
+            Stmt idstmt2 = Jimple.v().newIdentityStmt(sfieldloc,
+                               Jimple.v().
+                                     newParameterRef(aclass.getType(), 0));
+            fieldref = Jimple.v().  newInstanceFieldRef(setthis,perfield);
+            fieldassign = Jimple.v().newAssignStmt(fieldref,sfieldloc);
+            returnstmt = Jimple.v().newReturnVoidStmt();
+
+            // insert the statements into chain
+            setunits.addLast(idstmt1);
+            setunits.addLast(idstmt2);
+            setunits.addLast(fieldassign);
+            setunits.addLast(returnstmt);
+
+            // add the method
+            scl.addMethod(setter);
+          }
       }
 
-    // fill in body of boolean hasAspect(java.lang.Object)
-    private void genPerHasAspectBody(SootClass cl, 
-                       String interfacename, String getName)
-      {
+    /** fill in body of <AspectName> aspectOf (java.lang.Object) */
+    private void genPerAspectOfBody(SootClass acl, 
+                      SootClass inter, 
+                      String getName)
+      { // get the aspectOf method
+        SootMethod aspectOf = acl.getMethodByName("aspectOf");
+        // get the class for  org.aspectj.lang.noAspectBoundException
+        SootClass nabe = Scene.v().getSootClass(
+                              "org.aspectj.lang.NoAspectBoundException");
+        SootMethod nabeinit = nabe.getMethod("<init>",new ArrayList());
+        // get the class for java.lang.Object
+        SootClass jlo = Scene.v().getSootClass("java.lang.Object");
+        // get the method for reading the per object
+        SootMethod getter = inter.getMethodByName(getName);
+
+        // make a new body for it, and make it the active one
+        Body b = Jimple.v().newBody(aspectOf);
+        aspectOf.setActiveBody(b);
+        Chain units = b.getUnits();
+
+        // generate the locals needed
+        LocalGeneratorEx lg = new LocalGeneratorEx(b);
+        Local theObject = lg.generateLocal(jlo.getType(), "theObject");
+        Local nabException = lg.generateLocal(nabe.getType(), "nabException");
+        Local castedArg = lg.generateLocal(inter.getType(), "castedArg");
+        Local canHavePer = lg.generateLocal(BooleanType.v(), "canHavePer");
+        Local perInstance = lg.generateLocal(acl.getType(), "perInstance");
+
+        // generate the statements
+        Stmt idstmt = Jimple.v().newIdentityStmt(theObject,
+                         Jimple.v().newParameterRef(jlo.getType(),0));
+        Stmt assign1 = Jimple.v().newAssignStmt(canHavePer,
+                          Jimple.v().
+                             newInstanceOfExpr(theObject,inter.getType()));  
+        Stmt label0 = Jimple.v().newNopStmt(); // placeholder
+        Stmt ifinstance = Jimple.v().
+            newIfStmt(Jimple.v().
+               newEqExpr(canHavePer,IntConstant.v(0)), label0);
+        Stmt caststmt = Jimple.v().newAssignStmt(
+                castedArg,Jimple.v().newCastExpr(theObject,inter.getType()));
+        Stmt interfaceinvoke =
+                Jimple.v().newAssignStmt (perInstance,
+                    Jimple.v().newInterfaceInvokeExpr(
+                      castedArg,getter));
+        Stmt ifnull = Jimple.v().
+            newIfStmt(Jimple.v().
+              newEqExpr(perInstance,NullConstant.v()), label0);
+        Stmt returnstmt = Jimple.v().newReturnStmt(perInstance);
+        Stmt newexception = Jimple.v().newAssignStmt(
+              nabException, Jimple.v().newNewExpr(nabe.getType()));
+        Stmt initexception = Jimple.v().newInvokeStmt(
+            Jimple.v().newSpecialInvokeExpr(nabException,nabeinit));
+        Stmt throwstmt = Jimple.v().newThrowStmt(nabException);
+
+        // insert the statements into the body
+        units.addLast(idstmt);
+        units.addLast(assign1);
+        units.addLast(ifinstance);
+        units.addLast(caststmt);
+        units.addLast(interfaceinvoke);
+        units.addLast(ifnull);
+        units.addLast(returnstmt);
+        units.addLast(label0);
+        units.addLast(newexception);
+        units.addLast(initexception);
+        units.addLast(throwstmt);
+      }
+
+    /** fill in body of boolean hasAspect(java.lang.Object) */
+    private void genPerHasAspectBody(SootClass acl, 
+                       SootClass inter, String getName)
+      { // get the hasAspect method
+        SootMethod hasAspect = acl.getMethodByName("hasAspect");
+        // get java.lang.Objects and the get and set methods for instance
+        SootClass jlo = Scene.v().getSootClass("java.lang.Object");
+        SootMethod getter = inter.getMethodByName(getName);
+
+        // make a new body, and make it active
+        Body b = Jimple.v().newBody(hasAspect);
+        hasAspect.setActiveBody(b);
+        Chain units = b.getUnits();
+
+        // gen the locals needed
+        LocalGeneratorEx lg = new LocalGeneratorEx(b);
+        Local theObject = lg.generateLocal(jlo.getType(),"theObject");
+        Local canHavePer = lg.generateLocal(BooleanType.v(), "canHavePer");
+        Local castedArg = lg.generateLocal(inter.getType(), "castedArg");
+        Local perInstance = lg.generateLocal(acl.getType(), "perInstance");
+
+        // gen the statements needed
+        Stmt idstmt = Jimple.v().newIdentityStmt(theObject,
+                         Jimple.v().newParameterRef(jlo.getType(),0));
+        Stmt assign1 = Jimple.v().newAssignStmt(canHavePer,
+                          Jimple.v().
+                             newInstanceOfExpr(theObject,inter.getType()));  
+        Stmt label0 = Jimple.v().newNopStmt(); // placeholder
+        Stmt ifinstance = Jimple.v().
+            newIfStmt(Jimple.v().
+               newEqExpr(canHavePer,IntConstant.v(0)), label0);
+        Stmt caststmt = Jimple.v().newAssignStmt(
+                castedArg,Jimple.v().newCastExpr(theObject,inter.getType()));
+        Stmt interfaceinvoke =
+                Jimple.v().newAssignStmt (perInstance,
+                    Jimple.v().newInterfaceInvokeExpr(
+                      castedArg,getter));
+        Stmt ifnull = Jimple.v().
+            newIfStmt(Jimple.v().
+              newEqExpr(perInstance,NullConstant.v()), label0);
+        Stmt returnstmt_true = Jimple.v().newReturnStmt(IntConstant.v(1));
+        Stmt returnstmt_false = Jimple.v().newReturnStmt(IntConstant.v(0));
+
+        // insert the statements into the body
+        
+        units.addLast(idstmt);
+        units.addLast(assign1);
+        units.addLast(ifinstance);
+        units.addLast(caststmt);
+        units.addLast(interfaceinvoke);
+        units.addLast(ifnull);
+        units.addLast(returnstmt_true);
+        units.addLast(label0);
+        units.addLast(returnstmt_false);
       }
    
-    // create method public static void abc$perObjectBind(java.lang.Object)
-    private void genPerObjectBindMethod(SootClass cl, 
-                       String interfaceName, String getName, String setName)
-      {
+    /** create method public static void abc$perThisBind(java.lang.Object)  or
+                      public static void abc$perTargetBind(java.lang.Object) */
+    private void genPerObjectBindMethod(SootClass acl, SootClass inter, 
+                   String getName, String setName, String perKind)
+      { String methodname = "abc$per" + perKind + "Bind"; 
+        // get the class for java.lang.Object, and set/get methods
+        SootClass jlo = Scene.v().getSootClass("java.lang.Object");
+        SootMethod getter = inter.getMethodByName(getName);
+        SootMethod setter = inter.getMethodByName(setName);
+        SootMethod aclinit = acl.getMethod("<init>",new ArrayList());
+        
+        // make the method and add it to the class
+        ArrayList param = new ArrayList();
+        param.add(jlo.getType());
+        SootMethod binder = new SootMethod ( methodname,
+                                  param, 
+                                  VoidType.v(), 
+                                  Modifier.PUBLIC | Modifier.STATIC );
+        acl.addMethod(binder);
+
+        // get body and chain
+        Body b = Jimple.v().newBody(binder);
+        binder.setActiveBody(b);
+        Chain units = b.getUnits().getNonPatchingChain();
+
+        // generate the locals needed
+        LocalGeneratorEx lg = new LocalGeneratorEx(b);
+        Local theObject = lg.generateLocal(acl.getType(), "theObject");
+        Local castedArg = lg.generateLocal(inter.getType(), "castedArg");
+        Local canHavePer = lg.generateLocal(BooleanType.v(), "canHavePer");
+        Local perInstance = lg.generateLocal(acl.getType(), "perInstance");
+        Local newInstance = lg.generateLocal(acl.getType(), "newInstance");
+
+        // generate the statements
+        Stmt idstmt = Jimple.v().newIdentityStmt(theObject,
+                         Jimple.v().newParameterRef(jlo.getType(),0));
+        Stmt assign1 = Jimple.v().newAssignStmt(canHavePer,
+                          Jimple.v().
+                             newInstanceOfExpr(theObject,inter.getType()));  
+        Stmt label0 = Jimple.v().newNopStmt(); // placeholder
+        Stmt ifinstance = Jimple.v().
+            newIfStmt(Jimple.v().
+               newEqExpr(canHavePer,IntConstant.v(0)), label0);
+        Stmt caststmt = Jimple.v().newAssignStmt(
+                castedArg,Jimple.v().newCastExpr(theObject,inter.getType()));
+        Stmt interfaceinvokeget =
+                Jimple.v().newAssignStmt (perInstance,
+                    Jimple.v().newInterfaceInvokeExpr(
+                      castedArg,getter));
+        Stmt ifnotnull = Jimple.v().
+            newIfStmt(Jimple.v().
+              newNeExpr(perInstance,NullConstant.v()), label0);
+        Stmt newstmt = Jimple.v().newAssignStmt(
+              newInstance, Jimple.v().newNewExpr(acl.getType()));
+        Stmt initstmt = Jimple.v().newInvokeStmt(
+            Jimple.v().newSpecialInvokeExpr(newInstance,aclinit));
+        Stmt interfaceinvokeset =
+            Jimple.v().newInvokeStmt(
+              Jimple.v().newInterfaceInvokeExpr(castedArg,setter,newInstance));
+
+        Stmt returnstmt = Jimple.v().newReturnVoidStmt();
+
+        // insert the statements into the body
+        units.addLast(idstmt);
+        units.addLast(assign1);
+        units.addLast(ifinstance);
+        units.addLast(caststmt);
+        units.addLast(interfaceinvokeget);
+        units.addLast(ifnotnull);
+        units.addLast(newstmt);
+        units.addLast(initstmt);
+        units.addLast(interfaceinvokeset);
+        units.addLast(label0);
+        units.addLast(returnstmt);
       }
+
     
     /* =============== PERCFLOW/PERCFLOWBELOW ASPECT ============= */
     // aspectOf
