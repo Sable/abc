@@ -296,6 +296,7 @@ source="1.4"
             <fileset dir="lib" includes="**/*.jar" />
             <fileset dir="ajc-harness/classes" includes="**" />
             <fileset dir="ajc-harness/lib" includes="abc-tests.jar" />
+            <fileset dir="doc/options" includes="*.dvi,*.pdf,*.aux,*.ps,*.tex,*.toc,*.log" />
         </delete> 
     </target>
 

@@ -28,7 +28,7 @@ ant clobber
 mkdir -p classes/abc/main
 echo "prerelease=$PREREL" > classes/abc/main/version.properties
 # FIXME : URL refs for javadoc
-ant jars javadoc runtime-javadoc copy-jars
+ant jars javadoc runtime-javadoc options-doc copy-jars
 rm classes/abc/main/version.properties
 
 VERSION=`CLASSPATH=lib/abc-complete.jar java abc.aspectj.Version`
