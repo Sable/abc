@@ -145,9 +145,21 @@ public class AntTask extends MatchingTask {
     }
     public void execute() throws BuildException {
         try {
-            if( sourceroots != null ) addPath("-sourceroots", sourceroots);
-            if( injars != null ) addPath("-injars", injars);
-            if( classpath != null ) addPath("-classpath", classpath);
+            if( sourceroots != null ) {
+                addPath("-sourceroots", sourceroots);
+                if(Debug.v().traceAntTask)
+                    System.err.println("sourceroots: "+sourceroots);
+            }
+            if( injars != null ) {
+                addPath("-injars", injars);
+                if(Debug.v().traceAntTask)
+                    System.err.println("injars: "+injars);
+            }
+            if( classpath != null ) {
+                addPath("-classpath", classpath);
+                if(Debug.v().traceAntTask)
+                    System.err.println("classpath: "+classpath);
+            }
             if( argfiles != null ) addArgfiles();
             if( src != null ) addSrc();
             for( Iterator sootIt = soots.iterator(); sootIt.hasNext(); ) {
@@ -186,23 +198,34 @@ public class AntTask extends MatchingTask {
     }
     public void addArgfiles() {
         String[] af = argfiles.list();
+        if(Debug.v().traceAntTask) System.err.print("argfiles: ");
+
         for(int i = 0; i < af.length; i++) {
             addArg("@"+project.resolveFile(af[i]).getAbsolutePath());
+            if(Debug.v().traceAntTask)
+                System.err.print("@"+project.resolveFile(af[i]).getAbsolutePath()+" ");
         }
+        if(Debug.v().traceAntTask) System.err.println("");
     }
 
 
     public void addSrc() {
         String[] srcs = src.list();
+        if(Debug.v().traceAntTask)
+            System.err.print("sources: ");
         for(int i = 0; i < srcs.length; i++) {
             File dir = project.resolveFile(srcs[i]);
-            String[] files = getDirectoryScanner(dir).getIncludedFiles(); 
+            String[] files = getDirectoryScanner(dir).getIncludedFiles();
             for(int j = 0; j < files.length; j++) {
                 File f = new File(dir, files[j]);
                 if( files[j].endsWith(".java") || files[j].endsWith(".aj") ) {
                     addArg(f.getAbsolutePath());
+                    if(Debug.v().traceAntTask)
+                        System.err.print(f.getAbsolutePath()+" ");
                 }
             }
         }
+        if(Debug.v().traceAntTask)
+            System.err.println("");
     }
 }

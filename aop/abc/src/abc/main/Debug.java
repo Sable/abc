@@ -117,6 +117,8 @@ public class Debug {
     public boolean dontRemovePushPop=false;
     public boolean nullCheckElim=true;
 
+    public boolean traceAntTask=false;
+
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before
