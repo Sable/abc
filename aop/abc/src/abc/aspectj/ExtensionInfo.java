@@ -182,9 +182,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         passes_aspectj_transforms(l, job);
         passes_jimple(l, job);
 
-	    // re-evaluate patterns for Soot classes; previously only for weavable classes
-	    // but soot classes are not loaded here: FIXME: move call to main
-        l.add(new NamePatternReevaluator(EVALUATE_PATTERNS_AGAIN));
+        // re-evaluate patterns for Soot classes; previously only for weavable classes
+        // but soot classes are not loaded here: FIXME: move call to main
+        //l.add(new NamePatternReevaluator(EVALUATE_PATTERNS_FINALLY));
 
         // no class serialization, because abc does not support incremental/separate compilation
         // of aspects and aspect-aware classes.
