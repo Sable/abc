@@ -215,9 +215,14 @@ public class AdviceDecl_c extends MethodDecl_c
 		Block bl = nf.Block(position()).append(ret);
 		List thrws = new LinkedList(throwTypes()); 
 		String name = UniqueID.newID("proceed");
-		MethodDecl md = nf.MethodDecl(position(),Flags.PRIVATE,tn,name,formals,thrws,bl);      
+		MethodDecl md = nf.MethodDecl(position(),
+						Flags.PRIVATE
+						//Flags.PUBLIC.set(Flags.FINAL)
+						,tn,name,formals,thrws,bl);      
 		MethodInstance mi = ts.methodInstance(position(), methodInstance().container(),
-						      Flags.PRIVATE, tn.type(), name,
+						      Flags.PRIVATE 
+						      //Flags.PUBLIC.set(Flags.FINAL)
+						      , tn.type(), name,
 						      new ArrayList(methodInstance().formalTypes()),
 						      new ArrayList(throwTypes()));
 		((ParsedClassType)methodInstance().container()).addMethod(mi);

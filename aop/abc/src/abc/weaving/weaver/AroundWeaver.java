@@ -47,6 +47,7 @@ import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
+import abc.main.Debug;
 import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
@@ -1048,7 +1049,7 @@ public class AroundWeaver {
 
 		private void makeAdviceInvokation(Local bindMaskLocal, Local returnedLocal, List dynamicActuals, Local lThis, int shadowID, Stmt insertionPoint, WeavingContext wc) {
 			LocalGeneratorEx lg = new LocalGeneratorEx(joinpointBody);
-			Chain invokeStmts = adviceMethod.adviceDecl.makeAdviceExecutionStmts(adviceAppl, lg, wc);
+			Chain invokeStmts = adviceAppl.advice.makeAdviceExecutionStmts(adviceAppl, lg, wc);
 			
 			VirtualInvokeExpr invokeEx = (VirtualInvokeExpr) ((InvokeStmt) invokeStmts.getLast()).getInvokeExpr();
 			Local aspectRef = (Local) invokeEx.getBase();
@@ -1266,6 +1267,12 @@ public class AroundWeaver {
 			SootClass theAspect = adviceDecl.getAspect().getInstanceClass().getSootClass();
 			SootMethod method = adviceDecl.getImpl().getSootMethod();
 			
+			final boolean bAlwaysUseClosures;
+			if (Debug.v().aroundWeaver)	{
+				bAlwaysUseClosures=false;//true;//false; // change this to suit your debugging needs...
+			} else {
+				bAlwaysUseClosures=false; // don't change this!
+			}
 
 			this.joinpointMethod=joinpointMethod;
 			this.joinpointClass=joinpointMethod.getDeclaringClass();
@@ -1279,11 +1286,14 @@ public class AroundWeaver {
 
 			AdviceMethod adviceMethodInfo = state.getAdviceMethod(method);
 			if (adviceMethodInfo == null) {
-				adviceMethodInfo = new AdviceMethod(method, adviceDecl);
+				adviceMethodInfo = new AdviceMethod(method, 
+						AdviceMethod.getOriginalAdviceFormals(adviceDecl));
 				state.setAdviceMethod(method, adviceMethodInfo);
 			} else {
-				if (adviceMethodInfo.adviceDecl != adviceDecl)
-					throw new InternalAroundError("Expecting same adviceDecl each time for same advice method");
+				if (AdviceMethod.getOriginalAdviceFormals(adviceDecl).size()
+						!= adviceMethodInfo.originalAdviceFormalTypes.size())
+					throw new InternalAroundError("Expecting consistent adviceDecl each time for same advice method");
+							// if this occurs, fix getOriginalAdviceFormals()	
 			}
 			
 			this.adviceMethod=adviceMethodInfo;
@@ -1299,7 +1309,7 @@ public class AroundWeaver {
 					 bExecutionWeavingIntoSelf)
 				this.bUseClosureObject=true;
 			else
-				this.bUseClosureObject=false;// true;//true;//false;
+				this.bUseClosureObject=bAlwaysUseClosures;// true;//true;//false;
 			
 			debug("CLOSURE: " + (bUseClosureObject ? "Using closure" : "Not using closure"));
 
@@ -1313,7 +1323,10 @@ public class AroundWeaver {
 			if (bExecutionAdvice && Util.isAroundAdviceMethod(joinpointMethod)) {
 				AdviceMethod adviceMethodWovenInto = state.getAdviceMethod(joinpointMethod);
 				if (adviceMethodWovenInto == null) {
-					adviceMethodWovenInto = new AdviceMethod(method, null);
+					AdviceDecl advdecl;
+					advdecl=getAdviceDecl(method);
+					adviceMethodWovenInto = new AdviceMethod(method, 
+							AdviceMethod.getOriginalAdviceFormals(advdecl));
 					adviceMethodWovenInto.generateProceedCalls(false, false, true, null);
 				}			
 				adviceMethodWovenInto.bHasBeenWovenInto=true;
@@ -1343,6 +1356,17 @@ public class AroundWeaver {
 					adviceMethod.setAccessMethod(joinpointMethod.getDeclaringClass().getName(), bStaticJoinPoint || adviceMethod.bAlwaysStaticAccessMethod, accessMethod);
 			}
 			this.accessMethod=accessMethod;
+		}
+
+		private static AdviceDecl getAdviceDecl(SootMethod method) {
+			List l=GlobalAspectInfo.v().getAdviceDecls();
+			for (Iterator it=l.iterator(); it.hasNext(); ) {
+				AdviceDecl decl=(AdviceDecl)it.next();
+				if (decl.getImpl().getSootMethod().equals(method)) {
+					return decl;
+				}					
+			}
+			throw new InternalAroundError();
 		}
 		public final Stmt begin;
 		public final Stmt end;
@@ -1885,6 +1909,7 @@ public class AroundWeaver {
 
 				if (invokeEx != null) {
 					if (invokeEx.getMethod().getName().startsWith("proceed$")) {
+						
 
 						// check if changed values are passed to proceed.
 						for (int i = 0; i < invokeEx.getArgCount(); i++) {
@@ -1954,11 +1979,11 @@ public class AroundWeaver {
 		}
 
 		public final SootMethod method;
-		public final AdviceDecl adviceDecl;
+		//public final AdviceDecl adviceDecl;
 		public final Body body;
 		public final Chain statements;
 
-		final public List originalAdviceFormalTypes = new LinkedList();
+		final public List originalAdviceFormalTypes;
 		final public List /*Value*/ implicitProceedParameters = new LinkedList();
 		public Local interfaceLocal;
 		//public Local targetLocal;
@@ -2002,25 +2027,16 @@ public class AroundWeaver {
 		 * searched.
 		 * 
 		 */
-		AdviceMethod(SootMethod method, AdviceDecl adviceDecl) {
+		AdviceMethod(SootMethod method, List originalAdviceFormalTypes) {
 			
-			if (adviceDecl==null) {
-				List l=GlobalAspectInfo.v().getAdviceDecls();
-				for (Iterator it=l.iterator(); it.hasNext(); ) {
-					AdviceDecl decl=(AdviceDecl)it.next();
-					if (decl.getImpl().getSootMethod().equals(method)) {
-						adviceDecl=decl;
-						break;
-					}
-				}
-			}
-			if (!adviceDecl.getImpl().getSootMethod().equals(method))
-				throw new InternalAroundError();
+			this.originalAdviceFormalTypes=originalAdviceFormalTypes;
+			
+		
 				
 			this.method = method;
 			this.body = method.getActiveBody();
 			this.statements = body.getUnits().getNonPatchingChain();
-			this.adviceDecl = adviceDecl;
+			//this.adviceDecl = adviceDecl;
 			for (int i = 0; i < dynamicArgsByType.length; i++) {
 				dynamicArgsByType[i] = new LinkedList();
 			}
@@ -2039,28 +2055,11 @@ public class AroundWeaver {
 			dynamicAccessMethodName = "abc$proceed$" + adviceMethodIdentifierString;
 			;
 
-			{ // store original advice formals in adviceMethodInfo
-
-				if (!originalAdviceFormalTypes.isEmpty())
-					throw new InternalAroundError();
-
-				Iterator it = adviceDecl.getImpl().getFormals().iterator();
-				while (it.hasNext()) {
-					Formal formal = (Formal) it.next();
-					originalAdviceFormalTypes.add(formal.getType().getSootType());
-					//formal.
-				}
-				// TODO: clean up the following 7 lines
-				int size = originalAdviceFormalTypes.size();
-				if (adviceDecl.hasEnclosingJoinPoint())
-					originalAdviceFormalTypes.remove(--size);
-				if (adviceDecl.hasJoinPoint())
-					originalAdviceFormalTypes.remove(--size);
-				if (adviceDecl.hasJoinPointStaticPart())
-					originalAdviceFormalTypes.remove(--size);
+			// store original advice formals in adviceMethodInfo
+			//originalAdviceFormalTypes.addAll(
+			//	getOriginalAdviceFormals(adviceDecl));
 
 				//adviceMethodInfo.originalAdviceFormals.addAll(adviceMethod.getParameterTypes());
-			}
 
 			accessMethodParameterTypes.add(IntType.v()); // the shadow id
 			accessMethodParameterTypes.add(IntType.v()); // the skip mask
@@ -2077,6 +2076,29 @@ public class AroundWeaver {
 			}			
 			//			Change advice method: add parameters and replace proceed				
 			doInitialAdviceMethodModification();
+		}
+
+		public static List getOriginalAdviceFormals(AdviceDecl adviceDecl) {
+			
+			List result=new LinkedList();
+			
+			Iterator it = adviceDecl.getImpl().getFormals().iterator();
+			while (it.hasNext()) {
+				Formal formal = (Formal) it.next();
+				result.add(formal.getType().getSootType());
+				//formal.
+			}
+			
+			// TODO: clean up the following 7 lines
+			int size = result.size();
+			if (adviceDecl.hasEnclosingJoinPoint())
+				result.remove(--size);
+			if (adviceDecl.hasJoinPoint())
+				result.remove(--size);
+			if (adviceDecl.hasJoinPointStaticPart())
+				result.remove(--size);
+				
+			return result;
 		}
 		
 		public List getAllAccessMethods() {
