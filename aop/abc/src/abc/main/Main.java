@@ -33,6 +33,8 @@ import java.io.*;
 import java.lang.reflect.*;
 
 public class Main {
+    public static final String abcVersionString = "0.1.0";
+
     public Collection/*<String>*/ aspect_sources = new ArrayList();
     public Collection/*<String>*/ jar_classes = new ArrayList();
     public Collection/*<String>*/ in_jars = new ArrayList();
@@ -59,6 +61,20 @@ public class Main {
       abc.weaving.weaver.AroundWeaver.reset();
       abc.weaving.matching.StmtShadowMatch.reset();
     }
+
+    public static void compilerOptionIgnored(String option, String message)
+      { G.v().out.println( "*** Option " + option + " ignored: " + message);
+      }
+
+    public static void abcPrintVersion() 
+      { G.v().out.println("Abc version " + abcVersionString);
+        G.v().out.println("Abc other stuff goes here!"); // TODO
+        // soot.Main.v().printVersion();
+        G.v().out.println("Soot version " + soot.Main.v().versionString);
+        G.v().out.println("Polyglot compiler toolkit version " + 
+                                    new polyglot.ext.jl.Version());
+        // Polyglot version ... put that here
+      }
     
     public static void main(String[] args) {
         try {
@@ -79,106 +95,208 @@ public class Main {
     }
 
     public void parseArgs(String[] args) throws IllegalArgumentException {
-        String outputdir=".";
-	boolean optflag=false;
+    String outputdir=".";
+    boolean optflag=false;
 
-        soot_args.add("-keep-line-number"); // always want line number info
-        // soot_args.add("-xml-attributes"); // FIXME: want to remove this
-
-        for (int i = 0 ; i < args.length ; i++) 
-	  { if (args[i].equals("+soot")) 
-	      { i++; // skip +soot
-                while (i < args.length && !args[i].equals("-soot")) 
-                  { if (args[i].equals("-d")) // get the Soot -d option
-                      { if (i+1 < args.length)
-                          { outputdir = args[i+1];
-                            i++ ;
-                          }
-                        else
-                          throw new IllegalArgumentException(
-                            "Missing argument to " + args[i]);
-                       }
-  		    else if (args[i].equals("-O"))
-		       optflag = true;
-		    else
-		       if(!args[i].equals("-keep-line-number") && 
-                           !args[i].equals("-xml-attributes"))
-		         soot_args.add(args[i]);
-		    i++;
-                  } 
-		if (i >= args.length ) 
-		  throw new IllegalArgumentException("no matching -soot found");
-              } // +soot .... -soot optoins
-	    else if (args[i].equals("+polyglot")) 
-	      { i++; // skip +polyglot
-                while (i < args.length && !args[i].equals("-polyglot")) 
-	          { polyglot_args.add(args[i]);
-		    i++;
-                  }
-                if (i >= args.length)
-	          throw new IllegalArgumentException(
-		                       "no matching -polyglot found");
-               } // +polyglot ... -polyglot options 
-	    else if (args[i].equals("-injars")) 
-	      { while (++i < args.length && !args[i].startsWith("-")) 
-	          { in_jars.add(args[i]);
-                  }
-                 i--;
-               } // injars 
-	    else if (args[i].equals("-classpath") || args[i].equals("-cp")) 
-	      { if (i+1 < args.length) 
-	          { classpath = args[i+1];
+    for (int i = 0 ; i < args.length ; i++) 
+      { /* --------FULLY IMPLEMENTED AJC-COMPLIANT OPTIONS ----------*/
+        // abc options that we handle completely, 
+        //     and correspond to ajc options
+            
+        // TODO: -help 
+        // TODO: -version
+        // TODO: -inpath PATH
+        // TODO: -argfile File
+        // TODO: -outjar output.jar
+        if (args[i].equals("-version"))
+          { abcPrintVersion();
+          }
+        else if (args[i].equals("-injars")) 
+          { while (++i < args.length && !args[i].startsWith("-")) 
+              { in_jars.add(args[i]);
+              }
+             i--;
+          } // injars 
+        else if (args[i].equals("-classpath") || args[i].equals("-cp")) 
+          { if (i+1 < args.length) 
+              { classpath = args[i+1];
                     i++;
-                  } 
-    	        else 
-	          { throw new IllegalArgumentException
-	              ("Missing argument to "+args[i]);
-                  }
-               } // classpath 
-	     else if (args[i].equals("-d"))  // -d flag in abc options
-	       { if (i+1 < args.length)
-	           { outputdir = args[i+1];
-	             i++;
-	           }
-	         else
-                   throw new IllegalArgumentException(
-                            "Missing argument to " + args[i]);
-               } // output directory 
-   	     else if (args[i].equals("-O"))  // -O flag in abc options
-		 optflag=true;
-	     else if (args[i].equals("-debug") || args[i].equals("-nodebug"))  // -debug and -nodebug flags in abc options
-	       { if (i+1 < args.length)
-	           { String debug_name = args[i+1];
-		     try {
-			 Field f = abc.main.Debug.class.getField(debug_name);
-			 f.setBoolean(abc.main.Debug.v(), args[i].equals("-debug"));
-		     } catch (NoSuchFieldException e) {
-			 throw new IllegalArgumentException("No such debug option: "+debug_name);
-		     } catch (Exception e) {
-			 throw new InternalCompilerError("Error setting debug field "+debug_name, e);
-		     }
-		     i++;
-	           }
-	         else
-                   throw new IllegalArgumentException(
-                            "Missing argument to " + args[i]);
-               } // output directory 
-   	     else if (args[i].startsWith("-")) 
-	       { throw new IllegalArgumentException("Unknown option "+args[i]);
-               } 
-	     else 
-	       { aspect_sources.add(args[i]);
-               } // must be file name
-          } // for each arg
+              } 
+            else 
+              { throw new IllegalArgumentException
+                  ("Missing argument to "+args[i]);
+              }
+           } // classpath 
+         else if (args[i].equals("-d"))  // -d flag in abc options
+           { if (i+1 < args.length)
+               { outputdir = args[i+1];
+                 i++;
+               }
+             else
+               throw new IllegalArgumentException(
+                        "Missing argument to " + args[i]);
+           } // output directory 
+         else if (args[i].equals("-noImportError")) 
+           // don't report unresolved imports 
+           { // nothing to do, because we don't do it anyway.
+           }
+         else if (args[i].equals("-time"))
+           { abc.main.Debug.v().abcTimer=true;
+             abc.main.Debug.v().polyglotTimer=true;
+             abc.main.Debug.v().sootResolverTimer=true;
+           }
 
+         /* -------- PARTIALLY-IMPLEMENTED AJC-COMPLIANT OPTIONS -------*/
+         // abc options that we handle incompletely, but don't
+         //    want to stop compilation
+             
+         // -Xlint, -Xlint:ignore, -Xlint:warning, -Xlint:errror
+         else if (args[i].equals("-Xlint:ignore"))
+           { // this one is ok, because we don't have Xlint anyway
+           } 
+         else if (args[i].equals("-Xlint") || 
+                  args[i].equals("-Xlint:warning") ||
+                  args[i].equals("-Xlint:error"))
+            compilerOptionIgnored(args[i],
+               "abc does not yet support Xlint");
+
+         // -1.3, -1.4
+         else if (args[i].equals("-1.3") || args[i].equals("-1.4"))
+            compilerOptionIgnored(args[i],
+                "abc should be able to handle both 1.3 and 1.4.");
+
+         // -target 1.1,  -target 1.2,  -target 1.3, -target 1.4
+         else if (args[i].equals("-target"))
+           { i++;
+             if (args[i].equals("1.1") || args[i].equals("1.2") ||
+                 args[i].equals("1.3") || args[i].equals("1.4"))
+               compilerOptionIgnored("-target " + args[i],
+                  "abc-generated code should run on any 1.1 - 1.4 VM."); 
+             else
+               compilerOptionIgnored("-target " + args[i],
+                   args[i] + " is not a known target number.");   
+           }
+
+         // -source 1.3,  -source 1.4
+         else if (args[i].equals("-source"))
+           { i++;
+             if (args[i].equals("1.3"))
+               compilerOptionIgnored("-source 1.3",
+                   "abc treats asserts as keywords as in 1.4");
+             else if (args[i].equals("1.4"))
+               { // that's what we do ... so ok
+               }
+             else 
+               compilerOptionIgnored("-source " + args[i],
+                   args[i] + " is not a known source number.");
+           }
+
+         // -nowarn, -warn:items  where items is a comma-delmited list
+         else if (args[i].equals("-nowarn")) // TODO: should implement 
+           compilerOptionIgnored(args[i], 
+             " warnings not disabled.");
+         else if (args[i].startsWith("-warn"))
+           compilerOptionIgnored(args[i],
+             " warning flags no implemented yet.");
+
+         // -g, -g:none, -g:{items} where items can 
+         //              contain lines,vars,source
+         else if (args[i].equals("-g")) 
+           compilerOptionIgnored(args[i], 
+              "abc does not yet support creating debug info.");
+         else if (args[i].startsWith("-g:"))
+           compilerOptionIgnored(args[i],
+              "abc does not yet support creating debug info");
+           
+         /* -------- ABC-SPECIFIC OPTIONS, NO AJC EQUIVALENTS ----------*/
+         // abc-specific options which have no ajc equivalents
+         else if (args[i].equals("-O"))  // -O flag in abc options
+           optflag=true;
+
+         // -debug and -nodebug flags in abc options
+         else if (args[i].equals("-debug") || args[i].equals("-nodebug"))  
+           { if (i+1 < args.length)
+               { String debug_name = args[i+1];
+                 try {
+                   Field f = abc.main.Debug.class.getField(debug_name);
+                   f.setBoolean(abc.main.Debug.v(), args[i].equals("-debug"));
+                 } 
+                 catch (NoSuchFieldException e) {
+                   throw new IllegalArgumentException(
+                                    "No such debug option: "+debug_name);
+                 } catch (Exception e) {
+                   throw new InternalCompilerError(
+                       "Error setting debug field "+debug_name, e);
+                 }
+                 i++;
+                }
+              else
+                throw new IllegalArgumentException(
+                    "Missing argument to " + args[i]);
+           } 
+
+         /* -------------------  SOOT OPTIONS -------------------------*/
+         // handle soot-specific options, must be between +soot -soot 
+         else if (args[i].equals("+soot")) 
+           { i++; // skip +soot
+             while (i < args.length && !args[i].equals("-soot")) 
+               { if (args[i].equals("-d")) // get the Soot -d option
+                   { if (i+1 < args.length)
+                       { outputdir = args[i+1];
+                         i++ ;
+                       }
+                     else
+                       throw new IllegalArgumentException(
+                            "Missing argument to " + args[i]);
+                    }
+                 else if (args[i].equals("-O"))
+                   optflag = true;
+                 else
+                   if(!args[i].equals("-keep-line-number") && 
+                        !args[i].equals("-xml-attributes"))
+                      soot_args.add(args[i]);
+                     i++;
+               } 
+             if (i >= args.length ) 
+               throw new IllegalArgumentException("no matching -soot found");
+           } // +soot .... -soot optoins
+
+        /* -------------------  POLYGLOT OPTIONS -------------------------*/
+        // handle polyglot-specific options, 
+        //   must be between +polyglot -polyglot
+        else if (args[i].equals("+polyglot")) 
+          { i++; // skip +polyglot
+            while (i < args.length && !args[i].equals("-polyglot")) 
+              { polyglot_args.add(args[i]);
+                i++;
+              }
+            if (i >= args.length)
+              throw new IllegalArgumentException(
+                               "no matching -polyglot found");
+          } // +polyglot ... -polyglot options 
+
+         /* ---------  UNKNOWN OPTION ---------------------------------- */
+         else if (args[i].startsWith("-")) 
+           { throw new IllegalArgumentException("Unknown option "+args[i]);
+               } 
+
+         /* ---------  FILE NAME  ---------------------------------- */
+         else 
+           { aspect_sources.add(args[i]);
+           } // must be file name
+        } // for each arg
+
+        // always want line number info
+        soot_args.add("-keep-line-number"); 
         // handle output directory, -d . is default
         soot_args.add("-d");
         soot_args.add(outputdir);
-	if(optflag) soot_args.add("-O");
+        if(optflag) soot_args.add("-O");
     }
 
+
     public void run() throws CompilerFailedException {
-    	//System.out.println(classpath);
+        //System.out.println(classpath);
         // Timer start stuff
         Date abcstart = new Date(); // wall clock time start
         G.v().out.println("Abc started on " + abcstart);
@@ -188,40 +306,41 @@ public class Main {
 
         // Main phases
 
-	    AbcTimer.start(); // start the AbcTimer
+        AbcTimer.start(); // start the AbcTimer
 
-	    addJarsToClasspath();
-	    initSoot();
-	    AbcTimer.mark("Init. of Soot");
+        addJarsToClasspath();
+        initSoot();
+        AbcTimer.mark("Init. of Soot");
 
-	    loadJars();
-	    AbcTimer.mark("Loading Jars");
+        loadJars();
+        AbcTimer.mark("Loading Jars");
 
-	    compile(); // Timers marked inside compile()
+        // if something to compile
+        compile(); // Timers marked inside compile()
+        // The compile method itself aborts if there is an error
 
-	    // The compile method itself aborts if there is an error
+        if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty())
+          { weave();   // Timers marked inside weave()
 
-	    weave();   // Timers marked inside weave()
+            abortIfErrors();
 
-	    abortIfErrors();
+            if(!abc.main.Debug.v().dontCheckExceptions) 
+              { checkExceptions();
+                AbcTimer.mark("Exceptions check");
+              }
+        
+            abortIfErrors();
 
-	    if(!abc.main.Debug.v().dontCheckExceptions) {
-		checkExceptions();
-		AbcTimer.mark("Exceptions check");
-	    }
-	    
-	    abortIfErrors();
+            if (Debug.v().doValidate) validate();
+            AbcTimer.mark("Validate jimple");
 
-            if (Debug.v().doValidate)
-	      validate();
-	    AbcTimer.mark("Validate jimple");
+            optimize();
 
-	    optimize();
+            AbcTimer.mark("Soot Packs");
 
-	    AbcTimer.mark("Soot Packs");
-
-	    output();
-	    AbcTimer.mark("Soot Writing Output");
+            output();
+            AbcTimer.mark("Soot Writing Output");
+          }
 
         // Timer end stuff
         Date abcfinish = new Date(); // wall clock time finish
@@ -233,7 +352,7 @@ public class Main {
         // Print out Soot time stats, if Soot -time flag on.   
         if (soot.options.Options.v().time())
           { Timers.v().totalTimer.end();
-	    Timers.v().printProfilingInformation();
+            Timers.v().printProfilingInformation();
           }
 
         // Print out abc timer information
@@ -249,15 +368,15 @@ public class Main {
 
 
     public void addJarsToClasspath() {
-	StringBuffer sb = new StringBuffer();
-	Iterator jari = in_jars.iterator();
-	while (jari.hasNext()) {
-	    String jar = (String)jari.next();
-	    sb.append(jar);
-	    sb.append(":");
-	}
-	sb.append(classpath);
-	classpath = sb.toString();
+      StringBuffer sb = new StringBuffer();
+      Iterator jari = in_jars.iterator();
+      while (jari.hasNext()) {
+        String jar = (String)jari.next();
+        sb.append(jar);
+        sb.append(":");
+      }
+      sb.append(classpath);
+      classpath = sb.toString();
     }
 
     public void initSoot() throws IllegalArgumentException {
@@ -270,21 +389,21 @@ public class Main {
     }
 
     public void loadJars() throws CompilerFailedException {
-	// Load the classes in all given jars
-	Iterator jari = in_jars.iterator();
-	while (jari.hasNext()) {
-	    String jar = (String)jari.next();
-	    List jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
-	    jar_classes.addAll(jar_classes);
-	}
+    // Load the classes in all given jars
+    Iterator jari = in_jars.iterator();
+    while (jari.hasNext()) {
+        String jar = (String)jari.next();
+        List jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
+        jar_classes.addAll(jar_classes);
+      }
 
-	// Make them all application classes
-	Iterator cni = jar_classes.iterator();
-	while (cni.hasNext()) {
-	    String cn = (String)cni.next();
-	    SootClass sc = Scene.v().getSootClass(cn);
-	    sc.setApplicationClass();
-	}
+    // Make them all application classes
+    Iterator cni = jar_classes.iterator();
+    while (cni.hasNext()) {
+        String cn = (String)cni.next();
+        SootClass sc = Scene.v().getSootClass(cn);
+        sc.setApplicationClass();
+      }
     }
 
     public void compile() throws CompilerFailedException, IllegalArgumentException {
@@ -308,7 +427,7 @@ public class Main {
             if (!compiler.compile(aspect_sources)) {
                 throw new CompilerFailedException("Compiler failed.");
             }
-	    error_queue = compiler.errorQueue(); // should be empty
+            error_queue = compiler.errorQueue(); // should be empty
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
@@ -320,17 +439,17 @@ public class Main {
             throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
         }
 
-        // Output the aspect info
-	if (abc.main.Debug.v().aspectInfo)
-	    GlobalAspectInfo.v().print(System.err);
+      // Output the aspect info
+      if (abc.main.Debug.v().aspectInfo)
+        GlobalAspectInfo.v().print(System.err);
     }
 
-        protected Compiler createCompiler(ExtensionInfo ext) {
-                return new Compiler(ext);
-        }
+    protected Compiler createCompiler(ExtensionInfo ext) {
+            return new Compiler(ext);
+    }
         
     public void weave() throws CompilerFailedException {
-	try {
+    try {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
         AbcTimer.mark("Declare Parents");
@@ -356,50 +475,50 @@ public class Main {
         AbcTimer.mark("Weave Initializers");
 
         if (!Debug.v().testITDsOnly) {
-	        // Make sure that all the standard AspectJ shadow types are loaded
-	        AspectJShadows.load();
-	        AbcTimer.mark("Load shadow types");
-	
-	        GlobalAspectInfo.v().computeAdviceLists();
-	        AbcTimer.mark("Compute advice lists");
-	
-	        if(Debug.v().matcherTest) {
-	            System.err.println("--- BEGIN ADVICE LISTS ---");
-	            // print out matching information for testing purposes
-	            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-	                final AbcClass cl = (AbcClass) clIt.next();
-	                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
-	                    final SootMethod method = (SootMethod) methodIt.next();
-	                    final StringBuffer sb=new StringBuffer(1000);
-	                    sb.append("method: "+method.getSignature()+"\n");
-	                    GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
-	                    System.err.println(sb.toString());
-	                }
-	            }
-	            System.err.println("--- END ADVICE LISTS ---");
-	        }
-	
-	        //generateDummyGAI();
-	
-	        Weaver weaver = new Weaver();
-	        weaver.weave(); // timer marks inside weave() */
+            // Make sure that all the standard AspectJ shadow types are loaded
+            AspectJShadows.load();
+            AbcTimer.mark("Load shadow types");
+    
+            GlobalAspectInfo.v().computeAdviceLists();
+            AbcTimer.mark("Compute advice lists");
+    
+            if(Debug.v().matcherTest) {
+                System.err.println("--- BEGIN ADVICE LISTS ---");
+                // print out matching information for testing purposes
+                for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                    final AbcClass cl = (AbcClass) clIt.next();
+                    for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                        final SootMethod method = (SootMethod) methodIt.next();
+                        final StringBuffer sb=new StringBuffer(1000);
+                        sb.append("method: "+method.getSignature()+"\n");
+                        GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
+                        System.err.println(sb.toString());
+                    }
+                }
+                System.err.println("--- END ADVICE LISTS ---");
+            }
+    
+            //generateDummyGAI();
+    
+            Weaver weaver = new Weaver();
+            weaver.weave(); // timer marks inside weave() */
         }
-	} catch(SemanticException e) {
-	    error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
-	}
+    } catch(SemanticException e) {
+        error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
+    }
     }
 
     private class GotCheckedExceptionError implements ExceptionCheckerErrorReporter {
         public void reportError(ExceptionCheckerError err) {
             SootClass exctype=err.excType();
-	    
+        
             String message="The exception "+exctype+" must be either caught "+
                 "or declared to be thrown";
             Stmt stmt=err.throwing();
             Position pos=null;
             if(err.method().getDeclaringClass().hasTag("SourceFileTag")) {
                 SourceFileTag sfTag=(SourceFileTag) err.method()
-		    .getDeclaringClass().getTag("SourceFileTag");
+            .getDeclaringClass().getTag("SourceFileTag");
                 if(stmt.hasTag("SourceLnPosTag")) {
                     SourceLnPosTag slpTag=(SourceLnPosTag) stmt.getTag("SourceLnPosTag");
                     pos=new Position(sfTag.getSourceFile(),
@@ -444,10 +563,10 @@ public class Main {
     }
 
     public void validate() {
-	for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-	    final AbcClass cl = (AbcClass) clIt.next();
-	    abc.soot.util.Validate.validate(cl.getSootClass());
-	}
+    for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        final AbcClass cl = (AbcClass) clIt.next();
+        abc.soot.util.Validate.validate(cl.getSootClass());
+    }
     }
 
     public void optimize(){
@@ -459,5 +578,5 @@ public class Main {
       PackManager.v().writeOutput();
     }
 
-	
+    
 }
