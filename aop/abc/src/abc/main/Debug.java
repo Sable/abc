@@ -41,4 +41,5 @@ public class Debug {
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
     public boolean aroundWeaver=false;
+    public boolean restructure=false; // restructuring utilities
 }
