@@ -144,8 +144,6 @@ public class Main {
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
-        abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
-        abc.weaving.weaver.CflowIntraAggregate.reset();
         abc.soot.util.SwitchFolder.reset();
         abc.weaving.weaver.AroundInliner.reset();
         abc.weaving.weaver.AfterBeforeInliner.reset();
@@ -492,7 +490,7 @@ public class Main {
                 }
                 
                 if (OptionsParser.v().O()!=0) {
-                	Weaver.doInlining();
+                        Weaver.doInlining();
                 
                 
                 	UnusedMethodsRemover.removeUnusedMethods();

@@ -64,8 +64,7 @@ import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
 import abc.weaving.weaver.AroundInliner;
-import abc.weaving.weaver.CflowIntraAggregate;
-import abc.weaving.weaver.CflowIntraproceduralAnalysis;
+import abc.weaving.weaver.CflowCodeGenUtils;
 
 /**
  * This class should be sub-classed to extend the behaviour of abc
@@ -184,22 +183,6 @@ public class AbcExtension
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.nullcheckelim", new NullCheckEliminator(f)), "jop.dae");
 		}
 
-		if (Debug.v().cflowIntraAnalysis) {
-			// Cflow Intraprocedural Analysis
-			// Two phases:
-			//              - Collapse all the local vars assigned to the same
-			//                CflowStack/CflowCounter field
-			//                to the same var, only needs to be assigned once
-			//              - Get the stack/counter for the current thread for
-			//                each of these lazily
-			//                to avoid repeated currentThread()s
-		        // This MUST run before the null check elim
-			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()), "jop.nullcheckelim");
-			// Before running the cflow intraprocedural, need to aggregate cflow
-			// vars
-			PackManager.v().getPack("jop").insertBefore(new Transform("jop.cflowaggregate", CflowIntraAggregate.v()), "jop.cflowintra");
-		}
-
 		if (Debug.v().switchFolder) {
 			// must be inserted somewhere before the unreachable code eliminator
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
@@ -208,7 +191,7 @@ public class AbcExtension
 		//	PackManager.v().getPack("jop").add(new Transform("jop.aroundinliner", AroundInliner.v()));
 		//}
 	}
-
+    
     /**
 	 * Call Scene.v().addBasicClass for each runtime class that the backend
 	 * might generate code for. Derived implementations should normally make
@@ -216,8 +199,7 @@ public class AbcExtension
 	 */
     public void addBasicClassesToSoot()
     {
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowStack",
-                                SootClass.SIGNATURES);
+    	CflowCodeGenUtils.addBasicClassesToSoot();
         Scene.v().addBasicClass("org.aspectbench.runtime.reflect.Factory",
                                 SootClass.SIGNATURES);
         Scene.v().addBasicClass("org.aspectj.lang.JoinPoint",
@@ -227,8 +209,6 @@ public class AbcExtension
         Scene.v().addBasicClass("org.aspectj.lang.SoftException",
                                 SootClass.SIGNATURES);
         Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException",
-                                SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowCounter",
                                 SootClass.SIGNATURES);
         Scene.v().addBasicClass("java.lang.System",
                                 SootClass.SIGNATURES);

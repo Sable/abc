@@ -75,7 +75,6 @@ public class Debug {
     public boolean unweaver=false;  // saving and restoring jimple bodies
     public boolean cflowAnalysis=false;  // interprocedural analysis of cflows
     public boolean cflowAnalysisStats=false;  // statistics from cflowinter
-    public boolean cflowIntraAnalysis=true; // intraprocedural cflow analysis
 
     public boolean aspectCodeGen=false; // inserting stuff into aspect class
     public boolean genStaticJoinPoints=false; // collect and gen SJP
@@ -125,7 +124,9 @@ public class Debug {
     public boolean allowDynamicTests = false;
     public boolean switchFolder = true;
     
-    
+    public boolean useOldCflow = false;
+    public boolean forceSingleThreadedCflow = false;
+    public boolean forceStaticFieldCflow = false;
     
     public boolean traceAntTask=false;
 
