@@ -2474,6 +2474,10 @@
         <compile files="CallsParams.java"></compile>
         <run class="CallsParams"></run>
     </ajc-test>
+<ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
+        <compile files="ObjectForInt.java"></compile>
+        <run class="ObjectForInt"></run>
+    </ajc-test>
 <ajc-test title="Does the matrix coverage thing for the new method signatures" num="473" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4,-Xlint:ignore" files="MethodSignatures.java"></compile>
         <run vm="1.4" class="MethodSignatures"></run>

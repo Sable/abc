@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@59e71
+creating: A@1c080c2
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -599,7 +599,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@4b3184
+InterfaceAndObject$1@165443b
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2285,7 +2285,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@a2a50c, [Ljava.lang.Object;@1b82e, TwoAnonymous$3@a2a50c
+calling run: TwoAnonymous$3@1dc83de, [Ljava.lang.Object;@557c5e, TwoAnonymous$3@1dc83de
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2402,32 +2402,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@a0d551.foo calls Outer$Inner@114be4a.mi
+Outer@b8bd98.foo calls Outer$Inner@a7602b.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@114be4a.mi calls java.io.PrintStream@d90fb4.println
+Outer$Inner@a7602b.mi calls java.io.PrintStream@9ae803.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@a0d551.foo calls Outer$InnerRandom@187b462.nextHook
+Outer@b8bd98.foo calls Outer$InnerRandom@edaee7.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@187b462.nextHook calls Outer$InnerRandom@187b462.next
+Outer$InnerRandom@edaee7.nextHook calls Outer$InnerRandom@edaee7.next
 Outer.foo() calls Random.nextInt(..)
-Outer@a0d551.foo calls X.nextInt
+Outer@b8bd98.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@6c27ca.foo calls Outer$Inner@a85fd0.mi
+Outer@1dc9751.foo calls Outer$Inner@152865e.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@a85fd0.mi calls java.io.PrintStream@2a90a0.println
+Outer$Inner@152865e.mi calls java.io.PrintStream@f3ae01.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@6c27ca.foo calls Outer$InnerRandom@7d01b1.nextHook
+Outer@1dc9751.foo calls Outer$InnerRandom@24ddc9.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@7d01b1.nextHook calls Outer$InnerRandom@7d01b1.next
+Outer$InnerRandom@24ddc9.nextHook calls Outer$InnerRandom@24ddc9.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@6c27ca.foo calls X.nextInt
+Outer@1dc9751.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2586,22 +2586,7 @@ PASS: Test 471: "new/calling and called this params in calls points" passed.
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-Test failed, compiled class behaved incorrectly
-Message: fail Test.a: 4 < 10
-org.aspectj.bridge.AbortException: Test.a: 4 < 10
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
-	at ObjectForInt.main(ObjectForInt.java:6)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:394)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 472: "new/primitive parameters coercable to Object just like return values are" failed.
+PASS: Test 472: "new/primitive parameters coercable to Object just like return values are" passed.
 
 
 Running test 473: new/Does the matrix coverage thing for the new method signatures
@@ -4005,9 +3990,8 @@ PASS: Test 739: "bugs/privileged access to code outside the control of the compi
 
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at new/PR862/pack/ImportInnerFromInterfaceImplementor.java:5,0-16: Package "pack.C" not found.
+File /usr/local/src/abc-dev/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
+Failed to find class pack.ImportInnerFromInterfaceImplementor
 FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed.
 
 
@@ -4060,7 +4044,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@1040e9c.x:=-3
+test.Test3@b9187d.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4143,8 +4127,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@1e10a62
-o: Bar@1e10a62, i: 10
+o: Bar@e98ef6
+o: Bar@e98ef6, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4567,8 +4551,8 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:726)
-	at abc.main.Main.loadSourceRoots(Main.java:743)
+	at abc.main.Main.findSourcesInDir(Main.java:727)
+	at abc.main.Main.loadSourceRoots(Main.java:744)
 	at abc.main.Main.run(Main.java:565)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -4737,7 +4721,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@15f1316
+LibraryAspect-defined run() for C@3a46c2
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5063,7 +5047,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1b84761
+? Util.read() obj=Test@12d970e
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5082,7 +5066,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@15d0099
+? Util.read() obj=ClinitTest@24d41e
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5092,7 +5076,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@98910
+? Util.read() obj=SuidTest@171772b
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5295,12 +5279,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@194bd6e
-Invoking command bean:  Command@20b4dc
-hello(Command@20b4dc)
-Created a PerThis aspect : Testcase2@141dbaf
-Invoking command bean:  Command@bdcc24
-hello again(Command@bdcc24)
+Created a PerThis aspect : Testcase2@1ba1e8f
+Invoking command bean:  Command@2c423f
+hello(Command@2c423f)
+Created a PerThis aspect : Testcase2@1b15d2a
+Invoking command bean:  Command@15ba8a9
+hello again(Command@15ba8a9)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5479,9 +5463,29 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 Caused by: java.lang.RuntimeException: interface needed; got B
 	at soot.Hierarchy.getImplementersOf(Hierarchy.java:387)
 	at abc.weaving.weaver.DeclareParentsWeaver.weave(DeclareParentsWeaver.java:61)
-	at abc.main.Main.weave(Main.java:832)
+	at abc.main.Main.weave(Main.java:834)
 	at abc.main.Main.run(Main.java:574)
 	... 3 more
 FAIL: Test 1000: "abctests/bugs/resolvingdeclareparents/resolving and declared parents" failed.
+
+
+Running test 1001: abctests/bugs/resolving anonymous classes inside classes with dollar signs
+Commandline: abc -d abctests/bugs abctests/bugs/ExtraAnon.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:645)
+	at abc.testing.TestCase.runTest(TestCase.java:287)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot-class-path set properly?)
+	at soot.SootResolver.bringToHierarchy(SootResolver.java:138)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:171)
+	at soot.SootResolver.processResolveWorklist(SootResolver.java:103)
+	at soot.SootResolver.resolveClass(SootResolver.java:88)
+	at soot.Scene.loadClass(Scene.java:329)
+	at abc.main.Main.compile(Main.java:810)
+	at abc.main.Main.run(Main.java:570)
+	... 3 more
+FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
 

@@ -10,10 +10,6 @@
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
     </ajc-test>
-<ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
-        <compile files="ObjectForInt.java"></compile>
-        <run class="ObjectForInt"></run>
-    </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
@@ -82,6 +78,9 @@
 <ajc-test title="resolving and declared parents" num="1000" dir="abctests/bugs/resolvingdeclareparents">
 	<compile files="B.java"></compile>
 	<compile files="A.java" classpath="."></compile>
+    </ajc-test>
+<ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
+         <compile files="ExtraAnon.java"></compile>
     </ajc-test>
  
 </suite>
