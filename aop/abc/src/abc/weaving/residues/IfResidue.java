@@ -6,6 +6,7 @@ import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import java.util.*;
 
 /** The dynamic residue of an if(...) pointcut
  *  @author Ganesh Sittampalam

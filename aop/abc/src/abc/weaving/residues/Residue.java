@@ -201,4 +201,5 @@ public abstract class Residue {
 			return result;
 		}
 	}
+        public List/*ResidueBox*/ getResidueBoxes() { return new ArrayList(); }
 }

@@ -644,13 +644,13 @@ public class AroundWeaver {
 			//joinpointStatements.insertBefore(beforeFailPoint, failPoint);
 
 			// weave in residue
-			Stmt endResidue = adviceAppl.residue.codeGen
+			Stmt endResidue = adviceAppl.getResidue().codeGen
 			    (joinpointMethod, localgen, joinpointStatements, begin, failPoint, true, wc);
 			
 			//((AdviceWeavingContext) wc).arglist.get()
 
 			// debug("weaving residue: " + adviceAppl.residue);
-			if (!(adviceAppl.residue instanceof AlwaysMatch)) {
+			if (!(adviceAppl.getResidue() instanceof AlwaysMatch)) {
 				InvokeExpr directInvoke;
 				List directParams = new LinkedList();
 				//directParams.add(targetLocal);
@@ -995,7 +995,7 @@ public class AroundWeaver {
 			//if (bHasProceed) {
 				Residue.Bindings bindings = new Residue.Bindings();
 				
-				adviceAppl.residue.getAdviceFormalBindings(bindings);
+				adviceAppl.getResidue().getAdviceFormalBindings(bindings);
 				bindings.calculateBitMaskLayout();
 				
 				debug(" " + bindings);
@@ -1005,7 +1005,7 @@ public class AroundWeaver {
 					LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
 					bindMaskLocal=lg.generateLocal(IntType.v(), "bindMask");			
 				}
-				adviceAppl.residue=adviceAppl.residue.restructureToCreateBindingsMask(bindMaskLocal, bindings);
+				adviceAppl.setResidue(adviceAppl.getResidue().restructureToCreateBindingsMask(bindMaskLocal, bindings));
 			//}
 			
 			Stmt endResidue=weaveDynamicResidue(

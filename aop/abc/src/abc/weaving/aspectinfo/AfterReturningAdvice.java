@@ -38,7 +38,7 @@ public class AfterReturningAdvice extends AbstractAdviceSpec {
 			     LocalGeneratorEx localgen,
 			     AdviceApplication adviceappl) {
 	WeavingContext wc=adviceappl.advice.makeWeavingContext();
-	doWeave(method,localgen,adviceappl,adviceappl.residue,wc);
+	doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
     }
     
 

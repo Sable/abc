@@ -101,6 +101,8 @@ public class Main {
 			    try {
 			        if(doCase(xTests[i])) {
 				    System.out.println("Current status: " + succeeded + " passed, " + failed + " failed and " + skipped + " skipped, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");
+                                    failedOut.flush();
+                                    fullOut.flush();
 				}
 			    } catch(Exception e) {
 			        stderr.println("Unexpected exception: " + e);

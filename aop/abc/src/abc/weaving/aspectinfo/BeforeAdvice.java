@@ -35,7 +35,7 @@ public class BeforeAdvice extends AbstractAdviceSpec {
 
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
 	WeavingContext wc=adviceappl.advice.makeWeavingContext();
-	doWeave(method,localgen,adviceappl,adviceappl.residue,wc);
+	doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
     }
 
     static void doWeave(SootMethod method,
@@ -74,8 +74,9 @@ public class BeforeAdvice extends AbstractAdviceSpec {
 
         debug("Generated stmts: " + stmts);
 	
-	for (Iterator stmtlist = stmts.iterator(); stmtlist.hasNext(); ) {
-	    Stmt nextstmt = (Stmt) stmtlist.next();
+	for( Iterator nextstmtIt = stmts.iterator(); nextstmtIt.hasNext(); ) {
+	
+	    final Stmt nextstmt = (Stmt) nextstmtIt.next();
 	    units.insertBefore(nextstmt,failpoint);
 	}
     }

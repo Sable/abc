@@ -8,6 +8,7 @@ import abc.weaving.aspectinfo.CflowSetup;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
+import java.util.*;
 
 public class CflowResidue extends Residue {
     private CflowSetup setup;
@@ -48,6 +49,10 @@ public class CflowResidue extends Residue {
 	}
     }
 
+    private Stmt isValidStmt;
+    /** Returns the statement that was woven to test isValid(). */
+    public Stmt getIsValidStmt() { return isValidStmt; }
+
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
 			Chain units,Stmt begin,Stmt fail,boolean sense,
 			WeavingContext wc) {
@@ -79,6 +84,8 @@ public class CflowResidue extends Residue {
 	    (isvalid,
 	     Jimple.v().newVirtualInvokeExpr(cflowStackOrCounter,isValidMethod));
 	units.insertAfter(checkvalid,getstackorcounter);
+
+        isValidStmt = checkvalid;
 
 	debug("generating abort");
 	Expr test;
@@ -148,5 +155,7 @@ public class CflowResidue extends Residue {
     public String toString() {
 	return "cflow("+setup.getPointcut()+")";
     }
+
+    public CflowSetup setup() { return setup; }
 
 }

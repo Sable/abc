@@ -1,6 +1,7 @@
 package abc.weaving.matching;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -160,5 +161,13 @@ public class MethodAdviceList {
 	    final AdviceApplication aa=(AdviceApplication) it.next();
 	    aa.debugInfo(prefix+" ",sb);
 	}
+    }
+    public List/*AdviceApplication*/ allAdvice() {
+        List/*AdviceApplication*/ ret = new ArrayList();
+        ret.addAll(bodyAdvice);
+        ret.addAll(stmtAdvice);
+        ret.addAll(preinitializationAdvice);
+        ret.addAll(initializationAdvice);
+        return ret;
     }
 }

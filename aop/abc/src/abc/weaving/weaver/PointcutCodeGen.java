@@ -135,7 +135,7 @@ public class PointcutCodeGen {
 		final SootMethod adviceMethod;
 		//final int original
 		public boolean isAlwaysMatchAppl() {
-			return execappl.residue instanceof AlwaysMatch;
+			return execappl.getResidue() instanceof AlwaysMatch;
 		}
 		
 		int orderID=-1;

@@ -35,7 +35,7 @@ public class Jimplify extends OncePass {
 	    final String className = (String) classNameIt.next();
 	    if (abc.main.Debug.v().classResolving)
 		System.err.println("Resolving class "+className);
-	    SootResolver.v().resolveClassAndSupportClasses(className);
+	    SootResolver.v().resolveClass(className, SootClass.BODIES);
 	}
 
 	long aftertime = System.currentTimeMillis();

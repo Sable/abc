@@ -547,8 +547,11 @@ public class Main {
     Iterator jari = in_jars.iterator();
     while (jari.hasNext()) {
         String jar = (String)jari.next();
-        List this_jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
-        jar_classes.addAll(this_jar_classes);
+        List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
+        for( Iterator classNameIt = this_jar_classes.iterator(); classNameIt.hasNext(); ) {
+            final String className = (String) classNameIt.next();
+            jar_classes.add(soot.Scene.v().loadClass(className, SootClass.BODIES).getName());
+        }
       }
 
     // Make them all application classes
@@ -697,12 +700,12 @@ public class Main {
         HashMap options=new HashMap();
         options.put("enabled","true");
 
-        for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); 
-            clIt.hasNext(); ) {
+        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+
             final AbcClass cl = (AbcClass) clIt.next();
 
-            for(Iterator methodIt=cl.getSootClass().getMethods().iterator(); 
-                methodIt.hasNext(); ) {
+            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+
                 final SootMethod method = (SootMethod) methodIt.next();
 
                 if(!method.isConcrete()) continue;
@@ -717,7 +720,7 @@ public class Main {
     }
 
     public void validate() {
-    for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+    for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
         final AbcClass cl = (AbcClass) clIt.next();
         abc.soot.util.Validate.validate(cl.getSootClass());
     }

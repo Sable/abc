@@ -40,7 +40,7 @@ public class BeforeAfterAdvice extends AbstractAdviceSpec {
 
     public void weave(SootMethod method,LocalGeneratorEx localgen,AdviceApplication adviceappl) {
 	WeavingContext wc=adviceappl.advice.makeWeavingContext();
-	doWeave(method,localgen,adviceappl,adviceappl.residue,wc);
+	doWeave(method,localgen,adviceappl,adviceappl.getResidue(),wc);
     }
 
     void doWeave(SootMethod method,LocalGeneratorEx localgen,

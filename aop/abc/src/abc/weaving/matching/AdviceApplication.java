@@ -26,7 +26,17 @@ public abstract class AdviceApplication {
     public AbstractAdviceDecl advice;
 
     /** The dynamic residue */
-    public Residue residue;
+    private ResidueBox residueBox = new ResidueBox();
+
+    public Residue getResidue() { return residueBox.getResidue(); }
+    public void setResidue(Residue r) { residueBox.setResidue(r); }
+
+    public List/*ResidueBox*/ getResidueBoxes() {
+        List/*ResidueBox*/ret = new ArrayList();
+        ret.add(residueBox);
+        ret.addAll(residueBox.getResidue().getResidueBoxes());
+        return ret;
+    }
 
     public ShadowMatch shadowmatch=null;
     
@@ -36,13 +46,13 @@ public abstract class AdviceApplication {
 
     public AdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	this.advice=advice;
-	this.residue=residue;
+	this.setResidue(residue);
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"advice decl:\n");
        	advice.debugInfo(prefix+" ",sb);
-	sb.append(prefix+"residue: "+residue+"\n");
+	sb.append(prefix+"residue: "+residueBox+"\n");
 	sb.append(prefix+"---"+"\n");
     }
 
