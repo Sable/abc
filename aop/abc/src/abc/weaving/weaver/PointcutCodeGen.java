@@ -67,6 +67,14 @@ public class PointcutCodeGen {
 
 	 // Make a new local, put it in the advice list structure, and copy this to it
 
+	//	do the stmt advice
+	   for (Iterator alistIt = adviceList.stmtAdvice.iterator(); 
+	   alistIt.hasNext();)
+		 { final AdviceApplication execappl = 
+			(AdviceApplication) alistIt.next(); 
+		weave_one(cl,method,localgen,execappl);
+	 }  // each stmt advice
+		 
 	 // do the body advice 
          for (Iterator alistIt = adviceList.bodyAdvice.iterator(); 
 	      alistIt.hasNext();)
@@ -75,13 +83,7 @@ public class PointcutCodeGen {
 	     weave_one(cl,method,localgen,execappl);
 	   } // each body advice 
 
-	 // do the stmt advice
-         for (Iterator alistIt = adviceList.stmtAdvice.iterator(); 
-	     alistIt.hasNext();)
-           { final AdviceApplication execappl = 
-	          (AdviceApplication) alistIt.next(); 
-	      weave_one(cl,method,localgen,execappl);
-	   }  // each stmt advice
+	 
          break;
 
 	 case 2: // ----------------------- PASS 2 ----------------

@@ -1724,7 +1724,7 @@ public class AroundWeaver {
 		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(interfaceName);
 		
 		Iterator it=statements.snapshotIterator();
-		while (it.hasNext()) { /// TODO: Check if all cases of proceed invokations are caught
+		while (it.hasNext()) { 
 			Stmt s=(Stmt)it.next();
 			InvokeExpr invokeEx;
 			try {
