@@ -14,17 +14,16 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootMethod method;
-    private SootMethod container;
     
     public ShadowMatch getEnclosing() {
 	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
 	return new ExecutionShadowMatch(container);
     }
 
-    private ConstructorCallShadowMatch(Stmt stmt,SootMethod method,SootMethod container) {
+    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,SootMethod method) {
+	super(container);
 	this.stmt=stmt;
 	this.method=method;
-	this.container=container;
     }
 
     public SootMethod getMethod() {
@@ -52,7 +51,7 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
 	// FIXME: Does this break with arrays?
-	return new ConstructorCallShadowMatch(current,method,pos.getContainer());
+	return new ConstructorCallShadowMatch(pos.getContainer(),current,method);
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {

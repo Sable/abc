@@ -9,6 +9,12 @@ import abc.weaving.residues.*;
  *  @date 05-May-04
  */
 public abstract class ShadowMatch {
+    protected SootMethod container;
+
+    protected ShadowMatch(SootMethod container) {
+	this.container=container;
+    }
+
     /** return the enclosing ShadowMatch */
     public abstract ShadowMatch getEnclosing();
 
@@ -48,10 +54,11 @@ public abstract class ShadowMatch {
     protected abstract AdviceApplication doAddAdviceApplication
 	(MethodAdviceList mal,AdviceDecl ad,Residue residue);
 
-    // FIXME: move this to subclasses(?)
-    public ContextValue getThisContextValue(SootMethod method) {
-        return method.isStatic() ? null : new This();
+    public ContextValue getThisContextValue() {
+        return container.isStatic() ? null : new This();
     }
+
+    //    public ContextValue getReturningContextValue(
 
     public boolean supportsBefore() {
 	return true;

@@ -12,14 +12,12 @@ import abc.weaving.residues.Residue;
  *  @date 05-May-04
  */
 public class ExecutionShadowMatch extends ShadowMatch {
-    private SootMethod container;
-
     public ShadowMatch getEnclosing() {
 	return this;
     }
 
     ExecutionShadowMatch(SootMethod container) {
-	this.container=container;
+	super(container);
     }
 
     public static ExecutionShadowMatch matchesAt(MethodPosition pos) {

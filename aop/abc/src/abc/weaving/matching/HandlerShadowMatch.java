@@ -14,10 +14,10 @@ public class HandlerShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootClass sootexc;
-    private SootMethod container;
+
     
-    private HandlerShadowMatch(Stmt stmt,SootClass sootexc,SootMethod container) {
-	this.container=container;
+    private HandlerShadowMatch(SootMethod container,Stmt stmt,SootClass sootexc) {
+	super(container);
 	this.stmt=stmt;
 	this.sootexc=sootexc;
     }
@@ -35,7 +35,7 @@ public class HandlerShadowMatch extends ShadowMatch {
 	if(!(pos instanceof TrapMethodPosition)) return null;
 	Trap trap=((TrapMethodPosition) pos).getTrap();
 	Stmt stmt=(Stmt) trap.getHandlerUnit();
-	return new HandlerShadowMatch(stmt,trap.getException(),pos.getContainer());
+	return new HandlerShadowMatch(pos.getContainer(),stmt,trap.getException());
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {

@@ -14,12 +14,11 @@ public class GetFieldShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootField field;
-    private SootMethod container;
     
-    private GetFieldShadowMatch(Stmt stmt,SootField field,SootMethod container) {
+    private GetFieldShadowMatch(SootMethod container,Stmt stmt,SootField field) {
+	super(container);
 	this.stmt=stmt;
 	this.field=field;
-	this.container=container;
     }
 
     public ShadowMatch getEnclosing() {
@@ -42,7 +41,7 @@ public class GetFieldShadowMatch extends ShadowMatch {
        	if(!(rhs instanceof FieldRef)) return null;
 	FieldRef fr = (FieldRef) rhs;
 
-	return new GetFieldShadowMatch(stmt,fr.getField(),pos.getContainer());
+	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
     }
     
     public AdviceApplication.SJPInfo makeSJPInfo() {

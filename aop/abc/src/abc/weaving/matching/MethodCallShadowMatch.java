@@ -16,12 +16,11 @@ public class MethodCallShadowMatch extends ShadowMatch {
     
     private Stmt stmt;
     private SootMethod method;
-    private SootMethod container;
     
-    private MethodCallShadowMatch(Stmt stmt,SootMethod method,SootMethod container) {
+    private MethodCallShadowMatch(SootMethod container,Stmt stmt,SootMethod method) {
+	super(container);
 	this.stmt=stmt;
 	this.method=method;
-	this.container=container;
     }
 
     public ShadowMatch getEnclosing() {
@@ -51,7 +50,7 @@ public class MethodCallShadowMatch extends ShadowMatch {
 	// The next one really ought not to happen...
 	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
 
-	return new MethodCallShadowMatch(stmt,method,pos.getContainer());
+	return new MethodCallShadowMatch(pos.getContainer(),stmt,method);
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {

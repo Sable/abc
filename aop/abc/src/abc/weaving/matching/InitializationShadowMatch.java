@@ -10,10 +10,9 @@ import abc.weaving.residues.Residue;
  *  @date 05-May-04
  */
 public class InitializationShadowMatch extends ShadowMatch {
-    private SootMethod container;
 
     private InitializationShadowMatch(SootMethod container) {
-	this.container=container;
+	super(container);
     }
 
     public ShadowMatch getEnclosing() {
@@ -40,5 +39,9 @@ public class InitializationShadowMatch extends ShadowMatch {
 	    =new InitializationAdviceApplication(ad,residue);
 	mal.addInitializationAdvice(aa);
 	return aa;
+    }
+
+    public boolean supportsAround() {
+	return false;
     }
 }

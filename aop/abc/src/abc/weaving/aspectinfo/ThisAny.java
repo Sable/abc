@@ -20,7 +20,7 @@ public class ThisAny extends DynamicValuePointcut {
 				   SootClass cls,
 				   SootMethod method,
 				   ShadowMatch sm) {
-	ContextValue cv=sm.getThisContextValue(method);
+	ContextValue cv=sm.getThisContextValue();
 	if(cv==null) return null;
 	return matchesAt(we,cv);
     }
