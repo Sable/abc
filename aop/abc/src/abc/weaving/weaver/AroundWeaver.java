@@ -367,7 +367,7 @@ public class AroundWeaver {
 		
 		if (abc.main.Debug.v().aroundWeaver) {
 			try {
-				UnreachableCodeEliminator.v().transform(shadowMethod.getActiveBody());
+//				UnreachableCodeEliminator.v().transform(shadowMethod.getActiveBody());
 				shadowMethod.getActiveBody().validate();
 			} catch (RuntimeException e ) {
 				debug("shadow method: " + Util.printMethod(shadowMethod));
@@ -387,7 +387,7 @@ public class AroundWeaver {
 			adviceMethod=method;
 			if (abc.main.Debug.v().aroundWeaver) {
 				try {
-					UnreachableCodeEliminator.v().transform(method.getActiveBody());
+	//				UnreachableCodeEliminator.v().transform(method.getActiveBody());
 					method.getActiveBody().validate();
 				} catch (RuntimeException e ) {
 					debug("advice method: " + Util.printMethod(method));
@@ -437,7 +437,7 @@ public class AroundWeaver {
 		}
 		if (abc.main.Debug.v().aroundWeaver) {
 			try {
-				UnreachableCodeEliminator.v().transform(shadowMethod.getActiveBody());
+	//			UnreachableCodeEliminator.v().transform(shadowMethod.getActiveBody());
 				shadowMethod.getActiveBody().validate();
 			} catch (RuntimeException e ) {
 				debug("shadow method: " + Util.printMethod(shadowMethod));
@@ -446,7 +446,7 @@ public class AroundWeaver {
 		}
 		if (abc.main.Debug.v().aroundWeaver) {
 			try {
-				UnreachableCodeEliminator.v().transform(adviceMethod.getActiveBody());
+		//		UnreachableCodeEliminator.v().transform(adviceMethod.getActiveBody());
 				adviceMethod.getActiveBody().validate();
 			} catch (RuntimeException e ) {
 				debug("advice method: " + Util.printMethod(adviceMethod));
