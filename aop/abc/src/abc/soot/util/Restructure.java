@@ -4,6 +4,7 @@ import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
+import abc.weaving.weaver.LocalGeneratorEx;
 import soot.jimple.toolkits.scalar.*;
 import java.util.*;
 import abc.weaving.weaver.CodeGenException;
@@ -369,4 +370,37 @@ public class Restructure {
         }
         return null;
     }
+
+    private static Map/*<SootMethod,Local>*/ thiscopies=new Hashtable();
+
+    public static Local makeThisCopy(SootMethod m) {
+	if(thiscopies.containsKey(m)) return ((Local) thiscopies.get(m));
+	
+	Body b=m.getActiveBody();
+	Local l=new LocalGeneratorEx(b).generateLocal
+	    (m.getDeclaringClass().getType(),"thisCopy");
+
+	Chain units=b.getUnits();
+	for(Stmt stmt=(Stmt) units.getFirst();
+	    ;
+	    stmt=(Stmt) units.getSuccOf(stmt)) {
+	    
+	    if(stmt==null) throw new RuntimeException
+			       ("internal error: didn't find identitystmt binding this "
+				+"in method "+m);
+
+	    if(stmt instanceof IdentityStmt) {
+		IdentityStmt istmt=(IdentityStmt) stmt;
+		if(istmt.getRightOp() instanceof ThisRef) {
+		    Value tr=istmt.getLeftOp();
+		    units.insertAfter(Jimple.v().newAssignStmt(l,tr),stmt);
+		    break;
+		}
+	    }
+	}
+	thiscopies.put(m,l);
+	return l;
+    }
+	
+
 } // class Restructure

@@ -25,6 +25,6 @@ public class TargetType extends TargetAny {
     }
 
     protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
-	return new CheckType(cv,type.getSootType());
+	return CheckType.construct(cv,type.getSootType());
     }
 }

@@ -27,14 +27,12 @@ public class AfterReturningArgAdvice extends AfterReturningAdvice {
 	return "after returning arg";
     }
 
-    /*
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
 	if(!sm.supportsAfter()) return null;
-	ReturnValue cv=new ReturnValue();
+	ContextValue cv=sm.getReturningContextValue();
 	Var v=new Var(formal.getName(),formal.getPosition());
-	Residue typeCheck=new CheckType(cv,we.getAbcType(v).getSootType());
-	Residue bind=new Bind(cv,we.getWeavingVar(v));
-	return AndResidue.construct(typeCheck,bind);
+	return Bind.construct
+	    (cv,we.getAbcType(v).getSootType(),we.getWeavingVar(v));
     }
-    */
+
 }

@@ -31,7 +31,6 @@ import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.Residue;
 
 public class PointcutCodeGen {
-   public static Hashtable/*<SootMethod,Local>*/ thisLocalMap=new Hashtable();
 
    private static void debug(String message)
      { if (abc.main.Debug.v().pointcutCodeGen) 

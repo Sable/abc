@@ -21,9 +21,13 @@ public class CheckType extends AbstractResidue {
     public ContextValue value;
     public Type type;
 
-    public CheckType(ContextValue value,Type type) {
+    CheckType(ContextValue value,Type type) {
 	this.value=value;
 	this.type=type;
+    }
+
+    public static Residue construct(ContextValue value,Type type) {
+	return new CheckType(value,type);
     }
 
     public String toString() {

@@ -25,9 +25,8 @@ public class TargetVar extends TargetAny {
     }
 
     protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
-	Residue typeCheck=new CheckType(cv,we.getAbcType(var).getSootType());
-	Residue bind=new Bind(cv,we.getWeavingVar(var));
-	return AndResidue.construct(typeCheck,bind);
+	return Bind.construct
+	    (cv,we.getAbcType(var).getSootType(),we.getWeavingVar(var));
     }
 
 }

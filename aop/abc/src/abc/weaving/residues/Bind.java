@@ -19,9 +19,15 @@ public class Bind extends AbstractResidue {
     public ContextValue value;
     public WeavingVar variable;
 
-    public Bind(ContextValue value,WeavingVar variable) {
+    Bind(ContextValue value,WeavingVar variable) {
 	this.value=value;
 	this.variable=variable;
+    }
+
+    public static Residue construct(ContextValue value,Type type,WeavingVar variable) {
+	return AndResidue.construct
+	    (new CheckType(value,type),
+	     new Bind(value,variable));
     }
 
     public String toString() {

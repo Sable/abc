@@ -1,8 +1,12 @@
 package abc.weaving.matching;
 
 import soot.*;
+import soot.jimple.*;
+import soot.util.*;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.*;
+import abc.weaving.weaver.LocalGeneratorEx;
+import abc.soot.util.Restructure;
 
 /** The results of matching at a particular shadow type
  *  @author Ganesh Sittampalam
@@ -55,7 +59,8 @@ public abstract class ShadowMatch {
 	(MethodAdviceList mal,AdviceDecl ad,Residue residue);
 
     public ContextValue getThisContextValue() {
-        return container.isStatic() ? null : new This();
+        if(container.isStatic()) return null;
+	return new JimpleValue(Restructure.makeThisCopy(container));
     }
 
     // no sensible default
