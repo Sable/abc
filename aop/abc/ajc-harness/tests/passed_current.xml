@@ -2885,11 +2885,6 @@
           <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="after returning advice on interface constructor - error" pr="889" dir="new">
-        <compile files="AfterReturningInterfaceConstructorCE.java">
-        	<message line="26" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="after advice on static call join point" pr="900" dir="bugs">
         <compile files="AfterStaticCall.java"></compile>
         <run class="AfterStaticCall"></run>
@@ -3513,5 +3508,81 @@
            <compile files="Handler.java"></compile>
            <run class="Handler"></run>
         </ajc-test>
+<ajc-test title="Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)" pr="51919" dir="bugs">
+        <compile files="OverloadedITDNPE.java"></compile>
+    </ajc-test>
+<ajc-test title="SUID: Before execution advice" pr="41181" dir="bugs/serialVersionUID">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, BeforeExecutionAdvice.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: thisJoinPoint with clinit method" pr="41181" dir="bugs/serialVersionUID" comment="OK if tjp private and existing clinit">
+		<compile files="ClinitTest.java, Util.java"></compile>
+        <run class="ClinitTest"></run>
+		<compile options="-Xlint:warning" files="ClinitTest.java, Util.java, TJP.aj"></compile>
+        <run options="-read" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: After returning staticinitialization advice with serialVersionUID field" pr="41181" dir="bugs/serialVersionUID" comment="OK because of serialVersionUID field">
+		<compile files="SuidTest.java, Util.java"></compile>
+        <run class="SuidTest"></run>
+		<compile options="-Xlint:warning" files="SuidTest.java, Util.java, AfterReturningStaticinitializationAdvice.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare extends" pr="41181" dir="bugs/serialVersionUID" comment="OK">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareExtends.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements non-Serializable (compile)" pr="41181" dir="bugs/serialVersionUID" comment="OK because not Serializable">
+		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplements.aj"></compile>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements Serializable (compile)" pr="41181" dir="bugs/serialVersionUID" comment="OK because adding Serializable">
+		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplementsSerializable.aj"></compile>
+	</ajc-test>
+<ajc-test title="fail in compiling aspect with overriding method introduction with different throws clause " pr="50776" dir="bugs">
+        <compile files="IntertypeDifferentThrows.java"></compile>
+    </ajc-test>
+<ajc-test title="super call in anonymous class created in around advice" dir="new" comment="in ajc 1.1.1, VerifyError Illegal use of nonvirtual function call">
+        <compile files="SuperClosure.java"></compile>
+        <run class="SuperClosure"></run>
+    </ajc-test>
+<ajc-test title="Introduce Unknown Type to class causes Null pointer exception" pr="51322" dir="bugs">
+        <compile files="Pr51322.java"> 
+        	<message line="5" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Private members introduced via an interface are visible to the class" pr="52928" dir="bugs">
+		<compile files="VisiblePrivateInterfaceITDs.java">
+            <message line="13" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="NPE when binary weaving a ctor ITD" pr="59440" dir="bugs">
+        <compile files="CtorITD.aj">
+        	<message line="2" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="InterTypeMethodDeclaration.java:104" pr="59778" dir="bugs/compileOrdering">
+        <compile files="B.java,D.java">
+          <message line="2" kind="error" file="B.java"></message>
+        </compile>
+        <compile files="D.java,B.java">
+          <message line="2" kind="error" file="B.java"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" pr="61538" dir="bugs">
+        <compile files="ConstructorMain.java"></compile>
+        <run class="ConstructorMain"></run>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" pr="62458" dir="bugs/IfPerThis">
+        <compile files="Testcase2.java"></compile>
+        <run class="Testcase2"></run>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" pr="62458" dir="bugs/IfPerThis">
+        <compile files="Testcase3.java">
+        	<message text="if() pointcut designator cannot be used directly in a per clause" line="2" kind="error"></message>
+        </compile>
+    </ajc-test>
  
 </suite>

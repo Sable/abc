@@ -81,6 +81,7 @@
         <compile options="-Xlint:warning" files="DeclareSoftCf.java">
 		  <message line="28" kind="warning"></message>
 		  <message line="29" kind="error"></message>
+		  <message kind="warning"></message>
         </compile>
     </ajc-test>
 <ajc-test title="unmatched type name in a declare parents should result in a warning in -Xlint mode" keywords="tofix" dir="new">
@@ -367,6 +368,32 @@
         <compile files="Main.java,TraceWithInnerV1.aj"></compile>
         <run class="Main"></run>
         <compile files="TraceWithInnerV2.aj"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="add aspect source file and check world is rewoven" keywords="incremental-test" dir="incremental/initialTests/aspectSourceAdded">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <inc-compile tag="20">
+            <dir-changes added="Detour"></dir-changes>
+        </inc-compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="weaving from an aspectpath jar into that same jar.." pr="43714" dir="bugs">
+        <compile outjar="notAJar.jar" files="WeaveLocal.java" aspectpath="notAJar.jar">         	
+        </compile>
+    </ajc-test>
+<ajc-test title="make sure additional classes generated during weave are deleted with src class file" keywords="incremental-test" dir="incremental/initialTests/classWAroundClosureRemoved">
+      <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <inc-compile tag="20">
+            <dir-changes removed="AdviceOnIntroduced$AjcClosure1"></dir-changes>
+        </inc-compile>
+    </ajc-test>
+<ajc-test title="incremental with aspect-driven full rebuild" pr="59895" dir="incremental/full-rebuild">
+        <compile staging="true" sourceroots="src" options="-incremental">
+        	<message line="3" kind="error" file="Aspect.java"></message>
+        	</compile>
+        <inc-compile tag="20">
+        	<message line="4" kind="warning" file="Main.java"></message>
+        	</inc-compile>
         <run class="Main"></run>
     </ajc-test>
  

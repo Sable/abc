@@ -615,6 +615,12 @@
         <compile files="AfterReturningInterfaceConstructor.java"></compile>
         <run class="AfterReturningInterfaceConstructor"></run>
     </ajc-test>
+<ajc-test title="after returning advice on interface constructor - error" pr="889" dir="new">
+        <compile files="AfterReturningInterfaceConstructorCE.java">
+        	<message line="26" kind="error"></message>
+        	<message line="30" kind="warning"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="options negative -Xlint args()" keywords="lint" dir="options">
         <compile options="-Xlint:ignore" files="XLintTypeArgsPCD.java"></compile>
     </ajc-test>
@@ -975,6 +981,336 @@
         <compile files="AfterThrowingCtor.java">
         </compile>
   		<run class="AfterThrowingCtor"></run>
+    </ajc-test>
+<ajc-test title="ClasscastException on concretization of if(false) 1" pr="51320" dir="bugs">
+        <compile files="DecwClassCastException.java">
+        
+         
+         <message text="if() pointcut designator cannot be used" line="27" kind="error"></message>
+         <message text="if() pointcut designator cannot be used" line="29" kind="error"></message>
+         
+         <message text="cflow() pointcut designator cannot be used" line="31" kind="error"></message>
+         <message text="cflow() pointcut designator cannot be used" line="33" kind="error"></message>
+         
+         <message text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></message>
+         <message text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></message>
+         
+         <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
+         <message text="this() pointcut designator cannot be used" line="41" kind="error"></message>
+         
+         <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
+         <message text="target() pointcut designator cannot be used" line="45" kind="error"></message>
+         
+         <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
+         <message text="args() pointcut designator cannot be used" line="49" kind="error"></message>
+         
+        </compile>
+    </ajc-test>
+<ajc-test title="ClasscastException on concretization of if(false) 2" pr="51320" dir="bugs">
+        <compile files="DeclareSoftDynamicPCDs.java">
+        
+         
+         <message text="if() pointcut designator cannot be used" line="27" kind="error"></message>
+         <message text="if() pointcut designator cannot be used" line="29" kind="error"></message>
+         
+         <message text="cflow() pointcut designator cannot be used" line="31" kind="error"></message>
+         <message text="cflow() pointcut designator cannot be used" line="33" kind="error"></message>
+         
+         <message text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></message>
+         <message text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></message>
+         
+         <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
+         <message text="this() pointcut designator cannot be used" line="41" kind="error"></message>
+         
+         <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
+         <message text="target() pointcut designator cannot be used" line="45" kind="error"></message>
+         
+         <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
+         <message text="args() pointcut designator cannot be used" line="49" kind="error"></message>
+         
+        </compile>
+    </ajc-test>
+<ajc-test title="SUID: Around execution advice" pr="41181" dir="bugs/serialVersionUID" comment="OK because around_body private">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, AroundExecutionAdvice.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Around closure execution advice (-Xlint:ignore)" pr="41181" dir="bugs/serialVersionUID" comment="OK because ignoring warnings">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj"></compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Around closure execution advice" pr="41181" dir="bugs/serialVersionUID" comment="Warning because around_body non-private">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile xlintfile="Xlint.properties" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj">
+            <message line="9" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: thisJoinPoint" pr="41181" dir="bugs/serialVersionUID" comment="Warning because of introduced clinit">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, TJP.aj">
+            <message line="6" kind="warning"></message>
+            <message line="13" kind="warning"></message>
+            <message line="17" kind="warning"></message>
+            <message line="24" kind="warning"></message>
+            <message line="31" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: After returning staticinitialization advice" pr="41181" dir="bugs/serialVersionUID" comment="Warning because of added clinit">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, AfterReturningStaticinitializationAdvice.aj">
+            <message line="6" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: ITD field" pr="41181" dir="bugs/serialVersionUID" comment="Error because added field may not be initialized">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:error" files="Test.java, Util.java, ITDField.aj">
+            <message line="0" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="SUID: ITD method" pr="41181" dir="bugs/serialVersionUID" comment="Warning because of added method">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, ITDMethod.aj">
+            <message line="3" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements (compile)" pr="41181" dir="bugs/serialVersionUID" comment="Warning because of added interface">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareImplements.aj">
+            <message kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements (weave)" pr="41181" dir="bugs/serialVersionUID" comment="Warning because of added interface">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="injar.jar, DeclareImplements.aj">
+            <message line="0" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Priviliged aspect" pr="41181" dir="bugs/serialVersionUID">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, PrivilegedAspect.aj">
+            <message line="1" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Perthis aspect" pr="41181" dir="bugs/serialVersionUID" comment="Warning because added of added interface MightHaveAspect. Added field is private transient">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, PerThisAspect.aj">
+            <message line="0" kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="declare String field on interface" pr="52107" dir="bugs/fieldsOnInterfaces">
+		<compile files="StringFieldOnInterface.java">
+			<message text="this affected type is not exposed" line="16" kind="warning"></message>
+         	<message text="this affected type is not exposed" line="17" kind="warning"></message>
+		</compile>	   
+	</ajc-test>
+<ajc-test title="declare int field on interface" pr="52107" dir="bugs/fieldsOnInterfaces">
+		<compile files="IntFieldOnInterface.java">
+		<message text="this affected type is not exposed" line="27" kind="warning"></message>
+         	<message text="this affected type is not exposed" line="28" kind="warning"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="declare Object field on interface" pr="52107" dir="bugs/fieldsOnInterfaces">
+		<compile files="ObjectFieldOnInterface.java">
+			<message text="this affected type is not exposed" line="20" kind="warning"></message>
+         	<message text="this affected type is not exposed" line="21" kind="warning"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="-deprecation not working?" pr="54098" dir="bugs/deprecated">
+    	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
+            <message line="5" kind="warning"></message>
+            <message line="6" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="retitle warning to circular {advice} dependency at ..." pr="44272" dir="bugs">
+        <compile files="CircularAdvicePrecedence.java">
+            <message line="4" kind="error"></message> 
+            <message line="5" kind="error"></message> 
+            <message line="6" kind="error"></message> 
+        </compile>
+    </ajc-test>
+<ajc-test title="declare precedence on a class should be a compile-time error 1" pr="53012" dir="bugs/declarePrecedenceWithClasses">
+        <compile files="DeclarePrecedenceTestClass.java">
+          <message text="Non-aspect types can only be specified" line="10" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare precedence on a class should be a compile-time error 2" pr="53012" dir="bugs/declarePrecedenceWithClasses">
+        <compile files="Priority.aj"></compile>
+    </ajc-test>
+<ajc-test title="error Type mismatch: cannot convert from java.lang.String to java.lang.String" pr="55341" keywords="" dir="bugs/StringToString" comment="make helloworld.jar with 'ajc -outjar helloworld.jar HW.java' or run BcweaverJarMaker">
+        <compile files="X.java" classpath="helloworld.jar">
+        	<message line="3" kind="warning"></message>
+        	<message line="7" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error binary-weaving NPE 1" pr="57432" dir="bugs/systemouts">
+        <compile files="injar-debug.jar,A.java">
+			<message line="12" kind="error" file="X.java"></message>
+			<message line="13" kind="error" file="X.java"></message>
+			<message line="20" kind="error" file="X.java"></message>
+			<message line="22" kind="error" file="X.java"></message>
+			<message line="23" kind="error" file="X.java"></message>
+			<message line="27" kind="error" file="X.java"></message>
+			<message line="28" kind="error" file="X.java"></message>
+			<message line="29" kind="error" file="X.java"></message>
+			<message line="30" kind="error" file="X.java"></message>
+			<message line="31" kind="error" file="X.java"></message>
+			<message line="32" kind="error" file="X.java"></message>
+			<message line="33" kind="error" file="X.java"></message>
+			<message line="34" kind="error" file="X.java"></message>
+			<message line="35" kind="error" file="X.java"></message>
+			<message line="36" kind="error" file="X.java"></message>
+			<message line="37" kind="error" file="X.java"></message>
+			<message line="38" kind="error" file="X.java"></message>
+			<message line="39" kind="error" file="X.java"></message>
+			<message line="40" kind="error" file="X.java"></message>
+			<message line="41" kind="error" file="X.java"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error binary-weaving NPE 2 " pr="57432" dir="bugs/systemouts">
+        <compile files="injar-nodebug.jar,A.java">
+			<message line="0" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" dir="bugs/tooManyErrors">
+        <compile files="Joinpoints101.jar,DecErrors.aj">
+         
+          <message line="10" kind="error"></message><message line="11" kind="error"></message>
+          <message line="12" kind="error"></message><message line="13" kind="error"></message>
+          <message line="14" kind="error"></message>
+
+          <message line="16" kind="error"></message><message line="17" kind="error"></message>
+          <message line="18" kind="error"></message><message line="19" kind="error"></message>
+          <message line="20" kind="error"></message>
+ 
+          <message line="22" kind="error"></message><message line="23" kind="error"></message>
+          <message line="24" kind="error"></message><message line="25" kind="error"></message>
+          <message line="26" kind="error"></message>
+ 
+          <message line="28" kind="error"></message><message line="29" kind="error"></message>
+          <message line="30" kind="error"></message><message line="31" kind="error"></message>
+          <message line="32" kind="error"></message>
+  
+          <message line="34" kind="error"></message><message line="35" kind="error"></message>
+          <message line="36" kind="error"></message><message line="37" kind="error"></message>
+          <message line="38" kind="error"></message>
+ 
+          <message line="40" kind="error"></message><message line="41" kind="error"></message>
+          <message line="42" kind="error"></message><message line="43" kind="error"></message>
+          <message line="44" kind="error"></message>
+          
+          <message line="46" kind="error"></message><message line="47" kind="error"></message>
+          <message line="48" kind="error"></message><message line="49" kind="error"></message>
+          <message line="50" kind="error"></message>
+ 
+          <message line="52" kind="error"></message><message line="53" kind="error"></message>
+          <message line="54" kind="error"></message><message line="55" kind="error"></message>
+          <message line="56" kind="error"></message>
+  
+          <message line="58" kind="error"></message><message line="59" kind="error"></message>
+          <message line="60" kind="error"></message><message line="61" kind="error"></message>
+          <message line="62" kind="error"></message>
+ 
+          <message line="64" kind="error"></message><message line="65" kind="error"></message>
+          <message line="66" kind="error"></message><message line="67" kind="error"></message>
+          <message line="68" kind="error"></message>
+          
+          <message line="70" kind="error"></message><message line="71" kind="error"></message>
+          <message line="72" kind="error"></message><message line="73" kind="error"></message>
+          <message line="74" kind="error"></message>
+ 
+          <message line="76" kind="error"></message><message line="77" kind="error"></message>
+          <message line="78" kind="error"></message><message line="79" kind="error"></message>
+          <message line="80" kind="error"></message>
+  
+          <message line="82" kind="error"></message><message line="83" kind="error"></message>
+          <message line="84" kind="error"></message><message line="85" kind="error"></message>
+          <message line="86" kind="error"></message>
+ 
+          <message line="88" kind="error"></message><message line="89" kind="error"></message>
+          <message line="90" kind="error"></message><message line="91" kind="error"></message>
+          <message line="92" kind="error"></message>
+          
+          <message line="94" kind="error"></message><message line="95" kind="error"></message>
+          <message line="96" kind="error"></message><message line="97" kind="error"></message>
+          <message line="98" kind="error"></message>
+ 
+          <message line="100" kind="error"></message><message line="101" kind="error"></message>
+          <message line="102" kind="error"></message><message line="103" kind="error"></message>
+          <message line="104" kind="error"></message>
+  
+          <message line="106" kind="error"></message><message line="107" kind="error"></message>
+          <message line="108" kind="error"></message><message line="109" kind="error"></message>
+          <message line="110" kind="error"></message>
+ 
+          <message line="112" kind="error"></message><message line="113" kind="error"></message>
+          <message line="114" kind="error"></message><message line="115" kind="error"></message>
+          <message line="116" kind="error"></message>
+          
+          <message line="118" kind="error"></message><message line="119" kind="error"></message>
+          <message line="120" kind="error"></message><message line="121" kind="error"></message>
+          <message line="122" kind="error"></message>
+  
+          <message line="124" kind="error"></message><message line="125" kind="error"></message>
+          <message line="126" kind="error"></message><message line="127" kind="error"></message>
+          <message line="128" kind="error"></message>
+ 
+          <message line="130" kind="error"></message>
+          
+        </compile>
+    </ajc-test>
+<ajc-test title="NPE in compiler when using (an unusual) declare warning against a ctor ITD" pr="59397" dir="bugs">
+        <compile files="DecwInitializationITD.java">
+        	<message line="16" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="wrong variable binding in || pointcuts" pr="61568" dir="bugs">
+        <compile files="DisjunctVarBinding.java">
+          <message text="Ambiguous binding of type B" line="34" kind="error"></message>
+          <message text="Ambiguous binding of type A" line="34" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="error message for constructor-execution pcd" pr="60936" dir="bugs">
+        <compile files="InterfaceConstructor.java">
+          <message text="no interface constructor-execution join point" line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="false ambigous binding error (introduced in 1.2rc2)" pr="62073" dir="bugs">
+        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
+        	<message text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
+        	<message text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
+        </compile>
+        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
+        	<message text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
+        	<message text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" dir="bugs/IfPerThis">
+        <compile files="Testcase1.java">
+        	<message text="if() pointcut designator cannot be used directly in a per clause" line="15" kind="error"></message>
+        	<message text="if() pointcut designator cannot be used directly in a per clause" line="23" kind="error"></message>
+        	<message text="if() pointcut designator cannot be used directly in a per clause" line="25" kind="error"></message>
+        	<message text="if() pointcut designator cannot be used directly in a per clause" line="27" kind="error"></message>
+        </compile>
     </ajc-test>
  
 </suite>
