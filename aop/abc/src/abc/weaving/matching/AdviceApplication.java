@@ -154,23 +154,12 @@ public abstract class AdviceApplication {
 
 	    SootClass sootCls = cls.getSootClass();
 	    Iterator methodIt;
-
-	    boolean hasclinit=false;
-
-	    for(methodIt=sootCls.methodIterator();methodIt.hasNext();) {
-
-		final SootMethod method = (SootMethod) methodIt.next();
-		if(method.getName().equals(SootMethod.staticInitializerName))
-		    hasclinit=true;
-
-		if(method.isAbstract()) continue;
-		if(method.isNative()) continue;
-
-		doMethod(info,sootCls,method,ret);
-	    }
+	    // Laurie changed this .... the old one was wiping out the
+	    // clinits that were really there
+	    boolean hasclinit=sootCls.declaresMethod("void <clinit>()");
 	    if(!hasclinit) {
 		SootMethod clinit = new SootMethod
-		    (SootMethod.staticInitializerName,
+		    ("<clinit>",
 		     new ArrayList(),
 		     VoidType.v(),
 		     Modifier.STATIC);
