@@ -1,6 +1,8 @@
 package abc.aspectj.ast;
 
-
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Stack;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
 import polyglot.types.MethodInstance;
 import polyglot.types.LocalInstance;
+import polyglot.types.ClassType;
 import polyglot.types.Type;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.AddMemberVisitor;
@@ -247,12 +250,24 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 			throw new SemanticException("Nested aspects must be static",position());
 		AspectDecl t = (AspectDecl) super.typeCheck(tc);
 		TypeSystem ts = tc.typeSystem();
-		if (ts.interfaces(t.type()).contains(ts.Serializable()))
+		Stack s = new Stack();
+		s.push(t.type());
+		Set visited = new HashSet();
+		while (!s.isEmpty()) {
+			ClassType ct = (ClassType) s.pop();
+			if (visited.contains(ct))
+				continue;
+			visited.add(ct);
+			if (ct.interfaces().contains(ts.Serializable()))
 					throw new SemanticException("Aspects cannot implement Serializable",position());
-		if (ts.interfaces(t.type()).contains(ts.Cloneable()))
-			throw new SemanticException("Aspects cannot implement Cloneable",position());
-		if (superClass()!= null && 
-		    AspectJFlags.isAspectclass(superClass.type().toClass().flags()) &&
+			if (ct.interfaces().contains(ts.Cloneable()))
+					throw new SemanticException("Aspects cannot implement Cloneable",position());
+			if (ct.superType()!= null)
+				s.push(ct.superType());
+			s.addAll(ct.interfaces());
+		}
+		if  (superClass() != null &&
+		     (superClass.type() instanceof AspectType) &&
 		    ! superClass.type().toClass().flags().isAbstract())
 			throw new SemanticException("Only abstract aspects can be extended",superClass.position());
 		return t;
