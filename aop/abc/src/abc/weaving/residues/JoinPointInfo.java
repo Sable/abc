@@ -1,7 +1,10 @@
 package abc.weaving.residues;
 
 import soot.*;
+import soot.util.Chain;
+import soot.jimple.Stmt;
 import abc.weaving.matching.ShadowMatch;
+import abc.soot.util.LocalGeneratorEx;
 
 public class JoinPointInfo extends ContextValue {
 
@@ -21,5 +24,9 @@ public class JoinPointInfo extends ContextValue {
 
     public Value getSootValue() {
 	return sm.sp.getThisJoinPoint();
+    }
+
+    public Stmt doInit(LocalGeneratorEx lg,Chain units,Stmt begin) {
+	return sm.sp.lazyInitThisJoinPoint(lg,units,begin);
     }
 }

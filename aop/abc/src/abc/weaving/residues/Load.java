@@ -32,6 +32,8 @@ public class Load extends Residue {
 		Stmt begin,
 		Stmt fail,
 		WeavingContext wc) {
+	    if(value instanceof JoinPointInfo) 
+		begin=((JoinPointInfo) value).doInit(localgen,units,begin);
 	    return variable.set(localgen,units,begin,wc,value.getSootValue());
 	}
 

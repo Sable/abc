@@ -66,96 +66,115 @@ public class ShadowPoints {
 	shadowmatch=sm;
     }
 
+    public Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
+	Stmt skip=Jimple.v().newNopStmt();
+        Stmt jump=Jimple.v().newIfStmt
+            (Jimple.v().newNeExpr(getThisJoinPoint(),NullConstant.v()),skip);
+        units.insertAfter(jump,start);
+        Stmt init=initThisJoinPoint(lg,units,jump);
+        units.insertAfter(skip,init);
+        return skip;
+
+    }
+
+    private Stmt initThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
+	Type object=Scene.v().getSootClass("java.lang.Object").getType();
+	WeavingContext wc=new WeavingContext();
+	
+	WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
+				       "sjpinfo");
+	Stmt bindSJPInfo
+	    =new Load(new StaticJoinPointInfo(shadowmatch.getSJPInfo()),sjpVal)
+	    .codeGen(container,lg,units,start,null,wc);
+	
+	WeavingVar thisVal=new LocalVar(object,"thisval");
+	ContextValue thisCV=shadowmatch.getThisContextValue();
+	// Sometimes using this would actually cause a pointcut to fail to match,
+	// but here we just want a null value in the JoinPointInfo
+	if(thisCV==null) thisCV=new JimpleValue(NullConstant.v());
+	Stmt bindThis=Bind
+	    .construct(thisCV,object,thisVal)
+	    .codeGen(container,lg,units,bindSJPInfo,end,wc);
+	
+	WeavingVar targetVal=new LocalVar(object,"targetval");
+	ContextValue targetCV=shadowmatch.getTargetContextValue();
+	// Likewise here
+	if(targetCV==null) targetCV=new JimpleValue(NullConstant.v());
+	Stmt bindTarget=Bind
+	    .construct(targetCV,object,targetVal)
+	    .codeGen(container,lg,units,bindThis,end,wc);
+	
+	Local argsVal=lg.generateLocal(ArrayType.v(object,1),"argsvals");
+	
+	List/*<ContextValue>*/ argsCVs=shadowmatch.getArgsContextValues();
+	
+	Stmt initArgsArray=Jimple.v().newAssignStmt
+	    (argsVal,Jimple.v().newNewArrayExpr(object,IntConstant.v(argsCVs.size())));
+	units.insertAfter(initArgsArray,bindTarget);
+	
+	Iterator it=argsCVs.iterator();
+	Stmt last=initArgsArray;
+	int i=0;
+	while(it.hasNext()) {
+	    ContextValue argCV=(ContextValue) it.next();
+	    WeavingVar argVal=new LocalVar(object,"argval");
+	    Stmt bindArg=Bind
+		.construct(argCV,object,argVal)
+		.codeGen(container,lg,units,last,end,wc);
+	    
+	    last=Jimple.v().newAssignStmt
+		(Jimple.v().newArrayRef(argsVal,IntConstant.v(i)),
+		 argVal.get());
+	    units.insertAfter(last,bindArg);
+	    
+	    i++;
+	}
+	
+	List/*<Value>*/ constrArgs=new LinkedList();
+	List/*<SootType>*/ constrTypes=new LinkedList();
+	
+	constrTypes.add(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
+	constrArgs.add(sjpVal.get()); 
+	
+	constrTypes.add(object);
+	constrArgs.add(thisVal.get()); 
+	
+	constrTypes.add(object);
+	constrArgs.add(targetVal.get());
+	
+	constrTypes.add(ArrayType.v(object,1));
+	constrArgs.add(argsVal);
+	
+	
+	SootClass factoryclass=Scene.v().loadClassAndSupport
+	    ("org.aspectj.runtime.reflect.Factory");
+	
+	Stmt makeJP=Jimple.v().newAssignStmt
+	    (getThisJoinPoint(),
+	     Jimple.v().newStaticInvokeExpr
+	     (factoryclass.getMethod("makeJP",constrTypes),
+	      constrArgs));
+	units.insertAfter(makeJP,last);
+
+	return makeJP;
+    }
+    
     private Local thisJoinPoint=null;
     public Local getThisJoinPoint() {
 	if(thisJoinPoint==null) {
 	    LocalGeneratorEx lg=new LocalGeneratorEx(container.getActiveBody());
 
 	    Chain units=container.getActiveBody().getUnits();
-	    
+
+	    thisJoinPoint=lg.generateLocal
+		(RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint");
+
 	    Stmt startJP=Jimple.v().newNopStmt();
 	    units.insertBefore(startJP,begin);
 	    
-	    Type object=Scene.v().getSootClass("java.lang.Object").getType();
-	    WeavingContext wc=new WeavingContext();
-	    
-	    WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
-					   "sjpinfo");
-	    Stmt bindSJPInfo
-		=new Load(new StaticJoinPointInfo(shadowmatch.getSJPInfo()),sjpVal)
-		.codeGen(container,lg,units,startJP,end,wc);
-	    
-	    WeavingVar thisVal=new LocalVar(object,"thisval");
-	    ContextValue thisCV=shadowmatch.getThisContextValue();
-	    // Sometimes using this would actually cause a pointcut to fail to match,
-	    // but here we just want a null value in the JoinPointInfo
-	    if(thisCV==null) thisCV=new JimpleValue(NullConstant.v());
-	    Stmt bindThis=Bind
-		.construct(thisCV,object,thisVal)
-		.codeGen(container,lg,units,bindSJPInfo,end,wc);
-	
-	    WeavingVar targetVal=new LocalVar(object,"targetval");
-	    ContextValue targetCV=shadowmatch.getTargetContextValue();
-	    // Likewise here
-	    if(targetCV==null) targetCV=new JimpleValue(NullConstant.v());
-	    Stmt bindTarget=Bind
-		.construct(targetCV,object,targetVal)
-		.codeGen(container,lg,units,bindThis,end,wc);
-	
-	    Local argsVal=lg.generateLocal(ArrayType.v(object,1),"argsvals");
-	    
-	    List/*<ContextValue>*/ argsCVs=shadowmatch.getArgsContextValues();
-	
-	    Stmt initArgsArray=Jimple.v().newAssignStmt
-		(argsVal,Jimple.v().newNewArrayExpr(object,IntConstant.v(argsCVs.size())));
-	    units.insertAfter(initArgsArray,bindTarget);
-	    
-	    Iterator it=argsCVs.iterator();
-	    Stmt last=initArgsArray;
-	    int i=0;
-	    while(it.hasNext()) {
-		ContextValue argCV=(ContextValue) it.next();
-		WeavingVar argVal=new LocalVar(object,"argval");
-		Stmt bindArg=Bind
-		    .construct(argCV,object,argVal)
-		    .codeGen(container,lg,units,last,end,wc);
-		
-		last=Jimple.v().newAssignStmt
-		    (Jimple.v().newArrayRef(argsVal,IntConstant.v(i)),
-		     argVal.get());
-		units.insertAfter(last,bindArg);
-		
-		i++;
-	    }
-
-	    List/*<Value>*/ constrArgs=new LinkedList();
-	    List/*<SootType>*/ constrTypes=new LinkedList();
-	    
-	    constrTypes.add(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
-	    constrArgs.add(sjpVal.get()); 
-	    
-	    constrTypes.add(object);
-	    constrArgs.add(thisVal.get()); 
-	    
-	    constrTypes.add(object);
-	    constrArgs.add(targetVal.get());
-	    
-	    constrTypes.add(ArrayType.v(object,1));
-	    constrArgs.add(argsVal);
-	    
-	    
-	    thisJoinPoint=lg.generateLocal
-		(RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint");
-	    
-	    SootClass factoryclass=Scene.v().loadClassAndSupport
-		("org.aspectj.runtime.reflect.Factory");
-	    
-	    Stmt makeJP=Jimple.v().newAssignStmt
-		(thisJoinPoint,
-		 Jimple.v().newStaticInvokeExpr
-		 (factoryclass.getMethod("makeJP",constrTypes),
-		  constrArgs));
-	    units.insertAfter(makeJP,last);
+	    Stmt assignStmt=Jimple.v().newAssignStmt(thisJoinPoint,NullConstant.v());
+	    units.insertAfter(assignStmt,startJP);
+	    //	    initThisJoinPoint(lg,units,startJP);
 	}
 	return thisJoinPoint;
     }
