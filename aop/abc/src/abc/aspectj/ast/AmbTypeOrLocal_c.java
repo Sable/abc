@@ -61,6 +61,10 @@ public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 		this.type = type;
 	}
 	
+	/* return the typenode */ 
+	public TypeNode type(){
+		return type;
+	}
 	/** Disambiguate the expression. */
 	 public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 	 	// first try to produce a local that refers to an advice formal

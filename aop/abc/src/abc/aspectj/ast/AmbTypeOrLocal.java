@@ -20,6 +20,8 @@
 
 package abc.aspectj.ast;
 
+import polyglot.ast.TypeNode;
+
 
 /** Represents either a type or a local. This is for arguments of <code>args(..)</code>,
  *  <code>this(..)</code>, <code>target(..)</code> as well as named pointcuts.
@@ -29,5 +31,5 @@ package abc.aspectj.ast;
  *  @author Aske Simon Christensen
  */
 public interface AmbTypeOrLocal extends ArgPattern {
-
+	public TypeNode type();
 }
