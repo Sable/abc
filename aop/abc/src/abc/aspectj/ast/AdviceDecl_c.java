@@ -1,7 +1,9 @@
 package arc.aspectj.ast;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Collections;
 
 import polyglot.util.CodeWriter;
@@ -23,10 +25,12 @@ import polyglot.types.MethodInstance;
 import polyglot.types.SemanticException;
 import polyglot.types.Type;
 import polyglot.types.TypeSystem;
+import polyglot.types.ClassType;
 
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.TypeChecker;
+import polyglot.visit.TypeBuilder;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
 
@@ -190,8 +194,56 @@ public class AdviceDecl_c extends MethodDecl_c
 		return this;
 	}
 	
+	/** build the type; the spec is included in the advice instance to give
+	 *  intelligible error messages - see adviceInstance overrides
+	 */	
+	public Node buildTypes(TypeBuilder tb) throws SemanticException {
+			TypeSystem ts = tb.typeSystem();
 
-			
+			List l = new ArrayList(formals.size());
+			for (int i = 0; i < formals.size(); i++) {
+			  l.add(ts.unknownType(position()));
+			}
+
+			List m = new ArrayList(throwTypes().size());
+			for (int i = 0; i < throwTypes().size(); i++) {
+			  m.add(ts.unknownType(position()));
+			}
+
+			MethodInstance mi = ((AspectJTypeSystem)ts).adviceInstance(position(), ts.Object(),
+												  Flags.NONE,
+												  ts.unknownType(position()),
+												  name, l, m, spec);
+			return methodInstance(mi);
+		}
+
+	protected MethodInstance makeMethodInstance(ClassType ct, TypeSystem ts)
+		throws SemanticException {
+
+		List argTypes = new LinkedList();
+		List excTypes = new LinkedList();
+
+		for (Iterator i = formals.iterator(); i.hasNext(); ) {
+			Formal f = (Formal) i.next();
+			argTypes.add(f.declType());
+		}
+
+		for (Iterator i = throwTypes().iterator(); i.hasNext(); ) {
+			TypeNode tn = (TypeNode) i.next();
+			excTypes.add(tn.type());
+		}
+
+		Flags flags = this.flags;
+
+		if (ct.flags().isInterface()) {
+			flags = flags.Public().Abstract();
+		}
+	
+	
+		return ((AspectJTypeSystem)ts).adviceInstance(position(),
+								       ct, flags, returnType.type(), name,
+								       argTypes, excTypes,spec);
+		}
 }
 	
 

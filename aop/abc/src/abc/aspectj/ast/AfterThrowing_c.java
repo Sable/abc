@@ -22,6 +22,26 @@ public class AfterThrowing_c extends AdviceSpec_c
         this.returnVal = exc;
     }
 
+	//	string representation for error messages
+	public String toString() {
+		String s = "after(";
+
+		for (Iterator i = formals.iterator(); i.hasNext(); ) {
+			Formal t = (Formal) i.next();
+			s += t.toString();
+
+			if (i.hasNext()) {
+					 s += ", ";
+			}
+		}
+		s = s + ") throwing";
+		
+		if (returnVal != null)
+		   s = s + " " + returnVal;
+		
+		return s;
+	}
+    
        
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.begin(0);

@@ -15,7 +15,7 @@ public class AdviceSpec_c extends Node_c implements AdviceSpec
     protected TypeNode returnType;
     protected Formal returnVal;
 
-    public AdviceSpec_c(Position pos) {
+	public AdviceSpec_c(Position pos) {
         super(pos);
         this.formals = null;
 	    this.returnType = null;

@@ -21,6 +21,23 @@ public class Before_c extends AdviceSpec_c
         this.returnType = voidn;
     }
 
+	// string representation for error messages
+	public String toString() {
+		String s = "before(";
+
+		for (Iterator i = formals.iterator(); i.hasNext(); ) {
+			Formal t = (Formal) i.next();
+			s += t.toString();
+
+			if (i.hasNext()) {
+				  s += ", ";
+			}
+		}
+		s = s + ")";
+		
+		return s;
+	}
+	  
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("before(");
 

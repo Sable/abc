@@ -12,30 +12,22 @@ public class DeclareParentsExt_c extends DeclareDecl_c
 {
 
     ClassnamePatternExpr pat;
-    List types;
+    TypeNode type;
 
     public DeclareParentsExt_c(Position pos, 
                                ClassnamePatternExpr pat,
-                               List types)
+                               TypeNode type)
     {
 	super(pos);
         this.pat  = pat;
-        this.types = TypedList.copyAndCheck(types,TypeNode.class,true);
+        this.type = type;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("declare parents : ");
         print(pat, w, tr);
         w.write(" extends ");
-        for (Iterator i = types.iterator(); i.hasNext(); ) {
-	       TypeNode n = (TypeNode) i.next();
-                print(n,w,tr);
-		
-		if (i.hasNext()) {
-		    w.write(",");
-		    w.allowBreak(4, " ");
-		}
-	    }
+        print(type,w,tr);
         w.write(";");
     }
 

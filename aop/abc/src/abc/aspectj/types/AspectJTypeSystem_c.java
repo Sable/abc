@@ -4,6 +4,8 @@ import java.util.List;
 import polyglot.util.Position;
 import polyglot.types.*;
 import polyglot.frontend.Source;
+
+import arc.aspectj.ast.AdviceSpec;
 import arc.aspectj.types.AspectJFlags;
 
 import soot.javaToJimple.jj.types.JjTypeSystem_c;
@@ -31,7 +33,19 @@ public class AspectJTypeSystem_c
 		    }
 		    super.checkTopLevelClassFlags(f);
 	}
-			
+		
+	public MethodInstance adviceInstance(Position pos,
+										ReferenceType container, Flags flags,
+						Type returnType, String name,
+						List argTypes, List excTypes, AdviceSpec spec) {
+
+		   assert_(container);
+		   assert_(returnType);
+		   assert_(argTypes);
+		   assert_(excTypes);
+	   return new AdviceInstance_c(this, pos, container, flags,
+					   returnType, name, argTypes, excTypes,spec);
+	}	
 			
 	
 

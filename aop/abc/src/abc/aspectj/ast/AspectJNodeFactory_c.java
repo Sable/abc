@@ -62,8 +62,8 @@ public class AspectJNodeFactory_c
 
     public DeclareParentsExt DeclareParentsExt(Position pos,
                                                ClassnamePatternExpr pat,
-                                               List types) {
-        DeclareParentsExt n = new DeclareParentsExt_c(pos,pat,types);
+                                               TypeNode type) {
+        DeclareParentsExt n = new DeclareParentsExt_c(pos,pat,type);
         return n;
     }
 

@@ -41,7 +41,7 @@ public interface AspectJNodeFactory
     
     DeclareParentsExt DeclareParentsExt(Position pos,
                                         ClassnamePatternExpr pat,
-                                        List types);
+                                        TypeNode type);
 
     DeclareParentsImpl DeclareParentsImpl(Position pos,
                                           ClassnamePatternExpr pat,
