@@ -2408,6 +2408,16 @@
         <compile files="AdviceFormalsCp.java"></compile>
         <run class="AdviceFormalsCp"></run>
     </ajc-test>
+<ajc-test title="advice formals produce errors just like method formals" pr="544" num="520" keywords="from-resolved_10x" dir="new" abccomment="we give up in each method after finding the first error">
+        <compile files="AdviceFormalsCf.java">
+            <ajcmessage line="28" kind="error"></ajcmessage>
+            <ajcmessage line="29" kind="error"></ajcmessage>
+            <ajcmessage line="36" kind="error"></ajcmessage>
+            <ajcmessage line="37" kind="error"></ajcmessage>
+            <message line="28" kind="error"></message>
+            <message line="36" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="potential method conflicts with introductions and interfaces and PR#561" pr="570" num="522" keywords="from-resolved_10x" dir="new">
         <compile files="MethodConflictsCP.java"></compile>
         <run class="MethodConflictsCP"></run>
@@ -2443,6 +2453,27 @@
 <ajc-test title="Aspect type unavailable to qualified new expressions in body of introduced methods" num="532" keywords="from-resolved_10x" dir="new/introTypeMissing">
         <compile files="AspectInIntroducedMethod.java"></compile>
         <run class="AspectInIntroducedMethod"></run>
+    </ajc-test>
+<ajc-test title="Introduced type unavailable to instanceof expressions in introduced methods" num="533" keywords="from-resolved_10x,knownLimitation" dir="new/introTypeMissing" abccomment="ajc seems to think foo instanceof int is OK!">
+        <compile files="InstanceOf.java,TargetClass.java,Util.java">
+            <ajcmessage line="19" kind="error"></ajcmessage>
+            <ajcmessage line="20" kind="error"></ajcmessage>
+            <ajcmessage line="21" kind="error"></ajcmessage>
+            <ajcmessage line="22" kind="error"></ajcmessage>
+            <ajcmessage line="23" kind="error"></ajcmessage>
+            <ajcmessage line="24" kind="error"></ajcmessage>
+            <ajcmessage line="25" kind="error"></ajcmessage>
+            <ajcmessage line="26" kind="error"></ajcmessage>
+            <message line="19" kind="error"></message>
+            <message line="20" kind="error"></message>
+            <message line="21" kind="error"></message>
+            <message line="22" kind="error"></message>
+            <message line="23" kind="error"></message>
+            <message line="24" kind="error"></message>
+            <message line="25" kind="error"></message>
+            <message line="26" kind="error"></message>
+            <message line="29" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="Introduced type unavailable to qualified new expressions in introduced field initializers" num="534" keywords="from-resolved_10x" dir="new/introTypeMissing">
         <compile files="InnerInFieldInit.java,TargetClass.java,Util.java"></compile>
@@ -2755,6 +2786,21 @@
             <message line="15" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="incrementing objects, arrays CE" pr="715" num="610" keywords="from-resolved_104,purejava,messages-vary" dir="new" abccomment="slightly different errors reported">
+        <compile options="!eclipse" files="ArrayIncCE.java">
+            <ajcmessage line="15" kind="error"></ajcmessage>
+            <ajcmessage line="16" kind="error"></ajcmessage>
+            <ajcmessage line="17" kind="error"></ajcmessage>
+            <ajcmessage line="18" kind="error"></ajcmessage>
+            <ajcmessage line="19" kind="error"></ajcmessage>
+            <message line="15" kind="error"></message>
+            <message line="16" kind="error"></message>
+            <message line="17" kind="error"></message>
+            <message line="18" kind="error"></message>
+            <message line="19" kind="error"></message>
+            <message line="20" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="incrementing objects, arrays - 3" pr="715" num="611" keywords="from-resolved_104,purejava" dir="new">
         <compile files="ArrayInc3CE.java">
             <message line="15" kind="error"></message>
@@ -2772,6 +2818,13 @@
         <compile files="TargetObjectReplacement.java"></compile>
         <run class="TargetObjectReplacement"></run>
     </ajc-test>
+<ajc-test title="name binding in before cflow containing cflowbelow" pr="659" num="616" keywords="from-resolved_104" dir="new">
+        <compile options="!eclipse" files="ArgsInCflow.java">
+            <ajcmessage line="29" kind="error"></ajcmessage>
+            <ajcmessage line="32" kind="error"></ajcmessage>
+            <message line="32" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="no circularity errors simply because of inners (1)" pr="737" num="617" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="circle/Test1CP.java"></compile>
         <run class="circle.Test1CP"></run>
@@ -2779,6 +2832,23 @@
 <ajc-test title="no circularity errors simply because of inners (2)" pr="737" num="618" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="circle/Test2CP.java"></compile>
         <run class="circle.Test2CP"></run>
+    </ajc-test>
+<ajc-test title="should have circular inheritance errors (1)" pr="737" num="619" keywords="from-resolved_105,purejava,messages-vary" dir="pureJava">
+      <abckeywords> <nate></nate><laurie></laurie></abckeywords>
+        <compile options="!eclipse" files="circle/Test1CF.java">
+            <message line="7" kind="error"></message>
+            <message line="15" kind="error"></message>
+            <message line="17" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="should have circular inheritance errors (2)" pr="737" num="620" keywords="from-resolved_105,purejava,messages-vary" dir="pureJava" abccomment="we only report one error for each inheritance loop">
+      <abckeywords> <nate></nate><laurie></laurie></abckeywords>
+        <compile options="!eclipse" files="circle/Test2CF.java">
+            <ajcmessage line="6" kind="error"></ajcmessage>
+            <ajcmessage line="10" kind="error"></ajcmessage>
+            <ajcmessage line="15" kind="error"></ajcmessage>
+            <message line="15" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="file order in type searching" pr="728" num="621" keywords="from-resolved_105" dir="new/pr728">
         <compile files="AnotherClass.java,Interface.java"></compile>
@@ -2878,6 +2948,14 @@
             <message line="4" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="more tests of super alone" num="640" keywords="from-resolved_105,purejava" dir="pureJava">
+        <compile files="SuperIsWeird.java">
+            <message line="9" kind="error"></message>
+            <message line="13" kind="error"></message>
+            <message line="20" kind="error"></message>
+            <message line="21" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="The dynamic type, not the static one, should be used in if pcds" num="641" keywords="from-resolved_105" dir="new">
         <compile files="StaticTypeInIf.java"></compile>
         <run class="StaticTypeInIf"></run>
@@ -2936,6 +3014,13 @@
            <message line="10" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="assert flow" num="662" keywords="from-14tests,purejava" dir="pureJava" abccomment="assert b=false  should not definitely assign to b,         so jlc does not give a later var not assigned error.  Reported         to Polyglot bugzilla July 7/04 LJH">
+        <compile options="-source,1.4" files="AssertsCF.java">
+            <ajcmessage line="8" kind="error"></ajcmessage>
+            <ajcmessage line="11" kind="error"></ajcmessage>
+            <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="assert flow - 2" num="663" keywords="from-14tests,purejava" dir="pureJava">
         <compile options="-source,1.4" files="AssertsCF2.java">
             <message line="6" kind="error"></message>
@@ -2957,6 +3042,14 @@
 <ajc-test title="various forms of package name pattern matching work" num="672" keywords="from-broken14usejavac" dir="base/test131">
         <compile files="Driver.java,p1/C1.java,p1/p2/C2.java"></compile>
         <run class="Driver"></run>
+    </ajc-test>
+<ajc-test title="import of a class in the default package" pr="134" num="673" keywords="from-broken14usejavac,purejava" dir="new" abccomment="we get an extra (spurious, but not terrible) error">
+        <compile files="ImportFromUnnamed.java,DeclaredExcs.java">
+          <ajcmessage line="2" kind="error"></ajcmessage>
+          <message line="3" kind="error"></message>
+          <message line="12" kind="error"></message>
+        </compile>
+        <ajcrun class="ImportFromUnnamed"></ajcrun>
     </ajc-test>
 <ajc-test title="assert statement in advice coverage [requires 1.4]" pr="657" num="682" keywords="from-14tests,fail-in-eclipse" dir="new">
         <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
@@ -3032,6 +3125,13 @@
         <compile files="AnonymousSelfReference.java"></compile>
         <run class="AnonymousSelfReference"></run>
     </ajc-test>
+<ajc-test title="expect CE for unterminated declare error" num="714" dir="new" abccomment="the ajc error is much nicer than the abc one">
+        <compile files="UnterminatedDeclareErrorCE.java">
+            <ajcmessage line="4" kind="error"></ajcmessage>
+            <message line="5" kind="error"></message>
+            <message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="subtype pattern in dominates will conflict with type pattern" num="717" dir="new">
         <compile files="DominatesTypePatternCE.java">
         	<message line="15" kind="error"></message>
@@ -3047,7 +3147,7 @@
             <message line="17" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="declare interface implements interface" pr="853" num="725" dir="new">
+<ajc-test title="declare interface implements interface" pr="853" num="725" dir="new" abccomment="we already accept implements instead of extends here">
         <compile files="DeclareInterfaceImplementsInterface.java">
         </compile>
     </ajc-test>
@@ -3294,6 +3394,20 @@
 <ajc-test title="try switch VerifyError, InconsistentStackHeight" pr="38345" num="833" dir="bugs">
         <compile files="TrySwitch.java"></compile>
         <run class="TrySwitch"></run>
+    </ajc-test>
+<ajc-test title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" pr="39458" num="834" dir="bugs" abccomment="abc bails out early">
+        <compile files="NewVoid.java">
+            <ajcmessage line="17" kind="error"></ajcmessage>        
+            <ajcmessage line="20" kind="error"></ajcmessage>        
+            <ajcmessage line="21" kind="error"></ajcmessage>
+                  
+            <ajcmessage line="28" kind="error"></ajcmessage>        
+            <ajcmessage line="29" kind="warning"></ajcmessage>        
+            <ajcmessage line="30" kind="warning"></ajcmessage>            
+
+            <message line="20" kind="error"></message>        
+            <message line="28" kind="error"></message>        
+        </compile>
     </ajc-test>
 <ajc-test title="Missing import crashes compiler" pr="39460" num="835" dir="bugs">
         <compile files="MissingImport.java">
@@ -3720,9 +3834,22 @@
             <message line="13" kind="error"></message>
 		</compile>
 	</ajc-test>
+<ajc-test title="error Type mismatch: cannot convert from java.lang.String to java.lang.String" pr="55341" num="960" keywords="" dir="bugs/StringToString" comment="make helloworld.jar with 'ajc -outjar helloworld.jar HW.java' or run BcweaverJarMaker" abccomment="we think this is an error">
+        <compile files="X.java" classpath="helloworld.jar">
+        	<ajcmessage line="3" kind="warning"></ajcmessage>
+        	<ajcmessage line="7" kind="warning"></ajcmessage>
+        	<message line="3" kind="error"></message>
+        	<message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="NPE when binary weaving a ctor ITD" pr="59440" num="964" dir="bugs">
         <compile files="CtorITD.aj">
         	<message line="2" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="NPE in compiler when using (an unusual) declare warning against a ctor ITD" pr="59397" num="966" dir="bugs" abccomment="we do the right thing and ignore extra introduced arguments">
+        <compile files="DecwInitializationITD.java">
+        	<ajcmessage line="16" kind="warning"></ajcmessage>
         </compile>
     </ajc-test>
 <ajc-test title="InterTypeMethodDeclaration.java:104" pr="59778" num="967" dir="bugs/compileOrdering">
@@ -3736,6 +3863,12 @@
 <ajc-test title="nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" pr="61538" num="968" dir="bugs">
         <compile files="ConstructorMain.java"></compile>
         <run class="ConstructorMain"></run>
+    </ajc-test>
+<ajc-test title="wrong variable binding in || pointcuts" pr="61568" num="969" dir="bugs" abccomment="we support this fine">
+        <compile files="DisjunctVarBinding.java">
+          <ajcmessage text="Ambiguous binding of type B" line="34" kind="error"></ajcmessage>
+          <ajcmessage text="Ambiguous binding of type A" line="34" kind="error"></ajcmessage>
+        </compile>
     </ajc-test>
 <ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" num="972" dir="bugs/IfPerThis" abccomment="abc supports if() inside per clauses">
         <compile files="Testcase1.java">
