@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import soot.Body;
 import soot.BooleanType;
@@ -44,7 +43,6 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
-import soot.jimple.parser.node.ADivBinop;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
@@ -70,7 +68,6 @@ import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.NotResidue;
 import abc.weaving.residues.OrResidue;
 import abc.weaving.residues.Residue;
-import abc.weaving.weaver.AroundWeaver.State.*;
 
 /** Handle around weaving.
  * @author Sascha Kuzins 
@@ -1056,10 +1053,11 @@ public class AroundWeaver {
 				SootClass cl = Scene.v().getSootClass(className);
 				// if the class is a sub-class of the new class or 
 				// if this is the new class and we need to add a super to the new class
-				if (Util.isBaseClass(newAccessClass, cl) || (className.equals(newAccessClass.getName()) && bAddSuperToNewMethod)) {
+				if (Util.isBaseClass(newAccessClass, cl) || 
+					(className.equals(newAccessClass.getName()) && bAddSuperToNewMethod)) {
 					if (accessInfo.superCallTarget == null
 						|| // if the class has no super() call 
-					Util.isBaseClass(accessInfo.superCallTarget, newAccessClass)) { // or if it's invalid
+						Util.isBaseClass(accessInfo.superCallTarget, newAccessClass)) { // or if it's invalid
 	
 						// generate new super() call
 						Body body = accessInfo.method.getActiveBody();
@@ -1070,7 +1068,12 @@ public class AroundWeaver {
 						// This is the target class of the super call.
 						accessInfo.superCallTarget = cl.getSuperclass();
 						while (!keys.contains(accessInfo.superCallTarget.getName())) {
-							accessInfo.superCallTarget = accessInfo.superCallTarget.getSuperclass();
+							try {
+								accessInfo.superCallTarget = accessInfo.superCallTarget.getSuperclass();
+							} catch (RuntimeException e) {
+								System.err.println("Class: " + accessInfo.superCallTarget);
+								throw e;
+							}
 						}
 	
 						Util.removeStatements(body, accessInfo.defaultTarget, accessInfo.defaultEnd, null);
@@ -1544,7 +1547,7 @@ public class AroundWeaver {
 		public HashSet /*String*/
 		staticProceedTypes = new HashSet();
 		public boolean hasDynamicProceed = false;
-		public boolean bAllwaysStaticAccessMethod = true; //false;
+		public boolean bAllwaysStaticAccessMethod = false;//true; //false;
 
 		public static class ProceedInvokation {
 			public Local lhs;
@@ -1684,6 +1687,10 @@ public class AroundWeaver {
 			statements.remove(lookupStmt);
 			lookupStmt = newLookupStmt;
 
+			if (!bStaticAccessMethod) {
+				 adviceMethod.fixAccessMethodSuperCalls(joinpointClass);
+			}
+
 			Util.cleanLocals(body);			
 		}
 		//HashMap /*String, Integer*/ fieldIDs=new HashMap();
@@ -1775,11 +1782,12 @@ public class AroundWeaver {
 
 		public final AdviceMethod adviceMethod;
 		public final SootClass joinpointClass;
+		public final boolean bStaticAccessMethod;
 		Body body;
 		Chain statements;
 			
 		AccessMethod(AdviceMethod parent, SootClass joinpointClass, boolean bStaticAccessMethod, String accessMethodName) {
-
+			this.bStaticAccessMethod=bStaticAccessMethod;
 			this.adviceMethod = parent;
 			this.joinpointClass = joinpointClass;
 
@@ -1860,9 +1868,7 @@ public class AroundWeaver {
 				dynParamLocals.add(l);
 			}
 
-			if (!bStaticAccessMethod) {
-				 adviceMethod.fixAccessMethodSuperCalls(joinpointClass);
-			}
+			// fixSuperCalls used to be here...
 
 			Restructure.validateMethod(method);
 
@@ -1961,7 +1967,7 @@ public class AroundWeaver {
 			}
 			return ((Integer) staticDispatchTypeIDs.get(name)).intValue();
 		}
-		int nextStaticTypeDispatchID = 1; // 0 is special value
+		int nextStaticTypeDispatchID = 1; // 0 is a special value
 		HashMap /*String, int*/
 		staticDispatchTypeIDs = new HashMap();
 
