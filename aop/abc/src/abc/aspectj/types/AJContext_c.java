@@ -4,6 +4,8 @@ package abc.aspectj.types;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.Iterator;
 
 import polyglot.util.InternalCompilerError;
@@ -93,6 +95,21 @@ public class AJContext_c extends Context_c implements AJContext {
 	   }
 	
 	   visited.add(type);
+	   
+	   // add members of outer classes, in order of lexical scoping
+	   // so first build up the list of outer classes, then traverse it
+	   if (type instanceof ClassType) {
+	   	 	List outers = new LinkedList();
+	   	 	ClassType ct = type.toClass();
+	   	 	while (ct.outer() != null) {
+	   	 		outers.add(0,ct.outer());
+	   	 		ct = ct.outer();
+	   	 	}
+	   	 	for (Iterator oct = outers.iterator(); oct.hasNext(); ) {
+	   	 		ct = (ClassType) oct.next();
+	   	 		addMembers(ct,visited);
+	   	 	}
+	   }
 	
 	   // Add supertype members first to ensure overrides work correctly.
 	   if (type.superType() != null) {
@@ -121,6 +138,8 @@ public class AJContext_c extends Context_c implements AJContext {
 		   addMembers(t.toReference(),visited);
 	   }
 	   
+
+	   
 	
 		AspectJTypeSystem ts = (AspectJTypeSystem) typeSystem();
 	
@@ -135,6 +154,15 @@ public class AJContext_c extends Context_c implements AJContext {
 			if (ts.isAccessible(fi,this)) 
 				addITFieldHost(fi);
 	   }
+	   
+	   if (type.isClass()) {
+				   for (Iterator i = type.toClass().memberClasses().iterator();
+						i.hasNext(); ) {
+					   ClassType mct = (ClassType) i.next();
+					   if (ts.isAccessible(mct,this))
+					   		addNamed(mct);
+				   }
+			   }
 	}
 
 }

@@ -242,7 +242,8 @@ public class Supers {
 	}
     
 	public Call qualThis(AspectJNodeFactory nf, AspectJTypeSystem ts, ClassType target, Expr targetThis, ClassType qualifier) {
-		String qualThisName = UniqueID.newID(qualifier + "$this");
+		String qualName = qualifier.fullName().replace('.','$');
+		String qualThisName = UniqueID.newID(qualName + "$this");
 		Call c = nf.Call(targetThis.position(),targetThis,qualThisName);
 		MethodInstance mi = ts.methodInstance(targetThis.position(),target,Flags.PUBLIC,qualifier,qualThisName,new ArrayList(),new ArrayList());
 		qualThiss.add(new QualThis(mi,target,qualifier,c.position()));
