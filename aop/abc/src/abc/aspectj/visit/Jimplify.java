@@ -47,24 +47,11 @@ public class Jimplify extends OncePass {
     }
 
     public void once() {
-	long beforetime = System.currentTimeMillis();
 
 	List classProviders = new LinkedList();
 	classProviders.add( new AbcClassProvider() );
 	classProviders.add( new CoffiClassProvider() );
 	SourceLocator.v().setClassProviders(classProviders);
-
-	// NOTE: if you move where the resolveClassAndSupportClasses is
-	//   called,  please also move the timer code with it. LJH
-	for( Iterator classNameIt = class_to_ast.keySet().iterator(); classNameIt.hasNext(); ) {
-	    final String className = (String) classNameIt.next();
-	    if (abc.main.Debug.v().classResolving)
-		System.err.println("Resolving class "+className);
-	    SootResolver.v().resolveClass(className, SootClass.BODIES);
-	}
-
-	long aftertime = System.currentTimeMillis();
-	AbcTimer.addToSootResolve(aftertime-beforetime);
     }
 
     private class AbcClassProvider implements ClassProvider {
@@ -92,7 +79,6 @@ public class Jimplify extends OncePass {
 		InitialResolver.v().setAst(n);
 		InitialResolver.v().resolveAST();
 		ret = InitialResolver.v().resolveFromJavaFile(sc);
-		sc.setApplicationClass();
 	    } catch(InternalCompilerError e) {
 		throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
 						e.position(),

@@ -25,6 +25,7 @@ import polyglot.types.ClassType;
 import polyglot.types.SemanticException;
 
 import soot.SootClass;
+import soot.SootResolver;
 
 import java.util.*;
 
@@ -96,7 +97,7 @@ public class AbcFactory {
 
     public static SootClass classTypeToSootClass(ClassType ct) {
 	if (ct_to_name.containsKey(ct)) {
-	    return soot.Scene.v().getSootClass((String)ct_to_name.get(ct));
+	    return SootResolver.v().makeClassRef((String)ct_to_name.get(ct));
 	} else {
 	    soot.RefType rt=(soot.RefType) soot.javaToJimple.Util.getSootType(ct);
 	    SootClass sc = rt.getSootClass();

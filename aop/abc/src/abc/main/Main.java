@@ -483,8 +483,6 @@ public class Main {
 			compile(); // Timers marked inside compile()
 			// The compile method itself aborts if there is an error
 
-                        Scene.v().setDoneResolving();
-
 			if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty()) {
 				weave(); // Timers marked inside weave()
 
@@ -653,18 +651,7 @@ public class Main {
     while (jari.hasNext()) {
         String jar = (String)jari.next();
         List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
-        for( Iterator classNameIt = this_jar_classes.iterator(); classNameIt.hasNext(); ) {
-            final String className = (String) classNameIt.next();
-            jar_classes.add(soot.Scene.v().loadClass(className, SootClass.BODIES).getName());
-        }
-      }
-
-    // Make them all application classes
-    Iterator cni = jar_classes.iterator();
-    while (cni.hasNext()) {
-        String cn = (String)cni.next();
-        SootClass sc = Scene.v().getSootClass(cn);
-        sc.setApplicationClass();
+        jar_classes.addAll(this_jar_classes);
       }
     }
 
@@ -701,6 +688,16 @@ public class Main {
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
+
+            for( Iterator clsIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clsIt.hasNext(); ) {
+
+                final AbcClass cls = (AbcClass) clsIt.next();
+                SootClass scls = cls.getSootClass();
+                scls.setApplicationClass();
+                Scene.v().loadClass(scls.getName(), SootClass.BODIES);
+            }
+            Scene.v().setDoneResolving();
+            AbcTimer.mark("Soot resolving");
 
             GlobalAspectInfo.v().buildAspectHierarchy();
             AbcTimer.mark("Resolve class names");
