@@ -293,7 +293,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
             lexicalfirst=GlobalAspectInfo.PRECEDENCE_FIRST;
             lexicalsecond=GlobalAspectInfo.PRECEDENCE_SECOND;
         }
-
+        
         if(a.getPosition().line() < b.getPosition().line())
             return lexicalfirst;
         if(a.getPosition().line() > b.getPosition().line())

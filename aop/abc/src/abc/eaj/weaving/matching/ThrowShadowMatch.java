@@ -97,18 +97,6 @@ public class ThrowShadowMatch extends StmtShadowMatch
            ExtendedSJPInfo.makeThrowSigData(container, throw_type), stmt);
     }
 
-    protected AdviceApplication doAddAdviceApplication
-        (MethodAdviceList mal, AbstractAdviceDecl ad, Residue residue)
-    {
-        StmtAdviceApplication aa = new StmtAdviceApplication(ad,residue,stmt);
-        mal.addStmtAdvice(aa);
-        return aa;
-    }
-
-    public Host getHost()
-    {
-        return stmt;
-    }
     
     public String joinpointName() {
         return "throw";

@@ -124,12 +124,6 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
         return ret;
 	}
 	
-    // why is this necessary?
-	// StmtShadowMatch should have default implementation.
-	public Host getHost() {
-		return stmt;
-	}
-
 	public SJPInfo makeSJPInfo()
     {
         return abc.main.Main.v().getAbcExtension().createSJPInfo
@@ -139,14 +133,6 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
            ExtendedSJPInfo.makeArrayGetSigData(container), stmt);
     }
 
-    // why is this necessary?
-	// StmtShadowMatch should have default implementation.
-	protected AdviceApplication doAddAdviceApplication(MethodAdviceList mal,
-			AbstractAdviceDecl ad, Residue residue) {
-		StmtAdviceApplication aa = new StmtAdviceApplication(ad,residue,stmt);
-        mal.addStmtAdvice(aa);
-        return aa;
-	}
 
 	public String joinpointName() {
 		return "arrayget";

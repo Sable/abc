@@ -3054,7 +3054,7 @@ public class AroundWeaver {
 						if (originalStmt instanceof AssignStmt) {
 							lhs = (Local) (((AssignStmt) originalStmt).getLeftOp());
 						}
-						Chain statements=sootProceedCallMethod.getActiveBody().getUnits().getNonPatchingChain();
+						Chain statements=methodBody.getUnits().getNonPatchingChain();
 						statements.insertBefore(begin, originalStmt);
 						statements.insertAfter(end, originalStmt);
 						originalStmt.redirectJumpsToThisTo(begin);
@@ -3080,6 +3080,7 @@ public class AroundWeaver {
 					
 					public void generateProceed(ProceedMethod proceedMethod, String newStaticInvokeClassName) {
 						debug("1YYYYYYYYYYYYYY generateProceed()");
+						//debug(Util.printMethod(sootProceedCallMethod));
 						Util.removeStatements(methodBody, begin, end, null);
 						debug("YYYYYYYYYYYYYY generateProceed()" + AdviceMethod.this.sootAdviceMethod);
 						List parameters = new LinkedList();

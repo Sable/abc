@@ -36,6 +36,7 @@ import polyglot.util.InternalCompilerError;
  */
 public class CastShadowMatch extends StmtShadowMatch
 {
+
     public static ShadowType shadowType()
     {
         return new ShadowType() {
@@ -103,18 +104,7 @@ public class CastShadowMatch extends StmtShadowMatch
            ExtendedSJPInfo.makeCastSigData(container, cast_to), stmt);
     }
 
-    protected AdviceApplication doAddAdviceApplication
-        (MethodAdviceList mal, AbstractAdviceDecl ad, Residue residue)
-    {
-        StmtAdviceApplication aa = new StmtAdviceApplication(ad,residue,stmt);
-        mal.addStmtAdvice(aa);
-        return aa;
-    }
-
-    public Host getHost()
-    {
-        return stmt;
-    }
+    
     public String joinpointName() {
         return "cast";
     }

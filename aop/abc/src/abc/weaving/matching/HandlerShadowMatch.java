@@ -70,9 +70,6 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 	return new HandlerShadowMatch(pos.getContainer(),stmt,trap.getException());
     }
 
-    public Host getHost() {
-	return stmt;
-    }
     
     public SJPInfo makeSJPInfo() {
 	return abc.main.Main.v().getAbcExtension().createSJPInfo

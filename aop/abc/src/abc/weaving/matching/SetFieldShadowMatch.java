@@ -140,9 +140,6 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
     }
     
 
-    public Host getHost() {
-	return stmt;
-    }
     
     public SJPInfo makeSJPInfo() {
 	return abc.main.Main.v().getAbcExtension().createSJPInfo
@@ -151,15 +148,6 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
              "makeFieldSig",
 	     AbcSJPInfo.makeFieldSigData(fieldref),stmt);
     }
-
-    protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
-
-	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
-	mal.addStmtAdvice(aa);
-	return aa;
-    }
-
        
 	public ContextValue getTargetContextValue() {
 		// System.out.println(stmt);

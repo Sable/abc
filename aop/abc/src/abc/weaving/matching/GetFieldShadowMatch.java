@@ -93,9 +93,6 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	}
     }
 
-    public Host getHost() {
-	return stmt;
-    }
     
     public SJPInfo makeSJPInfo() {
 	return abc.main.Main.v().getAbcExtension().createSJPInfo
@@ -106,13 +103,7 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     }
 
 
-    protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 
-	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
-	mal.addStmtAdvice(aa);
-	return aa;
-    }
 
     public ContextValue getTargetContextValue() {
 		if (stmt instanceof AssignStmt) {

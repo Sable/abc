@@ -137,24 +137,12 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,methodref);
     }
 
-    public Host getHost() {
-	return stmt;
-    }
-
     public SJPInfo makeSJPInfo() {
 	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    ("method-call",
              "org.aspectj.lang.reflect.MethodSignature",
              "makeMethodSig",
              AbcSJPInfo.makeMethodSigData(methodref),stmt);
-    }
-
-    protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
-
-	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
-	mal.addStmtAdvice(aa);
-	return aa;
     }
 
     public ContextValue getTargetContextValue() {

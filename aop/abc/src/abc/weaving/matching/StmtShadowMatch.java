@@ -28,9 +28,12 @@ import polyglot.util.InternalCompilerError;
 
 import soot.*;
 import soot.jimple.*;
+import soot.tagkit.Host;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.Residue;
 
 /** A base class for join point shadows that apply to a single statement
  *  (or pair of statements in the case of constructor calls)
@@ -40,6 +43,16 @@ import abc.weaving.residues.ContextValue;
 public abstract class StmtShadowMatch extends ShadowMatch {
     protected Stmt stmt;
 
+    public Host getHost() {
+		return stmt;
+	}
+	protected AdviceApplication doAddAdviceApplication(MethodAdviceList mal,
+			AbstractAdviceDecl ad, Residue residue) {
+		StmtAdviceApplication aa = new StmtAdviceApplication(ad,residue,stmt);
+        mal.addStmtAdvice(aa);
+        return aa;
+	}
+	
     protected StmtShadowMatch(SootMethod container,Stmt stmt) {
         super(container);
         this.stmt=stmt;

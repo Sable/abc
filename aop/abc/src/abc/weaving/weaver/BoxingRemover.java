@@ -159,7 +159,11 @@ public class BoxingRemover extends BodyTransformer {
         			    ((SpecialInvokeExpr)stmt.getInvokeExpr()).getBase().equals(l) &&
 						stmt.getInvokeExpr().getMethodRef().name().equals("<init>") &&
 						stmt.getInvokeExpr().getMethodRef().parameterTypes().size()==1 &&
-						stmt.getInvokeExpr().getMethodRef().parameterType(0) instanceof PrimType) {
+						stmt.getInvokeExpr().getMethodRef().parameterType(0) instanceof PrimType && // make sure it's not a string constructor
+						!(((SpecialInvokeExpr)stmt.getInvokeExpr()).getBase().getType(). // make sure it's not the Float(double) constructor
+									equals(Scene.v().getSootClass("java.lang.Float").getType())
+								&&
+									stmt.getInvokeExpr().getMethodRef().parameterType(0) instanceof DoubleType) ) {
         			
         				// if initialized twice, we can't optimize it away.
         				// should usually not occur in Jimple 

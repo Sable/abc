@@ -19,10 +19,7 @@ import abcexer2.weaving.matching.ArrayGetShadowMatch;
 import abcexer2.weaving.matching.ExtendedSJPInfo;
 
 /**
- * @author sascha
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Sascha Kuzins
  */
 public class AbcExtension extends abc.main.AbcExtension {
 	public abc.aspectj.ExtensionInfo makeExtensionInfo(Collection jar_classes,
