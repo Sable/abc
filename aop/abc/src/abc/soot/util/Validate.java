@@ -19,13 +19,25 @@ public class Validate {
 	Scene.v().releaseActiveHierarchy();
 	for( Iterator methodIt = cl.getMethods().iterator(); methodIt.hasNext(); ) {
 	    final SootMethod method = (SootMethod) methodIt.next();
+	    if(!method.isConcrete()) continue;
+	    checkLocals(method);
 	    checkTypes(method);
 	    checkInit(method);
 	}
     }
 
-    public static void checkTypes(SootMethod method) {
-	if(!method.isConcrete()) return;
+    private static void checkLocals(SootMethod method) {
+	Chain locals=method.getActiveBody().getLocals();
+
+	Iterator it=locals.iterator();
+	while(it.hasNext()) {
+	    Local l=(Local) it.next();
+	    if(l.getType() instanceof VoidType) 
+		System.err.println("Local "+l+" in "+method+" defined with void type");
+	}
+    }
+
+    private static void checkTypes(SootMethod method) {
 	Chain units=method.getActiveBody().getUnits();
 
 	Iterator it=units.iterator();
@@ -68,7 +80,7 @@ public class Validate {
 	}
     }
 
-    public static void checkCopy(Type leftType,Type rightType,String errorSuffix) {
+    private static void checkCopy(Type leftType,Type rightType,String errorSuffix) {
 	if(leftType instanceof PrimType || rightType instanceof PrimType) {
 	    if(leftType instanceof IntType && rightType instanceof IntType) return;
 	    if(leftType instanceof LongType && rightType instanceof LongType) return;
@@ -115,8 +127,6 @@ public class Validate {
     }
 
     public static void checkInit(SootMethod method) {
-	if(!method.isConcrete()) return;
-
         Body b = method.getActiveBody();
 	Chain units=b.getUnits();
         ExceptionalUnitGraph g = new ExceptionalUnitGraph
