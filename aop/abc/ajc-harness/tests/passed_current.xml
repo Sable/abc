@@ -2788,9 +2788,17 @@
         <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
         <run class="driver.PR555"></run>
     </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
+    </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
+    </ajc-test>
+<ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" num="582" keywords="from-resolved_10rc3" dir="new">
+        <compile files="PR559.java"></compile>
+        <run class="PR559"></run>
     </ajc-test>
 <ajc-test title="more issues with abstract aspects and cflow pointcuts" pr="559" num="583" keywords="from-resolved_10rc3,fail-unimplemented" dir="new">
         <compile files="AbstractCflows.java"></compile>
@@ -2865,6 +2873,10 @@
 <ajc-test title="default package for aspect introductions is not the current package" pr="548" num="597" keywords="from-resolved_10rc3,from-resolved_104" dir="new">
         <compile files="introductionPackage/two/C.java,introductionPackage/one/C.java,introductionPackage/one/Aspect.java,introductionPackage/one/TestAspect.java"></compile>
         <run class="one.TestAspect"></run>
+    </ajc-test>
+<ajc-test title="anon class written to wrong directory" pr="569" num="598" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
+        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
+        <run class="a.IntroAnon"></run>
     </ajc-test>
 <ajc-test title="unqualified transitive pointcut references not resolved" pr="603" num="599" keywords="from-resolved_104" dir="new">
         <compile files="PointcutQualification.java"></compile>
@@ -3177,6 +3189,11 @@
         <compile options="-source,1.4" files="Asserts.java"></compile>
         <run vm="1.4" class="Asserts"></run>
     </ajc-test>
+<ajc-test title="assert coverage tests [requires 1.4]" num="666" keywords="from-14tests,purejava" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
+        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
+        <compile options="-source,1.4" files="AssertsCv.java"></compile>
+        <run vm="1.4" class="AssertsCv"></run>
+    </ajc-test>
 <ajc-test title="assert tests in introduction [requires 1.4]" num="668" keywords="from-14tests,fail-unimplemented" dir="new">
         <compile options="-source,1.4" files="AssertInIntro.java"></compile>
         <run vm="1.4" class="AssertInIntro"></run>
@@ -3441,6 +3458,32 @@
         <compile files="CflowCycles.java"></compile>
         <run class="CflowCycles"></run>
     </ajc-test>
+<ajc-test title="incompatible advice throws clause are a compile-time error" num="763" keywords="from-resolved_10x" dir="new" abccomment="we don't report the advice positions too">
+        <compile files="AdviceThrowsCf.java">
+            <ajcmessage line="13" kind="error"></ajcmessage>
+            <ajcmessage line="28" kind="error"></ajcmessage>
+            <ajcmessage line="47" kind="error"></ajcmessage>
+            <ajcmessage line="48" kind="error"></ajcmessage>
+            <ajcmessage line="50" kind="error"></ajcmessage>
+            
+            <ajcmessage line="70" kind="error"></ajcmessage>
+            <ajcmessage line="74" kind="error"></ajcmessage>
+            <ajcmessage line="76" kind="error"></ajcmessage>
+            <ajcmessage line="78" kind="error"></ajcmessage>
+            
+            <ajcmessage line="85" kind="error"></ajcmessage>
+
+            <message line="13" kind="error"></message>
+            <message line="13" kind="error"></message>
+            <message line="28" kind="error"></message>
+            <message line="28" kind="error"></message>
+            <message line="47" kind="error"></message>
+            <message line="48" kind="error"></message>
+            <message line="50" kind="error"></message>
+            <message line="50" kind="error"></message>
+
+        </compile>
+    </ajc-test>
 <ajc-test title="cflow binding -- original weaver crash" pr="34858" num="765" dir="bugs">
         <compile files="CflowBindingOrig.java"></compile>
         <run class="CflowBindingOrig"></run>
@@ -3475,6 +3518,10 @@
 <ajc-test title="IllegalAccessError while accessing introduced variable / 1.1rc1" pr="36110" num="778" dir="bugs/interSpecials">
         <compile files="p1/C.java,p2/A1.java"></compile>
         <run class="p2.A1"></run>
+    </ajc-test>
+<ajc-test title="testing that assert works like .class" pr="36110" num="779" dir="bugs/interSpecials">
+        <compile options="-source,1.4" files="p1/C.java,p2/A2.java"></compile>
+        <run vm="1.4" class="p2.A2"></run>
     </ajc-test>
 <ajc-test title="implemented abstract pointcut" pr="36736" num="780" dir="new">
         <compile files="AbstractImplementedPointcut.java">
@@ -3613,6 +3660,22 @@
         </compile>
         <run class="app.Main"></run>
 	</ajc-test>
+<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" num="796" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start" abccomment="ideally we'd get the message at line 6, but 12 is about the best we can do.                      6 isn't reported in the bytecode anywhere, so there's no hope of that.                      ajc does the same as us.">
+        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
+        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
+        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
+        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
+        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error on handler/method execution with no code on binary javac 1.4 classes" pr="37020" num="797" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start; XXX need javac inlining example" abccomment="ideally we'd get the message at line 6 and 17, but 12 and 20 is the best we can do                     given what the bytecode has. ajc does the same as us.">
+        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-javac-1.4.jar">
+        	<ajcmessage text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></ajcmessage>
+        	<ajcmessage text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></ajcmessage>        	  
+        	<message text="execution(void MainExecStartLines.main(String[]))" line="12" kind="error" file="app/MainExecStartLines.java"></message>
+        	<message text="handler(RuntimeException)" line="20" kind="error" file="app/MainExecStartLines.java"></message>        	  
+        </compile>
+    </ajc-test>
 <ajc-test title="expected class tree" num="803" dir="incremental/initialTests/expClasses">
         <compile files="Main.java">
             <dir-changes expDir="expected"></dir-changes>
@@ -3907,8 +3970,11 @@
                 <message line="15" kind="error"></message>
         	<message line="16" kind="error"></message>
                 <message line="16" kind="error"></message>
-        	<message line="18" kind="error"></message>
+                <message line="17" kind="error"></message>
+                <message line="18" kind="error"></message>
+                <message line="19" kind="error"></message>
         	<message line="20" kind="error"></message>
+                <message line="21" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="alias getCause for getWrappedThrowable in SoftException" pr="49250" num="884" dir="bugs">
@@ -4260,6 +4326,16 @@
         <compile files="DisjunctVarBinding.java">
           <ajcmessage text="Ambiguous binding of type B" line="34" kind="error"></ajcmessage>
           <ajcmessage text="Ambiguous binding of type A" line="34" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="false ambigous binding error (introduced in 1.2rc2)" pr="62073" num="971" dir="bugs" abccomment="we support ambiguous bindings">
+        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
+        	<ajcmessage text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        	<ajcmessage text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        </compile>
+        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
+        	<ajcmessage text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        	<ajcmessage text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
         </compile>
     </ajc-test>
 <ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" num="972" dir="bugs/IfPerThis" abccomment="abc supports if() inside per clauses">

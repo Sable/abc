@@ -171,18 +171,6 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
-        <compile files="InnerClassInPrivilegedAspect.java"></compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
-    </ajc-test>
-<ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" num="582" keywords="from-resolved_10rc3" dir="new">
-        <compile files="PR559.java"></compile>
-        <run class="PR559"></run>
-    </ajc-test>
-<ajc-test title="anon class written to wrong directory" pr="569" num="598" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
-        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
-        <run class="a.IntroAnon"></run>
-    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
@@ -210,11 +198,6 @@
             <message line="16" kind="error"></message>
             <message line="20" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="assert coverage tests [requires 1.4]" num="666" keywords="from-14tests,purejava" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile options="-source,1.4" files="AssertsCv.java"></compile>
-        <run vm="1.4" class="AssertsCv"></run>
     </ajc-test>
 <ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
         <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
@@ -324,22 +307,6 @@
             <message text="adviceExecution() &amp;&amp; within(A)" line="74" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="incompatible advice throws clause are a compile-time error" num="763" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceThrowsCf.java">
-            <message line="13" kind="error"></message>
-            <message line="28" kind="error"></message>
-            <message line="47" kind="error"></message>
-            <message line="48" kind="error"></message>
-            <message line="50" kind="error"></message>
-            
-            <message line="70" kind="error"></message>
-            <message line="74" kind="error"></message>
-            <message line="76" kind="error"></message>
-            <message line="78" kind="error"></message>
-            
-            <message line="85" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="cflow binding issues with ignoring state" pr="34858" num="764" dir="bugs">
         <compile files="CflowBinding.java"></compile>
         <run class="CflowBinding"></run>
@@ -353,10 +320,6 @@
             <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="testing that assert works like .class" pr="36110" num="779" dir="bugs/interSpecials">
-        <compile options="-source,1.4" files="p1/C.java,p2/A2.java"></compile>
-        <run vm="1.4" class="p2.A2"></run>
-    </ajc-test>
 <ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround">
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
             <message line="102" kind="warning"></message>
@@ -368,18 +331,6 @@
 <ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="TryFinallyInAround.java"></compile>
         <run class="TryFinallyInAround"></run>
-    </ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" num="796" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
-    </ajc-test>
-<ajc-test title="declare error on handler/method execution with no code on binary javac 1.4 classes" pr="37020" num="797" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start; XXX need javac inlining example">
-        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-javac-1.4.jar">
-        	<message text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></message>
-        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
-        </compile>
     </ajc-test>
 <ajc-test title="can not resolve this member warning" pr="38212" num="832" dir="bugs/accessMethods">
         <compile files="p1/Base.java,p2/Derived.java"></compile>
@@ -523,16 +474,6 @@
 <ajc-test title="error message for constructor-execution pcd" pr="60936" num="970" dir="bugs">
         <compile files="InterfaceConstructor.java">
           <message text="no interface constructor-execution join point" line="10" kind="warning"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="false ambigous binding error (introduced in 1.2rc2)" pr="62073" num="971" dir="bugs">
-        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
-        	<message text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
-        	<message text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
-        </compile>
-        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
-        	<message text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
-        	<message text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
         </compile>
     </ajc-test>
  

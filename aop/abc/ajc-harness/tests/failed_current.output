@@ -1,6 +1,33 @@
 Running test 25: base/test118/DEPRECATED: Introduce of constructors
 Commandline: abc -d base/test118 base/test118/Driver.java 
-Abc started on Wed Aug 11 17:49:14 BST 2004
+Abc started on Wed Aug 11 20:10:13 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: C1 with params: [A1]
+finalLocalInfo: {}
+creating new for classToInvoke: C11 with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: C111 with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: C12 with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: Cleaf1 with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: Cleaf11 with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: Cleaf111 with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: Cleaf12 with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming C111... 
 Transforming I111... 
 Transforming I11... 
@@ -16,29 +43,29 @@ Transforming Cleaf11...
 Transforming C11... 
 Transforming I12... 
 Transforming Verify... 
-Abc finished on Wed Aug 11 17:49:15 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 11 20:10:15 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1211 millisec.)
+Breakdown of abc phases  (total: 1194 millisec.)
 ------------------------------------------------
-[ 30.966% ] Init. of Soot:  375
+[ 49.246% ] Init. of Soot:  588
 [ 00.000% ] Loading Jars:  0
-[ 00.083% ] Create polyglot compiler:  1
-[ 20.809% ] Polyglot phases:  252
+[ 00.084% ] Create polyglot compiler:  1
+[ 20.268% ] Polyglot phases:  242
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.083% ] Intertype Adjuster:  1
-[ 01.652% ] Retrieving bodies:  20
-[ 21.800% ] Update pattern matcher:  264
-[ 00.000% ] Weave Initializers:  0
+[ 00.084% ] Intertype Adjuster:  1
+[ 02.094% ] Retrieving bodies:  25
+[ 03.853% ] Update pattern matcher:  46
+[ 00.084% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 03.220% ] Compute advice lists:  39
+[ 02.261% ] Compute advice lists:  27
 [ 00.000% ] Intertype weave:  0
-[ 00.083% ] Add aspect code:  1
-[ 00.413% ] Weaving advice:  5
-[ 00.083% ] Exceptions check:  1
+[ 00.084% ] Add aspect code:  1
+[ 00.335% ] Weaving advice:  4
+[ 00.168% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 12.221% ] Soot Packs:  148
-[ 08.588% ] Soot Writing Output:  104
+[ 12.479% ] Soot Packs:  149
+[ 08.961% ] Soot Writing Output:  107
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail A1.i1Count: 0 < 8
@@ -62,17 +89,19 @@ FAIL: Test 25: "base/test118/DEPRECATED: Introduce of constructors" failed.
 
 Running test 115: new/Not binding constructor when using more than one compilation
 Commandline: abc -d new new/OuterAbstract_PR408.java 
-Abc started on Wed Aug 11 17:52:58 BST 2004
+Abc started on Wed Aug 11 20:13:56 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming OuterAbstract_PR408... 
 Transforming OuterAbstract_PR408$InnerAbstract... 
-Abc finished on Wed Aug 11 17:52:59 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:13:57 BST 2004. ( 0 min. 0 sec. )
 ================================================
 Breakdown of abc phases  (total: 544 millisec.)
 ------------------------------------------------
-[ 63.235% ] Init. of Soot:  344
-[ 00.184% ] Loading Jars:  1
-[ 00.000% ] Create polyglot compiler:  0
-[ 26.103% ] Polyglot phases:  142
+[ 63.971% ] Init. of Soot:  348
+[ 00.000% ] Loading Jars:  0
+[ 00.184% ] Create polyglot compiler:  1
+[ 25.368% ] Polyglot phases:  138
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
@@ -90,7 +119,7 @@ Breakdown of abc phases  (total: 544 millisec.)
 [ 02.574% ] Soot Writing Output:  14
 ================================================
 Commandline: abc -cp new:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new new/ExtendsOuterAbstract_PR408.java 
-Abc started on Wed Aug 11 17:52:59 BST 2004
+Abc started on Wed Aug 11 20:13:57 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,30-60: No valid constructor found for OuterAbstract_PR408.InnerAbstract(java.lang.String).
@@ -99,33 +128,38 @@ FAIL: Test 115: "new/Not binding constructor when using more than one compilatio
 
 Running test 129: pureJava/innerDefaultConstructors/Default constructors have same access as their enclosing type
 Commandline: abc -d pureJava/innerDefaultConstructors pureJava/innerDefaultConstructors/pkg1/Main.java pureJava/innerDefaultConstructors/pkg2/Foo.java 
-Abc started on Wed Aug 11 17:53:08 BST 2004
+Abc started on Wed Aug 11 20:14:06 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: pkg2.Foo$Goo with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming pkg1.Main... 
 Transforming pkg2.Foo$Goo... 
 Transforming pkg2.Foo... 
-Abc finished on Wed Aug 11 17:53:08 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:14:07 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 428 millisec.)
+Breakdown of abc phases  (total: 416 millisec.)
 ------------------------------------------------
-[ 72.897% ] Init. of Soot:  312
+[ 82.933% ] Init. of Soot:  345
 [ 00.000% ] Loading Jars:  0
-[ 00.234% ] Create polyglot compiler:  1
-[ 13.084% ] Polyglot phases:  56
+[ 00.000% ] Create polyglot compiler:  0
+[ 03.846% ] Polyglot phases:  16
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.234% ] Intertype Adjuster:  1
-[ 00.467% ] Retrieving bodies:  2
-[ 05.607% ] Update pattern matcher:  24
+[ 00.240% ] Intertype Adjuster:  1
+[ 00.721% ] Retrieving bodies:  3
+[ 05.048% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.234% ] Compute advice lists:  1
+[ 00.240% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.234% ] Weaving advice:  1
+[ 00.240% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.271% ] Soot Packs:  14
-[ 03.738% ] Soot Writing Output:  16
+[ 03.365% ] Soot Packs:  14
+[ 03.365% ] Soot Writing Output:  14
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 129: "pureJava/innerDefaultConstructors/Default constructors have same access as their enclosing type" failed.
@@ -133,7 +167,7 @@ FAIL: Test 129: "pureJava/innerDefaultConstructors/Default constructors have sam
 
 Running test 149: pureJava/invalid numeric literals
 Commandline: abc -d pureJava pureJava/LiteralsCf.java 
-Abc started on Wed Aug 11 17:53:20 BST 2004
+Abc started on Wed Aug 11 20:14:18 BST 2004
 Compilation produced an unexpected number of errors: 6, should be 18
 Actual errors found: 
 Syntax Error at pureJava/LiteralsCf.java:18,22-23: Syntax error.
@@ -147,35 +181,44 @@ FAIL: Test 149: "pureJava/invalid numeric literals" failed.
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
-Abc started on Wed Aug 11 17:53:31 BST 2004
+Abc started on Wed Aug 11 20:14:29 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: p1.Foo with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: p1.p2$Foo with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming p1.p2.Foo... 
 Transforming p1.Main1... 
 Transforming p1.p2$Foo... 
 Transforming p1.Foo... 
 Transforming p1.p2... 
-Abc finished on Wed Aug 11 17:53:32 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:14:29 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 688 millisec.)
+Breakdown of abc phases  (total: 684 millisec.)
 ------------------------------------------------
-[ 45.494% ] Init. of Soot:  313
+[ 54.532% ] Init. of Soot:  373
 [ 00.000% ] Loading Jars:  0
-[ 00.145% ] Create polyglot compiler:  1
-[ 41.134% ] Polyglot phases:  283
+[ 00.146% ] Create polyglot compiler:  1
+[ 32.164% ] Polyglot phases:  220
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.145% ] Intertype Adjuster:  1
-[ 00.581% ] Retrieving bodies:  4
-[ 04.360% ] Update pattern matcher:  30
+[ 00.146% ] Intertype Adjuster:  1
+[ 00.731% ] Retrieving bodies:  5
+[ 04.386% ] Update pattern matcher:  30
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.291% ] Compute advice lists:  2
+[ 00.292% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.145% ] Weaving advice:  1
+[ 00.146% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.488% ] Soot Packs:  24
-[ 04.215% ] Soot Writing Output:  29
+[ 03.363% ] Soot Packs:  23
+[ 04.094% ] Soot Writing Output:  28
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed.
@@ -183,7 +226,7 @@ FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught a
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
 Commandline: abc -d pureJava pureJava/NestedFinally.java 
-Abc started on Wed Aug 11 17:53:38 BST 2004
+Abc started on Wed Aug 11 20:14:36 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
@@ -192,7 +235,7 @@ FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location 
 
 Running test 265: errors/good error for bad field and inner class references
 Commandline: abc -d errors errors/BadReferences.java 
-Abc started on Wed Aug 11 17:54:16 BST 2004
+Abc started on Wed Aug 11 20:15:13 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
 Semantic Error at errors/BadReferences.java:5,16-23: Member type "Inner" is ambiguous; it is defined in both I1 and I2.
@@ -201,7 +244,16 @@ FAIL: Test 265: "errors/good error for bad field and inner class references" fai
 
 Running test 271: errors/circular dominates leading to irresolvable advice precedence
 Commandline: abc -d errors errors/CircularDominates.java 
-Abc started on Wed Aug 11 17:54:18 BST 2004
+Abc started on Wed Aug 11 20:15:15 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.StringBuffer with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.StringBuffer with params: []
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Semantic Error at null: Precedence conflict
@@ -210,7 +262,7 @@ FAIL: Test 271: "errors/circular dominates leading to irresolvable advice preced
 
 Running test 285: errors/class and interface extension
 Commandline: abc -d errors errors/BadExtension.java 
-Abc started on Wed Aug 11 17:54:24 BST 2004
+Abc started on Wed Aug 11 20:15:20 BST 2004
 Compilation produced an unexpected number of errors: 7, should be 9
 Actual errors found: 
 Semantic Error at errors/BadExtension.java:9,20-43: An abstract method cannot have a body.
@@ -229,7 +281,7 @@ FAIL: Test 285: "errors/class and interface extension" failed.
 
 Running test 307: errors/parse-time illegal modifiers
 Commandline: abc -d errors errors/Modifiers1.java 
-Abc started on Wed Aug 11 17:54:32 BST 2004
+Abc started on Wed Aug 11 20:15:29 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Syntax Error at null: Couldn't repair and continue parse
@@ -238,34 +290,43 @@ FAIL: Test 307: "errors/parse-time illegal modifiers" failed.
 
 Running test 358: new/non-static advice on inner class defined inside of method body
 Commandline: abc -d new new/MethodInner.java 
-Abc started on Wed Aug 11 17:55:04 BST 2004
+Abc started on Wed Aug 11 20:16:00 BST 2004
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [Id(local final int N = 10)] finalLocalsUsed: [Id(local final int N = 10)]}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [Id(local final int N = 10)] finalLocalsUsed: [Id(local final int N = 10)]}
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [Id(local final int N = 10)] finalLocalsUsed: [Id(local final int N = 10)]}
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [Id(local final int N = 10)] finalLocalsUsed: [Id(local final int N = 10)]}
+finalLocals for: C$1Inner are: [Id(local final int N = 10)]
+creating new for classToInvoke: C$1Inner with params: [C, int]
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [Id(local final int N = 10)] finalLocalsUsed: [Id(local final int N = 10)]}
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [Id(local final int N = 10)] finalLocalsUsed: [Id(local final int N = 10)]}
 Transforming A... 
 Transforming C... 
 Transforming C$1Inner... 
 Transforming MethodInner... 
-Abc finished on Wed Aug 11 17:55:05 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:16:01 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 749 millisec.)
+Breakdown of abc phases  (total: 695 millisec.)
 ------------------------------------------------
-[ 47.397% ] Init. of Soot:  355
+[ 44.460% ] Init. of Soot:  309
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 34.045% ] Polyglot phases:  255
+[ 00.144% ] Create polyglot compiler:  1
+[ 35.540% ] Polyglot phases:  247
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.335% ] Retrieving bodies:  10
-[ 03.471% ] Update pattern matcher:  26
+[ 00.144% ] Intertype Adjuster:  1
+[ 01.583% ] Retrieving bodies:  11
+[ 03.741% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.534% ] Compute advice lists:  4
-[ 00.134% ] Intertype weave:  1
-[ 00.000% ] Add aspect code:  0
-[ 00.668% ] Weaving advice:  5
-[ 00.134% ] Exceptions check:  1
+[ 00.576% ] Compute advice lists:  4
+[ 00.000% ] Intertype weave:  0
+[ 00.144% ] Add aspect code:  1
+[ 00.576% ] Weaving advice:  4
+[ 00.144% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.676% ] Soot Packs:  50
-[ 05.607% ] Soot Writing Output:  42
+[ 07.194% ] Soot Packs:  50
+[ 05.755% ] Soot Writing Output:  40
 ================================================
 before: execution(int C.foo())
 Failed to define or resolve class C$1Inner from new
@@ -306,7 +367,28 @@ FAIL: Test 358: "new/non-static advice on inner class defined inside of method b
 
 Running test 410: new/holding onto proceed calls in a closure-like way
 Commandline: abc -d new new/HoldProceed.java 
-Abc started on Wed Aug 11 17:55:46 BST 2004
+Abc started on Wed Aug 11 20:16:42 BST 2004
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: java.lang.Exception with params: [java.lang.String]
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: A$1 are: []
+creating new for classToInvoke: A$1 with params: [A]
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: A$1MyRun are: []
+creating new for classToInvoke: A$1MyRun with params: [A]
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: A$2 are: []
+creating new for classToInvoke: A$2 with params: [A]
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: java.lang.StringBuffer with params: []
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: java.util.LinkedList with params: []
+finalLocalInfo: {Id(MyRun)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
 Transforming A... 
 Transforming A$1MyRun... 
 Transforming A$2... 
@@ -314,29 +396,29 @@ Transforming A$1...
 Transforming C... 
 Transforming HoldProceed... 
 Transforming Abc$access$A$around$784... 
-Abc finished on Wed Aug 11 17:55:47 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 11 20:16:43 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1079 millisec.)
+Breakdown of abc phases  (total: 1097 millisec.)
 ------------------------------------------------
-[ 28.730% ] Init. of Soot:  310
+[ 32.361% ] Init. of Soot:  355
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 43.281% ] Polyglot phases:  467
+[ 41.386% ] Polyglot phases:  454
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.946% ] Retrieving bodies:  21
-[ 02.873% ] Update pattern matcher:  31
+[ 02.097% ] Retrieving bodies:  23
+[ 02.735% ] Update pattern matcher:  30
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.834% ] Compute advice lists:  9
+[ 00.820% ] Compute advice lists:  9
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 01.112% ] Weaving advice:  12
-[ 00.185% ] Exceptions check:  2
+[ 00.091% ] Add aspect code:  1
+[ 01.003% ] Weaving advice:  11
+[ 00.091% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 13.902% ] Soot Packs:  150
-[ 07.136% ] Soot Writing Output:  77
+[ 13.127% ] Soot Packs:  144
+[ 06.290% ] Soot Writing Output:  69
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A$1, method: run signature: ()V) Accessing value from uninitialized register 1
 java.lang.reflect.InvocationTargetException
@@ -356,32 +438,38 @@ FAIL: Test 410: "new/holding onto proceed calls in a closure-like way" failed.
 
 Running test 418: new/join points exist in the execution of field initializers
 Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Abc started on Wed Aug 11 17:55:52 BST 2004
+Abc started on Wed Aug 11 20:16:49 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: FieldInitializerJoinPoints with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: FieldInitializerJoinPoints with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming A... 
 Transforming FieldInitializerJoinPoints... 
-Abc finished on Wed Aug 11 17:55:53 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:16:50 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 841 millisec.)
+Breakdown of abc phases  (total: 843 millisec.)
 ------------------------------------------------
-[ 41.260% ] Init. of Soot:  347
+[ 41.044% ] Init. of Soot:  346
 [ 00.000% ] Loading Jars:  0
-[ 00.119% ] Create polyglot compiler:  1
-[ 27.586% ] Polyglot phases:  232
+[ 00.000% ] Create polyglot compiler:  0
+[ 30.368% ] Polyglot phases:  256
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.259% ] Retrieving bodies:  19
-[ 10.702% ] Update pattern matcher:  90
+[ 02.372% ] Retrieving bodies:  20
+[ 03.321% ] Update pattern matcher:  28
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.021% ] Compute advice lists:  17
-[ 00.119% ] Intertype weave:  1
+[ 01.898% ] Compute advice lists:  16
+[ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.238% ] Weaving advice:  2
+[ 00.237% ] Weaving advice:  2
 [ 00.119% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 08.918% ] Soot Packs:  75
-[ 06.659% ] Soot Writing Output:  56
+[ 09.134% ] Soot Packs:  77
+[ 11.507% ] Soot Writing Output:  97
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail jcount: 1 > 0
@@ -403,7 +491,12 @@ FAIL: Test 418: "new/join points exist in the execution of field initializers" f
 
 Running test 419: new/privilegedAspects/privileged aspects
 Commandline: abc -d new/privilegedAspects new/privilegedAspects/main/Main.java new/privilegedAspects/fish/PrivateClass.java new/privilegedAspects/fish/B.java new/privilegedAspects/fowl/C.java new/privilegedAspects/fowl/D.java 
-Abc started on Wed Aug 11 17:55:53 BST 2004
+Abc started on Wed Aug 11 20:16:50 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: fish.PrivateClass with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <fish.A: void fooA(fish.PrivateClass)>
 polyglot.util.InternalCompilerError: Exception while processing <fish.A: void fooA(fish.PrivateClass)>
 	at abc.main.Main.weave(Main.java:648)
@@ -426,35 +519,43 @@ FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed.
 
 Running test 422: new/basic tests for initializer and staticinitializer PCDs
 Commandline: abc -d new new/InitializerTest.java 
-Abc started on Wed Aug 11 17:55:55 BST 2004
+Abc started on Wed Aug 11 20:16:52 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.String with params: [java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: SubC with params: []
 Transforming SubC... 
 Transforming I... 
 Transforming C... 
 Transforming InitializerTest... 
 Transforming A... 
-Abc finished on Wed Aug 11 17:55:56 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:16:53 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 781 millisec.)
+Breakdown of abc phases  (total: 792 millisec.)
 ------------------------------------------------
-[ 43.918% ] Init. of Soot:  343
+[ 44.823% ] Init. of Soot:  355
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 28.809% ] Polyglot phases:  225
+[ 22.980% ] Polyglot phases:  182
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.049% ] Retrieving bodies:  16
-[ 03.201% ] Update pattern matcher:  25
+[ 02.146% ] Retrieving bodies:  17
+[ 03.157% ] Update pattern matcher:  25
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.689% ] Compute advice lists:  21
+[ 02.525% ] Compute advice lists:  20
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.512% ] Weaving advice:  4
-[ 00.128% ] Exceptions check:  1
+[ 00.126% ] Add aspect code:  1
+[ 01.136% ] Weaving advice:  9
+[ 00.126% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 10.883% ] Soot Packs:  85
-[ 07.810% ] Soot Writing Output:  61
+[ 16.162% ] Soot Packs:  128
+[ 06.818% ] Soot Writing Output:  54
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "initialized I"
@@ -478,35 +579,46 @@ FAIL: Test 422: "new/basic tests for initializer and staticinitializer PCDs" fai
 
 Running test 426: new/field patterns and subtyping
 Commandline: abc -d new new/FieldPatterns.java 
-Abc started on Wed Aug 11 17:55:59 BST 2004
+Abc started on Wed Aug 11 20:16:56 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: SuperC with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: SubC with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming SubC... 
 Transforming C... 
 Transforming SuperC... 
 Transforming A... 
 Transforming FieldPatterns... 
-Abc finished on Wed Aug 11 17:55:59 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:16:57 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 640 millisec.)
+Breakdown of abc phases  (total: 661 millisec.)
 ------------------------------------------------
-[ 52.656% ] Init. of Soot:  337
+[ 50.832% ] Init. of Soot:  336
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 24.688% ] Polyglot phases:  158
+[ 28.593% ] Polyglot phases:  189
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.562% ] Retrieving bodies:  10
-[ 03.906% ] Update pattern matcher:  25
+[ 01.664% ] Retrieving bodies:  11
+[ 03.782% ] Update pattern matcher:  25
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.094% ] Compute advice lists:  7
+[ 00.908% ] Compute advice lists:  6
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 01.250% ] Weaving advice:  8
-[ 00.156% ] Exceptions check:  1
+[ 00.151% ] Add aspect code:  1
+[ 00.151% ] Weaving advice:  1
+[ 00.151% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 07.812% ] Soot Packs:  50
-[ 06.875% ] Soot Writing Output:  44
+[ 07.716% ] Soot Packs:  51
+[ 06.051% ] Soot Writing Output:  40
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail C: 2 > 1
@@ -528,7 +640,19 @@ FAIL: Test 426: "new/field patterns and subtyping" failed.
 
 Running test 439: new/within and withincode (doesn't all work due to local class name issues)
 Commandline: abc -d new new/WithinInners.java 
-Abc started on Wed Aug 11 17:56:10 BST 2004
+Abc started on Wed Aug 11 20:17:06 BST 2004
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: C$1Inner are: []
+creating new for classToInvoke: C$1Inner with params: [C]
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: C$1 are: []
+creating new for classToInvoke: C$1 with params: [C]
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(Inner)=static: false finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
 Transforming WithinInners... 
 Transforming A... 
 Transforming C... 
@@ -536,29 +660,29 @@ Transforming C$1...
 Transforming C$1Inner... 
 Transforming Abc$access$A$around$947... 
 Transforming Abc$access$A$around$950... 
-Abc finished on Wed Aug 11 17:56:11 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:17:07 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 828 millisec.)
+Breakdown of abc phases  (total: 800 millisec.)
 ------------------------------------------------
-[ 40.942% ] Init. of Soot:  339
+[ 42.375% ] Init. of Soot:  339
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 26.570% ] Polyglot phases:  220
+[ 26.750% ] Polyglot phases:  214
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.932% ] Retrieving bodies:  16
-[ 03.140% ] Update pattern matcher:  26
+[ 00.125% ] Intertype Adjuster:  1
+[ 02.125% ] Retrieving bodies:  17
+[ 08.000% ] Update pattern matcher:  64
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.657% ] Compute advice lists:  22
+[ 02.625% ] Compute advice lists:  21
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.725% ] Weaving advice:  6
-[ 00.121% ] Exceptions check:  1
+[ 00.125% ] Add aspect code:  1
+[ 00.625% ] Weaving advice:  5
+[ 00.125% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 16.546% ] Soot Packs:  137
-[ 07.367% ] Soot Writing Output:  61
+[ 09.375% ] Soot Packs:  75
+[ 07.750% ] Soot Writing Output:  62
 ================================================
 TEXT
 write( String )
@@ -585,7 +709,21 @@ FAIL: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Wed Aug 11 17:56:12 BST 2004
+Abc started on Wed Aug 11 20:17:08 BST 2004
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: Outer with params: []
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: Outer$Inner with params: [Outer]
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: Outer$InnerRandom with params: [Outer]
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: Outer$1 are: []
+creating new for classToInvoke: Outer$1 with params: [Outer]
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of java.util.Random>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
 Transforming AroundInnerCalls... 
 Transforming Outer... 
 Transforming A... 
@@ -593,41 +731,41 @@ Transforming Outer$InnerRandom...
 Transforming Outer$1... 
 Transforming Outer$Inner... 
 Transforming Abc$access$A$around$956... 
-Abc finished on Wed Aug 11 17:56:14 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 11 20:17:09 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1164 millisec.)
+Breakdown of abc phases  (total: 1169 millisec.)
 ------------------------------------------------
-[ 29.467% ] Init. of Soot:  343
+[ 28.743% ] Init. of Soot:  336
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 33.076% ] Polyglot phases:  385
+[ 00.086% ] Create polyglot compiler:  1
+[ 31.052% ] Polyglot phases:  363
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.086% ] Intertype Adjuster:  1
-[ 01.460% ] Retrieving bodies:  17
-[ 02.663% ] Update pattern matcher:  31
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.540% ] Retrieving bodies:  18
+[ 02.652% ] Update pattern matcher:  31
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.203% ] Compute advice lists:  14
+[ 01.198% ] Compute advice lists:  14
 [ 00.000% ] Intertype weave:  0
-[ 00.086% ] Add aspect code:  1
-[ 03.608% ] Weaving advice:  42
+[ 00.000% ] Add aspect code:  0
+[ 08.811% ] Weaving advice:  103
 [ 00.086% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 17.440% ] Soot Packs:  203
-[ 10.825% ] Soot Writing Output:  126
+[ 12.660% ] Soot Packs:  148
+[ 13.174% ] Soot Writing Output:  154
 ================================================
 Outer.foo() calls Outer.Inner.mi()
-Outer@96d1b2.foo calls Outer$Inner@1a113fc.mi
+Outer@3c14bc.foo calls Outer$Inner@756082.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1a113fc.mi calls java.io.PrintStream@273777.println
+Outer$Inner@756082.mi calls java.io.PrintStream@1316d7.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@96d1b2.foo calls Outer$InnerRandom@aa70fd.nextHook
+Outer@3c14bc.foo calls Outer$InnerRandom@1408372.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@aa70fd.nextHook calls Outer$InnerRandom@aa70fd.next
+Outer$InnerRandom@1408372.nextHook calls Outer$InnerRandom@1408372.next
 Outer.foo() calls Random.nextInt(..)
-Outer@96d1b2.foo calls X.nextInt
+Outer@3c14bc.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)"
@@ -652,7 +790,14 @@ FAIL: Test 441: "new/around advice on calls within inner classes (including prot
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
 Commandline: abc -d new new/Fixes.java 
-Abc started on Wed Aug 11 17:56:44 BST 2004
+Abc started on Wed Aug 11 20:17:39 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: Fixes with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: TheObject with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <TheAspect: void postinc()>
 polyglot.util.InternalCompilerError: Exception while processing <TheAspect: void postinc()>
 	at abc.main.Main.weave(Main.java:648)
@@ -675,7 +820,7 @@ FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctl
 
 Running test 466: new/advice on an inherited method
 Commandline: abc -d new new/AdviceOnInheritedMethod.java 
-Abc started on Wed Aug 11 17:56:46 BST 2004
+Abc started on Wed Aug 11 20:17:41 BST 2004
 Compilation produced an unexpected number of errors: 4, should be 0
 Actual errors found: 
 Syntax Error at new/AdviceOnInheritedMethod.java:22,35-48: Syntax error.
@@ -687,35 +832,41 @@ FAIL: Test 466: "new/advice on an inherited method" failed.
 
 Running test 470: new/advice on default constructor for a class only referenced via reflection
 Commandline: abc -d new new/OddConstructors.java 
-Abc started on Wed Aug 11 17:56:49 BST 2004
+Abc started on Wed Aug 11 20:17:45 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: OddConstructors with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming I... 
 Transforming A... 
 Transforming OddConstructors... 
 Transforming OddConstructors$B... 
 Transforming C... 
-Abc finished on Wed Aug 11 17:56:50 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:17:45 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 762 millisec.)
+Breakdown of abc phases  (total: 787 millisec.)
 ------------------------------------------------
-[ 42.388% ] Init. of Soot:  323
+[ 42.058% ] Init. of Soot:  331
 [ 00.000% ] Loading Jars:  0
-[ 00.131% ] Create polyglot compiler:  1
-[ 42.257% ] Polyglot phases:  322
+[ 00.127% ] Create polyglot compiler:  1
+[ 35.832% ] Polyglot phases:  282
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.131% ] Intertype Adjuster:  1
-[ 00.919% ] Retrieving bodies:  7
-[ 03.937% ] Update pattern matcher:  30
+[ 00.000% ] Intertype Adjuster:  0
+[ 02.033% ] Retrieving bodies:  16
+[ 10.165% ] Update pattern matcher:  80
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.525% ] Compute advice lists:  4
+[ 00.381% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.131% ] Weaving advice:  1
-[ 00.131% ] Exceptions check:  1
+[ 00.127% ] Add aspect code:  1
+[ 00.127% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 04.856% ] Soot Packs:  37
-[ 04.593% ] Soot Writing Output:  35
+[ 04.828% ] Soot Packs:  38
+[ 04.320% ] Soot Writing Output:  34
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "advised default constructor"
@@ -740,34 +891,41 @@ FAIL: Test 470: "new/advice on default constructor for a class only referenced v
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-Abc started on Wed Aug 11 17:56:51 BST 2004
+Abc started on Wed Aug 11 20:17:46 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: Test with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Integer with params: [int]
+finalLocalInfo: {}
 Transforming A... 
 Transforming Test... 
 Transforming ObjectForInt... 
 Transforming Abc$access$A$around$1409... 
-Abc finished on Wed Aug 11 17:56:51 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:17:47 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 631 millisec.)
+Breakdown of abc phases  (total: 690 millisec.)
 ------------------------------------------------
-[ 48.494% ] Init. of Soot:  306
+[ 52.464% ] Init. of Soot:  362
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 32.805% ] Polyglot phases:  207
+[ 00.145% ] Create polyglot compiler:  1
+[ 22.754% ] Polyglot phases:  157
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.268% ] Retrieving bodies:  8
-[ 03.803% ] Update pattern matcher:  24
+[ 01.304% ] Retrieving bodies:  9
+[ 11.014% ] Update pattern matcher:  76
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.792% ] Compute advice lists:  5
+[ 00.580% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
-[ 00.158% ] Add aspect code:  1
-[ 00.475% ] Weaving advice:  3
-[ 00.158% ] Exceptions check:  1
+[ 00.145% ] Add aspect code:  1
+[ 00.435% ] Weaving advice:  3
+[ 00.145% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.815% ] Soot Packs:  43
-[ 05.230% ] Soot Writing Output:  33
+[ 06.377% ] Soot Packs:  44
+[ 04.638% ] Soot Writing Output:  32
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
@@ -789,34 +947,41 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 478: new/Reception based on strictfp modifier
 Commandline: abc -d new new/StrictFpReceptions.java 
-Abc started on Wed Aug 11 17:56:58 BST 2004
+Abc started on Wed Aug 11 20:17:53 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: StrictClass with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming StrictClassAbstract... 
 Transforming StrictFpWatcher... 
 Transforming StrictFpReceptions... 
 Transforming StrictClass... 
-Abc finished on Wed Aug 11 17:56:58 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:17:54 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 724 millisec.)
+Breakdown of abc phases  (total: 740 millisec.)
 ------------------------------------------------
-[ 43.923% ] Init. of Soot:  318
+[ 44.730% ] Init. of Soot:  331
 [ 00.000% ] Loading Jars:  0
-[ 00.138% ] Create polyglot compiler:  1
-[ 29.834% ] Polyglot phases:  216
+[ 00.000% ] Create polyglot compiler:  0
+[ 23.108% ] Polyglot phases:  171
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.486% ] Retrieving bodies:  18
-[ 03.453% ] Update pattern matcher:  25
+[ 02.568% ] Retrieving bodies:  19
+[ 03.243% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.486% ] Compute advice lists:  18
+[ 02.432% ] Compute advice lists:  18
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.276% ] Weaving advice:  2
-[ 00.138% ] Exceptions check:  1
+[ 07.162% ] Add aspect code:  53
+[ 00.270% ] Weaving advice:  2
+[ 00.135% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.530% ] Soot Packs:  69
-[ 07.735% ] Soot Writing Output:  56
+[ 09.054% ] Soot Packs:  67
+[ 07.297% ] Soot Writing Output:  54
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail test1 method call, counters=0,0
@@ -838,7 +1003,8 @@ FAIL: Test 478: "new/Reception based on strictfp modifier" failed.
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
 Commandline: abc -d new/foemmel new/foemmel/TheAspect.java new/foemmel/TheObject.java 
-Abc started on Wed Aug 11 17:57:01 BST 2004
+Abc started on Wed Aug 11 20:17:57 BST 2004
+finalLocalInfo: {}
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <TheAspect: void test_timeseq()>
 polyglot.util.InternalCompilerError: Exception while processing <TheAspect: void test_timeseq()>
 	at abc.main.Main.weave(Main.java:648)
@@ -861,8 +1027,13 @@ FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates
 
 Running test 495: new/innerInterfaces/private inner interfaces and bytecode visibility
 Commandline: abc -d new/innerInterfaces new/innerInterfaces/p/Driver.java new/innerInterfaces/p/InnerTest.java new/innerInterfaces/other/Test.java 
-Abc started on Wed Aug 11 17:57:11 BST 2004
+Abc started on Wed Aug 11 20:18:06 BST 2004
 Creating getInstance method public abstract int get$count$1624() for itfi field private int count
+finalLocalInfo: {}
+creating new for classToInvoke: other.Test with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <p.InnerTest: void before$1621(p.InnerTest$Inner)>
 polyglot.util.InternalCompilerError: Exception while processing <p.InnerTest: void before$1621(p.InnerTest$Inner)>
 	at abc.main.Main.weave(Main.java:648)
@@ -885,35 +1056,47 @@ FAIL: Test 495: "new/innerInterfaces/private inner interfaces and bytecode visib
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-Abc started on Wed Aug 11 17:57:11 BST 2004
+Abc started on Wed Aug 11 20:18:07 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: [java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.util.ArrayList with params: []
 Transforming A... 
 Transforming C... 
 Transforming SuperC... 
 Transforming AroundAll... 
 Transforming Abc$access$A$around$1629... 
-Abc finished on Wed Aug 11 17:57:14 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Wed Aug 11 20:18:09 BST 2004. ( 0 min. 2 sec. )
 ================================================
-Breakdown of abc phases  (total: 2071 millisec.)
+Breakdown of abc phases  (total: 2044 millisec.)
 ------------------------------------------------
-[ 14.969% ] Init. of Soot:  310
+[ 16.634% ] Init. of Soot:  340
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 22.260% ] Polyglot phases:  461
-[ 00.000% ] Resolve class names:  0
+[ 00.049% ] Create polyglot compiler:  1
+[ 21.624% ] Polyglot phases:  442
+[ 00.049% ] Resolve class names:  1
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.400% ] Retrieving bodies:  29
-[ 03.863% ] Update pattern matcher:  80
+[ 01.468% ] Retrieving bodies:  30
+[ 01.468% ] Update pattern matcher:  30
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.014% ] Compute advice lists:  21
+[ 01.027% ] Compute advice lists:  21
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 18.204% ] Weaving advice:  377
-[ 00.097% ] Exceptions check:  2
+[ 00.049% ] Add aspect code:  1
+[ 18.004% ] Weaving advice:  368
+[ 00.098% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 24.819% ] Soot Packs:  514
-[ 13.375% ] Soot Writing Output:  277
+[ 26.468% ] Soot Packs:  541
+[ 13.063% ] Soot Writing Output:  267
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 132
@@ -940,7 +1123,18 @@ Running test 499: new/target type matching with messy interface hierarchies
 Commandline: abc -d new -1.4 -Xlint:ignore new/CallTypesI.java 
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Wed Aug 11 17:57:15 BST 2004
+Abc started on Wed Aug 11 20:18:11 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: C1a with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: java.util.TreeSet with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: java.util.StringTokenizer with params: [java.lang.String, java.lang.String, boolean]
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming C0... 
 Transforming C1a... 
 Transforming I1a... 
@@ -949,29 +1143,29 @@ Transforming A...
 Transforming CallTypesI... 
 Transforming I1b... 
 Transforming C1b... 
-Abc finished on Wed Aug 11 17:57:16 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 11 20:18:12 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1273 millisec.)
+Breakdown of abc phases  (total: 1269 millisec.)
 ------------------------------------------------
-[ 27.808% ] Init. of Soot:  354
+[ 27.896% ] Init. of Soot:  354
 [ 00.000% ] Loading Jars:  0
-[ 00.079% ] Create polyglot compiler:  1
-[ 28.751% ] Polyglot phases:  366
+[ 00.000% ] Create polyglot compiler:  0
+[ 31.757% ] Polyglot phases:  403
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.885% ] Retrieving bodies:  24
-[ 05.813% ] Update pattern matcher:  74
+[ 00.079% ] Intertype Adjuster:  1
+[ 01.970% ] Retrieving bodies:  25
+[ 02.285% ] Update pattern matcher:  29
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 03.221% ] Compute advice lists:  41
+[ 03.152% ] Compute advice lists:  40
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 01.414% ] Weaving advice:  18
-[ 00.314% ] Exceptions check:  4
+[ 00.079% ] Add aspect code:  1
+[ 01.576% ] Weaving advice:  20
+[ 00.236% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 19.482% ] Soot Packs:  248
-[ 11.233% ] Soot Writing Output:  143
+[ 20.173% ] Soot Packs:  256
+[ 10.796% ] Soot Writing Output:  137
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail base: c1a.mI(): [instanceof c0, instanceof c1a, instanceof i0, instanceof i1a, static c1a, static i0] !equals [instanceof c0, instanceof c1a, instanceof i0, instanceof i1a, static c1a, static i0, static i1a]
@@ -995,35 +1189,43 @@ FAIL: Test 499: "new/target type matching with messy interface hierarchies" fail
 
 Running test 503: new/anonInnerClass/anonymous inner class with aspect
 Commandline: abc -d new/anonInnerClass new/anonInnerClass/Driver.java 
-Abc started on Wed Aug 11 17:57:19 BST 2004
+Abc started on Wed Aug 11 20:18:14 BST 2004
+finalLocalInfo: {Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: Test with params: []
+finalLocalInfo: {Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: Test$1 are: []
+creating new for classToInvoke: Test$1 with params: [Test]
+finalLocalInfo: {Id(<anon subtype of java.lang.Object>)=static: false finalLocalsAvail: [] finalLocalsUsed: []}
 Transforming I... 
 Transforming A... 
 Transforming Driver... 
 Transforming Test... 
 Transforming Test$1... 
-Abc finished on Wed Aug 11 17:57:20 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:18:15 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 686 millisec.)
+Breakdown of abc phases  (total: 633 millisec.)
 ------------------------------------------------
-[ 51.749% ] Init. of Soot:  355
+[ 48.973% ] Init. of Soot:  310
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 23.907% ] Polyglot phases:  164
+[ 31.280% ] Polyglot phases:  198
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.146% ] Intertype Adjuster:  1
-[ 01.458% ] Retrieving bodies:  10
-[ 03.499% ] Update pattern matcher:  24
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.738% ] Retrieving bodies:  11
+[ 03.791% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.729% ] Compute advice lists:  5
+[ 00.790% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.146% ] Weaving advice:  1
-[ 00.146% ] Exceptions check:  1
+[ 00.158% ] Add aspect code:  1
+[ 00.158% ] Weaving advice:  1
+[ 00.158% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.560% ] Soot Packs:  45
-[ 11.662% ] Soot Writing Output:  80
+[ 07.109% ] Soot Packs:  45
+[ 05.845% ] Soot Writing Output:  37
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail : -bar !equals -bar-after
@@ -1045,11 +1247,20 @@ FAIL: Test 503: "new/anonInnerClass/anonymous inner class with aspect" failed.
 
 Running test 505: design/intro/interfaces as mixins with introduction
 Commandline: abc -d design/intro design/intro/Interfaces.java 
-Abc started on Wed Aug 11 17:57:20 BST 2004
+Abc started on Wed Aug 11 20:18:16 BST 2004
 Creating getInstance method public abstract java.lang.String get$instanceField$1690() for itfi field public java.lang.String instanceField
 Creating getInstance method public abstract java.lang.String get$instanceField$1694() for itfi field public java.lang.String instanceField
 Creating getInstance method public abstract java.lang.String get$privateField$1698() for itfi field private java.lang.String privateField
 Creating getInstance method public abstract java.lang.String get$privateField$1702() for itfi field private java.lang.String privateField
+finalLocalInfo: {}
+creating new for classToInvoke: java.util.LinkedList with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.util.LinkedList with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: SubC with params: []
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Interfaces: void main(java.lang.String[])>
 polyglot.util.InternalCompilerError: Exception while processing <Interfaces: void main(java.lang.String[])>
 	at abc.main.Main.weave(Main.java:648)
@@ -1072,45 +1283,102 @@ FAIL: Test 505: "design/intro/interfaces as mixins with introduction" failed.
 
 Running test 50601: abctests/new/functional modifiers work correctly with introduced members
 Commandline: abc -d abctests/new abctests/new/IntroducedModifiers.java 
-Abc started on Wed Aug 11 17:57:21 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-I/O Error at null: Cannot find source file "abctests/new/IntroducedModifiers.java".
+Abc started on Wed Aug 11 20:18:17 BST 2004
+Creating getInstance method public abstract int get$iField$1720() for itfi field public transient volatile int iField
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+Transforming I... 
+Transforming IntroducedModifiers... 
+Transforming C... 
+Transforming A... 
+Abc finished on Wed Aug 11 20:18:18 BST 2004. ( 0 min. 0 sec. )
+================================================
+Breakdown of abc phases  (total: 929 millisec.)
+------------------------------------------------
+[ 37.783% ] Init. of Soot:  351
+[ 00.000% ] Loading Jars:  0
+[ 00.000% ] Create polyglot compiler:  0
+[ 37.137% ] Polyglot phases:  345
+[ 00.000% ] Resolve class names:  0
+[ 00.000% ] Declare Parents:  0
+[ 00.108% ] Intertype Adjuster:  1
+[ 01.938% ] Retrieving bodies:  18
+[ 03.337% ] Update pattern matcher:  31
+[ 00.000% ] Weave Initializers:  0
+[ 00.108% ] Load shadow types:  1
+[ 00.646% ] Compute advice lists:  6
+[ 00.000% ] Intertype weave:  0
+[ 00.000% ] Add aspect code:  0
+[ 00.108% ] Weaving advice:  1
+[ 00.108% ] Exceptions check:  1
+[ 00.000% ] Validate jimple:  0
+[ 08.611% ] Soot Packs:  80
+[ 10.118% ] Soot Writing Output:  94
+================================================
+InvocationTargetException while trying to run compiled class: java.lang.NoSuchFieldException: iField
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:383)
+	at abc.testing.Main.doCase(Main.java:270)
+	at abc.testing.Main.main(Main.java:104)
+Caused by: java.lang.NoSuchFieldException: iField
+	at java.lang.Class.getField(Class.java:911)
+	at IntroducedModifiers.main(IntroducedModifiers.java:25)
+	... 7 more
 FAIL: Test 50601: "abctests/new/functional modifiers work correctly with introduced members" failed.
 
 
 Running test 518: new/validate (enclosing) join point and source locations
 Commandline: abc -d new -Xlint:ignore new/NegativeSourceLocation.java 
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Wed Aug 11 17:57:31 BST 2004
+Abc started on Wed Aug 11 20:18:29 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: TargetClass with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Thread with params: [java.lang.Runnable, java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Error with params: [java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: TargetClass with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.StringBuffer with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming Const... 
 Transforming TargetClass... 
 Transforming Signal... 
 Transforming Aspect... 
 Transforming NegativeSourceLocation... 
-Abc finished on Wed Aug 11 17:57:33 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 11 20:18:31 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1771 millisec.)
+Breakdown of abc phases  (total: 1844 millisec.)
 ------------------------------------------------
-[ 17.335% ] Init. of Soot:  307
+[ 19.306% ] Init. of Soot:  356
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 25.014% ] Polyglot phases:  443
+[ 23.807% ] Polyglot phases:  439
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 02.880% ] Retrieving bodies:  51
-[ 04.912% ] Update pattern matcher:  87
+[ 00.054% ] Intertype Adjuster:  1
+[ 05.477% ] Retrieving bodies:  101
+[ 01.573% ] Update pattern matcher:  29
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 05.929% ] Compute advice lists:  105
+[ 05.803% ] Compute advice lists:  107
 [ 00.000% ] Intertype weave:  0
-[ 00.056% ] Add aspect code:  1
-[ 02.089% ] Weaving advice:  37
-[ 00.226% ] Exceptions check:  4
+[ 00.000% ] Add aspect code:  0
+[ 06.887% ] Weaving advice:  127
+[ 00.217% ] Exceptions check:  4
 [ 00.000% ] Validate jimple:  0
-[ 26.652% ] Soot Packs:  472
-[ 14.907% ] Soot Writing Output:  264
+[ 23.482% ] Soot Packs:  433
+[ 13.395% ] Soot Writing Output:  247
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "before AllTargetJoinPoints initialization(java.lang.Runnable())" not found,  expected event "before AllTargetJoinPoints initialization(java.lang.Runnable())" not found]
@@ -1138,35 +1406,46 @@ FAIL: Test 518: "new/validate (enclosing) join point and source locations" faile
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-Abc started on Wed Aug 11 17:58:10 BST 2004
+Abc started on Wed Aug 11 20:19:06 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: Sub with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: ObjectSub with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: ObjectSub with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming ObjectSub... 
 Transforming A... 
 Transforming Sub... 
 Transforming Super... 
 Transforming SuperInIntroduction... 
-Abc finished on Wed Aug 11 17:58:11 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:19:07 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 772 millisec.)
+Breakdown of abc phases  (total: 719 millisec.)
 ------------------------------------------------
-[ 45.855% ] Init. of Soot:  354
+[ 48.401% ] Init. of Soot:  348
 [ 00.000% ] Loading Jars:  0
-[ 00.130% ] Create polyglot compiler:  1
-[ 27.720% ] Polyglot phases:  214
-[ 00.130% ] Resolve class names:  1
+[ 00.139% ] Create polyglot compiler:  1
+[ 23.227% ] Polyglot phases:  167
+[ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.130% ] Intertype Adjuster:  1
-[ 02.073% ] Retrieving bodies:  16
-[ 03.109% ] Update pattern matcher:  24
+[ 00.139% ] Intertype Adjuster:  1
+[ 07.232% ] Retrieving bodies:  52
+[ 03.338% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.777% ] Compute advice lists:  6
+[ 00.695% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.130% ] Weaving advice:  1
-[ 00.130% ] Exceptions check:  1
+[ 00.139% ] Add aspect code:  1
+[ 00.139% ] Weaving advice:  1
+[ 00.139% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 08.808% ] Soot Packs:  68
-[ 11.010% ] Soot Writing Output:  85
+[ 09.736% ] Soot Packs:  70
+[ 06.676% ] Soot Writing Output:  48
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError: tried to access method java.lang.Object.clone()Ljava/lang/Object; from class A
 java.lang.reflect.InvocationTargetException
@@ -1185,105 +1464,36 @@ Caused by: java.lang.IllegalAccessError: tried to access method java.lang.Object
 FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed.
 
 
-Running test 580: new/inner classes of privileged aspects cannot see target class private members
-Commandline: abc -d new new/InnerClassInPrivilegedAspect.java 
-Abc started on Wed Aug 11 17:58:30 BST 2004
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while checking exceptions in <PrivilegedAspectAround: void new$Target$2173(Target,PrivilegedAspectAround)>
-polyglot.util.InternalCompilerError: Exception while checking exceptions in <PrivilegedAspectAround: void new$Target$2173(Target,PrivilegedAspectAround)>
-	at abc.main.Main.checkExceptions(Main.java:733)
-	at abc.main.Main.run(Main.java:436)
-	at abc.testing.TestCase.runTest(TestCase.java:279)
-	at abc.testing.Main.doCase(Main.java:270)
-	at abc.testing.Main.main(Main.java:104)
-Caused by: soot.AbstractSootMethodRef$ClassResolutionFailedException: Class PrivilegedAspectAround$3 doesn't have method <init>([Target]) : void; failed to resolve in superclasses and interfacesLooking in PrivilegedAspectAround$3 which has methods [<PrivilegedAspectAround$3: void <init>()>, <PrivilegedAspectAround$3: void run()>, <PrivilegedAspectAround$3: void <clinit>()>]
-Looking in java.lang.Object which has methods [<java.lang.Object: void <init>()>, <java.lang.Object: int hashCode()>, <java.lang.Object: void <clinit>()>, <java.lang.Object: void finalize()>, <java.lang.Object: void notify()>, <java.lang.Object: void notifyAll()>, <java.lang.Object: void registerNatives()>, <java.lang.Object: void wait()>, <java.lang.Object: void wait(long)>, <java.lang.Object: void wait(long,int)>, <java.lang.Object: java.lang.Class getClass()>, <java.lang.Object: java.lang.Object clone()>, <java.lang.Object: boolean equals(java.lang.Object)>, <java.lang.Object: java.lang.String toString()>]
-Looking in java.lang.Runnable which has methods [<java.lang.Runnable: void run()>]
-
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:135)
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:94)
-	at soot.jimple.internal.AbstractInvokeExpr.getMethod(AbstractInvokeExpr.java:51)
-	at soot.jimple.toolkits.base.ExceptionChecker.checkInvokeExpr(ExceptionChecker.java:133)
-	at soot.jimple.toolkits.base.ExceptionChecker.checkInvoke(ExceptionChecker.java:120)
-	at abc.soot.util.AspectJExceptionChecker.doCheck(AspectJExceptionChecker.java:53)
-	at abc.soot.util.AspectJExceptionChecker.internalTransform(AspectJExceptionChecker.java:31)
-	at soot.BodyTransformer.transform(BodyTransformer.java:51)
-	at abc.main.Main.checkExceptions(Main.java:729)
-	... 4 more
-FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class private members" failed.
-
-
-Running test 582: new/subclass advice not run for join points selected by superclass cflow-based pointcuts
-Commandline: abc -d new new/PR559.java 
-Abc started on Wed Aug 11 17:58:31 BST 2004
-Compilation produced an unexpected number of errors: 10, should be 0
-Actual errors found: 
-Semantic Error at new/PR559.java:49,50-63: Pointcut notInAspect not found.
-Semantic Error at new/PR559.java:52,57-70: Pointcut notInAspect not found.
-Semantic Error at new/PR559.java:59,57-70: Pointcut notInAspect not found.
-Semantic Error at new/PR559.java:61,23-33: Pointcut inTarget not found.
-Semantic Error at new/PR559.java:65,23-37: Pointcut inTargetFlow not found.
-Semantic Error at new/PR559.java:85,50-63: Pointcut notInAspect not found.
-Semantic Error at new/PR559.java:88,57-70: Pointcut notInAspect not found.
-Semantic Error at new/PR559.java:95,57-70: Pointcut notInAspect not found.
-Semantic Error at new/PR559.java:101,23-33: Pointcut inTarget not found.
-Semantic Error at new/PR559.java:105,23-37: Pointcut inTargetFlow not found.
-FAIL: Test 582: "new/subclass advice not run for join points selected by superclass cflow-based pointcuts" failed.
-
-
-Running test 598: new/PR569/anon class written to wrong directory
-Commandline: abc -d new/PR569 new/PR569/a/IntroAnon.java new/PR569/a/MyInterface.java new/PR569/b/Dest.java 
-Abc started on Wed Aug 11 17:58:43 BST 2004
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while checking exceptions in <a.IntroAnon$MI: java.lang.Object foo(a.MyInterface)>
-polyglot.util.InternalCompilerError: Exception while checking exceptions in <a.IntroAnon$MI: java.lang.Object foo(a.MyInterface)>
-	at abc.main.Main.checkExceptions(Main.java:733)
-	at abc.main.Main.run(Main.java:436)
-	at abc.testing.TestCase.runTest(TestCase.java:279)
-	at abc.testing.Main.doCase(Main.java:270)
-	at abc.testing.Main.main(Main.java:104)
-Caused by: soot.AbstractSootMethodRef$ClassResolutionFailedException: Class a.IntroAnon$1 doesn't have method <init>([a.MyInterface]) : void; failed to resolve in superclasses and interfacesLooking in a.IntroAnon$1 which has methods [<a.IntroAnon$1: void <init>()>, <a.IntroAnon$1: void <clinit>()>]
-Looking in java.lang.Object which has methods [<java.lang.Object: void <init>()>, <java.lang.Object: int hashCode()>, <java.lang.Object: void <clinit>()>, <java.lang.Object: void finalize()>, <java.lang.Object: void notify()>, <java.lang.Object: void notifyAll()>, <java.lang.Object: void registerNatives()>, <java.lang.Object: void wait()>, <java.lang.Object: void wait(long)>, <java.lang.Object: void wait(long,int)>, <java.lang.Object: java.lang.Class getClass()>, <java.lang.Object: java.lang.Object clone()>, <java.lang.Object: boolean equals(java.lang.Object)>, <java.lang.Object: java.lang.String toString()>]
-
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:135)
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:94)
-	at soot.jimple.internal.AbstractInvokeExpr.getMethod(AbstractInvokeExpr.java:51)
-	at soot.jimple.toolkits.base.ExceptionChecker.checkInvokeExpr(ExceptionChecker.java:133)
-	at soot.jimple.toolkits.base.ExceptionChecker.checkInvoke(ExceptionChecker.java:120)
-	at abc.soot.util.AspectJExceptionChecker.doCheck(AspectJExceptionChecker.java:53)
-	at abc.soot.util.AspectJExceptionChecker.internalTransform(AspectJExceptionChecker.java:31)
-	at soot.BodyTransformer.transform(BodyTransformer.java:51)
-	at abc.main.Main.checkExceptions(Main.java:729)
-	... 4 more
-FAIL: Test 598: "new/PR569/anon class written to wrong directory" failed.
-
-
 Running test 634: new/CE for ambiguous type reference (two files in package)
 Commandline: abc -d new new/ambiguousClass/AmbiguousReferent.java new/ambiguousClass/AmbiguousClassReference.java 
-Abc started on Wed Aug 11 17:59:02 BST 2004
+Abc started on Wed Aug 11 20:20:04 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming ambiguousClass.AmbiguousClassReference... 
 Transforming ambiguousClass.AmbiguousReferent... 
-Abc finished on Wed Aug 11 17:59:02 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:20:04 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 420 millisec.)
+Breakdown of abc phases  (total: 414 millisec.)
 ------------------------------------------------
-[ 83.571% ] Init. of Soot:  351
+[ 81.159% ] Init. of Soot:  336
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 06.429% ] Polyglot phases:  27
+[ 00.242% ] Create polyglot compiler:  1
+[ 02.657% ] Polyglot phases:  11
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.238% ] Intertype Adjuster:  1
-[ 00.238% ] Retrieving bodies:  1
-[ 05.000% ] Update pattern matcher:  21
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.483% ] Retrieving bodies:  2
+[ 10.870% ] Update pattern matcher:  45
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.238% ] Compute advice lists:  1
+[ 00.242% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.000% ] Weaving advice:  0
+[ 00.242% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.143% ] Soot Packs:  9
-[ 02.143% ] Soot Writing Output:  9
+[ 01.932% ] Soot Packs:  8
+[ 02.174% ] Soot Writing Output:  9
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" failed.
@@ -1291,8 +1501,10 @@ FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" fai
 
 Running test 639: new/Incrementing interface-introduced field
 Commandline: abc -d new new/IntroducedFieldInc.java 
-Abc started on Wed Aug 11 17:59:05 BST 2004
-Creating getInstance method public abstract int get$count$2270() for itfi field public int count
+Abc started on Wed Aug 11 20:20:06 BST 2004
+Creating getInstance method public abstract int get$count$2300() for itfi field public int count
+finalLocalInfo: {}
+creating new for classToInvoke: IntroducedFieldInc with params: []
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <IntroducedFieldInc: void main(java.lang.String[])>
 polyglot.util.InternalCompilerError: Exception while processing <IntroducedFieldInc: void main(java.lang.String[])>
 	at abc.main.Main.weave(Main.java:648)
@@ -1300,12 +1512,12 @@ polyglot.util.InternalCompilerError: Exception while processing <IntroducedField
 	at abc.testing.TestCase.runTest(TestCase.java:279)
 	at abc.testing.Main.doCase(Main.java:270)
 	at abc.testing.Main.main(Main.java:104)
-Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$2272], [local$assign$2272 = null, i.set$count$2269(i.get$count$2270() + 1)])
+Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$2302], [local$assign$2302 = null, i.set$count$2299(i.get$count$2300() + 1)])
 	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1651)
-	at soot.javaToJimple.JimpleBodyBuilder.getBinaryLocal(JimpleBodyBuilder.java:2388)
+	at soot.javaToJimple.JimpleBodyBuilder.getBinaryLocal(JimpleBodyBuilder.java:2392)
 	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1615)
-	at soot.javaToJimple.JimpleBodyBuilder.getSootParams(JimpleBodyBuilder.java:3325)
-	at soot.javaToJimple.JimpleBodyBuilder.getCallLocal(JimpleBodyBuilder.java:3616)
+	at soot.javaToJimple.JimpleBodyBuilder.getSootParams(JimpleBodyBuilder.java:3350)
+	at soot.javaToJimple.JimpleBodyBuilder.getCallLocal(JimpleBodyBuilder.java:3644)
 	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1633)
 	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:528)
 	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:330)
@@ -1320,7 +1532,33 @@ FAIL: Test 639: "new/Incrementing interface-introduced field" failed.
 
 Running test 647: new/flag errors when binding args with indeterminate prefix and suffix
 Commandline: abc -d new new/IndeterminateArgsCE.java 
-Abc started on Wed Aug 11 17:59:12 BST 2004
+Abc started on Wed Aug 11 20:20:12 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: STarget with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: STarget with params: [java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: STarget with params: [java.lang.String, java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: STarget with params: [java.lang.String, java.lang.String, java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: OTarget with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: OTarget with params: [java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: OTarget with params: [java.lang.String, java.lang.Object]
+finalLocalInfo: {}
+creating new for classToInvoke: OTarget with params: [java.lang.String, java.lang.Object, java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Compilation produced an unexpected number of errors: 1, should be 4
 Actual errors found: 
 Semantic Error at new/IndeterminateArgsCE.java:65,70-72: Two fillers in args pattern
@@ -1329,7 +1567,7 @@ FAIL: Test 647: "new/flag errors when binding args with indeterminate prefix and
 
 Running test 653: new/nolang/Compiling java.lang.Object with ajc yields non-verifying bytecode
 Commandline: abc -d new/nolang new/nolang/java/lang/Object.java new/nolang/java/lang/String.java 
-Abc started on Wed Aug 11 18:00:48 BST 2004
+Abc started on Wed Aug 11 20:21:48 BST 2004
 Method was <java.lang.Object: void <init>()>
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
@@ -1352,68 +1590,100 @@ FAIL: Test 653: "new/nolang/Compiling java.lang.Object with ajc yields non-verif
 
 Running test 655: new/CE expected for assignment to arg in if pcd
 Commandline: abc -d new new/IfPCDAssignmentCE.java 
-Abc started on Wed Aug 11 18:00:51 BST 2004
+Abc started on Wed Aug 11 20:21:51 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
 Transforming A... 
 Transforming C... 
 Transforming IfPCDAssignmentCE... 
-Abc finished on Wed Aug 11 18:00:51 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:21:52 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 475 millisec.)
+Breakdown of abc phases  (total: 472 millisec.)
 ------------------------------------------------
-[ 72.842% ] Init. of Soot:  346
+[ 73.941% ] Init. of Soot:  349
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 06.737% ] Polyglot phases:  32
+[ 04.873% ] Polyglot phases:  23
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.263% ] Retrieving bodies:  6
-[ 04.421% ] Update pattern matcher:  21
+[ 01.695% ] Retrieving bodies:  8
+[ 04.661% ] Update pattern matcher:  22
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.842% ] Compute advice lists:  4
+[ 00.636% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.211% ] Weaving advice:  1
-[ 00.211% ] Exceptions check:  1
+[ 00.212% ] Weaving advice:  1
+[ 00.212% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 08.211% ] Soot Packs:  39
-[ 05.263% ] Soot Writing Output:  25
+[ 08.051% ] Soot Packs:  38
+[ 05.720% ] Soot Writing Output:  27
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 655: "new/CE expected for assignment to arg in if pcd" failed.
 
 
-Running test 666: pureJava/assert coverage tests [requires 1.4]
-Commandline: abc -d pureJava -source 1.4 pureJava/AssertsCv.java 
-Abc started on Wed Aug 11 18:00:56 BST 2004
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while checking exceptions in <AssertTest: void testContexts()>
-polyglot.util.InternalCompilerError: Exception while checking exceptions in <AssertTest: void testContexts()>
-	at abc.main.Main.checkExceptions(Main.java:733)
-	at abc.main.Main.run(Main.java:436)
-	at abc.testing.TestCase.runTest(TestCase.java:279)
-	at abc.testing.Main.doCase(Main.java:270)
-	at abc.testing.Main.main(Main.java:104)
-Caused by: soot.AbstractSootMethodRef$ClassResolutionFailedException: Class AssertTest$2 doesn't have method <init>([int]) : void; failed to resolve in superclasses and interfacesLooking in AssertTest$2 which has methods [<AssertTest$2: int throwAssert()>, <AssertTest$2: void <init>()>, <AssertTest$2: void run()>, <AssertTest$2: void <clinit>()>]
-Looking in java.lang.Object which has methods [<java.lang.Object: void <init>()>, <java.lang.Object: int hashCode()>, <java.lang.Object: void <clinit>()>, <java.lang.Object: void finalize()>, <java.lang.Object: void notify()>, <java.lang.Object: void notifyAll()>, <java.lang.Object: void registerNatives()>, <java.lang.Object: void wait()>, <java.lang.Object: void wait(long)>, <java.lang.Object: void wait(long,int)>, <java.lang.Object: java.lang.Class getClass()>, <java.lang.Object: java.lang.Object clone()>, <java.lang.Object: boolean equals(java.lang.Object)>, <java.lang.Object: java.lang.String toString()>]
-Looking in java.lang.Runnable which has methods [<java.lang.Runnable: void run()>]
-
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:135)
-	at soot.AbstractSootMethodRef.resolve(AbstractSootMethodRef.java:94)
-	at soot.jimple.internal.AbstractInvokeExpr.getMethod(AbstractInvokeExpr.java:51)
-	at soot.jimple.toolkits.base.ExceptionChecker.checkInvokeExpr(ExceptionChecker.java:133)
-	at soot.jimple.toolkits.base.ExceptionChecker.checkInvoke(ExceptionChecker.java:120)
-	at abc.soot.util.AspectJExceptionChecker.doCheck(AspectJExceptionChecker.java:53)
-	at abc.soot.util.AspectJExceptionChecker.internalTransform(AspectJExceptionChecker.java:31)
-	at soot.BodyTransformer.transform(BodyTransformer.java:51)
-	at abc.main.Main.checkExceptions(Main.java:729)
-	... 4 more
-FAIL: Test 666: "pureJava/assert coverage tests [requires 1.4]" failed.
-
-
 Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertInOnePackage.java 
-Abc started on Wed Aug 11 18:00:57 BST 2004
+Abc started on Wed Aug 11 20:21:59 BST 2004
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$1 are: []
+creating new for classToInvoke: AssertInOnePackage$1 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$2 are: []
+creating new for classToInvoke: AssertInOnePackage$2 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$3 are: []
+creating new for classToInvoke: AssertInOnePackage$3 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$4 are: []
+creating new for classToInvoke: AssertInOnePackage$4 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$5 are: []
+creating new for classToInvoke: AssertInOnePackage$5 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$6 are: []
+creating new for classToInvoke: AssertInOnePackage$6 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$7 are: []
+creating new for classToInvoke: AssertInOnePackage$7 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$8 are: []
+creating new for classToInvoke: AssertInOnePackage$8 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$9 are: []
+creating new for classToInvoke: AssertInOnePackage$9 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocals for: AssertInOnePackage$10 are: []
+creating new for classToInvoke: AssertInOnePackage$10 with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: ConstructorOnHelper with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+creating new for classToInvoke: ConstructorOffHelper with params: []
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
+finalLocalInfo: {Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: [], Id(<anon subtype of AssertInOnePackage.Runnable>)=static: true finalLocalsAvail: [] finalLocalsUsed: []}
 Transforming CycleSubOff... 
 Transforming CycleSuperOff... 
 Transforming ConstructorOnHelper... 
@@ -1442,29 +1712,29 @@ Transforming AssertInOnePackage$7...
 Transforming InnerStaticInitializerOnHelperI... 
 Transforming InnerStaticInitializerOffHelper... 
 Transforming InnerStaticInitializerOnHelper... 
-Abc finished on Wed Aug 11 18:00:59 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Wed Aug 11 20:22:00 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1441 millisec.)
+Breakdown of abc phases  (total: 1431 millisec.)
 ------------------------------------------------
-[ 27.134% ] Init. of Soot:  391
+[ 22.781% ] Init. of Soot:  326
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 28.036% ] Polyglot phases:  404
+[ 00.070% ] Create polyglot compiler:  1
+[ 28.092% ] Polyglot phases:  402
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.069% ] Intertype Adjuster:  1
-[ 03.956% ] Retrieving bodies:  57
-[ 02.221% ] Update pattern matcher:  32
+[ 00.000% ] Intertype Adjuster:  0
+[ 07.966% ] Retrieving bodies:  114
+[ 02.236% ] Update pattern matcher:  32
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.527% ] Compute advice lists:  22
+[ 01.468% ] Compute advice lists:  21
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.347% ] Weaving advice:  5
-[ 00.139% ] Exceptions check:  2
+[ 00.349% ] Weaving advice:  5
+[ 00.140% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 21.721% ] Soot Packs:  313
-[ 14.851% ] Soot Writing Output:  214
+[ 19.706% ] Soot Packs:  282
+[ 17.191% ] Soot Writing Output:  246
 ================================================
 Failed to define or resolve class InnerStaticInitializerOnHelperI from pureJava
 java.lang.ClassFormatError: InnerStaticInitializerOnHelperI (Illegal field modifiers: 0x8)
@@ -1508,37 +1778,38 @@ FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" f
 
 Running test 674: pureJava/Referencing static interfaces with import statements
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 11 18:01:01 BST 2004
+Abc started on Wed Aug 11 20:22:02 BST 2004
+finalLocalInfo: {}
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 11 18:01:02 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:03 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 413 millisec.)
+Breakdown of abc phases  (total: 402 millisec.)
 ------------------------------------------------
-[ 82.809% ] Init. of Soot:  342
+[ 84.328% ] Init. of Soot:  339
 [ 00.000% ] Loading Jars:  0
-[ 00.242% ] Create polyglot compiler:  1
-[ 04.843% ] Polyglot phases:  20
+[ 00.000% ] Create polyglot compiler:  0
+[ 02.488% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.242% ] Retrieving bodies:  1
-[ 05.085% ] Update pattern matcher:  21
+[ 00.746% ] Retrieving bodies:  3
+[ 05.224% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.242% ] Compute advice lists:  1
+[ 00.249% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.242% ] Weaving advice:  1
+[ 00.249% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.179% ] Soot Packs:  9
-[ 04.116% ] Soot Writing Output:  17
+[ 02.239% ] Soot Packs:  9
+[ 04.478% ] Soot Writing Output:  18
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfaces_PR386.java 
-Abc started on Wed Aug 11 18:01:02 BST 2004
+Abc started on Wed Aug 11 20:22:03 BST 2004
 Compilation produced an unexpected number of errors: 3, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfaces_PR386.java:2,0-45: Package "ClassWithStaticInnerInterfaces" not found.
@@ -1549,37 +1820,38 @@ FAIL: Test 674: "pureJava/Referencing static interfaces with import statements" 
 
 Running test 675: pureJava/Referencing static interfaces with import statements stars
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 11 18:01:02 BST 2004
+Abc started on Wed Aug 11 20:22:03 BST 2004
+finalLocalInfo: {}
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 11 18:01:03 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:04 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 414 millisec.)
+Breakdown of abc phases  (total: 399 millisec.)
 ------------------------------------------------
-[ 85.266% ] Init. of Soot:  353
+[ 84.712% ] Init. of Soot:  338
 [ 00.000% ] Loading Jars:  0
-[ 00.242% ] Create polyglot compiler:  1
-[ 02.415% ] Polyglot phases:  10
+[ 00.000% ] Create polyglot compiler:  0
+[ 02.506% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.242% ] Retrieving bodies:  1
-[ 05.072% ] Update pattern matcher:  21
+[ 00.251% ] Intertype Adjuster:  1
+[ 00.251% ] Retrieving bodies:  1
+[ 05.263% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.242% ] Compute advice lists:  1
+[ 00.251% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
 [ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.415% ] Soot Packs:  10
-[ 04.106% ] Soot Writing Output:  17
+[ 02.506% ] Soot Packs:  10
+[ 04.261% ] Soot Writing Output:  17
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars_PR386.java 
-Abc started on Wed Aug 11 18:01:03 BST 2004
+Abc started on Wed Aug 11 20:22:04 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfacesStars_PR386.java:23,20-26: Could not find type "Inner3".
@@ -1588,37 +1860,38 @@ FAIL: Test 675: "pureJava/Referencing static interfaces with import statements s
 
 Running test 676: pureJava/Referencing static interfaces with import statements stars 2
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 11 18:01:03 BST 2004
+Abc started on Wed Aug 11 20:22:04 BST 2004
+finalLocalInfo: {}
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 11 18:01:03 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:05 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 412 millisec.)
+Breakdown of abc phases  (total: 419 millisec.)
 ------------------------------------------------
-[ 79.612% ] Init. of Soot:  328
+[ 78.759% ] Init. of Soot:  330
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 08.252% ] Polyglot phases:  34
+[ 02.387% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.243% ] Intertype Adjuster:  1
-[ 00.243% ] Retrieving bodies:  1
-[ 04.854% ] Update pattern matcher:  20
+[ 00.239% ] Intertype Adjuster:  1
+[ 00.239% ] Retrieving bodies:  1
+[ 11.933% ] Update pattern matcher:  50
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.243% ] Compute advice lists:  1
+[ 00.239% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.243% ] Weaving advice:  1
+[ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.184% ] Soot Packs:  9
-[ 04.126% ] Soot Writing Output:  17
+[ 02.387% ] Soot Packs:  10
+[ 03.819% ] Soot Writing Output:  16
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars2_PR386.java 
-Abc started on Wed Aug 11 18:01:04 BST 2004
+Abc started on Wed Aug 11 20:22:05 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfacesStars2_PR386.java:19,20-26: Could not find type "Inner2".
@@ -1627,37 +1900,38 @@ FAIL: Test 676: "pureJava/Referencing static interfaces with import statements s
 
 Running test 677: pureJava/Referencing static interfaces with import statements stars 3
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Wed Aug 11 18:01:04 BST 2004
+Abc started on Wed Aug 11 20:22:05 BST 2004
+finalLocalInfo: {}
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Wed Aug 11 18:01:04 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:05 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 389 millisec.)
+Breakdown of abc phases  (total: 391 millisec.)
 ------------------------------------------------
-[ 84.576% ] Init. of Soot:  329
+[ 84.655% ] Init. of Soot:  331
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 02.571% ] Polyglot phases:  10
+[ 02.558% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.257% ] Retrieving bodies:  1
-[ 05.398% ] Update pattern matcher:  21
+[ 00.256% ] Intertype Adjuster:  1
+[ 00.256% ] Retrieving bodies:  1
+[ 05.115% ] Update pattern matcher:  20
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.257% ] Compute advice lists:  1
+[ 00.256% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.257% ] Weaving advice:  1
+[ 00.256% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.314% ] Soot Packs:  9
-[ 04.370% ] Soot Writing Output:  17
+[ 02.558% ] Soot Packs:  10
+[ 04.092% ] Soot Writing Output:  16
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars3_PR386.java 
-Abc started on Wed Aug 11 18:01:04 BST 2004
+Abc started on Wed Aug 11 20:22:05 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfacesStars3_PR386.java:14,20-26: Could not find type "Inner1".
@@ -1666,7 +1940,7 @@ FAIL: Test 677: "pureJava/Referencing static interfaces with import statements s
 
 Running test 679: pureJava/Referencing interfaces with import statements stars
 Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars_PR386.java 
-Abc started on Wed Aug 11 18:01:05 BST 2004
+Abc started on Wed Aug 11 20:22:06 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingInnerInterfacesStars_PR386.java:23,20-26: Could not find type "Inner3".
@@ -1675,7 +1949,7 @@ FAIL: Test 679: "pureJava/Referencing interfaces with import statements stars" f
 
 Running test 680: pureJava/Referencing interfaces with import statements stars 2
 Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars2_PR386.java 
-Abc started on Wed Aug 11 18:01:05 BST 2004
+Abc started on Wed Aug 11 20:22:06 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingInnerInterfacesStars2_PR386.java:19,20-26: Could not find type "Inner2".
@@ -1684,7 +1958,7 @@ FAIL: Test 680: "pureJava/Referencing interfaces with import statements stars 2"
 
 Running test 681: pureJava/Referencing interfaces with import statements stars 3
 Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars3_PR386.java 
-Abc started on Wed Aug 11 18:01:05 BST 2004
+Abc started on Wed Aug 11 20:22:06 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingInnerInterfacesStars3_PR386.java:14,20-26: Could not find type "Inner1".
@@ -1693,7 +1967,7 @@ FAIL: Test 681: "pureJava/Referencing interfaces with import statements stars 3"
 
 Running test 684: new/declaring a private method on an inner interface
 Commandline: abc -d new new/PrivateMethodOnInnerInterface.java 
-Abc started on Wed Aug 11 18:01:08 BST 2004
+Abc started on Wed Aug 11 20:22:10 BST 2004
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at new/PrivateMethodOnInnerInterface.java:25,21-42: privateMethod() in A.I cannot override privateMethod() in A.I; attempting to assign weaker access privileges
@@ -1703,35 +1977,40 @@ FAIL: Test 684: "new/declaring a private method on an inner interface" failed.
 
 Running test 691: new/after returning advice on interface constructor
 Commandline: abc -d new new/AfterReturningInterfaceConstructor.java 
-Abc started on Wed Aug 11 18:01:13 BST 2004
-Creating getInstance method public abstract int get$i$2445() for itfi field int i
+Abc started on Wed Aug 11 20:22:15 BST 2004
+Creating getInstance method public abstract int get$i$2475() for itfi field int i
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming I... 
 Transforming A... 
 Transforming AfterReturningInterfaceConstructor... 
 Transforming C... 
-Abc finished on Wed Aug 11 18:01:13 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:16 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 625 millisec.)
+Breakdown of abc phases  (total: 598 millisec.)
 ------------------------------------------------
-[ 53.120% ] Init. of Soot:  332
+[ 54.348% ] Init. of Soot:  325
 [ 00.000% ] Loading Jars:  0
-[ 00.160% ] Create polyglot compiler:  1
-[ 24.000% ] Polyglot phases:  150
+[ 00.000% ] Create polyglot compiler:  0
+[ 28.930% ] Polyglot phases:  173
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.160% ] Intertype Adjuster:  1
-[ 00.800% ] Retrieving bodies:  5
-[ 04.000% ] Update pattern matcher:  25
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.003% ] Retrieving bodies:  6
+[ 04.181% ] Update pattern matcher:  25
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 07.520% ] Compute advice lists:  47
+[ 00.502% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
-[ 00.160% ] Add aspect code:  1
+[ 00.167% ] Add aspect code:  1
 [ 00.000% ] Weaving advice:  0
-[ 00.160% ] Exceptions check:  1
+[ 00.167% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 05.600% ] Soot Packs:  35
-[ 04.320% ] Soot Writing Output:  27
+[ 05.853% ] Soot Packs:  35
+[ 04.849% ] Soot Writing Output:  29
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail i.i: 0 < 2
@@ -1753,8 +2032,8 @@ FAIL: Test 691: "new/after returning advice on interface constructor" failed.
 
 Running test 692: new/after returning advice on interface constructor - error
 Commandline: abc -d new new/AfterReturningInterfaceConstructorCE.java 
-Abc started on Wed Aug 11 18:01:13 BST 2004
-Creating getInstance method public abstract int get$i$2452() for itfi field int i
+Abc started on Wed Aug 11 20:22:16 BST 2004
+Creating getInstance method public abstract int get$i$2482() for itfi field int i
 Found an unexpected error - should be on line 30, but is on line 26.
 Errors found during this compilation:
 Semantic Error at new/AfterReturningInterfaceConstructorCE.java:26,4-29:5: Duplicate constructor "constructor C()".
@@ -1764,8 +2043,8 @@ FAIL: Test 692: "new/after returning advice on interface constructor - error" fa
 
 Running test 713: new/self-reference from (aspect-declared) method-local class
 Commandline: abc -d new new/MethodSelfReference.java 
-Abc started on Wed Aug 11 18:01:20 BST 2004
-Creating getInstance method public abstract java.lang.Runnable get$runnable$2473() for itfi field java.lang.Runnable runnable
+Abc started on Wed Aug 11 20:22:22 BST 2004
+Creating getInstance method public abstract java.lang.Runnable get$runnable$2503() for itfi field java.lang.Runnable runnable
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/MethodSelfReference.java:16,4-18: <anon subtype of java.lang.Object> should be declared abstract; it does not define start(), which was injected into I by aspect A
@@ -1774,7 +2053,7 @@ FAIL: Test 713: "new/self-reference from (aspect-declared) method-local class" f
 
 Running test 718: new/after returning advice on interface and implementation constructor
 Commandline: abc -d new new/AfterReturningConstructor.java 
-Abc started on Wed Aug 11 18:01:22 BST 2004
+Abc started on Wed Aug 11 20:22:24 BST 2004
 Compilation produced an unexpected number of errors: 7, should be 0
 Actual errors found: 
 Syntax Error at new/AfterReturningConstructor.java:7,15-21: Syntax error.
@@ -1789,7 +2068,7 @@ FAIL: Test 718: "new/after returning advice on interface and implementation cons
 
 Running test 724: new/declare class implements class
 Commandline: abc -d new new/DeclareClassImplementsClass.java 
-Abc started on Wed Aug 11 18:01:25 BST 2004
+Abc started on Wed Aug 11 20:22:27 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/DeclareClassImplementsClass.java:10,4-37: Type B is not an interface
@@ -1798,9 +2077,14 @@ FAIL: Test 724: "new/declare class implements class" failed.
 
 Running test 733: bugs/inter-type fields with array types
 Commandline: abc -d bugs bugs/InterFieldArrays.java 
-Abc started on Wed Aug 11 18:01:29 BST 2004
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Bar: int[] init$bar$2516(Foo)>
-polyglot.util.InternalCompilerError: Exception while processing <Bar: int[] init$bar$2516(Foo)>
+Abc started on Wed Aug 11 20:22:31 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: Foo with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Bar: int[] init$bar$2546(Foo)>
+polyglot.util.InternalCompilerError: Exception while processing <Bar: int[] init$bar$2546(Foo)>
 	at abc.main.Main.weave(Main.java:648)
 	at abc.main.Main.run(Main.java:431)
 	at abc.testing.TestCase.runTest(TestCase.java:279)
@@ -1808,7 +2092,7 @@ polyglot.util.InternalCompilerError: Exception while processing <Bar: int[] init
 	at abc.testing.Main.main(Main.java:104)
 Caused by: java.lang.RuntimeException: Unhandled Expression: { ... }
 	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1651)
-	at soot.javaToJimple.JimpleBodyBuilder.getCastLocal(JimpleBodyBuilder.java:3298)
+	at soot.javaToJimple.JimpleBodyBuilder.getCastLocal(JimpleBodyBuilder.java:3323)
 	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1621)
 	at soot.javaToJimple.JimpleBodyBuilder.createReturn(JimpleBodyBuilder.java:1282)
 	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:552)
@@ -1824,7 +2108,9 @@ FAIL: Test 733: "bugs/inter-type fields with array types" failed.
 
 Running test 735: new/checking around join point for advice return type - numeric
 Commandline: abc -d new new/AroundNumericCastCE.java 
-Abc started on Wed Aug 11 18:01:29 BST 2004
+Abc started on Wed Aug 11 20:22:31 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
 Semantic Error at AroundNumericCastCE.java:11,18-13:5: Invalid application of around advice: Illegal narrowing cast (shadow type: int; advice return type: double)
@@ -1833,7 +2119,14 @@ FAIL: Test 735: "new/checking around join point for advice return type - numeric
 
 Running test 736: new/void around advice without proceed
 Commandline: abc -d new new/VoidAround.java 
-Abc started on Wed Aug 11 18:01:30 BST 2004
+Abc started on Wed Aug 11 20:22:32 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Object with params: []
+finalLocalInfo: {}
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
 Semantic Error at VoidAround.java:11,15-16: Invalid application of around advice: Can't apply around advice with void return type to a non void shadow. (shadow type: java.lang.Object; advice return type: void)
@@ -1842,33 +2135,37 @@ FAIL: Test 736: "new/void around advice without proceed" failed.
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs bugs/Finalizer.java 
-Abc started on Wed Aug 11 18:01:40 BST 2004
+Abc started on Wed Aug 11 20:22:40 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: Finalizer with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming Finalizer... 
 Transforming FinalizeContract... 
-Transforming Abc$access$FinalizeContract$around$2574... 
-Abc finished on Wed Aug 11 18:01:40 BST 2004. ( 0 min. 0 sec. )
+Transforming Abc$access$FinalizeContract$around$2604... 
+Abc finished on Wed Aug 11 20:22:41 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 553 millisec.)
+Breakdown of abc phases  (total: 567 millisec.)
 ------------------------------------------------
-[ 61.844% ] Init. of Soot:  342
+[ 61.905% ] Init. of Soot:  351
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 16.275% ] Polyglot phases:  90
+[ 23.104% ] Polyglot phases:  131
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.723% ] Retrieving bodies:  4
-[ 04.159% ] Update pattern matcher:  23
+[ 00.882% ] Retrieving bodies:  5
+[ 03.880% ] Update pattern matcher:  22
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.362% ] Compute advice lists:  2
+[ 00.353% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.181% ] Add aspect code:  1
-[ 00.362% ] Weaving advice:  2
+[ 00.176% ] Add aspect code:  1
+[ 00.353% ] Weaving advice:  2
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 05.425% ] Soot Packs:  30
-[ 10.669% ] Soot Writing Output:  59
+[ 05.467% ] Soot Packs:  31
+[ 03.880% ] Soot Writing Output:  22
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
@@ -1876,7 +2173,7 @@ FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 Running test 756: bugs/interfaceNames/can't resolve nested public interfaces (also PR#32399)
 Commandline: abc -d bugs/interfaceNames bugs/interfaceNames/TransactionTest.java bugs/interfaceNames/sub/ExecutionMonitor.java bugs/interfaceNames/sub/ObserverProtocol.aj 
-Abc started on Wed Aug 11 18:01:42 BST 2004
+Abc started on Wed Aug 11 20:22:43 BST 2004
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:487)
@@ -1925,32 +2222,48 @@ FAIL: Test 756: "bugs/interfaceNames/can't resolve nested public interfaces (als
 
 Running test 761: new/declare/omnibus declare warning context
 Commandline: abc -d new/declare new/declare/DeclareWarning.java 
-Abc started on Wed Aug 11 18:01:44 BST 2004
+Abc started on Wed Aug 11 20:22:45 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Error with params: [java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Error with params: [java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.RuntimeException with params: [java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.OutOfMemoryError with params: [java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: DeclareWarning with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Error with params: [java.lang.String]
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.Error with params: [java.lang.String]
+finalLocalInfo: {}
 Transforming A... 
 Transforming DeclareWarning... 
-Abc finished on Wed Aug 11 18:01:45 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:45 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 613 millisec.)
+Breakdown of abc phases  (total: 618 millisec.)
 ------------------------------------------------
-[ 55.465% ] Init. of Soot:  340
+[ 55.502% ] Init. of Soot:  343
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 17.945% ] Polyglot phases:  110
-[ 00.000% ] Resolve class names:  0
+[ 00.162% ] Create polyglot compiler:  1
+[ 17.638% ] Polyglot phases:  109
+[ 00.162% ] Resolve class names:  1
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.447% ] Retrieving bodies:  15
-[ 12.072% ] Update pattern matcher:  74
+[ 02.427% ] Retrieving bodies:  15
+[ 03.883% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.305% ] Compute advice lists:  8
+[ 01.294% ] Compute advice lists:  8
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.326% ] Weaving advice:  2
+[ 00.324% ] Weaving advice:  2
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.525% ] Soot Packs:  40
-[ 03.915% ] Soot Writing Output:  24
+[ 14.401% ] Soot Packs:  89
+[ 04.207% ] Soot Writing Output:  26
 ================================================
 Found an unexpected error - should be on line 5, but is on line 3.
 Errors found during this compilation:
@@ -1973,25 +2286,14 @@ Warning at DeclareWarning.java:72,4-78:5: adviceExecution() && within(A)
 FAIL: Test 761: "new/declare/omnibus declare warning context" failed.
 
 
-Running test 763: new/incompatible advice throws clause are a compile-time error
-Commandline: abc -d new new/AdviceThrowsCf.java 
-Abc started on Wed Aug 11 18:01:46 BST 2004
-Compilation produced an unexpected number of errors: 8, should be 10
-Actual errors found: 
-Semantic Error at AdviceThrowsCf.java:13,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:13,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:28,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:28,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:47,0-61:1: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:48,10-11: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:50,8-14: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:50,8-14: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-FAIL: Test 763: "new/incompatible advice throws clause are a compile-time error" failed.
-
-
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
-Abc started on Wed Aug 11 18:01:46 BST 2004
+Abc started on Wed Aug 11 20:22:47 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: Bar with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Advice formal pcvar$17 not found
 polyglot.util.InternalCompilerError: Advice formal pcvar$17 not found
 	at abc.weaving.aspectinfo.AdviceDecl.getFormalIndex(AdviceDecl.java:56)
@@ -2012,7 +2314,7 @@ FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed.
 
 Running test 772: bugs/declare soft and throw statements
 Commandline: abc -d bugs bugs/ConvertToUnchecked.java 
-Abc started on Wed Aug 11 18:01:49 BST 2004
+Abc started on Wed Aug 11 20:22:49 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Syntax Error at bugs/ConvertToUnchecked.java:25,18-19: Syntax error.
@@ -2021,7 +2323,14 @@ FAIL: Test 772: "bugs/declare soft and throw statements" failed.
 
 Running test 776: new/declareParents/Declare parents removing ancestor
 Commandline: abc -d new/declareParents new/declareParents/IllegalAdoption.java 
-Abc started on Wed Aug 11 18:01:51 BST 2004
+Abc started on Wed Aug 11 20:22:51 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming IllegalAdoption... 
 Transforming IllegalAdoption$Adoption... 
 Transforming IllegalAdoption$E... 
@@ -2029,102 +2338,37 @@ Transforming IllegalAdoption$B...
 Transforming IllegalAdoption$C... 
 Transforming IllegalAdoption$D... 
 Transforming IllegalAdoption$A... 
-Abc finished on Wed Aug 11 18:01:51 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:22:52 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 504 millisec.)
+Breakdown of abc phases  (total: 537 millisec.)
 ------------------------------------------------
-[ 68.849% ] Init. of Soot:  347
+[ 65.363% ] Init. of Soot:  351
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 10.317% ] Polyglot phases:  52
+[ 00.186% ] Create polyglot compiler:  1
+[ 07.449% ] Polyglot phases:  40
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.190% ] Retrieving bodies:  6
-[ 04.167% ] Update pattern matcher:  21
+[ 00.186% ] Intertype Adjuster:  1
+[ 00.931% ] Retrieving bodies:  5
+[ 03.911% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.397% ] Compute advice lists:  2
+[ 00.372% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.198% ] Add aspect code:  1
-[ 00.198% ] Weaving advice:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.372% ] Weaving advice:  2
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.944% ] Soot Packs:  35
-[ 07.738% ] Soot Writing Output:  39
+[ 06.890% ] Soot Packs:  37
+[ 14.339% ] Soot Writing Output:  77
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 776: "new/declareParents/Declare parents removing ancestor" failed.
 
 
-Running test 779: bugs/interSpecials/testing that assert works like .class
-Commandline: abc -d bugs/interSpecials -source 1.4 bugs/interSpecials/p1/C.java bugs/interSpecials/p2/A2.java 
-Abc started on Wed Aug 11 18:01:53 BST 2004
-Transforming p1.C... 
-Transforming p2.A2... 
-Transforming p2.InterClass... 
-Transforming Abc$access$p2_d_InterClass$around$2634... 
-Abc finished on Wed Aug 11 18:01:54 BST 2004. ( 0 min. 0 sec. )
-================================================
-Breakdown of abc phases  (total: 619 millisec.)
-------------------------------------------------
-[ 57.027% ] Init. of Soot:  353
-[ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 22.779% ] Polyglot phases:  141
-[ 00.000% ] Resolve class names:  0
-[ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.454% ] Retrieving bodies:  9
-[ 04.200% ] Update pattern matcher:  26
-[ 00.000% ] Weave Initializers:  0
-[ 00.000% ] Load shadow types:  0
-[ 00.646% ] Compute advice lists:  4
-[ 00.000% ] Intertype weave:  0
-[ 00.162% ] Add aspect code:  1
-[ 00.323% ] Weaving advice:  2
-[ 00.162% ] Exceptions check:  1
-[ 00.000% ] Validate jimple:  0
-[ 07.754% ] Soot Packs:  48
-[ 05.493% ] Soot Writing Output:  34
-================================================
-Failed to define or resolve class p2.InterClass from bugs/interSpecials
-java.lang.ClassFormatError: p2/InterClass (Illegal Field name "class$p2.InterClass")
-	at java.lang.ClassLoader.defineClass0(Native Method)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
-	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
-	at abc.testing.TestCase$FileClassLoader.findClass(TestCase.java:782)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:289)
-	at java.lang.ClassLoader.loadClass(ClassLoader.java:235)
-	at java.lang.ClassLoader.loadClassInternal(ClassLoader.java:302)
-	at p1.C.p2$InterClass$foo$2635(C.java)
-	at p2.A2.main(A2.java:6)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:383)
-	at abc.testing.Main.doCase(Main.java:270)
-	at abc.testing.Main.main(Main.java:104)
-InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: p2/InterClass
-java.lang.reflect.InvocationTargetException
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:383)
-	at abc.testing.Main.doCase(Main.java:270)
-	at abc.testing.Main.main(Main.java:104)
-Caused by: java.lang.NoClassDefFoundError: p2/InterClass
-	at p1.C.p2$InterClass$foo$2635(C.java)
-	at p2.A2.main(A2.java:6)
-	... 7 more
-FAIL: Test 779: "bugs/interSpecials/testing that assert works like .class" failed.
-
-
 Running test 784: bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds
 Commandline: abc -d bugs/messyAround bugs/messyAround/aspects/Trace.aj bugs/messyAround/cap/OptionList.java bugs/messyAround/DebugTrace.aj 
-Abc started on Wed Aug 11 18:01:56 BST 2004
+Abc started on Wed Aug 11 20:22:57 BST 2004
 Compilation produced an unexpected number of errors: 27, should be 3
 Actual errors found: 
 Semantic Error at bugs/messyAround/DebugTrace.aj:11,37-42: Could not find type "Trace".
@@ -2159,34 +2403,39 @@ FAIL: Test 784: "bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy a
 
 Running test 785: new/try/finally in around advice (same as ...messy arounds?)
 Commandline: abc -d new new/TryFinallyInAround.java 
-Abc started on Wed Aug 11 18:01:57 BST 2004
+Abc started on Wed Aug 11 20:22:58 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: C with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming A... 
 Transforming C... 
 Transforming TryFinallyInAround... 
-Transforming Abc$access$A$around$2664... 
-Abc finished on Wed Aug 11 18:01:58 BST 2004. ( 0 min. 0 sec. )
+Transforming Abc$access$A$around$2694... 
+Abc finished on Wed Aug 11 20:22:58 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 816 millisec.)
+Breakdown of abc phases  (total: 807 millisec.)
 ------------------------------------------------
-[ 41.912% ] Init. of Soot:  342
+[ 46.964% ] Init. of Soot:  379
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 30.515% ] Polyglot phases:  249
+[ 24.287% ] Polyglot phases:  196
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.123% ] Intertype Adjuster:  1
-[ 01.225% ] Retrieving bodies:  10
-[ 03.431% ] Update pattern matcher:  28
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.363% ] Retrieving bodies:  11
+[ 03.346% ] Update pattern matcher:  27
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.490% ] Compute advice lists:  4
+[ 00.496% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 02.451% ] Weaving advice:  20
-[ 00.123% ] Exceptions check:  1
+[ 02.478% ] Weaving advice:  20
+[ 00.124% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 14.093% ] Soot Packs:  115
-[ 05.637% ] Soot Writing Output:  46
+[ 14.746% ] Soot Packs:  119
+[ 06.196% ] Soot Writing Output:  50
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.NoSuchFieldError: abc$cflowCounter$1
 java.lang.reflect.InvocationTargetException
@@ -2204,60 +2453,48 @@ Caused by: java.lang.NoSuchFieldError: abc$cflowCounter$1
 FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" failed.
 
 
-Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
-Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/appStartLines-ajc-1.1.jar new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java 
-Abc started on Wed Aug 11 18:02:05 BST 2004
-Found an unexpected error - should be on line 6, but is on line 12.
-Errors found during this compilation:
-Semantic Error at MainExecStartLines.java:12: execution(void MainExecStartLines.main(String[]))
-Semantic Error at MainExecStartLines.java:17: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes" failed.
-
-
-Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
-Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/appStartLines-javac-1.4.jar new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java 
-Abc started on Wed Aug 11 18:02:05 BST 2004
-Found an unexpected error - should be on line 6, but is on line 12.
-Errors found during this compilation:
-Semantic Error at MainExecStartLines.java:12: execution(void MainExecStartLines.main(String[]))
-Semantic Error at MainExecStartLines.java:20: handler(RuntimeException) && within(MainExecStartLines)
-FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed.
-
-
 Running test 832: bugs/accessMethods/can not resolve this member warning
 Commandline: abc -d bugs/accessMethods bugs/accessMethods/p1/Base.java bugs/accessMethods/p2/Derived.java 
-Abc started on Wed Aug 11 18:03:34 BST 2004
+Abc started on Wed Aug 11 20:24:34 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: p2.Derived with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: p2.Derived$Inner with params: [p2.Derived]
+finalLocalInfo: {}
 field: p2.Derived.this.value
 field target: class abc.aspectj.extension.AJSpecial_c
 field: value
 field target: class abc.aspectj.extension.AJSpecial_c
+finalLocalInfo: {}
+finalLocalInfo: {}
 Transforming p2.Derived... 
-Transforming p2.Derived$Inner... 
 Transforming p2.Derived$A... 
+Transforming p2.Derived$Inner... 
 Transforming p1.Base... 
-Abc finished on Wed Aug 11 18:03:35 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:24:35 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 620 millisec.)
+Breakdown of abc phases  (total: 616 millisec.)
 ------------------------------------------------
-[ 54.839% ] Init. of Soot:  340
+[ 56.331% ] Init. of Soot:  347
 [ 00.000% ] Loading Jars:  0
-[ 00.161% ] Create polyglot compiler:  1
-[ 24.839% ] Polyglot phases:  154
-[ 00.000% ] Resolve class names:  0
+[ 00.000% ] Create polyglot compiler:  0
+[ 22.890% ] Polyglot phases:  141
+[ 00.162% ] Resolve class names:  1
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.452% ] Retrieving bodies:  9
-[ 03.871% ] Update pattern matcher:  24
+[ 01.623% ] Retrieving bodies:  10
+[ 03.734% ] Update pattern matcher:  23
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.645% ] Compute advice lists:  4
+[ 00.812% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.161% ] Add aspect code:  1
-[ 00.323% ] Weaving advice:  2
-[ 00.161% ] Exceptions check:  1
+[ 00.162% ] Add aspect code:  1
+[ 00.325% ] Weaving advice:  2
+[ 00.162% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 07.419% ] Soot Packs:  46
-[ 06.129% ] Soot Writing Output:  38
+[ 07.305% ] Soot Packs:  45
+[ 06.494% ] Soot Writing Output:  40
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError: tried to access method p1.Base.getName()Ljava/lang/String; from class p2.Derived$Inner
 java.lang.reflect.InvocationTargetException
@@ -2277,15 +2514,20 @@ FAIL: Test 832: "bugs/accessMethods/can not resolve this member warning" failed.
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
 Commandline: abc -d bugs bugs/PrivilegedParsing.java 
-Abc started on Wed Aug 11 18:03:59 BST 2004
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Outer$Inner: void before$2793(PrivilegedParsing)>
-polyglot.util.InternalCompilerError: Exception while processing <Outer$Inner: void before$2793(PrivilegedParsing)>
+Abc started on Wed Aug 11 20:24:58 BST 2004
+finalLocalInfo: {}
+creating new for classToInvoke: PrivilegedParsing with params: [int, int]
+finalLocalInfo: {}
+finalLocalInfo: {}
+finalLocalInfo: {}
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Outer$Inner: void before$2823(PrivilegedParsing)>
+polyglot.util.InternalCompilerError: Exception while processing <Outer$Inner: void before$2823(PrivilegedParsing)>
 	at abc.main.Main.weave(Main.java:648)
 	at abc.main.Main.run(Main.java:431)
 	at abc.testing.TestCase.runTest(TestCase.java:279)
 	at abc.testing.Main.doCase(Main.java:270)
 	at abc.testing.Main.main(Main.java:104)
-Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$2795, local$assign$$2797], [local$assign$2795 = capsule, local$assign$$2797 = local$assign$2795.get$accessor$hidden$2796(), local$assign$2795.get$accessor$hidden$2796(local$assign$2795.get$accessor$hidden$2796() + 1), local$assign$$2797])
+Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$2825, local$assign$$2827], [local$assign$2825 = capsule, local$assign$$2827 = local$assign$2825.get$accessor$hidden$2826(), local$assign$2825.get$accessor$hidden$2826(local$assign$2825.get$accessor$hidden$2826() + 1), local$assign$$2827])
 	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1651)
 	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:528)
 	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:330)
@@ -2300,34 +2542,48 @@ FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" f
 
 Running test 898: bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits
 Commandline: abc -d bugs bugs/AfterThrowingCtor.java 
-Abc started on Wed Aug 11 18:03:59 BST 2004
+Abc started on Wed Aug 11 20:24:59 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: AfterThrowingCtor$AdviceRanException with params: [AfterThrowingCtor]
+finalLocalInfo: {}
+creating new for classToInvoke: Foo with params: []
+finalLocalInfo: {}
+creating new for classToInvoke: Foo1 with params: []
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.IllegalStateException with params: [java.lang.String]
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: java.lang.IllegalStateException with params: [java.lang.String]
+finalLocalInfo: {}
 Transforming Foo1... 
 Transforming Foo... 
 Transforming AfterThrowingCtor... 
 Transforming AfterThrowingCtor$AdviceRanException... 
-Abc finished on Wed Aug 11 18:04:00 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:25:00 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 752 millisec.)
+Breakdown of abc phases  (total: 717 millisec.)
 ------------------------------------------------
-[ 45.479% ] Init. of Soot:  342
+[ 47.559% ] Init. of Soot:  341
 [ 00.000% ] Loading Jars:  0
-[ 00.133% ] Create polyglot compiler:  1
-[ 32.713% ] Polyglot phases:  246
+[ 00.000% ] Create polyglot compiler:  0
+[ 34.449% ] Polyglot phases:  247
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.133% ] Intertype Adjuster:  1
-[ 01.197% ] Retrieving bodies:  9
-[ 03.457% ] Update pattern matcher:  26
-[ 00.000% ] Weave Initializers:  0
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.534% ] Retrieving bodies:  11
+[ 03.766% ] Update pattern matcher:  27
+[ 00.139% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.532% ] Compute advice lists:  4
+[ 00.558% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.133% ] Weaving advice:  1
-[ 00.133% ] Exceptions check:  1
+[ 00.139% ] Weaving advice:  1
+[ 00.139% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 05.984% ] Soot Packs:  45
-[ 10.106% ] Soot Writing Output:  76
+[ 06.416% ] Soot Packs:  46
+[ 05.300% ] Soot Writing Output:  38
 ================================================
 InvocationTargetException while trying to run compiled class: AfterThrowingCtor$AdviceRanException
 java.lang.reflect.InvocationTargetException
@@ -2339,7 +2595,7 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.Main.doCase(Main.java:270)
 	at abc.testing.Main.main(Main.java:104)
 Caused by: AfterThrowingCtor$AdviceRanException
-	at AfterThrowingCtor.afterThrowing$2801(AfterThrowingCtor.java:5)
+	at AfterThrowingCtor.afterThrowing$2831(AfterThrowingCtor.java:5)
 	at Foo.<init>(AfterThrowingCtor.java:33)
 	at AfterThrowingCtor.main(AfterThrowingCtor.java:10)
 	... 7 more
@@ -2348,7 +2604,9 @@ FAIL: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-t
 
 Running test 952: bugs/retitle warning to circular {advice} dependency at ...
 Commandline: abc -d bugs bugs/CircularAdvicePrecedence.java 
-Abc started on Wed Aug 11 18:04:33 BST 2004
+Abc started on Wed Aug 11 20:25:33 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Semantic Error at null: Precedence conflict
@@ -2357,7 +2615,7 @@ FAIL: Test 952: "bugs/retitle warning to circular {advice} dependency at ..." fa
 
 Running test 959: bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 2
 Commandline: abc -d bugs/declarePrecedenceWithClasses bugs/declarePrecedenceWithClasses/Priority.aj 
-Abc started on Wed Aug 11 18:04:35 BST 2004
+Abc started on Wed Aug 11 20:25:34 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at bugs/declarePrecedenceWithClasses/Priority.aj:8,21-41: Aspect Security is matched by more than one pattern on the precedence list
@@ -2366,7 +2624,8 @@ FAIL: Test 959: "bugs/declarePrecedenceWithClasses/declare precedence on a class
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
 Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-debug.jar bugs/systemouts/A.java 
-Abc started on Wed Aug 11 18:04:35 BST 2004
+Abc started on Wed Aug 11 20:25:35 BST 2004
+finalLocalInfo: {}
 Compilation produced an unexpected number of errors: 21, should be 20
 Actual errors found: 
 Semantic Error at X.java:12: NPE
@@ -2395,7 +2654,8 @@ FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed.
 
 Running test 962: bugs/systemouts/declare error binary-weaving NPE 2 
 Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-nodebug.jar bugs/systemouts/A.java 
-Abc started on Wed Aug 11 18:04:36 BST 2004
+Abc started on Wed Aug 11 20:25:35 BST 2004
+finalLocalInfo: {}
 Getting source file for an untagged class pack.X
 Getting source file for an untagged class pack.X
 Getting source file for an untagged class pack.X
@@ -2445,7 +2705,8 @@ FAIL: Test 962: "bugs/systemouts/declare error binary-weaving NPE 2 " failed.
 
 Running test 963: bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult
 Commandline: abc -d bugs/tooManyErrors -injars bugs/tooManyErrors/Joinpoints101.jar bugs/tooManyErrors/DecErrors.aj 
-Abc started on Wed Aug 11 18:04:36 BST 2004
+Abc started on Wed Aug 11 20:25:36 BST 2004
+finalLocalInfo: {}
 Compilation produced an unexpected number of errors: 100, should be 101
 Actual errors found: 
 Semantic Error at Joinpoints101.java:10: In Joinpoints101!
@@ -2553,71 +2814,40 @@ FAIL: Test 963: "bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResul
 
 Running test 970: bugs/error message for constructor-execution pcd
 Commandline: abc -d bugs bugs/InterfaceConstructor.java 
-Abc started on Wed Aug 11 18:04:40 BST 2004
+Abc started on Wed Aug 11 20:25:40 BST 2004
+finalLocalInfo: {}
+finalLocalInfo: {}
+creating new for classToInvoke: InterfaceConstructor with params: []
+finalLocalInfo: {}
 Transforming I... 
 Transforming NoSuchJP... 
 Transforming InterfaceConstructor... 
-Abc finished on Wed Aug 11 18:04:41 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Wed Aug 11 20:25:40 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 433 millisec.)
+Breakdown of abc phases  (total: 473 millisec.)
 ------------------------------------------------
-[ 79.908% ] Init. of Soot:  346
+[ 72.727% ] Init. of Soot:  344
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 03.695% ] Polyglot phases:  16
+[ 03.383% ] Polyglot phases:  16
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.924% ] Retrieving bodies:  4
-[ 04.619% ] Update pattern matcher:  20
+[ 00.846% ] Retrieving bodies:  4
+[ 13.319% ] Update pattern matcher:  63
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.462% ] Compute advice lists:  2
+[ 00.423% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.231% ] Add aspect code:  1
+[ 00.211% ] Add aspect code:  1
 [ 00.000% ] Weaving advice:  0
-[ 00.231% ] Exceptions check:  1
+[ 00.211% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 05.543% ] Soot Packs:  24
-[ 04.388% ] Soot Writing Output:  19
+[ 05.074% ] Soot Packs:  24
+[ 03.805% ] Soot Writing Output:  18
 ================================================
 Compilation produced an unexpected number of errors: 0, should be 1
 Actual errors found: 
 FAIL: Test 970: "bugs/error message for constructor-execution pcd" failed.
-
-
-Running test 971: bugs/false ambigous binding error (introduced in 1.2rc2)
-Commandline: abc -d bugs bugs/DisjunctVarBinding_2.java bugs/DisjunctVarBinding_3.java 
-Abc started on Wed Aug 11 18:04:41 BST 2004
-Transforming A... 
-Transforming IfPointcut... 
-Transforming B... 
-Transforming DisjunctVarBinding_2... 
-Abc finished on Wed Aug 11 18:04:41 BST 2004. ( 0 min. 0 sec. )
-================================================
-Breakdown of abc phases  (total: 584 millisec.)
-------------------------------------------------
-[ 58.390% ] Init. of Soot:  341
-[ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 23.116% ] Polyglot phases:  135
-[ 00.000% ] Resolve class names:  0
-[ 00.000% ] Declare Parents:  0
-[ 00.171% ] Intertype Adjuster:  1
-[ 01.199% ] Retrieving bodies:  7
-[ 04.110% ] Update pattern matcher:  24
-[ 00.000% ] Weave Initializers:  0
-[ 00.000% ] Load shadow types:  0
-[ 01.027% ] Compute advice lists:  6
-[ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.171% ] Weaving advice:  1
-[ 00.171% ] Exceptions check:  1
-[ 00.000% ] Validate jimple:  0
-[ 06.507% ] Soot Packs:  38
-[ 05.137% ] Soot Writing Output:  30
-================================================
-Compilation succeeded but was expected to fail.
-FAIL: Test 971: "bugs/false ambigous binding error (introduced in 1.2rc2)" failed.
 
 
