@@ -74,6 +74,10 @@
         </compile>
         
     </ajc-test>
+<ajc-test title="DEPRECATED: Introduce of constructors" num="25" keywords="from-base" dir="base/test118" abccomment="this fails because we don't match I.new(..) correctly. ODM 4/7/04">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="Local declarations in advise bodies" num="26" keywords="from-base" dir="base/test119">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -1750,11 +1754,8 @@
             <message line="19" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="initial tests for new introduction style" num="320" keywords="from-design" dir="design/intro" abccomment="we signal itd inits without a specific order">
-        <compile files="Simple.java">
-            <message line="67" kind="warning"></message>
-            <message line="67" kind="warning"></message>
-        </compile>
+<ajc-test title="initial tests for new introduction style" num="320" keywords="from-design" dir="design/intro">
+        <compile files="Simple.java"></compile>
         <run class="Simple"></run>
     </ajc-test>
 <ajc-test title="overriding of introduced methods and accessibility" num="321" keywords="from-design" dir="design/intro">
@@ -2187,6 +2188,10 @@
         <compile files="TwoAnonymous.java"></compile>
         <run class="TwoAnonymous"></run>
     </ajc-test>
+<ajc-test title="basic tests for initializer and staticinitializer PCDs" num="422" keywords="from-resolved_10x" dir="new">
+        <compile files="InitializerTest.java"></compile>
+        <run class="InitializerTest"></run>
+    </ajc-test>
 <ajc-test title="introduction of an initializer into a class" pr="98" num="423" keywords="from-resolved_10x" dir="new">
         <compile files="IntroductionOfInitializer.java"></compile>
         <run class="IntroductionOfInitializer"></run>
@@ -2369,6 +2374,10 @@
 <ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOrdering.java"></compile>
         <run class="AdviceOrdering"></run>
+    </ajc-test>
+<ajc-test title="advice on default constructor for a class only referenced via reflection" pr="241" num="470" keywords="from-resolved_10x" dir="new">
+        <compile files="OddConstructors.java"></compile>
+        <run class="OddConstructors"></run>
     </ajc-test>
 <ajc-test title="calling and called this params in calls points" pr="289" num="471" keywords="from-resolved_10x" dir="new">
         <compile files="CallsParams.java"></compile>
@@ -2820,6 +2829,10 @@
         <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
         <run class="driver.PR555"></run>
     </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
+    </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
@@ -3150,6 +3163,18 @@
         <compile files="IndeterminateArgs.java"></compile>
         <run class="IndeterminateArgs"></run>
     </ajc-test>
+<ajc-test title="flag errors when binding args with indeterminate prefix and suffix" pr="764" num="647" keywords="from-resolved_105,knownLimitation" dir="new" abccomment="ajc reports errors in named pointcuts at use; we report                   the error at the point of declaration. ODM 13/08/04">
+        <compile files="IndeterminateArgsCE.java">
+            <ajcmessage line="67" kind="error"></ajcmessage>
+            <ajcmessage line="68" kind="error"></ajcmessage>
+            <ajcmessage line="70" kind="error"></ajcmessage>
+            <ajcmessage line="72" kind="error"></ajcmessage>
+            <message line="65" kind="error"></message>
+            <message line="66" kind="error"></message>
+            <message line="67" kind="error"></message>
+            <message line="68" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="check arg types with indeterminate prefix and suffix" pr="764" num="648" keywords="from-resolved_105" dir="new">
         <compile files="IndeterminateArgType.java"></compile>
         <run class="IndeterminateArgType"></run>
@@ -3173,6 +3198,12 @@
 <ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
         <run class="MethodLocalAroundReturns"></run>
+    </ajc-test>
+<ajc-test title="CE expected for assignment to arg in if pcd" num="655" keywords="from-resolved_105" dir="new">
+        <compile files="IfPCDAssignmentCE.java">
+            <message line="16" kind="error"></message>
+            <message line="20" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="advising field get/sets when accessing via super" num="656" keywords="from-resolved_105" dir="new">
         <compile files="SuperField.java"></compile>
@@ -3270,6 +3301,18 @@
 <ajc-test title="crashes given method in declared method" pr="888" num="690" dir="new">
         <compile files="DeclareMethodCE.java">
           <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="after returning advice on interface constructor" pr="889" num="691" dir="new">
+        <compile files="AfterReturningInterfaceConstructor.java"></compile>
+        <run class="AfterReturningInterfaceConstructor"></run>
+    </ajc-test>
+<ajc-test title="after returning advice on interface constructor - error" pr="889" num="692" dir="new" abccomment="abc gives two errors, but ok. ODM 13/08/04">
+        <compile files="AfterReturningInterfaceConstructorCE.java">
+        	<ajcmessage line="26" kind="error"></ajcmessage>
+        	<ajcmessage line="30" kind="warning"></ajcmessage>
+                <message line="26" kind="error"></message>
+                <message line="26" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="after advice on static call join point" pr="900" num="693" dir="bugs">
@@ -3390,6 +3433,10 @@
 <ajc-test title="declared exceptions in inter-type decls" pr="29106" num="731" dir="bugs">
         <compile files="ExceptionsOnInters.java"></compile>
         <run class="ExceptionsOnInters"></run>
+    </ajc-test>
+<ajc-test title="inter-type fields with array types" pr="29113" num="733" dir="bugs">
+        <compile files="InterFieldArrays.java"></compile>
+        <run class="InterFieldArrays"></run>
     </ajc-test>
 <ajc-test title="declaring method on superclass and subclass" pr="852" num="737" dir="new/PR852">
         <compile files="aspectPack/Aspect.java,target/SubClass.java,target/SuperClass.java">

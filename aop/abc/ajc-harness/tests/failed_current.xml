@@ -1,9 +1,5 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="DEPRECATED: Introduce of constructors" num="25" keywords="from-base" dir="base/test118" abccomment="this fails because we don't match I.new(..) correctly. ODM 4/7/04">
-        <compile files="Driver.java"></compile>
-        <run class="Driver"></run>
-    </ajc-test>
-<ajc-test title="Not binding constructor when using more than one compilation" pr="408" num="115" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
+ <ajc-test title="Not binding constructor when using more than one compilation" pr="408" num="115" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
         <compile files="OuterAbstract_PR408.java"></compile>
         <compile includeClassesDir="true" files="ExtendsOuterAbstract_PR408.java"></compile>
         <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
@@ -91,10 +87,6 @@
         <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
         <run class="main.Main"></run>
     </ajc-test>
-<ajc-test title="basic tests for initializer and staticinitializer PCDs" num="422" keywords="from-resolved_10x" dir="new">
-        <compile files="InitializerTest.java"></compile>
-        <run class="InitializerTest"></run>
-    </ajc-test>
 <ajc-test title="field patterns and subtyping" num="426" keywords="from-resolved_10x" dir="new">
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
@@ -102,10 +94,6 @@
 <ajc-test title="advice on an inherited method" pr="105" num="466" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnInheritedMethod.java"></compile>
         <run class="AdviceOnInheritedMethod"></run>
-    </ajc-test>
-<ajc-test title="advice on default constructor for a class only referenced via reflection" pr="241" num="470" keywords="from-resolved_10x" dir="new">
-        <compile files="OddConstructors.java"></compile>
-        <run class="OddConstructors"></run>
     </ajc-test>
 <ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
         <compile files="ObjectForInt.java"></compile>
@@ -131,10 +119,6 @@
         <compile files="Interfaces.java"></compile>
         <run class="Interfaces"></run>
     </ajc-test>
-<ajc-test title="functional modifiers work correctly with introduced members" num="50601" keywords="from-resolved_10x" dir="abctests/new" abccomment="test depends on implementation-specific naming convention, via reflection.                   Cloned from 506. ODM 11/08/04">
-        <compile files="IntroducedModifiers.java"></compile>
-        <run class="IntroducedModifiers"></run>
-    </ajc-test>
 <ajc-test title="validate (enclosing) join point and source locations" pr="525" num="518" keywords="from-resolved_10x" dir="new">
         <compile options="-Xlint:ignore" files="NegativeSourceLocation.java"></compile>
         <run class="NegativeSourceLocation"></run>
@@ -142,12 +126,6 @@
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
-    </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new" abccomment="we give a warning about unspecified init order. ODM 12/08/04">
-        <compile files="InnerClassInPrivilegedAspect.java">
-             <message line="109" kind="warning"></message>
-        </compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
@@ -159,24 +137,10 @@
         <compile files="IntroducedFieldInc.java"></compile>
         <run class="IntroducedFieldInc"></run>
     </ajc-test>
-<ajc-test title="flag errors when binding args with indeterminate prefix and suffix" pr="764" num="647" keywords="from-resolved_105,knownLimitation" dir="new">
-        <compile files="IndeterminateArgsCE.java">
-            <message line="67" kind="error"></message>
-            <message line="68" kind="error"></message>
-            <message line="70" kind="error"></message>
-            <message line="72" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
 	    <compile files="java/lang/Object.java,java/lang/String.java">
 	    </compile>
 	</ajc-test>
-<ajc-test title="CE expected for assignment to arg in if pcd" num="655" keywords="from-resolved_105" dir="new">
-        <compile files="IfPCDAssignmentCE.java">
-            <message line="16" kind="error"></message>
-            <message line="20" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
         <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
         <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
@@ -213,16 +177,6 @@
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
         <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
-<ajc-test title="after returning advice on interface constructor" pr="889" num="691" dir="new">
-        <compile files="AfterReturningInterfaceConstructor.java"></compile>
-        <run class="AfterReturningInterfaceConstructor"></run>
-    </ajc-test>
-<ajc-test title="after returning advice on interface constructor - error" pr="889" num="692" dir="new">
-        <compile files="AfterReturningInterfaceConstructorCE.java">
-        	<message line="26" kind="error"></message>
-        	<message line="30" kind="warning"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="self-reference from (aspect-declared) method-local class" pr="776" num="713" dir="new">
         <compile files="MethodSelfReference.java"></compile>
         <run class="MethodSelfReference"></run>
@@ -234,10 +188,6 @@
 <ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="we should accept implements instead of extends">
         <compile files="DeclareClassImplementsClass.java">
         </compile>
-    </ajc-test>
-<ajc-test title="inter-type fields with array types" pr="29113" num="733" dir="bugs">
-        <compile files="InterFieldArrays.java"></compile>
-        <run class="InterFieldArrays"></run>
     </ajc-test>
 <ajc-test title="checking around join point for advice return type - numeric" pr="838" num="735" dir="new">
         <compile files="AroundNumericCastCE.java">

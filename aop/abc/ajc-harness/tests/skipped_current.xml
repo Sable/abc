@@ -23,6 +23,11 @@
         <compile files="IntroducedModifiers.java"></compile>
         <run class="IntroducedModifiers"></run>
     </ajc-test>
+<ajc-test title="functional modifiers work correctly with introduced members" num="50601" keywords="from-resolved_10x" dir="abctests/new" abccomment="test depends on implementation-specific naming convention, via reflection.                   Cloned from 506. ODM 11/08/04. Impossible to get this right                   for abc, because the field name depends on the name generator.">
+      <abckeywords> <skip></skip> </abckeywords>
+        <compile files="IntroducedModifiers.java"></compile>
+        <run class="IntroducedModifiers"></run>
+    </ajc-test>
 <ajc-test title="AspectOf available for different aspect types" num="524" keywords="from-resolved_10x" dir="new" abccomment="we don't support aspect as a variable name">
         <abckeywords><skip></skip></abckeywords>
         <compile files="AspectOf.java"></compile>
