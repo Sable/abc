@@ -7542,7 +7542,10 @@
 
 	<ajc-test dir="bugs/extdirs" 
 		pr="42574"
-		title="zip and jar suffixes for extdirs entries">
+		title="zip and jar suffixes for extdirs entries"
+		abccomment="Skipping this case as we're not sure what the extdirs option
+		       is meant to do. PA/AGS">
+		<abckeywords> <skip/> </abckeywords>
 		<compile files="extdirs-src/main/Main.java"
 			extdirs="lib/lowercase"/>
 	</ajc-test>
