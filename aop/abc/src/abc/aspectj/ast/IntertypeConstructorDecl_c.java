@@ -3,6 +3,7 @@ package abc.aspectj.ast;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import polyglot.ast.Node;
 import polyglot.ast.Block;
@@ -21,6 +22,7 @@ import polyglot.ext.jl.ast.ConstructorDecl_c;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.InterTypeConstructorInstance_c;
 
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     implements IntertypeConstructorDecl, ContainsAspectInfo
@@ -61,9 +63,11 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
         List formals = visitList(this.formals, v);
         List throwTypes = visitList(this.throwTypes, v);
         Block body = (Block) visitChild(this.body, v);
-	TypeNode host=(TypeNode) visitChild(this.host,v);
-	return reconstruct(formals,throwTypes,body,host);
+		TypeNode host=(TypeNode) visitChild(this.host,v);
+		return reconstruct(formals,throwTypes,body,host);
     }
+    
+    protected InterTypeConstructorInstance_c itConstructorInstance;
     
     /**
      * @author Aske Christensen
@@ -82,10 +86,31 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		   							constructorInstance().throwTypes());
 		   
 	  	  ((ParsedClassType)ht).addConstructor(ci);
+	  	  itConstructorInstance = (InterTypeConstructorInstance_c) ci;
 		}
         return am.bypassChildren(this);
     }
     
+
+	/**
+	* @author Oege de Moor
+	* change private intertype constructor decl into public,
+	* mangling by giving it an extra parameter
+	*/
+	public IntertypeConstructorDecl accessChange(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+		if (flags().isPrivate() || flags().isPackage()) {
+			System.out.println("it's private or package");
+			ParsedClassType ht = (ParsedClassType) host.type();
+			ht.fields().remove(itConstructorInstance); // remove old instance from host type    		
+			ConstructorInstance mmi = itConstructorInstance.mangled();  // retrieve the mangled instance 		
+			ht.addConstructor(mmi); // add new instance to host type 
+            List newFormals = new LinkedList(formals());
+            newFormals.add(itConstructorInstance.mangledFormal(nf,ts));
+			return (IntertypeConstructorDecl) constructorInstance(mmi).flags(mmi.flags()).formals(newFormals);
+		}
+		return this;
+	}
+	
 
     /** Duplicate most of the things for ConstructorDecl here to avoid comparing
      *  the name against the contaning class.
@@ -213,7 +238,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 			AJContext nc = (AJContext) super.enterScope(c);
 			TypeSystem ts = nc.typeSystem();
 			return nc.pushHost(ts.staticTarget(host.type()).toClass());
-		}
+    }
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 	System.out.println("ICD host: "+host.toString());

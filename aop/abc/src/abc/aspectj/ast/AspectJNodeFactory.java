@@ -273,6 +273,9 @@ public interface AspectJNodeFactory
     ArgDotDot ArgDotDot(Position pos);
     
 	Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer);
+	
+	ConstructorCall hostConstructorCall(Position pos, ConstructorCall.Kind kind, Expr qualifier, List arguments);
+	
 }
 
 

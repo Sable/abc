@@ -56,9 +56,9 @@ public class InterTypeMethodInstance_c
 			excTypes);
 		this.origin = origin;
 //		prepare for later transformation to mangled form:
-		if (flags.isPrivate()){
+		if (flags.isPrivate() || flags.isPackage()){
 			Flags newFlags = flags.clearPrivate().set(Flags.PUBLIC);
-			String mangledName = UniqueID.newID("private$"+name);
+			String mangledName = UniqueID.newID("mangle$"+name);
 			mangled = flags(newFlags).name(mangledName);
 		} else mangled = this;  // no mangling
 	}

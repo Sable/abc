@@ -457,19 +457,33 @@ public class AspectJNodeFactory_c
     }
     
     public Special Special(Position pos, Special.Kind kind, TypeNode outer) {
-		   Special n = new AJSpecial_c(pos, kind, outer);
-		   return n;
-	   }
-	  
-	   
- 
-	public Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer) {
-			Special n = new HostSpecial_c(pos, kind, outer);
-			return n;
+		Special n = new AJSpecial_c(pos, kind, outer);
+		return n;
 	}
-    // TODO:  Implement factory methods for new AST ndes.
-    // TODO:  Override factory methods for overriden AST nodes.
-    // TODO:  Override factory methods for AST nodes with new extension nodes.
+	     
+	public Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer) {
+		Special n = new HostSpecial_c(pos, kind, outer);
+		return n;
+	}
+	
+	public ConstructorCall ConstructorCall(Position pos, ConstructorCall.Kind kind, Expr qualifier, List arguments) {
+		ConstructorCall cc = new AJConstructorCall_c(pos,kind,qualifier,arguments);
+		return cc;
+	}
+	
+	public ConstructorCall hostConstructorCall(Position pos, ConstructorCall.Kind kind, Expr qualifier, List arguments) {
+		ConstructorCall cc = new HostConstructorCall_c(pos,kind,qualifier,arguments);
+		return cc;
+	}
+	
+	/*
+	public ConstructorDecl ConstructorDecl(Position pos, Flags flags, String name, 
+											List formals, List throwTypes, Block body) {
+		ConstructorDecl cd = new AJConstructorDecl_c(pos,flags,name,formals,throwTypes,body);
+		return cd;
+	} */
+	
+	
 }
 
 
