@@ -604,14 +604,14 @@ public class TestCase {
 		        case ErrorInfo.SEMANTIC_ERROR:
 		        case ErrorInfo.SYNTAX_ERROR:
 		            if(!errKind.equals("error")) {
-		                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
+		                System.err.println("Encountered error of unexpected type - should be " + errKind + ", but was error.");
 		                printErrors(errors);
 		                return false;
 		            }
 		            break;
 		        case ErrorInfo.WARNING:
 		            if(!errKind.equals("warning")) {
-		                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
+		                System.err.println("Encountered error of unexpected type - should be " + errKind + ", but was warning.");
 		                printErrors(errors);
 		                return false;
 		            }
