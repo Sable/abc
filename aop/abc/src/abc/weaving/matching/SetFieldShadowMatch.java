@@ -27,6 +27,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 
     private SetFieldShadowMatch(SootMethod container,Stmt stmt,SootFieldRef fieldref) {
 	super(container,stmt);
+	if(abc.main.Debug.v().java13) fieldref=fieldref.resolve().makeRef();
 	this.fieldref=fieldref;
     }
 
@@ -64,8 +65,6 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		else return null;
 	} else return null;
      
-	
-
 	return new SetFieldShadowMatch(pos.getContainer(),stmt,sfr);
     }
     /**
@@ -98,7 +97,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("field-set","FieldSignature","makeFieldSig",
-	     SJPInfo.makeFieldSigData(container,fieldref.resolve()),stmt);
+	     SJPInfo.makeFieldSigData(fieldref),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

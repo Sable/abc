@@ -89,4 +89,5 @@ public class Debug {
 
     // Config stuff - to be moved, probably (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
+    public boolean java13=false; // java 1.3 semantics
 }

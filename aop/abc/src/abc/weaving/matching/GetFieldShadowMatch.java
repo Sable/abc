@@ -22,6 +22,7 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     
     private GetFieldShadowMatch(SootMethod container,Stmt stmt,SootFieldRef fieldref) {
 	super(container,stmt);
+	if(abc.main.Debug.v().java13) fieldref=fieldref.resolve().makeRef();
 	this.fieldref=fieldref;
     }
 
@@ -41,7 +42,7 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
        	if(rhs instanceof FieldRef) {
 	    FieldRef fr = (FieldRef) rhs;
 		if (MethodCategory.weaveSetGet(fr.getFieldRef()))
-	    	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getFieldRef());
+		    return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getFieldRef());
 	    else
 	    	return null;
 	} else if(rhs instanceof InvokeExpr) {
@@ -49,8 +50,8 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 		SootMethodRef smr = ie.getMethodRef();
 	    if(MethodCategory.getCategory(smr)
 	       ==MethodCategory.ACCESSOR_GET) {
-			return new GetFieldShadowMatch
-			    (pos.getContainer(),stmt,MethodCategory.getFieldRef(smr));
+		return new GetFieldShadowMatch
+		    (pos.getContainer(),stmt,MethodCategory.getFieldRef(smr));
 	    }
 	    else return null;
 	} else {
@@ -65,7 +66,7 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("field-get","FieldSignature","makeFieldSig",
-	     SJPInfo.makeFieldSigData(container,fieldref.resolve()),stmt);
+	     SJPInfo.makeFieldSigData(fieldref),stmt);
     }
 
 

@@ -194,7 +194,7 @@ public class Main {
                   args[i].equals("-Xlint:error") ||
                   args[i].equals("-Xlint:ignore"))
            { compilerOptionIgnored(args[i],
-                 "abc does not yet support Xlint");
+                 "abc does not support Xlint");
              if (args[i].equals("Xlint") || args[i].equals("Xlint:warning"))
                abc.main.Options.v().Xlint = abc.main.Options.WARNING;
              else if (args[i].equals("Xlint:error"))
@@ -204,9 +204,10 @@ public class Main {
            }
 
          // -1.3, -1.4
-         else if (args[i].equals("-1.3") || args[i].equals("-1.4"))
-            compilerOptionIgnored(args[i],
-                "abc should be able to handle both 1.3 and 1.4.");
+         else if (args[i].equals("-1.3"))
+	     abc.main.Debug.v().java13=true;
+	 else if (args[i].equals("-1.4"))
+	     abc.main.Debug.v().java13=false;
 
          // -target 1.1,  -target 1.2,  -target 1.3, -target 1.4
          else if (args[i].equals("-target"))

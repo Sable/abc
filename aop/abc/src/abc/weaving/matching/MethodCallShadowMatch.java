@@ -27,6 +27,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     private MethodCallShadowMatch(SootMethod container,Stmt stmt,
 				  InvokeExpr invoke,SootMethodRef methodref) {
 	super(container,stmt);
+	if(abc.main.Debug.v().java13) methodref=methodref.resolve().makeRef();
 	this.methodref=methodref;
 	this.invoke=invoke;
     }
@@ -109,7 +110,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("method-call","MethodSignature","makeMethodSig",
-	     SJPInfo.makeMethodSigData(methodref.resolve()),stmt);
+	     SJPInfo.makeMethodSigData(methodref),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

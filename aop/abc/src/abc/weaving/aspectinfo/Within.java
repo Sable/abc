@@ -4,7 +4,12 @@ import soot.*;
 import polyglot.util.Position;
 import abc.weaving.residues.*;
 
-/** Handler for <code>within</code> condition pointcut. */
+/** Handler for <code>within</code> condition pointcut. 
+ *  The within(ClassPattern) pointcut matches any join point lexically contained
+ *  within a class matching ClassPattern.
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class Within extends LexicalPointcut {
     private ClassnamePattern pattern;
 

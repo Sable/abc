@@ -53,9 +53,6 @@ public class SJPInfo {
 	else return type.toString();
     }
 
-    // REVIEW/FIXME: This takes a SootMethod always, rather than an option of a SootMethodRef,
-    // because we will need to resolve a ref anyway to find the exceptions.
-    // We should work out if this is actually correct.
     public static String makeMethodSigData(SootMethod method) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());
@@ -99,6 +96,53 @@ public class SJPInfo {
 	}
 	sb.append('-');
 	sb.append(getTypeString(method.getReturnType()));
+	sb.append('-');
+	return sb.toString();
+    }
+
+    public static String makeMethodSigData(SootMethodRef methodref) {
+	StringBuffer sb=new StringBuffer();
+	sb.append(new Integer(methodref.resolve().getModifiers()).toString());
+	sb.append('-');
+	sb.append(MethodCategory.getName(methodref));
+	sb.append('-');
+	sb.append(MethodCategory.getClass(methodref).getName());
+	sb.append('-');
+	List parameterTypes = new ArrayList(methodref.parameterTypes());
+	for (int i = 0; i < MethodCategory.getSkipFirst(methodref); i++)
+		parameterTypes.remove(0);
+	for (int j = 0; j < MethodCategory.getSkipLast(methodref); j++)
+		parameterTypes.remove(parameterTypes.size() - 1);
+	Iterator it = parameterTypes.iterator();
+	while(it.hasNext()) {
+	    Type type=(Type) (it.next());
+	    sb.append(getTypeString(type));
+	    sb.append(':');
+	}
+	sb.append('-');
+	if(methodref.resolve().hasTag("ParamNamesTag")) {
+	    List names=((ParamNamesTag) (methodref.resolve().getTag("ParamNamesTag"))).getNames();
+	    it=names.iterator();
+	    while(it.hasNext()) {
+		sb.append((String) (it.next()));
+		sb.append(':');
+	    }
+	} else {
+	    int n=methodref.parameterTypes().size();
+	    for(int i=0;i<n;i++) {
+		sb.append("arg"+i);
+		sb.append(':');
+	    }
+	}
+	sb.append('-');
+	it=methodref.resolve().getExceptions().iterator();
+	while(it.hasNext()) {
+	    SootClass cl=(SootClass) (it.next());
+	    sb.append(cl.getName());
+	    sb.append(':');
+	}
+	sb.append('-');
+	sb.append(getTypeString(methodref.returnType()));
 	sb.append('-');
 	return sb.toString();
     }
@@ -187,21 +231,28 @@ public class SJPInfo {
 	return sb.toString();
     }
 
-    // FIXME: (oege) I think the first parameter is obsolete
-    // REVIEW/FIXME: This takes a SootField always, rather than an option of a SootFieldRef,
-    // for consistency with makeMethodSigData
-    public static String makeFieldSigData(SootMethod container,SootField field) {
+    public static String makeFieldSigData(SootField field) {
 	StringBuffer sb=new StringBuffer();
-	//sb.append(new Integer(container.getModifiers()).toString());
-	  sb.append(new Integer(MethodCategory.getModifiers(field)).toString());
+	sb.append(new Integer(MethodCategory.getModifiers(field)).toString());
 	sb.append('-');
-	// sb.append(field.getName());
-	  sb.append(MethodCategory.getName(field));
+	sb.append(MethodCategory.getName(field));
 	sb.append('-');
-	// sb.append(container.getDeclaringClass().getName());
-	  sb.append(MethodCategory.getClass(field));
+	sb.append(MethodCategory.getClass(field));
 	sb.append('-');
 	sb.append(getTypeString(field.getType()));
+	sb.append('-');
+	return sb.toString();
+    }
+
+    public static String makeFieldSigData(SootFieldRef fieldref) {
+	StringBuffer sb=new StringBuffer();
+	sb.append(new Integer(MethodCategory.getModifiers(fieldref.resolve())).toString());
+	sb.append('-');
+	sb.append(MethodCategory.getName(fieldref));
+	sb.append('-');
+	sb.append(MethodCategory.getClass(fieldref));
+	sb.append('-');
+	sb.append(getTypeString(fieldref.type()));
 	sb.append('-');
 	return sb.toString();
     }
