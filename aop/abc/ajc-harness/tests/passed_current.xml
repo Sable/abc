@@ -251,10 +251,6 @@
         <compile files="BoundaryNums.java"></compile>
         <run class="BoundaryNums"></run>
     </ajc-test>
-<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
-        <compile files="NestedInners.java"></compile>
-        <run class="NestedInners"></run>
-    </ajc-test>
 <ajc-test title="?: expressions should typecheck in interesting ways" keywords="from-java" dir="pureJava">
         <compile files="TriTestTypecheck.java"></compile>
         <run class="TriTestTypecheck"></run>
@@ -1974,10 +1970,6 @@
         <compile files="AroundAdviceOnMethodsCalledInAroundAdvice.java"></compile>
         <run class="AroundAdviceOnMethodsCalledInAroundAdvice"></run>
     </ajc-test>
-<ajc-test title="Make sure that names of lifted local classes are right when referenced in call-site advice" keywords="from-resolved_10x" dir="new">
-        <compile files="CallsAndLocalClasses.java"></compile>
-        <run class="CallsAndLocalClasses"></run>
-    </ajc-test>
 <ajc-test title="matching for throws clause" keywords="from-resolved_10x" dir="new">
         <compile files="ThrowsMatching.java"></compile>
         <run class="ThrowsMatching"></run>
@@ -2085,6 +2077,10 @@
 <ajc-test title="Arguments to runNext should be final when needed" keywords="from-resolved_10x" dir="new">
         <compile files="Finals.java"></compile>
         <run class="Finals"></run>
+    </ajc-test>
+<ajc-test title="Method introductions" keywords="from-resolved_10x" dir="new">
+        <compile files="MethodIntroductions.java"></compile>
+        <run class="MethodIntroductions"></run>
     </ajc-test>
 <ajc-test title="Putting an introduced method on each interface" keywords="from-resolved_10x" dir="new">
         <compile files="IntroducedMethodsOnEachInterface.java"></compile>
@@ -2334,10 +2330,6 @@
         <compile files="InnerInFieldInit.java,TargetClass.java,Util.java"></compile>
         <run class="InnerInFieldInit"></run>
     </ajc-test>
-<ajc-test title="variable slots and finally/catch causing verify errors" pr="595" keywords="from-resolved_10final,from-resolved_10x" dir="new">
-        <compile files="AfterFinally.java"></compile>
-        <run class="AfterFinally"></run>
-    </ajc-test>
 <ajc-test title="after advice on static method with pcd if() using result" pr="590" keywords="from-resolved_10x" dir="new">
         <compile files="PR590.java">
             <message line="20" kind="error"></message>
@@ -2349,26 +2341,6 @@
             <message line="29" kind="error"></message>
             <message line="31" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 1)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="Main.java,My_error.java,A.java,B.java,C.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 2)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="Main.java,My_error.java,C.java,A.java,B.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 3)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="My_error.java,A.java,B.java,C.java,Main.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 4)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="A.java,B.java,C.java,Main.java,My_error.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 5)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="A.java,B.java,Main.java,C.java,My_error.java"></compile>
-        <run class="Main"></run>
     </ajc-test>
 <ajc-test title="declare error and abstract pointcuts" keywords="from-resolved_10x" dir="new">
         <compile files="AbstractDeclare.java">
@@ -2959,6 +2931,11 @@
           <dir-changes added="target.SubClass,target.SuperClass"></dir-changes>
         </compile>
         <run class="aspectPack.Aspect"></run>
+    </ajc-test>
+<ajc-test title="privileged access to code outside the control of the compiler" pr="906" dir="bugs">
+        <compile options="-Xlint:warning" files="PrivilegeBeyondScope.java">
+		  <message line="23" kind="warning"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="introducing final fields (simple)" pr="28974" dir="new/finalfield">
         <compile files="Introducer.java,Receiver.java,User1.java"></compile>

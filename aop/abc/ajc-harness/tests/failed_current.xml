@@ -3,6 +3,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
+        <compile files="NestedInners.java"></compile>
+        <run class="NestedInners"></run>
+    </ajc-test>
 <ajc-test title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" keywords="from-java" dir="pureJava">
         <compile files="MisplacedThisInAnnonymousInnerClasses.java"></compile>
         <run class="MisplacedThisInAnnonymousInnerClasses"></run>
@@ -244,6 +248,10 @@
         <compile files="BackdoorMethods.java"></compile>
         <run class="BackdoorMethods"></run>
     </ajc-test>
+<ajc-test title="Make sure that names of lifted local classes are right when referenced in call-site advice" keywords="from-resolved_10x" dir="new">
+        <compile files="CallsAndLocalClasses.java"></compile>
+        <run class="CallsAndLocalClasses"></run>
+    </ajc-test>
 <ajc-test title="holding onto proceed calls in a closure-like way" keywords="from-resolved_10x,knownLimitation" dir="new">
         <compile files="HoldProceed.java"></compile>
         <run class="HoldProceed"></run>
@@ -275,10 +283,6 @@
 <ajc-test title="around advice on calls within inner classes (including protected method calls)" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4" files="AroundInnerCalls.java"></compile>
         <run class="AroundInnerCalls"></run>
-    </ajc-test>
-<ajc-test title="Method introductions" keywords="from-resolved_10x" dir="new">
-        <compile files="MethodIntroductions.java"></compile>
-        <run class="MethodIntroductions"></run>
     </ajc-test>
 <ajc-test title="different version of aspect inheritance, particularly empty pointcuts and abstract cflows [eachcflow]" keywords="from-resolved_10x,fail-unimplemented" dir="new">
         <compile files="AspectInheritance.java"></compile>
@@ -408,9 +412,33 @@
             <message line="26" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="variable slots and finally/catch causing verify errors" pr="595" keywords="from-resolved_10final,from-resolved_10x" dir="new">
+        <compile files="AfterFinally.java"></compile>
+        <run class="AfterFinally"></run>
+    </ajc-test>
 <ajc-test title="enclosing join point not exported properly in pre-initialization join point" keywords="from-resolved_10x,knownLimitation" dir="new">
         <compile files="PreInitialization.java"></compile>
         <run class="PreInitialization"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 1)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="Main.java,My_error.java,A.java,B.java,C.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 2)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="Main.java,My_error.java,C.java,A.java,B.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 3)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="My_error.java,A.java,B.java,C.java,Main.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 4)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="A.java,B.java,C.java,Main.java,My_error.java"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="AbstractMethodError for introduced methods (order 5)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
+        <compile files="A.java,B.java,Main.java,C.java,My_error.java"></compile>
+        <run class="Main"></run>
     </ajc-test>
 <ajc-test title="VerifyError after around advice falls off end of tryCatch" keywords="from-resolved_10x" dir="new">
         <compile files="TryOffEnd.java">
@@ -712,11 +740,6 @@
           <dir-changes added="target.SubClass,target.SuperClass"></dir-changes>
         </compile>
         <run class="aspect.Aspect"></run>
-    </ajc-test>
-<ajc-test title="privileged access to code outside the control of the compiler" pr="906" dir="bugs">
-        <compile options="-Xlint:warning" files="PrivilegeBeyondScope.java">
-		  <message line="23" kind="warning"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" keywords="purejava" dir="new/PR862">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
