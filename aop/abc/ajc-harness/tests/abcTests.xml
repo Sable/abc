@@ -2170,17 +2170,10 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Crashes when there're stray dots"
-      abccomment="javac,ajc and abc all give errors on all the lines.
-                  July 3/04 LJH"
+      abccomment=" Seems ok now July 7/04 LJH"
       keywords="from-errors,purejava">
         <compile files="StrayDot.java">
-            <ajcmessage kind="error" line="9"/>
             <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-            <message kind="error" line="11"/>
-            <message kind="error" line="12"/>
-            <message kind="error" line="13"/>
-            <message kind="error" line="14"/>
         </compile>
     </ajc-test>
 
@@ -5414,6 +5407,9 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="assert flow"
+      abccomment="assert b=false  should not definitely assign to b,
+        so jlc does not give a later var not assigned error.  Reported
+        to Polyglot bugzilla July 7/04 LJH"
       keywords="from-14tests,purejava">
         <compile options="-source,1.4" files="AssertsCF.java">
             <message kind="error" line="8"/>
@@ -5442,14 +5438,18 @@
 
 
     <ajc-test dir="pureJava" title="assert coverage tests [requires 1.4]"
+      abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH"
       keywords="from-14tests,purejava">
+        <abckeywords> <jennifer/> <laurie/> </abckeywords>
         <compile options="-source,1.4" files="AssertsCv.java"/>
         <run class="AssertsCv" vm="1.4"/>
     </ajc-test>
 
     <ajc-test dir="pureJava"
       title="assert coverage tests in one package [requires 1.4]"
+      abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH"
       keywords="from-14tests,purejava,fail-unimplemented">
+        <abckeywords> <jennifer/> <laurie/> </abckeywords>
         <compile options="-source,1.4" files="AssertInOnePackage.java"/>
         <run class="AssertInOnePackage" vm="1.4"/>
     </ajc-test>
