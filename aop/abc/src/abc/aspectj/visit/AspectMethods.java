@@ -122,7 +122,6 @@ public class AspectMethods extends NodeVisitor {
 					return itmd.superCall(nf,ts,c);
 				}
 			}
-			return n;
 		}
 		if (n instanceof IntertypeMethodDecl_c) {
 			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
