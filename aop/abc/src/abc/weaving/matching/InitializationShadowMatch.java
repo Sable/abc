@@ -51,9 +51,12 @@ public class InitializationShadowMatch extends BodyShadowMatch {
 	return aa;
     }
 
+    // ajc doesn't support this, but we do
+    /*
     public boolean supportsAround() {
 	return false;
     }
+    */
 
     public String joinpointName() {
 	return "initialization";
