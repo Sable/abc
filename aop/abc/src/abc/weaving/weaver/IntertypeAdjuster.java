@@ -461,7 +461,7 @@ public class IntertypeAdjuster {
 		 		                              method.getReturnType(), 
 		 		                              method.getName(), 
 		 		                              method.getFormals(),
-		 		                              method.getExceptions(), 
+		 		                              method.getAbcExceptions(), 
 		 		                              method.getPosition());
 		 		createTargetMethod(implMethod,itf,sc,imd.getAspect(),sc,imd.getOrigName());
 		 		Set implementors = hierarchy.getAllImplementersOfInterface(sc);
