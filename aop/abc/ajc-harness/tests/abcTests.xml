@@ -9372,7 +9372,7 @@
     </ajc-test>
     <ajc-test num="1012" dir="abctests/bugs"
          title="correct handling of methods in source with $ in the name 3">
-         <compile files="DollarMethod3.java"/>
-         <run class="Some$Type"/>
+         <compile files="Dollar$Method3.java"/>
+         <run class="Dollar$Method3"/>
     </ajc-test>
 </suite>
