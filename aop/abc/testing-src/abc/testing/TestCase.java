@@ -181,16 +181,20 @@ public class TestCase {
 					    arrFiles[j] = dir + "/" + arrFiles[j].trim();
 					}
 					// Combine flag and file arguments into a single array
+					// XXX: At the moment, there's no consolidation between arguments passed to abc 
+					// via the +abc ... -abc command line switches and the ones inserted here/in the
+					// XML file. TODO: Fix.
 					String[] args;
 					if(arrJars.length == 0) {
-					    args = new String[2 + arrOptions.length + arrFiles.length]; //2 extra options for -d dir
+					    args = new String[2 + Main.abcArgs.size() + arrOptions.length + arrFiles.length]; //2 extra options for -d dir
 						args[0] = "-d";
 						args[1] = dir;
-						System.arraycopy(arrOptions, 0, args, 2, arrOptions.length);
-						System.arraycopy(arrFiles, 0, args, arrOptions.length + 2, arrFiles.length);
+						System.arraycopy(Main.abcArgs.toArray(), 0, args, 2, Main.abcArgs.size());
+						System.arraycopy(arrOptions, 0, args, 2 + Main.abcArgs.size(), arrOptions.length);
+						System.arraycopy(arrFiles, 0, args, arrOptions.length + Main.abcArgs.size() + 2, arrFiles.length);
 					}
 					else {
-					    args = new String[4 + arrOptions.length + arrFiles.length];
+					    args = new String[4 + Main.abcArgs.size() + arrOptions.length + arrFiles.length];
 						args[0] = "-d";
 						args[1] = dir;
 					    args[2] = "-injars";
@@ -198,8 +202,9 @@ public class TestCase {
 					    for(int j = 1; j < arrJars.length; j++) {
 					        args[3] += System.getProperty("path.separator") + arrJars[j];
 					    }
-						System.arraycopy(arrOptions, 0, args, 4, arrOptions.length);
-						System.arraycopy(arrFiles, 0, args, arrOptions.length + 4, arrFiles.length);
+					    System.arraycopy(Main.abcArgs.toArray(), 0, args, 4, Main.abcArgs.size());
+						System.arraycopy(arrOptions, 0, args, Main.abcArgs.size() + 4, arrOptions.length);
+						System.arraycopy(arrFiles, 0, args, Main.abcArgs.size() + arrOptions.length + 4, arrFiles.length);
 					}
 					
 					// Handle additional classpath elements gracefully, i.e. add them to existing CP rather than

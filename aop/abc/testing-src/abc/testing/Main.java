@@ -3,6 +3,7 @@ package abc.testing;
 import java.lang.String;
 import dk.brics.xact.*;
 import java.io.*;
+import java.util.ArrayList;
 //import abc.main.Main;
 
 public class Main {
@@ -28,6 +29,7 @@ public class Main {
 	static PrintStream stdout, stderr;
 	static BufferedWriter fullOut, failedOut;
 	
+	static ArrayList abcArgs = new ArrayList();
 	
 	static Runtime runtime;
 
@@ -261,6 +263,7 @@ public class Main {
 	
 	protected static void parseArgs(String[] args) {
 	    boolean doneXmlFile = false, doneDirFilter = false, doneTitleFilter = false;
+	    boolean readingAbcArgs = false;
 		// Do we have any arguments?
 		if(args.length < 1) {
 		    printUsage();
@@ -270,21 +273,27 @@ public class Main {
 		// We check that doneTitleFilter is false as we can only handle 3 unqualified options. 
 		// TODO: Needs better solution, really...
 	    for(int arg = 0; arg < args.length && !doneTitleFilter; arg++) {
-			if(args[arg].equals("-list") || args[arg].equals("-l")) {
+	        if(args[arg].equals("-abc")) {
+	            readingAbcArgs = false;
+	        }
+	        else if(args[arg].equals("+abc")) {
+	            readingAbcArgs = true;
+	        }
+	        else if(readingAbcArgs) {
+	            abcArgs.add(args[arg]);
+	        }
+			else if(args[arg].equals("-list") || args[arg].equals("-l")) {
 				skiptests = true;
-				arg++;
-				if(args[arg].equals("-xml") || args[arg].equals("-x")) {
+				if(args[arg + 1].equals("-xml") || args[arg].equals("-x")) {
 					listxml = true;
 					arg++;
 				}
 			}
 			else if(args[arg].equals("-timeajc") || args[arg].equals("-t")) {
 				timeajc = true;
-				arg++;
-				if(args[arg].equals("-cutoff") | args[arg].equals("-c")) {
+				if(args[arg + 1].equals("-cutoff") | args[arg].equals("-c")) {
 					arg++;
 					cutoff = Integer.parseInt(args[arg]);
-					arg++;
 				}
 			}
 			else if(!doneXmlFile) {
