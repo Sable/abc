@@ -163,12 +163,12 @@
             <abckeywords> <skip></skip> </abckeywords>
 		<run class="Client"></run>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="can weave to create library, and then weave clients" abccomment="abc doesn't support aspect path. ODM 19/07/04">
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar 1" dir="new/interfaceLibrary" comment="can weave to create library, and then weave clients" abccomment="abc doesn't support aspect path. ODM 19/07/04">
         <abckeywords> <skip></skip> </abckeywords>
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar" aspectpath="aspectOnly.jar"></compile>
 		<run class="Client"></run>
 		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="works if source aspect and binary classpath woven with aspect?             should NOT warn about affected type not since affected type is already woven?" abccomment="abc doesn't support aspectpath. ODM 19/07/04">
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar 2" dir="new/interfaceLibrary" comment="works if source aspect and binary classpath woven with aspect?             should NOT warn about affected type not since affected type is already woven?" abccomment="abc doesn't support aspectpath. ODM 19/07/04">
         <abckeywords> <skip></skip> </abckeywords>
 		<compile files="Client.java,LibraryAspect.java" classpath="aspectedInterfaceOnly.jar"></compile>
 			

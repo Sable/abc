@@ -2370,6 +2370,10 @@
         <compile files="Cricket.java"></compile>
         <run class="Cricket"></run>
     </ajc-test>
+<ajc-test title="after returning advice param" pr="694" keywords="from-resolved_10x" dir="new">
+        <compile files="AfterReturningParam.java"></compile>
+        <run class="AfterReturningParam"></run>
+    </ajc-test>
 <ajc-test title="! and declaring types with callee-side call join points" pr="695" keywords="from-resolved_10x" dir="new">
         <compile options="-Xlint:ignore" files="NotAndDeclaringTypes.java"></compile>
         <run class="NotAndDeclaringTypes"></run>
@@ -2503,6 +2507,10 @@
 <ajc-test title="!target with second advice on casted call" pr="661" keywords="from-resolved_104" dir="new">
         <compile files="CallNotTarget.java"></compile>
         <run class="CallNotTarget"></run>
+    </ajc-test>
+<ajc-test title="name binding in around cflow" pr="666" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
+        <compile files="AroundCall.java"></compile>
+        <run class="AroundCall"></run>
     </ajc-test>
 <ajc-test title="name binding in around cflow - 2" pr="660" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="ArgsInCflow2.java"></compile>
@@ -2892,10 +2900,6 @@
         <compile files="CflowCycles.java"></compile>
         <run class="CflowCycles"></run>
     </ajc-test>
-<ajc-test title="cflow binding issues with ignoring state" pr="34858" dir="bugs">
-        <compile files="CflowBinding.java"></compile>
-        <run class="CflowBinding"></run>
-    </ajc-test>
 <ajc-test title="cflow binding -- original weaver crash" pr="34858" dir="bugs">
         <compile files="CflowBindingOrig.java"></compile>
         <run class="CflowBindingOrig"></run>
@@ -2958,6 +2962,11 @@
             <dir-changes expDir="expected"></dir-changes>
         </compile>
         <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="perthis and inline arounds" pr="37152" dir="bugs/inlineAround">
+        <compile files="aspect1/Base.java,aspect2/Concrete.java,p1/Main.java">
+        </compile>
+        <run class="p1.Main"></run>
     </ajc-test>
 <ajc-test title="Weaver fails with NPE for very large source files " pr="37325" dir="bugs">
         <compile files="LongFile.java"></compile>

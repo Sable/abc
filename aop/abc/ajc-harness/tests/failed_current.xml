@@ -532,10 +532,6 @@
         <compile files="RunnableSub.java,Common.java"></compile>
         <run class="RunnableSub"></run>
     </ajc-test>
-<ajc-test title="after returning advice param" pr="694" keywords="from-resolved_10x" dir="new">
-        <compile files="AfterReturningParam.java"></compile>
-        <run class="AfterReturningParam"></run>
-    </ajc-test>
 <ajc-test title="access to private members from privileged aspect" pr="555" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
         <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
         <run class="driver.PR555"></run>
@@ -547,10 +543,6 @@
 <ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR559.java"></compile>
         <run class="PR559"></run>
-    </ajc-test>
-<ajc-test title="name binding in around cflow" pr="666" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
-        <compile files="AroundCall.java"></compile>
-        <run class="AroundCall"></run>
     </ajc-test>
 <ajc-test title="around name-binding in cflows using factorial" pr="677" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="FactorialCflow.java"></compile>
@@ -939,6 +931,10 @@
             <message line="85" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="cflow binding issues with ignoring state" pr="34858" dir="bugs">
+        <compile files="CflowBinding.java"></compile>
+        <run class="CflowBinding"></run>
+    </ajc-test>
 <ajc-test title="illegal name binding in around cflow" pr="660" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="ArgsInCflowCf.java">
             <message line="19" kind="error"></message>
@@ -1086,11 +1082,6 @@
         	<message text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></message>
         	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
         </compile>
-    </ajc-test>
-<ajc-test title="perthis and inline arounds" pr="37152" dir="bugs/inlineAround">
-        <compile files="aspect1/Base.java,aspect2/Concrete.java,p1/Main.java">
-        </compile>
-        <run class="p1.Main"></run>
     </ajc-test>
 <ajc-test title="CLE: no sources" keywords="command-line-error" dir="harness" abccomment="abc fails this test because       when invoked without sources, it runs through and does nothing,       while ajc aborts with an error.">
         <compile badInput="true">
