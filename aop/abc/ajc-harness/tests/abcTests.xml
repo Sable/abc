@@ -9397,12 +9397,11 @@
             <message kind="error"/>
             <message kind="error"/>
             <message kind="error"/>
-            <message kind="error" line="2"/>
-            <message kind="error" line="2"/>
-            <message kind="error" line="2"/>
-            <message kind="error" line="2"/>
-            <message kind="error" line="2"/>
-            <message kind="error" line="2"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
          </compile>
     </ajc-test>
 </suite>
