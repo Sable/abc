@@ -2,6 +2,9 @@
 package abc.aspectj.types;
 
 import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.HashSet;
 
 import polyglot.util.InternalCompilerError;
 
@@ -90,36 +93,71 @@ public class InterTypeMethodInstance_c
 		return interfaceTarget;
 	}
 
-	/** fix up the mangled instance to agree with super type and interfaces. What to do if there
-	 *   are multiple interfaces? FIX THIS: all interfaces would need to use the same mangled name.
+	/** fix up the mangled instance to agree with super type and interfaces. 
+	 *   We employ a union-find structure for this purpose. From each itm instance,
+	 *   the mangled name is propagated to the super type and interfaces. When
+	 *  a previously set name is encountered, a union is performed to ensure all
+	 *  related itm instances get the same mangled name.
 	 *  */
+	private class UnionFind {
+		String name;
+		UnionFind parent;
+		
+		UnionFind(String name) {
+			this.name = name;
+			parent = null;
+		}
+		
+		// what component are we in?
+		// may want to do path compression here, but probably not worth it
+		UnionFind find() {
+			if (parent==null) return this;
+			else return parent.find();
+		}
+		
+		// return the name of the constituent component
+		String findName() {
+			return find().name;
+		}
+		
+		// union two components
+		void union(UnionFind other) {
+			UnionFind root = find();
+			UnionFind otherRoot = other.find();
+			if (root != otherRoot)
+				root.parent = otherRoot;
+		}
+	}
 	
-	public void setMangle(AJTypeSystem ts) {
-			MethodInstance superInstance = null;
-		    if (container.superType() != null) {
-					if (container.superType().toReference().hasMethod(this)) {
-						try {
-						 superInstance = ts.findMethod(container.superType().toReference(),this.name(),this.formalTypes(),
-													   origin);
-						} catch (SemanticException e) { throw new InternalCompilerError("could not find method"+e.getMessage()) ; }
-					}
-		    }
-		    MethodInstance intfInstance = null;
-			if (superInstance==null) {
-		 		List impls = implemented();
-				do intfInstance = (MethodInstance) impls.remove(0);
-				while (!impls.isEmpty() && 
-				             intfInstance.container().toClass().flags().isInterface());
-			} 
-			if (intfInstance != null && intfInstance.container().toClass().flags().isInterface())
-				superInstance = intfInstance;
-			if (superInstance != null && superInstance.flags().isAbstract())
-				{if (superInstance instanceof InterTypeMethodInstance_c)
-						mangled = mangled.name(((InterTypeMethodInstance_c)superInstance).mangled().name());
-			  	  else 
-			    		mangled = mangled.name(superInstance.name());
-				}
-			else /* skip */;
+	private UnionFind nameComponent = null;
+	
+	private void visit(UnionFind comp,Set visited) {
+		if (visited.contains(this))
+			return;
+		visited.add(this);
+		if (nameComponent !=null)
+			nameComponent.union(comp);
+		else
+			nameComponent = comp;		
+		// all the methods that this implements need to have the same name
+		List followers = implemented();
+		// and also if it overrides an abstract method in the superclass
+		followers.addAll(overrides());
+		AJTypeSystem_c ts = (AJTypeSystem_c) typeSystem();
+		for (Iterator followIt = followers.iterator(); followIt.hasNext(); ) {
+			MethodInstance mi = (MethodInstance) followIt.next();
+			if (ts.isAccessible(mi,origin()) && mi instanceof InterTypeMethodInstance_c)
+				((InterTypeMethodInstance_c)mi).visit(comp,visited);
+		}
+	}
+	
+	public void setMangleNameComponent() {
+			UnionFind comp = new UnionFind(mangled().name());
+			visit(comp, new HashSet());
+		}
+			
+	public void setMangle() {
+		mangled = mangled.name(nameComponent.findName());
 	}
 	
 	public MethodInstance mangled() {

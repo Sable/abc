@@ -87,8 +87,11 @@ public class InterTypeConstructorInstance_c
 		return flags();
 	}
 	
-	public void setMangle(AJTypeSystem ts) {
+	public void setMangle() {
 		// to be filled in!
+	}
+	
+	public void setMangleNameComponent() {
 	}
 	
 	public ConstructorInstance mangled() {

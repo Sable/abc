@@ -17,7 +17,9 @@ public interface InterTypeMemberInstance extends MemberInstance {
 	ClassType origin(); 
 	
 	/** set the mangled instance */
-	void setMangle(AJTypeSystem ts);
+	void setMangle();
+	
+	void setMangleNameComponent();
 	
 	Flags origFlags();
 	

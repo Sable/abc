@@ -83,8 +83,11 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 		return origin;
 	}
 	
-	public void setMangle(AJTypeSystem ts) {
+	public void setMangle() {
 		// to be filled in!
+	}
+	
+	public void setMangleNameComponent() {
 	}
 
 	public FieldInstance mangled() {

@@ -1,6 +1,7 @@
 /*
- * Created on Jun 9, 2004
+ * Created on 18-Aug-2004
  */
+ 
 package abc.aspectj.visit;
 
 import java.util.Iterator;
@@ -19,12 +20,13 @@ import abc.aspectj.types.AJTypeSystem;
 /**
  * @author oege
  */
-public class MangleNames extends NodeVisitor {
+public class MangleNameComponents extends NodeVisitor {
+
 
 	/**
 	 * 
 	 */
-	public MangleNames() {
+	public MangleNameComponents() {
 		super();
 	}
 
@@ -34,9 +36,10 @@ public class MangleNames extends NodeVisitor {
 			for (Iterator miIt = cd.type().methods().iterator(); miIt.hasNext(); ) {
 				MethodInstance mi = (MethodInstance) miIt.next();
 				if (mi instanceof InterTypeMemberInstance)
-					((InterTypeMemberInstance) mi).setMangle();
+					((InterTypeMemberInstance) mi).setMangleNameComponent();
 			}
 		}
 		return this;
 	}
 }
+

@@ -98,7 +98,8 @@ public class IntertypeAdjuster {
 			} else if (zapsmethod(pht,minst,mi)) {	
 					skipped = true;
 					}
-				else {
+				else { System.out.println("minst="+minst+" of origin "+origin(minst));
+						    System.out.println("mi of origin " + origin(mi));
 					        throw new InternalCompilerError("introduction of "+mi.getName()+
                                             " conflicts with an existing class member of " +pht); } 
 			}
@@ -188,7 +189,7 @@ public class IntertypeAdjuster {
 	
     private void addTargetMethod( IntertypeMethodDecl imd, SootMethod implMethod) {
         MethodSig method = imd.getTarget();
-        System.out.println("target method for "+imd);
+        // System.out.println("target method for "+imd);
         SootClass sc = method.getDeclaringClass().getSootClass();
 		 if( sc.isInterface() ) {
 		 		MethodSig itf = new MethodSig(method.getModifiers() | Modifier.ABSTRACT, 
@@ -198,7 +199,7 @@ public class IntertypeAdjuster {
 		 		                              method.getFormals(),
 		 		                              method.getExceptions(), 
 		 		                              method.getPosition());
-		 		 System.out.println("creating target method in "+sc);
+		 		 // System.out.println("creating target method in "+sc);
 		 		createTargetMethod(implMethod,itf,sc,imd.getAspect(),sc,imd.getOrigName());
 		 		Set implementors = hierarchy.getAllImplementersOfInterface(sc);
 			   for( Iterator childClassIt = implementors.iterator(); childClassIt.hasNext(); ) {
@@ -208,7 +209,7 @@ public class IntertypeAdjuster {
 				   && implementors.contains(childClass.getSuperclass()) )
 					   continue;
 
-					System.out.println("creating interface impl target method in "+childClass);
+					// System.out.println("creating interface impl target method in "+childClass);
                    createTargetMethod(implMethod,method,childClass,imd.getAspect(),sc,imd.getOrigName());
 				  
 			   }

@@ -59,6 +59,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	public static final polyglot.frontend.Pass.ID SET_DEPENDS = new polyglot.frontend.Pass.ID("set-depends");
 	public static final polyglot.frontend.Pass.ID CHECK_DEPENDS = new polyglot.frontend.Pass.ID("check-depends");
 	
+	public static final polyglot.frontend.Pass.ID MANGLE_NAME_COMPONENTS = new polyglot.frontend.Pass.ID("mangle-name-components");
+	public static final polyglot.frontend.Pass.ID NAME_COMPONENTS = new polyglot.frontend.Pass.ID("name-components");
     public static final polyglot.frontend.Pass.ID MANGLE_NAMES = new polyglot.frontend.Pass.ID("mangle-names");
 	public static final polyglot.frontend.Pass.ID NAMES_MANGLED = new polyglot.frontend.Pass.ID("names-mangled");
 	
@@ -244,7 +246,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     protected void passes_mangle_names(List l, Job job)
     {
-	l.add(new VisitorPass(MANGLE_NAMES, job, new MangleNames(ts)));
+    l.add(new VisitorPass(MANGLE_NAME_COMPONENTS, job, new MangleNameComponents()));
+    l.add(new GlobalBarrierPass(NAME_COMPONENTS, job));
+	l.add(new VisitorPass(MANGLE_NAMES, job, new MangleNames()));
 	l.add(new GlobalBarrierPass(NAMES_MANGLED, job));
     }
 
