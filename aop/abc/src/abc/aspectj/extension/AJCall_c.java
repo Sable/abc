@@ -1,5 +1,4 @@
 /* Abc - The AspectBench Compiler
- * Copyright (C) 2004 oege
  * Copyright (C) 2004 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or
@@ -121,7 +120,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
 
 	  // we call typeCheck on the receiver too.
 	  r = (Receiver)r.typeCheck(tc);
-	  return this.target(r).typeCheck(tc);
+	  return this.targetImplicit(true).target(r).del().typeCheck(tc);
   }
   
   

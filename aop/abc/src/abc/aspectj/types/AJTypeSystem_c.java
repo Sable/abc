@@ -21,6 +21,7 @@ package abc.aspectj.types;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Stack;
 import java.util.Iterator;
 
@@ -670,4 +671,13 @@ public class AJTypeSystem_c
 		  return new AspectType_c(this, init, fromSource, perKind);
 	}
 
+	public List overrides(MethodInstance mi) {
+		List result = new LinkedList();
+		for (Iterator ovs = super.overrides(mi).iterator(); ovs.hasNext(); ) {
+			MethodInstance mi2 = (MethodInstance) ovs.next();
+			if (this.isAccessible(mi2,mi.container().toClass()))
+				result.add(mi);
+		}
+		return result;
+	}
 }

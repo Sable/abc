@@ -93,7 +93,7 @@ public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
 		    }
 
 		    LinkedList worklist = new LinkedList();
-		    worklist.add(ext.hierarchy.getClass(ts.typeForName(a)));
+		    worklist.add(ext.hierarchy.getClass(ts.typeForName(a).toClass()));
 		    Set seen = new HashSet();
 		    boolean found = false;
 		    while (!worklist.isEmpty()) {
