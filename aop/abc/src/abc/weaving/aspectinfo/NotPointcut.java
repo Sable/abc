@@ -41,4 +41,8 @@ public class NotPointcut extends Pointcut {
     public String toString() {
 	return "!("+pc+")";
     }
+
+    public void registerSetupAdvice() {
+	pc.registerSetupAdvice();
+    }
 }

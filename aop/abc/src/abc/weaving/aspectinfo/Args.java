@@ -111,4 +111,6 @@ public class Args extends DynamicValuePointcut {
 	    ("Internal error: reached the end of a args pattern list unexpectedly - "
 	     +"pattern was "+args+", method was "+method);
     }
+
+    public void registerSetupAdvice() {}
 }

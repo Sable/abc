@@ -54,4 +54,8 @@ public class LocalPointcutVars extends Pointcut {
     public String toString() {
 	return "local"+formals+" ("+pc+")";
     }
+
+    public void registerSetupAdvice() {
+	pc.registerSetupAdvice();
+    }
 }

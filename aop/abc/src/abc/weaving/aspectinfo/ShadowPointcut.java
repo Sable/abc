@@ -36,4 +36,6 @@ public abstract class ShadowPointcut extends Pointcut {
 	return this;
     }
 
+    public void registerSetupAdvice() {}
+
 }

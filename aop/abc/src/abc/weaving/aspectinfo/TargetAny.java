@@ -28,5 +28,5 @@ public class TargetAny extends DynamicValuePointcut {
     public String toString() {
 	return "target(*)";
     }
-
+    public void registerSetupAdvice() {}
 }

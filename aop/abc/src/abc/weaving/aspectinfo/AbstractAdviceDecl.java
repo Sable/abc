@@ -4,6 +4,7 @@ import java.util.*;
 import soot.*;
 import soot.util.Chain;
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
@@ -21,10 +22,17 @@ public abstract class AbstractAdviceDecl extends Syntax {
 
     protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
 				 List/*<Formal>*/ formals,Position pos) {
+
+	this(spec,pc,formals,pos,false);
+    }
+
+    protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
+				 List/*<Formal>*/ formals,Position pos,
+				 boolean normalized) {
 	super(pos);
 	this.spec=spec;
 
-	this.origpc=pc;
+	if(normalized) this.pc=pc; else this.origpc=pc;
 	this.formals=formals;
 
 	if (spec instanceof AbstractAdviceSpec) {
@@ -36,8 +44,22 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	return spec;
     }
 
+    // return the associated aspect, if there is one;
+    // be careful calling it, since some things don't have 
+    // aspects
+    protected Aspect getAspect() {
+	throw new InternalCompilerError("This kind of advice doesn't have an aspect: "+getClass());
+    }
+
+    public void preprocess() {
+	if(pc!=null) throw new InternalCompilerError
+			 ("Trying to call preprocess on an already normalized advice decl");
+	pc=Pointcut.normalize(origpc,formals,getAspect());
+    }
+
     public Pointcut getPointcut() {
-	if(pc==null) pc=Pointcut.normalize(origpc,formals);
+	if(pc==null) throw new InternalCompilerError
+			 ("Must call preprocess on advice decls before using them");
 	return pc;
     }
 

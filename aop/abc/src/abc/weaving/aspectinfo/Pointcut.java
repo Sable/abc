@@ -39,7 +39,8 @@ public abstract class Pointcut extends Syntax {
     // Ought to lift local variables to one block at
     // the top and cache the weaving env or something
     public static Pointcut normalize(Pointcut pc,
-				     List/*<Formal>*/ formals) {
+				     List/*<Formal>*/ formals,
+				     Aspect context) {
 
 	Hashtable/*<String,Var>*/ renameEnv=new Hashtable();
 	Hashtable/*<String,AbcType>*/ typeEnv=new Hashtable();
@@ -52,10 +53,11 @@ public abstract class Pointcut extends Syntax {
 	    }
 	}
 
-	//FIXME: Give the correct context here!
-	Pointcut ret=pc.inline(renameEnv,typeEnv,null);
+	Pointcut ret=pc.inline(renameEnv,typeEnv,context);
 	if(abc.main.Debug.v.showNormalizedPointcuts)
 	    System.err.println("normalized pointcut: "+ret);
+
+	ret.registerSetupAdvice();
 	return ret;
     }
 
@@ -69,5 +71,7 @@ public abstract class Pointcut extends Syntax {
     public static String freshVar() {
 	return "pcvar$"+(freshVarNum++);
     }
-
+    // changed to protected since other people shouldn't need to call it, 
+    // but I can't be bothered to change the modifiers on the subclasses
+    protected abstract void registerSetupAdvice();
 }

@@ -60,5 +60,6 @@ public class CastPointcutVar extends Pointcut {
 	else return this;
 	   
     }
+    public void registerSetupAdvice() {}
 
 }

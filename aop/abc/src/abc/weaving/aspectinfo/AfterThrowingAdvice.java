@@ -9,6 +9,9 @@ import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.WeavingContext;
 
+// FIXME: replace ThrowingAdvice interface with just embedding AfterReturning and AfterThrowing 
+// in After when we delegate the weaving code appropriate
+
 /** Advice specification for after throwing advice without exception variable binding. */
 public class AfterThrowingAdvice extends AbstractAdviceSpec implements ThrowingAdvice {
     public AfterThrowingAdvice(Position pos) {

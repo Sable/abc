@@ -2,6 +2,7 @@ package abc.weaving.aspectinfo;
 
 import java.util.*;
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
@@ -100,5 +101,8 @@ public class PointcutRef extends Pointcut {
 	return pc;
 
     }
-
+    public void registerSetupAdvice() {
+	throw new InternalCompilerError
+	    ("PointcutRef should have been inlined by now",getPosition());
+    }
 }

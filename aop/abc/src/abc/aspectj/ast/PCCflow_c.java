@@ -54,8 +54,7 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 	}
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	return new abc.weaving.aspectinfo.OtherPointcut
-	    (new abc.weaving.aspectinfo.Cflow(pc.makeAIPointcut()),
-	     position());
+	return new abc.weaving.aspectinfo.Cflow
+	    (pc.makeAIPointcut(),position());
     }
 }

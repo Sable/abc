@@ -47,4 +47,9 @@ public class OrPointcut extends Pointcut {
     public String toString() {
 	return "("+pc1+") || ("+pc2+")";
     }
+
+    public void registerSetupAdvice() {
+	pc1.registerSetupAdvice();
+	pc2.registerSetupAdvice();
+    }
 }

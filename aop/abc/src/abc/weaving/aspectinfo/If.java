@@ -53,4 +53,6 @@ public class If extends Pointcut {
 	return new If(newvars,impl,getPosition());
     }
 
+    public void registerSetupAdvice() {}
+
 }

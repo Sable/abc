@@ -37,4 +37,6 @@ public abstract class LexicalPointcut extends Pointcut {
 	return this;
     }
 
+    public void registerSetupAdvice() {}
+
 }
