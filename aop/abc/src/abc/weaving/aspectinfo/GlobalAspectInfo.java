@@ -68,7 +68,12 @@ public class GlobalAspectInfo {
     
    
    	
-    
+    /** This method builds the aspect_visibility structure,
+     *  which is a mapping from classes and abstract aspects to
+     *  the concrete aspects that extend them.
+     *  It also takes care of inheriting per clauses and
+     *  registering the necessary pieces of advice to implement those clauses
+     */
     public void buildAspectHierarchy() {
 	// Build the aspect hierarchy
 	Iterator ai = aspects.iterator();
@@ -85,7 +90,10 @@ public class GlobalAspectInfo {
 		while (sa != null) {
 		    ((Set)aspect_visibility.get(sa)).add(ca);
 		    sa = (Aspect)aspects_map.get(AbcFactory.AbcClass(sa.getInstanceClass().getSootClass().getSuperclass()));
+		    if(ca.getPer()==null && sa!=null) ca.setPer(sa.getPer());
 		}
+		if(ca.getPer()==null) ca.setPer(new Singleton(ca.getPosition()));
+		ca.getPer().registerSetupAdvice(ca);
 	    }
 	}
     }

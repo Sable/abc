@@ -14,7 +14,6 @@ public class Aspect extends Syntax {
 	super(pos);
 	this.cl = cl;
 	this.per = per;
-	if(!cl.getPolyglotType().flags().isAbstract()) per.registerSetupAdvice(this);
     }
 
     public AbcClass getInstanceClass() {
@@ -23,6 +22,10 @@ public class Aspect extends Syntax {
 
     public Per getPer() {
 	return per;
+    }
+
+    public void setPer(Per per) {
+	this.per=per;
     }
 
     public String getName() {

@@ -279,7 +279,7 @@ public class AspectDecl_c extends ClassDecl_c
 	}
 	
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
-	Per p = (per == null ? new Singleton(position()) : per.makeAIPer());
+	Per p = (per == null ? null : per.makeAIPer());
 	AbcClass cl = AbcFactory.AbcClass(type());
 	Aspect a = new Aspect(cl, p, position());
 	gai.addAspect(a);
