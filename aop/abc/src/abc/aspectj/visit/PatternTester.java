@@ -17,10 +17,11 @@ public class PatternTester extends NodeVisitor {
     }
 
     public Node override(Node n) {
-	if (n instanceof NamePattern) {
-	    Position p = n.position();
-	    System.out.println("The name pattern "+n+" on "+p+" matches these names:");
-	    Set matches = ext_info.pattern_matcher.getMatches((NamePattern)n);
+	if (n instanceof ContainsNamePattern) {
+	    NamePattern pat = ((ContainsNamePattern)n).getNamePattern();
+	    Position p = pat.position();
+	    System.out.println("The name pattern "+pat+" on "+p+" matches these names:");
+	    Set matches = ext_info.pattern_matcher.getMatches(pat);
 	    Iterator mi = matches.iterator();
 	    while (mi.hasNext()) {
 		PCNode m = (PCNode)mi.next();

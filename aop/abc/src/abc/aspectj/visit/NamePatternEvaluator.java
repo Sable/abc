@@ -51,10 +51,11 @@ public class NamePatternEvaluator extends HaltingVisitor {
 	    }
 	    return this;
 	}
-	if (n instanceof NamePattern) {
+	if (n instanceof ContainsNamePattern) {
 	    //Position p = n.position();
 	    //System.out.println("Evaluating name pattern on "+p.file()+":"+p.line());
-	    ext_info.pattern_matcher.computeMatches((NamePattern)n, context, classes, packages);
+	    ext_info.pattern_matcher.computeMatches(((ContainsNamePattern)n).getNamePattern(),
+						    context, classes, packages);
 	    return bypass(n);
 	}
 	return this;

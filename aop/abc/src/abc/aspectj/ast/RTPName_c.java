@@ -13,7 +13,7 @@ import polyglot.ext.jl.ast.Node_c;
 import java.util.*;
 
 public class RTPName_c extends Node_c 
-                       implements RTPName
+    implements RTPName, ContainsNamePattern
 {
     protected NamePattern pat;
 
@@ -45,6 +45,10 @@ public class RTPName_c extends Node_c
 
     public String toString() {
 	return pat.toString();
+    }
+
+    public NamePattern getNamePattern() {
+	return pat;
     }
 
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {

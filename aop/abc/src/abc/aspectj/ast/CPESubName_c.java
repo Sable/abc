@@ -10,7 +10,7 @@ import polyglot.visit.*;
 import java.util.*;
 
 public class CPESubName_c extends ClassnamePatternExpr_c 
-                          implements CPESubName
+    implements CPESubName, ContainsNamePattern
 {
     protected NamePattern pat;
 
@@ -44,6 +44,10 @@ public class CPESubName_c extends ClassnamePatternExpr_c
 
     public String toString() {
 	return pat+"+";
+    }
+
+    public NamePattern getNamePattern() {
+	return pat;
     }
 
     public boolean matches(PatternMatcher matcher, PCNode cl) {

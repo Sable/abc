@@ -10,7 +10,7 @@ import polyglot.visit.*;
 import java.util.*;
 
 public class CPEName_c extends ClassnamePatternExpr_c 
-                       implements CPEName
+    implements CPEName, ContainsNamePattern
 {
     protected NamePattern pat;
 
@@ -43,6 +43,10 @@ public class CPEName_c extends ClassnamePatternExpr_c
 
     public String toString() {
 	return pat.toString();
+    }
+
+    public NamePattern getNamePattern() {
+	return pat;
     }
 
     public boolean matches(PatternMatcher matcher, PCNode cl) {

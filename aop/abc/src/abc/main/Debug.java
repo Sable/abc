@@ -30,6 +30,7 @@ public class Debug {
     public boolean precedenceRelation=false;
 
     public boolean namePatternMatches=false;
+    public boolean namePatternProcessing=false;
     public boolean declareParents=false;
     public boolean classKinds=false;
 

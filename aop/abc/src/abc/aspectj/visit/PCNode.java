@@ -179,7 +179,7 @@ public class PCNode {
 	    }
 
 	}
-	if (abc.main.Debug.v().namePatternMatches)
+	if (abc.main.Debug.v().namePatternProcessing)
 	    System.out.println(this+".matchScope "+simple_name_pattern.pattern()+": "+this_scope);
 	return this_scope;
     }
@@ -205,7 +205,7 @@ public class PCNode {
 		}
 	    }
 	}
-	if (abc.main.Debug.v().namePatternMatches)
+	if (abc.main.Debug.v().namePatternProcessing)
 	    System.out.println(this+".matchClass "+simple_name_pattern.pattern()+": "+this_class);
 	return this_class;
     }
