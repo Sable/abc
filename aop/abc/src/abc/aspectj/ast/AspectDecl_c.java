@@ -251,7 +251,9 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 					throw new SemanticException("Aspects cannot implement Serializable",position());
 		if (ts.interfaces(t.type()).contains(ts.Cloneable()))
 			throw new SemanticException("Aspects cannot implement Cloneable",position());
-		if (superClass()!= null && ! superClass.type().toClass().flags().isAbstract())
+		if (superClass()!= null && 
+		    AspectJFlags.isAspectclass(superClass.type().toClass().flags()) &&
+		    ! superClass.type().toClass().flags().isAbstract())
 			throw new SemanticException("Only abstract aspects can be extended",superClass.position());
 		return t;
 	}
