@@ -28,11 +28,11 @@ public class AspectCodeGen {
           fillInSingletonAspect(aspct);
         else if ((per instanceof PerThis) || 
                  (per instanceof PerTarget))
-          fillInPerAspect(aspct);
+          fillInPerObjectAspect(aspct);
         else if ((per instanceof PerCflow) ||
                  (per instanceof PerCflowBelow))
-          throw new CodeGenException(
-                              "Can't gen code for percflow/percflowbelow");
+	  fillInPerCflowAspect(aspct);
+
         else
           throw new CodeGenException("Unknown kind of per aspect");
       }
@@ -313,7 +313,7 @@ public class AspectCodeGen {
     /* ===================== PERTHIS/PERTARGET ASPECT ========== */
 
     /** top-level call to fill in per aspect with fields and methods */
-    public void fillInPerAspect( Aspect aspct ) 
+    public void fillInPerObjectAspect( Aspect aspct ) 
       { SootClass cl = aspct.getInstanceClass().getSootClass();
         String aname = aspct.getName();
         String perkind = 
@@ -331,18 +331,18 @@ public class AspectCodeGen {
 
         // generate the interface
         SootClass inter =
-          genPerInterface(cl, perInterfaceName, perGetName, perSetName);
+          genPerObjectInterface(cl, perInterfaceName, perGetName, perSetName);
 
         // add implementation of interface to all weavable classes
-        genPerInterfaceImpl(cl, inter, perGetName, perSetName, perFieldName);
+        genPerObjectInterfaceImpl(cl, inter, perGetName, perSetName, perFieldName);
 
         // front end has put aspectOf method, fill in body
         debug(" ... adding aspectOf body");
-        genPerAspectOfBody(cl, inter, perGetName);
+        genPerObjectAspectOfBody(cl, inter, perGetName);
 
         // front end has put hasAspect method, fill in body
         debug(" ... adding hasAspect body");
-        genPerHasAspectBody(cl, inter, perGetName);
+        genPerObjectHasAspectBody(cl, inter, perGetName);
 
         // generate the per Object bind method
         debug("... adding per Object bind method");
@@ -352,8 +352,17 @@ public class AspectCodeGen {
                         " with kind " + perkind +"\n" );
       }
 
+    public void fillInPerCflowAspect(Aspect aspct) {
+	SootClass cl = aspct.getInstanceClass().getSootClass();
+	
+	genPerCflowStackField(cl);
+	genPerCflowAspectOfBody(cl);
+	genPerCflowHasAspectBody(cl);
+	genPerCflowPushMethod(cl);
+    }
+
     /** make interface for per instance */
-    private static SootClass genPerInterface( SootClass aclass, 
+    private static SootClass genPerObjectInterface( SootClass aclass, 
                       String interfaceName, String getName, String setName)
       { // make the new interface 
         SootClass inter = new SootClass(interfaceName,
@@ -383,7 +392,7 @@ public class AspectCodeGen {
       }
 
     /** add implements interface and accessor methods to all weavable classes */
-    private void genPerInterfaceImpl(SootClass aclass, SootClass inter,
+    private void genPerObjectInterfaceImpl(SootClass aclass, SootClass inter,
                                         String getName, String setName,
                                         String fieldName)
       { // TODO: right now doing ALL weavable classes as ajc does, should
@@ -475,7 +484,7 @@ public class AspectCodeGen {
       }
 
     /** fill in body of <AspectName> aspectOf (java.lang.Object) */
-    private void genPerAspectOfBody(SootClass acl, 
+    private void genPerObjectAspectOfBody(SootClass acl, 
                       SootClass inter, 
                       String getName)
       { // get the aspectOf method
@@ -543,7 +552,7 @@ public class AspectCodeGen {
       }
 
     /** fill in body of boolean hasAspect(java.lang.Object) */
-    private void genPerHasAspectBody(SootClass acl, 
+    private void genPerObjectHasAspectBody(SootClass acl, 
                        SootClass inter, String getName)
       { // get the hasAspect method
         SootMethod hasAspect = acl.getMethodByName("hasAspect");
@@ -673,6 +682,166 @@ public class AspectCodeGen {
         units.addLast(label0);
         units.addLast(returnstmt);
       }
+
+    public void genPerCflowStackField(SootClass aspct) {
+	SootField perCflowStack;
+
+	SootClass stackClass=Scene.v()
+	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	RefType stackType=stackClass.getType();
+
+	perCflowStack=new SootField("abc$perCflowStack",stackType,
+				    Modifier.PUBLIC | Modifier.STATIC);
+
+	SootMethod preClinit=new AspectCodeGen().getPreClinit(aspct);
+	LocalGeneratorEx lg=new LocalGeneratorEx
+	    (preClinit.getActiveBody());
+	    
+	Local loc=lg.generateLocal(stackType,"perCflowStack");
+	Chain units=preClinit.getActiveBody().getUnits();
+
+	Stmt returnStmt=(Stmt) units.getFirst();
+	while(!(returnStmt instanceof ReturnVoidStmt)) 
+	    returnStmt=(Stmt) units.getSuccOf(returnStmt);
+	    
+	units.insertBefore(Jimple.v().newAssignStmt
+			   (loc,Jimple.v().newNewExpr(stackType)),
+			   returnStmt);
+	units.insertBefore(Jimple.v().newInvokeStmt
+			   (Jimple.v().newSpecialInvokeExpr
+			    (loc,stackClass.getMethod
+			     (SootMethod.constructorName,
+			      new ArrayList()))),
+			   returnStmt);
+	units.insertBefore(Jimple.v().newAssignStmt
+			   (Jimple.v().newStaticFieldRef(perCflowStack),loc),
+			   returnStmt);
+	debug("adding abc$perCflowStack field");
+	aspct.addField(perCflowStack);
+    }
+
+    private void genPerCflowHasAspectBody(SootClass cl){
+	SootMethod hasAspect;
+	if (Modifier.isAbstract(cl.getModifiers()))
+	    return;
+	hasAspect = cl.getMethod("hasAspect",new ArrayList());
+	Body b = Jimple.v().newBody(hasAspect);
+	hasAspect.setActiveBody(b);
+	
+	LocalGeneratorEx lg = new LocalGeneratorEx(b);
+	
+	Chain units = b.getUnits(); 
+	
+	SootClass stackClass=Scene.v()
+	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	RefType stackType=stackClass.getType();
+
+	SootField perCflowStack=cl.getFieldByName("abc$perCflowStack");
+	Local stackLoc=lg.generateLocal(stackType,"perCflowStack");
+      
+	units.addLast(Jimple.v().newAssignStmt
+		      (stackLoc,Jimple.v().newStaticFieldRef(perCflowStack)));
+
+
+	Local hasAspectLoc=lg.generateLocal(BooleanType.v(),"hasAspect");
+	units.addLast(Jimple.v().newAssignStmt
+		      (hasAspectLoc,
+		       Jimple.v().newVirtualInvokeExpr
+		       (stackLoc,
+			stackClass.getMethod("isValid",new ArrayList()))));
+
+	units.addLast(Jimple.v().newReturnStmt(hasAspectLoc));
+    }
+
+    private void genPerCflowAspectOfBody(SootClass cl){
+	SootMethod hasAspect;
+	if (Modifier.isAbstract(cl.getModifiers()))
+	    return;
+	hasAspect = cl.getMethod("aspectOf",new ArrayList());
+	Body b = Jimple.v().newBody(hasAspect);
+	hasAspect.setActiveBody(b);
+	
+	LocalGeneratorEx lg = new LocalGeneratorEx(b);
+	
+	Chain units = b.getUnits(); 
+
+	SootClass stackClass=Scene.v()
+	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	RefType stackType=stackClass.getType();
+	
+	SootField perCflowStack=cl.getFieldByName("abc$perCflowStack");
+	Local stackLoc=lg.generateLocal(stackType,"perCflowStack");
+      
+	units.addLast(Jimple.v().
+		      newAssignStmt(stackLoc,
+				    Jimple.v().newStaticFieldRef(perCflowStack)));
+
+	Type object=Scene.v().getSootClass("java.lang.Object").getType();
+
+	Local theAspectO=lg.generateLocal(object,"theAspectO");
+	units.addLast(Jimple.v().newAssignStmt
+		      (theAspectO,
+		       Jimple.v().newVirtualInvokeExpr
+		       (stackLoc,
+			stackClass.getMethod("peekInstance",new ArrayList()))));
+
+	Local theAspect=lg.generateLocal(cl.getType(),"theAspect");
+	units.addLast(Jimple.v().newAssignStmt
+		      (theAspect,Jimple.v().newCastExpr(theAspectO,cl.getType())));
+
+	units.addLast(Jimple.v().newReturnStmt(theAspect));
+    }
+
+
+    /** create method public static void abc$perCflowPush() */
+    private void genPerCflowPushMethod(SootClass aspct) {
+	SootClass stackClass=Scene.v()
+	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	RefType stackType=stackClass.getType();
+
+	Type object=Scene.v().getSootClass("java.lang.Object").getType();
+
+	SootMethod perCflowPush=new SootMethod
+	    ("abc$perCflowPush",new ArrayList(),VoidType.v(),
+	     Modifier.PUBLIC | Modifier.STATIC);
+
+	Body b=Jimple.v().newBody(perCflowPush);
+	perCflowPush.setActiveBody(b);
+
+	LocalGeneratorEx lg=new LocalGeneratorEx(b);
+
+	Chain units=b.getUnits();
+
+	SootField perCflowStack=aspct.getFieldByName("abc$perCflowStack");
+	Local stackLoc=lg.generateLocal(stackType,"perCflowStack");
+
+	units.addLast(Jimple.v().newAssignStmt
+		      (stackLoc,Jimple.v().newStaticFieldRef(perCflowStack)));
+
+	Local aspectLoc=lg.generateLocal(aspct.getType(),"aspect");
+	units.addLast(Jimple.v().newAssignStmt
+		      (aspectLoc,Jimple.v().newNewExpr(aspct.getType())));
+	units.addLast(Jimple.v().newInvokeStmt
+		      (Jimple.v().newSpecialInvokeExpr
+		       (aspectLoc,aspct.getMethod
+			(SootMethod.constructorName,new ArrayList()))));
+
+	ArrayList pushArgs=new ArrayList(1);
+	pushArgs.add(object);
+
+	units.addLast(Jimple.v().newInvokeStmt
+		      (Jimple.v().newVirtualInvokeExpr
+		       (stackLoc,
+			stackClass.getMethod("pushInstance",pushArgs),
+			aspectLoc)));
+
+	units.addLast(Jimple.v().newReturnVoidStmt());
+		      
+
+	aspct.addMethod(perCflowPush);
+	
+    }
+
 
     public SootMethod getPreClinit(SootClass cl) {
 	if(cl.declaresMethod("abc$preClinit",new ArrayList(),VoidType.v()))

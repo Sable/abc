@@ -14,7 +14,7 @@ import abc.soot.util.LocalGeneratorEx;
 public class PerThisSetup extends PerSetupAdvice {
 
     protected PerThisSetup(Aspect aspct,Pointcut pc,Position pos) {
-	super(aspct,pc,pos);
+	super(new BeforeAdvice(pos),aspct,pc,pos);
     }
 
     public WeavingContext makeWeavingContext() {

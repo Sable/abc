@@ -17,16 +17,4 @@ public abstract class PerPointcut extends Per {
 	return pc;
     }
 
-    // FIXME once PerCflow and PerCflowBelow are done
-    public void registerSetupAdvice(Aspect aspct) {
-	throw new RuntimeException("per clause not supported yet: "+this); 
-    }
-
-    public Residue matchesAt(Aspect aspct,ShadowMatch sm) { 
-	throw new RuntimeException("per clause not supported yet: "+this); 
-    }
-    public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) { 
-	throw new RuntimeException("per clause not supported yet: "+this);
-    }
-
 }

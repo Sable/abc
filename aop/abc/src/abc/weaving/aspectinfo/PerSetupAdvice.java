@@ -12,8 +12,8 @@ public abstract class PerSetupAdvice extends AbstractAdviceDecl {
 	return aspct;
     }
 
-    protected PerSetupAdvice(Aspect aspct,Pointcut pc,Position pos) {
-	super(new BeforeAdvice(pos),pc,new ArrayList(),pos);
+    protected PerSetupAdvice(AdviceSpec spec,Aspect aspct,Pointcut pc,Position pos) {
+	super(spec,pc,new ArrayList(),pos);
 	this.aspct=aspct;
     }
 

@@ -15,6 +15,9 @@ import abc.weaving.weaver.WeavingContext;
 public class AlwaysMatch extends Residue {
     // is this worthwhile? (save on heap turnover)
     public final static AlwaysMatch v=new AlwaysMatch();
+    public static AlwaysMatch v() {
+	return v;
+    }
 
     public String toString() {
 	return "always";
