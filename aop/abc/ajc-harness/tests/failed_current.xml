@@ -314,10 +314,6 @@
         <compile files="BackdoorMethods.java"></compile>
         <run class="BackdoorMethods"></run>
     </ajc-test>
-<ajc-test title="Parsing C+ expressions without parens in super introductions." keywords="from-resolved_10x" dir="new">
-        <compile files="ParsingSubtypesIntroductions.java"></compile>
-        <run class="ParsingSubtypesIntroductions"></run>
-    </ajc-test>
 <ajc-test title="holding onto proceed calls in a closure-like way" keywords="from-resolved_10x,knownLimitation" dir="new">
         <compile files="HoldProceed.java"></compile>
         <run class="HoldProceed"></run>
@@ -353,6 +349,10 @@
 <ajc-test title="around advice on calls within inner classes (including protected method calls)" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4" files="AroundInnerCalls.java"></compile>
         <run class="AroundInnerCalls"></run>
+    </ajc-test>
+<ajc-test title="Arguments to runNext should be final when needed" keywords="from-resolved_10x" dir="new">
+        <compile files="Finals.java"></compile>
+        <run class="Finals"></run>
     </ajc-test>
 <ajc-test title="Method introductions" keywords="from-resolved_10x" dir="new">
         <compile files="MethodIntroductions.java"></compile>
@@ -544,13 +544,21 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="Overriding method implementations using introduction on interfaces" pr="654" keywords="from-resolved_10x,fail-unimplemented" dir="new">
-        <compile options="-Xlint:ignore" files="IntroductionsOverriding.java"></compile>
-        <run class="IntroductionsOverriding"></run>
+<ajc-test title="aroundInner 1 - around advice inner Thread subclass running proceed but not writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="ThreadNoField.java,Common.java"></compile>
+        <run class="ThreadNoField"></run>
     </ajc-test>
-<ajc-test title="more coverage for around and concrete methods on interfaces" pr="654" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="MultiAndAround.java"></compile>
-        <run class="MultiAndAround"></run>
+<ajc-test title="aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="Proxy.java,Common.java"></compile>
+        <run class="Proxy"></run>
+    </ajc-test>
+<ajc-test title="aroundInner 4 - around advice inner Thread subclass running proceed and writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="ThreadSub.java,Common.java"></compile>
+        <run class="ThreadSub"></run>
+    </ajc-test>
+<ajc-test title="aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="RunnableSub.java,Common.java"></compile>
+        <run class="RunnableSub"></run>
     </ajc-test>
 <ajc-test title="after returning advice param" pr="694" keywords="from-resolved_10x" dir="new">
         <compile files="AfterReturningParam.java"></compile>
@@ -575,12 +583,6 @@
             <message line="18" kind="error"></message>
             <message line="32" kind="error"></message>
             <message line="43" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="indirect use outside aspect of undefined abstract pointcut" pr="619" keywords="from-resolved_104" dir="new">
-        <compile files="AbstractPointcutIndirectCE.java">
-            <message line="9" kind="error"></message>
-            <message line="5" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="name binding in around cflow" pr="666" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
@@ -923,10 +925,6 @@
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"></run>
     </ajc-test>
-<ajc-test title="super call in intertype method declaration body causes VerifyError" pr="29959" dir="bugs">
-        <compile files="SuperToIntro.java"></compile>
-        <run class="SuperToIntro"></run>
-    </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" dir="bugs">
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
@@ -1004,10 +1002,6 @@
 <ajc-test title="declare soft and throw statements" pr="34925" dir="bugs">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
-    </ajc-test>
-<ajc-test title="inter-type declaration bug with abstract classes" pr="36046" dir="bugs/interAbstract">
-        <compile files="Driver.java"></compile>
-        <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="Declare parents with intermediate ancestor" keywords="from-new" dir="new/declareParents">
         <compile files="Driver.java"></compile>
@@ -1224,10 +1218,6 @@
 <ajc-test title="NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch" pr="39479" dir="bugs">
         <compile files="NewSwitch.java"></compile>
         <run class="NewSwitch"></run>
-    </ajc-test>
-<ajc-test title="ajc stack trace on declaring hashcode() method in aspect" pr="39993" dir="bugs">
-        <compile files="OverridingInterfaceObjectMethod.java"></compile>
-        <run class="OverridingInterfaceObjectMethod"></run>
     </ajc-test>
 <ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
         <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
