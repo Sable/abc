@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +25,10 @@ import soot.*;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.*;
 
-/** A <code>pertarget</code> per clause. */
+/** A <code>pertarget</code> per clause. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class PerTarget extends PerPointcut {
     public PerTarget(Pointcut pc, Position pos) {
 	super(pc, pos);

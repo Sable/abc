@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +23,9 @@ import polyglot.util.Position;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.Residue;
 
-/** Base class for a per clause that contains a pointcut. */
+/** Base class for a per clause that contains a pointcut. 
+ *  @author Aske Simon Christensen
+ */
 public abstract class PerPointcut extends Per {
     private Pointcut pc;
 

@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +24,9 @@ import polyglot.util.Position;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.WeavingContext;
 
+/*  Base class for synthetic advice used to instantiate aspects with per clauses
+ *  @author Ganesh Sittampalam
+ */
 public abstract class PerSetupAdvice extends AbstractAdviceDecl {
 
     protected PerSetupAdvice(AdviceSpec spec,Aspect aspct,Pointcut pc,Position pos) {

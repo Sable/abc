@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,6 +30,9 @@ import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.SingleValueWeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
+/** Synthetic advice to support instantiation of pertarget aspects
+ *  @author Ganesh Sittampalam
+ */
 public class PerTargetSetup extends PerSetupAdvice {
 
     protected PerTargetSetup(Aspect aspct,Pointcut pc,Position pos) {

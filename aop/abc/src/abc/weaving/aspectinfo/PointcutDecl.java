@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +25,9 @@ import soot.*;
 
 import java.util.*;
 
-/** A pointcut declaration. */
+/** A pointcut declaration. 
+ *  @author Aske Simon Christensen
+ */
 public class PointcutDecl extends InAspect {
     private String name;
     private List/*<Formal>*/ formals;
