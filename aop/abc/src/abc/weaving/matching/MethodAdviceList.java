@@ -18,7 +18,10 @@ public class MethodAdviceList {
 	execution joinpoints */
     public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
-	bodyAdvice.add(aa);
+	// FIXME: temporary precedence hack
+	if(aa.advice.getAdviceSpec() instanceof BeforeAdvice)
+	    ((LinkedList) bodyAdvice).addFirst(aa);
+	else bodyAdvice.add(aa);
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
@@ -42,6 +45,15 @@ public class MethodAdviceList {
     public void addInitializationAdvice(AdviceApplication aa) {
 	initializationAdvice.add(aa);
     }
+
+    /** is true if method has been restructured to move returns to bottom */
+    private boolean hasReturnsRestructured = false;
+
+    /** should be called the first time the restructuring is done */
+    public void restructuringDone() { hasReturnsRestructured = true; }
+
+    /** public method, returns true if restructuring done */
+    public boolean isRestructured() { return hasReturnsRestructured; } 
 
     /** returns true if there is no advice */
     public boolean isEmpty() { 
