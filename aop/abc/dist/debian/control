@@ -2,7 +2,7 @@ Source: abc
 Section: devel
 Priority: optional
 Maintainer: abc development team <abc-dev@comlab.ox.ac.uk>
-Build-Depends: java-compiler, ant, dbs
+Build-Depends: java-compiler, ant, dbs, jflex
 
 Package: abc
 Architecture: all

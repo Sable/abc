@@ -79,7 +79,7 @@ if(defined $ARGV[0] && $ARGV[0] eq 'redhat') {
   }
 } elsif(defined $ARGV[0] && $ARGV[0] eq 'debian') {
   foreach my $entry (@entries) {
-    print "photopub (".$entry->{'version'}.") unstable; urgency=low\n\n";
+    print "abc (".$entry->{'version'}.") unstable; urgency=low\n\n";
     foreach my $changes (@{$entry->{'changes'}}) {
       print '  * '.$changes->{'text'}->[0]."\n";
       shift @{$changes->{'text'}};

@@ -32,6 +32,7 @@ build-stamp: $(patched)
 	cd build-tree/abc-$(ABC_VER) && \
 	  (echo polyglot.loc=../../lib/polyglot.jar ; \
 	   echo polyglot.cupclasses.loc=../../lib/java_cup.jar ; \
+           echo jflex.loc=/usr/share/java/JFlex.jar ; \
 	   echo soot.loc=../../lib/sootclasses-custom.jar ; \
 	   echo jasmin.loc=../../lib/jasminclasses-sable-nocup.jar ; \
 	   echo xact.loc=../../xact-complete-$(XACT_VER).jar) \

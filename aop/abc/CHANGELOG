@@ -24,6 +24,6 @@
 
 $Changed package root for runtime stuff from uk.ac.ox.comlab.abc 
 ;to org.aspectbench
-$Started keeping changelog (so this one will be incomplete)
+$Started keeping changelog (the one for this release is incomplete)
 
 &abc development team <abc-dev@comlab.ox.ac.uk>

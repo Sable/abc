@@ -15,6 +15,6 @@ ln -s \
  /srv/www/abc.comlab.ox.ac.uk/apt/dists/abc/main/binary-all/
 
 /srv/www/abc.comlab.ox.ac.uk/scripts/build-apt.sh abc main
-dist/credits.pl < CREDITS > /srv/www/abc.comlab.ox.ac.uk/html/credits.shtml
+dist/credits.pl < CREDITS > /srv/www/abc.comlab.ox.ac.uk/html/people.shtml
 
 echo Done.

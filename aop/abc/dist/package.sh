@@ -138,16 +138,10 @@ echo "export POLYGLOT_VER=dev-$DATE" >> debian/rules
 echo "export JASMIN_VER=dev-$DATE" >> debian/rules
 cat ../../../dist/debian/rules >> debian/rules
 
-dist/addchangelogrelease.pl $VERSION `date +%s` < ../../../CHANGELOG | \
-   dist/makechangelogs.pl debian > debian/changelog
-
-echo "abc ($VERSION) unstable; urgency=low" > debian/changelog
-echo >> debian/changelog
-echo "  * Built from source" >> debian/changelog
-echo >> debian/changelog
-echo -n " -- abc development team <abc-dev@comlab.ox.ac.uk>  " \
-   >> debian/changelog
-date +'%a, %e %b %Y %T %z' >> debian/changelog
+../../../dist/addchangelogrelease.pl $VERSION `date +%s` \
+   < ../../../CHANGELOG \
+   | ../../../dist/makechangelogs.pl debian \
+   > debian/changelog
 
 dpkg-buildpackage -rfakeroot -uc -us
 
