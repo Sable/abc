@@ -22,6 +22,31 @@ options with something like <ajc/>
 -->
     <name>General Options</name>
     <!-- Give each section a name. The options in the section follow. -->
+    <boolopt>
+      <alias>h</alias>
+      <alias>help</alias>
+      <ajc/>
+      <short_desc>Print the usage screen for abc.</short_desc>
+      <long_desc>
+Prints the usage screen for abc.
+<!-- Notice that there are two aliases, -h and -help, so
+the XML file has two alias tags. -->
+      </long_desc>
+    </boolopt>
+    <boolopt>
+      <alias>v</alias>
+      <alias>version</alias>
+      <ajc/>
+      <short_desc>Print the abc version number.</short_desc>
+      <long_desc>
+	Print the abc version number. The underlying 
+	versions of soot and polyglot, which form part of abc, are also
+	printed.
+      </long_desc>
+    </boolopt>
+  </section>
+  <section>
+    <name>Input Options</name>
     <pathopt>
       <alias>sourceroots</alias>
 <!--
@@ -47,15 +72,75 @@ screen:
   -sourceroots  <path>              Use classes in dirs in <path> as source.
 -->
     </pathopt>
+    <pathopt>
+      <alias>injars</alias>
+      <set_arg_label>jar list</set_arg_label>
+      <short_desc>Use class files from the jars in 
+	<use_arg_label/> as source.</short_desc>
+      <long_desc>Use all the class files in the jar files specified by 
+	<use_arg_label/> as source. 
+      </long_desc>
+    </pathopt>
+    <pathopt>
+      <alias>inpath</alias>
+      <set_arg_label>dir list</set_arg_label>
+      <short_desc>Use class files found in the directories in <use_arg_label/> 
+	as source.</short_desc>
+      <long_desc>Use all the class files in the directories specified by 
+	<use_arg_label/> as source. 
+      </long_desc>
+    </pathopt>
+    <pathopt>
+      <alias>cp</alias>
+      <alias>classpath</alias>
+      <set_arg_label>classpath</set_arg_label>
+      <short_desc>Specify the class path to be used when searching for 
+	libraries.</short_desc>
+      <long_desc><use_arg_label/> gives a list of zips, 
+	jars and directories that will be used when searching for libraries
+	referred to in the code being compiled.
+      </long_desc>
+    </pathopt>
+  </section>
+  <section>
+    <name>Output Options</name>
+  </section>
+  <section>
+    <name>Warning/Error Reporting Options</name>
     <boolopt>
-      <alias>h</alias>
-      <alias>help</alias>
-      <short_desc>foo</short_desc>
-      <long_desc>
-Prints the usage screen. Notice that there are two aliases, -h and -help, so
-the XML file has two alias tags.
+      <alias>warn-unused-advice</alias>
+      <default>true</default>
+      <short_desc>Warn if a piece of advice doesn't apply anywhere.
+      </short_desc>
+      <long_desc>If a piece of advice does not apply at any join point shadow,
+	generate a warning. 
       </long_desc>
     </boolopt>
+  </section>
+  <section>
+    <name>Language Options</name>
+    <boolopt>
+      <alias>nested-comments</alias>
+      <short_desc>Allow nested comments.</short_desc>
+      <long_desc>If this option is enabled, comments of the form 
+	/* ... /* ... */ ... */ will be allowed.
+      </long_desc>
+    </boolopt>
+  </section>
+  <section>
+    <name>Optimization Options</name>
+    <intopt>
+      <alias>O</alias>
+      <default>1</default>
+      <short_desc>Set the general optimization level.</short_desc>
+      <long_desc>Set the general optimization level. 0 means no optimizations,
+	1 means the standard intra-procedural options, and 3 means the
+	standard inter-procedural options. 2 currently has the same effect
+	as 1.
+      </long_desc>
+    </intopt>
+  <section>
+    <name>Debug options</name>
     <debugopt>
       <undocumented/>
 <!--

@@ -68,21 +68,17 @@ public class Usage {
     "\n" + 
     "Output Options [ajc]: \n" +
     "--------------------- \n" +
-    "  -d <dir>                     Destination directory for generated files.\n" +
-    "  -outjar <filename>           Destination .jar file for generated files."
+    "  -d <dir>                       Destination directory for generated files.\n" +
+    "  -outjar <filename>             Destination .jar file for generated files."
     );
   }
 
   public static String errorOptions() {
   return(
     "\n" + 
-    "Warning/Error Reporting Options [ajc]: \n" +
+    "Warning/Error Reporting Options [abc]: \n" +
     "-------------------------------------- \n" +
-    "  -Xlint -Xlint:warning        Report Xlint (weaving-related) warnings/errors.\n" +
-    "  -Xlint:error                 Report Xlint errors only, not warnings.\n" +
-    "  -Xlint:ignore                Don't report Xlint warnings or errors . \n" +
-    "  -nowarn -warn:none           Don't report normal (non-weaving-related) warnings."
-    // "-help:warn [abc]"
+    "  -warn-unused-advice[:{on|off}] Warn if a piece of advice doesn't apply anywhere."
    );
   }
     
@@ -144,8 +140,8 @@ public class Usage {
     G.v().out.println(inputOptions());
     G.v().out.println(outputOptions());
     G.v().out.println(errorOptions());
-    G.v().out.println(utilityOptions());
-    G.v().out.println(debugOptions());
+//    G.v().out.println(utilityOptions());
+//    G.v().out.println(debugOptions());
     G.v().out.println(advancedOptions());
     G.v().out.println(optimizationOptions());
     G.v().out.println(sootPolyglotOptions());

@@ -419,7 +419,8 @@ public class Main {
             }
 
             // optimization settings
-            else if (args.top().equals("-O") || (args.top().equals("-O1")))
+            else if (args.top().equals("-O") || (args.top().equals("-O1"))
+		     || args.top().equals("-O2"))
                 optflag=true;                 //   this is the default
             else if (args.top().equals("-O0")) // -O0 turns opt off
                 optflag=false;
