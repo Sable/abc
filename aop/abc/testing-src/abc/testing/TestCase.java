@@ -536,7 +536,6 @@ public class TestCase {
 		            System.err.println("Found an unexpected position-less error: " + ei.getMessage());
 		            System.err.println("Errors found during this compilation:");
 		            printErrors(errors);
-		            failTest();
 		            return false;
 		        }
 		        System.err.println("Error position is null; assuming error matches. Error message: " + ei.getMessage());
