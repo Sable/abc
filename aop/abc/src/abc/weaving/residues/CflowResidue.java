@@ -90,7 +90,6 @@ public class CflowResidue extends Residue {
                         WeavingContext wc) {
 
         CflowCodeGenUtils.CflowCodeGen codegen = setup.codeGen();
-        codegen.setLocalGen(localgen);
 
         debug("beginning cflow codegen");
 
@@ -104,7 +103,7 @@ public class CflowResidue extends Residue {
 
         Local cflowLocal = setup.getMethodCflowThreadLocal(localgen, method);
 
-        Chain getlocalstack = codegen.genInitLocalLazily(cflowLocal, cflowStack);
+        Chain getlocalstack = codegen.genInitLocalLazily(localgen, cflowLocal, cflowStack);
         last = (Stmt)insertChainAfter(units, getlocalstack, last);
         
         debug("checking validity");
@@ -119,7 +118,7 @@ public class CflowResidue extends Residue {
         
         Local isvalid=localgen.generateLocal(BooleanType.v(),"cflowactive");
 
-        ChainStmtBox isValidCheck = codegen.genIsValid(cflowLocal, isvalid, succeedStmt, failStmt);
+        ChainStmtBox isValidCheck = codegen.genIsValid(localgen, cflowLocal, isvalid, succeedStmt, failStmt);
         last = (Stmt)insertChainAfter(units, isValidCheck.getChain(), last);
         isValidStmt = isValidCheck.getStmt();
 
@@ -151,7 +150,7 @@ public class CflowResidue extends Residue {
         }
         
         debug("get bound values");
-        Chain peekchain = codegen.genPeek(cflowLocal, reslocals);
+        Chain peekchain = codegen.genPeek(localgen, cflowLocal, reslocals);
         last = (Stmt)insertChainAfter(units,peekchain, last);
         
         debug("Copy bound values into weaving vars");
@@ -164,7 +163,7 @@ public class CflowResidue extends Residue {
         }
 
         }
-
+        
         debug("done with cflow codegen");
         return last;
 

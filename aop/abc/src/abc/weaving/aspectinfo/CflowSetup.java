@@ -241,8 +241,10 @@ public class CflowSetup extends AbstractAdviceDecl {
 
     public void resetForReweaving() {
     	cflowStack=null;
-        //popStmts=new HashMap();
-        //pushStmts=new HashMap();
+        popStmts=new HashMap();
+        pushStmts=new HashMap();
+        methodCflowLocals = new HashMap();
+        methodCflowThreadLocals = new HashMap();
     }
     
     private SootFieldRef cflowStack=null; private SootMethod preClinit=null;
@@ -283,8 +285,7 @@ public class CflowSetup extends AbstractAdviceDecl {
             while(!(returnStmt instanceof ReturnVoidStmt))
                 returnStmt=(Stmt) units.getSuccOf(returnStmt);
             
-            codeGen.setLocalGen(lg);
-            Chain cflowInitStmts = codeGen.genInitCflowField(cflowStack);
+            Chain cflowInitStmts = codeGen.genInitCflowField(lg, cflowStack);
            
             
             Iterator it = cflowInitStmts.iterator();
@@ -372,8 +373,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
     	l = localgen.generateLocal(codeGen().getCflowInstanceType(), codeGen().chooseName()+"Instance");
 		
-		codeGen().setLocalGen(localgen);
-		Chain c = codeGen().genInitLocalToNull(l);
+		Chain c = codeGen().genInitLocalToNull(localgen, l);
 
 		Stmt insertAfter = getMethodFirstSafeCflowStatement(m);
 
@@ -386,6 +386,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 			insertAfter = s;
 		}
 		methodCflowThreadLocals.put(m, l);
+		
 		return l;
     }
     
@@ -399,7 +400,6 @@ public class CflowSetup extends AbstractAdviceDecl {
         
         // Prepare codeGen()
         Chain c = new HashChain();
-        codeGen().setLocalGen(localgen);
         
         //FIXME Getting the current method is a hack, but fixing it requires adding it as a param
         // Get current method
@@ -415,7 +415,7 @@ public class CflowSetup extends AbstractAdviceDecl {
         	// PUSH
 
         	// Initialise the cflow thread-local
-        	Chain getInstance = codeGen().genInitLocalLazily(cflowLocal, cflowInstance);
+        	Chain getInstance = codeGen().genInitLocalLazily(localgen, cflowLocal, cflowInstance);
         	c.addAll(getInstance);
 
         	List/*<Value>*/ values = new LinkedList();
@@ -425,13 +425,13 @@ public class CflowSetup extends AbstractAdviceDecl {
         		values.add(v);
         	}
         	
-        	ChainStmtBox pushChain = codeGen().genPush(cflowLocal, values);
+        	ChainStmtBox pushChain = codeGen().genPush(localgen, cflowLocal, values);
         	c.addAll(pushChain.getChain());
         	pushStmts.put(adviceappl, pushChain.getStmt());
         	
         } else {
         	// POP
-        	ChainStmtBox popChain = codeGen().genPop(cflowLocal);
+        	ChainStmtBox popChain = codeGen().genPop(localgen, cflowLocal);
         	c.addAll(popChain.getChain());
         	popStmts.put(adviceappl, popChain.getStmt());
         }

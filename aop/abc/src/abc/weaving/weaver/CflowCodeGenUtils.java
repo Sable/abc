@@ -70,23 +70,20 @@ public class CflowCodeGenUtils {
 	private static class CodeGenUtils {
 		private CodeGenUtils() { }
 		private static CodeGenUtils instance = new CodeGenUtils();
-		private static CodeGenUtils v(LocalGeneratorEx localgen) { instance.setLocalGen(localgen); return instance; }
-		
-		private LocalGeneratorEx localgen;
-		private void setLocalGen(LocalGeneratorEx localgen) { this.localgen = localgen; }
+		private static CodeGenUtils v() { return instance; }
 		
 
 		/* SOME CODEGEN UTILITY FUNCTIONS */
 		
 		/** Copy one local to another, autoboxing/unboxing and inserting a cast if necessary
 		 */
-		private Chain genCopy(Local from, Local to) {
+		private Chain genCopy(LocalGeneratorEx localgen, Local from, Local to) {
 			Chain c = new HashChain();
 			Type tfrom = from.getType();
 			Type tto = to.getType();
 			if ((tfrom instanceof RefType && tto instanceof RefType) ||
 				(tfrom instanceof PrimType && tto instanceof PrimType)) {
-				c.addAll(genCopyCast(from, to));
+				c.addAll(genCopyCast(localgen, from, to));
 				return c;
 			} else if (tfrom instanceof RefType) {
 				// UNBOX
@@ -100,7 +97,7 @@ public class CflowCodeGenUtils {
 		                     false);
 				
 				// Cast the variable if necessary
-				Local castval = genCast(c, from, boxClass.getType(), null);
+				Local castval = genCast(localgen, c, from, boxClass.getType(), null);
                 
                 Stmt putstmt = Jimple.v().newAssignStmt(
                 		to,
@@ -132,24 +129,24 @@ public class CflowCodeGenUtils {
 		
 		/** Copy an array cell into a local, autoboxing/unboxing
 		 */
-		private Chain genCopyFromArray(Local fromArray, int index, Local to) {
+		private Chain genCopyFromArray(LocalGeneratorEx localgen, Local fromArray, int index, Local to) {
 			Type elemType = ((ArrayType)fromArray.getType()).baseType;
 			Local temp = localgen.generateLocal(elemType, "arrayTemp");
 			Stmt getstmt =
 				Jimple.v().newAssignStmt(
 						temp,
 						Jimple.v().newArrayRef(fromArray, IntConstant.v(index)));
-			Chain c = genCopy(temp, to);
+			Chain c = genCopy(localgen, temp, to);
 			c.addFirst(getstmt);
 			return c;
 		}
 		
 		/** Copy a local into an array cell, autoboxing/unboxing
 		 */
-		private Chain genCopyToArray(Local from, Local toArray, int index) {
+		private Chain genCopyToArray(LocalGeneratorEx localgen, Local from, Local toArray, int index) {
 			Type elemType = ((ArrayType)toArray.getType()).baseType;
 			Local temp = localgen.generateLocal(elemType);
-			Chain c = genCopy(from, temp);
+			Chain c = genCopy(localgen, from, temp);
 			Stmt putstmt =
 				Jimple.v().newAssignStmt(
 						Jimple.v().newArrayRef(toArray, IntConstant.v(index)),
@@ -220,7 +217,7 @@ public class CflowCodeGenUtils {
 		 *  coerced value, and inserts the cast (if necessary) after stmt in c.
 		 *  Pass null as stmt to insert at the beginning
 		 */
-		private Local genCast(Chain c, Local from, Type toType, Stmt stmt) {
+		private Local genCast(LocalGeneratorEx localgen, Chain c, Local from, Type toType, Stmt stmt) {
 			Type fromType = from.getType();
 			
 			if (needCast(fromType, toType)) {
@@ -244,7 +241,7 @@ public class CflowCodeGenUtils {
 		
 		/** Copy one local to another, inserting a cast if necessary
 		 */
-		private Chain genCopyCast(Local from, Local to) {
+		private Chain genCopyCast(LocalGeneratorEx localgen, Local from, Local to) {
 			Type fromType = from.getType();
 			Type toType = to.getType();
 			Chain c = new HashChain();
@@ -268,7 +265,7 @@ public class CflowCodeGenUtils {
 		 *  succeed (resp. fail) if true (resp. false), or just fall through if
 		 *  the corresponding parameter is null
 		 */
-		private Chain genDecision(Expr testIfTrue, Local result, Stmt succeed, Stmt fail) {
+		private Chain genDecision(LocalGeneratorEx localgen, Expr testIfTrue, Local result, Stmt succeed, Stmt fail) {
 			Stmt resfalse =
 				Jimple.v().newAssignStmt(
 						result,
@@ -529,22 +526,13 @@ public class CflowCodeGenUtils {
 		 */
 		public abstract String chooseName();
 		
-		protected LocalGeneratorEx localgen;
-		protected CodeGenUtils cgu;
-		/** Set the local variable generator for the current method. Must be called before 
-		 * code gen and whenever it changes
-		 * @param localgen The local variable generator 
-		 */
-		public void setLocalGen(LocalGeneratorEx localgen) { 
-			this.localgen = localgen; 
-			cgu = CodeGenUtils.v(localgen);  
-		}
-		
+		protected CodeGenUtils cgu = CodeGenUtils.v();
+
 		/** Generate code to initialise a cflow instance local to a dummy value if necessary
 		 * @param l The cflow local variable to initialise
 		 * @return The chian of statements initialising the local
 		 */
-		public Chain genInitLocalToNull(Local l) {
+		public Chain genInitLocalToNull(LocalGeneratorEx localgen, Local l) {
 			Chain c = new HashChain();
 			Stmt init = Jimple.v().newAssignStmt(l, NullConstant.v());
 			c.add(init);
@@ -566,14 +554,14 @@ public class CflowCodeGenUtils {
 		 * @param cFlowInstance The cflow bookkeeping instance to get the thread-local from 
 		 * @return The chain of statements initialising the cflow local
 		 */
-		public abstract Chain genInitLocal(Local cFlowLocal, Local cFlowInstance);
+		public abstract Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance);
 		/** Generate code to initialise a local variable to the cflow thread-local, if non-null
 		 * @param cFlowLocal The local variable to contain the thread-local Cflow bookkeeping class
 		 * @param cFlowInstance The cflow bookkeeping instance to get the thread-local from 
 		 * @return The chain of statements initialising the cflow local
 		 */
-		public Chain genInitLocalLazily(Local cFlowLocal, Local cFlowInstance) {
-			Chain c = genInitLocal(cFlowLocal, cFlowInstance);
+		public Chain genInitLocalLazily(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			Chain c = genInitLocal(localgen, cFlowLocal, cFlowInstance);
 			Stmt nop = Jimple.v().newNopStmt();
 			c.addLast(nop);
 			Stmt jumpIfNull = 
@@ -589,19 +577,19 @@ public class CflowCodeGenUtils {
 		 * @return The chain of statements generated for the push operation, together with a single
 		 * statement representing it for analyses (cf. conditions for this stmt).
 		 */
-		public abstract ChainStmtBox genPush(Local cFlowLocal, List/*<Value>*/ values);
+		public abstract ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Value>*/ values);
 		/** Generate code for a pop operation.
 		 * @param cFlowLocal The local variable containing the thread-local Cflow bookkeeping class
 		 * @return The chain of statements generated for the pop operation together with a single
 		 * statement representing it for analyses (cf. conditions for this stmt).
 		 */
-		public abstract ChainStmtBox genPop(Local cFlowLocal);
+		public abstract ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal);
 		/** Generate code for a peek operation.
 		 * @param cFlowLocal The local variable containing the thread-local Cflow bookkeeping class
 		 * @param targets The list of target variables to save the cflow context into
 		 * @return The chain of statements generated for the peek operation
 		 */
-		public abstract Chain genPeek(Local cFlowLocal, List/*<Local>*/ targets);
+		public abstract Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets);
 		/** Generate code for an isValid test. This sets a boolean variable to the result. In addition,
 		 *  if succeed (resp. fail) is non-null, then control flow jumps to succeed (resp. fail) if the
 		 *  test succeeds (resp. fails). Both succeed and fail should occur *after* the point at which
@@ -613,13 +601,13 @@ public class CflowCodeGenUtils {
 		 * @return The chain of statements generated for the isValid test, together with a single
 		 * statement representing it for analyses (cf. conditions for this stmt).
 		 */
-		public abstract ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed, Stmt fail);
+		public abstract ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail);
 		
 		/** Generate code to initialise a field to contain the cflow state (in an aspect) 
 		 * @param field The field to contain the cflow state (of type getCflowType())
 		 * @return The chain of statements generated to initialise the field
 		 */
-		public Chain genInitCflowField(SootFieldRef field) {
+		public Chain genInitCflowField(LocalGeneratorEx localgen, SootFieldRef field) {
 			// Default implementation : appropriate for all implementations in which the cflow 
 			// state is contained in an instance of a class
 			Chain c = new HashChain();
@@ -668,7 +656,8 @@ public class CflowCodeGenUtils {
 						" nonempty cflow bound vars list");
 		}
 		
-		public Chain genInitCflowField(SootFieldRef field) {
+		public Chain genInitCflowField(LocalGeneratorEx localgen, SootFieldRef field) {
+			
 			// override default to use a factory method
 			Chain c = new HashChain();
 			Local l = localgen.generateLocal(util.counterType(), chooseName());
@@ -683,10 +672,12 @@ public class CflowCodeGenUtils {
 						Jimple.v().newStaticFieldRef(field), l);
 			c.add(init);
 			c.add(set);
+			
 			return c;
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			
 			Stmt init = 
 				Jimple.v().newAssignStmt(
 						cFlowLocal,
@@ -696,9 +687,11 @@ public class CflowCodeGenUtils {
 								new ArrayList()));
 			Chain c = new HashChain();
 			c.add(init);
+			
 			return c;
 		}
-		public ChainStmtBox genPush(Local cFlowLocal, List/*<Value>*/ values) {
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Value>*/ values) {
+			
 			// Check that no formals bound
 			if (values.size() > 0) throw new 
 				RuntimeException("Cflow Counter used with nonempty formals list");
@@ -724,9 +717,11 @@ public class CflowCodeGenUtils {
 			c.add(get);
 			c.add(inc);
 			c.add(put);
+			
 			return new ChainStmtBox(c,inc);
 		}
-		public ChainStmtBox genPop(Local cFlowLocal) {
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCount");
 			Stmt get = 
 				Jimple.v().newAssignStmt(
@@ -748,13 +743,15 @@ public class CflowCodeGenUtils {
 			c.add(get);
 			c.add(dec);
 			c.add(put);
+			
 			return new ChainStmtBox(c, dec);
 		}
-		public Chain genPeek(Local cFlowLocal, List/*<Local>*/ targets) {
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
 			// Should never be used on counters
 			throw new RuntimeException("peek operation attempted on a Cflow counter.");
 		}
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
+			
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCount");
 			Stmt get = 
 				Jimple.v().newAssignStmt(
@@ -764,8 +761,9 @@ public class CflowCodeGenUtils {
 								util.threadCountField()));
 			Expr testExpr = 
 				Jimple.v().newGtExpr(temp, IntConstant.v(0));
-			Chain c = cgu.genDecision(testExpr, result, succeed, fail);
+			Chain c = cgu.genDecision(localgen, testExpr, result, succeed, fail);
 			c.addFirst(get);
+			
 			return new ChainStmtBox (c, get);
 		}
 	}
@@ -793,20 +791,25 @@ public class CflowCodeGenUtils {
 		
 		// Override the lazy init code in this case - not needed 
 		// The dummy assignments cFlowInstance->cFlowLocal should have no effect on bytecode
-		public Chain genInitLocalLazily(Local cFlowLocal, Local cFlowInstance) {
-			return genInitLocal(cFlowLocal, cFlowInstance);
+		public Chain genInitLocalLazily(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			
+			
+			return genInitLocal(localgen, cFlowLocal, cFlowInstance);
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
 			// There is nothing to do (no thread-local instance to get)
 			// Set the cflowLocal to cFlowInstance to keep a handle on it
+			
 			Chain c = new HashChain();
-			c.addAll(cgu.genCopy(cFlowInstance, cFlowLocal));
+			c.addAll(cgu.genCopy(localgen, cFlowInstance, cFlowLocal));
+			
 			return c;
 		}
 
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed,
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed,
 				Stmt fail) {
+			
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCounter");
 			Stmt get =
 				Jimple.v().newAssignStmt(
@@ -817,17 +820,19 @@ public class CflowCodeGenUtils {
 			Expr test = 
 				Jimple.v().newGtExpr(temp, IntConstant.v(0));
 			
-			Chain c = cgu.genDecision(test, result, succeed, fail);
+			Chain c = cgu.genDecision(localgen, test, result, succeed, fail);
 			c.addFirst(get);
+			
 			return new ChainStmtBox(c, get);
 		}
 
-		public Chain genPeek(Local cFlowLocal, List targets) {
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
 			// Invalid Operation
 			throw new RuntimeException("CflowCounter peek operation");
 		}
 
-		public ChainStmtBox genPop(Local cFlowLocal) {
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			
 			Chain c = new HashChain();
 			
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCounter");
@@ -856,7 +861,7 @@ public class CflowCodeGenUtils {
 			return new ChainStmtBox(c, dec);
 		}
 
-		public ChainStmtBox genPush(Local cFlowLocal, List values) {
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List values) {
 			Chain c = new HashChain();
 			
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCounter");
@@ -897,7 +902,7 @@ public class CflowCodeGenUtils {
 		public String chooseName() {
 			return "cflowCounter";
 		}
-		public Chain genInitCflowField(SootFieldRef field) {
+		public Chain genInitCflowField(LocalGeneratorEx localgen, SootFieldRef field) {
 			// Initialise the field to 0
 			Chain c = new HashChain();
 			Stmt init = 
@@ -906,33 +911,36 @@ public class CflowCodeGenUtils {
 						IntConstant.v(0));
 			return c;
 		}
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
 			// Nothing to do
 			return new HashChain();
 		}
-		public Chain genInitLocalLazily(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocalLazily(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
 			// Override the laziness in this case, not useful
-			return genInitLocal(cFlowLocal, cFlowInstance);
+			return genInitLocal(localgen, cFlowLocal, cFlowInstance);
 		}
-		public Chain genInitLocalToNull(Local l) {
+		public Chain genInitLocalToNull(LocalGeneratorEx localgen, Local l) {
 			// Override default behaviour. Nothing to initialise here
 			return new HashChain();
 		}
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed,
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed,
 				Stmt fail) {
+			
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCounterTemp");
 			Stmt get = Jimple.v().newAssignStmt(temp, 
 					Jimple.v().newStaticFieldRef(field));
 			Expr test = Jimple.v().newGtExpr(temp, IntConstant.v(0));
-			Chain c = cgu.genDecision(test, result, succeed, fail);
+			Chain c = cgu.genDecision(localgen, test, result, succeed, fail);
 			c.addFirst(get);
+			
 			return new ChainStmtBox(c, get);
 		}
-		public Chain genPeek(Local cFlowLocal, List targets) {
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
 			// Not valid
 			throw new RuntimeException("Peek on cflow counter");
 		}
-		public ChainStmtBox genPop(Local cFlowLocal) {
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			
 			Chain c = new HashChain();
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCounterTemp");
 			Stmt get = Jimple.v().newAssignStmt(temp, 
@@ -945,9 +953,11 @@ public class CflowCodeGenUtils {
 			c.add(get);
 			c.add(dec);
 			c.add(put);
+			
 			return new ChainStmtBox(c, dec);
 		}
-		public ChainStmtBox genPush(Local cFlowLocal, List values) {
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List values) {
+			
 			Chain c = new HashChain();
 			Local temp = localgen.generateLocal(IntType.v(), "cflowCounterTemp");
 			Stmt get = Jimple.v().newAssignStmt(temp, 
@@ -960,10 +970,8 @@ public class CflowCodeGenUtils {
 			c.add(get);
 			c.add(inc);
 			c.add(put);
+			
 			return new ChainStmtBox(c, inc);
-		}
-		public SootClass getCflowClass() {
-			return null;
 		}
 		public SootClass getCflowInstanceClass() {
 			return null;
@@ -1094,8 +1102,10 @@ public class CflowCodeGenUtils {
 					cFlowLocal, getStackField(isSingleThreaded, useStaticField));
 		}
 		
-		protected ChainStmtBox protogenIsValid(Local cFlowLocal, Local result, Stmt succeed, Stmt fail, 
+		protected ChainStmtBox protogenIsValid(LocalGeneratorEx localgen, 
+				Local cFlowLocal, Local result, Stmt succeed, Stmt fail, 
 				boolean isSingleThreaded, boolean useStaticField) {
+			
 			Local topCellLocal = 
 				localgen.generateLocal(
 						util.threadStackCellType(elemType), "cflowStackCell");
@@ -1107,14 +1117,16 @@ public class CflowCodeGenUtils {
 			Expr testExpr = 
 				Jimple.v().newNeExpr(topCellLocal, NullConstant.v());
 			
-			Chain c = cgu.genDecision(testExpr, result, succeed, fail);
+			Chain c = cgu.genDecision(localgen, testExpr, result, succeed, fail);
 			
 			c.addFirst(getTopCell);
 			
 			return new ChainStmtBox(c, getTopCell);
 		}
 		
-		protected ChainStmtBox protogenPop(Local cFlowLocal, boolean isSingleThreaded, boolean useStaticField) {
+		protected ChainStmtBox protogenPop(LocalGeneratorEx localgen, 
+				Local cFlowLocal, boolean isSingleThreaded, boolean useStaticField) {
+			
 			Local topCell = 
 				localgen.generateLocal(
 						util.threadStackCellType(elemType), "cflowStackCell");
@@ -1140,11 +1152,14 @@ public class CflowCodeGenUtils {
 			c.add(getCell);
 			c.add(getPrevCell);
 			c.add(setTopCell);
+			
 			return new ChainStmtBox(c, getPrevCell);
 		}
 		
-		protected Chain protogenPeek(Local cFlowLocal, List/*<Local>*/ targets, boolean isSingleThreaded
+		protected Chain protogenPeek(LocalGeneratorEx localgen, 
+				Local cFlowLocal, List/*<Local>*/ targets, boolean isSingleThreaded
 				, boolean useStaticField) {
+			
 			Chain c = new HashChain();
 			
 			// Get the top element of the stack
@@ -1166,7 +1181,7 @@ public class CflowCodeGenUtils {
 			c.add(getTopElem);
 			
 			// Cast the top elem if necessary
-			Local cflowBound = cgu.genCast(c, topElem, actualElemType, getTopElem);
+			Local cflowBound = cgu.genCast(localgen, c, topElem, actualElemType, getTopElem);
 			
 			// Add a nop to separate the two
 			Stmt nop = Jimple.v().newNopStmt();
@@ -1177,20 +1192,22 @@ public class CflowCodeGenUtils {
 				int i = 0;
 				while (it.hasNext()) {
 					Local to = (Local)it.next();
-					Chain copy = cgu.genCopyFromArray(cflowBound, i, to);
+					Chain copy = cgu.genCopyFromArray(localgen, cflowBound, i, to);
 					c.addAll(copy);
 					i++;
 				}
 			} else {
 				Local to = (Local)targets.get(0);
-				Chain copy = cgu.genCopyCast(cflowBound, to);
+				Chain copy = cgu.genCopyCast(localgen, cflowBound, to);
 				c.addAll(copy);
 			}
+			
 			return c;
 		}
 		
-		protected ChainStmtBox protogenPush(Local cFlowLocal, List/*<Value>*/ values, boolean isSingleThreaded
+		protected ChainStmtBox protogenPush(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Value>*/ values, boolean isSingleThreaded
 				, boolean useStaticField) {
+			
 			Chain c = new HashChain();
 			
 			// Create the new value to store at the top of the cflow stack
@@ -1220,7 +1237,7 @@ public class CflowCodeGenUtils {
 								temp,
 								v);
 					c.add(copyToTemp);
-					Chain copy = cgu.genCopyToArray(temp, newElemValue, i);
+					Chain copy = cgu.genCopyToArray(localgen, temp, newElemValue, i);
 					c.addAll(copy);
 					i++;
 				}
@@ -1266,6 +1283,7 @@ public class CflowCodeGenUtils {
 						getStackFieldInstance(isSingleThreaded, useStaticField, cFlowLocal),
 						newTopElem);
 			c.add(putNewTopElem);
+			
 			return new ChainStmtBox(c, putNewTopElem);
 		}
 		
@@ -1286,8 +1304,9 @@ public class CflowCodeGenUtils {
 		
 		/* CODEGEN */
 		
-		public Chain genInitCflowField(SootFieldRef field) {
+		public Chain genInitCflowField(LocalGeneratorEx localgen, SootFieldRef field) {
 			// override default to use a factory method
+			
 			Chain c = new HashChain();
 			Local l = localgen.generateLocal(util.typedStackType(elemType), chooseName());
 			
@@ -1301,10 +1320,12 @@ public class CflowCodeGenUtils {
 						Jimple.v().newStaticFieldRef(field), l);
 			c.add(init);
 			c.add(set);
+			
 			return c;
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			
 			Stmt initStmt = 
 				Jimple.v().newAssignStmt(
 						cFlowLocal,
@@ -1314,23 +1335,24 @@ public class CflowCodeGenUtils {
 								new ArrayList()));
 			Chain c = new HashChain();
 			c.add(initStmt);
+			
 			return c;
 		}
 
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
-			return protogenIsValid(cFlowLocal, result, succeed, fail, false, false);
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
+			return protogenIsValid(localgen, cFlowLocal, result, succeed, fail, false, false);
 		}
 	
-		public Chain genPeek(Local cFlowLocal, List/*<Local>*/ targets) {
-			return protogenPeek(cFlowLocal, targets, false, false);
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
+			return protogenPeek(localgen, cFlowLocal, targets, false, false);
 		}
 
-		public ChainStmtBox genPop(Local cFlowLocal) {
-			return protogenPop(cFlowLocal, false, false);
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			return protogenPop(localgen, cFlowLocal, false, false);
 		}
 
-		public ChainStmtBox genPush(Local cFlowLocal, List/*<Value>*/ values) {
-			return protogenPush(cFlowLocal, values, false, false);
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Value>*/ values) {
+			return protogenPush(localgen, cFlowLocal, values, false, false);
 		}
 	}
 	
@@ -1353,30 +1375,32 @@ public class CflowCodeGenUtils {
 		
 		// Override the lazy init code in this case - not needed 
 		// The dummy assignments cFlowInstance->cFlowLocal should have no effect on bytecode
-		public Chain genInitLocalLazily(Local cFlowLocal, Local cFlowInstance) {
-			return genInitLocal(cFlowLocal, cFlowInstance);
+		public Chain genInitLocalLazily(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			return genInitLocal(localgen, cFlowLocal, cFlowInstance);
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			
 			Chain c = new HashChain();
-			c.addAll(cgu.genCopy(cFlowInstance, cFlowLocal));
+			c.addAll(cgu.genCopy(localgen, cFlowInstance, cFlowLocal));
+			
 			return c;
 		}
 
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
-			return protogenIsValid(cFlowLocal, result, succeed, fail, true, false);
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
+			return protogenIsValid(localgen, cFlowLocal, result, succeed, fail, true, false);
 		}
 	
-		public Chain genPeek(Local cFlowLocal, List/*<Local>*/ targets) {
-			return protogenPeek(cFlowLocal, targets, true, false);
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
+			return protogenPeek(localgen, cFlowLocal, targets, true, false);
 		}
 
-		public ChainStmtBox genPop(Local cFlowLocal) {
-			return protogenPop(cFlowLocal, true, false);
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			return protogenPop(localgen, cFlowLocal, true, false);
 		}
 
-		public ChainStmtBox genPush(Local cFlowLocal, List/*<Value>*/ values) {
-			return protogenPush(cFlowLocal, values, true, false);
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Value>*/ values) {
+			return protogenPush(localgen, cFlowLocal, values, true, false);
 		}
 	}
 	
@@ -1397,35 +1421,37 @@ public class CflowCodeGenUtils {
 		/* CODEGEN */
 		
 		// Override the lazy init code in this case - not needed 
-		public Chain genInitLocalLazily(Local cFlowLocal, Local cFlowInstance) {
-			return genInitLocal(cFlowLocal, cFlowInstance);
+		public Chain genInitLocalLazily(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			return genInitLocal(localgen, cFlowLocal, cFlowInstance);
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
 			// Nothing to initialise
 			return new HashChain();
 		}
 
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
-			return protogenIsValid(cFlowLocal, result, succeed, fail, true, true);
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
+			return protogenIsValid(localgen, cFlowLocal, result, succeed, fail, true, true);
 		}
 	
-		public Chain genPeek(Local cFlowLocal, List/*<Local>*/ targets) {
-			return protogenPeek(cFlowLocal, targets, true, true);
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
+			return protogenPeek(localgen, cFlowLocal, targets, true, true);
 		}
 
-		public ChainStmtBox genPop(Local cFlowLocal) {
-			return protogenPop(cFlowLocal, true, true);
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			return protogenPop(localgen, cFlowLocal, true, true);
 		}
 
-		public ChainStmtBox genPush(Local cFlowLocal, List/*<Value>*/ values) {
-			return protogenPush(cFlowLocal, values, true, true);
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Value>*/ values) {
+			return protogenPush(localgen, cFlowLocal, values, true, true);
 		}
-		public Chain genInitCflowField(SootFieldRef field) {
+		public Chain genInitCflowField(LocalGeneratorEx localgen, SootFieldRef field) {
+			
 			Chain c = new HashChain();
 			Stmt s = Jimple.v().newAssignStmt(
 					Jimple.v().newStaticFieldRef(field), 
 					NullConstant.v());
+			
 			return c;
 		}
 	}
@@ -1496,7 +1522,8 @@ public class CflowCodeGenUtils {
 					true);
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			
 			Chain  c = new HashChain();
 			Stmt initLocal = 
 				Jimple.v().newAssignStmt(
@@ -1506,11 +1533,13 @@ public class CflowCodeGenUtils {
 								getMethod(),
 								new ArrayList()));
 			c.add(initLocal);
+			
 			return c;
 		}
 
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed,
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed,
 				Stmt fail) {
+			
 			Chain  c = new HashChain();
 			List args = new ArrayList(1);
 			args.add(cFlowLocal);
@@ -1538,15 +1567,17 @@ public class CflowCodeGenUtils {
 				c.add(Jimple.v().newGotoStmt(succeed));
 			}
 			
+			
 			return new ChainStmtBox(c, testStmt);
 		}
 
-		public Chain genPeek(Local cFlowLocal, List targets) {
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
 			// Invalid operation
 			throw new RuntimeException("Error: (old) counter codegen called to generate peek");
 		}
 
-		public ChainStmtBox genPop(Local cFlowLocal) {
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			
 			Chain  c = new HashChain();
 			List args = new ArrayList(1);
 			args.add(cFlowLocal);
@@ -1556,10 +1587,12 @@ public class CflowCodeGenUtils {
 								decMethod(),
 								args));
 			c.add(popStmt);
+			
 			return new ChainStmtBox(c, popStmt);
 		}
 
-		public ChainStmtBox genPush(Local cFlowLocal, List values) {
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List values) {
+			
 			Chain  c = new HashChain();
 			List args = new ArrayList(1);
 			args.add(cFlowLocal);
@@ -1569,6 +1602,7 @@ public class CflowCodeGenUtils {
 								incMethod(),
 								args));
 			c.add(pushStmt);
+			
 			return new ChainStmtBox(c, pushStmt);
 		}
 
@@ -1664,7 +1698,8 @@ public class CflowCodeGenUtils {
 					true);
 		}
 		
-		public Chain genInitLocal(Local cFlowLocal, Local cFlowInstance) {
+		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
+			
 			Chain  c = new HashChain();
 			Stmt initLocal = 
 				Jimple.v().newAssignStmt(
@@ -1674,12 +1709,14 @@ public class CflowCodeGenUtils {
 								getMethod(),
 								new ArrayList()));
 			c.add(initLocal);
+			
 			return c;
 		}
 	
 		
-		public ChainStmtBox genIsValid(Local cFlowLocal, Local result, Stmt succeed,
+		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed,
 				Stmt fail) {
+			
 			Chain  c = new HashChain();
 			List args = new ArrayList(1);
 			args.add(cFlowLocal);
@@ -1707,10 +1744,12 @@ public class CflowCodeGenUtils {
 				c.add(Jimple.v().newGotoStmt(succeed));
 			}
 			
+			
 			return new ChainStmtBox(c, testStmt);
 		}
 
-		public Chain genPeek(Local cFlowLocal, List targets) {
+		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
+			
 			Chain c = new HashChain();
 			
 			Iterator it = targets.iterator(); int i = 0;
@@ -1729,15 +1768,17 @@ public class CflowCodeGenUtils {
 									args));
 				c.add(getStmt);
 				
-				Chain copyChain = cgu.genCopy(tempLocal, l);
+				Chain copyChain = cgu.genCopy(localgen, tempLocal, l);
 				c.addAll(copyChain);
 				
 				i++;
 			}
+			
 			return c;
 		}
 
-		public ChainStmtBox genPop(Local cFlowLocal) {
+		public ChainStmtBox genPop(LocalGeneratorEx localgen, Local cFlowLocal) {
+			
 			Chain  c = new HashChain();
 			List args = new ArrayList(1);
 			args.add(cFlowLocal);
@@ -1747,10 +1788,12 @@ public class CflowCodeGenUtils {
 								popMethod(),
 								args));
 			c.add(popStmt);
+			
 			return new ChainStmtBox(c, popStmt);
 		}
 
-		public ChainStmtBox genPush(Local cFlowLocal, List values) {
+		public ChainStmtBox genPush(LocalGeneratorEx localgen, Local cFlowLocal, List values) {
+			
 			Chain c = new HashChain();
 			// Create an array
 			Local arrayLocal = localgen.generateLocal(
@@ -1770,7 +1813,7 @@ public class CflowCodeGenUtils {
 				Stmt prepareValue = 
 					Jimple.v().newAssignStmt(l, v);
 				c.add(prepareValue);
-				Chain arrayCopy = cgu.genCopyToArray(l, arrayLocal, i);
+				Chain arrayCopy = cgu.genCopyToArray(localgen, l, arrayLocal, i);
 				c.addAll(arrayCopy);
 				i++;
 			}
