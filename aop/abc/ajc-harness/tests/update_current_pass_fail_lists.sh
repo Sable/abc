@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cd ../../ &&
+ant clean > /dev/null &&
 ant >/dev/null &&
 cd ajc-harness/tests &&
 nice -n 5 ./run_cases.pl ajcTests.xml >full.output 2>&1 &&
