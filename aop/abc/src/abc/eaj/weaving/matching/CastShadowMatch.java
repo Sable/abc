@@ -34,6 +34,15 @@ import abc.weaving.residues.*;
  */
 public class CastShadowMatch extends StmtShadowMatch
 {
+    public static ShadowType shadowType()
+    {
+        return new ShadowType() {
+            public ShadowMatch matchesAt(MethodPosition pos) {
+                return CastShadowMatch.matchesAt(pos);
+            }
+        };
+    }
+
     private Type cast_to;
 
     private CastShadowMatch(SootMethod container, Stmt stmt, Type cast_to)
@@ -56,7 +65,7 @@ public class CastShadowMatch extends StmtShadowMatch
         //            * expressions are not recursive
         //            * expressions are only used as r-values
         //            * r-values only appear in assignments
-        
+
         Stmt stmt = ((StmtMethodPosition) pos).getStmt();
 
         if (!(stmt instanceof AssignStmt)) return null;
@@ -64,7 +73,7 @@ public class CastShadowMatch extends StmtShadowMatch
 
         if(!(rhs instanceof CastExpr)) return null;
         Type cast_to = ((CastExpr) rhs).getCastType();
- 
+
         return new CastShadowMatch(pos.getContainer(), stmt, cast_to);
     }
 
@@ -105,7 +114,7 @@ public class CastShadowMatch extends StmtShadowMatch
         return stmt;
     }
     public String joinpointName() {
-	return "cast";
+        return "cast";
     }
 
 

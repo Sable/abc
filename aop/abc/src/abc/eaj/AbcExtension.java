@@ -49,11 +49,11 @@ public class AbcExtension extends abc.main.AbcExtension
         return new abc.eaj.ExtensionInfo(jar_classes, aspect_sources);
     }
 
-    protected List /*<ShadowType>*/ listShadowTypes()
+    protected List/*<ShadowType>*/ listShadowTypes()
     {
-        List /*<ShadowType*/ shadowTypes = super.listShadowTypes();
+        List/*<ShadowType*/ shadowTypes = super.listShadowTypes();
 
-        shadowTypes.add(new CastShadowType());
+        shadowTypes.add(CastShadowMatch.shadowType());
 
         return shadowTypes;
     }
