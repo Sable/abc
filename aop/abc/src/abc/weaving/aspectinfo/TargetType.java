@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.*;
@@ -34,5 +36,15 @@ public class TargetType extends TargetAny {
 	    return (othertype.equals(type));
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof TargetType) {
+			AbcType othertype = ((TargetType)otherpc).getType();
+			return (othertype.equals(type));
+		} else return false;
+	}
 
 }

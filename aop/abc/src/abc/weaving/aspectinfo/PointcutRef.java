@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
 import soot.*;
@@ -125,5 +126,14 @@ public class PointcutRef extends Pointcut {
 	    ("PointcutRef should have been inlined by now (equivalent(pc))",
 	     getPosition());
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		throw new InternalCompilerError
+			("PointcutRef should have been inlined by now (equivalent(pc, renaming))",
+			 getPosition());
+	}
 
 }

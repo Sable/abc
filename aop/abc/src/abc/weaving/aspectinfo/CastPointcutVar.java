@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.*;
@@ -75,5 +76,18 @@ public class CastPointcutVar extends Pointcut {
 		    && (  to.equals(((CastPointcutVar)otherpc).getTo())));
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof CastPointcutVar) {
+			CastPointcutVar othcast = (CastPointcutVar) otherpc;
+			
+			if (from.canRenameTo(othcast.getFrom(), renaming)) {
+				return (to.canRenameTo(othcast.getTo(), renaming));
+			} else return false;
+		} else return false;
+	}
 
 }

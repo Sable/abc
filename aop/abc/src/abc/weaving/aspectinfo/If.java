@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.*;
@@ -146,5 +147,42 @@ public class If extends Pointcut {
 
 	} else return false;
     }
+
+
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof If) {
+			If oif = (If)otherpc;
+			
+			if (this.hasJoinPoint() != oif.hasJoinPoint()) return false;
+			if (this.hasJoinPointStaticPart() != oif.hasJoinPointStaticPart()) return false;
+			if (this.hasEnclosingJoinPoint() != oif.hasEnclosingJoinPoint()) return false;
+			
+			// COMPARING VARS
+			
+			Iterator it1 = vars.iterator();
+			Iterator it2 = oif.getVars().iterator();
+			
+			while (it1.hasNext() && it2.hasNext()) {
+				Var var1 = (Var) it1.next();
+				Var var2 = (Var) it2.next();
+				
+				if (!var1.canRenameTo(var2, renaming)) return false;
+			}
+			if (it1.hasNext() || it2.hasNext()) return false;
+			
+			// COMPARING IMPLEMENTATIONS
+			// FIXME Is it OK to require If methods to be equal?
+			// It seems that some substitution should be required inside the body
+			// but inline() doesn't do that
+			
+			if (!impl.equals(oif.getImpl())) return false;
+			
+			return true;
+		} else return false;
+	}
 
 }

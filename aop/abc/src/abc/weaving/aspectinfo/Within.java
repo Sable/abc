@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 import polyglot.util.Position;
 import abc.weaving.residues.*;
@@ -43,4 +45,14 @@ public class Within extends LexicalPointcut {
 	} else return false;
     }
     
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		//FIXME Within.equivalent(DirectlyWithin, ren) returns true, is this OK?
+		if (otherpc instanceof Within) {
+			return pattern.equivalent(((Within)otherpc).getPattern());
+		} else return false;
+	}
+
 }

@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import soot.*;
 import polyglot.util.Position;
 import abc.weaving.matching.*;
@@ -42,5 +43,15 @@ public class ThisAny extends DynamicValuePointcut {
 	    return true;
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		// FIXME ThisAny.equivalent(ThisVar, ren) returns true; is this ok?
+		if (otherpc instanceof ThisAny) {
+			return true;
+		} else return false;
+	}
 
 }

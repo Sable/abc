@@ -44,4 +44,24 @@ public class Formal extends Syntax {
     public int hashCode() {
 	return type.hashCode();
     }
+    
+    public boolean canRenameTo(Formal f, Hashtable/*<String, Var>*/ renaming) {    	
+    	if (type.equals(f.getType())) {
+    		if (renaming.containsKey(name)) {
+    			Var previous = (Var)renaming.get(name);
+    			if (previous.getName().equals(f.getName())) {
+    				return true;
+    			} else return false;
+    		} else {
+    			// Construct a new Var with name f.name to map to
+    			// FIXME Is it OK to create a new var in Formal.canRenameTo if necessary?
+    			// Note: Will only ever do this if a local var is declared in a pc but not 
+    			// actually used. Does this ever happen? 
+    			// This should mean that the new var never gets used anyway...
+    			Var newvar = new Var(f.getName(), f.getPosition());
+    			renaming.put(name, newvar);
+    			return true;
+    		}
+    	} else return false;
+    }
 }

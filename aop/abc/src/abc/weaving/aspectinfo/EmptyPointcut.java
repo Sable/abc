@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import polyglot.util.Position;
 
 import soot.*;
@@ -31,5 +33,14 @@ public class EmptyPointcut extends LexicalPointcut {
 	    return true;
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof EmptyPointcut) {
+			return true;
+		} else return false;
+	}
 
 }

@@ -21,28 +21,26 @@ public class GlobalCflowSetupFactory {
        keep a set of these as one may match */
 
     private static class CfsStore {
-	// Our own implementation of (the relevant operations of) Map - 
-	// Need to compare elements by equivalent, not equals, and no
-	// guarantee that the hash codes are correct w.r.t. equiv
-	// So keep it as an association list for the time being
-
+       // Keep a list of pairs (pc, cfs): each pointcut pc already seen
+       // maps to one or more CflowSetup objects. 
+       
 	private static class CflowEntry {
 	    private Pointcut pc;
-	    private HashSet/*<CflowSetup>*/ s;
+	    private CflowSetup s;
 
 	    Pointcut getPc() { return pc; }
-	    HashSet/*<CflowSetup>*/ getCfs() { return s; }
+	    CflowSetup getCfs() { return s; }
 
-	    public CflowEntry(Pointcut pc, HashSet/*<CflowSetup>*/ s) {
+	    public CflowEntry(Pointcut pc, CflowSetup s) {
 		this.pc = pc; this.s = s;
 	    }
 	}
 
 	private static LinkedList/*<CflowEntry>*/ cfsStore = new LinkedList();
 
-	/* getIfExists(k): returns the elem that k maps to, or null if none */
+	/* getIfExists(k): returns the elem that k maps to, or null if none 
 
-	static HashSet/*<CflowSetup>*/ getIfExists(Pointcut k) {
+	static HashSet<CflowSetup> getIfExists(Pointcut k) {
 	    Iterator it = cfsStore.iterator();
 
 	    while (it.hasNext()) {
@@ -52,10 +50,52 @@ public class GlobalCflowSetupFactory {
 
 	    return null;
 	}
+*/
+
+	private static class AllMatchesIterator implements Iterator {
+		private Pointcut pc;
+		private Iterator it;
+		private CflowSetupContainer cfsc;
+		
+		public AllMatchesIterator(Pointcut k) {
+			this.pc = k;
+			this.it = CfsStore.cfsStore.iterator();
+		}
+		
+		public boolean hasNext() {
+			while (it.hasNext()) {
+				CflowEntry cfe = (CflowEntry)it.next();
+				Hashtable/*<String,Var>*/ renaming = new Hashtable();
+				
+				if (cfe.getPc().equivalent(pc, renaming)) {
+					cfsc = new
+						CflowSetupContainer(cfe.getCfs(), false, renaming);
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public Object next() {
+			return cfsc;
+		}
+		
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	/* allMatches(k) : returns an iterator that goes through the matches 
+	 * For each match return a CflowSetupContainer with the corresponding
+	 * substitution in, and FALSE as isFresh() */
+
+	static Iterator allMatches(Pointcut k) {
+		return new AllMatchesIterator(k);
+	}
 
 	/* put(k, s): adds the mapping k |-> s to the map */
 
-	static void put(Pointcut k, HashSet/*<CflowSetup>*/ s) {
+	static void put(Pointcut k, CflowSetup s) {
 	    cfsStore.addFirst(new CflowEntry(k, s));
 	}
 
@@ -102,32 +142,11 @@ public class GlobalCflowSetupFactory {
 
     }
 
-    /* Get all cflowsetups stored for a particular pointcut */
-
-    private static HashSet/*<CflowSetup>*/ getCfsInstances(Pointcut pc) {
-
-	HashSet /*<CflowSetup>*/ cfss;
-
-	cfss = CfsStore.getIfExists(pc);
-
-	if (cfss == null) {
-	    cfss = new HashSet();
-	    CfsStore.put(pc, cfss);
-	}
-
-	return cfss;
-
-    }
-
     /* Add a new cflowsetup */
 
-    private static void registerCfsInstance(HashSet/*<CflowSetup>*/ cfsSet,
-					    Pointcut pc, CflowSetup cfs) {
+    private static void registerCfsInstance(Pointcut pc, CflowSetup cfs) {
 
-	// We know that cfs is the value that pc maps to under CflowStore
-	// as cfs was the return value of getCfsInstances(pc)
-
-	cfsSet.add(cfs);	
+		CfsStore.put(pc, cfs);
 
     }
 
@@ -142,17 +161,20 @@ public class GlobalCflowSetupFactory {
 						Position pos,
 						int depth) {
 
-	/* is there an old one we can use? */	
-
-	HashSet/*<CflowSetup>*/ cfsSet = getCfsInstances(pc);
+	/* is there an old one we can use? if the debug flag is not set... */	
 
 	if (!abc.main.Debug.v().dontShareCflowStacks) {
 
-	Iterator it = cfsSet.iterator();
+	Iterator it = CfsStore.allMatches(pc);
+		
 	while (it.hasNext()) {
-	    CflowSetup cfs = (CflowSetup) it.next();
-	    if (canShare(aspect, isBelow, depth, cfs))		
-		return new CflowSetupContainer(cfs, false);
+		CflowSetupContainer cfsc = (CflowSetupContainer) it.next();
+
+	    if (canShare(aspect, isBelow, depth, cfsc.getCfs())) {
+			// We can share the cflowsetup (but to use it may need to apply the
+			// renaming)
+			return cfsc;
+	    }
 	}
 
 	}
@@ -160,18 +182,34 @@ public class GlobalCflowSetupFactory {
 	/* else we need to create a new one */
 
 	CflowSetup ncfs = CflowSetup.construct(aspect,pc,isBelow,typeMap,pos,depth);
-	registerCfsInstance(cfsSet, pc, ncfs);
-	return new CflowSetupContainer(ncfs, true);
+	registerCfsInstance(pc, ncfs);
+	
+		// Create a new CflowSetupContainer
+		// The substitution should be the identity map on the free vars in the pc,
+		// rather than just the empty map 
+		
+		Hashtable/*<String,Var>*/ newrename = new Hashtable();
+		
+		Iterator fvs = ncfs.getActuals().iterator();
+		while (fvs.hasNext()) {
+			Var fv = (Var)fvs.next();
+			newrename.put(fv.getName(), fv);
+		}
+		
+	return new CflowSetupContainer(ncfs, true, newrename);
     }
 
 
     public static class CflowSetupContainer {
 	private CflowSetup cfs;
 	private boolean isFresh;
+	private Hashtable/*<String, Var>*/ renaming;
 
-	public CflowSetupContainer(CflowSetup cfs, boolean isFresh) {
+	public CflowSetupContainer(CflowSetup cfs, boolean isFresh, 
+							   Hashtable/*<String, Var>*/ renaming) {
 	    this.cfs = cfs;
 	    this.isFresh = isFresh;
+	    this.renaming = renaming;
 	}
 
 	public CflowSetup getCfs() {
@@ -180,6 +218,10 @@ public class GlobalCflowSetupFactory {
 
 	public boolean isFresh() {
 	    return isFresh;
+	}
+
+	public Hashtable/*<String, Var>*/ getRenaming() {
+		return renaming;
 	}
 
     }

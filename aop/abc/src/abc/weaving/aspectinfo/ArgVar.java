@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.WeavingEnv;
@@ -66,5 +67,15 @@ public class ArgVar extends ArgAny {
 	    return (var.equals(((ArgVar)o).getVar()));
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
+	 */
+	public boolean equivalent(ArgPattern p, Hashtable renaming) {
+		if (p instanceof ArgVar) {
+			Var othervar = ((ArgVar)p).getVar(); 
+			return (var.canRenameTo(othervar, renaming));
+		} else return false;
+	}
 
 }

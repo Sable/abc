@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 import polyglot.util.Position;
 import abc.weaving.residues.*;
@@ -39,5 +41,14 @@ public class WithinMethod extends LexicalPointcut {
 	    return pattern.equivalent(((WithinMethod)otherpc).getPattern());
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof WithinMethod) {
+			return pattern.equivalent(((WithinMethod)otherpc).getPattern());
+		} else return false;
+	}
 
 }

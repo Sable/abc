@@ -1,6 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.*;
@@ -49,5 +50,15 @@ public class TargetVar extends TargetAny {
 	    return (othervar.equals(var));
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof TargetVar) {
+			Var othervar = ((TargetVar)otherpc).getVar();
+			return (var.canRenameTo(othervar, renaming));
+		} else return false;
+	}
 
 }

@@ -186,4 +186,7 @@ public abstract class Pointcut extends Syntax {
 
     public abstract boolean equivalent(Pointcut otherpc);
 
+	public abstract boolean equivalent(Pointcut otherpc, 
+									   Hashtable/*<String,Var>*/ renaming);
+
 }

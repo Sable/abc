@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 import soot.jimple.*;
 
@@ -42,5 +44,14 @@ public class MethodCall extends ShadowPointcut {
 	    return pattern.equivalent(((MethodCall)otherpc).getPattern());
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof MethodCall) {
+			return pattern.equivalent(((MethodCall)otherpc).getPattern());
+		} else return false;
+	}
 
 }

@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 import polyglot.util.Position;
 import abc.weaving.residues.*;
@@ -30,5 +32,14 @@ public class WithinStaticInitializer extends LexicalPointcut {
 	    return true;
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof WithinStaticInitializer) {
+			return true;
+		} else return false;
+	}
 
 }

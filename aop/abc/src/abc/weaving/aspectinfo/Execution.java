@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 import soot.jimple.*;
 
@@ -28,5 +30,14 @@ public class Execution extends ShadowPointcut {
 	    return true;
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof Execution) {
+			return true;
+		} else return false;
+	}
 
 }

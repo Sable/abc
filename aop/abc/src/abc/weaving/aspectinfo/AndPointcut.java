@@ -80,4 +80,18 @@ public class AndPointcut extends Pointcut {
 	} else return false;
     }
 
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		/* if matches, subst is the union of the substs for left and right */
+		
+		if (otherpc instanceof AndPointcut) {
+			AndPointcut otherand = (AndPointcut)otherpc;
+			if (pc1.equivalent(otherand.getLeftPointcut(), renaming)) {
+				return (pc2.equivalent(otherand.getRightPointcut(), renaming));
+			} else return false;
+		} else return false;
+	}
+
 }

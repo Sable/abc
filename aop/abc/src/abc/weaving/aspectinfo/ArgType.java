@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.*;
@@ -36,5 +38,14 @@ public class ArgType extends ArgAny {
 	    return (type.equals(((ArgType)o).getType()));
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
+	 */
+	public boolean equivalent(ArgPattern p, Hashtable renaming) {
+		if (p instanceof ArgType) {
+			return (type.equals(((ArgType)p).getType()));
+		} else return false;
+	}
 
 }

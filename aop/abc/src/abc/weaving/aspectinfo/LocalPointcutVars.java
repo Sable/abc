@@ -95,11 +95,43 @@ public class LocalPointcutVars extends Pointcut {
 
     public boolean equivalent(Pointcut otherpc) {
 	if (otherpc instanceof LocalPointcutVars) {
-	    if (!pc.equals(((LocalPointcutVars)otherpc).getPointcut())) 
+	    if (!pc.equivalent(((LocalPointcutVars)otherpc).getPointcut())) 
 		return false;
 	    List/*<Formal>*/ otherformals = ((LocalPointcutVars)otherpc).getFormals();
 	    return otherformals.equals(formals);
 	} else return false;
     }
+
+
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof LocalPointcutVars) {
+			LocalPointcutVars other = (LocalPointcutVars) otherpc; 
+			if (pc.equivalent(other.getPointcut(), renaming)) {
+				// The inner pcs are equivalent, and we have the renaming
+				// Are the variables to be abstracted the same?
+				// ie require that corresponding elements in the lists of formals:
+				//   - have the same type
+				//   - are related by the substitution
+				
+				Iterator it1 = formals.iterator();
+				Iterator it2 = other.getFormals().iterator();
+				while (it1.hasNext() && it2.hasNext()) {
+					Formal form1 = (Formal) it1.next();
+					Formal form2 = (Formal) it2.next();
+					
+					if (!form1.canRenameTo(form2, renaming)) 
+							return false;	
+				}
+				if (it1.hasNext() || it2.hasNext()) return false;
+				// The lists have the same length and corresponding elements are related
+				// We are done
+				return true;
+			} else return false;
+		} else return false;
+	}
 
 }

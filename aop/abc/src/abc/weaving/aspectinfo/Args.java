@@ -1,6 +1,9 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
+import com.sun.rsasign.i;
+
 import polyglot.util.Position;
 import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
@@ -148,5 +151,25 @@ public class Args extends DynamicValuePointcut {
 	    return args.equals(otherargs);
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof Args) {
+			List/*<ArgPattern>*/ otherargs = ((Args)otherpc).getArgs();
+			// Walk through the lists manually b/c want to compute renamings
+			
+			Iterator it1 = args.iterator();
+			Iterator it2 = otherargs.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				ArgPattern pat1 = (ArgPattern)it1.next();
+				ArgPattern pat2 = (ArgPattern)it2.next();
+				if (!pat1.equivalent(pat2, renaming)) return false;
+			}
+			if (it1.hasNext() || it2.hasNext()) return false;
+			return true;
+		} else return false;
+	}
 
 }

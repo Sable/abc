@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import java.util.Hashtable;
+
 import soot.*;
 
 import polyglot.util.Position;
@@ -27,5 +29,14 @@ public class Preinitialization extends ShadowPointcut {
 	    return true;
 	} else return false;
     }
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
+	 */
+	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc instanceof Preinitialization) {
+			return true;
+		} else return false;
+	}
 
 }

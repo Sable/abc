@@ -2,6 +2,7 @@
 package abc.weaving.aspectinfo;
 
 import java.util.*;
+
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.*;
@@ -44,5 +45,16 @@ public class ArgAny extends ArgPattern {
 	    return true;
 	} else return false;
     }
+
+
+	/* (non-Javadoc)
+	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
+	 */
+	public boolean equivalent(ArgPattern p, Hashtable renaming) {
+		if (p instanceof ArgAny) {
+			//FIXME ArgAny.equivalent(ArgType, ren) returns true; is this OK?
+			return true;
+		} else return false;
+	}
 
 }
