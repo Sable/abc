@@ -1,0 +1,24 @@
+<project name="section8.3.3" default="compile">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile-takeOne">
+        <ant dir="takeOne"/>
+    </target>
+
+    <target name="compile-takeTwo">
+        <ant dir="takeTwo"/>
+    </target>
+
+    <target name="compile" depends="compile-takeOne, compile-takeTwo">
+    </target>
+</project>
+
+
+
+
+
+
+

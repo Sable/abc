@@ -1,0 +1,20 @@
+<project name="section8.5.1" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-infiniteRecursion-problem">
+        <ant dir="infiniteRecursionProblem"/>k
+
+    </target>
+
+    <target name="run-infiniteRecursion-solution">
+        <ant dir="infiniteRecursionSolution"/>
+    </target>
+
+    <target name="run" depends="run-infiniteRecursion-problem, run-infiniteRecursion-solution">
+    </target>
+</project>
+
+

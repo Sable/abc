@@ -1,0 +1,1 @@
+call ajc DetectEJBViolations.java customer\*.java

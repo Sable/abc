@@ -1,0 +1,18 @@
+<project name="section8.1.3-withReturnValue" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+     <target name="run-without-aspect">
+        <ant dir="withoutAspect"/>
+    </target>
+
+    <target name="run-with-aspect">
+        <ant dir="withAspect"/>
+    </target>   
+
+    <target name="run" depends="run-without-aspect, run-with-aspect">
+    </target>
+</project>
+

@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>AspectJ in Action: Source code readme</title>
+  <meta name="author" content="Ramnivas Laddad">
+</head>
+<body>
+<h1 style="text-align: center;">AspectJ In Action</h1>
+The source code is provided to ease compiling and running examples in
+the "<a href="http://www.manning.com/laddad/index.html">AspectJ in Action</a>"
+by Ramnivas Laddad. The sources files are structured to allow
+easy experimentation. Towards this goal, each section contains all
+the necessary files and modifying a file will not affect the remaining
+sections.<br>
+<br>
+THE SOURCE CODE AND ACCOMPANYING FILES ARE PROVIDED WITHOUT ANY
+WARRANTY, WRITTEN OR IMPLIED.<br>
+<h2>Running the scripts</h2>
+Each section contains a batch file (run.bat) and an Ant build file
+(build.xml) that will compile and run the example. Executing either form
+of the script requires you to modify the CLASSPATH and other environment
+variables as described in the <a
+ href="#Obtaining_and_installing_external_tools">next section</a>.<br>
+<br>
+Note that in certain cases, compilation is supposed to produce an error
+and therefore the script will not attempt to run the example. Further,
+certain sections contain multiple ways to compile and run the examples, in which
+case the batch file names or Ant targets are appropriated changed.<br>
+<h2><a name="Obtaining_and_installing_external_tools"></a>Obtaining and
+installing external tools and packages</h2>
+<table cellpadding="2" cellspacing="2" border="1"
+ style="text-align: left; width: 100%;">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">Package and version<br>
+      </td>
+      <td style="vertical-align: top;">Tested version</td>
+      <td style="vertical-align: top;">URL<br>
+      </td>
+      <td style="vertical-align: top;">Classpath components</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">JDK 1.4</td>
+      <td style="vertical-align: top;">1.4.1_01<br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://java.sun.com/j2se" target="blanck">http://java.sun.com/j2se</a></td>
+      <td style="vertical-align: top; text-align: center;">-<br>
+      <div style="text-align: left;">(Include JAVA_HOME/bin into PATH)</div>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">AspectJ 1.1</td>
+      <td style="vertical-align: top;">1.1.0</td>
+      <td style="vertical-align: top;"><a
+ href="http://www.eclipse.org/aspectj" target="blanck">http://www.eclipse.org/aspectj</a></td>
+      <td style="vertical-align: top;">aspectjrt.jar and
+aspectjtools.jar<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">log4j 1.2</td>
+      <td style="vertical-align: top;">1.2<br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://jakarta.apache.org/log4j" target="blanck">http://jakarta.apache.org/log4j</a></td>
+      <td style="vertical-align: top;">log4j-1.2.jar<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">J2EE SDK 1.3</td>
+      <td style="vertical-align: top;">1.3.1<br>
+      </td>
+      <td style="vertical-align: top;"><a
+ href="http://java.sun.com/j2ee" target="blanck">http://java.sun.com/j2ee</a></td>
+      <td style="vertical-align: top;">Those set by bin\setenv.bat in
+J2EE_HOME<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Doug Lea&#8217;s Concurrency
+library&nbsp;</td>
+      <td style="vertical-align: top;">1.3.2</td>
+      <td style="vertical-align: top;"><a
+ href="http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html"
+ target="blanck">http://gee.cs.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html</a></td>
+      <td style="vertical-align: top;">Obtain sources, compile it
+yourself, and put the resulting directory/jar file in classpath.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Jess 6.1</td>
+      <td style="vertical-align: top;">6.1p2</td>
+      <td style="vertical-align: top;"><a
+ href="http://herzberg.ca.sandia.gov/jess/" target="blanck">http://herzberg.ca.sandia.gov/jess/</a></td>
+      <td style="vertical-align: top;">jess.jar<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Ant 1.5</td>
+      <td style="vertical-align: top;">1.5.1<br>
+      </td>
+      <td style="vertical-align: top;"><a href="http://ant.apache.org/"
+ target="blanck">http://ant.apache.org/</a></td>
+      <td style="vertical-align: top;">
+      <div style="text-align: center;">-<br>
+      </div>
+      <div style="text-align: left;">(Include ANT_HOME/bin into PATH)</div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<h2>Setting up the database table</h2>
+Running the examples in chapter 7 and chapter 11 requires the use of a
+database. Here are general instruction to set up the example database
+for MySQL and MS Access. You should be able to use a similar process for
+other databases.<br>
+<h3>Chapter 7 setup</h3>
+The examples in chapter 7 simply prints the content of a database table
+and as such you may use any new or existing database. The instructions here creates a table that match the one in
+the book<br>
+<h4>MySQL</h4>
+<ul>
+  <li>Create a new database named "stock" using mysqladmin tool.</li>
+</ul>
+<ul>
+</ul>
+<pre>    &gt; mysqladmin create stock</pre>
+<ul>
+  <li>Create and populate a table in the "stock" database by issuing the
+following commands</li>
+</ul>
+<pre>    &gt; mysql stock<br>    mysql&gt; create table price (symbol VARCHAR(8), price FLOAT);<br>    mysql&gt; insert into price VALUES ('SUNW', 5.0);<br>    mysql&gt; insert into price VALUES ('IBM', 85.0);<br>    mysql&gt; flush table price;<br>    mysql&gt; quit</pre>
+<ul>
+  <li>Modify Test.java to use JDBC driver, JDBC URL, user name, and
+password that match your system</li>
+The Test.main() method should resemble the following:
+  <pre>public static void main(String[] args) throws Exception {<br>&nbsp;&nbsp;&nbsp; Class.forName("com.mysql.jdbc.Driver");<br>&nbsp;&nbsp;&nbsp; printTable("jdbc:mysql://localhost/stock", "price",<br>    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; "user1", "password1");<br>&nbsp;&nbsp;&nbsp; printTable("jdbc:mysql://localhost/stock", "price",<br>    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; "user2", "password2");<br>&nbsp;&nbsp;&nbsp; printTable("jdbc:mysql://localhost/stock", "price",<br>    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; "user1", "password1");<br>&nbsp;&nbsp;&nbsp; printTable("jdbc:mysql://localhost/stock", "price",<br>    &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; "user2", "password2");<br>}</pre>
+</ul>
+<ul>
+  <li>Modify CLASSPATH to include MySQL JDBC driver<br>
+Add jar file containing a MySQL JDBC driver (for example,
+mysql-connector-java-3.0.8-stable-bin.jar) to your classpath.</li>
+  <li>Compile and run the program.<br>
+  </li>
+</ul>
+<ul>
+</ul>
+<h3>Microsoft Access</h3>
+<ul>
+  <li>&nbsp;Create a new database named "stock"</li>
+  <ul>
+    <li>Open MS Access and using File/New menu and selecting "Database"
+from the options offered.</li>
+  </ul>
+  <ul>
+    <li>Specify a file name where you want to store the database file
+such as stock.mdb</li>
+  </ul>
+  <ul>
+    <li>Create database table using "Design View"<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+</ul>
+<ul>
+  <li>Create and populate table in "stock" database</li>
+  <ul>
+    <li>In the design view, enter two fields: symbol with datatype
+"Text" and price with datatype "Number"</li>
+  </ul>
+  <ul>
+    <li>Save. When offered to specify table name, enter "price". Ignore
+the message about primary key (choose "No").</li>
+  </ul>
+  <ul>
+    <li>Close the design view<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+  <ul>
+    <li>&nbsp;Choose "price" table to enter data. Enter the following
+data</li>
+  </ul>
+</ul>
+<table border="1" style="width: 30%;" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="text-align: center;">SUNW </td>
+      <td style="text-align: center;">5.0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">IBM </td>
+      <td style="text-align: center;">85.0</td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+  <li>Make the database available as ODBC Data Source</li>
+  <ul>
+    <li>Open "Control Panel" and double-click on "Data Source (ODBC)".</li>
+    <li>Click on "Add". From the options available, choose "Microsoft
+Access Driver (*.mdb)"</li>
+    <li>Type "stock" as "Data Source Name" and choose the file that you
+have saved database to using "Select..."<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+  <li>Compile and run the test program</li>
+</ul>
+<h3>Chapter 11 setup</h3>
+<h4>MySQL</h4>
+<ul>
+  <li>Create a new database named "bank" using mysqladmin tool.</li>
+</ul>
+<pre>    &gt; mysqladmin create bank</pre>
+<ul>
+  <li>Create and populate table in the "bank" database by issuing the
+following commands</li>
+</ul>
+<pre>    &gt; mysql bank<br>    mysql&gt; create table accounts (accountNumber INTEGER, balance FLOAT);<br>    mysql&gt; insert into accounts VALUES (1, 0);<br>    mysql&gt; insert into accounts VALUES (2, 0);<br>    mysql&gt; insert into accounts VALUES (3, 0);<br>    mysql&gt; flush table accounts;<br>    mysql&gt; quit</pre>
+<ul>
+  <li>Modify DatabaseHelper.java to use JDBC driver, JDBC URL, user
+name, and password that match your system</li>
+The DatabaseHelper.java should resemble the following:
+  <pre>package banking;<br>  <br><br>import java.sql.*;<br>  <br>public class DatabaseHelper {<br>&nbsp;&nbsp;&nbsp; static {<br>&nbsp;&nbsp; &nbsp;    try {<br>    &nbsp;&nbsp;&nbsp;     Class.forName("com.mysql.jdbc.Driver");<br>    &nbsp;&nbsp; &nbsp;} catch (Exception ex) {<br>&nbsp;&nbsp; &nbsp;    &nbsp;&nbsp;&nbsp; // ignore...<br>    &nbsp;&nbsp; &nbsp;}<br>&nbsp;&nbsp;&nbsp; }<br>  <br>&nbsp;&nbsp;&nbsp; public static Connection getConnection() throws SQLException {<br>    &nbsp;&nbsp; &nbsp;String url = "jdbc:mysql://localhost/bank";<br>&nbsp;&nbsp; &nbsp;    String user = "user1";<br>    &nbsp;&nbsp; &nbsp;String password = "password1";<br>&nbsp;&nbsp; &nbsp;    Connection connection =<br>            DriverManager.getConnection(url, user, password);<br>    &nbsp;&nbsp; &nbsp;connection.setAutoCommit(true);<br>&nbsp;&nbsp; &nbsp;    return connection;<br>&nbsp;&nbsp;&nbsp; }<br>}<br></pre>
+</ul>
+<ul>
+  <li>Modify CLASSPATH to include MySQL JDBC driver<br>
+Add jar file containing a MySQL JDBC driver (for example,
+mysql-connector-java-3.0.8-stable-bin.jar) to your classpath.</li>
+  <li>Compile and run the program.<br>
+  </li>
+</ul>
+<h2>Microsoft Access</h2>
+<ul>
+  <li> Create a new database named "bank"</li>
+  <ul>
+    <li>Open MS Access and using File/New menu and selecting "Database"
+from the options offered.</li>
+    <li>Specify a file name where you want to store the database file
+such as bank.mdb</li>
+    <li>Create database table using "Design View"<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+  <li>Create and populate table in "bank" database</li>
+  <ul>
+    <li>In the design view, enter two fields: accountNumber with
+datatype "Number" and balance with datatype "Number"</li>
+  </ul>
+  <ul>
+    <li>Save. When offered to specify table name, enter "accounts".
+Ignore the message about primary key (choose "No").</li>
+  </ul>
+  <ul>
+    <li>Close the design view<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+  <ul>
+    <li>&nbsp;Choose "account" table to enter data. Enter the following
+data</li>
+  </ul>
+</ul>
+<table border="1" style="width: 30%;" cellpadding="2" cellspacing="2">
+  <tbody>
+    <tr>
+      <td style="text-align: center;">1</td>
+      <td style="text-align: center;">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">2 </td>
+      <td style="text-align: center;">0</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top; text-align: center;">3<br>
+      </td>
+      <td style="vertical-align: top; text-align: center;">0<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<ul>
+  <li>Make the database available as ODBC Data Source</li>
+  <ul>
+    <li>Open "Control Panel" and double-click on "Data Source (ODBC)".</li>
+    <li>Click on "Add". From the options available, choose "Microsoft
+Access Driver (*.mdb)"</li>
+    <li>Type "bank" as "Data Source Name" and choose the file that you
+have saved database to using "Select..."<br>
+    </li>
+  </ul>
+</ul>
+<ul>
+  <li>Compile and run the test program.</li>
+</ul>
+</body>
+</html>

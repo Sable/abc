@@ -1,0 +1,26 @@
+<project name="section2.2" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-pure">
+        <ant dir="helloWorld"/>
+    </target>
+
+    <target name="run-manners">
+        <ant dir="mannersHelloWorld"/>
+    </target>
+
+    <target name="run-hindi-manners">
+        <ant dir="hindiMannersHelloWorld"/>
+    </target>
+
+    <target name="run" depends="run-pure, run-manners, run-hindi-manners">
+    </target>
+</project>
+
+
+
+
+

@@ -1,0 +1,19 @@
+<project name="section8.5.4" default="compile">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile-conventional-way">
+        <ant dir="conventionalWay"/>
+    </target>
+
+    <target name="compile-aspectj-way">
+        <ant dir="aspectjWay"/>
+    </target>
+
+    <target name="compile" depends="compile-conventional-way, compile-aspectj-way">
+    </target>
+</project>
+
+

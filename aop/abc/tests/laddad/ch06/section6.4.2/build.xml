@@ -1,0 +1,21 @@
+<project name="section6.4.2" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-shoppingCartAccess">
+        <ant dir="shoppingCartAccess"/>
+    </target>
+
+    <target name="run-productCreationAccess">
+        <ant dir="productCreationAccess"/>
+    </target>
+
+    <target name="run-productCreationAccessUsingWithin">
+        <ant dir="productCreationAccessUsingWithin"/>
+    </target>
+
+    <target name="run" depends="run-shoppingCartAccess">
+    </target>
+</project>

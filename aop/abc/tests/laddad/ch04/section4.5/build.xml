@@ -1,0 +1,20 @@
+<project name="section4.4" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-before-aspect-made-privileged">
+        <ant dir="beforeAspectMadePrivileged"/>
+    </target>
+
+    <target name="run-after-aspect-made-privileged">
+        <ant dir="afterAspectMadePrivileged"/>
+    </target>
+
+    <target name="compile" depends="run-before-aspect-made-privileged">
+    </target>
+
+    <target name="run" depends="run-after-aspect-made-privileged">
+    </target>    
+</project>

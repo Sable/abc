@@ -1,0 +1,20 @@
+<project name="section4.4" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-without-softening-aspect">
+        <ant dir="withoutSofteningAspect"/>
+    </target>
+
+    <target name="run-with-softening-aspect">
+        <ant dir="withSofteningAspect"/>
+    </target>
+
+    <target name="compile" depends="run-without-softening-aspect">
+    </target>
+
+    <target name="run" depends="run-with-softening-aspect">
+    </target>    
+</project>

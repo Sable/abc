@@ -1,0 +1,22 @@
+<project name="section4.3.4" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-without-perthis">
+        <ant dir="withoutPerthis"/>
+    </target>
+
+    <target name="run-with-perthis">
+        <ant dir="withPerthis"/>
+    </target>
+
+    <target name="run" depends="run-without-perthis, run-with-perthis">
+    </target>
+</project>
+
+
+
+
+

@@ -1,0 +1,29 @@
+<project name="section10.6-v2-authorization-aspectjway" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile">
+        <mkdir dir="dest"/>
+        <iajc destdir="dest">
+            <sourceroots>
+	        <pathelement location="."/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="run" depends="compile">
+        <echo>
+Copy and paste following lines:
+cd dest
+java -Djava.security.auth.login.config=../sample_jaas.config -Djava.security.policy=../security.policy banking.Test
+        </echo>
+    </target>
+
+</project>
+
+
+
+
+

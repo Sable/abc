@@ -1,0 +1,28 @@
+<project name="section8.3.3" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-concern-specific-exception">
+        <ant dir="concernSpecificException"/>
+    </target>
+
+    <target name="run-business-specific-exception">
+        <ant dir="businessSpecificException"/>
+    </target>
+
+    <target name="run-preserve-business-exception">
+        <ant dir="preserveBusinessException"/>
+    </target>
+
+    <target name="run" depends="run-concern-specific-exception, run-business-specific-exception, run-preserve-business-exception">
+    </target>
+</project>
+
+
+
+
+
+
+

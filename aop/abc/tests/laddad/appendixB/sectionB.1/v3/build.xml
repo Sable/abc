@@ -1,0 +1,34 @@
+<project name="shopping-tracing" default="run">
+    <taskdef
+     resource=
+         "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+	 <classpath>
+	     <pathelement
+	         location="${aspectj.dir}/lib/aspectjtools.jar"/>
+	 </classpath>
+    </taskdef>
+
+    <target name="compile">
+        <mkdir dir="dest"/>
+         <iajc destdir="dest">
+             <sourceroots>
+	         <pathelement location="shopping"/>
+		 <pathelement location="tracing"/>
+             </sourceroots>
+             <classpath>
+	         <pathelement path="${java.class.path}"/>
+		 <pathelement location="${aspectj.dir}/lib/aspectjrt.jar"/>
+	     </classpath>
+	 </iajc>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classname="Test">
+	    <classpath>
+	        <pathelement location="dest"/>
+		<pathelement path="${java.class.path}"/>
+		<pathelement location="${aspectj.dir}/lib/aspectjrt.jar"/>
+	    </classpath>
+	</java>
+    </target>
+</project>

@@ -1,0 +1,52 @@
+<project name="section12.5" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile-without-rules">
+        <mkdir dir="dest1"/>
+        <iajc destdir="dest1">
+            <sourceroots>
+	        <pathelement location="banking"/>
+	        <pathelement location="logging"/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="compile-with-rules">
+        <mkdir dir="dest2"/>
+        <iajc destdir="dest2">
+            <sourceroots>
+	        <pathelement location="banking"/>
+	        <pathelement location="logging"/>
+	        <pathelement location="rule\common"/>
+	        <pathelement location="rule\java"/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="compile" depends="compile-without-rules, compile-with-rules">
+    </target>
+
+    <target name="run-without-rules">
+        <java classname="banking.Test" fork="yes">
+	    <classpath>
+	        <pathelement location="dest1"/>
+		<pathelement path="${java.class.path}"/>
+	    </classpath>
+	</java>
+    </target>
+
+    <target name="run-with-rules">
+        <java classname="banking.Test"  fork="yes">
+	    <classpath>
+	        <pathelement location="dest2"/>
+		<pathelement path="${java.class.path}"/>
+	    </classpath>
+	</java>
+    </target>
+
+    <target name="run" depends="compile, run-without-rules, run-with-rules">
+    </target>
+</project>

@@ -1,0 +1,35 @@
+<project name="shopping-tracing" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile" depends="trace-lib,shopping-jar">
+        <mkdir dir="dest"/>
+	<iajc destdir="dest">
+	    <injars>
+	        <pathelement location="shopping.jar"/>
+		<pathelement location="tracing.jar"/>
+	    </injars>
+	    <aspectpath>
+	        <pathelement location="tracing.jar"/>
+	    </aspectpath>
+	</iajc>
+    </target>
+
+    <target name="trace-lib">
+        <iajc outjar="tracing.jar" XnoWeave="true">
+	    <sourceroots>
+	        <pathelement location="tracing"/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="shopping-jar">
+        <iajc outjar="shopping.jar" XnoWeave="true">
+	    <sourceroots>
+	        <pathelement location="shopping"/>
+	    </sourceroots>
+	</iajc>
+    </target>
+</project>

@@ -1,0 +1,44 @@
+<project name="section9.6" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile">
+        <mkdir dir="dest1"/>
+        <mkdir dir="dest2"/>
+
+        <iajc destdir="dest1">
+	   <argfiles>
+	       <pathelement location="plain.project"/>
+	   </argfiles>
+	</iajc>
+
+        <iajc destdir="dest2">
+            <sourceroots>
+	        <pathelement location="."/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="run1">
+        <java classname="TestResponsiveness" fork="yes">
+	    <classpath>
+	        <pathelement location="dest1"/>
+		<pathelement path="${java.class.path}"/>
+	    </classpath>
+	</java>
+    </target>
+
+    <target name="run" depends="compile, run1">
+        <java classname="TestResponsiveness" fork="yes">
+	    <classpath>
+	        <pathelement location="dest2"/>
+		<pathelement path="${java.class.path}"/>
+	    </classpath>
+	</java>
+    </target>
+</project>
+
+
+

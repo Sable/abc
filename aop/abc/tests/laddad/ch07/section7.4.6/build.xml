@@ -1,0 +1,30 @@
+<project name="section7.4.6" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile">
+        <iajc destdir="." source="1.4">
+            <sourceroots>
+		<pathelement location="."/>	
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="run" depends="compile">
+        <echo>
+Copy and paste following commands to start a server and clients.
+-------------------------------------
+start java -ea EchoServer 10000
+-------------------------------------
+java -ea EchoClient localhost 10000
+Type in a few strings and then "quit"
+-------------------------------------
+java -ea EchoClient localhost 10000
+Type in a few strings and then "quit"
+-------------------------------------
+	</echo>
+    </target>
+</project>
+

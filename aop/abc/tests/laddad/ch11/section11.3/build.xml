@@ -1,0 +1,22 @@
+<project name="section11.3" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run-aspectj-v1">
+        <ant dir="aspectjBasedSolution-v1"/>
+    </target>
+
+    <target name="run-aspectj-v2">
+        <ant dir="aspectjBasedSolution-v2"/>
+    </target>
+
+    <target name="run" depends="run-aspectj-v1, run-aspectj-v2">
+    </target>
+</project>
+
+
+
+
+

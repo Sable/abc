@@ -1,0 +1,28 @@
+<project name="section10.3-authentication-conventionalway" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile">
+        <mkdir dir="dest"/>
+        <iajc destdir="dest">
+            <sourceroots>
+	        <pathelement location="."/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="run" depends="compile">
+       <echo>
+Copy and paste following lines:
+cd dest
+java -Djava.security.auth.login.config==../sample_jaas.config banking.Test
+       </echo>
+    </target>
+</project>
+
+
+
+
+

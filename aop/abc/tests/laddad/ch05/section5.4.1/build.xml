@@ -1,0 +1,22 @@
+<project name="section2.2" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+
+    <target name="run-using-System.out">
+        <ant dir="usingSystem.out"/>
+    </target>
+
+    <target name="run-using-JavaLoggingToolkit">
+        <ant dir="usingJavaLoggingToolkit"/>
+    </target>
+
+    <target name="run-using-Log4jToolkit">
+        <ant dir="usingLog4jToolkit"/>
+    </target>
+
+    <target name="run" depends="run-using-System.out, run-using-JavaLoggingToolkit, run-using-Log4jToolkit">
+    </target>
+</project>

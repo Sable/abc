@@ -1,0 +1,20 @@
+<project name="section3.3.1" default="compile">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile">
+        <mkdir dir="dest"/>
+        <iajc destdir="dest">
+            <sourceroots>
+	        <pathelement location="."/>
+	    </sourceroots>
+	</iajc>
+    </target>
+</project>
+
+
+
+
+

@@ -1,0 +1,25 @@
+<project name="section8.3.3-concern-specific-exception" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="compile">
+        <mkdir dir="dest"/>
+        <iajc destdir="dest">
+            <sourceroots>
+		<pathelement location="."/>	
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classname="TestException">
+	    <classpath>
+	        <pathelement location="dest"/>
+		<pathelement path="${java.class.path}"/>
+	    </classpath>
+	</java>
+    </target>
+</project>
+

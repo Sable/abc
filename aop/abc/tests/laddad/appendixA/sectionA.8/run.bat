@@ -1,0 +1,1 @@
+ajc -incremental -sourceroots F:\aspectj-book\appendixA\sectionA.8\shopping;F:\aspectj-book\appendixA\sectionA.8\tracing

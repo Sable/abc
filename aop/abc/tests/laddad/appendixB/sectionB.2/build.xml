@@ -1,0 +1,41 @@
+<project name="shopping-tracing" default="run">
+    <taskdef
+      resource=
+          "org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties">
+    </taskdef>
+
+    <target name="run" depends="weave">
+        <java classname="Test">
+	    <classpath>
+	        <pathelement location="dest"/>
+		<pathelement path="${java.class.path}"/>
+	    </classpath>
+	</java>
+    </target>
+
+    <target name="weave" depends="shopping-jar">
+        <mkdir dir="dest"/>
+        <iajc destdir="dest">
+	    <injars>
+	        <pathelement location="shopping.jar"/>
+	    </injars>
+	    <sourceroots>
+	        <pathelement location="tracing"/>
+	    </sourceroots>
+	</iajc>
+    </target>
+
+    <target name="compile-shopping">
+        <mkdir dir="dest/shopping"/>
+	<javac destdir="dest/shopping">
+	    <src>
+	        <pathelement location="shopping"/>
+	    </src>
+	</javac>
+    </target>
+
+    <target name="shopping-jar" depends="compile-shopping">
+        <jar destfile="shopping.jar"
+	    basedir="dest/shopping"/>
+    </target>
+</project>

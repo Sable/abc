@@ -1,0 +1,6 @@
+grant Principal sample.principal.SamplePrincipal "testUser" {
+    permission banking.BankingPermission "credit";
+    permission banking.BankingPermission "debit";
+    permission banking.BankingPermission "getBalance";
+    permission banking.BankingPermission "transfer";
+};
