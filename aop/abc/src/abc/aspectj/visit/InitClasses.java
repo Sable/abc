@@ -13,11 +13,9 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 import java.util.*;
 
-public class InitClasses extends AbstractPass {
+public class InitClasses extends OncePass {
     private ExtensionInfo ext;
     private TypeSystem ts;
-
-    private boolean has_been_run = false;
 
     public InitClasses(Pass.ID id, ExtensionInfo ext, TypeSystem ts) {
 	super(id);
@@ -25,31 +23,28 @@ public class InitClasses extends AbstractPass {
 	this.ts = ts;
     }
 
-    public boolean run() {
+    public void once() {
 	try {
-	    if (!has_been_run) {
-		ext.hierarchy = new PCStructure(ts.systemResolver());
+	    Resolver res = ts.loadedResolver();
 
-		// Fetch all the weavable classes and put them in the right places
-		Resolver res = ts.systemResolver();
-		Iterator wcni = ext.jar_classes.iterator();
-		while (wcni.hasNext()) {
-		    String wcn = (String)wcni.next();
-		    ClassType ct = (ClassType)res.find(wcn);
-		    if (ct == null) {
-			throw new InternalCompilerError("Class type of jar class was null");
-		    }
-		    ext.hierarchy.insertClassAndSuperclasses(ct, true);
-		    GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
+	    ext.hierarchy = new PCStructure(res);
+
+	    // Fetch all the weavable classes and put them in the right places
+	    Iterator wcni = ext.jar_classes.iterator();
+	    while (wcni.hasNext()) {
+		String wcn = (String)wcni.next();
+		ClassType ct = (ClassType)res.find(wcn);
+		if (ct == null) {
+		    throw new InternalCompilerError("Class type of jar class was null");
 		}
-
-		GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);
-
-		ext.pattern_matcher = PatternMatcher.create(ext.hierarchy);
-
-		has_been_run = true;
+		ext.hierarchy.insertClassAndSuperclasses(ct, true);
+		ext.hierarchy.registerName(ct, wcn);
+		GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
 	    }
-	    return true;
+
+	    GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);
+	    
+	    ext.pattern_matcher = PatternMatcher.create(ext.hierarchy);
 	} catch (SemanticException e) {
 	    throw new InternalCompilerError("Class from jar not found by Polyglot");
 	}

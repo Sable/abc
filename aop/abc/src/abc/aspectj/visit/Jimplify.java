@@ -12,10 +12,8 @@ import java.util.*;
 
 import abc.main.AbcTimer;
 
-public class Jimplify extends AbstractPass {
+public class Jimplify extends OncePass {
     private Map class_to_ast;
-
-    private boolean has_been_run = false;
 
     private InitialResolver res = SootResolver.v().getInitSourceResolver();
 
@@ -24,34 +22,25 @@ public class Jimplify extends AbstractPass {
 	this.class_to_ast = class_to_ast;
     }
 
-    public boolean run() {
-	if (!has_been_run) {
-	    long beforetime = System.currentTimeMillis();
+    public void once() {
+	long beforetime = System.currentTimeMillis();
 
-	    List classProviders = new LinkedList();
-	    classProviders.add( new AbcClassProvider() );
-	    classProviders.add( new CoffiClassProvider() );
-	    SourceLocator.v().setClassProviders(classProviders);
+	List classProviders = new LinkedList();
+	classProviders.add( new AbcClassProvider() );
+	classProviders.add( new CoffiClassProvider() );
+	SourceLocator.v().setClassProviders(classProviders);
 
-	    // NOTE: if you move where the resolveClassAndSupportClasses is
-	    //   called,  please also move the timer code with it. LJH
-	    for( Iterator classNameIt = class_to_ast.keySet().iterator(); classNameIt.hasNext(); ) {
-	        final String className = (String) classNameIt.next();
-		if (abc.main.Debug.v().classResolving)
-		    System.err.println("Resolving class "+className);
-		SootResolver.v().resolveClassAndSupportClasses(className);
-	    }
-
-	    long aftertime = System.currentTimeMillis();
-	    AbcTimer.addToSootResolve(aftertime-beforetime);
-
-	    // Update the pattern matcher hierarchy
-	    // This is outside the timer so we can distinquish the two times
-	    PCStructure.v().updateWithAllSootClasses();
-
-	    has_been_run = true;
+	// NOTE: if you move where the resolveClassAndSupportClasses is
+	//   called,  please also move the timer code with it. LJH
+	for( Iterator classNameIt = class_to_ast.keySet().iterator(); classNameIt.hasNext(); ) {
+	    final String className = (String) classNameIt.next();
+	    if (abc.main.Debug.v().classResolving)
+		System.err.println("Resolving class "+className);
+	    SootResolver.v().resolveClassAndSupportClasses(className);
 	}
-	return true;
+
+	long aftertime = System.currentTimeMillis();
+	AbcTimer.addToSootResolve(aftertime-beforetime);
     }
 
     private class AbcClassProvider implements ClassProvider {

@@ -5,6 +5,8 @@ import polyglot.types.SemanticException;
 
 import abc.aspectj.visit.DeclareParentsAmbiguityRemover;
 
+import abc.weaving.aspectinfo.AbcClass;
+
 import java.util.*;
 
 public interface DeclareParentsImpl extends DeclareDecl
@@ -15,4 +17,6 @@ public interface DeclareParentsImpl extends DeclareDecl
     public List/*<TypeNode>*/ interfaces();
 
     public Node disambiguate(DeclareParentsAmbiguityRemover ar) throws SemanticException;
+
+    public void addTarget(AbcClass cl);
 }

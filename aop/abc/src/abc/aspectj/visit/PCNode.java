@@ -12,6 +12,7 @@ public class PCNode {
     private Set/*<PCNode>*/ children;
     private boolean is_class;
     private boolean is_weavable;
+    private boolean is_object;
     private PCStructure root;
 
     public PCNode(String name, PCNode outer, PCStructure root) {
@@ -23,6 +24,7 @@ public class PCNode {
 	children = new HashSet();
 	is_class = false;
 	is_weavable = false;
+	is_object = toString().equals("java.lang.Object");
     }
     
     PCNode insertFullName(String full_name, boolean cl, boolean weavable) {
@@ -53,8 +55,12 @@ public class PCNode {
     }
 
     public void addParent(PCNode parent) {
-	parents.add(parent);
-	parent.children.add(this);
+	// Polyglot thinks java.lang.Object is a superclass of itself.
+	// We don't want that.
+	if (!is_object) {
+	    parents.add(parent);
+	    parent.children.add(this);
+	}
     }
 
     public boolean isClass() {
@@ -93,7 +99,7 @@ public class PCNode {
 	}
 	return "";
     }
-
+    /*
     public String transformedName() {
 	if (outer != null) {
 	    String ps = outer.toString();
@@ -109,7 +115,7 @@ public class PCNode {
 	}
 	return "";
     }
-
+    */
     public Set/*<PCNode>*/ matchScope(Pattern simple_name_pattern, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set this_scope = matchClass(simple_name_pattern);
 	Set this_scope_names = new HashSet();

@@ -11,6 +11,7 @@ import polyglot.ext.jl.ast.*;
 
 import java.util.*;
 
+import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
@@ -22,6 +23,8 @@ public class DeclareParentsExt_c extends DeclareDecl_c
 
     ClassnamePatternExpr pat;
     TypeNode type;
+
+    Collection/*<AbcClass>*/ targets = new ArrayList();
 
     public DeclareParentsExt_c(Position pos, 
                                ClassnamePatternExpr pat,
@@ -70,10 +73,15 @@ public class DeclareParentsExt_c extends DeclareDecl_c
 	return type;
     }
 
+    public void addTarget(AbcClass cl) {
+	targets.add(cl);
+    }
+
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	//System.out.println("Declare parents ext");
 	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsExt
 			      (pat.makeAIClassnamePattern(),
+			       targets,
 			       AbcFactory.AbcClass((ClassType)type.type()),
 			       current_aspect,
 			       position()));

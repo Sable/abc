@@ -91,12 +91,12 @@ public class PatternMatcher {
 	pattern_matches.put(pat, hierarchy.matchName(pat, context, classes, packages));
     }
 
+    /** Should be called when jimplification is complete.
+     *  This ensures that all Soot classes can be used to index into the
+     *  hierarchy.
+     */
     public void updateWithAllSootClasses() {
-	Iterator sci = Scene.v().getClasses().iterator();
-	while (sci.hasNext()) {
-	    SootClass sc = (SootClass)sci.next();
-	    hierarchy.insertClassAndSuperclasses(sc, false);
-	}
+	PCStructure.v().updateWithAllSootClasses();
     }
 
     public void recomputeAllMatches() {

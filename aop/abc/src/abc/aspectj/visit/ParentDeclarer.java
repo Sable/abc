@@ -10,6 +10,8 @@ import polyglot.types.*;
 
 import abc.aspectj.ExtensionInfo;
 
+import abc.weaving.aspectinfo.AbcFactory;
+
 import java.util.*;
 
 public class ParentDeclarer extends ErrorHandlingVisitor {
@@ -25,13 +27,15 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	//TODO: More sanity checks
 
 	if (n instanceof DeclareParentsImpl) {
-	    ClassnamePatternExpr pat = ((DeclareParentsImpl)n).pat();
-	    List/*<TypeNde>*/ interfaces = ((DeclareParentsImpl)n).interfaces();
+	    DeclareParentsImpl dpi = (DeclareParentsImpl)n;
+	    ClassnamePatternExpr pat = dpi.pat();
+	    List/*<TypeNde>*/ interfaces = dpi.interfaces();
 	    Iterator cti = new ArrayList(ext.hierarchy.getClassTypes()).iterator();
 	    while (cti.hasNext()) {
 		ClassType ct = (ClassType)cti.next();
 		PCNode hi_cl = ext.hierarchy.getClass(ct);
-		if (pat.matches(PatternMatcher.v(), hi_cl)) {
+		if (hi_cl.isWeavable() && pat.matches(PatternMatcher.v(), hi_cl)) {
+		    dpi.addTarget(AbcFactory.AbcClass(ct));
 		    if (ct instanceof ParsedClassType) {
 			ParsedClassType pct = (ParsedClassType)ct;
 			Iterator ini = interfaces.iterator();
@@ -52,6 +56,7 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 			    
 			    pct.addInterface(inct);
 			    hi_cl.addParent(hi_in);
+			    //System.out.println(hi_cl+" implements "+hi_in);
 			}
 		    }
 		}
@@ -59,8 +64,9 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	}
 
 	if (n instanceof DeclareParentsExt) {
-	    ClassnamePatternExpr pat = ((DeclareParentsExt)n).pat();
-	    TypeNode type = ((DeclareParentsExt)n).type();
+	    DeclareParentsExt dpe = (DeclareParentsExt)n;
+	    ClassnamePatternExpr pat = dpe.pat();
+	    TypeNode type = dpe.type();
 	    if (!type.type().isClass()) {
 		throw new SemanticException("Type "+type+" is not an class");
 	    }
@@ -69,7 +75,8 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	    while (cti.hasNext()) {
 		ClassType ct = (ClassType)cti.next();
 		PCNode hi_cl = ext.hierarchy.getClass(ct);
-		if (pat.matches(PatternMatcher.v(), hi_cl)) {
+		if (hi_cl.isWeavable() && pat.matches(PatternMatcher.v(), hi_cl)) {
+		    dpe.addTarget(AbcFactory.AbcClass(ct));
 		    if (ct instanceof ParsedClassType) {
 			ParsedClassType pct = (ParsedClassType)ct;
 			/* FIXME: What are the exact type rules here?
@@ -89,6 +96,7 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 			
 			pct.superType(typect);
 			hi_cl.addParent(hi_type);
+			//System.out.println(hi_cl+" extends "+hi_type);
 		    }
 		}
 	    }

@@ -9,6 +9,7 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
@@ -20,6 +21,8 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 
     ClassnamePatternExpr pat;
     TypedList interfaces;
+
+    Collection/*<AbcClass>*/ targets = new ArrayList();
 
     public DeclareParentsImpl_c(Position pos, 
                                ClassnamePatternExpr pat,
@@ -84,6 +87,10 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	return interfaces;
     }
 
+    public void addTarget(AbcClass cl) {
+	targets.add(cl);
+    }
+
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	//System.out.println("Declare parents impl");
 	List/*<AbcClass>*/ ints = new ArrayList();
@@ -93,7 +100,11 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	    ints.add(AbcFactory.AbcClass((ClassType)i.type()));
 	}
 	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsImpl
-			      (pat.makeAIClassnamePattern(), ints, current_aspect, position()));
+			      (pat.makeAIClassnamePattern(),
+			       targets,
+			       ints,
+			       current_aspect,
+			       position()));
     }
 
 }

@@ -10,12 +10,13 @@ public class DeclareParentsImpl extends DeclareParents {
     List/*<AbcClass>*/ interfaces;
 
     /** Create a <code>declare parents</code> implementing a list of interfaces.
-     *  @param the classes that should implement the interfaces.
+     *  @param classes the classes that should implement the interfaces. A collection of
+     *                 {@link abc.weaving.aspectinfo.AbcClass} objects.
      *  @param interfaces a list of {@link abc.weaving.aspectinfo.AbcClass} objects giving the
      *         interfaces to be implemented.
      */
-    public DeclareParentsImpl(ClassnamePattern classes, List interfaces, Aspect aspct, Position pos) {
-	super(classes, aspct, pos);
+    public DeclareParentsImpl(ClassnamePattern pattern, Collection classes, List interfaces, Aspect aspct, Position pos) {
+	super(pattern, classes, aspct, pos);
 	this.interfaces = interfaces;
     }
 

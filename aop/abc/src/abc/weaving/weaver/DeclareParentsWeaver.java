@@ -13,15 +13,12 @@ public class DeclareParentsWeaver {
 	Iterator dpi = GlobalAspectInfo.v().getDeclareParents().iterator();
 	while (dpi.hasNext()) {
 	    DeclareParents dp = (DeclareParents)dpi.next();
-	    ClassnamePattern pat = dp.getClasses();
 	    List/*<SootClass>*/ classes = new ArrayList();
-	    Iterator wci = GlobalAspectInfo.v().getWeavableClasses().iterator();
+	    Iterator wci = dp.getClasses().iterator();
 	    while (wci.hasNext()) {
 		AbcClass wc = (AbcClass)wci.next();
 		SootClass sc = wc.getSootClass();
-		if (pat.matchesClass(sc)) {
-		    classes.add(sc);
-		}
+		classes.add(sc);
 	    }
 	    if (dp instanceof DeclareParentsImpl) {
 		List/*<SootClass>*/ ints = new ArrayList();

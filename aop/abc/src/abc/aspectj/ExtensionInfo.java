@@ -112,6 +112,13 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         return new AspectJTypeSystem_c();
     }
 
+    public void addDependencyToCurrentJob(Source s) {
+	// Ignore nonexisting jobs
+	try {
+	    super.addDependencyToCurrentJob(s);
+	} catch (InternalCompilerError e) {}
+    }
+
     public List passes(Job job) {
 	ArrayList l = new ArrayList(25);
 	l.add(new InitClasses(INIT_CLASSES, this, ts));

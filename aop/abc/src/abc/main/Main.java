@@ -60,6 +60,7 @@ public class Main {
       abc.main.AbcTimer.reset();
       abc.main.Options.reset();
       abc.soot.util.Restructure.reset();
+      abc.aspectj.visit.OncePass.reset();
       abc.aspectj.visit.PCStructure.reset();
       abc.aspectj.visit.AspectInfoHarvester.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
@@ -457,8 +458,8 @@ public class Main {
     Iterator jari = in_jars.iterator();
     while (jari.hasNext()) {
         String jar = (String)jari.next();
-        List jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
-        jar_classes.addAll(jar_classes);
+        List this_jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
+        jar_classes.addAll(this_jar_classes);
       }
 
     // Make them all application classes
@@ -534,6 +535,10 @@ public class Main {
             }
         }
         AbcTimer.mark("Retrieving bodies");
+
+	PatternMatcher.v().updateWithAllSootClasses();
+	PatternMatcher.v().recomputeAllMatches();
+	AbcTimer.mark("Update pattern matcher");
 
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");

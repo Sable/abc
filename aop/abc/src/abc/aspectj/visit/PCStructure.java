@@ -24,14 +24,17 @@ public class PCStructure {
     PCNode root;
     PCNode dummy;
     Map/*<ClassType,PCNode>*/ classes;
-    Map/*<String,ClassType>*/ names;
+    Map/*<String,ClassType>*/ name_to_ct;
+    Map/*<ClassType,String>*/ ct_to_name;
+    boolean autosootify = false;
 
     public PCStructure(Resolver res) {
 	this.res = res;
 	root = new PCNode(null, null, this);
 	dummy = new PCNode(null, null, this);
 	classes = new HashMap();
-	names = new HashMap();
+	name_to_ct = new HashMap();
+	ct_to_name = new HashMap();
 	v = this;
     }
 
@@ -56,6 +59,9 @@ public class PCStructure {
 		cn = new PCNode(null, null, this).updateWeavable(weavable);
 	    }
 	    classes.put(ct, cn);
+	    if (autosootify) {
+		classTypeToSootClass(ct);
+	    }
 	    return cn;
 	}
     }
@@ -63,20 +69,36 @@ public class PCStructure {
     private ClassType sootClassToClassType(SootClass sc) {
 	boolean debug = abc.main.Debug.v().sootClassToClassType;
 	if (debug) System.err.print("To ClassType: "+sc.getName()+" ... ");
-	String jvm_name = sc.getName();
-	if (names.containsKey(jvm_name)) {
+	if (name_to_ct.containsKey(sc.getName())) {
 	    if (debug) System.err.println("KNOWN");
-	    return (ClassType)names.get(jvm_name);
+	    return (ClassType)name_to_ct.get(sc.getName());
 	} else {
 	    try {
 		if (debug) System.err.println("LOOKUP");
-		ClassType ct = (ClassType)res.find(jvm_name);
-		names.put(jvm_name, ct);
+		ClassType ct = (ClassType)res.find(sc.getName());
+		name_to_ct.put(sc.getName(), ct);
+		ct_to_name.put(ct, sc.getName());
 		return ct;
 	    } catch (SemanticException e) {
 		throw new NoSuchElementException("No such class: "+sc);
 	    }
 	}
+    }
+
+    private SootClass classTypeToSootClass(ClassType ct) {
+	if (ct_to_name.containsKey(ct)) {
+	    return Scene.v().getSootClass((String)ct_to_name.get(ct));
+	} else {
+	    SootClass sc = ((RefType)soot.javaToJimple.Util.getSootType(ct)).getSootClass();
+	    name_to_ct.put(sc.getName(), ct);
+	    ct_to_name.put(ct, sc.getName());
+	    return sc;
+	}
+    }
+
+    public void registerName(ClassType ct, String name) {
+	name_to_ct.put(name, ct);
+	ct_to_name.put(ct, name);
     }
 
     public Collection getClassTypes() {
@@ -85,7 +107,9 @@ public class PCStructure {
 
     public PCNode getClass(ClassType ct) {
 	if (!classes.containsKey(ct)) {
-	    throw new NoSuchElementException("No such class: "+ct);
+	    PCNode cn = insertClassAndSuperclasses(ct, false);
+	    classes.put(ct, cn);
+	    return cn;
 	}
 	return (PCNode)classes.get(ct);
     }
@@ -94,16 +118,8 @@ public class PCStructure {
 	return getClass(sootClassToClassType(sc));
     }
 
-    public boolean containsClass(ClassType ct) {
-	return classes.containsKey(ct);
-    }
-
-    public boolean containsClass(SootClass sc) {
-	return containsClass(sootClassToClassType(sc));
-    }
-
     public PCNode insertClassAndSuperclasses(ClassType ct, boolean weavable) {
-	if (containsClass(ct)) {
+	if (classes.containsKey(ct)) {
 	    return getClass(ct).updateWeavable(weavable);
 	} else {
 	    PCNode pc = insertClass(ct, weavable);
@@ -127,31 +143,15 @@ public class PCStructure {
 	return insertClassAndSuperclasses(sootClassToClassType(sc), weavable);
     }
 
-    /** Should be called when jimplification is complete.
-     *  This ensures that all Soot classes can be used to index into the
-     *  hierarchy.
-     */
     public void updateWithAllSootClasses() {
-	// Fix up all weavable classes first
-	Iterator cti = classes.keySet().iterator();
+	Iterator cti = getClassTypes().iterator();
 	while (cti.hasNext()) {
 	    ClassType ct = (ClassType)cti.next();
-	    if (((PCNode)classes.get(ct)).isWeavable()) {
-		if (abc.main.Debug.v().sootClassToClassType) {
-		    System.err.print("Converting polyglot type: ");
-		    ClassType pct = ct;
-		    while (pct.outer() != null) {
-			System.err.print("inner of ");		    
-			pct = pct.outer();
-		    }
-		    System.err.println(pct);
-		}
-		SootClass sc = ((RefType)soot.javaToJimple.Util.getSootType(ct)).getSootClass();
-		names.put(sc.getName(), ct);
-	    }
+	    classTypeToSootClass(ct);
 	}
 
-	// Add all the other ones as well
+	autosootify = true;
+
 	Iterator sci = Scene.v().getClasses().iterator();
 	while (sci.hasNext()) {
 	    SootClass sc = (SootClass)sci.next();
@@ -159,31 +159,7 @@ public class PCStructure {
 	}
     }
 
-    /*
-    public void insertAllSootClassesByName(Collection scns, boolean weavable) {
-	Iterator scni = scns.iterator();
-	while (scni.hasNext()) {
-	    String scn = (String)scni.next();
-	    insertSootClass(Scene.v().getSootClass(scn), weavable);
-	}
-    }
-    */
 
-	/*
-    public String transformClassName(String class_name) {
-	return getClass(class_name).transformedName();
-    }
-	*/
-	/*
-    public void declareParent(String child, String parent) throws SemanticException {
-	PCNode cn = insertClass(child, false);
-	if (!cn.isWeavable()) {
-	    throw new SemanticException("The class "+child+" is not weavable");
-	}
-	PCNode pn = insertClass(parent, false);
-	cn.addParent(pn);
-    }
-	*/
     public Set/*<PCNode>*/ matchName(NamePattern pattern, PCNode context, Set/*<String>*/ classes, Set/*<String>*/ packages) {
 	Set/*<PCNode>*/ classes_nodes = new HashSet();
 	Iterator ci = classes.iterator();
