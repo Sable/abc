@@ -61,4 +61,8 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	return new JimpleValue(ifr.getBase());
     }
 
+    public ContextValue getReturningContextValue() {
+	return new JimpleValue(((AssignStmt) stmt).getLeftOp());
+    }
+
 }

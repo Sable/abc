@@ -8,7 +8,7 @@ import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
-
+import abc.soot.util.Restructure;
 
 /** The results of matching at a method call shadow
  *  @author Ganesh Sittampalam
@@ -36,9 +36,22 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 
 	InvokeExpr invoke;
 
+	// Eagerly restructure non-constructor InvokeStmts to AssignStmts, 
+	// because it saves us from having to fix up the AdviceApplications later
+	// We may wish to improve this behaviour later.
 	if (stmt instanceof InvokeStmt) {
-	    invoke = ((InvokeStmt) stmt).getInvokeExpr();
-	} else if(stmt instanceof AssignStmt) {
+
+	    InvokeStmt istmt=(InvokeStmt) stmt;
+	    SootMethod m=istmt.getInvokeExpr().getMethod();
+
+	    if(!(m.getReturnType() instanceof VoidType) && 
+	       !(m.getName().equals(SootMethod.constructorName)))
+
+		stmt=Restructure.getEquivAssignStmt(pos.getContainer(),istmt);
+
+	    //	    invoke = ((InvokeStmt) stmt).getInvokeExpr();
+	}
+	if(stmt instanceof AssignStmt) {
 	    AssignStmt as = (AssignStmt) stmt;
 	    Value rhs = as.getRightOp();
 	    if(!(rhs instanceof InvokeExpr)) return null;
@@ -71,5 +84,19 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	    InstanceInvokeExpr ii=(InstanceInvokeExpr) invoke;
 	    return new JimpleValue(ii.getBase());
 	} else return null;
+    }
+
+    public ContextValue getReturningContextValue() {
+	if(method.getReturnType() instanceof VoidType)
+	    return super.getReturningContextValue();  // null value
+
+	// This shouldn't get triggered as long as we are eagerly restructuring
+	// in the matcher above
+	if(stmt instanceof InvokeStmt) 
+	    stmt=Restructure.getEquivAssignStmt(container,(InvokeStmt) stmt);
+
+	AssignStmt astmt=(AssignStmt) stmt;
+
+	return new JimpleValue(astmt.getLeftOp());
     }
 }

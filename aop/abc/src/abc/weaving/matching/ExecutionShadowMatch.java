@@ -2,19 +2,18 @@ package abc.weaving.matching;
 
 import soot.*;
 import soot.jimple.*;
+import soot.util.Chain;
 import java.util.*;
 
-import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.residues.Residue;
+import abc.weaving.aspectinfo.*;
+import abc.weaving.residues.*;
+import abc.soot.util.Restructure;
 
 /** The results of matching at an execution shadow
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
 public class ExecutionShadowMatch extends BodyShadowMatch {
-    public ShadowMatch getEnclosing() {
-	return this;
-    }
 
     ExecutionShadowMatch(SootMethod container) {
 	super(container);
@@ -73,5 +72,25 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	ExecutionAdviceApplication aa=new ExecutionAdviceApplication(ad,residue);
 	mal.addBodyAdvice(aa);
 	return aa;
+    }
+
+    public ContextValue getReturningContextValue() {
+
+	if(container.getName().equals(SootMethod.staticInitializerName) ||
+	   container.getName().equals(SootMethod.constructorName) ||
+	   MethodCategory.adviceBody(container)) 
+	    return super.getReturningContextValue();  // null value
+
+	Stmt nop=Restructure.restructureReturn(container);
+	Chain units=container.getActiveBody().getUnits();
+	Stmt ret=(Stmt) units.getSuccOf(nop);
+
+	if(ret instanceof ReturnVoidStmt)
+	    return super.getReturningContextValue();  // null value
+	else if(ret instanceof ReturnStmt)
+	    return new JimpleValue(((ReturnStmt) ret).getOp());
+	else throw new RuntimeException
+		 ("restructureReturn didn't restructure returns correctly");
+	   
     }
 }

@@ -3,10 +3,12 @@ package abc.weaving.aspectinfo;
 import polyglot.util.Position;
 
 import soot.*;
+import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
+import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for after throwing advice with exception variable binding.
  *  @author Aske Simon Christensen
@@ -28,11 +30,15 @@ public class AfterThrowingArgAdvice extends AfterThrowingAdvice {
 	return "after throwing arg";
     }
 
-    /*
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-	if(!sm.supportsAfter()) return null;
-	// Bind the exception
-	return AlwaysMatch.v;
+    // We inherit the matchesAt method from AfterThrowingAdvice,
+    // because the binding of the formal is best done as a special
+    // case in the weaver for after throwing advice
+
+    public RefType getCatchType() {
+	return (RefType) (formal.getType().getSootType());
     }
-    */
+
+    public void bindException(WeavingContext wc,AdviceDecl ad,Local exception) {
+	wc.arglist.setElementAt(exception,ad.getFormalIndex(formal.getName()));
+    }
 }

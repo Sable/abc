@@ -410,6 +410,28 @@ public class Restructure {
 	thiscopies.put(m,l);
 	return l;
     }
+
+    private static Map/*<InvokeStmt,AssignStmt>*/ invokeassignstmts=new Hashtable();
+    
+    public static AssignStmt getEquivAssignStmt(SootMethod m,InvokeStmt stmt) {
+	// We assume that a statement will only ever occur in one method
+	// If this is not true, then use a separate table to check whether
+	// the assignstmt has been repatched into a particular method
+
+	if(invokeassignstmts.containsKey(stmt)) 
+	    return ((AssignStmt) (invokeassignstmts.get(stmt)));
+
+	Body b=m.getActiveBody();
+	Chain units=b.getUnits();
+	InvokeExpr e=stmt.getInvokeExpr();
+	Local l=new LocalGeneratorEx(b).generateLocal(e.getMethod().getReturnType(),"retval");
+	AssignStmt a=Jimple.v().newAssignStmt(l,e);
+
+	units.swapWith(stmt,a);
+
+	invokeassignstmts.put(stmt,a);
+	return a;
+    }
 	
 	/**
 	 * Sanity check for methods.

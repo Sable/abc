@@ -21,7 +21,7 @@ import soot.jimple.IntConstant;
 import soot.util.Chain;
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.aspectinfo.AdviceSpec;
+import abc.weaving.aspectinfo.AfterThrowingAdvice;
 import abc.weaving.matching.AdviceApplication;
 
 /** Handle after throwing weaving.
@@ -49,7 +49,7 @@ public class AfterThrowingWeaver {
 	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
 
 	AdviceDecl advicedecl = adviceappl.advice;
-	AdviceSpec advicespec = advicedecl.getAdviceSpec();
+	AfterThrowingAdvice advicespec = (AfterThrowingAdvice) (advicedecl.getAdviceSpec());
 	SootClass aspect = advicedecl.getAspect().
 	                          getInstanceClass().getSootClass();
 	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
@@ -66,9 +66,11 @@ public class AfterThrowingWeaver {
 	//    goto1:      goto nop2;
 	//    nop2:       nop;
 	//    endshadow:  nop;  
-	
-        Local exception = lg.generateLocal(
-	                      RefType.v("java.lang.Throwable"), "exception");
+
+	RefType catchType=advicespec.getCatchType();
+	Local exception = lg.generateLocal(catchType,"exception");
+	advicespec.bindException(wc,advicedecl,exception);
+
         CaughtExceptionRef exceptRef = Jimple.v().newCaughtExceptionRef();
         IdentityStmt idStmt = Jimple.v().newIdentityStmt(exception, exceptRef);
         units.insertAfter(idStmt, goto1);
@@ -155,8 +157,8 @@ public class AfterThrowingWeaver {
 
         b.getTraps().
 	  add(Jimple.v().
-	      newTrap(Scene.v().getSootClass("java.lang.Throwable"), 
-              begincode, idStmt, idStmt));
+	      newTrap(catchType.getSootClass(),
+		      begincode, idStmt, idStmt));
 
 	//  added 
 	//     catch java.lang.Throwable 

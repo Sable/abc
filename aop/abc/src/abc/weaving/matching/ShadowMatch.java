@@ -66,10 +66,8 @@ public abstract class ShadowMatch {
     // no sensible default
     public abstract ContextValue getTargetContextValue();
 
-    // no sensible default
     public ContextValue getReturningContextValue() {
-	// remove when subclasses implement it
-	throw new RuntimeException("No returning context value implemented "+this);
+	return new JimpleValue(NullConstant.v());
     }
 
     public boolean supportsBefore() {

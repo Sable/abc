@@ -65,4 +65,8 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     public ContextValue getTargetContextValue() {
 	return new JimpleValue(((AssignStmt) stmt).getLeftOp());
     }
+
+    public ContextValue getReturningContextValue() {
+	return getTargetContextValue();
+    }
 }
