@@ -27,13 +27,4 @@ public class MethodCallShadowType extends ShadowType {
     public ShadowMatch matchesAt(MethodPosition pos) {
 	return MethodCallShadowMatch.matchesAt(pos);
     }
-
-    private MethodCallShadowType() {
-    }
-
-    private static ShadowType v=new MethodCallShadowType();
-    
-    public static void register() {
-	register(v);
-    }
 }

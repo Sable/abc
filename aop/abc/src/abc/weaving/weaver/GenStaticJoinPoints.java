@@ -44,9 +44,12 @@ import abc.weaving.weaver.*;
 
 public class GenStaticJoinPoints {
 
-    // FIXME: Should let the extension decide which factory to use, 
-    // or default to the standard one otherwise
-    String runtimeFactoryClass="uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory";
+    private String runtimeFactoryClass;
+    
+    public GenStaticJoinPoints(String runtimeFactoryClass)
+    {
+        this.runtimeFactoryClass = runtimeFactoryClass;
+    }
 
     /** only want to generate the factory for the first SJP of a class.
         It should be reset to false at the beginning of each class.  */

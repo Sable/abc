@@ -77,13 +77,6 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
         return new EAJTypeSystem_c();
     }
 
-    public List passes(Job job) {
-        // FIXME: shouldn't really be here:
-        abc.eaj.weaving.matching.CastShadowType.register();
-
-        return super.passes(job);
-    }
-
     protected void passes_patterns_and_parents(List l, Job job)
     {
         super.passes_patterns_and_parents(l, job);

@@ -27,13 +27,4 @@ public class GetFieldShadowType extends ShadowType {
     public ShadowMatch matchesAt(MethodPosition pos) {
 	return GetFieldShadowMatch.matchesAt(pos);
     }
-
-    private GetFieldShadowType() {
-    }
-
-    private static ShadowType v=new GetFieldShadowType();
-    
-    public static void register() {
-	register(v);
-    }
 }

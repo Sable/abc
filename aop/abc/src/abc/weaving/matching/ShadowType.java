@@ -37,21 +37,4 @@ import abc.weaving.residues.*;
 public abstract class ShadowType {
     /** Could a given MethodPosition match here? */
     public abstract ShadowMatch matchesAt(MethodPosition pos);
-
-    private static List/*<ShadowType>*/ allShadowTypes=new LinkedList();
-
-    public static void reset() {
-	allShadowTypes=new LinkedList();
-    }
-    
-
-    /** Call this for each shadow type we want to be active */
-    public static void register(ShadowType st) {
-        allShadowTypes.add(st);
-    }
-
-    public static Iterator shadowTypesIterator() {
-        return allShadowTypes.iterator();
-    }
-
 }

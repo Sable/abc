@@ -27,13 +27,4 @@ public class ConstructorCallShadowType extends ShadowType {
     public ShadowMatch matchesAt(MethodPosition pos) {
 	return ConstructorCallShadowMatch.matchesAt(pos);
     }
-
-    private ConstructorCallShadowType() {
-    }
-
-    private static ShadowType v=new ConstructorCallShadowType();
-    
-    public static void register() {
-	register(v);
-    }
 }

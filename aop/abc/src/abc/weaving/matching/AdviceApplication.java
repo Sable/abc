@@ -87,7 +87,7 @@ public abstract class AdviceApplication {
 	throws SemanticException 
     {
 	Iterator shadowIt;
-	for(shadowIt=ShadowType.shadowTypesIterator();
+	for(shadowIt = abc.main.Main.v().getAbcExtension().shadowTypes();
 	    shadowIt.hasNext();) {
 	    
 	    ShadowType st=(ShadowType) shadowIt.next();

@@ -95,9 +95,6 @@ import abc.weaving.weaver.Weaver;
  */
 
 public class Main {
-    public static final String abcVersionString
-        = new abc.aspectj.Version().toString();
-
     private static Main v=null;
     public static Main v() {
         return v;
@@ -116,7 +113,14 @@ public class Main {
 
     public ErrorQueue error_queue; // For reporting errors and warnings
 
-    private String extinfo_classname = "abc.aspectj.ExtensionInfo";
+    // delegate all behaviour that might be added to or modified
+    // by an extension to an extension-specific class
+    private AbcExtension abcExtension = null;
+
+    public AbcExtension getAbcExtension()
+    {
+        return abcExtension;
+    }
 
     /** reset all static information so main can be called again */
     public static void reset() {
@@ -132,7 +136,6 @@ public class Main {
         abc.aspectj.parse.Lexer_c.reset();
         abc.weaving.aspectinfo.AbcFactory.reset();
         abc.weaving.aspectinfo.GlobalAspectInfo.reset();
-        abc.weaving.matching.ShadowType.reset();
         abc.weaving.weaver.AroundWeaver.reset();
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
@@ -147,9 +150,12 @@ public class Main {
     { G.v().out.println( "*** Option " + option + " ignored: " + message);
     }
 
-    public static void abcPrintVersion()
-    { G.v().out.println("abc version " + abcVersionString);
-        // FIXME: should print out any extension version
+    public void abcPrintVersion()
+    {
+        // display the abc version along with the version
+        // of any loaded extension
+        G.v().out.print(getAbcExtension().versions());
+ 
         G.v().out.println("... using Soot toolkit version " +
                 soot.Main.v().versionString);
         G.v().out.println("... using Polyglot compiler toolkit version " +
@@ -217,15 +223,16 @@ public class Main {
         /** Add arg to the front of the arg list. */
         void push( String arg ) { addFirst(arg); }
     }
+
     public void parseArgs(String[] argArray) throws IllegalArgumentException, CompilerAbortedException {
         ArgList args = new ArgList(argArray);
         String outputdir=".";
         boolean optflag=true;
         boolean outputIsJar=false;
-        if (args.size() == 0)
-        { abcPrintVersion();
-            throw new CompilerAbortedException("No arguments provied.");
-        }
+        boolean noArguments = args.isEmpty();
+        boolean seenVersionFlag = false;
+
+        String abcExtensionPackage = "abc.main";
 
         for(; !args.isEmpty(); args.shift())
         { /* --------FULLY IMPLEMENTED AJC-COMPLIANT OPTIONS ----------*/
@@ -240,8 +247,8 @@ public class Main {
             }
             else if (args.top().equals("-version") || args.top().equals("--version") ||
                     args.top().equals("-v"))
-            { abcPrintVersion();
-                throw new CompilerAbortedException("Acted on -version option.");
+            {
+                seenVersionFlag = true;
             }
             else if (args.top().equals("-injars")||args.top().equals("-inpath"))
             {
@@ -419,7 +426,7 @@ public class Main {
             }
             else if (args.top().equals("-ext"))
             {
-                extinfo_classname = args.argTo();
+                abcExtensionPackage = args.argTo();
             }
             else if (args.top().equals("-v")) {
                 abc.main.Debug.v().verbose=true;
@@ -510,6 +517,22 @@ public class Main {
         if(outputIsJar) soot_args.add("-outjar");
         if(optflag) {
             soot_args.add("-O");
+        }
+
+        // now we have parsed the arguments we know which AbcExtension
+        // to load
+        loadAbcExtension(abcExtensionPackage);
+
+        if (noArguments)
+        {
+            abcPrintVersion();
+            throw new CompilerAbortedException("No arguments provided.");
+        }
+
+        if (seenVersionFlag)
+        {
+            abcPrintVersion();
+            throw new CompilerAbortedException("Acted on -version option.");
         }
     }
 
@@ -685,24 +708,13 @@ public class Main {
                 return afjbb;
             }
         });
+
         Scene.v().setSootClassPath(classpath);
-
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack",SootClass.SIGNATURES);
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.reflect.Factory",SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectj.lang.JoinPoint",SootClass.HIERARCHY);
-        Scene.v().addBasicClass("org.aspectj.lang.JoinPoint$StaticPart",SootClass.HIERARCHY);
-        Scene.v().addBasicClass("org.aspectj.lang.SoftException",SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException",SootClass.SIGNATURES);
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter",SootClass.SIGNATURES);
-
-        // FIXME: move this to EAJ
-        Scene.v().addBasicClass("uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory",SootClass.SIGNATURES);
+        getAbcExtension().addBasicClassesToSoot();
 
         // FIXME: make ClassLoadException in soot, and catch it here
         // and check what was wrong
-
         Scene.v().loadBasicClasses();
-
     }
 
     private void findSourcesInDir(String dir, Collection sources) throws IllegalArgumentException {
@@ -744,7 +756,7 @@ public class Main {
         // Invoke polyglot
         try {
             abc.aspectj.ExtensionInfo ext =
-                loadExtensionInfo(jar_classes, aspect_sources);
+                getAbcExtension().makeExtensionInfo(jar_classes, aspect_sources);
             Options options = ext.getOptions();
             options.assertions = true;
             options.serialize_type_info = false;
@@ -866,9 +878,7 @@ public class Main {
                     System.err.println("--- END ADVICE LISTS ---");
                 }
 
-
-
-                Weaver weaver = new Weaver();
+                Weaver weaver = getAbcExtension().makeWeaver();
                 weaver.weave(); // timer marks inside weave() */
             }
             // the intertype adjuster has put dummy fields into interfaces,
@@ -991,25 +1001,19 @@ public class Main {
         PackManager.v().writeOutput();
     }
 
-    private abc.aspectj.ExtensionInfo loadExtensionInfo(Collection jar_classes, Collection aspect_sources)
+    private void loadAbcExtension(String abcExtensionPackage)
     {
-        Class[] types = new Class[] { Collection.class, Collection.class };
-        Object[] args = new Object[] { jar_classes, aspect_sources };
-
-        Class extinfo;
-        Constructor cons;
-        abc.aspectj.ExtensionInfo extensionInfoInstance;
+        Class abcExt;
 
         try {
-            extinfo = Class.forName(extinfo_classname);
-            cons = extinfo.getConstructor(types);
-            extensionInfoInstance = (abc.aspectj.ExtensionInfo) cons.newInstance(args);
+            abcExt = Class.forName(abcExtensionPackage + ".AbcExtension");
+            abcExtension = (AbcExtension) abcExt.newInstance();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot load extension class " + extinfo_classname);
+            throw new IllegalArgumentException(
+                "Cannot load AbcExtension from " + abcExtensionPackage);
         }
-
-        return extensionInfoInstance;
     }
+
     /** Parse a path.separator separated path into the separate directories. */
     private void parsePath(String path, Collection paths) {
         String[] jars = path.split(System.getProperty("path.separator"));

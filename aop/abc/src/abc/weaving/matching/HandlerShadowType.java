@@ -27,13 +27,4 @@ public class HandlerShadowType extends ShadowType {
     public ShadowMatch matchesAt(MethodPosition pos) {
 	return HandlerShadowMatch.matchesAt(pos);
     }
-
-    private HandlerShadowType() {
-    }
-
-    private static ShadowType v=new HandlerShadowType();
-    
-    public static void register() {
-	register(v);
-    }
 }

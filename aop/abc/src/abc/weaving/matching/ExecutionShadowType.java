@@ -27,14 +27,4 @@ public class ExecutionShadowType extends ShadowType {
     public ShadowMatch matchesAt(MethodPosition pos) {
 	return ExecutionShadowMatch.matchesAt(pos);
     }
-
-    private ExecutionShadowType() {
-    }
-
-    private static ShadowType v=new ExecutionShadowType();
-    
-    public static void register() {
-	register(v);
-    }
-
 }

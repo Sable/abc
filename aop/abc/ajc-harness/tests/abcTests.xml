@@ -9138,19 +9138,19 @@
 
     <ajc-test num="975" dir="abctests/eaj/casting"
               title="Test of cast pointcuts">
-         <compile files="Test.java" options="-ext,abc.eaj.ExtensionInfo" />
+         <compile files="Test.java" options="-ext,abc.eaj" />
          <run class="Test" />
     </ajc-test>
 
     <ajc-test num="976" dir="abctests/eaj/global_pointcuts"
               title="Test of global and private pointcuts">
-         <compile files="aaa/A.java,bbb/B.java" options="-ext,abc.eaj.ExtensionInfo" />
+         <compile files="aaa/A.java,bbb/B.java" options="-ext,abc.eaj" />
          <run class="aaa.A" />
     </ajc-test>
 
     <ajc-test num="977" dir="abctests/eaj/local_vars"
               title="Test of private pointcuts">
-         <compile files="Fibonacci.java,Observer.java" options="-ext,abc.eaj.ExtensionInfo" />
+         <compile files="Fibonacci.java,Observer.java" options="-ext,abc.eaj" />
          <run class="Fibonacci" />
     </ajc-test>
  

@@ -30,13 +30,4 @@ public class CastShadowType extends ShadowType
     {
         return CastShadowMatch.matchesAt(pos);
     }
-
-    private CastShadowType() {}
-
-    private static ShadowType v = new CastShadowType();
-
-    public static void register()
-    {
-        register(v);
-    }
 }

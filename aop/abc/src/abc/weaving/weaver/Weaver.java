@@ -39,6 +39,12 @@ import abc.main.AbcTimer;
 
 public class Weaver {
 
+    private String runtimeFactoryClass;
+
+    public Weaver(String runtimeFactoryClass)
+    {
+        this.runtimeFactoryClass = runtimeFactoryClass;
+    }
 
     private static void debug(String message)
       { if (abc.main.Debug.v().weaverDriver) 
@@ -94,7 +100,8 @@ public class Weaver {
 	public void weaveAdvice() {
 		ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
 		PointcutCodeGen pg = new PointcutCodeGen();
-		GenStaticJoinPoints gsjp = new GenStaticJoinPoints();
+		GenStaticJoinPoints gsjp =
+                        new GenStaticJoinPoints(runtimeFactoryClass);
 	
 		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 	

@@ -32,14 +32,13 @@ import abc.weaving.residues.Residue;
  */
 public class ClassInitializationShadowMatch extends BodyShadowMatch {
 
-    public static ShadowType shadowtype = new ShadowType() {
+    public static ShadowType shadowType()
+    {
+        return new ShadowType() {
 	    public ShadowMatch matchesAt(MethodPosition pos) {
-		return ClassInitializationShadowMatch.matchesAt(pos);
-	    }
-	};
-
-    public static void register() {
-	ShadowType.register(shadowtype);
+                return ClassInitializationShadowMatch.matchesAt(pos);
+            }
+        };
     }
 
     private ClassInitializationShadowMatch(SootMethod container) {

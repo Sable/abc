@@ -39,14 +39,13 @@ import abc.weaving.weaver.ShadowPoints;
  */
 public class InterfaceInitializationShadowMatch extends BodyShadowMatch {
 
-    public static ShadowType shadowtype = new ShadowType() {
-	    public ShadowMatch matchesAt(MethodPosition pos) {
-		return InterfaceInitializationShadowMatch.matchesAt(pos);
-	    }
-	};
-
-    public static void register() {
-	ShadowType.register(shadowtype);
+    public static ShadowType shadowType()
+    {
+        return new ShadowType() {
+            public ShadowMatch matchesAt(MethodPosition pos) {
+                return InterfaceInitializationShadowMatch.matchesAt(pos);
+            }
+        };
     }
 
     protected SootClass intrface;
