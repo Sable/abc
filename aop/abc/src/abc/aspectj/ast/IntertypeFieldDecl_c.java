@@ -275,7 +275,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     public IntertypeFieldDecl accessChange() {
     	if (flags().isPrivate() || flags().isPackage() || host.type().toClass().flags().isInterface()) {
     		ParsedClassType ht = (ParsedClassType) host.type();
-    		InterTypeFieldInstance_c fi = (InterTypeFieldInstance_c) ht.fieldNamed(name());
+    		InterTypeFieldInstance_c fi = hostInstance; // was findFieldNamed...
     		ht.fields().remove(fi); // remove old instance from host type    		
     		FieldInstance mi = fi.mangled();  // retrieve the mangled instance 		
     		ht.addField(mi); // add new instance to host type   		

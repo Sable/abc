@@ -130,25 +130,26 @@ public class AJClassBody_c extends ClassBody_c {
 						InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) mi;
 						if (mj instanceof InterTypeMemberInstance) {
 							InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
-						    throw new SemanticException("Duplicate method \"" + mi + "\" introduced by " +
+						    throw new SemanticException("Duplicate method \"" + mi.signature() + "\" introduced by " +
 						                "aspects \""+itmi.origin() + "\" and \"" + itmj.origin() + 
                                         "\" into class \"" + mi.container() + "\".", mi.position());
 						}
-						throw new SemanticException("Duplicate method \"" + mi + "\" introduced by " +
+						throw new SemanticException("Duplicate method \"" + mi.signature() + "\" introduced by " +
 						                "aspect \""+itmi.origin() +"\" into class \""+
 						                mi.container() + "\", which already contains that method.", 
 						                mi.position());
 					}
 					if (mj instanceof InterTypeMemberInstance) {
 						InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
-						throw new SemanticException("Duplicate method \"" + mj + "\" introduced by " +
+						throw new SemanticException("Duplicate method \"" + mj.signature() + "\" introduced by " +
 										"aspect \""+itmj.origin() +"\" into class \""+
 										mj.container() + "\", which already contains that method.", 
 										mj.position());
 					}
 					else if (mi instanceof PointcutInstance_c)
-					    throw new SemanticException("Duplicate "+mj+" in class "+mj.container() +".",mj.position());
-					else throw new SemanticException("Duplicate method \"" + mj + "\" in class \"" +
+					    throw new SemanticException("Duplicate pointcut \""+mj.name() +
+                                   "\" in class \""+mj.container() +"\".",mj.position());
+					else throw new SemanticException("Duplicate method \"" + mj.signature() + "\" in class \"" +
 						                            mi.container() + "\".", mj.position());
 				}
 			}
