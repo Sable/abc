@@ -40,35 +40,35 @@ public class InitClasses extends OncePass {
     private TypeSystem ts;
 
     public InitClasses(Pass.ID id, ExtensionInfo ext, TypeSystem ts) {
-	super(id);
-	this.ext = ext;
-	this.ts = ts;
+        super(id);
+        this.ext = ext;
+        this.ts = ts;
     }
 
     public void once() {
-	try {
-	    Resolver res = ts.loadedResolver();
+        try {
+            Resolver res = ts.loadedResolver();
 
-	    AbcFactory.init(res);
+            AbcFactory.init(res);
 
-	    // Fetch all the weavable classes and put them in the right places
-	    Iterator wcni = ext.jar_classes.iterator();
-	    while (wcni.hasNext()) {
-		String wcn = (String)wcni.next();
-		ClassType ct = (ClassType)res.find(wcn);
-		if (ct == null) {
-		    throw new InternalCompilerError("Class type of jar class was null");
-		}
-		ext.hierarchy.insertClassAndSuperclasses(ct, true);
-		AbcFactory.registerName(ct, wcn);
-		GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
-	    }
+            // Fetch all the weavable classes and put them in the right places
+            Iterator wcni = ext.jar_classes.iterator();
+            while (wcni.hasNext()) {
+                String wcn = (String)wcni.next();
+                ClassType ct = (ClassType)res.find(wcn);
+                if (ct == null) {
+                    throw new InternalCompilerError("Class type of jar class was null");
+                }
+                ext.hierarchy.insertClassAndSuperclasses(ct, true);
+                AbcFactory.registerName(ct, wcn);
+                GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
+            }
 
-	    GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);
-	    
-	    ext.pattern_matcher = PatternMatcher.create(ext.hierarchy);
-	} catch (SemanticException e) {
-	    throw new InternalCompilerError("Class from jar not found by Polyglot");
-	}
+            GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);
+
+            ext.pattern_matcher = PatternMatcher.create(ext.hierarchy);
+        } catch (SemanticException e) {
+            throw new InternalCompilerError("Class from jar not found by Polyglot",e);
+        }
     }
 }
