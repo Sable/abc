@@ -46,20 +46,29 @@ public class CflowIntraAggregate extends BodyTransformer {
 
 	private LocalGeneratorEx lg;
 
-	private SootClass cflowStackClass;
-	private SootClass cflowCounterClass;
+	private SootClass cflowStackClassV=null;
+	private SootClass cflowCounterClassV=null;
+
+	private SootClass cflowStackClass() {
+		if (cflowStackClassV == null)
+			cflowStackClassV = Scene.v().getSootClass
+			("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+		return cflowStackClassV;
+	}
+	private SootClass cflowCounterClass() {
+		if (cflowCounterClassV == null)
+			cflowCounterClassV = Scene.v().getSootClass
+			("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
+		return cflowCounterClassV;
+	}
 
 	private static CflowIntraAggregate instance = 
 		new CflowIntraAggregate();
 	private CflowIntraAggregate() {
-		// Get the SootClass objects for CflowStack and CflowCounter
-		this.cflowStackClass = Scene.v().getSootClass(
-			"uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
-		this.cflowCounterClass = Scene.v().getSootClass(
-			"uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
 	}
 	
 	public static CflowIntraAggregate v() { return instance; }
+	public static void reset() { instance = new CflowIntraAggregate(); }
 
 	private void addToMultimap(Map/*<SootFieldRef, Chain<Local>>*/ m, 
 							   SootFieldRef fr,
@@ -85,8 +94,8 @@ public class CflowIntraAggregate extends BodyTransformer {
 				Value left = ((AssignStmt)s).getLeftOp();
 				Value right = ((AssignStmt)s).getRightOp();
 				if (left instanceof Local) {
-				if (   left.getType().equals(cflowStackClass.getType()) 
-				    ||  left.getType().equals(cflowCounterClass.getType())) {
+				if (   left.getType().equals(cflowStackClass().getType()) 
+				    ||  left.getType().equals(cflowCounterClass().getType())) {
 				    	// We have an assignment to a stack/counter variable
 				    	// There should be no others, but just check anyway that
 				    	// we have a static field ref
@@ -106,21 +115,22 @@ public class CflowIntraAggregate extends BodyTransformer {
 	}
 
 	private String getLocalName(SootFieldRef sf) {
-		if (sf.type().equals(cflowStackClass.getType())) {
+		if (sf.type().equals(cflowStackClass().getType())) {
 			return "cflowstack";
 		}
-		if (sf.type().equals(cflowCounterClass.getType())) {
+		if (sf.type().equals(cflowCounterClass().getType())) {
 			return "cflowcounter";
 		}
 		throw new RuntimeException("Unknown Static Field Ref type: "+sf);
 	}
 
-	private Local addNewCflowLocalAndInit(Body b, Chain/*<Local>*/ ls, SootFieldRef sf) {
+	private Local addNewCflowLocalAndInit
+	(Body b, Chain/*<Local>*/ ls, SootFieldRef sf, Unit safeToInit) {
 		Local l = lg.generateLocal(sf.type(), getLocalName(sf));	
 		
 		Stmt assign = Jimple.v().newAssignStmt(l, Jimple.v().newStaticFieldRef(sf));
 		
-		b.getUnits().addFirst(assign);
+		b.getUnits().insertAfter(assign, safeToInit);
 		
 		return l;
 	}
@@ -168,12 +178,77 @@ public class CflowIntraAggregate extends BodyTransformer {
 		}
 	}
 
+	private boolean isPreClinit(Body b, Unit u) {
+		// FIXME this looks for preClinit by name, is there a
+		// more robust way?
+		
+		if (u instanceof InvokeStmt) {
+			InvokeExpr ie = ((InvokeStmt)u).getInvokeExpr();
+			if (ie instanceof StaticInvokeExpr) {
+				SootMethod m = ie.getMethod();
+				if (m.getName().equals("abc$preClinit"))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private Unit findPreClinitIfExists(Body b) {
+		Iterator it = b.getUnits().iterator();
+		while (it.hasNext()) {
+			Unit u = (Unit)it.next();
+			if (isPreClinit(b, u))
+				return u;
+		}
+		return null;
+	}
+
+	/** find the first statement after which it is safe to initialize
+	 *  cflow locals
+	 * 
+	 * @param b the body of the method
+	 * @return the first such stmt
+	 */
+	private Unit findSafeToInit(Body b) {
+		
+		// Try to find a call to preClinit
+		Unit s = findPreClinitIfExists(b);
+		
+		// Otherwise, the first statement is safe
+		// We add a NOP at the beginning to be able to 
+		// initialize after it
+		if (s == null) {
+			b.getUnits().addFirst(Jimple.v().newNopStmt());
+			return (Unit)b.getUnits().getFirst();
+		}
+		else
+			return s;
+		
+	}
+
+	/** should we aggregate cflow locals in the current body?
+	 *  This could be unsafe, cf clinit of aspects. Returns true
+	 *  for all bodies at the moment as it seems that this is always
+	 *  safe (after preClinit is called)
+	 *  TODO check that this is safe
+	 * 
+	 * @param b the body of the method
+	 * @return true if it is safe to aggregate cflow locals
+	 */
+	private boolean safeToAggregate(Body b) {
+		return true;
+	}
+
 	/* (non-Javadoc)
 	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
 	 */
 	protected void internalTransform(Body b, String phaseName, Map options) {
-		// Initialise a local var generator:
 		
+		// Is it safe to aggregate cflow locals in the current body?
+		if (!safeToAggregate(b))
+			return;
+		
+		// Initialise a local var generator:
 		lg = new LocalGeneratorEx(b);
 		
 		// Find all the locals that get assigned cflow stacks/counters, and produce
@@ -181,34 +256,37 @@ public class CflowIntraAggregate extends BodyTransformer {
 		// them
 		
 		Map/*<SootFieldRef,Chain<Local>>*/ cflows = getCflowStackLocals(b);
-		
-		// FIXME Check that this doesn't cause a problem with the initial setting of 
-		// the CflowStack/Counter field in the aspect
-		
+
+		// Find the first SAFE position to initialize cflow locals
+		// Note: cflow vars are STATIC members of aspects, initialized in
+		// preClinit
+		// SO this can only go wrong before preClinit is called, or inside
+		// preClinit. 
+		//    1. preClinit is called in <clinit>, so just need to make sure
+		//       that if we are in <clinit>, we only initialize it after the
+		//		 call to preClinit
+		//    2. preClinit is not weavable and does NOT contain references to
+		//       cflow fields, so is OK
+		// We initialize AFTER the safeToInit statement, which should be a NOP
+		// if necessary
+		Unit safeToInit = findSafeToInit(b);		
+
 		// For each stack/counter, if we bother to aggregate, make a new var to hold the
 		// stack/counter, and assign to it at the beginning of the method
-		// TODO Be more clever and assign to it at the latest common ancestors of all references
-		// Then replace all references to any of the vars it subsumes by that var
-		//System.out.println("******* " + b.getMethod().getName());
+
 		Iterator it = cflows.keySet().iterator();
 		while (it.hasNext()) {
 			SootFieldRef sf = (SootFieldRef)it.next();
 			Chain/*<Local>*/ ls = (Chain/*<Local>*/)cflows.get(sf);
 			if (shouldAggregate(ls)) {
-				//System.out.println("Found something to aggregate: " + sf + " with " + 
-		//		ls.size() + " uses");
 				
 				// Add the new local and initialisation
-				Local newl = addNewCflowLocalAndInit(b, ls, sf);
-				//System.out.println("Aggregated to " + newl);
+				Local newl = addNewCflowLocalAndInit(b, ls, sf, safeToInit);
 				
-				// Replace other locals
-				
+				// Replace other locals				
 				findAndReplaceCflowLocals(b, ls, newl);
 			}
 		}
-		
-		// TODO Check that useless locals do get thrown away after this!
 
 	}
 

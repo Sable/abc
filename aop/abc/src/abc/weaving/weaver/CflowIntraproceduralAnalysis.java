@@ -38,11 +38,10 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 	// single cflow stack or counter required for us to get the right 
 	// object in advance to avoid getting the current thread over and 
 	// over again
-	// Trade-off: currently the thread get will occur at the beginning of
-	// the method, regardless of whether the cflow operations happen or not
-	// So can make it slower - should only do this if we're reasonably certain
-	// that the number of invokes makes it (possibly) worthwhile
-	// Also, adds a local per cflow stack or counter
+	// Trade-off: if we are unlucky, we may be adding lots of null checks
+	// that we can't get rid of (lazy initialisation strategy) - should
+	// set a reasonable threshold in the hope that this doesn't happen too
+	// often
 
 	private final int SHARE_THRESHOLD = 2;
 
@@ -51,27 +50,110 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 	private Map/*<String,String>*/ cflowCounterRename;
 	private Map/*<String,String>*/ cflowStackRename;	
 	
-	private SootClass cflowStackClass;
-	private SootClass cflowCounterClass;
-	private Type objectType;
+	private SootClass cflowStackClassV = null;
+	private SootClass cflowCounterClassV = null;
+	private Type objectTypeV = null;
+
+	private SootClass cflowStackClass() {
+		if (cflowStackClassV == null)
+			cflowStackClassV = Scene.v().getSootClass
+			("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
+		return cflowStackClassV;
+	}
+	private SootClass cflowCounterClass() {
+		if (cflowCounterClassV == null)
+			cflowCounterClassV = Scene.v().getSootClass
+			("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
+		return cflowCounterClassV;
+	}
+	private Type objectType() {
+		if (objectTypeV == null)
+		 	objectTypeV = Scene.v().getSootClass
+		 	("java.lang.Object").getType();
+		 return objectTypeV;
+	}
 
 	private static CflowIntraproceduralAnalysis instance = 
 		new CflowIntraproceduralAnalysis();
+	public static void reset() { instance = new CflowIntraproceduralAnalysis(); }
+		
 	private CflowIntraproceduralAnalysis() {
-		// Get the SootClass objects for CflowStack and CflowCounter
-		this.cflowStackClass = Scene.v().getSootClass(
-			"uk.ac.ox.comlab.abc.runtime.internal.CFlowStack");
-		this.cflowCounterClass = Scene.v().getSootClass(
-			"uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter");
-		this.objectType = Scene.v().getSootClass(
-			"java.lang.Object").getType();
-			
 		// Initialise the renaming cflowRename
 		// Maps a CflowCounter/CflowStack method name
 		// to the name of the equivalent method taking an 
 		// additional parameter (the cached stack/counter)
 		this.initCflowRename();
 	}
+	
+	private static class CodeGen {
+		// A bunch of helper methods to generate the relevant bits of code
+		
+		static Stmt genInitStmt(Local cflowLoc, Local threadl) {
+
+		Stmt init;
+
+		if (cflowLoc.getType().equals(v().cflowStackClass().getType())) {
+			SootMethodRef stackGetThread = 
+				Scene.v().makeMethodRef(v().cflowStackClass(), 
+										"getStack",
+										new ArrayList(),
+										v().objectType(),
+										false);
+			init = 
+				Jimple.v().newAssignStmt(threadl, 
+				Jimple.v().newVirtualInvokeExpr(cflowLoc, 
+												stackGetThread,
+												new ArrayList()));
+		} else 
+		if (cflowLoc.getType().equals(v().cflowCounterClass().getType())) {
+			SootMethodRef counterGetThread = 
+							Scene.v().makeMethodRef(v().cflowCounterClass(), 
+													"getCounter",
+													new ArrayList(),
+													v().objectType(),
+													false);
+			init = 
+				Jimple.v().newAssignStmt(threadl, 
+				Jimple.v().newVirtualInvokeExpr(cflowLoc, 
+												counterGetThread,
+												new ArrayList()));
+		} else
+			throw new RuntimeException("Cflow local "+cflowLoc+
+					" has unexpected type "+cflowLoc.getType());
+
+		return init;
+	}
+		
+	static Local genThreadLocal(Local cflowLoc) {
+		return v().lg.generateLocal(v().objectType(), cflowLoc.getName()+"Cache");
+	}
+	
+	static Stmt genBranchIfNotNull(Local threadl, Unit targ) {
+		return Jimple.v().newIfStmt(
+					Jimple.v().newNeExpr(threadl,
+										 NullConstant.v()), 
+					targ);
+	}
+	
+	static void genputAssignIfNull(Body b, Local cflowLoc, Local threadl, Unit fallthrough) {
+		Stmt ass = genInitStmt(cflowLoc, threadl);
+		b.getUnits().insertBefore(ass, fallthrough);
+		Stmt br = genBranchIfNotNull(threadl, fallthrough);
+		b.getUnits().insertBefore(br, ass);
+	}
+	
+	static boolean isStackMethod(VirtualInvokeExpr vie) {
+		if (vie.getMethodRef().declaringClass().equals(v().cflowStackClass())) {
+			return true;
+		} else
+		if (vie.getMethodRef().declaringClass().equals(v().cflowCounterClass())) {
+			return false;
+		} else throw new RuntimeException("Unknown class in presumed cflow runtime operation: "+
+										  vie.getMethodRef().getClass());
+	}
+	
+	}
+	
 	
 	private void initCflowRename() {
 		cflowCounterRename = new HashMap();
@@ -105,10 +187,10 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 		Iterator it = locals.iterator();
 		while (it.hasNext()) {
 			Local l = (Local)it.next();
-			if (l.getType().equals(cflowStackClass.getType())) {
+			if (l.getType().equals(cflowStackClass().getType())) {
 				cflowLocals.add(l);
 			}
-			if (l.getType().equals(cflowCounterClass.getType())) {
+			if (l.getType().equals(cflowCounterClass().getType())) {
 				cflowLocals.add(l);
 			}
 		}
@@ -157,43 +239,17 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 	}
 
 	private Local addThreadLocalAndInitialise(Local cflowLoc, Body b) {
-		Local threadl = lg.generateLocal(objectType, cflowLoc.getName()+"Cache");
+		Local threadl = lg.generateLocal(objectType(), cflowLoc.getName()+"Cache");
 		
-		if (cflowLoc.getType().equals(cflowStackClass.getType())) {
-			SootMethodRef stackGetThread = 
-				Scene.v().makeMethodRef(cflowStackClass, 
-										"getStack",
-										new ArrayList(),
-										objectType,
-										false);
-			Stmt init = 
-				Jimple.v().newAssignStmt(threadl, 
-				Jimple.v().newVirtualInvokeExpr(cflowLoc, 
-												stackGetThread,
-												new ArrayList()));
-			
-			b.getUnits().insertAfter(init,
-									 findInitStmt(cflowLoc, b));
-		} else 
-		if (cflowLoc.getType().equals(cflowCounterClass.getType())) {
-			SootMethodRef counterGetThread = 
-							Scene.v().makeMethodRef(cflowCounterClass, 
-													"getCounter",
-													new ArrayList(),
-													objectType,
-													false);
-			Stmt init = 
-				Jimple.v().newAssignStmt(threadl, 
-				Jimple.v().newVirtualInvokeExpr(cflowLoc, 
-												counterGetThread,
-												new ArrayList()));
-			
-			b.getUnits().insertAfter(init,
-									 findInitStmt(cflowLoc, b));
-		} else
-			throw new RuntimeException("Cflow local "+cflowLoc+
-					" has unexpected type "+cflowLoc.getType());
-
+		// Initialise it to NULL
+		// It will be initalised lazily later
+		
+		Stmt init = 
+			Jimple.v().newAssignStmt(
+				threadl,
+				NullConstant.v());
+		b.getUnits().addFirst(init);
+		
 		return threadl;
 	}
 
@@ -209,37 +265,38 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 		return newname;
 	}
 
-	private void updateCflowUse(ValueBox vb, Local threadl) {
+	private void updateCflowUse(Body b, Stmt s, Local threadl) {
+		ValueBox vb = s.getInvokeExprBox();
+		
 		// NOTE vb contains a VirtualInvokeExpr
 		VirtualInvokeExpr vie = (VirtualInvokeExpr)vb.getValue();
 		
+		// Is this a stack or a counter?
 		boolean isStack;
+		isStack = CodeGen.isStackMethod(vie);
 		
-		if (vie.getMethodRef().declaringClass().equals(cflowStackClass)) {
-			isStack = true;
-		} else
-		if (vie.getMethodRef().declaringClass().equals(cflowCounterClass)) {
-			isStack = false;
-		} else throw new RuntimeException("Unknown class in presumed cflow runtime operation: "+
-										  vie.getMethodRef().getClass());
-		
+		// Get new method name
 		String newName = getNewName(isStack, vie.getMethodRef().name());
-						
+		
+		// Get new list of parameter types
 		List newParameterTypes = new ArrayList();
 		Iterator paramIt = vie.getMethodRef().parameterTypes().iterator();
 		while (paramIt.hasNext()) {
 			Type t = (Type)paramIt.next();
 			newParameterTypes.add(t);
 		}
-		newParameterTypes.add(objectType);
+		newParameterTypes.add(objectType());
 		
+		// Get new method
+		// The new method is static
 		SootMethodRef newMethod = Scene.v().makeMethodRef(
 			vie.getMethodRef().declaringClass(),
 			newName,
 			newParameterTypes,
 			vie.getMethodRef().returnType(),
-			vie.getMethodRef().isStatic());
+			true);
 			
+		// Get new actuals
 		ArrayList newParams = new ArrayList();
 		Iterator actualIt = vie.getArgs().iterator();
 		while (actualIt.hasNext()) {
@@ -248,30 +305,38 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 		}
 		newParams.add(threadl);
 			
-		VirtualInvokeExpr newvie = 
-			Jimple.v().newVirtualInvokeExpr(
-				(Local)vie.getBase(),
+		// Construct the call
+		StaticInvokeExpr newie = 
+			Jimple.v().newStaticInvokeExpr(
 				newMethod,
 				newParams);
-			
-		vb.setValue(newvie);
+		
+		// Replace the original call
+		vb.setValue(newie);
+		
+		// Add the code to initialize the stack/counter if was not done before
+		CodeGen.genputAssignIfNull(b, (Local)vie.getBase(), threadl, s);
 	}
 
-	private void updateCflowUseIfNecessary(ValueBox vb, Local threadl) {
+	private void updateCflowUseIfNecessary(Body b, Stmt s, Local threadl) {
+		
 		// Update a use of a cflow variable to use the cached value
-		// IF necessary - ie if the use is not the call to getStack/getCounter!
+		// IF necessary - ie if the use is not a call to getStack/getCounter!
 		
+		ValueBox vb = s.getInvokeExprBox();		
 		SootMethodRef meth = ((VirtualInvokeExpr)vb.getValue()).getMethodRef();
-		
+	
 		if (meth.name().equals("getStack") || meth.name().equals("getCounter"))
 			return;
 		
-		updateCflowUse(vb, threadl);
+		updateCflowUse(b, s, threadl);
 	}
 
 	private void updateCflowUses(Local cflowl, Local threadl, Body b) {
 		Iterator it = b.getUnits().iterator();
+		Set stmts = new HashSet();
 		
+		// Collect all the uses
 		while (it.hasNext()) {
 			Stmt s = (Stmt)it.next();
 			if (s.containsInvokeExpr()) {
@@ -279,11 +344,17 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 				if (e instanceof VirtualInvokeExpr) {
 					Value base = ((VirtualInvokeExpr)e).getBase();
 					if (cflowl.equivTo(base)) {
-						updateCflowUseIfNecessary(s.getInvokeExprBox(), threadl);
+						stmts.add(s);
 					}
 				}
 			}
 		}
+		
+		// update them
+		it = stmts.iterator();
+		while (it.hasNext()) 
+			updateCflowUseIfNecessary(b, (Stmt)it.next(), threadl);
+		
 	}
 
 	/* (non-Javadoc)
@@ -297,29 +368,23 @@ public class CflowIntraproceduralAnalysis extends BodyTransformer {
 	
 		Chain/*<Local>*/ cflowLocals = getCflowLocals(b);
 		
-		// For each CflowStack/Counter, get all occurences (Stmts)
-		
 		// Iterate through the stacks/counters, if the # of occurences is
 		// large enough, 
 		//    - add a local to hold the thread stack/counter
-		//    - add a statement to initialise it at beginning of body
-		// TODO find a better place to initialise the thread stack/counter
-		// (as may not always need to initialise it!)
-		//    - change all statements to use the saved stack/counter
+		//    - initialize it to NULL at the beginning of the method body
+		//    - change all uses of the cflow stack/counter to use the cached
+		//      version, initializing it lazily as needed - rely on null check
+		//      eliminator to get rid of the spurious null checks
 
 		Iterator it = cflowLocals.iterator();
 		while (it.hasNext()) {
 			Local l = (Local)it.next(); 
 			Chain/*<ValueBox>*/ invokes = getCflowLocalStmts(l, b);
 			if (shouldShareStack(l, invokes, b)) {
-				//System.out.println("Found something to share!: " +
-				//	l + " with " + invokes.size() + " statements");
+
 				// Add a local and initialise it
-				
 				Local threadl = addThreadLocalAndInitialise(l, b);
-				
 				// Change all statements
-				
 				updateCflowUses(l, threadl, b);
 			} 
 		}
