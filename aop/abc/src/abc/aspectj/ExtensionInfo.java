@@ -53,7 +53,6 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     }
 
     protected TypeSystem createTypeSystem() {
-    	System.out.println("type system created!");
         return new AspectJTypeSystem_c();
     }
 

@@ -13,40 +13,42 @@ public class AfterThrowing_c extends AdviceSpec_c
    
     public AfterThrowing_c(Position pos, 
                            List formals,
-                           Formal exc)
+                           Formal exc,
+                           TypeNode voidn)
     {
-	super(pos);
+	    super(pos);
         this.formals = formals;
+        this.returnType = voidn;
         this.returnVal = exc;
     }
 
        
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.begin(0);
+        
         w.write("after(");
 
-	w.begin(0);
+		w.begin(0);
+		for (Iterator i = formals.iterator(); i.hasNext(); ) {
+	   	 	Formal f = (Formal) i.next();
+	    	print(f, w, tr);
 
-	for (Iterator i = formals.iterator(); i.hasNext(); ) {
-	    Formal f = (Formal) i.next();
-	    print(f, w, tr);
-
-	    if (i.hasNext()) {
-		w.write(",");
-		w.allowBreak(0, " ");
-	    }
-	}
-
-	w.end();
-	w.write(")");
+	    	if (i.hasNext()) {
+				w.write(",");
+				w.allowBreak(0, " ");
+	    	}
+		}
+		w.end();
+		
+		w.write(")");
         w.allowBreak(0, " ");
         w.write("throwing");
 
-	if (returnVal != null) {
-	    w.write("(");
-	    print(returnVal,w,tr);
-	    w.write(")");
-	}
+		if (returnVal != null) {
+	 	   w.write("(");
+	 	   print(returnVal,w,tr);
+	    	w.write(")");
+		}
 
         w.end();
     }

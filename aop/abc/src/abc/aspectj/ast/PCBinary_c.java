@@ -5,6 +5,9 @@ import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.util.*;
 import polyglot.visit.*;
+
+import polyglot.ext.jl.ast.Node_c;
+
 import java.util.*;
 
 public class PCBinary_c extends Pointcut_c implements PCBinary
@@ -15,11 +18,11 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
     protected Precedence precedence;
 
     public PCBinary_c(Position pos, Pointcut left, Operator op, Pointcut right)    {
-	super(pos);
+		super(pos);
         this.left = left;
-	this.op = op;
-	this.right = right;
-	this.precedence = op.precedence();
+		this.op = op;
+		this.right = right;
+		this.precedence = op.precedence();
     }
 
     public Precedence precedence() {
@@ -27,11 +30,30 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-	printSubExpr(left, true, w, tr);
-	w.write(" ");
-	w.write(op.toString());
-	w.allowBreak(2, " ");
-	printSubExpr(right, false, w, tr);
+		printSubExpr(left, true, w, tr);
+		w.write(" ");
+		w.write(op.toString());
+		w.allowBreak(2, " ");
+		printSubExpr(right, false, w, tr);
     }
+    
+	protected PCBinary_c reconstruct(Pointcut left,
+	                                 Pointcut right) {
+		if (left != this.left || op != this.op || right != this.right) {
+			PCBinary_c n = (PCBinary_c) copy();
+			n.left = left;
+			n.right = right;
+			return n;
+		}
+
+		return this;
+	}
+
+	public Node visitChildren(NodeVisitor v) {	
+		Pointcut left = (Pointcut) visitChild(this.left,v);
+		Pointcut right = (Pointcut) visitChild(this.right,v);
+		return reconstruct(left,right);
+	}
+
 
 }

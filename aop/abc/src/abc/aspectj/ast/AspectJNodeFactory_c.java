@@ -144,9 +144,10 @@ public class AspectJNodeFactory_c
 
      public AfterThrowing AfterThrowing(Position pos,
 					List formals,
-					Formal exc) {
-	AfterThrowing n = new AfterThrowing_c(pos,formals,exc);
-	return n;
+					Formal exc,
+					TypeNode voidn) {
+		AfterThrowing n = new AfterThrowing_c(pos,formals,exc,voidn);
+		return n;
      }
 
     public Around Around(Position pos,

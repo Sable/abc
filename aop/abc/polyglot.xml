@@ -30,7 +30,7 @@
     <pathelement location="${classes}"/>
     <pathelement location="${lib}/java_cup.jar"/>
     <pathelement location="${lib}/JFlex.jar"/>
-    <pathelement location="${basedir}/soot-2.1.0/classes"/>
+    <pathelement location="/home/aske/jar/sootclasses-2.1.0-custom.jar"/>
   </path>
 
   <target name="configure" description="Configure Polyglot"
@@ -516,7 +516,7 @@ ext=""
     <antcall target="aspectj-lexer"/>
     <antcall target="aspectj-ppg-parser"/>
   <!--  <antcall target="standard-ext-qq-dep"/> -->
-    <antcall target="compile-ext"/>
+    <antcall target="compile-aspectj"/>
   <!--  <antcall target="compile-ext-qq-dep"/> -->
   </target>
 

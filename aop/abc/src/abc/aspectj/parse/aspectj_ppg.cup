@@ -1827,18 +1827,23 @@ advice_spec ::=
                                                                                                       :}
  |  AFTER:x LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING:y {:
                                                                     Grm.parserTrace("after(formals)throwing");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
           AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
                                                              a,
-							     null);
+							                                 null,
+							                                 voidn);
           RESULT = afterThrow;
        
                                                                     :}
  |  AFTER:x LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING LPAREN formal_parameter:b RPAREN:y {:
                                                                                                      Grm.parserTrace("after(formals)throwing(p)");
-
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
           AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
                                                              a,
-							     b);
+							                                 b,
+							                                 voidn);
           RESULT = afterThrow;
        
                                                                                                      :}

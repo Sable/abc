@@ -2,24 +2,34 @@ package arc.aspectj.ast;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
-import polyglot.ast.Block;
-import polyglot.ast.TypeNode;
-import polyglot.types.Flags;
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
-import polyglot.util.UniqueID;
 import polyglot.util.TypedList;
-import polyglot.visit.PrettyPrinter;
-import polyglot.ast.Formal;
 
+import polyglot.ast.Block;
+import polyglot.ast.Formal;
+import polyglot.ast.TypeNode;
+import polyglot.ast.Node;
+import polyglot.ast.MethodDecl;
+import polyglot.ast.CodeDecl;
+
+import polyglot.types.Flags;
 import polyglot.types.Context;
-import polyglot.types.ClassType;
-import polyglot.types.TypeSystem;
 import polyglot.types.LocalInstance;
 import polyglot.types.MethodInstance;
+import polyglot.types.SemanticException;
+import polyglot.types.Type;
+import polyglot.types.TypeSystem;
+
+import polyglot.visit.NodeVisitor;
+import polyglot.visit.PrettyPrinter;
+import polyglot.visit.TypeChecker;
+
 import polyglot.ext.jl.ast.MethodDecl_c;
+
 
 import arc.aspectj.types.AspectJTypeSystem;
 
@@ -48,60 +58,88 @@ public class AdviceDecl_c extends MethodDecl_c
                         List throwTypes,
                         Pointcut pc,
 	  	                Block body) {
-	super(pos,
-	      flags, 
-	      spec.returnType(),
-	      UniqueID.newID("$advice$"),
-	      locs(spec.returnVal(),spec.formals()),
-	      throwTypes,
-	      body);
-	this.spec = spec;
-    this.pc = pc;
+		super(pos,
+	    	  flags, 
+	     	  spec.returnType(),
+	     	  UniqueID.newID("$advice$"),
+	          locs(spec.returnVal(),spec.formals()),
+	          throwTypes,
+	          body);
+		this.spec = spec;
+    	this.pc = pc;
     }
     
+    
+    // new visitor code
+	protected AdviceDecl_c reconstruct(TypeNode returnType, 
+								       List formals, 
+								       List throwTypes,
+								       Block body,
+								       AdviceSpec spec,
+								       Pointcut pc) {
+		if (spec != this.spec || pc != this.pc) {
+			AdviceDecl_c n = (AdviceDecl_c) copy();
+			n.spec = spec;
+			n.pc = pc;
+			return (AdviceDecl_c) n.reconstruct(returnType, formals, throwTypes, body);
+		}
+
+		return (AdviceDecl_c) super.reconstruct(returnType, formals, throwTypes, body);
+	}
+
+	public Node visitChildren(NodeVisitor v) {	
+		TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+		List formals = visitList(this.formals, v);
+		List throwTypes = visitList(this.throwTypes, v);
+		// do not visit spec, to avoid duplicate errors
+		Pointcut pc = (Pointcut) visitChild(this.pc,v);
+		Block body = (Block) visitChild(this.body, v);
+		return reconstruct(returnType, formals, throwTypes, body, spec, pc);
+	}
+
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-	w.begin(0);
-	w.write(flags.translate());
+		w.begin(0);
+		w.write(flags.translate());
 
         print(spec,w,tr);
 
-	w.begin(0);
+		w.begin(0);
 
         if (! throwTypes.isEmpty()) {
-	    w.allowBreak(6);
-	    w.write("throws ");
+	    	w.allowBreak(6);
+	    	w.write("throws ");
 
-	    for (Iterator i = throwTypes.iterator(); i.hasNext(); ) {
-	        TypeNode tn = (TypeNode) i.next();
-		print(tn, w, tr);
-
-		if (i.hasNext()) {
-		    w.write(",");
-		    w.allowBreak(4, " ");
-		}
-	    }
-	}
-
-	w.end();
-
-	w.write(":");
-
-	w.allowBreak(0);
-
-	print(pc, w, tr);
+	    	for (Iterator i = throwTypes.iterator(); i.hasNext(); ) {
+	      	  	TypeNode tn = (TypeNode) i.next();
+				print(tn, w, tr);
 	
-	if (body != null) {
-	    printSubStmt(body, w, tr);
-	}
-	else {
-	    w.write(";");
-	}
+				if (i.hasNext()) {
+		   	 		w.write(",");
+		   	 		w.allowBreak(4, " ");
+				}
+	    	}
+		}
 
-	w.end();
+		w.end();
 
+		w.write(":");
+
+		w.allowBreak(0);
+
+		print(pc, w, tr);
+	
+		if (body != null) 
+	 	   printSubStmt(body, w, tr);
+		else w.write(";");
+
+		w.end();
     }
     
-
+    /** Type checking of proceed: keep track of the methodInstance for the current proceed
+     *  the ProceedCall will query this information via the proceedInstance() 
+     *  method
+     * */
 	static private MethodInstance proceedInstance = null;
 	static private Context scope = null;
 	static public MethodInstance  proceedInstance(Context c) {
@@ -113,8 +151,12 @@ public class AdviceDecl_c extends MethodDecl_c
 	}
 
 	public Context enterScope(Context c) {
+		if (mi == null)
+			System.out.println("method instance of advice is null");
+			
 		Context nc = super.enterScope(c);
 		
+		// inside an advice body, thisJoinPoint is in scope, but nowhere else in an aspect
 		AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
 	    LocalInstance jp = ts.localInstance(position(), Flags.NONE, ts.JoinPoint(), "thisJoinPoint");
 		nc.addVariable(jp);
@@ -127,6 +169,28 @@ public class AdviceDecl_c extends MethodDecl_c
         
 		return nc;
 	}
+	
+	/** Type check the advice: first the usual method checks, then whether the "throwing" result is
+	 *  actually throwable
+	 *  */
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		super.typeCheck(tc);
+		if (spec instanceof AfterThrowing && spec.returnVal() != null) {
+			
+			// get the resolved type of the returnVal, which is the last parameter
+			// of the advice method:
+			List formalTypes = methodInstance().formalTypes();
+			Type t = (Type)(formalTypes.get(formalTypes.size()-1));
+			
+			if (! t.isThrowable()) {
+				TypeSystem ts = tc.typeSystem();
+				throw new SemanticException("type \"" + t + "\" is not a subclass of \" +" +					                        ts.Throwable() + "\".", spec.returnVal().type().position());
+			}
+		}
+		return this;
+	}
+	
+
 			
 }
 	

@@ -90,7 +90,8 @@ public interface AspectJNodeFactory
 
     AfterThrowing AfterThrowing(Position pos,
 			        List formals,
-			        Formal exc);
+			        Formal exc,
+			        TypeNode voidn);
 
     Around Around(Position pos,
 		  TypeNode returnType,
