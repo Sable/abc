@@ -125,6 +125,13 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	    ) {
 	    SootClass advicethrow=(SootClass) (advicethrownit.next());
 
+	    // don't care about unchecked exceptions
+	    if(Scene.v().getOrMakeFastHierarchy().isSubclass
+	       (advicethrow,Scene.v().getSootClass("java.lang.RuntimeException"))) continue;
+
+	    if(Scene.v().getOrMakeFastHierarchy().isSubclass
+	       (advicethrow,Scene.v().getSootClass("java.lang.Error"))) continue;
+
 	    for(Iterator shadowthrownit=shadowthrown.iterator();
 		shadowthrownit.hasNext();
 		) {
