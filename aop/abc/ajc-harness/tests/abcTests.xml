@@ -9391,4 +9391,18 @@
          title="correct topological sorting of precedence">
          <compile files="PrecedenceSort.java"/>
     </ajc-test>
+    <ajc-test num="1016" dir="abctests/bugs"
+         title="checks for declare parents on binary classes">
+         <compile files="declareparentsbinary/DP.jar,DeclareParentsBinaryAspect.java">
+            <message kind="error" line="1-3"/>
+            <message kind="error" line="1-4"/>
+            <message kind="error" line="1-6"/>
+            <message kind="error" line="2"/>
+            <message kind="error" line="2"/>
+            <message kind="error" line="3"/>
+            <message kind="error" line="3"/>
+            <message kind="error" line="4"/>
+            <message kind="error" line="5"/>
+         </compile>
+    </ajc-test>
 </suite>

@@ -203,7 +203,7 @@ public class Main {
             System.out.println("Illegal arguments: "+e.getMessage());
             System.exit(1);
         } catch (CompilerFailedException e) {
-            System.out.println(e.getMessage());
+            //System.out.println(e.getMessage());
             System.exit(5);
         }
     }
@@ -577,7 +577,7 @@ public class Main {
     private void abortIfErrors(int n) throws CompilerFailedException {
         if(error_queue!=null && error_queue.errorCount()>n) {
             error_queue.flush();
-            throw new CompilerFailedException("Compiler failed.");
+            throw new CompilerFailedException("There were errors.");
         }
     }
 
@@ -717,7 +717,7 @@ public class Main {
                 }
                 if (!aspect_sources.isEmpty()) {
                     if (!compiler.compile(aspect_sources)) {
-                        throw new CompilerFailedException("Compiler failed.");
+                        throw new CompilerFailedException("Compilation failed.");
                     }
                 } else {
                     // No source files. Run all once-passes.
