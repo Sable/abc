@@ -107,9 +107,9 @@ public class OrResidue extends Residue {
         }
     }
 
-    public void getAdviceFormalBindings(Bindings bindings) {
-        getLeftOp().getAdviceFormalBindings(bindings);
-        getRightOp().getAdviceFormalBindings(bindings);
+    public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+        getLeftOp().getAdviceFormalBindings(bindings, null);
+        getRightOp().getAdviceFormalBindings(bindings, null);
     }
     public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
         left.setResidue(getLeftOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));

@@ -70,13 +70,16 @@ public class NotResidue extends Residue {
         return getOp().codeGen(method,localgen,units,begin,fail,!sense,wc);
     }
 
-        public void getAdviceFormalBindings(Bindings bindings) {
-                getOp().getAdviceFormalBindings(bindings);
-        }
-        public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
-                op.setResidue(getOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));
-                return this;
-        }
+
+	public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+		getOp().getAdviceFormalBindings(bindings, null);
+	}
+	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+		op.setResidue(getOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));
+		return this;
+	}
+
+
         public List/*ResidueBox*/ getResidueBoxes() {
             List/*ResidueBox*/ ret = new ArrayList();
             ret.add( op );

@@ -6,6 +6,7 @@ import soot.jimple.*;
 import soot.util.Chain;
 import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.residues.Residue.Bindings;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
 
@@ -82,10 +83,12 @@ public class SeqResidue extends Residue {
         return new SeqResidue(left,right);
     }
 
-    public void getAdviceFormalBindings(Bindings bindings) {
-        getLeftOp().getAdviceFormalBindings(bindings);
-        getRightOp().getAdviceFormalBindings(bindings);
+
+    public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+        getLeftOp().getAdviceFormalBindings(bindings, null);
+        getRightOp().getAdviceFormalBindings(bindings, null);
     }
+
     public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
         left.setResidue(getLeftOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));
         right.setResidue(getRightOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));

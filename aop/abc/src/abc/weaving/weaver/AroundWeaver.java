@@ -930,7 +930,7 @@ public class AroundWeaver {
 					//if (bHasProceed) {
 						Residue.Bindings bindings = new Residue.Bindings();
 						
-						adviceAppl.getResidue().getAdviceFormalBindings(bindings);
+						adviceAppl.getResidue().getAdviceFormalBindings(bindings, null);
 						bindings.calculateBitMaskLayout();
 						
 						debug(" " + bindings);

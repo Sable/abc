@@ -29,10 +29,16 @@ import abc.soot.util.LocalGeneratorEx;
  *  @author Ganesh Sittampalam
  */ 
 
-public class Copy extends Residue {
+public class Copy extends Residue implements BindingLink {
     public WeavingVar from;
     public WeavingVar to;
-
+    
+	public WeavingVar getAdviceFormal(WeavingVar var) {
+		if (var==from)
+			return to;
+		
+		return null;
+	}
     public Copy(WeavingVar from,WeavingVar to) {
 	this.from=from;
 	this.to=to;

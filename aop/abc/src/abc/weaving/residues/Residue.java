@@ -84,7 +84,7 @@ public abstract class Residue {
      * advice-formal bindings.
      * Has to be overwritten by all Residue classes that have children.
      */
-    public void getAdviceFormalBindings(Bindings bindings) {
+    public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
     }
 
     /**
@@ -252,3 +252,8 @@ public abstract class Residue {
     }
     public List/*ResidueBox*/ getResidueBoxes() { return new ArrayList(); }
 }
+
+interface BindingLink {
+	public abstract WeavingVar getAdviceFormal(WeavingVar var);
+}
+

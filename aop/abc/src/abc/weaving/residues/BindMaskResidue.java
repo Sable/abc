@@ -75,8 +75,8 @@ public class BindMaskResidue extends Residue {
         	return op.getResidue().resetForReweaving();
         	}
         
-        public void getAdviceFormalBindings(Bindings bindings) {
-                getOp().getAdviceFormalBindings(bindings);
+        public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+                getOp().getAdviceFormalBindings(bindings, null);
         }
         public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
                 op.setResidue(getOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));

@@ -31,7 +31,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @author Ganesh Sittampalam
  */ 
 
-public class Box extends Residue {
+public class Box extends Residue implements BindingLink {
     public WeavingVar from;
     public WeavingVar to;
 
@@ -40,6 +40,13 @@ public class Box extends Residue {
 	this.to=to;
     }
 
+    public WeavingVar getAdviceFormal(WeavingVar var) {
+		if (var==from)
+			return to;
+		
+		return null;
+	}
+    
     public Residue resetForReweaving() {
     	from.resetForReweaving();
     	to.resetForReweaving();

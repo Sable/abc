@@ -30,8 +30,9 @@ import java.util.*;
 
 /** The conjunction of two dynamic residues
  *  @author Ganesh Sittampalam
- */
-public class AndResidue extends Residue {
+ */ 
+public class AndResidue extends Residue implements BindingLink {
+
     private ResidueBox left = new ResidueBox();
     private ResidueBox right = new ResidueBox();
 
@@ -109,9 +110,10 @@ public class AndResidue extends Residue {
         return new AndResidue(left,right);
     }
 
-    public void getAdviceFormalBindings(Bindings bindings) {
-        getLeftOp().getAdviceFormalBindings(bindings);
-        getRightOp().getAdviceFormalBindings(bindings);
+    public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {
+    	AndResidue root=andRoot==null ? this : andRoot;
+        getLeftOp().getAdviceFormalBindings(bindings, root );
+        getRightOp().getAdviceFormalBindings(bindings, root);
     }
     public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
         left.setResidue(getLeftOp().restructureToCreateBindingsMask(bindingsMaskLocal, bindings));
@@ -125,5 +127,25 @@ public class AndResidue extends Residue {
         ret.addAll( left.getResidue().getResidueBoxes() );
         ret.addAll( right.getResidue().getResidueBoxes() );
         return ret;
+    }
+    public WeavingVar getAdviceFormal(WeavingVar var) {
+    	WeavingVar result=null;
+    	
+    	System.out.println("getAdviceFormal: " + this);
+    	if (getLeftOp() instanceof BindingLink) {
+    		System.out.println(" left instanceof BindingLink");
+    		BindingLink link=(BindingLink)getLeftOp();
+    		result=link.getAdviceFormal(var);
+    	}
+		if (getRightOp() instanceof BindingLink) {
+			System.out.println(" right instanceof BindingLink");
+    		BindingLink link=(BindingLink)getRightOp();
+    		System.out.println(" var: " + var);
+    		WeavingVar result2=link.getAdviceFormal(result == null ? var : result);
+    		System.out.println(" result2: " + result2);
+    		if (result2!=null)
+    			return result2;
+    	}
+    	return result;//==null ? var : result;
     }
 }
