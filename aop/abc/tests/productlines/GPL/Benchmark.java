@@ -57,9 +57,9 @@ public aspect Benchmark
     }
     
     public static void Graph.startProfile() {
-	// accum = 0;
-	// current = System.currentTimeMillis();
-	// last = current;
+	accum = 0;
+	current = System.currentTimeMillis();
+	last = current;
     }
 	  
     public static void Graph.stopProfile() {
