@@ -122,7 +122,9 @@ public abstract class Pointcut extends Syntax {
 	    Pointcut ifs=new FullPointcut(pos);
 	    while(it.hasNext()) {
 		Pointcut cur=(Pointcut) it.next();
-		if(cur instanceof If)
+		// a "not" might have a nested if, and since it can't bind anything 
+		// moving it can't matter
+		if(cur instanceof If || cur instanceof NotPointcut) 
 		    ifs=new AndPointcut(ifs,cur,pos);
 		else res=new AndPointcut(res,cur,pos);
 	    }
