@@ -271,7 +271,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 					es.add(Ei); 
 				else  es.add(genArgMethod(nf,ts,Ei,methodDecls));
 			}
-			ccall = ccall.arguments(es); // replace the Ei by ei
+			ccall = (ConstructorCall) ccall.arguments(es); // replace the Ei by ei
 			b = b.append(ccall);
 		} else { // create a call to super()
 			ccall = nf.ConstructorCall(position(),ConstructorCall.SUPER,new LinkedList());

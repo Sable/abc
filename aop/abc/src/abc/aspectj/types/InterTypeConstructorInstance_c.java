@@ -104,7 +104,7 @@ public class InterTypeConstructorInstance_c
 			nl = nl.type(mangleType);
 			List args = new LinkedList(cc.arguments());
 			args.add(nl);
-			ConstructorCall nc = cc.arguments(args);
+			ConstructorCall nc = (ConstructorCall) cc.arguments(args);
 			return nc.constructorInstance(mangled()); 
 		} else return cc;
 	}
@@ -116,7 +116,7 @@ public class InterTypeConstructorInstance_c
 			nl = nl.type(mangleType);
 			List args = new LinkedList(cc.arguments());
 			args.add(nl);
-		 	nc = cc.arguments(args);
+		 	nc = (New) cc.arguments(args);
 			return nc.constructorInstance(mangled()); 
 		} else return cc;
 	}
