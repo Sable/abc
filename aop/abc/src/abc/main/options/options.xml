@@ -177,6 +177,12 @@ any of their subdirectories.
       <long_desc>Use Java 1.4 compliance mode. This is the default.
       </long_desc>
     </boolopt>
+    <boolopt>
+      <alias>abc100runtime</alias>
+      <short_desc>abc 1.0 runtime compliance mode.</short_desc>
+      <long_desc>Use the abc 1.0 runtime. This disables some cflow optimisations (abc >= 1.0.2). 
+      </long_desc>
+    </boolopt>
   </section>
   <section>
     <name>Optimization Options</name>
@@ -227,6 +233,18 @@ any of their subdirectories.
       </short_desc>
       <long_desc>Inline before and after advice whenever possible (as opposed to adaptive inlining).
       </long_desc>
+    </boolopt>
+    <boolopt>
+      <alias>cflow-use-counters</alias>
+      <default>true</default>
+      <short_desc>Use the counter implementation of cflow whenever possible.</short_desc>
+      <long_desc>Implement the cflow construct with counters rather than stacks whenever possible for performance.</long_desc>
+    </boolopt>
+    <boolopt>
+      <alias>cflow-use-sharing</alias>
+      <default>true</default>
+      <short_desc>Share state between cflow pointcuts whenever possible</short_desc>
+      <long_desc>Use only one stack or counter for several occurrences of the same cflow pointcut.</long_desc>
     </boolopt>
   </section>
   <section undoc="">

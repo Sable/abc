@@ -1852,8 +1852,8 @@ public class CflowCodeGenUtils {
 		 */
 		public static CflowCodeGen v(List/*<Type>*/ types) {
 			boolean formalsEmpty = types.size() == 0;
-			boolean useCounter = !(Debug.v().dontUseCflowCounter);
-			boolean useOldRuntime = Debug.v().useOldCflow;
+			boolean useCounter = abc.main.options.OptionsParser.v().cflow_use_counters();
+			boolean useOldRuntime = abc.main.options.OptionsParser.v().abc100runtime();
 			boolean useSingleThreaded = Debug.v().forceSingleThreadedCflow;
 			boolean useStaticField = Debug.v().forceStaticFieldCflow;
 			

@@ -112,8 +112,6 @@ public class Debug {
 
     public boolean dontCheckExceptions=false;
 
-    public boolean dontUseCflowCounter=false;
-    public boolean dontShareCflowStacks=false;
     public boolean debugCflowSharing=false;
     public boolean debugPointcutUnification=false;
     public boolean debugUnweaver=false;
@@ -124,7 +122,6 @@ public class Debug {
     public boolean allowDynamicTests = false;
     public boolean switchFolder = true;
     
-    public boolean useOldCflow = false;
     public boolean forceSingleThreadedCflow = false;
     public boolean forceStaticFieldCflow = false;
     

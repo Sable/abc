@@ -302,7 +302,7 @@ public class GlobalCflowSetupFactory {
 		
 		// Need to remember that we've created cfs
 		// IF THE DEBUG FLAG IS NOT SET (o/w no point)
-		if (!Debug.v().dontShareCflowStacks)
+		if (abc.main.options.OptionsParser.v().cflow_use_sharing())
 			CfsStore.put(pc, typeMap, cfs);
 		
 		// Now return it
@@ -312,7 +312,7 @@ public class GlobalCflowSetupFactory {
     public static CfsContainer construct(
     		Aspect a, Pointcut pc, boolean isBelow, Hashtable typeMap, Position pos, int depth) {
     	
-    	if (Debug.v().dontShareCflowStacks)
+    	if (!abc.main.options.OptionsParser.v().cflow_use_sharing())
     		return buildNewCfs(a, pc, isBelow, typeMap, pos, depth);
     	
     	CfsContainer cfsc = CfsStore.findExisting(a, pc, isBelow, typeMap, pos, depth);
