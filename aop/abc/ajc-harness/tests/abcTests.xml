@@ -9212,8 +9212,8 @@
         title="method intertype onto inner class"
 	abccomment="abc fails in generation of accessors; ajc fails
                     at runtime">
-	<compile files="Sep9.java"/>
-	<run class="Sep9"/>
+	<compile files="QualThis.java"/>
+	<run class="QualThis"/>
     </ajc-test>  
 
 </suite>

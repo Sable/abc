@@ -15,10 +15,10 @@ aspect Aspect {
 	}
 }
 
-public class Sep9 {
+public class QualThis {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 	A a = new A();
-	System.out.println(a.b.foo());
+	if(3 != a.b.foo()) throw new Exception("Qualified this didn't work - expecting 3, got " + a.b.foo());
     }
 }
