@@ -4965,5 +4965,11 @@
 	    <message line="6" kind="error" file="foo/Foo.java"></message>
 	</compile>
     </ajc-test>
+<ajc-test title="Try all advice types on the throw joinpoint" num="993" dir="abctests/eaj/throw_pointcut">
+        <compile options="-ext,abc.eaj" files="Throw.java">
+            <message line="18" kind="warning"></message>
+        </compile>
+        <run class="Throw"></run>
+    </ajc-test>
  
 </suite>
