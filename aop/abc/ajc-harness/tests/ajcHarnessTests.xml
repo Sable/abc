@@ -1,0 +1,317 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<!--
+    To log unexpected results, run
+        with -logPass -ajctestRequireKeywords=expect-fail
+     or with -logFail -ajctestSkipKeywords=expect-fail
+     
+     You can also run using -traceTestsMin and scan for 
+     unexpected results:
+        
+        FAIL pass {title..}  # expect pass, actual fail 
+        PASS fail {title..}  # expect fail, actual pass
+
+     Also pick out "incremental-test" keyword for incremental tests.
+-->
+<suite>
+<!-- disabled so skipping expect-fail causes all to pass
+	 (error emitted before test is skipped)
+	
+    <ajc-test dir="noSuchDir"
+      title="fail no such directory - report as error (AjcTest specification)"
+     keywords="expect-fail">
+        <compile files="NoSuchFile.java"/>
+    </ajc-test>
+-->
+    <ajc-test dir="harness"
+      title="pass 2 error">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="pass 2 error, with filenames">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" file="ErrorTest.java"/>
+            <message kind="error" line="6" file="ErrorTest.java"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, with 1 bad filename"
+      keywords="expect-fail">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" file="ErrorTest.java"/>
+            <message kind="error" line="6" file="ErrorTest2.java"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="harness"
+      title="fail 2 error, with 2 bad filename"
+      keywords="expect-fail">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" file="ErrorTest3.java"/>
+            <message kind="error" line="6" file="ErrorTest2.java"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, three expected"
+     keywords="expect-fail">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="6"/>
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, one unexpected"
+     keywords="expect-fail">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, one with with error line wrong"
+     keywords="expect-fail">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5"/>
+            <message kind="error" line="7" text="Wrong line number"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, one with with kind wrong"
+     keywords="expect-fail">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5"/>
+            <message kind="warning" line="6"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="harness"
+      title="pass 1 warning">
+        <compile files="WarningTest.java">
+            <message kind="warning" line="14"/>
+        </compile>
+    </ajc-test>
+    
+    <ajc-test dir="harness"
+      title="fail 1 warning with kind wrong"
+     keywords="expect-fail">
+        <compile files="WarningTest.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 1 warning with line wrong"
+     keywords="expect-fail">
+        <compile files="WarningTest.java">
+            <message kind="warning" line="15"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+    	title="fail checks and events, failed to specify 6 expected fails"
+     keywords="expect-fail">
+        <compile files="TestTesterFail.java"/>
+        <run class="TestTesterFail"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+    	title="fail one missing note"
+     keywords="expect-fail">
+        <compile files="TesterNotesFail.java"/>
+        <run class="TesterNotesFail"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+    	title="pass checks and events, all should pass">
+        <compile files="TestTester.java"/>
+        <run class="TestTester"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+    	title="pass event files">
+        <compile files="TestTesterFile.java"/>
+        <run class="TestTesterFile"/>
+    </ajc-test>
+
+    <ajc-test dir="harness" 
+    	title="pass compile and run, no tester required">
+        <compile files="TestNoTester.java"/>
+        <run class="TestNoTester" skipTester="true"/>
+    </ajc-test>
+
+    <ajc-test dir="harness/classpathTest"
+      title="pass specify jars and directories on classpath"
+      keywords="purejava">
+        <compile classpath="classesDir,jars/required.jar" 
+                 files="Main.java"/>
+        <run class="Main"/>
+    </ajc-test>
+
+    <ajc-test dir="harness/classpathTest"
+      title="pass specify aspectpath and classpath jars and directories">
+        <compile classpath="classesDir,jars/required.jar"
+                 aspectpath="jars/requiredAspects.jar"
+                 files="AspectMain.java"/>
+        <run class="AspectMain"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"  keywords="incremental-test"
+    		title="pass minimal purejava sourceroots test">
+        <compile sourceroots="sourceroot"/>
+		<run class="packageOne.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"  keywords="incremental-test"
+    		title="pass test of dual sourceroots with aspects">
+        <compile sourceroots="sourceroot,sourceroot2"/>
+		<run class="packageOne.Main"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"  keywords="incremental-test"
+    		title="pass minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/> 
+		<run class="packageOne.Main" 
+		   options="new-event"/>
+    </ajc-test>
+
+    <ajc-test dir="harness"  keywords="incremental-test"
+    		title="pass rebuild minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/>
+		<run class="packageOne.Main" 
+		   options="new-event"/> 
+
+        <compile options="-incremental" 
+            reuseCompiler="true"
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/>
+		<run class="packageOne.Main" 
+		   options="new-event"/>
+    </ajc-test>
+    
+    <ajc-test dir="harness"  keywords="incremental-test"
+    		title="pass rebuild fresh-same minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+        <inc-compile tag="22"/> 
+		<run class="packageOne.Main" 
+		   options="new-event"/> 
+
+        <inc-compile tag="same" fresh="true" />
+		<run class="packageOne.Main" 
+		   options="new-event"/> <!-- now expect new-event -->
+    </ajc-test>
+    
+    <ajc-test dir="harness"  keywords="incremental-test"
+    		title="pass rebuild fresh-updated minimal incremental purejava sourceroots test"
+    	comment="inc-22 generates new event, expected after">
+        <compile options="-incremental" 
+        	sourceroots="sourceroot-inc"/>
+		<run class="packageOne.Main"/>
+
+        <inc-compile tag="22" fresh="true" /> 
+		<run class="packageOne.Main" 
+		   options="new-event"/> 
+    </ajc-test>
+<!-- disabled pending resolution of same in ajcTestsFailing.xml
+    <ajc-test dir="incremental/stringliteral"
+    	keywords="incremental-test,fixme"
+		title="pass incrementally change only string literal size">
+        <compile staging="true" options="-incremental" 
+        	sourceroots="src"/>
+		<run class="packageOne.Main"
+			options="in packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+        <inc-compile tag="20">
+        	<dir-changes updated="packageOne.Main"/>
+        </inc-compile>
+		<run class="packageOne.Main"
+			options="in longer packageOne.Main.main(..),
+					 before main packageOne.Main"/>
+    </ajc-test>
+-->
+
+   <ajc-test dir="incremental/defaultPackage/src"
+   	title="pass test using prior classes">
+        <compile files="lib/Lib.java"/>
+        <run class="lib.Lib"/>
+        <compile files="Main.java" includeClassesDir="true"/>
+        <run class="Main"/>
+    </ajc-test>
+
+   <ajc-test dir="incremental/interPackage/src"
+   	title="pass test using prior classes (inter-package)">
+        <compile files="lib/Lib.java"/>
+        <run class="lib.Lib"/>
+        <compile files="app/Main.java" includeClassesDir="true"/>
+        <run class="app.Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="harness/systemExit" 
+        title="pass System exit 0">
+        <compile files="SystemExit.java"/>
+        <run class="SystemExit"/>
+    </ajc-test>
+    <ajc-test dir="harness/systemExit" 
+    	keywords="expect-fail"
+        title="fail System exit 1">
+        <compile files="SystemExit.java"/>
+        <run class="SystemExit" options="1"/>
+    </ajc-test>
+    
+    <ajc-test dir="harness/systemExit" 
+    	keywords="expect-fail"
+        title="fail System exit -1">
+        <compile files="SystemExit.java"/>
+        <run class="SystemExit" options="-1"/>
+    </ajc-test>
+  
+    <ajc-test dir="harness/inpath"
+      title="pass test inpath option - valid">
+        <compile files="input-path-classes" sourceroots="aspectsrc"/>
+        <run class="Main"/>
+    </ajc-test>
+    
+    <ajc-test dir="harness"
+      title="pass 2 compound warning">
+        <compile files="CompoundMessage.java">
+            <message kind="warning" line="6">
+            	<source line="14" file="CompoundMessage.java"/>
+            </message>
+            <message kind="warning" line="6">
+            	<source line="12" file="CompoundMessage.java"/>
+            </message>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="harness"
+      title="fail 2 error, but expecting more details">
+        <compile files="ErrorTest.java">
+            <message kind="error" line="5" details="expecting more"/>
+            <message kind="error" line="6" details="details"/>
+        </compile>
+    </ajc-test>
+
+</suite>
+
+

@@ -1,0 +1,14 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+
+<suite>
+    <ajc-test dir="abc"
+      title="syntax error aspect2 instead of aspect"
+      keywords="from-abc">
+        <compile files="Simple2.java">
+            <message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
+
+</suite>
