@@ -49,8 +49,9 @@ public class Main {
 	for (int i = 0 ; i < args.length ; i++) {
 	    if (args[i].equals("+soot")) {
 		soot_args.add("-keep-line-number");
+		soot_args.add("-xml-attributes");
 		while (++i < args.length && !args[i].equals("-soot")) {
-		    if(!args[i].equals("-keep-line-number"))
+		    if(!args[i].equals("-keep-line-number") && !args[i].equals("-xml-attributes"))
 		       soot_args.add(args[i]);
 		}
 	    } else if (args[i].equals("+polyglot")) {
@@ -82,6 +83,7 @@ public class Main {
 	loadJars();
 	compile();
 	weave();
+    optimize();
 	output();
     }
 
@@ -165,13 +167,19 @@ public class Main {
         weaver.weave();
     }
 
+    public void optimize(){
+        PackManager.v().runPacks();
+    }
+    
     public void output() {
 	// Write classes
+    
+        PackManager.v().writeOutput();
 
-		Collection classes=new ArrayList();
+		/*Collection classes=new ArrayList();
 		classes.addAll(weavable_classes);
 		classes.addAll(GlobalAspectInfo.v().getGeneratedClasses());
-        Iterator/*<String>*/ wci = classes.iterator();
+        Iterator/*<String>*/ /*wci = classes.iterator();
         while (wci.hasNext()) {
             String wc = (String) wci.next();
             // System.out.println("Printing out " + wc);
@@ -187,7 +195,7 @@ public class Main {
              Printer.v().write(sc, classes_destdir);
            else
 	     writeClass(sc);
-        }
+        }*/
     }
 
 
