@@ -6,6 +6,8 @@ import polyglot.util.*;
 
 import abc.aspectj.ast.*;
 
+import abc.eaj.extension.*;
+
 import java.util.*;
 
 /**

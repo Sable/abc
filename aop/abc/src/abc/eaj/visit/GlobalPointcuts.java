@@ -10,6 +10,7 @@ import abc.aspectj.ast.*;
 import abc.aspectj.visit.*;
 
 import abc.eaj.ast.*;
+import abc.eaj.extension.*;
 import abc.eaj.types.*;
 
 public class GlobalPointcuts extends ContextVisitor

@@ -1,4 +1,4 @@
-package abc.eaj.ast;
+package abc.eaj.extension;
 
 import polyglot.ast.Node;
 import polyglot.types.Context;
