@@ -103,14 +103,14 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 		l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
 
 		// Pattern and declare parents stuff
-		//l.add(new VisitorPass(CLEAN_DECLARE, job,
-		//new DeclareParentsAmbiguityRemover(job, ts, nf, DeclareParentsAmbiguityRemover.DECLARE)));
+		l.add(new VisitorPass(CLEAN_DECLARE, job,
+				      new DeclareParentsAmbiguityRemover(job, ts, nf)));
 		l.add(new VisitorPass(BUILD_HIERARCHY, job, new HierarchyBuilder(hierarchy, weavable_classes)));
 		l.add(new GlobalBarrierPass(HIERARCHY_BUILT, job));
 		l.add(new VisitorPass(EVALUATE_PATTERNS, job, new NamePatternEvaluator(this)));
 		l.add(new VisitorPass(TEST_PATTERNS, job, new PatternTester(this)));
-		//l.add(new GlobalBarrierPass(PATTERNS_EVALUATED, job));
-		//l.add(new VisitorPass(DECLARE_PARENTS, job, new ParentDeclarer(hierarchy, weavable_classes, ts)));
+		l.add(new GlobalBarrierPass(PATTERNS_EVALUATED, job));
+		l.add(new VisitorPass(DECLARE_PARENTS, job, new ParentDeclarer(hierarchy, weavable_classes, ts)));
 	
 		l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
 			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));

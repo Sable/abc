@@ -44,14 +44,11 @@ public class DeclareParentsExt_c extends DeclareDecl_c
 	return reconstruct(pat, type);
     }
 
-    public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
-	//System.out.println("DeclareParentsExt 0 "+ar.kind());
-	if (ar.kind() == DeclareParentsAmbiguityRemover.DECLARE) {
-	    //System.out.println("DeclareParentsExt 1 "+((AmbTypeNode)type).name());
-	    type = (TypeNode)type.disambiguate(ar);
-	    //System.out.println("DeclareParentsExt 2 "+type.type());
+    public Node disambiguate(DeclareParentsAmbiguityRemover ar) throws SemanticException {
+	if (type instanceof AmbTypeNode) {
+	    AmbTypeNode atn = (AmbTypeNode)type;
+	    type = (TypeNode) ar.nodeFactory().disamb().disambiguate(atn, ar, position(), atn.qual(), atn.name());
 	}
-
 	return this;
     }
 

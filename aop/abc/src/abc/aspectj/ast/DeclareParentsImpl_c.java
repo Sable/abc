@@ -44,21 +44,21 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	return reconstruct(pat, interfaces);
     }
 
-    public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
-	//System.out.println("DeclareParentsImpl 0 "+ar.kind());
-	if (ar.kind() == DeclareParentsAmbiguityRemover.DECLARE) {
-	    TypedList interfaces_disam = new TypedList(new ArrayList(), TypeNode.class, false);
-	    Iterator ti = interfaces.iterator();
-	    while (ti.hasNext()) {
-		TypeNode tn = (TypeNode)ti.next();
-		//System.out.println("DeclareParentsImpl 1 "+tn.type());
-		tn = (TypeNode)tn.disambiguate(ar);
-		//System.out.println("DeclareParentsImpl 2 "+tn.type());
-		interfaces_disam.add(tn);
+    public Node disambiguate(DeclareParentsAmbiguityRemover ar) throws SemanticException {
+	System.err.print("Declare parents impl:");
+	TypedList interfaces_disam = new TypedList(new ArrayList(), TypeNode.class, false);
+	Iterator ti = interfaces.iterator();
+	while (ti.hasNext()) {
+	    TypeNode tn = (TypeNode)ti.next();
+	    if (tn instanceof AmbTypeNode) {
+		AmbTypeNode atn = (AmbTypeNode)tn;
+		System.err.print(" "+atn.name());
+		tn = (TypeNode) ar.nodeFactory().disamb().disambiguate(atn, ar, position(), atn.qual(), atn.name());
 	    }
-	    interfaces = interfaces_disam;
+	    interfaces_disam.add(tn);
 	}
-
+	System.err.println();
+	interfaces = interfaces_disam;
 	return this;
     }
 
