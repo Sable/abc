@@ -11,6 +11,8 @@ import abc.weaving.residues.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 /** The results of matching at a particular shadow type
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
@@ -72,8 +74,9 @@ public abstract class ShadowMatch {
 	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue);
 
     public ContextValue getThisContextValue() {
-        if(container.isStatic()) return null;
-	return new JimpleValue(Restructure.getThisCopy(container));
+        if(container.isStatic()   && 
+        	!MethodCategory.hasThisAsFirstParameter(container) ) return null;
+		return new JimpleValue(Restructure.getThisCopy(container));
     }
 
     // no sensible default - unless null?

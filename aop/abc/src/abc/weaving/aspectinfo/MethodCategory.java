@@ -293,5 +293,15 @@ public class MethodCategory {
     public static int getSkipLast(SootMethod m) {
 	return GlobalAspectInfo.v().getSkipLast(AbcFactory.MethodSig(m));
     }
+    
+    /** is this an ITD (method or field initialiser) that has "this"
+     *  as a parameter?
+     */
+    public static boolean hasThisAsFirstParameter(SootMethod m) {
+    	return (getCategory(m) == INTERTYPE_FIELD_INITIALIZER ||
+    	        getCategory(m) == INTERTYPE_METHOD_SOURCE) &&
+    	        getSkipFirst(m) == 1; // FIXME: this is a fragile test to
+    	                              // see whether the ITM was declared static
+    }
 
 }

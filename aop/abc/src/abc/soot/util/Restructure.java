@@ -9,6 +9,7 @@ import soot.jimple.toolkits.scalar.*;
 import java.util.*;
 
 import abc.weaving.weaver.CodeGenException;
+import abc.weaving.aspectinfo.MethodCategory;
 
 
 
@@ -411,12 +412,11 @@ public class Restructure {
 	
 	Body b=m.getActiveBody();
 	Local l=new LocalGeneratorEx(b).generateLocal
-	    (m.getDeclaringClass().getType(),"thisCopy");
+	    (MethodCategory.getClass(m).getType(),"thisCopy");
 
 	// don't want exceptions "fixed" up
 	Chain units=b.getUnits().getNonPatchingChain();
-	for(Stmt stmt=(Stmt) units.getFirst();
-	    ;
+	for(Stmt stmt=(Stmt) units.getFirst(); ;
 	    stmt=(Stmt) units.getSuccOf(stmt)) {
 	    
 	    if(stmt==null) throw new RuntimeException
@@ -424,15 +424,31 @@ public class Restructure {
 				+"in method "+m);
 
 	    if(stmt instanceof IdentityStmt) {
-		IdentityStmt istmt=(IdentityStmt) stmt;
-		if(istmt.getRightOp() instanceof ThisRef) {
-		    Value tr=istmt.getLeftOp();
-		    do { 
-			stmt=(Stmt) units.getSuccOf(stmt); 
-		    } while(stmt instanceof IdentityStmt);
-		    units.insertBefore(Jimple.v().newAssignStmt(l,tr),stmt);
-		    break;
-		}
+			IdentityStmt istmt=(IdentityStmt) stmt;
+			
+			// for ITDs "this" means the first parameter
+			if (MethodCategory.hasThisAsFirstParameter(m)) {
+				if (istmt.getRightOp() instanceof ParameterRef) {
+					ParameterRef parref = (ParameterRef) istmt.getRightOp();
+					if (parref.getIndex()==0) {
+					   Value tr=istmt.getLeftOp();
+					   do { 
+					   stmt=(Stmt) units.getSuccOf(stmt); 
+					   } while(stmt instanceof IdentityStmt);
+					   units.insertBefore(Jimple.v().newAssignStmt(l,tr),stmt);
+					   break;
+					}
+				}
+			} else 
+			// the normal non-ITD case
+			if(istmt.getRightOp() instanceof ThisRef) {
+			    Value tr=istmt.getLeftOp();
+			    do { 
+				stmt=(Stmt) units.getSuccOf(stmt); 
+			    } while(stmt instanceof IdentityStmt);
+			    units.insertBefore(Jimple.v().newAssignStmt(l,tr),stmt);
+			    break;
+			}
 	    }
 	}
 	thiscopies.put(m,l);
