@@ -51,7 +51,7 @@ public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
         if (n instanceof SourceFile) {
-            if (!source_files.contains(((SourceFile)n).source().name())) {
+            if (!source_files.contains(((SourceFile)n).source().path())) {
                 throw new SemanticException("Source file was needed but not given on the commandline", n.position());
             }
             current_ast = n;
