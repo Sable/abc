@@ -421,6 +421,9 @@ public class AspectCodeGen {
           { final AbcClass cl = (AbcClass) clIt.next();
 	    final SootClass scl = cl.getSootClass();
             debug("Adding " + inter.getName() + " to " + scl.getName());
+            
+            // I don't think we want to add it to interfaces - ODM
+            if (scl.isInterface()) continue; 
 
             // add the implements
             scl.addInterface(inter); 
