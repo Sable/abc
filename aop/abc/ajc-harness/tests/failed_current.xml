@@ -75,10 +75,6 @@
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
        <run class="Cast"></run>
     </ajc-test>
-<ajc-test title="resolving and declared parents" num="1000" dir="abctests/bugs/resolvingdeclareparents">
-	<compile files="B.java"></compile>
-	<compile files="A.java" classpath="."></compile>
-    </ajc-test>
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>

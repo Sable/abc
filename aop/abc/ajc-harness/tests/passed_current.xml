@@ -1955,7 +1955,9 @@
         <run class="AspectRedefinesParam"></run>
     </ajc-test>
 <ajc-test title="introducing extends and implements" num="343" keywords="from-resolved_10x" dir="new" abccomment="Need to support I1 extends I2,I3,I4. ODM 09/07/04">
-        <compile files="HierarchyIntroductions.java"></compile>
+        <compile files="HierarchyIntroductions.java">
+        <message line="29" kind="warning"></message>
+        </compile>
         <run class="HierarchyIntroductions"></run>
     </ajc-test>
 <ajc-test title="(related) aspect on interface" pr="104" num="344" keywords="from-resolved_10x" dir="new">
@@ -3801,7 +3803,9 @@
         <run class="b_impl.BImpl"></run>
     </ajc-test>
 <ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents">
-        <compile files="Driver.java"></compile>
+        <compile files="Driver.java">
+        <message line="29" kind="warning"></message>
+        </compile>
         <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="Declare parents removing ancestor" num="776" keywords="from-new" dir="new/declareParents">
@@ -4046,13 +4050,13 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
-<ajc-test title="advice on handler join points should not throw unpermitted checked exceptions" pr="37898" num="825" keywords="knownLimitation" dir="bugs/handlers" abccomment="we only report the error at the join point shadow, not the advice body too">
+<ajc-test title="advice on handler join points should not throw unpermitted checked exceptions" pr="37898" num="825" keywords="knownLimitation" dir="bugs/handlers" abccomment="we only report the error at the join point shadow, not the advice                              body too.">
         <compile files="ExceptionCheckCE.java">
 			<ajcmessage text="expected" line="8" kind="warning"></ajcmessage>
 			<ajcmessage text="throw checked exception" line="25" kind="error"></ajcmessage>
 			<ajcmessage text="throw checked exception" line="8" kind="error"></ajcmessage>
-			<message text="expected" line="8" kind="warning"></message>
 			<message line="8" kind="error"></message>
+			<message text="expected" line="8" kind="warning"></message>
         </compile>
     </ajc-test>
 <ajc-test title="-nowarn suppresses XLint warnings" pr="38134" num="827" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
@@ -5009,6 +5013,13 @@
     </ajc-test>
 <ajc-test title="declare parents/protected access/inner classes" num="999" dir="abctests/bugs/declareparentsprotectedaccessinnerclasses">
 	<compile files="A.java,bar/C.java"></compile>
+    </ajc-test>
+<ajc-test title="resolving and declared parents" num="1000" dir="abctests/bugs/resolvingdeclareparents">
+	<compile files="B.java"></compile>
+	<compile files="A.java" classpath="."></compile>
+    </ajc-test>
+<ajc-test title="" num="1002" dir="abctests/bugs/doubledeclareparents">
+         <compile files="A.java"></compile>
     </ajc-test>
  
 </suite>
