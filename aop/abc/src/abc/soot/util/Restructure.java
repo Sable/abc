@@ -376,7 +376,8 @@ public class Restructure {
 		Iterator unitBoxesIt=newStmt.getUnitBoxes().iterator();
 		while(unitBoxesIt.hasNext()) {
 		    UnitBox box=(UnitBox) unitBoxesIt.next();
-		    box.setUnit((Stmt) oldStmtsToNew.get(box.getUnit()));
+		    if(oldStmtsToNew.containsKey(box.getUnit()))
+			box.setUnit((Stmt) oldStmtsToNew.get(box.getUnit()));
 		}
 	    }
                 
