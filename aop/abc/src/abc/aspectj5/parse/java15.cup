@@ -82,6 +82,98 @@ JSR-201 Features added:
 	|	SEMICOLON class_body_declarations_opt
 	;
 */
+
+/*
+JSR-175: Annotations support
+  modifier ::= ...
+	|	annotation
+	;
+  compilation_unit ::= 
+	[annotations_opt PACKAGE qualified_identifier SEMICOLON]
+	[import_declaration]
+	[type_declaration]
+	;
+  interface_declaration ::= ...
+	|	annotation_type_declaration
+	;
+
+  annotation_type_declaration ::= 
+	interface_modifiers_opt AT INTERFACE
+	identifier annotation_type_body
+	;
+  annotation_type_body ::= 
+	LBRACE annotation_type_element_declarations_opt RBRACE 
+	;
+  annotation_type_element_declarations_opt ::=
+	| annotation_type_element_declarations
+	;
+  annotation_type_element_declarations ::=
+	  annotation_type_element_declaration
+	| annotation_type_element_declarations annotation_type_element_declaration
+	;
+  annotation_type_element_declaration ::=
+	  abstract_method_modifiers_opt type identifier LPAREN RPAREN default_value_opt SEMICOLON
+	| constant_declaration
+	| class_declaration
+	| interface_declaration
+	| enum_declaration
+	| annotation_type_declaration
+	;
+  default_value_opt ::=
+	| default_value
+	;
+  default_value ::=
+	DEFAULT element_value
+	;
+
+  annotations ::=
+	  annotation
+	| annotations annotation
+	;
+  annotation ::= 
+	  normal_annotation
+	| marker_annotation
+	| single_element_annotation
+	;
+
+  normal_annotation ::=
+	  AT type_name LPAREN element_value_pairs_opt RPAREN
+	;
+  element_value_pairs_opt ::=
+	| element_value_pairs
+	;
+  element_value_pairs ::=
+	  element_value_pair
+	| element_value_pairs COMMA element_value_pair
+	;
+  element_value_pair ::=
+	  identifier EQ element_value
+	;
+  element_values_opt ::= 
+	| element_values
+	;
+  element_values ::=
+	  element_value 
+	| element_values COMMA element_value
+	;
+  element_value ::=
+	  conditional_expression
+	| annotation
+	| element_value_array_initializer
+	;
+  element_value_array_initializer ::=
+	LBRACE element_values_opt RBRACE
+	;
+  
+  marker_annotation ::= 
+	AT type_name
+	;
+
+  single_element_annotation ::= 
+	AT type_name LPAREN element_value RPAREN
+	;
+*/
+
 parser code  {: 
   Lexer lexer;
 
@@ -147,6 +239,7 @@ terminal QUESTION; // conditional_expression
 terminal MULTEQ, DIVEQ, MODEQ, PLUSEQ, MINUSEQ; // assignment_operator
 terminal LSHIFTEQ, RSHIFTEQ, URSHIFTEQ; // assignment_operator
 terminal ANDEQ, XOREQ, OREQ; // assignment_operator
+terminal AT; // @ sign
 
 terminal java.lang.Number INTEGER_LITERAL;
 terminal java.lang.Number FLOATING_POINT_LITERAL;
@@ -181,7 +274,7 @@ non terminal array_type;
 non terminal name, simple_name, qualified_name;
 // 19.6) Packages
 non terminal compilation_unit;
-non terminal package_declaration_opt, package_declaration;
+non terminal package_declaration;
 non terminal import_declarations_opt, import_declarations;
 non terminal type_declarations_opt, type_declarations;
 non terminal import_declaration;
@@ -318,6 +411,28 @@ non terminal conditional_or_expression_nn;
 non terminal conditional_expression_nn;
 non terminal assignment_expression_nn;
 non terminal expression_nn;
+// JSR-175 nonterminals
+//// Annotation types
+non terminal annotation_type_declaration;
+non terminal annotation_type_body;
+non terminal annotation_type_element_declarations_opt, annotation_type_element_declarations, annotation_type_element_declaration;
+non terminal default_value_opt, default_value;
+//// Annotations
+non terminal annotation;
+////// Normal Annotations
+non terminal normal_annotation;
+non terminal element_value_pairs_opt, element_value_pairs, element_value_pair;
+non terminal element_values_opt, element_values, element_value;
+non terminal element_value_array_initializer;
+////// Marker Annotations
+non terminal marker_annotation;
+////// Single Element Annotations
+non terminal single_element_annotation;
+//// Misc nonterminals: not directly JSR-175 related but added for JSR-175
+non terminal normal_interface_declaration;
+non terminal type_name;
+non terminal method_header_nomods;
+non terminal modifier_noannot;
 
 start with goal;
 
@@ -465,12 +580,12 @@ qualified_name ::=
 	;
 
 // 19.6) Packages
-compilation_unit ::=
-		package_declaration_opt 
-		import_declarations_opt
-		type_declarations_opt
-		;
-package_declaration_opt ::= package_declaration | ;
+compilation_unit ::= // JSR-175-LALR : expanded to resolve ambiguity
+	  package_declaration import_declarations_opt type_declarations_opt
+	| import_declarations type_declarations_opt
+	| type_declarations_opt
+	;
+
 import_declarations_opt ::= import_declarations | ;
 type_declarations_opt   ::= type_declarations   | ;
 
@@ -482,8 +597,9 @@ type_declarations ::=
 		type_declaration
 	|	type_declarations type_declaration
 	;
-package_declaration ::= 
-		PACKAGE name SEMICOLON
+package_declaration ::= // JSR-175-LALR : PACKAGE can be preceded by annotations, but use modifiers w/ semantic check
+	  modifiers PACKAGE name SEMICOLON
+	| PACKAGE name SEMICOLON
 	;
 import_declaration ::= 
 		single_type_import_declaration
@@ -503,7 +619,7 @@ type_import_on_demand_declaration ::=
 static_type_import_on_demand_declaration ::=
 		IMPORT STATIC name DOT MULT SEMICOLON
 	;
-type_declaration ::=
+type_declaration ::=	
 		class_declaration
 	|	enum_declaration
 	|	interface_declaration
@@ -517,7 +633,9 @@ modifiers_opt::=
 modifiers ::= 	modifier
 	|	modifiers modifier
 	;
-modifier ::=	PUBLIC | PROTECTED | PRIVATE
+modifier ::= modifier_noannot | annotation; // JSR-175
+modifier_noannot ::=	// JSR-175
+		PUBLIC | PROTECTED | PRIVATE
 	|	STATIC
 	|	ABSTRACT | FINAL | NATIVE | SYNCHRONIZED | TRANSIENT | VOLATILE
 	|	STRICTFP // note that semantic analysis must check that the
@@ -561,7 +679,7 @@ class_body_declaration ::=
 	|	constructor_declaration
 	|	block
 	;
-class_member_declaration ::=
+class_member_declaration ::=  
 		field_declaration
 	|	method_declaration
 	/* repeat the prod for 'class_declaration' here: */
@@ -572,8 +690,9 @@ class_member_declaration ::=
 	;
 
 // JSR-201) Enum Declaration
-enum_declaration ::=
-		modifiers_opt ENUM IDENTIFIER interfaces_opt enum_body
+enum_declaration ::= // JSR-175-LALR: expand modifiers_opt
+		ENUM IDENTIFIER interfaces_opt enum_body
+	|	modifiers ENUM IDENTIFIER interfaces_opt enum_body
 	;
 enum_body ::=
 		LBRACE enum_constants_opt enum_body_declarations_opt RBRACE
@@ -597,8 +716,9 @@ enum_body_declarations_opt ::=
 	;
 
 // 19.8.2) Field Declarations
-field_declaration ::= 
-		modifiers_opt type variable_declarators SEMICOLON
+field_declaration ::= // JSR-175-LALR: expands modifiers_opt to avoid ambiguity
+		type variable_declarators SEMICOLON
+	|	modifiers type variable_declarators SEMICOLON
 	;
 variable_declarators ::=
 		variable_declarator
@@ -618,19 +738,24 @@ variable_initializer ::=
 	;
 
 // 19.8.3) Method Declarations
-method_declaration ::=
+method_declaration ::= 
 		method_header method_body
 	;
-method_header ::=
+
+method_header ::=// JSR-175-LALR : expand modifier_opt
+		method_header_nomods
+	|	modifiers method_header_nomods;
+
+method_header_nomods ::=
 	// have to expand type_parameters_opt here so that we don't
 	// force an early decision of whether this is a field_declaration
 	// or a method_declaration (the type_parameters_opt would have to
 	// be reduced when we see the 'type' if this was a method declaration,
 	// but it might still turn out to be a field declaration).
-		modifiers_opt type method_declarator throws_opt
-	|	modifiers_opt LT type_parameter_list_1 type method_declarator throws_opt
-	|	modifiers_opt VOID method_declarator throws_opt
-	|	modifiers_opt LT type_parameter_list_1 VOID method_declarator throws_opt
+		type method_declarator throws_opt
+	|	LT type_parameter_list_1 type method_declarator throws_opt
+	|	VOID method_declarator throws_opt
+	|	LT type_parameter_list_1 VOID method_declarator throws_opt
 	;
 method_declarator ::=
 		IDENTIFIER LPAREN formal_parameter_list_opt RPAREN
@@ -670,10 +795,14 @@ static_initializer ::=
 	;
 
 // 19.8.5) Constructor Declarations
-constructor_declaration ::=
-		modifiers_opt constructor_declarator
+constructor_declaration ::= // JSR-175-LALR : expand modifiers_opt
+		constructor_declarator
 			throws_opt constructor_body
-	|	modifiers_opt LT type_parameter_list_1 constructor_declarator
+	|	LT type_parameter_list_1 constructor_declarator
+			throws_opt constructor_body
+	|	modifiers constructor_declarator
+			throws_opt constructor_body
+	|	modifiers LT type_parameter_list_1 constructor_declarator
 			throws_opt constructor_body
 	;
 constructor_declarator ::=
@@ -701,10 +830,17 @@ explicit_constructor_invocation ::=
 // 19.9) Interfaces
 
 // 19.9.1) Interface Declarations
+
 interface_declaration ::=
+	  normal_interface_declaration
+	| annotation_type_declaration	// JSR-175
+	;
+
+normal_interface_declaration ::=
 		modifiers_opt INTERFACE IDENTIFIER type_parameters_opt
 		  extends_interfaces_opt interface_body
 	;
+
 extends_interfaces_opt ::=
 	|	extends_interfaces
 	;
@@ -1237,6 +1373,87 @@ additional_bound ::=
 additional_bound_1 ::=
 		AND reference_type_1
 	;
+
+// ///////// JSR-175 Productions: Annotations and Annotation TypeDecls /////////
+
+  annotation_type_declaration ::= // JSR-175-LALR: split cases modifiers/no mods
+	   AT INTERFACE IDENTIFIER annotation_type_body
+	|  modifiers AT INTERFACE IDENTIFIER annotation_type_body
+	;
+
+  annotation_type_body ::= 
+	LBRACE annotation_type_element_declarations_opt RBRACE 
+	;
+  annotation_type_element_declarations_opt ::=
+	| annotation_type_element_declarations
+	;
+  annotation_type_element_declarations ::=
+	  annotation_type_element_declaration
+	| annotation_type_element_declarations annotation_type_element_declaration
+	;
+  annotation_type_element_declaration ::=
+	  type IDENTIFIER LPAREN RPAREN default_value_opt SEMICOLON
+	| modifiers type IDENTIFIER LPAREN RPAREN default_value_opt SEMICOLON
+	| constant_declaration
+	| type_declaration
+	;
+  default_value_opt ::=
+	| default_value
+	;
+  default_value ::=
+	DEFAULT element_value
+	;
+
+  annotation ::= 
+	  normal_annotation
+	| marker_annotation
+	| single_element_annotation
+	;
+
+  normal_annotation ::=
+	  AT type_name LPAREN element_value_pairs_opt RPAREN
+	;
+  element_value_pairs_opt ::=
+	| element_value_pairs
+	;
+  element_value_pairs ::=
+	  element_value_pair
+	| element_value_pairs COMMA element_value_pair
+	;
+  element_value_pair ::=
+	  IDENTIFIER EQ element_value
+	;
+  element_values_opt ::= 
+	| element_values
+	;
+  element_values ::=
+	  element_value 
+	| element_values COMMA element_value
+	;
+  element_value ::=
+	  conditional_expression
+	| annotation
+	| element_value_array_initializer
+	;
+  element_value_array_initializer ::=
+	  LBRACE element_values COMMA RBRACE
+	| LBRACE element_values RBRACE
+	| LBRACE COMMA RBRACE
+	| LBRACE RBRACE
+	;
+  
+  marker_annotation ::= 
+	AT type_name
+	;
+
+  single_element_annotation ::= 
+	AT type_name LPAREN element_value RPAREN
+	;
+
+  type_name ::= // This may not be right. Undefined in JSR-175
+	name
+	;
+
 //////////////////////////////////////////////
 // the following productions are copied from the standard ones, but
 // 'name' all alone is not allowed.  The '_nn' stands for 'not name'.

@@ -129,7 +129,7 @@ terminal Identifier IDENTIFIERPATTERN;
 /* ---------------------------------------------------------*/
 
 /* --- all types List must be fixed to give real types --- */
-non terminal AspectDecl aspect_declaration; 
+non terminal AspectDecl aspect_declaration;
 non terminal PerClause  perclause_opt;
 non terminal PerClause  perclause;
 
@@ -145,6 +145,7 @@ non terminal AdviceDecl advice_declaration;
 non terminal AdviceSpec advice_spec;
 
 non terminal IntertypeDecl intertype_member_declaration;
+non terminal IntertypeDecl intertype_member_declaration_nomods; // JSR-175-LALR
 
 non terminal Pointcut pointcut_expr;
 non terminal Pointcut or_pointcut_expr;
@@ -280,7 +281,7 @@ extend interface_member_declaration ::=
    another rule which can go to epsilon,  then there is a shift reduce
    conflict with modifiers_opt, which can also go to epsilon. */
 
-aspect_declaration ::=
+aspect_declaration ::= 
       modifiers_opt:a PRIVILEGED modifiers_opt:a1 ASPECT:n IDENTIFIER:b
                          super_opt:c interfaces_opt:d  perclause_opt:f  
                          aspect_body:g
@@ -483,13 +484,25 @@ pointcut_declaration ::=
      :}
   ;
 
-advice_declaration ::=
-      modifiers_opt:m advice_spec:a throws_opt:b COLON pointcut_expr:c 
+advice_declaration ::= // JSR-175-LALR: expand modifiers_opt to avoid conflicts
+      modifiers:m advice_spec:a throws_opt:b COLON pointcut_expr:c 
      /* only valid modifier is strictfp */
         method_body:d 
        {: Grm.parserTrace("advice declaration without strictfp");
           AdviceDecl ad = parser.nf.AdviceDecl(parser.pos(a,d),
 					       m,
+                                               a,
+                                               b,
+					       c,
+	                                       d);
+          RESULT = ad;
+       :}
+  |  advice_spec:a throws_opt:b COLON pointcut_expr:c 
+     /* only valid modifier is strictfp */
+        method_body:d 
+       {: Grm.parserTrace("advice declaration without strictfp");
+          AdviceDecl ad = parser.nf.AdviceDecl(parser.pos(a,d),
+					       null, 
                                                a,
                                                b,
 					       c,
@@ -595,8 +608,12 @@ advice_spec ::=
        :}
   ;
 
-intertype_member_declaration ::=
-     modifiers_opt:a VOID:b name:c DOT IDENTIFIER:d 
+intertype_member_declaration ::= // JSR-175-LALR: split intertype_member_declaration
+     intertype_member_declaration_nomods
+  |  modifiers:a intertype_member_declaration_nomods;
+
+intertype_member_declaration_nomods ::= 
+     VOID:b name:c DOT IDENTIFIER:d 
          LPAREN formal_parameter_list_opt:e RPAREN:r throws_opt:f method_body:g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
@@ -606,7 +623,7 @@ intertype_member_declaration ::=
         
           IntertypeMethodDecl imd 
             = parser.nf.IntertypeMethodDecl(parser.pos(b,r),
-                                      a,
+                                      null, 
                                       voidn,
 				      c.toType(),
 				      d.getIdentifier(),
@@ -615,14 +632,14 @@ intertype_member_declaration ::=
                                       g);                                     
            RESULT = imd;
        :}
-  |  modifiers_opt:a type:b name:c DOT IDENTIFIER:d 
+  |  type:b name:c DOT IDENTIFIER:d 
          LPAREN formal_parameter_list_opt:e RPAREN:r throws_opt:f method_body:g
      /* must check if modifiers includes abstract, no body,  if doesn't
           include abstract, has body */
        {: Grm.parserTrace("Intertype METHOD declaration");
            IntertypeMethodDecl imd 
             = parser.nf.IntertypeMethodDecl(parser.pos(b,r),
-                                      a,
+                                      null, 
                                       b,
 				      c.toType(),
 				      d.getIdentifier(),
@@ -631,13 +648,13 @@ intertype_member_declaration ::=
                                       g);                                     
            RESULT = imd;
        :}
-  | modifiers_opt:a name:b DOT NEW 
+  | name:b DOT NEW 
          LPAREN formal_parameter_list_opt:c RPAREN throws_opt:d constructor_body:e
      /* must check that body is not null */
        {: Grm.parserTrace("Intertype CONSTRUCTOR declaration");
           IntertypeConstructorDecl icd
            = parser.nf.IntertypeConstructorDecl(parser.pos(b,e),
-                                        a,
+                                        null, 
 					b.toType(),
 					b.toString(),
 					c,
@@ -645,23 +662,23 @@ intertype_member_declaration ::=
 					e);		
           RESULT = icd;
        :}
-  | modifiers_opt:a type:b name:c DOT IDENTIFIER:d SEMICOLON 
+  | type:b name:c DOT IDENTIFIER:d SEMICOLON 
        {: Grm.parserTrace("Intertype FIELD without initializer");
           IntertypeFieldDecl ifd
 	   = parser.nf.IntertypeFieldDecl(parser.pos(b,d),
-                                          a,
+                                          null, 
                                           b,
                                           c.toType(),
                                           d.getIdentifier(),
                                           null);
           RESULT = ifd;
        :}
-  | modifiers_opt:a type:b name:c DOT IDENTIFIER:d  
+  | type:b name:c DOT IDENTIFIER:d  
         EQ variable_initializer:e SEMICOLON 
        {: Grm.parserTrace("Intertype FIELD with initializer");
           IntertypeFieldDecl ifd
 	   = parser.nf.IntertypeFieldDecl(parser.pos(b,d),
-                                          a,
+                                          null, 
                                           b,
                                           c.toType(),
                                           d.getIdentifier(),
@@ -1241,26 +1258,26 @@ unary_classname_pattern_expr_nobang ::=
 /* ----------------------- MODIFIER PATTERNS ---------------------------- */
 
 modifier_pattern_expr ::=
-     modifier:a
+     modifier_noannot:a // JSR-175: must not allow annotations here
        {: Grm.parserTrace("first modifier " + a);
           RESULT = new TypedList(new LinkedList(),
 				 ModifierPattern.class,
 				 false);
 	  RESULT.add(parser.nf.ModifierPattern(null,a,true));
        :}
-  |  PC_NOT:b modifier:a
+  |  PC_NOT:b modifier_noannot:a // JSR-175: must not allow annotations here
        {: Grm.parserTrace("first modifier is NOT " + a);
           RESULT = new TypedList(new LinkedList(),
 				 ModifierPattern.class,
 				 false);
 	  RESULT.add(parser.nf.ModifierPattern(parser.pos(b),a,false));
        :}
-  |  modifier_pattern_expr:a modifier:b
+  |  modifier_pattern_expr:a modifier_noannot:b
        {: Grm.parserTrace("another modifier is " + b);
           a.add(parser.nf.ModifierPattern(parser.pos(a),b,true));
           RESULT = a;
        :}
-  |  modifier_pattern_expr:a PC_NOT:c modifier:b
+  |  modifier_pattern_expr:a PC_NOT:c modifier_noannot:b
        {: Grm.parserTrace("another modifier is NOT" + b);
           a.add(parser.nf.ModifierPattern(parser.pos(c),b,false)); 
           RESULT = a;
