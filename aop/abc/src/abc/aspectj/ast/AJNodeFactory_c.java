@@ -1,6 +1,7 @@
 package abc.aspectj.ast;
 
 import polyglot.ast.*;
+import polyglot.ast.Unary.Operator;
 import polyglot.ext.jl.ast.*;
 import polyglot.types.Flags;
 import polyglot.types.Package;
@@ -8,6 +9,7 @@ import polyglot.types.Type;
 import polyglot.types.Qualifier;
 import polyglot.types.SemanticException;
 import polyglot.util.*;
+
 import java.util.*;
 import abc.aspectj.ast.*;
 import abc.aspectj.extension.*;
@@ -843,4 +845,11 @@ public class AJNodeFactory_c
     }
     
 	
+    /* needed to associate custom delegator with nodes */
+    public Unary Unary(Position pos, Operator op, Expr expr) {
+        Unary u = super.Unary(pos, op, expr);
+        u = (Unary)u.ext(extFactory.extUnary());
+        u = (Unary)u.del(delFactory.delUnary());
+        return u;
+    }
 }

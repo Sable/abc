@@ -119,6 +119,7 @@ public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
     protected JL delUnaryImpl() {
         return new UnaryDel_c();
     }
+    
     public final JL delDeclareParentsExt() {
         JL e = delDeclareParentsExtImpl();
 
