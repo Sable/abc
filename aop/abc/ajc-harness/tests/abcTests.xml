@@ -6886,10 +6886,12 @@
     </ajc-test>
     
 
-	<ajc-test num="78401" dir="bugs/messyAround" pr="36056"
+	<ajc-test num="784" dir="bugs/messyAround" pr="36056"
          abccomment="we only report the warning in one location. Also,
 	         the main class is not declared public, which makes
-		 this fail from the test harness. Cloned. PA"
+		 this fail from the test harness. Cloned. PA. 
+                 The test also imports org.aspectj.runtime.* for no
+                 apparent reason."
       title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds">
       <abckeywords><skip/></abckeywords>
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
@@ -6902,7 +6904,7 @@
         <run class="cap.OptionList"/>
     </ajc-test>  
 
-	<ajc-test num="784" dir="abctests/bugs/messyAround" pr="36056"
+	<ajc-test num="78401" dir="abctests/bugs/messyAround" pr="36056"
          abccomment="we only report the warning in one location. Also,
 	         the main class is not declared public, which makes
 		 this fail from the test harness. Cloned. PA"
