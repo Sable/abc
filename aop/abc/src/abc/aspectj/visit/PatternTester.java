@@ -19,7 +19,7 @@ public class PatternTester extends NodeVisitor {
     public Node override(Node n) {
 	if (n instanceof NamePattern) {
 	    Position p = n.position();
-	    System.out.println("The name pattern on "+p.file()+":"+p.line()+" matches these names:");
+	    System.out.println("The name pattern "+n+" on "+p.file()+":"+p.line()+" matches these names:");
 	    Set matches = ext_info.pattern_matcher.getMatches((NamePattern)n);
 	    Iterator mi = matches.iterator();
 	    while (mi.hasNext()) {

@@ -30,7 +30,7 @@ public class TPEArray_c extends TypePatternExpr_c
 	return this;
     }
 
-    public Node vistChildren(NodeVisitor v) {
+    public Node visitChildren(NodeVisitor v) {
 	TypePatternExpr base = (TypePatternExpr) visitChild(this.base, v);
 	return reconstruct(base);
     }

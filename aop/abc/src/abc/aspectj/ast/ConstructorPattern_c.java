@@ -15,7 +15,6 @@ public class ConstructorPattern_c extends Node_c
                                   implements  ConstructorPattern
 {
 
-    Position pos;
     List modifiers;       // of ModifierPattern
     ClassTypeDotNew name;
     List formals;         // of FormalPattern
@@ -27,7 +26,6 @@ public class ConstructorPattern_c extends Node_c
 			        List formals,
                                 ClassnamePatternExpr throwpat) {
         super(pos);
-	this.pos = pos;
 	this.modifiers = modifiers;
 	this.name = name;
 	this.formals = formals;
@@ -62,6 +60,18 @@ public class ConstructorPattern_c extends Node_c
 	   w.write(" throws ");
 	   print(throwpat,w,tr);
        }
+    }
+
+    public List/*<ModifierPattern>*/ getModifiers() {
+	return modifiers;
+    }
+
+    public ClassTypeDotNew getName() {
+	return name;
+    }
+
+    public List/*<FormalPattern>*/ getFormals() {
+	return formals;
     }
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern() {

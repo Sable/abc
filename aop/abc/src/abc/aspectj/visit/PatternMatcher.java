@@ -13,6 +13,9 @@ import soot.*;
 public class PatternMatcher {
     private PCStructure hierarchy;
     private Map/*<NamePattern,Set<PCNode>>*/ pattern_matches = new HashMap();
+    private Map/*<NamePattern,Set<String>>*/ pattern_classes = new HashMap();
+    private Map/*<NamePattern,Set<String>>*/ pattern_packages = new HashMap();
+    private Map/*<NamePattern,PCNode>*/ pattern_context = new HashMap();
 
     private Set/*<String>*/ prim_types;
 
@@ -43,25 +46,59 @@ public class PatternMatcher {
     }
 
     public void computeMatches(NamePattern pat, PCNode context, Set/*<String>*/ classes, Set/*<String>*/ packages) {
-	Set/*<PCNode>*/ matches = hierarchy.matchName(pat, context, classes, packages);
-	pattern_matches.put(pat, matches);
+	pattern_classes.put(pat, classes);
+	pattern_packages.put(pat, packages);
+	pattern_context.put(pat, context);
+	pattern_matches.put(pat, hierarchy.matchName(pat, context, classes, packages));
     }
 
-    public Set/*<PCNode>*/ getMatches(NamePattern pat) {
+    public void updateWithAllSootClasses() {
+	Iterator sci = Scene.v().getClasses().iterator();
+	while (sci.hasNext()) {
+	    SootClass sc = (SootClass)sci.next();
+	    hierarchy.insertSootClass(sc, false);
+	}
+    }
+
+    public void recomputeAllMatches() {
+	Iterator pati = pattern_matches.keySet().iterator();
+	while (pati.hasNext()) {
+	    NamePattern pat = (NamePattern)pati.next();
+	    PCNode context = (PCNode)pattern_context.get(pat);
+	    Set classes = (Set)pattern_classes.get(pat);
+	    Set packages = (Set)pattern_packages.get(pat);
+	    //System.out.print("Recomputing pattern "+pat+"...");
+	    pattern_matches.put(pat, hierarchy.matchName(pat, context, classes, packages));
+	    //System.out.println("DONE");
+	}
+    }
+
+    Set getMatches(NamePattern pat) {
+	if (!pattern_matches.containsKey(pat)) {
+	    throw new RuntimeException("Unknown name pattern: "+pat+" at "+pat.position());
+	}
 	return (Set)pattern_matches.get(pat);
     }
 
+    public boolean matchesName(NamePattern pat, PCNode name) {
+	//System.out.print("Matching pattern "+pat+"...");
+	boolean res = getMatches(pat).contains(name);
+	//System.out.println("DONE");
+	return res;
+    }
+
     public boolean matchesObject(NamePattern pat) {
-	PCNode object = hierarchy.insertFullName("java.lang.Object", true, false);
-	return getMatches(pat).contains(object);
+	PCNode object = hierarchy.getClass("java.lang.Object");
+	return matchesName(pat, object);
     }
 
     public boolean matchesClass(ClassnamePatternExpr pattern, String cl) {
-	PCNode cl_node = hierarchy.insertFullName(cl, true, false);
+	PCNode cl_node = hierarchy.getClass(cl);
 	return pattern.matches(this, cl_node);
     }
 
     public boolean matchesType(TypePatternExpr pattern, String type) {
+	//System.out.println("Matching type pattern "+pattern+" on "+pattern.position()+" to "+type+"...");
 	int dim = 0;
 	while (type.endsWith("[]")) {
 	    dim++;
@@ -74,7 +111,7 @@ public class PatternMatcher {
 		return pattern.matchesPrimitiveArray(this, type, dim);
 	    }
 	} else {
-	    PCNode cl_node = hierarchy.insertFullName(type, true, false);
+	    PCNode cl_node = hierarchy.getClass(type);
 	    if (dim == 0) {
 		return pattern.matchesClass(this, cl_node);
 	    } else {
@@ -88,8 +125,31 @@ public class PatternMatcher {
 	return true;
     }
 
+    public boolean matchesFormals(List/*<FormalPattern>*/ fpats, List/*<soot.Type>*/ ftypes) {
+	return matchesFormals(fpats, 0, ftypes, 0);
+    }
 
-
+    private boolean matchesFormals(List/*<FormalPattern>*/ fpats, int fpi, List/*<soot.Type>*/ ftypes, int fti) {
+	// FIXME: BRUTE FORCE MATCHING. DO SOMETHING MORE CLEVER!
+	while (fpi < fpats.size() && fti < ftypes.size()) {
+	    FormalPattern fp = (FormalPattern)fpats.get(fpi);
+	    soot.Type ft = (soot.Type)ftypes.get(fti);
+	    if (fp instanceof TypeFormalPattern) {
+		TypePatternExpr pat = ((TypeFormalPattern)fp).expr();
+		if (!matchesType(pat, ft.toString())) return false;
+	    } else {
+		// DOTDOT
+		while (fti < ftypes.size()) {
+		    if (matchesFormals(fpats, fpi+1, ftypes, fti)) return true;
+		    fti++;
+		}
+		return false;
+	    }
+	    fpi++;
+	    fti++;
+	}
+	return fpi == fpats.size() && fti == ftypes.size();
+    }
 
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern(ClassnamePatternExpr pattern) {
 	return new AIClassnamePattern(pattern);
@@ -139,16 +199,19 @@ public class PatternMatcher {
 
     private class AIMethodPattern implements abc.weaving.aspectinfo.MethodPattern {
 	MethodPattern pattern;
+
 	public AIMethodPattern(MethodPattern pattern) {
-	    this.pattern=pattern;
+	    this.pattern = pattern;
 	}
+
 	public boolean matchesMethod(SootMethod method) {
-	    if(!matchesModifiers(pattern.getModifiers(),method)) return false;
-	    if(!matchesType(pattern.getType(),method.getReturnType().toString())) return false;
-	    if(!matchesClass(pattern.getName().base(),method.getDeclaringClass().toString())) return false;
-	    if(!pattern.getName().name().getPattern().matcher(method.getName()).matches()) return false;
-	    // FIXME: need to match arguments and throws
-	    return true;
+	    return
+		matchesModifiers(pattern.getModifiers(), method) &&
+		matchesType(pattern.getType(), method.getReturnType().toString()) &&
+		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
+		pattern.getName().name().getPattern().matcher(method.getName()).matches() &&
+		matchesFormals(pattern.getFormals(), method.getParameterTypes());
+	    // FIXME: need throws
 	}
 	public String toString() {
 	    return pattern.toString();
@@ -190,9 +253,29 @@ public class PatternMatcher {
     }
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern(ConstructorPattern pattern) {
+	// Assumes that name is <init>
 	if(abc.main.Debug.v.matcherWarnUnimplemented)
-	    System.err.println("FIXME: Making a null contructor pattern");
-	return null;
+	    System.err.println("FIXME: Making an incomplete contructor pattern");
+	return new AIConstructorPattern(pattern);
+    }
+
+    private class AIConstructorPattern implements abc.weaving.aspectinfo.ConstructorPattern {
+	ConstructorPattern pattern;
+
+	public AIConstructorPattern(ConstructorPattern pattern) {
+	    this.pattern = pattern;
+	}
+
+	public boolean matchesConstructor(SootMethod method) {
+	    return
+		matchesModifiers(pattern.getModifiers(), method) &&
+		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
+		matchesFormals(pattern.getFormals(), method.getParameterTypes());
+	    // FIXME: need throws
+	}
+	public String toString() {
+	    return pattern.toString();
+	}
     }
 
 

@@ -44,6 +44,10 @@ public class RTPSubName_c extends Node_c
         w.write("+");
     }
 
+    public String toString() {
+	return pat.toString()+"+";
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	return matches(matcher, cl);
     }
@@ -53,8 +57,7 @@ public class RTPSubName_c extends Node_c
     }
 
     private boolean matches(PatternMatcher matcher, PCNode cl) {
-	Set pat_matches = matcher.getMatches(pat);
-	if (pat_matches.contains(cl)) {
+	if (matcher.matchesName(pat, cl)) {
 	    return true;
 	}
 	Set tried = new HashSet();
@@ -66,7 +69,7 @@ public class RTPSubName_c extends Node_c
 	    while (pi.hasNext()) {
 		PCNode parent = (PCNode)pi.next();
 		if (!tried.contains(parent)) {
-		    if (pat_matches.contains(parent)) {
+		    if (matcher.matchesName(pat, parent)) {
 			return true;
 		    }
 		    tried.add(parent);

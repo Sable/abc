@@ -46,7 +46,7 @@ public class CPEName_c extends ClassnamePatternExpr_c
     }
 
     public boolean matches(PatternMatcher matcher, PCNode cl) {
-	return matcher.getMatches(pat).contains(cl);
+	return matcher.matchesName(pat, cl);
     }
 
 }

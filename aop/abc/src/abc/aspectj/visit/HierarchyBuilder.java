@@ -23,11 +23,10 @@ public class HierarchyBuilder extends NodeVisitor {
 	if (n instanceof ClassDecl) {
 	    String name = ((ClassDecl)n).type().fullName();
 	    // System.out.println("Weavable class: "+name);
-	    PCNode pc = hierarchy.insertFullName(name, true, true);
+	    PCNode pc = hierarchy.insertClass(name, true);
 	    setParents(pc, ((ClassDecl)n).type());
 	    weavable_classes.add(name);
 	    GlobalAspectInfo.v().addClass(new AbcClass(name));
-	    return this;
 	}
 	return this;
     }
@@ -35,14 +34,14 @@ public class HierarchyBuilder extends NodeVisitor {
     private void setParents(PCNode pc, ClassType t) {
 	ClassType st = (ClassType)t.superType();
 	if (st != null) {
-	    PCNode scpc = hierarchy.insertFullName(st.fullName(), true, false);
+	    PCNode scpc = hierarchy.insertClass(st.fullName(), false);
 	    pc.addParent(scpc);
 	    setParents(scpc, (ClassType)st);
 	}
 	Iterator iii = t.interfaces().iterator();
 	while (iii.hasNext()) {
 	    ClassType ii = (ClassType)iii.next();
-	    PCNode iipc = hierarchy.insertFullName(ii.fullName(), true, false);
+	    PCNode iipc = hierarchy.insertClass(ii.fullName(), false);
 	    pc.addParent(iipc);
 	    setParents(iipc, (ClassType)ii);
 	}

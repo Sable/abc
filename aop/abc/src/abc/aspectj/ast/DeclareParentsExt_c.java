@@ -48,10 +48,7 @@ public class DeclareParentsExt_c extends DeclareDecl_c
     }
 
     public Node disambiguate(DeclareParentsAmbiguityRemover ar) throws SemanticException {
-	if (type instanceof AmbTypeNode) {
-	    AmbTypeNode atn = (AmbTypeNode)type;
-	    type = (TypeNode) ar.nodeFactory().disamb().disambiguate(atn, ar, position(), atn.qual(), atn.name());
-	}
+	type = (TypeNode)ar.disamb(type);
 	return this;
     }
 

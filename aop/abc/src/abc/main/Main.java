@@ -9,6 +9,8 @@ import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 import polyglot.frontend.Stats;
 
+import abc.aspectj.visit.PatternMatcher;
+
 import abc.weaving.weaver.*;
 import abc.weaving.aspectinfo.*;
 
@@ -241,7 +243,7 @@ public class Main {
         ita.adjust();
         AbcTimer.mark("Intertype Adjuster");
 
-        // retrieve all bodies
+        // Retrieve all bodies
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
@@ -250,8 +252,13 @@ public class Main {
                 method.retrieveActiveBody();
             }
         }
-        
         AbcTimer.mark("Retrieving bodies");
+
+	// Update pattern matcher class hierarchy and recompute pattern matches
+	PatternMatcher.v().updateWithAllSootClasses();
+	PatternMatcher.v().recomputeAllMatches();
+        AbcTimer.mark("Recompute name pattern matches");
+        
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
         

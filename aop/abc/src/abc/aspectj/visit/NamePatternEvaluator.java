@@ -23,7 +23,7 @@ public class NamePatternEvaluator extends NodeVisitor {
     public NodeVisitor enter(Node n) {
 	if (n instanceof ClassDecl) {
 	    String name = ((ClassDecl)n).type().fullName();
-	    context = ext_info.hierarchy.insertFullName(name, true, false);
+	    context = ext_info.hierarchy.getClass(name);
 	    return this;
 	}
 	return this;

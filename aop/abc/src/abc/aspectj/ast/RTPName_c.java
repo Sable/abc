@@ -43,8 +43,12 @@ public class RTPName_c extends Node_c
 	print(pat,w,tr);
     }
 
+    public String toString() {
+	return pat.toString();
+    }
+
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
-	return matcher.getMatches(pat).contains(cl);
+	return matcher.matchesName(pat, cl);
     }
 
     public boolean matchesArray(PatternMatcher matcher) {

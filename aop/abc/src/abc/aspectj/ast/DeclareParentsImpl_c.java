@@ -53,11 +53,7 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	Iterator ti = interfaces.iterator();
 	while (ti.hasNext()) {
 	    TypeNode tn = (TypeNode)ti.next();
-	    if (tn instanceof AmbTypeNode) {
-		AmbTypeNode atn = (AmbTypeNode)tn;
-		System.err.print(" "+atn.name());
-		tn = (TypeNode) ar.nodeFactory().disamb().disambiguate(atn, ar, position(), atn.qual(), atn.name());
-	    }
+	    tn = (TypeNode)ar.disamb(tn);
 	    interfaces_disam.add(tn);
 	}
 	System.err.println();

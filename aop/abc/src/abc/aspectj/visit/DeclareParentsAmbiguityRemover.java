@@ -3,6 +3,10 @@ package abc.aspectj.visit;
 
 
 import polyglot.ast.Node;
+import polyglot.ast.Ambiguous;
+import polyglot.ast.QualifierNode;
+import polyglot.ast.AmbTypeNode;
+import polyglot.ast.AmbQualifierNode;
 import polyglot.ast.ClassMember;
 import polyglot.ast.NodeFactory;
 import polyglot.ast.ClassDecl;
@@ -39,5 +43,24 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
 	    return ((DeclareParentsImpl)n).disambiguate(this);
 	}
 	return n;
+    }
+
+    public QualifierNode disamb(QualifierNode tn) throws SemanticException {
+	if (tn instanceof Ambiguous) {
+	    QualifierNode qual;
+	    String name;
+	    if (tn instanceof AmbQualifierNode) {
+		qual = ((AmbQualifierNode)tn).qual();
+		name = ((AmbQualifierNode)tn).name();
+	    } else if (tn instanceof AmbTypeNode) {
+		qual = ((AmbTypeNode)tn).qual();
+		name = ((AmbTypeNode)tn).name();
+	    } else {
+		throw new RuntimeException("Unexpected ambiguous node in declare parents: "+tn.getClass().getName());
+	    }
+	    qual = disamb(qual);
+	    tn = (QualifierNode) nodeFactory().disamb().disambiguate((Ambiguous)tn, this, tn.position(), qual, name);
+	}
+	return tn;
     }
 }

@@ -25,7 +25,7 @@ public class PCNode {
 	is_weavable = false;
     }
     
-    public PCNode insertFullName(String full_name, boolean cl, boolean weavable) {
+    PCNode insertFullName(String full_name, boolean cl, boolean weavable) {
 	int dotpos = full_name.indexOf('.');
 	String head;
 	String rest;
@@ -63,6 +63,11 @@ public class PCNode {
 
     public boolean isWeavable() {
 	return is_weavable;
+    }
+
+    public PCNode updateWeavable(boolean weavable) {
+	is_weavable |= weavable;
+	return this;
     }
 
     public Set/*<PCNode>*/ getInners() {

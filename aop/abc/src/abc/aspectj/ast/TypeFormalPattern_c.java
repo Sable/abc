@@ -41,6 +41,10 @@ public class TypeFormalPattern_c extends Node_c
 	print(expr,w,pp);
     }
 
+    public TypePatternExpr expr() {
+	return expr;
+    }
+
     public String toString() {
 	return expr.toString();
     }

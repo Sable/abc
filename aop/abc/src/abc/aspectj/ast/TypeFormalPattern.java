@@ -5,4 +5,6 @@ import polyglot.ast.Node;
 public interface TypeFormalPattern extends FormalPattern
 {
     /* new stuff to be added */
+
+    public TypePatternExpr expr();
 }
