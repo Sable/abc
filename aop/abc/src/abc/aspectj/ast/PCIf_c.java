@@ -117,9 +117,8 @@ public class PCIf_c extends Pointcut_c implements PCIf
 	    Formal f = (Formal)fi.next();
 	    vars.add(new abc.weaving.aspectinfo.Var(f.name(), f.position()));
 	}
-	return new abc.weaving.aspectinfo.OtherPointcut
-	    (new abc.weaving.aspectinfo.If(vars, AspectInfoHarvester.makeMethodSig(methodDecl)),
-	     position());
+	return new abc.weaving.aspectinfo.If
+	    (vars, AspectInfoHarvester.makeMethodSig(methodDecl),position);
     }
 
 }

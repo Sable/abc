@@ -7,6 +7,7 @@ import abc.weaving.matching.MethodPosition;
 import abc.weaving.residues.*;
 
 /** A pointcut designator that inspects a dynamic value
+ *  (this,target,args)
  *  @author Ganesh Sittampalam
  *  @date 04-May-04
  */

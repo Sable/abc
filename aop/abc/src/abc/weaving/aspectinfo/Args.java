@@ -37,6 +37,24 @@ public class Args extends DynamicValuePointcut {
 	return out.toString();
     }
 
+    protected Pointcut inline(Hashtable renameEnv,
+			      Hashtable typeEnv) {
+
+	Iterator it=args.iterator();
+	List newargs=new LinkedList();
+	while(it.hasNext()) {
+	    ArgPattern arg=(ArgPattern) it.next();
+	    // Ought to delegate this really, but this is easier
+	    if(arg instanceof ArgVar) {
+		ArgVar argvar=(ArgVar) arg;
+		newargs.add(new ArgVar(argvar.getVar().rename(renameEnv),
+				       argvar.getPosition()));
+	    } else newargs.add(arg);
+	}
+	return new Args(newargs,getPosition());
+	
+    }
+
     public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm) {
 	Residue ret=AlwaysMatch.v;
 	ListIterator formalsIt=args.listIterator();
