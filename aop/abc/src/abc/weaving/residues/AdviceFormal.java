@@ -11,9 +11,9 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 
-/** A formal parameter to advice
+/** A weaving variable that represents a formal 
+ *  parameter to be passed to an advice body
  *  @author Ganesh Sittampalam
- *  @date 04-May-04
  */ 
 
 public class AdviceFormal extends WeavingVar {

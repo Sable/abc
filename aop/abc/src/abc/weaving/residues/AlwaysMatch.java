@@ -6,10 +6,9 @@ import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
-/** A "dynamic" residue that can never match. 
+/** A "dynamic" residue that always matches.
  *  Intended for convenience during generation and residue analysis process.
  *  @author Ganesh Sittampalam
- *  @date 28-Apr-04
  */ 
 
 public class AlwaysMatch extends Residue {

@@ -10,7 +10,7 @@ import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 
 /** A residue that puts the relevant aspect instance into a 
- * local variable in the weaving context
+ *  local variable in the weaving context
  *  @author Ganesh Sittampalam
  */ 
 

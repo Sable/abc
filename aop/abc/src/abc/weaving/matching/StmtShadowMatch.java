@@ -13,7 +13,8 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.residues.ContextValue;
 
-/** A "stmt" shadow match
+/** A base class for join point shadows that apply to a single statement
+ *  (or pair of statements in the case of constructor calls)
  *  @author Ganesh Sittampalam
  */
 

@@ -8,9 +8,8 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
 
-/** Conjunction of two residues
+/** The conjunction of two dynamic residues
  *  @author Ganesh Sittampalam
- *  @date 28-Apr-04
  */ 
 public class AndResidue extends Residue {
     private ResidueBox left = new ResidueBox();

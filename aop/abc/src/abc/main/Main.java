@@ -34,6 +34,20 @@ import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
 
+/** The main class of abc. Responsible for parsing command-line arguments,
+ *  initialising Polyglot and Soot, and driving the compilation process.
+ *
+ *  @author Aske Simon Christensen
+ *  @author Laurie Hendren
+ *  @author Ganesh Sittampalam
+ *  @author Sascha Kuzins
+ *  @author Ondrej Lhotak
+ *  @author Jennifer Lhotak
+ *  @author Julian Tibble
+ *  @author Pavel Avgustinov
+ *  @author Oege de Moor
+ */
+
 public class Main {
     public static final String abcVersionString = "0.1.0";
 
