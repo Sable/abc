@@ -3367,6 +3367,12 @@
         <compile files="FinalFields.java"></compile>
         <run class="FinalFields"></run>
     </ajc-test>
+<ajc-test title="Weaving rt.jar results in stack overflow" pr="37758" num="817" dir="bugs/lines">
+        <compile files="A.java,big.jar">
+ 			
+        </compile>
+        <run class="Big"></run>
+    </ajc-test>
 <ajc-test title="XLint:ignore suppresses XLint warnings" num="820" dir="harness">
         <compile options="-Xlint:ignore" files="XLintWarningTest.java"></compile>
     </ajc-test>
@@ -3881,6 +3887,11 @@
 <ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" pr="62458" num="973" dir="bugs/IfPerThis">
         <compile files="Testcase2.java"></compile>
         <run class="Testcase2"></run>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" pr="62458" num="974" dir="bugs/IfPerThis" abccomment="abc supports if inside perclauses;                             the error we do produce is complaining about a                             reference to a static member of the aspect,                             which we ought to support but don't yet - AGS 6/8/04">
+        <compile files="Testcase3.java">
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="2" kind="error"></ajcmessage>
+        </compile>
     </ajc-test>
  
 </suite>

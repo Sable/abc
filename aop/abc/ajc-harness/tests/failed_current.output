@@ -1,6 +1,6 @@
 Running test 25: base/test118/DEPRECATED: Introduce of constructors
 Commandline: abc -d base/test118 base/test118/Driver.java 
-Abc started on Mon Aug 09 19:01:37 BST 2004
+Abc started on Tue Aug 10 02:11:59 BST 2004
 Checking i1Count
 Checking c1Count
 Checking c1IntCount
@@ -19,29 +19,29 @@ Transforming Cleaf11...
 Transforming C11... 
 Transforming I12... 
 Transforming Verify... 
-Abc finished on Mon Aug 09 19:01:38 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:12:01 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1159 millisec.)
+Breakdown of abc phases  (total: 1166 millisec.)
 ------------------------------------------------
-[ 50.216% ] Init. of Soot:  582
+[ 49.828% ] Init. of Soot:  581
 [ 00.000% ] Loading Jars:  0
-[ 00.086% ] Create polyglot compiler:  1
-[ 20.449% ] Polyglot phases:  237
+[ 00.000% ] Create polyglot compiler:  0
+[ 20.583% ] Polyglot phases:  240
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.086% ] Intertype Adjuster:  1
-[ 01.639% ] Retrieving bodies:  19
-[ 03.883% ] Update pattern matcher:  45
+[ 01.715% ] Retrieving bodies:  20
+[ 04.117% ] Update pattern matcher:  48
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.467% ] Compute advice lists:  17
+[ 01.372% ] Compute advice lists:  16
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.431% ] Weaving advice:  5
+[ 00.086% ] Add aspect code:  1
+[ 00.429% ] Weaving advice:  5
 [ 00.086% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 12.770% ] Soot Packs:  148
-[ 08.887% ] Soot Writing Output:  103
+[ 12.607% ] Soot Packs:  147
+[ 09.091% ] Soot Writing Output:  106
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail A1.i1Count: 0 < 8
@@ -65,35 +65,35 @@ FAIL: Test 25: "base/test118/DEPRECATED: Introduce of constructors" failed.
 
 Running test 115: new/Not binding constructor when using more than one compilation
 Commandline: abc -d new new/OuterAbstract_PR408.java 
-Abc started on Mon Aug 09 19:05:19 BST 2004
+Abc started on Tue Aug 10 02:15:39 BST 2004
 Transforming OuterAbstract_PR408... 
 Transforming OuterAbstract_PR408$InnerAbstract... 
-Abc finished on Mon Aug 09 19:05:20 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:15:40 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 545 millisec.)
+Breakdown of abc phases  (total: 531 millisec.)
 ------------------------------------------------
-[ 56.147% ] Init. of Soot:  306
+[ 57.627% ] Init. of Soot:  306
 [ 00.000% ] Loading Jars:  0
-[ 00.183% ] Create polyglot compiler:  1
-[ 32.294% ] Polyglot phases:  176
+[ 00.188% ] Create polyglot compiler:  1
+[ 30.885% ] Polyglot phases:  164
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.734% ] Retrieving bodies:  4
-[ 04.954% ] Update pattern matcher:  27
+[ 00.565% ] Retrieving bodies:  3
+[ 04.520% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.367% ] Compute advice lists:  2
+[ 00.377% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.183% ] Weaving advice:  1
+[ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.385% ] Soot Packs:  13
-[ 02.752% ] Soot Writing Output:  15
+[ 03.202% ] Soot Packs:  17
+[ 02.637% ] Soot Writing Output:  14
 ================================================
 Commandline: abc -cp new:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new new/ExtendsOuterAbstract_PR408.java 
-Abc started on Mon Aug 09 19:05:20 BST 2004
+Abc started on Tue Aug 10 02:15:40 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/ExtendsOuterAbstract_PR408.java:4,30-60: No valid constructor found for OuterAbstract_PR408.InnerAbstract(java.lang.String).
@@ -102,33 +102,33 @@ FAIL: Test 115: "new/Not binding constructor when using more than one compilatio
 
 Running test 129: pureJava/innerDefaultConstructors/Default constructors have same access as their enclosing type
 Commandline: abc -d pureJava/innerDefaultConstructors pureJava/innerDefaultConstructors/pkg1/Main.java pureJava/innerDefaultConstructors/pkg2/Foo.java 
-Abc started on Mon Aug 09 19:05:28 BST 2004
+Abc started on Tue Aug 10 02:15:48 BST 2004
 Transforming pkg1.Main... 
 Transforming pkg2.Foo$Goo... 
 Transforming pkg2.Foo... 
-Abc finished on Mon Aug 09 19:05:29 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:15:49 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 448 millisec.)
+Breakdown of abc phases  (total: 425 millisec.)
 ------------------------------------------------
-[ 83.482% ] Init. of Soot:  374
+[ 83.765% ] Init. of Soot:  356
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 03.348% ] Polyglot phases:  15
+[ 03.529% ] Polyglot phases:  15
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.223% ] Intertype Adjuster:  1
-[ 00.446% ] Retrieving bodies:  2
-[ 04.688% ] Update pattern matcher:  21
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.706% ] Retrieving bodies:  3
+[ 04.941% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.446% ] Compute advice lists:  2
+[ 00.235% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
 [ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.571% ] Soot Packs:  16
-[ 03.795% ] Soot Writing Output:  17
+[ 03.529% ] Soot Packs:  15
+[ 03.294% ] Soot Writing Output:  14
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 129: "pureJava/innerDefaultConstructors/Default constructors have same access as their enclosing type" failed.
@@ -136,33 +136,33 @@ FAIL: Test 129: "pureJava/innerDefaultConstructors/Default constructors have sam
 
 Running test 135: pureJava/Inners can reference protected fields of their outer's super.
 Commandline: abc -d pureJava pureJava/protectedFieldRefInInner/Main.java pureJava/protectedFieldRefInInner/p1/C.java 
-Abc started on Mon Aug 09 19:05:31 BST 2004
+Abc started on Tue Aug 10 02:15:51 BST 2004
 Transforming protectedFieldRefInInner.Main... 
 Transforming protectedFieldRefInInner.p1.C... 
 Transforming protectedFieldRefInInner.Main$Inner... 
-Abc finished on Mon Aug 09 19:05:32 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:15:51 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 910 millisec.)
+Breakdown of abc phases  (total: 439 millisec.)
 ------------------------------------------------
-[ 38.022% ] Init. of Soot:  346
+[ 75.171% ] Init. of Soot:  330
 [ 00.000% ] Loading Jars:  0
-[ 00.110% ] Create polyglot compiler:  1
-[ 02.198% ] Polyglot phases:  20
+[ 00.000% ] Create polyglot compiler:  0
+[ 04.328% ] Polyglot phases:  19
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.659% ] Retrieving bodies:  6
-[ 02.308% ] Update pattern matcher:  21
+[ 00.228% ] Intertype Adjuster:  1
+[ 01.139% ] Retrieving bodies:  5
+[ 04.784% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.220% ] Compute advice lists:  2
+[ 00.456% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.110% ] Weaving advice:  1
+[ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
-[ 00.000% ] Validate jimple:  0
-[ 02.418% ] Soot Packs:  22
-[ 53.956% ] Soot Writing Output:  491
+[ 00.228% ] Validate jimple:  1
+[ 08.884% ] Soot Packs:  39
+[ 04.784% ] Soot Writing Output:  21
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError: tried to access field protectedFieldRefInInner.p1.C.x from class protectedFieldRefInInner.Main$Inner
 java.lang.reflect.InvocationTargetException
@@ -182,7 +182,7 @@ FAIL: Test 135: "pureJava/Inners can reference protected fields of their outer's
 
 Running test 149: pureJava/invalid numeric literals
 Commandline: abc -d pureJava pureJava/LiteralsCf.java 
-Abc started on Mon Aug 09 19:05:40 BST 2004
+Abc started on Tue Aug 10 02:15:59 BST 2004
 Compilation produced an unexpected number of errors: 6, should be 18
 Actual errors found: 
 Syntax Error at pureJava/LiteralsCf.java:18,22-23: Syntax error.
@@ -196,35 +196,35 @@ FAIL: Test 149: "pureJava/invalid numeric literals" failed.
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
-Abc started on Mon Aug 09 19:05:52 BST 2004
+Abc started on Tue Aug 10 02:16:11 BST 2004
 Transforming p1.p2.Foo... 
 Transforming p1.Main1... 
 Transforming p1.p2$Foo... 
 Transforming p1.Foo... 
 Transforming p1.p2... 
-Abc finished on Mon Aug 09 19:05:53 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:16:12 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 722 millisec.)
+Breakdown of abc phases  (total: 719 millisec.)
 ------------------------------------------------
-[ 49.584% ] Init. of Soot:  358
+[ 49.513% ] Init. of Soot:  356
 [ 00.000% ] Loading Jars:  0
 [ 00.139% ] Create polyglot compiler:  1
-[ 38.227% ] Polyglot phases:  276
+[ 38.387% ] Polyglot phases:  276
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.693% ] Retrieving bodies:  5
-[ 04.017% ] Update pattern matcher:  29
-[ 00.139% ] Weave Initializers:  1
+[ 00.695% ] Retrieving bodies:  5
+[ 04.033% ] Update pattern matcher:  29
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.277% ] Compute advice lists:  2
+[ 00.278% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.000% ] Weaving advice:  0
+[ 00.139% ] Weaving advice:  1
 [ 00.139% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 03.324% ] Soot Packs:  24
-[ 03.463% ] Soot Writing Output:  25
+[ 03.199% ] Soot Packs:  23
+[ 03.477% ] Soot Writing Output:  25
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed.
@@ -232,7 +232,7 @@ FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught a
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
 Commandline: abc -d pureJava pureJava/NestedFinally.java 
-Abc started on Mon Aug 09 19:06:00 BST 2004
+Abc started on Tue Aug 10 02:16:18 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
@@ -241,16 +241,16 @@ FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location 
 
 Running test 265: errors/good error for bad field and inner class references
 Commandline: abc -d errors errors/BadReferences.java 
-Abc started on Mon Aug 09 19:06:36 BST 2004
+Abc started on Tue Aug 10 02:16:54 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
-Semantic Error at errors/BadReferences.java:5,16-23: Member type "Inner" is ambiguous; it is defined in both I1 and I2.
+Semantic Error at errors/BadReferences.java:5,16-23: Member type "Inner" is ambiguous; it is defined in both I2 and I1.
 FAIL: Test 265: "errors/good error for bad field and inner class references" failed.
 
 
 Running test 271: errors/circular dominates leading to irresolvable advice precedence
 Commandline: abc -d errors errors/CircularDominates.java 
-Abc started on Mon Aug 09 19:06:38 BST 2004
+Abc started on Tue Aug 10 02:16:57 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Semantic Error at null: Precedence conflict
@@ -259,7 +259,7 @@ FAIL: Test 271: "errors/circular dominates leading to irresolvable advice preced
 
 Running test 285: errors/class and interface extension
 Commandline: abc -d errors errors/BadExtension.java 
-Abc started on Mon Aug 09 19:06:43 BST 2004
+Abc started on Tue Aug 10 02:17:02 BST 2004
 Compilation produced an unexpected number of errors: 7, should be 9
 Actual errors found: 
 Semantic Error at errors/BadExtension.java:9,20-43: An abstract method cannot have a body.
@@ -278,7 +278,7 @@ FAIL: Test 285: "errors/class and interface extension" failed.
 
 Running test 307: errors/parse-time illegal modifiers
 Commandline: abc -d errors errors/Modifiers1.java 
-Abc started on Mon Aug 09 19:06:51 BST 2004
+Abc started on Tue Aug 10 02:17:10 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Syntax Error at null: Couldn't repair and continue parse
@@ -288,7 +288,7 @@ FAIL: Test 307: "errors/parse-time illegal modifiers" failed.
 Running test 314: new/introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public
 Commandline: abc -d new -Xlint:ignore new/IntroduceInnerInterfaceCF.java 
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:06:54 BST 2004
+Abc started on Tue Aug 10 02:17:12 BST 2004
 Compilation produced an unexpected number of errors: 8, should be 9
 Actual errors found: 
 Semantic Error at new/IntroduceInnerInterfaceCF.java:16,0-21:1: TargetClass should be declared abstract; it does not define defaultMethod(), which is declared in Aspect.Inner
@@ -304,7 +304,7 @@ FAIL: Test 314: "new/introduced inner interfaces - compile should fail to bind i
 
 Running test 343: new/introducing extends and implements
 Commandline: abc -d new new/HierarchyIntroductions.java 
-Abc started on Mon Aug 09 19:07:12 BST 2004
+Abc started on Tue Aug 10 02:17:31 BST 2004
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at new/HierarchyIntroductions.java:12,9-11: The type of the variable initializer "C2" does not match that of the declaration "I4".
@@ -314,35 +314,35 @@ FAIL: Test 343: "new/introducing extends and implements" failed.
 
 Running test 358: new/non-static advice on inner class defined inside of method body
 Commandline: abc -d new new/MethodInner.java 
-Abc started on Mon Aug 09 19:07:22 BST 2004
+Abc started on Tue Aug 10 02:17:40 BST 2004
 Getting position for a untagged source line $i0 = this.<C$1Inner: int val$N>
 Transforming A... 
 Transforming C... 
 Transforming C$1Inner... 
 Transforming MethodInner... 
-Abc finished on Mon Aug 09 19:07:23 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:17:41 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 676 millisec.)
+Breakdown of abc phases  (total: 679 millisec.)
 ------------------------------------------------
-[ 50.888% ] Init. of Soot:  344
+[ 50.810% ] Init. of Soot:  345
 [ 00.000% ] Loading Jars:  0
-[ 00.148% ] Create polyglot compiler:  1
-[ 28.107% ] Polyglot phases:  190
+[ 00.000% ] Create polyglot compiler:  0
+[ 28.424% ] Polyglot phases:  193
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.479% ] Retrieving bodies:  10
-[ 03.846% ] Update pattern matcher:  26
+[ 01.325% ] Retrieving bodies:  9
+[ 03.829% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.740% ] Compute advice lists:  5
+[ 00.884% ] Compute advice lists:  6
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.592% ] Weaving advice:  4
-[ 00.148% ] Exceptions check:  1
+[ 00.589% ] Weaving advice:  4
+[ 00.147% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 07.396% ] Soot Packs:  50
-[ 06.657% ] Soot Writing Output:  45
+[ 07.364% ] Soot Packs:  50
+[ 06.627% ] Soot Writing Output:  45
 ================================================
 before: execution(int C.foo())
 Failed to define or resolve class C$1Inner from new
@@ -383,7 +383,7 @@ FAIL: Test 358: "new/non-static advice on inner class defined inside of method b
 
 Running test 361: new/generating the right throws clause for call-site advice (and around)
 Commandline: abc -d new new/ComputedThrows.java 
-Abc started on Mon Aug 09 19:07:24 BST 2004
+Abc started on Tue Aug 10 02:17:43 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at ComputedThrows.java:6,29-34: The exception java.lang.Exception must be either caught or declared to be thrown
@@ -392,7 +392,7 @@ FAIL: Test 361: "new/generating the right throws clause for call-site advice (an
 
 Running test 362: new/advice on calls to static methods using several syntax
 Commandline: abc -d new new/StaticCalls.java 
-Abc started on Mon Aug 09 19:07:25 BST 2004
+Abc started on Tue Aug 10 02:17:43 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at StaticCalls.java:26,14-15: The exception java.lang.ClassNotFoundException must be either caught or declared to be thrown
@@ -401,7 +401,7 @@ FAIL: Test 362: "new/advice on calls to static methods using several syntax" fai
 
 Running test 363: new/, PR#249, PR#250 advice on constructor sites
 Commandline: abc -d new new/NewSiteAdvice.java 
-Abc started on Mon Aug 09 19:07:25 BST 2004
+Abc started on Tue Aug 10 02:17:44 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at NewSiteAdvice.java:14,26-45: The exception java.rmi.RemoteException must be either caught or declared to be thrown
@@ -410,7 +410,7 @@ FAIL: Test 363: "new/, PR#249, PR#250 advice on constructor sites" failed.
 
 Running test 364: new/test after throwing advice in several ways
 Commandline: abc -d new new/AfterThrowing.java 
-Abc started on Mon Aug 09 19:07:26 BST 2004
+Abc started on Tue Aug 10 02:17:45 BST 2004
 Getting position for a untagged source line return
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
@@ -421,7 +421,7 @@ FAIL: Test 364: "new/test after throwing advice in several ways" failed.
 
 Running test 367: new/extraThrows/throws Exception clause is unnecessarily added to Driver.main method
 Commandline: abc -d new/extraThrows new/extraThrows/Driver.java 
-Abc started on Mon Aug 09 19:07:29 BST 2004
+Abc started on Tue Aug 10 02:17:47 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at Driver.java:18,22-28: The exception java.lang.Exception must be either caught or declared to be thrown
@@ -430,7 +430,7 @@ FAIL: Test 367: "new/extraThrows/throws Exception clause is unnecessarily added 
 
 Running test 385: new/Compiler can compile correct strictfp modifiers
 Commandline: abc -d new new/StrictFpCompile.java 
-Abc started on Mon Aug 09 19:07:42 BST 2004
+Abc started on Tue Aug 10 02:18:00 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/StrictFpCompile.java:18,9-24:1: Cannot declare a strictfp interface.
@@ -439,7 +439,7 @@ FAIL: Test 385: "new/Compiler can compile correct strictfp modifiers" failed.
 
 Running test 410: new/holding onto proceed calls in a closure-like way
 Commandline: abc -d new new/HoldProceed.java 
-Abc started on Mon Aug 09 19:08:02 BST 2004
+Abc started on Tue Aug 10 02:18:20 BST 2004
 Checking cnt
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
@@ -449,7 +449,7 @@ FAIL: Test 410: "new/holding onto proceed calls in a closure-like way" failed.
 
 Running test 411: new/basic test of declare soft
 Commandline: abc -d new new/DeclareSoft.java 
-Abc started on Mon Aug 09 19:08:03 BST 2004
+Abc started on Tue Aug 10 02:18:21 BST 2004
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at DeclareSoft.java:62,8-37: The exception java.io.FileNotFoundException must be either caught or declared to be thrown
@@ -459,7 +459,7 @@ FAIL: Test 411: "new/basic test of declare soft" failed.
 
 Running test 418: new/join points exist in the execution of field initializers
 Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Abc started on Mon Aug 09 19:08:08 BST 2004
+Abc started on Tue Aug 10 02:18:26 BST 2004
 Checking FieldInitializerJoinPoints.jcount
 Checking FieldInitializerJoinPoints.kcount
 Checking FieldInitializerJoinPoints.lcount
@@ -474,29 +474,29 @@ Checking FieldInitializerJoinPoints.pMcount
 Checking FieldInitializerJoinPoints.qMcount
 Transforming A... 
 Transforming FieldInitializerJoinPoints... 
-Abc finished on Mon Aug 09 19:08:08 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:18:27 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 839 millisec.)
+Breakdown of abc phases  (total: 838 millisec.)
 ------------------------------------------------
-[ 42.551% ] Init. of Soot:  357
+[ 42.721% ] Init. of Soot:  358
 [ 00.000% ] Loading Jars:  0
-[ 00.119% ] Create polyglot compiler:  1
-[ 26.341% ] Polyglot phases:  221
+[ 00.000% ] Create polyglot compiler:  0
+[ 26.372% ] Polyglot phases:  221
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.265% ] Retrieving bodies:  19
-[ 03.218% ] Update pattern matcher:  27
+[ 02.267% ] Retrieving bodies:  19
+[ 03.222% ] Update pattern matcher:  27
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.026% ] Compute advice lists:  17
+[ 02.029% ] Compute advice lists:  17
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.238% ] Weaving advice:  2
+[ 00.239% ] Weaving advice:  2
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 16.329% ] Soot Packs:  137
-[ 06.913% ] Soot Writing Output:  58
+[ 16.468% ] Soot Packs:  138
+[ 06.683% ] Soot Writing Output:  56
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail jcount: 1 > 0
@@ -518,7 +518,7 @@ FAIL: Test 418: "new/join points exist in the execution of field initializers" f
 
 Running test 419: new/privilegedAspects/privileged aspects
 Commandline: abc -d new/privilegedAspects new/privilegedAspects/main/Main.java new/privilegedAspects/fish/PrivateClass.java new/privilegedAspects/fish/B.java new/privilegedAspects/fowl/C.java new/privilegedAspects/fowl/D.java 
-Abc started on Mon Aug 09 19:08:08 BST 2004
+Abc started on Tue Aug 10 02:18:27 BST 2004
 Checking a
 Checking obj.a
 Checking b
@@ -535,10 +535,10 @@ polyglot.util.InternalCompilerError: Exception while processing <fish.A: void fo
 	at abc.testing.Main.doCase(Main.java:254)
 	at abc.testing.Main.main(Main.java:102)
 Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$$827, local$assign$$829], [local$assign$$827 = this$823, local$assign$$829 = local$assign$$827.get$accessor$a$828(), local$assign$$827.get$accessor$a$828(local$assign$$827.get$accessor$a$828() - 1), local$assign$$829])
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1648)
-	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:525)
-	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:327)
-	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:128)
+	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1652)
+	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:529)
+	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:331)
+	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:132)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:303)
@@ -549,35 +549,35 @@ FAIL: Test 419: "new/privilegedAspects/privileged aspects" failed.
 
 Running test 422: new/basic tests for initializer and staticinitializer PCDs
 Commandline: abc -d new new/InitializerTest.java 
-Abc started on Mon Aug 09 19:08:10 BST 2004
+Abc started on Tue Aug 10 02:18:29 BST 2004
 Transforming SubC... 
 Transforming I... 
 Transforming C... 
 Transforming InitializerTest... 
 Transforming A... 
-Abc finished on Mon Aug 09 19:08:11 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:18:29 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 808 millisec.)
+Breakdown of abc phases  (total: 810 millisec.)
 ------------------------------------------------
-[ 43.936% ] Init. of Soot:  355
+[ 43.827% ] Init. of Soot:  355
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 22.525% ] Polyglot phases:  182
+[ 22.593% ] Polyglot phases:  183
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.980% ] Retrieving bodies:  16
-[ 03.094% ] Update pattern matcher:  25
+[ 01.975% ] Retrieving bodies:  16
+[ 03.086% ] Update pattern matcher:  25
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.351% ] Compute advice lists:  19
+[ 02.469% ] Compute advice lists:  20
 [ 00.000% ] Intertype weave:  0
-[ 00.124% ] Add aspect code:  1
-[ 00.495% ] Weaving advice:  4
-[ 00.124% ] Exceptions check:  1
+[ 00.123% ] Add aspect code:  1
+[ 00.370% ] Weaving advice:  3
+[ 00.123% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 17.698% ] Soot Packs:  143
-[ 07.673% ] Soot Writing Output:  62
+[ 17.778% ] Soot Packs:  144
+[ 07.654% ] Soot Writing Output:  62
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "initialized I"
@@ -601,7 +601,7 @@ FAIL: Test 422: "new/basic tests for initializer and staticinitializer PCDs" fai
 
 Running test 430: new/calls advice on array objects causes error in code generation
 Commandline: abc -d new new/CallsToArray.java 
-Abc started on Mon Aug 09 19:08:18 BST 2004
+Abc started on Tue Aug 10 02:18:36 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at CallsToArray.java:6,20-29: The exception java.lang.CloneNotSupportedException must be either caught or declared to be thrown
@@ -610,7 +610,7 @@ FAIL: Test 430: "new/calls advice on array objects causes error in code generati
 
 Running test 439: new/within and withincode (doesn't all work due to local class name issues)
 Commandline: abc -d new new/WithinInners.java 
-Abc started on Mon Aug 09 19:08:24 BST 2004
+Abc started on Tue Aug 10 02:18:43 BST 2004
 Transforming WithinInners... 
 Transforming A... 
 Transforming C... 
@@ -618,29 +618,29 @@ Transforming C$1...
 Transforming C$1Inner... 
 Transforming Abc$access$A$around$947... 
 Transforming Abc$access$A$around$950... 
-Abc finished on Mon Aug 09 19:08:25 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:18:43 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 773 millisec.)
+Breakdown of abc phases  (total: 777 millisec.)
 ------------------------------------------------
-[ 39.327% ] Init. of Soot:  304
+[ 38.996% ] Init. of Soot:  303
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 33.894% ] Polyglot phases:  262
+[ 00.129% ] Create polyglot compiler:  1
+[ 33.591% ] Polyglot phases:  261
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.070% ] Retrieving bodies:  16
-[ 03.364% ] Update pattern matcher:  26
+[ 02.059% ] Retrieving bodies:  16
+[ 03.346% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 02.717% ] Compute advice lists:  21
+[ 03.089% ] Compute advice lists:  24
 [ 00.000% ] Intertype weave:  0
-[ 00.129% ] Add aspect code:  1
-[ 00.647% ] Weaving advice:  5
+[ 00.000% ] Add aspect code:  0
+[ 00.772% ] Weaving advice:  6
 [ 00.129% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.573% ] Soot Packs:  74
-[ 08.150% ] Soot Writing Output:  63
+[ 09.653% ] Soot Packs:  75
+[ 08.237% ] Soot Writing Output:  64
 ================================================
 TEXT
 write( String )
@@ -667,7 +667,7 @@ FAIL: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
-Abc started on Mon Aug 09 19:08:26 BST 2004
+Abc started on Tue Aug 10 02:18:45 BST 2004
 Getting position for a untagged source line uniqueArgLocal9 = "X.toString()"
 Transforming AroundInnerCalls... 
 Transforming Outer... 
@@ -676,41 +676,41 @@ Transforming Outer$InnerRandom...
 Transforming Outer$1... 
 Transforming Outer$Inner... 
 Transforming Abc$access$A$around$956... 
-Abc finished on Mon Aug 09 19:08:28 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:18:46 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1159 millisec.)
+Breakdown of abc phases  (total: 1168 millisec.)
 ------------------------------------------------
-[ 29.681% ] Init. of Soot:  344
+[ 29.366% ] Init. of Soot:  343
 [ 00.000% ] Loading Jars:  0
-[ 00.086% ] Create polyglot compiler:  1
-[ 32.355% ] Polyglot phases:  375
+[ 00.000% ] Create polyglot compiler:  0
+[ 32.021% ] Polyglot phases:  374
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.467% ] Retrieving bodies:  17
-[ 02.588% ] Update pattern matcher:  30
+[ 01.455% ] Retrieving bodies:  17
+[ 02.568% ] Update pattern matcher:  30
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.208% ] Compute advice lists:  14
+[ 01.199% ] Compute advice lists:  14
 [ 00.000% ] Intertype weave:  0
 [ 00.086% ] Add aspect code:  1
-[ 03.451% ] Weaving advice:  40
-[ 00.173% ] Exceptions check:  2
+[ 03.425% ] Weaving advice:  40
+[ 00.086% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 12.770% ] Soot Packs:  148
-[ 16.135% ] Soot Writing Output:  187
+[ 12.842% ] Soot Packs:  150
+[ 16.952% ] Soot Writing Output:  198
 ================================================
 Outer.foo() calls Outer.Inner.mi()
-Outer@fa324d.foo calls Outer$Inner@1fc6e25.mi
+Outer@489832.foo calls Outer$Inner@332e.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1fc6e25.mi calls java.io.PrintStream@1a34442.println
+Outer$Inner@332e.mi calls java.io.PrintStream@120423f.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@fa324d.foo calls Outer$InnerRandom@1d6573a.nextHook
+Outer@489832.foo calls Outer$InnerRandom@dd4d3e.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1d6573a.nextHook calls Outer$InnerRandom@1d6573a.next
+Outer$InnerRandom@dd4d3e.nextHook calls Outer$InnerRandom@dd4d3e.next
 Outer.foo() calls Random.nextInt(..)
-Outer@fa324d.foo calls X.nextInt
+Outer@489832.foo calls X.nextInt
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)"
 org.aspectj.bridge.AbortException: expected note "Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)"
@@ -735,7 +735,7 @@ FAIL: Test 441: "new/around advice on calls within inner classes (including prot
 
 Running test 463: new/Crashing when looking up the type of array members.
 Commandline: abc -d new new/ArrayCasts.java 
-Abc started on Mon Aug 09 19:08:58 BST 2004
+Abc started on Tue Aug 10 02:19:16 BST 2004
 Compilation produced an unexpected number of errors: 6, should be 0
 Actual errors found: 
 Semantic Error at ArrayCasts.java:18,50-57: The exception java.lang.CloneNotSupportedException must be either caught or declared to be thrown
@@ -749,7 +749,7 @@ FAIL: Test 463: "new/Crashing when looking up the type of array members." failed
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
 Commandline: abc -d new new/Fixes.java 
-Abc started on Mon Aug 09 19:08:58 BST 2004
+Abc started on Tue Aug 10 02:19:16 BST 2004
 Checking theObject.private_int
 Checking theObject.private_int
 Checking theObject.private_int
@@ -762,10 +762,10 @@ polyglot.util.InternalCompilerError: Exception while processing <TheAspect: void
 	at abc.testing.Main.doCase(Main.java:254)
 	at abc.testing.Main.main(Main.java:102)
 Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$$1370, local$assign$$1371], [local$assign$$1370 = theObject, local$assign$$1371 = local$assign$$1370.get$accessor$private_int$1369(), local$assign$$1370.get$accessor$private_int$1369(local$assign$$1370.get$accessor$private_int$1369() + 1), local$assign$$1371])
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1648)
-	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:525)
-	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:327)
-	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:128)
+	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1652)
+	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:529)
+	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:331)
+	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:132)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:303)
@@ -776,7 +776,7 @@ FAIL: Test 464: "new/PostfixExprs to various synthetic things are fixed correctl
 
 Running test 466: new/advice on an inherited method
 Commandline: abc -d new new/AdviceOnInheritedMethod.java 
-Abc started on Mon Aug 09 19:09:00 BST 2004
+Abc started on Tue Aug 10 02:19:18 BST 2004
 Compilation produced an unexpected number of errors: 4, should be 0
 Actual errors found: 
 Syntax Error at new/AdviceOnInheritedMethod.java:22,35-48: Syntax error.
@@ -788,7 +788,7 @@ FAIL: Test 466: "new/advice on an inherited method" failed.
 
 Running test 468: new/various declared exception permutations
 Commandline: abc -d new new/DeclaredExcs.java 
-Abc started on Mon Aug 09 19:09:01 BST 2004
+Abc started on Tue Aug 10 02:19:20 BST 2004
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at DeclaredExcs.java:40,5-15: The exception java.lang.Exception must be either caught or declared to be thrown
@@ -798,36 +798,36 @@ FAIL: Test 468: "new/various declared exception permutations" failed.
 
 Running test 470: new/advice on default constructor for a class only referenced via reflection
 Commandline: abc -d new new/OddConstructors.java 
-Abc started on Mon Aug 09 19:09:03 BST 2004
+Abc started on Tue Aug 10 02:19:22 BST 2004
 Checking count
 Transforming I... 
 Transforming A... 
 Transforming OddConstructors... 
 Transforming OddConstructors$B... 
 Transforming C... 
-Abc finished on Mon Aug 09 19:09:04 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:22 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 771 millisec.)
+Breakdown of abc phases  (total: 751 millisec.)
 ------------------------------------------------
-[ 41.764% ] Init. of Soot:  322
+[ 42.344% ] Init. of Soot:  318
 [ 00.000% ] Loading Jars:  0
-[ 00.130% ] Create polyglot compiler:  1
-[ 36.057% ] Polyglot phases:  278
+[ 00.000% ] Create polyglot compiler:  0
+[ 42.210% ] Polyglot phases:  317
 [ 00.000% ] Resolve class names:  0
-[ 00.130% ] Declare Parents:  1
+[ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.908% ] Retrieving bodies:  7
-[ 03.891% ] Update pattern matcher:  30
+[ 01.065% ] Retrieving bodies:  8
+[ 03.862% ] Update pattern matcher:  29
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.389% ] Compute advice lists:  3
-[ 00.130% ] Intertype weave:  1
+[ 00.533% ] Compute advice lists:  4
+[ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.130% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.133% ] Weaving advice:  1
+[ 00.133% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 11.543% ] Soot Packs:  89
-[ 04.929% ] Soot Writing Output:  38
+[ 05.060% ] Soot Packs:  38
+[ 04.660% ] Soot Writing Output:  35
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail expected note "advised default constructor"
@@ -852,34 +852,34 @@ FAIL: Test 470: "new/advice on default constructor for a class only referenced v
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-Abc started on Mon Aug 09 19:09:05 BST 2004
+Abc started on Tue Aug 10 02:19:23 BST 2004
 Transforming A... 
 Transforming Test... 
 Transforming ObjectForInt... 
 Transforming Abc$access$A$around$1409... 
-Abc finished on Mon Aug 09 19:09:06 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:24 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 677 millisec.)
+Breakdown of abc phases  (total: 683 millisec.)
 ------------------------------------------------
-[ 52.142% ] Init. of Soot:  353
+[ 51.684% ] Init. of Soot:  353
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 22.895% ] Polyglot phases:  155
+[ 00.146% ] Create polyglot compiler:  1
+[ 22.548% ] Polyglot phases:  154
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.182% ] Retrieving bodies:  8
-[ 03.545% ] Update pattern matcher:  24
+[ 01.171% ] Retrieving bodies:  8
+[ 11.713% ] Update pattern matcher:  80
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.739% ] Compute advice lists:  5
+[ 00.732% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.148% ] Add aspect code:  1
-[ 00.443% ] Weaving advice:  3
-[ 00.148% ] Exceptions check:  1
+[ 00.146% ] Add aspect code:  1
+[ 00.439% ] Weaving advice:  3
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.499% ] Soot Packs:  44
-[ 12.260% ] Soot Writing Output:  83
+[ 06.589% ] Soot Packs:  45
+[ 04.832% ] Soot Writing Output:  33
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
@@ -903,7 +903,7 @@ Running test 473: new/Does the matrix coverage thing for the new method signatur
 Commandline: abc -d new -1.4 -Xlint:ignore new/MethodSignatures.java 
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:09:06 BST 2004
+Abc started on Tue Aug 10 02:19:24 BST 2004
 Transforming I... 
 Transforming D1... 
 Transforming C... 
@@ -912,29 +912,29 @@ Transforming F...
 Transforming E... 
 Transforming D0... 
 Transforming MethodSignatures... 
-Abc finished on Mon Aug 09 19:09:07 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:19:25 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1291 millisec.)
+Breakdown of abc phases  (total: 1306 millisec.)
 ------------------------------------------------
-[ 23.625% ] Init. of Soot:  305
+[ 26.799% ] Init. of Soot:  350
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 40.511% ] Polyglot phases:  523
+[ 00.077% ] Create polyglot compiler:  1
+[ 36.447% ] Polyglot phases:  476
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 03.021% ] Retrieving bodies:  39
-[ 02.401% ] Update pattern matcher:  31
+[ 00.077% ] Intertype Adjuster:  1
+[ 02.910% ] Retrieving bodies:  38
+[ 02.450% ] Update pattern matcher:  32
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 05.655% ] Compute advice lists:  73
+[ 05.590% ] Compute advice lists:  73
 [ 00.000% ] Intertype weave:  0
-[ 00.077% ] Add aspect code:  1
-[ 00.852% ] Weaving advice:  11
-[ 00.155% ] Exceptions check:  2
+[ 00.000% ] Add aspect code:  0
+[ 00.919% ] Weaving advice:  12
+[ 00.077% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 14.795% ] Soot Packs:  191
-[ 08.908% ] Soot Writing Output:  115
+[ 16.003% ] Soot Packs:  209
+[ 08.652% ] Soot Writing Output:  113
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail d0.m0 does not contain before calls advice for d0.m0
@@ -959,35 +959,35 @@ Running test 476: new/correct types of parameters at call-sites
 Commandline: abc -d new -1.4 -Xlint:ignore new/CallTypes.java 
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:09:09 BST 2004
+Abc started on Tue Aug 10 02:19:28 BST 2004
 Transforming C2... 
 Transforming C... 
 Transforming A... 
 Transforming C1... 
 Transforming CallTypes... 
-Abc finished on Mon Aug 09 19:09:10 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:19:29 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1084 millisec.)
+Breakdown of abc phases  (total: 1091 millisec.)
 ------------------------------------------------
-[ 29.889% ] Init. of Soot:  324
+[ 29.881% ] Init. of Soot:  326
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 33.303% ] Polyglot phases:  361
+[ 36.755% ] Polyglot phases:  401
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 05.996% ] Retrieving bodies:  65
-[ 02.675% ] Update pattern matcher:  29
+[ 00.092% ] Intertype Adjuster:  1
+[ 02.475% ] Retrieving bodies:  27
+[ 02.658% ] Update pattern matcher:  29
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 03.875% ] Compute advice lists:  42
+[ 03.758% ] Compute advice lists:  41
 [ 00.000% ] Intertype weave:  0
-[ 00.092% ] Add aspect code:  1
-[ 00.369% ] Weaving advice:  4
-[ 00.185% ] Exceptions check:  2
+[ 00.000% ] Add aspect code:  0
+[ 00.458% ] Weaving advice:  5
+[ 00.092% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 11.162% ] Soot Packs:  121
-[ 12.454% ] Soot Writing Output:  135
+[ 15.857% ] Soot Packs:  173
+[ 07.974% ] Soot Writing Output:  87
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail base: c1.foo(): [instanceof c, instanceof c1, static c] !equals [instanceof c, instanceof c1, static c, static c1]
@@ -1011,36 +1011,36 @@ FAIL: Test 476: "new/correct types of parameters at call-sites" failed.
 
 Running test 478: new/Reception based on strictfp modifier
 Commandline: abc -d new new/StrictFpReceptions.java 
-Abc started on Mon Aug 09 19:09:12 BST 2004
+Abc started on Tue Aug 10 02:19:30 BST 2004
 Checking StrictFpReceptions.r_counter
 Checking StrictFpReceptions.c_counter
 Transforming StrictClassAbstract... 
 Transforming StrictFpWatcher... 
 Transforming StrictFpReceptions... 
 Transforming StrictClass... 
-Abc finished on Mon Aug 09 19:09:13 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:31 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 685 millisec.)
+Breakdown of abc phases  (total: 722 millisec.)
 ------------------------------------------------
-[ 44.672% ] Init. of Soot:  306
+[ 45.845% ] Init. of Soot:  331
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 28.905% ] Polyglot phases:  198
+[ 00.139% ] Create polyglot compiler:  1
+[ 22.853% ] Polyglot phases:  165
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.146% ] Intertype Adjuster:  1
-[ 02.482% ] Retrieving bodies:  17
-[ 03.504% ] Update pattern matcher:  24
+[ 00.139% ] Intertype Adjuster:  1
+[ 02.355% ] Retrieving bodies:  17
+[ 03.324% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.752% ] Compute advice lists:  12
+[ 01.662% ] Compute advice lists:  12
 [ 00.000% ] Intertype weave:  0
-[ 00.146% ] Add aspect code:  1
-[ 00.146% ] Weaving advice:  1
-[ 00.146% ] Exceptions check:  1
+[ 00.139% ] Add aspect code:  1
+[ 00.139% ] Weaving advice:  1
+[ 00.139% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.927% ] Soot Packs:  68
-[ 08.175% ] Soot Writing Output:  56
+[ 15.651% ] Soot Packs:  113
+[ 07.618% ] Soot Writing Output:  55
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail test1 method call, counters=0,0
@@ -1062,7 +1062,7 @@ FAIL: Test 478: "new/Reception based on strictfp modifier" failed.
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
 Commandline: abc -d new/foemmel new/foemmel/TheAspect.java new/foemmel/TheObject.java 
-Abc started on Mon Aug 09 19:09:15 BST 2004
+Abc started on Tue Aug 10 02:19:33 BST 2004
 Checking theObject.private_int
 Checking theObject.protected_int
 Checking theObject.package_int
@@ -1087,10 +1087,10 @@ polyglot.util.InternalCompilerError: Exception while processing <TheAspect: void
 	at abc.testing.Main.doCase(Main.java:254)
 	at abc.testing.Main.main(Main.java:102)
 Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$$1484], [local$assign$$1484 = theObject, local$assign$$1484.get$accessor$private_int$1483(local$assign$$1484.get$accessor$private_int$1483() * 4)])
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1648)
-	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:525)
-	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:327)
-	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:128)
+	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1652)
+	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:529)
+	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:331)
+	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:132)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:303)
@@ -1101,7 +1101,7 @@ FAIL: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates
 
 Running test 483: new/exceptions thrown and caught in advice, particularly try+proceed
 Commandline: abc -d new new/TryAndProceed.java 
-Abc started on Mon Aug 09 19:09:16 BST 2004
+Abc started on Tue Aug 10 02:19:34 BST 2004
 Getting position for a untagged source line returnedLocal4 = virtualinvoke theAspect6.<A: java.lang.Object around$1506(Abc$access$A$around$1506,int,int,int,java.lang.Object)>(null, 1, 1, bindMask4, $r10)
 Getting position for a untagged source line returnedLocal11 = virtualinvoke theAspect2.<A: java.lang.Object around$1506(Abc$access$A$around$1506,int,int,int,java.lang.Object)>(null, 0, 1, bindMask1, $r4)
 Compilation produced an unexpected number of errors: 4, should be 0
@@ -1115,36 +1115,36 @@ FAIL: Test 483: "new/exceptions thrown and caught in advice, particularly try+pr
 
 Running test 495: new/innerInterfaces/private inner interfaces and bytecode visibility
 Commandline: abc -d new/innerInterfaces new/innerInterfaces/p/Driver.java new/innerInterfaces/p/InnerTest.java new/innerInterfaces/other/Test.java 
-Abc started on Mon Aug 09 19:09:25 BST 2004
+Abc started on Tue Aug 10 02:19:43 BST 2004
 host type is p.InnerTest.Inner
 Checking i.count
 Transforming p.Driver... 
-Transforming other.Test... 
 Transforming p.InnerTest... 
+Transforming other.Test... 
 Transforming p.InnerTest$Inner... 
-Abc finished on Mon Aug 09 19:09:25 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:44 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 600 millisec.)
+Breakdown of abc phases  (total: 645 millisec.)
 ------------------------------------------------
-[ 58.667% ] Init. of Soot:  352
+[ 54.109% ] Init. of Soot:  349
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 22.500% ] Polyglot phases:  135
+[ 00.155% ] Create polyglot compiler:  1
+[ 20.775% ] Polyglot phases:  134
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.167% ] Intertype Adjuster:  1
-[ 01.167% ] Retrieving bodies:  7
-[ 03.833% ] Update pattern matcher:  23
-[ 00.000% ] Weave Initializers:  0
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.085% ] Retrieving bodies:  7
+[ 03.566% ] Update pattern matcher:  23
+[ 00.155% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.667% ] Compute advice lists:  4
+[ 00.620% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
-[ 00.167% ] Add aspect code:  1
-[ 00.167% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.000% ] Add aspect code:  0
+[ 00.155% ] Weaving advice:  1
+[ 00.155% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 07.167% ] Soot Packs:  43
-[ 05.500% ] Soot Writing Output:  33
+[ 06.667% ] Soot Packs:  43
+[ 12.558% ] Soot Writing Output:  81
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail compare: 0 < 1
@@ -1167,7 +1167,7 @@ FAIL: Test 495: "new/innerInterfaces/private inner interfaces and bytecode visib
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-Abc started on Mon Aug 09 19:09:25 BST 2004
+Abc started on Tue Aug 10 02:19:44 BST 2004
 Getting position for a untagged source line return
 Getting position for a untagged source line return
 Transforming A... 
@@ -1175,29 +1175,29 @@ Transforming C...
 Transforming SuperC... 
 Transforming AroundAll... 
 Transforming Abc$access$A$around$1628... 
-Abc finished on Mon Aug 09 19:09:27 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Tue Aug 10 02:19:46 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 2028 millisec.)
+Breakdown of abc phases  (total: 1985 millisec.)
 ------------------------------------------------
-[ 16.765% ] Init. of Soot:  340
+[ 15.264% ] Init. of Soot:  303
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 21.992% ] Polyglot phases:  446
+[ 00.050% ] Create polyglot compiler:  1
+[ 22.771% ] Polyglot phases:  452
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.049% ] Intertype Adjuster:  1
-[ 01.381% ] Retrieving bodies:  28
-[ 01.479% ] Update pattern matcher:  30
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.461% ] Retrieving bodies:  29
+[ 03.476% ] Update pattern matcher:  69
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.036% ] Compute advice lists:  21
+[ 01.008% ] Compute advice lists:  20
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 17.061% ] Weaving advice:  346
-[ 00.148% ] Exceptions check:  3
+[ 00.050% ] Add aspect code:  1
+[ 14.962% ] Weaving advice:  297
+[ 00.151% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 27.613% ] Soot Packs:  560
-[ 12.475% ] Soot Writing Output:  253
+[ 28.212% ] Soot Packs:  560
+[ 12.594% ] Soot Writing Output:  250
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 132
@@ -1224,7 +1224,7 @@ Running test 499: new/target type matching with messy interface hierarchies
 Commandline: abc -d new -1.4 -Xlint:ignore new/CallTypesI.java 
 *** Option -1.4 ignored: abc should be able to handle both 1.3 and 1.4.
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:09:29 BST 2004
+Abc started on Tue Aug 10 02:19:47 BST 2004
 Transforming C0... 
 Transforming C1a... 
 Transforming I1a... 
@@ -1233,29 +1233,29 @@ Transforming A...
 Transforming CallTypesI... 
 Transforming I1b... 
 Transforming C1b... 
-Abc finished on Mon Aug 09 19:09:30 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:19:48 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1264 millisec.)
+Breakdown of abc phases  (total: 1290 millisec.)
 ------------------------------------------------
-[ 27.690% ] Init. of Soot:  350
+[ 26.822% ] Init. of Soot:  346
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 32.437% ] Polyglot phases:  410
+[ 00.078% ] Create polyglot compiler:  1
+[ 31.473% ] Polyglot phases:  406
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.079% ] Intertype Adjuster:  1
-[ 01.899% ] Retrieving bodies:  24
-[ 02.294% ] Update pattern matcher:  29
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.860% ] Retrieving bodies:  24
+[ 02.248% ] Update pattern matcher:  29
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 03.165% ] Compute advice lists:  40
+[ 06.822% ] Compute advice lists:  88
 [ 00.000% ] Intertype weave:  0
-[ 00.079% ] Add aspect code:  1
-[ 01.108% ] Weaving advice:  14
-[ 00.237% ] Exceptions check:  3
+[ 00.078% ] Add aspect code:  1
+[ 01.085% ] Weaving advice:  14
+[ 00.233% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 20.491% ] Soot Packs:  259
-[ 10.522% ] Soot Writing Output:  133
+[ 16.124% ] Soot Packs:  208
+[ 13.178% ] Soot Writing Output:  170
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail base: c1a.mI(): [instanceof c0, instanceof c1a, instanceof i0, instanceof i1a, static c1a, static i0] !equals [instanceof c0, instanceof c1a, instanceof i0, instanceof i1a, static c1a, static i0, static i1a]
@@ -1279,35 +1279,35 @@ FAIL: Test 499: "new/target type matching with messy interface hierarchies" fail
 
 Running test 503: new/anonInnerClass/anonymous inner class with aspect
 Commandline: abc -d new/anonInnerClass new/anonInnerClass/Driver.java 
-Abc started on Mon Aug 09 19:09:32 BST 2004
+Abc started on Tue Aug 10 02:19:51 BST 2004
 Transforming I... 
 Transforming A... 
 Transforming Driver... 
 Transforming Test... 
 Transforming Test$1... 
-Abc finished on Mon Aug 09 19:09:33 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:51 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 673 millisec.)
+Breakdown of abc phases  (total: 627 millisec.)
 ------------------------------------------------
-[ 51.560% ] Init. of Soot:  347
+[ 48.325% ] Init. of Soot:  303
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 22.288% ] Polyglot phases:  150
+[ 00.159% ] Create polyglot compiler:  1
+[ 31.579% ] Polyglot phases:  198
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.486% ] Retrieving bodies:  10
-[ 11.441% ] Update pattern matcher:  77
+[ 01.595% ] Retrieving bodies:  10
+[ 03.828% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.743% ] Compute advice lists:  5
+[ 00.797% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.149% ] Weaving advice:  1
-[ 00.149% ] Exceptions check:  1
+[ 00.159% ] Add aspect code:  1
+[ 00.159% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.835% ] Soot Packs:  46
-[ 05.349% ] Soot Writing Output:  36
+[ 07.337% ] Soot Packs:  46
+[ 06.061% ] Soot Writing Output:  38
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail : -bar !equals -bar-after
@@ -1329,7 +1329,7 @@ FAIL: Test 503: "new/anonInnerClass/anonymous inner class with aspect" failed.
 
 Running test 505: design/intro/interfaces as mixins with introduction
 Commandline: abc -d design/intro design/intro/Interfaces.java 
-Abc started on Mon Aug 09 19:09:34 BST 2004
+Abc started on Tue Aug 10 02:19:52 BST 2004
 host type is SubI
 host type is I
 host type is I
@@ -1345,29 +1345,29 @@ Transforming Interfaces...
 Transforming A3... 
 Transforming A1... 
 Transforming A2... 
-Abc finished on Mon Aug 09 19:09:35 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:19:53 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1150 millisec.)
+Breakdown of abc phases  (total: 1142 millisec.)
 ------------------------------------------------
-[ 30.783% ] Init. of Soot:  354
+[ 30.385% ] Init. of Soot:  347
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 33.826% ] Polyglot phases:  389
+[ 37.828% ] Polyglot phases:  432
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.174% ] Intertype Adjuster:  2
-[ 04.957% ] Retrieving bodies:  57
-[ 02.435% ] Update pattern matcher:  28
-[ 00.174% ] Weave Initializers:  2
+[ 00.175% ] Intertype Adjuster:  2
+[ 01.751% ] Retrieving bodies:  20
+[ 02.539% ] Update pattern matcher:  29
+[ 00.088% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 02.870% ] Compute advice lists:  33
+[ 02.977% ] Compute advice lists:  34
 [ 00.000% ] Intertype weave:  0
-[ 00.087% ] Add aspect code:  1
-[ 00.261% ] Weaving advice:  3
-[ 00.087% ] Exceptions check:  1
+[ 00.088% ] Add aspect code:  1
+[ 00.263% ] Weaving advice:  3
+[ 00.088% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 11.391% ] Soot Packs:  131
-[ 12.957% ] Soot Writing Output:  149
+[ 15.149% ] Soot Packs:  173
+[ 08.669% ] Soot Writing Output:  99
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected inst init of I "initialize-I" not found]
@@ -1392,7 +1392,7 @@ FAIL: Test 505: "design/intro/interfaces as mixins with introduction" failed.
 
 Running test 506: new/functional modifiers work correctly with introduced members
 Commandline: abc -d new new/IntroducedModifiers.java 
-Abc started on Mon Aug 09 19:09:35 BST 2004
+Abc started on Tue Aug 10 02:19:53 BST 2004
 host type is C
 host type is C
 host type is I
@@ -1400,29 +1400,29 @@ Transforming I...
 Transforming IntroducedModifiers... 
 Transforming C... 
 Transforming A... 
-Abc finished on Mon Aug 09 19:09:36 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:54 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 887 millisec.)
+Breakdown of abc phases  (total: 857 millisec.)
 ------------------------------------------------
-[ 34.386% ] Init. of Soot:  305
+[ 39.090% ] Init. of Soot:  335
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 37.091% ] Polyglot phases:  329
+[ 00.117% ] Create polyglot compiler:  1
+[ 34.072% ] Polyglot phases:  292
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.113% ] Intertype Adjuster:  1
-[ 02.029% ] Retrieving bodies:  18
-[ 03.382% ] Update pattern matcher:  30
-[ 00.113% ] Weave Initializers:  1
+[ 00.117% ] Intertype Adjuster:  1
+[ 06.651% ] Retrieving bodies:  57
+[ 03.501% ] Update pattern matcher:  30
+[ 00.117% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.676% ] Compute advice lists:  6
+[ 00.817% ] Compute advice lists:  7
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.113% ] Weaving advice:  1
-[ 00.113% ] Exceptions check:  1
+[ 00.117% ] Weaving advice:  1
+[ 00.117% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 15.896% ] Soot Packs:  141
-[ 06.088% ] Soot Writing Output:  54
+[ 09.218% ] Soot Packs:  79
+[ 06.068% ] Soot Writing Output:  52
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.NoSuchFieldException: iField
 java.lang.reflect.InvocationTargetException
@@ -1442,7 +1442,7 @@ FAIL: Test 506: "new/functional modifiers work correctly with introduced members
 
 Running test 511: new/compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface
 Commandline: abc -d new new/PR528.java 
-Abc started on Mon Aug 09 19:09:40 BST 2004
+Abc started on Tue Aug 10 02:19:58 BST 2004
 Checking originalIndex
 Checking callbackIndex
 Checking aroundIndex
@@ -1452,29 +1452,29 @@ Transforming PR528...
 Transforming C... 
 Transforming B... 
 Transforming Abc$access$B$around$1752... 
-Abc finished on Mon Aug 09 19:09:40 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:19:59 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 809 millisec.)
+Breakdown of abc phases  (total: 804 millisec.)
 ------------------------------------------------
-[ 37.577% ] Init. of Soot:  304
+[ 43.159% ] Init. of Soot:  347
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 29.172% ] Polyglot phases:  236
+[ 00.124% ] Create polyglot compiler:  1
+[ 22.761% ] Polyglot phases:  183
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.124% ] Intertype Adjuster:  1
-[ 01.360% ] Retrieving bodies:  11
-[ 03.090% ] Update pattern matcher:  25
+[ 01.493% ] Retrieving bodies:  12
+[ 02.985% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.865% ] Compute advice lists:  7
+[ 00.995% ] Compute advice lists:  8
 [ 00.000% ] Intertype weave:  0
-[ 00.124% ] Add aspect code:  1
-[ 00.865% ] Weaving advice:  7
+[ 00.000% ] Add aspect code:  0
+[ 00.871% ] Weaving advice:  7
 [ 00.124% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 12.237% ] Soot Packs:  99
-[ 14.462% ] Soot Writing Output:  117
+[ 19.154% ] Soot Packs:  154
+[ 08.209% ] Soot Writing Output:  66
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.ExceptionInInitializerError
 java.lang.reflect.InvocationTargetException
@@ -1498,34 +1498,34 @@ FAIL: Test 511: "new/compile errors boolean using cflow and unimplemented method
 
 Running test 513: new/missing method name to synthetic invocation
 Commandline: abc -d new new/PR535.java 
-Abc started on Mon Aug 09 19:09:41 BST 2004
+Abc started on Tue Aug 10 02:19:59 BST 2004
 Transforming PR535... 
 Transforming C... 
 Transforming A... 
 Transforming Abc$access$A$around$1758... 
-Abc finished on Mon Aug 09 19:09:42 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:20:00 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 685 millisec.)
+Breakdown of abc phases  (total: 651 millisec.)
 ------------------------------------------------
-[ 50.073% ] Init. of Soot:  343
+[ 46.544% ] Init. of Soot:  303
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 21.460% ] Polyglot phases:  147
+[ 31.644% ] Polyglot phases:  206
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.730% ] Retrieving bodies:  5
-[ 03.650% ] Update pattern matcher:  25
+[ 00.154% ] Intertype Adjuster:  1
+[ 00.768% ] Retrieving bodies:  5
+[ 03.840% ] Update pattern matcher:  25
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.584% ] Compute advice lists:  4
+[ 00.768% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.146% ] Add aspect code:  1
-[ 00.730% ] Weaving advice:  5
-[ 00.000% ] Exceptions check:  0
+[ 00.000% ] Add aspect code:  0
+[ 00.768% ] Weaving advice:  5
+[ 00.154% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 16.934% ] Soot Packs:  116
-[ 05.693% ] Soot Writing Output:  39
+[ 09.217% ] Soot Packs:  60
+[ 06.144% ] Soot Writing Output:  40
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.ExceptionInInitializerError
 java.lang.reflect.InvocationTargetException
@@ -1548,7 +1548,7 @@ FAIL: Test 513: "new/missing method name to synthetic invocation" failed.
 
 Running test 517: new/introduced inner interfaces accessible inside aspect
 Commandline: abc -d new new/IntroduceInnerInterfaceCP.java 
-Abc started on Mon Aug 09 19:09:45 BST 2004
+Abc started on Tue Aug 10 02:20:03 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/IntroduceInnerInterfaceCP.java:29,0-33:1: TargetClass should be declared abstract; it does not define walk(), which is declared in Aspect.Inner
@@ -1558,36 +1558,36 @@ FAIL: Test 517: "new/introduced inner interfaces accessible inside aspect" faile
 Running test 518: new/validate (enclosing) join point and source locations
 Commandline: abc -d new -Xlint:ignore new/NegativeSourceLocation.java 
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:09:45 BST 2004
+Abc started on Tue Aug 10 02:20:03 BST 2004
 Checking i
 Transforming Const... 
 Transforming TargetClass... 
 Transforming Signal... 
 Transforming Aspect... 
 Transforming NegativeSourceLocation... 
-Abc finished on Mon Aug 09 19:09:47 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:20:05 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1770 millisec.)
+Breakdown of abc phases  (total: 1759 millisec.)
 ------------------------------------------------
-[ 18.588% ] Init. of Soot:  329
+[ 18.761% ] Init. of Soot:  330
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 24.972% ] Polyglot phases:  442
+[ 24.787% ] Polyglot phases:  436
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.825% ] Retrieving bodies:  50
-[ 01.638% ] Update pattern matcher:  29
+[ 02.843% ] Retrieving bodies:  50
+[ 01.649% ] Update pattern matcher:  29
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 06.102% ] Compute advice lists:  108
+[ 09.323% ] Compute advice lists:  164
 [ 00.000% ] Intertype weave:  0
-[ 00.169% ] Add aspect code:  3
-[ 02.486% ] Weaving advice:  44
-[ 00.169% ] Exceptions check:  3
-[ 00.000% ] Validate jimple:  0
-[ 27.345% ] Soot Packs:  484
-[ 15.706% ] Soot Writing Output:  278
+[ 00.057% ] Add aspect code:  1
+[ 02.388% ] Weaving advice:  42
+[ 00.171% ] Exceptions check:  3
+[ 00.057% ] Validate jimple:  1
+[ 24.275% ] Soot Packs:  427
+[ 15.691% ] Soot Writing Output:  276
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "before AllTargetJoinPoints initialization(java.lang.Runnable())" not found,  expected event "before AllTargetJoinPoints initialization(java.lang.Runnable())" not found]
@@ -1615,21 +1615,22 @@ FAIL: Test 518: "new/validate (enclosing) join point and source locations" faile
 
 Running test 521: new/advice throws clauses must be compatible with joinpoints they apply to
 Commandline: abc -d new new/AdviceThrowsCp.java 
-Abc started on Mon Aug 09 19:09:48 BST 2004
-Compilation produced an unexpected number of errors: 6, should be 0
+Abc started on Tue Aug 10 02:20:06 BST 2004
+Getting position for a untagged source line virtualinvoke theAspect14.<A: void around$1786(Abc$access$A$around$1786,int,int,int,java.lang.Object)>(null, 1, 1, bindMask8, $r4)
+Getting position for a untagged source line virtualinvoke theAspect2.<A: void around$1786(Abc$access$A$around$1786,int,int,int,java.lang.Object)>(null, 0, 1, bindMask2, $r0)
+Compilation produced an unexpected number of errors: 5, should be 0
 Actual errors found: 
-Semantic Error at AdviceThrowsCp.java:7,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCp.java:7,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCp.java:19,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCp.java:19,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCp.java:28,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCp.java:28,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
+Semantic Error at AdviceThrowsCp.java: The exception CheckedExc must be either caught or declared to be thrown in method <AdviceThrowsCp: void abc$static$proceed$A$around$1785(int,int,java.lang.Object)>
+Semantic Error at AdviceThrowsCp.java: The exception CheckedExc must be either caught or declared to be thrown in method <AdviceThrowsCp: void abc$static$proceed$A$around$1785(int,int,java.lang.Object)>
+Semantic Error at AdviceThrowsCp.java:7,20-24: The exception CheckedExc must be either caught or declared to be thrown
+Semantic Error at AdviceThrowsCp.java:19,20-24: The exception java.io.IOException must be either caught or declared to be thrown
+Semantic Error at AdviceThrowsCp.java:19,20-24: The exception CheckedExc must be either caught or declared to be thrown
 FAIL: Test 521: "new/advice throws clauses must be compatible with joinpoints they apply to" failed.
 
 
 Running test 523: new/illegal method conflicts with introductions and interfaces and PR#561
 Commandline: abc -d new new/MethodConflictsCF.java 
-Abc started on Mon Aug 09 19:09:50 BST 2004
+Abc started on Tue Aug 10 02:20:08 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Semantic Error at new/MethodConflictsCF.java:28,15-29: Duplicate method "m1()" introduced by aspects "I2.BODY" and "I1.BODY" into class "C".
@@ -1638,32 +1639,32 @@ FAIL: Test 523: "new/illegal method conflicts with introductions and interfaces 
 
 Running test 546: new/VerifyError after around advice falls off end of tryCatch
 Commandline: abc -d new new/TryOffEnd.java 
-Abc started on Mon Aug 09 19:10:18 BST 2004
+Abc started on Tue Aug 10 02:20:34 BST 2004
 Transforming TryOffEnd... 
 Transforming A... 
-Abc finished on Mon Aug 09 19:10:18 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:20:35 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 711 millisec.)
+Breakdown of abc phases  (total: 659 millisec.)
 ------------------------------------------------
-[ 46.554% ] Init. of Soot:  331
+[ 46.131% ] Init. of Soot:  304
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 33.474% ] Polyglot phases:  238
+[ 41.123% ] Polyglot phases:  271
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.141% ] Intertype Adjuster:  1
-[ 00.844% ] Retrieving bodies:  6
-[ 11.955% ] Update pattern matcher:  85
+[ 00.152% ] Intertype Adjuster:  1
+[ 00.910% ] Retrieving bodies:  6
+[ 04.249% ] Update pattern matcher:  28
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.281% ] Compute advice lists:  2
+[ 00.303% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.141% ] Weaving advice:  1
+[ 00.152% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.797% ] Soot Packs:  27
-[ 02.813% ] Soot Writing Output:  20
+[ 04.097% ] Soot Packs:  27
+[ 02.883% ] Soot Writing Output:  19
 ================================================
 Compilation produced an unexpected number of errors: 0, should be 2
 Actual errors found: 
@@ -1672,31 +1673,31 @@ FAIL: Test 546: "new/VerifyError after around advice falls off end of tryCatch" 
 
 Running test 548: new/subaspects/aspect with private abstract pointcut
 Commandline: abc -d new/subaspects new/subaspects/PrivatePointcutCE.java 
-Abc started on Mon Aug 09 19:10:19 BST 2004
+Abc started on Tue Aug 10 02:20:36 BST 2004
 Transforming PrivatePointcutCE... 
-Abc finished on Mon Aug 09 19:10:19 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:20:36 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 384 millisec.)
+Breakdown of abc phases  (total: 391 millisec.)
 ------------------------------------------------
-[ 89.583% ] Init. of Soot:  344
+[ 89.770% ] Init. of Soot:  351
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 02.344% ] Polyglot phases:  9
+[ 00.256% ] Create polyglot compiler:  1
+[ 02.046% ] Polyglot phases:  8
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.260% ] Retrieving bodies:  1
-[ 05.208% ] Update pattern matcher:  20
+[ 00.256% ] Retrieving bodies:  1
+[ 05.371% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.260% ] Compute advice lists:  1
+[ 00.000% ] Compute advice lists:  0
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.000% ] Weaving advice:  0
+[ 00.256% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 01.042% ] Soot Packs:  4
-[ 01.302% ] Soot Writing Output:  5
+[ 01.023% ] Soot Packs:  4
+[ 01.023% ] Soot Writing Output:  4
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 548: "new/subaspects/aspect with private abstract pointcut" failed.
@@ -1704,7 +1705,7 @@ FAIL: Test 548: "new/subaspects/aspect with private abstract pointcut" failed.
 
 Running test 549: new/subaspects/concrete aspect unable to access abstract package-private pointcut in parent for overriding
 Commandline: abc -d new/subaspects new/subaspects/parent/ParentCE.java new/subaspects/child/ChildCE.java 
-Abc started on Mon Aug 09 19:10:19 BST 2004
+Abc started on Tue Aug 10 02:20:36 BST 2004
 Compilation produced an unexpected number of errors: 4, should be 6
 Actual errors found: 
 Semantic Error at new/subaspects/child/ChildCE.java:9,7-18:1: child.ChildCE should be declared abstract; it does not define fromInterface(), which is declared in child.I
@@ -1716,7 +1717,7 @@ FAIL: Test 549: "new/subaspects/concrete aspect unable to access abstract packag
 
 Running test 554: new/private inner interface accessible in scope when declared on outer class
 Commandline: abc -d new new/DeclareAccess.java 
-Abc started on Mon Aug 09 19:10:22 BST 2004
+Abc started on Tue Aug 10 02:20:39 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/DeclareAccess.java:19,0-24:1: Target should be declared abstract; it does not define value(), which is declared in Aspect.PI
@@ -1725,7 +1726,7 @@ FAIL: Test 554: "new/private inner interface accessible in scope when declared o
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-Abc started on Mon Aug 09 19:10:23 BST 2004
+Abc started on Tue Aug 10 02:20:39 BST 2004
 Checking to see if A is an aspect.
 Checking to see if A is an aspect.
 Checking to see if A is an aspect.
@@ -1736,29 +1737,29 @@ Transforming A...
 Transforming Sub... 
 Transforming Super... 
 Transforming SuperInIntroduction... 
-Abc finished on Mon Aug 09 19:10:23 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:20:40 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 712 millisec.)
+Breakdown of abc phases  (total: 719 millisec.)
 ------------------------------------------------
-[ 47.191% ] Init. of Soot:  336
+[ 47.010% ] Init. of Soot:  338
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 28.652% ] Polyglot phases:  204
+[ 23.366% ] Polyglot phases:  168
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.140% ] Intertype Adjuster:  1
-[ 02.388% ] Retrieving bodies:  17
-[ 03.511% ] Update pattern matcher:  25
+[ 00.139% ] Intertype Adjuster:  1
+[ 02.225% ] Retrieving bodies:  16
+[ 09.875% ] Update pattern matcher:  71
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.702% ] Compute advice lists:  5
+[ 00.695% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.140% ] Add aspect code:  1
-[ 00.140% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.000% ] Add aspect code:  0
+[ 00.139% ] Weaving advice:  1
+[ 00.139% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.831% ] Soot Packs:  70
-[ 07.303% ] Soot Writing Output:  52
+[ 09.597% ] Soot Packs:  69
+[ 06.815% ] Soot Writing Output:  49
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError: tried to access method java.lang.Object.clone()Ljava/lang/Object; from class A
 java.lang.reflect.InvocationTargetException
@@ -1779,7 +1780,7 @@ FAIL: Test 555: "new/accessing protected superclass members in and outside CCC f
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
 Commandline: abc -d new new/InnerClassInPrivilegedAspect.java 
-Abc started on Mon Aug 09 19:10:43 BST 2004
+Abc started on Tue Aug 10 02:21:00 BST 2004
 host type is Target
 host type is Target
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
@@ -1809,7 +1810,7 @@ FAIL: Test 580: "new/inner classes of privileged aspects cannot see target class
 
 Running test 582: new/subclass advice not run for join points selected by superclass cflow-based pointcuts
 Commandline: abc -d new new/PR559.java 
-Abc started on Mon Aug 09 19:10:45 BST 2004
+Abc started on Tue Aug 10 02:21:01 BST 2004
 Compilation produced an unexpected number of errors: 17, should be 0
 Actual errors found: 
 Semantic Error at new/PR559.java:35,13-36:64: An abstract pointcut cannot have a body.
@@ -1834,7 +1835,7 @@ FAIL: Test 582: "new/subclass advice not run for join points selected by supercl
 
 Running test 598: new/PR569/anon class written to wrong directory
 Commandline: abc -d new/PR569 new/PR569/a/IntroAnon.java new/PR569/a/MyInterface.java new/PR569/b/Dest.java 
-Abc started on Mon Aug 09 19:10:56 BST 2004
+Abc started on Tue Aug 10 02:21:13 BST 2004
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:486)
@@ -1861,34 +1862,34 @@ FAIL: Test 598: "new/PR569/anon class written to wrong directory" failed.
 
 Running test 608: new/around name-binding in cflows using factorial
 Commandline: abc -d new new/FactorialCflow.java 
-Abc started on Mon Aug 09 19:11:03 BST 2004
+Abc started on Tue Aug 10 02:21:19 BST 2004
 Transforming A... 
 Transforming FactorialCflow... 
 Transforming Abc$access$A$around$2269... 
 Transforming Abc$access$A$around$2268... 
-Abc finished on Mon Aug 09 19:11:04 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:21:20 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1147 millisec.)
+Breakdown of abc phases  (total: 1133 millisec.)
 ------------------------------------------------
-[ 29.817% ] Init. of Soot:  342
+[ 30.450% ] Init. of Soot:  345
 [ 00.000% ] Loading Jars:  0
-[ 00.087% ] Create polyglot compiler:  1
-[ 08.457% ] Polyglot phases:  97
+[ 00.000% ] Create polyglot compiler:  0
+[ 08.561% ] Polyglot phases:  97
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.087% ] Intertype Adjuster:  1
-[ 00.872% ] Retrieving bodies:  10
-[ 02.005% ] Update pattern matcher:  23
-[ 00.000% ] Weave Initializers:  0
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.883% ] Retrieving bodies:  10
+[ 02.030% ] Update pattern matcher:  23
+[ 00.088% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.872% ] Compute advice lists:  10
+[ 00.706% ] Compute advice lists:  8
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 07.847% ] Weaving advice:  90
-[ 00.174% ] Exceptions check:  2
+[ 00.088% ] Add aspect code:  1
+[ 03.089% ] Weaving advice:  35
+[ 00.265% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 34.438% ] Soot Packs:  395
-[ 15.344% ] Soot Writing Output:  176
+[ 39.276% ] Soot Packs:  445
+[ 14.563% ] Soot Writing Output:  165
 ================================================
 Unexpected exception while trying to run compiled class: java.lang.ExceptionInInitializerError
 java.lang.ExceptionInInitializerError
@@ -1908,32 +1909,32 @@ FAIL: Test 608: "new/around name-binding in cflows using factorial" failed.
 
 Running test 634: new/CE for ambiguous type reference (two files in package)
 Commandline: abc -d new new/ambiguousClass/AmbiguousReferent.java new/ambiguousClass/AmbiguousClassReference.java 
-Abc started on Mon Aug 09 19:11:14 BST 2004
+Abc started on Tue Aug 10 02:21:31 BST 2004
 Transforming ambiguousClass.AmbiguousClassReference... 
 Transforming ambiguousClass.AmbiguousReferent... 
-Abc finished on Mon Aug 09 19:11:15 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:21:31 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 395 millisec.)
+Breakdown of abc phases  (total: 393 millisec.)
 ------------------------------------------------
-[ 86.582% ] Init. of Soot:  342
+[ 86.768% ] Init. of Soot:  341
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 03.038% ] Polyglot phases:  12
+[ 00.254% ] Create polyglot compiler:  1
+[ 02.799% ] Polyglot phases:  11
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.506% ] Retrieving bodies:  2
-[ 05.063% ] Update pattern matcher:  20
+[ 00.254% ] Retrieving bodies:  1
+[ 05.344% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.253% ] Compute advice lists:  1
+[ 00.254% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.253% ] Weaving advice:  1
+[ 00.254% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.025% ] Soot Packs:  8
-[ 02.278% ] Soot Writing Output:  9
+[ 01.781% ] Soot Packs:  7
+[ 02.290% ] Soot Writing Output:  9
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" failed.
@@ -1941,7 +1942,7 @@ FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" fai
 
 Running test 639: new/Incrementing interface-introduced field
 Commandline: abc -d new new/IntroducedFieldInc.java 
-Abc started on Mon Aug 09 19:11:17 BST 2004
+Abc started on Tue Aug 10 02:21:33 BST 2004
 host type is I
 Checking i.count
 Checking (I) i.count
@@ -1950,29 +1951,29 @@ Checking getICount
 Transforming IntroducedFieldInc... 
 Transforming I... 
 Transforming A... 
-Abc finished on Mon Aug 09 19:11:18 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:21:34 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 640 millisec.)
+Breakdown of abc phases  (total: 628 millisec.)
 ------------------------------------------------
-[ 52.188% ] Init. of Soot:  334
+[ 51.911% ] Init. of Soot:  326
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 23.438% ] Polyglot phases:  150
+[ 23.726% ] Polyglot phases:  149
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.562% ] Retrieving bodies:  10
-[ 03.750% ] Update pattern matcher:  24
-[ 00.156% ] Weave Initializers:  1
+[ 00.159% ] Intertype Adjuster:  1
+[ 01.433% ] Retrieving bodies:  9
+[ 03.981% ] Update pattern matcher:  25
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.469% ] Compute advice lists:  3
+[ 00.478% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.156% ] Weaving advice:  1
-[ 00.156% ] Exceptions check:  1
+[ 00.159% ] Add aspect code:  1
+[ 00.000% ] Weaving advice:  0
+[ 00.159% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.250% ] Soot Packs:  40
-[ 11.875% ] Soot Writing Output:  76
+[ 13.057% ] Soot Packs:  82
+[ 04.936% ] Soot Writing Output:  31
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail ++((I)i).count
@@ -1994,7 +1995,7 @@ FAIL: Test 639: "new/Incrementing interface-introduced field" failed.
 
 Running test 647: new/flag errors when binding args with indeterminate prefix and suffix
 Commandline: abc -d new new/IndeterminateArgsCE.java 
-Abc started on Mon Aug 09 19:11:23 BST 2004
+Abc started on Tue Aug 10 02:21:39 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 4
 Actual errors found: 
 Semantic Error at new/IndeterminateArgsCE.java:65,70-72: Two fillers in args pattern
@@ -2003,7 +2004,7 @@ FAIL: Test 647: "new/flag errors when binding args with indeterminate prefix and
 
 Running test 652: pureJava/subclass access to enclosing super class private members
 Commandline: abc -d pureJava pureJava/SubclassAccessToEnclosingSuperClassPrivate.java 
-Abc started on Mon Aug 09 19:13:01 BST 2004
+Abc started on Tue Aug 10 02:23:17 BST 2004
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:486)
@@ -2030,7 +2031,7 @@ FAIL: Test 652: "pureJava/subclass access to enclosing super class private membe
 
 Running test 653: new/nolang/Compiling java.lang.Object with ajc yields non-verifying bytecode
 Commandline: abc -d new/nolang new/nolang/java/lang/Object.java new/nolang/java/lang/String.java 
-Abc started on Mon Aug 09 19:13:02 BST 2004
+Abc started on Tue Aug 10 02:23:18 BST 2004
 Method was <java.lang.Object: void <init>()>
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
@@ -2053,33 +2054,33 @@ FAIL: Test 653: "new/nolang/Compiling java.lang.Object with ajc yields non-verif
 
 Running test 655: new/CE expected for assignment to arg in if pcd
 Commandline: abc -d new new/IfPCDAssignmentCE.java 
-Abc started on Mon Aug 09 19:13:05 BST 2004
+Abc started on Tue Aug 10 02:23:21 BST 2004
 Transforming A... 
 Transforming C... 
 Transforming IfPCDAssignmentCE... 
-Abc finished on Mon Aug 09 19:13:05 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:21 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 514 millisec.)
+Breakdown of abc phases  (total: 510 millisec.)
 ------------------------------------------------
-[ 67.121% ] Init. of Soot:  345
+[ 67.451% ] Init. of Soot:  344
 [ 00.000% ] Loading Jars:  0
-[ 00.195% ] Create polyglot compiler:  1
-[ 04.475% ] Polyglot phases:  23
+[ 00.196% ] Create polyglot compiler:  1
+[ 04.314% ] Polyglot phases:  22
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.362% ] Retrieving bodies:  7
-[ 12.646% ] Update pattern matcher:  65
+[ 00.196% ] Intertype Adjuster:  1
+[ 01.176% ] Retrieving bodies:  6
+[ 12.941% ] Update pattern matcher:  66
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.584% ] Compute advice lists:  3
+[ 00.784% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.195% ] Weaving advice:  1
-[ 00.195% ] Exceptions check:  1
+[ 00.196% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 07.393% ] Soot Packs:  38
-[ 05.837% ] Soot Writing Output:  30
+[ 07.647% ] Soot Packs:  39
+[ 05.098% ] Soot Writing Output:  26
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 655: "new/CE expected for assignment to arg in if pcd" failed.
@@ -2087,33 +2088,33 @@ FAIL: Test 655: "new/CE expected for assignment to arg in if pcd" failed.
 
 Running test 660: new/declare interface extends class
 Commandline: abc -d new new/DeclareInterfaceExtendsClass.java 
-Abc started on Mon Aug 09 19:13:07 BST 2004
+Abc started on Tue Aug 10 02:23:23 BST 2004
 Transforming I... 
 Transforming A... 
 Transforming C... 
-Abc finished on Mon Aug 09 19:13:08 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:24 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 418 millisec.)
+Breakdown of abc phases  (total: 414 millisec.)
 ------------------------------------------------
-[ 82.775% ] Init. of Soot:  346
+[ 82.850% ] Init. of Soot:  343
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 02.871% ] Polyglot phases:  12
-[ 00.000% ] Resolve class names:  0
+[ 02.657% ] Polyglot phases:  11
+[ 00.242% ] Resolve class names:  1
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.478% ] Retrieving bodies:  2
-[ 05.024% ] Update pattern matcher:  21
-[ 00.000% ] Weave Initializers:  0
+[ 00.483% ] Retrieving bodies:  2
+[ 04.831% ] Update pattern matcher:  20
+[ 00.242% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.239% ] Compute advice lists:  1
-[ 00.000% ] Intertype weave:  0
+[ 00.000% ] Compute advice lists:  0
+[ 00.242% ] Intertype weave:  1
 [ 00.000% ] Add aspect code:  0
-[ 00.239% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.000% ] Weaving advice:  0
+[ 00.242% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 04.306% ] Soot Packs:  18
-[ 04.067% ] Soot Writing Output:  17
+[ 04.348% ] Soot Packs:  18
+[ 03.865% ] Soot Writing Output:  16
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 660: "new/declare interface extends class" failed.
@@ -2121,7 +2122,7 @@ FAIL: Test 660: "new/declare interface extends class" failed.
 
 Running test 666: pureJava/assert coverage tests [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertsCv.java 
-Abc started on Mon Aug 09 19:13:10 BST 2004
+Abc started on Tue Aug 10 02:23:26 BST 2004
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:486)
@@ -2149,7 +2150,7 @@ FAIL: Test 666: "pureJava/assert coverage tests [requires 1.4]" failed.
 
 Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertInOnePackage.java 
-Abc started on Mon Aug 09 19:13:11 BST 2004
+Abc started on Tue Aug 10 02:23:27 BST 2004
 Transforming CycleSubOff... 
 Transforming CycleSuperOff... 
 Transforming ConstructorOnHelper... 
@@ -2178,29 +2179,29 @@ Transforming AssertInOnePackage$7...
 Transforming InnerStaticInitializerOnHelperI... 
 Transforming InnerStaticInitializerOffHelper... 
 Transforming InnerStaticInitializerOnHelper... 
-Abc finished on Mon Aug 09 19:13:13 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 10 02:23:29 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1430 millisec.)
+Breakdown of abc phases  (total: 1422 millisec.)
 ------------------------------------------------
-[ 25.105% ] Init. of Soot:  359
+[ 24.543% ] Init. of Soot:  349
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 28.951% ] Polyglot phases:  414
+[ 29.044% ] Polyglot phases:  413
 [ 00.000% ] Resolve class names:  0
-[ 00.000% ] Declare Parents:  0
+[ 00.070% ] Declare Parents:  1
 [ 00.000% ] Intertype Adjuster:  0
-[ 03.986% ] Retrieving bodies:  57
-[ 02.238% ] Update pattern matcher:  32
+[ 04.008% ] Retrieving bodies:  57
+[ 05.485% ] Update pattern matcher:  78
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.469% ] Compute advice lists:  21
+[ 01.477% ] Compute advice lists:  21
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.280% ] Weaving advice:  4
-[ 00.140% ] Exceptions check:  2
+[ 00.352% ] Weaving advice:  5
+[ 00.141% ] Exceptions check:  2
 [ 00.000% ] Validate jimple:  0
-[ 22.168% ] Soot Packs:  317
-[ 15.664% ] Soot Writing Output:  224
+[ 19.128% ] Soot Packs:  272
+[ 15.752% ] Soot Writing Output:  224
 ================================================
 Failed to define or resolve class InnerStaticInitializerOnHelperI from pureJava
 java.lang.ClassFormatError: InnerStaticInitializerOnHelperI (Illegal field modifiers: 0x8)
@@ -2244,37 +2245,37 @@ FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" f
 
 Running test 674: pureJava/Referencing static interfaces with import statements
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Mon Aug 09 19:13:15 BST 2004
+Abc started on Tue Aug 10 02:23:31 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Mon Aug 09 19:13:15 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:31 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 394 millisec.)
+Breakdown of abc phases  (total: 399 millisec.)
 ------------------------------------------------
-[ 84.518% ] Init. of Soot:  333
+[ 84.962% ] Init. of Soot:  339
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 02.538% ] Polyglot phases:  10
+[ 02.506% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.254% ] Retrieving bodies:  1
-[ 05.330% ] Update pattern matcher:  21
+[ 00.251% ] Retrieving bodies:  1
+[ 05.263% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.254% ] Compute advice lists:  1
+[ 00.251% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.254% ] Weaving advice:  1
+[ 00.000% ] Weaving advice:  0
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.284% ] Soot Packs:  9
-[ 04.569% ] Soot Writing Output:  18
+[ 02.506% ] Soot Packs:  10
+[ 04.261% ] Soot Writing Output:  17
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfaces_PR386.java 
-Abc started on Mon Aug 09 19:13:15 BST 2004
+Abc started on Tue Aug 10 02:23:31 BST 2004
 Compilation produced an unexpected number of errors: 3, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfaces_PR386.java:2,0-45: Package "ClassWithStaticInnerInterfaces" not found.
@@ -2285,37 +2286,37 @@ FAIL: Test 674: "pureJava/Referencing static interfaces with import statements" 
 
 Running test 675: pureJava/Referencing static interfaces with import statements stars
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Mon Aug 09 19:13:16 BST 2004
+Abc started on Tue Aug 10 02:23:32 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Mon Aug 09 19:13:16 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:32 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 396 millisec.)
+Breakdown of abc phases  (total: 392 millisec.)
 ------------------------------------------------
-[ 77.020% ] Init. of Soot:  305
+[ 84.694% ] Init. of Soot:  332
 [ 00.000% ] Loading Jars:  0
-[ 00.253% ] Create polyglot compiler:  1
-[ 09.848% ] Polyglot phases:  39
+[ 00.000% ] Create polyglot compiler:  0
+[ 02.551% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.253% ] Retrieving bodies:  1
-[ 05.303% ] Update pattern matcher:  21
+[ 00.255% ] Retrieving bodies:  1
+[ 05.357% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.253% ] Compute advice lists:  1
+[ 00.255% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.253% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.000% ] Weaving advice:  0
+[ 00.255% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 02.273% ] Soot Packs:  9
-[ 04.545% ] Soot Writing Output:  18
+[ 02.296% ] Soot Packs:  9
+[ 04.337% ] Soot Writing Output:  17
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars_PR386.java 
-Abc started on Mon Aug 09 19:13:16 BST 2004
+Abc started on Tue Aug 10 02:23:32 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfacesStars_PR386.java:23,20-26: Could not find type "Inner3".
@@ -2324,37 +2325,37 @@ FAIL: Test 675: "pureJava/Referencing static interfaces with import statements s
 
 Running test 676: pureJava/Referencing static interfaces with import statements stars 2
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Mon Aug 09 19:13:17 BST 2004
+Abc started on Tue Aug 10 02:23:33 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Mon Aug 09 19:13:17 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:33 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 392 millisec.)
+Breakdown of abc phases  (total: 379 millisec.)
 ------------------------------------------------
-[ 84.439% ] Init. of Soot:  331
+[ 84.169% ] Init. of Soot:  319
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 02.551% ] Polyglot phases:  10
+[ 00.264% ] Create polyglot compiler:  1
+[ 02.639% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.510% ] Retrieving bodies:  2
-[ 05.357% ] Update pattern matcher:  21
+[ 00.264% ] Retrieving bodies:  1
+[ 05.277% ] Update pattern matcher:  20
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.255% ] Compute advice lists:  1
+[ 00.264% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.255% ] Weaving advice:  1
+[ 00.264% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.296% ] Soot Packs:  9
-[ 04.337% ] Soot Writing Output:  17
+[ 02.639% ] Soot Packs:  10
+[ 04.222% ] Soot Writing Output:  16
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars2_PR386.java 
-Abc started on Mon Aug 09 19:13:17 BST 2004
+Abc started on Tue Aug 10 02:23:33 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfacesStars2_PR386.java:19,20-26: Could not find type "Inner2".
@@ -2363,37 +2364,37 @@ FAIL: Test 676: "pureJava/Referencing static interfaces with import statements s
 
 Running test 677: pureJava/Referencing static interfaces with import statements stars 3
 Commandline: abc -d pureJava pureJava/ClassWithStaticInnerInterfaces.java 
-Abc started on Mon Aug 09 19:13:18 BST 2004
+Abc started on Tue Aug 10 02:23:34 BST 2004
 Transforming ClassWithStaticInnerInterfaces... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2... 
 Transforming ClassWithStaticInnerInterfaces$Inner1... 
 Transforming ClassWithStaticInnerInterfaces$Inner1$Inner2$Inner3... 
-Abc finished on Mon Aug 09 19:13:18 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:34 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 387 millisec.)
+Breakdown of abc phases  (total: 401 millisec.)
 ------------------------------------------------
-[ 84.238% ] Init. of Soot:  326
+[ 85.037% ] Init. of Soot:  341
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 02.584% ] Polyglot phases:  10
+[ 00.249% ] Create polyglot compiler:  1
+[ 02.494% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.258% ] Intertype Adjuster:  1
-[ 00.258% ] Retrieving bodies:  1
-[ 05.168% ] Update pattern matcher:  20
-[ 00.258% ] Weave Initializers:  1
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.249% ] Retrieving bodies:  1
+[ 05.237% ] Update pattern matcher:  21
+[ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
 [ 00.000% ] Compute advice lists:  0
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.258% ] Weaving advice:  1
+[ 00.249% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 02.584% ] Soot Packs:  10
-[ 04.393% ] Soot Writing Output:  17
+[ 02.494% ] Soot Packs:  10
+[ 03.990% ] Soot Writing Output:  16
 ================================================
 Commandline: abc -cp pureJava:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d pureJava pureJava/ImportingStaticInnerInterfacesStars3_PR386.java 
-Abc started on Mon Aug 09 19:13:18 BST 2004
+Abc started on Tue Aug 10 02:23:34 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingStaticInnerInterfacesStars3_PR386.java:14,20-26: Could not find type "Inner1".
@@ -2402,7 +2403,7 @@ FAIL: Test 677: "pureJava/Referencing static interfaces with import statements s
 
 Running test 679: pureJava/Referencing interfaces with import statements stars
 Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars_PR386.java 
-Abc started on Mon Aug 09 19:13:18 BST 2004
+Abc started on Tue Aug 10 02:23:34 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingInnerInterfacesStars_PR386.java:23,20-26: Could not find type "Inner3".
@@ -2411,7 +2412,7 @@ FAIL: Test 679: "pureJava/Referencing interfaces with import statements stars" f
 
 Running test 680: pureJava/Referencing interfaces with import statements stars 2
 Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars2_PR386.java 
-Abc started on Mon Aug 09 19:13:19 BST 2004
+Abc started on Tue Aug 10 02:23:35 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingInnerInterfacesStars2_PR386.java:19,20-26: Could not find type "Inner2".
@@ -2420,7 +2421,7 @@ FAIL: Test 680: "pureJava/Referencing interfaces with import statements stars 2"
 
 Running test 681: pureJava/Referencing interfaces with import statements stars 3
 Commandline: abc -d pureJava pureJava/ClassWithInnerInterfaces.java pureJava/ImportingInnerInterfacesStars3_PR386.java 
-Abc started on Mon Aug 09 19:13:19 BST 2004
+Abc started on Tue Aug 10 02:23:35 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/ImportingInnerInterfacesStars3_PR386.java:14,20-26: Could not find type "Inner1".
@@ -2429,7 +2430,7 @@ FAIL: Test 681: "pureJava/Referencing interfaces with import statements stars 3"
 
 Running test 684: new/declaring a private method on an inner interface
 Commandline: abc -d new new/PrivateMethodOnInnerInterface.java 
-Abc started on Mon Aug 09 19:13:21 BST 2004
+Abc started on Tue Aug 10 02:23:38 BST 2004
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
 Semantic Error at new/PrivateMethodOnInnerInterface.java:25,21-42: privateMethod() in A.I cannot override privateMethod() in A.I; attempting to assign weaker access privileges
@@ -2439,36 +2440,36 @@ FAIL: Test 684: "new/declaring a private method on an inner interface" failed.
 
 Running test 689: new/source locations within expressions (hard case of constructor start)
 Commandline: abc -d new new/SourceLocationWithinExprHard.java 
-Abc started on Mon Aug 09 19:13:25 BST 2004
+Abc started on Tue Aug 10 02:23:41 BST 2004
 Transforming D... 
 Transforming E... 
 Transforming F... 
 Transforming A... 
 Transforming C... 
 Transforming SourceLocationWithinExprHard... 
-Abc finished on Mon Aug 09 19:13:26 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:42 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 865 millisec.)
+Breakdown of abc phases  (total: 812 millisec.)
 ------------------------------------------------
-[ 39.075% ] Init. of Soot:  338
+[ 41.502% ] Init. of Soot:  337
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 36.416% ] Polyglot phases:  315
+[ 38.547% ] Polyglot phases:  313
 [ 00.000% ] Resolve class names:  0
-[ 00.116% ] Declare Parents:  1
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.618% ] Retrieving bodies:  14
-[ 03.121% ] Update pattern matcher:  27
+[ 00.000% ] Declare Parents:  0
+[ 00.123% ] Intertype Adjuster:  1
+[ 01.601% ] Retrieving bodies:  13
+[ 03.202% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.156% ] Compute advice lists:  10
+[ 01.355% ] Compute advice lists:  11
 [ 00.000% ] Intertype weave:  0
-[ 00.116% ] Add aspect code:  1
-[ 00.116% ] Weaving advice:  1
-[ 00.116% ] Exceptions check:  1
+[ 00.123% ] Add aspect code:  1
+[ 00.123% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.936% ] Soot Packs:  60
-[ 11.214% ] Soot Writing Output:  97
+[ 07.512% ] Soot Packs:  61
+[ 05.911% ] Soot Writing Output:  48
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "setup" not found]
@@ -2495,35 +2496,35 @@ FAIL: Test 689: "new/source locations within expressions (hard case of construct
 
 Running test 691: new/after returning advice on interface constructor
 Commandline: abc -d new new/AfterReturningInterfaceConstructor.java 
-Abc started on Mon Aug 09 19:13:26 BST 2004
+Abc started on Tue Aug 10 02:23:42 BST 2004
 host type is I
 Transforming I... 
 Transforming A... 
 Transforming AfterReturningInterfaceConstructor... 
 Transforming C... 
-Abc finished on Mon Aug 09 19:13:27 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:43 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 577 millisec.)
+Breakdown of abc phases  (total: 598 millisec.)
 ------------------------------------------------
-[ 57.019% ] Init. of Soot:  329
+[ 54.515% ] Init. of Soot:  326
 [ 00.000% ] Loading Jars:  0
-[ 00.173% ] Create polyglot compiler:  1
-[ 25.303% ] Polyglot phases:  146
+[ 00.167% ] Create polyglot compiler:  1
+[ 28.930% ] Polyglot phases:  173
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.173% ] Intertype Adjuster:  1
-[ 00.867% ] Retrieving bodies:  5
-[ 04.333% ] Update pattern matcher:  25
+[ 00.167% ] Intertype Adjuster:  1
+[ 00.836% ] Retrieving bodies:  5
+[ 04.013% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.520% ] Compute advice lists:  3
+[ 00.502% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.173% ] Weaving advice:  1
-[ 00.173% ] Exceptions check:  1
+[ 00.167% ] Add aspect code:  1
+[ 00.167% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 05.893% ] Soot Packs:  34
-[ 05.373% ] Soot Writing Output:  31
+[ 05.853% ] Soot Packs:  35
+[ 04.682% ] Soot Writing Output:  28
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail i.i: 0 < 2
@@ -2545,7 +2546,7 @@ FAIL: Test 691: "new/after returning advice on interface constructor" failed.
 
 Running test 692: new/after returning advice on interface constructor - error
 Commandline: abc -d new new/AfterReturningInterfaceConstructorCE.java 
-Abc started on Mon Aug 09 19:13:27 BST 2004
+Abc started on Tue Aug 10 02:23:43 BST 2004
 host type is I
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
@@ -2556,7 +2557,7 @@ FAIL: Test 692: "new/after returning advice on interface constructor - error" fa
 Running test 705: options/options negative -Xlint args()
 Commandline: abc -d options -Xlint:ignore options/XLintTypeArgsPCD.java 
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:13:31 BST 2004
+Abc started on Tue Aug 10 02:23:47 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at options/XLintTypeArgsPCD.java:10,21-32: Could not find advice formal or type "UnknownType". 
@@ -2566,7 +2567,7 @@ FAIL: Test 705: "options/options negative -Xlint args()" failed.
 Running test 707: options/options negative -Xlint target()
 Commandline: abc -d options -Xlint:ignore options/XLintTypeTargetPCD.java 
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:13:32 BST 2004
+Abc started on Tue Aug 10 02:23:48 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at options/XLintTypeTargetPCD.java:10,23-34: Could not find advice formal or type "UnknownType". 
@@ -2576,7 +2577,7 @@ FAIL: Test 707: "options/options negative -Xlint target()" failed.
 Running test 708: options/options negative -Xlint this()
 Commandline: abc -d options -Xlint:ignore options/XLintTypeThisPCD.java 
 *** Option -Xlint:ignore ignored: abc does not yet support Xlint
-Abc started on Mon Aug 09 19:13:32 BST 2004
+Abc started on Tue Aug 10 02:23:48 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at options/XLintTypeThisPCD.java:10,21-32: Could not find advice formal or type "UnknownType". 
@@ -2585,7 +2586,7 @@ FAIL: Test 708: "options/options negative -Xlint this()" failed.
 
 Running test 713: new/self-reference from (aspect-declared) method-local class
 Commandline: abc -d new new/MethodSelfReference.java 
-Abc started on Mon Aug 09 19:13:34 BST 2004
+Abc started on Tue Aug 10 02:23:50 BST 2004
 host type is I
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
@@ -2595,7 +2596,7 @@ FAIL: Test 713: "new/self-reference from (aspect-declared) method-local class" f
 
 Running test 715: new/expect CE for declaration collision between subaspects instead of domination order
 Commandline: abc -d new new/DeclarationCollisionCE.java 
-Abc started on Mon Aug 09 19:13:35 BST 2004
+Abc started on Tue Aug 10 02:23:51 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Semantic Error at new/DeclarationCollisionCE.java:13,41-46: Aspect B is matched by more than one pattern on the precedence list
@@ -2604,7 +2605,7 @@ FAIL: Test 715: "new/expect CE for declaration collision between subaspects inst
 
 Running test 716: new/subtype pattern in dominates should pick out aspect subtypes
 Commandline: abc -d new new/DominatesTypePattern.java 
-Abc started on Mon Aug 09 19:13:35 BST 2004
+Abc started on Tue Aug 10 02:23:51 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/DominatesTypePattern.java:15,41-56: Aspect A is matched by more than one pattern on the precedence list
@@ -2613,7 +2614,7 @@ FAIL: Test 716: "new/subtype pattern in dominates should pick out aspect subtype
 
 Running test 718: new/after returning advice on interface and implementation constructor
 Commandline: abc -d new new/AfterReturningConstructor.java 
-Abc started on Mon Aug 09 19:13:36 BST 2004
+Abc started on Tue Aug 10 02:23:52 BST 2004
 Compilation produced an unexpected number of errors: 7, should be 0
 Actual errors found: 
 Syntax Error at new/AfterReturningConstructor.java:7,15-21: Syntax error.
@@ -2628,32 +2629,32 @@ FAIL: Test 718: "new/after returning advice on interface and implementation cons
 
 Running test 721: new/prohibit declaring new aspect constructor with arguments
 Commandline: abc -d new new/DeclareAspectConstructorCE.java 
-Abc started on Mon Aug 09 19:13:38 BST 2004
+Abc started on Tue Aug 10 02:23:54 BST 2004
 Transforming A... 
 Transforming B... 
-Abc finished on Mon Aug 09 19:13:38 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:54 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 420 millisec.)
+Breakdown of abc phases  (total: 412 millisec.)
 ------------------------------------------------
-[ 78.571% ] Init. of Soot:  330
+[ 78.641% ] Init. of Soot:  324
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 03.095% ] Polyglot phases:  13
+[ 02.913% ] Polyglot phases:  12
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.714% ] Retrieving bodies:  3
-[ 05.000% ] Update pattern matcher:  21
+[ 00.243% ] Intertype Adjuster:  1
+[ 00.728% ] Retrieving bodies:  3
+[ 04.854% ] Update pattern matcher:  20
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.238% ] Compute advice lists:  1
+[ 00.485% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.238% ] Add aspect code:  1
+[ 00.243% ] Add aspect code:  1
 [ 00.000% ] Weaving advice:  0
-[ 00.238% ] Exceptions check:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.905% ] Soot Packs:  29
-[ 05.000% ] Soot Writing Output:  21
+[ 07.282% ] Soot Packs:  30
+[ 04.612% ] Soot Writing Output:  19
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 721: "new/prohibit declaring new aspect constructor with arguments" failed.
@@ -2661,32 +2662,32 @@ FAIL: Test 721: "new/prohibit declaring new aspect constructor with arguments" f
 
 Running test 722: new/prohibit declaring only aspect constructor with arguments
 Commandline: abc -d new new/DeclareOnlyAspectConstructorCE.java 
-Abc started on Mon Aug 09 19:13:38 BST 2004
+Abc started on Tue Aug 10 02:23:54 BST 2004
 Transforming A... 
 Transforming B... 
-Abc finished on Mon Aug 09 19:13:38 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:23:54 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 426 millisec.)
+Breakdown of abc phases  (total: 469 millisec.)
 ------------------------------------------------
-[ 79.108% ] Init. of Soot:  337
+[ 71.429% ] Init. of Soot:  335
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 02.817% ] Polyglot phases:  12
+[ 00.213% ] Create polyglot compiler:  1
+[ 02.559% ] Polyglot phases:  12
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.235% ] Intertype Adjuster:  1
-[ 00.704% ] Retrieving bodies:  3
-[ 04.930% ] Update pattern matcher:  21
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.640% ] Retrieving bodies:  3
+[ 04.478% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.235% ] Compute advice lists:  1
+[ 00.213% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
-[ 00.235% ] Add aspect code:  1
+[ 00.213% ] Add aspect code:  1
 [ 00.000% ] Weaving advice:  0
-[ 00.235% ] Exceptions check:  1
+[ 00.213% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.808% ] Soot Packs:  29
-[ 04.695% ] Soot Writing Output:  20
+[ 15.991% ] Soot Packs:  75
+[ 04.051% ] Soot Writing Output:  19
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 722: "new/prohibit declaring only aspect constructor with arguments" failed.
@@ -2694,7 +2695,7 @@ FAIL: Test 722: "new/prohibit declaring only aspect constructor with arguments" 
 
 Running test 723: new/declare class extends interface
 Commandline: abc -d new new/DeclareClassExtendsInterface.java 
-Abc started on Mon Aug 09 19:13:39 BST 2004
+Abc started on Tue Aug 10 02:23:54 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/DeclareClassExtendsInterface.java:7,0-10: No valid constructor found for java.io.Serializable().
@@ -2703,7 +2704,7 @@ FAIL: Test 723: "new/declare class extends interface" failed.
 
 Running test 724: new/declare class implements class
 Commandline: abc -d new new/DeclareClassImplementsClass.java 
-Abc started on Mon Aug 09 19:13:39 BST 2004
+Abc started on Tue Aug 10 02:23:55 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at new/DeclareClassImplementsClass.java:10,4-37: Type B is not an interface
@@ -2712,7 +2713,7 @@ FAIL: Test 724: "new/declare class implements class" failed.
 
 Running test 726: new/if and cflow arg binding
 Commandline: abc -d new new/CflowBinding.java 
-Abc started on Mon Aug 09 19:13:40 BST 2004
+Abc started on Tue Aug 10 02:23:56 BST 2004
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: new/CflowBinding.java:12,17-25: Variable t not found in context
 polyglot.util.InternalCompilerError: new/CflowBinding.java:12,17-25: Variable t not found in context
 	at abc.weaving.aspectinfo.CflowSetup$CflowBoundVars.getWeavingVar(CflowSetup.java:175)
@@ -2732,7 +2733,7 @@ FAIL: Test 726: "new/if and cflow arg binding" failed.
 
 Running test 733: bugs/inter-type fields with array types
 Commandline: abc -d bugs bugs/InterFieldArrays.java 
-Abc started on Mon Aug 09 19:13:43 BST 2004
+Abc started on Tue Aug 10 02:23:59 BST 2004
 host type is Foo
 host type is Foo
 host type is Foo
@@ -2744,13 +2745,13 @@ polyglot.util.InternalCompilerError: Exception while processing <Bar: int[] init
 	at abc.testing.Main.doCase(Main.java:254)
 	at abc.testing.Main.main(Main.java:102)
 Caused by: java.lang.RuntimeException: Unhandled Expression: { ... }
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1648)
-	at soot.javaToJimple.JimpleBodyBuilder.getCastLocal(JimpleBodyBuilder.java:3173)
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1618)
-	at soot.javaToJimple.JimpleBodyBuilder.createReturn(JimpleBodyBuilder.java:1279)
-	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:549)
-	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:327)
-	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:128)
+	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1652)
+	at soot.javaToJimple.JimpleBodyBuilder.getCastLocal(JimpleBodyBuilder.java:3177)
+	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1622)
+	at soot.javaToJimple.JimpleBodyBuilder.createReturn(JimpleBodyBuilder.java:1283)
+	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:553)
+	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:331)
+	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:132)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:303)
@@ -2761,51 +2762,51 @@ FAIL: Test 733: "bugs/inter-type fields with array types" failed.
 
 Running test 735: new/checking around join point for advice return type - numeric
 Commandline: abc -d new new/AroundNumericCastCE.java 
-Abc started on Mon Aug 09 19:13:43 BST 2004
+Abc started on Tue Aug 10 02:23:59 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
-Semantic Error at AroundNumericCastCE.java:12,8-21: Illegal narrowing cast***  Shadow type: int Advice Type: double ShadowMatch: abc.weaving.matching.ExecutionShadowMatch@4bc2a3 Type: abc.weaving.matching.ExecutionShadowMatch
+Semantic Error at AroundNumericCastCE.java:12,8-21: Illegal narrowing cast***  Shadow type: int Advice Type: double ShadowMatch: abc.weaving.matching.ExecutionShadowMatch@d8fb6e Type: abc.weaving.matching.ExecutionShadowMatch
 FAIL: Test 735: "new/checking around join point for advice return type - numeric" failed.
 
 
 Running test 736: new/void around advice without proceed
 Commandline: abc -d new new/VoidAround.java 
-Abc started on Mon Aug 09 19:13:44 BST 2004
+Abc started on Tue Aug 10 02:24:00 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 2
 Actual errors found: 
-Semantic Error at VoidAround.java:11,15-16: Can't apply around advice with void return type to a non void shadow.***  Shadow type: java.lang.Object Advice Type: void ShadowMatch: abc.weaving.matching.MethodCallShadowMatch@163a868 Type: abc.weaving.matching.MethodCallShadowMatch
+Semantic Error at VoidAround.java:11,15-16: Can't apply around advice with void return type to a non void shadow.***  Shadow type: java.lang.Object Advice Type: void ShadowMatch: abc.weaving.matching.MethodCallShadowMatch@bb9528 Type: abc.weaving.matching.MethodCallShadowMatch
 FAIL: Test 736: "new/void around advice without proceed" failed.
 
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs bugs/Finalizer.java 
-Abc started on Mon Aug 09 19:13:52 BST 2004
+Abc started on Tue Aug 10 02:24:08 BST 2004
 Transforming Finalizer... 
 Transforming FinalizeContract... 
 Transforming Abc$access$FinalizeContract$around$2594... 
-Abc finished on Mon Aug 09 19:13:53 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:09 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 573 millisec.)
+Breakdown of abc phases  (total: 560 millisec.)
 ------------------------------------------------
-[ 60.733% ] Init. of Soot:  348
+[ 61.429% ] Init. of Soot:  344
 [ 00.000% ] Loading Jars:  0
-[ 00.175% ] Create polyglot compiler:  1
-[ 15.707% ] Polyglot phases:  90
+[ 00.000% ] Create polyglot compiler:  0
+[ 16.071% ] Polyglot phases:  90
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.175% ] Intertype Adjuster:  1
-[ 00.698% ] Retrieving bodies:  4
-[ 03.839% ] Update pattern matcher:  22
+[ 00.000% ] Intertype Adjuster:  0
+[ 00.893% ] Retrieving bodies:  5
+[ 03.929% ] Update pattern matcher:  22
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.524% ] Compute advice lists:  3
+[ 00.536% ] Compute advice lists:  3
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.349% ] Weaving advice:  2
-[ 00.175% ] Exceptions check:  1
+[ 00.357% ] Weaving advice:  2
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 13.787% ] Soot Packs:  79
-[ 03.839% ] Soot Writing Output:  22
+[ 05.536% ] Soot Packs:  31
+[ 11.250% ] Soot Writing Output:  63
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
@@ -2813,7 +2814,7 @@ FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 Running test 756: bugs/interfaceNames/can't resolve nested public interfaces (also PR#32399)
 Commandline: abc -d bugs/interfaceNames bugs/interfaceNames/TransactionTest.java bugs/interfaceNames/sub/ExecutionMonitor.java bugs/interfaceNames/sub/ObserverProtocol.aj 
-Abc started on Mon Aug 09 19:13:55 BST 2004
+Abc started on Tue Aug 10 02:24:11 BST 2004
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:486)
@@ -2834,14 +2835,14 @@ Caused by: java.lang.NullPointerException
 	at polyglot.ext.jl.ast.ClassBody_c.visitChildren(ClassBody_c.java:61)
 	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
 	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
-	at abc.aspectj.ast.AspectDecl_c.visitChildren(AspectDecl_c.java:208)
+	at abc.aspectj.ast.AspectDecl_c.visitChildren(AspectDecl_c.java:223)
 	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
 	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
 	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:205)
 	at polyglot.ext.jl.ast.ClassBody_c.visitChildren(ClassBody_c.java:61)
 	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
 	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
-	at abc.aspectj.ast.AspectDecl_c.visitChildren(AspectDecl_c.java:208)
+	at abc.aspectj.ast.AspectDecl_c.visitChildren(AspectDecl_c.java:223)
 	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
 	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
 	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:205)
@@ -2862,33 +2863,33 @@ FAIL: Test 756: "bugs/interfaceNames/can't resolve nested public interfaces (als
 
 Running test 760: new/declare/omnibus declare warning context with no initializer/constructor
 Commandline: abc -d new/declare new/declare/DeclareWarningEmpty.java 
-Abc started on Mon Aug 09 19:13:56 BST 2004
+Abc started on Tue Aug 10 02:24:12 BST 2004
 Getting position for a untagged source line return
 Transforming A... 
 Transforming DeclareWarningEmpty... 
-Abc finished on Mon Aug 09 19:13:57 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:13 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 391 millisec.)
+Breakdown of abc phases  (total: 427 millisec.)
 ------------------------------------------------
-[ 83.120% ] Init. of Soot:  325
+[ 75.644% ] Init. of Soot:  323
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 02.813% ] Polyglot phases:  11
+[ 02.576% ] Polyglot phases:  11
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.256% ] Intertype Adjuster:  1
-[ 00.256% ] Retrieving bodies:  1
-[ 05.371% ] Update pattern matcher:  21
+[ 00.234% ] Intertype Adjuster:  1
+[ 00.468% ] Retrieving bodies:  2
+[ 04.684% ] Update pattern matcher:  20
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.512% ] Compute advice lists:  2
+[ 00.468% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.256% ] Weaving advice:  1
+[ 00.234% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 04.092% ] Soot Packs:  16
-[ 03.325% ] Soot Writing Output:  13
+[ 03.747% ] Soot Packs:  16
+[ 11.944% ] Soot Writing Output:  51
 ================================================
 Found an unexpected error - should be on line 3, but is on line -1.
 Errors found during this compilation:
@@ -2899,34 +2900,34 @@ FAIL: Test 760: "new/declare/omnibus declare warning context with no initializer
 
 Running test 761: new/declare/omnibus declare warning context
 Commandline: abc -d new/declare new/declare/DeclareWarning.java 
-Abc started on Mon Aug 09 19:13:57 BST 2004
+Abc started on Tue Aug 10 02:24:13 BST 2004
 Getting position for a untagged source line return
 Getting position for a untagged source line return
 Transforming A... 
 Transforming DeclareWarning... 
-Abc finished on Mon Aug 09 19:13:59 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Tue Aug 10 02:24:13 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 2122 millisec.)
+Breakdown of abc phases  (total: 569 millisec.)
 ------------------------------------------------
-[ 89.397% ] Init. of Soot:  1897
+[ 60.457% ] Init. of Soot:  344
 [ 00.000% ] Loading Jars:  0
-[ 00.047% ] Create polyglot compiler:  1
-[ 05.231% ] Polyglot phases:  111
+[ 00.000% ] Create polyglot compiler:  0
+[ 19.156% ] Polyglot phases:  109
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.660% ] Retrieving bodies:  14
-[ 01.131% ] Update pattern matcher:  24
+[ 00.176% ] Intertype Adjuster:  1
+[ 02.285% ] Retrieving bodies:  13
+[ 04.218% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.377% ] Compute advice lists:  8
+[ 01.406% ] Compute advice lists:  8
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.094% ] Weaving advice:  2
-[ 00.000% ] Exceptions check:  0
+[ 00.176% ] Add aspect code:  1
+[ 00.176% ] Weaving advice:  1
+[ 00.176% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 01.885% ] Soot Packs:  40
-[ 01.178% ] Soot Writing Output:  25
+[ 06.854% ] Soot Packs:  39
+[ 04.921% ] Soot Writing Output:  28
 ================================================
 Found an unexpected error - should be on line 5, but is on line -1.
 Errors found during this compilation:
@@ -2951,36 +2952,26 @@ FAIL: Test 761: "new/declare/omnibus declare warning context" failed.
 
 Running test 763: new/incompatible advice throws clause are a compile-time error
 Commandline: abc -d new new/AdviceThrowsCf.java 
-Abc started on Mon Aug 09 19:14:00 BST 2004
+Abc started on Tue Aug 10 02:24:14 BST 2004
 Getting position for a untagged source line return
-Compilation produced an unexpected number of errors: 13, should be 10
+Compilation produced an unexpected number of errors: 8, should be 10
 Actual errors found: 
 Semantic Error at AdviceThrowsCf.java: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here in method <C: void <clinit>()>
-Semantic Error at AdviceThrowsCf.java:7,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:13,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:13,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:19,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:28,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:28,20-24: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:28,20-24: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:48,10-11: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:48,10-11: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:50,8-14: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
 Semantic Error at AdviceThrowsCf.java:50,8-14: Advice from aspect A applies here, and throws exception CheckedExc which is not already thrown here
-Semantic Error at AdviceThrowsCf.java:50,8-14: Advice from aspect A applies here, and throws exception UncheckedExc which is not already thrown here
 FAIL: Test 763: "new/incompatible advice throws clause are a compile-time error" failed.
 
 
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
-Abc started on Mon Aug 09 19:14:01 BST 2004
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:486)
-	at abc.testing.TestCase.runTest(TestCase.java:279)
-	at abc.testing.Main.doCase(Main.java:254)
-	at abc.testing.Main.main(Main.java:102)
-Caused by: java.lang.RuntimeException: Advice formal pcvar$17 not found
+Abc started on Tue Aug 10 02:24:15 BST 2004
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: Advice formal pcvar$17 not found
+polyglot.util.InternalCompilerError: Advice formal pcvar$17 not found
 	at abc.weaving.aspectinfo.AdviceDecl.getFormalIndex(AdviceDecl.java:56)
 	at abc.weaving.matching.AdviceFormals.getWeavingVar(AdviceFormals.java:24)
 	at abc.weaving.aspectinfo.Cflow.matchesAt(Cflow.java:69)
@@ -2991,13 +2982,15 @@ Caused by: java.lang.RuntimeException: Advice formal pcvar$17 not found
 	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:377)
 	at abc.main.Main.weave(Main.java:665)
 	at abc.main.Main.run(Main.java:430)
-	... 3 more
+	at abc.testing.TestCase.runTest(TestCase.java:279)
+	at abc.testing.Main.doCase(Main.java:254)
+	at abc.testing.Main.main(Main.java:102)
 FAIL: Test 764: "bugs/cflow binding issues with ignoring state" failed.
 
 
 Running test 772: bugs/declare soft and throw statements
 Commandline: abc -d bugs bugs/ConvertToUnchecked.java 
-Abc started on Mon Aug 09 19:14:03 BST 2004
+Abc started on Tue Aug 10 02:24:17 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Syntax Error at bugs/ConvertToUnchecked.java:25,18-19: Syntax error.
@@ -3006,7 +2999,7 @@ FAIL: Test 772: "bugs/declare soft and throw statements" failed.
 
 Running test 776: new/declareParents/Declare parents removing ancestor
 Commandline: abc -d new/declareParents new/declareParents/IllegalAdoption.java 
-Abc started on Mon Aug 09 19:14:05 BST 2004
+Abc started on Tue Aug 10 02:24:19 BST 2004
 Transforming IllegalAdoption... 
 Transforming IllegalAdoption$Adoption... 
 Transforming IllegalAdoption$E... 
@@ -3014,29 +3007,29 @@ Transforming IllegalAdoption$B...
 Transforming IllegalAdoption$C... 
 Transforming IllegalAdoption$D... 
 Transforming IllegalAdoption$A... 
-Abc finished on Mon Aug 09 19:14:05 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:20 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 537 millisec.)
+Breakdown of abc phases  (total: 527 millisec.)
 ------------------------------------------------
-[ 64.804% ] Init. of Soot:  348
+[ 64.516% ] Init. of Soot:  340
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 07.635% ] Polyglot phases:  41
+[ 07.590% ] Polyglot phases:  40
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.745% ] Retrieving bodies:  4
-[ 03.911% ] Update pattern matcher:  21
+[ 00.190% ] Intertype Adjuster:  1
+[ 00.759% ] Retrieving bodies:  4
+[ 12.334% ] Update pattern matcher:  65
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.372% ] Compute advice lists:  2
+[ 00.380% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.186% ] Add aspect code:  1
-[ 00.186% ] Weaving advice:  1
-[ 00.186% ] Exceptions check:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.380% ] Weaving advice:  2
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 15.084% ] Soot Packs:  81
-[ 06.890% ] Soot Writing Output:  37
+[ 06.831% ] Soot Packs:  36
+[ 07.021% ] Soot Writing Output:  37
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 776: "new/declareParents/Declare parents removing ancestor" failed.
@@ -3044,34 +3037,34 @@ FAIL: Test 776: "new/declareParents/Declare parents removing ancestor" failed.
 
 Running test 779: bugs/interSpecials/testing that assert works like .class
 Commandline: abc -d bugs/interSpecials -source 1.4 bugs/interSpecials/p1/C.java bugs/interSpecials/p2/A2.java 
-Abc started on Mon Aug 09 19:14:07 BST 2004
+Abc started on Tue Aug 10 02:24:23 BST 2004
 Transforming p1.C... 
 Transforming p2.A2... 
 Transforming p2.InterClass... 
 Transforming Abc$access$p2_d_InterClass$around$2654... 
-Abc finished on Mon Aug 09 19:14:07 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:23 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 606 millisec.)
+Breakdown of abc phases  (total: 615 millisec.)
 ------------------------------------------------
-[ 57.261% ] Init. of Soot:  347
+[ 56.911% ] Init. of Soot:  350
 [ 00.000% ] Loading Jars:  0
-[ 00.165% ] Create polyglot compiler:  1
-[ 15.347% ] Polyglot phases:  93
+[ 00.000% ] Create polyglot compiler:  0
+[ 15.285% ] Polyglot phases:  94
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.165% ] Intertype Adjuster:  1
-[ 01.320% ] Retrieving bodies:  8
-[ 04.290% ] Update pattern matcher:  26
+[ 00.000% ] Intertype Adjuster:  0
+[ 01.463% ] Retrieving bodies:  9
+[ 11.870% ] Update pattern matcher:  73
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.660% ] Compute advice lists:  4
+[ 00.813% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.165% ] Add aspect code:  1
-[ 00.330% ] Weaving advice:  2
-[ 00.165% ] Exceptions check:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.325% ] Weaving advice:  2
+[ 00.163% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 07.921% ] Soot Packs:  48
-[ 12.211% ] Soot Writing Output:  74
+[ 07.967% ] Soot Packs:  49
+[ 05.203% ] Soot Writing Output:  32
 ================================================
 Failed to define or resolve class p2.InterClass from bugs/interSpecials
 java.lang.ClassFormatError: p2/InterClass (Illegal Field name "class$p2.InterClass")
@@ -3109,7 +3102,7 @@ FAIL: Test 779: "bugs/interSpecials/testing that assert works like .class" faile
 
 Running test 782: bugs/Internal compiler error with thisJoinPoint.getStaticPart()
 Commandline: abc -d bugs bugs/tjpStaticPart/Test.java bugs/tjpStaticPart/Exceptions.java 
-Abc started on Mon Aug 09 19:14:08 BST 2004
+Abc started on Tue Aug 10 02:24:24 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at Test.java:9,24-66: The exception java.io.FileNotFoundException must be either caught or declared to be thrown
@@ -3118,7 +3111,7 @@ FAIL: Test 782: "bugs/Internal compiler error with thisJoinPoint.getStaticPart()
 
 Running test 784: bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds
 Commandline: abc -d bugs/messyAround bugs/messyAround/aspects/Trace.aj bugs/messyAround/cap/OptionList.java bugs/messyAround/DebugTrace.aj 
-Abc started on Mon Aug 09 19:14:10 BST 2004
+Abc started on Tue Aug 10 02:24:26 BST 2004
 Checking apiIndex
 Checking i
 Checking i
@@ -3156,35 +3149,35 @@ FAIL: Test 784: "bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy a
 
 Running test 785: new/try/finally in around advice (same as ...messy arounds?)
 Commandline: abc -d new new/TryFinallyInAround.java 
-Abc started on Mon Aug 09 19:14:11 BST 2004
+Abc started on Tue Aug 10 02:24:27 BST 2004
 Checking i
 Transforming A... 
 Transforming C... 
 Transforming TryFinallyInAround... 
 Transforming Abc$access$A$around$2684... 
-Abc finished on Mon Aug 09 19:14:11 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:27 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 759 millisec.)
+Breakdown of abc phases  (total: 767 millisec.)
 ------------------------------------------------
-[ 44.928% ] Init. of Soot:  341
+[ 44.329% ] Init. of Soot:  340
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 30.698% ] Polyglot phases:  233
+[ 25.163% ] Polyglot phases:  193
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.318% ] Retrieving bodies:  10
-[ 03.426% ] Update pattern matcher:  26
+[ 01.434% ] Retrieving bodies:  11
+[ 03.390% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.791% ] Compute advice lists:  6
-[ 00.000% ] Intertype weave:  0
+[ 00.652% ] Compute advice lists:  5
+[ 00.130% ] Intertype weave:  1
 [ 00.000% ] Add aspect code:  0
-[ 02.503% ] Weaving advice:  19
-[ 00.132% ] Exceptions check:  1
+[ 08.735% ] Weaving advice:  67
+[ 00.130% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.486% ] Soot Packs:  72
-[ 06.719% ] Soot Writing Output:  51
+[ 09.387% ] Soot Packs:  72
+[ 06.649% ] Soot Writing Output:  51
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.NoSuchFieldError: abc$cflowCounter$1
 java.lang.reflect.InvocationTargetException
@@ -3204,7 +3197,7 @@ FAIL: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" f
 
 Running test 787: new/can't put around advice on interface static initializer
 Commandline: abc -d new new/EmptyInterfaceCE.java 
-Abc started on Mon Aug 09 19:14:12 BST 2004
+Abc started on Tue Aug 10 02:24:28 BST 2004
 Checking hits
 Getting position for a untagged source line return
 Transforming EmptyInterfaceCE... 
@@ -3212,29 +3205,29 @@ Transforming C...
 Transforming Log... 
 Transforming Log$LoggedType... 
 Transforming Abc$access$Log: not supported by cvs2svn $around$2687... 
-Abc finished on Mon Aug 09 19:14:13 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:29 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 711 millisec.)
+Breakdown of abc phases  (total: 715 millisec.)
 ------------------------------------------------
-[ 47.679% ] Init. of Soot:  339
+[ 47.413% ] Init. of Soot:  339
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 35.021% ] Polyglot phases:  249
+[ 29.650% ] Polyglot phases:  212
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.141% ] Intertype Adjuster:  1
-[ 00.985% ] Retrieving bodies:  7
-[ 03.657% ] Update pattern matcher:  26
+[ 00.140% ] Intertype Adjuster:  1
+[ 00.839% ] Retrieving bodies:  6
+[ 03.636% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.422% ] Compute advice lists:  3
+[ 00.559% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.422% ] Weaving advice:  3
-[ 00.141% ] Exceptions check:  1
+[ 00.420% ] Weaving advice:  3
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.188% ] Soot Packs:  44
-[ 05.345% ] Soot Writing Output:  38
+[ 12.308% ] Soot Packs:  88
+[ 05.035% ] Soot Writing Output:  36
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 787: "new/can't put around advice on interface static initializer" failed.
@@ -3242,33 +3235,33 @@ FAIL: Test 787: "new/can't put around advice on interface static initializer" fa
 
 Running test 788: bugs/cflow concretization causing assertion failure
 Commandline: abc -d bugs bugs/CflowConcrete.java 
-Abc started on Mon Aug 09 19:14:13 BST 2004
+Abc started on Tue Aug 10 02:24:29 BST 2004
 Getting position for a untagged source line return
 Transforming TestAjc... 
 Transforming CflowConcrete... 
-Abc finished on Mon Aug 09 19:14:14 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:30 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 605 millisec.)
+Breakdown of abc phases  (total: 588 millisec.)
 ------------------------------------------------
-[ 57.025% ] Init. of Soot:  345
+[ 57.823% ] Init. of Soot:  340
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 14.215% ] Polyglot phases:  86
-[ 00.165% ] Resolve class names:  1
+[ 14.626% ] Polyglot phases:  86
+[ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.496% ] Retrieving bodies:  3
-[ 03.802% ] Update pattern matcher:  23
+[ 00.170% ] Intertype Adjuster:  1
+[ 00.510% ] Retrieving bodies:  3
+[ 03.912% ] Update pattern matcher:  23
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.496% ] Compute advice lists:  3
+[ 00.340% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 09.256% ] Weaving advice:  56
-[ 00.000% ] Exceptions check:  0
+[ 00.170% ] Add aspect code:  1
+[ 00.680% ] Weaving advice:  4
+[ 00.170% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.256% ] Soot Packs:  56
-[ 05.289% ] Soot Writing Output:  32
+[ 16.497% ] Soot Packs:  97
+[ 05.102% ] Soot Writing Output:  30
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.ExceptionInInitializerError
 java.lang.reflect.InvocationTargetException
@@ -3290,36 +3283,36 @@ FAIL: Test 788: "bugs/cflow concretization causing assertion failure" failed.
 
 Running test 793: new/binaryWarnings/src/declare warnings on main
 Commandline: abc -d new/binaryWarnings/src new/binaryWarnings/src/aspects/MainWarnings.java new/binaryWarnings/src/app/Main.java 
-Abc started on Mon Aug 09 19:14:16 BST 2004
+Abc started on Tue Aug 10 02:24:32 BST 2004
 Checking i
 Getting position for a untagged source line $r0 = ".."
 Transforming aspects.MainWarnings... 
 Transforming app.Main... 
 Transforming app.D... 
 Transforming app.C... 
-Abc finished on Mon Aug 09 19:14:17 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:33 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 598 millisec.)
+Breakdown of abc phases  (total: 592 millisec.)
 ------------------------------------------------
-[ 58.696% ] Init. of Soot:  351
+[ 59.122% ] Init. of Soot:  350
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 11.371% ] Polyglot phases:  68
+[ 11.486% ] Polyglot phases:  68
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.167% ] Intertype Adjuster:  1
-[ 02.007% ] Retrieving bodies:  12
-[ 04.013% ] Update pattern matcher:  24
+[ 00.000% ] Intertype Adjuster:  0
+[ 02.027% ] Retrieving bodies:  12
+[ 04.054% ] Update pattern matcher:  24
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.672% ] Compute advice lists:  10
-[ 00.000% ] Intertype weave:  0
-[ 00.167% ] Add aspect code:  1
-[ 00.000% ] Weaving advice:  0
-[ 09.197% ] Exceptions check:  55
+[ 01.689% ] Compute advice lists:  10
+[ 00.169% ] Intertype weave:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.169% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 07.191% ] Soot Packs:  43
-[ 05.518% ] Soot Writing Output:  33
+[ 15.878% ] Soot Packs:  94
+[ 05.405% ] Soot Writing Output:  32
 ================================================
 Found an unexpected error - should be on line 6, but is on line -1.
 Errors found during this compilation:
@@ -3346,7 +3339,7 @@ FAIL: Test 793: "new/binaryWarnings/src/declare warnings on main" failed.
 
 Running test 794: new/binaryWarnings/src/declare warnings on binary javac 1.4 classes
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-javac-1.4.jar new/binaryWarnings/src/aspects/MainWarnings.java 
-Abc started on Mon Aug 09 19:14:17 BST 2004
+Abc started on Tue Aug 10 02:24:33 BST 2004
 Getting position for a untagged source line <app.C: void <init>()>
 Getting position for a untagged source line <app.Main: java.lang.String staticString> = "hello"
 Getting position for a untagged source line <app.Main: java.lang.String staticString> = setRHSLocal
@@ -3369,29 +3362,29 @@ Transforming app.C...
 Transforming app.D... 
 Transforming app.Main... 
 Transforming aspects.MainWarnings... 
-Abc finished on Mon Aug 09 19:14:18 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:33 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 648 millisec.)
+Breakdown of abc phases  (total: 647 millisec.)
 ------------------------------------------------
-[ 54.167% ] Init. of Soot:  351
-[ 13.735% ] Loading Jars:  89
-[ 00.154% ] Create polyglot compiler:  1
-[ 02.932% ] Polyglot phases:  19
+[ 54.096% ] Init. of Soot:  350
+[ 13.910% ] Loading Jars:  90
+[ 00.000% ] Create polyglot compiler:  0
+[ 03.091% ] Polyglot phases:  20
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.154% ] Intertype Adjuster:  1
-[ 04.784% ] Retrieving bodies:  31
-[ 04.321% ] Update pattern matcher:  28
+[ 00.000% ] Intertype Adjuster:  0
+[ 04.946% ] Retrieving bodies:  32
+[ 04.173% ] Update pattern matcher:  27
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.852% ] Compute advice lists:  12
+[ 02.009% ] Compute advice lists:  13
 [ 00.000% ] Intertype weave:  0
-[ 00.154% ] Add aspect code:  1
-[ 00.154% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.000% ] Add aspect code:  0
+[ 00.155% ] Weaving advice:  1
+[ 00.155% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 12.809% ] Soot Packs:  83
-[ 04.784% ] Soot Writing Output:  31
+[ 12.519% ] Soot Packs:  81
+[ 04.946% ] Soot Writing Output:  32
 ================================================
 Found an unexpected error - should be on line 6, but is on line -1.
 Errors found during this compilation:
@@ -3418,7 +3411,7 @@ FAIL: Test 794: "new/binaryWarnings/src/declare warnings on binary javac 1.4 cla
 
 Running test 795: new/binaryWarnings/src/declare warnings on binary ajc 1.1 classes
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-ajc-1.1.jar new/binaryWarnings/src/aspects/MainWarnings.java 
-Abc started on Mon Aug 09 19:14:18 BST 2004
+Abc started on Tue Aug 10 02:24:33 BST 2004
 Getting position for a untagged source line staticinvoke <app.D: void go()>()
 Getting position for a untagged source line r1 = <app.Main: java.lang.String staticString>
 Getting position for a untagged source line <app.Main: java.lang.String staticString> = $r6
@@ -3441,29 +3434,29 @@ Transforming app.D...
 Transforming app.Main... 
 Transforming app.C... 
 Transforming aspects.MainWarnings... 
-Abc finished on Mon Aug 09 19:14:18 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:24:34 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 652 millisec.)
+Breakdown of abc phases  (total: 651 millisec.)
 ------------------------------------------------
-[ 54.294% ] Init. of Soot:  354
-[ 13.804% ] Loading Jars:  90
+[ 54.224% ] Init. of Soot:  353
+[ 13.825% ] Loading Jars:  90
 [ 00.000% ] Create polyglot compiler:  0
-[ 03.221% ] Polyglot phases:  21
+[ 03.226% ] Polyglot phases:  21
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 04.601% ] Retrieving bodies:  30
-[ 04.294% ] Update pattern matcher:  28
+[ 00.154% ] Intertype Adjuster:  1
+[ 04.608% ] Retrieving bodies:  30
+[ 04.147% ] Update pattern matcher:  27
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.840% ] Compute advice lists:  12
+[ 07.988% ] Compute advice lists:  52
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.153% ] Weaving advice:  1
+[ 00.154% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 12.883% ] Soot Packs:  84
-[ 04.908% ] Soot Writing Output:  32
+[ 06.605% ] Soot Packs:  43
+[ 05.069% ] Soot Writing Output:  33
 ================================================
 Found an unexpected error - should be on line 6, but is on line -1.
 Errors found during this compilation:
@@ -3490,7 +3483,7 @@ FAIL: Test 795: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 class
 
 Running test 796: new/binaryWarnings/src/declare error on handler/method execution with no code on binary ajc 1.1 classes
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/appStartLines-ajc-1.1.jar new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java 
-Abc started on Mon Aug 09 19:14:18 BST 2004
+Abc started on Tue Aug 10 02:24:34 BST 2004
 Getting position for a untagged source line $r1 = "...."
 Getting position for a untagged source line $r4 := @caughtexception
 Found an unexpected error - should be on line 6, but is on line -1.
@@ -3502,7 +3495,7 @@ FAIL: Test 796: "new/binaryWarnings/src/declare error on handler/method executio
 
 Running test 797: new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/appStartLines-javac-1.4.jar new/binaryWarnings/src/aspects/MainExecStartLinesErrors.java 
-Abc started on Mon Aug 09 19:14:19 BST 2004
+Abc started on Tue Aug 10 02:24:35 BST 2004
 Getting position for a untagged source line $r1 = "...."
 Getting position for a untagged source line $r5 := @caughtexception
 Found an unexpected error - should be on line 6, but is on line -1.
@@ -3512,59 +3505,37 @@ Semantic Error at MainExecStartLines.java: handler(RuntimeException) && within(M
 FAIL: Test 797: "new/binaryWarnings/src/declare error on handler/method execution with no code on binary javac 1.4 classes" failed.
 
 
-Running test 817: bugs/lines/Weaving rt.jar results in stack overflow
-Commandline: abc -d bugs/lines -injars bugs/lines/big.jar bugs/lines/A.java 
-Abc started on Mon Aug 09 19:14:23 BST 2004
-Getting position for a untagged source line r1 = staticinvoke <Big: java.lang.String m()>()
-Getting position for a untagged source line r0 = "a"
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:486)
-	at abc.testing.TestCase.runTest(TestCase.java:279)
-	at abc.testing.Main.doCase(Main.java:254)
-	at abc.testing.Main.main(Main.java:102)
-Caused by: java.lang.NullPointerException
-	at abc.weaving.weaver.GenStaticJoinPoints.genSJPFactory(GenStaticJoinPoints.java:158)
-	at abc.weaving.weaver.GenStaticJoinPoints.genStaticJoinPoints(GenStaticJoinPoints.java:105)
-	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:101)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:47)
-	at abc.main.Main.weave(Main.java:687)
-	at abc.main.Main.run(Main.java:430)
-	... 3 more
-FAIL: Test 817: "bugs/lines/Weaving rt.jar results in stack overflow" failed.
-
-
 Running test 823: new/binaryWarnings/src/declare warnings on binary javac 1.4 main - constructor execution
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-javac-1.4.jar new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java 
-Abc started on Mon Aug 09 19:15:35 BST 2004
+Abc started on Tue Aug 10 02:25:58 BST 2004
 Getting position for a untagged source line specialinvoke r0.<java.lang.Object: void <init>()>()
 Transforming app.C... 
 Transforming app.D... 
 Transforming app.Main... 
 Transforming aspects.ConstructorExecutionWarning... 
-Abc finished on Mon Aug 09 19:15:37 BST 2004. ( 0 min. 2 sec. )
+Abc finished on Tue Aug 10 02:25:59 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 2145 millisec.)
+Breakdown of abc phases  (total: 659 millisec.)
 ------------------------------------------------
-[ 85.688% ] Init. of Soot:  1838
-[ 04.149% ] Loading Jars:  89
-[ 00.000% ] Create polyglot compiler:  0
-[ 00.513% ] Polyglot phases:  11
+[ 52.504% ] Init. of Soot:  346
+[ 19.879% ] Loading Jars:  131
+[ 00.152% ] Create polyglot compiler:  1
+[ 01.517% ] Polyglot phases:  10
 [ 00.000% ] Resolve class names:  0
-[ 00.047% ] Declare Parents:  1
-[ 00.000% ] Intertype Adjuster:  0
-[ 03.030% ] Retrieving bodies:  65
-[ 01.166% ] Update pattern matcher:  25
+[ 00.000% ] Declare Parents:  0
+[ 00.152% ] Intertype Adjuster:  1
+[ 09.863% ] Retrieving bodies:  65
+[ 03.945% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
-[ 00.047% ] Load shadow types:  1
-[ 00.186% ] Compute advice lists:  4
+[ 00.000% ] Load shadow types:  0
+[ 00.607% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.047% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.152% ] Add aspect code:  1
+[ 00.000% ] Weaving advice:  0
+[ 00.152% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 03.683% ] Soot Packs:  79
-[ 01.445% ] Soot Writing Output:  31
+[ 06.373% ] Soot Packs:  42
+[ 04.704% ] Soot Writing Output:  31
 ================================================
 Found an unexpected error - should be on line 23, but is on line -1.
 Errors found during this compilation:
@@ -3574,35 +3545,35 @@ FAIL: Test 823: "new/binaryWarnings/src/declare warnings on binary javac 1.4 mai
 
 Running test 824: new/binaryWarnings/src/declare warnings on binary ajc 1.1 main - constructor execution
 Commandline: abc -d new/binaryWarnings/src -injars new/binaryWarnings/src/../injars/app-ajc-1.1.jar new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java 
-Abc started on Mon Aug 09 19:15:37 BST 2004
+Abc started on Tue Aug 10 02:25:59 BST 2004
 Getting position for a untagged source line specialinvoke r0.<java.lang.Object: void <init>()>()
 Transforming app.D... 
 Transforming app.Main... 
 Transforming app.C... 
 Transforming aspects.ConstructorExecutionWarning... 
-Abc finished on Mon Aug 09 19:15:38 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:25:59 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 623 millisec.)
+Breakdown of abc phases  (total: 634 millisec.)
 ------------------------------------------------
-[ 56.019% ] Init. of Soot:  349
-[ 14.446% ] Loading Jars:  90
-[ 00.161% ] Create polyglot compiler:  1
-[ 01.766% ] Polyglot phases:  11
+[ 55.678% ] Init. of Soot:  353
+[ 20.662% ] Loading Jars:  131
+[ 00.000% ] Create polyglot compiler:  0
+[ 01.893% ] Polyglot phases:  12
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 04.655% ] Retrieving bodies:  29
-[ 04.013% ] Update pattern matcher:  25
+[ 04.732% ] Retrieving bodies:  30
+[ 04.101% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.803% ] Compute advice lists:  5
+[ 00.631% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.161% ] Weaving advice:  1
-[ 00.000% ] Exceptions check:  0
+[ 00.158% ] Weaving advice:  1
+[ 00.158% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 13.002% ] Soot Packs:  81
-[ 04.976% ] Soot Writing Output:  31
+[ 06.625% ] Soot Packs:  42
+[ 05.363% ] Soot Writing Output:  34
 ================================================
 Found an unexpected error - should be on line 23, but is on line -1.
 Errors found during this compilation:
@@ -3612,34 +3583,34 @@ FAIL: Test 824: "new/binaryWarnings/src/declare warnings on binary ajc 1.1 main 
 
 Running test 832: bugs/accessMethods/can not resolve this member warning
 Commandline: abc -d bugs/accessMethods bugs/accessMethods/p1/Base.java bugs/accessMethods/p2/Derived.java 
-Abc started on Mon Aug 09 19:15:39 BST 2004
+Abc started on Tue Aug 10 02:26:01 BST 2004
 Transforming p2.Derived... 
 Transforming p2.Derived$A... 
 Transforming p2.Derived$Inner... 
 Transforming p1.Base... 
-Abc finished on Mon Aug 09 19:15:40 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:26:01 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 624 millisec.)
+Breakdown of abc phases  (total: 563 millisec.)
 ------------------------------------------------
-[ 56.410% ] Init. of Soot:  352
+[ 61.989% ] Init. of Soot:  349
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 15.224% ] Polyglot phases:  95
+[ 16.874% ] Polyglot phases:  95
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 01.282% ] Retrieving bodies:  8
-[ 03.846% ] Update pattern matcher:  24
+[ 00.178% ] Intertype Adjuster:  1
+[ 01.421% ] Retrieving bodies:  8
+[ 04.085% ] Update pattern matcher:  23
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.641% ] Compute advice lists:  4
-[ 00.000% ] Intertype weave:  0
-[ 00.160% ] Add aspect code:  1
-[ 00.321% ] Weaving advice:  2
-[ 00.000% ] Exceptions check:  0
+[ 00.710% ] Compute advice lists:  4
+[ 00.178% ] Intertype weave:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.355% ] Weaving advice:  2
+[ 00.178% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 16.186% ] Soot Packs:  101
-[ 05.929% ] Soot Writing Output:  37
+[ 07.638% ] Soot Packs:  43
+[ 06.394% ] Soot Writing Output:  36
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.IllegalAccessError: tried to access method p1.Base.getName()Ljava/lang/String; from class p2.Derived$Inner
 java.lang.reflect.InvocationTargetException
@@ -3659,7 +3630,7 @@ FAIL: Test 832: "bugs/accessMethods/can not resolve this member warning" failed.
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
 Commandline: abc -d bugs bugs/PrivilegedParsing.java 
-Abc started on Mon Aug 09 19:16:03 BST 2004
+Abc started on Tue Aug 10 02:26:25 BST 2004
 Checking capsule.visible
 Checking capsule.hidden
 Checking capsule.visible
@@ -3672,10 +3643,10 @@ polyglot.util.InternalCompilerError: Exception while processing <Outer$Inner: vo
 	at abc.testing.Main.doCase(Main.java:254)
 	at abc.testing.Main.main(Main.java:102)
 Caused by: java.lang.RuntimeException: Unhandled Expression: Comma_c([local$assign$$2817, local$assign$$2819], [local$assign$$2817 = capsule, local$assign$$2819 = local$assign$$2817.get$accessor$hidden$2818(), local$assign$$2817.get$accessor$hidden$2818(local$assign$$2817.get$accessor$hidden$2818() + 1), local$assign$$2819])
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1648)
-	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:525)
-	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:327)
-	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:128)
+	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1652)
+	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:529)
+	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:331)
+	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:132)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:303)
@@ -3686,35 +3657,35 @@ FAIL: Test 897: "bugs/compiler issues error on inner aspects when privilieged" f
 
 Running test 898: bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits
 Commandline: abc -d bugs bugs/AfterThrowingCtor.java 
-Abc started on Mon Aug 09 19:16:04 BST 2004
+Abc started on Tue Aug 10 02:26:25 BST 2004
 host type is Foo
 Transforming Foo1... 
 Transforming Foo... 
 Transforming AfterThrowingCtor... 
 Transforming AfterThrowingCtor$AdviceRanException... 
-Abc finished on Mon Aug 09 19:16:05 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:26:26 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 713 millisec.)
+Breakdown of abc phases  (total: 706 millisec.)
 ------------------------------------------------
-[ 47.686% ] Init. of Soot:  340
+[ 48.017% ] Init. of Soot:  339
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 28.471% ] Polyglot phases:  203
+[ 28.612% ] Polyglot phases:  202
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.262% ] Retrieving bodies:  9
-[ 03.647% ] Update pattern matcher:  26
+[ 07.082% ] Retrieving bodies:  50
+[ 03.683% ] Update pattern matcher:  26
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.561% ] Compute advice lists:  4
+[ 00.567% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.281% ] Weaving advice:  2
-[ 00.000% ] Exceptions check:  0
+[ 00.142% ] Weaving advice:  1
+[ 00.142% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 12.903% ] Soot Packs:  92
-[ 05.189% ] Soot Writing Output:  37
+[ 06.516% ] Soot Packs:  46
+[ 05.241% ] Soot Writing Output:  37
 ================================================
 InvocationTargetException while trying to run compiled class: AfterThrowingCtor$AdviceRanException
 java.lang.reflect.InvocationTargetException
@@ -3735,7 +3706,7 @@ FAIL: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-t
 
 Running test 926: bugs/ClasscastException on concretization of if(false) 1
 Commandline: abc -d bugs bugs/DecwClassCastException.java 
-Abc started on Mon Aug 09 19:16:16 BST 2004
+Abc started on Tue Aug 10 02:26:39 BST 2004
 Compilation produced an unexpected number of errors: 6, should be 12
 Actual errors found: 
 Semantic Error at bugs/DecwClassCastException.java:27,19-27: if(..) requires a dynamic test and cannot be used inside a "declare" statement
@@ -3749,7 +3720,7 @@ FAIL: Test 926: "bugs/ClasscastException on concretization of if(false) 1" faile
 
 Running test 927: bugs/ClasscastException on concretization of if(false) 2
 Commandline: abc -d bugs bugs/DeclareSoftDynamicPCDs.java 
-Abc started on Mon Aug 09 19:16:17 BST 2004
+Abc started on Tue Aug 10 02:26:40 BST 2004
 Compilation produced an unexpected number of errors: 6, should be 12
 Actual errors found: 
 Semantic Error at bugs/DeclareSoftDynamicPCDs.java:27,28-36: if(..) requires a dynamic test and cannot be used inside a "declare" statement
@@ -3763,7 +3734,7 @@ FAIL: Test 927: "bugs/ClasscastException on concretization of if(false) 2" faile
 
 Running test 952: bugs/retitle warning to circular {advice} dependency at ...
 Commandline: abc -d bugs bugs/CircularAdvicePrecedence.java 
-Abc started on Mon Aug 09 19:16:36 BST 2004
+Abc started on Tue Aug 10 02:26:58 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 3
 Actual errors found: 
 Semantic Error at null: Precedence conflict
@@ -3772,32 +3743,32 @@ FAIL: Test 952: "bugs/retitle warning to circular {advice} dependency at ..." fa
 
 Running test 958: bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 1
 Commandline: abc -d bugs/declarePrecedenceWithClasses bugs/declarePrecedenceWithClasses/DeclarePrecedenceTestClass.java 
-Abc started on Mon Aug 09 19:16:37 BST 2004
+Abc started on Tue Aug 10 02:26:59 BST 2004
 Transforming DeclarePrecedenceTestClass... 
 Transforming DP... 
-Abc finished on Mon Aug 09 19:16:38 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:26:59 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 521 millisec.)
+Breakdown of abc phases  (total: 512 millisec.)
 ------------------------------------------------
-[ 61.996% ] Init. of Soot:  323
+[ 63.477% ] Init. of Soot:  325
 [ 00.000% ] Loading Jars:  0
-[ 00.192% ] Create polyglot compiler:  1
-[ 15.739% ] Polyglot phases:  82
+[ 00.000% ] Create polyglot compiler:  0
+[ 16.211% ] Polyglot phases:  83
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.768% ] Retrieving bodies:  4
-[ 04.415% ] Update pattern matcher:  23
+[ 00.586% ] Retrieving bodies:  3
+[ 11.523% ] Update pattern matcher:  59
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 09.021% ] Compute advice lists:  47
+[ 00.391% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.192% ] Add aspect code:  1
-[ 00.000% ] Weaving advice:  0
-[ 00.192% ] Exceptions check:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.195% ] Weaving advice:  1
+[ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 04.415% ] Soot Packs:  23
-[ 03.071% ] Soot Writing Output:  16
+[ 04.297% ] Soot Packs:  22
+[ 03.320% ] Soot Writing Output:  17
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 958: "bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 1" failed.
@@ -3805,7 +3776,7 @@ FAIL: Test 958: "bugs/declarePrecedenceWithClasses/declare precedence on a class
 
 Running test 959: bugs/declarePrecedenceWithClasses/declare precedence on a class should be a compile-time error 2
 Commandline: abc -d bugs/declarePrecedenceWithClasses bugs/declarePrecedenceWithClasses/Priority.aj 
-Abc started on Mon Aug 09 19:16:38 BST 2004
+Abc started on Tue Aug 10 02:26:59 BST 2004
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at bugs/declarePrecedenceWithClasses/Priority.aj:8,21-41: Aspect Security is matched by more than one pattern on the precedence list
@@ -3814,7 +3785,7 @@ FAIL: Test 959: "bugs/declarePrecedenceWithClasses/declare precedence on a class
 
 Running test 961: bugs/systemouts/declare error binary-weaving NPE 1
 Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-debug.jar bugs/systemouts/A.java 
-Abc started on Mon Aug 09 19:16:39 BST 2004
+Abc started on Tue Aug 10 02:27:00 BST 2004
 Getting position for a untagged source line $r3 = <java.lang.System: java.io.PrintStream out>
 Getting position for a untagged source line $r4 = <java.lang.System: java.io.PrintStream out>
 Getting position for a untagged source line virtualinvoke r1.<java.lang.RuntimeException: void printStackTrace(java.io.PrintStream)>($r4)
@@ -3864,7 +3835,7 @@ FAIL: Test 961: "bugs/systemouts/declare error binary-weaving NPE 1" failed.
 
 Running test 962: bugs/systemouts/declare error binary-weaving NPE 2 
 Commandline: abc -d bugs/systemouts -injars bugs/systemouts/injar-nodebug.jar bugs/systemouts/A.java 
-Abc started on Mon Aug 09 19:16:39 BST 2004
+Abc started on Tue Aug 10 02:27:00 BST 2004
 Getting source file for an untagged class pack.X
 Getting source file for an untagged class pack.X
 Getting source file for an untagged class pack.X
@@ -3914,7 +3885,7 @@ FAIL: Test 962: "bugs/systemouts/declare error binary-weaving NPE 2 " failed.
 
 Running test 963: bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResult
 Commandline: abc -d bugs/tooManyErrors -injars bugs/tooManyErrors/Joinpoints101.jar bugs/tooManyErrors/DecErrors.aj 
-Abc started on Mon Aug 09 19:16:40 BST 2004
+Abc started on Tue Aug 10 02:27:01 BST 2004
 Getting position for a untagged source line $i0 = r0.<Joinpoints101: int l>
 Getting position for a untagged source line $i1 = r0.<Joinpoints101: int l>
 Getting position for a untagged source line $i2 = r0.<Joinpoints101: int l>
@@ -4122,33 +4093,33 @@ FAIL: Test 963: "bugs/tooManyErrors/Regression from 1.1: NPE in CompilationResul
 
 Running test 970: bugs/error message for constructor-execution pcd
 Commandline: abc -d bugs bugs/InterfaceConstructor.java 
-Abc started on Mon Aug 09 19:16:43 BST 2004
+Abc started on Tue Aug 10 02:27:05 BST 2004
 Transforming I... 
 Transforming NoSuchJP... 
 Transforming InterfaceConstructor... 
-Abc finished on Mon Aug 09 19:16:44 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:27:05 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 435 millisec.)
+Breakdown of abc phases  (total: 475 millisec.)
 ------------------------------------------------
-[ 79.770% ] Init. of Soot:  347
+[ 71.368% ] Init. of Soot:  339
 [ 00.000% ] Loading Jars:  0
-[ 00.230% ] Create polyglot compiler:  1
-[ 03.678% ] Polyglot phases:  16
+[ 00.000% ] Create polyglot compiler:  0
+[ 03.368% ] Polyglot phases:  16
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.690% ] Retrieving bodies:  3
-[ 04.828% ] Update pattern matcher:  21
+[ 00.632% ] Retrieving bodies:  3
+[ 04.421% ] Update pattern matcher:  21
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.230% ] Compute advice lists:  1
+[ 00.421% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
-[ 00.230% ] Add aspect code:  1
-[ 00.230% ] Weaving advice:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.211% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 05.517% ] Soot Packs:  24
-[ 04.598% ] Soot Writing Output:  20
+[ 15.579% ] Soot Packs:  74
+[ 04.000% ] Soot Writing Output:  19
 ================================================
 Compilation produced an unexpected number of errors: 0, should be 1
 Actual errors found: 
@@ -4157,45 +4128,36 @@ FAIL: Test 970: "bugs/error message for constructor-execution pcd" failed.
 
 Running test 971: bugs/false ambigous binding error (introduced in 1.2rc2)
 Commandline: abc -d bugs bugs/DisjunctVarBinding_2.java bugs/DisjunctVarBinding_3.java 
-Abc started on Mon Aug 09 19:16:44 BST 2004
+Abc started on Tue Aug 10 02:27:05 BST 2004
 Transforming A... 
 Transforming IfPointcut... 
 Transforming B... 
 Transforming DisjunctVarBinding_2... 
-Abc finished on Mon Aug 09 19:16:44 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 10 02:27:06 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 581 millisec.)
+Breakdown of abc phases  (total: 544 millisec.)
 ------------------------------------------------
-[ 58.348% ] Init. of Soot:  339
+[ 63.051% ] Init. of Soot:  343
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 16.351% ] Polyglot phases:  95
+[ 17.463% ] Polyglot phases:  95
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 07.917% ] Retrieving bodies:  46
-[ 03.959% ] Update pattern matcher:  23
+[ 01.287% ] Retrieving bodies:  7
+[ 04.228% ] Update pattern matcher:  23
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.688% ] Compute advice lists:  4
+[ 00.735% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
-[ 00.172% ] Add aspect code:  1
-[ 00.172% ] Weaving advice:  1
+[ 00.184% ] Add aspect code:  1
+[ 00.184% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 06.713% ] Soot Packs:  39
-[ 05.680% ] Soot Writing Output:  33
+[ 07.169% ] Soot Packs:  39
+[ 05.699% ] Soot Writing Output:  31
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 971: "bugs/false ambigous binding error (introduced in 1.2rc2)" failed.
-
-
-Running test 974: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3
-Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase3.java 
-Abc started on Mon Aug 09 19:16:46 BST 2004
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at bugs/IfPerThis/Testcase3.java:2,58-84: Could not find field or local variable "commandInterceptionEnabled".
-FAIL: Test 974: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" failed.
 
 
