@@ -22,32 +22,34 @@
  * all of which can discriminate on runtime information. 
  */
 
-public aspect DecwClassCastExceptionIndirect {
+public aspect DeclareSoftDynamicPCDsIndirect {
 
-    /*	declare warning : if(true) : "if(true) directly against checker"; */
+    /*	declare soft : MyException:if(true) ; */
 	pointcut p(): if(false);
-	declare warning : p() : "if(false) through defined pointcut";
+	declare soft : MyException: p() ;
 	
-	/*	declare error : cflow(execution(* main(..))): "cflow(execution(* main(..))) directly against checker"; */
+	/*	declare soft : MyException:cflow(execution(* main(..))); */
 	pointcut p2(): cflow(execution(* main(..)));
-	declare error : p2() : "cflow(execution(* main(..))) through defined pointcut";
+	declare soft : MyException:p2();
 	
-	/* declare warning : cflowbelow(execution(* main(..))): "cflowbelow(execution(* main(..))) directly against checker"; */
+	/* declare soft : MyException:cflowbelow(execution(* main(..))); */
 	pointcut p3(): cflowbelow(execution(* main(..)));
-	declare error : p3() : "cflowbelow(execution(* main(..))) through defined pointcut";
+	declare soft : MyException:p3();
 	
-	/* declare warning : this(Object): "this(Object) directly against checker"; */
+	/* declare soft : MyException: this(Object); */
 	pointcut p4(): this(Object);
-	declare warning : p4(): "this(Object) through defined pointcut";
+	declare soft : MyException:p4();
 	
-	/* declare warning : target(Object): "target(Object) directly against checker"; */
+	/* declare soft : MyException:target(Object); */
 	pointcut p5(): target(Object);
-	declare warning : p5(): "target(Object) through defined pointcut";
+	declare soft : MyException:p5();
 		
-	/* declare warning : args(Object): "args(Object) directly against checker"; */
+	/* declare soft : MyException:args(Object); */
 	pointcut p6(): args(Object);
-	declare warning : p6(): "args(Object) through defined pointcut"; 
+	declare soft : MyException:p6();
 	
+	class MyException extends Exception {
+	}
 
     public static void main(String[] args) {
 	    System.err.println("In main!");
