@@ -129,14 +129,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:647)
+	at abc.main.Main.run(Main.java:644)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:728)
-	at abc.main.Main.loadSourceRoots(Main.java:745)
-	at abc.main.Main.run(Main.java:567)
+	at abc.main.Main.findSourcesInDir(Main.java:724)
+	at abc.main.Main.loadSourceRoots(Main.java:741)
+	at abc.main.Main.run(Main.java:564)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
