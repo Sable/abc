@@ -25,20 +25,25 @@ public class ExecutionShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	String jpKind;
+	String sigClass;
 	String sigMethod;
 	String sig="";
 	if(container.getName().equals(SootMethod.staticInitializerName)) {
 	    jpKind="staticinitialization";
-	    sigMethod="makeConstructorSig"; // FIXME: find the right thing to do here
+	    sigClass="InitializerSignature";
+	    sigMethod="makeInitializerSig"; 
 	} else if(container.getName().equals(SootMethod.constructorName)) {
 	    jpKind="constructor-execution";
+	    sigClass="ConstructorSignature";
 	    sigMethod="makeConstructorSig";
 	} else { // add advice-execution case
 	    jpKind="method-execution";
+	    sigClass="MethodSignature";
 	    sigMethod="makeMethodSig";
 	}
 	AdviceApplication.SJPInfo sjpInfo
-	    =new AdviceApplication.SJPInfo(jpKind,sigMethod,sig,container);
+	    =new AdviceApplication.SJPInfo(jpKind,sigClass, 
+		                               sigMethod,sig,container);
 	mal.addBodyAdvice(new ExecutionAdviceApplication(ad,residue,sjpInfo));
     }
 }

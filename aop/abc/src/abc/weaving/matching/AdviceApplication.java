@@ -20,6 +20,7 @@ public abstract class AdviceApplication {
 
     public static class SJPInfo {
 	public String kind;            // first parameter to makeSJP
+	public String signatureTypeClass; // name of class containing following method
 	public String signatureType;   // name of method to call for second parameter
         public String signature;       // parameter for call in second parameter
         public int row;                // row
@@ -31,8 +32,10 @@ public abstract class AdviceApplication {
 	// The shadow match presumably needs to pick up the signature.
 	// Hopefully it can get the line/column information too.
 
-	SJPInfo(String kind,String signatureType,String signature,Host host) {
+	SJPInfo(String kind,String signatureTypeClass,
+	    String signatureType,String signature,Host host) {
 	    this.kind=kind;
+	    this.signatureTypeClass=signatureTypeClass;
 	    this.signatureType=signatureType;
 	    this.signature=signature;
 	    if(host!=null && host.hasTag("SourceLnPosTag")) {

@@ -42,7 +42,8 @@ public class GetFieldShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("field-get","makeFieldSig","",stmt);
+	    = new AdviceApplication.SJPInfo("field-get",
+		"FieldSignature","makeFieldSig","",stmt);
         mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }

@@ -52,7 +52,8 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("constructor-call","makeConstructorSig","",stmt);
+	    = new AdviceApplication.SJPInfo( "constructor-call",
+		"ConstructorSignature","makeConstructorSig","",stmt);
         mal.addStmtAdvice(new NewStmtAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }
