@@ -61,6 +61,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
                                  List formals,
                                  List throwTypes,
 	  	                 Block body) {	
+	
 	super(pos,AspectJFlags.intertype(flags),returnType,
               name,formals,throwTypes,body);
 	this.host = host;

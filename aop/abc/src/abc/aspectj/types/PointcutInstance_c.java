@@ -104,10 +104,11 @@ String localName;
 			if (quiet) return false;
 			throw new SemanticException( mi + " in " + mi.container() + " cannot override definition in " + mj.container() + " because both are abstract");
 		}
+		/* Aske believed this to be a rule, but the test in new/EmptyStack.java seems to indicate otherwise
 		if (!mi.flags().isAbstract() && !mj.flags().isAbstract()) {
 			if (quiet) return false;
 			throw new SemanticException(mi + " in " + mi.container() + " cannot override definition in " + mj.container() + " because both are concrete");
-		}
+		} */
 		if (!mi.hasFormals(mj.formalTypes())) {
 			if (quiet) return false;
 			throw new SemanticException(mi + " in " + mi.container() + " cannot override definition in " + mj.container() + " because parameter types differ");

@@ -296,6 +296,12 @@ public class AdviceDecl_c extends MethodDecl_c
 		else return proceedInstance(c.pop());
 	}
 	
+	static public boolean withinAdvice(Context c) {
+		if (c==null) return false;
+		if (c==scope) return true;
+		return withinAdvice(c.pop());
+	}
+	
 
 
     private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {

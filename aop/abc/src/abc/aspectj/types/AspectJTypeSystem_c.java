@@ -122,11 +122,14 @@ public class AspectJTypeSystem_c
 	
     public boolean isAccessible(MemberInstance mi, ClassType ctc) {
         if (mi instanceof InterTypeMemberInstance) {
+        	
         	// the following code has been copied from TypeSystem_c.isAccessible
         	// the only change is the definition of target, which is normally mi.container()
+        	// also we omit the class accessibility check
 			ReferenceType target = ((InterTypeMemberInstance) mi).origin(); 
 														// accessibility of intertype declarations
 		                                                // is with respect to origin, not container
+		    
 			Flags flags = mi.flags();
 
 			if (! target.isClass()) {
@@ -137,9 +140,10 @@ public class AspectJTypeSystem_c
 
 			ClassType ctt = target.toClass();
 
+			/*// Omitted: see new/PR569
 			if (! classAccessible(ctt, ctc)) {
 				return false;
-			}
+			} */
 
 			if (equals(ctt, ctc))
 				return true;
@@ -391,11 +395,12 @@ public class AspectJTypeSystem_c
 					MethodInstance mi = (MethodInstance)j.next();
 					
 					// FOLLOWING LINES ARE CHANGES FOR ASPECTJ:
-					ClassType container;
+					ClassType miContainer;
 					if (mi instanceof InterTypeMemberInstance)
-						container = ((InterTypeMemberInstance) mi).origin();
+						miContainer = ((InterTypeMemberInstance) mi).origin();
 					else
-						container = ct;
+						miContainer = ct;
+						
 					// END OF CHANGES
 					if (!mi.flags().isAbstract()) {
 						// the method isn't abstract, so ct doesn't have to
@@ -409,9 +414,15 @@ public class AspectJTypeSystem_c
 						List possible = curr.methods(mi.name(), mi.formalTypes());
 						for (Iterator k = possible.iterator(); k.hasNext(); ) {
 							MethodInstance mj = (MethodInstance)k.next();
-							// NEXT LINE IS CHANGED FOR ASPECTJ:
-							if (!mj.flags().isAbstract() && isAccessible(mj, container) &&
-								isAccessible(mi,mj.container().toClass())) {
+							ClassType mjContainer;
+							// NEWLY INSERTED FOR ASPECTJ:
+							if (mj instanceof InterTypeMemberInstance)
+								mjContainer = ((InterTypeMemberInstance) mj).origin();
+							else
+								mjContainer = mj.container().toClass(); // skip the test below, see new/introduceInnerInterfaceCP.java
+							// NEXT LINE CHANGED FOR ASPECTJ:
+							if (!mj.flags().isAbstract() && isAccessible(mj, miContainer) &&
+								isAccessible(mi,mjContainer)) {
 								// May have found a suitable implementation of mi.
 								// mj is not abstract, it is accessible from the 
 								// class ct, and since mi is accessible from the container

@@ -201,8 +201,8 @@ public class PCName_c extends Pointcut_c implements PCName
        		throw new SemanticException("Pointcut "+name+" not found.", position());
        mi = (MethodInstance) ms.iterator().next(); // PointcutInstance_c
       
-       if (c.currentClass().flags().isStatic() && mi.flags().isAbstract())
-       		throw new SemanticException("Cannot make a static reference to an abstract pointcut",
+       if (mi.flags().isAbstract() && AdviceDecl_c.withinAdvice(c) && !(c.currentClass().flags().isAbstract()))
+       		throw new SemanticException("Cannot refer to an abstract pointcut inside an advice declaration in a concrete aspect.",
        		                             position());
       
        // get the formal types

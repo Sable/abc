@@ -147,8 +147,8 @@ public class AJClassBody_c extends ClassBody_c {
 										mj.position());
 					}
 					else if (mi instanceof PointcutInstance_c)
-					    throw new SemanticException("Duplicate pointcut \""+mj.name() +
-                                   "\" in class \""+mj.container() +"\".",mj.position());
+					    throw new SemanticException("Duplicate "+mj+
+                                   " in class \""+mj.container() +"\".",mj.position());
 					else throw new SemanticException("Duplicate method \"" + mj.signature() + "\" in class \"" +
 						                            mi.container() + "\".", mj.position());
 				}
