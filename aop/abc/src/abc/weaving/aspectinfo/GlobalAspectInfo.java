@@ -309,7 +309,8 @@ public class GlobalAspectInfo {
 	this.prec_rel = prec_rel;
     }
 
-    /** Get the precedence relationship between two aspects.
+    /** Get the precedence relationship between two aspect names, 
+     *  just using declare precedence relations
      *  @param a the name of the first aspect.
      *  @param b the name of the second aspect.
      *  @return
@@ -319,9 +320,10 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(String a, String b) {
-	if (!prec_rel.containsKey(a) || !prec_rel.containsKey(b)) {
+	int prec;
+	if (!prec_rel.containsKey(a) || !prec_rel.containsKey(b))
 	    return PRECEDENCE_NONE;
-	}
+
 	boolean ab = ((Set)prec_rel.get(a)).contains(b);
 	boolean ba = ((Set)prec_rel.get(b)).contains(a);
 	return ab ?
@@ -329,7 +331,8 @@ public class GlobalAspectInfo {
 	    ba ? PRECEDENCE_SECOND : PRECEDENCE_NONE;
     }
 
-    /** Get the precedence relationship between two aspects.
+    /** Get the precedence relationship between two aspects, 
+     * using both declare precedence relations and aspect inheritance
      *  @param a the first aspect.
      *  @param b the second aspect.
      *  @return
@@ -339,7 +342,30 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(Aspect a, Aspect b) {
-	return getPrecedence(a.getName(), b.getName());
+	System.out.println("Comparing precedence of "+a.getName()+" and "+b.getName());
+
+	int prec=getPrecedence(a.getName(), b.getName());
+	if(prec!=PRECEDENCE_NONE) return prec;
+
+	System.out.println("Trying inheritance");
+
+	// Can't use aspect_visibility since that just maps to concrete aspects.
+	// So just walk up from each one to try to find the other.
+
+	Aspect sa=a;
+	while(sa!=null) {
+	    sa=(Aspect)aspects_map.get(AbcFactory.AbcClass
+				       (sa.getInstanceClass().getSootClass().getSuperclass()));
+	    if(sa==b) return PRECEDENCE_FIRST;
+	}
+
+	Aspect sb=b;
+	while(sb!=null) {
+	    sb=(Aspect)aspects_map.get(AbcFactory.AbcClass
+				       (sb.getInstanceClass().getSootClass().getSuperclass()));
+	    if(sb==a) return PRECEDENCE_SECOND;
+	}
+	return PRECEDENCE_NONE;
     }
 
     public void sinkAdviceDecls() {

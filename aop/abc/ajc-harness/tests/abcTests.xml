@@ -420,7 +420,6 @@
 
     <ajc-test dir="base/test140"
       title="aspect inheritance and advice, introduction" 
-      abccomment="Fails due to use of advice in abstract aspect. ODM 04/07/04"
       keywords="from-base">
         <compile files="Driver.java"/>
         <run class="Driver"/>

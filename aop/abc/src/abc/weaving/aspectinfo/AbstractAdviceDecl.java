@@ -20,7 +20,13 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     private Pointcut origpc;
     private List formals;
 
+    // What aspect is this advice being applied from?
+    // This is important for resolving abstract pointcuts
     private Aspect aspct;
+
+    // What aspect was this advice originally defined in?
+    // This is important for dealing with advice precedence
+    private Aspect defined_aspct;
 
     protected AbstractAdviceDecl(Aspect aspct,
 				 AdviceSpec spec,
@@ -37,6 +43,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 				 boolean normalized) {
 	super(pos);
 	this.aspct=aspct;
+	this.defined_aspct=aspct;
 	this.spec=spec;
 
 	if(normalized) this.pc=pc; else this.origpc=pc;
@@ -146,8 +153,8 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      */
     public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
 	// FIXME : what happens when we merge cflow stacks?
-	if(!a.getAspect().getName().equals(b.getAspect().getName()))
-	    return GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
+	if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
+	    return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
 
 	// a quick first pass to assist in separating out the major classes of advice
 	// consider delegating this
