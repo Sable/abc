@@ -33,6 +33,7 @@ public class CheckPackageNames extends OncePass {
 	    if(!pctype.flags().isPublic()) continue;
 
 	    String classname=pctype.fullName();
+	    if(pctype.fromSource()==null) continue; // probably came from a jar
 	    String filename=pctype.fromSource().path();
 	    
 	    int dotindex=filename.lastIndexOf(".");
