@@ -5654,12 +5654,18 @@
 
     <ajc-test num="647" dir="new" pr="764"
       title="flag errors when binding args with indeterminate prefix and suffix"
+      abccomment="ajc reports errors in named pointcuts at use; we report
+                  the error at the point of declaration. ODM 13/08/04"
       keywords="from-resolved_105,knownLimitation">
         <compile files="IndeterminateArgsCE.java">
+            <ajcmessage kind="error" line="67"/>
+            <ajcmessage kind="error" line="68"/>
+            <ajcmessage kind="error" line="70"/>
+            <ajcmessage kind="error" line="72"/>
+            <message kind="error" line="65"/>
+            <message kind="error" line="66"/>
             <message kind="error" line="67"/>
             <message kind="error" line="68"/>
-            <message kind="error" line="70"/>
-            <message kind="error" line="72"/>
         </compile>
     </ajc-test>
 

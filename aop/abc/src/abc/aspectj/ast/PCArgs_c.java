@@ -53,6 +53,13 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 		AJContext c = (AJContext) tc.context();
 		if (c.inDeclare())
 			throw new SemanticException("args(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
+		int count = 0;
+		for (Iterator patIt = pats.iterator(); patIt.hasNext(); ) {
+			if (patIt.next() instanceof ArgDotDot)
+				count++;
+		}
+		if (count > 1)
+			throw new SemanticException("args() may contain at most one occurrence of \"..\".", position());
 		return this;
 	}
 	

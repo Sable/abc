@@ -17,6 +17,7 @@ import polyglot.ast.MethodDecl;
 import polyglot.ast.Call;
 import polyglot.ast.Cast;
 import polyglot.ast.Special;
+import polyglot.ast.ArrayInit;
 
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
@@ -213,7 +214,13 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			throwTypes.add(ttn);
 		}
 		
-		Cast cast = nf.Cast(position(),type(),init());
+		Expr initExpr = init();
+		if (init() instanceof ArrayInit) {
+			ArrayType initType = (ArrayType) init().type();
+			initExpr = nf.NewArray(position,type(),initType.dims(),(ArrayInit)init()).type(initType);
+		}
+		
+		Cast cast = nf.Cast(position(),type(),initExpr);
 		cast = (Cast) cast.type(type().type());
 		
 		Return ret = nf.Return(init().position(),cast);

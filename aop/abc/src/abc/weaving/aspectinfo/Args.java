@@ -112,9 +112,10 @@ public class Args extends DynamicValuePointcut {
 	while(formalsIt.hasPrevious() && actualsIt.hasPrevious()) {
 	    ArgPattern formal=(ArgPattern) formalsIt.previous();
 	    if(formal instanceof ArgFill) {
-		if(formalsIt.nextIndex()+1!=fillerpos)
+		/* this is now checked in the frontend:
+		    if(formalsIt.nextIndex()+1!=fillerpos)
 		    throw new SemanticException
-			("Two fillers in args pattern",formal.getPosition()); 
+			("Two fillers in args pattern",formal.getPosition());  */
 
 		return ret; // all done!
 	    }
