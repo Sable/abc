@@ -1507,6 +1507,11 @@
         <compile files="AdviceOnAdvice.java"/>
         <run class="AdviceOnAdvice"/>
     </ajc-test>
+<ajc-test dir="new" title="Introductions on other introductions"
+      keywords="from-resolved_10x">
+        <compile files="IntroOnIntro.java"/>
+        <run class="IntroOnIntro"/>
+    </ajc-test>
 <ajc-test dir="new" title="Putting advice on array constructors."
       keywords="from-resolved_10x">
         <compile files="Orleans.java"/>

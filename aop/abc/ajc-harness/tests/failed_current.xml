@@ -963,11 +963,6 @@
         <compile files="InnerClassNaming.java"/>
         <run class="InnerClassNaming"/>
     </ajc-test>
-<ajc-test dir="new" title="Introductions on other introductions"
-      keywords="from-resolved_10x">
-        <compile files="IntroOnIntro.java"/>
-        <run class="IntroOnIntro"/>
-    </ajc-test>
 <ajc-test dir="new" title="basic test of callsto pointcuts"
       keywords="from-resolved_10x">
         <compile files="CallsTo.java"/>
