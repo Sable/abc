@@ -64,8 +64,14 @@ public class AJCall_c extends Call_c implements Call {
 	  	r = nf.CanonicalTypeNode(position(), mi.container()).type(mi.container());
 	  } else // test whether this a call to an instance method of an ITHost 
 	  		if (ts.refHostOfITD(c,mi)) {
-	  			TypeNode tn = nf.CanonicalTypeNode(position(),c.hostClass()).type(c.hostClass());
-	  			r = nf.hostSpecial(position(),Special.THIS,tn,c.hostClass()).type(c.hostClass());
+	  			AJContext ajc = (AJContext) c;
+	  			ClassType scope = ajc.findMethodScopeInHost(name);
+	  			if (! ts.equals(scope,ajc.hostClass())) {
+	  				TypeNode tn = nf.CanonicalTypeNode(position(),scope).type(scope);
+	  				r = nf.hostSpecial(position(),Special.THIS,tn,c.hostClass()).type(scope);
+	  			} else {
+	  				r = nf.hostSpecial(position(),Special.THIS,null,c.hostClass()).type(c.hostClass());
+	  			}
 	  		} else {
 			  // The method is non-static, so we must prepend with "this", but we
 			  // need to determine if the "this" should be qualified.  Get the

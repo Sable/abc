@@ -7,6 +7,7 @@ import polyglot.types.Context;
 import polyglot.types.MethodInstance;
 import polyglot.types.VarInstance;
 import polyglot.types.ReferenceType;
+import polyglot.types.SemanticException;
 
 /**
  * @author Oege de Moor
@@ -23,25 +24,29 @@ public interface AJContext extends Context {
 	/** in scope of an intertype decl? */
 	boolean inInterType();      
 	
-	/** the enclosing host scope, when in intertype **/
-	AJContext hostScope();   
-	
-	/** traverse scopes until hostScope, looking for name;
-	 * if it's found in the hostScope, return true, otherwise false.
-	 */
+	/** was a field of this name introduced via the host? */
 	public boolean varInHost(String name);
 	
-	/** traverse scopes until hostScope, looking for name;
-	 * if it's found in the hostScope, return true, otherwise false.
-	 */
+	/** was a method by this name introduced via the host? */
 	public boolean methodInHost(String name);
-	
-	/** was enclosing intertype decl static? */
-	boolean staticInterType();
+
+	/** if varInHost(name), find the class that introduced the field by name (this can be an outer class
+	 *  of the host. The result is in general a subtype of the field's container.
+	 */
+	public ClassType findFieldScopeInHost(String name);
+
+	/** if methodInHost(name), find the class that introduced it (this can be an outer class
+	 *  of the host. The result is in general a subtype of the method's container.
+	 */
+	public ClassType findMethodScopeInHost(String name) throws SemanticException;
 	
 	/** inner class inside intertype decl? */
 	boolean nested(); 
 
 	/** add all the members from the intertype host that are accessible */
-	public void addITMembers(ReferenceType host);
+	public AJContext addITMembers(ReferenceType host);
+	
+	/** was the ITD itself declared static? */
+	public boolean explicitlyStatic();
+	 
 }

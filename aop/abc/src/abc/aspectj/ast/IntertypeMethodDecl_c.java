@@ -265,13 +265,12 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	
 	public Context enterScope(Context c) {
 		// System.out.println("entering scope of "+name+" in class "+c.currentClass());
-		AJContext nc = (AJContext) super.enterScope(c);
-		TypeSystem ts = nc.typeSystem();
-		AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
-			                               flags.isStatic());
-		ncc.addITMembers(host.type().toClass());
+			AJContext nc = (AJContext) super.enterScope(c);
+			TypeSystem ts = nc.typeSystem();
+			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
+				                               flags.isStatic());
+			return ncc.addITMembers(host.type().toClass());
 		// System.out.println("current class="+ncc.currentClass());
-		return ncc;		
 	}
 	
 	

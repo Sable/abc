@@ -109,7 +109,7 @@ public class AspectJTypeSystem_c
 		assert_(excTypes);
 		return new InterTypeConstructorInstance_c(this,pos,id,origin,container,flags,argTypes,excTypes);														
 	}
-		   
+	
     public boolean isAccessible(MemberInstance mi, ClassType ctc) {
         if (mi instanceof InterTypeMemberInstance) {
         	// the following code has been copied from TypeSystem_c.isAccessible
@@ -117,7 +117,6 @@ public class AspectJTypeSystem_c
 			ReferenceType target = ((InterTypeMemberInstance) mi).origin(); 
 														// accessibility of intertype declarations
 		                                                // is with respect to origin, not container
-		//    System.out.println("isAccessible: mi="+mi+" ctc= "+ctc + "target="+target);
 			Flags flags = mi.flags();
 			if (flags.isPublic()) return true;
 			if (equals(target, ctc)) return true;
@@ -155,7 +154,7 @@ public class AspectJTypeSystem_c
     }
     
     
-    
+  
     private boolean hostHasMember(AJContext c, MemberInstance mi) {
        if (mi instanceof FieldInstance)
        		return c.varInHost(((FieldInstance)mi).name());
@@ -166,33 +165,51 @@ public class AspectJTypeSystem_c
     	return false;
     }
     
-    public boolean refHostOfITD(AJContext c, MemberInstance mi) {    	
+	/** Disambiguation of references to fields and methods that do *not*
+	   * have an explicit target.
+	   * 
+	   * We need to determine whether the implicit receiver of this reference
+	   * is the host of an intertype declaration, or whether it is a receiver (possibly
+	   * an inner class) in an aspect. 
+	   * 
+	   * If the reference does not occur inside an intertype declaration, 
+	   * it is treated according to the normal rules of Java.
+	   * 
+	   * If it inside an intertype declaration, we try to determine whether it might
+	   * refer to the host. To this end, we look up the member name
+	   * (and only the name, not taking into account the parameter types of a method)
+	   * in the context. The lookup starts in the current scope, and continues until
+	   * we reach the scope of the smallest enclosing intertype decl. It is in this
+	   * scope that all the members of the host (that are visible from the aspect)
+	   * are introduced. If the member name does occur in this scope we return
+	   * true; in all other cases (if the name was found earlier, or it does not occur
+	   * in the ITD scope) we return false.
+	   */
+    
+    public boolean refHostOfITD(AJContext c, MemberInstance mi) {   
 	   return c.inInterType() && hostHasMember(c,mi) ;
     }
     
-    
-    public boolean hostEnclosingInstance(ClassType current, ClassType aspct, ClassType qualifier,ClassType host) {
-    	if (current == aspct)
-    		return host.hasEnclosingInstance(qualifier);
-    	else return (current == qualifier)
-                    ||
-                    (current.outer() != null && hostEnclosingInstance(current.outer(),aspct,qualifier,host));
-    }               
-	
+        	
+	/** Disambiguation of references of fields and references that do have an explicit
+	 * target.
+	 * 
+	 * If we're not in the scope of an intertype declaration, the reference is treated
+	 * according to normal Java rules.
+	 * 
+	 * If there is no explicit qualifier (like "A" in A.this or A.super), and we're not inside an
+	 * inner class (inside an ITD), the special (this or super) refers to the host type.
+	 * 
+	 * If there is an explicit qualifier, we have to look for an enclosing instance of the appropriate
+	 * type. 
+	 */
 	public boolean refHostOfITD(AJContext c, Typed qualifier) {
-		
-		/* if (qualifier == null)
+		if (!c.inInterType())
+			return false;
+		 if (qualifier == null)
 			return !c.nested();
 		else
-			return hostEnclosingInstance(c.currentClass(),
-			                             c.hostScope().currentClass(), 
-			                             qualifier.type().toClass(), 
-			                             c.hostClass()); */
-	
-		return c.inInterType() && 
-			   // !c.staticInterType() &&  I
-			   !(qualifier==null && c.nested()) &&
-			   !(qualifier != null && c.currentClass().hasEnclosingInstance(qualifier.type().toClass()));
+			return c.hostClass().hasEnclosingInstance(qualifier.type().toClass());
 	}
     
     

@@ -296,8 +296,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			TypeSystem ts = nc.typeSystem();
 			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
 											 flags().isStatic());
-			ncc.addITMembers(host.type().toClass());
-			return ncc;
+			return ncc.addITMembers(host.type().toClass());
 		} else return nc;
 	}
 	

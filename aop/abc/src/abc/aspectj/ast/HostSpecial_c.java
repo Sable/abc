@@ -69,12 +69,12 @@ public class HostSpecial_c extends Special_c implements Special {
 			   }
 		   }
 
-		/*   if (c.inStaticContext() && ts.equals(t, c.hostClass())) {
+		if (c.explicitlyStatic() && ts.equals(t, c.hostClass())) {
 			   // trying to access "this" or "super" from a static context.
 			   throw new SemanticException("Cannot access a non-static " +
 				   "field or method, or refer to \"this\" or \"super\" " + 
 				   "from a static context.",  this.position());
-		   } */
+		   }
 
 	   if (kind == THIS) {
 		   return type(t);
@@ -92,6 +92,6 @@ public class HostSpecial_c extends Special_c implements Special {
 		  w.write(".");
 	  }
 
-	  w.write("host"+host+ kind.toString());
+	  w.write("host"+kind.toString());
 	  }
 }

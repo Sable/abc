@@ -25,15 +25,15 @@ import polyglot.types.Type;
 /**
  * @author Oege de Moor
  *
- * hostClass gives the host of an intertype decl
- * pushHost is called upon entering an intertype decl
  */
 public class AJContext_c extends Context_c implements AJContext {
 		
 	protected ClassType host; // the host of the intertype decl
 	protected boolean nested; // an inner class in an interType decl
     protected boolean declaredStatic; // intertype decl declared static?
-    protected AJContext hostScope;
+    protected AJContext_c startHostScope; // the first item on the context stack that signifies an ITD
+    protected AJContext_c endHostScope; // the last item on the context stack that signifies an ITD
+    protected ClassType fakeType;
     
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
@@ -41,12 +41,12 @@ public class AJContext_c extends Context_c implements AJContext {
 		nested = false;
 	}
 	
-	public boolean inInterType() {
-		return host != null;
+	public ClassType aspect() {
+		return startHostScope.currentClass();
 	}
 	
-	public boolean staticInterType() {
-		return inInterType() && declaredStatic;
+	public boolean inInterType() {
+		return host != null;
 	}
 	
 	public boolean nested() {
@@ -67,45 +67,132 @@ public class AJContext_c extends Context_c implements AJContext {
 		AJContext_c c = (AJContext_c) super.push();
 		c.host = t;
 		c.nested = false;
-		c.declaredStatic = declaredStatic;
 		c.staticContext = true; 
-		c.hostScope = c;
+		c.startHostScope = c;
+		c.declaredStatic = declaredStatic;
 		return c;
 	}
 	
-	public AJContext hostScope() {
-		return hostScope;
+	
+	public Context pushStatic() {
+		AJContext_c c = (AJContext_c) super.pushStatic();
+		c.declaredStatic = true;
+		return c;
+	}
+	
+	public boolean explicitlyStatic() {
+		return declaredStatic;
+	}
+	
+	private Context fakePushClass(ClassType ct) {
+		AJContext_c c = (AJContext_c) super.push();
+		c.fakeType = ct;
+		return c;
+	}
+	
+	/**
+		 * Finds the class which added a field to the scope.
+		 * just like findFieldScope, but return fakeType rather than type
+		 */
+	public ClassType findFieldScopeInHost(String name)  {
+		VarInstance vi = findVariableInThisScope(name);
+		if (vi instanceof FieldInstance) {
+			return fakeType;
+		}
+		if (vi == null && outer != null) {
+			return ((AJContext_c)outer).findFieldScopeInHost(name);
+		}
+		throw new InternalCompilerError ("Field " + name + " not found.");
+	}
+	
+	
+	/** Finds the class which added a method to the host scope.
+	   */
+	  public ClassType findMethodScopeInHost(String name) {
+		  ClassType container = findMethodContainerInThisScope(name);
+		  if (container != null) {
+			  return fakeType;
+		  }
+		  if (outer != null) {
+			  return ((AJContext_c)outer).findMethodScopeInHost(name);
+		  }
+		  throw new InternalCompilerError ("Method " + name + " not found.");
+	  }
+	
+	public void addMethodContainerToThisHostScope(MethodInstance mi) {
+		 if (methods == null) methods = new HashMap();
+		 methods.put(mi.name(), fakeType);
+	 }
+
+	
+	public AJContext startHostScope() {
+		return startHostScope;
+	}
+	
+	public AJContext endHostScope() {
+		return endHostScope;
+	}
+	
+	private boolean varBetween(String name) {
+		if (this == startHostScope)
+			return false; /* the first host frame does not contain host members */
+		else 
+			return (findVariableInThisScope(name) != null ||
+						((AJContext_c)outer).varBetween(name));
 	}
 	
 	public boolean varInHost(String name) {
-		if (this == hostScope)
-			return findVariableInThisScope(name) != null;
+		if (this == startHostScope.endHostScope)
+			 return varBetween(name);
 		else
 		    return findVariableInThisScope(name) == null && ((AJContext_c)outer).varInHost(name);
 	}
+
+	private boolean methodBetween(String name) {
+			if (this == startHostScope)
+				return false;
+			else
+				return (findMethodContainerInThisScope(name) != null ||
+							((AJContext_c)outer).methodBetween(name));
+	}
 	
 	public boolean methodInHost(String name) {
-		if (this == hostScope)
-			return findMethodContainerInThisScope(name) != null;
+		if (this == startHostScope.endHostScope)
+			return methodBetween(name);
 		else
 			return findMethodContainerInThisScope(name) == null && ((AJContext_c)outer).methodInHost(name);
 	} 
-	
-	private void addITMethodHost(MethodInstance mi) {
-		if (methods == null) methods = new HashMap();
-	     // ITMs are always introduced into the scope by the host class, 
-	     // not the current one
-		methods.put(mi.name(), hostClass());
-	}
-	
-	private void addITFieldHost(VarInstance var) {
-		if (vars == null) vars = new HashMap();
-		 vars.put(var.name(), var);
-	}
-	
-	public void addITMembers(ReferenceType type) {
+
+
+	public AJContext addITMembers(ReferenceType type) {
 		if (type !=	null)
-			addMembers(type,new HashSet());
+		{
+		   AJContext_c nc = addOuters(type);
+		   endHostScope = nc;
+		   return nc;
+		}
+		else return this;
+	}
+	
+	private AJContext_c addOuters(ReferenceType type) {
+		// add members of outer classes, in order of lexical scoping
+			  // so first build up the list of outer classes, then traverse it
+			  AJContext_c result = this;
+			  if (type instanceof ParsedClassType) {
+				   List outers = new LinkedList();
+				   outers.add(hostClass());
+				   ParsedClassType ct = (ParsedClassType) hostClass();
+				   while (ct.outer() != null) {
+					   outers.add(0,ct.outer());
+					   ct = (ParsedClassType) ct.outer();
+				   }
+				   for (Iterator oct = outers.iterator(); oct.hasNext(); ) {
+					   ct = (ParsedClassType) oct.next();
+					   result = (AJContext_c) result.fakePushClass(ct);
+					   result.addMembers(ct,new HashSet());
+				   }
+			  }
+			  return result;
 	}
 	
 	private void addMembers(ReferenceType type, Set visited) {
@@ -115,21 +202,6 @@ public class AJContext_c extends Context_c implements AJContext {
 	   }
 	
 	   visited.add(type);
-	   
-	   // add members of outer classes, in order of lexical scoping
-	   // so first build up the list of outer classes, then traverse it
-	   if (type instanceof ClassType) {
-	   	 	List outers = new LinkedList();
-	   	 	ClassType ct = type.toClass();
-	   	 	while (ct.outer() != null) {
-	   	 		outers.add(0,ct.outer());
-	   	 		ct = ct.outer();
-	   	 	}
-	   	 	for (Iterator oct = outers.iterator(); oct.hasNext(); ) {
-	   	 		ct = (ClassType) oct.next();
-	   	 		addMembers(ct,visited);
-	   	 	}
-	   }
 	
 	   // Add supertype members first to ensure overrides work correctly.
 	   if (type.superType() != null) {
@@ -165,21 +237,21 @@ public class AJContext_c extends Context_c implements AJContext {
 	
 	   for (Iterator i = type.methods().iterator(); i.hasNext(); ) {
 		   MethodInstance mi = (MethodInstance) i.next();
-		   if (ts.isAccessible(mi,this)) 
-				addITMethodHost(mi); 
+		   if (ts.isAccessible(mi,startHostScope)) 
+				addMethodContainerToThisHostScope(mi); 
 	   }
 	
 	   for (Iterator i = type.fields().iterator(); i.hasNext(); ) {
 			FieldInstance fi = (FieldInstance) i.next();
-			if (ts.isAccessible(fi,this)) 
-				addITFieldHost(fi);
+			if (ts.isAccessible(fi,startHostScope)) 
+				addVariable(fi);
 	   }
 	   
 	   if (type.isClass()) {
 				   for (Iterator i = type.toClass().memberClasses().iterator();
 						i.hasNext(); ) {
 					   ClassType mct = (ClassType) i.next();
-					   if (ts.isAccessible(mct,this))
+					   if (ts.isAccessible(mct,startHostScope))
 					   		addNamed(mct);
 				   }
 			   }
