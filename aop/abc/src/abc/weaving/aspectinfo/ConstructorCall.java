@@ -18,7 +18,7 @@ public class ConstructorCall extends AbstractShadowPointcutHandler {
 	return pattern;
     }
 
-    static private ShadowType shadowType=new StmtShadowType();
+    static private ShadowType shadowType=new NewStmtShadowType();
     
     static {
 	AbstractShadowPointcutHandler.registerShadowType(shadowType);
@@ -29,9 +29,9 @@ public class ConstructorCall extends AbstractShadowPointcutHandler {
     }
 
     public Residue matchesAt(MethodPosition position) {
-	if(!(position instanceof StmtMethodPosition)) return null;
+	if(!(position instanceof NewStmtMethodPosition)) return null;
 
-	StmtMethodPosition stmtMP=(StmtMethodPosition) position;
+	NewStmtMethodPosition stmtMP=(NewStmtMethodPosition) position;
 	Stmt current=stmtMP.getStmt();
 
 	// FIXME: Hack should be removed when patterns are added

@@ -89,27 +89,27 @@ public abstract class AdviceApplication {
 		Chain stmtsChain=method.getActiveBody().getUnits();
 		Stmt current,next;
 
-		for(current=(Stmt) stmtsChain.getFirst();
-		    current!=null;
-		    current=next) {
-		    next=(Stmt) stmtsChain.getSuccOf(current);
-		    doStatement(info,mal,sootCls,method,new StmtMethodPosition(current,next));
+		if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
+		    for(current=(Stmt) stmtsChain.getFirst();
+			current!=null;
+			current=next) {
+			next=(Stmt) stmtsChain.getSuccOf(current);
+			doStatement(info,mal,sootCls,method,new StmtMethodPosition(current));
+			doStatement(info,mal,sootCls,method,new NewStmtMethodPosition(current,next));
+		    }
 		}
 
 		// Do exception handler shadows
 		Chain trapsChain=method.getActiveBody().getTraps();
 		Trap currentTrap;
-		// FIXME: There's probably a better way to deal with empty traps chains...
-		try {
+
+		if(!trapsChain.isEmpty()) {
 		    for(currentTrap=(Trap) trapsChain.getFirst();
 			currentTrap!=null;
-			currentTrap=(Trap) trapsChain.getSuccOf(current))
+			currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
 			
 			doStatement(info,mal,sootCls,method,new TrapMethodPosition(currentTrap));
-
-		} catch(NoSuchElementException e) {
 		}
-		
 
 		ret.put(method,mal);
 

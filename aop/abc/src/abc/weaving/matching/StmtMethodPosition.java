@@ -9,18 +9,13 @@ import soot.jimple.*;
 
 public class StmtMethodPosition implements MethodPosition {
     private Stmt stmt;
-    private Stmt nextStmt;
     
-    public StmtMethodPosition(Stmt stmt,Stmt nextStmt) {
+    public StmtMethodPosition(Stmt stmt) {
 	this.stmt=stmt;
-	this.nextStmt=nextStmt;
     }
 
     public Stmt getStmt() {
 	return stmt;
-    }
-    public Stmt getNextStmt() {
-	return nextStmt;
     }
 
 }
