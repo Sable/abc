@@ -135,9 +135,9 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
 
 	// FIXME : what happens when we merge cflow stacks?
-	int aspectcomp=GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
-	if(aspectcomp!=GlobalAspectInfo.PRECEDENCE_NONE || a.getAspect()!=b.getAspect()) 
-	    return aspectcomp;
+	if(!a.getAspect().getName().equals(b.getAspect().getName()))
+	    return GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
+
 
 	// Must be both AdviceDecl or both CflowSetup, from the same aspect
 	// Check carefully just to be on the safe side
@@ -147,7 +147,7 @@ public abstract class AbstractAdviceDecl extends Syntax {
 	    return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
 
 	throw new InternalCompilerError
-	    ("case not handled when comparing "+a.getClass()+" and "+b.getClass());
+	    ("case not handled when comparing "+a+" and "+b);
     }
     private static int getPrecNum(AbstractAdviceDecl d) {
 	if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 4 : 0;
