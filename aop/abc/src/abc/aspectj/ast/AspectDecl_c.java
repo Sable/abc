@@ -65,7 +65,8 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		List args = new LinkedList();
 		if (per instanceof PerThis || per instanceof PerTarget) {
 			TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object());
-			args.add(obj);
+			polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam");
+			args.add(f);
 		}
 		List thrws = new LinkedList(); thrws.add(nab);
 		MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl); 
