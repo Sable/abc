@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@2f0a99
+creating: A@d4d311
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -599,7 +599,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@bf21f1
+InterfaceAndObject$1@1c96248
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2286,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@69bd51, [Ljava.lang.Object;@c34f4, TwoAnonymous$3@69bd51
+calling run: TwoAnonymous$3@c95d49, [Ljava.lang.Object;@b9022, TwoAnonymous$3@c95d49
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2403,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@158f3bb.foo calls Outer$Inner@e9b941.mi
+Outer@1ce86a0.foo calls Outer$Inner@1e89c55.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@e9b941.mi calls java.io.PrintStream@816106.println
+Outer$Inner@1e89c55.mi calls java.io.PrintStream@6fb868.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@158f3bb.foo calls Outer$InnerRandom@1ce86a0.nextHook
+Outer@1ce86a0.foo calls Outer$InnerRandom@d6e111.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1ce86a0.nextHook calls Outer$InnerRandom@1ce86a0.next
+Outer$InnerRandom@d6e111.nextHook calls Outer$InnerRandom@d6e111.next
 Outer.foo() calls Random.nextInt(..)
-Outer@158f3bb.foo calls X.nextInt
+Outer@1ce86a0.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1b34729.foo calls Outer$Inner@104d7ab.mi
+Outer@159e505.foo calls Outer$Inner@cae66d.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@104d7ab.mi calls java.io.PrintStream@eb3ad9.println
+Outer$Inner@cae66d.mi calls java.io.PrintStream@de07be.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1b34729.foo calls Outer$InnerRandom@159e505.nextHook
+Outer@159e505.foo calls Outer$InnerRandom@ecb2ac.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@159e505.nextHook calls Outer$InnerRandom@159e505.next
+Outer$InnerRandom@ecb2ac.nextHook calls Outer$InnerRandom@ecb2ac.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1b34729.foo calls X.nextInt
+Outer@159e505.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4128,8 +4128,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@a5fc09
-o: Bar@a5fc09, i: 10
+o: Bar@145eb9f
+o: Bar@145eb9f, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -5045,7 +5045,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1765260
+? Util.read() obj=Test@e1d8ee
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5055,6 +5055,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:ignore bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AroundClosureExecutionAdvice.aj 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 ? Util.fail() ex=java.io.InvalidClassException: Test; local class incompatible: stream classdesc serialVersionUID = 6093543801813805496, local class serialVersionUID = 2522483775000271807
 PASS: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" passed.
 
@@ -5064,7 +5065,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@14c96f1
+? Util.read() obj=ClinitTest@1dcbfbe
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5074,7 +5075,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1ccde58
+? Util.read() obj=SuidTest@18810f9
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5277,12 +5278,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1b7ee64
-Invoking command bean:  Command@83f573
-hello(Command@83f573)
-Created a PerThis aspect : Testcase2@1677636
-Invoking command bean:  Command@181fbf4
-hello again(Command@181fbf4)
+Created a PerThis aspect : Testcase2@a08659
+Invoking command bean:  Command@d455ff
+hello(Command@d455ff)
+Created a PerThis aspect : Testcase2@5a1759
+Invoking command bean:  Command@b2d95e
+hello again(Command@b2d95e)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5569,58 +5570,7 @@ PASS: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double litera
 
 Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtractedProceed.java 
- java.util.NoSuchElementException null
-soot.util.HashChain$LinkIterator.<init>(HashChain.java:466)
-soot.util.HashChain.iterator(HashChain.java:327)
-abc.weaving.weaver.AroundWeaver$Util.removeStatements(AroundWeaver.java:245)
-abc.weaving.weaver.AroundWeaver$Util.access$900(AroundWeaver.java:118)
-abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3084)
-abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod.generateProceeds(AroundWeaver.java:3031)
-abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass.generateProceeds(AroundWeaver.java:2657)
-abc.weaving.weaver.AroundWeaver$AdviceMethod.generateProceedCalls(AroundWeaver.java:2539)
-abc.weaving.weaver.AroundWeaver$AdviceMethod.modifyAdviceMethod(AroundWeaver.java:2404)
-abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod$AdviceApplicationInfo.doWeave(AroundWeaver.java:957)
-abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod.doWeave(AroundWeaver.java:790)
-abc.weaving.weaver.AroundWeaver$AdviceMethod.doWeave(AroundWeaver.java:669)
-abc.weaving.weaver.AroundWeaver.doWeave(AroundWeaver.java:440)
-abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:154)
-abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:348)
-abc.weaving.weaver.PointcutCodeGen.weaveInAspectsPass(PointcutCodeGen.java:105)
-abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:278)
-abc.weaving.weaver.Weaver.weave(Weaver.java:170)
-abc.main.Main.weave(Main.java:886)
-abc.main.Main.run(Main.java:483)
-abc.testing.TestCase.runTest(TestCase.java:288)
-abc.testing.Main.doCase(Main.java:282)
-abc.testing.Main.main(Main.java:116)
-Unexpected exception while compiling: abc.weaving.weaver.AroundWeaver$InternalAroundError: ARD around weaver internal error: 
-abc.weaving.weaver.AroundWeaver$InternalAroundError: ARD around weaver internal error: 
-	at abc.weaving.weaver.AroundWeaver.doWeave(AroundWeaver.java:451)
-	at abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:154)
-	at abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:348)
-	at abc.weaving.weaver.PointcutCodeGen.weaveInAspectsPass(PointcutCodeGen.java:105)
-	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:278)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:170)
-	at abc.main.Main.weave(Main.java:886)
-	at abc.main.Main.run(Main.java:483)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.util.NoSuchElementException: HashChain.LinkIterator(obj) with obj that is not in the chain: nop
-	at soot.util.HashChain$LinkIterator.<init>(HashChain.java:466)
-	at soot.util.HashChain.iterator(HashChain.java:327)
-	at abc.weaving.weaver.AroundWeaver$Util.removeStatements(AroundWeaver.java:245)
-	at abc.weaving.weaver.AroundWeaver$Util.access$900(AroundWeaver.java:118)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3084)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod.generateProceeds(AroundWeaver.java:3031)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass.generateProceeds(AroundWeaver.java:2657)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod.generateProceedCalls(AroundWeaver.java:2539)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod.modifyAdviceMethod(AroundWeaver.java:2404)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod$AdviceApplicationInfo.doWeave(AroundWeaver.java:957)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod.doWeave(AroundWeaver.java:790)
-	at abc.weaving.weaver.AroundWeaver$AdviceMethod.doWeave(AroundWeaver.java:669)
-	at abc.weaving.weaver.AroundWeaver.doWeave(AroundWeaver.java:440)
-	... 10 more
-FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed.
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+PASS: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" passed.
 
 

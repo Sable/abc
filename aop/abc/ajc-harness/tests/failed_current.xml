@@ -71,8 +71,5 @@
 <ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
          <compile files="PrecedenceSort.java"></compile>
     </ajc-test>
-<ajc-test title="internal around weaver error when trying to capture proceed() into a closure" num="1018" dir="abctests/bugs">
-        <compile files="ExtractedProceed.java"></compile>
-    </ajc-test>
  
 </suite>

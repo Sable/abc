@@ -4540,9 +4540,12 @@
         <run class="Util"></run>
 	</ajc-test>
 <ajc-test title="SUID: Around closure execution advice (-Xlint:ignore)" pr="41181" num="930" dir="bugs/serialVersionUID" comment="OK because ignoring warnings">
-		<compile files="Test.java, Util.java"></compile>
+		<compile files="Test.java, Util.java">
+		</compile>
         <run class="Test"></run>
-		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj"></compile>
+		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj">
+		<message kind="warning"></message>
+		</compile>
         <run options="-fail" class="Util"></run>
 	</ajc-test>
 <ajc-test title="SUID: thisJoinPoint with clinit method" pr="41181" num="933" dir="bugs/serialVersionUID" comment="OK if tjp private and existing clinit">
@@ -5097,6 +5100,12 @@
 <ajc-test title="around weaver incorrectly unboxing double literals in float context" num="1017" dir="abctests/bugs">
         <compile files="AroundUnboxing.java"></compile>
         <run class="AroundUnboxing"></run>
+    </ajc-test>
+<ajc-test title="internal around weaver error when trying to capture proceed() into a closure" num="1018" dir="abctests/bugs">
+        <compile files="ExtractedProceed.java">
+         <message kind="warning"></message>
+          <message kind="warning"></message>
+        </compile>
     </ajc-test>
  
 </suite>
