@@ -51,6 +51,9 @@ public class AroundAdvice extends AbstractAdviceSpec {
 			//	ErrorInfo.SEMANTIC_ERROR, s);
     }
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
+    	if (!sm.supportsAround())
+    		return null;
+    	
     	Type shadowType=sm.getReturningContextValue().getSootType();
     	if (shadowType.equals(NullType.v()))
     		shadowType=VoidType.v();
@@ -63,7 +66,8 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		reportError(e.getMessage(),sm);
     		return null; // don't weave if type error
     	}
-	return sm.supportsAround() ? AlwaysMatch.v : null;
+    	
+    	return AlwaysMatch.v;
     }
 
 	/**
@@ -73,7 +77,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
 	 * 
 	 * 
 	 */
-    // TODO: verify that this is the desired type check behavior!
+    // TODO: verify that this is the desired type check
 	private void checkTypes(Type shadowType, Type adviceType) {
 		Type objectType=Scene.v().getSootClass("java.lang.Object").getType();
     	if (adviceType.equals(objectType)) {
