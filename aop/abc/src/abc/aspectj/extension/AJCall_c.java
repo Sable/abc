@@ -30,8 +30,12 @@ import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeMethodInstance_c;
+import abc.aspectj.types.AspectType;
+import abc.aspectj.types.AJFlags;
 
 import abc.aspectj.visit.AspectMethods;
+
+import polyglot.util.InternalCompilerError;
 
 /**
  * Override the typechecking of method calls, to delegate to the host in certain
@@ -173,6 +177,24 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
                                        AJTypeSystem ts)
         {
                 Call c = this;
+            	if(ts.isAccessible(this.methodInstance(), visitor.context()) && 
+            	        !ts.isAccessibleIgnorePrivileged(this.methodInstance(), visitor.context())) {
+            	    // We have a method that is visible from the aspect but not visible if we ignore
+            	    // the privileged attribute => we need to use accessor methods here
+            	    ClassType cct = (ClassType) visitor.container(); // TODO: Check container() is what we want
+            	    while(cct != null) {
+            	        if(AJFlags.isPrivilegedaspect(cct.flags())) {
+            	            AspectType at = (AspectType) cct;
+            	            // XXX: This probably *WILL* break if one tries to access a private field of a super class
+            	            // from an aspect method.
+            	            return at.getAccessorMethods().accessorDispatch(nf, ts, c, (ClassType)this.target().type(), null);
+            	        }
+            	        cct = cct.outer();
+            	    }
+            	    // Shouldn't happen - accessibility test thinks we're in a privileged aspect, 
+            	    // but we failed to find a containing aspect
+            	    throw new InternalCompilerError("Problem determining whether or not we're in a privileged aspect");
+            	}
                 if (c.methodInstance() instanceof InterTypeMethodInstance_c) {
                         InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) c.methodInstance();
                         c = c.methodInstance(itmi.mangled()).name(itmi.mangled().name());
@@ -193,8 +215,17 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
                         		TypeNode aspct = nf.CanonicalTypeNode(position,itmi.origin()).type(itmi.origin());                     
                         		c = (Call) c.target(aspct).methodInstance(impl).arguments(newArgs); 
                         	} else {
-                                c = id.getSupers().superCall(nf, ts, c, id.host().type().toClass(),
-                                                                id.thisReference(nf, ts));
+                                //c = id.getSupers().superCall(nf, ts, c, id.host().type().toClass(),
+                                //                                id.thisReference(nf, ts));
+                        	    // We are in an aspect method. The SuperAccessorMethods object is stored in the
+                        	    // enclosing aspect.
+                        	    AspectType aspect = ((AJContext)visitor.context()).currentAspect();
+                        	    if(aspect == null) {
+                        	        // Is this really impossible? Depends on how exactly the nesting works, investigate
+                        	        throw new InternalCompilerError("Intertype method " + c.name() + " not enclosed by aspect");
+                        	    }
+                        	    c = aspect.getAccessorMethods().accessorDispatch(nf, ts, c, id.host().type().toClass(), 
+                        	            	id.thisReference(nf, ts));
                         	}
                         }
                 }

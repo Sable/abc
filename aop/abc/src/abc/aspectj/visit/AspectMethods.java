@@ -56,6 +56,7 @@ import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import polyglot.visit.ContextVisitor;
 
@@ -242,6 +243,12 @@ public class AspectMethods extends ContextVisitor {
 		if (del instanceof MakesAspectMethods) {
 					 n = ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
 				}
+		if(del instanceof ClassDecl) {
+		    // Emulate ajc's behaviour of turning classes that privileged aspects access public.
+		    if(GlobalAspectInfo.v().getClassesToMakePublic().contains(((ClassDecl)del).type())) {
+		        n = ((ClassDecl)n).flags(((ClassDecl)n).flags().Public().clearProtected());
+		    }
+		}
 		return n;
 		
 	}

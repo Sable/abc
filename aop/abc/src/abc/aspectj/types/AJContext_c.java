@@ -17,6 +17,7 @@ import polyglot.types.ParsedClassType;
 import polyglot.types.ClassType;
 import polyglot.types.TypeSystem;
 import polyglot.types.MethodInstance;
+import polyglot.types.MemberInstance;
 import polyglot.types.VarInstance;
 import polyglot.types.ReferenceType;
 import polyglot.types.FieldInstance;
@@ -297,4 +298,22 @@ public class AJContext_c extends Context_c implements AJContext {
 			   }
 	}
 
+	public AspectType currentAspect() {
+	    ClassType cur = currentClass();
+	    while(cur != null) {
+	        System.out.println("Checking to see if " + cur + " is an aspect.");
+		    if(cur instanceof AspectType) {
+		        return (AspectType) cur;
+		    }
+		    try {
+		        cur = (ClassType)cur.container();
+		    } catch (ClassCastException e) {
+		        // If we can't cast to ClassType, then the container is a ReferenceType but not a MemberInstance.
+		        // Is this possible? Classes and Aspects are member instances, what else do we expect? FIXME
+		        System.err.println("Couldn't cast " + cur + " to ClassType, it " + (cur instanceof MemberInstance ? "is" : "isn't") + " a member instance.");
+		        break;
+		    }
+	    }
+	    return null;
+	}
 }

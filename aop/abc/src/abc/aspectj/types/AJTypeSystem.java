@@ -21,6 +21,8 @@ import abc.aspectj.ast.AdviceSpec;
 
 import soot.javaToJimple.jj.types.JjTypeSystem;
 
+import polyglot.types.Context;
+
 public interface AJTypeSystem extends JjTypeSystem {
     
 	public ClassType JoinPoint() ;
@@ -55,5 +57,9 @@ public interface AJTypeSystem extends JjTypeSystem {
 	public boolean refHostOfITD(AJContext c, Typed qualifier); 		
 	
 	public AspectType createAspectType(Source source, int perKind);
-					              
+	
+	// The normal isAccessible method inherited from JjTypeSystem is overridden so it always returns
+	// true if called for a context that is a privileged aspect, and returns the value of
+	// isAccessibleIgnorePrivileged otherwise.
+	public boolean isAccessibleIgnorePrivileged(MemberInstance mi, Context ctc);				              
 }

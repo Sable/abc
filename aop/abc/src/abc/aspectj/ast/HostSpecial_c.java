@@ -19,6 +19,8 @@ import polyglot.types.ClassType;
 import polyglot.types.TypeSystem;
 import polyglot.visit.TypeChecker;
 
+import abc.aspectj.types.AspectType;
+
 
 import polyglot.ext.jl.ast.Special_c;
 import polyglot.util.Position;
@@ -117,17 +119,21 @@ public class HostSpecial_c extends Special_c implements Special, MakesAspectMeth
         public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
-                IntertypeDecl id = visitor.intertypeDecl();
-                if (kind() == Special.THIS) {
-                        if (qualifier() == null ||
-                            (qualifier() != null && qualifier().type() == id.host().type()))
-                                return id.thisReference(nf, ts);
-                        else
-                                return id.getSupers().qualThis(nf, ts,
-                                                               id.host().type().toClass(),
-                                                               id.thisReference(nf, ts),
-                                                               qualifier().type().toClass());
+            IntertypeDecl id = visitor.intertypeDecl();
+            if (kind() == Special.THIS) {
+                if (qualifier() == null ||
+                    (qualifier() != null && qualifier().type() == id.host().type()))
+                        return id.thisReference(nf, ts);
+                else {
+                    /*    return id.getSupers().qualThis(nf, ts,
+                                                       id.host().type().toClass(),
+                                                       id.thisReference(nf, ts),
+                                                       qualifier().type().toClass()); */
+                    AspectType at = ((AJContext)visitor.context()).currentAspect();
+                    return at.getAccessorMethods().accessorQualSpecial(nf, ts, id.host().type().toClass(),
+                            id.thisReference(nf, ts), qualifier().type().toClass(), true);
                 }
-                return this;
+            }
+            return this;
         }
 }

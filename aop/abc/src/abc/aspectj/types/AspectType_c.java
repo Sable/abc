@@ -6,13 +6,18 @@ import polyglot.frontend.Source;
 import polyglot.types.LazyClassInitializer;
 import polyglot.types.TypeSystem;
 
+import abc.aspectj.visit.AccessorMethods;
+
 
 public class AspectType_c extends ParsedClassType_c implements AspectType {
 	
 	protected int perKind;
+	
+	protected AccessorMethods accessorMethods;
 
 	public AspectType_c() {
 		super();
+		this.accessorMethods = new AccessorMethods();
 	}
 
 	
@@ -22,6 +27,7 @@ public class AspectType_c extends ParsedClassType_c implements AspectType {
 		Source fromSource, int perKind) {	
 		super(ts, init, fromSource);
 		this.perKind = perKind;
+		this.accessorMethods = new AccessorMethods();
 	}
 
 	public int perKind() {
@@ -37,5 +43,9 @@ public class AspectType_c extends ParsedClassType_c implements AspectType {
 	public boolean perObject() {
 		int per = perKind();
 		return (per == PER_THIS || per == PER_TARGET);
+	}
+	
+	public AccessorMethods getAccessorMethods() {
+	    return accessorMethods;
 	}
 }

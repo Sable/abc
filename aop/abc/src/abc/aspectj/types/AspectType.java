@@ -2,6 +2,7 @@
 package abc.aspectj.types;
 
 import polyglot.types.ParsedClassType;
+import abc.aspectj.visit.AccessorMethods;
 
 public interface AspectType extends ParsedClassType {
 	public static int PER_NONE = 0;
@@ -15,5 +16,5 @@ public interface AspectType extends ParsedClassType {
 	
 	boolean perObject();
 	
-
+	public AccessorMethods getAccessorMethods();
 }

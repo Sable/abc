@@ -4,6 +4,7 @@ import abc.aspectj.visit.PCStructure;
 
 import polyglot.util.Position;
 import polyglot.types.SemanticException;
+import polyglot.types.ClassType;
 import polyglot.util.InternalCompilerError;
 
 import soot.*;
@@ -44,6 +45,8 @@ public class GlobalAspectInfo {
     private List/*<DeclareParents>*/ dps = new ArrayList();
     private List/*<DeclarePrecedence>*/ dprs = new ArrayList();
 
+    private List /*<ClassType>*/ ctmps = new ArrayList();
+    
     // Just stored in the ads list instead
     //    private List/*<DeclareSoft>*/ dss = new ArrayList();
 	
@@ -210,6 +213,10 @@ public class GlobalAspectInfo {
 	return (Aspect)aspects_map.get(cl);
     }
 
+    public List getClassesToMakePublic() {
+        return ctmps;
+    }
+    
     public void addWeavableClass(AbcClass cl) {
 	classes.add(cl);
     }
@@ -278,6 +285,10 @@ public class GlobalAspectInfo {
 	ads.add(ds);
     }
 
+	public void addClassToMakePublic(ClassType c) {
+	    ctmps.add(c);
+	}
+	
     public void print(java.io.PrintStream p) {
 	p.println();
 	printList(p, classes, "Classes:");

@@ -68,4 +68,7 @@ public interface AJContext extends Context {
 	/** are we in a declare decl? */
 	boolean inDeclare(); 
 	
+	/** Get enclosing aspect, or null */
+	public AspectType currentAspect();
+	
 }

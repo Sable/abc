@@ -11,11 +11,13 @@ import polyglot.frontend.Source;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import polyglot.types.*;
+import polyglot.ext.jl.types.ParsedClassType_c;
 
 import polyglot.ast.Typed;
 
 import abc.aspectj.ast.AdviceSpec;
 import abc.aspectj.types.AJFlags;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import soot.javaToJimple.jj.types.JjTypeSystem_c;
 
@@ -122,7 +124,72 @@ public class AJTypeSystem_c
 		return new InterTypeConstructorInstance_c(this,pos,id,origin,container,flags,argTypes,excTypes);														
 	}
 	
-    public boolean isAccessible(MemberInstance mi, ClassType ctc) {
+    /* (non-Javadoc)
+     * @see polyglot.ext.jl.types.TypeSystem_c#classAccessible(polyglot.types.ClassType, polyglot.types.ClassType)
+     */
+    protected boolean classAccessible(ClassType targetClass,
+            ClassType contextClass) {
+	    ClassType ct = contextClass;
+	    boolean normallyVisible;
+	    if(targetClass.isMember()) {
+	        // as the default implementation in the super class will delegate to isAccessible(), 
+	        // which will return true in a privileged aspect...
+	        normallyVisible = isAccessibleIgnorePrivileged(targetClass, contextClass);
+	    }
+	    else {
+	        normallyVisible = super.classAccessible(targetClass, contextClass);
+	    }
+        // Any nested classes or aspects inside a privileged aspect are privileged.
+        // Checked from current ajc behaviour. PA
+        while(ct != null) {
+	        if (AJFlags.isPrivilegedaspect(ct.flags())){
+	            // As it's a privileged aspect, it can see everything.
+	            if(!normallyVisible) {
+	                // FIXME TODO XXX - temporary workaround (although matching ajc behaviour)
+	                // for what should really be done with accessor classes.
+//	                ((ParsedClassType_c)targetClass).flags(targetClass.flags().Public().clearProtected());
+	                GlobalAspectInfo.v().addClassToMakePublic(targetClass);
+	            }
+	            return true;
+	        }
+	        ct = ct.outer();
+        }
+        return normallyVisible;
+    }
+    
+    /* (non-Javadoc)
+     * @see polyglot.types.TypeSystem#classAccessible(polyglot.types.ClassType, polyglot.types.Context)
+     */
+    public boolean classAccessible(ClassType targetClass, Context context) {
+        if(context.currentClass() == null) return super.classAccessible(targetClass, context);
+        return classAccessible(targetClass, context.currentClass());
+    }
+
+    public boolean isAccessible(MemberInstance mi, Context context) {
+        return isAccessible(mi, ((AJContext)context).currentClass());
+    }
+    
+	public boolean isAccessibleIgnorePrivileged(MemberInstance mi, Context context) {
+	    return isAccessibleIgnorePrivileged(mi, context.currentClass());
+	}
+	
+	public boolean isAccessible(MemberInstance mi, ClassType ctc) {
+	    ClassType ct = ctc;
+        // Any nested classes or aspects inside a privileged aspect are privileged.
+        // Checked from current ajc behaviour. PA
+        while(ct != null) {
+	        if (AJFlags.isPrivilegedaspect(ct.flags())){
+	            // As it's a privileged aspect, it can see everything.
+	            return true;
+	        }
+	        ct = ct.outer();
+        }
+        return isAccessibleIgnorePrivileged(mi, ctc);
+	}
+	
+    // Original isAccessible method - the separation is needed to see which members are only visible because an aspect
+    // is privileged. We can check (isAccessible(...) && !isAccessibleIgnorePrivileged(...)).
+    public boolean isAccessibleIgnorePrivileged(MemberInstance mi, ClassType ctc) {
         if (mi instanceof InterTypeMemberInstance) {
         	
         	// the following code has been copied from TypeSystem_c.isAccessible
