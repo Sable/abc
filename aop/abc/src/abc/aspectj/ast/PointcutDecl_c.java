@@ -113,9 +113,9 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 		}
 
 	/** Type check the pointcut decl. */
-	   public Node typeCheck(TypeChecker tc) throws SemanticException {
+   public Node typeCheck(TypeChecker tc) throws SemanticException {
 	   TypeSystem ts = tc.typeSystem();
-
+	   
       /* check the flags */
 	  if (tc.context().currentClass().flags().isInterface()) {
 			   if (flags().isProtected() || flags().isPrivate()) {
@@ -128,14 +128,14 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 		   throw new SemanticException("Missing pointcut body.", position());
 	   }
 
-	   if (body != null && flags().isAbstract()) {
+	   if (pc != null && flags().isAbstract()) {
 		   throw new SemanticException(
 		   "An abstract pointcut cannot have a body.", position());
 	   }
 		   overrideMethodCheck(tc);
 
 	   return this;
-	   }
+	}
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.begin(0);

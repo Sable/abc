@@ -725,6 +725,11 @@ SingleCharacter = [^\r\n\'\\]
   "&&"                           { return op(sym.PC_ANDAND); }
   "||"                           { return op(sym.PC_OROR); }
   "+"                            { return op(sym.PC_PLUS); }
+  
+/* Note that if both IdentifierPattern and * match, then * will be
+   chosen first, since it is an earlier rule.
+*/
+  
   "*"                            { return op(sym.PC_MULT); }
 
 

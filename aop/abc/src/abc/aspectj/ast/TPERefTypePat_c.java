@@ -22,6 +22,23 @@ public class TPERefTypePat_c extends TypePatternExpr_c
     public Precedence precedence() {
 	return Precedence.UNARY;
     }
+    
+	/** Reconstruct the pattern. */
+	protected TPERefTypePat_c reconstruct(RefTypePattern pat) {
+		if (pat != this.pat) {
+			 TPERefTypePat_c n = (TPERefTypePat_c) copy();
+			 n.pat = pat;
+			 return n;
+		}
+
+		return this;
+	}
+
+	/** Visit the children of the pattern. */
+	public Node visitChildren(NodeVisitor v) {
+		RefTypePattern pat = (RefTypePattern)visitChild(this.pat, v);
+		return reconstruct(pat);
+	}
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	print(pat, w, tr);

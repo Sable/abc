@@ -297,8 +297,8 @@ public class AspectJNodeFactory_c
 	return new PCIf_c(pos,expr);
     }
 
-    public PCName PCName(Position pos, Name name, List args) {
-	return new PCName_c(pos,name,args);
+    public PCName PCName(Position pos, Receiver target, String name, List args) {
+	return new PCName_c(pos,target,name,args);
     }
 
     public SimpleNamePattern SimpleNamePattern(Position pos, String pat) {
@@ -444,6 +444,9 @@ public class AspectJNodeFactory_c
 		return new ProceedCall_c(pos,arguments);
 	}
 	
+	public AmbTypeOrLocal AmbTypeOrLocal(Position pos,TypeNode type) {
+		return new AmbTypeOrLocal_c(pos,type);
+	}
     // TODO:  Implement factory methods for new AST ndes.
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.

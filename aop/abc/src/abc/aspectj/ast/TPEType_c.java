@@ -19,9 +19,25 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
     }
 
     public Precedence precedence() {
-	return Precedence.UNARY;
+		return Precedence.UNARY;
     }
 
+	/** Reconstruct the type pattern */
+	protected TPEType_c reconstruct(TypeNode type) {
+		if (this.type != type) {
+			 TPEType_c n = (TPEType_c) copy();
+			 n.type = type;
+			 return n;
+		}
+		return this;
+	}
+
+	/** Visit the children of the type pattern. */
+	public Node visitChildren(NodeVisitor v) {
+		TypeNode type = (TypeNode) visitChild(this.type, v);
+		return reconstruct(type);
+	}
+    
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         print(type, w, tr);
     }

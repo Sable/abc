@@ -145,6 +145,11 @@ non terminal List formal_pattern_list_opt;
 non terminal List formal_pattern_list;
 non terminal FormalPattern formal_pattern;
 
+non terminal List type_id_star_list_opt;
+non terminal List type_id_star_list;
+non terminal AmbTypeOrLocal type_id_star;
+
+
 start with goal;
 
 /* ---------------------------------------------------------------- */
@@ -715,10 +720,10 @@ basic_pointcut_expr ::=
           RESULT = parser.nf.PCArgs(parser.pos(x,y),a);
        :}   
    // for named pointcuts, ajc allows only * or fully-defined type/id
-   | name:n LPAREN formal_pattern_list_opt:a RPAREN:y
-       {: Grm.parserTrace("pointcut application of " + n);
-          RESULT = parser.nf.PCName(parser.pos(n,y),n,a);
-       :}
+    |  name:a LPAREN type_id_star_list_opt:b RPAREN:y
+            {: RESULT = parser.nf.PCName(parser.pos(a,y),
+                a.prefix == null ? null : a.prefix.toReceiver(),
+                a.name, b); :}
   ;
 
 
@@ -1268,3 +1273,42 @@ formal_pattern ::=
             RESULT = parser.nf.TypeFormalPattern(parser.pos(a),a);
          :}
     ;
+    
+/* -------------------- POINTCUT PARAMETER LIST PATTERNS --------------*/
+
+type_id_star_list_opt ::=
+      // epsilon                   
+       {: Grm.parserTrace("Empty pointcut parameter list"); 
+          RESULT = new LinkedList();
+       :}
+      | type_id_star_list:a
+       {: Grm.parserTrace("Non-empty pointcut parameter list");
+	  RESULT = a; 
+       :}
+    ;
+type_id_star_list ::=
+     type_id_star:a
+        {: Grm.parserTrace("First pointcut parameter in the list.");
+           RESULT = new LinkedList();
+	       RESULT.add(a); 
+        :}
+    |  type_id_star_list:a COMMA type_id_star:b
+        {: Grm.parserTrace("Another pointcut parameter");
+	   a.add(b);
+           RESULT = a;
+        :}
+    ;
+
+// there should be three alternatives here: star, type, and identifier
+// disambiguation between type and identifier happens in the type-checker
+type_id_star ::=
+       PC_MULT:a 
+         {: Grm.parserTrace("Star pointcut parameter");
+            RESULT = parser.nf.AmbTypeOrLocal(parser.pos(a),null);
+         :}
+    |  type:a 
+         {: Grm.parserTrace("A type pointcut parameter");
+            RESULT =parser.nf.AmbTypeOrLocal(parser.pos(a),a);
+         :}
+    ;
+

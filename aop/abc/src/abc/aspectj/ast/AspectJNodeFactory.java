@@ -10,7 +10,7 @@ import polyglot.types.SemanticException;
 import polyglot.util.*;
 import java.util.*;
 
-import arc.aspectj.lex.*;
+// import arc.aspectj.lex.*;
 
 /**
  * NodeFactory for aspectj extension.
@@ -183,7 +183,7 @@ public interface AspectJNodeFactory
 
     PCIf PCIf(Position pos, Expr expr);
 
-    PCName PCName(Position pos, Name name, List args);
+    PCName PCName(Position pos, Receiver target, String name, List args);
 
     SimpleNamePattern SimpleNamePattern(Position pos, String pat);
 
@@ -265,8 +265,9 @@ public interface AspectJNodeFactory
     CharLit CharLit(Position pos, char value);
     
     ProceedCall ProceedCall(Position pos,List arguments);
+    
+    AmbTypeOrLocal AmbTypeOrLocal(Position pos,TypeNode type);
 
-  
 }
 
 

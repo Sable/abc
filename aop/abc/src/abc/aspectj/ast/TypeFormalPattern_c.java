@@ -20,6 +20,22 @@ public class TypeFormalPattern_c extends Node_c
         super(pos);
         this.expr = expr;
     }
+    
+	/** Reconstruct the type pattern. */
+    protected TypeFormalPattern_c reconstruct(TypePatternExpr expr) {
+		if (expr != this.expr) {
+			 TypeFormalPattern_c n = (TypeFormalPattern_c) copy();
+			 n.expr = expr;
+			 return n;
+		}
+		return this;
+	}
+
+	/** Visit the children of the type pattern. */
+	public Node visitChildren(NodeVisitor v) {
+		 TypePatternExpr expr = (TypePatternExpr) visitChild(this.expr, v);
+		 return reconstruct(expr);
+	}
 
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
 	print(expr,w,pp);
