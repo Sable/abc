@@ -214,8 +214,8 @@ public class AdviceDecl_c extends MethodDecl_c
     }
     
     public void joinpointFormals(Local n) {
-    	hasJoinPoint = hasJoinPoint || (n.name() =="thisJoinPoint");
-    	hasJoinPointStaticPart = hasJoinPointStaticPart || (n.name() =="thisJoinPointStaticPart");
+    	hasJoinPoint = hasJoinPoint || (n.name().equals("thisJoinPoint"));
+    	hasJoinPointStaticPart = hasJoinPointStaticPart || (n.name().equals("thisJoinPointStaticPart"));
     }
     
     public MethodDecl methodDecl(AspectJNodeFactory nf,
@@ -224,11 +224,15 @@ public class AdviceDecl_c extends MethodDecl_c
     	if (hasJoinPointStaticPart()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
     		Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
+		LocalInstance li = ts.localInstance(position(),Flags.FINAL,tn.type(),"thisJoinPointStaticPart");
+		jpsp = jpsp.localInstance(li);
     		newformals.add(jpsp);
     	}
     	if (hasJoinPoint()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
     		Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
+		LocalInstance li = ts.localInstance(position(),Flags.FINAL,tn.type(),"thisJoinPoint");
+		jp = jp.localInstance(li);
     		newformals.add(jp);
     	}
     	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc);
