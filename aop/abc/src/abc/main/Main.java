@@ -111,7 +111,7 @@ public class Main {
 
   public void parseArgs(String[] args) throws IllegalArgumentException {
     String outputdir=".";
-    boolean optflag=false;
+    boolean optflag=true;
     if (args.length == 0)
       { abcPrintVersion();
         System.exit(0);
@@ -277,8 +277,11 @@ public class Main {
             System.exit(0);
           }
 
-         else if (args[i].equals("-O"))  // -O flag in abc options
-           optflag=true;
+         // optimization settings
+         else if (args[i].equals("-O") || (args[i].equals("-O1")))  
+           optflag=true;                 //   this is the default
+         else if (args[i].equals("-O0")) // -O0 turns opt off
+           optflag=false;
 
          // -debug and -nodebug flags in abc options
          else if (args[i].equals("-debug") || args[i].equals("-nodebug"))  

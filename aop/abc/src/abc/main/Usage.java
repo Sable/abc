@@ -11,18 +11,21 @@ public class Usage {
 
   public static String headerInfo() {
   return(
-    "Usage:  java <java_options> abc.main.Main <abc_options> <filenames> \n\n" +
-    "   where a useful <java_option> is -Xmx512M, to provide a large heap.\n" +
-    "   <filenames> should end in .java or .aj\n" +
-    "   <abc_options> are as follows: \n" +
-    "      [ajc] indicates an option also available for ajc \n" +
-    "      [abc] indicates an option specific to abc" 
+    "Usage:  java <java_options> abc.main.Main <abc_options> <filenames> \n" +
+    "   -or- abc <abc_options> <filenames>\n\n" +
+    "   where a useful <java_option> is -Xmx512M, to provide a large heap\n" +
+    "     and <filenames> should end in .java or .aj .\n\n" +
+    "   <abc_options> are listed below, where \n" +
+    "      [ajc] indicates an option also available for ajc, and \n" +
+    "      [abc] indicates an option specific to abc.\n" 
     );
   }
   
   public static String generalOptions() {
   return(
-    "\nGeneral Options [ajc]: \n" +
+    "\n"+
+    "General Options [ajc]: \n" +
+    "---------------------- \n" +
     "  -h -help --help        Print options.  \n" +
     "  -v -version --version  Print abc, Soot and Polyglot versions."
     );
@@ -30,7 +33,9 @@ public class Usage {
 
   public static String inputOptions() {
   return(
-    "\nInput Options [ajc]: \n" +
+    "\n" +
+    "Input Options [ajc]: \n" +
+    "-------------------- \n" +
     "  -injars  <jarList>     Use classes in <jarList> as source.\n" +
     "  -classpath -cp         Class path of zip/jar and directories."
     );
@@ -38,32 +43,40 @@ public class Usage {
 
   public static String outputOptions() {
   return(
-    "\nOutput Options [ajc]: \n" +
+    "\n" + 
+    "Output Options [ajc]: \n" +
+    "--------------------- \n" +
     "  -d <dir>               Destination directory for generated files."
     );
   }
 
   public static String errorOptions() {
   return(
-    "\nWarning/Error Reporting Options [ajc]: \n" +
+    "\n" + 
+    "Warning/Error Reporting Options [ajc]: \n" +
+    "-------------------------------------- \n" +
     "  -Xlint -Xlint:warning  Report Xlint (weaving-related) warnings/errors.\n" +
     "  -Xlint:error           Report Xlint errors only, not warnings.\n" +
     "  -Xlint:ignore          Don't report Xlint warnings or errors . \n" +
-    "  -nowarn -warn:none     Don't report normal (non-weaving-related) warnings"
+    "  -nowarn -warn:none     Don't report normal (non-weaving-related) warnings."
     // "-help:warn [abc]"
    );
   }
     
   public static String utilityOptions() {
   return(
-    "\nUtility Options [ajc]:  \n" +
+    "\n" + 
+    "Utility Options [ajc]:  \n" +
+    "----------------------  \n" +
     "  -time                  Report total times and times for each phase."
     );
   }
 
   public static String debugOptions() {
   return(
-    "\nDebug Options [abc]: \n" +
+    "\n" +
+    "Debug Options [abc]: \n" +
+    "-------------------- \n" +
     "  -debug <FlagName>      Set abc.main.Debug.v().FlagName to true.\n" +
     "  -nodebug <FlagName>    Set abc.main.Debug.v().FlagName to false."
     // "-help:debug       [abc]"
@@ -72,14 +85,20 @@ public class Usage {
 
   public static String optimizationOptions() {
   return(
-    "\nOptimization Options [abc]: \n" +
-    "  -O                     Enable basic Soot optimizations."
+    "\n" +
+    "Optimization Options [abc]: \n" +
+    "--------------------------- \n" +
+    "  -O0                    Disable all optimizations.\n" +
+    "  -O, -O1                Enable basic optimizations on generated code.\n" +
+    "                         (this is the default setting)"
     );
   }
 
   public static String sootPolyglotOptions() {
   return(
-    "\nPolyglot (front-end) and Soot (back-end) Options [abc]: \n" +
+    "\n" +
+    "Polyglot (front-end) and Soot (back-end) Options [abc]: \n" +
+    "------------------------------------------------------- \n" +
     "  +polyglot <polyglot_options> -polyglot   Set polyglot options. \n" + 
     "  -help:polyglot                           List polyglot options. \n" +
     "  +soot <soot_options> -soot               Set soot options.\n" +
