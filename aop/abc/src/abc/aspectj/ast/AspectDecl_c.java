@@ -144,6 +144,7 @@ public class AspectDecl_c extends ClassDecl_c
         
 		AspectType ct = (AspectType) ajtb.currentClass();
 
+			
 	   // Member classes of interfaces are implicitly public and static.
 	   if (ct.isMember() && ct.outer().flags().isInterface()) {
 		   ct.flags(ct.flags().Public().Static());

@@ -55,7 +55,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	public static final polyglot.frontend.Pass.ID JAR_CHECK = new polyglot.frontend.Pass.ID("jar-check");
 	
     public static final polyglot.frontend.Pass.ID MANGLE_NAMES = new polyglot.frontend.Pass.ID("mangle-names");
-
+	public static final polyglot.frontend.Pass.ID NAMES_MANGLED = new polyglot.frontend.Pass.ID("names-mangled");
 	
     public static final polyglot.frontend.Pass.ID CLEAN_DECLARE = new polyglot.frontend.Pass.ID("clean-declare");
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
@@ -191,6 +191,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	
 	l.add(new VisitorPass(MANGLE_NAMES, job, new MangleNames(ts)));
+	l.add(new GlobalBarrierPass(NAMES_MANGLED, job));
 
 	// add new methods for proceed and if-pointcuts, and turn advice into methods
 	l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
