@@ -115,7 +115,7 @@ public class AccessorMethods {
         }
         else {
             accessorName = UniqueID.newID("get$" + tag() + "$" + f.name());
-            dispatchers.add(createGetterObject(accessorName, fi, target, f.position()));
+            getters.add(createGetterObject(accessorName, fi, target, f.position()));
         }
         
         // Now create the call that should replace the field reference in the AST
@@ -153,7 +153,7 @@ public class AccessorMethods {
         }
         else {
             accessorName = UniqueID.newID("set$" + tag() + "$" + f.name());
-            dispatchers.add(createSetterObject(accessorName, fi, target, f.position()));
+            setters.add(createSetterObject(accessorName, fi, target, f.position()));
         }
         
         // Now create the call that should replace the field reference in the AST
