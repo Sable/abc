@@ -5337,11 +5337,25 @@
         <compile files="ConstructorExecInit.java"/>
         <run class="ConstructorExecInit"/>
     </ajc-test>
+
+    <ajc-test num="61401" dir="abctests/new"
+      title="after returning from initialization and after executing constructor"
+      keywords="from-resolved_104">
+        <compile files="ConstructorExecInit.java"/>
+        <run class="ConstructorExecInit"/>
+    </ajc-test>
+
     
     <ajc-test num="615" dir="new"
       abccomment="we don't support target as a variable name in pointcuts"
       title="after returning from initialization causes ExceptionInInitializer in aspect">
         <abckeywords><skip/></abckeywords>
+        <compile files="ConstructorExecInitFails.java"/>
+        <run class="ConstructorExecInitFails"/>
+    </ajc-test>
+
+    <ajc-test num="61501" dir="abctests/new"
+      title="after returning from initialization causes ExceptionInInitializer in aspect">
         <compile files="ConstructorExecInitFails.java"/>
         <run class="ConstructorExecInitFails"/>
     </ajc-test>
@@ -5629,6 +5643,13 @@
       keywords="from-resolved_105">
         <abckeywords><skip/></abckeywords>
         <compile files="TypePat.java"/>
+        <run class="test.TypePat"/>
+    </ajc-test>
+
+    <ajc-test num="64301" dir="abctests/new"
+      title="type pattern matching for inner classes (from Ken Horn)"
+      keywords="from-resolved_105">
+        <compile files="test/TypePat.java"/>
         <run class="test.TypePat"/>
     </ajc-test>
 
@@ -6754,10 +6775,8 @@
     </ajc-test>
 
     <ajc-test num="775" dir="new/declareParents"
-      abccomment="javac doesn't allow statically incompatible types for instanceofs"
       title="Declare parents with intermediate ancestor"
       keywords="from-new">
-        <abckeywords><skip/></abckeywords>
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
