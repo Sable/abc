@@ -46,7 +46,7 @@ public class PointcutInstance_c extends MethodInstance_c {
 
     String localName;
     
-    Set refersTo; /* PointcutInstance_c */
+    Set refersTo; /* PCRef  */
     Set transRefs;
     boolean transComputed;
     boolean transAbstract;
@@ -54,6 +54,16 @@ public class PointcutInstance_c extends MethodInstance_c {
     boolean transDynamicComputed;
     boolean transDynamic;
 
+    public static class PCRef {
+    	boolean qualified;
+    	PointcutInstance_c ref;
+    	
+    	public PCRef(boolean qualified, PointcutInstance_c ref) {
+    		this.qualified = qualified;
+    		this.ref = ref;
+    	}
+    }
+    
 	public PointcutInstance_c(TypeSystem ts, Position pos,
 												ReferenceType container,
 												Flags flags, Type returnType, String name,
@@ -95,31 +105,79 @@ public class PointcutInstance_c extends MethodInstance_c {
 				System.out.println(this);
 			transRefs = new HashSet(refersTo);
 			for (Iterator refs = refersTo.iterator(); refs.hasNext(); ) {
-				PointcutInstance_c ref = (PointcutInstance_c) refs.next();
-				transRefs.addAll(ref.transRefs());
+				PCRef ref = (PCRef) refs.next();
+				transRefs.addAll(ref.ref.transRefs());
 			}
 			return transRefs;
 		} else return transRefs;
+	}
+	
+	public boolean cyclic() {
+		boolean result = false;
+		for (Iterator refs = transRefs().iterator(); !result && refs.hasNext(); ) {
+			PCRef ref = (PCRef) refs.next();
+			result |= (this == ref.ref);
+		}
+		return result;
+	}
+	
+	public boolean checkAbstract(AJContext c) {
+		if (cyclic()) return false;
+		boolean result = flags().isAbstract();
+		for (Iterator refs = transRefs().iterator(); !result && refs.hasNext(); ) {
+			PCRef ref = (PCRef) refs.next();
+			AJTypeSystem ajts = (AJTypeSystem) c.typeSystem();
+			if (!ref.qualified) {
+				// this might be an override, so check in the context
+				try {
+				PointcutInstance_c refhere = ajts.findPointCutNamed(c.findPointcutScope(ref.ref.localName),ref.ref.localName);
+	            result |= refhere.checkAbstract(c);
+				} catch (SemanticException e) {
+					result |= ref.ref.flags().isAbstract();
+				}
+			} else result |= ref.ref.flags().isAbstract();			
+		}
+		return result;
 	}
 	
 	public boolean transAbstract() {
 		if (!transComputed) {
 			transAbstract = flags().isAbstract();
 			for (Iterator refs = transRefs().iterator(); refs.hasNext(); ) {
-				PointcutInstance_c ref = (PointcutInstance_c) refs.next();
-				transAbstract |= ref.flags().isAbstract();
+				PCRef ref = (PCRef) refs.next();
+				transAbstract |= ref.ref.flags().isAbstract();
 			}
 			transComputed = true;
 			return transAbstract;
 		} else return transAbstract;
-	}
+	} 
 	
+	public boolean checkDynamic(AJContext c) {
+		if (cyclic()) return false;
+		boolean result = isDynamic();
+		for (Iterator refs = transRefs().iterator(); !result && refs.hasNext(); ) {
+			PCRef ref = (PCRef) refs.next();
+			AJTypeSystem ajts = (AJTypeSystem) c.typeSystem();
+			if (!ref.qualified) {
+				// this might be an override, so check in the context
+				try {
+				PointcutInstance_c refhere = ajts.findPointCutNamed(c.findPointcutScope(ref.ref.localName),ref.ref.localName);
+				result |= refhere.checkDynamic(c);
+				} catch (SemanticException e) {
+					result |= ref.ref.isDynamic();
+				}
+			} else result |= ref.ref.isDynamic();			
+		}
+		return result;
+    }
+    
 	public boolean transDynamic() {
+		
 		if (!transDynamicComputed) {
 			transDynamic = isDynamic();
 			for (Iterator refs = transRefs().iterator(); refs.hasNext(); ) {
-				PointcutInstance_c ref = (PointcutInstance_c) refs.next();
-				transDynamic |= ref.isDynamic();
+				PCRef ref = (PCRef) refs.next();
+				transDynamic |= ref.ref.isDynamic();
 			}
 			transDynamicComputed = true;
 			return transDynamic;

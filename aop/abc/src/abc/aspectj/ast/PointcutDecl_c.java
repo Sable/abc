@@ -90,7 +90,7 @@ public class PointcutDecl_c extends MethodDecl_c
     {  super(pos,
 			  flags, 
 			  voidn,
-			  "$pointcut$"+name,
+			  name, 
 			  formals,
 			  new TypedList(new LinkedList(),TypeNode.class,true),
 			  null);
@@ -223,7 +223,7 @@ public class PointcutDecl_c extends MethodDecl_c
 	
 	public Node checkDepends(DependsChecker dc ) throws SemanticException {
 		PointcutInstance_c pci = (PointcutInstance_c) methodInstance();
-		if (pci.transRefs().contains(pci))
+		if (pci.cyclic())
 			throw new SemanticException("Pointcuts cannot be recursive.",position());
 		return this;
 	}

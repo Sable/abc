@@ -88,5 +88,7 @@ public interface AJTypeSystem extends JjTypeSystem {
 	// isAccessibleIgnorePrivileged otherwise.
 	public boolean isAccessibleIgnorePrivileged(MemberInstance mi, Context ctc);	
 	
-	public void checkPointcutFlags(Flags f) throws SemanticException;			              
+	public void checkPointcutFlags(Flags f) throws SemanticException;	
+	
+	public PointcutInstance_c findPointCutNamed(ClassType ct, String name) throws SemanticException; 		              
 }

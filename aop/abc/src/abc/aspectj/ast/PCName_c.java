@@ -28,7 +28,6 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-import polyglot.ext.jl.types.Context_c;
 
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.PointcutInstance_c;
@@ -69,7 +68,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
     
 	public Set pcRefs() {
 		Set a = new HashSet();
-		a.add(mi);
+		a.add(new PointcutInstance_c.PCRef(target!=null,(PointcutInstance_c)mi));
 		return a;
 	}
 	
@@ -167,44 +166,14 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 	   return this.pointcutInstance(mi);
 	 }
 	 
-    // FIXME: shouldn't this be Context, not Context_c ?
-	public ClassType findPointcutScope(Context_c c, String name) throws SemanticException {	
-		   ClassType container = c.findMethodContainerInThisScope("$pointcut$"+name);
-
-		   if (container != null) {
-			   return container;
-		   }
-
-          Context_c outer = (Context_c) c.pop();
-		   if (outer != null) {
-			   return findPointcutScope(outer,name);
-		   }
-
-		   throw new SemanticException("Pointcut " + name + " not found ss.", position());
-	   }
-
+  
    
-   private Set methodsNamed(ClassType ct, String name) {
-		Set result = new HashSet();
-		List toCheck = new LinkedList();
-		toCheck.add(ct);
-		while (! toCheck.isEmpty()) {
-			ClassType nct = (ClassType) toCheck.remove(0);
-			List rs = nct.methodsNamed(name);
-			if (rs.size() == 0) {
-				if (nct.superType() != null)
-				   toCheck.add(nct.superType().toClass());
-				toCheck.addAll(nct.interfaces());
-			}
-			result.addAll(rs);
-		}
-		return result;
-   }
+   
    
 	/** type check the pointcut reference */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
-	   TypeSystem ts = tc.typeSystem();
-	   Context c = tc.context();
+	   AJTypeSystem ts = (AJTypeSystem) tc.typeSystem();
+	   AJContext c = (AJContext) tc.context();
 
 	   ReferenceType targetType = null;
 
@@ -239,16 +208,11 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 	   MethodInstance mi;
 	   ClassType ct;
 	   if (target==null)
-       		ct = findPointcutScope((Context_c)c,name);
+       		ct = c.findPointcutScope(name);
        else 
        		ct = target.type().toClass(); // will return non-null because of above checks
-       Set ms = methodsNamed(ct,"$pointcut$"+name);
-       if (ms.size() == 0)
-       		throw new SemanticException("Pointcut "+name+" not found.", position());
-       if (ms.size() > 1)
-       		throw new SemanticException("Ambiguous pointcut reference.",position());
        		
-       mi = (MethodInstance) ms.iterator().next(); // PointcutInstance_c
+       mi = ts.findPointCutNamed(ct,name);
       
        // get the formal types
        List formalTypes = mi.formalTypes();
@@ -277,12 +241,12 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 	public Node checkDepends(DependsChecker dc) throws SemanticException {
 		AJContext c = (AJContext) dc.context();
 		PointcutInstance_c pci = (PointcutInstance_c) pointcutInstance();
-		if (pci.transAbstract() && 
+		if (pci.checkAbstract(c) && 
 		    !(c.currentClass().flags().isAbstract()) &&
 		    (c.currentClass() instanceof AspectType))
 				   throw new SemanticException("Cannot refer to an abstract pointcut inside a concrete aspect.",
 												position());
-	    if (pci.transDynamic() && c.inDeclare())
+	    if (pci.checkDynamic(c) && c.inDeclare())
 	    	throw new SemanticException("Pointcut \"" + name()+"\" requires a dynamic test and cannot be used inside a \"declare\" statement.",position());
       	return this;
 	}

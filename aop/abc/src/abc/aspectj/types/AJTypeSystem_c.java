@@ -129,7 +129,7 @@ public class AJTypeSystem_c
 			   assert_(excTypes);
 		   return new PointcutInstance_c(this, pos, container, flags,
 						   returnType, name, argTypes, excTypes);
-		}	
+	}	
 	
 	public FieldInstance interTypeFieldInstance(
 		                                 	Position pos, String id, ClassType origin,
@@ -680,4 +680,32 @@ public class AJTypeSystem_c
 		}
 		return result;
 	}
+	
+	public PointcutInstance_c findPointCutNamed(ClassType ct, String name) 
+											throws SemanticException {
+	   java.util.Set ms = methodsNamed(ct,"$pointcut$"+name);
+	   if (ms.size() == 0)
+			throw new SemanticException("Pointcut "+name+" not found.");
+	   if (ms.size() > 1)
+			throw new SemanticException("Ambiguous pointcut reference.");
+	   return (PointcutInstance_c) ms.iterator().next(); 
+	}
+
+	private java.util.Set methodsNamed(ClassType ct, String name) {
+		java.util.Set result = new java.util.HashSet();
+		List toCheck = new LinkedList();
+		toCheck.add(ct);
+		while (! toCheck.isEmpty()) {
+			ClassType nct = (ClassType) toCheck.remove(0);
+			List rs = nct.methodsNamed(name);
+			if (rs.size() == 0) {
+				if (nct.superType() != null)
+				   toCheck.add(nct.superType().toClass());
+				toCheck.addAll(nct.interfaces());
+			}
+			result.addAll(rs);
+		}
+		return result;
+	}
+
 }

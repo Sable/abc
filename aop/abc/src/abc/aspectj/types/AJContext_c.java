@@ -420,7 +420,26 @@ public class AJContext_c extends Context_c implements AJContext {
         public AspectType currentAspect() {
                 return currentAspect;
         }
+        
+        
+        /** pointcut lookup */
+	  	public ClassType findPointcutScope(String name) throws SemanticException {	
+             // System.out.println("finding "+name+" in "+ type);
+			 ClassType container = findMethodContainerInThisScope("$pointcut$"+name);
 
+			 if (container != null) {
+				 return container;
+			 }
+
+			 AJContext_c outer = (AJContext_c) pop();
+			 if (outer != null) {
+				 return outer.findPointcutScope(name);
+			 }
+
+			 throw new SemanticException("Pointcut " + name + " not found.");
+		 }
+
+		
         private static final Collection TOPICS =
                                         CollectionUtil.list(Report.types, Report.context);
 

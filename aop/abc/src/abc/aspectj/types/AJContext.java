@@ -93,6 +93,9 @@ public interface AJContext extends Context {
 
 /* other pointcut stuff */
 
+    /** find the class that introduced a pointcut by the given name */
+    ClassType findPointcutScope(String name) throws SemanticException;
+    
 	/** mark entry of cflow pointcut expr */
 	AJContext pushCflow(Collection mustBind);
 	
