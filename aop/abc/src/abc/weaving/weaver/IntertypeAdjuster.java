@@ -234,10 +234,30 @@ public class IntertypeAdjuster {
 			MethodCategory.registerFieldSet(sf,sm);
 		}
     
+    private void addSuperDispatch(SuperDispatch sd) {
+    	SootClass sc = sd.getTarget().getSootClass();
+		if( sc.isInterface() ) {
+		  addSuperDispatch(sc,sd,true);
+		  Set implementors = hierarchy.getAllImplementersOfInterface(sc);
+		  for( Iterator childClassIt = implementors.iterator(); childClassIt.hasNext(); ) {
+			  final SootClass childClass = (SootClass) childClassIt.next();
+			  if( childClass.isInterface() ) continue;
+			  if( childClass.hasSuperclass() 
+			  && implementors.contains(childClass.getSuperclass()) )
+				  continue;
 
-	private void addSuperDispatch( SuperDispatch sd ) {
+			  addSuperDispatch(childClass,sd,false);
+		  
+		  }
+	  } else addSuperDispatch(sc,sd,false);
+    }
+
+	private void addSuperDispatch(SootClass sc, SuperDispatch sd, boolean abstrct ) {
+		//System.out.println("in super dispatch");
 	// the method that we wish to call, in the superclass of sd.target()
 		MethodSig method = sd.getMethodSig(); 
+		//System.out.println("method="+method + " in "+method.getDeclaringClass());
+		//System.out.println("target="+sd.getTarget());
 		
 	// create a new method for the dispatch
 		Type retType = method.getReturnType().getSootType();
@@ -251,6 +271,9 @@ public class IntertypeAdjuster {
 		modifiers |= Modifier.PUBLIC;
 		modifiers &= ~Modifier.PRIVATE;
 		modifiers &= ~Modifier.PROTECTED;
+		modifiers &= ~Modifier.NATIVE;
+		if (abstrct)
+			modifiers |= Modifier.ABSTRACT;
             
 		// Create the method
 		SootMethod sm = new SootMethod( 
@@ -264,6 +287,15 @@ public class IntertypeAdjuster {
 				sm.addException( exception );
 		}
 		
+			
+		//	Add method to the target class
+		sc.addMethod(sm);
+		//		This is an intertype special call delegator
+		MethodCategory.register(sm, MethodCategory.INTERTYPE_SPECIAL_CALL_DELEGATOR);
+		// System.out.println("new sootmethod "+sm + " with mods "+ Modifier.toString(sm.getModifiers()));
+		if (abstrct)
+			return;
+
 		/* generate call to implementation: specialinvoke this.<Superclass: method> ( arg1, arg2, ..., argn) */	
 			//create a body
 				Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
@@ -282,7 +314,6 @@ public class IntertypeAdjuster {
 					index++;
 				}
 			//	the target of the invoke is "this : TargetType"
-				SootClass sc = sd.getTarget().getSootClass();
 				RefType rt = sc.getType(); 
 				ThisRef thisref = Jimple.v().newThisRef(rt); 
 				Local v = Jimple.v().newLocal("this$loc",rt); ; ls.add(v);
@@ -301,12 +332,7 @@ public class IntertypeAdjuster {
 					AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, ie); ss.add(rStmt);
 					ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
 					ss.add(stmt);
-				}
-			// Add method to the target class
-				sc.addMethod(sm);
-
-				// This is an intertype special call delegator
-				MethodCategory.register(sm, MethodCategory.INTERTYPE_SPECIAL_CALL_DELEGATOR);
+				}	
 	}
 	
 /* intertype method declarations */	
@@ -358,10 +384,10 @@ public class IntertypeAdjuster {
 		if (pht.declaresMethod(mi.getName(),mi.getParameterTypes())) {
 			// System.out.println("it has the method already");
 			SootMethod minst = pht.getMethod(mi.getName(),mi.getParameterTypes());
-			if (zapsmethod(mi,minst)){   
+			if (zapsmethod(pht,mi,minst)){   
 					pht.removeMethod(minst);
 					pht.addMethod(mi);
-			} else if (zapsmethod(minst,mi)) {	
+			} else if (zapsmethod(pht,minst,mi)) {	
 					skipped = true;
 					}
 				else {
@@ -388,12 +414,13 @@ public class IntertypeAdjuster {
 	}
 	
 	
-	boolean zapsmethod(SootMethod mi1,SootMethod mi2) {
+	boolean zapsmethod(SootClass pht, SootMethod mi1,SootMethod mi2) {
 		if (!(Modifier.isAbstract(mi1.getModifiers())) && Modifier.isAbstract(mi2.getModifiers()))
 			return true;
 		// was mi2 then mi1
+		// if (pht.isInterface() && fromInterface(mi2)) return true;
 		if (!fromInterface(mi1) && fromInterface(mi2)) return true;
-		if (!(isIntertype(mi1) && (isIntertype(mi2)))) return false;
+		if (!(isIntertype(mi1)  && isIntertype(mi2))) return false;
 		if (fromInterface(mi1) && fromInterface(mi2) &&
 			 isSubInterface(interfaceTarget(mi1),interfaceTarget(mi2)))
 			return true;

@@ -51,6 +51,8 @@ import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 
+import polyglot.visit.ContextVisitor;
+
 public class AspectMethods extends NodeVisitor {
 
     private Stack /* List MethodDecl */ methods; // method declaration lists, one for each classdecl

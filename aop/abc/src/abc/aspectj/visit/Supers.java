@@ -49,35 +49,8 @@ public class Supers {
     	
 		public abc.weaving.aspectinfo.SuperDispatch
 					convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-		    /*
-			List formals = new ArrayList();
-			Iterator fi = mi.formalTypes().iterator();
-			int i = 0;
-			while (fi.hasNext()) {
-				Type f = (Type)fi.next();
-				String fname = "a$"+i; i++;
-				formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f),
-													  fname, f.position()));
-			}
-			List exc = new ArrayList();
-			Iterator ti = mi.throwTypes().iterator();
-			while (ti.hasNext()) {
-				TypeNode t = (TypeNode)ti.next();
-				exc.add(t.type().toString());
-			}
-		    */
 			return	new abc.weaving.aspectinfo.SuperDispatch(
 							name,
-							/*
-							new abc.weaving.aspectinfo.MethodSig(
-								AspectInfoHarvester.convertModifiers(mi.flags()),
-									gai.getClass(mi.container()),
-									AbcFactory.AbcType(mi.returnType()),
-									mi.name(),
-									formals,
-									exc,
-									position),
-							*/
 							AbcFactory.MethodSig(mi),
 							AbcFactory.AbcClass(target));
 					}
@@ -88,6 +61,8 @@ public class Supers {
 		MethodInstance mi = c.methodInstance();
 		superCalls.add(new SuperCall(supername,mi,target,c.position()));
 		mi = mi.name(supername).container(target);
+		if (target.flags().isInterface())
+			mi = mi.flags(mi.flags().Abstract().clear(Flags.NATIVE));
 		return c.target(targetThis).name(supername).methodInstance(mi);
 	}
     
@@ -119,13 +94,6 @@ public class Supers {
 	   public abc.weaving.aspectinfo.SuperFieldGet
 				   convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
 			return new abc.weaving.aspectinfo.SuperFieldGet(
-									/*
-					 new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
-							gai.getClass(fi.container()),   // the containing aspect
-							AbcFactory.AbcType(fi.type()),
-							fi.name(), 
-							position),
-									*/
 									AbcFactory.FieldSig(fi),
 							name,
 							AbcFactory.AbcClass(target));
@@ -149,13 +117,6 @@ public class Supers {
 		 public abc.weaving.aspectinfo.SuperFieldSet
 					 convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
 			  return new abc.weaving.aspectinfo.SuperFieldSet(
-									  /*
-					   new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
-							  gai.getClass(fi.container()),   // the containing aspect
-							  AbcFactory.AbcType(fi.type()),
-							  fi.name(), 
-							  position),
-									  */
 									  AbcFactory.FieldSig(fi),
 							  name,
 							  AbcFactory.AbcClass(target));
@@ -231,23 +192,6 @@ public class Supers {
     	
 		public abc.weaving.aspectinfo.QualThis
 					convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-		    /*
-			List formals = new ArrayList();
-			Iterator fi = mi.formalTypes().iterator();
-			int i = 0;
-			while (fi.hasNext()) {
-				Type f = (Type)fi.next();
-				String fname = "a$"+i; i++;
-				formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f),
-													  fname, f.position()));
-			}
-			List exc = new ArrayList();
-			Iterator ti = mi.throwTypes().iterator();
-			while (ti.hasNext()) {
-				TypeNode t = (TypeNode)ti.next();
-				exc.add(t.type().toString());
-			}
-		    */
 			return	new abc.weaving.aspectinfo.QualThis(
 								    /*
 							new abc.weaving.aspectinfo.MethodSig(

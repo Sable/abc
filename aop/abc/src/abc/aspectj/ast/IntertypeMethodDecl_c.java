@@ -117,8 +117,9 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
 			
 			Flags newFlags = flags();
-			if (pht.flags().isInterface())
-				newFlags = newFlags.set(Flags.ABSTRACT);
+			if (pht.flags().isInterface()) {
+				newFlags = newFlags.Abstract();
+			}
 			MethodInstance mi = ts.interTypeMethodInstance(position(), identifier,
 		                                	               	(ClassType) methodInstance().container(),
 		                                               		(ReferenceType)ht,
@@ -143,7 +144,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 
 	public static void overrideITDmethod(ClassType pht, 
 											MethodInstance mi) {
-		// System.out.println("attempting to add method "+mi+" to "+pht);
+	    // System.out.println("attempting to add method "+mi+" to "+pht);
 		InterTypeMethodInstance_c toinsert = (InterTypeMethodInstance_c) mi;
 		// InterTypeMethodInstance_c toinsert =  (InterTypeMethodInstance_c) mi.container(pht).flags(itmic.origFlags());
 		// System.out.println("instance to insert:"+ " origin=" + toinsert.origin() +
@@ -235,8 +236,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	}
 	
 	static boolean fromInterface(MethodInstance mi) {
-		return mi instanceof InterTypeMethodInstance_c &&
-		       (((InterTypeMethodInstance_c)mi).interfaceTarget() != null);
+		return ((mi instanceof InterTypeMethodInstance_c &&
+		       (((InterTypeMethodInstance_c)mi).interfaceTarget() != null)));
 	}
 	
 	// replace this by a call to the appropriate structure!
@@ -251,6 +252,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	static boolean zaps(MethodInstance mi1,MethodInstance mi2) {
 		if (!(mi1.flags().isAbstract()) && mi2.flags().isAbstract())
 			return true;
+		// if (mi1 instanceof InterTypeMethodInstance_c && mi2.container().toClass().flags().isInterface())
+		//	return true;
 		//System.out.println("not (!mi1.abstract && mi2.abstract)");
 		// was mi2 then mi1
  	    if (!fromInterface(mi1) && fromInterface(mi2)) return true;
@@ -328,7 +331,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		if (flags().isProtected())
 			throw new SemanticException("Intertype methods cannot be protected",position());
-		if (flags().isStatic() && tc.context().currentClass().flags().isInterface())
+		if (flags().isStatic() && host.type().toClass().flags().isInterface())
 			throw new SemanticException("Cannot declare static intertype method on interface",position());
 		return super.typeCheck(tc);
 	}
