@@ -47,7 +47,6 @@ public class AJContext_c extends Context_c implements AJContext {
 	public Context pushHost(ClassType t) {
 		AJContext_c c = (AJContext_c) super.push();
 		c.host = t;
-		c.staticContext = true;
 		nested = false;
 		return c;
 	}

@@ -107,12 +107,45 @@ public class AspectJTypeSystem_c
 	}
 		   
     protected boolean isAccessible(MemberInstance mi, ClassType ctc) {
-    	// private ITDs are accessible only from the originating aspect
-    	if (mi instanceof InterTypeMemberInstance && mi.flags().isPrivate())
-    		return ctc.equalsImpl(((InterTypeMemberInstance) mi).origin());
-    	// privileged aspects can access anything
-    	if (AspectJFlags.isAspect(ctc.flags()) && AspectJFlags.isPrivileged(ctc.flags()))
-    		return true;
+        if (mi instanceof InterTypeMemberInstance) {
+        	// the following code has been copied from TypeSystem_c.isAccessible
+        	// the only change is the definition of target
+			ReferenceType target = ((InterTypeMemberInstance) mi).origin(); 
+														// accessibility of intertype declarations
+		                                                // is with respect to origin, not container
+			Flags flags = mi.flags();
+			if (flags.isPublic()) return true;
+			if (equals(target, ctc)) return true;
+			if (! target.isClass()) return false;
+
+			ClassType ctt = target.toClass();
+
+			// If the current class and the target class are both in the
+			// same class body, then protection doesn't matter, i.e.
+			// protected and private members may be accessed. Do this by 
+			// working up through ctc's containers.
+			if (isEnclosed(ctc, ctt)) return true;                    
+			if (isEnclosed(ctt, ctc)) return true;                        
+			ClassType ctcContainer = ctc;
+		while (!ctcContainer.isTopLevel()) {
+			ctcContainer = ctcContainer.outer();
+			if (isEnclosed(ctt, ctcContainer)) return true;                        
+		};
+
+		// Check for package level scope.
+		// FIXME: protected too?
+		if (ctt.package_() == null && ctc.package_() == null &&
+			flags.isPackage())
+			return true;
+
+	
+		if (ctt.package_() != null && ctt.package_().equals (ctc.package_()) &&
+			(flags.isPackage() || flags.isProtected())) {
+			return true;
+		}
+		
+		return false; // ITDs cannot be protected
+        }
     	else return super.isAccessible(mi,ctc);
     }
     

@@ -20,6 +20,7 @@ import polyglot.ext.jl.ast.ConstructorDecl_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.*;
+import abc.aspectj.types.AJContext;
 
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     implements IntertypeConstructorDecl, ContainsAspectInfo
@@ -29,10 +30,10 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     public IntertypeConstructorDecl_c(Position pos,
                                  Flags flags,
                                  TypeNode host,
-				 String name,
+				 				 String name,
                                  List formals,
                                  List throwTypes,
-	  	                 Block body) {
+	  	                 		Block body) {
 	super(pos,flags,name,formals,throwTypes,body);
 	this.host = host;
     }
@@ -104,6 +105,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		if (flags().isProtected()) {
 			throw new SemanticException("Cannot declare a protected intertype constructor");
 		}
+		
 
         if (ct.isAnonymous()) {
 	    throw new SemanticException(
@@ -202,6 +204,16 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	w.end();
 
     }
+    
+	/**
+	* @author Oege de Moor
+	* record the host type in the environment, for checking of this and super
+	*/
+	public Context enterScope(Context c) {
+			AJContext nc = (AJContext) super.enterScope(c);
+			TypeSystem ts = nc.typeSystem();
+			return nc.pushHost(ts.staticTarget(host.type()).toClass());
+		}
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 	System.out.println("ICD host: "+host.toString());

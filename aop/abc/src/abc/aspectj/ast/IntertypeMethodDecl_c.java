@@ -96,7 +96,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	* mangling the name.
 	*/
 	public IntertypeMethodDecl accessChange() {
-		if (flags().isPrivate()) {
+		if (flags().isPrivate() || flags().isPackage()) {
 			ParsedClassType ht = (ParsedClassType) host.type();
 			ht.fields().remove(itMethodInstance); // remove old instance from host type    		
 			MethodInstance mmi = itMethodInstance.mangled();  // retrieve the mangled instance 		

@@ -25,6 +25,7 @@ import polyglot.ext.jl.ast.FieldDecl_c;
 
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
@@ -120,7 +121,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
      * mangling the name.
      */
     public IntertypeFieldDecl accessChange() {
-    	if (flags().isPrivate()) {
+    	if (flags().isPrivate() || flags().isPackage()) {
     		ParsedClassType ht = (ParsedClassType) host.type();
     		InterTypeFieldInstance_c fi = (InterTypeFieldInstance_c) ht.fieldNamed(name());
     		ht.fields().remove(fi); // remove old instance from host type    		
@@ -132,6 +133,16 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     }
     
    
+	/**
+	 * @author Oege de Moor
+	 * record the host type in the environment, for checking of this and super
+	*/
+	public Context enterScope(Context c) {
+			AJContext nc = (AJContext) super.enterScope(c);
+			TypeSystem ts = nc.typeSystem();
+			return nc.pushHost(ts.staticTarget(host.type()).toClass());
+	}
+	
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 		System.out.println("IFD host: "+host.toString());
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
