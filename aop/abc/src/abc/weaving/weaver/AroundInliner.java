@@ -121,7 +121,7 @@ public class AroundInliner extends AdviceInliner {
 				debug(" Method: " + container);
 				debug(" Advice method: " + method); 
 				debug(" Violations: " + accessViolations);
-				if (accessViolations>3)
+				if (accessViolations>1)
 					return false;					
 			}
 			
@@ -137,11 +137,13 @@ public class AroundInliner extends AdviceInliner {
 			debug(" Proceed invocations: " + info.proceedInvocations);
 			
 						
-			if (info.originalSize<4)
+			if (info.originalSize<6)
 				return true;
 			
-			if (info.applications==1)
-				return true;
+			//if (info.internalLocalCount==0)
+			//	return true;
+			//if (info.applications==1)
+			//	return true;
 			
 			return false;
 		}
@@ -201,8 +203,14 @@ public class AroundInliner extends AdviceInliner {
 			} else {
 				debug(" Could not find shadow information.");				
 			}
-			if (shadowInfo!=null && shadowInfo.size<6)
-				return true;
+			if (shadowInfo!=null) {
+				if (shadowInfo.size<6)
+					return true;
+				
+				//if (shadowInfo.internalLocals==0)
+				//	return true;
+			}
+				
 			
 			
 

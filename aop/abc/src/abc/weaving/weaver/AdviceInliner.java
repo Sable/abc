@@ -60,7 +60,11 @@ public abstract class AdviceInliner extends BodyTransformer {
 			System.err.println("AIL*** " + message);
 	}
 	final public static int MAX_DEPTH=4;
-	final public static int MAX_CONTAINER_SIZE=5000;
+	
+	// with  50, all cases pass with forced inlining.
+	// 100 works as well
+	// with 300, some run out of memory (@512M).
+	final public static int MAX_CONTAINER_SIZE=100; //5000;
 	
 	public static interface InlineOptions {
 		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr);
