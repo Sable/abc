@@ -31,6 +31,10 @@ public class DotDotNamePattern_c extends NamePattern_c
 	return init+".";
     }
 
+    public NamePattern getInit() {
+	return init;
+    }
+
      public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set/*<PCNode>*/ matches = init.match(context, classes, packages);
 	LinkedList worklist = new LinkedList(matches);
@@ -50,6 +54,12 @@ public class DotDotNamePattern_c extends NamePattern_c
 
     public boolean universal() {
 	return false;
+    }
+
+    public boolean equivalent(NamePattern p) {
+	if (p instanceof DotDotNamePattern) {
+	    return (init.equivalent(((DotDotNamePattern)p).getInit()));
+	} else return false;
     }
 
 }

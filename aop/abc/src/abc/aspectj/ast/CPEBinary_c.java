@@ -17,6 +17,16 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
     protected ClassnamePatternExpr right;
     protected Precedence precedence;
 
+    public Operator getOperator() {
+	return op;
+    }
+    public ClassnamePatternExpr getLeft() {
+	return left;
+    }
+    public ClassnamePatternExpr getRight() {
+	return right;
+    }
+
     public CPEBinary_c(Position pos, 
                        ClassnamePatternExpr left, 
                        Operator op, 
@@ -65,4 +75,14 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
 	}
 	throw new RuntimeException("Illegal CPE op");
     }
+
+    public boolean equivalent(ClassnamePatternExpr otherexp) {
+	if (otherexp instanceof CPEBinary) {
+	    CPEBinary o = (CPEBinary)otherexp;
+	    return (   (o.getOperator() == op)
+		    && (o.getLeft().equivalent(left))
+		    && (o.getRight().equivalent(right)));
+	} else return false;
+    }
 }
+

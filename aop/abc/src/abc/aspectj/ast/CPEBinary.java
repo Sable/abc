@@ -6,6 +6,10 @@ import polyglot.ast.Precedence;
 public interface CPEBinary extends ClassnamePatternExpr
 {
 
+    public Operator getOperator();
+    public ClassnamePatternExpr getLeft();
+    public ClassnamePatternExpr getRight();
+
     public static class Operator extends Enum {
 	Precedence prec;
 

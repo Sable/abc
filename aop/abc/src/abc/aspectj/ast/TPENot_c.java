@@ -18,6 +18,10 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
         this.tpe = tpe;
     }
 
+    public TypePatternExpr getTpe() {
+	return tpe;
+    }
+
     protected TPENot_c reconstruct(TypePatternExpr tpe) {
 	if (tpe != this.tpe) {
 	    TPENot_c n = (TPENot_c) copy();
@@ -64,6 +68,12 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
 	ClassnamePatternExpr cpe = tpe.transformToClassnamePattern(nf);
 	return nf.CPENot(position, cpe);
+    }
+
+    public boolean equivalent(TypePatternExpr t) {
+	if (t instanceof TPENot) {
+	    return (tpe.equivalent(((TPENot)t).getTpe()));
+	} else return false;
     }
 
 }

@@ -15,6 +15,14 @@ public class TPEArray_c extends TypePatternExpr_c
     protected TypePatternExpr base;
     protected int dims;
 
+    public TypePatternExpr base() {
+	return base;
+    }
+
+    public int dims() {
+	return dims;
+    }
+
     public TPEArray_c(Position pos, TypePatternExpr base, int dims)  {
 	super(pos);
         this.base = base;
@@ -84,5 +92,11 @@ public class TPEArray_c extends TypePatternExpr_c
 	throw new SemanticException("Array in classname attern");
     }
 
+    public boolean equivalent(TypePatternExpr t) {
+	if (t instanceof TPEArray) {
+	    TPEArray tar = (TPEArray)t;
+	    return ((base.equivalent(tar.base())) && (dims == tar.dims()));
+	} else return false;
+    }
 
 }

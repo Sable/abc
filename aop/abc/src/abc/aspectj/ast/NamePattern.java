@@ -11,4 +11,6 @@ public interface NamePattern extends Node
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages);
 
     boolean universal();
+
+    public boolean equivalent(NamePattern p);
 }

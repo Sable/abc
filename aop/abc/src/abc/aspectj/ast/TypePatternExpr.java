@@ -28,5 +28,7 @@ public interface TypePatternExpr extends Node
 
     public abc.weaving.aspectinfo.TypePattern makeAITypePattern();
 
+    public boolean equivalent(TypePatternExpr t);
+
 }
 

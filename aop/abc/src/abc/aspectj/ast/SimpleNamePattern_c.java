@@ -33,11 +33,21 @@ public class SimpleNamePattern_c extends NamePattern_c
 	return PatternMatcher.v().compileNamePattern(pat);
     }
 
+    public String getPatternString() {
+	return pat;
+    }
+
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	return context.matchScope(getPattern(), classes, packages);
     }
 
     public boolean universal() {
 	return pat.equals("*");
+    }
+
+    public boolean equivalent(NamePattern p) {
+	if (p instanceof SimpleNamePattern) {
+	    return (pat.equals(((SimpleNamePattern)p).getPatternString()));
+	} else return false;
     }
 }

@@ -95,4 +95,25 @@ public class FieldPattern_c extends Node_c
 	return PatternMatcher.v().makeAIFieldPattern(this);
     }
 
+    public boolean equivalent(FieldPattern p) {
+
+    if (!name.equivalent(p.getName())) return false;
+
+    if (!type.equivalent(p.getType())) return false;
+
+    Iterator it1 = modifiers.iterator();
+    Iterator it2 = p.getModifiers().iterator();
+
+    while (it1.hasNext()) {
+	if (!it2.hasNext()) return false;
+	if (!((ModifierPattern)it1.next()).equivalent(
+		  (ModifierPattern)it2.next())) return false;
+    }
+    if (it2.hasNext()) return false;
+
+    return true;
+
+    }
+
+
 }

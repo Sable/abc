@@ -28,7 +28,10 @@ public class CFlowStack {
     private int change_count = 0;
     private static final int COLLECT_AT = 20000;
     private static final int MIN_COLLECT_AT = 100;
+    /*    private static final int MAX_STACK_TRACES = 100;
 
+    private int stack_traces = 0;*/
+    
     private synchronized Stack getThreadStack() {
         if (Thread.currentThread() != cached_thread) {
             cached_thread = Thread.currentThread();
@@ -58,18 +61,38 @@ public class CFlowStack {
 
 	//XXX dangerous, try to remove
     public void push(Object obj) {
+	/*	if (stack_traces < MAX_STACK_TRACES) {
+	    System.out.println("Push (obj)");
+	    stack_traces = stack_traces+1;
+	    Thread.dumpStack();
+	    }*/
         getThreadStack().push(obj);
     }
 
     public void pushInstance(Object obj) {
+	/*	if (stack_traces < MAX_STACK_TRACES) {
+	    System.out.println("PushInstance (obj)");
+	    stack_traces = stack_traces+1;
+	    Thread.dumpStack();
+	    }*/
         getThreadStack().push(new CFlow(obj));
     }
 
     public void push(Object[] obj) {
+	/*	if (stack_traces < MAX_STACK_TRACES) {
+	    System.out.println("Push (obj[])");
+	    stack_traces = stack_traces+1;
+	    Thread.dumpStack();
+	    }*/
         getThreadStack().push(new CFlowPlusState(obj));
     }
 
     public void pop() {
+	/*	if (stack_traces < MAX_STACK_TRACES) {
+	    System.out.println("Pop()");
+	    stack_traces = stack_traces+1;
+	    Thread.dumpStack();
+	    }*/
         getThreadStack().pop();
     }
 

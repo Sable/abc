@@ -13,4 +13,6 @@ public interface FieldPattern extends Node
     public List/*<ModifierPattern>*/ getModifiers();
     public TypePatternExpr getType();
     public ClassTypeDotId getName();
+
+    public boolean equivalent(FieldPattern e);
 }

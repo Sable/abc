@@ -150,4 +150,51 @@ public class MethodPattern_c extends Node_c
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern() {
 	return PatternMatcher.v().makeAIMethodPattern(this);
     }
+
+    public boolean equivalent(MethodPattern p) {
+
+    if (!type.equivalent(p.getType())) return false;
+
+    if (!name.equivalent(p.getName())) return false;
+
+    // COMPARING MODIFIERS
+
+    Iterator it1 = modifiers.iterator();
+    Iterator it2 = p.getModifiers().iterator();
+
+    while (it1.hasNext()) {
+	if (!it2.hasNext()) return false;
+	if (!((ModifierPattern)it1.next()).equivalent(
+		  (ModifierPattern)it2.next())) return false;
+    }
+    if (it2.hasNext()) return false;
+
+    // COMPARING FORMALS
+
+    it1 = formals.iterator();
+    it2 = p.getFormals().iterator();
+
+    while (it1.hasNext()) {
+	if (!it2.hasNext()) return false;
+	if (!((FormalPattern)it1.next()).equivalent(
+		  (FormalPattern)it2.next())) return false;
+    }
+    if (it2.hasNext()) return false;
+
+    // COMPARING THROWSPATS
+
+    it1 = throwspats.iterator();
+    it2 = p.getThrowspats().iterator();
+
+    while (it1.hasNext()) {
+	if (!it2.hasNext()) return false;
+	if (!((ThrowsPattern)it1.next()).equivalent(
+		  (ThrowsPattern)it2.next())) return false;
+    }
+    if (it2.hasNext()) return false;
+
+    return true;
+
+    }
+
 }

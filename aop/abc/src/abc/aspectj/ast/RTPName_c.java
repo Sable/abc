@@ -63,4 +63,10 @@ public class RTPName_c extends Node_c
 	return nf.CPEName(position, pat);
     }
 
+    public boolean equivalent(RefTypePattern p) {
+	if (p instanceof RTPName) {
+	    return (pat.equivalent(((RTPName)p).getNamePattern()));
+	} else return false;
+    }
+
 }

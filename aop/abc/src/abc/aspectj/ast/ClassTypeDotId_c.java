@@ -67,4 +67,8 @@ public class ClassTypeDotId_c extends Node_c implements ClassTypeDotId
 	return s;
     }
 
+    public boolean equivalent(ClassTypeDotId c) {
+	return (base.equivalent(c.base()) && name.equivalent(c.name()));
+    }
+
 }

@@ -14,4 +14,6 @@ public interface ConstructorPattern extends MethodConstructorPattern
     public List/*<ThrowsPattern>*/ getThrowspats();
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern();
+
+    public boolean equivalent(ConstructorPattern e);
 }

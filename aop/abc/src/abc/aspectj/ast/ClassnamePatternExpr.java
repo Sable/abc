@@ -19,4 +19,6 @@ public interface ClassnamePatternExpr extends Node
     public boolean matches(PatternMatcher matcher, PCNode cl);
 
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern();
+
+    public boolean equivalent(ClassnamePatternExpr e);
 }

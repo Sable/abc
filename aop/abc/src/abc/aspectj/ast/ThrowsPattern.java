@@ -11,4 +11,6 @@ public interface ThrowsPattern extends Node
     public boolean positive();
 
     /* new stuff to be added */
+
+    public boolean equivalent(ThrowsPattern p);
 }

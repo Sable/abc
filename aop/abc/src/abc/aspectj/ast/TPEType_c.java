@@ -18,6 +18,10 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
         this.type = type;
     }
 
+    public TypeNode type() {
+	return type;
+    }
+
     public Precedence precedence() {
 		return Precedence.UNARY;
     }
@@ -64,6 +68,12 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
 
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
 	throw new SemanticException("Primitive type in classname pattern");
+    }
+
+    public boolean equivalent(TypePatternExpr t) {
+	if (t instanceof TPEType) {
+	    return (type.equals(((TPEType)t).type()));
+	} else return false;
     }
 
 }

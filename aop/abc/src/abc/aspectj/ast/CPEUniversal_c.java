@@ -30,4 +30,10 @@ public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUnivers
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	return true;
     }
+
+    public boolean equivalent(ClassnamePatternExpr otherexp) {
+	if (otherexp instanceof CPEUniversal) {
+	    return true;
+	} else return false;
+    }
 }

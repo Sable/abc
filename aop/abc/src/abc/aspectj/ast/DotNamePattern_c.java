@@ -33,6 +33,13 @@ public class DotNamePattern_c extends NamePattern_c
 	return init+"."+last;
     }
 
+    public NamePattern getInit() {
+	return init;
+    }
+    public SimpleNamePattern getLast() {
+	return last;
+    }
+
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set/*<PCNode>*/ init_matches = init.match(context, classes, packages);
 	Set/*<PCNode>*/ result = new HashSet();
@@ -47,6 +54,13 @@ public class DotNamePattern_c extends NamePattern_c
 
     public boolean universal() {
 	return false;
+    }
+
+    public boolean equivalent(NamePattern p) {
+	if (p instanceof DotNamePattern) {
+	    DotNamePattern dnp = (DotNamePattern) p;
+	    return (init.equivalent(dnp.getInit()) && last.equivalent(dnp.getLast()));
+	} else return false;
     }
 
 }

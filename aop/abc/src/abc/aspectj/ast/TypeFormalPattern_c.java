@@ -49,4 +49,10 @@ public class TypeFormalPattern_c extends Node_c
 	return expr.toString();
     }
 
+    public boolean equivalent(FormalPattern p) {
+	if (p instanceof TypeFormalPattern) {
+	    return expr.equivalent(((TypeFormalPattern)p).expr());
+	} else return false;
+    }
+
 }

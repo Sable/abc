@@ -28,6 +28,16 @@ public class TPEBinary_c extends TypePatternExpr_c
 	this.precedence = op.precedence();
     }
 
+    public TypePatternExpr left() {
+	return left;
+    }
+    public TypePatternExpr right() {
+	return right;
+    }
+    public Operator op() {
+	return op;
+    }
+
     protected TPEBinary_c reconstruct(TypePatternExpr left, TypePatternExpr right) {
 	if (left != this.left || right != this.right) {
 	    TPEBinary_c n = (TPEBinary_c) copy();
@@ -108,4 +118,14 @@ public class TPEBinary_c extends TypePatternExpr_c
 	throw new RuntimeException("Illegal TPE op");
     }
 
+    public boolean equivalent(TypePatternExpr t) {
+	if (t instanceof TPEBinary) {
+	    TPEBinary tb = (TPEBinary) t;
+	    return (left.equivalent(tb.left())
+		    && right.equivalent(tb.right()) 
+		    && (op == tb.op()));
+	} else return false;
+    }
+
 }
+    

@@ -14,6 +14,10 @@ public class TPERefTypePat_c extends TypePatternExpr_c
 {
     protected RefTypePattern pat;
 
+    public RefTypePattern getPattern() {
+	return pat;
+    }
+
     public TPERefTypePat_c(Position pos, RefTypePattern pat)  {
 	super(pos);
         this.pat = pat;
@@ -66,6 +70,12 @@ public class TPERefTypePat_c extends TypePatternExpr_c
 
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
 	return pat.transformToClassnamePattern(nf);
+    }
+
+    public boolean equivalent(TypePatternExpr t) {
+	if (t instanceof TPERefTypePat) {
+	    return (pat.equivalent(((TPERefTypePat)t).getPattern()));
+	} else return false;
     }
 
 }

@@ -47,4 +47,10 @@ public class TPEUniversal_c extends TypePatternExpr_c implements TPEUniversal
 	return nf.CPEUniversal(position);
     }
 
+    public boolean equivalent(TypePatternExpr t) {
+	if (t instanceof TPEUniversal) {
+	    return true;
+	} else return false;
+    }
+
 }

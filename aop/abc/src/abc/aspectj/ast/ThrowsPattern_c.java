@@ -55,4 +55,9 @@ public class ThrowsPattern_c extends Node_c implements ThrowsPattern
 	else return "!"+type.toString();
     }
 
+    public boolean equivalent(ThrowsPattern p) {
+	return (   (type.equivalent(p.type()))
+	        && (positive == p.positive()));
+    }
+
 }

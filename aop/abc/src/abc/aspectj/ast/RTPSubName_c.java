@@ -87,4 +87,12 @@ public class RTPSubName_c extends Node_c
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
 	return nf.CPESubName(position, pat);
     }
+
+
+    public boolean equivalent(RefTypePattern p) {
+	if (p instanceof RTPSubName) {
+	    return (pat.equivalent(((RTPSubName)p).getNamePattern()));
+	} else return false;
+    }
+
 }

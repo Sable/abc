@@ -14,4 +14,6 @@ public interface MethodPattern extends MethodConstructorPattern
     public ClassTypeDotId getName();
     public List/*<FormalPattern>*/ getFormals();
     public List/*<ThrowsPattern>*/ getThrowspats();
+
+    public boolean equivalent(MethodPattern e);
 }

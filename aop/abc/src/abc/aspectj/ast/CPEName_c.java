@@ -53,4 +53,10 @@ public class CPEName_c extends ClassnamePatternExpr_c
 	return matcher.matchesName(pat, cl);
     }
 
+    public boolean equivalent(ClassnamePatternExpr otherexp) {
+	if (otherexp instanceof CPEName) {
+	    return (pat.equivalent(((CPEName)otherexp).getNamePattern()));
+	} else return false;
+    }
+
 }

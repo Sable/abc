@@ -73,4 +73,10 @@ public class CPESubName_c extends ClassnamePatternExpr_c
 	}
 	return false;
     }
+
+    public boolean equivalent(ClassnamePatternExpr otherexp) {
+	if (otherexp instanceof CPESubName) {
+	    return (pat.equivalent(((CPESubName)otherexp).getNamePattern()));
+	} else return false;
+    }
 }

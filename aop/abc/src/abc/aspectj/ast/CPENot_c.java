@@ -18,6 +18,10 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
         this.cpe = cpe;
     }
 
+    public ClassnamePatternExpr getCpe() {
+	return cpe;
+    }
+
     protected CPENot_c reconstruct(ClassnamePatternExpr cpe) {
 	if (cpe != this.cpe) {
 	    CPENot_c n = (CPENot_c) copy();
@@ -49,5 +53,10 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
 	return !cpe.matches(matcher, cl);
     }
 
+    public boolean equivalent(ClassnamePatternExpr otherexpr) {
+	if (otherexpr instanceof CPENot) {
+	    return (cpe.equivalent(((CPENot)otherexpr).getCpe()));
+	} else return false;
+    }
 
 }

@@ -25,4 +25,10 @@ public class DotDotFormalPattern_c extends Node_c
 	return "..";
     }
 
+    public boolean equivalent(FormalPattern p) {
+	if (p instanceof DotDotFormalPattern) {
+	    return true;
+	} else return false;
+    }
+
 }

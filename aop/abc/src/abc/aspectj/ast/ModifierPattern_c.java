@@ -41,4 +41,9 @@ public class ModifierPattern_c extends Node_c implements ModifierPattern
 	else return "!"+modifier.translate();
     }
 
+    public boolean equivalent(ModifierPattern p) {
+	return (   (positive == p.positive())
+		&& (modifier.equals(p.modifier())));
+    }
+
 }

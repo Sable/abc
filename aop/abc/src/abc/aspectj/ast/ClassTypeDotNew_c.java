@@ -51,4 +51,8 @@ public class ClassTypeDotNew_c extends Node_c implements ClassTypeDotNew
 	else return "new";
     }
 
+    public boolean equivalent(ClassTypeDotNew c) {
+	return base.equivalent(c.base());
+    }
+
 }
