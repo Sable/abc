@@ -59,5 +59,3 @@ abstract class UsageBase {
         return pad( 4, vals, 32, desc );
     }
 }
-
-
