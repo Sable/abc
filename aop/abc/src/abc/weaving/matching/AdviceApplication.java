@@ -60,11 +60,13 @@ public class AdviceApplication {
 			final AdviceDecl ad = (AdviceDecl) adviceIt.next();
 
 			Pointcut pc=ad.getPointcut();
-		        boolean matches;
+
+			boolean matches;
 
 			if(pc!=null) {
 			    matches=pc.matchesAt(sootCls,method,current);
 			} else {
+			    System.out.println("Got a null pointcut");
 			    // BIG TEMPORARY HACK
 			    matches=false;
 			    if (current instanceof AssignStmt) {
