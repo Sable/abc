@@ -256,7 +256,7 @@
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="78401" dir="bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
+<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA.                   The test also imports org.aspectj.runtime.* for no                  apparent reason.">
       <abckeywords><skip></skip></abckeywords>
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
                 <ajcmessage line="102" kind="warning"></ajcmessage>

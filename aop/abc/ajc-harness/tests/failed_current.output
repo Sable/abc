@@ -1,40 +1,35 @@
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
-Abc started on Mon Aug 23 02:16:00 BST 2004
+Abc started on Tue Aug 24 02:15:59 BST 2004
 [pureJava/nameConflicts/p1/p2.java, pureJava/nameConflicts/p1/Main1.java, pureJava/nameConflicts/p1/Foo.java, pureJava/nameConflicts/p1/p2/Foo.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
 Transforming p1.p2.Foo... 
 Transforming p1.Main1... 
 Transforming p1.p2$Foo... 
 Transforming p1.Foo... 
 Transforming p1.p2... 
-Abc finished on Mon Aug 23 02:16:01 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 24 02:15:59 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 688 millisec.)
+Breakdown of abc phases  (total: 697 millisec.)
 ------------------------------------------------
-[ 52.616% ] Init. of Soot:  362
+[ 43.615% ] Init. of Soot:  304
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 34.738% ] Polyglot phases:  239
+[ 00.143% ] Create polyglot compiler:  1
+[ 43.472% ] Polyglot phases:  303
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.727% ] Retrieving bodies:  5
-[ 04.360% ] Update pattern matcher:  30
-[ 00.145% ] Weave Initializers:  1
+[ 00.717% ] Retrieving bodies:  5
+[ 04.304% ] Update pattern matcher:  30
+[ 00.143% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.291% ] Compute advice lists:  2
+[ 00.287% ] Compute advice lists:  2
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.145% ] Weaving advice:  1
+[ 00.143% ] Weaving advice:  1
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.488% ] Soot Packs:  24
-[ 03.488% ] Soot Writing Output:  24
+[ 03.443% ] Soot Packs:  24
+[ 03.730% ] Soot Writing Output:  26
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed.
@@ -42,9 +37,8 @@ FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught a
 
 Running test 178: pureJava/nested finally blocks have interesting frame location problems
 Commandline: abc -d pureJava pureJava/NestedFinally.java 
-Abc started on Mon Aug 23 02:16:07 BST 2004
+Abc started on Tue Aug 24 02:16:06 BST 2004
 [pureJava/NestedFinally.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
@@ -53,35 +47,33 @@ FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location 
 
 Running test 418: new/join points exist in the execution of field initializers
 Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Abc started on Mon Aug 23 02:18:23 BST 2004
+Abc started on Tue Aug 24 02:18:21 BST 2004
 [new/FieldInitializerJoinPoints.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
 Transforming A... 
 Transforming FieldInitializerJoinPoints... 
-Abc finished on Mon Aug 23 02:18:24 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 24 02:18:22 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 866 millisec.)
+Breakdown of abc phases  (total: 865 millisec.)
 ------------------------------------------------
-[ 41.224% ] Init. of Soot:  357
+[ 39.884% ] Init. of Soot:  345
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 30.139% ] Polyglot phases:  261
-[ 00.115% ] Resolve class names:  1
+[ 30.751% ] Polyglot phases:  266
+[ 00.116% ] Resolve class names:  1
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 02.079% ] Retrieving bodies:  18
-[ 03.233% ] Update pattern matcher:  28
+[ 02.081% ] Retrieving bodies:  18
+[ 03.237% ] Update pattern matcher:  28
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 01.386% ] Compute advice lists:  12
+[ 09.017% ] Compute advice lists:  78
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.231% ] Weaving advice:  2
-[ 00.115% ] Exceptions check:  1
+[ 00.116% ] Add aspect code:  1
+[ 00.116% ] Weaving advice:  1
+[ 00.347% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 15.935% ] Soot Packs:  138
-[ 05.543% ] Soot Writing Output:  48
+[ 08.671% ] Soot Packs:  75
+[ 05.665% ] Soot Writing Output:  49
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail ncount: 0 < 1
@@ -103,38 +95,35 @@ FAIL: Test 418: "new/join points exist in the execution of field initializers" f
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-Abc started on Mon Aug 23 02:19:27 BST 2004
+Abc started on Tue Aug 24 02:19:25 BST 2004
 [new/ObjectForInt.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
 Transforming A... 
 Transforming Test... 
 Transforming ObjectForInt... 
 Transforming Abc$proceed$A$around$1397... 
-Abc finished on Mon Aug 23 02:19:27 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 24 02:19:26 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 650 millisec.)
+Breakdown of abc phases  (total: 712 millisec.)
 ------------------------------------------------
-[ 54.615% ] Init. of Soot:  355
+[ 50.562% ] Init. of Soot:  360
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 27.077% ] Polyglot phases:  176
+[ 00.140% ] Create polyglot compiler:  1
+[ 24.860% ] Polyglot phases:  177
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.231% ] Retrieving bodies:  8
-[ 04.000% ] Update pattern matcher:  26
-[ 00.000% ] Weave Initializers:  0
+[ 01.124% ] Retrieving bodies:  8
+[ 11.236% ] Update pattern matcher:  80
+[ 00.140% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.615% ] Compute advice lists:  4
+[ 00.562% ] Compute advice lists:  4
 [ 00.000% ] Intertype weave:  0
-[ 00.154% ] Add aspect code:  1
-[ 00.462% ] Weaving advice:  3
-[ 00.154% ] Exceptions check:  1
+[ 00.140% ] Add aspect code:  1
+[ 00.281% ] Weaving advice:  2
+[ 00.140% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 06.769% ] Soot Packs:  44
-[ 04.923% ] Soot Writing Output:  32
+[ 06.320% ] Soot Packs:  45
+[ 04.494% ] Soot Writing Output:  32
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
@@ -156,40 +145,36 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-Abc started on Mon Aug 23 02:19:49 BST 2004
+Abc started on Tue Aug 24 02:19:48 BST 2004
 [new/AroundAll.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
 Transforming A... 
 Transforming C... 
 Transforming SuperC... 
 Transforming AroundAll... 
 Transforming Abc$proceed$A$around$1601... 
-Abc finished on Mon Aug 23 02:19:51 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 24 02:19:50 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1960 millisec.)
+Breakdown of abc phases  (total: 1978 millisec.)
 ------------------------------------------------
-[ 17.296% ] Init. of Soot:  339
+[ 17.341% ] Init. of Soot:  343
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 24.949% ] Polyglot phases:  489
+[ 24.570% ] Polyglot phases:  486
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.480% ] Retrieving bodies:  29
-[ 04.286% ] Update pattern matcher:  84
+[ 01.466% ] Retrieving bodies:  29
+[ 01.567% ] Update pattern matcher:  31
 [ 00.051% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.765% ] Compute advice lists:  15
+[ 00.910% ] Compute advice lists:  18
 [ 00.000% ] Intertype weave:  0
 [ 00.051% ] Add aspect code:  1
-[ 13.163% ] Weaving advice:  258
-[ 00.153% ] Exceptions check:  3
+[ 16.077% ] Weaving advice:  318
+[ 00.152% ] Exceptions check:  3
 [ 00.000% ] Validate jimple:  0
-[ 25.867% ] Soot Packs:  507
-[ 11.939% ] Soot Writing Output:  234
+[ 25.581% ] Soot Packs:  506
+[ 12.235% ] Soot Writing Output:  242
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 126
@@ -214,41 +199,36 @@ FAIL: Test 496: "new/elaborated into testing of around on all join points" faile
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-Abc started on Mon Aug 23 02:20:51 BST 2004
+Abc started on Tue Aug 24 02:20:50 BST 2004
 [new/SuperInIntroduction.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
 Transforming ObjectSub... 
 Transforming A... 
 Transforming Sub... 
 Transforming Super... 
 Transforming SuperInIntroduction... 
-Abc finished on Mon Aug 23 02:20:52 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 24 02:20:51 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 814 millisec.)
+Breakdown of abc phases  (total: 821 millisec.)
 ------------------------------------------------
-[ 41.646% ] Init. of Soot:  339
+[ 41.413% ] Init. of Soot:  340
 [ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 32.064% ] Polyglot phases:  261
+[ 32.156% ] Polyglot phases:  264
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.246% ] Intertype Adjuster:  2
-[ 01.966% ] Retrieving bodies:  16
-[ 03.194% ] Update pattern matcher:  26
-[ 00.000% ] Weave Initializers:  0
+[ 00.122% ] Intertype Adjuster:  1
+[ 02.071% ] Retrieving bodies:  17
+[ 03.045% ] Update pattern matcher:  25
+[ 00.122% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.737% ] Compute advice lists:  6
+[ 00.609% ] Compute advice lists:  5
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.123% ] Weaving advice:  1
-[ 00.123% ] Exceptions check:  1
+[ 00.122% ] Add aspect code:  1
+[ 00.122% ] Weaving advice:  1
+[ 00.122% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 13.882% ] Soot Packs:  113
-[ 06.020% ] Soot Writing Output:  49
+[ 13.642% ] Soot Packs:  112
+[ 06.456% ] Soot Writing Output:  53
 ================================================
 InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
 java.lang.reflect.InvocationTargetException
@@ -268,36 +248,33 @@ FAIL: Test 555: "new/accessing protected superclass members in and outside CCC f
 
 Running test 634: new/CE for ambiguous type reference (two files in package)
 Commandline: abc -d new new/ambiguousClass/AmbiguousReferent.java new/ambiguousClass/AmbiguousClassReference.java 
-Abc started on Mon Aug 23 02:21:52 BST 2004
+Abc started on Tue Aug 24 02:21:51 BST 2004
 [new/ambiguousClass/AmbiguousReferent.java, new/ambiguousClass/AmbiguousClassReference.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
 Transforming ambiguousClass.AmbiguousClassReference... 
 Transforming ambiguousClass.AmbiguousReferent... 
-Abc finished on Mon Aug 23 02:21:52 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 24 02:21:51 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 465 millisec.)
+Breakdown of abc phases  (total: 457 millisec.)
 ------------------------------------------------
-[ 79.140% ] Init. of Soot:  368
-[ 00.215% ] Loading Jars:  1
+[ 78.993% ] Init. of Soot:  361
+[ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 07.312% ] Polyglot phases:  34
+[ 07.659% ] Polyglot phases:  35
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 00.215% ] Retrieving bodies:  1
-[ 07.742% ] Update pattern matcher:  36
-[ 00.000% ] Weave Initializers:  0
+[ 00.438% ] Retrieving bodies:  2
+[ 06.565% ] Update pattern matcher:  30
+[ 00.219% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 00.215% ] Compute advice lists:  1
+[ 00.219% ] Compute advice lists:  1
 [ 00.000% ] Intertype weave:  0
 [ 00.000% ] Add aspect code:  0
-[ 00.215% ] Weaving advice:  1
+[ 02.188% ] Weaving advice:  10
 [ 00.000% ] Exceptions check:  0
 [ 00.000% ] Validate jimple:  0
-[ 03.011% ] Soot Packs:  14
-[ 01.935% ] Soot Writing Output:  9
+[ 01.751% ] Soot Packs:  8
+[ 01.969% ] Soot Writing Output:  9
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" failed.
@@ -305,42 +282,37 @@ FAIL: Test 634: "new/CE for ambiguous type reference (two files in package)" fai
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
 Commandline: abc -d abctests/new abctests/new/test/TypePat.java 
-Abc started on Mon Aug 23 02:21:59 BST 2004
+Abc started on Tue Aug 24 02:21:57 BST 2004
 [abctests/new/test/TypePat.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
 Transforming test.A... 
 Transforming test.TypePat... 
 Transforming test.TypePat$Inner... 
 Transforming test.TypePat$InnerA... 
 Transforming test.C... 
 Transforming test.TypePat$1... 
-Abc finished on Mon Aug 23 02:22:00 BST 2004. ( 0 min. 1 sec. )
+Abc finished on Tue Aug 24 02:21:59 BST 2004. ( 0 min. 1 sec. )
 ================================================
-Breakdown of abc phases  (total: 1622 millisec.)
+Breakdown of abc phases  (total: 1644 millisec.)
 ------------------------------------------------
-[ 22.873% ] Init. of Soot:  371
+[ 22.445% ] Init. of Soot:  369
 [ 00.000% ] Loading Jars:  0
-[ 00.000% ] Create polyglot compiler:  0
-[ 50.493% ] Polyglot phases:  819
-[ 00.062% ] Resolve class names:  1
+[ 00.061% ] Create polyglot compiler:  1
+[ 50.669% ] Polyglot phases:  833
+[ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
 [ 00.000% ] Intertype Adjuster:  0
-[ 01.541% ] Retrieving bodies:  25
-[ 03.453% ] Update pattern matcher:  56
-[ 00.000% ] Weave Initializers:  0
+[ 01.277% ] Retrieving bodies:  21
+[ 02.981% ] Update pattern matcher:  49
+[ 00.061% ] Weave Initializers:  1
 [ 00.000% ] Load shadow types:  0
-[ 01.603% ] Compute advice lists:  26
+[ 01.703% ] Compute advice lists:  28
 [ 00.000% ] Intertype weave:  0
-[ 00.000% ] Add aspect code:  0
-[ 00.986% ] Weaving advice:  16
-[ 00.062% ] Exceptions check:  1
+[ 00.061% ] Add aspect code:  1
+[ 00.973% ] Weaving advice:  16
+[ 00.061% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 09.926% ] Soot Packs:  161
-[ 09.001% ] Soot Writing Output:  146
+[ 09.732% ] Soot Packs:  160
+[ 09.976% ] Soot Writing Output:  164
 ================================================
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "A.before2: C.foo()" not found]
@@ -366,36 +338,34 @@ FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ke
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs bugs/Finalizer.java 
-Abc started on Mon Aug 23 02:24:28 BST 2004
+Abc started on Tue Aug 24 02:24:29 BST 2004
 [bugs/Finalizer.java]
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.ast.AspectDecl_c
 Transforming Finalizer... 
 Transforming FinalizeContract... 
 Transforming Abc$proceed$FinalizeContract$around$2595... 
-Abc finished on Mon Aug 23 02:24:29 BST 2004. ( 0 min. 0 sec. )
+Abc finished on Tue Aug 24 02:24:29 BST 2004. ( 0 min. 0 sec. )
 ================================================
-Breakdown of abc phases  (total: 567 millisec.)
+Breakdown of abc phases  (total: 593 millisec.)
 ------------------------------------------------
-[ 61.376% ] Init. of Soot:  348
-[ 00.176% ] Loading Jars:  1
+[ 61.383% ] Init. of Soot:  364
+[ 00.000% ] Loading Jars:  0
 [ 00.000% ] Create polyglot compiler:  0
-[ 18.166% ] Polyglot phases:  103
+[ 19.562% ] Polyglot phases:  116
 [ 00.000% ] Resolve class names:  0
 [ 00.000% ] Declare Parents:  0
-[ 00.000% ] Intertype Adjuster:  0
-[ 00.705% ] Retrieving bodies:  4
-[ 04.233% ] Update pattern matcher:  24
+[ 00.169% ] Intertype Adjuster:  1
+[ 01.180% ] Retrieving bodies:  7
+[ 05.902% ] Update pattern matcher:  35
 [ 00.000% ] Weave Initializers:  0
 [ 00.000% ] Load shadow types:  0
-[ 00.353% ] Compute advice lists:  2
-[ 00.000% ] Intertype weave:  0
-[ 00.176% ] Add aspect code:  1
-[ 00.353% ] Weaving advice:  2
-[ 00.000% ] Exceptions check:  0
+[ 00.337% ] Compute advice lists:  2
+[ 00.169% ] Intertype weave:  1
+[ 00.000% ] Add aspect code:  0
+[ 00.337% ] Weaving advice:  2
+[ 00.169% ] Exceptions check:  1
 [ 00.000% ] Validate jimple:  0
-[ 10.758% ] Soot Packs:  61
-[ 03.704% ] Soot Writing Output:  21
+[ 07.251% ] Soot Packs:  43
+[ 03.541% ] Soot Writing Output:  21
 ================================================
 Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
@@ -403,15 +373,30 @@ FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 Running test 77201: abctests/bugs/declare soft and throw statements
 Commandline: abc -d abctests/bugs abctests/bugs/ConvertToUnchecked.java 
-Abc started on Mon Aug 23 02:24:38 BST 2004
+Abc started on Tue Aug 24 02:24:41 BST 2004
 [abctests/bugs/ConvertToUnchecked.java]
-n.getClass()class abc.aspectj.ast.AspectDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
-n.getClass()class abc.aspectj.extension.AJClassDecl_c
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
 FAIL: Test 77201: "abctests/bugs/declare soft and throw statements" failed.
+
+
+Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
+Commandline: abc -d abctests/bugs/messyAround abctests/bugs/messyAround/aspects/Trace.aj abctests/bugs/messyAround/cap/OptionList.java abctests/bugs/messyAround/DebugTrace.aj 
+Abc started on Tue Aug 24 02:24:51 BST 2004
+[abctests/bugs/messyAround/aspects/Trace.aj, abctests/bugs/messyAround/cap/OptionList.java, abctests/bugs/messyAround/DebugTrace.aj]
+Compilation produced an unexpected number of errors: 10, should be 2
+Actual errors found: 
+Semantic Error at abctests/bugs/messyAround/DebugTrace.aj:11,11-34:1: No valid constructor found for aspects.Trace().
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:158,65-78: Could not find type "CodeSignature".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:169,65-85: Could not find type "CatchClauseSignature".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:174,38-47: Could not find type "JoinPoint".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:197,28-37: Could not find type "JoinPoint".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:284,48-68: Could not find type "StaticPart".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:305,45-54: Could not find type "JoinPoint".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:351,27-36: Could not find type "JoinPoint".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:379,48-57: Could not find type "JoinPoint".
+Semantic Error at abctests/bugs/messyAround/aspects/Trace.aj:468,20-29: Could not find type "JoinPoint".
+FAIL: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" failed.
 
 

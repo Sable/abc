@@ -3836,16 +3836,6 @@
         <compile files="StackError.java"></compile>
         <run class="StackError"></run>
     </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" pr="36056" num="784" dir="abctests/bugs/messyAround" abccomment="we only report the warning in one location. Also,           the main class is not declared public, which makes    this fail from the test harness. Cloned. PA">
-        <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-                <ajcmessage line="102" kind="warning"></ajcmessage>
-        	<ajcmessage line="124" kind="warning"></ajcmessage>
-        	<ajcmessage line="138" kind="warning"></ajcmessage>
-		<message line="102" kind="warning"></message>
-        	<message line="124" kind="warning"></message>
-        </compile>
-        <run class="cap.OptionList"></run>
-    </ajc-test>
 <ajc-test title="try/finally in around advice (same as ...messy arounds?)" num="785" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="TryFinallyInAround.java"></compile>
         <run class="TryFinallyInAround"></run>
