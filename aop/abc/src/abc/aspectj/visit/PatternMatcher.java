@@ -463,7 +463,7 @@ public class PatternMatcher {
 	    SootMethod method = methodref.resolve();
 	    boolean matches =
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
-		pattern.getName().name().getPattern().matcher(method.getName()).matches() &&
+		pattern.getName().name().getPattern().matcher(MethodCategory.getName(method)).matches() &&
 		matchesFormals(pattern.getFormals(), method.getParameterTypes()) &&
 		matchesModifiers(pattern.getModifiers(), method.getModifiers()) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
