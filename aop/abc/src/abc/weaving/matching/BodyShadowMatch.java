@@ -42,9 +42,8 @@ public abstract class BodyShadowMatch extends ShadowMatch {
 	}
 	
 	// change by Oege: some parameters are implicit
-	// List cvs = ret.subList(MethodCategory.getSkipFirst(container),count-MethodCategory.getSkipLast(container));
-	// return cvs;
+ 	List cvs = ret.subList(MethodCategory.getSkipFirst(container),count-MethodCategory.getSkipLast(container));
+	return cvs;
 	
-	return ret;
     }
 }
