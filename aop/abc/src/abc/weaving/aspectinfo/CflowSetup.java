@@ -217,8 +217,8 @@ public class CflowSetup extends AbstractAdviceDecl {
 	return new CflowSetupWeavingContext(getFormals().size());
     }
 
-    private SootField cflowStack=null;
-    public SootField getCflowStack() {
+    private SootFieldRef cflowStack=null;
+    public SootFieldRef getCflowStack() {
 	if(cflowStack==null) {
 
 	    if (!(cflowCounter==null)) {
@@ -234,14 +234,16 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    do {
 		name="abc$cflowStack$"+i;
 		i++;
-	    } while(cl.declaresFieldByName(name));
+	    } while(cl.XdeclaresFieldByName(name));
 	    
 	    SootClass stackClass=Scene.v()
 		.getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	    RefType stackType=stackClass.getType();
 
-	    cflowStack=new SootField(name,stackType,
-				     Modifier.PUBLIC | Modifier.STATIC);
+	    SootField cflowStackF=new SootField(name,stackType,
+						Modifier.PUBLIC | Modifier.STATIC);
+	    cl.addField(cflowStackF);
+	    cflowStack=cflowStackF.makeRef();
 
 	    SootMethod preClinit=new AspectCodeGen().getPreClinit(cl);
 	    LocalGeneratorEx lg=new LocalGeneratorEx
@@ -259,14 +261,11 @@ public class CflowSetup extends AbstractAdviceDecl {
 			       returnStmt);
 	    units.insertBefore(Jimple.v().newInvokeStmt
 			       (Jimple.v().newSpecialInvokeExpr
-				(loc,stackClass.getMethod
-				 (SootMethod.constructorName,
-				  new ArrayList()))),
+				(loc,Scene.v().makeConstructorRef(stackClass,new ArrayList()))),
 			       returnStmt);
 	    units.insertBefore(Jimple.v().newAssignStmt
 			       (Jimple.v().newStaticFieldRef(cflowStack),loc),
 			       returnStmt);
-	    cl.addField(cflowStack);
 	}
 	return cflowStack;
     }
@@ -274,8 +273,8 @@ public class CflowSetup extends AbstractAdviceDecl {
     // getCflowCounter retrieves the counter associated with a pcd
     //  - didn't use getCflowStack for this b/c confusing
 
-    private SootField cflowCounter=null;
-    public SootField getCflowCounter() {
+    private SootFieldRef cflowCounter=null;
+    public SootFieldRef getCflowCounter() {
 	if(cflowCounter==null) {
 
 	    if (!(cflowStack==null)) {
@@ -291,14 +290,17 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    do {
 		name="abc$cflowCounter$"+i;
 		i++;
-	    } while(cl.declaresFieldByName(name));   
+	    } while(cl.XdeclaresFieldByName(name));   
 	    
 	    SootClass counterClass=Scene.v()
 		.getSootClass("abc.runtime.internal.CFlowCounter");
 	    RefType counterType=counterClass.getType();
 
-	    cflowCounter=new SootField(name,counterType,
-			               Modifier.PUBLIC | Modifier.STATIC);
+	    SootField cflowCounterF=new SootField(name,counterType,
+						  Modifier.PUBLIC | Modifier.STATIC);
+	    cl.addField(cflowCounterF);
+
+	    cflowCounter=cflowCounterF.makeRef();
 
 	    SootMethod preClinit=new AspectCodeGen().getPreClinit(cl);
 	    LocalGeneratorEx lg=new LocalGeneratorEx
@@ -316,14 +318,11 @@ public class CflowSetup extends AbstractAdviceDecl {
 			       returnStmt);
 	    units.insertBefore(Jimple.v().newInvokeStmt
 			       (Jimple.v().newSpecialInvokeExpr
-				(loc,counterClass.getMethod
-				 (SootMethod.constructorName,
-				  new ArrayList()))),
+				(loc,Scene.v().makeConstructorRef(counterClass,new ArrayList()))),
 			       returnStmt);
 	    units.insertBefore(Jimple.v().newAssignStmt
 			       (Jimple.v().newStaticFieldRef(cflowCounter),loc),
 			       returnStmt);
-	    cl.addField(cflowCounter);
 	}
 	return cflowCounter;
     }
@@ -344,7 +343,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 		// call cflowcounter.inc()
 
-	    SootMethod inc=counterClass.getMethod("inc",new ArrayList());
+	    SootMethodRef inc=Scene.v().makeMethodRef(counterClass,"inc",new ArrayList(),VoidType.v());
 	    c.addLast(Jimple.v().newAssignStmt
 		      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
 	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,inc)));
@@ -354,7 +353,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 		// call cflowcounter.dec()
 
-	    SootMethod dec=counterClass.getMethod("dec",new ArrayList());
+	    SootMethodRef dec=Scene.v().makeMethodRef(counterClass,"dec",new ArrayList(),VoidType.v());
 	    c.addLast(Jimple.v().newAssignStmt
 		      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
 	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,dec)));
@@ -387,7 +386,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 	    ArrayList types=new ArrayList(1);
 	    types.add(ArrayType.v(object,1));
-	    SootMethod push=stackClass.getMethod("push",types);
+	    SootMethodRef push=Scene.v().makeMethodRef(stackClass,"push",types,VoidType.v());
 
 	    Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
 	    c.addLast(Jimple.v().newAssignStmt
@@ -401,7 +400,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    Chain c=new HashChain();
 	    SootClass stackClass=Scene.v()
 		.getSootClass("org.aspectj.runtime.internal.CFlowStack");
-	    SootMethod pop=stackClass.getMethod("pop",new ArrayList());
+	    SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v());
 	    Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
 	    c.addLast(Jimple.v().newAssignStmt
 		      (cflowStack,Jimple.v().newStaticFieldRef(getCflowStack())));

@@ -38,7 +38,7 @@ public class CflowResidue extends Residue {
 		 }
      }
 
-    private SootField getCflowStackOrCounter() {
+    private SootFieldRef getCflowStackOrCounter() {
 
 	/* Load field for class or counter from setup, depending on useCounter */
 

@@ -48,20 +48,20 @@ public class Validate {
 	    if(stmt instanceof InvokeStmt) iexpr=((InvokeStmt) stmt).getInvokeExpr();
 
 	    if(iexpr!=null) {
-		SootMethod called=iexpr.getMethod();
+		SootMethodRef called=iexpr.getMethodRef();
 
 		if(iexpr instanceof InstanceInvokeExpr) {
 		    InstanceInvokeExpr iiexpr=(InstanceInvokeExpr) iexpr;
-		    checkCopy(called.getDeclaringClass().getType(),
+		    checkCopy(called.declaringClass().getType(),
 			      iiexpr.getBase().getType(),
 			      " in receiver of call"+errorSuffix);
 		}
 
-		if(called.getParameterCount() != iexpr.getArgCount())
+		if(called.parameterTypes().size() != iexpr.getArgCount())
 		    System.err.println("Warning: Argument count doesn't match up with signature in call"+errorSuffix);
 		else 
 		    for(int i=0;i<iexpr.getArgCount();i++)
-			checkCopy(Type.toMachineType(called.getParameterType(i)),
+			checkCopy(Type.toMachineType(called.parameterType(i)),
 				  Type.toMachineType(iexpr.getArg(i).getType()),
 				  " in argument "+i+" of call"+errorSuffix);
 	    }

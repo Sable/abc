@@ -11,7 +11,7 @@ public class FieldSig extends Sig {
     private AbcClass cl;
     private AbcType type;
     private String name;
-    private SootField sf;
+    private SootFieldRef sfr=null;
 
     public FieldSig(int mod, AbcClass cl, AbcType type, String name, Position pos) {
 	super(pos);
@@ -41,13 +41,17 @@ public class FieldSig extends Sig {
 	return getSootField();
     }
 
-    public SootField getSootField() {
-	if (sf == null) {
+    public SootFieldRef getSootFieldRef() {
+	if (sfr == null) {
 	    SootClass sc = cl.getSootClass();
 	    soot.Type st = type.getSootType();
-	    sf = sc.getField(name, st);
+	    sfr = Scene.v().makeFieldRef(sc,name,st);
 	}
-	return sf;
+	return sfr;
+    }
+
+    public SootField getSootField() {
+	return getSootFieldRef().resolve();
     }
 
     public String toString() {

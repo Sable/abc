@@ -83,7 +83,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
 	List argsTypeList=new ArrayList(1);
 	argsTypeList.add(RefType.v("java.lang.Throwable"));
-	SootMethod constr=soft.getMethod(SootMethod.constructorName,argsTypeList);
+	SootMethodRef constr=Scene.v().makeConstructorRef(soft,argsTypeList);
 	units.addLast(Jimple.v().newInvokeStmt
 		      (Jimple.v().newSpecialInvokeExpr(softexc,constr,ex)));
 

@@ -20,7 +20,7 @@ import abc.weaving.aspectinfo.MethodCategory;
  * @author Ondrej Lhotak
  * @author Jennifer Lhotak
  * @author Sascha Kuzins
- * @date May 18, 2004
+ * @author Ganesh Sittampalam
  */
 
 public class Restructure {
@@ -79,7 +79,7 @@ public class Restructure {
 
           if ((u instanceof InvokeStmt) && 
 	      ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
-	      ((InvokeStmt) u).getInvokeExpr().getMethod().getName()
+	      ((InvokeStmt) u).getInvokeExpr().getMethodRef().name()
 	      .equals(SootMethod.constructorName) &&
 	      receivercopies.contains
 	      (((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).getBase()))
@@ -262,17 +262,19 @@ public class Restructure {
 	    (SpecialInvokeExpr)invokeStmt.getInvokeExpr();
 
         // if it is a this() call, need to do the inlining
-        if (specInvokeExpr.getMethod().getDeclaringClass().equals(
+        if (specInvokeExpr.getMethodRef().declaringClass().equals(
 	                         b.getMethod().getDeclaringClass())){
             
             // put locals from inlinee into container
-            if (!specInvokeExpr.getMethod().hasActiveBody()){
-                specInvokeExpr.getMethod().retrieveActiveBody();
+            if (!specInvokeExpr.getMethodRef().resolve().hasActiveBody()){
+                specInvokeExpr.getMethodRef().resolve().retrieveActiveBody();
             }
+
+	    Body inlineeBody=specInvokeExpr.getMethodRef().resolve().getActiveBody();
 
             HashMap oldLocalsToNew = new HashMap();
             
-            Iterator localsIt = specInvokeExpr.getMethod().getActiveBody().getLocals().iterator();
+            Iterator localsIt = inlineeBody.getLocals().iterator();
             while (localsIt.hasNext()){
                 Local l = (Local)localsIt.next();
                 Local newLocal = (Local)l.clone();
@@ -286,7 +288,7 @@ public class Restructure {
             HashMap oldStmtsToNew = new HashMap();
             
             //System.out.println("locals: "+b.getLocals());
-            Iterator inlineeIt = specInvokeExpr.getMethod().getActiveBody().getUnits().iterator();
+            Iterator inlineeIt = inlineeBody.getUnits().iterator();
             while (inlineeIt.hasNext()){
                 Stmt inlineeStmt = (Stmt)inlineeIt.next();
                
@@ -351,7 +353,7 @@ public class Restructure {
             }
                 
             // handleTraps
-            Iterator trapsIt = specInvokeExpr.getMethod().getActiveBody().getTraps().iterator();
+            Iterator trapsIt = inlineeBody.getTraps().iterator();
             while (trapsIt.hasNext()){
                 Trap t = (Trap)trapsIt.next();
                 debug("begin: "+t.getBeginUnit());
@@ -368,7 +370,7 @@ public class Restructure {
             }
 
             // patch gotos
-            inlineeIt = specInvokeExpr.getMethod().getActiveBody().getUnits().iterator();
+            inlineeIt = inlineeBody.getUnits().iterator();
             while (inlineeIt.hasNext()){
                 Stmt newStmt = (Stmt) oldStmtsToNew.get(inlineeIt.next());
 		Iterator unitBoxesIt=newStmt.getUnitBoxes().iterator();
@@ -483,7 +485,7 @@ public class Restructure {
 	Body b=m.getActiveBody();
 	Chain units=b.getUnits();
 	InvokeExpr e=stmt.getInvokeExpr();
-	Local l=new LocalGeneratorEx(b).generateLocal(e.getMethod().getReturnType(),"retval");
+	Local l=new LocalGeneratorEx(b).generateLocal(e.getMethodRef().returnType(),"retval");
 	AssignStmt a=Jimple.v().newAssignStmt(l,e);
 
 	units.swapWith(stmt,a);
@@ -624,7 +626,7 @@ public class Restructure {
 				SootMethod m=(SootMethod)it.next();
 				try {
 					
-					SootMethod m2=cl2.getMethod(m.getName(), m.getParameterTypes());
+					SootMethod m2=cl2.XgetMethod(m.getName(), m.getParameterTypes());
 					if (!m2.getReturnType().equals(m.getReturnType()))
 						return true;
 					
@@ -875,7 +877,7 @@ public class Restructure {
 				 List initParams=new LinkedList();
 				 initParams.add(sourceType);
 				 Stmt initBox=Jimple.v().newInvokeStmt( 
-				 	Jimple.v().newSpecialInvokeExpr( box, boxClass.getMethod( "<init>", initParams), 
+				 	Jimple.v().newSpecialInvokeExpr( box, Scene.v().makeConstructorRef(boxClass,initParams), 
 				 			castLocal)) ;
 				units.insertBefore(newAssignStmt, tmpStmt);
 				units.insertBefore(initBox, tmpStmt);
@@ -887,8 +889,11 @@ public class Restructure {
 				Local box=localgen.generateLocal(boxClass.getType(), "box");
 				Stmt newAssignStmt=Jimple.v().newAssignStmt(box, 
 					Jimple.v().newCastExpr(castLocal, boxClass.getType()));
-				SootMethod method=boxClass.getMethodByName(
-					JavaTypeInfo.getBoxingClassMethodName(targetType));
+				SootMethodRef method=Scene.v().makeMethodRef
+				    (boxClass,
+				     JavaTypeInfo.getBoxingClassMethodName(targetType),
+				     new ArrayList(),
+				     targetType);
 				castedExpr=Jimple.v().newVirtualInvokeExpr(box, 
 						 method);		
 				units.insertBefore(newAssignStmt, tmpStmt);						

@@ -2,6 +2,7 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
@@ -15,8 +16,8 @@ public class MethodSig extends Sig {
     private String name;
     private List/*<Formal>*/ formals;
     private List/*<AbcClass>*/ exc;
-    private SootMethod sm;
-    private List/*<SootClass>*/ sexc;
+    private SootMethodRef smr=null;
+    private List/*<SootClass>*/ sexc=null;
 
     /** Create a method signature.
      *  @param formals a list of {@link abc.weaving.aspectinfo.Formal} objects
@@ -78,8 +79,8 @@ public class MethodSig extends Sig {
 	return getSootMethod();
     }
 
-    public SootMethod getSootMethod() {
-	if (sm == null) {
+    public SootMethodRef getSootMethodRef() {
+	if (smr == null) {
 	    SootClass sc = cl.getSootClass();
 	    soot.Type srt = rtype.getSootType();
 	    List spt = new ArrayList();
@@ -88,25 +89,27 @@ public class MethodSig extends Sig {
 		Formal f = (Formal)fi.next();
 		spt.add(f.getType().getSootType());
 	    }
-	    try {
-	    	sm = sc.getMethod(name, spt);
-	    } catch (RuntimeException e) {
-	    	// output name and signature of method
-	    	String msg=name + "(";
-	    	for (Iterator it=spt.iterator();it.hasNext();) {
-	    		Type type=(Type)it.next();
-	    		msg += type.toString();
-	    		if (it.hasNext())
-	    			msg += ", ";
-	    	}
-	    	msg += ")";
-	    	throw new RuntimeException(
-	    				"Could not find method " + msg + 
-						" in class " + sc + 
-						": " + e.getMessage());
-	    }
+	    smr = Scene.v().makeMethodRef(sc,name,spt,srt);
 	}
-	return sm;
+	return smr;
+    }
+
+    public SootMethod getSootMethod() {
+	try {
+	    return getSootMethodRef().resolve();
+	} catch (RuntimeException e) {
+	    // output name and signature of method
+	    String msg=name + "(";
+	    for (Iterator it=formals.iterator();it.hasNext();) {
+		Formal f=(Formal)it.next();
+		msg += f.getType().getSootType().toString();
+		if (it.hasNext())
+		    msg += ", ";
+	    }
+	    msg += ")";
+	    throw new InternalCompilerError
+		("Problem while resolving "+msg+ " in class "+cl.getSootClass(),e);
+	}
     }
 
     public String toString() {

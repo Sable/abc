@@ -34,7 +34,7 @@ public class PerTargetSetup extends PerSetupAdvice {
 
 	c.addLast(Jimple.v().newInvokeStmt
 		  (Jimple.v().newStaticInvokeExpr
-		   (aspectclass.getMethod("abc$perTargetBind",paramTypes),
+		   (Scene.v().makeMethodRef(aspectclass,"abc$perTargetBind",paramTypes,VoidType.v()),
 		    svwc.value)));
 
 	return c;

@@ -39,7 +39,7 @@ public class IfResidue extends Residue {
 	while(it.hasNext())
 	    actuals.add(((WeavingVar) (it.next())).get());
 	Local ifresult=localgen.generateLocal(BooleanType.v(),"ifresult");
-	InvokeExpr ifcall=Jimple.v().newStaticInvokeExpr(impl,actuals);
+	InvokeExpr ifcall=Jimple.v().newStaticInvokeExpr(impl.makeRef(),actuals);
 	AssignStmt assign=Jimple.v().newAssignStmt(ifresult,ifcall);
 	Expr test;
 	if(sense) test=Jimple.v().newEqExpr(ifresult,IntConstant.v(0));

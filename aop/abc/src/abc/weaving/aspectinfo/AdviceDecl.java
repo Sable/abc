@@ -216,7 +216,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
 
 	Stmt s =Jimple.v().newInvokeStmt
 	    (Jimple.v().newVirtualInvokeExpr
-	     (awc.aspectinstance,advicemethod,awc.arglist)
+	     (awc.aspectinstance,advicemethod.makeRef(),awc.arglist)
 	     );
 	c.addLast(s);
 	return (c);

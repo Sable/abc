@@ -741,9 +741,9 @@ public class Main {
 				    if(super.isAlwaysNonNull(v)) return true;
 				    if(v instanceof soot.jimple.InvokeExpr) {
 					soot.jimple.InvokeExpr ie=(soot.jimple.InvokeExpr) v;
-					soot.SootMethod m=ie.getMethod();
-					if(m.getName().equals("makeJP") && 
-					   m.getDeclaringClass().getName().equals("org.aspectj.runtime.reflect.Factory"))
+					soot.SootMethodRef m=ie.getMethodRef();
+					if(m.name().equals("makeJP") && 
+					   m.declaringClass().getName().equals("org.aspectj.runtime.reflect.Factory"))
 					    return true;
 				    }
 				    return false;
