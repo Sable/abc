@@ -69,6 +69,8 @@ public class AdviceDecl_c extends MethodDecl_c
     protected LocalInstance thisJoinPointStaticPartInstance;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance;
     
+    protected int spec_retval_pos;
+
     // if the returnVal of "after returning" or "after throwing" is
     // specified, make it an additional parameter to the advice body
     private static List locs(Formal rt, List formals) {
@@ -105,6 +107,12 @@ public class AdviceDecl_c extends MethodDecl_c
 	          body);
 		this.spec = spec;
     	this.pc = pc;
+
+	if (spec.returnVal() != null) {
+	    spec_retval_pos = formals().size()-1;
+	} else {
+	    spec_retval_pos = -1;
+	}
     }
     
     
@@ -129,7 +137,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
 		List formals = visitList(this.formals, v);
 		List throwTypes = visitList(this.throwTypes, v);
-		AdviceSpec spec = (AdviceSpec) visitChild(this.spec, v);
+		//AdviceSpec spec = (AdviceSpec) visitChild(this.spec, v);
 		// FIXME: visiting spec gives duplicate errors!!
 		Pointcut pc = (Pointcut) visitChild(this.pc,v);
 		Block body = (Block) visitChild(this.body, v);
@@ -451,6 +459,10 @@ public class AdviceDecl_c extends MethodDecl_c
 	// Since the spec is not visited, we copy the (checked)
 	// return type node from the advice declaration
 	spec.setReturnType(returnType());
+	// And the return formal as well
+	if (spec_retval_pos != -1) {
+	    spec.setReturnVal((Formal)formals().get(spec_retval_pos));
+	}
 
 	abc.weaving.aspectinfo.AdviceDecl ad =
 	    new abc.weaving.aspectinfo.AdviceDecl

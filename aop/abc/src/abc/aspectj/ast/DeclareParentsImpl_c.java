@@ -40,7 +40,7 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 
     public Node visitChildren(NodeVisitor v) {
 	ClassnamePatternExpr pat = (ClassnamePatternExpr) visitChild(this.pat, v);
-	TypedList interfaces = (TypedList) visitList(this.interfaces, v);
+	TypedList interfaces = new TypedList(visitList(this.interfaces, v), TypeNode.class, true);
 	return reconstruct(pat, interfaces);
     }
 

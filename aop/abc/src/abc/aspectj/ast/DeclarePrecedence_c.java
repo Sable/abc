@@ -32,7 +32,7 @@ public class DeclarePrecedence_c extends DeclareDecl_c
     }
 
     public Node visitChildren(NodeVisitor v) {
-	TypedList pats = (TypedList) visitList(this.pats, v);
+	TypedList pats = new TypedList(visitList(this.pats, v), ClassnamePatternExpr.class, true);
 	return reconstruct(pats);
     }
 
