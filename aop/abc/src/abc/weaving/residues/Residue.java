@@ -272,4 +272,3 @@ public abstract class Residue {
 interface BindingLink {
 	public abstract WeavingVar getAdviceFormal(WeavingVar var);
 }
-

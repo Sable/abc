@@ -54,8 +54,11 @@ my $class;
 
 foreach my $line (@lines) {
   if($line=~/\@author\s+(\w[\w\s]*\w)/ && !exists $copyrightdone{$1}) {
-    push @copyrights,{'years'=>"$currentyear",'name'=>$1};
-    $copyrightdone{$1}=1;
+    my $name=$1;
+    if($name=~/\s/) { # rule out things like @author oege etc.
+       push @copyrights,{'years'=>"$currentyear",'name'=>$name};
+       $copyrightdone{$name}=1;
+    }
   }
   if($line=~/^package ([\w\.]+);/) {
     $package=$1;

@@ -1,4 +1,3 @@
-
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Oege de Moor
  *
@@ -17,6 +16,7 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 package abc.aspectj.types;
 
 import polyglot.types.ClassType;
