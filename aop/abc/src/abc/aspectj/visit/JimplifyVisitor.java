@@ -9,6 +9,8 @@ import soot.javaToJimple.*;
 
 import java.util.*;
 
+import abc.main.AbcTimer;
+
 public class JimplifyVisitor extends NodeVisitor {
     private Collection classes;
     private PCStructure hierarchy;
@@ -35,7 +37,13 @@ public class JimplifyVisitor extends NodeVisitor {
     }
 
     public void finish(Node n) {
+        // NOTE: if you move where the resolveClassAndSupportClasses is
+        //   called,  please also move the timer code with it. LJH
+	long beforetime = System.currentTimeMillis();
+	// FIXME: I think we can do better than this????
 	soot_res.resolveClassAndSupportClasses("java.lang.Object");
+	long aftertime = System.currentTimeMillis();
+	AbcTimer.addToSootResolve(aftertime-beforetime);
     }
 /*
     private class AspectSootResolver extends SootResolver {

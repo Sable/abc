@@ -6,6 +6,7 @@ import abc.aspectj.parse.Grm;
 import abc.aspectj.ast.*;
 import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
+import abc.main.AbcTimer;
 
 import polyglot.ast.*;
 import polyglot.types.*;
@@ -157,6 +158,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
 	 	// l.add(new OutputPass(Pass.OUTPUT, job, new Translator(job, ts, nf, targetFactory())));
 
+        // grab this list for the timing module
+        AbcTimer.storePolyglotPasses(l); 
         return l;
     }
 

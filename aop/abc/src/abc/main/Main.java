@@ -1,4 +1,3 @@
-
 package abc.main;
 
 import soot.*;
@@ -8,6 +7,7 @@ import soot.xml.*;
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
+import polyglot.frontend.Stats;
 
 import abc.weaving.weaver.*;
 import abc.weaving.aspectinfo.*;
@@ -48,7 +48,7 @@ public class Main {
 	for (int i = 0 ; i < args.length ; i++) {
 	    if (args[i].equals("+soot")) {
 		soot_args.add("-keep-line-number");
-		soot_args.add("-xml-attributes");
+		// soot_args.add("-xml-attributes");
 		while (++i < args.length && !args[i].equals("-soot")) {
 		    if(!args[i].equals("-keep-line-number") && !args[i].equals("-xml-attributes"))
 		       soot_args.add(args[i]);
@@ -78,12 +78,50 @@ public class Main {
     }
 
     public void run() throws CompilerFailedException {
+        // Timer start stuff
+        Date abcstart = new Date(); // wall clock time start
+	long abcstart_time = System.currentTimeMillis(); // java timer
+
+        Timers.v().totalTimer.start(); // Soot timer start
+        G.v().out.println("Abc started on " + abcstart);
+
+	// Main phases
+	AbcTimer.start(); // start the AbcTimer
+
 	initSoot();
+	AbcTimer.mark("Init. of Soot");
+
 	loadJars();
-	compile();
-	weave();
+	AbcTimer.mark("Loading Jars");
+
+	compile(); // Timers marked inside compile()
+
+	weave();   // Timers marked inside weave()
+
 	optimize();
+	AbcTimer.mark("Soot Packs");
+
 	output();
+        AbcTimer.mark("Soot Writing Output");
+
+	// Timer end stuff
+	Date abcfinish = new Date(); // wall clock time finish
+	long abcfinish_time = System.currentTimeMillis(); // java timer
+        G.v().out.println("Abc finished on " + abcfinish);
+        long runtime = abcfinish.getTime() - abcstart.getTime();
+        G.v().out.println( "Abc has run for " + (runtime / 60000)
+                + " min. " + ((runtime % 60000) / 1000) + " sec. (wall clock)");
+	G.v().out.println("Elapsed time is " + 
+	                  (abcfinish_time - abcstart_time) + 
+ 			  " milliseconds.");
+
+        // Print out Soot time stats, if Soot -time flag on.   
+        Timers.v().totalTimer.end();
+        if (soot.options.Options.v().time())
+          Timers.v().printProfilingInformation();
+
+	// Print out abc timer information
+	AbcTimer.report();
     }
 
     public void initSoot() throws IllegalArgumentException {
@@ -101,7 +139,8 @@ public class Main {
     public void compile() throws CompilerFailedException, IllegalArgumentException {
 	// Invoke polyglot
 	try {
-	    abc.aspectj.ExtensionInfo ext = new abc.aspectj.ExtensionInfo(weavable_classes);
+	    abc.aspectj.ExtensionInfo ext = 
+	        new abc.aspectj.ExtensionInfo(weavable_classes);
 	    Options options = ext.getOptions();
 	    options.assertions = true;
 	    options.serialize_type_info = false;
@@ -114,10 +153,15 @@ public class Main {
 	    }
 	    Options.global = options;
 	    Compiler compiler = createCompiler(ext);
+
 	    if (!compiler.compile(aspect_sources)) {
 		throw new CompilerFailedException("Compiler failed.");
 	    }
+
+	    AbcTimer.mark("Polyglot phases");
+	    AbcTimer.storePolyglotStats(ext.getStats());
 	    GlobalAspectInfo.v().transformClassNames(ext.hierarchy);
+	    AbcTimer.mark("Transform class names");
 	} catch (polyglot.main.UsageError e) {
 	    throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
 	}
@@ -137,6 +181,7 @@ public class Main {
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
         ita.adjust();
+	AbcTimer.mark("Intertype Adjuster");
 
         // retrieve all bodies
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
@@ -148,16 +193,19 @@ public class Main {
             }
         }
         
+	AbcTimer.mark("Retrieving bodies");
         ita.initialisers(); // weave the field initialisers into the constructors
+	AbcTimer.mark("Weave Initializers");
         
         // We should now have all classes as jimple
-        
-        
 
 	// Make sure that all the standard AspectJ shadow types are loaded
 	AspectJShadows.load();
+	AbcTimer.mark("Load shadow types");
 
         GlobalAspectInfo.v().computeAdviceLists();
+	AbcTimer.mark("Compute advice lists");
+
 	if(Debug.v.matcherTest) {
 	    System.err.println("--- BEGIN ADVICE LISTS ---");
 	    // print out matching information for testing purposes
@@ -177,7 +225,7 @@ public class Main {
         //generateDummyGAI();
 
         Weaver weaver = new Weaver();
-        weaver.weave();
+        weaver.weave(); // timer marks inside weave()
     }
 
     public void optimize(){
@@ -185,103 +233,8 @@ public class Main {
     }
     
     public void output() {
-	// Write classes
-   
-        PackManager.v().writeOutput();
-
-		/*Collection classes=new ArrayList();
-		classes.addAll(weavable_classes);
-		classes.addAll(GlobalAspectInfo.v().getGeneratedClasses());
-        Iterator/*<String>*/ /*wci = classes.iterator();
-        while (wci.hasNext()) {
-            String wc = (String) wci.next();
-            // System.out.println("Printing out " + wc);
-            SootClass sc = Scene.v().getSootClass(wc);
-		    Iterator mi = sc.getMethods().iterator();
-		    while (mi.hasNext()) {
-		        SootMethod m = (SootMethod)mi.next();
-		        if (m.hasActiveBody())
-		        	m.retrieveActiveBody();
-         	        }
-	   if (soot.options.Options.v().output_format() == 
-			soot.options.Options.output_format_class)
-             Printer.v().write(sc, classes_destdir);
-           else
-	     writeClass(sc);
-        }*/
+      // Write classes
+      PackManager.v().writeOutput();
     }
 
-
-    private void writeClass(SootClass c) {
-        final int format = soot.options.Options.v().output_format();
-        if( format == soot.options.Options.output_format_none ) return;
-        if( format == soot.options.Options.output_format_dava ) return;
-
-        FileOutputStream streamOut = null;
-        PrintWriter writerOut = null;
-        boolean noOutputFile = false;
-
-        String fileName = SourceLocator.v().getFileNameFor(c, format);
-
-        if (format != soot.options.Options.output_format_class) {
-            try {
-                streamOut = new FileOutputStream(fileName);
-                writerOut = new PrintWriter(new OutputStreamWriter(streamOut));
-                G.v().out.println( "Writing to "+fileName );
-            } catch (IOException e) {
-                G.v().out.println("Cannot output file " + fileName);
-            }
-        }
-
-        //if (soot.options.Options.v().xml_attributes()) {
-        //    Printer.v().setOption(Printer.ADD_JIMPLE_LN);
-        // }
-	
-        Printer.v().clearOption(Printer.ADD_JIMPLE_LN);
-	
-        switch (format) {
-            case soot.options.Options.output_format_jasmin :
-                if (c.containsBafBody())
-                    new soot.baf.JasminClass(c).print(writerOut);
-                else
-                    new soot.jimple.JasminClass(c).print(writerOut);
-                break;
-            case soot.options.Options.output_format_jimp :
-            case soot.options.Options.output_format_shimp :
-            case soot.options.Options.output_format_b :
-            case soot.options.Options.output_format_grimp :
-                Printer.v().setOption(Printer.USE_ABBREVIATIONS);
-                Printer.v().printTo(c, writerOut);
-                break;
-            case soot.options.Options.output_format_baf :
-            case soot.options.Options.output_format_jimple :
-            case soot.options.Options.output_format_shimple :
-            case soot.options.Options.output_format_grimple :
-                writerOut =
-                    new PrintWriter(
-                        new EscapedWriter(new OutputStreamWriter(streamOut)));
-                Printer.v().printTo(c, writerOut);
-                break;
-            case soot.options.Options.output_format_class :
-                Printer.v().write(c, SourceLocator.v().getOutputDir());
-                break;
-            case soot.options.Options.output_format_xml :
-                writerOut =
-                    new PrintWriter(
-                        new EscapedWriter(new OutputStreamWriter(streamOut)));
-                XMLPrinter.v().printJimpleStyleTo(c, writerOut);
-                break;
-            default :
-                throw new RuntimeException();
-        }
-
-        if (format != soot.options.Options.output_format_class) {
-            try {
-                writerOut.flush();
-                streamOut.close();
-            } catch (IOException e) {
-                G.v().out.println("Cannot close output file " + fileName);
-            }
-        }
-    }
 }
