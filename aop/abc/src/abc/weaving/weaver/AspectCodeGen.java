@@ -42,7 +42,7 @@ public class AspectCodeGen {
     /** top-level call to fill in singleton aspect with fields and methods */
     public void fillInSingletonAspect( Aspect aspct ) 
       { debug("--- BEGIN filling in Singleton aspect "+ 
-            aspct.getInstanceClass().getName() );
+            aspct.getName() );
         SootClass cl = aspct.getInstanceClass().getSootClass();
 
         // add public static final abc$perSingletonInstance field
@@ -311,7 +311,7 @@ public class AspectCodeGen {
     /** top-level call to fill in per aspect with fields and methods */
     public void fillInPerAspect( Aspect aspct ) 
       { SootClass cl = aspct.getInstanceClass().getSootClass();
-        String aname = aspct.getInstanceClass().getName();
+        String aname = aspct.getName();
         String perkind = 
           aspct.getPer() instanceof PerThis ? "This" : "Target";
 

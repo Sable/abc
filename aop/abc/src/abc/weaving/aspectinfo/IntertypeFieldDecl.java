@@ -53,6 +53,6 @@ public class IntertypeFieldDecl extends Syntax {
     }
 
     public String toString() {
-	return "(in aspect "+aspect.getInstanceClass().getName()+") "+target+";";
+	return "(in aspect "+aspect.getName()+") "+target+";";
     }
 }

@@ -7,6 +7,7 @@ import abc.aspectj.ast.*;
 import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
 import abc.main.AbcTimer;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import polyglot.ast.*;
 import polyglot.types.*;
@@ -65,6 +66,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	this.hierarchy = new PCStructure();
 	this.pattern_matcher = PatternMatcher.create(hierarchy);
 	hierarchy.insertAllSootClassesByName(weavable_classes, true);
+	GlobalAspectInfo.v().insertAllSootClassesByName(weavable_classes);
     }
 
     static {

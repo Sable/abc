@@ -274,7 +274,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	     position());
 	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
 	    (AspectInfoHarvester.convertModifiers(origflags),
-	     gai.getClass(host.toString()),
+	     gai.getClass(host.type()),
 	     AspectInfoHarvester.toAbcType(returnType().type()),
 	     name(),
 	     formals,

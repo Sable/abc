@@ -13,6 +13,7 @@ import java.util.*;
 public class HierarchyBuilder extends NodeVisitor {
     private PCStructure hierarchy;
     private Collection weavable_classes;
+    private Map/*<ParsedClassType,String>*/ seen_classes_name = new HashMap();
 
     public HierarchyBuilder(PCStructure hierarchy, Collection weavable_classes) {
 	this.hierarchy = hierarchy;
@@ -21,12 +22,36 @@ public class HierarchyBuilder extends NodeVisitor {
 
     public NodeVisitor enter(Node n) {
 	if (n instanceof ClassDecl) {
-	    String name = ((ClassDecl)n).type().fullName();
-	    // System.out.println("Weavable class: "+name);
-	    PCNode pc = hierarchy.insertClass(name, true);
-	    setParents(pc, ((ClassDecl)n).type());
-	    weavable_classes.add(name);
-	    GlobalAspectInfo.v().addClass(new AbcClass(name));
+	    boolean debug = abc.main.Debug.v().classKinds;
+	    ParsedClassType ct = ((ClassDecl)n).type();
+	    String java_name = ct.fullName();
+	    if (ct.kind() == ClassType.ANONYMOUS || ct.kind() == ClassType.LOCAL) {
+		GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type()));
+		if (debug) System.err.println("Local class: "+java_name);
+	    } else if (ct.kind() == ClassType.MEMBER) {
+		ReferenceType cont = ct.container();
+		if (seen_classes_name.containsKey(cont)) {
+		    String cont_name = (String)seen_classes_name.get(cont);
+		    String jvm_name = cont_name+"$"+ct.name();
+		    PCNode pc = hierarchy.insertClass(java_name, true);
+		    setParents(pc, ct);
+		    weavable_classes.add(jvm_name);
+		    GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type(), java_name));
+		    seen_classes_name.put(ct, jvm_name);
+		    if (debug) System.err.println("Visible inner class: "+java_name+" ("+jvm_name+")");
+		} else {
+		    GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type()));
+		    if (debug) System.err.println("Invisible inner class: "+java_name);
+		}
+	    } else if (ct.kind() == ClassType.TOP_LEVEL) {
+		PCNode pc = hierarchy.insertClass(java_name, true);
+		setParents(pc, ct);
+		weavable_classes.add(java_name);
+		GlobalAspectInfo.v().addClass(new AbcClass(((ClassDecl)n).type(), java_name));
+		seen_classes_name.put(ct, java_name);
+		if (debug) System.err.println("Toplevel class: "+java_name);
+	    }
+	    
 	}
 	return this;
     }

@@ -92,7 +92,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 	    throw new RuntimeException("Error in aspect info generation: Method is not in a named class");
 	}
 	int mod = convertModifiers(md.flags());
-	AbcClass cl = GlobalAspectInfo.v().getClass(((ParsedClassType)mcc).fullName());
+	AbcClass cl = GlobalAspectInfo.v().getClass(mcc);
 	AbcType rtype = toAbcType(md.returnType().type());
 	String name = md.name();
 	List formals = convertFormals(md.formals());
@@ -122,7 +122,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 	    Type t = (Type)ti.next();
 	    exc.add(t.toString());
 	}
-	AbcClass container = GlobalAspectInfo.v().getClass(mi.container().toClass().toString());
+	AbcClass container = GlobalAspectInfo.v().getClass(mi.container());
 	AbcType returnType = AspectInfoHarvester.toAbcType(mi.returnType());
 	int mod = AspectInfoHarvester.convertModifiers(mi.flags());
 	return new MethodSig (mod,container,returnType,mi.name(),formals,exc,mi.position());	

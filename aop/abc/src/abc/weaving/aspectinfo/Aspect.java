@@ -25,7 +25,11 @@ public class Aspect extends Syntax {
 	return per;
     }
 
+    public String getName() {
+	return cl.getJavaName();
+    }
+
     public String toString() {
-	return "aspect "+cl.getName()+" "+per;
+	return "aspect "+getName()+" "+per;
     }
 }

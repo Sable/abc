@@ -13,6 +13,7 @@ import abc.weaving.matching.MethodAdviceList;
 
 /** All aspect-specific information for an entire program. */
 public class GlobalAspectInfo {
+    private GlobalAspectInfo() {}
     private static GlobalAspectInfo instance = new GlobalAspectInfo();
     public static GlobalAspectInfo v() { return instance; }
 
@@ -43,7 +44,8 @@ public class GlobalAspectInfo {
 	// additional generated classes that need to be output in the end
 	//private Collection/*<String>*/ generated_classes = new ArrayList();
 	
-    private Map/*<String,AbcClass>*/ classes_map = new HashMap();
+    private Map/*<polyglot.types.Type,AbcClass>*/ type_class_map = new HashMap();
+    private Map/*<SootClass,AbcClass>*/ soot_class_map = new HashMap();
     private Map/*<String,Aspect>*/ aspects_map = new HashMap();
     private Map/*<String,Set<PointcutDecl>>*/ pc_map = new HashMap();
     private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();
@@ -54,16 +56,20 @@ public class GlobalAspectInfo {
     private Map/*<String,Integer>*/ method_skip_first = new HashMap();
     private Map/*<String,Integer>*/ method_skip_last = new HashMap();
 
-    public GlobalAspectInfo() {
-	
+    public void insertAllSootClassesByName(Collection weavable_classes) {
+	Iterator cni = weavable_classes.iterator();
+	while (cni.hasNext()) {
+	    String cn = (String)cni.next();
+	    addClass(new AbcClass(Scene.v().getSootClass(cn)));
+	}
     }
 
-    public void transformClassNames(PCStructure hierarchy) {
+    public void resolveClassNames() {
 	// Transform the class names from Java names to JVM names
 	Iterator ci = classes.iterator();
 	while (ci.hasNext()) {
 	    AbcClass c = (AbcClass)ci.next();
-	    c.transformName(hierarchy);
+	    addClassToSootMap(c);
 	}
 
 	// Build the aspect hierarchy
@@ -203,8 +209,12 @@ public class GlobalAspectInfo {
 	return dms;
     }
 
-    public AbcClass getClass(String name) {
-	return (AbcClass)classes_map.get(name);
+    public AbcClass getClass(polyglot.types.Type type) {
+	return (AbcClass)type_class_map.get(type);
+    }
+
+    public AbcClass getClass(SootClass sc) {
+	return (AbcClass)soot_class_map.get(sc);
     }
 
     public Aspect getAspect(String name) {
@@ -212,16 +222,26 @@ public class GlobalAspectInfo {
     }
 
     public void addClass(AbcClass cl) {
-	if (!classes_map.containsKey(cl.getName())) {
-	    classes.add(cl);
-	    classes_map.put(cl.getName(),cl);
+	classes.add(cl);
+	if (cl.getPolyglotType() != null) {
+	    addClassToTypeMap(cl);
+	} else {
+	    addClassToSootMap(cl);
 	}
     }
 
+    void addClassToTypeMap(AbcClass cl) {
+	type_class_map.put(cl.getPolyglotType(), cl);
+    }
+
+    void addClassToSootMap(AbcClass cl) {
+	soot_class_map.put(cl.getSootClass(), cl);
+    }
+
     public void addAspect(Aspect aspect) {
-	if (!aspects_map.containsKey(aspect.getInstanceClass().getName())) {
+	if (!aspects_map.containsKey(aspect.getName())) {
 	    aspects.add(aspect);
-	    aspects_map.put(aspect.getInstanceClass().getName(),aspect);
+	    aspects_map.put(aspect.getName(),aspect);
 	}
     }
 
@@ -343,7 +363,7 @@ public class GlobalAspectInfo {
 		    if (pat.matchesClass(asc)) {
 			// It is an error if an aspect is matched twice on the same list
 			if (passed.contains(a)) {
-			    throw new SemanticException("Aspect "+a.getInstanceClass().getName()+
+			    throw new SemanticException("Aspect "+a.getName()+
 							" is matched by more than one pattern on the precedence list",
 							dpr.getPosition());
 			}
@@ -353,8 +373,8 @@ public class GlobalAspectInfo {
 			    Aspect pa = (Aspect)pai.next();
 			    ((Set)prec_rel.get(pa)).add(a);
 			    if (abc.main.Debug.v().precedenceRelation) {
-				System.err.println("aspect "+pa.getInstanceClass().getName()+
-						   " has precedence over aspect "+a.getInstanceClass().getName());
+				System.err.println("aspect "+pa.getName()+
+						   " has precedence over aspect "+a.getName());
 			    }
 			}
 			// Add it to the current set

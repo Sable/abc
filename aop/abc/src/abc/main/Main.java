@@ -195,13 +195,14 @@ public class Main {
     }
 
     public void addJarsToClasspath() {
-	StringBuffer sb = new StringBuffer(classpath);
+	StringBuffer sb = new StringBuffer();
 	Iterator jari = in_jars.iterator();
 	while (jari.hasNext()) {
 	    String jar = (String)jari.next();
-	    sb.append(":");
 	    sb.append(jar);
+	    sb.append(":");
 	}
+	sb.append(classpath);
 	classpath = sb.toString();
     }
 
@@ -215,7 +216,21 @@ public class Main {
     }
 
     public void loadJars() throws CompilerFailedException {
-        // TODO
+	// Load the classes in all given jars
+	Iterator jari = in_jars.iterator();
+	while (jari.hasNext()) {
+	    String jar = (String)jari.next();
+	    List jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
+	    weavable_classes.addAll(jar_classes);
+	}
+
+	// Make them all application classes
+	Iterator cni = weavable_classes.iterator();
+	while (cni.hasNext()) {
+	    String cn = (String)cni.next();
+	    SootClass sc = Scene.v().getSootClass(cn);
+	    sc.setApplicationClass();
+	}
     }
 
     public void compile() throws CompilerFailedException, IllegalArgumentException {
@@ -244,8 +259,8 @@ public class Main {
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
 
-            GlobalAspectInfo.v().transformClassNames(ext.hierarchy);
-            AbcTimer.mark("Transform class names");
+            GlobalAspectInfo.v().resolveClassNames();
+            AbcTimer.mark("Resolve class names");
 
         } catch (polyglot.main.UsageError e) {
             throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);

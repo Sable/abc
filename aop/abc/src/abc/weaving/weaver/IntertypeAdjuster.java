@@ -185,7 +185,7 @@ public class IntertypeAdjuster {
 
 		// This is an accessor method for reading a field
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
-		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(),
+		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getJavaName(),
 							0,0);
     }
     
@@ -233,7 +233,7 @@ public class IntertypeAdjuster {
 
 		// This is an accessor method for reading a field
 			MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
-			MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName(),
+			MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getJavaName(),
 								0,0);
 		}
     
@@ -457,7 +457,7 @@ public class IntertypeAdjuster {
 		
 				// This is a stub for an intertype method decl
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
-				MethodCategory.registerRealNameAndClass(sm, method.getName(), method.getDeclaringClass().getName(),
+				MethodCategory.registerRealNameAndClass(sm, method.getName(), method.getDeclaringClass().getJavaName(),
 									0,0); //FIXME: Extra formals?
 	}
 	

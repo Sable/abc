@@ -3,6 +3,7 @@ package abc.aspectj.visit;
 
 import abc.aspectj.ast.*;
 
+import polyglot.types.*;
 import polyglot.ast.*;
 import polyglot.visit.*;
 import polyglot.util.*;
@@ -15,6 +16,8 @@ public class NamePatternEvaluator extends HaltingVisitor {
     protected PCNode context;
 
     protected abc.aspectj.ExtensionInfo ext_info;
+
+    private Set/*<ParsedClassType>*/ seen_classes = new HashSet();
 
     public NamePatternEvaluator(abc.aspectj.ExtensionInfo ext_info) {
 	this.ext_info = ext_info;
@@ -39,8 +42,13 @@ public class NamePatternEvaluator extends HaltingVisitor {
 	    return this;
 	}
 	if (n instanceof ClassDecl) {
-	    String name = ((ClassDecl)n).type().fullName();
-	    context = ext_info.hierarchy.getClass(name);
+	    ParsedClassType ct = ((ClassDecl)n).type();
+	    if (ct.kind() == ClassType.TOP_LEVEL ||
+		(ct.kind() == ClassType.MEMBER && seen_classes.contains(ct.container()))) {
+		String name = ((ClassDecl)n).type().fullName();
+		context = ext_info.hierarchy.getClass(name);
+		seen_classes.add(ct);
+	    }
 	    return this;
 	}
 	if (n instanceof NamePattern) {

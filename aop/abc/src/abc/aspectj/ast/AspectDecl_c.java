@@ -147,7 +147,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	Per p = (per == null ? new Singleton(position()) : per.makeAIPer());
-	AbcClass cl = gai.getClass(type().fullName());
+	AbcClass cl = gai.getClass(type());
 	Aspect a = new Aspect(cl, p, position());
 	gai.addAspect(a);
 		    

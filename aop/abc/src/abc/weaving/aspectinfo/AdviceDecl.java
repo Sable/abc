@@ -207,14 +207,14 @@ public class AdviceDecl extends AbstractAdviceDecl {
 
 
     public String toString() {
-	return "(in aspect "+aspect.getInstanceClass().getName()+") "+spec+": "+pc+" >> "+impl+" <<"
+	return "(in aspect "+aspect.getName()+") "+spec+": "+pc+" >> "+impl+" <<"
 	    +(hasJoinPoint() ? " thisJoinPoint" : "")
 	    +(hasJoinPointStaticPart() ? " thisJoinPointStaticPart" : "")
 	    +(hasEnclosingJoinPoint() ? " thisEnclosingJoinPoint" : "");
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+" in aspect: "+aspect.getInstanceClass().getName()+"\n");
+	sb.append(prefix+" in aspect: "+aspect.getName()+"\n");
 	sb.append(prefix+" type: "+spec+"\n");
 	sb.append(prefix+" pointcut: "+pc+"\n");
 	sb.append(prefix+" implementation: "+impl+"\n");

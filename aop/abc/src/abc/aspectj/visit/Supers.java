@@ -66,13 +66,13 @@ public class Supers {
 							name,
 							new abc.weaving.aspectinfo.MethodSig(
 								AspectInfoHarvester.convertModifiers(mi.flags()),
-									gai.getClass(mi.container().toString()),
+									gai.getClass(mi.container()),
 									AspectInfoHarvester.toAbcType(mi.returnType()),
 									mi.name(),
 									formals,
 									exc,
 									position),
-							gai.getClass(target.toString()));
+							gai.getClass(target));
 					}
 	}
     
@@ -113,12 +113,12 @@ public class Supers {
 				   convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
 			return new abc.weaving.aspectinfo.SuperFieldGet(
 					 new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
-							gai.getClass(fi.container().toClass().toString()),   // the containing aspect
+							gai.getClass(fi.container()),   // the containing aspect
 							AspectInfoHarvester.toAbcType(fi.type()),
 							fi.name(), 
 							position),
 							name,
-							gai.getClass(target.toString()));
+							gai.getClass(target));
 				   }
    }
    
@@ -140,12 +140,12 @@ public class Supers {
 					 convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
 			  return new abc.weaving.aspectinfo.SuperFieldSet(
 					   new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
-							  gai.getClass(fi.container().toClass().toString()),   // the containing aspect
+							  gai.getClass(fi.container()),   // the containing aspect
 							  AspectInfoHarvester.toAbcType(fi.type()),
 							  fi.name(), 
 							  position),
 							  name,
-							  gai.getClass(target.toString()));
+							  gai.getClass(target));
 					 }
 	 }
 
@@ -230,14 +230,14 @@ public class Supers {
 			return	new abc.weaving.aspectinfo.QualThis(
 							new abc.weaving.aspectinfo.MethodSig(
 								AspectInfoHarvester.convertModifiers(mi.flags()),
-									gai.getClass(mi.container().toString()),
+									gai.getClass(mi.container()),
 									AspectInfoHarvester.toAbcType(mi.returnType()),
 									mi.name(),
 									formals,
 									exc,
 									position),
-							gai.getClass(target.toString()),
-							gai.getClass(qualifier.toString()));
+							gai.getClass(target),
+							gai.getClass(qualifier));
 					}
 	}
     

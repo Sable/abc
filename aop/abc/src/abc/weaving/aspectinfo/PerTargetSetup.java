@@ -50,7 +50,7 @@ public class PerTargetSetup extends PerSetupAdvice {
     }
 
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+" from aspect: "+getAspect().getInstanceClass().getName()+"\n");
+	sb.append(prefix+" from aspect: "+getAspect().getName()+"\n");
 	sb.append(prefix+" type: "+spec+"\n");
 	sb.append(prefix+" pointcut: "+pc+"\n");
 	sb.append(prefix+" special: pertarget instantiation\n");

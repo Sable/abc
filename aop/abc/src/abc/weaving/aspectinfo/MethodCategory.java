@@ -275,7 +275,7 @@ public class MethodCategory {
     public static String getClassName(MethodSig m) {
 	String real_class = GlobalAspectInfo.v().getRealClass(signature(m));
 	if (real_class == null) {
-	    return d2d(m.getDeclaringClass().getName());
+	    return m.getDeclaringClass().getJavaName();
 	} else {
 	    return real_class;
 	}
