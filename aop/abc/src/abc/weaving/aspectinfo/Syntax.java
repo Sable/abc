@@ -3,6 +3,7 @@ package arc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
+/** Base class for anything that corresponds to some syntax in the program. */
 public class Syntax {
     private Position pos;
 

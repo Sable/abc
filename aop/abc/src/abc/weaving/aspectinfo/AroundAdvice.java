@@ -4,6 +4,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** Advice specification for around advice. */
 public class AroundAdvice extends AbstractAdviceSpec {
     private Type rtype;
     private MethodSig proceed;

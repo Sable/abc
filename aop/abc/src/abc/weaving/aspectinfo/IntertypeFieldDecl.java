@@ -5,6 +5,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** An intertype field declaration. */
 public class IntertypeFieldDecl extends Syntax {
     private FieldSig target;
     private Aspect aspect;

@@ -3,6 +3,7 @@ package arc.weaving.aspectinfo;
 
 import soot.*;
 
+/** A weavable class. */
 public class Class {
     private String name;
     private SootClass sc;

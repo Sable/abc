@@ -4,6 +4,9 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** A pointcut designator representing a set of joinpoint shadows
+ *  at which the pointcut will match.
+ */
 public class ShadowPointcut extends AbstractPointcut {
     private ShadowPointcutHandler handler;
 

@@ -5,6 +5,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** An advice declaration. */
 public class AdviceDecl extends Syntax {
     private AdviceSpec spec;
     private Pointcut pc;

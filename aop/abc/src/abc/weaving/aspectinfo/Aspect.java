@@ -5,6 +5,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** An aspect in the program. */
 public class Aspect extends Syntax {
     private Class cl;
     private Per per;

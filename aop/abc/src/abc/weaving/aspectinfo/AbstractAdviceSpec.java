@@ -4,6 +4,9 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** Skeleton implementation of the {@link arc.weaving.aspectinfo.AdviceSpec} interface.
+ *  Useful when implementing advice specifications.
+ */
 public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {
     private AdviceDecl advice;
 

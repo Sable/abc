@@ -4,6 +4,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** Pointcut disjunction. */
 public class OrPointcut extends AbstractPointcut {
     private Pointcut pc1;
     private Pointcut pc2;

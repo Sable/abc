@@ -3,6 +3,7 @@ package arc.weaving.aspectinfo;
 
 import soot.*;
 
+/** A Java type. */
 public class Type {
     private String name;
     private soot.Type st;

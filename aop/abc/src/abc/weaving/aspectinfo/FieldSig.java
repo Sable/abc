@@ -5,6 +5,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** A field signature. */
 public class FieldSig extends Syntax {
     private Class cl;
     private Type type;

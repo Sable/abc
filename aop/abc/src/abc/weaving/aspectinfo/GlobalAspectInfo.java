@@ -6,6 +6,7 @@ import soot.*;
 
 import java.util.*;
 
+/** All aspect-specific information for an entire program. */
 public class GlobalAspectInfo {
     private List/*<Class>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();

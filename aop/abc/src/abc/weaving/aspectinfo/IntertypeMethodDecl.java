@@ -5,6 +5,7 @@ import polyglot.util.Position;
 
 import soot.*;
 
+/** An intertype method declaration. */
 public class IntertypeMethodDecl extends Syntax {
     private MethodSig target;
     private MethodSig impl;

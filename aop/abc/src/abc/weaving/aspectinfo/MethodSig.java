@@ -7,6 +7,7 @@ import soot.*;
 
 import java.util.*;
 
+/** A method signature. */
 public class MethodSig extends Syntax {
     private Class cl;
     private Type rtype;
