@@ -15,6 +15,7 @@ import polyglot.ast.Local;
 import polyglot.ast.Field;
 import polyglot.ast.Call;
 import polyglot.ast.New;
+import polyglot.ast.Special;
 
 import polyglot.visit.NodeVisitor;
 
@@ -29,9 +30,11 @@ import abc.aspectj.ast.PointcutDecl;
 import abc.aspectj.ast.ProceedCall;
 
 import abc.aspectj.ast.IntertypeFieldDecl;
+import abc.aspectj.ast.IntertypeMethodDecl;
 import abc.aspectj.ast.IntertypeFieldDecl_c;
 import abc.aspectj.ast.IntertypeMethodDecl_c;
 import abc.aspectj.ast.IntertypeConstructorDecl_c;
+import abc.aspectj.ast.HostSpecial_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeFieldInstance_c;
@@ -45,6 +48,7 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
     private Stack /* List AdviceDecl */ advices;
     private Stack /* ParsedClassType */ container; // Keep track of current container
+    private Stack /* IntertypeMethodDecl */ itmethod;
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
@@ -58,6 +62,7 @@ public class AspectMethods extends NodeVisitor {
 		this.proceeds = new Stack();
 		this.advices = new Stack();
 		this.container = new Stack();
+		this.itmethod = new Stack();
 	}
 	
 	public NodeVisitor enter(Node n) {
@@ -75,6 +80,9 @@ public class AspectMethods extends NodeVisitor {
 			proceeds.push(md);
 			formals.push(ad.formals());
 			advices.push(ad);
+		}
+		if (n instanceof IntertypeMethodDecl) {
+			itmethod.push(n);
 		}
 		return this;
 	 }
@@ -103,7 +111,7 @@ public class AspectMethods extends NodeVisitor {
 		}
 		if (n instanceof IntertypeMethodDecl_c) {
 			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
-			return itmd.accessChange();
+			return ((IntertypeMethodDecl_c) itmd.accessChange()).thisParameter(nf,ts);
 		}
 		if (n instanceof ConstructorCall) {
 				ConstructorCall cc = (ConstructorCall) n;
@@ -124,6 +132,12 @@ public class AspectMethods extends NodeVisitor {
 		if (n instanceof IntertypeConstructorDecl_c) {
 			IntertypeConstructorDecl_c itcd = (IntertypeConstructorDecl_c) n;
 			return itcd.accessChange(nf,ts);
+		}
+		if (n instanceof HostSpecial_c) {
+			HostSpecial_c hs = (HostSpecial_c) n;
+			if (hs.kind() == Special.THIS)
+				return ((IntertypeMethodDecl_c) itmethod.peek()).thisReference(nf,ts);
+			else return n;
 		}
 /* advice: */
 		if (n instanceof AdviceDecl) {

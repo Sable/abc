@@ -3,11 +3,15 @@ package abc.aspectj.ast;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
 import polyglot.ast.Node;
+import polyglot.ast.Expr;
+import polyglot.ast.Local;
+
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
@@ -27,6 +31,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 {
     protected TypeNode host;
     protected InterTypeMethodInstance_c itMethodInstance;
+    protected LocalInstance thisParamInstance;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -85,6 +90,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		                                               		methodInstance().throwTypes());
 	    	((ParsedClassType)ht).addMethod(mi);
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
+	    	
+	    	/* record instance for "this" parameter */
+	    	String name = UniqueID.newID("this");
+	    	thisParamInstance = ts.localInstance(position,Flags.NONE,host.type(),name);
 		}
         return am.bypassChildren(this);
     }
@@ -105,7 +114,38 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		}
 		return this;
 	}
-    
+	
+	/**
+	 * introduce "this" as first parameter
+	 * @author Oege de Moor
+	 */
+	public IntertypeMethodDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+		
+		// create the new list of formals
+		TypeNode tn = nf.CanonicalTypeNode(position,thisParamInstance.type());
+		Formal newformal = nf.Formal(position,thisParamInstance.flags(),tn,thisParamInstance.name());
+		newformal = newformal.localInstance(thisParamInstance);
+		List formals = new LinkedList(formals());
+		formals.add(0,newformal);
+		
+		// create the new methodinstance
+		MethodInstance mi = methodInstance();
+		List newtypes = new LinkedList(mi.formalTypes());
+		newtypes.add(0,thisParamInstance.type());
+		mi = mi.formalTypes(newtypes);
+		
+		return (IntertypeMethodDecl) formals(formals).methodInstance(mi);
+	}
+	
+	/**
+	 * create a reference to the "this" parameter
+	 * @author Oege de Moor
+	 */
+    public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+    	Local x = nf.Local(position,thisParamInstance.name());
+    	x = x.localInstance(thisParamInstance);
+    	return x;
+    }
 
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		if (flags().isProtected())
