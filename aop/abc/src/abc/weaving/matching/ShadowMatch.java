@@ -24,12 +24,12 @@ public abstract class ShadowMatch {
     public abstract ShadowMatch getEnclosing();
 
     /** construct the sjpInfo structure */
-    protected abstract AdviceApplication.SJPInfo makeSJPInfo();
+    protected abstract SJPInfo makeSJPInfo();
 
-    private AdviceApplication.SJPInfo sjpInfo=null;
+    private SJPInfo sjpInfo=null;
 
     /** retrieve the sjpInfo structure */
-    public final AdviceApplication.SJPInfo getSJPInfo() {
+    public final SJPInfo getSJPInfo() {
 	if(sjpInfo==null) sjpInfo=makeSJPInfo();
 	return sjpInfo;
     }

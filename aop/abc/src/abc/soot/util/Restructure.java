@@ -108,6 +108,7 @@ public class Restructure {
        while ( it.hasNext() ) { 
 	     Stmt u = (Stmt) it.next();
 	     if(u instanceof IdentityStmt) continue;
+	     if(u instanceof NopStmt) continue;
 	     // skip over any copy of "this" we made
 	     if(u instanceof AssignStmt)
 		 if(thiscopies.containsKey(m)) 
@@ -441,7 +442,7 @@ public class Restructure {
 	AssignStmt a=Jimple.v().newAssignStmt(l,e);
 
 	units.swapWith(stmt,a);
-
+	if(stmt.hasTag("SourceLnPosTag")) a.addTag(stmt.getTag("SourceLnPosTag"));
 	invokeassignstmts.put(stmt,a);
 	return a;
     }
@@ -585,6 +586,7 @@ public class Restructure {
 			else 
 				throw new RuntimeException();
 		}
+
 		public static String getBoxingClassMethodName(Type type) {	
 			if (type.equals(IntType.v()))
 				return "intValue";

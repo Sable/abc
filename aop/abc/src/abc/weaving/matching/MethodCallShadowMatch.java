@@ -81,11 +81,10 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,method);
     }
 
-    public AdviceApplication.SJPInfo makeSJPInfo() {
-	// FIXME: dummy string
-	return new AdviceApplication.SJPInfo
+    public SJPInfo makeSJPInfo() {
+	return new SJPInfo
 	    ("method-call","MethodSignature","makeMethodSig",
-	     "1-println-java.io.PrintStream-java.lang.String:-arg0:--void-",stmt);
+	     SJPInfo.makeMethodSigData(method),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

@@ -54,11 +54,10 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	return new ConstructorCallShadowMatch(pos.getContainer(),current,invoke);
     }
 
-    public AdviceApplication.SJPInfo makeSJPInfo() {
-	// FIXME : dummy details string
-	return new AdviceApplication.SJPInfo
+    public SJPInfo makeSJPInfo() {
+	return new SJPInfo
 	    ( "constructor-call","ConstructorSignature",
-	      "makeConstructorSig","1--Test-int:-x:--",stmt);
+	      "makeConstructorSig",SJPInfo.makeConstructorSigData(getMethod()),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

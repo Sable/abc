@@ -3,13 +3,14 @@ package abc.weaving.residues;
 import polyglot.util.InternalCompilerError;
 import soot.*;
 import soot.jimple.Jimple;
+import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.AdviceApplication;
 
 public class StaticJoinPointInfo extends ContextValue {
 
-    private AdviceApplication.SJPInfo sjpInfo;
+    private SJPInfo sjpInfo;
 
-    public StaticJoinPointInfo(AdviceApplication.SJPInfo sjpInfo) {
+    public StaticJoinPointInfo(SJPInfo sjpInfo) {
 	if(sjpInfo==null) 
 	    throw new InternalCompilerError("StaticJoinPointInfo constructed with null argument");
 	this.sjpInfo=sjpInfo;

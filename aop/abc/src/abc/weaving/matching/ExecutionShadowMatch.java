@@ -24,7 +24,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	return new ExecutionShadowMatch(pos.getContainer());
     }
 
-    public AdviceApplication.SJPInfo makeSJPInfo() {
+    public SJPInfo makeSJPInfo() {
 	String jpKind;
 	String sigClass;
 	String sigMethod;
@@ -33,22 +33,22 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	    jpKind="staticinitialization";
 	    sigClass="InitializerSignature";
 	    sigMethod="makeInitializerSig"; 
-	    sig="8--Test-";  // FIXME
+	    sig=SJPInfo.makeStaticInitializerSigData(container);
 	} else if(container.getName().equals(SootMethod.constructorName)) {
 	    jpKind="constructor-execution";
 	    sigClass="ConstructorSignature";
 	    sigMethod="makeConstructorSig";
-	    sig="1--Test----"; // FIXME
+	    sig=SJPInfo.makeConstructorSigData(container);
 	} else if(MethodCategory.adviceBody(container)) {
 	    jpKind="advice-execution";
 	    sigClass="AdviceSignature";
 	    sigMethod="makeAdviceSig";
-	    sig="1-ajc$before$Aspect2$1$36f01b1c-Aspect2-org.aspectj.lang.JoinPoint$StaticPart:-thisJoinPointStaticPart:--void-"; // FIXME
+	    sig=SJPInfo.makeAdviceSigData(container);
 	} else {
 	    jpKind="method-execution";
 	    sigClass="MethodSignature";
 	    sigMethod="makeMethodSig";
-	    sig="0-foo-Test-int:-x:--int-"; // FIXME
+	    sig=SJPInfo.makeMethodSigData(container);
 	}
 
 	// FIXME:  this is close to what we want,  but in the case of
@@ -61,17 +61,13 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
         // TODO:  rethink the structure of this code .... where should we
 	//          find the position??  should have some utililty 
 	//          methods?
-	Stmt firstRealStmt = null;
 	// Want to return the first "real" statement of the body that
 	//   is not an identity statement or a nop
-	Iterator it = container.getActiveBody().getUnits().iterator();
-	while (it.hasNext())
-	   { firstRealStmt = (Stmt) it.next();
-	     if (! (firstRealStmt instanceof IdentityStmt) &&
-		 ! (firstRealStmt instanceof NopStmt) )
-	       break;
-	   }
-	return new AdviceApplication.SJPInfo
+
+	Stmt firstRealStmt = Restructure.findFirstRealStmt
+	    (container,container.getActiveBody().getUnits());
+
+	return new SJPInfo
 	    (jpKind,sigClass,sigMethod,sig,firstRealStmt);
     }
 

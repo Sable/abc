@@ -22,10 +22,10 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
 	return new PreinitializationShadowMatch(container);
     }
 
-    public AdviceApplication.SJPInfo makeSJPInfo() {
-	return new AdviceApplication.SJPInfo
+    public SJPInfo makeSJPInfo() {
+	return new SJPInfo
 	    ("preinitialization","ConstructorSignature","makeConstructorSig",
-	     "1--Test-double:-y:--",container);
+	     SJPInfo.makeConstructorSigData(container),container);
     }
 
     protected AdviceApplication doAddAdviceApplication

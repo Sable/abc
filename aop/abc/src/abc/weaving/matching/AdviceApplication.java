@@ -1,10 +1,10 @@
 package abc.weaving.matching;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
-import soot.tagkit.SourceLnPosTag;
-import soot.tagkit.Host;
 
 import abc.soot.util.InPreinitializationTag;
 import abc.soot.util.Restructure;
@@ -27,39 +27,6 @@ public abstract class AdviceApplication {
     /** The dynamic residue */
     public Residue residue;
 
-    public static class SJPInfo {
-	public String kind;            // first parameter to makeSJP
-	public String signatureTypeClass; // type returned by call following 
-	public String signatureType;   // name of method to call for second parameter
-        public String signature;       // parameter for call in second parameter
-        public int row;                // row
-	public int col;                // col
-
-        /** the SootField corresponding to a static join point */
-        public SootField sjpfield;
-
-	SJPInfo(String kind,String signatureTypeClass,
-	    String signatureType,String signature,Host host) {
-	    this.kind=kind;
-	    this.signatureTypeClass=signatureTypeClass;
-	    this.signatureType=signatureType;
-	    this.signature=signature;
-	    if(host!=null && host.hasTag("SourceLnPosTag")) {
-		SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
-		this.row=slpTag.startLn();
-		this.col=slpTag.startPos();
-	    } else {
-		System.err.println("getting SJPInfo for a untagged source line "+host);
-		this.row=-1;
-		this.col=-1;
-	    }
-	}
-
-	public String toString() {
-	    return kind+" "+signatureType+" "+signature+" "+row+" "+col+
-	           "  "+sjpfield;
-	}
-    }
 
     /** information for generating the SJP - will be null if we don't need it */
     public SJPInfo sjpInfo;

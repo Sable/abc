@@ -41,10 +41,10 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
     }
     
-    public AdviceApplication.SJPInfo makeSJPInfo() {
-	// FIXME : dummy details string
-	return new AdviceApplication.SJPInfo
-	    ("field-get","FieldSignature","makeFieldSig","0-r-Test-double-",stmt);
+    public SJPInfo makeSJPInfo() {
+	return new SJPInfo
+	    ("field-get","FieldSignature","makeFieldSig",
+	     SJPInfo.makeFieldSigData(container,field),stmt);
     }
 
 
