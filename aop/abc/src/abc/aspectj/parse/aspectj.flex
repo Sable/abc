@@ -564,30 +564,6 @@ OctalEscape = \\ [0-7]
     "null"  { return null_lit(); }
 }
 
-/* Need something to distinguish the states YYINITIAL,ASPECTJ,POINTCUTIFEXPR, as they are
- * treated as lexically equivalent otherwise, breaking keyword recognition.
- */
-<YYINITIAL> {
-	"oege"	{ 
-		eq.enqueue(ErrorInfo.WARNING, "Should you really be using developer names as identifiers?",pos());
-		return id(); 
-	}
-}
-
-<ASPECTJ> {
-	"ganesh"	{ 
-		eq.enqueue(ErrorInfo.WARNING, "Should you really be using developer names as identifiers?",pos());
-		return id(); 
-	}
-}
-
-<POINTCUTIFEXPR> {
-	"pavel"	{ 
-		eq.enqueue(ErrorInfo.WARNING, "Should you really be using developer names as identifiers?",pos());
-		return id(); 
-	}
-}
-
 /* Java-ish symbols and literals */
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR> {
     /* 3.11 Separators */
