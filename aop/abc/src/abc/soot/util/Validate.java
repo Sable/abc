@@ -6,6 +6,8 @@ import soot.jimple.*;
 import soot.util.*;
 import soot.toolkits.scalar.FlowSet;
 import soot.toolkits.graph.TrapUnitGraph;
+import soot.util.cfgcmd.*;
+import soot.util.dot.*;
 
 // import polyglot.util.InternalCompilerError;
 
@@ -114,9 +116,18 @@ public class Validate {
     public static void checkInit(SootMethod method) {
 	if(!method.isConcrete()) return;
 
-	InitAnalysis analysis=new InitAnalysis(new TrapUnitGraph(method.getActiveBody()));
-	Chain units=method.getActiveBody().getUnits();
+        Body b = method.getActiveBody();
+	Chain units=b.getUnits();
+        TrapUnitGraph g = new TrapUnitGraph(b);
 
+        // print out the cfg as a dot file
+        if (abc.main.Debug.v().doValidateDumpCFG)
+          { String methodname = method.getName();
+            CFGToDotGraph stog = new CFGToDotGraph();
+            DotGraph dg = stog.drawCFG(g,g.getBody());
+            dg.plot(methodname + ".dot");
+          }
+        InitAnalysis analysis=new InitAnalysis(g);
 	Iterator it=units.iterator();
 	while(it.hasNext()) {
 	    Stmt s=(Stmt) (it.next());
