@@ -12,15 +12,17 @@ import abc.weaving.residues.*;
 import abc.main.Debug;
 
 /**
- * @author Damien Sereni
- *
  * A class for generating code for the cflow operations. The cflow operations are:
  * <p> push(locals)
  * <p> pop()
  * <p> peek()
  * <p> isValid()
- * <p> The different flavours of Cflow (counter, etc...) are selected by using different
- * nested classes.
+ * <p> The nested (abstract) class CflowCodeGen encapsulates the code generation
+ *     functions for these operations. Instances of CflowCodeGen are constructed
+ *     using the nested CflowCodeGenFactory class, which picks the appropriate 
+ *     flavour of cflow codegen. 
+ *
+ * @author Damien Sereni
  */
 public class CflowCodeGenUtils {
 
@@ -637,7 +639,7 @@ public class CflowCodeGenUtils {
 		}
 	}
 
-	public static class CflowCounterGlobalCodeGen extends CflowCodeGen {
+	private static class CflowCounterGlobalCodeGen extends CflowCodeGen {
 	
 		private CflowCounterGlobalCodeGen() {} 
 		public static CflowCounterGlobalCodeGen v() { 
@@ -768,7 +770,7 @@ public class CflowCodeGenUtils {
 		}
 	}
 	
-	public static class CflowCounterSingleThreadedCodeGen extends CflowCodeGen {
+	private static class CflowCounterSingleThreadedCodeGen extends CflowCodeGen {
 		private CflowCounterSingleThreadedCodeGen() {} 
 		public static CflowCounterSingleThreadedCodeGen v() { 
 			return new CflowCounterSingleThreadedCodeGen(); }
@@ -892,7 +894,7 @@ public class CflowCodeGenUtils {
 
 	}
 	
-	public static class CflowCounterSingleThreadedStaticFieldCodeGen extends CflowCodeGen {
+	private static class CflowCounterSingleThreadedStaticFieldCodeGen extends CflowCodeGen {
 		
 		// Note: to create an instance of this codegen, need to specify the field to contain the cflow.
 		private CflowCounterSingleThreadedStaticFieldCodeGen() { } 
@@ -1289,7 +1291,7 @@ public class CflowCodeGenUtils {
 		
 	}
 	
-	public static class CflowStackGlobalCodeGen extends CflowStackCommonCodeGen {
+	private static class CflowStackGlobalCodeGen extends CflowStackCommonCodeGen {
 		
 		private CflowStackGlobalCodeGen() {}
 		public static CflowStackGlobalCodeGen v() { 
@@ -1356,7 +1358,7 @@ public class CflowCodeGenUtils {
 		}
 	}
 	
-	public static class CflowStackSingleThreadedCodeGen extends CflowStackCommonCodeGen {
+	private static class CflowStackSingleThreadedCodeGen extends CflowStackCommonCodeGen {
 		
 		private CflowStackSingleThreadedCodeGen() {}
 		public static CflowStackSingleThreadedCodeGen v() { 
@@ -1404,7 +1406,7 @@ public class CflowCodeGenUtils {
 		}
 	}
 	
-	public static class CflowStackSingleThreadedStaticFieldCodeGen extends CflowStackCommonCodeGen {
+	private static class CflowStackSingleThreadedStaticFieldCodeGen extends CflowStackCommonCodeGen {
 		
 		private CflowStackSingleThreadedStaticFieldCodeGen() {}
 		public static CflowStackSingleThreadedStaticFieldCodeGen v() { 
@@ -1456,7 +1458,7 @@ public class CflowCodeGenUtils {
 		}
 	}
 	
-	public static class CflowOldCounterCodeGen extends CflowCodeGen {
+	private static class CflowOldCounterCodeGen extends CflowCodeGen {
 		
 		private CflowOldCounterCodeGen() {} 
 		public static CflowOldCounterCodeGen v() { 
@@ -1612,7 +1614,7 @@ public class CflowCodeGenUtils {
 		}
 	}
 	
-	public static class CflowOldStackCodeGen extends CflowCodeGen {
+	private static class CflowOldStackCodeGen extends CflowCodeGen {
 
 		private CflowOldStackCodeGen() {}
 		public static CflowOldStackCodeGen v() 
@@ -1836,8 +1838,9 @@ public class CflowCodeGenUtils {
 		}
 	}
 	
-	/** A factory class for constructing Cflow CodeGen objects */
-	public static class CflowAutoChooseCodeGen  {
+	/** A factory class for constructing Cflow CodeGen objects. This is the only
+	 *  way to get a handle on an instance of CflowCodeGenUtils.CflowCodeGen */
+	public static class CflowCodeGenFactory  {
 		
 		/** Return an instance of a Cflow codegen class appropriate for
 		 * the given list of (types of) formals. Should always be used
@@ -1888,5 +1891,11 @@ public class CflowCodeGenUtils {
 			return g;
 			}
 	}
-	
+
+    /** Reset any static data used in the various cflow codegens
+     */
+    public static void reset() {
+	// So far, nothing to reset
+    }
+
 }

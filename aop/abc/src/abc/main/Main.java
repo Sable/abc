@@ -150,6 +150,7 @@ public class Main {
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();
         abc.weaving.weaver.WeavingState.reset();
+	abc.weaving.weaver.CflowCodeGenUtils.reset();
 
         v=null;
     }

@@ -255,7 +255,7 @@ public class CflowSetup extends AbstractAdviceDecl {
             List/*<Type>*/ formalTypes = new LinkedList();
             for (Iterator it = getFormals().iterator(); it.hasNext(); 
         		formalTypes.add(((Formal)it.next()).getType().getSootType()));
-            codeGen = CflowCodeGenUtils.CflowAutoChooseCodeGen.v(formalTypes);
+            codeGen = CflowCodeGenUtils.CflowCodeGenFactory.v(formalTypes);
         	
             SootClass cl=getAspect().getInstanceClass().getSootClass();
 
