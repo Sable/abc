@@ -178,9 +178,10 @@ any of their subdirectories.
       </long_desc>
     </boolopt>
     <boolopt>
-      <alias>abc100runtime</alias>
-      <short_desc>abc 1.0 runtime compliance mode.</short_desc>
-      <long_desc>Use the abc 1.0 runtime. This disables some cflow optimisations (abc >= 1.0.2). 
+      <alias>abc101runtime</alias>
+      <short_desc>abc 1.0.1 runtime compliance mode.</short_desc>
+      <long_desc>Use the abc 1.0.0/1.0.1 runtime. This disables some cflow 
+                 optimisations present in versions 1.0.2 onwards.
       </long_desc>
     </boolopt>
   </section>
