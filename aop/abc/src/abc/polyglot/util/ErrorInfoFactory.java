@@ -28,34 +28,61 @@ import soot.tagkit.*;
  *  @author Ganesh Sittampalam
  */
 public class ErrorInfoFactory {
-    public static ErrorInfo newErrorInfo(int kind,String message,SootMethod container,Host host) {
-	Position pos=null;
-	if(container.getDeclaringClass().hasTag("SourceFileTag")) {
-	    SourceFileTag sfTag=(SourceFileTag) 
-		container.getDeclaringClass().getTag("SourceFileTag");
-	    if(host.hasTag("SourceLnPosTag")) {
-		SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
-		pos=new Position(sfTag.getSourceFile(),
-				 slpTag.startLn(),slpTag.startPos(),
-				 slpTag.endLn(),slpTag.endPos());
-	    } else if(host.hasTag("LineNumberTag")) {
-		LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
-		pos=new Position(sfTag.getSourceFile(),
-				 lnTag.getLineNumber());
-	    } else {
-		if(abc.main.Debug.v().warnUntaggedSourceInfo)
-		    System.err.println("Getting position for a untagged source line "+host);
-		pos=new Position(sfTag.getSourceFile());
-		message+=" in method "+container;
-	    }
-	} else {
-		if(abc.main.Debug.v().warnUntaggedSourceInfo)
-		    System.err.println("Getting source file for an untagged class "
-				       +container.getDeclaringClass());
-	    message+=" in method "+container
-		+" in class "+container.getDeclaringClass();
-	}
+    public static Position getPosition(SootMethod container,Host host) {
+        Position pos=null;
+        if(container.getDeclaringClass().hasTag("SourceFileTag")) {
+            SourceFileTag sfTag=(SourceFileTag)
+                container.getDeclaringClass().getTag("SourceFileTag");
+            if(host.hasTag("SourceLnPosTag")) {
+                SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
+                pos=new Position(sfTag.getSourceFile(),
+                                 slpTag.startLn(),slpTag.startPos(),
+                                 slpTag.endLn(),slpTag.endPos());
+            } else if(host.hasTag("LineNumberTag")) {
+                LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
+                pos=new Position(sfTag.getSourceFile(),
+                                 lnTag.getLineNumber());
+            } else {
+                if(abc.main.Debug.v().warnUntaggedSourceInfo)
+                    System.err.println("Getting position for a untagged source line "+host);
+                pos=new Position(sfTag.getSourceFile());
+            }
+        } else {
+            if(abc.main.Debug.v().warnUntaggedSourceInfo)
+                System.err.println("Getting source file for an untagged class "
+                                   +container.getDeclaringClass());
+        }
+        return pos;
+    }
 
-	return new ErrorInfo(kind,message,pos);
+    public static ErrorInfo newErrorInfo(int kind,String message,SootMethod container,Host host) {
+        Position pos=null;
+        if(container.getDeclaringClass().hasTag("SourceFileTag")) {
+            SourceFileTag sfTag=(SourceFileTag)
+                container.getDeclaringClass().getTag("SourceFileTag");
+            if(host.hasTag("SourceLnPosTag")) {
+                SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
+                pos=new Position(sfTag.getSourceFile(),
+                                 slpTag.startLn(),slpTag.startPos(),
+                                 slpTag.endLn(),slpTag.endPos());
+            } else if(host.hasTag("LineNumberTag")) {
+                LineNumberTag lnTag=(LineNumberTag) host.getTag("LineNumberTag");
+                pos=new Position(sfTag.getSourceFile(),
+                                 lnTag.getLineNumber());
+            } else {
+                if(abc.main.Debug.v().warnUntaggedSourceInfo)
+                    System.err.println("Getting position for a untagged source line "+host);
+                pos=new Position(sfTag.getSourceFile());
+                message+=" in method "+container;
+            }
+        } else {
+            if(abc.main.Debug.v().warnUntaggedSourceInfo)
+                System.err.println("Getting source file for an untagged class "
+                                   +container.getDeclaringClass());
+            message+=" in method "+container
+                +" in class "+container.getDeclaringClass();
+        }
+
+        return new ErrorInfo(kind,message,pos);
     }
 }

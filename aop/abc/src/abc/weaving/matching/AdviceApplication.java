@@ -41,7 +41,7 @@ import java.util.*;
  */
 public abstract class AdviceApplication {
 
-    /** The advice to be applied. 
+    /** The advice to be applied.
      */
     public AbstractAdviceDecl advice;
 
@@ -59,249 +59,265 @@ public abstract class AdviceApplication {
     }
 
     public ShadowMatch shadowmatch=null;
-    
+
     public final void setShadowMatch(ShadowMatch sm) {
-	shadowmatch=sm;
+        shadowmatch=sm;
     }
 
     public AdviceApplication(AbstractAdviceDecl advice,Residue residue) {
-	this.advice=advice;
-	this.setResidue(residue);
+        this.advice=advice;
+        this.setResidue(residue);
     }
 
     /** Add some information about the advice application to a string
      *  buffer, starting each line with the given prefix
      */
     public void debugInfo(String prefix,StringBuffer sb) {
-	sb.append(prefix+"advice decl:\n");
-       	advice.debugInfo(prefix+" ",sb);
-	sb.append(prefix+"residue: "+residueBox+"\n");
-	sb.append(prefix+"---"+"\n");
+        sb.append(prefix+"advice decl:\n");
+        advice.debugInfo(prefix+" ",sb);
+        sb.append(prefix+"residue: "+residueBox+"\n");
+        sb.append(prefix+"---"+"\n");
     }
 
     private static void doShadows(GlobalAspectInfo info,
-				  MethodAdviceList mal,
-				  SootClass cls,
-				  SootMethod method,
-				  MethodPosition pos) 
-	throws SemanticException 
+                                  MethodAdviceList mal,
+                                  SootClass cls,
+                                  SootMethod method,
+                                  MethodPosition pos)
+        throws SemanticException
     {
-	Iterator shadowIt;
-	for(shadowIt = abc.main.Main.v().getAbcExtension().shadowTypes();
-	    shadowIt.hasNext();) {
-	    
-	    ShadowType st=(ShadowType) shadowIt.next();
-	    ShadowMatch sm=st.matchesAt(pos);
+        Iterator shadowIt;
+        for(shadowIt = abc.main.Main.v().getAbcExtension().shadowTypes();
+            shadowIt.hasNext();) {
 
-	    if(sm==null) continue;
-	    
-	    Iterator adviceIt;
+            ShadowType st=(ShadowType) shadowIt.next();
+            ShadowMatch sm;
+            try {
+                sm=st.matchesAt(pos);
+            } catch(InternalCompilerError e) {
+                throw new InternalCompilerError
+                    (e.message(),
+                     e.position()==null
+                     ? abc.polyglot.util.ErrorInfoFactory.getPosition(pos.getContainer(),pos.getHost())
+                     : e.position(),
+                     e.getCause());
+            } catch(Throwable e) {
+                throw new InternalCompilerError
+                    ("Error while looking for join point shadow",
+                     abc.polyglot.util.ErrorInfoFactory.getPosition(pos.getContainer(),pos.getHost()),
+                     e);
+            }
 
-	    for(adviceIt=info.getAdviceDecls().iterator();
-		adviceIt.hasNext();) {
-		final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
 
-		Pointcut pc=ad.getPointcut();
-		WeavingEnv we=ad.getWeavingEnv();
+            if(sm==null) continue;
 
-		if(abc.main.Debug.v().showPointcutMatching)
-		    System.out.println("Matching "+pc+" at "+sm);
+            Iterator adviceIt;
 
-		// manual short-circuit logic
-		Residue residue=AlwaysMatch.v;
+            for(adviceIt=info.getAdviceDecls().iterator();
+                adviceIt.hasNext();) {
+                final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
 
-		if(!NeverMatch.neverMatches(residue))
-		    residue=AndResidue.construct
-			(residue,ad.preResidue(sm));
+                Pointcut pc=ad.getPointcut();
+                WeavingEnv we=ad.getWeavingEnv();
 
-		if(!NeverMatch.neverMatches(residue))
-		    residue=AndResidue.construct
-			(residue,pc.matchesAt(we,cls,method,sm));
+                if(abc.main.Debug.v().showPointcutMatching)
+                    System.out.println("Matching "+pc+" at "+sm);
 
-		if(!NeverMatch.neverMatches(residue))
-		    residue=AndResidue.construct
-			(residue,ad.postResidue(sm));
+                // manual short-circuit logic
+                Residue residue=AlwaysMatch.v;
 
-		// Mostly this is just to eliminate advice at shadow points
-		// where it can't apply - e.g. after advice at handlers
-		// ajc gives a warning if we throw away a match here; 
-		// we probably should too. (FIXME)
-		// In the case of AfterReturningArg it does generate a real 
-		// residue, but this may go away if we put the return value
-		// in the shadowpoints.
-		// Note that since the AdviceSpec for DeclareMessage is null,
-		// this needs to come after the postResidue above. This will
-		// probably change in future.
+                if(!NeverMatch.neverMatches(residue))
+                    residue=AndResidue.construct
+                        (residue,ad.preResidue(sm));
 
-		if(!NeverMatch.neverMatches(residue))
-		    residue=AndResidue.construct
-			(residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
+                if(!NeverMatch.neverMatches(residue))
+                    residue=AndResidue.construct
+                        (residue,pc.matchesAt(we,cls,method,sm));
 
-		if(abc.main.Debug.v().showPointcutMatching
-		   && !NeverMatch.neverMatches(residue)) 
-		    System.out.println("residue: "+residue);
-			
-		if(!NeverMatch.neverMatches(residue))
-		    sm.addAdviceApplication(mal,ad,residue);
-	    }
-	    mal.flush();
-	}
+                if(!NeverMatch.neverMatches(residue))
+                    residue=AndResidue.construct
+                        (residue,ad.postResidue(sm));
+
+                // Mostly this is just to eliminate advice at shadow points
+                // where it can't apply - e.g. after advice at handlers
+                // ajc gives a warning if we throw away a match here;
+                // we probably should too. (FIXME)
+                // In the case of AfterReturningArg it does generate a real
+                // residue, but this may go away if we put the return value
+                // in the shadowpoints.
+                // Note that since the AdviceSpec for DeclareMessage is null,
+                // this needs to come after the postResidue above. This will
+                // probably change in future.
+
+                if(!NeverMatch.neverMatches(residue))
+                    residue=AndResidue.construct
+                        (residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
+
+                if(abc.main.Debug.v().showPointcutMatching
+                   && !NeverMatch.neverMatches(residue))
+                    System.out.println("residue: "+residue);
+
+                if(!NeverMatch.neverMatches(residue))
+                    sm.addAdviceApplication(mal,ad,residue);
+            }
+            mal.flush();
+        }
     }
 
     private static void doMethod(GlobalAspectInfo info,
-				SootClass cls,
-				SootMethod method,
-				Hashtable ret) 
-	throws SemanticException
+                                SootClass cls,
+                                SootMethod method,
+                                Hashtable ret)
+        throws SemanticException
     {
 
-	// Restructure everything that corresponds to a 'new' in 
-	// source so that object initialisation and constructor call
-	// are adjacent
+        // Restructure everything that corresponds to a 'new' in
+        // source so that object initialisation and constructor call
+        // are adjacent
 
-	// FIXME: Replace this call with one to the partial 
-	// transformer;
-	// Iterate through body to find "new", decide if we have a 
-	// pointcut 
-	// that might match it, and add the class to the list if so
-	// Either that or pre-compute the list of all classes that our
-	// pointcuts could match
-	
-	if(abc.main.Debug.v().traceMatcher)
-	    System.out.println("Doing method: "+method);
+        // FIXME: Replace this call with one to the partial
+        // transformer;
+        // Iterate through body to find "new", decide if we have a
+        // pointcut
+        // that might match it, and add the class to the list if so
+        // Either that or pre-compute the list of all classes that our
+        // pointcuts could match
 
-	HashMap m=new HashMap();
-	m.put("enabled","true");
-	if(abc.main.Debug.v().restructure)
-	    System.out.println("restructuring "+method);
-	(new soot.jimple.toolkits.base.JimpleConstructorFolder())
-	    .transform(method.getActiveBody(),"jtp.jcf",m);
+        if(abc.main.Debug.v().traceMatcher)
+            System.out.println("Doing method: "+method);
 
-	// Identify whether we're in a constructor, and if we are identify
-	// the position of the 'this' or 'super' call. 
-	// Uniquely, the constructor of java.lang.Object has none.
-	if(method.getName().equals(SootMethod.constructorName)
-	   && !cls.getName().equals("java.lang.Object")) {
-	    Stmt thisOrSuper;
-	    try {
-		thisOrSuper=Restructure.findInitStmt(method.getActiveBody().getUnits());
-	  } catch(InternalCompilerError e) {
-		System.err.println(method.getActiveBody().getUnits());
-		throw new InternalCompilerError(e.message()+" while processing "+method,
-						e.position(),
-						e.getCause());
-	    } catch(Throwable e) {
-		throw new InternalCompilerError("exception while processing "+method,e);
-	    }
+        HashMap m=new HashMap();
+        m.put("enabled","true");
+        if(abc.main.Debug.v().restructure)
+            System.out.println("restructuring "+method);
+        (new soot.jimple.toolkits.base.JimpleConstructorFolder())
+            .transform(method.getActiveBody(),"jtp.jcf",m);
 
-	    Iterator stmtsIt=method.getActiveBody().getUnits().iterator();
-	    while(stmtsIt.hasNext()) {
-		Stmt stmt=(Stmt) stmtsIt.next();
-		if(stmt==thisOrSuper) break;
-		stmt.addTag(new InPreinitializationTag());
-	    }
-	}
-	
-	MethodAdviceList mal=new MethodAdviceList();
+        // Identify whether we're in a constructor, and if we are identify
+        // the position of the 'this' or 'super' call.
+        // Uniquely, the constructor of java.lang.Object has none.
+        if(method.getName().equals(SootMethod.constructorName)
+           && !cls.getName().equals("java.lang.Object")) {
+            Stmt thisOrSuper;
+            try {
+                thisOrSuper=Restructure.findInitStmt(method.getActiveBody().getUnits());
+          } catch(InternalCompilerError e) {
+                System.err.println(method.getActiveBody().getUnits());
+                throw new InternalCompilerError(e.message()+" while processing "+method,
+                                                e.position(),
+                                                e.getCause());
+            } catch(Throwable e) {
+                throw new InternalCompilerError("exception while processing "+method,e);
+            }
 
-	// Do whole body shadows
-	if(MethodCategory.weaveExecution(method))
-	    doShadows(info,mal,cls,method,new WholeMethodPosition(method));
-	
-	// Do statement shadows
-	if(abc.main.Debug.v().traceMatcher) 
-	    System.err.println("Doing statement shadows");
-	if(MethodCategory.weaveInside(method)) {
-	    Chain stmtsChain=method.getActiveBody().getUnits();
-	    Stmt current,next;
-	    
-	    if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
-		for(current=(Stmt) stmtsChain.getFirst();
-		    current!=null;
-		    current=next) {
-		    if(abc.main.Debug.v().traceMatcher)
-			System.err.println("Stmt = "+current);
-		    next=(Stmt) stmtsChain.getSuccOf(current);
-		    doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
-		    doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
-		}
-	    }
-	}
-	
-	// Do exception handler shadows
+            Iterator stmtsIt=method.getActiveBody().getUnits().iterator();
+            while(stmtsIt.hasNext()) {
+                Stmt stmt=(Stmt) stmtsIt.next();
+                if(stmt==thisOrSuper) break;
+                stmt.addTag(new InPreinitializationTag());
+            }
+        }
 
-	if(abc.main.Debug.v().traceMatcher) 
-	    System.err.println("Doing exception shadows");
+        MethodAdviceList mal=new MethodAdviceList();
 
-	Chain trapsChain=method.getActiveBody().getTraps();
-	Trap currentTrap;
-	
-	if(!trapsChain.isEmpty()) {
-	    for(currentTrap=(Trap) trapsChain.getFirst();
-		currentTrap!=null;
-		currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
-		
-		doShadows(info,mal,cls,method,new TrapMethodPosition(method,currentTrap));
-	}
+        // Do whole body shadows
+        if(MethodCategory.weaveExecution(method))
+            doShadows(info,mal,cls,method,new WholeMethodPosition(method));
+
+        // Do statement shadows
+        if(abc.main.Debug.v().traceMatcher)
+            System.err.println("Doing statement shadows");
+        if(MethodCategory.weaveInside(method)) {
+            Chain stmtsChain=method.getActiveBody().getUnits();
+            Stmt current,next;
+
+            if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
+                for(current=(Stmt) stmtsChain.getFirst();
+                    current!=null;
+                    current=next) {
+                    if(abc.main.Debug.v().traceMatcher)
+                        System.err.println("Stmt = "+current);
+                    next=(Stmt) stmtsChain.getSuccOf(current);
+                    doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
+                    doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
+                }
+            }
+        }
+
+        // Do exception handler shadows
+
+        if(abc.main.Debug.v().traceMatcher)
+            System.err.println("Doing exception shadows");
+
+        Chain trapsChain=method.getActiveBody().getTraps();
+        Trap currentTrap;
+
+        if(!trapsChain.isEmpty()) {
+            for(currentTrap=(Trap) trapsChain.getFirst();
+                currentTrap!=null;
+                currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
+
+                doShadows(info,mal,cls,method,new TrapMethodPosition(method,currentTrap));
+        }
 
 
-	
-	ret.put(method,mal);
+
+        ret.put(method,mal);
     }
 
-    /** Construct a hash table mapping each concrete {@link soot.SootMethod} 
+    /** Construct a hash table mapping each concrete {@link soot.SootMethod}
      *  in each weaveable class to a {@link MethodAdviceList} for that method.
      */
     public static Hashtable computeAdviceLists(GlobalAspectInfo info)
-	throws SemanticException
+        throws SemanticException
     {
-	Iterator clsIt;
+        Iterator clsIt;
 
-	Hashtable ret=new Hashtable();
+        Hashtable ret=new Hashtable();
 
-	for(clsIt=info.getWeavableClasses().iterator();clsIt.hasNext();) {
+        for(clsIt=info.getWeavableClasses().iterator();clsIt.hasNext();) {
 
-	    final AbcClass cls 
-		= (AbcClass) clsIt.next();
+            final AbcClass cls
+                = (AbcClass) clsIt.next();
 
-	    SootClass sootCls = cls.getSootClass();
-	    Iterator methodIt;
+            SootClass sootCls = cls.getSootClass();
+            Iterator methodIt;
 
-	    boolean hasclinit=false;
+            boolean hasclinit=false;
 
-	    for(methodIt=sootCls.methodIterator();methodIt.hasNext();) {
+            for(methodIt=sootCls.methodIterator();methodIt.hasNext();) {
 
-		final SootMethod method = (SootMethod) methodIt.next();
-		if(method.getName().equals(SootMethod.staticInitializerName))
-		    hasclinit=true;
+                final SootMethod method = (SootMethod) methodIt.next();
+                if(method.getName().equals(SootMethod.staticInitializerName))
+                    hasclinit=true;
 
-		if(method.isAbstract()) continue;
-		if(method.isNative()) continue;
+                if(method.isAbstract()) continue;
+                if(method.isNative()) continue;
 
-		doMethod(info,sootCls,method,ret);
-	    }
+                doMethod(info,sootCls,method,ret);
+            }
 
-	    if(!hasclinit) {
-	      // System.out.println("Don't have a clinit");
-		// System.out.println("Inserting " + SootMethod.staticInitializerName);
-		SootMethod clinit = new SootMethod
-		    (SootMethod.staticInitializerName,
-		     new ArrayList(),
-		     VoidType.v(),
-		     Modifier.STATIC);
-		sootCls.addMethod(clinit);
-		Body b = Jimple.v().newBody(clinit);
-		clinit.setActiveBody(b);
-		Stmt retvoid=Jimple.v().newReturnVoidStmt();
-		if(sootCls.hasTag("SourceLnPosTag")) {
-		    retvoid.addTag(sootCls.getTag("SourceLnPosTag"));
-		    clinit.addTag(sootCls.getTag("SourceLnPosTag"));
-		}
-		b.getUnits().addLast(retvoid);
+            if(!hasclinit) {
+              // System.out.println("Don't have a clinit");
+                // System.out.println("Inserting " + SootMethod.staticInitializerName);
+                SootMethod clinit = new SootMethod
+                    (SootMethod.staticInitializerName,
+                     new ArrayList(),
+                     VoidType.v(),
+                     Modifier.STATIC);
+                sootCls.addMethod(clinit);
+                Body b = Jimple.v().newBody(clinit);
+                clinit.setActiveBody(b);
+                Stmt retvoid=Jimple.v().newReturnVoidStmt();
+                if(sootCls.hasTag("SourceLnPosTag")) {
+                    retvoid.addTag(sootCls.getTag("SourceLnPosTag"));
+                    clinit.addTag(sootCls.getTag("SourceLnPosTag"));
+                }
+                b.getUnits().addLast(retvoid);
 
-		doMethod(info,sootCls,clinit,ret);
-	    }
-	}
-	return ret;
+                doMethod(info,sootCls,clinit,ret);
+            }
+        }
+        return ret;
     }
 }
