@@ -120,24 +120,14 @@ public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
         return new UnaryDel_c();
     }
     
-    public final JL delDeclareParentsExt() {
-        JL e = delDeclareParentsExtImpl();
+    public final JL delDeclareParents() {
+        JL e = delDeclareParentsImpl();
 
         if (nextDelFactory != null) {
-            JL e2 = nextDelFactory.delDeclareParentsExt();
+            JL e2 = nextDelFactory.delDeclareParents();
             e = composeDels(e, e2);
         }
-        return postDelDeclareParentsExt(e);
-    }
-
-    public final JL delDeclareParentsImpl() {
-        JL e = delDeclareParentsImplImpl();
-
-        if (nextDelFactory != null) {
-            JL e2 = nextDelFactory.delDeclareParentsImpl();
-            e = composeDels(e, e2);
-        }
-        return postDelDeclareParentsImpl(e);
+        return postDelDeclareParents(e);
     }
 
     public final JL delDeclareWarning() {
@@ -1023,12 +1013,8 @@ public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
         return delTermImpl();
     }
 
-    protected JL delDeclareParentsExtImpl() {
-        return delDeclareDeclImpl();
-    }
-
-    protected JL delDeclareParentsImplImpl() {
-        return delDeclareDeclImpl();
+    protected JL delDeclareParentsImpl() {
+        return delDeclareDecl();
     }
 
     protected JL delDeclareWarningImpl() {
@@ -1423,11 +1409,7 @@ public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
         return postDelTerm(del);
     }
 
-    protected JL postDelDeclareParentsExt(JL del) {
-        return postDelDeclareDecl(del);
-    }
-
-    protected JL postDelDeclareParentsImpl(JL del) {
+    protected JL postDelDeclareParents(JL del) {
         return postDelDeclareDecl(del);
     }
 

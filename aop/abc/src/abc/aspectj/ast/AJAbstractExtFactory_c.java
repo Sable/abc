@@ -112,24 +112,14 @@ public abstract class AJAbstractExtFactory_c extends AbstractExtFactory_c
         return postExtDeclareDecl(e);
     }
 
-    public final Ext extDeclareParentsExt() {
-        Ext e = extDeclareParentsExtImpl();
+    public final Ext extDeclareParents() {
+        Ext e = extDeclareParentsImpl();
 
         if (nextExtFactory != null) {
-            Ext e2 = nextExtFactory.extDeclareParentsExt();
+            Ext e2 = nextExtFactory.extDeclareParents();
             e = composeExts(e, e2);
         }
-        return postExtDeclareParentsExt(e);
-    }
-
-    public final Ext extDeclareParentsImpl() {
-        Ext e = extDeclareParentsImplImpl();
-
-        if (nextExtFactory != null) {
-            Ext e2 = nextExtFactory.extDeclareParentsImpl();
-            e = composeExts(e, e2);
-        }
-        return postExtDeclareParentsImpl(e);
+        return postExtDeclareParents(e);
     }
 
     public final Ext extDeclareWarning() {
@@ -1016,11 +1006,7 @@ public abstract class AJAbstractExtFactory_c extends AbstractExtFactory_c
         return extTermImpl();
     }
 
-    protected Ext extDeclareParentsExtImpl() {
-        return extDeclareDeclImpl();
-    }
-
-    protected Ext extDeclareParentsImplImpl() {
+    protected Ext extDeclareParentsImpl() {
         return extDeclareDeclImpl();
     }
 
@@ -1403,11 +1389,7 @@ public abstract class AJAbstractExtFactory_c extends AbstractExtFactory_c
         return postExtTerm(ext);
     }
 
-    protected Ext postExtDeclareParentsExt(Ext ext) {
-        return postExtDeclareDecl(ext);
-    }
-
-    protected Ext postExtDeclareParentsImpl(Ext ext) {
+    protected Ext postExtDeclareParents(Ext ext) {
         return postExtDeclareDecl(ext);
     }
 

@@ -110,21 +110,13 @@ public class AJNodeFactory_c
         return n;
     }
 
-    public DeclareParentsExt DeclareParentsExt(Position pos,
-                                               ClassnamePatternExpr pat,
-                                               TypeNode type) {
-        DeclareParentsExt n = new DeclareParentsExt_c(pos,pat,type);
-        n = (DeclareParentsExt)n.ext(extFactory.extDeclareParentsExt());
-        n = (DeclareParentsExt)n.del(delFactory.delDeclareParentsExt());
-        return n;
-    }
-
-    public DeclareParentsImpl DeclareParentsImpl(Position pos,
-                                                 ClassnamePatternExpr pat,
-                                                 List interfaces) {
-        DeclareParentsImpl n = new DeclareParentsImpl_c(pos,pat,interfaces);
-        n = (DeclareParentsImpl)n.ext(extFactory.extDeclareParentsImpl());
-        n = (DeclareParentsImpl)n.del(delFactory.delDeclareParentsImpl());
+    public DeclareParents DeclareParents(Position pos,
+					 ClassnamePatternExpr pat,
+					 List parents,
+					 DeclareParents.Kind kind) {
+        DeclareParents n = new DeclareParents_c(pos,pat,parents,kind);
+        n = (DeclareParents)n.ext(extFactory.extDeclareParents());
+        n = (DeclareParents)n.del(delFactory.delDeclareParents());
         return n;
     }
 

@@ -46,13 +46,10 @@ public interface AJNodeFactory
 
     IsSingleton IsSingleton(Position pos);
     
-    DeclareParentsExt DeclareParentsExt(Position pos,
-                                        ClassnamePatternExpr pat,
-                                        TypeNode type);
-
-    DeclareParentsImpl DeclareParentsImpl(Position pos,
-                                          ClassnamePatternExpr pat,
-                                          List interfaces);
+    DeclareParents DeclareParents(Position pos,
+				  ClassnamePatternExpr pat,
+				  List parents,
+				  DeclareParents.Kind kind);
 
     DeclareWarning DeclareWarning(Position pos,
                                   Pointcut pc,

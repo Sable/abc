@@ -7804,6 +7804,7 @@
 		</ajc-test>
 
    <ajc-test num="889" dir="bugs"
+        <abckeywords><skip/></abckeywords>
 		title="XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)"
 		pr="41952"
 		>

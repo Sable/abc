@@ -14,8 +14,7 @@ public interface AJDelFactory extends DelFactory
     JL delPerCflowBelow();
     JL delIsSingleton();
     JL delDeclareDecl();
-    JL delDeclareParentsExt();
-    JL delDeclareParentsImpl();
+    JL delDeclareParents();
     JL delDeclareWarning();
     JL delDeclareError();
     JL delDeclareSoft();

@@ -14,8 +14,7 @@ public interface AJExtFactory extends ExtFactory
     Ext extPerCflowBelow();
     Ext extIsSingleton();
     Ext extDeclareDecl();
-    Ext extDeclareParentsExt();
-    Ext extDeclareParentsImpl();
+    Ext extDeclareParents();
     Ext extDeclareWarning();
     Ext extDeclareError();
     Ext extDeclareSoft();

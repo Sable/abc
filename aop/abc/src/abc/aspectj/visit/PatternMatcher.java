@@ -137,7 +137,7 @@ public class PatternMatcher {
 	return pattern.matches(this, cl_node);
     }
 
-    public boolean matchesClassWithMethod(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType) {
+    public boolean matchesClassWithMethod(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType, List /*<ModifierPattern>*/ modps, List/*<ThrowsPattern>*/ tpats) {
 	Set seen = new HashSet();
 	LinkedList worklist = new LinkedList();
 	worklist.add(base_sc);
@@ -151,7 +151,43 @@ public class PatternMatcher {
 		//    System.err.println(m);
 		//}
 		if (sc.declaresMethod(name, parameterTypes, returnType) && matchesClass(pattern, sc)) {
-		    return true;
+		    SootMethod sm = sc.getMethod(name, parameterTypes, returnType);
+		    if (matchesModifiers(modps, sm.getModifiers()) && matchesThrows(tpats, sm.getExceptions())) {
+			return true;
+		    }
+		}
+		seen.add(sc);
+		if (sc.hasSuperclass()) {
+		    worklist.add(sc.getSuperclass());
+		}
+		Iterator ini = sc.getInterfaces().iterator();
+		while (ini.hasNext()) {
+		    SootClass in = (SootClass)ini.next();
+		    worklist.add(in);
+		}
+	    }
+	}
+	return false;
+    }
+
+    public boolean matchesClassWithField(ClassnamePatternExpr pattern, SootClass base_sc, String name, Type type, List /*<ModifierPattern>*/ modps) {
+	Set seen = new HashSet();
+	LinkedList worklist = new LinkedList();
+	worklist.add(base_sc);
+	while (!worklist.isEmpty()) {
+	    SootClass sc = (SootClass)worklist.removeFirst();
+	    if (!seen.contains(sc)) {
+		//System.err.println(sc+": "+matchesClass(pattern, sc)+" ");
+		//Iterator mi = sc.getMethods().iterator();
+		//while (mi.hasNext()) {
+		//    SootMethod m = (SootMethod)mi.next();
+		//    System.err.println(m);
+		//}
+		if (sc.declaresField(name, type) && matchesClass(pattern, sc)) {
+		    SootField sf = sc.getField(name, type);
+		    if (matchesModifiers(modps, sf.getModifiers())) {
+			return true;
+		    }
 		}
 		seen.add(sc);
 		if (sc.hasSuperclass()) {
@@ -344,14 +380,16 @@ public class PatternMatcher {
 	    while (skip_first-- > 0) ftypes.removeFirst();
 	    while (skip_last-- > 0) ftypes.removeLast();
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), mods) &&
 		matchesType(pattern.getType(), methodref.returnType().toString()) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
 		matchesFormals(pattern.getFormals(), methodref) &&
-		matchesThrows(pattern.getThrowspats(), methodref.resolve().getExceptions()) &&
-		(matchesClass(pattern.getName().base(), realcl) ||
-		 (!Modifier.isStatic(mods) &&  
-		  matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, methodref.returnType())));
+		((matchesClass(pattern.getName().base(), realcl) &&
+		  matchesModifiers(pattern.getModifiers(), mods) &&
+		  matchesThrows(pattern.getThrowspats(), methodref.resolve().getExceptions()))
+		 ||
+		 (!Modifier.isStatic(mods) &&
+		  matchesClassWithMethod(pattern.getName().base(), realcl, name, ftypes, methodref.returnType(),
+					 pattern.getModifiers(), pattern.getThrowspats())));
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching method pattern "+pattern+" against ("+mods+" "+realcl+"."+name+") "+methodref+": "+matches);
 	    }
@@ -383,11 +421,18 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesFieldRef(SootFieldRef sfr) {
+	    int mods = MethodCategory.getModifiers(sfr);
+	    String name = MethodCategory.getName(sfr);
+	    SootClass realcl = MethodCategory.getClass(sfr);
 	    boolean matches =
-		matchesModifiers(pattern.getModifiers(), MethodCategory.getModifiers(sfr)) &&
 		matchesType(pattern.getType(), sfr.type().toString()) &&
-		matchesClass(pattern.getName().base(), MethodCategory.getClass(sfr)) &&
-		pattern.getName().name().getPattern().matcher(MethodCategory.getName(sfr)).matches();
+		pattern.getName().name().getPattern().matcher(name).matches() &&
+		((matchesClass(pattern.getName().base(), realcl) &&
+		  matchesModifiers(pattern.getModifiers(), mods))
+		 ||
+		 (!Modifier.isStatic(mods) &&
+		  matchesClassWithField(pattern.getName().base(), realcl, name, sfr.type(),
+					pattern.getModifiers())));
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching field pattern "+pattern+" against "+sfr+": "+matches);
 	    }

@@ -191,6 +191,23 @@ public class AbcFactory {
 	return new MethodSig(mod, cl, rtype, name, formals, exc, null);
     }
 
+    public static MethodSig MethodSig(soot.SootMethodRef mr) {
+	int mod = 0;
+	AbcClass cl = AbcFactory.AbcClass(mr.declaringClass());
+	AbcType rtype = AbcFactory.AbcType(mr.returnType());
+	String name = mr.name();
+	List formals = new ArrayList();
+	int index = 0;
+	Iterator mfti = mr.parameterTypes().iterator();
+	while (mfti.hasNext()) {
+	    soot.Type mft = (soot.Type)mfti.next();
+	    formals.add(new Formal(AbcFactory.AbcType(mft), "a$"+index, null));
+	    index++;
+	}
+	List exc = new ArrayList();
+	return new MethodSig(mod, cl, rtype, name, formals, exc, null);
+    }
+
     public static FieldSig FieldSig(polyglot.ast.FieldDecl f) {
 	return FieldSig(f, (polyglot.types.ClassType)f.fieldInstance().container());
     }
@@ -216,6 +233,14 @@ public class AbcFactory {
 	AbcClass cl = AbcFactory.AbcClass(f.getDeclaringClass());
 	AbcType type = AbcFactory.AbcType(f.getType());
 	String name = f.getName();
+	return new FieldSig(mod, cl, type, name, null);
+    }
+
+    public static FieldSig FieldSig(soot.SootFieldRef fr) {
+	int mod = 0;
+	AbcClass cl = AbcFactory.AbcClass(fr.declaringClass());
+	AbcType type = AbcFactory.AbcType(fr.type());
+	String name = fr.name();
 	return new FieldSig(mod, cl, type, name, null);
     }
 }

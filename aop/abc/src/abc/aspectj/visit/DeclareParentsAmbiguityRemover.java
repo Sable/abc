@@ -17,8 +17,7 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.ContextVisitor;
 import polyglot.types.SemanticException;
 
-import abc.aspectj.ast.DeclareParentsExt;
-import abc.aspectj.ast.DeclareParentsImpl;
+import abc.aspectj.ast.DeclareParents;
 
 
 public class DeclareParentsAmbiguityRemover extends ContextVisitor {
@@ -29,18 +28,15 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
 	if (n instanceof ClassMember && !(n instanceof ClassDecl) &&
-		!(n instanceof DeclareParentsExt || n instanceof DeclareParentsImpl)) {
+		!(n instanceof DeclareParents)) {
 	    return this.bypassChildren(n);
 	} 
 	return this;
     }
 
     protected Node leaveCall(Node n) throws SemanticException {
-	if (n instanceof DeclareParentsExt) {
-	    return ((DeclareParentsExt)n).disambiguate(this);
-	}
-	if (n instanceof DeclareParentsImpl) {
-	    return ((DeclareParentsImpl)n).disambiguate(this);
+	if (n instanceof DeclareParents) {
+	    return ((DeclareParents)n).disambiguate(this);
 	}
 	return n;
     }
