@@ -67,7 +67,8 @@ public class LocalPointcutVars extends Pointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect context) {
+			      Aspect context,
+			      int cflowdepth) {
 
 	List/*<Formal>*/ newFormals=new ArrayList(formals.size());
 
@@ -83,7 +84,7 @@ public class LocalPointcutVars extends Pointcut {
 	    newRenameEnv.put(old.getName(),new Var(newName,old.getPosition()));
 	}
 	
-	Pointcut pc=this.pc.inline(newRenameEnv,typeEnv,context);
+	Pointcut pc=this.pc.inline(newRenameEnv,typeEnv,context,cflowdepth);
 	if(pc==this.pc) return this;
 	else return new LocalPointcutVars(pc,newFormals,getPosition());
     }

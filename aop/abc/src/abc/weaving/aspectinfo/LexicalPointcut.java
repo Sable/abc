@@ -51,7 +51,8 @@ public abstract class LexicalPointcut extends Pointcut {
 
     protected Pointcut inline(Hashtable typeEnv,
                               Hashtable renameEnv,
-                              Aspect context) {
+                              Aspect context,
+			      int cflowdepth) {
         return this;
     }
 

@@ -54,7 +54,8 @@ public abstract class ShadowPointcut extends Pointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
                               Hashtable typeEnv,
-                              Aspect context) {
+                              Aspect context,
+			      int cflowdepth) {
         return this;
     }
 

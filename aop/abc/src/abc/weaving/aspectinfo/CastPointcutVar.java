@@ -70,7 +70,8 @@ public class CastPointcutVar extends Pointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect context) {
+			      Aspect context,
+			      int cflowdepth) {
 	Var from=this.from;
 	if(renameEnv.containsKey(from.getName()))
 	   from=(Var) renameEnv.get(from.getName());

@@ -71,9 +71,10 @@ public class OrPointcut extends Pointcut {
 				   pc2.matchesAt(we,cls,method,sm));
     }
 
-    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv,Aspect context) {
-	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv,context);
-	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv,context);
+    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv,
+			      Aspect context,int cflowdepth) {
+	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv,context,cflowdepth);
+	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv,context,cflowdepth);
 	if(pc1==this.pc1 && pc2==this.pc2) return this;
 	else return construct(pc1,pc2,getPosition());
     }

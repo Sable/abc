@@ -133,7 +133,8 @@ public class If extends Pointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
                               Hashtable typeEnv,
-                              Aspect context) {
+                              Aspect context,
+			      int cflowdepth) {
         Iterator it=vars.iterator();
         List newvars=new LinkedList();
         while(it.hasNext())

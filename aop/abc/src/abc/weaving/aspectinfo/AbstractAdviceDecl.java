@@ -117,8 +117,13 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      *  @author Ganesh Sittampalam
      */
     public void preprocess() {
-        if(pc!=null) throw new InternalCompilerError
-                         ("Trying to call preprocess on an already normalized advice decl "+this);
+        if(pc!=null) {
+	    if(abc.main.Debug.v().debugPointcutNormalization) 
+		System.out.println("Already normalized");
+	    return;
+	    // throw new InternalCompilerError
+	    // ("Trying to call preprocess on an already normalized advice decl "+this);
+	}
         if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("normalizing");
         //        System.err.println(origpc);
         pc=Pointcut.normalize(origpc,formals,getAspect());

@@ -80,7 +80,7 @@ public abstract class Pointcut extends Syntax {
             }
         }
 
-        Pointcut inlined=pc.inline(renameEnv,typeEnv,context);
+        Pointcut inlined=pc.inline(renameEnv,typeEnv,context,0);
 
         Pointcut ret=inlined.dnf().makePointcut(pc.getPosition());
 
@@ -180,10 +180,13 @@ public abstract class Pointcut extends Syntax {
     /** Inlining should remove all PointcutRefs,
      *  and return a pointcut that is alpha-renamed
      */
+    // It would be better if the list of parameters was wrapped up into
+    // a class, so we don't need to change everything each time we add one
     protected abstract Pointcut inline
         (Hashtable/*<String,Var>*/ renameEnv,
          Hashtable/*<String,AbcType>*/ typeEnv,
-         Aspect context);
+         Aspect context,
+	 int cflowdepth);
 
     private static int freshVarNum=0;
     /** Return a freshly named pointcut variable */

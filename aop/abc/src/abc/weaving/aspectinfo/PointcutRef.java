@@ -92,7 +92,8 @@ public class PointcutRef extends Pointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect context) {
+			      Aspect context,
+			      int cflowdepth) {
 	Iterator actualsIt=args.iterator();
 	Iterator formalsIt=getDecl(context).getFormals().iterator();
 
@@ -119,7 +120,7 @@ public class PointcutRef extends Pointcut {
 	    if(d.isAbstract()) 
 		throw new InternalCompilerError("Got an abstract pointcut decl while inlining "+this);
 	    pc=getDecl(context).getPointcut()
-		.inline(declRenameEnv,declTypeEnv,context);
+		.inline(declRenameEnv,declTypeEnv,context,cflowdepth);
 	} catch(NullPointerException e) {
 	    throw new InternalCompilerError("NPE while trying to inline "+this+" with context "+context,e);
 	}

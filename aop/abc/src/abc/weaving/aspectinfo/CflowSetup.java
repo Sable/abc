@@ -98,6 +98,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     }
 
     public int getDepth() {
+	if(depth==-1) throw new InternalCompilerError("depth of CflowSetup was -1",getPosition());
         return depth;
     }
 

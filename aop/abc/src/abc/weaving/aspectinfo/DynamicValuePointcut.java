@@ -39,7 +39,8 @@ public abstract class DynamicValuePointcut extends Pointcut {
     // this if you change the signature
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect context) {
+			      Aspect context,
+			      int cflowdepth) {
 	return this;
     }
 

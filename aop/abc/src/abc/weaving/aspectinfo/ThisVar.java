@@ -58,7 +58,8 @@ public class ThisVar extends ThisAny {
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect context) {
+			      Aspect context,
+			      int cflowdepth) {
 	Var var=this.var.rename(renameEnv);
 
 	if(var==this.var) return this;

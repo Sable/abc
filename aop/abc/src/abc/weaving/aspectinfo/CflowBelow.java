@@ -24,6 +24,7 @@ package abc.weaving.aspectinfo;
 import java.util.*;
 
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
@@ -34,12 +35,12 @@ import abc.weaving.residues.*;
  *  @author Damien Sereni
  */
 public class CflowBelow extends CflowPointcut {
-    int depth;
+    int depth=-1;
 
     public CflowBelow(Pointcut pc,Position pos,int depth) {
+	// depth ignored, to be deleted
 	super(pos);
 	setPointcut(pc);
-	this.depth=depth;
     }
 
     public int getDepth() {
@@ -47,9 +48,10 @@ public class CflowBelow extends CflowPointcut {
     }
 
     protected DNF dnf() {
-	return new DNF
-	    (new CflowBelow
-	     (getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth));
+	CflowBelow ret=new CflowBelow
+	    (getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth);
+	ret.depth=depth;
+	return new DNF(ret);
     }
 
     public String toString() {
@@ -58,14 +60,19 @@ public class CflowBelow extends CflowPointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect context) {
-	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context);
-	if(pc==this.getPointcut()) return this;
-	else return new CflowBelow(pc,getPosition(),depth);
+			      Aspect context,
+			      int cflowdepth) {
+	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context,cflowdepth+1);
+	CflowBelow ret;
+	if(pc==this.getPointcut()) ret=this;
+	else ret=new CflowBelow(pc,getPosition(),-1);
+	ret.depth=depth==-1 ? cflowdepth : depth;
+	return ret;
     }
 
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
-   
+   	if(depth==-1) 
+	    throw new InternalCompilerError("uninlined cflowbelow registered",getPosition());   
 	GlobalCflowSetupFactory.CfsContainer cfsCont = 
 	    GlobalCflowSetupFactory.construct(context,getPointcut(),true,typeMap,getPosition(),depth);
 	setCfs(cfsCont.getCfs());
