@@ -145,7 +145,7 @@ public class PointcutDecl_c extends MethodDecl_c
 			Flags flags = this.flags;
 
 			if (ct.flags().isInterface()) {
-				flags = flags.Public().Abstract();
+				flags = flags.Public(); // but not abstract
 			}
 		
 			return ((AJTypeSystem)ts).pointcutInstance(position(),
@@ -164,6 +164,12 @@ public class PointcutDecl_c extends MethodDecl_c
 											   position());
 			   }
 		   }
+	   try {
+		   ((AJTypeSystem)ts).checkPointcutFlags(flags());
+	   }
+	   catch (SemanticException e) {
+		   throw new SemanticException(e.getMessage(), position());
+	   }
 
 	   if (!(pc instanceof PCEmpty) && flags().isAbstract()) {
 		   throw new SemanticException(

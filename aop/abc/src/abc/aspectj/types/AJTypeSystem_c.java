@@ -61,9 +61,25 @@ public class AJTypeSystem_c
 		                                   f.clear(ASPECT_FLAGS));
 		       return;
 		    }
-		    super.checkTopLevelClassFlags(f);
+		if (! f.clear(TOP_LEVEL_CLASS_FLAGS).equals(Flags.NONE)) {
+					throw new SemanticException(
+					"Cannot declare a top-level class with flag(s) " +
+					f.clear(TOP_LEVEL_CLASS_FLAGS) + ".");
+		}
+
+			/*		if (f.isStrictFP() && f.isInterface()) {
+						throw new SemanticException("Cannot declare a strictfp interface.");
+					} */
+
+		if (f.isFinal() && f.isInterface()) {
+			throw new SemanticException("Cannot declare a final interface.");
+		}
+
+		checkAccessFlags(f);
+
 	}
-    		
+    	
+	
 	public MethodInstance adviceInstance(Position pos,
 										ReferenceType container, Flags flags,
 										Type returnType, String name,
@@ -338,7 +354,7 @@ public class AJTypeSystem_c
 		checkAccessFlags(f);
 	}
 
-
+	
 		/**
 		   * Requires: all type arguments are canonical.
 		   *
@@ -604,6 +620,18 @@ public class AJTypeSystem_c
 			checkAccessFlags(f); 
 			  
 		  }
+		  
+	protected final Flags POINTCUT_FLAGS = ACCESS_FLAGS.Abstract();
+	
+	public void checkPointcutFlags(Flags f) throws SemanticException {
+		if (! f.clear(POINTCUT_FLAGS).equals(Flags.NONE)) {
+			throw new SemanticException("Cannot declare pointcut with flags " +
+			                            f.clear(POINTCUT_FLAGS) +".");
+		}
+		
+		if (f.isAbstract() && f.isPrivate())
+			throw new SemanticException("Cannot declare pointcut that is both abstract and private.");
+	}
 
 	public List findAcceptableMethods(ReferenceType container, String name,
 											List argTypes, ClassType currClass) throws SemanticException {

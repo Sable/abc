@@ -12,6 +12,7 @@ import polyglot.types.ReferenceType;
 import polyglot.types.Flags;
 import polyglot.types.Type;
 import polyglot.types.MemberInstance;
+import polyglot.types.SemanticException;
 
 import polyglot.frontend.Source;
 
@@ -61,5 +62,7 @@ public interface AJTypeSystem extends JjTypeSystem {
 	// The normal isAccessible method inherited from JjTypeSystem is overridden so it always returns
 	// true if called for a context that is a privileged aspect, and returns the value of
 	// isAccessibleIgnorePrivileged otherwise.
-	public boolean isAccessibleIgnorePrivileged(MemberInstance mi, Context ctc);				              
+	public boolean isAccessibleIgnorePrivileged(MemberInstance mi, Context ctc);	
+	
+	public void checkPointcutFlags(Flags f) throws SemanticException;			              
 }
