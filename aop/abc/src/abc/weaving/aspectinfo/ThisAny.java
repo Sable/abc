@@ -17,11 +17,10 @@ public class ThisAny extends DynamicValuePointcut {
     }
 
     public final Residue matchesAt(WeavingEnv we,
-				   ShadowType st,
 				   SootClass cls,
 				   SootMethod method,
-				   MethodPosition pos) {
-	ContextValue cv=st.getThisContextValue(method);
+				   ShadowMatch sm) {
+	ContextValue cv=sm.getThisContextValue(method);
 	if(cv==null) return null;
 	return matchesAt(we,cv);
     }

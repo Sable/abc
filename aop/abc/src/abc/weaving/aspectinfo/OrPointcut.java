@@ -28,12 +28,11 @@ public class OrPointcut extends AbstractPointcut {
     }
 
     public Residue matchesAt(WeavingEnv we,
-			     ShadowType st,
 			     SootClass cls,
 			     SootMethod method,
-			     MethodPosition pos) {
-	return OrResidue.construct(pc1.matchesAt(we,st,cls,method,pos),
-				   pc2.matchesAt(we,st,cls,method,pos));
+			     ShadowMatch sm) {
+	return OrResidue.construct(pc1.matchesAt(we,cls,method,sm),
+				   pc2.matchesAt(we,cls,method,sm));
     }
 
     public String toString() {

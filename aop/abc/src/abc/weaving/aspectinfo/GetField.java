@@ -21,27 +21,15 @@ public class GetField extends ShadowPointcut {
 	return pattern;
     }
 
-    static private ShadowType shadowType=new StmtShadowType();
-    
-    static public void registerShadowType() {
-	ShadowPointcut.registerShadowType(shadowType);
-    }
+    protected Residue matchesAt(ShadowMatch sm) {
+	if(!(sm instanceof GetFieldShadowMatch)) return null;
+	SootField field=((GetFieldShadowMatch) sm).getField();
 
-    public ShadowType getShadowType() {
-	return shadowType;
-    }
-
-    protected Residue matchesAt(MethodPosition position) {
-	if(!(position instanceof StmtMethodPosition)) return null;
-	Stmt stmt=((StmtMethodPosition) position).getStmt();
-
-	if (!(stmt instanceof AssignStmt)) return null;
-	AssignStmt as = (AssignStmt) stmt;
-	Value rhs = as.getRightOp();
-       	if(!(rhs instanceof FieldRef)) return null;
-	FieldRef fr = (FieldRef) rhs;
-	if(!getPattern().matchesField(fr.getField())) return null;
+	if(!getPattern().matchesField(field)) return null;
 	return AlwaysMatch.v;
+
+
+	   
     }
 
     public String toString() {

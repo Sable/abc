@@ -15,8 +15,7 @@ public interface Pointcut {
      *  If stmt is null, then shadow is the entire execution
      */
     public Residue matchesAt(WeavingEnv env,
-			     ShadowType ShadowType,
 			     SootClass cls,
 			     SootMethod method,
-			     MethodPosition pos);
+			     ShadowMatch sm);
 }

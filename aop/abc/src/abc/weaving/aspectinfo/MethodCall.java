@@ -21,36 +21,15 @@ public class MethodCall extends ShadowPointcut {
 	return pattern;
     }
 
-    static private ShadowType shadowType=new StmtShadowType();
-    
-    static public void registerShadowType() {
-	ShadowPointcut.registerShadowType(shadowType);
-    }
-
-    public ShadowType getShadowType() {
-	return shadowType;
-    }
-
-    protected Residue matchesAt(MethodPosition position) {
-	if(!(position instanceof StmtMethodPosition)) return null;
-	Stmt stmt=((StmtMethodPosition) position).getStmt();
+    protected Residue matchesAt(ShadowMatch sm) {
+	if(!(sm instanceof MethodCallShadowMatch)) return null;
+	MethodCallShadowMatch msm=(MethodCallShadowMatch) sm;
 
 	// FIXME: Hack should be removed when patterns are added
 	if(getPattern()==null) return AlwaysMatch.v;
 
-	if (stmt instanceof InvokeStmt) {
-	    SootMethod method = ((InvokeStmt) stmt).getInvokeExpr().getMethod();
-	    if(!getPattern().matchesMethod(method)) return null;
-	    return AlwaysMatch.v;
-	} else if(stmt instanceof AssignStmt) {
-	    AssignStmt as = (AssignStmt) stmt;
-	    Value rhs = as.getRightOp();
-	    if(!(rhs instanceof InvokeExpr)) return null;
-	    if(!getPattern().matchesMethod(((InvokeExpr) rhs).getMethod())) 
-		return null;
-	    return AlwaysMatch.v;
-	} else return null;
-
+	if(!getPattern().matchesMethod(msm.getMethod())) return null;
+	return AlwaysMatch.v;
     }
 
     public String toString() {

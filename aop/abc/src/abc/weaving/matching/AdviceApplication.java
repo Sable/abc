@@ -29,30 +29,34 @@ public abstract class AdviceApplication {
 				    SootClass cls,
 				    SootMethod method,
 				    MethodPosition pos) {
-	Iterator adviceIt;
-	for(adviceIt=info.getAdviceDecls().iterator();
-	    adviceIt.hasNext();) {
-	    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
+	
+	Iterator shadowIt;
+	for(shadowIt=ShadowType.shadowTypesIterator();
+	    shadowIt.hasNext();) {
 	    
-	    Pointcut pc=ad.getPointcut();
+	    ShadowType st=(ShadowType) shadowIt.next();
+	    ShadowMatch sm=st.matchesAt(pos);
 	    
-	    // remove the null check once everything is properly implemented
-	    if(pc!=null) {
-		
-		Iterator shadowIt;
-		for(shadowIt=ShadowPointcut.shadowTypesIterator();
-		    shadowIt.hasNext();) {
-		    
-		    ShadowType st=(ShadowType) shadowIt.next();
-		    WeavingEnv we=new AdviceFormals(ad);
+	    if(sm!=null) {
 
-		    if(st.couldMatch(pos)) {
-			Residue residue=pc.matchesAt(we,st,cls,method,pos);
+		Iterator adviceIt;
+		for(adviceIt=info.getAdviceDecls().iterator();
+		    adviceIt.hasNext();) {
+		    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
+		    WeavingEnv we=new AdviceFormals(ad);
+	    
+		    Pointcut pc=ad.getPointcut();
+	    
+		    // remove the null check once everything is properly 
+		    // implemented
+		    if(pc!=null) {
+			Residue residue=pc.matchesAt(we,cls,method,sm);
 			
-			if(ShadowType.debugResidues) System.out.println("residue: "+residue);
+			if(false) 
+			    System.out.println("residue: "+residue);
 			
 			if(!NeverMatch.neverMatches(residue))
-			    st.addAdviceApplication(mal,ad,residue,pos);
+			    sm.addAdviceApplication(mal,ad,residue);
 			
 		    }
 		}
@@ -77,18 +81,22 @@ public abstract class AdviceApplication {
 
 		final SootMethod method = (SootMethod) methodIt.next();
 
-		// FIXME: Replace this call with one to the partial transformer;
-		// Iterate through body to find "new", decide if we have a pointcut 
+		if(method.isAbstract()) continue;
+		if(method.isNative()) continue;
+		System.out.println("Processing a method");
+		// FIXME: Replace this call with one to the partial 
+		// transformer;
+		// Iterate through body to find "new", decide if we have a 
+		// pointcut 
 		// that might match it, and add the class to the list if so
 		// Either that or pre-compute the list of all classes that our
 		// pointcuts could match
 
+		HashMap m=new HashMap();
+		m.put("enabled","true");
 		(new soot.jimple.toolkits.base.JimpleConstructorFolder())
-		    .transform(method.getActiveBody(),"jtp.jcf",new HashMap());
+		    .transform(method.getActiveBody(),"jtp.jcf",m);
 
-		if(method.isAbstract()) continue;
-		if(method.isNative()) continue;
-		
 		MethodAdviceList mal=new MethodAdviceList();
 
 		// Do whole body shadows
@@ -103,6 +111,7 @@ public abstract class AdviceApplication {
 			current!=null;
 			current=next) {
 			next=(Stmt) stmtsChain.getSuccOf(current);
+			System.out.println("at: "+current);
 			doStatement(info,mal,sootCls,method,new StmtMethodPosition(current));
 			doStatement(info,mal,sootCls,method,new NewStmtMethodPosition(current,next));
 		    }
@@ -121,7 +130,7 @@ public abstract class AdviceApplication {
 		}
 
 		ret.put(method,mal);
-
+		System.out.println("Done processing");
 	    }
 	}
 	return ret;

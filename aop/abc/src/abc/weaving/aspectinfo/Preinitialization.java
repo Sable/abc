@@ -13,17 +13,8 @@ public class Preinitialization extends ShadowPointcut {
 	super(pos);
     }
 
-    static private ShadowType shadowType=new PreinitializationShadowType();
-    static public void registerShadowType() {
-	ShadowPointcut.registerShadowType(shadowType);
-    }
-
-    public ShadowType getShadowType() {
-	return shadowType;
-    }
-
-    public Residue matchesAt(MethodPosition pos) {
-	if(!(pos instanceof WholeMethodPosition)) return null;
+    public Residue matchesAt(ShadowMatch sm) {
+	if(!(sm instanceof PreinitializationShadowMatch)) return null;
 	return AlwaysMatch.v;
     }
 

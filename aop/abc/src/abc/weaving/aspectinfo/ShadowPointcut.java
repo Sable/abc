@@ -17,33 +17,17 @@ import abc.weaving.residues.Residue;
  */
 public abstract class ShadowPointcut extends AbstractPointcut {
     public final Residue matchesAt(WeavingEnv env,
-				   ShadowType st,
 				   SootClass cls,
 				   SootMethod method,
-				   MethodPosition position) {
-	return st==getShadowType() ? matchesAt(position) : null;
+				   ShadowMatch sm) {
+	return matchesAt(sm);
     }
 
     public ShadowPointcut(Position pos) {
 	super(pos);
     }
 
-    // Keep a record of what class is what shadow type?
-    static private List/*<ShadowType>*/ allShadowTypes=new LinkedList();
-
-    /** All classes that implement a new shadow type should call this in 
-	their static initializer */
-    static public void registerShadowType(ShadowType st) {
-	allShadowTypes.add(st);
-    }
-
-    static public Iterator shadowTypesIterator() {
-	return allShadowTypes.iterator();
-    }
-
-    public abstract ShadowType getShadowType();
-
-    /** Shadow pointcuts just need to know the position for matching */
-    protected abstract Residue matchesAt(MethodPosition position);
+    /** Shadow pointcuts just need to know the ShadowMatch */
+    protected abstract Residue matchesAt(ShadowMatch sm);
 
 }

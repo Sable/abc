@@ -14,17 +14,8 @@ public class Initialization extends ShadowPointcut {
 	super(pos);
     }
 
-    static private ShadowType shadowType=new InitializationShadowType();
-    static public void registerShadowType() {
-	ShadowPointcut.registerShadowType(shadowType);
-    }
-
-    public ShadowType getShadowType() {
-	return shadowType;
-    }
-
-    protected Residue matchesAt(MethodPosition pos) {
-	if(!(pos instanceof WholeMethodPosition)) return null;
+    protected Residue matchesAt(ShadowMatch sm) {
+	if(!(sm instanceof InitializationShadowMatch)) return null;
 	return AlwaysMatch.v;
     }
 

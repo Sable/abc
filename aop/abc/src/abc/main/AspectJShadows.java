@@ -1,17 +1,17 @@
 package abc.main;
 
-import abc.weaving.aspectinfo.*;
+import abc.weaving.matching.*;
 
 public class AspectJShadows {
 
     static void load() {
-	ConstructorCall.registerShadowType();
-	Execution.registerShadowType();
-	GetField.registerShadowType();
-	Handler.registerShadowType();
-	Initialization.registerShadowType();
-	MethodCall.registerShadowType();
-	Preinitialization.registerShadowType();
-	SetField.registerShadowType();
+	ConstructorCallShadowType.register();
+	ExecutionShadowType.register();
+	GetFieldShadowType.register();
+	HandlerShadowType.register();
+	InitializationShadowType.register();
+	MethodCallShadowType.register();
+	PreinitializationShadowType.register();
+	SetFieldShadowType.register();
     }
 }

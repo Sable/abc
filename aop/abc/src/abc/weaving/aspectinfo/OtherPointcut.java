@@ -21,10 +21,9 @@ public class OtherPointcut extends AbstractPointcut {
     }
 
     public Residue matchesAt(WeavingEnv env,
-			     ShadowType st,
 			     SootClass cls,
 			     SootMethod method,
-			     MethodPosition position) {
+			     ShadowMatch sm) {
 	return null;
     }
 

@@ -22,11 +22,10 @@ public class NotPointcut extends AbstractPointcut {
     }
 
     public Residue matchesAt(WeavingEnv we,
-			     ShadowType st,
 			     SootClass cls,
 			     SootMethod method,
-			     MethodPosition pos) {
-	return NotResidue.construct(pc.matchesAt(we,st,cls,method,pos));
+			     ShadowMatch sm) {
+	return NotResidue.construct(pc.matchesAt(we,cls,method,sm));
     }
 
     public String toString() {

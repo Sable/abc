@@ -19,10 +19,9 @@ public abstract class LexicalPointcut extends AbstractPointcut {
     }
 
     public final Residue matchesAt(WeavingEnv env,
-				   ShadowType st,
 				   SootClass cls,
 				   SootMethod method,
-				   MethodPosition position) {
+				   ShadowMatch sm) {
 	return matchesAt(cls,method);
     }
 

@@ -20,23 +20,14 @@ public class Handler extends ShadowPointcut {
 	return pattern;
     }
 
-    static private ShadowType shadowType=new TrapShadowType();
-    static public void registerShadowType() {
-	ShadowPointcut.registerShadowType(shadowType);
-    }
-
-    public ShadowType getShadowType() {
-	return shadowType;
-    }
-
-    protected Residue matchesAt(MethodPosition position) {
-	if(!(position instanceof TrapMethodPosition)) return null;
-	Trap trap=((TrapMethodPosition) position).getTrap();
+    protected Residue matchesAt(ShadowMatch sm) {
+	if(!(sm instanceof HandlerShadowMatch)) return null;
+	SootClass exc=((HandlerShadowMatch) sm).getException();
 
 	// FIXME: Hack should be removed when patterns are added
 	if(getPattern()==null) return AlwaysMatch.v;
 
-	if(!getPattern().matchesClass(trap.getException())) return null;
+	if(!getPattern().matchesClass(exc)) return null;
 	return AlwaysMatch.v;
 
     }
