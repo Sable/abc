@@ -22,6 +22,10 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
+<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
+        <run vm="1.4" class="AssertInAdviceBug"></run>
+    </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
