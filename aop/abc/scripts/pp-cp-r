@@ -1,0 +1,10 @@
+cp -r $1 $1-rac
+e=`pwd`
+for i in `find $1-rac -type d`
+do
+   cd $e/$i
+   for j in *.java
+   do
+      pp-rac $j
+   done
+done

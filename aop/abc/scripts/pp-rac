@@ -1,0 +1,3 @@
+jlc -ext aspectj -sx java -ox ljh -noserial -dump parse $1 >& /tmp/$1.t
+sed '1,3d' < /tmp/$1.t > $1
+rm /tmp/$1.t

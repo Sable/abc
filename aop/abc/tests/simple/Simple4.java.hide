@@ -1,0 +1,30 @@
+public aspect Simple4  { 
+
+  class ClassInsideAspect { int x; }
+
+  interface InterfaceInsideAspect { int foo(int x); }
+
+  static aspect AspectInsideAspect { pointcut p(): adviceexecution(); }
+
+}
+
+class Class1 {
+
+    static aspect AspectInsideClass 
+      { pointcut p(int x): args(x) && if (x == 0); }
+
+    interface InterfaceInsideClass { int goo (int x, int y); }
+
+    class ClassInsideClass { int x; int m(int x) { return (x+1); } }
+
+}
+
+interface Interface1 {
+
+    class ClassInsideInterface { float y; }
+
+    interface InterfaceInsideInterface { int hoo (int x, float y); }
+
+    static aspect AspectInsideInterface 
+       { pointcut p(): withincode(int || boolean f(int)); }
+}

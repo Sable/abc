@@ -1,0 +1,1190 @@
+include "jj.ppg"
+
+package polyglot.ext.aspectj.parse;
+
+import polyglot.ext.aspectj.types.AspectJTypeSystem;
+import polyglot.ext.aspectj.ast.AspectJNodeFactory;
+import polyglot.ext.jl.parse.Name;
+
+import polyglot.ext.aspectj.ast.*;
+
+parser Grm extends soot.javaToJimple.jj.parse.Grm {:
+    public final AspectJTypeSystem ts;
+    public final AspectJNodeFactory nf;
+
+    public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
+        super(l, t, n, q);
+        ts = (AspectJTypeSystem) t;
+        nf = (AspectJNodeFactory) n;
+    }
+
+    /* Flag for personalized parser trace. */
+    public static boolean parserTraceOn = false;
+
+    public static void parserTrace (String s)
+      { if (parserTraceOn) 
+          System.err.println(" REDUCED: " + s); 
+      }
+
+:};
+
+/* ---------------------------------------------------------*/
+/* ----            TOKENS added for AspectJ             --- */
+/* ---------------------------------------------------------*/
+
+/* ----   tokens added to the Java part of scanner ---*/
+terminal Token ASPECT;
+terminal Token PRIVILEGED;
+
+/* ----   tokens added to the AspectJ part of scanner ---*/
+terminal Token AFTER;
+terminal Token AROUND;
+terminal Token BEFORE;
+terminal Token DECLARE;
+terminal Token ISSINGLETON;
+terminal Token PERCFLOW;
+terminal Token PERCFLOWBELOW;
+terminal Token PERTARGET;
+terminal Token PERTHIS;
+terminal Token POINTCUT;
+terminal Token PROCEED;
+terminal Token THISENCLOSINGJOINPOINTSTATICPART;
+terminal Token THISJOINPOINT;
+terminal Token THISJOINPOINTSTATICPART;
+
+/* ----   tokens added to the pointcut part of scanner ---*/
+terminal Token PC_ADVICEEXECUTION;
+terminal Token PC_ARGS;
+terminal Token PC_CALL;
+terminal Token PC_CFLOW;
+terminal Token PC_CFLOWBELOW;
+terminal Token PC_ERROR;
+terminal Token PC_EXECUTION;
+terminal Token PC_GET;
+terminal Token PC_HANDLER;
+terminal Token PC_IF;
+terminal Token PC_INITIALIZATION;
+terminal Token PC_PARENTS;
+terminal Token PC_PRECEDENCE;
+terminal Token PC_PREINITIALIZATION;
+terminal Token PC_RETURNING;
+terminal Token PC_SET;
+terminal Token PC_SOFT;
+terminal Token PC_STATICINITIALIZATION;
+terminal Token PC_TARGET;
+terminal Token PC_THIS;
+terminal Token PC_THROWING;
+terminal Token PC_WARNING;
+terminal Token PC_WITHIN;
+terminal Token PC_WITHINCODE;
+
+terminal Token PC_DOTDOT; 
+terminal Token PC_NOT;
+terminal Token PC_ANDAND;
+terminal Token PC_OROR;
+terminal Token PC_PLUS;
+terminal Token PC_PLUSDOT;
+
+terminal Token IDENTIFIERPATTERN;
+
+/* ---------------------------------------------------------*/
+/* ----          NON-TERMINALS added for AspectJ        --- */
+/* ---------------------------------------------------------*/
+
+/* --- all types List must be fixed to give real types --- */
+non terminal AspectDecl aspect_declaration; 
+non terminal PerClause  perclause_opt;
+non terminal PerClause  perclause;
+
+non terminal AspectBody aspect_body;
+non terminal List aspect_body_declarations;
+non terminal List aspect_body_declaration;
+
+non terminal DeclareDecl declare_declaration;
+
+non terminal PointcutDecl pointcut_declaration;
+
+non terminal AdviceDecl advice_declaration;
+non terminal AdviceSpec advice_spec;
+
+non terminal IntertypeDecl intertype_member_declaration;
+
+non terminal Pointcut pointcut_expr;
+non terminal Pointcut or_pointcut_expr;
+non terminal Pointcut unary_pointcut_expr;
+non terminal Pointcut basic_pointcut_expr;
+
+non terminal NamePattern name_pattern;
+non terminal SimpleNamePattern simple_name_pattern;
+non terminal Token aspectj_reserved_identifier;
+
+non terminal TypePatternExpr type_pattern_expr;
+non terminal TypePatternExpr or_type_pattern_expr;
+non terminal TypePatternExpr unary_type_pattern_expr;
+non terminal TypePatternExpr basic_type_pattern;
+non terminal RefTypePattern reference_type_pattern;
+
+non terminal List classname_pattern_expr_list;
+non terminal ClassnamePatternExpr classname_pattern_expr;
+non terminal ClassnamePatternExpr or_classname_pattern_expr;
+non terminal ClassnamePatternExpr unary_classname_pattern_expr;
+non terminal ClassnamePatternExpr basic_classname_pattern;
+
+non terminal List modifier_pattern_expr;
+
+non terminal ClassnamePatternExpr throws_pattern_expr_opt;
+non terminal MethodConstructorPattern method_constructor_pattern;
+non terminal MethodPattern method_pattern;
+non terminal ConstructorPattern constructor_pattern;
+non terminal FieldPattern field_pattern; 
+
+non terminal ClassTypeDotNew classtype_dot_new;
+non terminal ClassTypeDotId  classtype_dot_id;
+
+non terminal List formal_pattern_list_opt;
+non terminal List formal_pattern_list;
+non terminal FormalPattern formal_pattern;
+
+start with goal;
+
+/* ---------------------------------------------------------------- */
+/*             EXTENSIONS TO BASE JAVA RULES                        */
+/* ---------------------------------------------------------------- */
+
+/* add the possiblility of declaring an apspect to type_declaration */
+extend type_declaration ::=   // class | interface | aspect
+     aspect_declaration:a
+       {: RESULT = a; :}
+  ;
+
+/* add the possibility of a call to proceed as a method_invocation */
+extend method_invocation ::=
+     PROCEED:a LPAREN argument_list_opt:b RPAREN:d
+       {: RESULT = parser.nf.ProceedCall(parser.pos(a,d),b);
+       :}  
+  ;
+
+/* add the possiblity of a simple_name for this_ aspectj vars */
+extend simple_name ::= 
+     THISJOINPOINT:a
+       {: RESULT = new Name(parser, parser.pos(a), "thisJoinPoint"); 
+       :}
+  |  THISJOINPOINTSTATICPART:a
+       {: RESULT = new Name(parser, parser.pos(a), "thisJoinPointStaticPart"); 
+       :}
+  |  THISENCLOSINGJOINPOINTSTATICPART:a
+       {: RESULT = new Name(parser, parser.pos(a), 
+                                "thisEnclosingJoinPointStaticPart"); 
+       :}
+  ;
+
+extend class_member_declaration ::=
+    aspect_declaration:a
+    {: Grm.parserTrace("a class member declaration is an aspect");
+       List l = new TypedList(new LinkedList(),
+                              ClassMember.class,
+                              false);
+       l.add(a);
+       RESULT = l;
+    :}
+|   pointcut_declaration:a
+    {: Grm.parserTrace("a class member declaration is a pointcut declaration");
+       List l = new TypedList(new LinkedList(),
+                              ClassMember.class,
+                              false);
+       l.add(a);
+       RESULT = l;
+    :}
+  ;
+
+extend interface_member_declaration ::=
+    aspect_declaration:a
+    {: Grm.parserTrace("an interface declaration is an aspect");
+       List l = new TypedList(new LinkedList(),
+                              ClassMember.class,
+                              false);
+       l.add(a);
+       RESULT = l;
+    :}
+|   pointcut_declaration:a
+    {: Grm.parserTrace("an interface member declaration is a pointcut declaration");
+       List l = new TypedList(new LinkedList(),
+                              ClassMember.class,
+                              false);
+       l.add(a);
+       RESULT = l;
+    :}
+  ;
+
+
+/* ---------------------------------------------------------------- */
+/*                      ASPECTJ RULES                               */
+/* ---------------------------------------------------------------- */
+
+/* must explicitly give two alternatives here,  if you make PRIVILEGED
+   another rule which can go to epsilon,  then there is a shift reduce
+   conflict with modifiers_opt, which can also go to epsilon. */
+
+aspect_declaration ::=
+      modifiers_opt:a PRIVILEGED modifiers_opt:a1 ASPECT:n IDENTIFIER:b
+                         super_opt:c interfaces_opt:d  perclause_opt:f  
+                         aspect_body:g
+       {: Grm.parserTrace( "PRIVILEGED aspect declaration: " + 
+                                               b.getIdentifier()); 
+          RESULT = parser.nf.AspectDecl(parser.pos(n,g),
+                                        true,
+                                        a.set(a1),
+                                        b.getIdentifier(),
+                                        c,
+                                        d,
+                                        f,
+                                        g); // ignore per-clause for now
+       :}
+   |  modifiers_opt:a ASPECT:n IDENTIFIER:b
+                         super_opt:c interfaces_opt:d  perclause_opt:f  
+                         aspect_body:g
+       {: Grm.parserTrace( "aspect declaration: " + 
+                                               b.getIdentifier()); 
+          RESULT = parser.nf.AspectDecl(parser.pos(n,g),
+                                        false,
+                                        a,
+                                        b.getIdentifier(),
+                                        c,
+                                        d,
+                                        f,
+                                        g); // ignore per-clause for now
+       :}
+  ;
+
+perclause_opt ::=
+     perclause:a
+       {: Grm.parserTrace("non-empty perclause in perclause_opt");
+          RESULT = a;
+       :}
+  | /* epsilon */
+       {: Grm.parserTrace("empty perclause in perclause_opt");
+          RESULT = null;
+       :}
+  ;
+
+perclause ::= 
+     PERTARGET:per LPAREN pointcut_expr:pc RPAREN:d
+       {: Grm.parserTrace("pertarget");
+          RESULT = parser.nf.PerTarget(parser.pos(per,d),pc);
+       :}
+  |  PERTHIS:per LPAREN pointcut_expr:pc RPAREN:d
+       {: Grm.parserTrace("perthis");
+          RESULT = parser.nf.PerThis(parser.pos(per,d),pc);
+       :}
+  |  PERCFLOW:per LPAREN pointcut_expr:pc RPAREN:d
+       {: Grm.parserTrace("percflow");
+          RESULT = parser.nf.PerCflow(parser.pos(per,d),pc);
+       :}
+  |  PERCFLOWBELOW:per LPAREN pointcut_expr:pc RPAREN:d
+       {: Grm.parserTrace("percflowbelow");
+          RESULT = parser.nf.PerCflowBelow(parser.pos(per,d),pc);
+       :}
+  |  ISSINGLETON:per
+       {: Grm.parserTrace("isingleton");
+          RESULT = parser.nf.IsSingleton(parser.pos(per));
+       :}
+  |  ISSINGLETON:per LPAREN RPAREN:d // just to pass the ajc tests
+       {: Grm.parserTrace("isingleton");
+          RESULT = parser.nf.IsSingleton(parser.pos(per,d));
+       :}
+  ;
+
+
+aspect_body ::=
+     LBRACE:lb  RBRACE:rb
+        {: Grm.parserTrace("empty aspect body"); 
+           RESULT = parser.nf.AspectBody(parser.pos(lb,rb),
+                                         new TypedList(new LinkedList(), 
+                                                       ClassMember.class, 
+                                                       false)); 
+        :}
+  |
+     LBRACE:lb aspect_body_declarations:a RBRACE:rb
+       {: Grm.parserTrace("aspect body"); 
+          RESULT = parser.nf.AspectBody(parser.pos(lb,rb),a); 
+       :}
+  ;
+
+aspect_body_declarations ::=
+     aspect_body_declaration:a
+       {: Grm.parserTrace("aspect_body_declaration");
+          RESULT = new TypedList(new LinkedList(), ClassMember.class, false);
+          RESULT.addAll(a);
+       :}
+  |  aspect_body_declarations:a aspect_body_declaration:b
+       {: Grm.parserTrace("aspect_body_declarations");
+          RESULT = a;
+          a.addAll(b);
+       :}
+  ;
+
+aspect_body_declaration ::= 
+     class_body_declaration:a
+       {: Grm.parserTrace("aspect_body_declaration is just a class_body_declaration\n");
+          Grm.parserTrace("LINE " + parser.pos(a));
+          Grm.parserTrace("-----------------------------------------------\n");
+          RESULT = a;
+       :}
+  |  declare_declaration:a
+       {: Grm.parserTrace("declare declaration\n");
+          Grm.parserTrace("LINE " + parser.pos(a));
+          Grm.parserTrace("-----------------------------------------------\n");
+          List ds = new TypedList(new LinkedList(),ClassMember.class,false);
+          ds.add(a);
+          RESULT = ds;
+       :}
+ /* |  pointcut_declaration:a
+       {: Grm.parserTrace("pointcut declaration\n");
+          Grm.parserTrace("LINE " + parser.pos(a));
+          Grm.parserTrace("-----------------------------------------------\n");
+          List ds = new TypedList(new LinkedList(),ClassMember.class,false);
+          ds.add(a);
+          RESULT = ds;
+       :} */
+  |  advice_declaration:a
+       {: Grm.parserTrace("advice declaration\n");
+          Grm.parserTrace("LINE " + parser.pos(a));
+          Grm.parserTrace("-----------------------------------------------\n");
+          List ds = new TypedList(new LinkedList(),ClassMember.class,false);
+          ds.add(a);
+          RESULT = ds;
+       :}
+  |  intertype_member_declaration:a
+       {: Grm.parserTrace("intertype_member_declaration\n");
+          Grm.parserTrace("LINE " + parser.pos(a));
+          Grm.parserTrace("-----------------------------------------------\n");
+          List ds = new TypedList(new LinkedList(),ClassMember.class,false);
+          ds.add(a);
+          RESULT = ds;
+       :}
+  ;
+
+declare_declaration ::=
+     DECLARE:d PC_PARENTS COLON classname_pattern_expr:a EXTENDS class_type_list:b SEMICOLON:e
+       {: Grm.parserTrace("Declare class extension");
+          DeclareParentsExt dpe = parser.nf.DeclareParentsExt(parser.pos(d,e),a,b);
+          RESULT = dpe;
+       :}
+  |  DECLARE:d PC_PARENTS COLON classname_pattern_expr:a IMPLEMENTS interface_type_list:b SEMICOLON:e
+       {: Grm.parserTrace("Declare interface extension");
+          DeclareParentsImpl dpi = parser.nf.DeclareParentsImpl(parser.pos(d,e),a,b);
+          RESULT = dpi;
+       :}
+  |  DECLARE:d PC_WARNING COLON pointcut_expr:a COLON STRING_LITERAL:b SEMICOLON:e 
+       {: Grm.parserTrace("Declare warning:" + b.getValue());
+          DeclareWarning dw = parser.nf.DeclareWarning(parser.pos(d,e),a,b.getValue());
+          RESULT = dw;
+       :}
+  |  DECLARE:d PC_ERROR COLON pointcut_expr:a COLON STRING_LITERAL:b SEMICOLON:e 
+       {: Grm.parserTrace("Declare error:" + b.getValue());
+          DeclareError de = parser.nf.DeclareError(parser.pos(d,e),a,b.getValue());
+          RESULT = de;
+       :}
+  |  DECLARE:d PC_SOFT COLON type:a COLON pointcut_expr:b SEMICOLON:e
+       {: Grm.parserTrace("Declare soft");
+          DeclareSoft ds = parser.nf.DeclareSoft(parser.pos(d,e),a,b);
+          RESULT = ds;
+       :}
+  |  DECLARE:d PC_PRECEDENCE COLON classname_pattern_expr_list:a SEMICOLON:e
+       {: Grm.parserTrace("Declare precedence");
+          DeclarePrecedence dp = parser.nf.DeclarePrecedence(parser.pos(a),a);
+          RESULT = dp;
+       :}
+  ;
+
+pointcut_declaration ::=
+     modifiers_opt:a POINTCUT IDENTIFIER:b 
+             LPAREN formal_parameter_list_opt:c RPAREN SEMICOLON:e
+     /* must check that modifiers include ABSTRACT */
+     {: Grm.parserTrace("abstract pointcut declaration");
+        PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
+                                                  a,
+                                                  b.getIdentifier(),
+                                                  c,
+                                                  null);
+        RESULT = pcd;
+     :}
+  |  modifiers_opt:a POINTCUT IDENTIFIER:b 
+             LPAREN formal_parameter_list_opt:c RPAREN 
+             COLON pointcut_expr:d SEMICOLON:e 
+     /* must check that modifiers DO NOT include ABSTRACT */
+     {: Grm.parserTrace("non-abstract pointcut declaration");
+        PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
+                                                  a,
+                                                  b.getIdentifier(),
+                                                  c,
+                                                  d);
+        RESULT = pcd;
+     :}
+  ;
+
+advice_declaration ::=
+      modifiers_opt:m advice_spec:a throws_opt:b COLON pointcut_expr:c 
+     /* only valid modifier is strictfp */
+        method_body:d 
+       {: Grm.parserTrace("advice declaration without strictfp");
+          AdviceDecl ad = parser.nf.AdviceDecl(parser.pos(a,d),
+					       m,
+                                               a,
+                                               b,
+					       c,
+	                                       d);
+          RESULT = ad;
+       :}
+  ;
+
+advice_spec ::=
+     BEFORE:x LPAREN formal_parameter_list_opt:a RPAREN:y
+       {: Grm.parserTrace("before(formals)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          Before b = parser.nf.Before(parser.pos(x,y),a,voidn);
+          RESULT = b;
+       :}
+  |  AFTER:x LPAREN formal_parameter_list_opt:a RPAREN:y
+       {: Grm.parserTrace("after(formals)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	      After after = parser.nf.After(parser.pos(x,y),a,voidn);
+          RESULT = after;
+       :}
+  |  AFTER:x  LPAREN formal_parameter_list_opt:a RPAREN PC_RETURNING:y
+       {: Grm.parserTrace("after(formals)returning");
+        TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	  AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
+	                                                     a,
+                                                         null,
+                                                         voidn);
+          RESULT = afterRet;
+       :}
+  |  AFTER:x LPAREN formal_parameter_list_opt:a RPAREN PC_RETURNING LPAREN RPAREN:y // just to pass ajc tests
+       {: Grm.parserTrace("after(formals)returning()");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	      AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
+	                                                         a,
+                                                             null,
+                                                             voidn);
+          RESULT = afterRet;
+       :}
+  |  AFTER:x  LPAREN formal_parameter_list_opt:a RPAREN PC_RETURNING 
+                                               LPAREN formal_parameter:b RPAREN:y
+       {: Grm.parserTrace("after(formals) returning(p)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+	      AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
+                                                             a,
+                                                             b,
+                                                             voidn);
+          RESULT = afterRet;
+       :}
+  |  AFTER:x  LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING:y
+       {: Grm.parserTrace("after(formals)throwing");
+          AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
+                                                             a,
+							     null);
+          RESULT = afterThrow;
+       :}
+  |  AFTER:x  LPAREN formal_parameter_list_opt:a RPAREN PC_THROWING
+                                               LPAREN formal_parameter:b RPAREN:y
+       {: Grm.parserTrace("after(formals)throwing(p)");
+
+          AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
+                                                             a,
+							     b);
+          RESULT = afterThrow;
+       :}
+  |  type:a AROUND LPAREN formal_parameter_list_opt:b RPAREN:y
+       {: Grm.parserTrace("non-void-type around (formals)");
+          Around around = parser.nf.Around(parser.pos(a,y),
+                                           a,
+                                           b);
+          RESULT = around;
+       :}
+  |  VOID:a AROUND LPAREN formal_parameter_list_opt:b RPAREN:y
+       {: Grm.parserTrace("VOID around (formals)");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                        parser.ts.Void());
+          Around around = parser.nf.Around(parser.pos(a,y),
+                                           voidn,
+                                           b);
+          RESULT = around;
+       :}
+  ;
+
+intertype_member_declaration ::=
+     modifiers_opt:a VOID:b name:c DOT IDENTIFIER:d 
+         LPAREN formal_parameter_list_opt:e RPAREN throws_opt:f method_body:g
+     /* must check if modifiers includes abstract, no body,  if doesn't
+          include abstract, has body */
+       {: Grm.parserTrace("Intertype VOID METHOD declaration");
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
+                                                        parser.ts.Void());
+          IntertypeMethodDecl imd 
+            = parser.nf.IntertypeMethodDecl(parser.pos(b,g),
+                                      a,
+                                      voidn,
+				      c.toType(),
+				      d.getIdentifier(),
+                                      e,
+                                      f,
+                                      g);                                     
+           RESULT = imd;
+       :}
+  |  modifiers_opt:a type:b name:c DOT IDENTIFIER:d 
+         LPAREN formal_parameter_list_opt:e RPAREN throws_opt:f method_body:g
+     /* must check if modifiers includes abstract, no body,  if doesn't
+          include abstract, has body */
+       {: Grm.parserTrace("Intertype METHOD declaration");
+           IntertypeMethodDecl imd 
+            = parser.nf.IntertypeMethodDecl(parser.pos(b,g),
+                                      a,
+                                      b,
+				      c.toType(),
+				      d.getIdentifier(),
+                                      e,
+                                      f,
+                                      g);                                     
+           RESULT = imd;
+       :}
+  | modifiers_opt:a name:b DOT NEW 
+         LPAREN formal_parameter_list_opt:c RPAREN throws_opt:d constructor_body:e
+     /* must check that body is not null */
+       {: Grm.parserTrace("Intertype CONSTRUCTOR declaration");
+          IntertypeConstructorDecl icd
+           = parser.nf.IntertypeConstructorDecl(parser.pos(b,e),
+                                        a,
+					b.toType(),
+					b.toString(),
+					c,
+					d,
+					e);		
+          RESULT = icd;
+       :}
+  | modifiers_opt:a type:b name:c DOT IDENTIFIER:d SEMICOLON 
+       {: Grm.parserTrace("Intertype FIELD without initializer");
+          IntertypeFieldDecl ifd
+	   = parser.nf.IntertypeFieldDecl(parser.pos(b),
+                                          a,
+                                          b,
+                                          c.toType(),
+                                          d.getIdentifier(),
+                                          null);
+          RESULT = ifd;
+       :}
+  | modifiers_opt:a type:b name:c DOT IDENTIFIER:d  
+        EQ variable_initializer:e SEMICOLON 
+       {: Grm.parserTrace("Intertype FIELD with initializer");
+          IntertypeFieldDecl ifd
+	   = parser.nf.IntertypeFieldDecl(parser.pos(b,d),
+                                          a,
+                                          b,
+                                          c.toType(),
+                                          d.getIdentifier(),
+                                          e);
+          RESULT = ifd;
+       :}
+  ;
+
+/* ------------------------- POINTCUT EXPRESSIONS ---------------------- */
+
+pointcut_expr ::= 
+      or_pointcut_expr:a
+        {: Grm.parserTrace("pointcut_expr is an or_pointcut_expr");
+           RESULT = a;
+        :}
+   |  pointcut_expr:a PC_ANDAND or_pointcut_expr:b
+        {: Grm.parserTrace("pointcut_expr && or_pointcut_expr");
+           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_AND,b);
+        :} 
+   ;
+
+or_pointcut_expr ::=
+      unary_pointcut_expr:a 
+        {: Grm.parserTrace("or_pointcut_expr is a unary_pointcut_expr");
+           RESULT = a;
+        :}
+   |  or_pointcut_expr:a PC_OROR unary_pointcut_expr:b 
+        {: Grm.parserTrace("or_pointcut_expr || unary_pointcut_expr");
+           RESULT = parser.nf.PCBinary(parser.pos(a,b),a,PCBinary.COND_OR,b);
+        :}
+   ;
+
+unary_pointcut_expr ::=
+      basic_pointcut_expr:a
+        {: Grm.parserTrace("unary_pointcut_expr is a basic_pointcut_expr");
+           RESULT = a;
+        :}
+   |  PC_NOT unary_pointcut_expr:a
+        {: Grm.parserTrace("! unary_pointcut_expr");
+           PCNot pcn = parser.nf.PCNot(parser.pos(a),a);
+           RESULT = pcn;
+        :}
+   ;
+
+basic_pointcut_expr ::=
+     LPAREN pointcut_expr:a RPAREN
+       {: Grm.parserTrace("basic_pointcut_expr is ( pointcut_expr )");
+          RESULT = a;
+       :}
+   | PC_CALL:x LPAREN method_constructor_pattern:a RPAREN:y
+       {: Grm.parserTrace("CALL pointcut");
+          RESULT = parser.nf.PCCall(parser.pos(x,y),a);
+       :}
+   | PC_EXECUTION:x LPAREN method_constructor_pattern:a RPAREN:y
+       {: Grm.parserTrace("EXECUTION pointcut");
+          RESULT = parser.nf.PCExecution(parser.pos(x,y),a);
+       :}
+   | PC_INITIALIZATION:x LPAREN constructor_pattern:a RPAREN:y
+       {: Grm.parserTrace("INITIALIZATION pointcut");
+          RESULT = parser.nf.PCInitialization(parser.pos(x,y),a);
+       :}
+   | PC_PREINITIALIZATION:x LPAREN constructor_pattern:a RPAREN:y
+       {: Grm.parserTrace("PREINITIALIZATION pointcut");
+          RESULT = parser.nf.PCPreinitialization(parser.pos(x,y),a);
+       :}
+   | PC_STATICINITIALIZATION:x LPAREN classname_pattern_expr:a RPAREN:y
+       {: Grm.parserTrace("STATICINITIALIZATION pointcut");
+          RESULT = parser.nf.PCStaticInitialization(parser.pos(x,y),a);
+       :}
+   | PC_GET:x LPAREN field_pattern:a RPAREN:y
+       {: Grm.parserTrace("GET pointcut");
+          RESULT = parser.nf.PCGet(parser.pos(x,y),a);
+       :} 
+   | PC_SET:x LPAREN field_pattern:a RPAREN:y
+       {: Grm.parserTrace("SET pointcut");
+          RESULT = parser.nf.PCSet(parser.pos(x,y),a);
+       :}
+   | PC_HANDLER:x LPAREN classname_pattern_expr:a RPAREN:y
+     /* verify that this really can take any type_pattern */
+       {: Grm.parserTrace("HANDLER pointcut");
+          RESULT = parser.nf.PCHandler(parser.pos(x,y),a);
+       :}
+   | PC_ADVICEEXECUTION:a LPAREN RPAREN:y
+       {: Grm.parserTrace("ADVICEEXECUTION pointcut");
+          RESULT = parser.nf.PCAdviceExecution(parser.pos(a,y));
+       :}
+   | PC_WITHIN:x LPAREN classname_pattern_expr:a RPAREN:y
+       {: Grm.parserTrace("WITHIN pointcut on pattern");
+          RESULT = parser.nf.PCWithin(parser.pos(x,y),a);
+       :}
+   | PC_WITHINCODE:x LPAREN method_constructor_pattern:a RPAREN:y
+       {: Grm.parserTrace("WITHINCODE pointcut on method_constructor_pattern");
+          RESULT = parser.nf.PCWithinCode(parser.pos(x,y),a);
+       :}
+   | PC_CFLOW:x LPAREN pointcut_expr:a RPAREN:y
+       {: Grm.parserTrace("CFLOW pointcut");
+          RESULT = parser.nf.PCCflow(parser.pos(x,y),a);
+       :}
+   | PC_CFLOWBELOW:x LPAREN pointcut_expr:a RPAREN:y
+       {: Grm.parserTrace("CFLOWBELOW pointcut");
+          RESULT = parser.nf.PCCflowBelow(parser.pos(x,y),a);
+       :}
+   | PC_IF:x LPAREN expression:a RPAREN:y
+       {: Grm.parserTrace("IF pointcut");
+          RESULT = parser.nf.PCIf(parser.pos(x,y),a);
+       :}
+   // following two rules, ajc only allows * or a fully-defined type/id
+   | PC_THIS:x LPAREN classname_pattern_expr:a RPAREN:y 
+       {: Grm.parserTrace("THIS pointcut");
+          RESULT = parser.nf.PCThis(parser.pos(x,y),a);
+       :}
+   | PC_TARGET:x LPAREN classname_pattern_expr:a RPAREN:y 
+       {: Grm.parserTrace("TARGET pointcut");
+          RESULT = parser.nf.PCTarget(parser.pos(x,y),a);
+       :}
+   // for args, ajc only allows each arg to be * .. or fully-defined type/id
+   | PC_ARGS:x LPAREN formal_pattern_list_opt:a RPAREN:y
+       {: Grm.parserTrace("ARGS pointcut");
+          RESULT = parser.nf.PCArgs(parser.pos(x,y),a);
+       :}   
+   // verify that only ids are allowed as args 
+   | name:n LPAREN formal_pattern_list_opt:a RPAREN:y
+       {: Grm.parserTrace("pointcut application of " + n);
+          RESULT = parser.nf.PCName(parser.pos(n,y),n,a);
+       :}
+  ;
+
+
+
+
+/* ------------------- NAME PATTERNS ---------------------------------- */
+
+name_pattern ::=
+     simple_name_pattern:a
+        {: Grm.parserTrace("name_pattern is just a simple_name_pattern");
+           RESULT = a;
+        :}
+  |  name_pattern:a  DOT simple_name_pattern:b
+        {: Grm.parserTrace("name_pattern is np . snp");
+           RESULT = parser.nf.DotNamePattern(parser.pos(a,b),a,b);
+        :}
+  |  name_pattern:a  PC_DOTDOT simple_name_pattern:b
+        {: Grm.parserTrace("name_pattern is np ..  snp");
+           RESULT = parser.nf.DotDotNamePattern(parser.pos(a,b),a,b);
+        :}
+  ;
+
+simple_name_pattern ::= 
+     IDENTIFIERPATTERN:a
+        {: Grm.parserTrace("simple_name_pattern is identifier pattern: " + a);
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),((Identifier)a).getIdentifier());
+        :}
+   | IDENTIFIER:a
+        {: Grm.parserTrace("simple_name_pattern is identifer: " + a);
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),a.getIdentifier());
+        :}
+   | aspectj_reserved_identifier:a
+        {: Grm.parserTrace("aspectj_reserved_identifier");
+	   String token = a.toString();
+           String keyword = token.substring(8,token.length()-1);
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),keyword);
+        :}
+   ;
+
+aspectj_reserved_identifier ::=
+     ASPECT:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PRIVILEGED:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_ADVICEEXECUTION:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_ARGS:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_CALL:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_CFLOW:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_CFLOWBELOW:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_ERROR:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_EXECUTION:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_GET:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_HANDLER:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_INITIALIZATION:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_PARENTS:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_PRECEDENCE:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_PREINITIALIZATION:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_RETURNING:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_SET:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_SOFT:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_STATICINITIALIZATION:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_TARGET:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_THROWING:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_WARNING:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  |  PC_WITHINCODE:a
+        {: Grm.parserTrace("aspectj_reserved_identifier: " + a);
+           RESULT = a;
+        :}
+  ;
+
+classtype_dot_id ::=
+     name_pattern:a 
+       {: Grm.parserTrace("classtype_dot_id is a name_pattern");
+	  TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
+                                parser.nf.RTPName(parser.pos(a),a,null)); // dodgy!
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(a),aa,null);
+       :}
+  |  name_pattern:a PC_PLUSDOT simple_name_pattern:b
+       {: Grm.parserTrace("classtype_dot_id is np + . snp");
+          TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
+                                parser.nf.RTPSubName(parser.pos(a),a,null));
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(a,b),aa,b);
+       :}
+  |  LPAREN:x type_pattern_expr:a RPAREN DOT simple_name_pattern:b 
+       /* must check it is a class pattern expr */
+       {: Grm.parserTrace("classtype_dot_id is (tpe) . snp");
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(x,b),a,b);
+       :}
+  ;
+
+classtype_dot_new ::=
+     NEW:a
+        {: Grm.parserTrace("classtype_dot_new is NEW: ");
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a),null);
+        :}
+  |  name_pattern:a DOT NEW:y 
+        {: Grm.parserTrace("classtype_dot_new is np . NEW");
+	   TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
+                                parser.nf.RTPName(parser.pos(a),a,null));
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
+        :}
+  |  name_pattern:a PC_PLUSDOT NEW:y 
+        {: Grm.parserTrace("classtype_dot_new is np + . NEW");
+           TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
+                                parser.nf.RTPSubName(parser.pos(a),a,null));
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
+        :}
+  |  LPAREN:x type_pattern_expr:a RPAREN DOT NEW:y
+        /* must check it is a class pattern expr */
+       {: Grm.parserTrace("(tpe) . new");
+          RESULT = parser.nf.ClassTypeDotNew(parser.pos(x,y),a);
+       :}
+  ;
+
+
+/* ------------------- TYPE PATTERNS ----------------------------------- */
+
+
+type_pattern_expr ::= 
+      or_type_pattern_expr:a
+        {: Grm.parserTrace("type_pattern_expr is an or_type_pattern_expr");
+           RESULT = a;
+        :}
+   |  type_pattern_expr:a PC_ANDAND or_type_pattern_expr:b
+        {: Grm.parserTrace("type_pattern_expr && or_type_pattern_expr");
+           RESULT = parser.nf.TPEBinary(parser.pos(a,b),
+					a,
+					TPEBinary.COND_AND,
+                                        b);
+        :} 
+   ;
+
+or_type_pattern_expr ::=
+      unary_type_pattern_expr:a 
+        {: Grm.parserTrace("or_type_pattern_expr is a unary_type_pattern_expr");
+           RESULT = a;
+        :}
+   |  or_type_pattern_expr:a PC_OROR unary_type_pattern_expr:b 
+        {: Grm.parserTrace("or_type_pattern_expr || unary_type_pattern_expr");
+           RESULT = parser.nf.TPEBinary(parser.pos(a,b),
+                                        a,
+                                        TPEBinary.COND_OR,
+                                        b);
+        :}
+   ;
+
+unary_type_pattern_expr ::=
+      basic_type_pattern:a
+        {: Grm.parserTrace("unary_type_pattern_expr is a  basic_type_pattern");
+           RESULT = a;
+        :}
+   |  PC_NOT:a unary_type_pattern_expr:b 
+        {: Grm.parserTrace("! unary_type_pattern_expr");
+           RESULT = parser.nf.TPENot(parser.pos(a,b),b);
+        :}
+   ;
+
+/* check that VOID is not in patterns for formals, ok for 
+       patterns for return types */
+basic_type_pattern ::=
+     VOID:a
+       {: Grm.parserTrace("VOID type");
+          TypeNode vn = parser.nf.CanonicalTypeNode(parser.pos(a),
+                                                    parser.ts.Void());
+          RESULT = parser.nf.TPEType(parser.pos(a),vn);
+       :}
+  |  primitive_type:a
+       {: Grm.parserTrace("basic_type_pattern is just a primitive_type");
+          RESULT = parser.nf.TPEType(parser.pos(a),a);
+       :}
+  |  reference_type_pattern:a
+       {: Grm.parserTrace("basic_type_pattern is a reference_type_pattern");
+          RESULT = parser.nf.TPERefTypePat(parser.pos(a),a);
+       :} 
+  |  LPAREN:lp type_pattern_expr:a RPAREN:rp
+       {: Grm.parserTrace("basic_type_pattern is a ( type_pattern_expr )");
+          RESULT = a;
+       :}
+  ;
+
+reference_type_pattern ::=
+     name_pattern:a 
+       {: Grm.parserTrace("reference_type_pattern is a name_pattern");
+          RESULT = parser.nf.RTPName(parser.pos(a),a,null);
+       :}
+  |  name_pattern:a dims:b
+       {: Grm.parserTrace("reference_type_pattern is name_pattern []...");
+          RESULT = parser.nf.RTPName(parser.pos(a,b),a,b);
+       :}
+  |  name_pattern:a PC_PLUS:y 
+       {: Grm.parserTrace("reference_type_pattern is name_pattern +");
+          RESULT = parser.nf.RTPSubName(parser.pos(a,y),a,null);
+       :}
+  |  name_pattern:a PC_PLUS dims:b
+       {: Grm.parserTrace("reference_type_pattern is name_pattern + []...");
+          RESULT = parser.nf.RTPSubName(parser.pos(a,b),a,b);
+       :}
+  ;
+
+/* ------------------ CLASSNAME PATTERNS ------------------------------- */
+
+classname_pattern_expr_list ::=
+     classname_pattern_expr:a 
+       {: Grm.parserTrace("first item of classname_pattern_expr_list");
+          RESULT = new TypedList(new LinkedList(),
+				 ClassnamePatternExpr.class,
+                                 false);
+          RESULT.add(a);
+       :}
+  |  classname_pattern_expr_list:a COMMA classname_pattern_expr:b
+       {: Grm.parserTrace("another item of classname_pattern_expr_list");
+          a.add(b);
+          RESULT = a;
+       :}
+  ;
+
+classname_pattern_expr ::= 
+      or_classname_pattern_expr:a
+        {: Grm.parserTrace("classname_pattern_expr is an or_classname_pattern_expr");
+           RESULT = a;
+        :}
+   |  classname_pattern_expr:a PC_ANDAND or_classname_pattern_expr:b
+        {: Grm.parserTrace("classname_pattern_expr && or_classname_pattern_expr");
+           RESULT = parser.nf.CPEBinary(parser.pos(a,b),
+					a,
+					CPEBinary.COND_AND,
+					b);
+        :} 
+   ;
+
+or_classname_pattern_expr ::=
+      unary_classname_pattern_expr:a 
+        {: Grm.parserTrace("or_classname_pattern_expr is a unary_classname_pattern_expr");
+           RESULT = a;
+        :}
+   |  or_classname_pattern_expr:a PC_OROR unary_classname_pattern_expr:b 
+        {: Grm.parserTrace("or_classname_pattern_expr || unary_classname_pattern_expr");
+           RESULT = parser.nf.CPEBinary(parser.pos(a,b), a, CPEBinary.COND_OR, b);
+        :}
+   ;
+
+unary_classname_pattern_expr ::=
+      basic_classname_pattern:a
+        {: Grm.parserTrace("unary_classname_pattern_expr is a  basic_classname_pattern");
+           RESULT = a;
+        :}
+   |  PC_NOT:x unary_classname_pattern_expr:a 
+        {: Grm.parserTrace("! unary_classname_pattern_expr");
+           RESULT = parser.nf.CPENot(parser.pos(x,a),a);
+        :}
+   ;
+
+basic_classname_pattern ::=
+     name_pattern:a 
+       {: Grm.parserTrace("classname_type_pattern is a name_pattern");
+          RESULT = parser.nf.CPEName(parser.pos(a),a);
+       :}
+  |  name_pattern:a PC_PLUS:y 
+       {: Grm.parserTrace("classname_type_pattern is name_pattern +");
+          RESULT = parser.nf.CPESubName(parser.pos(a,y),a);
+       :}
+  |  LPAREN:lp classname_pattern_expr:a RPAREN:rp
+       {: Grm.parserTrace("basic_classname_pattern is a ( classname_pattern_expr )");
+          RESULT = a;
+       :}
+  ;
+
+/* ----------------------- MODIFIER PATTERNS ---------------------------- */
+
+modifier_pattern_expr ::=
+     modifier:a
+       {: Grm.parserTrace("first modifier " + a);
+          RESULT = new TypedList(new LinkedList(),
+				 ModifierPattern.class,
+				 false);
+	  RESULT.add(parser.nf.ModifierPattern(null,a,true));
+       :}
+  |  PC_NOT:b modifier:a
+       {: Grm.parserTrace("first modifier is NOT " + a);
+          RESULT = new TypedList(new LinkedList(),
+				 ModifierPattern.class,
+				 false);
+	  RESULT.add(parser.nf.ModifierPattern(parser.pos(b),a,false));
+       :}
+  |  modifier_pattern_expr:a modifier:b
+       {: Grm.parserTrace("another modifier is " + b);
+          a.add(parser.nf.ModifierPattern(parser.pos(a),b,true));
+          RESULT = a;
+       :}
+  |  modifier_pattern_expr:a PC_NOT:c modifier:b
+       {: Grm.parserTrace("another modifier is NOT" + b);
+          a.add(parser.nf.ModifierPattern(parser.pos(c),b,true)); 
+          RESULT = a;
+       :}
+  ;
+
+
+/* -------------- METHOD, CONSTRUCTOR and FIELD PATTERNS ----------------- */
+
+throws_pattern_expr_opt ::=
+     // epsilon
+       {: Grm.parserTrace("no throws pattern");
+          RESULT = null;
+       :}
+  |  THROWS classname_pattern_expr:a
+       {: Grm.parserTrace("has throws pattern");
+          RESULT = a;
+       :}
+  ;
+
+method_constructor_pattern ::=
+     method_pattern:a
+       {: Grm.parserTrace("method_constructor is method");
+          RESULT = a;
+       :}
+  |  constructor_pattern:a
+       {: Grm.parserTrace("method_constructor is constructor");
+          RESULT = a;
+       :}
+  ;
+
+method_pattern ::=
+     modifier_pattern_expr:a  
+       type_pattern_expr:b 
+       classtype_dot_id:c
+       LPAREN:lp formal_pattern_list_opt:d RPAREN:rp 
+       throws_pattern_expr_opt:e
+        {: Grm.parserTrace("method_pattern with modifiers");
+           RESULT = parser.nf.MethodPattern(parser.pos(b,e),a,b,c,d,e);
+        :}
+  |  type_pattern_expr:b classtype_dot_id:c
+       LPAREN:lp formal_pattern_list_opt:d RPAREN:rp 
+       throws_pattern_expr_opt:e
+        {: Grm.parserTrace("method_pattern no modifiers");
+           List mods = new TypedList(new LinkedList(),
+                                     ModifierPattern.class,
+                                     true);
+           RESULT = parser.nf.MethodPattern(parser.pos(b,e),mods,b,c,d,e);
+        :}
+  ;
+
+constructor_pattern ::=
+     modifier_pattern_expr:a  
+       classtype_dot_new:b
+       LPAREN:lp formal_pattern_list_opt:c RPAREN:rp 
+       throws_pattern_expr_opt:d
+        {: Grm.parserTrace("constructor_pattern with modifiers");
+           RESULT = parser.nf.ConstructorPattern(parser.pos(b,d),
+                                                 a,b,c,d);
+        :}
+  |    classtype_dot_new:b
+       LPAREN:lp formal_pattern_list_opt:c RPAREN:rp 
+       throws_pattern_expr_opt:d
+        {: Grm.parserTrace("constructor_pattern no modifiers");
+	   List mods = new TypedList(new LinkedList(),
+                                     ModifierPattern.class,
+                                     true);
+           RESULT = parser.nf.ConstructorPattern(parser.pos(b,d),mods,b,c,d);
+        :}
+  ;
+
+field_pattern ::=
+     modifier_pattern_expr:a  type_pattern_expr:b classtype_dot_id:c
+// should be regular_variable_pattern 
+       {: Grm.parserTrace("field pattern with modifiers");
+          RESULT = parser.nf.FieldPattern(parser.pos(b,c),a,b,c);
+       :}
+  |  type_pattern_expr:b classtype_dot_id:c
+       {: Grm.parserTrace("field pattern without modifiers");
+          List a = new TypedList(new LinkedList(),
+			         ModifierPattern.class,
+                                 false);
+          RESULT = parser.nf.FieldPattern(parser.pos(b,c),a,b,c);
+       :}
+  ;
+
+/* -------------------- FORMAL PARAMETER LIST PATTERNS --------------*/
+
+formal_pattern_list_opt ::=
+      // epsilon                   
+       {: Grm.parserTrace("Empty formal parameter list"); 
+          RESULT = new TypedList(new LinkedList(),
+			         FormalPattern.class,
+                                 false); 
+       :}
+  | formal_pattern_list:a
+       {: Grm.parserTrace("Non-empty formal parameter list");
+	  RESULT = a; 
+       :}
+    ;
+formal_pattern_list ::=
+     formal_pattern:a
+        {: Grm.parserTrace("First formal pattern in the list.");
+           RESULT = new TypedList(new LinkedList(),
+				  FormalPattern.class,
+				  false);
+	   RESULT.add(a); 
+        :}
+    |  formal_pattern_list:a COMMA formal_pattern:b
+        {: Grm.parserTrace("Another formal parameter");
+	   a.add(b);
+           RESULT = a;
+        :}
+    ;
+
+formal_pattern ::=
+       PC_DOTDOT:a 
+         {: Grm.parserTrace("DOT DOT formal pattern");
+            RESULT = parser.nf.DotDotFormalPattern(parser.pos(a));
+         :}
+    |  type_pattern_expr:a 
+         {: Grm.parserTrace("A type pattern formal pattern");
+            RESULT = parser.nf.TypeFormalPattern(parser.pos(a),a);
+         :}
+    ;
