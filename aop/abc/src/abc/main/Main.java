@@ -135,6 +135,8 @@ public class Main {
         }
         // We should now have all classes as jimple
 
+	new abc.weaving.aspectinfo.Execution(null).toString();
+
         GlobalAspectInfo.v().computeAdviceLists();
 	
         //generateDummyGAI();

@@ -45,13 +45,15 @@ public abstract class AdviceApplication {
 		    
 		    ShadowType st=(ShadowType) shadowIt.next();
 		    WeavingEnv we=new AdviceFormals(ad);
-		    
-		    Residue residue=pc.matchesAt(we,st,cls,method,pos);
 
-		    System.out.println("residue: "+residue);
-
-		    if(!NeverMatch.neverMatches(residue)) {
-			st.addAdviceApplication(mal,ad,residue,pos);
+		    if(st.couldMatch(pos)) {
+			Residue residue=pc.matchesAt(we,st,cls,method,pos);
+			
+			System.out.println("residue: "+residue);
+			
+			if(!NeverMatch.neverMatches(residue))
+			    st.addAdviceApplication(mal,ad,residue,pos);
+			
 		    }
 		}
 	    }

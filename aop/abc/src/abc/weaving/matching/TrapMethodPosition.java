@@ -9,7 +9,7 @@ import soot.*;
 
 public class TrapMethodPosition implements MethodPosition {
     private Trap trap;
-    
+     
     public TrapMethodPosition(Trap trap) {
 	this.trap=trap;
     }

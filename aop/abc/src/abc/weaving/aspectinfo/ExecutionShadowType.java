@@ -10,6 +10,10 @@ import abc.weaving.residues.Residue;
  *  @date 29-Apr-04
  */
 public class ExecutionShadowType extends AbstractShadowType {
+    public boolean couldMatch(MethodPosition pos) {
+	return pos instanceof WholeMethodPosition;
+    }
+
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue,
