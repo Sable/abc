@@ -5919,7 +5919,7 @@
     </ajc-test>
 
     <ajc-test num="674" dir="pureJava" pr="386"
-      abccomment="tries to import inner classes invalidly"
+      abccomment="javac can't pass this test case"
       title="Referencing static interfaces with import statements"
       keywords="from-broken14usejavac,purejava">
         <abckeywords><skip/></abckeywords>
@@ -5945,7 +5945,7 @@
     </ajc-test>
 
     <ajc-test num="676" dir="pureJava" pr="386"
-      abccomment="See 675"
+      abccomment="See 675 : javac can't pass this"
       title="Referencing static interfaces with import statements stars 2"
       keywords="purejava,from-broken14usejavac">
        <abckeywords> <skip/> </abckeywords>
@@ -5956,7 +5956,7 @@
     </ajc-test>
 
     <ajc-test num="677" dir="pureJava" pr="386"
-      abccomment="See 676"
+      abccomment="See 676 : javac can't pass this"
       title="Referencing static interfaces with import statements stars 3"
       keywords="purejava,from-broken14usejavac">
       <abckeywords> <skip/> </abckeywords>
@@ -6304,7 +6304,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test num="71801" dir="new" pr="827"
+    <ajc-test num="718" dir="new" pr="827"
       abccomment="abc doesn't support 'before' as an identifier inside an aspect.
                 Cloned test case with different identifier name. PA"
       title="after returning advice on interface and implementation constructor"
@@ -6314,9 +6314,8 @@
         <run class="AfterReturningConstructor"/>
     </ajc-test>
 
-    <ajc-test num="718" dir="abctests/new" pr="827"
-      abccomment="abc doesn't support 'before' as an identifier inside an aspect.
-                Cloned test case with different identifier name. PA"
+    <ajc-test num="71801" dir="abctests/new" pr="827"
+      abccomment="Cloned from 718. PA"
       title="after returning advice on interface and implementation constructor - fixed"
       keywords="tofix">
         <compile files="AfterReturningConstructor.java"/>
@@ -6495,7 +6494,6 @@
       title="import any inner from interface implementor"
       abccomment="it is not legal to import inner classes"
       keywords="purejava">
-        <abckeywords><skip/></abckeywords>
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"/>
         </compile>
@@ -6747,7 +6745,6 @@
       abccomment="ajc doesn't report errors either and then breaks at runtime,
                   just like we do"
       keywords="from-resolved_104,knownLimitation">
-        <abckeywords><skip/></abckeywords>
         <compile files="ArgsInCflowCf.java">
             <message kind="error" line="19"/>
             <message kind="error" line="29"/>
@@ -7284,10 +7281,8 @@
     </ajc-test>
 
     <ajc-test num="812" dir="harness" keywords="command-line-error"
-        abccomment="we don't support sourceroot"
     	comment="XXX test skipped - harness ignores -sourceroot option"
       title="CLE: no dir specified for sourceroots">
-        <abckeywords><skip/></abckeywords>
         <compile badInput="true" files="ErrorTest.java" 
         	options="-sourceroots">
             <message kind="error" text="no sources specified"/>
@@ -7931,7 +7926,6 @@
 	</ajc-test>
 
 	<ajc-test num="881" dir="bugs/privilege/packageProtected" pr="42711"
-         abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04" 
             title="priviledged aspects calling methods from advice"> 
         <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java" /> 
     </ajc-test> 
@@ -8701,7 +8695,6 @@
     <ajc-test num="951" dir="bugs/deprecated" pr="54098"
                 abccomment="we don't support deprecation"
    	title="-deprecation not working?" >
-                <abckeywords><skip/></abckeywords>
     	 <compile files="Deprecation.java, Deprecated.java" options="-deprecation">
             <message kind="warning" line="5"/>
             <message kind="warning" line="6"/>
