@@ -19,6 +19,20 @@ public class ClassTypeDotNew_c extends Node_c implements ClassTypeDotNew
         this.base = base;
     }
 
+    protected ClassTypeDotNew_c reconstruct(ClassnamePatternExpr base) {
+	if(base!=this.base) {
+	    ClassTypeDotNew_c n = (ClassTypeDotNew_c) copy();
+	    n.base=base;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr base=(ClassnamePatternExpr) visitChild(this.base,v);
+	return reconstruct(base);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	if (base != null) {
 	    w.write("(");

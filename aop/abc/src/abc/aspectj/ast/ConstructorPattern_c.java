@@ -32,6 +32,31 @@ public class ConstructorPattern_c extends Node_c
         this.throwpat = throwpat;
     }
 
+    protected ConstructorPattern_c reconstruct(List/*<ModifierPattern>*/ modifiers,
+					  ClassTypeDotNew name,
+					  List/*<FormalPattern>*/ formals,
+					  ClassnamePatternExpr throwpat) {
+	if(modifiers != this.modifiers || name != this.name
+	   || formals != this.formals || throwpat != this.throwpat) {
+	    
+	    ConstructorPattern_c n = (ConstructorPattern_c) copy();
+	    n.modifiers=modifiers;
+	    n.name=name;
+	    n.formals=formals;
+	    n.throwpat=throwpat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	List/*<ModifierPattern>*/ modifiers = visitList(this.modifiers,v);
+	ClassTypeDotNew name = (ClassTypeDotNew) visitChild(this.name,v);
+	List/*<FormalPattern>*/ formals = visitList(this.formals,v);
+	ClassnamePatternExpr throwpat = (ClassnamePatternExpr) visitChild(this.throwpat,v);
+	return reconstruct(modifiers,name,formals,throwpat);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 
        for (Iterator i = modifiers.iterator(); i.hasNext(); ) {

@@ -83,6 +83,8 @@ public class PatternMatcher {
     }
 
     public void computeMatches(NamePattern pat, PCNode context, Set/*<String>*/ classes, Set/*<String>*/ packages) {
+	if (abc.main.Debug.v().namePatternMatches)
+	    System.err.println("Evaluating the name pattern "+pat+" ("+pat.getClass()+") in context "+context+" on "+pat.position());
 	pattern_classes.put(pat, classes);
 	pattern_packages.put(pat, packages);
 	pattern_context.put(pat, context);
@@ -112,7 +114,7 @@ public class PatternMatcher {
 
     Set getMatches(NamePattern pat) {
 	if (!pattern_matches.containsKey(pat)) {
-	    throw new RuntimeException("Unknown name pattern: "+pat+" at "+pat.position());
+	    throw new RuntimeException("Unknown name pattern: "+pat+" ("+pat.getClass()+") at "+pat.position());
 	}
 	return (Set)pattern_matches.get(pat);
     }

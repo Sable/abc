@@ -9,7 +9,7 @@ import polyglot.util.*;
 
 import java.util.*;
 
-public class NamePatternEvaluator extends NodeVisitor {
+public class NamePatternEvaluator extends HaltingVisitor {
     protected Set/*<String>*/ classes;
     protected Set/*<String>*/ packages;
     protected PCNode context;
@@ -21,15 +21,6 @@ public class NamePatternEvaluator extends NodeVisitor {
     }
 
     public NodeVisitor enter(Node n) {
-	if (n instanceof ClassDecl) {
-	    String name = ((ClassDecl)n).type().fullName();
-	    context = ext_info.hierarchy.getClass(name);
-	    return this;
-	}
-	return this;
-    }
-
-    public Node override(Node n) {
 	if (n instanceof SourceFile) {
 	    classes = new HashSet();
 	    packages = new HashSet();
@@ -45,14 +36,20 @@ public class NamePatternEvaluator extends NodeVisitor {
 	    }
 	    // Always implicitly import java.lang
 	    packages.add("java.lang");
-	    return null;
+	    return this;
+	}
+	if (n instanceof ClassDecl) {
+	    String name = ((ClassDecl)n).type().fullName();
+	    context = ext_info.hierarchy.getClass(name);
+	    return this;
 	}
 	if (n instanceof NamePattern) {
 	    //Position p = n.position();
 	    //System.out.println("Evaluating name pattern on "+p.file()+":"+p.line());
 	    ext_info.pattern_matcher.computeMatches((NamePattern)n, context, classes, packages);
+	    return bypass(n);
 	}
-	return null;
+	return this;
     }
 
 }
