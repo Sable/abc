@@ -92,7 +92,7 @@
         </compile>
         <run vm="1.4" class="ReturnCastProceed"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements" pr="386" num="674" keywords="from-broken14usejavac,purejava" dir="pureJava" abccomment="tries to import inner classes invalidly">
+<ajc-test title="Referencing static interfaces with import statements" pr="386" num="674" keywords="from-broken14usejavac,purejava" dir="pureJava" abccomment="javac can't pass this test case">
         <abckeywords><skip></skip></abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfaces_PR386.java"></compile>
@@ -104,13 +104,13 @@
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
         <run class="ImportingStaticInnerInterfacesStars_PR386"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 675">
+<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 675 : javac can't pass this">
        <abckeywords> <skip></skip> </abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars2_PR386.java"></compile>
         <run class="ImportingStaticInnerInterfacesStars2_PR386"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676">
+<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="See 676 : javac can't pass this">
       <abckeywords> <skip></skip> </abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars3_PR386.java"></compile>
@@ -191,7 +191,7 @@
         <compile files="Main.java,injar.jar,Aspect.java" aspectpath="aspectlib1.jar,aspectlib2.jar"></compile>
         
     </ajc-test>
-<ajc-test title="after returning advice on interface and implementation constructor" pr="827" num="71801" keywords="tofix" dir="new" abccomment="abc doesn't support 'before' as an identifier inside an aspect.                 Cloned test case with different identifier name. PA">
+<ajc-test title="after returning advice on interface and implementation constructor" pr="827" num="718" keywords="tofix" dir="new" abccomment="abc doesn't support 'before' as an identifier inside an aspect.                 Cloned test case with different identifier name. PA">
         <abckeywords><skip></skip></abckeywords>
         <compile files="AfterReturningConstructor.java"></compile>
         <run class="AfterReturningConstructor"></run>
@@ -217,21 +217,6 @@
           <dir-changes added="target.SubClass,target.SuperClass"></dir-changes>
         </compile>
         <run class="aspect.Aspect"></run>
-    </ajc-test>
-<ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
-        <abckeywords><skip></skip></abckeywords>
-        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
-          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
-        </compile>
-        <run class="pack.ImportInnerFromInterfaceImplementor"></run>
-    </ajc-test>
-<ajc-test title="illegal name binding in around cflow" pr="660" num="769" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="ajc doesn't report errors either and then breaks at runtime,                   just like we do">
-        <abckeywords><skip></skip></abckeywords>
-        <compile files="ArgsInCflowCf.java">
-            <message line="19" kind="error"></message>
-            <message line="29" kind="error"></message>
-            <message line="35" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="incrementally change string size and wire in injar classes" num="770" keywords="knownLimitation" dir="incremental/stringliteral">
         <compile staging="true" sourceroots="src" options="-incremental" files="oneInjar.jar,twoInjar.jar"></compile>
@@ -351,14 +336,6 @@
         <abckeywords><skip></skip></abckeywords>
         <compile badInput="true">
             <message text="no sources" kind="error"></message>
-            <message text="Usage" kind="abort"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option" abccomment="we don't support sourceroot">
-        <abckeywords><skip></skip></abckeywords>
-        <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
-            <message text="no sources specified" kind="error"></message>
-            <message text="bad sourceroot" kind="error"></message>
             <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
@@ -662,13 +639,6 @@
             <dir-changes added="Detour"></dir-changes>
         </inc-compile>
         <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
-                <abckeywords><skip></skip></abckeywords>
-    	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
-            <message line="5" kind="warning"></message>
-            <message line="6" kind="warning"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="weaving from an aspectpath jar into that same jar.." pr="43714" num="955" dir="bugs">
         <compile outjar="notAJar.jar" files="WeaveLocal.java" aspectpath="notAJar.jar">         	

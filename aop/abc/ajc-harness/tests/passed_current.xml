@@ -3519,7 +3519,7 @@
         	<message line="15" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="after returning advice on interface and implementation constructor - fixed" pr="827" num="718" keywords="tofix" dir="abctests/new" abccomment="abc doesn't support 'before' as an identifier inside an aspect.                 Cloned test case with different identifier name. PA">
+<ajc-test title="after returning advice on interface and implementation constructor - fixed" pr="827" num="71801" keywords="tofix" dir="abctests/new" abccomment="Cloned from 718. PA">
         <compile files="AfterReturningConstructor.java"></compile>
         <run class="AfterReturningConstructor"></run>
     </ajc-test>
@@ -4249,7 +4249,7 @@
         <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
         <run class="de.test.MyMain"></run>
     </ajc-test>
-<ajc-test title="priviledged aspects calling methods from advice" pr="42711" num="881" dir="bugs/privilege/packageProtected" abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04"> 
+<ajc-test title="priviledged aspects calling methods from advice" pr="42711" num="881" dir="bugs/privilege/packageProtected"> 
         <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
     </ajc-test>
 <ajc-test title="No error on overloaded pointcuts in class" pr="49457" num="882" dir="bugs" abccomment="abc messages differ but ok. ODM 19/07/04">
@@ -4938,6 +4938,9 @@
 <ajc-test title="binding of variables inside || pointcuts" num="980" dir="abctests/bugs">
       <compile files="BindProblem.java"></compile>
       <run class="BindProblem"></run>
+    </ajc-test>
+<ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
+        <compile files="DeclareParentsRef.java"></compile>
     </ajc-test>
  
 </suite>

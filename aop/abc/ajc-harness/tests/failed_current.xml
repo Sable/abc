@@ -35,20 +35,59 @@
         <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
         <run vm="1.4" class="AssertInOnePackage"></run>
     </ajc-test>
+<ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
+        <compile files="pack/ImportInnerFromInterfaceImplementor.java">
+          <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
+        </compile>
+        <run class="pack.ImportInnerFromInterfaceImplementor"></run>
+    </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="illegal name binding in around cflow" pr="660" num="769" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="ajc doesn't report errors either and then breaks at runtime,                   just like we do">
+        <compile files="ArgsInCflowCf.java">
+            <message line="19" kind="error"></message>
+            <message line="29" kind="error"></message>
+            <message line="35" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 772, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
+<ajc-test title="CLE: no dir specified for sourceroots" num="812" keywords="command-line-error" dir="harness" comment="XXX test skipped - harness ignores -sourceroot option">
+        <compile options="-sourceroots" files="ErrorTest.java" badInput="true">
+            <message text="no sources specified" kind="error"></message>
+            <message text="bad sourceroot" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
+    	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
+            <message line="5" kind="warning"></message>
+            <message line="6" kind="warning"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="packages in wrong place" num="979" dir="abctests/bugs/pack1">
       <compile files="A/B.java"></compile>
     </ajc-test>
 <ajc-test title="problem with byte constants" num="981" dir="abctests/bugs">
        <compile files="ByteProblem.java"></compile>
+    </ajc-test>
+<ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
+       <compile files="DeclareParentsInner.java"></compile>
+    </ajc-test>
+<ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
+       <compile files="BinaryClasses.jar,Aspect.java"></compile>
+       <run class="BinaryClass"></run>
+    </ajc-test>
+<ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
+       <compile files="BinaryClasses2.jar,Aspect.java">
+           
+           <message line="24" kind="error" file="BinaryClasses2.java"></message>
+       </compile>
     </ajc-test>
  
 </suite>
