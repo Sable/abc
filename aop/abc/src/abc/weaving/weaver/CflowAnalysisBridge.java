@@ -39,6 +39,10 @@ public class CflowAnalysisBridge {
     }   
 
     static class StackInfo {
+        public StackInfo( boolean bindsArgs ) {
+            this.bindsArgs = bindsArgs;
+        }
+        public boolean bindsArgs;
         public List/*Shadow*/ shadows = new ArrayList();
         public Map/*Stmt, AdviceApplication*/ stmtMap = new HashMap();
         public AdviceApplication aa( Stmt s ) {
@@ -96,7 +100,7 @@ public class CflowAnalysisBridge {
             debug("analyzing a stack");
             StackInfo si = stackInfo(stack);
             BDDCflowStack bddcfs =
-                new BDDCflowStack(cflowAnalysis, si.shadows, si.stmtMap.keySet() );
+                new BDDCflowStack(cflowAnalysis, si.shadows, si.stmtMap.keySet(), si.bindsArgs );
             for( Iterator stmtIt = bddcfs.neverValid(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
                 debug("found never: "+stmt);
@@ -159,7 +163,8 @@ public class CflowAnalysisBridge {
     private StackInfo stackInfo( CflowSetup cfs ) {
         StackInfo ret = (StackInfo) stackInfoMap.get(cfs);
         if(ret == null)
-            stackInfoMap.put(cfs, ret = new StackInfo());
+            stackInfoMap.put(cfs, 
+                    ret = new StackInfo(!cfs.getFormals().isEmpty()));
         return ret;
     }
     private void processAdvices(List/*AdviceApplication*/ adviceList) {
@@ -186,7 +191,6 @@ public class CflowAnalysisBridge {
     }
     private void processCflowSetup( final AdviceApplication aa ) {
         final CflowSetup cfs = (CflowSetup) aa.advice;
-        if( !cfs.getFormals().isEmpty() ) return;
         StackInfo si = stackInfo(cfs);
         final boolean unconditional = (aa.getResidue() instanceof AlwaysMatch);
         Shadow sh = new Shadow() {
