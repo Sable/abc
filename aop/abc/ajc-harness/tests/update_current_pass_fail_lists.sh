@@ -1,8 +1,8 @@
 #!/bin/sh
 
 cd ../../ &&
-ant clean > /dev/null &&
-ant >/dev/null &&
+CLASSPATH= ant clean > /dev/null &&
+CLASSPATH= ant >/dev/null &&
 cd ajc-harness/tests &&
 nice -n 5 ./run_cases.pl ajcTests.xml >full.output 2>&1 &&
 ./calc_updates.pl | mail -s"test run results" abc@comlab.ox.ac.uk &&
