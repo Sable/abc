@@ -1,13 +1,15 @@
 package abc.soot.util;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
-import abc.weaving.weaver.AroundWeaver;
 import soot.jimple.toolkits.scalar.*;
 import java.util.*;
 
+import abc.weaving.weaver.AroundWeaver;
 import abc.weaving.weaver.CodeGenException;
 import abc.weaving.aspectinfo.MethodCategory;
 
