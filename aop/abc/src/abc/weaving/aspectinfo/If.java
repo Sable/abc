@@ -44,7 +44,8 @@ public class If extends Pointcut {
     }
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv) {
+			      Hashtable typeEnv,
+			      Aspect context) {
 	Iterator it=vars.iterator();
 	List newvars=new LinkedList();
 	while(it.hasNext())

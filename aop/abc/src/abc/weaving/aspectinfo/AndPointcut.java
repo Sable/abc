@@ -37,9 +37,9 @@ public class AndPointcut extends Pointcut {
 				    pc2.matchesAt(we,cls,method,sm));
     }
     
-    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv) {
-	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv);
-	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv);
+    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv, Aspect context) {
+	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv,context);
+	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv,context);
 	if(pc1==this.pc1 && pc2==this.pc2) return this;
 	else return new AndPointcut(pc1,pc2,getPosition());
     }

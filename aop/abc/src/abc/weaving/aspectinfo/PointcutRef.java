@@ -10,36 +10,35 @@ import abc.weaving.residues.Residue;
 public class PointcutRef extends Pointcut {
     private Object decl_key;
     private Map/*<Object,PointcutDecl>*/ decl_map;
-    private PointcutDecl decl;
     private List/*<ArgPattern>*/ args;
-
+    private Map/*<Aspect,PointcutDecl>*/ decls = new HashMap();
+    
     /** Create an <code>args</code> pointcut.
      *  @param decl_key an object that can later be resolved into the pointcut declaration.
      *  @param decl_map a map from {@link java.lang.Object} to {@link abc.weaving.aspectinfo.PointcutDecl}.
      *  @param args a list of {@link abc.weaving.aspectinfo.ArgPattern} objects
      */
-    public PointcutRef(Object decl_key, Map decl_map, List args,Position pos) {
+    public PointcutRef(Object decl_key, Map decl_map, List args, Position pos) {
 	super(pos);
 	this.decl_key = decl_key;
 	this.decl_map = decl_map;
 	this.args = args;
     }
 
-    /** Create an <code>args</code> pointcut.
-     *  @param decl the pointcut declaration.
-     *  @param args a list of {@link abc.weaving.aspectinfo.ArgPattern} objects
-     */
-    public PointcutRef(PointcutDecl decl, List args,Position pos) {
-	super(pos);
-	this.decl = decl;
-	this.args = args;
+    private PointcutDecl getDirectDecl() {
+	return (PointcutDecl) decl_map.get(decl_key);
     }
 
-    public PointcutDecl getDecl() {
+    public PointcutDecl getDecl(Aspect context) {
+	PointcutDecl decl = (PointcutDecl) decls.get(context);
 	if (decl == null) {
-	    decl = (PointcutDecl) decl_map.get(decl_key);
+	    decl = getDirectDecl();
 	    decl_key = null;
 	    decl_map = null;
+	    if (decl.isAbstract()) {
+		decl = GlobalAspectInfo.v().getPointcutDecl(decl.getName(), context);
+	    }
+	    decls.put(context, decl);
 	}
 	return decl;
     }
@@ -52,7 +51,7 @@ public class PointcutRef extends Pointcut {
     }
 
     public String toString() {
-	return getDecl().getName()+"(...)";
+	return getDirectDecl().getName()+"(...)";
     }
 
     public Residue matchesAt(WeavingEnv env,
@@ -63,9 +62,10 @@ public class PointcutRef extends Pointcut {
     }
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv) {
+			      Hashtable typeEnv,
+			      Aspect context) {
 	Iterator actualsIt=args.iterator();
-	Iterator formalsIt=getDecl().getFormals().iterator();
+	Iterator formalsIt=getDecl(context).getFormals().iterator();
 
 	List/*<Formal>*/ newLocals=new LinkedList();
 	List/*<CastPointcutVar>*/ newCasts=new LinkedList();
@@ -84,8 +84,8 @@ public class PointcutRef extends Pointcut {
 	    declRenameEnv.put(formal.getName(),param);
 	}
 
-	Pointcut pc=getDecl().getPointcut()
-	    .inline(declRenameEnv,declTypeEnv);
+	Pointcut pc=getDecl(context).getPointcut()
+	    .inline(declRenameEnv,declTypeEnv,context);
 
 	Iterator castsIt=newCasts.iterator();
 	while(castsIt.hasNext()) {

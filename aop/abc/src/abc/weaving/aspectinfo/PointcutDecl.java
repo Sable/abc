@@ -15,7 +15,9 @@ public class PointcutDecl extends Syntax {
     private Aspect aspect;
 
     /** Create a pointcut declaration.
+     *  @param name the name of the pointcut.
      *  @param formals a list of {@link abc.weaving.aspectinfo.Formal} objects
+     *  @param pc the pointcut, or <code>null</code> if the declaration is abstract.
      */
     public PointcutDecl(String name, List formals, Pointcut pc, Aspect aspect, Position pos) {
 	super(pos);
@@ -34,6 +36,10 @@ public class PointcutDecl extends Syntax {
      */
     public List getFormals() {
 	return formals;
+    }
+
+    public boolean isAbstract() {
+	return pc == null;
     }
 
     public Pointcut getPointcut() {

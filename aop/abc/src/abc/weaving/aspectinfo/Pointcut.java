@@ -52,7 +52,8 @@ public abstract class Pointcut extends Syntax {
 	    }
 	}
 
-	Pointcut ret=pc.inline(renameEnv,typeEnv);
+	//FIXME: Give the correct context here!
+	Pointcut ret=pc.inline(renameEnv,typeEnv,null);
 	if(abc.main.Debug.v.showNormalizedPointcuts)
 	    System.err.println("normalized pointcut: "+ret);
 	return ret;
@@ -60,7 +61,8 @@ public abstract class Pointcut extends Syntax {
 
     protected abstract Pointcut inline
 	(Hashtable/*<String,Var>*/ renameEnv,
-	 Hashtable/*<String,AbcType>*/ typeEnv);
+	 Hashtable/*<String,AbcType>*/ typeEnv,
+	 Aspect context);
 
     private static int freshVarNum=0;
     /** Return a freshly named pointcut variable */

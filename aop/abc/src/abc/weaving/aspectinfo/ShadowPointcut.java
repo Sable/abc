@@ -31,7 +31,8 @@ public abstract class ShadowPointcut extends Pointcut {
     protected abstract Residue matchesAt(ShadowMatch sm);
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv) {
+			      Hashtable typeEnv,
+			      Aspect context) {
 	return this;
     }
 

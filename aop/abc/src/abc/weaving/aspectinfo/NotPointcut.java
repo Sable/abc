@@ -31,8 +31,9 @@ public class NotPointcut extends Pointcut {
     }
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv) {
-	Pointcut pc=this.pc.inline(renameEnv,typeEnv);
+			      Hashtable typeEnv,
+			      Aspect context) {
+	Pointcut pc=this.pc.inline(renameEnv,typeEnv,context);
 	if(pc==this.pc) return this;
 	else return new NotPointcut(pc,getPosition());
     }

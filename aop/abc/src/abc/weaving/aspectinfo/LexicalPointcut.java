@@ -32,7 +32,8 @@ public abstract class LexicalPointcut extends Pointcut {
 					 SootMethod method);
 
     protected Pointcut inline(Hashtable typeEnv,
-			      Hashtable renameEnv) {
+			      Hashtable renameEnv,
+			      Aspect context) {
 	return this;
     }
 

@@ -40,7 +40,8 @@ public class Args extends DynamicValuePointcut {
     }
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv) {
+			      Hashtable typeEnv,
+			      Aspect context) {
 
 	Iterator it=args.iterator();
 	List newargs=new LinkedList();

@@ -18,7 +18,8 @@ public abstract class DynamicValuePointcut extends Pointcut {
     }
 
     protected Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv) {
+			      Hashtable typeEnv,
+			      Aspect context) {
 	return this;
     }
 

@@ -40,7 +40,7 @@ import abc.weaving.aspectinfo.Aspect;
 public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, ContainsAspectInfo
 {
     String name;
-    Pointcut pc;
+    Pointcut pc; // null if abstract
 
 	private static List adviceFormals(List formals) {
 		  List result = new TypedList(new LinkedList(), AdviceFormal.class, false);
@@ -217,7 +217,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, Contai
 	    new abc.weaving.aspectinfo.PointcutDecl
 	    (name,
 	     AspectInfoHarvester.convertFormals(formals()),
-	     pc.makeAIPointcut(),
+	     pc == null ? null : pc.makeAIPointcut(),
 	     current_aspect,
 	     position());
 	// Use the method instance as key

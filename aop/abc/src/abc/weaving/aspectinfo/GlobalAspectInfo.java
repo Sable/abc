@@ -44,6 +44,8 @@ public class GlobalAspectInfo {
 	
     private Map/*<String,AbcClass>*/ classes_map = new HashMap();
     private Map/*<String,Aspect>*/ aspects_map = new HashMap();
+    private Map/*<String,Set<PointcutDecl>>*/ pc_map = new HashMap();
+    private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();
 
     private Map/*<String,Integer>*/ method_categories = new HashMap();
     private Map/*<String,String>*/ method_real_names = new HashMap();
@@ -54,10 +56,30 @@ public class GlobalAspectInfo {
     }
 
     public void transformClassNames(PCStructure hierarchy) {
+	// Transform the class names from Java names to JVM names
 	Iterator ci = classes.iterator();
 	while (ci.hasNext()) {
 	    AbcClass c = (AbcClass)ci.next();
 	    c.transformName(hierarchy);
+	}
+
+	// Build the aspect hierarchy
+	Iterator ai = aspects.iterator();
+	while (ai.hasNext()) {
+	    Aspect a = (Aspect)ai.next();
+	    aspect_visibility.put(a, new HashSet());
+	}
+
+	Iterator cai = aspects.iterator();
+	while (cai.hasNext()) {
+	    Aspect ca = (Aspect)cai.next();
+	    if (!ca.getInstanceClass().getSootClass().isAbstract()) {
+		Aspect sa = ca;
+		while (sa != null) {
+		    ((Set)aspect_visibility.get(sa)).add(ca);
+		    sa = (Aspect)aspects_map.get(sa.getInstanceClass().getSootClass().getSuperclass().getName());
+		}
+	    }
 	}
     }
 
@@ -138,6 +160,18 @@ public class GlobalAspectInfo {
 	return pcds;
     }
 
+    public PointcutDecl getPointcutDecl(String name, Aspect context) {
+	Set matching_pcds = (Set)pc_map.get(name);
+	Iterator pi = matching_pcds.iterator();
+	while (pi.hasNext()) {
+	    PointcutDecl p = (PointcutDecl)pi.next();
+	    if (((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
+		return p;
+	    }
+	}
+	throw new RuntimeException("Pointcut "+name+" was not found in "+context);
+    }
+
     /** Returns the list of all <code>declare parents</code> declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.DeclareParents} objects.
      */
@@ -211,6 +245,11 @@ public class GlobalAspectInfo {
 
     public void addPointcutDecl(PointcutDecl pcd) {
 	pcds.add(pcd);
+	String name = pcd.getName();
+	if (!pc_map.containsKey(name)) {
+	    pc_map.put(name, new HashSet());
+	}
+	((Set)pc_map.get(name)).add(pcd);
     }
 
     public void addDeclareParents(DeclareParents dp) {
