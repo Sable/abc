@@ -15,6 +15,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.jimple.AssignStmt;
 import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
@@ -85,7 +86,10 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	    // calls described in 'invokespecial' in the JVM spec
 
 	    // We already know it is not a <init>
-	    if(!method.isPrivate() && !method.isStatic()) {
+	    if(invoke instanceof SpecialInvokeExpr && 
+	       !method.isPrivate() && 
+	       // this check should be redundant
+	       !method.isStatic()) {
 		SootClass declaringclass=method.getDeclaringClass();
 		SootClass currentclass=pos.getContainer().getDeclaringClass();
 		// FIXME: temporary until Soot gets fixed
