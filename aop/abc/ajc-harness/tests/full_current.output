@@ -2286,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1e7893b, [Ljava.lang.Object;@1e2b5c8, TwoAnonymous$3@1e7893b
+calling run: TwoAnonymous$3@1e2b5c8, [Ljava.lang.Object;@10c66a4, TwoAnonymous$3@1e2b5c8
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2403,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1b4f409.foo calls Outer$Inner@1017ed2.mi
+Outer@12d4b0e.foo calls Outer$Inner@9aadc4.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1017ed2.mi calls java.io.PrintStream@12d4b0e.println
+Outer$Inner@9aadc4.mi calls java.io.PrintStream@1065aaa.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1b4f409.foo calls Outer$InnerRandom@1065aaa.nextHook
+Outer@12d4b0e.foo calls Outer$InnerRandom@1145011.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1065aaa.nextHook calls Outer$InnerRandom@1065aaa.next
+Outer$InnerRandom@1145011.nextHook calls Outer$InnerRandom@1145011.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1b4f409.foo calls X.nextInt
+Outer@12d4b0e.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1d4abb3.foo calls Outer$Inner@1549688.mi
+Outer@66f4d8.foo calls Outer$Inner@154c674.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1549688.mi calls java.io.PrintStream@66f4d8.println
+Outer$Inner@154c674.mi calls java.io.PrintStream@b10a27.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1d4abb3.foo calls Outer$InnerRandom@b10a27.nextHook
+Outer@66f4d8.foo calls Outer$InnerRandom@f89de4.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@b10a27.nextHook calls Outer$InnerRandom@b10a27.next
+Outer$InnerRandom@f89de4.nextHook calls Outer$InnerRandom@f89de4.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1d4abb3.foo calls X.nextInt
+Outer@66f4d8.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -5278,12 +5278,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
+Created a PerThis aspect : Testcase2@1102be3
+Invoking command bean:  Command@b16a95
+hello(Command@b16a95)
 Created a PerThis aspect : Testcase2@1cc65c9
 Invoking command bean:  Command@2e8ed1
-hello(Command@2e8ed1)
-Created a PerThis aspect : Testcase2@a25721
-Invoking command bean:  Command@64d65
-hello again(Command@64d65)
+hello again(Command@2e8ed1)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
