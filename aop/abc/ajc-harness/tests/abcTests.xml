@@ -9200,5 +9200,12 @@
         <compile files="DeclareParentsRef.java"/>
     </ajc-test>
 
+    <ajc-test num="986" dir="abctests/bugs"
+        title="Matching int[].clone()"
+	abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.
+	       Both work fine with 'call(* Object.clone())'.">
+	<compile files="IntArray.java"/>
+	<run class="IntArray"/>
+    </ajc-test>       
 </suite>
 
