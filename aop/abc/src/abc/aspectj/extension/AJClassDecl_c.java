@@ -50,6 +50,8 @@ public class AJClassDecl_c extends ClassDecl_c
                            implements MakesAspectMethods
 {
 
+	protected boolean superDisambiguated = false;
+	
 	/**
 	 * @param pos
 	 * @param flags
@@ -123,6 +125,13 @@ public class AJClassDecl_c extends ClassDecl_c
 			}
 
 		}
+	
+	protected void disambiguateSuperType(AmbiguityRemover ar) throws SemanticException {
+      	if (superDisambiguated)
+      		return;
+      	superDisambiguated = true;
+      	super.disambiguateSuperType(ar);
+	}
 
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		ClassDecl n = (ClassDecl) super.typeCheck(tc);
