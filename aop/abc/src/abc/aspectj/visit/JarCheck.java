@@ -24,7 +24,11 @@
 package abc.aspectj.visit;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
 import polyglot.frontend.Pass.ID;
+import polyglot.types.MethodInstance;
 import polyglot.types.TypeSystem;
 import polyglot.types.ClassType;
 import polyglot.types.SemanticException;
@@ -36,8 +40,10 @@ import polyglot.frontend.Source;
 import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
 
+import abc.aspectj.ast.IntertypeMethodDecl_c;
 import abc.aspectj.extension.AJClassBody_c;
 import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.types.InterTypeMethodInstance_c;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcClass;
@@ -73,6 +79,14 @@ public class JarCheck extends OncePass {
 					catch (SemanticException e) {
 					eq.enqueue(ErrorInfo.SEMANTIC_ERROR,injar + jarclass + ". " + e.getMessage(),e.position());
 				}
+				for (Iterator metIt = jarclass.methods().iterator(); metIt.hasNext(); ) {
+					MethodInstance mi = (MethodInstance) metIt.next();
+				try { IntertypeMethodDecl_c.overrideMethodCheck(mi); }
+				   catch (SemanticException e) {
+				   	eq.enqueue(ErrorInfo.SEMANTIC_ERROR,injar + jarclass + ". " + e.getMessage(),e.position());
+				   }
+				}
+							
 		     }
 	}
 }

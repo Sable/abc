@@ -239,15 +239,16 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		}
 	}
 
-    /** Do the usual override check for newly declared methods. */
-	static public void overrideMethodCheck(InterTypeMethodInstance_c mi) throws SemanticException {
+    /** Do the usual override check for newly declared methods.  Probably better to more
+     * this to AJTypeSystem. */
+	static public void overrideMethodCheck(MethodInstance mi) throws SemanticException {
 		   AJTypeSystem_c ts = (AJTypeSystem_c) mi.typeSystem();
 		   for (Iterator j = mi.implemented().iterator(); j.hasNext(); ) {
 			   MethodInstance mj = (MethodInstance) j.next();
 			   if (! ts.isAccessible(mj, mi.container().toClass())) {
 				   continue;
 			   }
-			    MethodInstance mi2 = mi.flags(mi.origFlags());
+			    // MethodInstance mi2 = mi.flags(mi.origFlags());
 				MethodInstance mj2;
 				if (mj instanceof InterTypeMethodInstance_c) {
 					InterTypeMethodInstance mji = (InterTypeMethodInstance) mj;
