@@ -69,6 +69,9 @@ public class AntTask extends MatchingTask {
     public void setDestdir(File arg) {
         addArg( "-d", arg.getAbsolutePath());
     }
+    public void setO(String arg) {
+        addArg("-O"+arg);
+    }
     public void setTime(boolean arg) {
         if(arg) addArg("-time");
     }
