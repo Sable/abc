@@ -13,6 +13,7 @@ import java.util.List;
 import polyglot.ast.NodeFactory;
 import polyglot.frontend.CupParser;
 import polyglot.frontend.FileSource;
+import polyglot.frontend.GlobalBarrierPass;
 import polyglot.frontend.Job;
 import polyglot.frontend.Parser;
 import polyglot.frontend.Pass;
@@ -35,7 +36,11 @@ import abcexer1.visit.Surround;
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
 	public static final Pass.ID TRANSFORM_SURROUND_ADVICE =
         new Pass.ID("transform-surround-advice");
-	
+    public static final Pass.ID BEFORE_SURROUND_TRANSFORMATION =
+        new Pass.ID("before-surround-transformation");
+    public static final Pass.ID AFTER_SURROUND_TRANSFORMATION =
+        new Pass.ID("after-surround-transformation");
+    
 	public ExtensionInfo(Collection jar_classes, Collection source_files)
     {
         super(jar_classes, source_files);
@@ -46,21 +51,27 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
         Grm grm = new Grm(lexer, ts, nf, eq);
         return new CupParser(grm, source, eq);
     }
+	
     protected NodeFactory createNodeFactory() {
         return new Abcexer1NodeFactory_c();
     }
 
     protected void passes_patterns_and_parents(List l, Job job)
     {
-        
+    	
 
+    	l.add(new GlobalBarrierPass(BEFORE_SURROUND_TRANSFORMATION, job));
+    	 
         l.add(new VisitorPass(TRANSFORM_SURROUND_ADVICE,
                               job,
-                              new Surround(/*GlobalPointcuts.COLLECT,
+                              new Surround(
                                                    job,
-                                                   (EAJTypeSystem) ts,*/
+                                                   ts,
                                                    (Abcexer1NodeFactory) nf)));
         
-        super.passes_patterns_and_parents(l, job);
+    	l.add(new GlobalBarrierPass(AFTER_SURROUND_TRANSFORMATION, job));
+    	
+    	super.passes_patterns_and_parents(l, job);
+    	
     }
 }

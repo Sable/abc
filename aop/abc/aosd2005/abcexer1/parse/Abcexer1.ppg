@@ -51,11 +51,11 @@ modifiers_opt:m SURROUND:x LPAREN formal_parameter_list_opt:a RPAREN:y throws_op
 	method_body:d 
 	method_body:e 
 		{: Grm.parserTrace("surround(formals){beforeadvice}{afteradvice} (advice declaration without strictfp)");
-          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
+          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(d),
                                                         parser.ts.Void());
           Surround r = parser.nf.Surround(parser.pos(x,y),a,voidn);
 
-          AdviceDecl ad = parser.nf.SurroundAdviceDecl(parser.pos(x,e),
+          AdviceDecl ad = parser.nf.SurroundAdviceDecl(parser.pos(d,e),
 					       m,
                                                r,
                                                b,
