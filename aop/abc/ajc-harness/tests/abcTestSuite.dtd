@@ -5,7 +5,7 @@
    <!ELEMENT suite (ajc-test*)>
    <!ATTLIST suite suiteDir CDATA #IMPLIED >
 
-   <!ELEMENT ajc-test (compile, (compile | inc-compile | run)*)>
+   <!ELEMENT ajc-test (compile, (compile | inc-compile | run | ajcrun )*)>
    <!ATTLIST ajc-test title CDATA #REQUIRED >
    <!ATTLIST ajc-test dir CDATA #REQUIRED >
    <!ATTLIST ajc-test pr CDATA #IMPLIED >
@@ -38,6 +38,14 @@
    <!ATTLIST run errStreamIsError CDATA #IMPLIED >
    <!ATTLIST run outStreamIsError CDATA #IMPLIED >
 
+   <!ELEMENT ajcrun (dir-changes*,message*)>
+   <!ATTLIST ajcrun class CDATA #REQUIRED >
+   <!ATTLIST ajcrun skipTester CDATA #IMPLIED >
+   <!ATTLIST ajcrun vm CDATA #IMPLIED >
+   <!ATTLIST ajcrun options CDATA #IMPLIED >
+   <!ATTLIST ajcrun errStreamIsError CDATA #IMPLIED >
+   <!ATTLIST ajcrun outStreamIsError CDATA #IMPLIED >
+
    <!ELEMENT file (#PCDATA)>
    <!ATTLIST file path CDATA #IMPLIED >
 
@@ -60,7 +68,7 @@
    <!ATTLIST source file CDATA #IMPLIED >
 
    <!ELEMENT dir-changes (#PCDATA)>
-   <!ATTLIST dir-changes dirToken (classes | run) #IMPLIED >
+   <!ATTLIST dir-changes dirToken (classes | run | ajcrun ) #IMPLIED >
    <!ATTLIST dir-changes defaultSuffix (.class) #IMPLIED >
    <!ATTLIST dir-changes added CDATA #IMPLIED >
    <!ATTLIST dir-changes removed CDATA #IMPLIED >
