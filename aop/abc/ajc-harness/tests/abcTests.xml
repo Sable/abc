@@ -9304,4 +9304,10 @@
         title="declare parents/protected access/inner classes">
 	<compile files="A.java,bar/C.java"/>
     </ajc-test>
+
+    <ajc-test num="1000" dir="abctests/bugs/resolvingdeclareparents"
+        title="resolving and declared parents">
+	<compile files="B.java"/>
+	<compile classpath="." files="A.java"/>
+    </ajc-test>
 </suite>
