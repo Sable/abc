@@ -33,16 +33,20 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		if (PatternMatcher.v().matchesClass(pat, cl)) {
 		    // FIXME: Check that cl is a class
 		    ClassType ct = typeSystem().typeForName(cl);
+		    if (ct.flags().isInterface())
+		    	throw new SemanticException("Interface "+cl+" cannot implement another interface");
 		    PCNode hi_cl = hierarchy.getClass(cl);
 		    if (ct instanceof ParsedClassType) {
 			ParsedClassType pct = (ParsedClassType)ct;
 			Iterator ini = interfaces.iterator();
 			while (ini.hasNext()) {
 			    TypeNode in = (TypeNode)ini.next();
-			    if (!in.type().isClass()) {
-				//FIXME: Check that in is an interface
-				throw new SemanticException("Type "+in+" is not an interface");
-			    }
+			    if (in.type().isClass()) {
+			    	ClassType ict = (ClassType)in.type();
+			    	if (!ict.flags().isInterface())
+						throw new SemanticException("Type "+in+" is not an interface");
+			    } else
+			    		throw new SemanticException("Type "+in+" is not a class");
 			    ClassType inct = (ClassType)in.type();
 			    PCNode hi_in = hierarchy.getClass(inct.fullName());
 
