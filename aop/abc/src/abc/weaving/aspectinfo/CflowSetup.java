@@ -19,7 +19,8 @@ public class CflowSetup extends AbstractAdviceDecl {
 				       Pointcut pc,
 				       boolean isBelow,
 				       Hashtable typeMap,
-				       Position pos) {
+				       Position pos,
+				       int depth) {
 	// this returns a set of String rather than Var because
 	// each occurrence will have a different position
 	Set/*<String>*/ fvs=new HashSet();
@@ -36,23 +37,29 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    actuals.add(new Var(fv,pos));
 	}
 
-	return new CflowSetup(aspect,pc,isBelow,formals,actuals,pos);
+	return new CflowSetup(aspect,pc,isBelow,formals,actuals,pos,depth);
     }
 
     private boolean isBelow;
+    private int depth;
 
     private List/*<Var>*/ actuals;
 
     private CflowSetup(Aspect aspect,Pointcut pc,boolean isBelow,
 		       List/*<Formal>*/ formals,List/*<Var>*/ actuals,
-		       Position pos) {
+		       Position pos,int depth) {
 	super(aspect,new BeforeAfterAdvice(pos),pc,formals,pos);
 	this.actuals=actuals;
 	this.isBelow=isBelow;
+	this.depth=depth;
     }
 
     public boolean isBelow() {
 	return isBelow;
+    }
+
+    public int getDepth() {
+	return depth;
     }
 
     public List/*<Var>*/ getActuals() {
@@ -298,6 +305,14 @@ public class CflowSetup extends AbstractAdviceDecl {
     public static int getPrecedence(CflowSetup a,CflowSetup b) {
 	// We know that the belows are the same and that we are in
 	// the same aspect
+
+	if(a.isBelow()) {
+	    if(a.getDepth() < b.getDepth()) return GlobalAspectInfo.PRECEDENCE_FIRST;
+	    if(a.getDepth() > b.getDepth()) return GlobalAspectInfo.PRECEDENCE_SECOND;
+	} else {
+	    if(a.getDepth() > b.getDepth()) return GlobalAspectInfo.PRECEDENCE_FIRST;
+	    if(a.getDepth() < b.getDepth()) return GlobalAspectInfo.PRECEDENCE_SECOND;
+	}
 
 	// FIXME: Best guess is to compare by positions, but is this correct w.r.t inlining?
 	if(a.getPosition().line() < b.getPosition().line()) 

@@ -12,6 +12,7 @@ import abc.aspectj.types.AJContext;
 public class PCCflow_c extends Pointcut_c implements PCCflow
 {
     protected Pointcut pc;
+    protected int depth=-1;
 
     public PCCflow_c(Position pos, Pointcut pc)  {
 		super(pos);
@@ -20,6 +21,10 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 
     public Precedence precedence() {
 		return Precedence.LITERAL;
+    }
+
+    public void recordCflowDepth(int depth) {
+	this.depth=depth;
     }
     
 	/** Reconstruct the pointcut. */
@@ -62,7 +67,9 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 	}
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	if(depth==-1) throw new InternalCompilerError
+			  ("Depth of cflow should have been recorded by now");
 	return new abc.weaving.aspectinfo.Cflow
-	    (pc.makeAIPointcut(),position());
+	    (pc.makeAIPointcut(),position(),depth);
     }
 }

@@ -34,11 +34,17 @@ public class AspectInfoHarvester extends ContextVisitor {
 	    current_aspect_scope = scope;
 	    current_aspect = gai.getAspect(AbcFactory.AbcClass(scope));
 	}
+
 	if (n instanceof ContainsAspectInfo) {
 	    ((ContainsAspectInfo)n).update(gai, current_aspect);
 	}
 	//System.out.println(n.getClass());
 	return super.enter(parent, n);
+    }
+
+    public Node leave(Node parent, Node old, Node n, NodeVisitor v) {
+
+	return super.leave(parent, old, n, v);
     }
 
     /** Convert a list of polyglot nodes representing argument patterns.

@@ -9,14 +9,20 @@ import abc.weaving.residues.*;
 /** Handler for <code>cflow</code> condition pointcut. */
 public class Cflow extends Pointcut {
     private Pointcut pc;
+    private int depth;
 
-    public Cflow(Pointcut pc,Position pos) {
+    public Cflow(Pointcut pc,Position pos,int depth) {
 	super(pos);
 	this.pc = pc;
+	this.depth = depth;
     }
 
     public Pointcut getPointcut() {
 	return pc;
+    }
+
+    public int getDepth() {
+	return depth;
     }
 
     public String toString() {
@@ -28,13 +34,13 @@ public class Cflow extends Pointcut {
 			      Aspect context) {
 	Pointcut pc=this.pc.inline(renameEnv,typeEnv,context);
 	if(pc==this.pc) return this;
-	else return new Cflow(pc,getPosition());
+	else return new Cflow(pc,getPosition(),depth);
     }
 
     private CflowSetup setupAdvice;
 
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
-	setupAdvice=CflowSetup.construct(context,pc,false,typeMap,getPosition());
+	setupAdvice=CflowSetup.construct(context,pc,false,typeMap,getPosition(),depth);
 	GlobalAspectInfo.v().addAdviceDecl(setupAdvice);
     }
 

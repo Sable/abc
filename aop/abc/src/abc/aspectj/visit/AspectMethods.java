@@ -60,6 +60,8 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* ParsedClassType */ container; // Keep track of current container
     private Stack /* IntertypeDecl */ itd;     
     private Stack /* Expr */ lhss; /* left-hand sides of assignments */ 
+
+    private int cflowdepth; // Put in this pass for lack of a better place for it
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
@@ -198,14 +200,20 @@ public class AspectMethods extends NodeVisitor {
                 if (del instanceof MakesAspectMethods) {
                         ((MakesAspectMethods) del).aspectMethodsEnter(this);
                 }
-
+		if (del instanceof CflowDepth) {
+		    cflowdepth++;
+		    ((CflowDepth) del).recordCflowDepth(cflowdepth);
+		}
                 return this;
         }
 	 
         public Node leave(Node parent, Node old, Node n, NodeVisitor v)
         {
                 JL del = n.del();
-                if (del instanceof MakesAspectMethods) {
+		if (del instanceof CflowDepth) {
+		    cflowdepth--;
+		}              
+		if (del instanceof MakesAspectMethods) {
                         return ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
                 }
 

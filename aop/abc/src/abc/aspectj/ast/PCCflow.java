@@ -1,6 +1,8 @@
 package abc.aspectj.ast;
 
-public interface PCCflow extends Pointcut
+import abc.aspectj.visit.CflowDepth;
+
+public interface PCCflow extends Pointcut,CflowDepth
 {
 
 }

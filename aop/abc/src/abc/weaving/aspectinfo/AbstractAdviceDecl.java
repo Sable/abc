@@ -145,7 +145,6 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      *     conflict between the two advice decls.
      */
     public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
-
 	// FIXME : what happens when we merge cflow stacks?
 	if(!a.getAspect().getName().equals(b.getAspect().getName()))
 	    return GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
