@@ -26,6 +26,7 @@ import soot.util.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /** A dynamic residue that throws an exception when tested. The intended use
  * is as an assertion failure. To check that a residue r is always true,
@@ -34,6 +35,9 @@ import java.util.*;
  */
 public class AssertResidue extends Residue {
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) {
+        return new AssertResidue(message);
+    }
     private String message;
     public AssertResidue() {
     }

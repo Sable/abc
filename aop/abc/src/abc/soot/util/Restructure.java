@@ -33,7 +33,7 @@ import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.toolkits.scalar.*;
 
-import abc.weaving.weaver.AroundWeaver;
+import abc.weaving.weaver.*;
 import abc.weaving.aspectinfo.MethodCategory;
 
 
@@ -265,10 +265,10 @@ public class Restructure {
   }
 
 
-  /** inline a call to this() if one exists, return true if an inlining
-   *  was done, false otherwise (no this() to inline).
+  /** inline a call to this() if one exists, return a ConstructorInliningMap if an inlining
+   *  was done, null otherwise (no this() to inline).
    */
-  public static boolean inlineThisCall(SootMethod method){
+  public static ConstructorInliningMap inlineThisCall(SootMethod method){
         // assure body is a constructor
         if (!method.getName().equals("<init>"))
 	   throw new InternalCompilerError 
@@ -291,11 +291,12 @@ public class Restructure {
 	                         b.getMethod().getDeclaringClass())){
             
             // put locals from inlinee into container
-            if (!specInvokeExpr.getMethodRef().resolve().hasActiveBody()){
-                specInvokeExpr.getMethodRef().resolve().retrieveActiveBody();
+            SootMethod inlinee = specInvokeExpr.getMethodRef().resolve();
+            if (!inlinee.hasActiveBody()){
+                inlinee.retrieveActiveBody();
             }
 
-	    Body inlineeBody=specInvokeExpr.getMethodRef().resolve().getActiveBody();
+	    Body inlineeBody=inlinee.getActiveBody();
 
             HashMap oldLocalsToNew = new HashMap();
             
@@ -412,10 +413,14 @@ public class Restructure {
             // resolve name collisions
             LocalNameStandardizer.v().transform(b, "ji.lns");
 
-	    // return true to indicate an inlining happened
-	    return(true);
+            ConstructorInliningMap cim = new ConstructorInliningMap(inlinee, method);
+            cim.add(oldLocalsToNew);
+            cim.add(oldStmtsToNew);
+
+	    // return cim to indicate an inlining happened
+	    return cim;
         }
-	return(false); // no inlining
+	return null; // no inlining
     }
 
     private static IdentityStmt findIdentityStmt(Body b){

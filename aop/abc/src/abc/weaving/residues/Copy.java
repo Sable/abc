@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +25,11 @@ import soot.jimple.*;
 import soot.util.Chain;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.weaver.*;
 
 /** Copy a weaving variable into another one
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 
 public class Copy extends Residue implements BindingLink {
@@ -34,6 +37,9 @@ public class Copy extends Residue implements BindingLink {
     public WeavingVar to;
 
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) {
+        return new Copy(from.inline(cim), to.inline(cim));
+    }
     
 	public WeavingVar getAdviceFormal(WeavingVar var) {
 		if (var==from)

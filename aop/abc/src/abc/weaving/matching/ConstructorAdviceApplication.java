@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +22,11 @@ package abc.weaving.matching;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
 
 /** A base class for initialization and pre-initialization advice 
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 
 public abstract class ConstructorAdviceApplication extends AdviceApplication {

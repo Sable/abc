@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +24,11 @@ import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
 
 /** Application of advice at a constructor call joinpoint
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class NewStmtAdviceApplication extends AdviceApplication {
     public Stmt stmt;
@@ -40,6 +43,11 @@ public class NewStmtAdviceApplication extends AdviceApplication {
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"new stmt: "+stmt+"\n");
 	super.debugInfo(prefix,sb);
+    }
+    public AdviceApplication inline( ConstructorInliningMap cim ) {
+        NewStmtAdviceApplication ret = new NewStmtAdviceApplication(advice, getResidue().inline(cim), cim.map(stmt));
+        ret.shadowmatch = shadowmatch.inline(cim);
+        return ret;
     }
 }
     

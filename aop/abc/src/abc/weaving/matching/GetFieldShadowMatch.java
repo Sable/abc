@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  * Copyright (C) 2004 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or
@@ -31,13 +32,25 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** A get field join point shadow.
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @author Oege de Moor
  */
 public class GetFieldShadowMatch extends StmtShadowMatch {
     
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new GetFieldShadowMatch(cim.target(), cim.map(stmt), fieldref);
+        cim.add(this, ret);
+        return ret;
+    }
     private SootFieldRef fieldref;
     
     private GetFieldShadowMatch(SootMethod container,Stmt stmt,SootFieldRef fieldref) {
@@ -109,12 +122,12 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 				FieldRef fr=(FieldRef) rhs;
 				if(!(fr instanceof InstanceFieldRef)) return null;
 				InstanceFieldRef ifr=(InstanceFieldRef) fr;
-				return new JimpleValue(ifr.getBase());
+				return new JimpleValue((Immediate)ifr.getBase());
 			} else if (rhs instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr vie = (InstanceInvokeExpr) rhs;
 				if (MethodCategory.getCategory(vie.getMethodRef()) 
 				    == MethodCategory.ACCESSOR_GET)
-					return new JimpleValue(vie.getBase());
+					return new JimpleValue((Immediate)vie.getBase());
 			} 
 		} else if (stmt instanceof InvokeStmt) {
 			InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
@@ -122,14 +135,14 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 				InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
 				if (MethodCategory.getCategory(vie.getMethodRef()) 
 				    == MethodCategory.ACCESSOR_GET)
-					return new JimpleValue(vie.getBase());
+					return new JimpleValue((Immediate)vie.getBase());
 			}
 		}
 		return null;
     }
 
     public ContextValue getReturningContextValue() {
-	return new JimpleValue(((AssignStmt) stmt).getLeftOp());
+	return new JimpleValue((Immediate) ((AssignStmt) stmt).getLeftOp());
     }
 
     public List/*<ContextValue>*/ getArgsContextValues() {

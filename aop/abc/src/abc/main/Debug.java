@@ -134,6 +134,7 @@ public class Debug {
     public boolean dumpAAWeave = false;
 
     public boolean optimizeResidues = false;
+    public boolean constructorInliner = false;
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance

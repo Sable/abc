@@ -28,6 +28,8 @@ import soot.tagkit.Host;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** The result of matching at a throw
  *  @author Julian Tibble
@@ -76,7 +78,7 @@ public class ThrowShadowMatch extends StmtShadowMatch
         ArrayList ret = new ArrayList(1);
 
         Value exception = ((ThrowStmt) stmt).getOp();
-        ret.add(new JimpleValue(exception));
+        ret.add(new JimpleValue((Immediate) exception));
 
         return ret;
     }
@@ -115,5 +117,14 @@ public class ThrowShadowMatch extends StmtShadowMatch
     public boolean supportsAround()
     {
         return false;
+    }
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new ThrowShadowMatch(cim.target(), cim.map(stmt), throw_type);
+        cim.add(this, ret);
+        return ret;
     }
 }

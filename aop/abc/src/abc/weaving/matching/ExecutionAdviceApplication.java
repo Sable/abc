@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,12 +24,13 @@ import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
 
 /** Advice applying at an execution shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class ExecutionAdviceApplication extends AdviceApplication {
-	
     public ExecutionAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	super(advice,residue);
     }
@@ -36,6 +38,12 @@ public class ExecutionAdviceApplication extends AdviceApplication {
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"execution"+"\n");
 	super.debugInfo(prefix,sb);
+    }
+
+    public AdviceApplication inline( ConstructorInliningMap cim ) {
+        ExecutionAdviceApplication ret = new ExecutionAdviceApplication(advice, getResidue().inline(cim));
+        ret.shadowmatch = shadowmatch.inline(cim);
+        return ret;
     }
 }
     

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,11 +22,21 @@ package abc.weaving.matching;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
+import abc.weaving.weaver.*;
 
 /** For initialization pointcuts
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class ClassInitializationAdviceApplication extends ConstructorAdviceApplication {
+    public AdviceApplication inline(ConstructorInliningMap cim) {
+        ClassInitializationAdviceApplication ret =
+            new ClassInitializationAdviceApplication(
+                    advice, getResidue().inline(cim));
+        ret.shadowmatch = shadowmatch.inline(cim);
+        return ret;
+    }
     public ClassInitializationAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	super(advice,residue);
     }

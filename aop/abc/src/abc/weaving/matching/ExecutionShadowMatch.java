@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,17 +26,30 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.Chain;
 import soot.tagkit.Host;
+import polyglot.util.InternalCompilerError;
 
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 import abc.soot.util.Restructure;
+import abc.weaving.weaver.*;
 
 /** An execution join point shadow.
  *  abc does a front-end transformation that means that static initialization
  *  and advice execution join point shadows are also treated as execution shadows
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class ExecutionShadowMatch extends BodyShadowMatch {
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = construct(cim.target());
+        cim.add(this, ret);
+        return ret;
+    }
+
 
     // Because this is a potential target for getEnclosing(),
     // we want to ensure that there is a unique instance per method
@@ -132,7 +146,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	if(ret instanceof ReturnVoidStmt)
 	    return super.getReturningContextValue();  // null value
 	else if(ret instanceof ReturnStmt)
-	    return new JimpleValue(((ReturnStmt) ret).getOp());
+	    return new JimpleValue((Immediate)((ReturnStmt) ret).getOp());
 	else throw new RuntimeException
 		 ("restructureReturn didn't restructure returns correctly");
 	   

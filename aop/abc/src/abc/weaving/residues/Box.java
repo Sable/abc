@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,9 +27,11 @@ import soot.util.Chain;
 import abc.soot.util.Restructure;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** Box a weaving variable (if necessary) into another one
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 
 public class Box extends Residue implements BindingLink {
@@ -36,6 +39,9 @@ public class Box extends Residue implements BindingLink {
     public WeavingVar to;
 
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) {
+        return new Box(from.inline(cim), to.inline(cim));
+    }
     public Box(WeavingVar from,WeavingVar to) {
 	this.from=from;
 	this.to=to;

@@ -123,8 +123,8 @@ public class ShadowPointsSetter {
 	private void insertStmtSP(SootMethod method, List/*<StmtShadowMatch>*/smList) {
 
 		// iterate through all shadow matches looking for Stmt ones
-		for (Iterator smIt = smList.iterator(); smIt.hasNext();) {
-			final StmtShadowMatch sm = (StmtShadowMatch) smIt.next();
+		for( Iterator smIt = smList.iterator(); smIt.hasNext(); ) {
+		    final StmtShadowMatch sm = (StmtShadowMatch) smIt.next();
 
 			debug("Creating a new ShadowPoints .... ");
 			sm.setShadowPoints(insertNopsAroundStmt(sm, method, rebind(sm.getStmt())));
@@ -191,7 +191,7 @@ public class ShadowPointsSetter {
 		Stmt retnop = Restructure.restructureReturn(method);
 		Stmt endnop = Jimple.v().newNopStmt();
 		units.insertAfter(endnop, retnop);
-		return new ShadowPoints(method, startnop, endnop);
+		return new RebindingShadowPoints(method, startnop, endnop);
 	} // method restructureBody 
 
 	/** Transform body of method so that a nop is placed both before and
@@ -214,8 +214,8 @@ public class ShadowPointsSetter {
 		// insert new nop stmts into body around targetstmt
 		if (sm instanceof HandlerShadowMatch) { // verify that no trap exists that starts at the targetstmt nor 
 			// ends at the stmt just after the targetstmt
-			for (Iterator trIt = b.getTraps().iterator(); trIt.hasNext();) {
-				final Trap tr = (Trap) trIt.next();
+			for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) {
+			    final Trap tr = (Trap) trIt.next();
 				if (tr.getBeginUnit() == targetstmt || tr.getEndUnit() == nextstmt)
 					throw new CodeGenException("Not expecting a trap to start at, or " + "end just after a handler stmt");
 			}
@@ -223,7 +223,7 @@ public class ShadowPointsSetter {
 			units.insertAfter(startnop, targetstmt);
 			units.insertAfter(endnop, startnop);
 			debug("Inserting nop after identity stmt " + targetstmt);
-			return new ShadowPoints(method, startnop, endnop);
+			return new RebindingShadowPoints(method, startnop, endnop);
 		} else if (sm instanceof ConstructorCallShadowMatch) { // expecting a new, followed by an <init> (treat these as one unit)
 			debug("Inserting nops around pair of stmts " + targetstmt + " ; " + nextstmt);
 			units.insertBefore(startnop, targetstmt);
@@ -235,7 +235,7 @@ public class ShadowPointsSetter {
 			// if a trap ended just after the new, 
 			// it should now extend down to the stmt after the endnop 
 			Restructure.resetTrapsEnd(b, nextstmt, (Stmt) units.getSuccOf(endnop));
-			return new ShadowPoints(method, startnop, endnop);
+			return new RebindingShadowPoints(method, startnop, endnop);
 		}
 
 		else {
@@ -249,7 +249,7 @@ public class ShadowPointsSetter {
 			// if a trap ended just after the targetstmt, 
 			// it should now extend down to the stmt after the endnop 
 			Restructure.resetTrapsEnd(b, nextstmt, (Stmt) units.getSuccOf(endnop));
-			return new ShadowPoints(method, startnop, endnop);
+			return new RebindingShadowPoints(method, startnop, endnop);
 		}
 
 	} // method insertNopAroundStmt
@@ -259,44 +259,9 @@ public class ShadowPointsSetter {
 	public void setShadowPointsPass2(SootClass sc) {
 		debug("--- BEGIN Setting ShadowPoints Pass2 for class " + sc.getName());
 
-		// for each method in the class, look to see if it is an <init> and
-		//    needs to be inlined
-		debug("Iterating through methods, looking for <init> methods ");
-		debug("that need inlining");
-
-		LinkedList methodlist = new LinkedList();
-
 		for (Iterator methodIt = sc.getMethods().iterator(); methodIt.hasNext();) {
 
-			// get the next method
-			final SootMethod method = (SootMethod) methodIt.next();
-
-			// nothing to do for abstract or native methods 
-			if (method.isAbstract())
-				continue;
-			if (method.isNative())
-				continue;
-
-			// if it has init or preinit advice list, inline body 
-			if (GlobalAspectInfo.v().getClassInitializationShadowMatch(method) != null || GlobalAspectInfo.v().getPreinitializationShadowMatch(method) != null)
-
-			{
-				debug("Must inline body of " + method.getName());
-				// add to list of methods to process
-				// if returns not restructured, do it now 
-				Restructure.restructureReturn(method);
-
-				boolean inlining_performed;
-				// keep inlining until no inlining happened
-				do
-					inlining_performed = Restructure.inlineThisCall(method);
-				while (inlining_performed);
-				methodlist.add(method);
-			}
-		}
-
 		// now go back and put in the init and preinit ShadowPoints
-		for (Iterator methodIt = methodlist.iterator(); methodIt.hasNext();) { // ---- process next <init> method
 			final SootMethod method = (SootMethod) methodIt.next();
 
 			debug("   --- BEGIN Setting ShadowPoints Pass2 for method " + method.getName());
@@ -354,7 +319,7 @@ public class ShadowPointsSetter {
 		// insert endnop just after just before final ret
 		units.insertBefore(endnop, units.getLast());
 
-		sm.setShadowPoints(new ShadowPoints(method, startnop, endnop));
+		sm.setShadowPoints(new RebindingShadowPoints(method, startnop, endnop));
 			
 	} // insertInitializationSP
 
@@ -378,7 +343,7 @@ public class ShadowPointsSetter {
 			Stmt initstmt = Restructure.findInitStmt(units);
 			units.insertBefore(endnop, initstmt);
 
-			sm.setShadowPoints(new ShadowPoints(method, startnop, endnop));
+			sm.setShadowPoints(new RebindingShadowPoints(method, startnop, endnop));
 		} else
 			throw new CodeGenException("Constructor advice on non <init>");
 	} // insertPreinitializationSP

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,14 +25,19 @@ import soot.*;
 import soot.jimple.Jimple;
 import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.AdviceApplication;
+import abc.weaving.weaver.*;
 
 /** A value that will become a thisJoinPointStaticPart structure at runtime
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class StaticJoinPointInfo extends ContextValue {
 
     private SJPInfo sjpInfo;
 
+    public ContextValue inline(ConstructorInliningMap cim) {
+        return new StaticJoinPointInfo(sjpInfo);
+    }
     public StaticJoinPointInfo(SJPInfo sjpInfo) {
 	if(sjpInfo==null) 
 	    throw new InternalCompilerError("StaticJoinPointInfo constructed with null argument");

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,9 +26,11 @@ import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** Check the type of a context value
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 30-Apr-04
  */
 
@@ -35,6 +38,9 @@ public class CheckType extends Residue {
     private ContextValue value;
     private Type type;
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) {
+        return construct(value.inline(cim), type);
+    }
 
     private CheckType(ContextValue value,Type type) {
         this.value=value;

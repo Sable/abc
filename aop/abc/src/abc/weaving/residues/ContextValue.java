@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +21,11 @@
 package abc.weaving.residues;
 
 import soot.*;
+import abc.weaving.weaver.*;
 
 /** The base class defining a value to be extracted from the context
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 30-Apr-04
  */ 
 
@@ -34,4 +37,6 @@ public abstract class ContextValue {
 
     /** get a soot value corresponding to this contextvalue */
     public abstract Value getSootValue();
+
+    public abstract ContextValue inline(ConstructorInliningMap cim);
 }

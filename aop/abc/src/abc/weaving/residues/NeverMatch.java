@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,10 +26,12 @@ import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** A "dynamic" residue that can never match.
  *  Intended for convenience during generation and residue analysis process.
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 
 public class NeverMatch extends Residue {
@@ -36,6 +39,9 @@ public class NeverMatch extends Residue {
     public static NeverMatch v() { return v; }
 
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) {
+        return this;
+    }
     public static boolean neverMatches(Residue r) {
         if(r==null) throw new InternalCompilerError("null residue found");
         // using null for NeverMatch is now deprecated

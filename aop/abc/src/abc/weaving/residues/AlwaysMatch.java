@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,15 +25,18 @@ import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** A "dynamic" residue that always matches.
  *  Intended for convenience during generation and residue analysis process.
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 
 public class AlwaysMatch extends Residue {
     private final static AlwaysMatch v=new AlwaysMatch();
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) { return this; }
     public static AlwaysMatch v() {
         return v;
     }

@@ -135,8 +135,11 @@ public class Weaver {
 
         static public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
+            // add aspectOf(), hasAspect(), ...
+            weaveGenerateAspectMethods();
+            inlineConstructors();
+
             if( doCflowOptimization ) {
-                weaveGenerateAspectMethods();
                 Unweaver unweaver = new Unweaver();
                 unweaver.save();
                 unitBindings = unweaver.restore();
@@ -155,8 +158,6 @@ public class Weaver {
                     weaveAdvice();
                 }
             } else {
-                // add aspectOf(), hasAspect(), ...
-                weaveGenerateAspectMethods();
                 if(abc.main.Debug.v().debugUnweaver) {
                     Unweaver unweaver = new Unweaver();
                     unweaver.save();
@@ -203,6 +204,16 @@ public class Weaver {
         	AfterBeforeInliner.v().doInlining();
         }
 
+        static public void inlineConstructors() {
+            ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
+            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                final AbcClass cl = (AbcClass) clIt.next();
+                SootClass scl = cl.getSootClass();
+                sg.setShadowPointsPass1(scl);
+                ConstructorInliner.inlineConstructors(scl);
+                sg.setShadowPointsPass2(scl);
+            }
+        }
         static public void weaveGenerateAspectMethods() {
                 // Generate methods inside aspects needed for code gen and bodies of
                 //   methods not filled in by front-end (i.e. aspectOf())
@@ -252,7 +263,6 @@ public class Weaver {
             }
         }
         static public void weaveAdvice() {
-                ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
                 PointcutCodeGen pg = new PointcutCodeGen();
                 GenStaticJoinPoints gsjp =
                     new GenStaticJoinPoints(abc.main.Main.v().getAbcExtension().runtimeSJPFactoryClass());
@@ -266,11 +276,6 @@ public class Weaver {
 
                         //  PASS 1 --------- (no init or preinit)--------------------
 
-                        // need to put in shadows for staticinit so SJP stuff can be
-                        //   inserted BEFORE the beginning point of the shadow.  If this
-                        //   is not done,  then the staticinitialization joinpoint will
-                        //   try to use an uninitialized SJP.
-                        sg.setShadowPointsPass1(scl);
                         // generate the Static Join Points
                         gsjp.genStaticJoinPoints(scl);
                         // print out advice info for debugging
@@ -280,8 +285,6 @@ public class Weaver {
                         pg.weaveInAspectsPass(scl, 1);
 
                         // PASS 2  ----------- (handle init and preinit) -------------
-                        // first set the shadows,this may trigger inlining
-                        sg.setShadowPointsPass2(scl);
                         // then do the weaving
                         pg.weaveInAspectsPass(scl, 2);
 

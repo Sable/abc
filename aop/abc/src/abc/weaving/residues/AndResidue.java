@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,9 +28,11 @@ import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /** The conjunction of two dynamic residues
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 public class AndResidue extends Residue implements BindingLink {
 
@@ -112,6 +115,9 @@ public class AndResidue extends Residue implements BindingLink {
 
     public Residue optimize() {
         return construct(getLeftOp().optimize(), getRightOp().optimize());
+    }
+    public Residue inline(ConstructorInliningMap cim) {
+        return construct(getLeftOp().inline(cim), getRightOp().inline(cim));
     }
 
     public void getAdviceFormalBindings(Bindings bindings, AndResidue andRoot) {

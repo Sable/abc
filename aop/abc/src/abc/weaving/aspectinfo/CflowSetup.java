@@ -32,6 +32,7 @@ import abc.weaving.residues.*;
 import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.CodeGenException;
+import abc.weaving.weaver.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.main.Debug;
@@ -138,6 +139,10 @@ public class CflowSetup extends AbstractAdviceDecl {
         private Type type;
         private boolean mustbox;
         private Local loc=null;
+        
+        public WeavingVar inline(ConstructorInliningMap cim) {
+        	return new CflowSetupBound(pos, type, mustbox);
+        }
 
         public void resetForReweaving() {
             loc=null;

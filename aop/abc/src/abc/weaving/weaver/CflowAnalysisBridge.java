@@ -76,10 +76,12 @@ public class CflowAnalysisBridge {
 
 
         debug("setting up paddle");
+        /*
         List entryPoints = new ArrayList();
         entryPoints.addAll(EntryPoints.v().implicit());
         entryPoints.addAll(EntryPoints.v().mainsOfApplicationClasses());
         Scene.v().setEntryPoints(entryPoints);
+        */
         PhaseOptions.v().setPhaseOption("cg", "enabled:false");
         PhaseOptions.v().setPhaseOption("cg.paddle", "enabled:false");
         PaddleOptions paddleOpts = new soot.options.PaddleOptions(PhaseOptions.v().getPhaseOptions("cg.paddle"));
@@ -163,6 +165,7 @@ public class CflowAnalysisBridge {
         }
 
 
+        /*
         debug("getting join point analysis result");
         for( Iterator optimizableIt = jpa.getResult().iterator(); optimizableIt.hasNext(); ) {
             final Local optimizable = (Local) optimizableIt.next();
@@ -171,6 +174,7 @@ public class CflowAnalysisBridge {
             debug( "load is "+load );
             if( load != null ) load.makeStatic();
         }
+        */
 
 
         debug("done cflow analysis");

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,15 +34,29 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** The results of matching at a method call shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class MethodCallShadowMatch extends StmtShadowMatch {
     
     private SootMethodRef methodref;
     private InvokeExpr invoke;
     
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new MethodCallShadowMatch(cim.target(), cim.map(stmt), invoke, methodref);
+        cim.add(this, ret);
+        return ret;
+    }
+
+
     private MethodCallShadowMatch(SootMethod container,Stmt stmt,
 				  InvokeExpr invoke,SootMethodRef methodref) {
 	super(container,stmt);
@@ -144,7 +159,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     public ContextValue getTargetContextValue() {
 	if(invoke instanceof InstanceInvokeExpr) {
 	    InstanceInvokeExpr ii=(InstanceInvokeExpr) invoke;
-	    return new JimpleValue(ii.getBase());
+	    return new JimpleValue((Immediate) ii.getBase());
 	} else return null;
     }
 
@@ -159,14 +174,14 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 
 	AssignStmt astmt=(AssignStmt) stmt;
 
-	return new JimpleValue(astmt.getLeftOp());
+	return new JimpleValue((Immediate)astmt.getLeftOp());
     }
     
     public List/*<ContextValue>*/ getArgsContextValues() {
 	Iterator argsIt=invoke.getArgs().iterator();
 	List ret=new LinkedList();
 	while(argsIt.hasNext()) 
-	    ret.add(new JimpleValue((Value) argsIt.next()));
+	    ret.add(new JimpleValue((Immediate) argsIt.next()));
 	return ret;
     }
 

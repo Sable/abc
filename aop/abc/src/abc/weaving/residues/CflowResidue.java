@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
@@ -29,9 +30,11 @@ import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /** A dynamic residue for cflow and cflow below
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @author Damien Sereni
  */
 public class CflowResidue extends Residue {
@@ -39,7 +42,15 @@ public class CflowResidue extends Residue {
     private List/*<WeavingVar>*/ vars;
     private boolean useCounter;
 
-    public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) { 
+        return new CflowResidue(setup, WeavingVar.inline(vars, cim));
+    }
+    public Residue optimize() { 
+        ArrayList newVars = new ArrayList();
+        newVars.addAll(vars);
+        return new CflowResidue(setup, newVars);
+    }
+
     public CflowResidue(CflowSetup setup,List vars) {
         this.setup=setup;
         this.vars=vars;

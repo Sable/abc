@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,18 +32,31 @@ import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
+import abc.weaving.weaver.*;
 
 /** The results of matching at a new+constructor call shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class ConstructorCallShadowMatch extends StmtShadowMatch {
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new ConstructorCallShadowMatch(cim.target(), cim.map(stmt),
+                cim.map(next), invoke );
+        cim.add(this, ret);
+        return ret;
+    }
+
     private Stmt next;
     private SpecialInvokeExpr invoke;
         
     private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,Stmt next,SpecialInvokeExpr invoke) {
 	super(container,stmt);
 	this.next=next;
-	this.invoke=invoke;
+        this.invoke=invoke;
     }
 
     public SootMethodRef getMethodRef() {
@@ -111,14 +125,14 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     public ContextValue getReturningContextValue() {
-	return new JimpleValue(invoke.getBase());
+	return new JimpleValue((Immediate) invoke.getBase());
     }
 
     public List/*<ContextValue>*/ getArgsContextValues() {
 	Iterator argsIt=invoke.getArgs().iterator();
 	List ret=new LinkedList();
 	while(argsIt.hasNext()) 
-	    ret.add(new JimpleValue((Value) argsIt.next()));
+	    ret.add(new JimpleValue((Immediate) argsIt.next()));
 	return ret;
     }
 

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,9 +29,11 @@ import soot.jimple.Jimple;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.residues.Residue.Bindings;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** Bind a context value to a local or argument
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 30-Apr-04
  */
 
@@ -41,6 +44,10 @@ public class Bind extends Residue {
     Bind(ContextValue value,WeavingVar variable) {
         this.value=value;
         this.variable=variable;
+    }
+
+    public Residue inline(ConstructorInliningMap cim) {
+        return new Bind(value.inline(cim), variable.inline(cim));
     }
 
     public Residue resetForReweaving() {

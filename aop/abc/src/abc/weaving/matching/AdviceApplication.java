@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,10 +35,12 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /** The data structure the pointcut matcher computes. One of these is
  *  constructed for each piece of advice at each shadow where it might apply.
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public abstract class AdviceApplication {
 
@@ -299,4 +302,8 @@ public abstract class AdviceApplication {
     public void reportMessages() {
         advice.reportMessages(this);
     }
+
+    /** Create a new AdviceApplication that's just like this one, but applies
+     * to an inlined version of the code. */
+    public abstract AdviceApplication inline( ConstructorInliningMap cim );
 }

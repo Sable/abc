@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,13 +28,26 @@ import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.*;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** The results of matching at a handler shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 05-May-04
  */
 public class HandlerShadowMatch extends StmtShadowMatch {
     
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new HandlerShadowMatch(cim.target(), cim.map(stmt), sootexc);
+        cim.add(this, ret);
+        return ret;
+    }
+
     private SootClass sootexc;
 
     
@@ -85,7 +99,7 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 
     public List/*<ContextValue>*/ getArgsContextValues() {
 	ArrayList ret=new ArrayList(1);
-	ret.add(new JimpleValue(((IdentityStmt) stmt).getLeftOp()));
+	ret.add(new JimpleValue((Immediate)((IdentityStmt) stmt).getLeftOp()));
 	return ret;
     }
 

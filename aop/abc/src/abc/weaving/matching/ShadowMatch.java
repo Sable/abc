@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,13 +33,16 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.weaver.*;
 
 /** A specific join point shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public abstract class ShadowMatch {
     protected SootMethod container;
 
+    public abstract ShadowMatch inline(ConstructorInliningMap cim);
     protected ShadowMatch(SootMethod container) {
         this.container=container;
         cachedThisContextValue=findThisContextValue();
@@ -86,6 +90,9 @@ public abstract class ShadowMatch {
         AdviceApplication aa=doAddAdviceApplication(mal,ad,residue);
         ad.incrApplCount();
         aa.setShadowMatch(this);
+        addIfNecessary();
+    }
+    public void addIfNecessary() {
         if(!recorded) {
             GlobalAspectInfo.v().addShadowMatch(container,this);
             recorded=true;

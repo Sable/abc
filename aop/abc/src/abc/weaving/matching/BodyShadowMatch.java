@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +34,7 @@ import abc.weaving.residues.*;
  *  or a section of it (i.e. execution and [pre]initialisation shadows), 
  *  rather than with a specific jimple statement.
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 
 public abstract class BodyShadowMatch extends ShadowMatch {
@@ -109,7 +111,7 @@ public abstract class BodyShadowMatch extends ShadowMatch {
 	    Value right=istmt.getRightOp();
 	    if(!(right instanceof ParameterRef)) continue;
 	    ParameterRef param=(ParameterRef) right;
-	    ret.set(param.getIndex(),new JimpleValue(istmt.getLeftOp()));
+	    ret.set(param.getIndex(),new JimpleValue((Immediate)istmt.getLeftOp()));
 	}
 	
 	// change by Oege: some parameters are implicit

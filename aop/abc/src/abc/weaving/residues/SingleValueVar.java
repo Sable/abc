@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,16 +30,27 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.SingleValueWeavingContext;
+import abc.weaving.weaver.*;
 
 /** For cases where there is just one value needed in the weaving context
  *  Don't ever use it in a context where a get() might be done on it
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 
 public class SingleValueVar extends WeavingVar {
     public Type type;
     public Value value;
 
+    public WeavingVar inline(ConstructorInliningMap cim) {
+        if( value != null ) throw new InternalCompilerError("can't inline once value has been set");
+        WeavingVar ret = cim.map(this);
+        if(ret == null) {
+            ret = new SingleValueVar(type);
+            cim.add(this, ret);
+        }
+        return ret;
+    }
     public void resetForReweaving() {}
     
     public SingleValueVar(Type type) {

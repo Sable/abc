@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,15 +27,20 @@ import soot.jimple.Stmt;
 import soot.jimple.IntConstant;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** is a context value null?
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 
 public class IsNull extends Residue {
     private ContextValue value;
 
     public Residue optimize() { return this; }
+    public Residue inline(ConstructorInliningMap cim) {
+        return new IsNull(value.inline(cim));
+    }
     public IsNull(ContextValue value) {
 	this.value=value;
     }

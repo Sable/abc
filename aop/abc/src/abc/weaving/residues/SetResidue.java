@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,20 +26,25 @@ import soot.jimple.*;
 import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** A residue that sets a local variable to a value
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 
 public class SetResidue extends Residue {
     
     Local loc;
-    Value val;
+    Constant val;
 
     public Residue optimize() { return this; }
-    public SetResidue(Local l,Value v) {
+    public SetResidue(Local l,Constant v) {
 	loc=l;
 	val=v;
+    }
+    public Residue inline(ConstructorInliningMap cim) {
+        return new SetResidue(cim.map(loc), (Constant) Jimple.v().cloneIfNecessary(val));
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,

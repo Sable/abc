@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,10 +26,13 @@ import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** A polymorphic local variable whose type is determined by
  *  the first thing it is set to
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */ 
 
 public class PolyLocalVar extends WeavingVar {
@@ -36,6 +40,16 @@ public class PolyLocalVar extends WeavingVar {
     private Local loc;
     private Type type;
 
+    public WeavingVar inline(ConstructorInliningMap cim) {
+        if( loc != null ) throw new InternalCompilerError("can't inline once loc has been set");
+        if( type != null ) throw new InternalCompilerError("can't inline once type has been set");
+        WeavingVar ret = cim.map(this);
+        if(ret == null) {
+            ret = new PolyLocalVar(name);
+            cim.add(this, ret);
+        }
+        return ret;
+    }
     /** The name parameter is just for debugging purposes;
      *  identity of the variable comes from the reference
      */

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,11 +29,13 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.residues.Residue.Bindings;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /** The sequencing of two dynamic residues, allowing
  *  side-effects in the left hand residue to run even
  *  if the right hand residue is NeverMatch
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class SeqResidue extends Residue {
     private ResidueBox left = new ResidueBox();
@@ -40,6 +43,9 @@ public class SeqResidue extends Residue {
 
     public Residue optimize() {
         return construct(getLeftOp().optimize(), getRightOp().optimize());
+    }
+    public Residue inline(ConstructorInliningMap cim) {
+        return construct(getLeftOp().inline(cim), getRightOp().inline(cim));
     }
 
     /** Get the left operand */

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +25,12 @@ import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
+import java.util.*;
 
 /** A variable for use in weaving
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 04-May-04
  */
 
@@ -58,4 +62,15 @@ public abstract class WeavingVar {
     }
     
     public abstract void resetForReweaving();
+
+    public abstract WeavingVar inline(ConstructorInliningMap cim);
+    public static List/*WeavingVar*/ inline( List/*WeavingVar*/ list,
+            ConstructorInliningMap cim) {
+        List ret = new ArrayList(list.size());
+        for( Iterator wvIt = list.iterator(); wvIt.hasNext(); ) {
+            final WeavingVar wv = (WeavingVar) wvIt.next();
+            ret.add(wv.inline(cim));
+        }
+        return ret;
+    }
 }

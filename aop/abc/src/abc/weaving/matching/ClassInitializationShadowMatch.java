@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,11 +27,24 @@ import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** The results of matching at an class initialization shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 public class ClassInitializationShadowMatch extends BodyShadowMatch {
+
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new ClassInitializationShadowMatch(cim.target());
+        cim.add(this, ret);
+        return ret;
+    }
 
     public static ShadowType shadowType()
     {

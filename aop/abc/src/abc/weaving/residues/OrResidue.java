@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,9 +27,11 @@ import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /** Disjunction of two residues
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 28-Apr-04
  */
 public class OrResidue extends Residue {
@@ -37,6 +40,9 @@ public class OrResidue extends Residue {
 
     public Residue optimize() {
         return construct(getLeftOp().optimize(), getRightOp().optimize());
+    }
+    public Residue inline(ConstructorInliningMap cim) {
+        return construct(getLeftOp().inline(cim), getRightOp().inline(cim));
     }
     /** Get the left operand */
     public Residue getLeftOp() {

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,12 +33,24 @@ import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.RebindingShadowPoints;
 import abc.weaving.weaver.Weaver;
+import abc.weaving.weaver.*;
 
 /** The results of matching at an interface initialization shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 05-May-04
  */
 public class InterfaceInitializationShadowMatch extends BodyShadowMatch {
+
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new InterfaceInitializationShadowMatch(cim.target(), intrface, sp.inline(cim));
+        cim.add(this, ret);
+        return ret;
+    }
 
     public static ShadowType shadowType()
     {

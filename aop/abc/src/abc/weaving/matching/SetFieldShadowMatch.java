@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  * Copyright (C) 2004 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or
@@ -36,14 +37,26 @@ import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
 import abc.weaving.residues.Residue;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.weaver.*;
 
 /** The results of matching at a field set shadow
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @author Oege de Moor
  */
 public class SetFieldShadowMatch extends StmtShadowMatch {
     
     private SootFieldRef fieldref;
+
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new SetFieldShadowMatch(cim.target(), cim.map(stmt), fieldref);
+        cim.add(this, ret);
+        return ret;
+    }
 
     private SetFieldShadowMatch(SootMethod container,Stmt stmt,SootFieldRef fieldref) {
 	super(container,stmt);
@@ -157,14 +170,14 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 				FieldRef fr=(FieldRef) lhs;
 				if(!(fr instanceof InstanceFieldRef)) return null;
 				InstanceFieldRef ifr=(InstanceFieldRef) fr;
-				return new JimpleValue(ifr.getBase());
+				return new JimpleValue((Immediate)ifr.getBase());
 			}
 			Value rhs = a.getRightOp();
 			if (rhs instanceof InvokeExpr) {
 			InstanceInvokeExpr vie = (InstanceInvokeExpr) rhs;
 			if (MethodCategory.getCategory(vie.getMethodRef()) 
 			    == MethodCategory.ACCESSOR_SET)
-				return new JimpleValue(vie.getBase());
+				return new JimpleValue((Immediate) vie.getBase());
 		}
 		} else if (stmt instanceof InvokeStmt) {
 			InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
@@ -172,7 +185,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 				InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
 				if (MethodCategory.getCategory(vie.getMethodRef()) 
 				    == MethodCategory.ACCESSOR_SET)
-					return new JimpleValue(vie.getBase());
+					return new JimpleValue((Immediate) vie.getBase());
 			}
 
 		}
@@ -184,17 +197,17 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 	if (stmt instanceof AssignStmt) {
 		AssignStmt a = (AssignStmt) stmt;
 		if (a.getLeftOp() instanceof FieldRef)
-			ret.add(new JimpleValue(((AssignStmt) stmt).getRightOp()));
+			ret.add(new JimpleValue((Immediate) ((AssignStmt) stmt).getRightOp()));
 		Value rhs = a.getRightOp();
 		if (rhs instanceof InvokeExpr) {
 			InvokeExpr vie = (InvokeExpr) rhs;
 			if (MethodCategory.getCategory(vie.getMethodRef()) 
 			    == MethodCategory.ACCESSOR_SET)
-				ret.add(new JimpleValue(vie.getArg(0)));
+				ret.add(new JimpleValue((Immediate) vie.getArg(0)));
 		}
 	} else if (stmt instanceof InvokeStmt) {
 		InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
-		ret.add(new JimpleValue(ie.getArg(0)));
+		ret.add(new JimpleValue((Immediate)ie.getArg(0)));
 	} else throw new InternalCompilerError("stmt neither an assignment nor an invoke");
 	return ret;
     }

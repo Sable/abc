@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  * Copyright (C) 2004 Sascha Kuzins
  *
  * This compiler is free software; you can redistribute it and/or
@@ -31,12 +32,18 @@ import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.*;
 
 /** The base class defining dynamic residues of pointcuts
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 
 public abstract class Residue {
+    /** Make a copy of the residue applying to an inlined version of the code.
+     */
+    public abstract Residue inline(ConstructorInliningMap cim);
+
     /** Optimize the residue by rebuilding it, invoking the smart
      * constructors along the way.
      */

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Sascha Kuzins
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,9 +34,11 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
+import abc.weaving.weaver.*;
 
 /**
  * @author Sascha Kuzins
+ * @author Ondrej Lhotak
  * 
  * Needed for ambiguous bindings.
  * Generates code to set bits in a mask that
@@ -54,6 +57,9 @@ public class BindMaskResidue extends Residue {
 
         public Residue optimize() {
             return new BindMaskResidue((Bind)getOp().optimize(), bindMaskLocal, mask);
+        }
+        public Residue inline(ConstructorInliningMap cim) {
+            return new BindMaskResidue((Bind)getOp().inline(cim), cim.map(bindMaskLocal), mask);
         }
         /**
          * Generates code to set the bits in the mask, then

@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,12 +26,19 @@ package abc.weaving.weaver;
  *  correct nops during weaving, the stored nops need to
  *  be mapped to the new versions.
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  */
 
 import soot.SootMethod;
 import soot.jimple.Stmt;
+import polyglot.util.InternalCompilerError;
 
 public class RebindingShadowPoints extends ShadowPoints {
+    public ShadowPoints inline(ConstructorInliningMap cim) {
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+            "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        return new RebindingShadowPoints(cim.target(), cim.map(super.getBegin()), cim.map(super.getEnd()));
+    }
     public RebindingShadowPoints(SootMethod container,Stmt b, Stmt e) {
         super(container,b,e);
     }

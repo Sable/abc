@@ -28,6 +28,8 @@ import soot.tagkit.Host;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
+import abc.weaving.weaver.*;
+import polyglot.util.InternalCompilerError;
 
 /** The result of matching at a cast
  *  @author Julian Tibble
@@ -82,7 +84,7 @@ public class CastShadowMatch extends StmtShadowMatch
         ArrayList ret = new ArrayList(1);
 
         CastExpr cast = (CastExpr) ((AssignStmt) stmt).getRightOp();
-        ret.add(new JimpleValue(cast.getOp()));
+        ret.add(new JimpleValue((Immediate)cast.getOp()));
 
         return ret;
     }
@@ -115,6 +117,16 @@ public class CastShadowMatch extends StmtShadowMatch
     }
     public String joinpointName() {
         return "cast";
+    }
+
+    public ShadowMatch inline(ConstructorInliningMap cim) {
+        ShadowMatch ret = cim.map(this);
+        if(ret != null) return ret;
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+                "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        ret = new CastShadowMatch(cim.target(), cim.map(stmt), cast_to);
+        cim.add(this, ret);
+        return ret;
     }
 
 

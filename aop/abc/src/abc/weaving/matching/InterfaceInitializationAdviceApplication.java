@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +24,11 @@ import soot.SootClass;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.*;
 
 /** for initialization pointcuts
  *  @author Ganesh Sittampalam
+ *  @author Ondrej Lhotak
  *  @date 29-Apr-04
  */
 public class InterfaceInitializationAdviceApplication extends ConstructorAdviceApplication {
@@ -39,5 +42,12 @@ public class InterfaceInitializationAdviceApplication extends ConstructorAdviceA
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"interfaceinitialization"+"\n");
 	super.debugInfo(prefix,sb);
+    }
+    public AdviceApplication inline( ConstructorInliningMap cim ) {
+        InterfaceInitializationAdviceApplication ret = 
+            new InterfaceInitializationAdviceApplication(
+                    advice, getResidue().inline(cim), intrface);
+        ret.shadowmatch = shadowmatch.inline(cim);
+        return ret;
     }
 }

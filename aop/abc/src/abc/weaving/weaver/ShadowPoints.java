@@ -50,11 +50,17 @@ import abc.soot.util.LocalGeneratorEx;
 
 public class ShadowPoints {
 
-    private final SootMethod container;
+    public ShadowPoints inline(ConstructorInliningMap cim) {
+        if( cim.inlinee() != container ) throw new InternalCompilerError(
+            "inlinee "+cim.inlinee()+" doesn't match container "+container);
+        return new ShadowPoints(cim.target(), cim.map(begin), cim.map(end));
+    }
 
-    private final Stmt begin;
+    protected final SootMethod container;
 
-    private final Stmt end;
+    protected final Stmt begin;
+
+    protected final Stmt end;
 
     /** Should always get references to NopStmts.  For all types of pointcuts
      *  both b and e will be non-null. Even handler pointcuts have an ending
