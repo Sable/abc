@@ -1,3 +1,4 @@
 #!/bin/sh
-java -cp ../lib/abc-testing-harness.jar:../lib/abc-tests.jar:../../abc/classes:../../abc-lib/polyglot.jar:../../abc-lib/sootclasses-2.1.0:../../abc-lib/JFlex.jar:../../abc-lib/jasminclasses-sable1.2.jar org.aspectj.testing.Harness $1
+CLASSPATH=$CLASSPATH:../lib/abc-testing-harness.jar:../lib/abc-tests.jar
+java org.aspectj.testing.Harness $1
 
