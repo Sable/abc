@@ -4,6 +4,7 @@ package abc.aspectj.visit;
 import polyglot.frontend.*;
 import polyglot.ast.*;
 import polyglot.visit.*;
+import polyglot.util.InternalCompilerError;
 
 import soot.*;
 import soot.javaToJimple.*;
@@ -58,14 +59,22 @@ public class Jimplify extends OncePass {
             super(className);
         }
         public void resolve( SootClass sc ) {
-	    if (abc.main.Debug.v().classResolving)
-		System.err.println("resolving [from abc AST]: " + className );
+	    try {
+		if (abc.main.Debug.v().classResolving)
+		    System.err.println("resolving [from abc AST]: " + className );
 
-            String javaClassName = SourceLocator.v().getSourceForClass(className);
-            Node n = (Node) class_to_ast.get(javaClassName);
-	    res.setAst(n);
-	    res.resolveFromJavaFile(sc);
-            sc.setApplicationClass();
+		String javaClassName = SourceLocator.v().getSourceForClass(className);
+		Node n = (Node) class_to_ast.get(javaClassName);
+		res.setAst(n);
+		res.resolveFromJavaFile(sc);
+		sc.setApplicationClass();
+	    } catch(InternalCompilerError e) {
+		throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
+						e.position(),
+						e.getCause());
+	    } catch(Throwable e) {
+		throw new InternalCompilerError("exception while resolving "+sc.getName(),e);
+	    }
         }
     }
 }
