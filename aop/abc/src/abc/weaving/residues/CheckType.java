@@ -60,7 +60,7 @@ public class CheckType extends Residue {
 
 	    return NeverMatch.v;
 	} else {
-	    FastHierarchy hier=Scene.v().getFastHierarchy();
+	    FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
 
 	    if(hier.canStoreType(from,to)) return AlwaysMatch.v;
 	    // For strict ajc compliance, we *must* eliminate this much, and

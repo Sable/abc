@@ -146,7 +146,11 @@ public class AfterThrowingWeaver {
 	Chain traps=b.getTraps();
 	Trap t=traps.size()>0 ? (Trap) traps.getFirst() : null;
 
-	while(t!=null && units.follows(t.getBeginUnit(),begincode))
+	// assume no exception ranges overlap with this one; make sure
+	// we go after any that would be enclosed within this one.
+	while(t!=null && (units.follows(t.getBeginUnit(),begincode) ||
+			  (t.getBeginUnit()==begincode && 
+			   units.follows(idStmt,t.getEndUnit()))))
 	    t=(Trap) traps.getSuccOf(t);
 
 	Trap newt=Jimple.v().
