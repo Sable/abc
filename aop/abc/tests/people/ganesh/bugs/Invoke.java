@@ -1,6 +1,6 @@
 public class Invoke {
     private void foo() {}
-    public static void Main(String[] args) {
+    public static void main(String[] args) {
        new Invoke().foo();
     }
 }
