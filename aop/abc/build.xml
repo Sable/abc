@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
-<project default="jars">
+<project default="default">
+
+    <target name="default"
+            depends="abc-jar,runtime-jar,harness-jar,testing-jar" />
 
     <target name="settings">
         <property file="ant.settings"/>

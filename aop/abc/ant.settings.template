@@ -1,3 +1,7 @@
+# You can use either jar files or classes directories for each location
+# However, to build the abc-complete.jar file (part of the jars target),
+# you must use jar files.
+
 ## Location of Polyglot classes jar
 polyglot.loc=/usr/local/src/polyglot-dev/lib/polyglot.jar
 #polyglot.loc=${user.home}/polyglot-1.2.0-src/classes
