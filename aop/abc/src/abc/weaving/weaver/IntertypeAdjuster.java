@@ -29,6 +29,7 @@ public class IntertypeAdjuster {
         	final SuperDispatch sd = (SuperDispatch) spdIt.next();
         	addSuperDispatch( sd );
         }
+        
     //  generate accessors for qualifier.this
     	for( Iterator qtsIt = GlobalAspectInfo.v().getQualThiss().iterator(); qtsIt.hasNext(); ) {
     		final QualThis qts = (QualThis) qtsIt.next();
@@ -52,12 +53,11 @@ public class IntertypeAdjuster {
     }
     
 	private void addQualThis( QualThis qts ) {
-			System.out.println("add qualified this method: "+qts.getMethod().getName()+" to "+qts.getTarget());
 	   // the signature of the method that we should generate
 	   		MethodSig method = qts.getMethod();  		
 	   // 	create a new method for the dispatch
-		   Type retType = method.getReturnType().getSootType();
-		   List parms = new ArrayList(); // no parameters
+		    Type retType = method.getReturnType().getSootType();
+		    List parms = new ArrayList(); // no parameters
 		   int modifiers = Modifier.PUBLIC;	
 	   // 	create the method
 		  	SootMethod sm = new SootMethod( 
@@ -126,11 +126,11 @@ public class IntertypeAdjuster {
 			// create the method
 			String name = UniqueID.newID("access$this$0$");
 			ArrayList paramTypes = new ArrayList();
-			soot.SootMethod meth = new soot.SootMethod(name, paramTypes, classToInvoke.getFieldByName("this$0").getType(), soot.Modifier.PUBLIC);
-			// add to target class
+			SootMethod meth = new SootMethod(name, paramTypes, classToInvoke.getFieldByName("this$0").getType(), soot.Modifier.PUBLIC);
+			//	add to target class
 			classToInvoke.addMethod(meth);
 			// now fill in the body
-			Body b = Jimple.v().newBody(); meth.setActiveBody(b);
+			Body b = Jimple.v().newBody(meth); meth.setActiveBody(b);
 			Chain ss = b.getUnits(); Chain ls = b.getLocals();
 			// generate local for "this"
 			SootField sf = classToInvoke.getFieldByName("this$0");
@@ -143,6 +143,7 @@ public class IntertypeAdjuster {
 			AssignStmt astmt = Jimple.v().newAssignStmt(res,fr); ss.add(astmt);
 			// return res
 			ReturnStmt ret = Jimple.v().newReturnStmt(res); ss.add(ret);	
+			
 			return meth;
 		}
     
