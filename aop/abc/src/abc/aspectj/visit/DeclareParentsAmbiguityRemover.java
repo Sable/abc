@@ -73,7 +73,7 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
 		qual = ((AmbTypeNode)tn).qual();
 		name = ((AmbTypeNode)tn).name();
 	    } else {
-		throw new RuntimeException("Unexpected ambiguous node in declare parents: "+tn.getClass().getName());
+		throw new polyglot.util.InternalCompilerError("Unexpected ambiguous node in declare parents: "+tn.getClass().getName());
 	    }
 	    qual = disamb(qual);
 	    tn = (QualifierNode) nodeFactory().disamb().disambiguate((Ambiguous)tn, this, tn.position(), qual, name);
