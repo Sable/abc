@@ -5,7 +5,7 @@ class A {
     class Inner {}
 }
 class B {
-    void foo(Inner x);
+    void foo(Inner x) {};
 }
 public aspect DeclareParentsInner {
     declare parents : B extends A;
