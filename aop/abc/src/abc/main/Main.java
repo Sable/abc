@@ -419,6 +419,38 @@ public class Main {
             else if (args.top().equals("-v")) {
                 abc.main.Debug.v().verbose=true;
             }
+            else if (args.top().startsWith("@") || args.top().equals("-argfile")) {
+                String fileName;
+                if(args.top().startsWith("@")) {
+                    fileName = args.top().substring(1);
+                } else {
+                    fileName = args.argTo();
+                }
+                args.shift();
+                BufferedReader br;
+                try {
+                    br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+                } catch(IOException e) {
+                    throw new IllegalArgumentException("Couldn't open argfile "+fileName);
+                }
+                LinkedList newArgs = new LinkedList();
+                try {
+                    while(true) {
+                        String s = br.readLine();
+                        if(s == null) break;
+                        newArgs.addFirst(s);
+                    }
+                } catch(IOException e) {
+                    throw new IllegalArgumentException("Error reading from argfile "+fileName);
+                }
+                for( Iterator argIt = newArgs.iterator(); argIt.hasNext(); ) {
+                    final String arg = (String) argIt.next();
+                    args.push(arg);
+                }
+                // push filename back on, so that after we advance, we're on the
+                // first arg from the argfile
+                args.push(fileName);
+            }
 
             /* -------------------  SOOT OPTIONS -------------------------*/
             // handle soot-specific options, must be between +soot -soot
@@ -459,34 +491,6 @@ public class Main {
             { throw new IllegalArgumentException("Unknown option "+args.top());
             }
 
-            /* ---------  ARG FILE - ---------------------------------- */
-            else if (args.top().startsWith("@")) {
-                String fileName = args.top().substring(1);
-                args.shift();
-                BufferedReader br;
-                try {
-                    br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
-                } catch(IOException e) {
-                    throw new IllegalArgumentException("Couldn't open argfile "+fileName);
-                }
-                LinkedList newArgs = new LinkedList();
-                try {
-                    while(true) {
-                        String s = br.readLine();
-                        if(s == null) break;
-                        newArgs.addFirst(s);
-                    }
-                } catch(IOException e) {
-                    throw new IllegalArgumentException("Error reading from argfile "+fileName);
-                }
-                for( Iterator argIt = newArgs.iterator(); argIt.hasNext(); ) {
-                    final String arg = (String) argIt.next();
-                    args.push(arg);
-                }
-                // push filename back on, so that after we advance, we're on the
-                // first arg from the argfile
-                args.push(fileName);
-            }
             /* ---------  FILE NAME  ---------------------------------- */
             else
             { aspect_sources.add(args.top());
