@@ -149,7 +149,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
 	l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf)));
 	l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf)));
-	l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
 	
 	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job,
 			      new CollectJimplifyVisitor(job, ts, nf, source_files, class_to_ast, hierarchy)));
