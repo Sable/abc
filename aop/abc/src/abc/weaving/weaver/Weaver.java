@@ -62,8 +62,8 @@ public class Weaver {
         else
                 return ut;
     }
-    static public void resetResiduesForReweaving() {
-        //debug("resetResiduesForReweaving");
+    static public void resetForReweaving() {
+        // reset all residues
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
@@ -71,22 +71,24 @@ public class Weaver {
 
                 MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
                 if (adviceList!=null) {
-          //            debug("found advice list for " + method);
-                        Iterator appIt=adviceList.allAdvice().iterator();
-                        while (appIt.hasNext()) {
-                                AdviceApplication appl=(AdviceApplication)appIt.next();
-            //                  debug(" " + appl.getResidue());
-                                appl.getResidue().resetForReweaving();
-                        }
+                    Iterator appIt=adviceList.allAdvice().iterator();
+                    while (appIt.hasNext()) {
+                        AdviceApplication appl=(AdviceApplication)appIt.next();
+                        appl.getResidue().resetForReweaving();
+                    }
                 }
             }
         }
-    }
-    // Iterate through all ShadowPoints structures and reset them
-    // In practice most will be thrown away later,
-    // but InterfaceInitialization ones won't and to keep things robust
-    // just reset the lot.
-    static public void resetShadowPointsForReweaving() {
+        // reset all advice
+        for( Iterator adIt = GlobalAspectInfo.v().getAdviceDecls().iterator(); adIt.hasNext(); ) {
+            final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
+            ad.resetForReweaving();
+        }
+        // reset all shadow points
+        // In practice most will be thrown away later,
+        // but InterfaceInitialization ones won't and to keep things robust
+        // just reset the lot.
+
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
@@ -100,6 +102,7 @@ public class Weaver {
                 }
             }
         }
+
     }
 
         static public void weave() {
@@ -116,8 +119,8 @@ public class Weaver {
                 cfab.run();
                 unitBindings = unweaver.restore();
                 AroundWeaver.reset();
-                resetResiduesForReweaving();
-                resetShadowPointsForReweaving();
+                resetForReweaving();
+                resetForReweaving();
                 weaveAdvice();
 
             } else {
@@ -130,16 +133,16 @@ public class Weaver {
                     unitBindings = unweaver.restore();
                     debug("unweaver restored state");
                     AroundWeaver.reset();
-                    resetResiduesForReweaving();
-                    resetShadowPointsForReweaving();
+                    resetForReweaving();
+                    resetForReweaving();
                     weaveAdvice();
                     debug("after weaveAdvice");
                     //if (true==true) return; ///
                     unitBindings = unweaver.restore();
                     debug("unweaver restored state (2)");
                     AroundWeaver.reset();
-                    resetResiduesForReweaving();
-                    resetShadowPointsForReweaving();
+                    resetForReweaving();
+                    resetForReweaving();
                     //throw new RuntimeException("just a test");
                 }
                 weaveAdvice();

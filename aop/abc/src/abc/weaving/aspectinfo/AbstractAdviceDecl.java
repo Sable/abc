@@ -50,29 +50,29 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     private Aspect defined_aspct;
 
     protected AbstractAdviceDecl(Aspect aspct,
-				 AdviceSpec spec,
-				 Pointcut pc,
-				 List/*<Formal>*/ formals,
-				 Position pos) {
-	this(aspct,spec,pc,formals,pos,false);
-	if(abc.main.Debug.v.debugPointcutNormalization) 
-	    System.out.println("made unnormalized decl");
+                                 AdviceSpec spec,
+                                 Pointcut pc,
+                                 List/*<Formal>*/ formals,
+                                 Position pos) {
+        this(aspct,spec,pc,formals,pos,false);
+        if(abc.main.Debug.v.debugPointcutNormalization)
+            System.out.println("made unnormalized decl");
     }
 
     protected AbstractAdviceDecl(Aspect aspct,AdviceSpec spec,Pointcut pc,
-				 List/*<Formal>*/ formals,Position pos,
-				 boolean normalized) {
-	super(pos);
-	this.aspct=aspct;
-	this.defined_aspct=aspct;
-	this.spec=spec;
+                                 List/*<Formal>*/ formals,Position pos,
+                                 boolean normalized) {
+        super(pos);
+        this.aspct=aspct;
+        this.defined_aspct=aspct;
+        this.spec=spec;
 
-	if(normalized) this.pc=pc; else this.origpc=pc;
-	this.formals=formals;
+        if(normalized) this.pc=pc; else this.origpc=pc;
+        this.formals=formals;
     }
 
     public AdviceSpec getAdviceSpec() {
-	return spec;
+        return spec;
     }
 
     /** Every advice declaration is associated with a particular aspect.
@@ -80,33 +80,33 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      *  @author Ganesh Sittampalam
      */
     public Aspect getAspect() {
-	return aspct;
+        return aspct;
     }
 
     /** Get the aspect an advice declaration was originally defined in.
      *  @author Ganesh Sittampalam
      */
     public Aspect getDefiningAspect() {
-	return defined_aspct;
+        return defined_aspct;
     }
 
     protected Object clone() {
-	try {
-	    return super.clone();
-	} catch(CloneNotSupportedException e) {
-	    throw new InternalCompilerError("AbstractAdviceDecl should be cloneable",e);
-	}
+        try {
+            return super.clone();
+        } catch(CloneNotSupportedException e) {
+            throw new InternalCompilerError("AbstractAdviceDecl should be cloneable",e);
+        }
     }
 
     /** Make an exact copy of this advice declaration, but change the aspect to the given one.
      *  This is needed to implement aspect inheritance, because that defines that advice defined
-     *  in a base aspect is treated as occurring once in each derived aspect. 
+     *  in a base aspect is treated as occurring once in each derived aspect.
      *  @author Ganesh Sittampalam
      */
     public AbstractAdviceDecl makeCopyInAspect(Aspect newaspct) {
-	AbstractAdviceDecl n=(AbstractAdviceDecl) this.clone();
-	n.aspct=newaspct;
-	return n;
+        AbstractAdviceDecl n=(AbstractAdviceDecl) this.clone();
+        n.aspct=newaspct;
+        return n;
     }
 
     /** Pointcuts come in normalized and unnormalized versions.
@@ -117,21 +117,21 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      *  @author Ganesh Sittampalam
      */
     public void preprocess() {
-	if(pc!=null) throw new InternalCompilerError
-			 ("Trying to call preprocess on an already normalized advice decl "+this);
-	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("normalizing");
-	pc=Pointcut.normalize(origpc,formals,getAspect());
-	if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
+        if(pc!=null) throw new InternalCompilerError
+                         ("Trying to call preprocess on an already normalized advice decl "+this);
+        if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("normalizing");
+        pc=Pointcut.normalize(origpc,formals,getAspect());
+        if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
     }
 
     public Pointcut getPointcut() {
-	if(pc==null) throw new InternalCompilerError
-			 ("Must call preprocess on advice decls before using them");
-	return pc;
+        if(pc==null) throw new InternalCompilerError
+                         ("Must call preprocess on advice decls before using them");
+        return pc;
     }
 
     public List/*<Formal>*/ getFormals() {
-	return formals;
+        return formals;
     }
 
     public abstract void debugInfo(String prefix,StringBuffer sb);
@@ -140,25 +140,28 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 
     public abstract WeavingContext makeWeavingContext();
 
+    public void resetForReweaving() {
+    };
+
     // All this JoinPoint stuff ought to move to a residue or something.
     public boolean hasJoinPoint() {
-	return false;
+        return false;
     }
 
     public boolean hasJoinPointStaticPart() {
-	return false;
+        return false;
     }
 
     public boolean hasEnclosingJoinPoint() {
-	return false;
+        return false;
     }
 
     public Residue preResidue(ShadowMatch sm) {
-	return AlwaysMatch.v;
+        return AlwaysMatch.v;
     }
 
     public Residue postResidue(ShadowMatch sm) {
-	return AlwaysMatch.v;
+        return AlwaysMatch.v;
     }
 
     /** Produce a chain containing the statements to execute this piece of advice.
@@ -172,7 +175,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      // document why we need adviceappl. Should we switch to the insertAfter model
      // everything else uses?
     public abstract Chain makeAdviceExecutionStmts
-	(AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc);
+        (AdviceApplication adviceappl,LocalGeneratorEx localgen,WeavingContext wc);
 
     private int applcount=0; // the number of times this AdviceDecl matches
                              //   (i.e. the number of static join points)
@@ -181,7 +184,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      */
     public int incrApplCount() {
         applcount++;
-	return(applcount);
+        return(applcount);
     }
 
     /** Get the precedence relationship between two aspects.
@@ -191,51 +194,51 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      *    {@link GlobalAspectInfo.PRECEDENCE_NONE} if none of the advice decls have precedence,
      *    {@link GlobalAspectInfo.PRECEDENCE_FIRST} if the first advice decl has precedence,
      *    {@link GlobalAspectInfo.PRECEDENCE_SECOND} if the second advice decl has precedence, or
-     *    {@link GlobalAspectInfo.PRECEDENCE_CONFLICT} if there is a precedence 
+     *    {@link GlobalAspectInfo.PRECEDENCE_CONFLICT} if there is a precedence
      *     conflict between the two advice decls.
      */
     public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
-	// a quick first pass to assist in separating out the major classes of advice
-	// consider delegating this
-	int aprec=getPrecNum(a),bprec=getPrecNum(b);
-	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
-	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
+        // a quick first pass to assist in separating out the major classes of advice
+        // consider delegating this
+        int aprec=getPrecNum(a),bprec=getPrecNum(b);
+        if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
+        if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
 
-	// CflowSetup needs to be compared by depth first
-	if(a instanceof CflowSetup && b instanceof CflowSetup) 
-	    return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
+        // CflowSetup needs to be compared by depth first
+        if(a instanceof CflowSetup && b instanceof CflowSetup)
+            return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
 
-	if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
-	    return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
+        if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
+            return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
 
-	if(a instanceof AdviceDecl && b instanceof AdviceDecl)
-	    return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
+        if(a instanceof AdviceDecl && b instanceof AdviceDecl)
+            return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
 
-	if(a instanceof DeclareSoft && b instanceof DeclareSoft)
-	    return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
+        if(a instanceof DeclareSoft && b instanceof DeclareSoft)
+            return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
 
-	throw new InternalCompilerError
-	    ("case not handled when comparing "+a+" and "+b);
+        throw new InternalCompilerError
+            ("case not handled when comparing "+a+" and "+b);
     }
     private static int getPrecNum(AbstractAdviceDecl d) {
-	if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 0 : 4;
-	else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 1 : 3;
-	else if(d instanceof PerThisSetup) return 4;
-	else if(d instanceof PerTargetSetup) return 4;
-	else if(d instanceof AdviceDecl) return 2;
-	else if(d instanceof DeclareSoft) return 5; //FIXME: no idea where this should go
-	else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
-					     d.getPosition());
+        if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 0 : 4;
+        else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 1 : 3;
+        else if(d instanceof PerThisSetup) return 4;
+        else if(d instanceof PerTargetSetup) return 4;
+        else if(d instanceof AdviceDecl) return 2;
+        else if(d instanceof DeclareSoft) return 5; //FIXME: no idea where this should go
+        else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
+                                             d.getPosition());
     }
 
     /** Return a string describing the current piece of advice, for use in
      *  error messages
      */
     public String errorInfo() {
-	return "aspect "+getAspect().getName().replace('$','.')
-	    +" ("+getPosition().file()
-	    +", line "+getPosition().line()+")";
+        return "aspect "+getAspect().getName().replace('$','.')
+            +" ("+getPosition().file()
+            +", line "+getPosition().line()+")";
     }
-    
+
 
 }
