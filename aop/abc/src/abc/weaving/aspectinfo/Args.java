@@ -2,6 +2,8 @@ package abc.weaving.aspectinfo;
 
 import java.util.*;
 import polyglot.util.Position;
+import polyglot.types.SemanticException;
+import polyglot.util.InternalCompilerError;
 import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
@@ -55,7 +57,8 @@ public class Args extends DynamicValuePointcut {
 	
     }
 
-    public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm) {
+    public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm)
+    {
 	Residue ret=AlwaysMatch.v;
 	ListIterator formalsIt=args.listIterator();
 	List actuals=sm.getArgsContextValues();
@@ -64,6 +67,7 @@ public class Args extends DynamicValuePointcut {
 	while(formalsIt.hasNext() && actualsIt.hasNext()) {
 	    ArgPattern formal=(ArgPattern) formalsIt.next();
 	    if(formal instanceof ArgFill) {
+		//		System.out.println("filler at "+formal.getPosition());
 		fillerpos=formalsIt.nextIndex();  // The position _after_ the filler
 		while(formalsIt.hasNext()) formalsIt.next();
 		while(actualsIt.hasNext()) actualsIt.next();
@@ -89,8 +93,9 @@ public class Args extends DynamicValuePointcut {
 	while(formalsIt.hasPrevious() && actualsIt.hasPrevious()) {
 	    ArgPattern formal=(ArgPattern) formalsIt.previous();
 	    if(formal instanceof ArgFill) {
-		if(formalsIt.nextIndex()!=fillerpos)
-		    throw new RuntimeException("Two fillers in args pattern"); // FIXME to proper error
+		if(formalsIt.nextIndex()+1!=fillerpos)
+		    // make this a SemanticException
+		    throw new InternalCompilerError("Two fillers in args pattern",formal.getPosition()); 
 
 		return ret; // all done!
 	    }
@@ -98,8 +103,11 @@ public class Args extends DynamicValuePointcut {
 	    
 	    ret=AndResidue.construct(ret,formal.matchesAt(we,actual));
 	}
+	if(formalsIt.hasPrevious() && formalsIt.previous() instanceof ArgFill) return ret;
 	// This shouldn't happen because we should find the filler before either the formals or the
 	// actuals run out.
-	throw new RuntimeException("Internal error: reached the end of a list unexpectedly");
+	throw new InternalCompilerError
+	    ("Internal error: reached the end of a args pattern list unexpectedly - "
+	     +"pattern was "+args+", method was "+method);
     }
 }

@@ -31,6 +31,10 @@ public class Test  {
       return 5;
    }
 
+   int foo(int x,int y) {
+      return 3;
+   }
+
    double foo(double x) {
       return x;
    }
