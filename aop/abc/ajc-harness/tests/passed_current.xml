@@ -457,6 +457,12 @@
         <compile files="PR413.java"></compile>
         <run class="PR413"></run>
     </ajc-test>
+<ajc-test title="Not binding constructor when using more than one compilation" pr="408" num="115" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
+        <compile files="OuterAbstract_PR408.java"></compile>
+        <compile includeClassesDir="true" files="ExtendsOuterAbstract_PR408.java"></compile>
+        <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
+        <run class="ConstructorNotFound_PR408"></run>
+    </ajc-test>
 <ajc-test title="confusions of casts and parens" num="116" keywords="from-java" dir="pureJava">
         <compile files="CastVsParen.java"></compile>
         <run class="CastVsParen"></run>
