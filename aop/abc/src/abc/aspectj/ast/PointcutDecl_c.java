@@ -169,7 +169,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 		   overrideMethodCheck(tc);
 
 	  if (pc != null)
-	  	pc.checkFormals(formals);
+	  	pc.checkFormals(formals,null);
 	  	
 	   return this;
 	}

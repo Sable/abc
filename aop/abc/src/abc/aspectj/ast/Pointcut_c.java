@@ -41,7 +41,11 @@ public class Pointcut_c extends Node_c implements Pointcut
    		return new HashSet();
    }
   
-   public void checkFormals(List formals) throws SemanticException {
+   public static String initialised; 
+   
+   public void checkFormals(List formals, Formal init) throws SemanticException {
+   		initialised = (init == null ? null : init.name());
+   
    		Collection maybind = mayBind();   // check for repeated bindings
    		
    		// now look for undefined formals
@@ -49,7 +53,7 @@ public class Pointcut_c extends Node_c implements Pointcut
    		
 	 	for (Iterator nb = formals.iterator(); nb.hasNext(); ) {
 			   Formal l = (Formal) nb.next();
-			   if (!(mustbind.contains(l.name())))
+			   if (l.name() != initialised && !(mustbind.contains(l.name())))
 			   	   throw new SemanticException("Formal \""+ l.name() + "\" may be unbound in pointcut.",
 																		l.position());
 		}

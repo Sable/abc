@@ -11,6 +11,7 @@ import polyglot.ast.Node;
 import polyglot.ast.NodeFactory;
 import polyglot.ast.ClassDecl;
 import polyglot.ast.MethodDecl;
+import polyglot.ast.Expr;
 
 import polyglot.types.Flags;
 import polyglot.util.Position;
@@ -49,9 +50,11 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl
     // it potentially throws org.aspectj.lang.NoAspectBoundException, so that is loaded,
     // if it is a per-object associated aspect, it takes one parameter of type Object, otherwise none
 	public NodeVisitor buildTypesEnter(TypeBuilder tb) throws SemanticException {
+		if (!flags().isAbstract()) {
 		NodeFactory nf = tb.nodeFactory();
 		TypeNode tn = nf.AmbTypeNode(position(),name());
-		Block bl = nf.Block(position());
+		Expr nl = nf.NullLit(position());
+		Block bl = nf.Block(position()).append(nf.Return(position(),nl));
 		AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();
 		TypeNode nab = nf.CanonicalTypeNode(position(),ts.NoAspectBound());
 		List args = new LinkedList();
@@ -61,9 +64,10 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl
 		}
 		List thrws = new LinkedList(); thrws.add(nab);
 		MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl);       
-		body = body().addMember(md); // against the polyglot doctrine of functional rewrites...
+		body = body().addMember(md); // against the polyglot doctrine of functional rewrites... 
+		}
 		return super.buildTypesEnter(tb);     
-	}
+	} 
 		
 	public void prettyPrintHeader(CodeWriter w, PrettyPrinter tr) {
 		

@@ -41,22 +41,25 @@ public class PCThis_c extends Pointcut_c implements PCThis
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 	   TypeSystem ts = tc.typeSystem();
 	   Context c = tc.context();
-	   Node voidType = tc.nodeFactory().CanonicalTypeNode(position(),ts.Void());
-
+	   
 		if (pat instanceof TPEUniversal)
-			return voidType;
+			return this;
 		
 		if (! (((Typed)pat).type() instanceof ReferenceType))
 		   throw new SemanticException("Argument of \"this\" must be of reference type",pat.position());
 		   
-		return voidType;
+		return this;
 	}
 	
 	public Collection mayBind() throws SemanticException {
 		Collection result = new HashSet();
-		if (pat instanceof Local)
-			result.add(((Local)pat).name());
-		 return result;
+		if (pat instanceof Local) {
+				String l = ((Local)pat).name();
+				if (l == Pointcut_c.initialised)
+							throw new SemanticException("cannot explicitly bind local \"" + l + "\"", pat.position());
+				result.add(((Local)pat).name());
+		}
+		return result;
 	}
    
 	public Collection mustBind() {

@@ -7,9 +7,12 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import arc.aspectj.types.AspectJTypeSystem;
+
 public class PCIf_c extends Pointcut_c implements PCIf
 {
     protected Expr expr;
+    private String methodName;
 
     public PCIf_c(Position pos, Expr expr)  {
 	super(pos);
@@ -67,5 +70,24 @@ public class PCIf_c extends Pointcut_c implements PCIf
 		return child.type();
 	}
 
-
+	public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals){
+		Return ret = nf.Return(position(),expr);
+		Block bl = nf.Block(position()).append(ret);
+		TypeNode retType = nf.CanonicalTypeNode(position(),ts.Boolean());
+		List args = new LinkedList(formals);
+		List throwTypes = new LinkedList();
+		for (Iterator i = expr.throwTypes(ts).iterator(); i.hasNext(); ) {
+			Type t = (Type) i.next();
+			TypeNode tn = nf.CanonicalTypeNode(position(),t);
+			throwTypes.add(tn);
+		}
+		methodName = UniqueID.newID("if");
+		MethodDecl md = nf.MethodDecl(position(),Flags.STATIC.Private(),retType,methodName,args,throwTypes,bl);
+		return md;
+	}
+	
+	public PCIf liftMethod(AspectJNodeFactory nf){
+		Expr exp = nf.Call(position(),methodName);
+		return reconstruct(exp);
+	}
 }

@@ -9,6 +9,7 @@ import polyglot.util.Position;
 
 import polyglot.ast.Node;
 import polyglot.ast.Expr;
+import polyglot.ast.MethodDecl;
 import polyglot.ast.Receiver;
 import polyglot.ast.Call;
 import polyglot.ext.jl.ast.Call_c;
@@ -24,6 +25,8 @@ import polyglot.visit.TypeBuilder;
 
 public class ProceedCall_c extends Call_c implements ProceedCall {
 
+	private MethodDecl proceedDecl;
+	
 	public ProceedCall_c(Position pos, List arguments) {
 		super(pos,null,"proceed",arguments);		         	
     }
@@ -32,6 +35,9 @@ public class ProceedCall_c extends Call_c implements ProceedCall {
     	super(c.position(),c.target(),c.name(),c.arguments());
     }
     
+    public ProceedCall proceedMethod(MethodDecl md) {
+    	return (ProceedCall) name(md.name());
+    }
     
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		

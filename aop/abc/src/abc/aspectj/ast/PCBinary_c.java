@@ -49,7 +49,7 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
 		return this;
 	}
 
-	public Node visitChildren(NodeVisitor v) {	
+	public Node visitChildren(NodeVisitor v) {
 		Pointcut left = (Pointcut) visitChild(this.left,v);
 		Pointcut right = (Pointcut) visitChild(this.right,v);
 		return reconstruct(left,right);

@@ -144,7 +144,7 @@ public class PCName_c extends Pointcut_c implements PCName
 
    public List methodsNamed(ClassType ct, String name){
    	  List result = ct.methodsNamed(name);
-   	  if (result.size() == 0) {
+   	  if (result.size() == 0 && ct.superType() != null) {
    	  	 ClassType outer = ct.superType().toClass();
    	  	 if (outer != null)
    	  	 	return methodsNamed(outer,name);
@@ -226,7 +226,7 @@ public class PCName_c extends Pointcut_c implements PCName
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write(name+"(");
         for (Iterator i = args.iterator(); i.hasNext(); ) {
-	        FormalPattern id = (FormalPattern) i.next();
+	            Node id = (Node) i.next();
                 print(id,w,tr);
 		
 		if (i.hasNext()) {
@@ -236,5 +236,32 @@ public class PCName_c extends Pointcut_c implements PCName
 	    }
         w.write(")");
     }
+    
+	public Collection mayBind() throws SemanticException {
+			Collection result = new HashSet();
+			for (Iterator i = args.iterator(); i.hasNext(); ) {
+				Node pat = (Node) i.next();
+				if (pat instanceof Local) {
+					String l = ((Local) pat).name();
+					 if (result.contains(l))
+						 throw new SemanticException("repeated binding of \"" + l +"\"",
+																				   pat.position());
+					 else if (l == Pointcut_c.initialised)
+								throw new SemanticException("cannot explicitly bind local \"" + l + "\"", pat.position());
+							  else result.add(l);
+				}
+			}
+			return result;
+	}
+   
+	public Collection mustBind() {
+			Collection result = new HashSet();
+				for (Iterator i = args.iterator(); i.hasNext(); ) {
+					Node pat = (Node) i.next();
+					if (pat instanceof Local)
+						 result.add(((Local)pat).name());
+				}
+				return result;
+			}
 
 }

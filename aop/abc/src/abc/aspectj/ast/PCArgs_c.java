@@ -48,7 +48,9 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 				 if (result.contains(l))
 				     throw new SemanticException("repeated binding of \"" + l +"\"",
 				                                                               pat.position());
-				 else result.add(l);
+				 else if (l == Pointcut_c.initialised)
+				 			throw new SemanticException("cannot explicitly bind local \"" + l + "\"", pat.position());
+				          else result.add(l);
 			}
 		}
 		return result;
@@ -67,8 +69,8 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("args(");
         for (Iterator i = pats.iterator(); i.hasNext(); ) {
-	        FormalPattern fp = (FormalPattern) i.next();
-		print(fp, w, tr);
+	        Node fp = (Node) i.next();
+ 		    print(fp, w, tr);
 
 		if (i.hasNext()) {
 		    w.write(",");
