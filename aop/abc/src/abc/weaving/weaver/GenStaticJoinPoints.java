@@ -153,7 +153,7 @@ public class GenStaticJoinPoints {
 	         thisSJPfield =  
 		     makeSJPfield(sc,units,ip,lg,method,adviceappl);
 
-   	      adviceappl.sjpfield = thisSJPfield; // store in adviceappl
+   	      adviceappl.sjpInfo.sjpfield = thisSJPfield; // store in adviceappl
 	    } // if we need a SJP
 	} // each advice for the SJP
     } // genSJPformethodmethod 
@@ -208,7 +208,7 @@ public class GenStaticJoinPoints {
 		// put it in the table
 		SJPhashtable.put(keystmt,thisSJPfield);
                }	
-   	      adviceappl.sjpfield = thisSJPfield; // store in adviceappl
+   	      adviceappl.sjpInfo.sjpfield = thisSJPfield; // store in adviceappl
 	    } // if we need a SJP
 	} // each advice for the SJP
     } // genSJPformethodmethod 
@@ -285,7 +285,7 @@ public class GenStaticJoinPoints {
       sc.addField(newsjpfield);
 
       // save field in AdviceApplication
-      adviceappl.sjpfield =  newsjpfield;
+      adviceappl.sjpInfo.sjpfield =  newsjpfield;
 
       // put initialization for the field in clinit()
       StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(newsjpfield);
