@@ -280,6 +280,8 @@ public interface AspectJNodeFactory
 	
 	ConstructorCall hostConstructorCall(Position pos, ConstructorCall.Kind kind, Expr qualifier, List arguments);
 	
+	PCEmpty PCEmpty(Position pos);
+	
 }
 
 

@@ -109,7 +109,7 @@ public class MethodCategory {
     {
 	true, false, true, false, false/*AJC doesn't, but why not?*/,
 	true, false,
-	true, true, false,
+	true, true, true,
 	true, true, false,
 	false, false, false
     };
@@ -118,7 +118,7 @@ public class MethodCategory {
     {
 	true, false, true, false, false,
 	true, false,
-	true, false, false,
+	true, false, true,
 	false, true, false,
 	false/*?*/, false/*?*/, false
     };

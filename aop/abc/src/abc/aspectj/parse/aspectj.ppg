@@ -417,7 +417,7 @@ pointcut_declaration ::=
                                                   a,
                                                   b.getIdentifier(),
                                                   c,
-                                                  null,
+                                                  parser.nf.PCEmpty(parser.pos(e)),
                                                   voidn);
         RESULT = pcd;
      :}

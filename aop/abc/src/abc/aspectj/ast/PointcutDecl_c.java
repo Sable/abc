@@ -163,11 +163,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, Contai
 			   }
 		   }
 
-	   if (pc == null && ! (flags().isAbstract() || flags().isNative())) {
-		   throw new SemanticException("Missing pointcut body.", position());
-	   }
-
-	   if (pc != null && flags().isAbstract()) {
+	   if (!(pc instanceof PCEmpty) && flags().isAbstract()) {
 		   throw new SemanticException(
 		   "An abstract pointcut cannot have a body.", position());
 	   }

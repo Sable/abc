@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Map;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
@@ -28,6 +29,7 @@ import polyglot.types.*;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
 
+import abc.aspectj.ExtensionInfo;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
@@ -116,8 +118,9 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		                                               		methodInstance().name(),
 		                                               		methodInstance().formalTypes(),
 		                                               		methodInstance().throwTypes());
-		                                               			    
-		 overrideITDmethod(pht, mi);
+		  
+		   abc.aspectj.ExtensionInfo ei= (abc.aspectj.ExtensionInfo) am.job().extensionInfo();                                             			    
+		   overrideITDmethod(pht, mi, ei.prec_rel);
 	    	
     	
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
@@ -130,7 +133,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     }
 
 	public static void overrideITDmethod(ClassType pht, 
-											MethodInstance mi) {
+											MethodInstance mi, Map prec_rel) {
 		// System.out.println("attempting to add method "+mi+" to "+pht);
 		InterTypeMethodInstance_c toinsert = (InterTypeMethodInstance_c) mi;
 		// InterTypeMethodInstance_c toinsert =  (InterTypeMethodInstance_c) mi.container(pht).flags(itmic.origFlags());
@@ -144,12 +147,12 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
 				// System.out.println("try next instance");
 				MethodInstance minst = (MethodInstance) misIt.next();
-				if (zaps(mi,minst) && !added){   
+				if (zaps(mi,minst,prec_rel) && !added){   
 					pht.methods().remove(minst);
 					pht.methods().add(toinsert);
 					// System.out.println("replaced");
 					added = true;
-				} else if (zaps(minst,toinsert)) {	
+				} else if (zaps(minst,toinsert,prec_rel)) {	
 					// skip  
 					// System.out.println("skipped");
 					}
@@ -168,11 +171,14 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	}
 	
 	// replace this by a call to the appropriate structure!
-	static boolean precedes(ClassType ct1, ClassType ct2) {
-		return ct1.descendsFrom(ct2);
+	static boolean precedes(ClassType ct1, ClassType ct2,Map prec_rel) {
+		return ct1.descendsFrom(ct2) ||
+					(prec_rel.containsKey(ct1.fullName()) && 
+					  ((Set) prec_rel.get(ct1.fullName())).contains(ct2.fullName()));
+					
 	}
 	
-	static boolean zaps(MethodInstance mi1,MethodInstance mi2) {
+	static boolean zaps(MethodInstance mi1,MethodInstance mi2,Map prec_rel) {
 		if (!(mi1.flags().isAbstract()) && mi2.flags().isAbstract())
 			return true;
 		// System.out.println("not (!mi1.abstract && mi2.abstract)");
@@ -187,7 +193,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		if (fromInterface(itmi1) && fromInterface(itmi2) &&
 		     itmi1.interfaceTarget().descendsFrom(itmi2.interfaceTarget()))
 		    return true;
-		return precedes(itmi1.origin(),itmi2.origin());	    
+		return precedes(itmi1.origin(),itmi2.origin(),prec_rel);	    
 	}
     
 	
@@ -367,7 +373,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addSuperFieldGetters(supers.superfieldgetters(gai));
 	gai.addSuperFieldSetters(supers.superfieldsetters(gai));
 	gai.addQualThiss(supers.qualthiss(gai));
-
+	
 	MethodCategory.register(impl, MethodCategory.INTERTYPE_METHOD_SOURCE);
 	MethodCategory.registerRealNameAndClass(impl, AbcFactory.modifiers(origflags), originalName, AbcFactory.AbcClass((ClassType)host.type()),
 						(origflags.isStatic()?0:1),0);

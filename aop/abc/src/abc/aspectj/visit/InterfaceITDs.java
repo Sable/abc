@@ -14,6 +14,8 @@ import polyglot.ast.ClassDecl;
 import polyglot.ast.TypeNode;
 
 import polyglot.frontend.Job;
+
+import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
 import polyglot.types.ClassType;
 import polyglot.types.MethodInstance;
@@ -21,7 +23,9 @@ import polyglot.types.FieldInstance;
 import polyglot.types.ConstructorInstance;
 
 import polyglot.visit.NodeVisitor;
+import polyglot.visit.ContextVisitor;
 
+import abc.aspectj.ExtensionInfo;
 import abc.aspectj.types.InterTypeMemberInstance;
 
 /**
@@ -30,8 +34,11 @@ import abc.aspectj.types.InterTypeMemberInstance;
  */
 public class InterfaceITDs extends NodeVisitor {
 
-	public InterfaceITDs() {
+	Job job;
+	
+	public InterfaceITDs(Job j, TypeSystem ts, NodeFactory nf) {
 		super();
+		this.job = j;
 	}
 	
 	public NodeVisitor enter(Node n) {
@@ -73,8 +80,9 @@ public class InterfaceITDs extends NodeVisitor {
 				 if (mi instanceof InterTypeMemberInstance) {
 					// System.out.println("attempting to add method "+mi + " to " + cd.type() + " which implements " + interf +
 					//	", which received method from " + ((InterTypeMemberInstance) mi).origin());
+					ExtensionInfo ei = (ExtensionInfo) job.extensionInfo();
 					abc.aspectj.ast.IntertypeMethodDecl_c.overrideITDmethod(cd.type(),
-					           mi.container(cd.type()).flags(((InterTypeMemberInstance)mi).origFlags()));
+					           mi.container(cd.type()).flags(((InterTypeMemberInstance)mi).origFlags()), ei.prec_rel);
 				 	
 				 }
 			}

@@ -58,8 +58,12 @@ public class SJPInfo {
 	sb.append('-');
 	sb.append(MethodCategory.getClass(method).getName());
 	sb.append('-');
-	// FIXME: use MethodCategory to ignore extra parameters
-	Iterator it=method.getParameterTypes().iterator();
+	List parameterTypes = method.getParameterTypes();
+	for (int i = 0; i < MethodCategory.getSkipFirst(method); i++)
+		parameterTypes.remove(0);
+	for (int j = 0; j < MethodCategory.getSkipLast(method); j++)
+		parameterTypes.remove(parameterTypes.size() - 1);
+	Iterator it = parameterTypes.iterator();
 	while(it.hasNext()) {
 	    Type type=(Type) (it.next());
 	    sb.append(getTypeString(type));
@@ -104,7 +108,12 @@ public class SJPInfo {
 	sb.append('-');
 	sb.append(method.getDeclaringClass().getName());
 	sb.append('-');
-	Iterator it=method.getParameterTypes().iterator();
+	List parameterTypes = method.getParameterTypes();
+	for (int i = 0; i < MethodCategory.getSkipFirst(method); i++)
+		parameterTypes.remove(0);
+	for (int j = 0; j < MethodCategory.getSkipLast(method); j++)
+		parameterTypes.remove(parameterTypes.size() - 1);
+	Iterator it=parameterTypes.iterator();
 	while(it.hasNext()) {
 	    Type type=(Type) (it.next());
 	    sb.append(getTypeString(type));

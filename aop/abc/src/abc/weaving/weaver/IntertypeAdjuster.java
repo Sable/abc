@@ -493,7 +493,8 @@ public class IntertypeAdjuster {
 		        modifiers |= Modifier.PUBLIC;
 		        modifiers &= ~Modifier.PRIVATE;
 		        modifiers &= ~Modifier.PROTECTED;
-		            
+			    // System.out.println("added method "+ method.getName() + " with modifiers " + Modifier.toString(modifiers) +  " to class " + sc);    
+		       
 		        // Create the method
 		        SootMethod sm = new SootMethod( 
 		                method.getName(),

@@ -512,6 +512,11 @@ public class AspectJNodeFactory_c
 		return new AJClassDecl_c(pos, flags, name, superClass, interfaces, body);
 	}
 	
+	
+	public PCEmpty PCEmpty(Position pos) {
+		return new PCEmpty_c(pos);
+	}
+	
     /*
 	public ConstructorDecl ConstructorDecl(Position pos, Flags flags, String name, 
 											List formals, List throwTypes, Block body) {

@@ -162,7 +162,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));
 	l.add(new GlobalBarrierPass(Pass.ADD_MEMBERS_ALL, job));
 	
-	l.add(new VisitorPass(INTERFACE_ITDS,job, new InterfaceITDs()));
+	l.add(new VisitorPass(INTERFACE_ITDS,job, new InterfaceITDs(job,ts,nf)));
 	l.add(new GlobalBarrierPass(INTERFACE_ITDS_ALL,job));
 	
 	l.add(new VisitorPass(Pass.DISAM, job,
