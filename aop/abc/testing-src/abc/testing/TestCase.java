@@ -132,15 +132,15 @@ public class TestCase {
 						// XXX: FIXME: This is a *nix-centric approach for detecting absolute
 						// classpaths and *WILL BREAK* on M$ Windows. Would it make sense to specify
 						// absolute paths in the XML file anyway?
-						if(!classpath.startsWith("/")) {
-						    // first entry is not absolute
-						    classpath = dir + System.getProperty("file.separator") + classpath;
-						    // handle all absolute paths following a comma
-						    classpath = classpath.replaceAll(",/", System.getProperty("path.separator") + "/");
-						    // all other commas are followed by relative paths
-						    classpath = classpath.replaceAll(",", System.getProperty("path.separator") + dir + 
-										     System.getProperty("file.separator"));
-						}
+							if(!classpath.startsWith("/")) {
+							    // first entry is not absolute
+							    classpath = dir + System.getProperty("file.separator") + classpath;
+							    // handle all absolute paths following a comma
+							    classpath = classpath.replaceAll(",/", System.getProperty("path.separator") + "/");
+							    // all other commas are followed by relative paths
+							    classpath = classpath.replaceAll(",", System.getProperty("path.separator") + dir + 
+											     System.getProperty("file.separator"));
+							}
 					    }
 					}
 					catch (Exception e) {
@@ -233,6 +233,9 @@ public class TestCase {
 					// attribute - then the directory of the test should be added to the classpath.
 					CompilationArgs cArgs;
 					if(!classpath.equals("")) {
+					    // Include current CP - otherwise normal classes can't be resolved
+					    classpath = classpath + System.getProperty("path.separator") + 
+					    		System.getProperty("java.class.path");
 					    if(xChildren[i].has("//@includeClassesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
 					        // We have both a specific classpath for the compilation and an extra directory to
 					        // add to it - simply append
@@ -249,8 +252,8 @@ public class TestCase {
 					    if(xChildren[i].has("//@includeClassesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
 					        // Need to add dir to classpath. Since just passing '-cp dir' would override the global
 					        // classpath, we combine it with dir here:
-					        cArgs = new CompilationArgs(args, System.getProperty("java.class.path") + 
-					                System.getProperty("path.separator") + dir);
+					        cArgs = new CompilationArgs(args, dir + System.getProperty("path.separator") + 
+					                System.getProperty("java.class.path"));
 							args = cArgs.args;
 					    }
 					    // else args is already the array we need - no modifications required.
