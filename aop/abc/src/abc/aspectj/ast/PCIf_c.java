@@ -92,9 +92,9 @@ public class PCIf_c extends Pointcut_c implements PCIf
 		    formaltypes.add(f.type().type());
 		}
 		methodName = UniqueID.newID("if");
-		MethodDecl md = nf.MethodDecl(position(),Flags.STATIC.Private(),retType,methodName,args,throwTypes,bl);
+		MethodDecl md = nf.MethodDecl(position(),Flags.STATIC.Public(),retType,methodName,args,throwTypes,bl);
 		MethodInstance mi = ts.methodInstance(position, container,
-						      Flags.STATIC.Private(), retType.type(), methodName,
+						      Flags.STATIC.Public(), retType.type(), methodName,
 						      new ArrayList(formaltypes),
 						      new ArrayList(expr.throwTypes(ts)));
 		container.addMethod(mi);
