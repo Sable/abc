@@ -88,6 +88,7 @@ public class Weaver {
         }
     }
     static public void resetForReweaving() {
+        WeavingState.reset();
     	AroundWeaver.reset();
     	AfterBeforeInliner.reset();
         // reset all residues

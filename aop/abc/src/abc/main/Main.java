@@ -149,6 +149,7 @@ public class Main {
         abc.soot.util.AfterBeforeInliner.reset();
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();
+        abc.weaving.weaver.WeavingState.reset();
 
         v=null;
     }

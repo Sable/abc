@@ -185,27 +185,31 @@ public class JoinPointInfo extends ContextValue {
         return makeJP;
     }
 
-    public void resetForReweaving() {
-        thisJoinPoint = null;
+    private Local get_thisJoinPoint() {
+        return abc.weaving.weaver.WeavingState.v().
+            get_JoinPointInfo_thisJoinPoint(this);
     }
-    private Local thisJoinPoint=null;
+    private void set_thisJoinPoint(Local val) {
+        abc.weaving.weaver.WeavingState.v().
+            set_JoinPointInfo_thisJoinPoint(this, val);
+    }
     private Local getThisJoinPoint() {
-        if(thisJoinPoint==null) {
+        if(get_thisJoinPoint()==null) {
             LocalGeneratorEx lg=new LocalGeneratorEx(sm.getContainer().getActiveBody());
 
             Chain units=sm.getContainer().getActiveBody().getUnits();
 
-            thisJoinPoint=lg.generateLocal
-                (RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint");
+            set_thisJoinPoint(lg.generateLocal
+                (RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint"));
 
             Stmt startJP=Jimple.v().newNopStmt();
             units.insertBefore(startJP,sm.sp.getBegin());
 
-            Stmt assignStmt=Jimple.v().newAssignStmt(thisJoinPoint,NullConstant.v());
+            Stmt assignStmt=Jimple.v().newAssignStmt(get_thisJoinPoint(),NullConstant.v());
             units.insertAfter(assignStmt,startJP);
             //      initThisJoinPoint(lg,units,startJP);
         }
-        return thisJoinPoint;
+        return get_thisJoinPoint();
     }
     private Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
         Stmt skip=Jimple.v().newNopStmt();
