@@ -25,6 +25,11 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+!Fixed a bug in EAJ with using private pointcut variables together with
+;calls to named pointcuts.
+!Added some javadoc to the abc.weaving.aspectinfo.Pointcut class,
+;to make it clearer what deriving classes need to do.
+
 %1.0.1 1104961494
 $Fixed bug 34, in which arithmetic calculations within strings were sometimes
 ;misinterpreted as string concatenation. Thanks to Jonathan Churchill for
