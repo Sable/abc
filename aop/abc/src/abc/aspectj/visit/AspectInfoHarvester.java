@@ -13,6 +13,8 @@ import polyglot.frontend.*;
 import java.util.*;
 
 public class AspectInfoHarvester extends ContextVisitor {
+    private static Map pc_decl_map = new HashMap();
+
     private GlobalAspectInfo gai;
     private String current_aspect_name;
     private Aspect current_aspect;
@@ -43,8 +45,45 @@ public class AspectInfoHarvester extends ContextVisitor {
     }
 
     public static int convertModifiers(Flags flags) {
-	//TODO
-	return 0;
+	return soot.javaToJimple.Util.getModifier(flags);
+    }
+
+    /** Convert a list of polyglot nodes representing argument patterns.
+     *  @param nodes a list containing {@link polyglot.ast.Local}, {@link polyglot.types.TypeNode},
+     *               {@link abc.aspectj.ast.ArgStar} and {@link abc.aspectj.ast.ArgDotDot} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.ArgPattern} objects.
+     */
+    public static List/*<ArgPattern>*/ convertArgPatterns(List/*<Node>*/ nodes) {
+	List aps = new ArrayList();
+	Iterator ni = nodes.iterator();
+	while (ni.hasNext()) {
+	    Node n = (Node) ni.next();
+	    abc.weaving.aspectinfo.ArgPattern ap;
+	    if (n instanceof Local) {
+		ap = new abc.weaving.aspectinfo.ArgVar(new Var(((Local)n).name(), n.position()), n.position());
+	    } else if (n instanceof TypeNode) {
+		ap = new abc.weaving.aspectinfo.ArgType(toAbcType(((TypeNode)n).type()), n.position());
+	    } else if (n instanceof ArgStar) {
+		ap = new abc.weaving.aspectinfo.ArgAny(n.position());
+	    } else if (n instanceof ArgDotDot) {
+		ap = new abc.weaving.aspectinfo.ArgFill(n.position());
+	    } else {
+		throw new RuntimeException("Unknown argument pattern type: "+n.getClass());
+	    }
+	    aps.add(ap);
+	}
+	return aps;
+    }
+
+    public static List/*<abc.weaving.aspectinfo.Formal>*/ convertFormals(List/*<polyglot.ast.Formal>*/ pformals) {
+	List formals = new ArrayList();
+	Iterator mdfi = pformals.iterator();
+	while (mdfi.hasNext()) {
+	    polyglot.ast.Formal mdf = (polyglot.ast.Formal)mdfi.next();
+	    formals.add(new abc.weaving.aspectinfo.Formal(toAbcType((polyglot.types.Type)mdf.type().type()),
+							  mdf.name(), mdf.position()));
+	}
+	return formals;
     }
 
     public static MethodSig makeMethodSig(MethodDecl md) {
@@ -56,13 +95,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 	AbcClass cl = GlobalAspectInfo.v().getClass(((ParsedClassType)mcc).fullName());
 	AbcType rtype = toAbcType(md.returnType().type());
 	String name = md.name();
-	List formals = new ArrayList();
-	Iterator mdfi = md.formals().iterator();
-	while (mdfi.hasNext()) {
-	    polyglot.ast.Formal mdf = (polyglot.ast.Formal)mdfi.next();
-	    formals.add(new abc.weaving.aspectinfo.Formal(toAbcType((polyglot.types.Type)mdf.type().type()),
-							  mdf.name(), mdf.position()));
-	}
+	List formals = convertFormals(md.formals());
 	List exc = new ArrayList();
 	Iterator ti = md.throwTypes().iterator();
 	while (ti.hasNext()) {
@@ -72,5 +105,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 	return new MethodSig(mod, cl, rtype, name, formals, exc, md.position());
     }
 
-
+    public static Map pointcutDeclarationMap() {
+	return pc_decl_map;
+    }
 }

@@ -12,6 +12,7 @@ import polyglot.ext.jl.types.Context_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.PointcutInstance_c;
+import abc.aspectj.visit.AspectInfoHarvester;
 
 public class PCName_c extends Pointcut_c implements PCName
 {
@@ -24,8 +25,8 @@ public class PCName_c extends Pointcut_c implements PCName
 	    super(pos);
 	    this.target = target;
         this.name = name;
-        this.args =  copyList(args); // here it is a list of TypeNode, containing null
-                                                        //  for occurrences of  * 
+        this.args =  copyList(args); // here it is a list of TypeNode, Local, ArgStar og ArgDotDot
+
     }
 
 	private List copyList(List xs) {
@@ -94,7 +95,7 @@ public class PCName_c extends Pointcut_c implements PCName
 	   if (target != this.target || ! CollectionUtil.equals(args,this.args)) {
 		 PCName_c n = (PCName_c) copy();
 		 n.target = (target == null ? null : (Receiver) target.copy());
-		 n.args =  copyList(args); // may become a list of TypeNode and Local
+		 n.args =  copyList(args); // may become a list of TypeNode, Local, ArgStar or ArgDotDot
 		 return n;
 	   }
 	   return this;
@@ -213,7 +214,7 @@ public class PCName_c extends Pointcut_c implements PCName
        for (Iterator b = formalTypes.iterator(); b.hasNext();  ) {
        	    Node arg = (Node)an.next();
        	    Type formaltype = (Type)b.next();
-       	    if (! (arg instanceof TPEUniversal)){
+       	    if (arg instanceof Typed){
        	        Type argtype = ((Typed)arg).type();
        	        if (!ts.isImplicitCastValid(argtype,formaltype))
        	        		throw new SemanticException("Wrong argument type "+argtype+
@@ -265,8 +266,10 @@ public class PCName_c extends Pointcut_c implements PCName
 			}
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	// TODO
-	System.out.println("Warning: named pointcuts not yet supported");
-	return null;
+	Object pcd_key = mi; //Find the pointcut using the method instance as key
+	Map decl_map = AspectInfoHarvester.pointcutDeclarationMap();
+	List args = AspectInfoHarvester.convertArgPatterns(this.args);
+	return new abc.weaving.aspectinfo.OtherPointcut
+	    (new abc.weaving.aspectinfo.PointcutRef(pcd_key, decl_map, args), position());
     }
 }

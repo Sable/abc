@@ -24,6 +24,7 @@ import java.io.*;
  */
 public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
+    public static final polyglot.frontend.Pass.ID CHECKING_DONE = new polyglot.frontend.Pass.ID("checking-done");
     public static final polyglot.frontend.Pass.ID ASPECT_METHODS = new polyglot.frontend.Pass.ID("aspect-methods");
     public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
 	
@@ -49,7 +50,6 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public PatternMatcher pattern_matcher;
 
     public ExtensionInfo(Collection weavable_classes) {
-    	System.out.println("weavable classes:"+weavable_classes);
 	this.weavable_classes = weavable_classes;
 	this.jimplify_classes = new HashSet();
 	this.hierarchy = new PCStructure();
@@ -125,6 +125,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
+
+	l.add(new GlobalBarrierPass(CHECKING_DONE, job));
 
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));

@@ -19,6 +19,7 @@ public class GlobalAspectInfo {
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AdviceDecl>*/ ads = new ArrayList();
+    private List/*<PointcutDecl>*/ pcds = new ArrayList();
 
     private Map/*<String,AbcClass>*/ classes_map = new HashMap();
     private Map/*<String,Aspect>*/ aspects_map = new HashMap();
@@ -69,6 +70,13 @@ public class GlobalAspectInfo {
 	return ads;
     }
 
+    /** Returns the list of all pointcut declarations.
+     *  @return a list of {@link abc.weaving.aspectinfo.PointcutDecl} objects.
+     */
+    public List getPointcutDecls() {
+	return pcds;
+    }
+
     public AbcClass getClass(String name) {
 	return (AbcClass)classes_map.get(name);
     }
@@ -107,18 +115,24 @@ public class GlobalAspectInfo {
 	ads.add(ad);
     }
 
+    public void addPointcutDecl(PointcutDecl pcd) {
+	pcds.add(pcd);
+    }
+
     public void print(java.io.PrintStream p) {
+	p.println();
 	printList(p, classes, "Classes:");
 	printList(p, aspects, "Aspects:");
 	printList(p, ifds, "Intertype field decls:");
 	printList(p, imds, "Intertype method decls:");
 	printList(p, icds, "Intertype constructor decls:");
 	printList(p, ads, "Advice decls:");
+	printList(p, pcds, "Pointcut decls:");
     }
 
     private void printList(java.io.PrintStream p, List l, String name) {
 	p.println(name);
-	p.println("----------");
+	p.println("------------------------------------------".substring(0,name.length()));
 	Iterator li = l.iterator();
 	while (li.hasNext()) {
 	    Object elem = li.next();

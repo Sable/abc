@@ -31,8 +31,13 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.ast.Pointcut;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.ContainsAspectInfo;
 
-public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.Aspect;
+
+public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, ContainsAspectInfo
 {
     String name;
     Pointcut pc;
@@ -207,6 +212,18 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 	w.write(";");
     }
     
+    public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	abc.weaving.aspectinfo.PointcutDecl pcd =
+	    new abc.weaving.aspectinfo.PointcutDecl
+	    (name,
+	     AspectInfoHarvester.convertFormals(formals()),
+	     pc.makeAIPointcut(),
+	     current_aspect,
+	     position());
+	// Use the method instance as key
+	AspectInfoHarvester.pointcutDeclarationMap().put(methodInstance(), pcd);
+	gai.addPointcutDecl(pcd);
+    }
 }
 
 

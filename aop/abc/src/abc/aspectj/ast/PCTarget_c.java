@@ -11,9 +11,9 @@ import abc.aspectj.visit.AspectInfoHarvester;
 
 public class PCTarget_c extends Pointcut_c implements PCTarget
 {
-    protected Node pat; // AmbTypeOrLocal, resolves to Local, TypeNode or TPEUniversal
+    protected Node pat; // ArgPattern, resolves to Local, TypeNode or ArgStar
 
-    public PCTarget_c(Position pos, AmbTypeOrLocal pat)  {
+    public PCTarget_c(Position pos, ArgPattern pat)  {
 	super(pos);
         this.pat = pat;
     }
@@ -87,7 +87,7 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
 		(new abc.weaving.aspectinfo.TargetType
 		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type())),
 		 position());
-	} else if (pat instanceof TPEUniversal) {
+	} else if (pat instanceof ArgStar) {
 	    return new abc.weaving.aspectinfo.OtherPointcut
 		(new abc.weaving.aspectinfo.TargetAny(),
 		 position());

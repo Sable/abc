@@ -147,7 +147,7 @@ non terminal FormalPattern formal_pattern;
 
 non terminal List type_id_star_list_opt;
 non terminal List type_id_star_list;
-non terminal AmbTypeOrLocal type_id_star;
+non terminal ArgPattern type_id_star;
 
 
 start with goal;
@@ -1304,7 +1304,11 @@ type_id_star_list ::=
 type_id_star ::=
        PC_MULT:a 
          {: Grm.parserTrace("Star pointcut parameter");
-            RESULT = parser.nf.AmbTypeOrLocal(parser.pos(a),null);
+            RESULT = parser.nf.ArgStar(parser.pos(a));
+         :}
+    |  PC_DOTDOT:a 
+         {: Grm.parserTrace("DotDot pointcut parameter");
+            RESULT = parser.nf.ArgDotDot(parser.pos(a));
          :}
     |  type:a 
          {: Grm.parserTrace("A type pointcut parameter");

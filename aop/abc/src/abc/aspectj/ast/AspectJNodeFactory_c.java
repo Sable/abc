@@ -269,11 +269,11 @@ public class AspectJNodeFactory_c
 	return new PCWithin_c(pos,pat);
     }
 
-    public PCThis PCThis(Position pos, AmbTypeOrLocal pat) {
+    public PCThis PCThis(Position pos, ArgPattern pat) {
 	return new PCThis_c(pos,pat);
     }
 
-    public PCTarget PCTarget(Position pos, AmbTypeOrLocal pat) {
+    public PCTarget PCTarget(Position pos, ArgPattern pat) {
 	return new PCTarget_c(pos,pat);
     }
 
@@ -440,13 +440,21 @@ public class AspectJNodeFactory_c
         return new FixCharLit_c(pos,value);
     }
 
-	public ProceedCall ProceedCall(Position pos, Receiver recv, List arguments) {
-		return new ProceedCall_c(pos,recv,arguments);
-	}
+    public ProceedCall ProceedCall(Position pos, Receiver recv, List arguments) {
+	return new ProceedCall_c(pos,recv,arguments);
+    }
 	
-	public AmbTypeOrLocal AmbTypeOrLocal(Position pos,TypeNode type) {
-		return new AmbTypeOrLocal_c(pos,type);
-	}
+    public AmbTypeOrLocal AmbTypeOrLocal(Position pos,TypeNode type) {
+	return new AmbTypeOrLocal_c(pos,type);
+    }
+
+    public ArgStar ArgStar(Position pos) {
+	return new ArgStar_c(pos);
+    }
+
+    public ArgDotDot ArgDotDot(Position pos) {
+	return new ArgDotDot_c(pos);
+    }
     // TODO:  Implement factory methods for new AST ndes.
     // TODO:  Override factory methods for overriden AST nodes.
     // TODO:  Override factory methods for AST nodes with new extension nodes.

@@ -26,4 +26,8 @@ public class OtherPointcut extends AbstractPointcut {
 			     MethodPosition position) {
 	return null;
     }
+
+    public String toString() {
+	return handler.toString();
+    }
 }

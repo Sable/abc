@@ -7,6 +7,8 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.visit.AspectInfoHarvester;
+
 public class PCArgs_c extends Pointcut_c implements PCArgs
 {
     protected List pats;
@@ -27,7 +29,7 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
     protected PCArgs_c reconstruct(List pats) {
 		if (! CollectionUtil.equals(pats,this.pats)) {
 			PCArgs_c n = (PCArgs_c) copy();
-			n.pats =  copyList(pats); // may become a list of TypeNode, Local and TPEUniversal
+			n.pats =  copyList(pats); // may become a list of TypeNode, Local, ArgStar and ArgDotDot
 			return n;
 		}
  		return this;
@@ -81,9 +83,9 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	// TODO
-	System.out.println("Warning: args pointcuts not yet supported");
-	return null;
+	List args = AspectInfoHarvester.convertArgPatterns(pats);
+	return new abc.weaving.aspectinfo.OtherPointcut
+	    (new abc.weaving.aspectinfo.Args(args), position());
     }
 
 }
