@@ -646,7 +646,7 @@ public class TestCase {
 	
 	protected void failTest() {
 	    Main.stdout.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed.");
-	    System.err.println("FAIL: Test \"" + dir + "/" + title + "\" failed");
+	    System.err.println("FAIL: Test" + testNumber + ": \"" + dir + "/" + title + "\" failed.");
 	    Main.xFailed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
 	            	Main.xFailed.plug("NEXT", xTest));
 	    this.failed = true;
@@ -655,7 +655,7 @@ public class TestCase {
 	
 	protected void passTest() {
 	    Main.stdout.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed.");
-	    System.out.println("PASS: " + dir + ": Test \"" + title + "\" passed.");
+	    System.out.println("PASS: Test" + testNumber + ": \""+ dir + "/" + title + "\" passed.");
 	    Main.xPassed = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
             	Main.xPassed.plug("NEXT", xTest));
 	    this.failed = false;
