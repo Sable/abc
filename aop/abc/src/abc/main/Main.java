@@ -73,6 +73,7 @@ import java.lang.reflect.*;
  *  @author Julian Tibble
  *  @author Pavel Avgustinov
  *  @author Oege de Moor
+ *  @author Damien Sereni
  */
 
 public class Main {
@@ -879,6 +880,24 @@ public class Main {
 	    .getPack("jop")
 	    .insertBefore(new Transform("jop.nullcheckelim", new soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator(f)),
 			  "jop.dae");
+
+	if (Debug.v().cflowIntraAnalysis) {
+		// Cflow Intraprocedural Analysis
+		// Two phases:
+		//		- Collapse all the local vars assigned to the same CflowStack/CflowCounter field
+		//		  to the same var, only needs to be assigned once
+		//		- Get the stack/counter for the current thread for each of these at the beginning
+		//		  of the method to avoid repeated currentThread()s
+		//		  NOTE This could have a negative performance impact, something better might be
+		//		  in order
+	PackManager.v().getPack("jop")
+	.insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()), 
+					"jop.dae");
+	// Before running the cflow intraprocedural, need to aggregate cflow vars
+	PackManager.v().getPack("jop")
+	.insertBefore(new Transform("jop.cflowaggregate", CflowIntraAggregate.v()), 
+					"jop.cflowintra");
+	}
 
 	PackManager.v().runPacks();
     }
