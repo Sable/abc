@@ -12,10 +12,12 @@ import abc.soot.util.Restructure;
 public class CflowResidue extends Residue {
     private CflowSetup setup;
     private List/*<WeavingVar>*/ vars;
+    private boolean useCounter;
 
     public CflowResidue(CflowSetup setup,List vars) {
 	this.setup=setup;
 	this.vars=vars;
+        this.useCounter=setup.useCounter();
     }
 
    public static void debug(String message)
@@ -23,44 +25,79 @@ public class CflowResidue extends Residue {
           System.err.println("RCG: "+message);
      }
 
+    private SootClass getStackOrCounterClass()
+     { 
+
+	 /* Load counter counter or stack class, depending on useCounter */
+
+	 if (useCounter) { 
+	     return Scene.v().loadClassAndSupport("abc.runtime.internal.CFlowCounter");
+		 } else {
+	     return Scene.v().loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+		 }
+     }
+
+    private SootField getCflowStackOrCounter() {
+
+	/* Load field for class or counter from setup, depending on useCounter */
+
+	if (useCounter) {
+	    return setup.getCflowCounter();
+	} else {
+	    return setup.getCflowStack();
+	}
+    }
+
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
 			Chain units,Stmt begin,Stmt fail,
 			WeavingContext wc) {
 
-	debug("beginning cflow codegen");
+	/* Generate the code for checking that the cflow applies and 
+	   binding any variables 
+	   Only difference bet. stack and counter: different class names,
+  	     give different var names for clearer jimple, and 
+	     don't bother creating the array for counter */
 
-	SootClass stackClass
-	    =Scene.v().loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	debug("beginning cflow codegen");
+        debug(useCounter?"use Counter ":"no counter");
+
+	SootClass stackorcounterClass=getStackOrCounterClass();
 	Type object=Scene.v().getSootClass("java.lang.Object").getType();
 
-	debug("getting cflowStack");
-	Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
-        Stmt getstack=Jimple.v().newAssignStmt
-	    (cflowStack,Jimple.v().newStaticFieldRef(setup.getCflowStack()));
-	units.insertAfter(getstack,begin);
+	debug("getting cflow" + (useCounter?"Counter":"Stack"));
+	Local cflowStackOrCounter = 
+            localgen.generateLocal(stackorcounterClass.getType(),
+                                   (useCounter?"cflowcounter":"cflowstack"));
+        Stmt getstackorcounter=Jimple.v().newAssignStmt
+	    (cflowStackOrCounter,Jimple.v().newStaticFieldRef(getCflowStackOrCounter()));
+	units.insertAfter(getstackorcounter,begin);
 
 	debug("checking validity");
 	Local isvalid=localgen.generateLocal(BooleanType.v(),"cflowactive");
-	SootMethod isValidMethod=stackClass.getMethod("isValid",new ArrayList());
+	SootMethod isValidMethod=stackorcounterClass.getMethod("isValid",new ArrayList());
 	Stmt checkvalid=Jimple.v().newAssignStmt
 	    (isvalid,
-	     Jimple.v().newVirtualInvokeExpr(cflowStack,isValidMethod));
-	units.insertAfter(checkvalid,getstack);
+	     Jimple.v().newVirtualInvokeExpr(cflowStackOrCounter,isValidMethod));
+	units.insertAfter(checkvalid,getstackorcounter);
 
 	debug("generating abort");
 	Stmt abort=Jimple.v().newIfStmt
 	    (Jimple.v().newEqExpr(isvalid,IntConstant.v(0)),
 	     fail);
 	units.insertAfter(abort,checkvalid);
-	
+
+        Stmt last = abort;
+
+        if (!useCounter) {
+
 	debug("setting up to get bound values");
 	ArrayList getargs=new ArrayList(1);
 	getargs.add(IntType.v());
-	SootMethod getMethod=stackClass.getMethod("get",getargs);
+	SootMethod getMethod=stackorcounterClass.getMethod("get",getargs);
 	Local item=localgen.generateLocal(object,"cflowbound");
 
 	debug("starting iteration");
-	Stmt last=abort; int index=0;
+        int index=0;
 	Iterator it=vars.iterator();
 	while(it.hasNext()) {
 	    WeavingVar to=(WeavingVar) (it.next());
@@ -71,7 +108,7 @@ public class CflowResidue extends Residue {
 
 	    Stmt getItem=Jimple.v().newAssignStmt
 		(item,
-		 Jimple.v().newVirtualInvokeExpr(cflowStack,getMethod,IntConstant.v(index)));
+		 Jimple.v().newVirtualInvokeExpr(cflowStackOrCounter,getMethod,IntConstant.v(index)));
 	    units.insertAfter(getItem,last);
 	    last=getItem;
 
@@ -99,6 +136,9 @@ public class CflowResidue extends Residue {
 	    last=to.set(localgen,units,last,wc,result);
 	    index++;
 	}
+
+	}
+
 	debug("done with cflow codegen");
 	return last;
 

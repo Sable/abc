@@ -10,8 +10,10 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.WeavingContext;
+import abc.weaving.weaver.CodeGenException;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
+import abc.main.Debug;
 
 public class CflowSetup extends AbstractAdviceDecl {
 
@@ -45,17 +47,26 @@ public class CflowSetup extends AbstractAdviceDecl {
 
     private List/*<Var>*/ actuals;
 
+    private boolean useCounter;
+
     private CflowSetup(Aspect aspect,Pointcut pc,boolean isBelow,
 		       List/*<Formal>*/ formals,List/*<Var>*/ actuals,
 		       Position pos,int depth) {
 	super(aspect,new BeforeAfterAdvice(pos),pc,formals,pos);
 	this.actuals=actuals;
 	this.isBelow=isBelow;
+	this.useCounter=
+	    formals.isEmpty()          // If no free vars, use a counter instead of a stack
+	    && !abc.main.Debug.v().dontUseCflowCounter;  
 	this.depth=depth;
     }
 
     public boolean isBelow() {
 	return isBelow;
+    }
+
+    public boolean useCounter() {
+	return useCounter;
     }
 
     public int getDepth() {
@@ -69,6 +80,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+" type: "+spec+"\n");
 	sb.append(prefix+" pointcut: "+pc+"\n");
+        sb.append(prefix+" state: "+(useCounter ? "counter" : "stack")+"\n");
 	sb.append(prefix+" special: "+(isBelow ? "cflowbelow" : "cflow")
 		  +" setup\n");
     }
@@ -207,6 +219,13 @@ public class CflowSetup extends AbstractAdviceDecl {
     private SootField cflowStack=null;
     public SootField getCflowStack() {
 	if(cflowStack==null) {
+
+	    if (!(cflowCounter==null)) {
+		//Why did we ask for a counter AND a stack??
+		throw new CodeGenException(
+		      "error: counter and stack requested for one cflow");
+	    }
+
 	    SootClass cl=getAspect().getInstanceClass().getSootClass();
 
 	    int i=0;
@@ -251,10 +270,98 @@ public class CflowSetup extends AbstractAdviceDecl {
 	return cflowStack;
     }
 
+    // getCflowCounter retrieves the counter associated with a pcd
+    //  - didn't use getCflowStack for this b/c confusing
+
+    private SootField cflowCounter=null;
+    public SootField getCflowCounter() {
+	if(cflowCounter==null) {
+
+	    if (!(cflowStack==null)) {
+		//Why did we ask for a counter AND a stack??
+		throw new CodeGenException(
+		      "error: counter and stack requested for one cflow");
+	    }
+
+	    SootClass cl=getAspect().getInstanceClass().getSootClass();
+
+	    int i=0;
+	    String name;
+	    do {
+		name="abc$cflowCounter$"+i;
+		i++;
+	    } while(cl.declaresFieldByName(name));   
+	    
+	    SootClass counterClass=Scene.v()
+		.loadClassAndSupport("abc.runtime.internal.CFlowCounter");
+	    RefType counterType=counterClass.getType();
+
+	    cflowCounter=new SootField(name,counterType,
+			               Modifier.PUBLIC | Modifier.STATIC);
+
+	    SootMethod preClinit=new AspectCodeGen().getPreClinit(cl);
+	    LocalGeneratorEx lg=new LocalGeneratorEx
+		(preClinit.getActiveBody());
+	    
+	    Local loc=lg.generateLocal(counterType,"cflowCounter$"+i);
+	    Chain units=preClinit.getActiveBody().getUnits();
+
+	    Stmt returnStmt=(Stmt) units.getFirst();
+	    while(!(returnStmt instanceof ReturnVoidStmt)) 
+		returnStmt=(Stmt) units.getSuccOf(returnStmt);
+
+	    units.insertBefore(Jimple.v().newAssignStmt
+			       (loc,Jimple.v().newNewExpr(counterType)),
+			       returnStmt);
+	    units.insertBefore(Jimple.v().newInvokeStmt
+			       (Jimple.v().newSpecialInvokeExpr
+				(loc,counterClass.getMethod
+				 (SootMethod.constructorName,
+				  new ArrayList()))),
+			       returnStmt);
+	    units.insertBefore(Jimple.v().newAssignStmt
+			       (Jimple.v().newStaticFieldRef(cflowCounter),loc),
+			       returnStmt);
+	    cl.addField(cflowCounter);
+	}
+	return cflowCounter;
+    }
+
     public Chain makeAdviceExecutionStmts
 	 (LocalGeneratorEx localgen,WeavingContext wc) {
 
 	CflowSetupWeavingContext cswc=(CflowSetupWeavingContext) wc;
+
+        if (useCounter) {
+
+	    Chain c=new HashChain();
+	    SootClass counterClass=Scene.v()
+		.loadClassAndSupport("abc.runtime.internal.CFlowCounter");
+	    Local cflowCounter=localgen.generateLocal(counterClass.getType(),"cflowcounter");
+
+	    if (cswc.doBefore) {
+
+		// call cflowcounter.inc()
+
+	    SootMethod inc=counterClass.getMethod("inc",new ArrayList());
+	    c.addLast(Jimple.v().newAssignStmt
+		      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
+	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,inc)));
+	    return c;
+		
+	    } else {
+
+		// call cflowcounter.dec()
+
+	    SootMethod dec=counterClass.getMethod("dec",new ArrayList());
+	    c.addLast(Jimple.v().newAssignStmt
+		      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
+	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,dec)));
+	    return c;
+
+	    }
+
+	} else {
 
 	if(cswc.doBefore) {
 
@@ -300,6 +407,9 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowStack,pop)));
 	    return c;
 	}
+
+	}
+
     }
 
     public static int getPrecedence(CflowSetup a,CflowSetup b) {
