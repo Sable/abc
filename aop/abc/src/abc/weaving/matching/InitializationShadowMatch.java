@@ -24,8 +24,10 @@ public class InitializationShadowMatch extends BodyShadowMatch {
 
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
+	// FIXME: dummy string
 	return new AdviceApplication.SJPInfo
-	    ("initialization","ConstructorSignature","makeConstructorSig","",container);
+	    ("initialization","ConstructorSignature","makeConstructorSig",
+	     "1--Test-double:-y:--",container);
     }
 
     protected AdviceApplication doAddAdviceApplication

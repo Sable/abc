@@ -33,8 +33,10 @@ public class HandlerShadowMatch extends StmtShadowMatch {
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
+	// FIXME: dummy string
 	return new AdviceApplication.SJPInfo
-	    ("exception-handler","CatchClauseSignature","makeCatchClauseSig","",stmt);
+	    ("exception-handler","CatchClauseSignature","makeCatchClauseSig",
+	     "0--Test-java.lang.Exception-<missing>-",stmt);
     }
 
     public AdviceApplication  doAddAdviceApplication

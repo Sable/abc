@@ -40,9 +40,9 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     }
     
     public AdviceApplication.SJPInfo makeSJPInfo() {
-
+	// FIXME : dummy details string
 	return new AdviceApplication.SJPInfo
-	    ("field-get","FieldSignature","makeFieldSig","",stmt);
+	    ("field-get","FieldSignature","makeFieldSig","0-r-Test-double-",stmt);
     }
 
 

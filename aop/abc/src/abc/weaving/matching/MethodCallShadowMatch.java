@@ -64,8 +64,10 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
+	// FIXME: dummy string
 	return new AdviceApplication.SJPInfo
-	    ("method-call","MethodSignature","makeMethodSig","",stmt);
+	    ("method-call","MethodSignature","makeMethodSig",
+	     "1-println-java.io.PrintStream-java.lang.String:-arg0:--void-",stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

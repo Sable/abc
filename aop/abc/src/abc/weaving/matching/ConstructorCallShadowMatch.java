@@ -50,8 +50,10 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
+	// FIXME : dummy details string
 	return new AdviceApplication.SJPInfo
-	    ( "constructor-call","ConstructorSignature","makeConstructorSig","",stmt);
+	    ( "constructor-call","ConstructorSignature",
+	      "makeConstructorSig","1--Test-int:-x:--",stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

@@ -24,7 +24,8 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
 	return new AdviceApplication.SJPInfo
-	    ("preinitialization","ConstructorSignature","makeConstructorSig","",container);
+	    ("preinitialization","ConstructorSignature","makeConstructorSig",
+	     "1--Test-double:-y:--",container);
     }
 
     protected AdviceApplication doAddAdviceApplication

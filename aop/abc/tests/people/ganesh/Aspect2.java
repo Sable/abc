@@ -4,7 +4,7 @@ int countpointcuts = 0;
 
 static boolean debug = true;
 
-before() : !within(Aspect*) // set(* *.*)
+before() : within(*) // set(* *.*)
    {  System.out.println("I am in a pointcut "+thisJoinPointStaticPart);
       countpointcuts++;
    }

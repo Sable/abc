@@ -28,19 +28,27 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	String jpKind;
 	String sigClass;
 	String sigMethod;
-	String sig="";
+	String sig;
 	if(container.getName().equals(SootMethod.staticInitializerName)) {
 	    jpKind="staticinitialization";
 	    sigClass="InitializerSignature";
 	    sigMethod="makeInitializerSig"; 
+	    sig="8--Test-";  // FIXME
 	} else if(container.getName().equals(SootMethod.constructorName)) {
 	    jpKind="constructor-execution";
 	    sigClass="ConstructorSignature";
 	    sigMethod="makeConstructorSig";
-	} else { // add advice-execution case
+	    sig="1--Test----"; // FIXME
+	} else if(MethodCategory.adviceBody(container)) {
+	    jpKind="advice-execution";
+	    sigClass="AdviceSignature";
+	    sigMethod="makeAdviceSig";
+	    sig="1-ajc$before$Aspect2$1$36f01b1c-Aspect2-org.aspectj.lang.JoinPoint$StaticPart:-thisJoinPointStaticPart:--void-"; // FIXME
+	} else {
 	    jpKind="method-execution";
 	    sigClass="MethodSignature";
 	    sigMethod="makeMethodSig";
+	    sig="0-foo-Test-int:-x:--int-"; // FIXME
 	}
 
 	// FIXME:  this is close to what we want,  but in the case of
