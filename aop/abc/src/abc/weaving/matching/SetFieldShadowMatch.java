@@ -17,7 +17,7 @@ import abc.weaving.residues.JimpleValue;
 import abc.weaving.residues.Residue;
 import abc.weaving.aspectinfo.MethodCategory;
 
-/** The results of matching at a field set
+/** The results of matching at a field set shadow
  *  @author Ganesh Sittampalam
  *  @author Oege de Moor
  */

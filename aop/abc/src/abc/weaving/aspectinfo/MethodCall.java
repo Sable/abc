@@ -8,7 +8,10 @@ import polyglot.util.Position;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** Handler for <code>call</code> shadow pointcut with a method pattern. */
+/** Handler for <code>call</code> shadow pointcut with a method pattern.
+ *  @author Ganesh Sittampalam
+ *  @author Aske Simon Christensen
+ */
 public class MethodCall extends ShadowPointcut {
     private MethodPattern pattern;
 

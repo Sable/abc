@@ -10,7 +10,9 @@ import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
-/** The base class for any kind of 'advice' declaration 
+/** The base class for any kind of 'advice' declaration
+ *  This can include both real advice declared directly in the aspect
+ *  and other kinds of advice needed by abc for implementation reasons.
  *  @author Ganesh Sittampalam
  */
 public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {

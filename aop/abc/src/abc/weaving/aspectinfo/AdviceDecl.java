@@ -17,7 +17,11 @@ import abc.weaving.weaver.CodeGenException;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
 
-/** A concrete advice declaration. */
+/** A concrete advice declaration.
+ *  This is used for advice declared directly in an aspect.
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class AdviceDecl extends AbstractAdviceDecl {
 
     private MethodSig impl;

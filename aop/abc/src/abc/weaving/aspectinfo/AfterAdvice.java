@@ -10,7 +10,10 @@ import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
-/** Advice specification for after advice. */
+/** Advice specification for after advice. 
+ *  @author Aske Simon Christensen
+ *  @author Ganesh Sittampalam
+ */
 public class AfterAdvice extends AbstractAfterAdvice {
     private AfterReturningAdvice returning;
     private AfterThrowingAdvice throwing;

@@ -8,6 +8,12 @@ import soot.util.*;
 import soot.tagkit.*;
 import abc.weaving.aspectinfo.MethodCategory;
 
+/** An internal representation of the information needed to construct
+ *  thisJoinPointStaticPart at runtime, plus some helper methods for
+ *  generating the information.
+ *  @author Ganesh Sittampalam
+ */
+
 
 public class SJPInfo {
     public String kind;            // first parameter to makeSJP
