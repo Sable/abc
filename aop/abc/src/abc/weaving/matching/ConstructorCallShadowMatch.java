@@ -2,6 +2,8 @@ package abc.weaving.matching;
 
 import java.util.*;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.*;
 import soot.jimple.*;
 import soot.tagkit.Host;
@@ -46,18 +48,24 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	if(!(rhs instanceof NewExpr)) return null;
 
 	if(!(next instanceof InvokeStmt)) { 
-	    // FIXME : improve this behaviour
-	    throw new Error
-		("INTERNAL ERROR: Didn't find an InvokeStmt after a new: "+pos.getContainer()+" "+current+" "+next);
+	    // FIXME : improve this behaviour?
+	    throw new InternalCompilerError
+		("Didn't find an InvokeStmt after a new: "
+		 +pos.getContainer()+" "+current+" "+next);
 	}
-	SpecialInvokeExpr invoke=(SpecialInvokeExpr) (((InvokeStmt) next).getInvokeExpr());
+	InvokeExpr iexpr=((InvokeStmt) next).getInvokeExpr();
+	if(!(iexpr instanceof SpecialInvokeExpr)) 
+	    throw new InternalCompilerError
+		("Invoke statement "+next+" after a new statement "+current+" in method "
+		 +pos.getContainer()+" wasn't a special invoke");
+	SpecialInvokeExpr siexpr=(SpecialInvokeExpr) (((InvokeStmt) next).getInvokeExpr());
 	
 	StmtShadowMatch.makeArgumentsUniqueLocals(stmtMP.getContainer(), next);
 	
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
 	// FIXME: Does this break with arrays?
-	return new ConstructorCallShadowMatch(pos.getContainer(),current,invoke);
+	return new ConstructorCallShadowMatch(pos.getContainer(),current,siexpr);
     }
 
     public Host getHost() {
