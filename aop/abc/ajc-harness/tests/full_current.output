@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@13861df
+creating: A@6913d0
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -599,7 +599,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@1df8d93
+InterfaceAndObject$1@b7593f
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2266,24 +2266,9 @@ Commandline: abc -d new new/Privileged.java
 PASS: Test 417: "new/Crashes with privileged aspect." passed.
 
 
-Running test 418: new/join points exist in the execution of field initializers
-Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Test failed, compiled class behaved incorrectly
-Message: fail ncount: 0 < 1
-org.aspectj.bridge.AbortException: ncount: 0 < 1
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
-	at FieldInitializerJoinPoints.main(FieldInitializerJoinPoints.java:59)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 418: "new/join points exist in the execution of field initializers" failed.
+Running test 41801: abctests/new/join points exist in the execution of field initializers
+Commandline: abc -d abctests/new abctests/new/FieldInitializerJoinPoints.java 
+PASS: Test 41801: "abctests/new/join points exist in the execution of field initializers" passed.
 
 
 Running test 419: new/privilegedAspects/privileged aspects
@@ -2301,7 +2286,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1a3548b, [Ljava.lang.Object;@379b2, TwoAnonymous$3@1a3548b
+calling run: TwoAnonymous$3@e86aa5, [Ljava.lang.Object;@b18eb2, TwoAnonymous$3@e86aa5
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2418,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@516ee4.foo calls Outer$Inner@475591.mi
+Outer@105a0c4.foo calls Outer$Inner@7dc11b.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@475591.mi calls java.io.PrintStream@142cabd.println
+Outer$Inner@7dc11b.mi calls java.io.PrintStream@10e447.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@516ee4.foo calls Outer$InnerRandom@1c1c7c7.nextHook
+Outer@105a0c4.foo calls Outer$InnerRandom@130c461.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1c1c7c7.nextHook calls Outer$InnerRandom@1c1c7c7.next
+Outer$InnerRandom@130c461.nextHook calls Outer$InnerRandom@130c461.next
 Outer.foo() calls Random.nextInt(..)
-Outer@516ee4.foo calls X.nextInt
+Outer@105a0c4.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1b47a0f.foo calls Outer$Inner@1b9a3f9.mi
+Outer@fa5e6f.foo calls Outer$Inner@14dfd33.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1b9a3f9.mi calls java.io.PrintStream@bc6ede.println
+Outer$Inner@14dfd33.mi calls java.io.PrintStream@12a5962.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1b47a0f.foo calls Outer$InnerRandom@112b653.nextHook
+Outer@fa5e6f.foo calls Outer$InnerRandom@1524d39.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@112b653.nextHook calls Outer$InnerRandom@112b653.next
+Outer$InnerRandom@1524d39.nextHook calls Outer$InnerRandom@1524d39.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1b47a0f.foo calls X.nextInt
+Outer@fa5e6f.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2739,8 +2724,8 @@ PASS: Test 495: "new/innerInterfaces/private inner interfaces and bytecode visib
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
 Test failed, compiled class behaved incorrectly
-Message: fail steps expected array of length 114 got 126
-org.aspectj.bridge.AbortException: steps expected array of length 114 got 126
+Message: fail steps expected array of length 114 got 132
+org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
 	at org.aspectj.testing.Tester.handle(Tester.java:963)
 	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
@@ -4082,7 +4067,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@4d0b2d.x:=-3
+test.Test3@c42520.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4165,8 +4150,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@356a78
-o: Bar@356a78, i: 10
+o: Bar@c6974f
+o: Bar@c6974f, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4759,7 +4744,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@33be51
+LibraryAspect-defined run() for C@9e6fd
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5085,7 +5070,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@18bf353
+? Util.read() obj=Test@efadbe
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5104,7 +5089,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@149c129
+? Util.read() obj=ClinitTest@15fd4ca
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5114,7 +5099,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1f09787
+? Util.read() obj=SuidTest@15de002
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5124,7 +5109,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/DeclareExtends.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Thread[Thread-947,5,main]
+? Util.read() obj=Thread[Thread-948,5,main]
 PASS: Test 938: "bugs/serialVersionUID/SUID: Declare extends" passed.
 
 
@@ -5317,12 +5302,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1e41e12
-Invoking command bean:  Command@1723bff
-hello(Command@1723bff)
-Created a PerThis aspect : Testcase2@c0e316
-Invoking command bean:  Command@17cf435
-hello again(Command@17cf435)
+Created a PerThis aspect : Testcase2@1043e12
+Invoking command bean:  Command@1873d66
+hello(Command@1873d66)
+Created a PerThis aspect : Testcase2@1d006c9
+Invoking command bean:  Command@6da015
+hello again(Command@6da015)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5459,5 +5444,10 @@ Running test 993: abctests/eaj/throw_pointcut/Try all advice types on the throw 
 Commandline: abc -d abctests/eaj/throw_pointcut -ext abc.eaj abctests/eaj/throw_pointcut/Throw.java 
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 993: "abctests/eaj/throw_pointcut/Try all advice types on the throw joinpoint" passed.
+
+
+Running test 994: abctests/bugs/&& and || interact correctly with binding
+Commandline: abc -d abctests/bugs abctests/bugs/AndOrBind.java 
+PASS: Test 994: "abctests/bugs/&& and || interact correctly with binding" passed.
 
 

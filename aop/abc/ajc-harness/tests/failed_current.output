@@ -20,26 +20,6 @@ Semantic Error at errors/CircularPlusImplementsIntros.java:19,4-36: Interface J 
 FAIL: Test 274: "errors/StackOverFlowException with circular +implements's." failed.
 
 
-Running test 418: new/join points exist in the execution of field initializers
-Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-Test failed, compiled class behaved incorrectly
-Message: fail ncount: 0 < 1
-org.aspectj.bridge.AbortException: ncount: 0 < 1
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
-	at FieldInitializerJoinPoints.main(FieldInitializerJoinPoints.java:59)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:393)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 418: "new/join points exist in the execution of field initializers" failed.
-
-
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
 Test failed, compiled class behaved incorrectly
@@ -63,8 +43,8 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
 Test failed, compiled class behaved incorrectly
-Message: fail steps expected array of length 114 got 126
-org.aspectj.bridge.AbortException: steps expected array of length 114 got 126
+Message: fail steps expected array of length 114 got 132
+org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
 	at org.aspectj.testing.Tester.handle(Tester.java:963)
 	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)

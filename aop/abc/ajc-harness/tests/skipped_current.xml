@@ -14,6 +14,11 @@
         <compile files="HoldProceed.java"></compile>
         <run class="HoldProceed"></run>
     </ajc-test>
+<ajc-test title="join points exist in the execution of field initializers" num="418" keywords="from-resolved_10x" dir="new" abccomment="bug in test case, according to Erik Hilsdale                    (see ajc bug database: 72245,72335);                   duplicated as 41801">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="FieldInitializerJoinPoints.java"></compile>
+        <run class="FieldInitializerJoinPoints"></run>
+    </ajc-test>
 <ajc-test title="pcd if() expression visibility at compile-time  (minimal operation)" num="488" keywords="from-resolved_10x" dir="new" abccomment="tries to use target,args etc as vars in pointcut - we skip">
         <abckeywords><skip></skip></abckeywords>
         <compile options="-Xlint:ignore" files="IfPCDExprVisibility.java"></compile>

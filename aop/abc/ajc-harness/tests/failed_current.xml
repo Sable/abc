@@ -17,10 +17,6 @@
             <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="join points exist in the execution of field initializers" num="418" keywords="from-resolved_10x" dir="new">
-        <compile files="FieldInitializerJoinPoints.java"></compile>
-        <run class="FieldInitializerJoinPoints"></run>
-    </ajc-test>
 <ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
         <compile files="ObjectForInt.java"></compile>
         <run class="ObjectForInt"></run>
