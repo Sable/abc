@@ -54,6 +54,10 @@ public class MethodSig extends Sig {
     public List getFormals() {
 	return formals;
     }
+    
+    public List getAbcExceptions() {
+    	return exc;
+    }
 
     /** Get the exceptions thrown by the method.
      *  @return a list of {@link soot.SootClass} objects.
