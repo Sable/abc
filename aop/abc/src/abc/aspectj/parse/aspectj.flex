@@ -790,7 +790,7 @@ OctalEscape = \\ [0-7]
     {Identifier}   { 
     	// Keywords common to all states first.
     	Integer i = (Integer) javaKeywords.get(yytext());
-    	System.out.println("J/AJ/PC/PCIE: " + YYINITIAL + "/"+ASPECTJ+"/"+POINTCUT+"/"+POINTCUTIFEXPR+", currernt state: " + yystate() + " for token " + yytext());
+    	// System.out.println("J/AJ/PC/PCIE: " + YYINITIAL + "/"+ASPECTJ+"/"+POINTCUT+"/"+POINTCUTIFEXPR+", currernt state: " + yystate() + " for token " + yytext());
 		if(i != null) {
 			// Some special handling is required...
 			if(yytext().equals("class")) {
