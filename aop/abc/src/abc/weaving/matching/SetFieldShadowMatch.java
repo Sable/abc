@@ -68,6 +68,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 								"setRHSLocal");
 			AssignStmt as=Jimple.v().newAssignStmt(l,val);
 			statements.insertBefore(as, stmt);
+			stmt.setRightOp(l);
 			stmt.redirectJumpsToThisTo(as);
     	}
     }
