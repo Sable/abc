@@ -308,6 +308,15 @@ public class Main {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
         AbcTimer.mark("Declare Parents");
+        
+		//		Update pattern matcher class hierarchy and recompute pattern matches
+		PatternMatcher.v().updateWithAllSootClasses();
+		PatternMatcher.v().recomputeAllMatches();
+		AbcTimer.mark("Recompute name pattern matches");
+        
+		 // Compute the precedence relation between aspects
+		 GlobalAspectInfo.v().computePrecedenceRelation();
+		 AbcTimer.mark("Compute precedence relation");
 
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
@@ -320,20 +329,11 @@ public class Main {
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
                 if( !method.isConcrete() ) continue;
-                // System.out.println("retrieve "+method+ " from "+cl);
+                System.out.println("retrieve "+method+ " from "+cl);
                 method.retrieveActiveBody();
             }
         }
         AbcTimer.mark("Retrieving bodies");
-
-	// Update pattern matcher class hierarchy and recompute pattern matches
-	PatternMatcher.v().updateWithAllSootClasses();
-	PatternMatcher.v().recomputeAllMatches();
-        AbcTimer.mark("Recompute name pattern matches");
-        
-	// Compute the precedence relation between aspects
-	GlobalAspectInfo.v().computePrecedenceRelation();
-	AbcTimer.mark("Compute precedence relation");
 
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");

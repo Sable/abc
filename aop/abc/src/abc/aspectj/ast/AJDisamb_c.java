@@ -36,16 +36,16 @@ public class AJDisamb_c extends Disamb_c implements Disamb {
 				// type of the class we want.
 	
 				ClassType scope = c.findFieldScope(name);
-
+				
 				AspectJTypeSystem ajts = (AspectJTypeSystem) ts;
 				AspectJNodeFactory ajnf = (AspectJNodeFactory) nf;
 				// first check whether this is a reference to the host of an ITD
 				if (ajts.refHostOfITD((AJContext)c,null,fi)) {
-					if (! ts.equals(scope,((AJContext)c).currentClass()))
+					if (! ts.equals(scope,c.currentClass()))
 						r = ajnf.hostSpecial(pos,Special.THIS,nf.CanonicalTypeNode(pos,fi.container()),
 						                                    ((AJContext)c).hostClass());
 					else
-						r = ajnf.hostSpecial(pos,Special.THIS,null, ((AJContext)c).hostClass());
+						 r = ajnf.hostSpecial(pos,Special.THIS,null, ((AJContext)c).hostClass());
 				} else
 				{ 
 					if (! ts.equals(scope, c.currentClass())) {

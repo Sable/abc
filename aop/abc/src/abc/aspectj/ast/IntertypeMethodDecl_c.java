@@ -123,7 +123,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	    	
 	    	/* record instance for "this" parameter */
 	    	String name = UniqueID.newID("this");
-	    	thisParamInstance = ts.localInstance(position,Flags.NONE,host.type(),name);
+	    	thisParamInstance = ts.localInstance(position,Flags.FINAL,host.type(),name);
 		}
         return am.bypassChildren(this);
     }
@@ -369,7 +369,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addQualThiss(supers.qualthiss(gai));
 
 	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
-	MethodCategory.registerRealNameAndClass(this, originalName, host.toString(),
+	MethodCategory.registerRealNameAndClass(this, originalName, current_aspect.toString(),
 						(flags().isStatic()?0:1),0);
     }
     

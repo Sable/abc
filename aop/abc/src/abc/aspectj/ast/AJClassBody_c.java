@@ -67,11 +67,14 @@ public class AJClassBody_c extends ClassBody_c {
 	}
 	
 	private boolean ITDok(MemberInstance ci, MemberInstance cj, AspectJTypeSystem_c ts) {
-		return // ok to zap private members with a non-private ITD
+		return // a private ITD cannot conflict with anything that's already there
+		            ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate()) &&
+		              !(cj instanceof InterTypeMemberInstance) ) ||
+				// ok to zap private members with a non-private ITD
 		            ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
 		            !(cj instanceof InterTypeMemberInstance) && 
 		            cj.flags().isPrivate())) ||
-		        // ok to have two ITDs that cannot see each other -- refine this to packages etc.
+		        // ok to have two ITDs that cannot see each other 
 		          ((ci instanceof InterTypeMemberInstance && 
 		            cj instanceof InterTypeMemberInstance && 
 		             ! ts.isAccessible(ci,((InterTypeMemberInstance) cj).origin()) &&

@@ -154,12 +154,29 @@ public class AspectJTypeSystem_c
     	else return super.isAccessible(mi,ctc);
     }
     
+    
+    
+    private boolean hostHasMember(AJContext c, MemberInstance mi) {
+       if (mi instanceof FieldInstance)
+       		return c.varInHost(((FieldInstance)mi).name());
+       if (mi instanceof MethodInstance) {
+       	// note: purely name-based, as this is prior to full disambiguation!
+    		return c.methodInHost(((MethodInstance)mi).name());
+    	}
+    	return false;
+    }
+    
     public boolean refHostOfITD(AJContext c, Typed qualifier, MemberInstance mi) {
-	   return !(!c.inInterType() 
+	   return c.inInterType() && 
+	               (  (qualifier == null && mi==null) ||
+	                  (qualifier != null && c.hostClass().hasEnclosingInstance(qualifier.type().toClass())) ||
+	                   hostHasMember(c,mi)) ;
+	   /*
+	   !(!c.inInterType() 
 					|| c.staticInterType()      // not so sure about this
 					|| (c.nested() && qualifier == null) // and this
 					|| (c.inInterType() && qualifier != null && 
-						c.currentClass().hasEnclosingInstance(qualifier.type().toClass())));  
+						c.currentClass().hasEnclosingInstance(qualifier.type().toClass())));   */
     }
     
 	public Context createContext() {

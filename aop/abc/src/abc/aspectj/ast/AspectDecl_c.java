@@ -185,9 +185,13 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		}
 		
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
-		if (type().isInnerClass())
-			throw new InternalCompilerError("Inner aspects have not been implemented yet.");
-		return super.typeCheck(tc);
+		AspectDecl t = (AspectDecl) super.typeCheck(tc);
+		TypeSystem ts = tc.typeSystem();
+		if (ts.interfaces(t.type()).contains(ts.Serializable()))
+			throw new SemanticException("Aspects cannot implement Serializable",position());
+		if (ts.interfaces(t.type()).contains(ts.Cloneable()))
+			throw new SemanticException("Aspects cannot implement Cloneable",position());
+		return t;
 	}
 	
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {

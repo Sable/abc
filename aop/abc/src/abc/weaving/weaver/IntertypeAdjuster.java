@@ -368,25 +368,38 @@ public class IntertypeAdjuster {
 			} else if (zapsmethod(minst,mi)) {	
 					skipped = true;
 					}
-				else { // pht.addMethod(mi); 
-					       throw new InternalCompilerError("ITD conflicts with an existing class member");} 
+				else { 
+					       throw new InternalCompilerError("introduction of "+mi.getName()+
+                                            " conflicts with an existing class member of " +pht);} 
 			}
 		else pht.addMethod(mi); 
 		return !skipped;
 	}
 	
 	
+	private boolean isSubInterface(SootClass sc1, SootClass sc2) {
+		Stack worklist = new Stack();
+		HashSet visited = new HashSet();
+		worklist.push(sc1);
+		while (! worklist.isEmpty()) {
+			SootClass sc = (SootClass) worklist.pop();
+			if (visited.contains(sc)) continue;
+			visited.add(sc);
+			if (sc.equals(sc2)) return true;
+			worklist.addAll(sc.getInterfaces());
+		}
+		return false;
+	}
+	
+	
 	boolean zapsmethod(SootMethod mi1,SootMethod mi2) {
 		if (!(Modifier.isAbstract(mi1.getModifiers())) && Modifier.isAbstract(mi2.getModifiers()))
 			return true;
-		// System.out.println("not (!mi1.abstract && mi2.abstract)");
 		// was mi2 then mi1
 		if (!fromInterface(mi1) && fromInterface(mi2)) return true;
-		// System.out.println("not (!mi2.fromInterface && mi1.fromInterface");
 		if (!(isIntertype(mi1) && (isIntertype(mi2)))) return false;
-		// System.out.println("check descendency");
 		if (fromInterface(mi1) && fromInterface(mi2) &&
-			 descendsfrom(interfaceTarget(mi1),interfaceTarget(mi2)))
+			 isSubInterface(interfaceTarget(mi1),interfaceTarget(mi2)))
 			return true;
 		return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
 	}
@@ -452,12 +465,10 @@ public class IntertypeAdjuster {
 				   && implementors.contains(childClass.getSuperclass()) )
 					   continue;
 
-                   createTargetMethod(implMethod,method,childClass,imd.getAspect());
-                	interfaceTarget.put(method,sc);
-                	
-				   // System.out.println("added method "+ method.getName() + " to class " + childClass);
+                   createTargetMethod(implMethod,method,childClass,imd.getAspect(),sc);
+				  
 			   }
-		   } else createTargetMethod(implMethod,method,sc, imd.getAspect());
+		   } else createTargetMethod(implMethod,method,sc, imd.getAspect(),null);
     }
     
     
@@ -467,7 +478,8 @@ public class IntertypeAdjuster {
 		SootMethod implMethod,
 		MethodSig method,
 		SootClass sc,
-		Aspect origin) {	
+		Aspect origin,
+		SootClass intftarget) {	
 			// System.out.println("added method "+ method.getName() + " to class " + sc);
 		        Type retType = method.getReturnType().getSootType();
 		        List parms = new ArrayList();
@@ -496,11 +508,13 @@ public class IntertypeAdjuster {
 		            sm.addException( exception );
 		        }
 		
+				if (intftarget != null)
+					interfaceTarget.put(sm,intftarget);
+				intertype.put(sm,origin);
 		//			Add method to the class
 		//		sc.addMethod(sm);	
 		        if (!overrideITDmethod(sc,sm))
 		        	return;
-		        intertype.put(sm,origin);
 		        			
 				if (!Modifier.isAbstract(modifiers)) {
 			/* generate call to implementation: impl(this,arg1,arg2,...,argn) */	
@@ -734,7 +748,7 @@ public class IntertypeAdjuster {
 			// System.out.println("it has the method already");
 			SootMethod minst = pht.getMethod(mi.getName(),mi.getParameterTypes());
 			if (zapsconstructor(mi,minst)){   
-					pht.removeMethod(minst);
+					// pht.removeMethod(minst); // FIXME: this must be wrong....
 					pht.addMethod(mi);
 			} else if (zapsconstructor(minst,mi)) {	
 					skipped = true;
@@ -748,6 +762,8 @@ public class IntertypeAdjuster {
 	
 	
 	boolean zapsconstructor(SootMethod mi1,SootMethod mi2) {
+		if ((Modifier.isPrivate(mi2.getModifiers()) && !isIntertype(mi2)) && 
+		     (!Modifier.isPrivate(mi1.getModifiers()) && isIntertype(mi1))) return true; // can always zap a private constructor
 		if (!(isIntertype(mi1) && (isIntertype(mi2)))) return false;
 		return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
 	}
@@ -801,11 +817,12 @@ public class IntertypeAdjuster {
 			sm.addException( exception );
 		}
 		
+		intertype.put(sm,icd.getAspect());
 		// inject the new constructor into the target type
 		// scTarget.addMethod(sm);	
 		if (!overrideITDconstructor(scTarget,sm))
 			return;
-			
+	    	
 		// the body of the constructor is of the form
 		//		qualifier.ccall(aspect.e1(f1,f2,...,fn), ..., aspect.ek(f1,f2,...,fn));  // super or this call
 		//		aspect.body(this,f1,f2,...,fn)
@@ -944,6 +961,7 @@ public class IntertypeAdjuster {
 										  VoidType.v(),
 										  Modifier.STATIC | Modifier.PUBLIC );
 						b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
+						cl.addMethod(clinit);
 						Chain ss = b.getUnits();
 						ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
 						ss.add(ret);

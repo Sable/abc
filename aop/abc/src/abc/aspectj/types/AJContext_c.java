@@ -33,6 +33,7 @@ public class AJContext_c extends Context_c implements AJContext {
 	protected ClassType host; // the host of the intertype decl
 	protected boolean nested; // an inner class in an interType decl
     protected boolean declaredStatic; // intertype decl declared static?
+    protected AJContext hostScope;
     
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
@@ -68,8 +69,27 @@ public class AJContext_c extends Context_c implements AJContext {
 		c.nested = false;
 		c.declaredStatic = declaredStatic;
 		c.staticContext = true; 
+		c.hostScope = c;
 		return c;
 	}
+	
+	public AJContext hostScope() {
+		return hostScope;
+	}
+	
+	public boolean varInHost(String name) {
+		if (this == hostScope)
+			return findVariableInThisScope(name) != null;
+		else
+		    return findVariableInThisScope(name) == null && ((AJContext_c)outer).varInHost(name);
+	}
+	
+	public boolean methodInHost(String name) {
+		if (this == hostScope)
+			return findMethodContainerInThisScope(name) != null;
+		else
+			return findMethodContainerInThisScope(name) == null && ((AJContext_c)outer).methodInHost(name);
+	} 
 	
 	private void addITMethodHost(MethodInstance mi) {
 		if (methods == null) methods = new HashMap();
