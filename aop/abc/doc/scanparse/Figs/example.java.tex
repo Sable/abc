@@ -1,0 +1,78 @@
+\begin{center}
+\framebox{
+\begin{minipage}{4.9in}
+\begin{java}
+\\
+{\bf import} java.lang.*;\\
+\\
+{\bf class} OrdinaryJavaClass \{\\
+\hspace{1.0em}{\bf public} {\bf int} x;\\
+\hspace{1.0em}{\bf public} {\bf int} y;\\
+\\
+\hspace{1.0em}String foo({\bf int} x) \\
+\hspace{2.5em}\{ {\bf return} ("The value of x + 1 is " + (x + 1));\\
+\hspace{2.5em}\}\\
+\}\\
+\\
+{\bf privileged} {\bf aspect} {\textit{/* a privileged aspect with a per declaration in the header */}}\\
+\end{java}
+
+\framebox{
+\begin{minipage}{4.7in}
+\begin{java}
+\\
+\hspace{1.0em}OrdinaryAspect {\bf percflow} \framebox{ ( {\bf call}({\bf void} Foo.m()) )} \\
+\hspace{1.0em}\{ \\
+\hspace{2.0em}{\textit{/* declare declaration */}}\\
+\hspace{2.0em}{\bf declare} \framebox{{\bf warning}: {\bf call}(*1.Foo+.{\bf new}(..)): \textit{{``pkg ending in 1, class or subclass of Foo"}};}\\
+\\
+\hspace{2.0em}{\textit{/* pointcut declarations */}}\\
+\hspace{2.0em}{\bf pointcut} \framebox{notKeywords(): {\bf call}({\bf void} *if*..*while*({\bf int},{\bf boolean},*for*));}\\
+\\
+\hspace{2.0em}{\bf pointcut} \framebox{hasSpecialIf(): {\bf if}\framebox{(Tracing.isEnabled())};}\\
+\\
+\hspace{2.0em}{\textit{/* advice declaration */}}\\
+\hspace{2.0em}{\bf after}\framebox{(Point p) {\bf returning}({\bf int} x): {\bf target}(p) \&\& {\bf call}({\bf int} getX())} \\
+\hspace{3.0em}\{\\
+\hspace{4.0em}System.out.println(\textit{{``Returning int value "}} + x + \textit{{`` for p = "}} + p);\\
+\hspace{3.0em}\}\\
+\\
+\hspace{2.0em}{\textit{/* inter-type member declaration */}}\\
+\hspace{2.0em}{\bf int} OrdinaryJavaClass.incr2({\bf int} i)\\
+\hspace{3.5em}\{ {\bf return}(x+2);\\
+\hspace{3.5em}\} \\
+\\
+\hspace{2.0em}{\textit{/* ordinary Java declarations */}}\\
+\hspace{2.0em}{\bf int} x;\\
+\\
+\hspace{2.0em}{\bf static} {\bf int} incr3({\bf int} x)\\
+\hspace{3.0em}\{ {\bf return}(x+3);\\
+\hspace{3.0em}\}\\
+\\
+\hspace{2.0em}{\textit{/* a nested class */}}\\
+\hspace{2.0em}{\bf class} \\
+\end{java}
+
+\framebox{
+\begin{minipage}{4.5in}
+\begin{java}
+\\
+\hspace{3.0em}NestedClass \{\\
+\hspace{3.0em}{\textit{/* In Java mode, after and before are not keywords. */}} \\
+\hspace{4.0em}{\bf public} {\bf int} after;\\
+\hspace{4.0em}{\bf public} {\bf int} getBefore()\\
+\hspace{4.0em}\{ {\bf return}(OtherClass.before);\\
+\hspace{4.0em}\}\\
+\hspace{2.5em}\} {\textit{// end of NestedClass }}\\
+\end{java}
+\end{minipage}
+}
+
+\begin{java}
+\hspace{1.0em}\} {\textit{// end of OrdinaryAspect}}\\
+\end{java}
+\end{minipage}
+}
+\end{minipage}
+}
+\end{center}
