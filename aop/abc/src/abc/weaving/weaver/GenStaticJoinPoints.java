@@ -1,11 +1,15 @@
 package abc.weaving.weaver;
 
+import java.util.*;
+
+import polyglot.util.InternalCompilerError;
+
 import soot.*;
 import soot.tagkit.*;
 import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
-import java.util.*;
+
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
@@ -60,16 +64,16 @@ public class GenStaticJoinPoints {
       Stmt ip;            // the instruction from with to insert (before)
 
       // --- get the units and insertion point in clinit()
-      if (sc.declaresMethod("void <clinit>()"))
-        { debug("Found the clinit in which to put the SJP");
-          clinit = sc.getMethod("void <clinit>()");
+      if (sc.XdeclaresMethod(SootMethod.staticInitializerName,new ArrayList())) {
+	  debug("Found the clinit in which to put the SJP");
+	  clinit = sc.XgetMethod(SootMethod.staticInitializerName,new ArrayList());
           b = clinit.retrieveActiveBody();
           units = b.getUnits();
           lg = new LocalGenerator(b);
 	  ip = (Stmt) units.getFirst();  // should be the return stmt 
         }
       else
-        throw new CodeGenException(
+        throw new InternalCompilerError(
            "SJP insertion assumes a clinit existed " +
 	   "in class " + sc.getName());
 
@@ -113,8 +117,10 @@ public class GenStaticJoinPoints {
         RefType.v("java.lang.Class"));
         Value arg = StringConstant.v(sc.getName());
         SootClass jls = Scene.v().getSootClass("java.lang.Class");
-        SootMethod forname = 
-              jls.getMethod("java.lang.Class forName(java.lang.String)");
+	List fornameParams=new ArrayList(1);
+	fornameParams.add(RefType.v("java.lang.String"));
+        SootMethodRef forname 
+	    = Scene.v().makeMethodRef(jls,"forName",fornameParams,RefType.v("java.lang.Class"));
         Value val = Jimple.v().newStaticInvokeExpr(forname,arg);
         Stmt getjavaclass = Jimple.v().newAssignStmt(javaclass,val);
         debug("Generating getjavaclass " + getjavaclass);
@@ -140,9 +146,11 @@ public class GenStaticJoinPoints {
         // factory_local.<init>("sourcefile",javaclass);
         SootClass fc = Scene.v().
 	     getSootClass("abc.runtime.reflect.AbcFactory");
-        SootMethod finit = 
-	     fc.getMethod(
-			 "void <init>(java.lang.String,java.lang.Class)");
+	List finitParams=new ArrayList(2);
+	finitParams.add(RefType.v("java.lang.String"));
+	finitParams.add(RefType.v("java.lang.Class"));
+        SootMethodRef finit = Scene.v().makeConstructorRef(fc,finitParams);
+
         ArrayList args = new ArrayList(2);
 	debug("tags attached to class are : " + sc.getTags());
 	SourceFileTag sft = (SourceFileTag) sc.getTag("SourceFileTag");
@@ -189,7 +197,7 @@ public class GenStaticJoinPoints {
       sc.addField(newsjpfield);
 
       // put initialization for the field in clinit()
-      StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(newsjpfield);
+      StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(newsjpfield.makeRef());
 
 
       String sigtypeclass = sjpInfo.signatureTypeClass;
@@ -209,9 +217,10 @@ public class GenStaticJoinPoints {
 	     getSootClass("abc.runtime.reflect.AbcFactory");
       debug("Got the factory class: " + fc);
 
-      SootMethod sigmethod = fc.getMethod(
-	     classpath + sigtypeclass + 
-	     " " + sigtype + "(java.lang.String)");
+      List sigmethodParams=new ArrayList(1);
+      sigmethodParams.add(RefType.v("java.lang.String"));
+      SootMethodRef sigmethod 
+	  = Scene.v().makeMethodRef(fc,sigtype,sigmethodParams,RefType.v(classpath+sigtypeclass));
       debug("Got the sig builder method: " + sigmethod);
 
       Stmt makesig = Jimple.v().
@@ -224,9 +233,18 @@ public class GenStaticJoinPoints {
       // get the SJP object
       Local sjploc = lg.generateLocal(
 	 RefType.v("org.aspectj.lang.JoinPoint$StaticPart")); 
-      SootMethod makeSJP = fc.getMethod(
-	  "org.aspectj.lang.JoinPoint$StaticPart " +
-	  "makeSJP(java.lang.String,org.aspectj.lang.Signature,int,int)");
+
+      List makeSJPParams=new ArrayList(4);
+      makeSJPParams.add(RefType.v("java.lang.String"));
+      makeSJPParams.add(RefType.v("org.aspectj.lang.Signature"));
+      makeSJPParams.add(IntType.v());
+      makeSJPParams.add(IntType.v());
+      SootMethodRef makeSJP 
+	  = Scene.v().makeMethodRef(fc,
+				    "makeSJP",
+				    makeSJPParams,
+				    RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
+
 
       ArrayList args = new ArrayList();
       args.add(StringConstant.v(sjpInfo.kind));

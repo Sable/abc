@@ -45,7 +45,7 @@ public class Box extends Residue {
 	    paramTypeList.add(type);
 	    Stmt constrStmt=Jimple.v().newInvokeStmt
 		(Jimple.v().newSpecialInvokeExpr
-		 (to.get(),boxClass.getMethod(SootMethod.constructorName,paramTypeList),from.get()));
+		 (to.get(),Scene.v().makeConstructorRef(boxClass,paramTypeList),from.get()));
 	    units.insertAfter(constrStmt,newStmt);
 	    
 	    return constrStmt;

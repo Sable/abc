@@ -25,6 +25,6 @@ public class StaticJoinPointInfo extends ContextValue {
     }
 
     public Value getSootValue() {
-	return Jimple.v().newStaticFieldRef(sjpInfo.sjpfield);
+	return Jimple.v().newStaticFieldRef(sjpInfo.sjpfield.makeRef());
     }
 }

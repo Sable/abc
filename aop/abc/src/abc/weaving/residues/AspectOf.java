@@ -50,7 +50,7 @@ public class AspectOf extends Residue {
 
 	AssignStmt stmtAspectOf = Jimple.v().newAssignStmt
 	    (aspectref, Jimple.v().newStaticInvokeExpr
-	     (aspct.getMethod("aspectOf",paramTypes),params));
+	     (Scene.v().makeMethodRef(aspct,"aspectOf",paramTypes,aspct.getType()),params));
 
 	units.insertAfter(stmtAspectOf,begin);
 	((AdviceWeavingContext) wc).aspectinstance=aspectref;
