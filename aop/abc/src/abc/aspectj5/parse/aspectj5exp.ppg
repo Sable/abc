@@ -1,0 +1,191 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Laurie Hendren
+ * Copyright (C) 2004 Oege de Moor
+ * Copyright (C) 2004 Aske Simon Christensen
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This compiler is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+ include "aspectj5.ppg"
+ 
+ /**
+* @author Sascha Kuzins
+*/
+
+non terminal reference_type_pattern ;
+//non terminal type_variable_pattern ;
+non terminal class_or_interface_pattern ;
+non terminal class_or_interface_type_pattern ;
+//non terminal class_type_pattern ; 
+//non terminal interface_type_pattern ; 
+non terminal array_type_pattern ;  
+non terminal type_arguments_pattern ;
+non terminal wildcard_pattern ;    
+non terminal wildcard_1_pattern ;  
+non terminal wildcard_2_pattern ;  
+non terminal wildcard_3_pattern ;  
+non terminal reference_type_1_pattern ;
+non terminal reference_type_2_pattern ;
+non terminal reference_type_3_pattern ;
+non terminal type_argument_list_pattern ;
+non terminal type_argument_list_1_pattern ;
+non terminal type_argument_list_2_pattern ;
+non terminal type_argument_list_3_pattern ;
+non terminal type_argument_pattern ;
+non terminal type_argument_1_pattern ;
+non terminal type_argument_2_pattern ;
+non terminal type_argument_3_pattern ;
+non terminal name_pattern2   ;     
+
+
+
+start with goal;
+
+/* ---------------------------------------------------------------- */
+/*                      CHANGED RULES                               */
+/* ---------------------------------------------------------------- */
+
+override generic_simple_name_pattern ::=
+     simple_name_pattern
+   | simple_name_pattern type_arguments_pattern
+   ;
+   
+/* ---------------------------------------------------------------- */
+/*                      NEW RULES                               	*/
+/* ---------------------------------------------------------------- */
+
+/*
+	This is an attempt to define a grammar for type patterns where 
+	* and .. can be used within the type argument list.
+	It was created by taking a copy of the original java 1.5 grammar
+	fragment, renaming everything (appending "_pattern") and then
+	changing the "name" non-terminal to be a pattern.
+	
+	This is a rather defensive add-on to the existing patterns.
+	It is likely that some of this should be pushed up further in 
+	the grammar into the original type patterns.
+*/   
+
+reference_type_pattern ::=
+		class_or_interface_type_pattern
+/* note that the 'type_variable' production will come out of the grammar
+ * as a 'class_or_interface_type' with a 'simple_name'.  The semantic
+ * checker will have to resolve whether this is a class name or a type
+ * variable */
+	|	array_type_pattern
+	;
+	
+/*type_variable_pattern ::=
+		IDENTIFIER
+	;*/
+	
+class_or_interface_pattern ::=
+		name_pattern2
+	|	class_or_interface_pattern LT type_argument_list_1_pattern DOT name_pattern2
+	;
+class_or_interface_type_pattern ::=
+		class_or_interface_pattern
+	|	class_or_interface_pattern LT type_argument_list_1_pattern
+	;
+
+//class_type_pattern ::=	class_or_interface_type_pattern;
+//interface_type_pattern ::= class_or_interface_type_pattern;		
+
+array_type_pattern ::=	
+	primitive_type dims
+	// we have class_or_interface_type here even though only unbounded
+	// wildcards are really allowed in the parameterization.
+	// we have to expand this to avoid lookahead problems.
+	|	name_pattern2 dims
+	|	class_or_interface_pattern LT type_argument_list_1_pattern DOT name_pattern2 dims
+	|	class_or_interface_pattern LT type_argument_list_1_pattern dims
+	;
+
+type_arguments_pattern ::=
+		LT type_argument_list_1_pattern
+	;
+wildcard_pattern ::=	QUESTION
+	|	QUESTION EXTENDS reference_type_pattern
+	|	QUESTION SUPER reference_type_pattern
+	;
+wildcard_1_pattern ::=	QUESTION GT
+	|	QUESTION EXTENDS reference_type_1_pattern
+	|	QUESTION SUPER reference_type_1_pattern
+	;
+wildcard_2_pattern ::=	QUESTION RSHIFT
+	|	QUESTION EXTENDS reference_type_2_pattern
+	|	QUESTION SUPER reference_type_2_pattern
+	;
+wildcard_3_pattern ::=	QUESTION URSHIFT
+	|	QUESTION EXTENDS reference_type_3_pattern
+	|	QUESTION SUPER reference_type_3_pattern
+	;
+reference_type_1_pattern ::=
+		reference_type_pattern GT
+	|	class_or_interface_pattern LT type_argument_list_2_pattern
+	;
+reference_type_2_pattern ::=
+		reference_type_pattern RSHIFT
+	|	class_or_interface_pattern LT type_argument_list_3_pattern
+	;
+reference_type_3_pattern ::=
+		reference_type_pattern URSHIFT
+	;
+type_argument_list_pattern ::=
+		type_argument_pattern
+	|	type_argument_list_pattern COMMA type_argument_pattern
+	;
+type_argument_list_1_pattern ::=
+		type_argument_1_pattern
+	|	type_argument_list_pattern COMMA type_argument_1_pattern
+	;
+type_argument_list_2_pattern ::=
+		type_argument_2_pattern
+	|	type_argument_list_pattern COMMA type_argument_2_pattern
+	;
+type_argument_list_3_pattern ::=
+		type_argument_3_pattern
+	|	type_argument_list_pattern COMMA type_argument_3_pattern
+	;
+type_argument_pattern ::=
+		reference_type_pattern
+	|	wildcard_pattern
+	;
+type_argument_1_pattern ::=
+		reference_type_1_pattern
+	|	wildcard_1_pattern
+	;
+type_argument_2_pattern ::=
+		reference_type_2_pattern
+	|	wildcard_2_pattern
+	;
+type_argument_3_pattern ::=
+		reference_type_3_pattern
+	|	wildcard_3_pattern
+	;
+	
+
+// 19.5) Names
+// This was the "name" terminal in the original grammar.
+// Inlined qualified_name
+name_pattern2	::=	
+		simple_name_pattern
+		name_pattern2 DOT simple_name_pattern //was: IDENTIFIER
+		name_pattern2 PC_DOTDOT simple_name_pattern //rule added
+	;
+		
+	
+   
