@@ -2290,6 +2290,10 @@
         <compile files="ExpandedDotDotPattern.java"></compile>
         <run class="ExpandedDotDotPattern"></run>
     </ajc-test>
+<ajc-test title="field patterns and subtyping" num="426" keywords="from-resolved_10x" dir="new">
+        <compile files="FieldPatterns.java"></compile>
+        <run class="FieldPatterns"></run>
+    </ajc-test>
 <ajc-test title="Checking formal matching as in Roeder's bug in 0.7b10" num="427" keywords="from-resolved_10x" dir="new">
         <compile files="FormalMatching.java"></compile>
         <run class="FormalMatching"></run>
@@ -2565,6 +2569,10 @@
 <ajc-test title="cflowbelow dependencies (from Chris Dutchyn)" num="498" keywords="from-resolved_10x" dir="new">
         <compile files="CflowBelowTest.java"></compile>
         <run class="CflowBelowTest"></run>
+    </ajc-test>
+<ajc-test title="target type matching with messy interface hierarchies" num="499" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4,-Xlint:ignore" files="CallTypesI.java"></compile>
+        <run vm="1.4" class="CallTypesI"></run>
     </ajc-test>
 <ajc-test title="PR#458 Compiler was incorrectly flagging error in advice on initialization and static initialization" pr="490" num="500" keywords="from-resolved_10x,knownLimitation" dir="new">
         <compile files="StaticInitCE.java"></compile>
@@ -4921,6 +4929,22 @@
         <compile files="Testcase3.java">
         	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="2" kind="error"></ajcmessage>
         </compile>
+    </ajc-test>
+<ajc-test title="Test of cast pointcuts" num="975" dir="abctests/eaj/casting">
+         <compile options="-ext,abc.eaj.ExtensionInfo" files="Test.java"></compile>
+         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Test of global and private pointcuts" num="976" dir="abctests/eaj/global_pointcuts">
+         <compile options="-ext,abc.eaj.ExtensionInfo" files="aaa/A.java,bbb/B.java"></compile>
+         <run class="aaa.A"></run>
+    </ajc-test>
+<ajc-test title="Test of private pointcuts" num="977" dir="abctests/eaj/local_vars">
+         <compile options="-ext,abc.eaj.ExtensionInfo" files="Fibonacci.java,Observer.java"></compile>
+         <run class="Fibonacci"></run>
+    </ajc-test>
+<ajc-test title="cflowbelow in abstract aspects" num="978" dir="abctests/bugs">
+          <compile files="AbstractPrec1.java"></compile>
+          <run class="AbstractPrec1"></run>
     </ajc-test>
  
 </suite>
