@@ -56,6 +56,10 @@ public class CflowSetup extends AbstractAdviceDecl {
 	this.isBelow=isBelow;
     }
 
+    public boolean isBelow() {
+	return isBelow;
+    }
+
     public List/*<Var>*/ getActuals() {
 	return actuals;
     }
@@ -278,6 +282,26 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowStack,pop)));
 	    return c;
 	}
+    }
+
+    public static int getPrecedence(CflowSetup a,CflowSetup b) {
+	// We know that the belows are the same and that we are in
+	// the same aspect
+
+	// FIXME: Best guess is to compare by positions, but is this correct w.r.t inlining?
+	if(a.getPosition().line() < b.getPosition().line()) 
+	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(a.getPosition().line() > b.getPosition().line()) 
+	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	if(a.getPosition().column() < b.getPosition().column()) 
+	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(a.getPosition().column() > b.getPosition().column()) 
+	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	// Trying to compare the same advice, I guess... (modulo inlining behaviour)
+	return GlobalAspectInfo.PRECEDENCE_NONE;
+
     }
 
 }

@@ -1,7 +1,7 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
-
+import polyglot.util.InternalCompilerError;
 import soot.*;
 
 /** Skeleton implementation of the {@link abc.weaving.aspectinfo.AdviceSpec} interface.
@@ -22,4 +22,20 @@ public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {
 	return advice;
     }
 
+    public static int getPrecedence(AdviceSpec a,AdviceSpec b) {
+	int aprec=getPrecNum(a),bprec=getPrecNum(b);
+	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
+	return GlobalAspectInfo.PRECEDENCE_NONE;
+    }
+
+    private static int getPrecNum(AdviceSpec s) {
+	if(s instanceof BeforeAdvice) return 0;
+	else if(s instanceof AfterAdvice 
+		|| s instanceof AfterReturningAdvice 
+		|| s instanceof AfterThrowingAdvice) return 1;
+	else if(s instanceof AroundAdvice) return 0;
+	else if(s instanceof BeforeAfterAdvice) return 0;
+	else throw new InternalCompilerError("Unknown advice spec "+s.getClass());
+    }
 }

@@ -20,6 +20,10 @@ public class PerCflowSetup extends PerSetupAdvice {
 	this.isBelow=isBelow;
     }
 
+    public boolean isBelow() {
+	return isBelow;
+    }
+
     public static class PerCflowSetupWeavingContext 
 	extends WeavingContext
 	implements BeforeAfterAdvice.ChoosePhase {

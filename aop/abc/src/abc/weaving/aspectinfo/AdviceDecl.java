@@ -213,4 +213,25 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	// FIXME: cache this?
 	return new AdviceFormals(this);
     }
+
+    public static int getPrecedence(AdviceDecl a,AdviceDecl b) {
+	// We know that we are in the same aspect
+
+	int speccomp=AbstractAdviceSpec.getPrecedence(a.getAdviceSpec(),b.getAdviceSpec());
+	if(speccomp!=GlobalAspectInfo.PRECEDENCE_NONE) return speccomp;
+
+	if(a.getPosition().line() < b.getPosition().line()) 
+	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(a.getPosition().line() > b.getPosition().line()) 
+	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	if(a.getPosition().column() < b.getPosition().column()) 
+	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(a.getPosition().column() > b.getPosition().column()) 
+	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	// Trying to compare the same advice, I guess... (modulo inlining behaviour)
+	return GlobalAspectInfo.PRECEDENCE_NONE;
+
+    }
 }

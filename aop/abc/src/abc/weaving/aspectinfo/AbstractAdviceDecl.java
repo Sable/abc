@@ -115,4 +115,48 @@ public abstract class AbstractAdviceDecl extends Syntax {
         applcount++;
 	return(applcount);
     }
+
+    /** Get the precedence relationship between two aspects.
+     *  @param a the first advice decl.
+     *  @param b the second advice decl.
+     *  @return
+     *    {@link GlobalAspectInfo.PRECEDENCE_NONE} if none of the advice decls have precedence,
+     *    {@link GlobalAspectInfo.PRECEDENCE_FIRST} if the first advice decl has precedence,
+     *    {@link GlobalAspectInfo.PRECEDENCE_SECOND} if the second advice decl has precedence, or
+     *    {@link GlobalAspectInfo.PRECEDENCE_CONFLICT} if there is a precedence 
+     *     conflict between the two advice decls.
+     */
+    public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
+	
+	// a quick first pass to assist in separating out the major classes of advice
+	// consider delegating this
+	int aprec=getPrecNum(a),bprec=getPrecNum(b);
+	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
+	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+	// FIXME : what happens when we merge cflow stacks?
+	int aspectcomp=GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
+	if(aspectcomp!=GlobalAspectInfo.PRECEDENCE_NONE || a.getAspect()!=b.getAspect()) 
+	    return aspectcomp;
+
+	// Must be both AdviceDecl or both CflowSetup, from the same aspect
+	// Check carefully just to be on the safe side
+	if(a instanceof AdviceDecl && b instanceof AdviceDecl)
+	    return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
+	if(a instanceof CflowSetup && b instanceof CflowSetup) 
+	    return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
+
+	throw new InternalCompilerError
+	    ("case not handled when comparing "+a.getClass()+" and "+b.getClass());
+    }
+    private static int getPrecNum(AbstractAdviceDecl d) {
+	if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 4 : 0;
+	else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 3 : 1;
+	else if(d instanceof PerThisSetup) return 0;
+	else if(d instanceof PerTargetSetup) return 0;
+	else if(d instanceof AdviceDecl) return 2;
+	else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
+					     d.getPosition());
+    }
+
 }

@@ -3,10 +3,10 @@ package abc.weaving.matching;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.util.ListIterator;
 
-// FIXME: temporary precedence hack
-import abc.weaving.aspectinfo.BeforeAdvice;
-import abc.weaving.aspectinfo.AroundAdvice;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 
 /** The list(s) of advice applying to a method
  *  @author Ganesh Sittampalam
@@ -16,48 +16,56 @@ import abc.weaving.aspectinfo.AroundAdvice;
  */
 public class MethodAdviceList {
 
+    private static void addWithPrecedence(List/*<AdviceApplication>*/ aalist,
+				     AdviceApplication aa) {
+
+	ListIterator it=aalist.listIterator();
+	while(it.hasNext()) {
+	    AdviceApplication curaa=(AdviceApplication) (it.next());
+	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
+	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT)
+		// FIXME to SemanticException with more info
+		throw new RuntimeException("Precedence conflict");
+	    if(prec==GlobalAspectInfo.PRECEDENCE_SECOND) {
+		it.previous(); // for correct insertion
+		break;
+	    }
+	}
+	it.add(aa);
+	while(it.hasNext()) {
+	    AdviceApplication curaa=(AdviceApplication) (it.next());
+	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
+	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT 
+	       || prec==GlobalAspectInfo.PRECEDENCE_FIRST)
+		// FIXME to SemanticException with more info
+		throw new RuntimeException("Precedence conflict");
+	}
+    }
+
     /** Advice that would apply to the whole body, i.e. at 
 	execution joinpoints */
     public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
-	// FIXME: temporary precedence hack
-	if(aa.advice!=null
-	   && (aa.advice.getAdviceSpec() instanceof BeforeAdvice
-	       || aa.advice.getAdviceSpec() instanceof AroundAdvice))
-	    ((LinkedList) bodyAdvice).addFirst(aa);
-	else bodyAdvice.add(aa);
+	addWithPrecedence(bodyAdvice,aa);
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
     public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
     public void addStmtAdvice(AdviceApplication aa) {
-	// FIXME: temporary precedence hack
-	if(aa.advice!=null
-	   && (aa.advice.getAdviceSpec() instanceof BeforeAdvice
-	       || aa.advice.getAdviceSpec() instanceof AroundAdvice))
-	    ((LinkedList) stmtAdvice).addFirst(aa);
-	else stmtAdvice.add(aa);
+	addWithPrecedence(stmtAdvice,aa);
     }
 
     /** pre-initialization joinpoints */
     public List/*<AdviceApplication>*/ preinitializationAdvice
 	=new LinkedList();
     public void addPreinitializationAdvice(AdviceApplication aa) {
-	if(aa.advice!=null &&
-	   (aa.advice.getAdviceSpec() instanceof BeforeAdvice
-	    || aa.advice.getAdviceSpec() instanceof AroundAdvice))
-	    ((LinkedList) preinitializationAdvice).addFirst(aa);
-	else preinitializationAdvice.add(aa);
+	addWithPrecedence(preinitializationAdvice,aa);
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
     public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
     public void addInitializationAdvice(AdviceApplication aa) {
-	if(aa.advice!=null && 
-	   (aa.advice.getAdviceSpec() instanceof BeforeAdvice
-	    || aa.advice.getAdviceSpec() instanceof AroundAdvice))
-	    ((LinkedList) initializationAdvice).addFirst(aa);
-	else initializationAdvice.add(aa);
+	addWithPrecedence(initializationAdvice,aa);
     }
 
     /** returns true if there is no advice */
