@@ -31,7 +31,7 @@ $Fixed bug 34, in which arithmetic calculations within strings were sometimes
 $Fixed bug 35, Java identifiers containing '$' are not "visible" from
 ;pointcuts. Thanks to Kevin Viggers for an extremely clear description of the
 ;precise problem and the code for the fix.
-$Fixed bug 36, in which circularly references to named pointcuts within
+$Fixed bug 36, in which circular references to named pointcuts within
 ;cflow caused a stack overflow.
 $Fixed bug 37, named pointcuts and multiply nested cflows interact badly.
 $Added support for inlining of advice bodies at join point shadows. A 
