@@ -40,7 +40,7 @@ public class InitClasses extends AbstractPass {
 			throw new InternalCompilerError("Class type of jar class was null");
 		    }
 		    ext.hierarchy.insertClassAndSuperclasses(ct, true);
-		    GlobalAspectInfo.v().addClass(AbcFactory.AbcClass(ct));
+		    GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
 		}
 
 		GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);

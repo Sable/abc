@@ -26,10 +26,20 @@ public class Aspect extends Syntax {
     }
 
     public String getName() {
-	return cl.getJavaName();
+	return cl.getJvmName();
     }
 
     public String toString() {
 	return "aspect "+getName()+" "+per;
+    }
+
+    public boolean equals(Object other) {
+	if (!(other instanceof Aspect)) return false;
+	Aspect oa = (Aspect)other;
+	return cl.equals(oa.cl);
+    }
+
+    public int hashCode() {
+	return cl.hashCode();
     }
 }

@@ -79,7 +79,7 @@ public class Supers {
 									position),
 							*/
 							AbcFactory.MethodSig(mi),
-							gai.getClass(target));
+							AbcFactory.AbcClass(target));
 					}
 	}
     
@@ -128,7 +128,7 @@ public class Supers {
 									*/
 									AbcFactory.FieldSig(fi),
 							name,
-							gai.getClass(target));
+							AbcFactory.AbcClass(target));
 				   }
    }
    
@@ -158,7 +158,7 @@ public class Supers {
 									  */
 									  AbcFactory.FieldSig(fi),
 							  name,
-							  gai.getClass(target));
+							  AbcFactory.AbcClass(target));
 					 }
 	 }
 
@@ -260,8 +260,8 @@ public class Supers {
 									position),
 								    */
 								    AbcFactory.MethodSig(mi),
-							gai.getClass(target),
-							gai.getClass(qualifier));
+							AbcFactory.AbcClass(target),
+							AbcFactory.AbcClass(qualifier));
 					}
 	}
     

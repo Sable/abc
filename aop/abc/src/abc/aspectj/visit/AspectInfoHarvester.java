@@ -20,7 +20,7 @@ public class AspectInfoHarvester extends ContextVisitor {
     }
 
     private GlobalAspectInfo gai;
-    private String current_aspect_name;
+    private ParsedClassType current_aspect_scope;
     private Aspect current_aspect;
 
     public AspectInfoHarvester(Job job, TypeSystem ts, NodeFactory nf) {
@@ -30,12 +30,9 @@ public class AspectInfoHarvester extends ContextVisitor {
 
     public NodeVisitor enter(Node parent, Node n) {
 	ParsedClassType scope = context().currentClassScope();
-	if (scope != null) {
-	    String clname = scope.fullName();
-	    if (!clname.equals(current_aspect_name)) {
-		current_aspect_name = clname;
-		current_aspect = gai.getAspect(clname);
-	    }
+	if (scope != null && !scope.equals(current_aspect_scope)) {
+	    current_aspect_scope = scope;
+	    current_aspect = gai.getAspect(AbcFactory.AbcClass(scope));
 	}
 	if (n instanceof ContainsAspectInfo) {
 	    ((ContainsAspectInfo)n).update(gai, current_aspect);

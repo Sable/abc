@@ -308,7 +308,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		// System.out.println("IFD host: "+host.toString());
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
 	  			  	(AspectInfoHarvester.convertModifiers(flags()),
-	   				gai.getClass(host.type()),
+	   				AbcFactory.AbcClass((ClassType)host.type()),
 	     			AbcFactory.AbcType(type().type()),
 	     			name(),
 	     			null);

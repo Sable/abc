@@ -8,7 +8,7 @@ import abc.aspectj.visit.PCStructure;
 import soot.Scene;
 import soot.SootClass;
 
-/** A class handled by the ABC compiler. */
+/** A Java class handled by the ABC compiler. */
 public class AbcClass {
     private String java_name;
     private String jvm_name;

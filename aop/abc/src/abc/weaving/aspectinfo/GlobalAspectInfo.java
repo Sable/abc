@@ -49,9 +49,7 @@ public class GlobalAspectInfo {
 	// additional generated classes that need to be output in the end
 	//private Collection/*<String>*/ generated_classes = new ArrayList();
 	
-    private Map/*<polyglot.types.Type,AbcClass>*/ type_class_map = new HashMap();
-    private Map/*<SootClass,AbcClass>*/ soot_class_map = new HashMap();
-    private Map/*<String,Aspect>*/ aspects_map = new HashMap();
+    private Map/*<AbcClass,Aspect>*/ aspects_map = new HashMap();
     private Map/*<String,Set<PointcutDecl>>*/ pc_map = new HashMap();
     private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();
 
@@ -67,7 +65,7 @@ public class GlobalAspectInfo {
 	Iterator ci = classes.iterator();
 	while (ci.hasNext()) {
 	    AbcClass c = (AbcClass)ci.next();
-	    addClassToSootMap(c);
+	    c.getSootClass();
 	}
 
 	// Build the aspect hierarchy
@@ -84,7 +82,7 @@ public class GlobalAspectInfo {
 		Aspect sa = ca;
 		while (sa != null) {
 		    ((Set)aspect_visibility.get(sa)).add(ca);
-		    sa = (Aspect)aspects_map.get(sa.getInstanceClass().getSootClass().getSuperclass().getName());
+		    sa = (Aspect)aspects_map.get(AbcFactory.AbcClass(sa.getInstanceClass().getSootClass().getSuperclass()));
 		}
 	    }
 	}
@@ -207,40 +205,18 @@ public class GlobalAspectInfo {
 	return dms;
     }
 
-
-    public AbcClass getClass(polyglot.types.Type type) {
-	return (AbcClass)type_class_map.get(type);
+    public Aspect getAspect(AbcClass cl) {
+	return (Aspect)aspects_map.get(cl);
     }
 
-    public AbcClass getClass(SootClass sc) {
-	return (AbcClass)soot_class_map.get(sc);
-    }
-
-    public Aspect getAspect(String name) {
-	return (Aspect)aspects_map.get(name);
-    }
-
-    public void addClass(AbcClass cl) {
+    public void addWeavableClass(AbcClass cl) {
 	classes.add(cl);
-	if (cl.getPolyglotType() != null) {
-	    addClassToTypeMap(cl);
-	} else {
-	    addClassToSootMap(cl);
-	}
-    }
-
-    void addClassToTypeMap(AbcClass cl) {
-	type_class_map.put(cl.getPolyglotType(), cl);
-    }
-
-    void addClassToSootMap(AbcClass cl) {
-	soot_class_map.put(cl.getSootClass(), cl);
     }
 
     public void addAspect(Aspect aspct) {
-	if (!aspects_map.containsKey(aspct.getName())) {
+	if (!aspects_map.containsKey(aspct.getInstanceClass())) {
 	    aspects.add(aspct);
-	    aspects_map.put(aspct.getName(),aspct);
+	    aspects_map.put(aspct.getInstanceClass(),aspct);
 	}
     }
 

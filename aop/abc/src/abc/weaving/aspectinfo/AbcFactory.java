@@ -32,14 +32,14 @@ public class AbcFactory {
 
     public static MethodSig MethodSig(polyglot.ast.MethodDecl m, polyglot.types.ClassType container) {
 	int mod = soot.javaToJimple.Util.getModifier(m.flags());
-	AbcClass cl = new AbcClass(container);
-	AbcType rtype = new AbcType(m.returnType().type());
+	AbcClass cl = AbcFactory.AbcClass(container);
+	AbcType rtype = AbcFactory.AbcType(m.returnType().type());
 	String name = m.name();
 	List formals = new ArrayList();
 	Iterator mdfi = m.formals().iterator();
 	while (mdfi.hasNext()) {
 	    polyglot.ast.Formal mdf = (polyglot.ast.Formal)mdfi.next();
-	    formals.add(new abc.weaving.aspectinfo.Formal(new AbcType((polyglot.types.Type)mdf.type().type()),
+	    formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType((polyglot.types.Type)mdf.type().type()),
 							  mdf.name(), mdf.position()));
 	}
 	List exc = new ArrayList();
@@ -52,10 +52,6 @@ public class AbcFactory {
     }
 
     public static MethodSig MethodSig(polyglot.types.MethodInstance mi) {
-	/* FIXME: Why was this here? We should never have null MethodSigs!
-	if (mi==null)
-	    return null;
-	*/
 	int mod = soot.javaToJimple.Util.getModifier(mi.flags());
 	AbcClass cl = AbcFactory.AbcClass((polyglot.types.ClassType)mi.container());
 	AbcType rtype = AbcFactory.AbcType(mi.returnType());
@@ -79,15 +75,15 @@ public class AbcFactory {
 
     public static MethodSig MethodSig(soot.SootMethod m) {
 	int mod = m.getModifiers();
-	AbcClass cl = new AbcClass(m.getDeclaringClass());
-	AbcType rtype = new AbcType(m.getReturnType());
+	AbcClass cl = AbcFactory.AbcClass(m.getDeclaringClass());
+	AbcType rtype = AbcFactory.AbcType(m.getReturnType());
 	String name = m.getName();
 	List formals = new ArrayList();
 	int index = 0;
 	Iterator mfti = m.getParameterTypes().iterator();
 	while (mfti.hasNext()) {
 	    soot.Type mft = (soot.Type)mfti.next();
-	    formals.add(new Formal(new AbcType(mft), "a$"+index, null));
+	    formals.add(new Formal(AbcFactory.AbcType(mft), "a$"+index, null));
 	    index++;
 	}
 	List exc = new ArrayList();
@@ -99,6 +95,18 @@ public class AbcFactory {
 	return new MethodSig(mod, cl, rtype, name, formals, exc, null);
     }
 
+    public static FieldSig FieldSig(polyglot.ast.FieldDecl f) {
+	return FieldSig(f, (polyglot.types.ClassType)f.fieldInstance().container());
+    }
+
+    public static FieldSig FieldSig(polyglot.ast.FieldDecl f, polyglot.types.ClassType container) {
+	int mod = soot.javaToJimple.Util.getModifier(f.flags());
+	AbcClass cl = AbcFactory.AbcClass(container);
+	AbcType type = AbcFactory.AbcType(f.type().type());
+	String name = f.name();
+	return new FieldSig(mod, cl, type, name, f.position());
+    }
+
     public static FieldSig FieldSig(polyglot.types.FieldInstance fi) {
 	int mod = soot.javaToJimple.Util.getModifier(fi.flags());
 	AbcClass cl = AbcFactory.AbcClass((polyglot.types.ClassType)fi.container());
@@ -107,4 +115,11 @@ public class AbcFactory {
 	return new FieldSig(mod, cl, type, name, fi.position());
     }
  
+    public static FieldSig FieldSig(soot.SootField f) {
+	int mod = f.getModifiers();
+	AbcClass cl = AbcFactory.AbcClass(f.getDeclaringClass());
+	AbcType type = AbcFactory.AbcType(f.getType());
+	String name = f.getName();
+	return new FieldSig(mod, cl, type, name, null);
+    }
 }
