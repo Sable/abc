@@ -64,8 +64,9 @@ public class AspectInfoHarvester extends ContextVisitor {
 	List formals = new ArrayList();
 	Iterator mdfi = md.formals().iterator();
 	while (mdfi.hasNext()) {
-	    Formal mdf = (Formal)mdfi.next();
-	    formals.add(toAbcType((polyglot.types.Type)mdf.type().type()));
+	    polyglot.ast.Formal mdf = (polyglot.ast.Formal)mdfi.next();
+	    formals.add(new abc.weaving.aspectinfo.Formal(toAbcType((polyglot.types.Type)mdf.type().type()),
+							  mdf.name(), mdf.position()));
 	}
 	List exc = new ArrayList();
 	Iterator ti = md.throwTypes().iterator();

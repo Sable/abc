@@ -25,9 +25,9 @@ public class IntertypeAdjuster {
         SootClass sc = method.getDeclaringClass().getSootClass();
         Type retType = method.getReturnType().getSootType();
         List parms = new ArrayList();
-        for( Iterator parmTypeIt = method.getParams().iterator(); parmTypeIt.hasNext(); ) {
-            final AbcType parmType = (AbcType) parmTypeIt.next();
-            parms.add(parmType.getSootType());
+        for( Iterator formalIt = method.getFormals().iterator(); formalIt.hasNext(); ) {
+            final AbcType formalType = ((Formal) formalIt.next()).getType();
+            parms.add(formalType.getSootType());
         }
 
         int modifiers = method.getModifiers();

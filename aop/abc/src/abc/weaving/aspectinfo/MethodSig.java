@@ -13,22 +13,22 @@ public class MethodSig extends Syntax {
     private AbcClass cl;
     private AbcType rtype;
     private String name;
-    private List/*<AbcType>*/ params;
+    private List/*<Formal>*/ formals;
     private List/*<String>*/ exc;
     private SootMethod sm;
     private List/*<SootClass>*/ sexc;
 
     /** Create a method signature.
-     *  @param params a list of {@link abc.weaving.aspectinfo.AbcType} objects
+     *  @param formals a list of {@link abc.weaving.aspectinfo.Formal} objects
      *  @param exc a list of {@link java.lang.String} objects
      */
-    public MethodSig(int mod, AbcClass cl, AbcType rtype, String name, List params, List exc, Position pos) {
+    public MethodSig(int mod, AbcClass cl, AbcType rtype, String name, List formals, List exc, Position pos) {
 	super(pos);
 	this.mod = mod;
 	this.cl = cl;
 	this.rtype = rtype;
 	this.name = name;
-	this.params = params;
+	this.formals = formals;
 	this.exc = exc;
     }
 
@@ -48,11 +48,11 @@ public class MethodSig extends Syntax {
 	return name;
     }
 
-    /** Get the parameter types of the method.
-     *  @return a list of {@link abc.weaving.aspectinfo.AbcType} objects.
+    /** Get the formals of the method.
+     *  @return a list of {@link abc.weaving.aspectinfo.Formal} objects.
      */
-    public List getParams() {
-	return params;
+    public List getFormals() {
+	return formals;
     }
 
     /** Get the exceptions thrown by the method.
@@ -75,10 +75,10 @@ public class MethodSig extends Syntax {
 	    SootClass sc = cl.getSootClass();
 	    soot.Type srt = rtype.getSootType();
 	    List spt = new ArrayList();
-	    Iterator pi = params.iterator();
-	    while (pi.hasNext()) {
-		AbcType t = (AbcType)pi.next();
-		spt.add(t.getSootType());
+	    Iterator fi = formals.iterator();
+	    while (fi.hasNext()) {
+		Formal f = (Formal)fi.next();
+		spt.add(f.getType().getSootType());
 	    }
 	    sm = sc.getMethod(name, spt);
 	}
@@ -95,11 +95,13 @@ public class MethodSig extends Syntax {
 	sb.append(".");
 	sb.append(name);
 	sb.append("(");
-	Iterator pi = params.iterator();
-	while (pi.hasNext()) {
-	    AbcType p = (AbcType)pi.next();
-	    sb.append(p);
-	    if (pi.hasNext()) {
+	Iterator fi = formals.iterator();
+	while (fi.hasNext()) {
+	    Formal f = (Formal)fi.next();
+	    sb.append(f.getType());
+	    sb.append(" ");
+	    sb.append(f.getName());
+	    if (fi.hasNext()) {
 		sb.append(", ");
 	    }
 	}

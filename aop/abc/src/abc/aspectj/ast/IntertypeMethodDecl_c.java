@@ -126,11 +126,12 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 	System.out.println("IMD host: "+host.toString());
-	List params = new ArrayList();
+	List formals = new ArrayList();
 	Iterator fi = formals().iterator();
 	while (fi.hasNext()) {
 	    Formal f = (Formal)fi.next();
-	    params.add(AspectInfoHarvester.toAbcType(f.type().type()));
+	    formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f.type().type()),
+							  f.name(), f.position()));
 	}
 	List exc = new ArrayList();
 	Iterator ti = throwTypes().iterator();
@@ -143,7 +144,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	     current_aspect.getInstanceClass(),
 	     AspectInfoHarvester.toAbcType(returnType().type()),
 	     name(),
-	     params,
+	     formals,
 	     exc,
 	     position());
 	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
@@ -151,7 +152,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	     gai.getClass(host.toString()),
 	     AspectInfoHarvester.toAbcType(returnType().type()),
 	     name(),
-	     params,
+	     formals,
 	     exc,
 	     null);
 	abc.weaving.aspectinfo.IntertypeMethodDecl imd = new abc.weaving.aspectinfo.IntertypeMethodDecl
