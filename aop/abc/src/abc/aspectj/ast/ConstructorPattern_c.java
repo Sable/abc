@@ -32,7 +32,8 @@ import abc.aspectj.visit.*;
 
 /** patterns to capture constructor joinpoints.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class ConstructorPattern_c extends Node_c 
                                   implements  ConstructorPattern

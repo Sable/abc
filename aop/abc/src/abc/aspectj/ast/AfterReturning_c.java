@@ -30,7 +30,8 @@ import polyglot.ext.jl.ast.NodeFactory_c;
 
 import abc.weaving.aspectinfo.AbcFactory;
 /** specification part of afterreturning advice.
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class AfterReturning_c extends AdviceSpec_c 
                               implements AfterReturning
@@ -96,7 +97,7 @@ public class AfterReturning_c extends AdviceSpec_c
 
         w.end();
     }
-    
+
     public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
 	if (returnVal == null) {
 	    return new abc.weaving.aspectinfo.AfterReturningAdvice(position());

@@ -23,9 +23,10 @@ import polyglot.ast.Node;
 
 
 /** 
- * represent  ClassnamePatternExpr.SimpleNamePattern in pointcuts.
+ *  represent  ClassnamePatternExpr.SimpleNamePattern in pointcuts.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface ClassTypeDotId extends Node
 {

@@ -30,7 +30,8 @@ import polyglot.ext.jl.ast.Node_c;
 
 /** represent (ClassNamePatternExpr.new) in pointcuts
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen 
  */
 public class ClassTypeDotNew_c extends Node_c implements ClassTypeDotNew
 {

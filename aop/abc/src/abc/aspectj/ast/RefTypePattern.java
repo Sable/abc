@@ -26,10 +26,10 @@ import polyglot.ast.Node;
 import polyglot.types.SemanticException;
 
 /**
- * A pattern for a reference type
+ *  A pattern for a reference type
  * 
- * @author Aske Simon Christensen
- * @author Oege de Moor
+ *  @author Aske Simon Christensen
+ *  @author Oege de Moor
  *
  */
 public interface RefTypePattern extends Node

@@ -34,9 +34,10 @@ import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.AbcFactory;
 
 /**
- * declare soft : <exceptiontype> : <pointcut>
+ *  declare soft : <exceptiontype> : <pointcut>
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class DeclareSoft_c extends DeclareDecl_c 

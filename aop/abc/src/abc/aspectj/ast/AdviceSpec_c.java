@@ -30,7 +30,8 @@ import polyglot.ext.jl.ast.Node_c;
 
 /** An advice specification states the kind of advice and the formals.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
 {
@@ -84,8 +85,9 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
     public void setReturnVal(AdviceFormal rv) {
 	returnVal = rv;
     }
-
-   public String kind() {
-   		return "advice";
-   }
+    /*
+    public String kind() {
+	return "advice";
+    }
+    */
 }

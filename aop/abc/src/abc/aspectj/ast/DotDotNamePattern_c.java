@@ -31,7 +31,8 @@ import java.util.*;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 

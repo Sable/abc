@@ -31,9 +31,10 @@ import polyglot.ext.jl.ast.Node_c;
 import abc.aspectj.visit.PatternMatcher;
 
 /** 
- * Class name pattern expressions can combine name patterns with logical operators.
+ *  Class name pattern expressions can combine name patterns with logical operators.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public abstract class ClassnamePatternExpr_c extends Node_c 
                                     implements ClassnamePatternExpr

@@ -62,7 +62,8 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c

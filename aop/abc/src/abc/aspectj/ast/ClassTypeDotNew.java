@@ -23,7 +23,8 @@ import polyglot.ast.Node;
 
 /** represent (ClassNamePatternExpr.new) in pointcuts
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface ClassTypeDotNew extends Node
 {

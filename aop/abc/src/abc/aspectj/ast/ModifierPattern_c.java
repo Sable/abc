@@ -29,7 +29,8 @@ import java.util.*;
 import polyglot.ext.jl.ast.Node_c;
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class ModifierPattern_c extends Node_c implements ModifierPattern

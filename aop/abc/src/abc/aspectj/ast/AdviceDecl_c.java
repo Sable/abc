@@ -94,9 +94,10 @@ import abc.weaving.aspectinfo.AbcFactory;
  *    : 
  * 	call(* fac(*)) && args(x)  // pointcut
  *    { System.out.println(x);} // body
- * </code>
- *  * @author Oege de Moor
- *  */
+ *  </code>
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
+ */
 public class AdviceDecl_c extends MethodDecl_c
     implements AdviceDecl, ContainsAspectInfo, MakesAspectMethods
 {

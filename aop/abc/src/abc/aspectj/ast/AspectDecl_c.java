@@ -73,11 +73,12 @@ import abc.aspectj.visit.ContainsAspectInfo;
 import abc.weaving.aspectinfo.*;
 
 /**
- * A <code>AspectDecl</code> is the definition of an aspect, abstract aspect,
- * or privileged. It may be a public or other top-level aspect, or an inner
- * named aspect.
+ *  A <code>AspectDecl</code> is the definition of an aspect, abstract aspect,
+ *  or privileged. It may be a public or other top-level aspect, or an inner
+ *  named aspect.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
  
 public class AspectDecl_c extends AJClassDecl_c

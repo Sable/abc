@@ -30,9 +30,10 @@ import polyglot.ext.jl.ast.Node_c;
 
 
 /** 
- * represent  ClassnamePatternExpr.SimpleNamePattern in pointcuts.
+ *  represent  ClassnamePatternExpr.SimpleNamePattern in pointcuts.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class ClassTypeDotId_c extends Node_c implements ClassTypeDotId
 {

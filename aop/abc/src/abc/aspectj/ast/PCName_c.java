@@ -39,8 +39,9 @@ import abc.aspectj.visit.DependsCheck;
 import abc.aspectj.visit.DependsChecker;
 
 /**
- * A reference to a named pointcut.
- * @author Oege de Moor
+ *  A reference to a named pointcut.
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class PCName_c extends Pointcut_c implements PCName, DependsCheck

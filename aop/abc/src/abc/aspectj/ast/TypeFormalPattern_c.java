@@ -29,8 +29,9 @@ import java.util.*;
 import polyglot.ext.jl.ast.Node_c;
 
 /**
- * A formal pattern that is a type pattern expression.
- * @author Oege de Moor
+ *  A formal pattern that is a type pattern expression.
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class TypeFormalPattern_c extends Node_c 

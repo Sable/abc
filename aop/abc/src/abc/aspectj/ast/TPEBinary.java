@@ -24,7 +24,8 @@ import polyglot.ast.Precedence;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public interface TPEBinary extends TypePatternExpr

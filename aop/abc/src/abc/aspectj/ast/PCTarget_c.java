@@ -32,7 +32,8 @@ import abc.aspectj.types.AJContext;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class PCTarget_c extends Pointcut_c implements PCTarget

@@ -24,7 +24,8 @@ import polyglot.util.Position;
 
 /** Wildcard argument for args,this,target and named pointcuts.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class ArgStar_c extends ArgPattern_c implements ArgStar {
 

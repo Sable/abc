@@ -30,7 +30,8 @@ import java.util.*;
 
 /** negation of a ClassnamePatternExpr.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
 {

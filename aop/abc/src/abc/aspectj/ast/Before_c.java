@@ -29,7 +29,8 @@ import java.util.*;
 
 /** specification part of before advice
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class Before_c extends AdviceSpec_c 
                               implements Before

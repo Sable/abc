@@ -26,7 +26,9 @@ import abc.weaving.residues.Residue;
 import abc.soot.util.LocalGeneratorEx;
 
 
-/** An advice specification. */
+/** An advice specification.
+ *  @author Aske Simon Christensen
+ */
 public interface AdviceSpec {
     
     /** Is this advice spec for "after" advice? 

@@ -1,5 +1,4 @@
 /* Abc - The AspectBench Compiler
- * Copyright (C) 2004 oege
  * Copyright (C) 2004 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or

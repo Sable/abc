@@ -66,7 +66,8 @@ import abc.weaving.aspectinfo.MethodCategory;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class IntertypeMethodDecl_c extends MethodDecl_c

@@ -30,7 +30,8 @@ import java.util.*;
 
 /** ClassnamePatternExpr that is just a name pattern.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class CPEName_c extends ClassnamePatternExpr_c 
     implements CPEName, ContainsNamePattern

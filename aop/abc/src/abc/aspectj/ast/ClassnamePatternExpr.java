@@ -28,9 +28,10 @@ import polyglot.util.*;
 
 
 /** 
- * Class name pattern expressions can combine name patterns with logical operators.
+ *  Class name pattern expressions can combine name patterns with logical operators.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 
 public interface ClassnamePatternExpr extends Node

@@ -30,7 +30,8 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 /** specification part of around advice.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class Around_c extends AdviceSpec_c 
                               implements Around

@@ -31,7 +31,8 @@ import abc.aspectj.types.AJContext;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class PCArgs_c extends Pointcut_c implements PCArgs

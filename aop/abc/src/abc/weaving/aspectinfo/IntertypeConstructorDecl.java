@@ -45,6 +45,7 @@ import soot.*;
   * 
   * The class below encodes the latter scheme, for code generation in the target class.
   * 
+  * @author Aske Simon Christensen
   * @author Oege de Moor
   */
 

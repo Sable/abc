@@ -24,8 +24,8 @@ import polyglot.ast.Node;
 
 /**
  * 
- * @author Oege de Moor
- * @author Aske Simon Christensen
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 
 public interface FormalPattern extends Node

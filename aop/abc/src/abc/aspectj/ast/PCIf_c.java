@@ -40,7 +40,8 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods

@@ -30,7 +30,8 @@ import java.util.*;
 
 /** binary operators on classname pattern expressions.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class CPEBinary_c extends ClassnamePatternExpr_c 
                          implements CPEBinary

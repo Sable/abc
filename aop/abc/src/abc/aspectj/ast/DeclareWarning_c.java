@@ -32,9 +32,10 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.DeclareMessage;
 
 /**
- * declare warning : <pointcut> : <message>;
+ *  declare warning : <pointcut> : <message>;
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class DeclareWarning_c extends DeclareDecl_c 

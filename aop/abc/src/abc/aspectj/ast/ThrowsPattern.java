@@ -25,8 +25,8 @@ import polyglot.types.*;
 
 /**
  * 
- * @author Oege de Moor
- * @ author Aske Simon Christensen
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface ThrowsPattern extends Node
 {

@@ -23,7 +23,8 @@ import polyglot.ast.Ambiguous;
 
 /** Fillers for args(x,..) etc. 
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface ArgDotDot extends ArgPattern {
 

@@ -32,7 +32,8 @@ import java.util.regex.*;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class DotNamePattern_c extends NamePattern_c 

@@ -32,7 +32,8 @@ import abc.aspectj.visit.PatternMatcher;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class FieldPattern_c extends Node_c 

@@ -21,7 +21,8 @@ package abc.aspectj.ast;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public interface TPEType extends TypePatternExpr

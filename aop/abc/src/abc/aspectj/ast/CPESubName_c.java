@@ -31,8 +31,8 @@ import java.util.*;
 
 /** a (class+) ClassnamePatternExpr that matches all subclasses.
  * 
- * @author Oege de Moor
- * @author Aske Simon Christensen
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class CPESubName_c extends ClassnamePatternExpr_c 
     implements CPESubName, ContainsNamePattern

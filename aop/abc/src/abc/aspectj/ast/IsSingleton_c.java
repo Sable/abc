@@ -31,7 +31,8 @@ import abc.aspectj.types.AspectType;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class IsSingleton_c extends PerClause_c implements IsSingleton

@@ -46,10 +46,11 @@ import polyglot.ext.jl.ast.TypeNode_c;
 import polyglot.ext.jl.ast.AmbTypeNode_c;
 
 /** Represents either a type or a local. This is for arguments of <code>args(..)</code>,
- * <code>this(..)</code>, <code>target(..)</code> as well as named pointcuts.
- * Instances disambiguate to a Local or TypeNode.
+ *  <code>this(..)</code>, <code>target(..)</code> as well as named pointcuts.
+ *  Instances disambiguate to a Local or TypeNode.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 	TypeNode type; // an identifier that is an advice formal or a type

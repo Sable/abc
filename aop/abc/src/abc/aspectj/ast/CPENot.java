@@ -21,8 +21,8 @@ package abc.aspectj.ast;
 
 /** negation of a ClassnamePatternExpr.
  * 
- * @author Oege de Moor
- * @ author Aske Simon Christensen
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface CPENot extends ClassnamePatternExpr
 {

@@ -31,8 +31,8 @@ import java.util.*;
 
 /** ClassnamePatternExpr that matches anything.
  * 
- * @author Oege de Moor
- * @author Aske Simon Christensen
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 
 public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUniversal

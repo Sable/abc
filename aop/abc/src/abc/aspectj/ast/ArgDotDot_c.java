@@ -24,7 +24,8 @@ import polyglot.util.Position;
 
 /** Fillers for args(x,..) etc. 
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class ArgDotDot_c extends ArgPattern_c implements ArgDotDot {
 

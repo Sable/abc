@@ -26,7 +26,9 @@ import polyglot.types.CodeInstance;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.TransformsAspectReflection;
 
-/** @author Oege de Moor */
+/** @author Oege de Moor
+ *  @author Aske Simon Christensen
+ */
 
 public interface AdviceDecl extends MethodDecl, 
                                     MakesAspectMethods, 

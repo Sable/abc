@@ -25,7 +25,8 @@ import polyglot.types.*;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public interface ModifierPattern extends Node

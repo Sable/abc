@@ -30,7 +30,8 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 /** specification part of afterthrowing advice.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class AfterThrowing_c extends AdviceSpec_c 
                              implements AfterThrowing

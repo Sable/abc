@@ -30,7 +30,8 @@ import java.util.*;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class TPEType_c extends TypePatternExpr_c implements TPEType

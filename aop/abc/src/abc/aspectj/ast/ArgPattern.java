@@ -22,7 +22,8 @@ package abc.aspectj.ast;
 import polyglot.ast.Ambiguous;
 
 /** argument patterns for args, this, target and named pointcuts 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface ArgPattern extends Ambiguous {
 

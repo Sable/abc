@@ -25,7 +25,8 @@ import polyglot.ast.Precedence;
 
 /** binary operators on classname pattern expressions.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface CPEBinary extends ClassnamePatternExpr
 {

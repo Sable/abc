@@ -22,8 +22,9 @@ package abc.aspectj.ast;
 import polyglot.ast.Node;
 
 /**
- * A formal pattern that is a type pattern expr.
- * @author Oege de Moor
+ *  A formal pattern that is a type pattern expr.
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface TypeFormalPattern extends FormalPattern
 {

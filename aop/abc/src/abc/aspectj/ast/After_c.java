@@ -28,7 +28,8 @@ import java.util.*;
 
 /** specification part of after advice.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public class After_c extends AdviceSpec_c 
                              implements After

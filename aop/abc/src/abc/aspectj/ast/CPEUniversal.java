@@ -23,7 +23,8 @@ import java.util.List;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public interface CPEUniversal extends ClassnamePatternExpr

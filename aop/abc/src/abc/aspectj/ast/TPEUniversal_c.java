@@ -30,9 +30,9 @@ import polyglot.visit.*;
 import java.util.*;
 
 /**
- * A type pattern expression that matches everything.
- * @author Oege de Moor
- * @author Aske Simon Christensen
+ *  A type pattern expression that matches everything.
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class TPEUniversal_c extends TypePatternExpr_c implements TPEUniversal

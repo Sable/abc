@@ -38,7 +38,8 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public class DeclarePrecedence_c extends DeclareDecl_c 

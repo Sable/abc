@@ -25,7 +25,8 @@ import java.util.*;
 
 /** patterns to capture constructor joinpoints.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface ConstructorPattern extends MethodConstructorPattern
 {

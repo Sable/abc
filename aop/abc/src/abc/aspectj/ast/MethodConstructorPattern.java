@@ -23,7 +23,8 @@ import polyglot.ast.Node;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public interface MethodConstructorPattern extends Node

@@ -26,7 +26,8 @@ import java.util.List;
 
 /** An advice specification states the kind of advice and the formals.
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface AdviceSpec extends Node
 {

@@ -30,7 +30,8 @@ import polyglot.ext.jl.ast.Node_c;
 
 /**
  * 
- * @author Oege de Moor
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  *
  */
 public abstract class NamePattern_c extends Node_c implements NamePattern

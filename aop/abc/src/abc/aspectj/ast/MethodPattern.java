@@ -26,8 +26,8 @@ import java.util.List;
 
 /**
  * 
- * @author Oege de Moor
- * @author Aske Simon Christensen
+ *  @author Oege de Moor
+ *  @author Aske Simon Christensen
  */
 public interface MethodPattern extends MethodConstructorPattern
 {
