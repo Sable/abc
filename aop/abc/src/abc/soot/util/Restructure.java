@@ -13,9 +13,7 @@ import abc.weaving.aspectinfo.MethodCategory;
 
 
 
-/** This class contains a variety of help
-import abc.weaving.weaver.AroundWeaver.InternalError;
-er methods to restructure Soot
+/** This class contains a variety of helper methods to restructure Soot
  *    method Bodies.
  *
  * @author Laurie Hendren
@@ -406,6 +404,15 @@ public class Restructure {
 
     private static Map/*<SootMethod,Local>*/ thiscopies=new Hashtable();
 
+    /** Restructure the method to place a copy of 'this' in a new local
+     *  variable. Why is this useful? The local bound by the relevant 
+     *  identity statement will always point to local variable slot 0
+     *  (ignoring ITD stuff), which will always be 'this' at method entry
+     *  However, optimised bytecode might reuse slot 0 at a later point,
+     *  and we want to be sure we really have a handle on the value of
+     *  'this', not whatever it gets reused for later (which might even
+     *  be the wrong type).
+     */
     public static Local getThisCopy(SootMethod m) {
 	if(thiscopies.containsKey(m)) return ((Local) thiscopies.get(m));
 	
