@@ -124,13 +124,13 @@ public class PointcutCodeGen {
 					SootMethod adviceMethod, 
 					AdviceApplication appl,
 					int originalOrderID) {
-			this.targetMethod=targetMethod;
+			this.targetAdviceMethod=targetMethod;
 			this.execappl=appl;
 			this.adviceMethod=adviceMethod;
 			this.originalOrderID=originalOrderID;
 		}
 		
-		final SootMethod targetMethod;
+		final SootMethod targetAdviceMethod;
 		final AdviceApplication execappl;
 		final SootMethod adviceMethod;
 		//final int original
@@ -154,7 +154,7 @@ public class PointcutCodeGen {
 		
 		
 		public String toString() {
-			return adviceMethod.getName() + "=>" + targetMethod.getName() 
+			return adviceMethod.getName() + "=>" + targetAdviceMethod.getName() 
 				+ " (" + originalOrderID + ")" ;
 		}
 	}
@@ -178,7 +178,7 @@ public class PointcutCodeGen {
 			if (!graph.containsKey(appl.adviceMethod))
 				graph.put(appl.adviceMethod, new HashSet());
 			
-			((HashSet)graph.get(appl.adviceMethod)).add(appl.targetMethod);		
+			((HashSet)graph.get(appl.adviceMethod)).add(appl.targetAdviceMethod);		
 		}
 		Set visited=new HashSet();
 		Set explored=new HashSet();
@@ -186,7 +186,7 @@ public class PointcutCodeGen {
 		//Integer ID=new Integer(0);
 		currentOrderID=0;
 		
-		// sort the graph (store number for each node)
+		// sort the graph (store a number for each node)
 		for (Iterator it=graph.keySet().iterator(); it.hasNext();) {
 			SootMethod adviceMethod=(SootMethod)it.next();
 			topologicalSort(adviceMethod, graph, visited, explored, numbers);
@@ -198,7 +198,7 @@ public class PointcutCodeGen {
 			AroundAdviceExecutionApplication appl=
 				(AroundAdviceExecutionApplication)it.next();
 			
-			appl.orderID=((Integer)numbers.get(appl.targetMethod)).intValue();
+			appl.orderID=((Integer)numbers.get(appl.targetAdviceMethod)).intValue();
 		}	
 		
 		// sort the applications
@@ -222,11 +222,12 @@ public class PointcutCodeGen {
 		if (explored.contains(adviceMethod))
 			return;
 		
-		if (visited.contains(adviceMethod)) 
+		if (visited.contains(adviceMethod)) {
 			throw new RuntimeException(
 				"Semantic error: cyclic graph (adviceexecution): " + // TODO: Fix this message!
 				adviceMethod			
 			);
+		}
 		
 		visited.add(adviceMethod);
 		
@@ -254,15 +255,15 @@ public class PointcutCodeGen {
 			} catch (Exception e) {
 			}
 		}
-			
+		
 		for (Iterator it=aroundAdviceExecutionApplications.iterator();
 				it.hasNext();) {
 			AroundAdviceExecutionApplication appl=
 				(AroundAdviceExecutionApplication)it.next();
 			
-			LocalGeneratorEx lg=new LocalGeneratorEx(appl.targetMethod.getActiveBody());
-			SootClass cl=appl.targetMethod.getDeclaringClass();
-			weave_one(cl, appl.targetMethod, lg, appl.execappl);			 
+			LocalGeneratorEx lg=new LocalGeneratorEx(appl.targetAdviceMethod.getActiveBody());
+			SootClass cl=appl.targetAdviceMethod.getDeclaringClass();
+			weave_one(cl, appl.targetAdviceMethod, lg, appl.execappl);			 
 		}
 	}
 	private List aroundAdviceExecutionApplications=new LinkedList();

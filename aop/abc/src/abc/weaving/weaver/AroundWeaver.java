@@ -1193,22 +1193,20 @@ public class AroundWeaver {
 						throw new InternalAroundError("Constructor must have void return type: " + 
 							joinpointMethod);
 				}
-				//if (joinpointMethod.getName().startsWith("around$"))
-				//	throw new CodeGenException("Execution pointcut matching advice method.");
-	
-				/*if (!bStatic) {
-					Local lThisCopy = joinpointBody.getThisLocal();
-					Stmt succ = (Stmt) joinpointStatements.getSuccOf(begin);
-					if (succ instanceof AssignStmt) {
-						AssignStmt s = (AssignStmt) succ;
-						if (s.getLeftOp() == lThisCopy) {
-							debug("moving 'thisCopy=this' out of execution shadow.");
-							// TODO: fix thisCopy strategy.
-							joinpointStatements.remove(s);
-							joinpointStatements.insertBefore(s, begin);
-						}
-					}
+				
+				/*if (adviceMethod.getReturnType().equals(VoidType.v()) &&
+						!joinpointMethod.getReturnType().equals(VoidType.v())) {
+					throw new InternalAroundError(
+							"Front-end issue: Applying void advice method " + adviceMethod + 
+							"to non-void method " + joinpointMethod);
+				}
+				if (!adviceMethod.getReturnType().equals(VoidType.v()) &&
+						joinpointMethod.getReturnType().equals(VoidType.v())) {
+					throw new InternalAroundError(
+							"Front-end issue: Applying non-void advice method " + adviceMethod + 
+							"to void method " + joinpointMethod);
 				}*/
+				
 				if (joinpointMethod.getReturnType().equals(VoidType.v())) {
 					if (
 						! adviceMethod.getReturnType().equals(VoidType.v())					 
@@ -1226,7 +1224,7 @@ public class AroundWeaver {
 					try {
 						returnStmt = (ReturnStmt) joinpointStatements.getSuccOf(end);
 					} catch (Exception ex) {
-						throw new CodeGenException("Expecting return statement after shadow " + "for execution advice in non-void method");
+						throw new InternalAroundError("Expecting return statement after shadow " + "for execution advice in non-void method");
 					}
 					if (returnStmt.getOp() instanceof Local) {
 						returnedLocal = (Local) returnStmt.getOp();
@@ -1242,7 +1240,9 @@ public class AroundWeaver {
 					
 				}
 			} else if (adviceAppl instanceof HandlerAdviceApplication) {
-				throw new RuntimeException("Semantic error: Cannot apply around advice to exception handler"); // TODO: fix message
+				throw new InternalAroundError(
+						"Front-end issue: " +
+						"Cannot apply around advice to exception handler");
 			} else if (adviceAppl instanceof StmtAdviceApplication ||
 					   adviceAppl instanceof NewStmtAdviceApplication) { 
 			
@@ -1266,6 +1266,13 @@ public class AroundWeaver {
 					if (leftOp instanceof Local) {
 						// get
 						returnedLocal = (Local) leftOp;
+						
+						/*if (adviceMethod.getReturnType().equals(VoidType.v())) {
+							throw new InternalAroundError(
+									"Front-end issue: Applying void advice method " + adviceMethod + 
+									"to non-void joinpoint" + applStmt);		
+						}*/
+						
 					} else if ((leftOp instanceof FieldRef && rightOp instanceof Local) ||	
 							   (leftOp instanceof FieldRef && rightOp instanceof Constant)) {
 						// set
@@ -1291,10 +1298,17 @@ public class AroundWeaver {
 						! adviceMethod.getReturnType().equals(VoidType.v())					 
 						) { 
 						// make dummy local to be returned. assign default value.
+						Type returnType=invStmt.getInvokeExpr().getType(); // used to be adviceMethod.getReturnType()
+						/*if (returnType.equals(VoidType.v())) {
+							throw new InternalAroundError(
+									"Front-end issue: Applying non-void advice method " + adviceMethod + 
+									"to void method " + invStmt.getInvokeExpr().getMethod());		
+						}*/
+						
 						LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
-						Local l=lg.generateLocal(adviceMethod.getReturnType(), "returnedLocal");
+						Local l=lg.generateLocal(returnType, "returnedLocal"); 
 						Stmt s=Jimple.v().newAssignStmt(l, 
-							Restructure.JavaTypeInfo.getDefaultValue(adviceMethod.getReturnType()));
+							Restructure.JavaTypeInfo.getDefaultValue(returnType));
 						joinpointStatements.insertAfter(s, begin);
 						returnedLocal=l;			
 					}

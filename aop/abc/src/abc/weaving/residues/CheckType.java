@@ -4,6 +4,7 @@ import soot.*;
 import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.Restructure;
 import abc.weaving.weaver.WeavingContext;
 
 /** Check the type of a context value
@@ -36,11 +37,19 @@ public class CheckType extends Residue {
 	if(from instanceof PrimType || to instanceof PrimType) {
 	    if(from.equals(to)) return AlwaysMatch.v;
 
+	    if (!(from instanceof PrimType && to instanceof PrimType))
+	    	return NeverMatch.v; // only one of them primitive
+
 	    // FIXME: check that the Java widening primitive conversions are
 	    // the right thing to do in this context
 	    // attempts to create a test case crash ajc, which makes things hard
 
-	    if(from instanceof ByteType) from=ShortType.v();
+	    if (Restructure.JavaTypeInfo.isWideningCast(from, to))
+	    	return AlwaysMatch.v;
+    
+	    return NeverMatch.v;
+	    
+	    /*if(from instanceof ByteType) from=ShortType.v();
 	    if(from.equals(to)) return AlwaysMatch.v;
 
 	    if(from instanceof ShortType || from instanceof CharType) 
@@ -55,8 +64,8 @@ public class CheckType extends Residue {
 
 	    if(from instanceof FloatType) from=DoubleType.v();
 	    if(from.equals(to)) return AlwaysMatch.v;
+	    */
 
-	    return NeverMatch.v;
 	} else {
 	    FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
 
@@ -69,6 +78,9 @@ public class CheckType extends Residue {
 	    // must be replaced by an "is not null" check
 	    // This is because if ajc treats null differently if it 
 	    // eliminates the static type check than if it doesn't.
+	    
+	    if (Restructure.JavaTypeInfo.isImpossibleConversion(from, to))
+	    	return NeverMatch.v;
 
 	}
 

@@ -574,6 +574,107 @@ public class Restructure {
 		public final static int refType=8;
 		public final static int typeCount=9;
 		
+		/*
+		 * This table is from Java in a Nutshell 3rd edition, page 28
+		 * X - same type
+		 * N - not allowed
+		 * Y - allowed implicitly
+		 * C - needs explicit cast
+		 */
+		private final static char [][] casts =
+			{ 
+				{ 'X', 'N', 'N', 'N', 'N', 'N', 'N', 'N'},
+				{ 'N', 'X', 'Y', 'C', 'Y', 'Y', 'Y', 'Y'},
+				{ 'N', 'C', 'X', 'C', 'Y', 'Y', 'Y', 'Y'},
+				{ 'N', 'C', 'C', 'X', 'Y', 'Y', 'Y', 'Y'},
+				{ 'N', 'C', 'C', 'C', 'X', 'Y', 'Y', 'Y'},
+				{ 'N', 'C', 'C', 'C', 'C', 'X', 'Y', 'Y'},
+				{ 'N', 'C', 'C', 'C', 'C', 'C', 'X', 'Y'},
+				{ 'N', 'C', 'C', 'C', 'C', 'C', 'C', 'X'}
+			};
+		public static char getSimpleTypeCastStatus(Type from, Type to) {
+			int f=sootTypeToInt(from);
+			if (!isSimpleType(f))
+				throw new RuntimeException();
+			int t=sootTypeToInt(to);
+			if (!isSimpleType(t))
+				throw new RuntimeException();
+			
+			if (casts[longType][intType]!='C')
+				throw new RuntimeException();
+			
+			return casts[f][t];
+		}
+		
+		public static boolean isSimpleType(Type t) {
+			return isSimpleType(sootTypeToInt(t));
+		}
+		
+		public static boolean isSimpleType(int type) {
+			return type!=refType;
+		}
+		public static boolean isWideningCast(Type from, Type to) {
+			char c=getSimpleTypeCastStatus(from, to);
+			return c=='Y' || c=='X'; 
+		}
+		// TODO: make sure this is correct. add support for arrays.
+		// how about AnySubType?
+		public static boolean isImpossibleConversion(Type from, Type to) {
+			if (to.equals(from))
+				return false;
+			
+			if (isSimpleType(from) && isSimpleType(to))
+				return isImpossibleCastSimple(from, to);
+			
+			if (isSimpleType(from) || isSimpleType(to))
+				return true;
+			
+			if (!(from instanceof RefType && to instanceof RefType)) {
+				Type objectType=Scene.v().getSootClass("java.lang.Object").getType();
+				if (from instanceof ArrayType && to instanceof RefType &&
+					!to.equals(objectType)) 
+					return true; // cast from array to non-object reftype
+				
+				if (to instanceof ArrayType && from instanceof RefType &&
+						!from.equals(objectType)) 
+					return true; // cast from non-object reftype to array
+				
+				/*
+				 * Some arrays can be converted, so we can't use this rule.
+				 * Quote soot source:
+				 * 	// You can store a int[][] in a Object[]. Yuck!
+				 	// Also, you can store a Interface[] in a Object[] 
+				 if (to instanceof ArrayType && from instanceof ArrayType)
+					return true; // arrays can't be converted
+				*/
+				
+				return false;
+			}
+			
+			RefType rFrom=(RefType)from;
+			RefType rTo=(RefType)to;
+			
+			if (rTo.getSootClass().isInterface())  // from could implement this interface
+				return false;
+			
+			if (rFrom.getSootClass().isInterface()) // from can implement other interfaces and 
+				return false;						// a non-interface type, so cast could be possible
+			
+			FastHierarchy hier=Scene.v().getOrMakeFastHierarchy();
+			if (hier.isSubclass(rFrom.getSootClass(), rTo.getSootClass()) ||
+				hier.isSubclass(rTo.getSootClass(), rFrom.getSootClass())) 
+				return false;
+			else
+				return true;					
+		}
+		public static boolean isImpossibleCastSimple(Type from, Type to) {
+			char c=getSimpleTypeCastStatus(from, to);
+			return c=='N';
+		}
+		/*public static boolean canBeInstanceOf(Type source, Type target) {
+			
+		}*/
+		
 		public static int sootTypeToInt(Type type) {
 			if (type.equals(IntType.v()))
 				return intType;
