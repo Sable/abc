@@ -989,7 +989,7 @@
     <ajc-test dir="pureJava" title="return;;; is not really legal"
       keywords="from-java,purejava"
       abccomment="ajc doesn't report one error per spurious ;, abc does.
-                  Added additional <message>s. PA/AGS"
+                  Added additional messages. PA/AGS"
     >
         <compile files="ReachableEmpty.java">
             <ajcmessage kind="error" line="5"/>
