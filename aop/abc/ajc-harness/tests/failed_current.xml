@@ -41,10 +41,6 @@
         <compile files="MethodInner.java"></compile>
         <run class="MethodInner"></run>
     </ajc-test>
-<ajc-test title="holding onto proceed calls in a closure-like way" num="410" keywords="from-resolved_10x,knownLimitation" dir="new">
-        <compile files="HoldProceed.java"></compile>
-        <run class="HoldProceed"></run>
-    </ajc-test>
 <ajc-test title="join points exist in the execution of field initializers" num="418" keywords="from-resolved_10x" dir="new">
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
@@ -84,7 +80,7 @@
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 77201, removing the offending parentheses.                   ODM 17/08/04">
+<ajc-test title="declare soft and throw statements" pr="34925" num="77201" dir="abctests/bugs" abccomment="Cloned from 772, removing the offending parentheses.                   ODM 17/08/04">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>

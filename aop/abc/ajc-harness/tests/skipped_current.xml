@@ -9,6 +9,11 @@
         <compile files="CatchAdvice.java"></compile>
         <run class="CatchAdvice"></run>
     </ajc-test>
+<ajc-test title="holding onto proceed calls in a closure-like way" num="410" keywords="from-resolved_10x,knownLimitation" dir="new" abccomment="ajc fails in the same way as abc, due to a bug in the                    test case. Duplicated as 41001.">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="HoldProceed.java"></compile>
+        <run class="HoldProceed"></run>
+    </ajc-test>
 <ajc-test title="pcd if() expression visibility at compile-time  (minimal operation)" num="488" keywords="from-resolved_10x" dir="new" abccomment="tries to use target,args etc as vars in pointcut - we skip">
         <abckeywords><skip></skip></abckeywords>
         <compile options="-Xlint:ignore" files="IfPCDExprVisibility.java"></compile>
