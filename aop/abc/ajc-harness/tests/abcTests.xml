@@ -7216,10 +7216,14 @@
     </ajc-test>
 
 	<ajc-test dir="errors"
+         abccomment="better errors from abc. 19/07/04 ODM"
 		title="compile error expected for abstract pointcut outside abstract aspect">
 		<compile files="AbstractPointcutCE.java">
-			<message kind="error" line="5"/>
-			<message kind="error" line="10"/>
+			<ajcmessage kind="error" line="5"/>
+			<ajcmessage kind="error" line="10"/>
+                        <message kind="error" line="5"/>
+			<message kind="error" line="4"/>
+                        <message kind="error" line="9"/>
 		</compile>
 	</ajc-test>
 	
@@ -7242,11 +7246,16 @@
 
 	<ajc-test dir="bugs"
 		pr="40814"
+               abccomment="an extra message from abc. ODM 19/07/04"
 		title="compile error expected for interface pointcuts">
 		<compile files="AbstractPointcutCE.java">
-			<message kind="error" line="7"/>
+			<ajcmessage kind="error" line="7"/>
+			<ajcmessage kind="error" line="11"/>		
+			<ajcmessage kind="error" line="15"/>
+	                <message kind="error" line="7"/>
 			<message kind="error" line="11"/>		
 			<message kind="error" line="15"/>
+                        <message kind="error" line="14"/>
 		</compile>
 	</ajc-test>
 
@@ -7277,6 +7286,7 @@
 		
 	<ajc-test dir="new/interfaceLibrary"
 		comment="prove that LibraryAspect is required"
+                abccomment="don't do aspectpath. ODM 19/07/04"
 		title="aspect-declared interface members in libraries - interfaceOnly.jar">
 		<compile 
 			files="Client.java" 
@@ -7286,11 +7296,13 @@
 		</ajc-test>
 
 	<ajc-test dir="new/interfaceLibrary"
+               abccomment="don't do aspectpath. ODM 19/07/04"
 		title="aspect-declared interface members in libraries - aspectOnly.jar">
 		<compile 
 			files="lib/LibraryInterface.java,
 					Client.java" 
 			aspectpath="aspectOnly.jar"/>
+            <abckeywords> <skip/> </abckeywords>
 		<run class="Client"/>
 		</ajc-test>
 		
@@ -7308,31 +7320,37 @@
 
 	<ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar"
-		comment="weaving required for implementations of interface? 
+		abccomment="only type error, but ok. ODM 19/07/04"
+                comment="weaving required for implementations of interface? 
 		         XXX Would prefer to support javac compiles of Client here, mimicked with classpath only"
 		>
 		<compile 
 			files="Client.java" 
 			classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
-			<message kind="error" line="9"/>
-			</compile>
+			<ajcmessage kind="error" line="9"/>
+			<message kind="error" line="14"/>
+                        </compile>
 		</ajc-test>
 
 	<ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar"
+                abccomment="abc bails out after type checking, but ok. ODM 19/07/04"
 		comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run"
 		>
 		<compile 
 			files="Client.java" 
 			classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
-			<message kind="error" line="9"/>
+			<ajcmessage kind="error" line="9"/>
+                        <message kind="error" line="14"/>
 			</compile>
 		</ajc-test>
 
 	<ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar"
-		comment="can weave to create library, and then weave clients"
+		abccomment="abc doesn't support aspect path. ODM 19/07/04"
+               comment="can weave to create library, and then weave clients"
 		>
+        <abckeywords> <skip/> </abckeywords>
 		<compile 
 			files="Client.java" 
 			classpath="aspectedInterfaceOnly.jar"
@@ -7342,9 +7360,11 @@
 
 	<ajc-test dir="new/interfaceLibrary"
 		title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar"
+                abccomment ="abc doesn't support aspectpath. ODM 19/07/04"
 		comment="works if source aspect and binary classpath woven with aspect? 
 		         should NOT warn about affected type not since affected type is already woven?"
 		>
+        <abckeywords> <skip/> </abckeywords>
 		<compile 
 			files="Client.java,LibraryAspect.java" 
 			classpath="aspectedInterfaceOnly.jar"/>
@@ -7354,6 +7374,7 @@
 
 	<ajc-test 
 		dir="bugs/interfaceLibrary"
+                abccomment="problem with loosing exception clauses on newly created soot methods. emailed abc list 19/07/04. ODM"
 		title="exception clause for aspect-declared interface methods - positive">
 		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"/>
 		<run class="Client"/>
@@ -7384,6 +7405,7 @@
 		
 	<ajc-test dir="bugs"
 		pr="41175"
+                abccomment="soot seems to loose declared exceptions on new methods. mailed abc list. 19/07/04 ODM."
 		title="reflective check of declared exceptions from aspect-declared methods">
 		<compile files="DeclaredExceptions.java"/>
 		<run class="DeclaredExceptions"/>
@@ -7447,13 +7469,14 @@
 			classpath="lib.jar">
 		    <ajcmessage kind="error" line="3"/>
 		    <message kind="error" line="3"/>
-		    <message kind="error" line="6"/>
 		</compile>
 	</ajc-test>
 	
 	<ajc-test dir="bugs/moreInterfaceLibrary"
 		pr="41123"
+                abccomment ="abc doesn't support weaving aspects from jars - error irrelevant. ODM 19/07/04"
 		title="Weaving failure when using injars (actual injars)">
+        <abckeywords> <skip/> </abckeywords>
 		<compile
 			files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
 		    <message kind="error" line="3"/>
@@ -7477,12 +7500,15 @@
 	
 	<ajc-test dir="bugs/throwsSignature"
 		pr="42539"
+                abccomment ="abc bails out after error but ok. ODM 19/07/04"
 		title="throw derivative pointcuts not advised">
 		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
-		    <message line="5" kind="warning" text="throws both"/>
-		    <message line="5" kind="error" text="throws Exception"/>
-		    <message line="7" kind="warning" text="throws both"/>
-		</compile>
+		    <ajcmessage line="5" kind="warning" text="throws both"/>
+		    <ajcmessage line="5" kind="error" text="throws Exception"/>
+		    <ajcmessage line="7" kind="warning" text="throws both"/>
+		    <message line="5" kind="warning"/>
+                    <message line="5" kind="error"/>
+                </compile>
 	</ajc-test>
 	
     <ajc-test dir="bugs" pr="42652"
@@ -7493,10 +7519,12 @@
     
 	<ajc-test dir="bugs/declareBinding"
 		pr="42740"
+                abccomment="awaiting tags with source locs, ok. ODM 19/07/04"
 		title="declare error fails on pointcuts composed from multiple classes">
 		<compile files="SampleExceptionHandling1.java">
-		    <message line="2" kind="error" text="no checked exceptions"/>
-		</compile>
+		    <ajcmessage line="2" kind="error"/>
+		    <message kind = "error"/>
+                </compile>
 	</ajc-test>
 
 	<ajc-test dir="bugs/declareSoftWithin"
@@ -7520,6 +7548,7 @@
     
   	<ajc-test dir="bugs/concretizeNpe" pr="43033"
 		title="NPE in concretization error path"
+                abccomment = "parse error location ok. ODM 19/07/04"
 		keywords="poorErrorMessages">
 		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
 		<!--
@@ -7529,8 +7558,9 @@
 		  <message line="12" kind="error" />
 		  <message line="13" kind="error" />
 		-->
-		  <message line="12" kind="error" />		
-		  <message line="13" kind="error" />
+		  <ajcmessage line="12" kind="error" />		
+		  <ajcmessage line="13" kind="error" />
+                  <message line="13" kind="error" />
 		</compile>
 	</ajc-test>
 
@@ -7554,28 +7584,39 @@
 			extdirs="lib/lowercase"/>
 	</ajc-test>
 
-	<ajc-test dir="bugs/privilege/packageProtected" pr="42711" 
+	<ajc-test dir="bugs/privilege/packageProtected" pr="42711"
+         abccomment="Awaiting Pavel's impl of privileged. ODM 19/07/04" 
             title="priviledged aspects calling methods from advice"> 
         <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java" /> 
     </ajc-test> 
 
     <ajc-test dir="bugs" pr="49457"
+         abccomment="abc messages differ but ok. ODM 19/07/04"
    	 title="No error on overloaded pointcuts in class">
         <compile files="OverloadedPointcutsInClass.java">
-        	<message kind="error" line="3" text="duplicate pointcut name: pc1"/>
-        	<message kind="error" line="4" text="duplicate pointcut name: pc1"/>
-        	<message kind="error" line="6" text="duplicate pointcut name: pc2"/>
-        	<message kind="error" line="7" text="duplicate pointcut name: pc2"/>
+        	<ajcmessage kind="error" line="3" text="duplicate pointcut name: pc1"/>
+        	<ajcmessage kind="error" line="4" text="duplicate pointcut name: pc1"/>
+        	<ajcmessage kind="error" line="6" text="duplicate pointcut name: pc2"/>
+        	<ajcmessage kind="error" line="7" text="duplicate pointcut name: pc2"/>
+                <message kind="error" line="6"/>
+        	<message kind="error" line="7"/>
+                <message kind="error" line="4"/>
         </compile>
     </ajc-test>
     
     <ajc-test dir="bugs" pr="49457"
+         abccomment ="abc text different but ok. ODM 19/07/04"
    	 title="No error on overloaded pointcuts unless binding variables">
         <compile files="OverloadedPointcutsInAspect.java">
-        	<message kind="error" line="15" text="duplicate pointcut name: pc"/>
-        	<message kind="error" line="16" text="duplicate pointcut name: pc"/>
-        	<message kind="error" line="18" text="incompatible type"/>
-        	<message kind="error" line="20" text="incompatible type"/>
+        	<ajcmessage kind="error" line="15" text="duplicate pointcut name: pc"/>
+        	<ajcmessage kind="error" line="16" text="duplicate pointcut name: pc"/>
+        	<ajcmessage kind="error" line="18" text="incompatible type"/>
+        	<ajcmessage kind="error" line="20" text="incompatible type"/>
+                <message kind="error" line="15"/>
+        	<message kind="error" line="16"/>
+        	<message kind="error" line="18"/>
+        	<message kind="error" line="20"/>
+                <message kind="error" line="16"/>
         </compile>
     </ajc-test>
 
@@ -7594,16 +7635,20 @@
     </ajc-test>
     
     <ajc-test dir="bugs" pr="47754"
+      abccomment ="text of message is better in abc. ODM 19/07/04"
       title="static method introduction on interfaces, should not be allowed">
         <compile files="StaticInterfaceMethods.java">
-		  <message kind="error" line="7" text="methods in interfaces cannot be declared static"/>
+		  <ajcmessage kind="error" line="7" text="methods in interfaces cannot be declared static"/>
+                  <message kind="error" line="7"/>
         </compile>
     </ajc-test>
 
 	<ajc-test dir="bugs" pr="45184"
+      abccomment="awaiting source pos tags. OK for now ODM 19/07/04"
       title="External pointcut refs not resolved if named pointcut used by declare">
         <compile files="DeclareErrorNamedPointcutCE.java">
- 	        <message kind="error" line="10" text="ref"/>
+ 	        <ajcmessage kind="error" line="10" text="ref"/>
+                <message kind="error"/>
         </compile>
     </ajc-test>
 
@@ -7700,23 +7745,26 @@
 <ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in java source"
       abccomment="error on line 8 is not reported by abc, but it is
-                  ok.  July 6/04 LJH"
+                  ok.  July 6/04 LJH. abc now reports both. July 19/04 ODM."
       >
         <compile files="ParserRecoveryTestPureJava.java">
-		  <ajcmessage kind="error" line="6"/>
-		  <ajcmessage kind="error" line="8"/>
 		  <message kind="error" line="6"/>
+		  <message kind="error" line="8"/>
         </compile>
     </ajc-test>     
     
     <ajc-test dir="bugs" 
 		pr="46280"
+     abccomment="Awaiting Pavel's implementation of privileged. ODM 19/07/04"
 		title="compiler issues error on inner aspects when privilieged">
         <compile files="PrivilegedParsing.java"/>
         <run class="PrivilegedParsing"/>
     </ajc-test>
 
     <ajc-test dir="bugs" pr="44586"
+      abccomment = "ITD field initialisers should not appear in the exec jps of host constructors, but
+                    they do appear in initialisation jps of the same. Need to discuss with Ganesh.
+                    ODM 19/07/04"
       title="After throwing advice on ctors doesn't execute for inter-type decl field inits">
         <compile files="AfterThrowingCtor.java">
         </compile>
@@ -7783,10 +7831,13 @@
 	
 	<ajc-test dir="bugs/interAbstract" 
 		pr="49784"
+                abccomment="I believe this to be an ajc bug. The program makes perfect sense,
+                            it compiles fine, and the test runs ok. ODM 19/07/4"
 		title="aspect declares interface method (abstract)">
         <compile files="InterfaceMethodDeclarationAbstract.java">
-        	<message kind="error" line="40" text="must implement" />
+        	<ajcmessage kind="error" line="40" text="must implement" />
         </compile>
+        <run class="InterfaceMethodDeclarationAbstract"/>
     </ajc-test>
 
     <ajc-test dir="bugs/interAbstract" 
@@ -7799,7 +7850,9 @@
 
     <ajc-test dir="bugs/interfaceDefinition" 
     	pr="43972"
+        abccomment = "abc doesn't do separate compilation. ODM 19/07/04 "
     	title="Use class implementing interface via aspect (not woven together)">
+        <abckeywords> <skip/> </abckeywords>
         <compile 
         	files="pack/DefineInterface.java,
         		   pack/InterfaceDefinition.java,
