@@ -37,6 +37,8 @@ public class GlobalAspectInfo {
     private Map/*<String,Aspect>*/ aspects_map = new HashMap();
 
     private Map/*<String,Integer>*/ method_categories = new HashMap();
+    private Map/*<String,String>*/ method_real_names = new HashMap();
+    private Map/*<String,String>*/ method_real_classes = new HashMap();
 
     public GlobalAspectInfo() {
 	
@@ -233,6 +235,20 @@ public class GlobalAspectInfo {
 	} else {
 	    return MethodCategory.NORMAL;
 	}
+    }
+
+    public void registerRealNameAndClass(String sig, String real_name, String real_class) {
+	//System.out.println("Method registered: "+sig+" ("+cat+")");
+	method_real_names.put(sig, real_name);
+	method_real_classes.put(sig, real_class);
+    }
+
+    public String getRealName(String sig) {
+	return (String)method_real_names.get(sig);
+    }
+
+    public String getRealClass(String sig) {
+	return (String)method_real_classes.get(sig);
     }
 
 }

@@ -281,6 +281,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addSuperFieldDispatches(supers.superfields(gai));
 
 	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
+	MethodCategory.registerRealNameAndClass(this, name(), host.toString());
     }
     
     public Supers getSupers() {

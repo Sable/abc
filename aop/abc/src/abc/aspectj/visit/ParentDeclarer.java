@@ -32,28 +32,36 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		String cl = (String)cli.next();
 		if (PatternMatcher.v().matchesClass(pat, cl)) {
 		    // FIXME: Check that cl is a class
-		    ClassType ct = typeSystem().typeForName(cl);
-		    if (ct.flags().isInterface())
-		    	throw new SemanticException("Interface "+cl+" cannot implement another interface");
-		    PCNode hi_cl = hierarchy.getClass(cl);
-		    if (ct instanceof ParsedClassType) {
-			ParsedClassType pct = (ParsedClassType)ct;
-			Iterator ini = interfaces.iterator();
-			while (ini.hasNext()) {
-			    TypeNode in = (TypeNode)ini.next();
-			    if (in.type().isClass()) {
-			    	ClassType ict = (ClassType)in.type();
-			    	if (!ict.flags().isInterface())
-						throw new SemanticException("Type "+in+" is not an interface");
-			    } else
-			    		throw new SemanticException("Type "+in+" is not a class");
-			    ClassType inct = (ClassType)in.type();
-			    PCNode hi_in = hierarchy.getClass(inct.fullName());
-
-			    //System.err.println("Declared "+cl+" to implement "+inct.fullName());
-
-			    pct.addInterface(inct);
-			    hi_cl.addParent(hi_in);
+		    ClassType ct = null;
+		    try {
+			ct = typeSystem().typeForName(cl);
+		    } catch (SemanticException e) {}
+		    if (ct != null) {
+			if (ct.flags().isInterface()) {
+			    throw new SemanticException("Interface "+cl+" cannot implement another interface");
+			}
+			PCNode hi_cl = hierarchy.getClass(cl);
+			if (ct instanceof ParsedClassType) {
+			    ParsedClassType pct = (ParsedClassType)ct;
+			    Iterator ini = interfaces.iterator();
+			    while (ini.hasNext()) {
+				TypeNode in = (TypeNode)ini.next();
+				if (in.type().isClass()) {
+				    ClassType ict = (ClassType)in.type();
+				    if (!ict.flags().isInterface()) {
+					throw new SemanticException("Type "+in+" is not an interface");
+				    }
+				} else {
+				    throw new SemanticException("Type "+in+" is not a class");
+				}
+				ClassType inct = (ClassType)in.type();
+				PCNode hi_in = hierarchy.getClass(inct.fullName());
+				
+				//System.err.println("Declared "+cl+" to implement "+inct.fullName());
+				
+				pct.addInterface(inct);
+				hi_cl.addParent(hi_in);
+			    }
 			}
 		    }
 		}
@@ -68,24 +76,29 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	    while (cli.hasNext()) {
 		String cl = (String)cli.next();
 		if (PatternMatcher.v().matchesClass(pat, cl)) {
-		    ClassType ct = typeSystem().typeForName(cl);
-		    PCNode hi_cl = hierarchy.getClass(cl);
-		    if (ct instanceof ParsedClassType) {
-			ParsedClassType pct = (ParsedClassType)ct;
-			if (!pct.superType().equals(object_type)) {
-			    throw new SemanticException("Class "+cl+" already has a superclass");
+		    ClassType ct = null;
+		    try {
+			ct = typeSystem().typeForName(cl);
+		    } catch (SemanticException e) {}
+		    if (ct != null) {
+			PCNode hi_cl = hierarchy.getClass(cl);
+			if (ct instanceof ParsedClassType) {
+			    ParsedClassType pct = (ParsedClassType)ct;
+			    if (!pct.superType().equals(object_type)) {
+				throw new SemanticException("Class "+cl+" already has a superclass");
+			    }
+			    if (!type.type().isClass()) {
+				//FIXME: Check that cl and type are either both classes or both intrfaces
+				throw new SemanticException("Type "+type+" is not an class");
+			    }
+			    ClassType typect = (ClassType)type.type();
+			    PCNode hi_type = hierarchy.getClass(typect.fullName());
+			    
+			    //System.err.println("Declared "+cl+" to extend "+typect.fullName());
+			    
+			    pct.superType(typect);
+			    hi_cl.addParent(hi_type);
 			}
-			if (!type.type().isClass()) {
-			    //FIXME: Check that cl and type are either both classes or both intrfaces
-			    throw new SemanticException("Type "+type+" is not an class");
-			}
-			ClassType typect = (ClassType)type.type();
-			PCNode hi_type = hierarchy.getClass(typect.fullName());
-
-			//System.err.println("Declared "+cl+" to extend "+typect.fullName());
-
-			pct.superType(typect);
-			hi_cl.addParent(hi_type);
 		    }
 		}
 	    }

@@ -33,17 +33,20 @@ public class MethodCategory {
 
     // **********
 
-    /** The implementation placeholder of an intertype method declaration */
+    /** The implementation placeholder of an intertype method declaration.
+     *  This will have its name as real name and the host class as real class. */
     // Generated in abc/aspectj/ast/IntertypeMethodDecl_c.java
     public static final int INTERTYPE_METHOD_SOURCE = 5;
 
-    /** A woven intertype method declaration, delegating to the actual implementation */
+    /** A woven intertype method declaration, delegating to the actual implementation.
+     *  This will have its name as real name and the host class as real class. */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
     public static final int INTERTYPE_METHOD_DELEGATOR = 6;
 
     // **********
 
-    /** The body of an intertype constructor declaration, without field initializers */
+    /** The body of an intertype constructor declaration, without field initializers.
+     *  This will have real name <code>&lt;init&gt;</code> and the host class as real class. */
     // Generated in abc/aspectj/ast/IntertypeConstructorDecl_c.java
     public static final int INTERTYPE_CONSTRUCTOR_BODY = 7;
 
@@ -69,7 +72,8 @@ public class MethodCategory {
 
     // **********
 
-    /** An accessor method to get the value of a field */
+    /** An accessor method to get the value of a field.
+     *  This will have the name and class of the field as real name class. */
     // Generated in abc/weaving/weaver/IntertypeAdjuster.java
     public static final int ACCESSOR_GET = 12;
     /** An accessor method to set the value of a field */
@@ -167,29 +171,95 @@ public class MethodCategory {
 
     // REGISTRATION METHODS
 
+    public static void register(String sig, int cat) {
+	GlobalAspectInfo.v().registerMethodCategory(sig, cat);
+    }
+
     public static void register(SootMethod m, int cat) {
-	GlobalAspectInfo.v().registerMethodCategory(signature(m), cat);
+	register(signature(m), cat);
     }
 
     public static void register(MethodDecl m, int cat) {
 	try {
-	    GlobalAspectInfo.v().registerMethodCategory(signature(m, (ParsedClassType)m.methodInstance().container()), cat);
+	    register(signature(m, (ParsedClassType)m.methodInstance().container()), cat);
 	} catch (ClassCastException e) {
 	    throw new RuntimeException("Tried to register category of method "+m.name()+" in unnamed class");
 	}
     }
 
     public static void register(MethodDecl m, ParsedClassType container, int cat) {
-	GlobalAspectInfo.v().registerMethodCategory(signature(m, container), cat);
+	register(signature(m, container), cat);
     }
 
     public static void register(MethodSig m, int cat) {
-	GlobalAspectInfo.v().registerMethodCategory(signature(m), cat);
+	register(signature(m), cat);
     }
 
-    public static void register(String sig, int cat) {
-	GlobalAspectInfo.v().registerMethodCategory(sig, cat);
+    // REAL NAME REGISTRATION
+
+    public static void registerRealNameAndClass(String sig, String real_name, String real_class) {
+	GlobalAspectInfo.v().registerRealNameAndClass(sig, real_name, d2d(real_class));
     }
+
+    public static void registerRealNameAndClass(SootMethod m, String real_name, String real_class) {
+	registerRealNameAndClass(signature(m), real_name, real_class);
+    }
+
+    public static void registerRealNameAndClass(MethodDecl m, String real_name, String real_class) {
+	try {
+	    registerRealNameAndClass(signature(m, (ParsedClassType)m.methodInstance().container()), real_name, real_class);
+	} catch (ClassCastException e) {
+	    throw new RuntimeException("Tried to register name and class of method "+m.name()+" in unnamed class");
+	}
+    }
+
+    public static void registerRealNameAndClass(MethodDecl m, ParsedClassType container, String real_name, String real_class) {
+	registerRealNameAndClass(signature(m, container), real_name, real_class);
+    }
+
+    public static void registerRealNameAndClass(MethodSig m, String real_name, String real_class) {
+	registerRealNameAndClass(signature(m), real_name, real_class);
+    }
+
+    // REAL NAME QUERY
+
+    public static String getName(SootMethod m) {
+	String real_name = GlobalAspectInfo.v().getRealName(signature(m));
+	if (real_name == null) {
+	    return m.getName().toString();
+	} else {
+	    return real_name;
+	}
+    }
+
+    public static String getName(MethodSig m) {
+	String real_name = GlobalAspectInfo.v().getRealName(signature(m));
+	if (real_name == null) {
+	    return m.getName().toString();
+	} else {
+	    return real_name;
+	}
+    }
+
+    public static String getClassName(SootMethod m) {
+	String real_class = GlobalAspectInfo.v().getRealClass(signature(m));
+	if (real_class == null) {
+	    return d2d(m.getDeclaringClass().getName());
+	} else {
+	    return real_class;
+	}
+    }
+
+    public static String getClassName(MethodSig m) {
+	String real_class = GlobalAspectInfo.v().getRealClass(signature(m));
+	if (real_class == null) {
+	    return d2d(m.getDeclaringClass().getName());
+	} else {
+	    return real_class;
+	}
+    }
+
+    // SIGNATURE CALCULATION METHODS
 
     private static String signature(SootMethod m) {
 	StringBuffer sb = new StringBuffer();

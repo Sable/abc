@@ -9,6 +9,8 @@ import polyglot.visit.*;
 import java.util.*;
 import java.util.regex.*;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 import soot.*;
 
 public class PatternMatcher {
@@ -240,11 +242,13 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesMethod(SootMethod method) {
+	    String name = MethodCategory.getName(method);
+	    String classname = MethodCategory.getClassName(method);
 	    return
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
-		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
-		pattern.getName().name().getPattern().matcher(method.getName()).matches() &&
+		matchesClass(pattern.getName().base(), classname) &&
+		pattern.getName().name().getPattern().matcher(name).matches() &&
 		matchesFormals(pattern.getFormals(), method.getParameterTypes());
 	    // FIXME: need throws
 	}
@@ -280,6 +284,18 @@ public class PatternMatcher {
 		matchesType(type, sf.getType().toString()) &&
 		matchesClass(clpat, sf.getDeclaringClass().toString()) &&
 		name.getPattern().matcher(sf.getName()).matches();
+	}
+
+	public boolean matchesMethod(SootMethod sm) {
+	    int cat = MethodCategory.getCategory(sm);
+	    if (!(cat == MethodCategory.ACCESSOR_GET || cat == MethodCategory.ACCESSOR_SET)) {
+		return false;
+	    }
+	    String name = MethodCategory.getName(sm);
+	    String classname = MethodCategory.getClassName(sm);
+	    //FIXME: This will not work for inner classes
+	    SootField sf = Scene.v().getSootClass(classname).getField(name);
+	    return matchesField(sf);
 	}
 
 	public String toString() {
