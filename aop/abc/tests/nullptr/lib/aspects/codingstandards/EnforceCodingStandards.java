@@ -53,7 +53,7 @@ public aspect EnforceCodingStandards
 	 */
 	
 	pointcut methodsThatReturnObjects():
-		call(* *.*(..)) && !call(void *.*(..));
+		call(Object+ *.*(..)) && !call(void *.*(..));
 	
 	/**
 	 * <!-- Description: -->

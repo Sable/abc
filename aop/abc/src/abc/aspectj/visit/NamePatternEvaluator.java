@@ -43,6 +43,8 @@ public class NamePatternEvaluator extends NodeVisitor {
 		    packages.add(i.name());
 		}
 	    }
+	    // Always implicitly import java.lang
+	    packages.add("java.lang");
 	    return null;
 	}
 	if (n instanceof NamePattern) {
