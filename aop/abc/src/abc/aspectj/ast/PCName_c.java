@@ -1,4 +1,4 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import polyglot.ast.*;
 
@@ -10,8 +10,8 @@ import java.util.*;
 
 import polyglot.ext.jl.types.Context_c;
 
-import arc.aspectj.types.AspectJTypeSystem;
-import arc.aspectj.types.PointcutInstance_c;
+import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.PointcutInstance_c;
 
 public class PCName_c extends Pointcut_c implements PCName
 {

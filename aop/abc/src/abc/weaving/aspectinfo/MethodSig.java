@@ -1,5 +1,5 @@
 
-package arc.weaving.aspectinfo;
+package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
@@ -16,7 +16,7 @@ public class MethodSig extends Syntax {
     private SootMethod sm;
 
     /** Create a method signature.
-     *  @param params a list of {@link arc.weaving.aspectinfo.Type} objects
+     *  @param params a list of {@link abc.weaving.aspectinfo.Type} objects
      */
     public MethodSig(Class cl, Type rtype, String name, List params, Position pos) {
 	super(pos);

@@ -1,4 +1,4 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +29,8 @@ import polyglot.visit.TypeChecker;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
 
-import arc.aspectj.ast.Pointcut;
-import arc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.ast.Pointcut;
+import abc.aspectj.types.AspectJTypeSystem;
 
 public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 {

@@ -1,4 +1,4 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import polyglot.ast.*;
 
@@ -7,7 +7,7 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-import arc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJTypeSystem;
 
 public class PCIf_c extends Pointcut_c implements PCIf
 {

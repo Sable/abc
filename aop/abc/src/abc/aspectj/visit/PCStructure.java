@@ -1,10 +1,10 @@
 
-package arc.aspectj.visit;
+package abc.aspectj.visit;
 
 import java.util.*;
 import java.util.regex.*;
 
-import arc.aspectj.ast.*;
+import abc.aspectj.ast.*;
 
 import polyglot.types.SemanticException;
 

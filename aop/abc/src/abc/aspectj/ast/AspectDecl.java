@@ -1,8 +1,8 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import polyglot.ast.ClassDecl;
 import polyglot.ast.MethodDecl;
-import arc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJTypeSystem;
 
 /**
  * A <code>AspectDecl</code> represents a top-level, member, or local class

@@ -1,4 +1,4 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import polyglot.ast.*;
 import polyglot.ext.jl.ast.*;
@@ -9,7 +9,7 @@ import polyglot.types.Qualifier;
 import polyglot.types.SemanticException;
 import polyglot.util.*;
 import java.util.*;
-import arc.aspectj.ast.*;
+import abc.aspectj.ast.*;
 import polyglot.ext.jl.parse.Name;
 
 /**

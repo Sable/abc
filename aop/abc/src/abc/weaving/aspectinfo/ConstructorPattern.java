@@ -1,4 +1,4 @@
-package arc.weaving.aspectinfo;
+package abc.weaving.aspectinfo;
 
 /** A constructor pattern. */
 public interface ConstructorPattern {

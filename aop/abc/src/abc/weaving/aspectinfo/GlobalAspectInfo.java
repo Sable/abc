@@ -1,4 +1,4 @@
-package arc.weaving.aspectinfo;
+package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
@@ -19,35 +19,35 @@ public class GlobalAspectInfo {
     }
 
     /** Returns the list of classes into which weaving can take place.
-     *  @return a list of {@link arc.weaving.aspectinfo.Class} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.Class} objects.
      */
     public List getWeavableClasses() {
 	return classes;
     }
 
     /** Returns the list of all aspects.
-     *  @return a list of {@link arc.weaving.aspectinfo.Aspect} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.Aspect} objects.
      */
     public List getAspects() {
 	return aspects;
     }
 
     /** Returns the list of all intertype method declarations.
-     *  @return a list of {@link arc.weaving.aspectinfo.IntertypeMethodDecl} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.IntertypeMethodDecl} objects.
      */
     public List getIntertypeMethodDecls() {
 	return imds;
     }
 
     /** Returns the list of all intertype field declarations.
-     *  @return a list of {@link arc.weaving.aspectinfo.IntertypeFieldDecl} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.IntertypeFieldDecl} objects.
      */
     public List getIntertypeFieldDecls() {
 	return ifds;
     }
 
     /** Returns the list of all advice declarations.
-     *  @return a list of {@link arc.weaving.aspectinfo.AdviceDecl} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.AdviceDecl} objects.
      */
     public List getAdviceDecls() {
 	return ads;

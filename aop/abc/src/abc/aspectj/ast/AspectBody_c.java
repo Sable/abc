@@ -1,8 +1,8 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import java.util.List;
 
-import arc.aspectj.ast.AspectBody;
+import abc.aspectj.ast.AspectBody;
 import polyglot.ast.ClassBody;
 import polyglot.ext.jl.ast.ClassBody_c;
 import polyglot.util.Position;

@@ -1,4 +1,4 @@
-package arc.weaving.aspectinfo;
+package abc.weaving.aspectinfo;
 
 /** A method pattern. */
 public interface MethodPattern {

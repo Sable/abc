@@ -1,5 +1,5 @@
 
-package arc.aspectj.types;
+package abc.aspectj.types;
 
 import polyglot.types.Flags;
 

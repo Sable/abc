@@ -1,6 +1,6 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
-import arc.aspectj.visit.*;
+import abc.aspectj.visit.*;
 
 import polyglot.ast.*;
 import polyglot.types.*;

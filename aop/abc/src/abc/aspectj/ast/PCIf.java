@@ -1,8 +1,8 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import java.util.List;
 import polyglot.ast.MethodDecl;
-import arc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJTypeSystem;
 
 public interface PCIf extends Pointcut
 {

@@ -1,4 +1,4 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 
 import java.util.List;
@@ -25,8 +25,8 @@ import polyglot.types.Type;
 
 import polyglot.ext.jl.ast.ClassDecl_c;
 
-import arc.aspectj.types.AspectJFlags;
-import arc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJFlags;
+import abc.aspectj.types.AspectJTypeSystem;
 
 /**
  * A <code>AspectDecl</code> is the definition of an aspect, abstract aspect,

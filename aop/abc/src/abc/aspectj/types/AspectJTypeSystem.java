@@ -1,4 +1,4 @@
-package arc.aspectj.types;
+package abc.aspectj.types;
 
 import java.util.List;
 import polyglot.util.Position;
@@ -10,7 +10,7 @@ import polyglot.types.ReferenceType;
 import polyglot.types.Flags;
 import polyglot.types.Type;
 
-import arc.aspectj.ast.AdviceSpec;
+import abc.aspectj.ast.AdviceSpec;
 
 import soot.javaToJimple.jj.types.JjTypeSystem;
 

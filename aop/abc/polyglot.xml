@@ -23,8 +23,8 @@
   <!-- binaries directory -->
   <property name="bin"  location="${polyglot}/bin"/>
 
-  <!-- arc directory -->
-  <property name="arcsrc" location="${basedir}/arc/src"/>
+  <!-- abc directory -->
+  <property name="abcsrc" location="${basedir}/abc/src"/>
 
   <path id="standard.classpath">
     <pathelement location="${classes}"/>
@@ -484,7 +484,7 @@ ext=""
 
   <target name="aspectj-lexer">
     <antcall target="jflex-lexer">
-      <param name="lexer.dir" value="${arcsrc}/arc/aspectj/parse"/>
+      <param name="lexer.dir" value="${abcsrc}/abc/aspectj/parse"/>
       <param name="lexer.class" value="Lexer_c"/>
       <param name="jflex.file" value="aspectj.flex"/>
     </antcall>
@@ -492,7 +492,7 @@ ext=""
 
  <target name="aspectj-ppg-parser">
     <antcall target="ppg-parser">
-      <param name="parser.dir" value="${arcsrc}/arc/aspectj/parse"/>
+      <param name="parser.dir" value="${abcsrc}/abc/aspectj/parse"/>
       <param name="ppg.file" value="aspectj.ppg"/>
       <param name="cup.file" value="aspectj_ppg.cup"/>
       <param name="parser.class" value="Grm"/>
@@ -502,8 +502,8 @@ ext=""
 
   <target name="compile-aspectj"
     description="compile an extension">
-    <javac srcdir="${arcsrc}" destdir="${classes}" debug="on"
-      includes="arc/aspectj/**,arc/main/**,arc/weaving/**"
+    <javac srcdir="${abcsrc}" destdir="${classes}" debug="on"
+      includes="abc/aspectj/**,abc/main/**,abc/weaving/**"
       excludes="**/qq/**,**/test/**,**/tests/**,**/runtime/**,**/doc/**">
       <classpath refid="standard.classpath"/>
     </javac>
@@ -522,7 +522,7 @@ ext=""
 
  
   <target name="aspectj-jar" depends="aspectj">
-    <jar jarfile="${lib}/arc.jar" basedir="${classes}" includes="arc/aspectj/**"/>
+    <jar jarfile="${lib}/abc.jar" basedir="${classes}" includes="abc/aspectj/**"/>
   </target>
 
   <target name="param" depends="jl">
@@ -716,7 +716,7 @@ ext=""
   <target name="aspectj-javadoc" depends="jl">
     <javadoc sourcepath="${polyglot}" destdir="doc/api">
       <packageset dir="${src}" defaultexcludes="yes">
-        <include name="arc/**"/>
+        <include name="abc/**"/>
       </packageset>
     </javadoc>
   </target>

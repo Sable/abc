@@ -1,5 +1,5 @@
 
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 import polyglot.ast.Call;
 import polyglot.ast.MethodDecl;

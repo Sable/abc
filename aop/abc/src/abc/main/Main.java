@@ -1,5 +1,5 @@
 
-package arc.main;
+package abc.main;
 
 import soot.*;
 
@@ -7,7 +7,7 @@ import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 
-import arc.weaving.weaver.*;
+import abc.weaving.weaver.*;
 
 import java.util.*;
 
@@ -33,7 +33,7 @@ public class Main {
 	// TODO: Resolve java classes
 
 	// Invoke polyglot
-	ExtensionInfo ext = new arc.aspectj.ExtensionInfo();
+	ExtensionInfo ext = new abc.aspectj.ExtensionInfo();
 	Options options = ext.getOptions();
         options.assertions = true;
 	options.serialize_type_info = false;

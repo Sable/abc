@@ -1,5 +1,5 @@
 
-package arc.aspectj.types;
+package abc.aspectj.types;
 
 import java.util.List;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ import polyglot.types.Flags;
 
 import polyglot.ext.jl.types.MethodInstance_c;
 
-import arc.aspectj.ast.AdviceSpec;
+import abc.aspectj.ast.AdviceSpec;
 
 
 public class AdviceInstance_c extends MethodInstance_c {

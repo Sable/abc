@@ -1,12 +1,12 @@
 include "../../../../../polyglot-1.2.0-src/src/polyglot/ext/jl/parse/java12.cup"
 
-package arc.aspectj.parse;
+package abc.aspectj.parse;
 
-import arc.aspectj.types.AspectJTypeSystem;
-import arc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.ast.AspectJNodeFactory;
 import polyglot.ext.jl.parse.Name;
 
-import arc.aspectj.ast.*;
+import abc.aspectj.ast.*;
 
 parser Grm extends polyglot.ext.jl.parse.Grm {:
     public final AspectJTypeSystem ts;

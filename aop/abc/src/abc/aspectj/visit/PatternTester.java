@@ -1,7 +1,7 @@
 
-package arc.aspectj.visit;
+package abc.aspectj.visit;
 
-import arc.aspectj.ast.*;
+import abc.aspectj.ast.*;
 
 import polyglot.ast.*;
 import polyglot.visit.*;
@@ -10,9 +10,9 @@ import polyglot.util.*;
 import java.util.*;
 
 public class PatternTester extends NodeVisitor {
-    protected arc.aspectj.ExtensionInfo ext_info;
+    protected abc.aspectj.ExtensionInfo ext_info;
 
-    public PatternTester(arc.aspectj.ExtensionInfo ext_info) {
+    public PatternTester(abc.aspectj.ExtensionInfo ext_info) {
 	this.ext_info = ext_info;
     }
 

@@ -1,5 +1,5 @@
 
-package arc.aspectj.visit;
+package abc.aspectj.visit;
 
 import java.util.List;
 import java.util.Stack;
@@ -15,14 +15,14 @@ import polyglot.visit.NodeVisitor;
 
 import polyglot.types.TypeSystem;
 
-import arc.aspectj.ast.PCIf;
-import arc.aspectj.ast.AdviceDecl;
-import arc.aspectj.ast.AspectDecl;
-import arc.aspectj.ast.AspectJNodeFactory;
-import arc.aspectj.ast.PointcutDecl;
-import arc.aspectj.ast.ProceedCall;
+import abc.aspectj.ast.PCIf;
+import abc.aspectj.ast.AdviceDecl;
+import abc.aspectj.ast.AspectDecl;
+import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.PointcutDecl;
+import abc.aspectj.ast.ProceedCall;
 
-import arc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJTypeSystem;
 
 public class AspectMethods extends NodeVisitor {
 

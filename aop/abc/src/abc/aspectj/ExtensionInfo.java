@@ -1,11 +1,11 @@
-package arc.aspectj;
+package abc.aspectj;
 
 import polyglot.lex.Lexer;
-import arc.aspectj.parse.Lexer_c;
-import arc.aspectj.parse.Grm;
-import arc.aspectj.ast.*;
-import arc.aspectj.types.*;
-import arc.aspectj.visit.*;
+import abc.aspectj.parse.Lexer_c;
+import abc.aspectj.parse.Grm;
+import abc.aspectj.ast.*;
+import abc.aspectj.types.*;
+import abc.aspectj.visit.*;
 
 import polyglot.ast.*;
 import polyglot.types.*;
@@ -61,7 +61,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     }
 
     public String compilerName() {
-        return "arc";
+        return "abc";
     }
 
     public Parser parser(Reader reader, FileSource source, ErrorQueue eq) {

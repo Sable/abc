@@ -1,7 +1,7 @@
 
-package arc.aspectj.visit;
+package abc.aspectj.visit;
 
-import arc.aspectj.ast.*;
+import abc.aspectj.ast.*;
 
 import polyglot.ast.*;
 import polyglot.visit.*;
@@ -14,9 +14,9 @@ public class NamePatternEvaluator extends NodeVisitor {
     protected Set/*<String>*/ packages;
     protected PCNode context;
 
-    protected arc.aspectj.ExtensionInfo ext_info;
+    protected abc.aspectj.ExtensionInfo ext_info;
 
-    public NamePatternEvaluator(arc.aspectj.ExtensionInfo ext_info) {
+    public NamePatternEvaluator(abc.aspectj.ExtensionInfo ext_info) {
 	this.ext_info = ext_info;
     }
 

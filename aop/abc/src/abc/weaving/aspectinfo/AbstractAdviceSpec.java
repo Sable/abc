@@ -1,10 +1,10 @@
-package arc.weaving.aspectinfo;
+package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
 import soot.*;
 
-/** Skeleton implementation of the {@link arc.weaving.aspectinfo.AdviceSpec} interface.
+/** Skeleton implementation of the {@link abc.weaving.aspectinfo.AdviceSpec} interface.
  *  Useful when implementing advice specifications.
  */
 public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {

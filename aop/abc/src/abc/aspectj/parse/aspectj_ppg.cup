@@ -1,4 +1,4 @@
-package arc.aspectj.parse;
+package abc.aspectj.parse;
 
 import java.util.*;
 import java_cup.runtime.*;
@@ -9,10 +9,10 @@ import polyglot.parse.*;
 import polyglot.types.*;
 import polyglot.*;
 import polyglot.ast.Assert;
-import arc.aspectj.types.AspectJTypeSystem;
-import arc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.ast.AspectJNodeFactory;
 import polyglot.ext.jl.parse.Name;
-import arc.aspectj.ast.*;
+import abc.aspectj.ast.*;
 
 parser Grm extends polyglot.ext.jl.parse.Grm {:
 

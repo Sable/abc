@@ -1,4 +1,4 @@
-package arc.aspectj.ast;
+package abc.aspectj.ast;
 
 /**
  * A <code>IsSingleton</code> represents the IsSingleton-clause of an aspect
