@@ -453,20 +453,6 @@ public class Main {
         soot_args.add(outputdir);
         if(optflag) {
             soot_args.add("-O");
-
-	    // The following set of options causes an odd bug with soot -O
-	    // to go away - it was eliminating a trap, but not the code
-	    // it pointed to, which caused verify errors. 
-	    // See tests/people/ganesh/NewSwitch2.java for an example
-            soot_args.add("-p");
-            soot_args.add("jb.uce");
-            soot_args.add("remove-unreachable-traps");
-            soot_args.add("-p");
-            soot_args.add("jop.uce1");
-            soot_args.add("remove-unreachable-traps");
-            soot_args.add("-p");
-            soot_args.add("jop.uce2");
-            soot_args.add("remove-unreachable-traps");
         }
     }
 
