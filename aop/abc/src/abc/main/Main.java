@@ -387,7 +387,18 @@ public class Main {
         // handle output directory, -d . is default
         soot_args.add("-d");
         soot_args.add(outputdir);
-        if(optflag) soot_args.add("-O");
+        if(optflag) {
+            soot_args.add("-O");
+            soot_args.add("-p");
+            soot_args.add("jb.uce");
+            soot_args.add("remove-unreachable-traps");
+            soot_args.add("-p");
+            soot_args.add("jop.uce1");
+            soot_args.add("remove-unreachable-traps");
+            soot_args.add("-p");
+            soot_args.add("jop.uce2");
+            soot_args.add("remove-unreachable-traps");
+        }
     }
 
 
