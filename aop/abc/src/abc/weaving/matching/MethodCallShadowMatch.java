@@ -11,6 +11,8 @@ import soot.Local;
 import soot.SootMethod;
 import soot.Value;
 import soot.VoidType;
+import soot.Scene;
+import soot.SootClass;
 import soot.jimple.AssignStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -71,6 +73,23 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	if(method.getName().equals(SootMethod.constructorName)) return null;
 	// The next one really ought not to happen...
 	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
+
+	if(abc.main.Debug.v().ajcCompliance) {
+	    // eliminate super calls, following the specification for such
+	    // calls described in 'invokespecial' in the JVM spec
+
+	    // We already know it is not a <init>
+	    if(!method.isPrivate()) {
+		SootClass declaringclass=method.getDeclaringClass();
+		SootClass currentclass=pos.getContainer().getDeclaringClass();
+		if(Scene.v().getActiveHierarchy()
+		   .isClassSubclassOf(currentclass,declaringclass)) {
+		    // Assume ACC_SUPER was set since we have no way of checking
+		    // and it's only not set by legacy compilers anyway
+		    return null;
+		}
+	    }
+	}
 
 	if(abc.main.Debug.v().traceMatcher) System.err.print("Restructuring...");
 	// Eagerly restructure non-constructor InvokeStmts to AssignStmts, 
