@@ -84,8 +84,24 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		}
 		else return null;
 	} else return null;
-	if(sfr.resolve().isFinal()) return null;
-	return new SetFieldShadowMatch(pos.getContainer(),stmt,sfr);
+
+        // If a final static field is being initialised with a compile-time
+        // constant, no join point exists at sets to it. In practice it
+        // is unlikely, but not illegal, that there will be any sets -
+        // the only place there could is the static initialiser, and most
+        // if not all compilers including abc omit it.
+
+        // Unfortunately there doesn't seem to be any better way to do this,
+        // despite the tags all being subclasses of ConstantValueTag
+        SootField resolved=sfr.resolve();
+        if(resolved.hasTag("IntegerConstantValueTag") ||
+           resolved.hasTag("LongConstantValueTag") ||
+           resolved.hasTag("FloatConstantValueTag") ||
+           resolved.hasTag("DoubleConstantValueTag") ||
+           resolved.hasTag("StringConstantValueTag")) 
+            return null;
+
+        return new SetFieldShadowMatch(pos.getContainer(),stmt,sfr);
     }
     /**
      * Ensures that the rhs of the set is a local.
