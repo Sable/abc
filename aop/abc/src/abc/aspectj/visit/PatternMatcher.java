@@ -189,4 +189,12 @@ public class PatternMatcher {
 	}
     }
 
+    public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern(ConstructorPattern pattern) {
+	if(abc.main.Debug.v.matcherWarnUnimplemented)
+	    System.err.println("FIXME: Making a null contructor pattern");
+	return null;
+    }
+
+
+
 }
