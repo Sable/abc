@@ -370,110 +370,119 @@ public class AspectJTypeSystem_c
 			}
 			return result;
 		}
-		
+	
 		/**
-		 * Assert that <code>ct</code> implements all abstract methods required;
-		 * that is, if it is a concrete class, then it must implement all
-		 * interfaces and abstract methods that it or it's superclasses declare.
-		 */
-		public void checkClassConformance(ClassType ct) throws SemanticException {
-			// if ct is abstract or an interface, then it doesn't need to 
-			// implement everything.
-			boolean mustImplementAll = (!ct.flags().isAbstract() && !ct.flags().isInterface());
-        
-			// build up a list of superclasses and interfaces that ct 
-			// extends/implements that may contain abstract methods that 
+		* Assert that <code>ct</code> implements all abstract methods required;
+		* that is, if it is a concrete class, then it must implement all
+		* interfaces and abstract methods that it or it's superclasses declare, and if 
+		* it is an abstract class then any methods that it overrides are overridden 
+		* correctly.
+		*/
+	   public void checkClassConformance(ClassType ct) throws SemanticException {
+		   if (ct.flags().isInterface()) {
+			   // don't need to check interfaces            
+			   return;
+		   }
 
-			// ct must define.
-			List superInterfaces = abstractSuperInterfaces(ct);
+		   // build up a list of superclasses and interfaces that ct 
+		   // extends/implements that may contain abstract methods that 
+		   // ct must define.
+		   List superInterfaces = abstractSuperInterfaces(ct);
 
-			// check each abstract method of the classes and interfaces in
-			// superInterfaces
-			for (Iterator i = superInterfaces.iterator(); i.hasNext(); ) {
-				ReferenceType rt = (ReferenceType)i.next();
-				for (Iterator j = rt.methods().iterator(); j.hasNext(); ) {
-					MethodInstance mi = (MethodInstance)j.next();
-					
-					// FOLLOWING LINES ARE CHANGES FOR ASPECTJ:
-					ClassType miContainer;
-					if (mi instanceof InterTypeMemberInstance)
+		   // check each abstract method of the classes and interfaces in
+		   // superInterfaces
+		   for (Iterator i = superInterfaces.iterator(); i.hasNext(); ) {
+			   ReferenceType rt = (ReferenceType)i.next();
+			   for (Iterator j = rt.methods().iterator(); j.hasNext(); ) {
+				   MethodInstance mi = (MethodInstance)j.next();
+				   if (!mi.flags().isAbstract()) {
+					   // the method isn't abstract, so ct doesn't have to
+					   // implement it.
+					   continue;
+				   }
+				// FOLLOWING LINES ARE CHANGES FOR ASPECTJ:
+				ClassType miContainer;
+				if (mi instanceof InterTypeMemberInstance)
 						miContainer = ((InterTypeMemberInstance) mi).origin();
-					else
+				else
 						miContainer = ct;
-						
-					// END OF CHANGES
-					if (!mi.flags().isAbstract()) {
-						// the method isn't abstract, so ct doesn't have to
-						// implement it.
-						continue;
-					}
-
-					boolean implFound = false;
-					ReferenceType curr = ct;
-					while (curr != null && !implFound) {
-						List possible = curr.methods(mi.name(), mi.formalTypes());
-						for (Iterator k = possible.iterator(); k.hasNext(); ) {
-							MethodInstance mj = (MethodInstance)k.next();
+				// END OF CHANGES
+				   boolean implFound = false;
+				   ReferenceType curr = ct;
+				   while (curr != null && !implFound) {
+					   List possible = curr.methods(mi.name(), mi.formalTypes());
+					   for (Iterator k = possible.iterator(); k.hasNext(); ) {
+						   MethodInstance mj = (MethodInstance)k.next();
+							//	NEWLY INSERTED FOR ASPECTJ:
 							ClassType mjContainer;
-							// NEWLY INSERTED FOR ASPECTJ:
 							if (mj instanceof InterTypeMemberInstance)
-								mjContainer = ((InterTypeMemberInstance) mj).origin();
+									mjContainer = ((InterTypeMemberInstance) mj).origin();
 							else
-								mjContainer = mj.container().toClass(); // skip the test below, see new/introduceInnerInterfaceCP.java
+									mjContainer = mj.container().toClass(); // skip the test below, see new/introduceInnerInterfaceCP.java
 							// NEXT LINE CHANGED FOR ASPECTJ:
-							if (!mj.flags().isAbstract() && isAccessible(mj, miContainer) &&
-								isAccessible(mi,mjContainer)) {
-								// May have found a suitable implementation of mi.
-								// mj is not abstract, it is accessible from the 
-								// class ct, and since mi is accessible from the container
-								// of mj, it is actually overriding mi.
-                            
-								// If neither the method instance mj nor the method 
-								// instance mi is declared in the class type ct, then 
-								// we need to check that it has appropriate protections.
-								if (!equals(ct, mj.container()) && !equals(ct, mi.container())) {
-									try {
-										// check that mj can override mi, which
-										// includes access protection checks.
-										checkOverride(mj, mi);
-									}
-									catch (SemanticException e) {
-										// change the position of the semantic
-										// exception to be the class that we
-										// are checking.
-										throw new SemanticException(e.getMessage(),
-											ct.position());
-									}
-								}
-								else {
-									// the method implementation mj or mi was
-									// declared in ct. So other checks will take
-									// care of access issues
-								}
-								implFound = true;
-								break;
-							}
-						}
+						   if (!mj.flags().isAbstract() && 
+							   ((isAccessible(mi, miContainer) && isAccessible(mj, miContainer)) || 
+									   isAccessible(mi, mjContainer))) {
+							   // The method mj may be a suitable implementation of mi.
+							   // mj is not abstract, and either mj's container 
+							   // can access mi (thus mj can really override mi), or
+							   // mi and mj are both accessible from ct (e.g.,
+							   // mi is declared in an interface that ct implements,
+							   // and mj is defined in a superclass of ct).
+                        
+							   // If neither the method instance mj nor the method 
+							   // instance mi is declared in the class type ct, then 
+							   // we need to check that it has appropriate protections.
+							   if (!equals(ct, mj.container()) && !equals(ct, mi.container())) {
+								   try {
+									   // check that mj can override mi, which
+									   // includes access protection checks.
+									   checkOverride(mj, mi);
+								   }
+								   catch (SemanticException e) {
+									   // change the position of the semantic
+									   // exception to be the class that we
+									   // are checking.
+									   throw new SemanticException(e.getMessage(),
+										   ct.position());
+								   }
+							   }
+							   else {
+								   // the method implementation mj or mi was
+								   // declared in ct. So other checks will take
+								   // care of access issues
+							   }
+							   implFound = true;
+							   break;
+						   }
+					   }
 
-						curr = curr.superType() ==  null ?
-							   null : curr.superType().toReference();
-					}
+					   if (curr == mi.container()) {
+						   // we've reached the definition of the abstract 
+						   // method. We don't want to look higher in the 
+						   // hierarchy; this is not an optimization, but is 
+						   // required for correctness. 
+						   break;
+					   }
+                
+					   curr = curr.superType() ==  null ?
+							  null : curr.superType().toReference();
+				   }
 
 
-					// did we find a suitable implementation of the method mi?
-					if (!implFound && mustImplementAll) {
-						throw new SemanticException(ct.fullName() + " should be " +
-								"declared abstract; it does not define " +
-								mi.signature() + ", which is declared in " +
-								rt.toClass().fullName(), ct.position());
-					}
-				}
-			}
-		}
-
+				   // did we find a suitable implementation of the method mi?
+				   if (!implFound && !ct.flags().isAbstract()) {
+					   throw new SemanticException(ct.fullName() + " should be " +
+							   "declared abstract; it does not define " +
+							   mi.signature() + ", which is declared in " +
+							   rt.toClass().fullName(), ct.position());
+				   }
+			   }
+		   }
+	   }	
 		
-		/** All flags allowed for a method. */
-		protected final Flags AJ_METHOD_FLAGS = AspectJFlags.intertype(AspectJFlags.interfaceorigin(METHOD_FLAGS));
+	/** All flags allowed for a method. */
+	protected final Flags AJ_METHOD_FLAGS = AspectJFlags.intertype(AspectJFlags.interfaceorigin(METHOD_FLAGS));
 
 	public void checkMethodFlags(Flags f) throws SemanticException {
 		  if (! f.clear(AJ_METHOD_FLAGS).equals(Flags.NONE)) {
@@ -515,5 +524,10 @@ public class AspectJTypeSystem_c
 			checkAccessFlags(f); 
 			  
 		  }
+
+	public List findAcceptableMethods(ReferenceType container, String name,
+											List argTypes, ClassType currClass) throws SemanticException {
+		return super.findAcceptableMethods(container,name,argTypes,currClass);
+	}
 
 }

@@ -2661,7 +2661,7 @@
       title="should give an error for introducing two members with the same name"
       abccomment="abc pinpoints one cause of all four ajc messages. ODM 07/07/04"
       keywords="from-errors">
-        <compile files="TwoIntros1.java">
+        <compile files="TwoIntros.java">
             <ajcmessage kind="error" line="10"/>
             <ajcmessage kind="error" line="14"/>
             <ajcmessage kind="error" line="16"/>
@@ -3031,27 +3031,98 @@
         <run class="MultiInheritCP"/>
     </ajc-test>
 
-    <ajc-test dir="design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods"
+    <ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 1"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
       keywords="from-design">
-        <compile files="MultiInheritCF.java">
-            <message kind="error" line="21"/>
-            <message kind="error" line="41"/>
-            <message kind="error" line="42"/>
-            <message kind="error" line="43"/>
-            <message kind="error" line="45"/>
+        <compile files="MultiInheritCF1.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
             <message kind="error" line="46"/>
+            <message kind="error" line="42"/>
+            <message kind="error" line="42"/>
         </compile>
     </ajc-test>
 
-    <ajc-test dir="design/intro"
+    <ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 2"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF2.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="43"/>
+        </compile>
+    </ajc-test>
+
+    <ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 3"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF3.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="41"/>
+        </compile>
+    </ajc-test>
+
+   <ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 4"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF4.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="41"/>        
+        </compile>
+    </ajc-test>
+
+
+    <ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
       title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF.java">
+        <compile files="ExceptionsCF1.java">
             <message kind="error" line="8"/>
             <message kind="error" line="23"/>
         </compile>
     </ajc-test>
 
+     <ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF1.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="23"/>
+            <message kind="error" line="23"/> 
+       </compile>
+    </ajc-test>
+
+    <ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF2.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="23"/>
+            <message kind="error" line="8"/> 
+       </compile>
+    </ajc-test>
+    
     <ajc-test dir="design/intro"
       title="declared exceptions are checked correctly on intros">
         <compile files="ExceptionsCP.java"/>
@@ -3074,18 +3145,21 @@
 
     <ajc-test dir="design/eachobject"
       title="eachobject: eachobject(receptions(...)) [eachobject]"
+      abccomment="fails on account of aspect inheritance. ODM 09/07/04"
       keywords="from-design">
         <compile files="Tricky1.java"/>
         <run class="Tricky1"/>
     </ajc-test>
 
     <ajc-test dir="design/reflect" title="Checking new joinpoints"
+      abccomment="fails on account of problems with aspectOf and aspect inheritance. ODM 09/07/04"
       keywords="from-design">
         <compile files="Coverage.java"/>
         <run class="Coverage"/>
     </ajc-test>
 
     <ajc-test dir="design/eachobject"
+      abccomment="fails on account of aspect inheritance. ODM 09/07/04"
       title="eachobject: simple test [eachobject] (still)"
       keywords="from-design">
         <compile files="Simple.java"/>
@@ -3133,6 +3207,7 @@
     </ajc-test>
 
     <ajc-test dir="new" title="introducing extends and implements"
+      abccomment="Need to support I1 extends I2,I3,I4. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="HierarchyIntroductions.java"/>
         <run class="HierarchyIntroductions"/>
@@ -3237,6 +3312,9 @@
 
     <ajc-test dir="new"
       title="non-static advice on inner class defined inside of method body"
+     abccomment="fails on use of thisJoinPoint when advice applies inside inner class;
+                 generates verify error. error goes away when use of thisJoinPoint is
+                 commented out. Emailed Ganesh. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="MethodInner.java"/>
         <run class="MethodInner"/>
@@ -3258,6 +3336,8 @@
 
     <ajc-test dir="new" pr="242"
       title="generating the right throws clause for call-site advice (and around)"
+      abccomment="exception checker does not work in the presence of around.
+                  ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="ComputedThrows.java"/>
         <run class="ComputedThrows"/>
@@ -3265,6 +3345,8 @@
 
     <ajc-test dir="new" pr="246"
       title="advice on calls to static methods using several syntax"
+      abccomment="reachability checker needs to be hacked so that proceed may throw
+                  any exception. On Ganesh's list. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="StaticCalls.java"/>
         <run class="StaticCalls"/>
@@ -3272,12 +3354,15 @@
 
     <ajc-test dir="new" pr="248"
       title=", PR#249, PR#250 advice on constructor sites"
+      abccomment="reachability checker needs to be hacked so that proceed may throw
+                  any exception. On Ganesh's list. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="NewSiteAdvice.java"/>
         <run class="NewSiteAdvice"/>
     </ajc-test>
 
     <ajc-test dir="new" title="test after throwing advice in several ways"
+      abccomment="the usual problem with around and exception checker. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="AfterThrowing.java"/>
         <run class="AfterThrowing"/>

@@ -64,6 +64,8 @@ public class GlobalAspectInfo {
     private Map/*<FieldSig,AbcClass>*/ field_real_classes = new HashMap();
     private Map/*<MethodSig,FieldSig>*/ accessor_of_field = new HashMap();
     
+   
+    
     public void buildAspectHierarchy() {
 	// Build the aspect hierarchy
 	Iterator ai = aspects.iterator();

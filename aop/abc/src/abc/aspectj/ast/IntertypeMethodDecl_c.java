@@ -28,9 +28,11 @@ import polyglot.visit.*;
 import polyglot.types.*;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
+import polyglot.ext.jl.types.TypeSystem_c;
 
 import abc.aspectj.ExtensionInfo;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJTypeSystem_c;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
@@ -38,9 +40,11 @@ import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.FieldSig;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
+
 
 public class IntertypeMethodDecl_c extends MethodDecl_c
     implements IntertypeMethodDecl, ContainsAspectInfo
@@ -52,6 +56,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     protected Flags origflags;
     protected String identifier;
     protected String originalName;
+    protected List /*<MethodInstance>*/ derivedMis;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -69,6 +74,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	this.origflags = flags;
 	this.identifier = UniqueID.newID("id");
 	this.originalName = name;
+	this.derivedMis = new ArrayList();
     }
 
 	public TypeNode host() {
@@ -96,10 +102,13 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
         TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
         List throwTypes = visitList(this.throwTypes, v);
         Block body = (Block) visitChild(this.body, v);
-	TypeNode host = (TypeNode) visitChild(this.host, v);
-	return reconstruct(returnType,formals,throwTypes,body,host);
+	    TypeNode host = (TypeNode) visitChild(this.host, v);
+	    return reconstruct(returnType,formals,throwTypes,body,host);
     }
 
+	public void addDerived(MethodInstance mi) {
+		derivedMis.add(mi);
+	}
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {
@@ -118,10 +127,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		                                               		methodInstance().returnType(),
 		                                               		methodInstance().name(),
 		                                               		methodInstance().formalTypes(),
-		                                               		methodInstance().throwTypes());
-		  
-		   abc.aspectj.ExtensionInfo ei= (abc.aspectj.ExtensionInfo) am.job().extensionInfo();                                             			    
-		   overrideITDmethod(pht, mi, ei.prec_rel);
+		                                               		methodInstance().throwTypes());                                			    
+		   overrideITDmethod(pht, mi);
 	    	
     	
 	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
@@ -133,8 +140,9 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
         return am.bypassChildren(this);
     }
 
+
 	public static void overrideITDmethod(ClassType pht, 
-											MethodInstance mi, Map prec_rel) {
+											MethodInstance mi) {
 		// System.out.println("attempting to add method "+mi+" to "+pht);
 		InterTypeMethodInstance_c toinsert = (InterTypeMethodInstance_c) mi;
 		// InterTypeMethodInstance_c toinsert =  (InterTypeMethodInstance_c) mi.container(pht).flags(itmic.origFlags());
@@ -146,24 +154,82 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			List mis = pht.methods(mi.name(),mi.formalTypes());
 			boolean added = false;
 			for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
-				// System.out.println("try next instance");
 				MethodInstance minst = (MethodInstance) misIt.next();
-				if (zaps(mi,minst,prec_rel) && !added){   
+				if (zaps(mi,minst) && !added){   
 					pht.methods().remove(minst);
 					pht.methods().add(toinsert);
 					// System.out.println("replaced");
 					added = true;
-				} else if (zaps(minst,toinsert,prec_rel)) {	
+				} else if (zaps(minst,toinsert)) {	
 					// skip  
 					// System.out.println("skipped");
 					}
 				else if (!added) { pht.methods().add(toinsert); added = true; 
-									// System.out.println("added");
+									// System.out.println("added1");
 									} 
 			}
-		} else {pht.methods().add(toinsert); // System.out.println("added");
+		} else {pht.methods().add(toinsert); // System.out.println("added2");
 					} 
 		// System.out.println("exit overrideITDmethod");
+	}
+
+	static boolean comparable(ClassType ct1, ClassType ct2) {
+		return ct1.equals(ct2) || ct1.descendsFrom(ct2) || ct2.descendsFrom(ct1);
+	}
+	
+	
+	/** Check whether an intertype declaration via an interface conflicts with a declaration in
+	 *  a parent. Not very pretty; should be simplified. ODM 09/07/04
+	 * 
+	 * */
+	static public void conflictWithParentCheck(InterTypeMethodInstance_c mi) throws SemanticException {
+		ClassType pht = mi.container().toClass(); // host class
+		AspectJTypeSystem_c ts = (AspectJTypeSystem_c) mi.typeSystem();
+		MethodInstance mj = null;
+		pht.methods().remove(mi);
+		try {
+		   mj = ts.findMethod(pht,mi.name(),mi.formalTypes(),pht);
+		} catch (SemanticException e) {};
+		pht.methods().add(mi);
+		if ((mj != null) && 
+		    // !zaps(mi,mj) &&
+		    (!mj.container().equals(pht)) && 
+		    fromInterface(mi) && !comparable(mj.container().toClass(),mi.interfaceTarget())) {
+			if (mj instanceof InterTypeMethodInstance_c) {
+				InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
+				throw new SemanticException ("Intertype method "+itmj.name()+" introduced by aspect "+itmj.origin() + " into " +
+				                         itmj.container() + " (a superclass of "+ pht +") conflicts with introduction by aspect "+mi.origin() + 
+                                         " into " + mi.interfaceTarget() + " which is implemented by" + pht, mi.position());
+			}
+			   throw new SemanticException("Intertype method " + mi.name() + " introduced by aspect "+ mi.origin() + " into " +
+			                        mi.interfaceTarget() + " (which is an interface of "+pht+") conflicts with existing member of " +
+			                        mj.container() + " (which is a superclass of "+pht+")",mi.position());
+		}
+	}
+
+    /** Do the usual override check for newly declared methods. */
+	static public void overrideMethodCheck(InterTypeMethodInstance_c mi) throws SemanticException {
+		   AspectJTypeSystem_c ts = (AspectJTypeSystem_c) mi.typeSystem();
+		   for (Iterator j = mi.implemented().iterator(); j.hasNext(); ) {
+			   MethodInstance mj = (MethodInstance) j.next();
+			   if (! ts.isAccessible(mj, mi.container().toClass())) {
+				   continue;
+			   }
+
+			   ts.checkOverride(mi, mj);
+		   }
+	}
+	
+	static public void intertypeMethodChecks(ClassType ct) throws SemanticException {
+		List copyOfMethods = new LinkedList(ct.methods());
+		for (Iterator metIt = copyOfMethods.iterator(); metIt.hasNext(); ) {
+			MethodInstance mi = (MethodInstance) metIt.next();
+			if (mi instanceof InterTypeMethodInstance_c) {
+				InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) mi;
+				conflictWithParentCheck(itmi);
+				overrideMethodCheck(itmi);
+			}
+		}
 	}
 	
 	static boolean fromInterface(MethodInstance mi) {
@@ -172,19 +238,20 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	}
 	
 	// replace this by a call to the appropriate structure!
-	static boolean precedes(ClassType ct1, ClassType ct2,Map prec_rel) {
-		return ct1.descendsFrom(ct2) ||
-					(prec_rel.containsKey(ct1.fullName()) && 
-					  ((Set) prec_rel.get(ct1.fullName())).contains(ct2.fullName()));
+	static boolean precedes(ClassType ct1, ClassType ct2) {
+		return (ct1.descendsFrom(ct2)  || 
+					  (GlobalAspectInfo.v().getPrecedence(ct1.fullName(),
+					                                      ct2.fullName()) 
+					    == GlobalAspectInfo.PRECEDENCE_FIRST) );
 					
 	}
 	
-	static boolean zaps(MethodInstance mi1,MethodInstance mi2,Map prec_rel) {
+	static boolean zaps(MethodInstance mi1,MethodInstance mi2) {
 		if (!(mi1.flags().isAbstract()) && mi2.flags().isAbstract())
 			return true;
-		// System.out.println("not (!mi1.abstract && mi2.abstract)");
+		//System.out.println("not (!mi1.abstract && mi2.abstract)");
 		// was mi2 then mi1
- 		if (!fromInterface(mi1) && fromInterface(mi2)) return true;
+ 	    if (!fromInterface(mi1) && fromInterface(mi2)) return true;
  		// System.out.println("not (!mi2.fromInterface && mi1.fromInterface");
 		if (!(mi1 instanceof InterTypeMethodInstance_c &&
 		      mi2 instanceof InterTypeMethodInstance_c)) return false;
@@ -194,7 +261,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		if (fromInterface(itmi1) && fromInterface(itmi2) &&
 		     itmi1.interfaceTarget().descendsFrom(itmi2.interfaceTarget()))
 		    return true;
-		return precedes(itmi1.origin(),itmi2.origin(),prec_rel);	    
+		return precedes(itmi1.origin(),itmi2.origin());	    
 	}
     
 	

@@ -80,9 +80,8 @@ public class InterfaceITDs extends NodeVisitor {
 				 if (mi instanceof InterTypeMemberInstance) {
 					// System.out.println("attempting to add method "+mi + " to " + cd.type() + " which implements " + interf +
 					//	", which received method from " + ((InterTypeMemberInstance) mi).origin());
-					ExtensionInfo ei = (ExtensionInfo) job.extensionInfo();
 					abc.aspectj.ast.IntertypeMethodDecl_c.overrideITDmethod(cd.type(),
-					           mi.container(cd.type()).flags(((InterTypeMemberInstance)mi).origFlags()), ei.prec_rel);
+					           mi.container(cd.type()).flags(((InterTypeMemberInstance)mi).origFlags()));
 				 	
 				 }
 			}

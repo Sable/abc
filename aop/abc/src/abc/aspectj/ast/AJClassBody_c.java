@@ -15,6 +15,7 @@ import polyglot.types.ConstructorInstance;
 
 import polyglot.visit.TypeChecker;
 
+import polyglot.ast.Node;
 
 import polyglot.ext.jl.ast.ClassBody_c;
 import polyglot.util.Position;
@@ -30,6 +31,9 @@ import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
 import abc.aspectj.types.AspectJTypeSystem_c;
 import abc.aspectj.types.PointcutInstance_c;
+
+import abc.aspectj.ast.IntertypeMethodDecl_c;
+
 /**
  * @author oege
  *
@@ -54,7 +58,7 @@ public class AJClassBody_c extends ClassBody_c {
 			 for (int j = i+1; j < l.size(); j++) {
 				 ConstructorInstance cj = (ConstructorInstance) l.get(j);
 
-				 if (ci.hasFormals(cj.formalTypes()) && !ITDoks(ci,cj,tc.typeSystem())) {
+				 if (ci.hasFormals(cj.formalTypes()) && !ITDoks(ci,cj)) {
 				 	if (ci instanceof InterTypeMemberInstance)
 				 		throw new SemanticException("Duplicate constructor \"" + ci + "\".", ci.position());
 				 	else
@@ -64,11 +68,12 @@ public class AJClassBody_c extends ClassBody_c {
 		 }
 	 }
 	
-	private boolean ITDoks(MemberInstance ci, MemberInstance cj,TypeSystem ts) {
-			return ITDok(ci,cj,(AspectJTypeSystem_c)ts) || ITDok(cj,ci,(AspectJTypeSystem_c)ts);
+	private boolean ITDoks(MemberInstance ci, MemberInstance cj) {
+			return ITDok(ci,cj) || ITDok(cj,ci);
 	}
 	
-	private boolean ITDok(MemberInstance ci, MemberInstance cj, AspectJTypeSystem_c ts) {
+	private boolean ITDok(MemberInstance ci, MemberInstance cj) {
+		AspectJTypeSystem_c ts = (AspectJTypeSystem_c) ci.typeSystem();
 		return // a private ITD cannot conflict with anything that's already there
 		            ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate()) &&
 		              !(cj instanceof InterTypeMemberInstance) ) ||
@@ -102,7 +107,7 @@ public class AJClassBody_c extends ClassBody_c {
 			  for (int j = i+1; j < l.size(); j++) {
 				  FieldInstance fj = (FieldInstance) l.get(j);
 
-				  if (fi.name().equals(fj.name()) && !ITDoks(fi,fj,tc.typeSystem())) {
+				  if (fi.name().equals(fj.name()) && !ITDoks(fi,fj)) {
 				  	if (fi instanceof InterTypeMemberInstance)
 				  		throw new SemanticException("Duplicate field \"" + fi + "\".", fi.position());
 				  	else
@@ -125,7 +130,7 @@ public class AJClassBody_c extends ClassBody_c {
 			for (int j = i+1; j < l.size(); j++) {
 				MethodInstance mj = (MethodInstance) l.get(j);
 
-				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj,tc.typeSystem())) {
+				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj)) {
 					if (mi instanceof InterTypeMemberInstance) {
 						InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) mi;
 						if (mj instanceof InterTypeMemberInstance) {
@@ -156,5 +161,10 @@ public class AJClassBody_c extends ClassBody_c {
 		}
 	}
 	
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		Node n = super.typeCheck(tc);
+		IntertypeMethodDecl_c.intertypeMethodChecks(tc.context().currentClass());
+		return n;
+	}
 	
 }

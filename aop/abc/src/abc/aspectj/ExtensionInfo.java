@@ -48,7 +48,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     public static final polyglot.frontend.Pass.ID COMPUTE_PRECEDENCE_RELATION = new polyglot.frontend.Pass.ID("compute-precedence-relation");
     public static final polyglot.frontend.Pass.ID PRECEDENCE_COMPUTED = new polyglot.frontend.Pass.ID("precedence-computed");
-
+   
     public static final polyglot.frontend.Pass.ID INTERFACE_ITDS = new polyglot.frontend.Pass.ID("interface-itds");
     public static final polyglot.frontend.Pass.ID INTERFACE_ITDS_ALL = new polyglot.frontend.Pass.ID("interface-itds-all");
 	
