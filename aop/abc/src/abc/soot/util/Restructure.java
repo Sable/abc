@@ -80,10 +80,11 @@ public class Restructure {
 	    receivercopies.add(((AssignStmt) u).getLeftOp());
 
           if ((u instanceof InvokeStmt) && 
-             ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
-	     receivercopies.contains(
-	       ((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).
-	                                                      getBase()))
+	      ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
+	      ((InvokeStmt) u).getInvokeExpr().getMethod().getName()
+	      .equals(SootMethod.constructorName) &&
+	      receivercopies.contains
+	      (((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).getBase()))
 	    { debug("Found <init> " + u);
 	      countinits++;
 	      if (countinits == 1) // great, found it
