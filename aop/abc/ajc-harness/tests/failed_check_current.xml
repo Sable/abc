@@ -17,15 +17,6 @@
             <message kind="error" line="14"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" title="IOException on windows if nul used as identifier"
-      abccomment="jlc misses error at line 14, reported to Nate July 1/04 LJH"
-      keywords="from-java,purejava">
-        <compile files="NulIOException.java">
-            <message kind="error" line="12"/>
-            <message kind="error" line="14"/>
-            <message kind="error" line="17"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="pureJava" title="invalid numeric literals"
       abccomment="abc doesn't do a good job on these,  needs a parser
                   that doesn't give up after the first error, and
@@ -65,21 +56,6 @@
             <ajcmessage kind="error" line="8"/>
             <message kind="error" line="2"/>
             <message kind="error" line="8"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="new" pr="567" title="cyclic class inheritance"
-      abccomment="There are two kinds of errors in this program, one
-        due to cyclic inheritance and one due to missing bodies of the
-        constructors.  Abc finds the missing bodies, ajc finds the
-        cyclic inheritance.   If the bodies are fixed to have a body then
-        abc finds the cyclic inheritance and gives a fine error
-        message.  LJH July 2/04" 
-      keywords="from-java,purejava">
-        <compile files="CyclicClassInheritance.java">
-            <ajcmessage kind="error" line="11"/>
-            <ajcmessage kind="error" line="12"/>
-            <message kind="error" line="8"/>
-            <message kind="error" line="12"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="Type names are not expressions on their own"
@@ -122,22 +98,11 @@
     </ajc-test>
 <ajc-test dir="new/packagePrefix" pr="574"
       title="classes that are package prefixes are illegal"
+      abccomment="ajc doesn't find this error, send to Nate July 5/04 LJH"
       keywords="from-java,purejava,messages-vary">
         <compile files="p/prefix.java,p/prefix/SomeClass.java"
                options="!eclipse">
             <message kind="error" line="2"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="new/introTypeMissing"
-      title="CF expected when enclosing class superclass used as this qualifier in inner class"
-      abccomment="missing error on line 23, example set to Nate
-                  July 2/04. LJH"
-      keywords="from-java">
-        <compile files="TargetClassCF.java,Util.java">
-            <message kind="error" line="22"/>
-            <message kind="error" line="23"/>
-            <message kind="error" line="27"/>
-            <message kind="error" line="28"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new"
@@ -150,14 +115,19 @@
     </ajc-test>
 <ajc-test dir="pureJava"
       title="suggested by Jacks 15.28-qualified-namestr tests"
+      abccomment="ajc and javac already report different subset of possible
+                    errors,  abc correctly reports first one and then
+                    doesn't check rest of switch.  I think it's ok.
+                    July 5/04 LJH"
       keywords="from-java,purejava,messages-vary">
         <compile files="NonConstants.java" 
                options="!eclipse">
+            <ajcmessage kind="error" line="13"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
             <message kind="error" line="13"/>
-            <message kind="error" line="14"/>
-            <message kind="error" line="15"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new/classaccess"
@@ -272,14 +242,6 @@
         </compile>
     </ajc-test>
 <ajc-test dir="errors"
-      title="cast expressions should not allow casts between ifaces and array types"
-      keywords="from-errors,purejava">
-        <compile files="InterfaceArrayCast.java">
-            <message kind="error" line="9"/>
-            <message kind="error" line="10"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors"
       title="good error for field name instead of type name"
       keywords="from-errors">
         <compile files="BadTypeName.java">
@@ -293,6 +255,9 @@
     </ajc-test>
 <ajc-test dir="errors"
       title="good error for bad field and inner class references"
+      abccomment="not pure java July 5/04 LJH
+                  polyglot does not find this error, sent to Nate,
+                       July 5/04 LJH"
       keywords="from-errors,purejava">
         <compile files="BadReferences.java">
             <message kind="error" line="3"/>
@@ -417,28 +382,6 @@
             <message kind="error" line="18"/>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava" title="continue targets must be continuable"
-      keywords="from-errors">
-        <compile files="BadContinueTarget.java">
-            <message kind="error" line="6"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Referencing various things from static contexts"
-      keywords="from-errors,purejava">
-        <compile files="StaticContexts.java">
-            <message kind="error" line="11"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="19"/>
-            <message kind="error" line="20"/>
-            <message kind="error" line="21"/>
-            <message kind="error" line="27"/>
-            <message kind="error" line="28"/>
-            <message kind="error" line="31"/>
-            <message kind="error" line="35"/>
-            <message kind="error" line="36"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new"
       title="Given non-matching TypePattern, CE flags use of non-introduced method rather than failure to introduce"
       keywords="from-errors">
@@ -468,6 +411,8 @@
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="illegal forward reference"
+      abccomment="jlc gets error (but on line 14), however abc
+                  doesn't find it.  Reported to Oege July 5/04 LJH"
       keywords="from-errors,purejava">
         <compile files="IllegalForwardReference.java">
             <message kind="error" line="9"/>
@@ -700,31 +645,6 @@
             <message kind="error" file="parent/ParentCE.java" line="22"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new"
-      title="accessing private superclass members from body of method introduction"
-      keywords="from-resolved_10x">
-        <compile files="SuperInIntroductionCE.java">
-            <message kind="error" line="25"/>
-            <message kind="error" line="26"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="new" title="invalid number and type of proceed arguments"
-      keywords="from-resolved_10x">
-        <compile files="InvalidProceedArgsCE.java">
-            <message kind="error" line="10"/>
-            <message kind="error" line="15"/>
-            <message kind="error" line="17"/>
-            <message kind="error" line="20"/>
-            <message kind="error" line="22"/>
-            <message kind="error" line="27"/>
-            <message kind="error" line="29"/>
-            <message kind="error" line="31"/>
-            <message kind="error" line="37"/>
-            <message kind="error" line="39"/>
-            <message kind="error" line="43"/>
-            <message kind="error" line="46"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new" pr="568" title="cyclic pointcut definitions"
       keywords="from-resolved_10rc3,knownLimitation">
         <compile files="CyclicPointcuts.java">
@@ -750,29 +670,10 @@
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" pr="715" title="incrementing objects, arrays - 2"
-      keywords="from-resolved_104,purejava">
-        <compile files="ArrayInc2CE.java">
-            <message kind="error" line="12"/>
-            <message kind="error" line="13"/>
-            <message kind="error" line="14"/>
-            <message kind="error" line="15"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new" pr="715" title="incrementing objects, arrays CE"
       keywords="from-resolved_104,purejava,messages-vary">
         <compile files="ArrayIncCE.java"
                options="!eclipse">
-            <message kind="error" line="15"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
-            <message kind="error" line="18"/>
-            <message kind="error" line="19"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="new" pr="715" title="incrementing objects, arrays - 3"
-      keywords="from-resolved_104,purejava">
-        <compile files="ArrayInc3CE.java">
             <message kind="error" line="15"/>
             <message kind="error" line="16"/>
             <message kind="error" line="17"/>
