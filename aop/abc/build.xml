@@ -133,15 +133,9 @@
             <targetfileset dir="generated/abc/aspectj/parse"
                 includes="Lexer_c.java"/>
         </dependset>
-        <dependset>
-            <srcfileset dir="src/abc/eaj/parse" includes="eajj.flex"/>
-            <targetfileset dir="generated/abc/eaj/parse"
-                includes="Lexer_c.java"/>
-        </dependset>
         <condition property="jflex-up-to-date">
             <and>
                 <available file="generated/abc/aspectj/parse/Lexer_c.java"/>
-                <available file="generated/abc/eaj/parse/Lexer_c.java"/>
             </and>
         </condition>
     </target>
