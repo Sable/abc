@@ -6,7 +6,7 @@ FILES="full_current.output failed_current.output \
 
 cd ../../
 CLASSPATH= ant clobber
-CLASSPATH= ant
+CLASSPATH= ant jars
 cd ajc-harness/tests
 nice -n 5 ./runtests abcTests.xml
 cvs update $FILES
