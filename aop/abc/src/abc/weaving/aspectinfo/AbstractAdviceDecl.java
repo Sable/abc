@@ -169,16 +169,15 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
      *     conflict between the two advice decls.
      */
     public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
-	// FIXME : what happens when we merge cflow stacks?
-	if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
-	    return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
-
 	// a quick first pass to assist in separating out the major classes of advice
 	// consider delegating this
 	int aprec=getPrecNum(a),bprec=getPrecNum(b);
 	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
 	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
 
+	// FIXME : what happens when we merge cflow stacks?
+	if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
+	    return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
 
 	// Must be both AdviceDecl or both CflowSetup, from the same aspect
 	// Check carefully just to be on the safe side
