@@ -42,5 +42,5 @@ public class Debug {
     public boolean afterThrowingWeaver=false;
     public boolean aroundWeaver=false;
     public boolean restructure=false; // restructuring utilities
-    public boolean abcTimer=true;
+    public boolean abcTimer=false;
 }
