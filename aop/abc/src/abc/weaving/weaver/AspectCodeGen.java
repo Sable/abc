@@ -33,6 +33,13 @@ public class AspectCodeGen {
 	    cl.getType(), Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL );
         cl.addField( instance );
 
+	// add private static java.lang.Throwable ajc$initFailureCause field
+	debug(" ... adding ajc$intFailureCause");
+        SootField instance2 = new SootField( "ajc$initFailureCause", 
+	    RefType.v("java.lang.Throwable"),
+	    Modifier.PRIVATE | Modifier.STATIC );
+        cl.addField( instance2 );
+
 	// front end has put aspectOf method, fill in body
 	debug(" ... adding aspectOf body");
         generateAspectOfBody(cl);
@@ -62,17 +69,20 @@ public class AspectCodeGen {
 	                          "org.aspectj.lang.NoAspectBoundException");
         Local r0 = Jimple.v().newLocal("r0", cl.getType());
         Local r1 = Jimple.v().newLocal("r1", nabe.getType() );
+	Local causeLocal = Jimple.v().
+	  newLocal("r2", RefType.v("java.lang.Throwable"));
 
 	// add locals:   <AspectType> r0; 
 	//               org.aspectj.lang.NoAspectBoundException r1; 
         b.getLocals().add(r0);
         b.getLocals().add(r1);
+        b.getLocals().add(causeLocal);
 
 	// make a field ref to static field ajc$perSingletonInstance
         StaticFieldRef ref = Jimple.v().
 	    newStaticFieldRef(cl.getFieldByName("ajc$perSingletonInstance"));
 
-	// get the unitys of the body so we can insert new Jimple stmts
+	// get the units of the body so we can insert new Jimple stmts
         Chain units = b.getUnits(); 
 
         units.addLast( Jimple.v().newAssignStmt( r0, ref));
@@ -80,7 +90,29 @@ public class AspectCodeGen {
         units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( r0, NullConstant.v() ), newExceptStmt ));
         units.addLast( Jimple.v().newReturnStmt( r0 ) );
         units.addLast( newExceptStmt );
-        units.addLast( Jimple.v().newInvokeStmt( Jimple.v().newSpecialInvokeExpr( r1, nabe.getMethod( "<init>", new ArrayList() ) ) ) ); 
+	List typelist = new LinkedList();
+	typelist.add(RefType.v("java.lang.String"));
+	typelist.add(RefType.v("java.lang.Throwable"));
+	SootMethod initthrowmethod = nabe.getMethod("<init>",typelist);
+	debug("init method for the throw in aspectOf is " + initthrowmethod);
+	StaticFieldRef causefield = 
+	  Jimple.v().
+	    newStaticFieldRef(cl.getFieldByName("ajc$initFailureCause"));
+	Stmt assigntocause =
+	   Jimple.v().
+	     newAssignStmt(causeLocal,causefield);
+	units.addLast(assigntocause);
+	List arglist = new LinkedList();
+        // string constant with name of aspect
+	arglist.add(StringConstant.v(cl.getName())); 
+	// local pointing to cause
+	arglist.add(causeLocal);  
+	// get the cause instance
+	Stmt exceptioninit = 
+	   Jimple.v().
+	     newInvokeStmt( Jimple.v().newSpecialInvokeExpr
+		 ( r1, initthrowmethod, arglist) ) ; 
+        units.addLast( exceptioninit );
         units.addLast( Jimple.v().newThrowStmt( r1 ) );
 
 	// have generated:
@@ -189,22 +221,69 @@ public class AspectCodeGen {
 
 	debug("getting clinit");
         clinit = cl.getMethod("void <clinit>()");
-
-	// get the body and then the units
-        units = clinit.retrieveActiveBody().getUnits();
-
+        // get the body
+	Body b2 = clinit.retrieveActiveBody();
+	// then the units
+        units = b2.getUnits();
+        // get a local generator for the body
+	LocalGenerator localgen = new LocalGenerator(b2);
 	// need a snapshotIterator because we are modifying units as we
 	// traverse it
         Iterator it = units.snapshotIterator();
         while( it.hasNext() ) {
             Stmt s = (Stmt) it.next();
 	    // insert a call to postClinit() just before each return
-            if( s instanceof ReturnVoidStmt ) {
-                units.insertBefore( 
-                        Jimple.v().newInvokeStmt( Jimple.v().newStaticInvokeExpr( postClinit ) ),
-                        s );
+            if( s instanceof ReturnVoidStmt ) 
+	      { // make a nop stmt which we will goto
+	        Stmt nop = Jimple.v().newNopStmt();	
+		// postClinit(); 
+		Stmt invokepostClinit =
+                   Jimple.v().
+		     newInvokeStmt( 
+			 Jimple.v().newStaticInvokeExpr( postClinit ) );
+		units.insertBefore(invokepostClinit,s);
+		// goto return;
+		Stmt goto_s = 
+		    Jimple.v().newGotoStmt(nop);
+		units.insertBefore(goto_s,s);
+	        // catchlocal := @caughtexception
+		Local catchLocal =
+		    localgen.generateLocal(RefType.v("java.lang.Throwable"));
+		CaughtExceptionRef exceptRef = 
+		    Jimple.v().newCaughtExceptionRef();
+		Stmt exceptionidentity =
+		    Jimple.v().newIdentityStmt(catchLocal, exceptRef);
+		units.insertBefore(exceptionidentity,s);
+		// ajc$initFailureCause := catchlocal    
+                StaticFieldRef cause = 
+		    Jimple.v().
+	               newStaticFieldRef(
+			   cl.getFieldByName("ajc$initFailureCause"));
+		Stmt assigntofield =
+		    Jimple.v().
+		       newAssignStmt(cause,catchLocal);
+		units.insertBefore(assigntofield,s);
+		// add nop before return
+		units.insertBefore(nop,s);
+		// add the try ... catch
+                b.getTraps().
+		  add(Jimple.v().
+		        newTrap(Scene.v().getSootClass("java.lang.Throwable"),
+			invokepostClinit,goto_s,exceptionidentity));
+
+		// have created:
+		//    java.lang.Exception catchLocal
+		//    ...
+		//    invokepostClinit :  postClinit();
+		//    goto_s           :  goto nop;
+		//    exceptionidentity:  catchLocal := @caughtexception;
+		//    assigntofield    :  ajc$initFailureCause := catchLocal;
+		//    nop              :  nop
+		//    S                :  return;
+		//
+		//    catch from invokepostClinit upto goto_s handlewith
+		//                       exceptionidentity
             }
         }
     }
-
 }
