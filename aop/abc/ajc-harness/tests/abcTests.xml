@@ -87,7 +87,7 @@
          <ajc-test dir="base/test100"
 	        abccomment="I have put this comment in as a test, and this is a very
 	       long one over multiple lines too. LJH"
-	         title="static and non-static before methods -- one file"
+	         title="static and non-static before methods - one file"
 		 keywords="from-base">
 		<compile files="Driver.java"/>
 		<run class="Driver"/>
@@ -2522,9 +2522,12 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="continue targets must be continuable"
+      abccomment="jlc/abc reports line of label, ajc reports line of contine
+                  seems fine,  LJH July 5/04"
       keywords="from-errors">
         <compile files="BadContinueTarget.java">
-            <message kind="error" line="6"/>
+            <ajcmessage kind="error" line="6"/>
+            <message kind="error" line="5"/>
         </compile>
     </ajc-test>
 
@@ -2538,13 +2541,24 @@
 
     <ajc-test dir="pureJava"
       title="Referencing various things from static contexts"
+      abccomment="abc catches most of these, missings ones don't seem
+                  important since fixing other problems would get rid
+                  of these July 5/04"
       keywords="from-errors,purejava">
         <compile files="StaticContexts.java">
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="27"/>
+            <ajcmessage kind="error" line="28"/>
+            <ajcmessage kind="error" line="31"/>
+            <ajcmessage kind="error" line="35"/>
+            <ajcmessage kind="error" line="36"/>
             <message kind="error" line="11"/>
             <message kind="error" line="18"/>
-            <message kind="error" line="19"/>
             <message kind="error" line="20"/>
-            <message kind="error" line="21"/>
             <message kind="error" line="27"/>
             <message kind="error" line="28"/>
             <message kind="error" line="31"/>
@@ -2592,6 +2606,8 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="illegal forward reference"
+      abccomment="jlc gets error (but on line 14), however abc
+                  doesn't find it.  Reported to Oege July 5/04 LJH"
       keywords="from-errors,purejava">
         <compile files="IllegalForwardReference.java">
             <message kind="error" line="9"/>
