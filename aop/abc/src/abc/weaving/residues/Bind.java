@@ -31,7 +31,7 @@ public class Bind extends Residue {
 	}
 	// FIXME check for subtype and eliminate 
 	else return AndResidue.construct
-		 (new CheckType(value,type),
+		 (CheckType.construct(value,type),
 		  new Bind(value,variable));
     }
 
@@ -46,7 +46,7 @@ public class Bind extends Residue {
 		Stmt fail,
 		WeavingContext wc) {
 	
-		Value val=value.getSootValue(method,localgen);
+		Value val=value.getSootValue();
 		if(!variable.hasType() || val.getType() instanceof PrimType)
 		    return variable.set(localgen,units,begin,wc,val);
 		else {

@@ -138,7 +138,8 @@ public abstract class AdviceApplication {
 			    residue=AndResidue.construct
 				(residue,ad.postResidue(sm));
 
-			if(false) 
+			if(abc.main.Debug.v.showResidues 
+			   && !NeverMatch.neverMatches(residue)) 
 			    System.out.println("residue: "+residue);
 			
 			if(!NeverMatch.neverMatches(residue))

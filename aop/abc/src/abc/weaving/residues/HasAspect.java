@@ -36,7 +36,7 @@ public class HasAspect extends Residue {
 	} else {
 	    params=new ArrayList(1); paramTypes=new ArrayList(1);
 	    paramTypes.add(Scene.v().getSootClass("java.lang.Object").getType());
-	    params.add(pervalue.getSootValue(method,localgen));
+	    params.add(pervalue.getSootValue());
 	}
 
 	Local hasaspect = localgen.generateLocal(BooleanType.v(),"hasAspect");

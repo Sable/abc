@@ -11,7 +11,7 @@ import abc.soot.util.LocalGeneratorEx;
  *  @date 30-Apr-04
  */ 
 
-public class JimpleValue extends AbstractContextValue {
+public class JimpleValue extends ContextValue {
 
     private Value value;
 
@@ -23,7 +23,7 @@ public class JimpleValue extends AbstractContextValue {
 	return "jimplevalue("+value+")";
     }
 
-    public Value getSootValue(SootMethod method,LocalGeneratorEx localgen) {
+    public Value getSootValue() {
 	return value;
     }
 

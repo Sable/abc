@@ -17,14 +17,31 @@ public class CheckType extends Residue {
     public ContextValue value;
     public Type type;
 
-    CheckType(ContextValue value,Type type) {
+    private CheckType(ContextValue value,Type type) {
 	this.value=value;
 	this.type=type;
     }
 
+    // It's important that we throw away statically invalid matches
+    // here rather than at code generation time, because if we wait until
+    // then the code for a corresponding Bind will probably be generated
+    // as well, and will be type incorrect; although it will be dead code,
+    // the Soot code generator still won't be happy.
+    // If it turns out that ContextValues need to be passed information
+    // we don't have here, then we will need a mechanism for code generation
+    // to prevent things that would be definitely dead code from being
+    // generated at all.
     public static Residue construct(ContextValue value,Type type) {
-	if(type.equals(Scene.v().getSootClass("java.lang.Object").getType())) return AlwaysMatch.v;
-	else return new CheckType(value,type);
+	if(type.equals(Scene.v().getSootClass("java.lang.Object").getType())) 
+	    return AlwaysMatch.v;
+
+	if(type instanceof PrimType) {
+	    if(type.equals(value.getSootValue().getType()))
+		return AlwaysMatch.v;
+	    else return NeverMatch.v;
+	}
+
+	return new CheckType(value,type);
     }
 
     public String toString() {
@@ -34,16 +51,9 @@ public class CheckType extends Residue {
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
 			Chain units,Stmt begin,Stmt fail,
 			WeavingContext wc) {
-	Value v=value.getSootValue(method,localgen);
+
+	Value v=value.getSootValue();
 	Local io=localgen.generateLocal(BooleanType.v(),"checkType");
-	if(type instanceof PrimType) {
-	    if(type.equals(v.getType())) return begin;
-	    else {
-		Stmt abort=Jimple.v().newGotoStmt(fail);
-		units.insertAfter(abort,begin);
-		return abort;
-	    }
-	}
 	Stmt instancetest
 	    =Jimple.v().newAssignStmt(io,Jimple.v().newInstanceOfExpr(v,type));
 	Stmt abort=Jimple.v().newIfStmt

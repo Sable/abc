@@ -4,9 +4,7 @@ import java.util.Hashtable;
 import polyglot.util.Position;
 import soot.*;
 import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
-import abc.weaving.residues.Copy;
-
+import abc.weaving.residues.*;
 
 
 /** Cast from one pointcut variable to another. 
@@ -40,6 +38,12 @@ public class CastPointcutVar extends Pointcut {
 			     SootClass cls,
 			     SootMethod method,
 			     ShadowMatch sm) {
+	Type fromType=we.getAbcType(from).getSootType();
+	Type toType=we.getAbcType(to).getSootType();
+	if(fromType instanceof PrimType && 
+	   toType.equals(Scene.v().getSootClass("java.lang.Object").getType()))
+	    return new Box(we.getWeavingVar(from),we.getWeavingVar(to));
+	
 	// no need to cast, because the rules guarantee this is an upcast...
 	return new Copy(we.getWeavingVar(from),we.getWeavingVar(to));
     }
