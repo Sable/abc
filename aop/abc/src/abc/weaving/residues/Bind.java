@@ -94,8 +94,8 @@ public class Bind extends Residue {
                 if (!(target instanceof AdviceFormal)) {
                         target=((BindingLink)andRoot).getAdviceFormal(target);
                         if (!(target instanceof AdviceFormal)) {
-                        		return;
-                                //throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
+                        		//return;
+                                throw new InternalCompilerError("Bind-Residue: Could not establish binding: " + this);
                         }
                 }
 
