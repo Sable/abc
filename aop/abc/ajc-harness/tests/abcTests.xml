@@ -2622,11 +2622,20 @@
     </ajc-test>
 
     <ajc-test num="285" dir="errors" title="class and interface extension"
-     abccomment="jlc not catching missing return statements"
+     abccomment="abc agrees with javac, but reports last error only upon
+                 use of the interface - ok. ODM 18/08/04"
      keywords="from-errors,purejava,messages-vary">
         <compile files="BadExtension.java"
                options="!eclipse">
-            <message kind="error" line="7"/>
+            <ajcmessage kind="error" line="7"/>
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="35"/>
+            <ajcmessage kind="error" line="38"/>
             <message kind="error" line="9"/>
             <message kind="error" line="16"/>
             <message kind="error" line="17"/>
@@ -2634,7 +2643,6 @@
             <message kind="error" line="19"/>
             <message kind="error" line="21"/>
             <message kind="error" line="35"/>
-            <message kind="error" line="38"/>
         </compile>
     </ajc-test>
 
