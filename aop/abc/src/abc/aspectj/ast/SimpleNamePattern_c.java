@@ -25,6 +25,10 @@ public class SimpleNamePattern_c extends NamePattern_c
 	w.write(pat);
     }
 
+    public String toString() {
+	return pat;
+    }
+
     public Pattern getPattern() {
 	return PCStructure.compilePattern(pat);
     }

@@ -131,4 +131,11 @@ public class AdviceDecl extends Syntax {
 	    +(hasJoinPointStaticPart() ? " thisJoinPointStaticPart" : "")
 	    +(hasEnclosingJoinPoint() ? " thisEnclosingJoinPoint" : "");
     }
+
+    public void debugInfo(String prefix,StringBuffer sb) {
+	sb.append(prefix+" in aspect: "+aspect.getInstanceClass().getName()+"\n");
+	sb.append(prefix+" type: "+spec+"\n");
+	sb.append(prefix+" pointcut: "+pc+"\n");
+	sb.append(prefix+" implementation: "+impl+"\n");
+    }
 }

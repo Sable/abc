@@ -40,6 +40,7 @@ public class MethodCallShadowMatch extends ShadowMatch {
 	} else return null;
 
 	if(method.getName().equals(SootMethod.constructorName)) return null;
+	// The next one really ought not to happen...
 	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
 
 	return new MethodCallShadowMatch(stmt,method);

@@ -23,6 +23,10 @@ public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUnivers
 	w.write("*");
     }
 
+    public String toString() {
+	return "*";
+    }
+
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	return true;
     }

@@ -65,6 +65,12 @@ public abstract class AdviceApplication {
 	this.sjpInfo=sjpInfo;
     }
 
+    public void debugInfo(String prefix,StringBuffer sb) {
+	sb.append(prefix+"advice decl:\n");
+       	advice.debugInfo(prefix+" ",sb);
+	sb.append(prefix+"residue: "+residue+"\n");
+    }
+
     private static void doStatement(GlobalAspectInfo info,
 				    MethodAdviceList mal,
 				    SootClass cls,

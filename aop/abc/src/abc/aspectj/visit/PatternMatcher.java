@@ -105,6 +105,10 @@ public class PatternMatcher {
 	public boolean matchesClass(SootClass sc) {
 	    return PatternMatcher.this.matchesClass(pattern, sc.toString());
 	}
+
+	public String toString() {
+	    return pattern.toString();
+	}
     }
 
     public abc.weaving.aspectinfo.TypePattern makeAITypePattern(TypePatternExpr pattern) {

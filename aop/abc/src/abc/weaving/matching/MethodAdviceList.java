@@ -2,6 +2,7 @@ package abc.weaving.matching;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Iterator;
 
 // FIXME: temporary precedence hack
 import abc.weaving.aspectinfo.BeforeAdvice;
@@ -83,11 +84,34 @@ public class MethodAdviceList {
       return !preinitializationAdvice.isEmpty();
     }
 
-
     public String toString() {
 	return "body advice: "+bodyAdvice+"\n"
 	    +"statement advice: "+stmtAdvice+"\n"
 	    +"preinitialization advice: "+preinitializationAdvice+"\n"
 	    +"initialization advice: "+initializationAdvice+"\n";
+    }
+
+    public void debugInfo(String prefix,StringBuffer sb) {
+	sb.append(prefix+"body advice:\n");
+	Iterator it;
+	for(it=bodyAdvice.iterator();it.hasNext();) {
+	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    aa.debugInfo(prefix+" ",sb);
+	}
+	sb.append(prefix+"stmt advice:\n");
+	for(it=stmtAdvice.iterator();it.hasNext();) {
+	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    aa.debugInfo(prefix+" ",sb);
+	}
+	sb.append(prefix+"preinit advice:\n");
+	for(it=preinitializationAdvice.iterator();it.hasNext();) {
+	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    aa.debugInfo(prefix+" ",sb);
+	}
+	sb.append(prefix+"init advice:\n");
+	for(it=initializationAdvice.iterator();it.hasNext();) {
+	    final AdviceApplication aa=(AdviceApplication) it.next();
+	    aa.debugInfo(prefix+" ",sb);
+	}
     }
 }
