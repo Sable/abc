@@ -79,12 +79,9 @@
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
        <run class="Cast"></run>
     </ajc-test>
-<ajc-test title="verify error with calls to outer methods from inner classes" num="997" dir="abctests/bugs">
-       <compile files="PatternMatcher.java"></compile>
-       <run class="PatternMatcher$AIMethodPattern"></run>
-    </ajc-test>
-<ajc-test title="declare parents causes interface to implement itself" num="998" dir="abctests/bugs">
-	<compile files="foo2/Foo.java"></compile>
+<ajc-test title="resolving and declared parents" num="1000" dir="abctests/bugs/resolvingdeclareparents">
+	<compile files="B.java"></compile>
+	<compile files="A.java" classpath="."></compile>
     </ajc-test>
  
 </suite>

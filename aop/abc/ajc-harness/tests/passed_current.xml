@@ -4996,6 +4996,13 @@
        <compile files="AnonPreinit.java"></compile>
        <run class="AnonPreinit"></run>
     </ajc-test>
+<ajc-test title="verify error with calls to outer methods from inner classes" num="997" dir="abctests/bugs">
+       <compile files="PatternMatcher.java"></compile>
+       <run class="PatternMatcher"></run>
+    </ajc-test>
+<ajc-test title="declare parents causes interface to implement itself" num="998" dir="abctests/bugs">
+	<compile files="foo2/Foo.java"></compile>
+    </ajc-test>
 <ajc-test title="declare parents/protected access/inner classes" num="999" dir="abctests/bugs/declareparentsprotectedaccessinnerclasses">
 	<compile files="A.java,bar/C.java"></compile>
     </ajc-test>

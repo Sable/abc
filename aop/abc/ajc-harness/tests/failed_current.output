@@ -194,21 +194,21 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed.
 
 
-Running test 997: abctests/bugs/verify error with calls to outer methods from inner classes
-Commandline: abc -d abctests/bugs abctests/bugs/PatternMatcher.java 
-Failed to find main() method in class PatternMatcher$AIMethodPattern
-FAIL: Test 997: "abctests/bugs/verify error with calls to outer methods from inner classes" failed.
-
-
-Running test 998: abctests/bugs/declare parents causes interface to implement itself
-Commandline: abc -d abctests/bugs abctests/bugs/foo2/Foo.java 
+Running test 1000: abctests/bugs/resolvingdeclareparents/resolving and declared parents
+Commandline: abc -d abctests/bugs/resolvingdeclareparents abctests/bugs/resolvingdeclareparents/B.java 
+Commandline: abc -cp abctests/bugs/resolvingdeclareparents/.:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d abctests/bugs/resolvingdeclareparents abctests/bugs/resolvingdeclareparents/A.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.main.Main.run(Main.java:645)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.StackOverflowError
-FAIL: Test 998: "abctests/bugs/declare parents causes interface to implement itself" failed.
+Caused by: java.lang.RuntimeException: interface needed; got B
+	at soot.Hierarchy.getImplementersOf(Hierarchy.java:387)
+	at abc.weaving.weaver.DeclareParentsWeaver.weave(DeclareParentsWeaver.java:61)
+	at abc.main.Main.weave(Main.java:832)
+	at abc.main.Main.run(Main.java:574)
+	... 3 more
+FAIL: Test 1000: "abctests/bugs/resolvingdeclareparents/resolving and declared parents" failed.
 
 
