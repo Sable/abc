@@ -73,7 +73,7 @@ public class Debug {
     public boolean showArgsMatching=false;
     public boolean showBinds=false;
     public boolean showAdviceFormalSets=false;
-    public boolean warnUntaggedSourceInfo=true;
+    public boolean warnUntaggedSourceInfo=false;
 
 
     public boolean doValidate=false;  // validate jimple

@@ -6553,6 +6553,7 @@
     
 
     <ajc-test num="761" dir="new/declare" pr="31724"
+            abccomment="different positions for execution-type joinpoints"
             title="omnibus declare warning context">
         <compile files="DeclareWarning.java">
             <ajcmessage kind="warning" line="5" text="staticinitialization(DeclareWarning)"/>
@@ -8672,9 +8673,31 @@
 	
     <ajc-test num="961" dir="bugs/systemouts"
     	pr="57432"
+         abccomment="we correctly report two errors at line 13"
 		title="declare error binary-weaving NPE 1">
         <compile files="injar-debug.jar,A.java">
+			<ajcmessage kind="error" line="12" file="X.java"/>
+			<ajcmessage kind="error" line="13" file="X.java"/>
+			<ajcmessage kind="error" line="20" file="X.java"/>
+			<ajcmessage kind="error" line="22" file="X.java"/>
+			<ajcmessage kind="error" line="23" file="X.java"/>
+			<ajcmessage kind="error" line="27" file="X.java"/>
+			<ajcmessage kind="error" line="28" file="X.java"/>
+			<ajcmessage kind="error" line="29" file="X.java"/>
+			<ajcmessage kind="error" line="30" file="X.java"/>
+			<ajcmessage kind="error" line="31" file="X.java"/>
+			<ajcmessage kind="error" line="32" file="X.java"/>
+			<ajcmessage kind="error" line="33" file="X.java"/>
+			<ajcmessage kind="error" line="34" file="X.java"/>
+			<ajcmessage kind="error" line="35" file="X.java"/>
+			<ajcmessage kind="error" line="36" file="X.java"/>
+			<ajcmessage kind="error" line="37" file="X.java"/>
+			<ajcmessage kind="error" line="38" file="X.java"/>
+			<ajcmessage kind="error" line="39" file="X.java"/>
+			<ajcmessage kind="error" line="40" file="X.java"/>
+			<ajcmessage kind="error" line="41" file="X.java"/>
 			<message kind="error" line="12" file="X.java"/>
+			<message kind="error" line="13" file="X.java"/>
 			<message kind="error" line="13" file="X.java"/>
 			<message kind="error" line="20" file="X.java"/>
 			<message kind="error" line="22" file="X.java"/>
@@ -8699,9 +8722,31 @@
     
     <ajc-test num="962" dir="bugs/systemouts"
     	pr="57432"
+           abccomment="we generate 21 errors, just like ajc.."
 		title="declare error binary-weaving NPE 2 ">
         <compile files="injar-nodebug.jar,A.java">
-			<message kind="error" line="0"/>
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<message kind="error" />
+			<ajcmessage kind="error" line="0"/>
         </compile>
     </ajc-test>
 	
