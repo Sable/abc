@@ -469,14 +469,33 @@ public class Main {
       while (jari.hasNext()) {
         String jar = (String)jari.next();
         sb.append(jar);
-        sb.append(":");
+        sb.append(File.pathSeparator);
       }
       sb.append(classpath);
+
+      sb.append(File.pathSeparator);
+      sb.append(System.getProperty("java.home"));
+      sb.append(File.separator);
+      sb.append("lib");
+      sb.append(File.separator);
+      sb.append("rt.jar");
+
+      if(System.getProperty("abc.home")!=null) {
+	  sb.append(File.pathSeparator);
+	  sb.append(System.getProperty("abc.home"));
+	  sb.append(File.separator);
+	  sb.append("lib");
+	  sb.append(File.separator);
+	  sb.append("abc-runtime.jar");
+      }
+
       classpath = sb.toString();
     }
 
     public void initSoot() throws IllegalArgumentException {
-        Scene.v().setSootClassPath(classpath);
+	System.out.println(classpath);
+	Scene.v().setSootClassPath(classpath);
+
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
         //System.out.println(classpath);
         if (!soot.options.Options.v().parse(soot_argv)) {

@@ -125,7 +125,7 @@ public class TestCase {
 					}
 					
 					try {
-						classpath = xChildren[i].select("//@classpath")[0].toString();
+						classpath = dir + "/" + xChildren[i].select("//@classpath")[0].toString();
 					}
 					catch (Exception e) {
 						// Unspecified classpath
@@ -215,12 +215,12 @@ public class TestCase {
 					    if(xChildren[i].has("//@includeClassesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
 					        // We have both a specific classpath for the compilation and an extra directory to
 					        // add to it - simply append
-					        cArgs = new CompilationArgs(args, classpath + System.getProperty("path.separator") + dir);
+					        cArgs = new CompilationArgs(dir,args, classpath + System.getProperty("path.separator") + dir);
 							args = cArgs.args;
 					    }
 					    else {
 					        // We just have a specified classpath... 
-					        cArgs = new CompilationArgs(args, classpath);
+					        cArgs = new CompilationArgs(dir,args, classpath);
 							args = cArgs.args;
 					    }
 					}
@@ -228,7 +228,7 @@ public class TestCase {
 					    if(xChildren[i].has("//@includeClassesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
 					        // Need to add dir to classpath. Since just passing '-cp dir' would override the global
 					        // classpath, we combine it with dir here:
-					        cArgs = new CompilationArgs(args, System.getProperty("java.class.path") + 
+					        cArgs = new CompilationArgs(dir, args, System.getProperty("java.class.path") + 
 					                System.getProperty("path.separator") + dir);
 							args = cArgs.args;
 					    }
@@ -647,17 +647,20 @@ public class TestCase {
 	
 	public static class CompilationArgs {
     	String[] args;
-    	public CompilationArgs(String[] args, String cp) {
+    	public CompilationArgs(String dir,String[] args, String cp) {
 			ArrayList currentArgs = new ArrayList();
 			boolean cpFound = false;
 			String currentCP = null;;
 			for (int i=0; i<args.length; i++) {
 				currentArgs.add(args[i]);
 				if ("-cp".equals(args[i]) || "-classpath".equals(args[i])) {
+				    // We need to prepend the dir onto the classpath item
+				    // TODO: should really check for absolute paths and not prepend to those
 					if (cp.length()==0)
-						currentCP = args[++i];
+						currentCP = dir + "/" + args[++i];
 					else {
-						currentCP = cp + System.getProperty("path.separator") + args[++i];
+						currentCP = cp + System.getProperty("path.separator") 
+						    + dir +"/"+ args[++i];
 					}
 						
 					currentArgs.add(currentCP);

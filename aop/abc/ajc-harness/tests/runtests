@@ -1,3 +1,5 @@
 #!/bin/sh -e
 
-java -Xmx512M abc.testing.Main $*
+ABC_HOME=`realpath ../..`
+
+java -Xmx512M -Dabc.home=$ABC_HOME abc.testing.Main $*
