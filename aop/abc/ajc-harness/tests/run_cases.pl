@@ -117,6 +117,16 @@ sub do_case {
   }
 
   $count++;
+
+  if ($xmlpart =~ m/options=\"-incremental\"/) {
+      print "Skipping test $count because of -incremental option: $title\n";
+      $skipped++;
+      print SKIPPED "$xmlpart\n";
+      return "";
+  }
+
+
+
 #  print "dir: $dir\ntitle: $title\nXML: $xmlpart\n";
 
 	if ($skiptests) {
