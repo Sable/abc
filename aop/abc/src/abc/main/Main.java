@@ -35,7 +35,6 @@ public class Main {
     }
     
     public static void main(String[] args) {
-        reset();
         try {
             Main main = new Main(args);
             main.run();
