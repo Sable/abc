@@ -82,7 +82,7 @@ public class DotDotNamePattern_c extends NamePattern_c
     }
 
     public boolean equivalent(NamePattern p) {
-	if (p instanceof DotDotNamePattern) {
+	if (p.getClass() == this.getClass()) {
 	    return (init.equivalent(((DotDotNamePattern)p).getInit()));
 	} else return false;
     }

@@ -116,7 +116,7 @@ public class RTPSubName_c extends Node_c
 
 
     public boolean equivalent(RefTypePattern p) {
-	if (p instanceof RTPSubName) {
+	if (p.getClass() == this.getClass()) {
 	    return (pat.equivalent(((RTPSubName)p).getNamePattern()));
 	} else return false;
     }

@@ -100,11 +100,11 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
     }
 
     public boolean equivalent(ClassnamePatternExpr otherexp) {
-	if (otherexp instanceof CPEBinary) {
+	if (otherexp.getClass() == this.getClass()) {
 	    CPEBinary o = (CPEBinary)otherexp;
 	    return (   (o.getOperator() == op)
-		    && (o.getLeft().equivalent(left))
-		    && (o.getRight().equivalent(right)));
+		    && (left.equivalent(o.getLeft()))
+		    && (right.equivalent(o.getRight())));
 	} else return false;
     }
 }

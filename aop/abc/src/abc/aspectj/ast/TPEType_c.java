@@ -95,7 +95,7 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
     }
 
     public boolean equivalent(TypePatternExpr t) {
-	if (t instanceof TPEType) {
+	if (t.getClass() == this.getClass()) {
 	    return (type.equals(((TPEType)t).type()));
 	} else return false;
     }

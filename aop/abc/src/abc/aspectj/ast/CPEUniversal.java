@@ -30,4 +30,5 @@ public interface CPEUniversal extends ClassnamePatternExpr
 {
     public void addExclude(ClassnamePatternExpr pat);
     public void setExcludes(List excludes);
+    public List/*ClassNamePatternExpr*/ getExcludes();
 }

@@ -76,9 +76,9 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
 	return !cpe.matches(matcher, cl);
     }
 
-    public boolean equivalent(ClassnamePatternExpr otherexpr) {
-	if (otherexpr instanceof CPENot) {
-	    return (cpe.equivalent(((CPENot)otherexpr).getCpe()));
+    public boolean equivalent(ClassnamePatternExpr otherexp) {
+	if (otherexp.getClass() == this.getClass()) {
+	    return (cpe.equivalent(((CPENot)otherexp).getCpe()));
 	} else return false;
     }
 

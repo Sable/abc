@@ -74,7 +74,7 @@ public class TPEUniversal_c extends TypePatternExpr_c implements TPEUniversal
     }
 
     public boolean equivalent(TypePatternExpr t) {
-	if (t instanceof TPEUniversal) {
+	if (t.getClass() == this.getClass()) {
 	    return true;
 	} else return false;
     }

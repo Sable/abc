@@ -89,7 +89,7 @@ public class RTPName_c extends Node_c
     }
 
     public boolean equivalent(RefTypePattern p) {
-	if (p instanceof RTPName) {
+	if (p.getClass() == this.getClass()) {
 	    return (pat.equivalent(((RTPName)p).getNamePattern()));
 	} else return false;
     }

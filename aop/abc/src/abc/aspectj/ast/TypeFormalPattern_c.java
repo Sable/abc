@@ -74,7 +74,7 @@ public class TypeFormalPattern_c extends Node_c
     }
 
     public boolean equivalent(FormalPattern p) {
-	if (p instanceof TypeFormalPattern) {
+	if (p.getClass() == this.getClass()) {
 	    return expr.equivalent(((TypeFormalPattern)p).expr());
 	} else return false;
     }

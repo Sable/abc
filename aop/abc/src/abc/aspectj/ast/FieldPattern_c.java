@@ -128,12 +128,12 @@ public class FieldPattern_c extends Node_c
     Iterator it1 = modifiers.iterator();
     Iterator it2 = p.getModifiers().iterator();
 
-    while (it1.hasNext()) {
-	if (!it2.hasNext()) return false;
-	if (!((ModifierPattern)it1.next()).equivalent(
-		  (ModifierPattern)it2.next())) return false;
-    }
-    if (it2.hasNext()) return false;
+	while (it1.hasNext() && it2.hasNext()) {
+		ModifierPattern mp1 = (ModifierPattern)it1.next();
+		ModifierPattern mp2 = (ModifierPattern)it2.next();
+		if (!mp1.equivalent(mp2)) return false;
+	}
+	if (it1.hasNext() || it2.hasNext()) return false;
 
     return true;
 

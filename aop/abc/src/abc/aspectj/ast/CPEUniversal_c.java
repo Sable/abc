@@ -62,6 +62,10 @@ public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUnivers
     public void setExcludes(List excludes) {
 	this.excludes = excludes;
     }
+    
+    public List/*<ClassnamePatternExpr>*/ getExcludes() {
+    	return excludes;
+    }
 
     public boolean matches(PatternMatcher matcher, PCNode cl) {
 	Iterator ei = excludes.iterator();
@@ -73,7 +77,43 @@ public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUnivers
     }
 
     public boolean equivalent(ClassnamePatternExpr otherexp) {
-	if (otherexp instanceof CPEUniversal) {
+	if (otherexp.getClass() == this.getClass()) {
+		// Check that the excludes are the same
+		// Could be a little too restrictive, but is correct
+		
+		List/*<ClassnamePatternExpr>*/ otherexcludes = 
+				((CPEUniversal)otherexp).getExcludes();
+		
+		// this.excludes SUBSET OF otherexp.excludes
+		Iterator it1 = excludes.iterator();
+		while (it1.hasNext()) {
+			ClassnamePatternExpr e = (ClassnamePatternExpr)it1.next();
+			Iterator it2 =  otherexcludes.iterator();
+			boolean found = false;
+			while (it2.hasNext() && !found) {
+				ClassnamePatternExpr othere = (ClassnamePatternExpr)it2.next(); 
+				if (e.equivalent(othere)) {
+					found = true;
+				}
+			}
+			if (!found) return false;
+		}
+		
+		// this.excludes SUPERSET OF otherexp.excludes
+		it1 = otherexcludes.iterator();
+		while (it1.hasNext()) {
+			ClassnamePatternExpr e = (ClassnamePatternExpr)it1.next();
+			Iterator it2 =  excludes.iterator();
+			boolean found = false;
+			while (it2.hasNext() && !found) {
+				ClassnamePatternExpr othere = (ClassnamePatternExpr)it2.next(); 
+				if (e.equivalent(othere)) {
+					found = true;
+				}
+			}
+			if (!found) return false;
+		}
+		
 	    return true;
 	} else return false;
     }

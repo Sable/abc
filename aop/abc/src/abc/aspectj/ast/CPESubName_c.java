@@ -100,7 +100,7 @@ public class CPESubName_c extends ClassnamePatternExpr_c
     }
 
     public boolean equivalent(ClassnamePatternExpr otherexp) {
-	if (otherexp instanceof CPESubName) {
+	if (otherexp.getClass() == this.getClass()) {
 	    return (pat.equivalent(((CPESubName)otherexp).getNamePattern()));
 	} else return false;
     }

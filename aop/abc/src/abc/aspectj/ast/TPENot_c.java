@@ -97,7 +97,7 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
     }
 
     public boolean equivalent(TypePatternExpr t) {
-	if (t instanceof TPENot) {
+	if (t.getClass() == this.getClass()) {
 	    return (tpe.equivalent(((TPENot)t).getTpe()));
 	} else return false;
     }

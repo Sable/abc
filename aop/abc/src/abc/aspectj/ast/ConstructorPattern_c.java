@@ -177,36 +177,33 @@ public class ConstructorPattern_c extends Node_c
     Iterator it1 = modifiers.iterator();
     Iterator it2 = p.getModifiers().iterator();
 
-    while (it1.hasNext()) {
-	if (!it2.hasNext()) return false;
+    while (it1.hasNext() && it2.hasNext()) {
 	if (!((ModifierPattern)it1.next()).equivalent(
 		  (ModifierPattern)it2.next())) return false;
     }
-    if (it2.hasNext()) return false;
+    if (it1.hasNext() || it2.hasNext()) return false;
 
     //COMPARE FORMALS
 
     it1 = formals.iterator();
     it2 = p.getFormals().iterator();
 
-    while (it1.hasNext()) {
-	if (!it2.hasNext()) return false;
+    while (it1.hasNext() && it2.hasNext()) {
 	if (!((FormalPattern)it1.next()).equivalent(
 		  (FormalPattern)it2.next())) return false;
     }
-    if (it2.hasNext()) return false;
+    if (it1.hasNext() || it2.hasNext()) return false;
 
     //COMPARE THROWSPATTERNS
 
     it1 = throwspats.iterator();
     it2 = p.getThrowspats().iterator();
 
-    while (it1.hasNext()) {
-	if (!it2.hasNext()) return false;
+    while (it1.hasNext() && it2.hasNext()) {
 	if (!((ThrowsPattern)it1.next()).equivalent(
 		  (ThrowsPattern)it2.next())) return false;
     }
-    if (it2.hasNext()) return false;
+    if (it1.hasNext() || it2.hasNext()) return false;
 
     return true;
 

@@ -98,7 +98,7 @@ public class TPERefTypePat_c extends TypePatternExpr_c
     }
 
     public boolean equivalent(TypePatternExpr t) {
-	if (t instanceof TPERefTypePat) {
+	if (t.getClass() == this.getClass()) {
 	    return (pat.equivalent(((TPERefTypePat)t).getPattern()));
 	} else return false;
     }

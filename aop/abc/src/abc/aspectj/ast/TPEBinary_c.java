@@ -144,7 +144,7 @@ public class TPEBinary_c extends TypePatternExpr_c
     }
 
     public boolean equivalent(TypePatternExpr t) {
-	if (t instanceof TPEBinary) {
+	if (t.getClass() == this.getClass()) {
 	    TPEBinary tb = (TPEBinary) t;
 	    return (left.equivalent(tb.left())
 		    && right.equivalent(tb.right()) 

@@ -71,7 +71,7 @@ public class SimpleNamePattern_c extends NamePattern_c
     }
 
     public boolean equivalent(NamePattern p) {
-	if (p instanceof SimpleNamePattern) {
+	if (p.getClass() == this.getClass()) {
 	    return (pat.equals(((SimpleNamePattern)p).getPatternString()));
 	} else return false;
     }

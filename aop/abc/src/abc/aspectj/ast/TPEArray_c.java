@@ -118,7 +118,7 @@ public class TPEArray_c extends TypePatternExpr_c
     }
 
     public boolean equivalent(TypePatternExpr t) {
-	if (t instanceof TPEArray) {
+	if (t.getClass() == this.getClass()) {
 	    TPEArray tar = (TPEArray)t;
 	    return ((base.equivalent(tar.base())) && (dims == tar.dims()));
 	} else return false;

@@ -77,7 +77,7 @@ public class CPEName_c extends ClassnamePatternExpr_c
     }
 
     public boolean equivalent(ClassnamePatternExpr otherexp) {
-	if (otherexp instanceof CPEName) {
+	if (otherexp.getClass() == this.getClass()) {
 	    return (pat.equivalent(((CPEName)otherexp).getNamePattern()));
 	} else return false;
     }

@@ -52,7 +52,7 @@ public class DotDotFormalPattern_c extends Node_c
     }
 
     public boolean equivalent(FormalPattern p) {
-	if (p instanceof DotDotFormalPattern) {
+	if (p.getClass() == this.getClass()) {
 	    return true;
 	} else return false;
     }
