@@ -281,12 +281,14 @@ public class AroundWeaver {
 		String adviceReturnTypeName=
 				adviceReturnType.toString();// .getClass().getName();
 		String adviceMangledReturnTypeName= // TODO: proper mangling!
-			adviceReturnTypeName.replace('.', '_');
+			adviceReturnTypeName.replace('.', '_').replace('/','_');
 		//String accessTypeString= bGet ? "get" : "set";
 		
+		String aspectName=theAspect.getName();
+		String mangledAspectName=aspectName.replace('.', '_').replace('/','_'); // TODO: proper mangling!
 		
 		final boolean interfacePerAdviceMethod=true;
-		String adviceMethodIdentifierString="$" + 	theAspect.getName() + "$" + adviceMethod.getName();
+		String adviceMethodIdentifierString="$" + mangledAspectName	 + "$" + adviceMethod.getName();
 		
 		String interfaceName="abc$access$" + adviceMangledReturnTypeName + 
 			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");
@@ -1474,6 +1476,22 @@ public class AroundWeaver {
 		}
 		local.setName(name);
 	}
+	
+	private static boolean isInSequence(Body body, Unit begin, Unit end, Unit test) {
+		Chain statements=body.getUnits().getNonPatchingChain();
+		
+		Iterator it=statements.iterator(begin);
+		it.next();
+		while (it.hasNext()) {
+			Unit ut=(Unit)it.next();
+			if (ut==end)
+				break;
+			
+			if (ut==test)
+				return true;
+		}
+		return false;
+	}
 	/**Copies a sequence of statements from one method to another.
 	 * Copied units exclude begin and end.
 	 * Returns bindings (old-unit<->new-unit).
@@ -1539,14 +1557,20 @@ public class AroundWeaver {
 		it = source.getTraps().iterator();
 		while(it.hasNext()) {
 			Trap original = (Trap) it.next();
-			Trap copy = (Trap) original.clone();
+			if (isInSequence(source, begin, end, original.getBeginUnit()) &&
+			    isInSequence(source, begin, end, original.getEndUnit()) &&
+				isInSequence(source, begin, end, original.getHandlerUnit())) {
+				
+			
+				Trap copy = (Trap) original.clone();
     
-			// Add cloned unit to our trap list.
-			trapChain.addLast(copy);
+				// Add cloned unit to our trap list.
+				trapChain.addLast(copy);
 
 			
-			// Store old <-> new mapping.
-			bindings.put(original, copy);
+				// Store old <-> new mapping.
+				bindings.put(original, copy);
+			}
 		}
 
 
@@ -1609,13 +1633,16 @@ public class AroundWeaver {
 			Trap trap=(Trap) it.next();
 			List boxes=trap.getUnitBoxes();
 			Iterator it2=boxes.iterator();
+
 			while (it2.hasNext()) {
 				UnitBox box=(UnitBox)it2.next();
 				Unit ut=box.getUnit();
 				Unit newUnit=(Unit)bindings.get(ut);
 				if (newUnit!=null) {
 					box.setUnit(newUnit);
-				}
+				} /*else {
+					
+				}*/
 			}
 		}
 
