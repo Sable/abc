@@ -9355,4 +9355,9 @@
          title="precedence of percflowsetups">
          <compile files="F.java"/>
     </ajc-test>
+    <ajc-test num="1009" dir="abctests/bugs"
+         title="correct interaction of advice and constructor inlining">
+         <compile files="InlinedCons.java"/>
+         <run class="InlinedCons"/>
+    </ajc-test>
 </suite>
