@@ -75,6 +75,7 @@ public class AdviceDecl_c extends MethodDecl_c
     protected LocalInstance thisJoinPointStaticPartInstance=null;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
     
+
     protected Set/*<CodeInstance>*/ methodsInAdvice;
     
     protected int spec_retval_pos;

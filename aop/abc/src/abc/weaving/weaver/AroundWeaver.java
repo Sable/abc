@@ -1338,8 +1338,8 @@ public class AroundWeaver {
 
 			AdviceMethod adviceMethodInfo = state.getAdviceMethod(method);
 			List sootProceeds=new LinkedList();
-			sootProceeds.addAll(adviceDecl.getSootProceeds());
-			if (sootProceeds.isEmpty())
+			sootProceeds.addAll(adviceDecl.getLocalSootMethods());
+			if (!sootProceeds.contains(method))
 				sootProceeds.add(method);
 			
 			if (adviceMethodInfo == null) {
@@ -1388,8 +1388,8 @@ public class AroundWeaver {
 					AdviceDecl advdecl;
 					advdecl=getAdviceDecl(joinpointMethod);
 					List sootProceeds2=new LinkedList();
-					sootProceeds2.addAll(advdecl.getSootProceeds());
-					if (sootProceeds2.isEmpty())
+					sootProceeds2.addAll(advdecl.getLocalSootMethods());
+					if (!sootProceeds2.contains(joinpointMethod))
 						sootProceeds2.add(joinpointMethod);
 					
 					adviceMethodWovenInto = new AdviceMethod(joinpointMethod, 
@@ -2001,26 +2001,8 @@ public class AroundWeaver {
 						addedAdviceParameterLocals.add(l);						
 					}
 					
-					for (Iterator it0=pm.nestedInitCalls.iterator(); it0.hasNext();) {
-						ProceedCallMethod.NestedInitCall nc=
-							(ProceedCallMethod.NestedInitCall)it0.next();
-						
-						if (addedAdviceParameterLocals.size()!=nc.proceedClass.addedFields.size())
-							throw new InternalAroundError();
-						
-						Iterator it=addedAdviceParameterLocals.iterator();
-						Iterator it1=nc.proceedClass.addedFields.iterator();
-						while (it.hasNext()) {
-							Local l=(Local)it.next();
-							SootField f=(SootField)it1.next();
-							Stmt ns=
-								Jimple.v().newAssignStmt(
-										Jimple.v().newInstanceFieldRef(
-												nc.baseLocal,
-												f), l);
-							pm.proceedCallBody.getUnits().getNonPatchingChain().insertAfter(ns, nc.statement);
-						}
-					}
+					pm.modifyNestedInits(addedAdviceParameterLocals);
+					
 					if (bDefault) {
 						pm.setDefaultParameters(addedAdviceParameterLocals);
 					}
@@ -2068,16 +2050,20 @@ public class AroundWeaver {
 							statements.insertBefore(sf, insertion);
 							addedAdviceParameterLocals.add(l);
 						}
+						pm.modifyNestedInits(addedAdviceParameterLocals);
 						if (bDefault) {
 							pm.setDefaultParameters(addedAdviceParameterLocals);
 						}
 						if (!bDefault)
-							pm.modifyInterfaceInvokations(addedAdviceParameterLocals);
-						
-					}					
+							pm.modifyInterfaceInvokations(addedAdviceParameterLocals);	
+					}
 				} 
 				//return addedAdviceParameterLocals;
 			}
+			
+			/**
+			 * @param pm
+			 */
 			
 			public final SootClass sootClass;
 			public final SootClass aspectClass;
@@ -2111,6 +2097,29 @@ public class AroundWeaver {
 
 		
 			public class ProceedCallMethod {
+				private void modifyNestedInits(List addedAdviceParameterLocals) {
+					ProceedCallMethod pm=this;
+					for (Iterator it0=pm.nestedInitCalls.iterator(); it0.hasNext();) {
+						ProceedCallMethod.NestedInitCall nc=
+							(ProceedCallMethod.NestedInitCall)it0.next();
+						
+						if (addedAdviceParameterLocals.size()!=nc.proceedClass.addedFields.size())
+							throw new InternalAroundError();
+						
+						Iterator it=addedAdviceParameterLocals.iterator();
+						Iterator it1=nc.proceedClass.addedFields.iterator();
+						while (it.hasNext()) {
+							Local l=(Local)it.next();
+							SootField f=(SootField)it1.next();
+							Stmt ns=
+								Jimple.v().newAssignStmt(
+										Jimple.v().newInstanceFieldRef(
+												nc.baseLocal,
+												f), l);
+							pm.proceedCallBody.getUnits().getNonPatchingChain().insertAfter(ns, nc.statement);
+						}
+					}
+				}
 				private void setDefaultParameters(List addedAdviceParameterLocals) {
 					ProceedCallMethod pm=this;
 					int i=0;
@@ -2207,24 +2216,25 @@ public class AroundWeaver {
 								proceedInvokations.add(invokation);							
 							}
 							// find <init> calls to local/anonymous classes
-							if (isAdviceMethod() && invokeEx instanceof SpecialInvokeExpr) {
+							if (invokeEx instanceof SpecialInvokeExpr) {
 								 
 								SpecialInvokeExpr si=(SpecialInvokeExpr) invokeEx;
-								SootClass baseClass=((RefType)si.getBase().getType()).getSootClass();
-								if (!baseClass.equals(aspectClass)) {
-									if (si.getMethod().getName().equals("<init>")) {
+								Local baseLocal=(Local)si.getBase();
+								SootClass baseClass=((RefType)baseLocal.getType()).getSootClass();
+								if (!baseClass.equals(aspectClass)) {									
+									if (si.getMethod().getName().equals("<init>") &&
+										!this.proceedCallBody.getThisLocal().equals(baseLocal) ) {
 										if (adviceMethod.proceedClasses.containsKey(baseClass)) {
-											
+											debug("WWWWWWWWWWWW base class: " + baseClass);
 											AroundWeaver.AdviceMethod.ProceedLocalClass pl=
 												(AroundWeaver.AdviceMethod.ProceedLocalClass)
 													adviceMethod.proceedClasses.get(baseClass);
 											
-											if (!pl.isFirstDegree())
-												throw new InternalAroundError();
-											
-											nestedInitCalls.add(
-													new NestedInitCall(s, pl, 
-															(Local)si.getBase()));
+											if (pl.isFirstDegree()) {											
+												nestedInitCalls.add(
+														new NestedInitCall(s, pl, 
+																(Local)si.getBase()));
+											}
 										//	nestedFirstDegreeClasses.add(baseClass);
 										}
 									}
@@ -2568,6 +2578,14 @@ public class AroundWeaver {
 					ProceedLocalClass pc=(ProceedLocalClass)it.next();
 					if (pc.isAspect())
 						pc.addDefaultParameters();
+				}
+			}
+			if (Debug.v().aroundWeaver){
+				debug("QQQQQQQQQQQQQQ Classes for advice-method" + sootAdviceMethod + "\n");
+				for (Iterator it=proceedClasses.values().iterator();it.hasNext();) {
+					ProceedLocalClass pc=(ProceedLocalClass)it.next();
+					debug(" " + pc.sootClass);
+					
 				}
 			}
 		}
