@@ -18,32 +18,32 @@ public class ConstructorPattern_c extends Node_c
     List modifiers;       // of ModifierPattern
     ClassTypeDotNew name;
     List formals;         // of FormalPattern
-    ClassnamePatternExpr throwpat;
+    List throwspats;        // of ThrowsPattern
 
     public ConstructorPattern_c(Position pos,
                                 List modifiers,
                                 ClassTypeDotNew name,
 			        List formals,
-                                ClassnamePatternExpr throwpat) {
+                                List throwspats) {
         super(pos);
 	this.modifiers = modifiers;
 	this.name = name;
 	this.formals = formals;
-        this.throwpat = throwpat;
+        this.throwspats = throwspats;
     }
 
     protected ConstructorPattern_c reconstruct(List/*<ModifierPattern>*/ modifiers,
-					  ClassTypeDotNew name,
-					  List/*<FormalPattern>*/ formals,
-					  ClassnamePatternExpr throwpat) {
+					       ClassTypeDotNew name,
+					       List/*<FormalPattern>*/ formals,
+					       List/*<ThrowsPattern>*/ throwspats) {
 	if(modifiers != this.modifiers || name != this.name
-	   || formals != this.formals || throwpat != this.throwpat) {
+	   || formals != this.formals || throwspats != this.throwspats) {
 	    
 	    ConstructorPattern_c n = (ConstructorPattern_c) copy();
 	    n.modifiers=modifiers;
 	    n.name=name;
 	    n.formals=formals;
-	    n.throwpat=throwpat;
+	    n.throwspats=throwspats;
 	    return n;
 	}
 	return this;
@@ -53,8 +53,8 @@ public class ConstructorPattern_c extends Node_c
 	List/*<ModifierPattern>*/ modifiers = visitList(this.modifiers,v);
 	ClassTypeDotNew name = (ClassTypeDotNew) visitChild(this.name,v);
 	List/*<FormalPattern>*/ formals = visitList(this.formals,v);
-	ClassnamePatternExpr throwpat = (ClassnamePatternExpr) visitChild(this.throwpat,v);
-	return reconstruct(modifiers,name,formals,throwpat);
+	List/*<ThrowsPattern>*/ throwspats = visitList(this.throwspats,v);
+	return reconstruct(modifiers,name,formals,throwspats);
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
@@ -81,9 +81,15 @@ public class ConstructorPattern_c extends Node_c
        w.end();
        w.write(")");
        
-       if (throwpat != null) {
+       if (throwspats.size() != 0) {
 	   w.write(" throws ");
-	   print(throwpat,w,tr);
+	   for (Iterator ti = throwspats.iterator(); ti.hasNext(); ) {
+	       ThrowsPattern t = (ThrowsPattern) ti.next();
+	       print(t,w,tr);
+	       if (ti.hasNext()) {
+		   w.write(", ");
+	       }
+	   }
        }
     }
 
@@ -98,6 +104,8 @@ public class ConstructorPattern_c extends Node_c
     public List/*<FormalPattern>*/ getFormals() {
 	return formals;
     }
+
+    public List/*<ThrowsPattern>*/ getThrowspats() { return throwspats; }
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern() {
 	return PatternMatcher.v().makeAIConstructorPattern(this);

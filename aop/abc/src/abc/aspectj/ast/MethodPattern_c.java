@@ -20,42 +20,42 @@ public class MethodPattern_c extends Node_c
     TypePatternExpr type;
     ClassTypeDotId name;
     List formals;         // of FormalPattern
-    ClassnamePatternExpr throwpat;
+    List throwspats;      // of ThrowsPattern
 
     public List/*<ModifierPattern>*/ getModifiers() { return modifiers; }
     public TypePatternExpr getType() { return type; }
     public ClassTypeDotId getName() { return name; }
     public List/*<FormalPattern>*/ getFormals() { return formals; }
-    public ClassnamePatternExpr getThrowPat() { return throwpat; }
+    public List/*<ThrowsPattern>*/ getThrowspats() { return throwspats; }
 
     public MethodPattern_c(Position pos,
                            List modifiers,
                            TypePatternExpr type,
                            ClassTypeDotId name,
 			   List formals,
-                           ClassnamePatternExpr throwpat) {
+                           List throwspats) {
         super(pos);
 	this.modifiers = modifiers;
 	this.type = type;
 	this.name = name;
         this.formals = formals;
-        this.throwpat = throwpat;
+        this.throwspats = throwspats;
     }
 
     protected MethodPattern_c reconstruct(List/*<ModifierPattern>*/ modifiers,
 					  TypePatternExpr type,
 					  ClassTypeDotId name,
 					  List/*<FormalPattern>*/ formals,
-					  ClassnamePatternExpr throwpat) {
+					  List throwspats) {
 	if(modifiers != this.modifiers || type != this.type || name != this.name
-	   || formals != this.formals || throwpat != this.throwpat) {
+	   || formals != this.formals || throwspats != this.throwspats) {
 	    
 	    MethodPattern_c n = (MethodPattern_c) copy();
 	    n.modifiers=modifiers;
 	    n.type=type;
 	    n.name=name;
 	    n.formals=formals;
-	    n.throwpat=throwpat;
+	    n.throwspats=throwspats;
 	    return n;
 	}
 	return this;
@@ -66,13 +66,13 @@ public class MethodPattern_c extends Node_c
 	TypePatternExpr type = (TypePatternExpr) visitChild(this.type,v);
 	ClassTypeDotId name = (ClassTypeDotId) visitChild(this.name,v);
 	List/*<FormalPattern>*/ formals = visitList(this.formals,v);
-	ClassnamePatternExpr throwpat = (ClassnamePatternExpr) visitChild(this.throwpat,v);
-	return reconstruct(modifiers,type,name,formals,throwpat);
+	List throwspats = visitList(this.throwspats,v);
+	return reconstruct(modifiers,type,name,formals,throwspats);
     }
 
     public String toString() {
 	String s=modifiers+" "+type+" "+name+" "+formals;
-	if(throwpat!=null) s+=" throws "+throwpat;
+	if(throwspats!=null) s+=" throws "+throwspats;
 	return s;
     }
 
@@ -104,9 +104,15 @@ public class MethodPattern_c extends Node_c
        w.end();
        w.write(")");
        
-       if (throwpat != null) {
+       if (throwspats.size() != 0) {
 	   w.write(" throws ");
-	   print(throwpat,w,tr);
+	   for (Iterator ti = throwspats.iterator(); ti.hasNext(); ) {
+	       ThrowsPattern t = (ThrowsPattern) ti.next();
+	       print(t,w,tr);
+	       if (ti.hasNext()) {
+		   w.write(", ");
+	       }
+	   }
        }
        w.end();
     }

@@ -11,6 +11,7 @@ public interface ConstructorPattern extends MethodConstructorPattern
     public List/*<ModifierPattern>*/ getModifiers();
     public ClassTypeDotNew getName();
     public List/*<FormalPattern>*/ getFormals();
+    public List/*<ThrowsPattern>*/ getThrowspats();
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern();
 }

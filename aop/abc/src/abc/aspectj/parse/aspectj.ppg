@@ -126,13 +126,17 @@ non terminal TypePatternExpr base_type_pattern;
 
 non terminal List classname_pattern_expr_list;
 non terminal ClassnamePatternExpr classname_pattern_expr;
-non terminal ClassnamePatternExpr or_classname_pattern_expr;
+non terminal ClassnamePatternExpr and_classname_pattern_expr;
 non terminal ClassnamePatternExpr unary_classname_pattern_expr;
 non terminal ClassnamePatternExpr basic_classname_pattern;
+non terminal ClassnamePatternExpr classname_pattern_expr_nobang;
+non terminal ClassnamePatternExpr and_classname_pattern_expr_nobang;
 
 non terminal List modifier_pattern_expr;
 
-non terminal ClassnamePatternExpr throws_pattern_expr_opt;
+non terminal List throws_pattern_list_opt;
+non terminal List throws_pattern_list;
+non terminal ThrowsPattern throws_pattern;
 non terminal MethodConstructorPattern method_constructor_pattern;
 non terminal MethodPattern method_pattern;
 non terminal ConstructorPattern constructor_pattern;
@@ -1073,27 +1077,27 @@ classname_pattern_expr_list ::=
   ;
 
 classname_pattern_expr ::= 
-      or_classname_pattern_expr:a
-        {: Grm.parserTrace("classname_pattern_expr is an or_classname_pattern_expr");
+      and_classname_pattern_expr:a
+        {: Grm.parserTrace("classname_pattern_expr is an and_classname_pattern_expr");
            RESULT = a;
         :}
-   |  classname_pattern_expr:a PC_ANDAND or_classname_pattern_expr:b
-        {: Grm.parserTrace("classname_pattern_expr && or_classname_pattern_expr");
+   |  classname_pattern_expr:a PC_OROR and_classname_pattern_expr:b
+        {: Grm.parserTrace("classname_pattern_expr || and_classname_pattern_expr");
            RESULT = parser.nf.CPEBinary(parser.pos(a,b),
 					a,
-					CPEBinary.COND_AND,
+					CPEBinary.COND_OR,
 					b);
         :} 
    ;
 
-or_classname_pattern_expr ::=
+and_classname_pattern_expr ::=
       unary_classname_pattern_expr:a 
-        {: Grm.parserTrace("or_classname_pattern_expr is a unary_classname_pattern_expr");
+        {: Grm.parserTrace("and_classname_pattern_expr is a unary_classname_pattern_expr");
            RESULT = a;
         :}
-   |  or_classname_pattern_expr:a PC_OROR unary_classname_pattern_expr:b 
-        {: Grm.parserTrace("or_classname_pattern_expr || unary_classname_pattern_expr");
-           RESULT = parser.nf.CPEBinary(parser.pos(a,b), a, CPEBinary.COND_OR, b);
+   |  and_classname_pattern_expr:a PC_ANDAND unary_classname_pattern_expr:b 
+        {: Grm.parserTrace("and_classname_pattern_expr && unary_classname_pattern_expr");
+           RESULT = parser.nf.CPEBinary(parser.pos(a,b), a, CPEBinary.COND_AND, b);
         :}
    ;
 
@@ -1135,6 +1139,32 @@ basic_classname_pattern ::=
         :}
   ;
 
+
+classname_pattern_expr_nobang ::= 
+      and_classname_pattern_expr_nobang:a
+        {: Grm.parserTrace("classname_pattern_expr_nobang is an and_classname_pattern_expr");
+           RESULT = a;
+        :}
+   |  classname_pattern_expr_nobang:a PC_OROR and_classname_pattern_expr:b
+        {: Grm.parserTrace("classname_pattern_expr_nobang || and_classname_pattern_expr");
+           RESULT = parser.nf.CPEBinary(parser.pos(a,b),
+					a,
+					CPEBinary.COND_OR,
+					b);
+        :} 
+   ;
+
+and_classname_pattern_expr_nobang ::=
+      basic_classname_pattern:a 
+        {: Grm.parserTrace("and_classname_pattern_expr_nobang is a basic_classname_pattern");
+           RESULT = a;
+        :}
+   |  and_classname_pattern_expr_nobang:a PC_ANDAND unary_classname_pattern_expr:b 
+        {: Grm.parserTrace("and_classname_pattern_expr_nobang && unary_classname_pattern_expr");
+           RESULT = parser.nf.CPEBinary(parser.pos(a,b), a, CPEBinary.COND_AND, b);
+        :}
+   ;
+
 /* ----------------------- MODIFIER PATTERNS ---------------------------- */
 
 modifier_pattern_expr ::=
@@ -1167,16 +1197,44 @@ modifier_pattern_expr ::=
 
 /* -------------- METHOD, CONSTRUCTOR and FIELD PATTERNS ----------------- */
 
-throws_pattern_expr_opt ::=
+throws_pattern_list_opt ::=
      // epsilon
-       {: Grm.parserTrace("no throws pattern");
-          RESULT = null;
+       {: Grm.parserTrace("no throws patterns");
+          RESULT = new TypedList(new LinkedList(),
+			         ThrowsPattern.class,
+                                 false); 
        :}
-  |  THROWS classname_pattern_expr:a
-       {: Grm.parserTrace("has throws pattern");
+  |  THROWS throws_pattern_list:a
+       {: Grm.parserTrace("has throws patterns");
           RESULT = a;
        :}
   ;
+
+throws_pattern_list ::=
+     throws_pattern:a
+        {: Grm.parserTrace("First throws pattern in the list.");
+           RESULT = new TypedList(new LinkedList(),
+				  ThrowsPattern.class,
+				  false);
+	   RESULT.add(a); 
+        :}
+    |  throws_pattern_list:a COMMA throws_pattern:b
+        {: Grm.parserTrace("Another throws parameter");
+	   a.add(b);
+           RESULT = a;
+        :}
+    ;
+
+throws_pattern ::=
+     classname_pattern_expr_nobang:a
+       {: Grm.parserTrace("throws pattern is " + a);
+	  RESULT = parser.nf.ThrowsPattern(parser.pos(a), a, true);
+       :}
+  |  PC_NOT:b classname_pattern_expr:a
+       {: Grm.parserTrace("throws pattern is NOT " + a);
+          RESULT = parser.nf.ThrowsPattern(parser.pos(b,a), a, false);
+       :}
+;
 
 method_constructor_pattern ::=
      method_pattern:a
@@ -1194,13 +1252,13 @@ method_pattern ::=
        type_pattern_expr:b 
        classtype_dot_id:c
        LPAREN:lp formal_pattern_list_opt:d RPAREN:rp 
-       throws_pattern_expr_opt:e
+       throws_pattern_list_opt:e
         {: Grm.parserTrace("method_pattern with modifiers");
            RESULT = parser.nf.MethodPattern(parser.pos(b,e),a,b,c,d,e);
         :}
   |  type_pattern_expr:b classtype_dot_id:c
        LPAREN:lp formal_pattern_list_opt:d RPAREN:rp 
-       throws_pattern_expr_opt:e
+       throws_pattern_list_opt:e
         {: Grm.parserTrace("method_pattern no modifiers");
            List mods = new TypedList(new LinkedList(),
                                      ModifierPattern.class,
@@ -1213,14 +1271,14 @@ constructor_pattern ::=
      modifier_pattern_expr:a  
        classtype_dot_new:b
        LPAREN:lp formal_pattern_list_opt:c RPAREN:rp 
-       throws_pattern_expr_opt:d
+       throws_pattern_list_opt:d
         {: Grm.parserTrace("constructor_pattern with modifiers");
            RESULT = parser.nf.ConstructorPattern(parser.pos(b,d),
                                                  a,b,c,d);
         :}
   |    classtype_dot_new:b
        LPAREN:lp formal_pattern_list_opt:c RPAREN:rp 
-       throws_pattern_expr_opt:d
+       throws_pattern_list_opt:d
         {: Grm.parserTrace("constructor_pattern no modifiers");
 	   List mods = new TypedList(new LinkedList(),
                                      ModifierPattern.class,

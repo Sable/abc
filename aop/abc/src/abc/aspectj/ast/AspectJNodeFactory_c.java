@@ -379,20 +379,20 @@ public class AspectJNodeFactory_c
 				       TypePatternExpr type,
 				       ClassTypeDotId name,
 				       List formals,
-				       ClassnamePatternExpr throwspat) {
-	return new MethodPattern_c(pos,modifiers,type,name,formals,throwspat);
+				       List throwspats) {
+	return new MethodPattern_c(pos,modifiers,type,name,formals,throwspats);
     }
 
     public ConstructorPattern ConstructorPattern(Position pos,
 						 List modifiers,
 						 ClassTypeDotNew name,
 						 List formals,
-						 ClassnamePatternExpr throwspat) {
+						 List throwspats) {
 	return new ConstructorPattern_c(pos,
 					modifiers,
 					name,
 					formals,
-					throwspat);
+					throwspats);
     }
 
     public FieldPattern FieldPattern(Position pos,
@@ -426,6 +426,12 @@ public class AspectJNodeFactory_c
     public TypeFormalPattern TypeFormalPattern(Position pos,
 					       TypePatternExpr expr) {
 	return new TypeFormalPattern_c(pos,expr);
+    }
+
+    public ThrowsPattern ThrowsPattern(Position pos,
+				       ClassnamePatternExpr type,
+				       boolean positive) {
+	return new ThrowsPattern_c(pos, type, positive);
     }
 
     public AmbExpr AmbExpr(Position pos, String name) {

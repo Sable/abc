@@ -55,12 +55,14 @@ public class PCStructure {
 	} else {
 	    PCNode cn = insertClass(sc.getName(), weavable);
 	    if (sc.hasSuperclass()) {
-		insertSootClass(sc.getSuperclass(), false);
+		PCNode p = insertSootClass(sc.getSuperclass(), false);
+		cn.addParent(p);
 	    }
 	    Iterator ii = sc.getInterfaces().iterator();
 	    while (ii.hasNext()) {
 		SootClass i = (SootClass)ii.next();
-		insertSootClass(i, false);
+		PCNode p = insertSootClass(i, false);
+		cn.addParent(p);
 	    }
 	    return cn;
 	}

@@ -228,13 +228,13 @@ public interface AspectJNodeFactory
 				TypePatternExpr type,
 				ClassTypeDotId name,
 				List formals,
-				ClassnamePatternExpr throwspat);
+				List throwspats);
 
     ConstructorPattern ConstructorPattern(Position pos,
 					  List modifiers,
 					  ClassTypeDotNew name,
 					  List formals,
-					  ClassnamePatternExpr throwspat);
+					  List throwspats);
 
     FieldPattern FieldPattern(Position pos,
 			      List modifiers,
@@ -257,7 +257,11 @@ public interface AspectJNodeFactory
 
     TypeFormalPattern TypeFormalPattern(Position pos,
 					TypePatternExpr expr);
-    
+
+    ThrowsPattern ThrowsPattern(Position pos,
+				ClassnamePatternExpr type,
+				boolean positive);
+
     AmbExpr AmbExpr(Position pos, String name);
 
     Field Field(Position pos, Receiver target, String name);

@@ -201,6 +201,22 @@ public class PatternMatcher {
 	return fti == ftypes.size();
     }
 
+    private boolean matchesThrows(List/*<ThrowsPattern>*/ tpats, List/*<soot.SootClass>*/ excs) {
+	Iterator tpati = tpats.iterator();
+	while (tpati.hasNext()) {
+	    ThrowsPattern tpat = (ThrowsPattern)tpati.next();
+	    ClassnamePatternExpr cnp = tpat.type();
+	    boolean matches = false;
+	    Iterator ei = excs.iterator();
+	    while (ei.hasNext() && !matches) {
+		soot.SootClass e = (soot.SootClass)ei.next();
+		if (matchesClass(cnp, e.toString())) matches = true;
+	    }
+	    if (matches != tpat.positive()) return false;
+	}
+	return true;
+    }
+
     public abc.weaving.aspectinfo.ClassnamePattern makeAIClassnamePattern(ClassnamePatternExpr pattern) {
 	return new AIClassnamePattern(pattern);
     }
@@ -242,8 +258,6 @@ public class PatternMatcher {
     }
 
     public abc.weaving.aspectinfo.MethodPattern makeAIMethodPattern(MethodPattern pattern) {
-	if(abc.main.Debug.v.matcherWarnUnimplemented)
-	    System.err.println("FIXME: Making an incomplete method pattern");
 	return new AIMethodPattern(pattern);
     }
 
@@ -262,8 +276,8 @@ public class PatternMatcher {
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
 		matchesClass(pattern.getName().base(), classname) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
-		matchesFormals(pattern.getFormals(), method.getParameterTypes());
-	    // FIXME: need throws
+		matchesFormals(pattern.getFormals(), method.getParameterTypes()) &&
+		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	}
 	public String toString() {
 	    return pattern.toString();
@@ -318,8 +332,6 @@ public class PatternMatcher {
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern(ConstructorPattern pattern) {
 	// Assumes that name is <init>
-	if(abc.main.Debug.v.matcherWarnUnimplemented)
-	    System.err.println("FIXME: Making an incomplete contructor pattern");
 	return new AIConstructorPattern(pattern);
     }
 
@@ -334,8 +346,8 @@ public class PatternMatcher {
 	    return
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
-		matchesFormals(pattern.getFormals(), method.getParameterTypes());
-	    // FIXME: need throws
+		matchesFormals(pattern.getFormals(), method.getParameterTypes()) &&
+		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	}
 	public String toString() {
 	    return pattern.toString();
