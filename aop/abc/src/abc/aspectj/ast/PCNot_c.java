@@ -56,4 +56,9 @@ public class PCNot_c extends Pointcut_c implements PCNot
 		return new HashSet();
 	}
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	return new abc.weaving.aspectinfo.NotPointcut
+	    (pc.makeAIPointcut(),
+	     position());
+    }
 }

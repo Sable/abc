@@ -7,6 +7,8 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.visit.AspectInfoHarvester;
+
 public class PCTarget_c extends Pointcut_c implements PCTarget
 {
     protected Node pat; // AmbTypeOrLocal, resolves to Local, TypeNode or TPEUniversal
@@ -74,4 +76,23 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	if (pat instanceof Local) {
+	    return new abc.weaving.aspectinfo.ConditionPointcut
+		(new abc.weaving.aspectinfo.TargetVar
+		 (new abc.weaving.aspectinfo.Var(((Local)pat).name(),((Local)pat).position())),
+		 position());
+	} else if (pat instanceof TypeNode) {
+	    return new abc.weaving.aspectinfo.ConditionPointcut
+		(new abc.weaving.aspectinfo.TargetType
+		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type())),
+		 position());
+	} else if (pat instanceof TPEUniversal) {
+	    return new abc.weaving.aspectinfo.ConditionPointcut
+		(new abc.weaving.aspectinfo.TargetAny(),
+		 position());
+	} else {
+	    throw new RuntimeException("Unexpected pattern in target pointcut: "+pat);
+	}
+    }
 }

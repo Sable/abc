@@ -28,7 +28,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
                                 TypeNode type,
                                 TypeNode host,
                                 String name,
-                                Expr init) {
+                                Expr init){
 	super(pos,flags,type,name,init);
 	this.host = host;
     }
@@ -59,8 +59,9 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     }
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
+	System.out.println("host: "+host.toString());
 	abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
-	    (gai.getClass(host.type().toString()),
+	    (gai.getClass(host.toString()),
 	     AspectInfoHarvester.toAbcType(type().type()),
 	     name(),
 	     null);

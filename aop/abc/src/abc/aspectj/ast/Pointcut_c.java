@@ -59,10 +59,5 @@ public abstract class Pointcut_c extends Node_c implements Pointcut
 		}
    }
 
-    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	// TODO
-	return null;
-    }
-
 }
 

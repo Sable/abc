@@ -26,4 +26,17 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	if (pat instanceof MethodPattern) {
+	    return new abc.weaving.aspectinfo.ShadowPointcut
+		(new abc.weaving.aspectinfo.MethodExecution(((MethodPattern)pat).makeAIMethodPattern()),
+		 position());
+	} else if (pat instanceof ConstructorPattern) {
+	    return new abc.weaving.aspectinfo.ShadowPointcut
+		(new abc.weaving.aspectinfo.ConstructorExecution(((ConstructorPattern)pat).makeAIConstructorPattern()),
+		 position());
+	} else {
+	    throw new RuntimeException("Unexpected MethodConstructorPattern type in execution pointcut: "+pat);
+	}
+    }
 }

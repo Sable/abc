@@ -13,8 +13,9 @@ public class GlobalAspectInfo {
 
     private List/*<AbcClass>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();
-    private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
     private List/*<IntertypeFieldDecl>*/ ifds = new ArrayList();
+    private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
+    private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AdviceDecl>*/ ads = new ArrayList();
 
     private Map/*<String,AbcClass>*/ classes_map = new HashMap();
@@ -38,6 +39,13 @@ public class GlobalAspectInfo {
 	return aspects;
     }
 
+    /** Returns the list of all intertype field declarations.
+     *  @return a list of {@link abc.weaving.aspectinfo.IntertypeFieldDecl} objects.
+     */
+    public List getIntertypeFieldDecls() {
+	return ifds;
+    }
+
     /** Returns the list of all intertype method declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeMethodDecl} objects.
      */
@@ -45,11 +53,11 @@ public class GlobalAspectInfo {
 	return imds;
     }
 
-    /** Returns the list of all intertype field declarations.
-     *  @return a list of {@link abc.weaving.aspectinfo.IntertypeFieldDecl} objects.
+    /** Returns the list of all intertype constructor declarations.
+     *  @return a list of {@link abc.weaving.aspectinfo.IntertypeConstructorDecl} objects.
      */
-    public List getIntertypeFieldDecls() {
-	return ifds;
+    public List getIntertypeConstructorDecls() {
+	return icds;
     }
 
     /** Returns the list of all advice declarations.
@@ -81,12 +89,16 @@ public class GlobalAspectInfo {
 	}
     }
 
+    public void addIntertypeFieldDecl(IntertypeFieldDecl ifd) {
+	ifds.add(ifd);
+    }
+
     public void addIntertypeMethodDecl(IntertypeMethodDecl imd) {
 	imds.add(imd);
     }
 
-    public void addIntertypeFieldDecl(IntertypeFieldDecl ifd) {
-	ifds.add(ifd);
+    public void addIntertypeConstructorDecl(IntertypeConstructorDecl imd) {
+	icds.add(imd);
     }
 
     public void addAdviceDecl(AdviceDecl ad) {

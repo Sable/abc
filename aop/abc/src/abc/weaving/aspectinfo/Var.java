@@ -7,6 +7,10 @@ public class Var extends Syntax {
     private String name;
     private int index;
 
+    public Var(String name, Position pos) {
+	this(name, -1, pos);
+    }
+
     public Var(String name, int index, Position pos) {
 	super(pos);
 	this.name = name;

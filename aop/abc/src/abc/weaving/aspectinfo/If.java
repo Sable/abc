@@ -2,20 +2,23 @@ package abc.weaving.aspectinfo;
 
 import soot.*;
 
+import java.util.*;
+
 /** Handler for <code>if</code> condition pointcut. */
 public class If extends AbstractConditionPointcutHandler {
-    private Var[] vars;
+    private List/*<Var>*/ vars;
     private MethodSig impl;
 
-    public If(Var[] vars, MethodSig impl) {
+    public If(List vars, MethodSig impl) {
 	this.vars = vars;
 	this.impl = impl;
     }
 
     /** Get the pointcut variables that should be given as arguments to
      *  the method implementing the <code>if</code> condition.
+     *  @return a list of {@link {abc.weaving.aspectinfo.Var} objects.
      */
-    public Var[] getVars() {
+    public List getVars() {
 	return vars;
     }
 

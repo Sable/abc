@@ -264,4 +264,9 @@ public class PCName_c extends Pointcut_c implements PCName
 				return result;
 			}
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	// TODO
+	System.out.println("Warning: named pointcuts not yet supported");
+	return null;
+    }
 }

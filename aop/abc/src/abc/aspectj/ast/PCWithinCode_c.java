@@ -26,4 +26,17 @@ public class PCWithinCode_c extends Pointcut_c implements PCWithinCode
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	if (pat instanceof MethodPattern) {
+	    return new abc.weaving.aspectinfo.ConditionPointcut
+		(new abc.weaving.aspectinfo.WithinMethod(((MethodPattern)pat).makeAIMethodPattern()),
+		 position());
+	} else if (pat instanceof ConstructorPattern) {
+	    return new abc.weaving.aspectinfo.ConditionPointcut
+		(new abc.weaving.aspectinfo.WithinConstructor(((ConstructorPattern)pat).makeAIConstructorPattern()),
+		 position());
+	} else {
+	    throw new RuntimeException("Unexpected MethodConstructorPattern type in withincode pointcut: "+pat);
+	}
+    }
 }

@@ -80,4 +80,10 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	// TODO
+	System.out.println("Warning: args pointcuts not yet supported");
+	return null;
+    }
+
 }

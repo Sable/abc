@@ -24,6 +24,8 @@ public class PCAdviceExecution_c extends Pointcut_c
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	return new abc.weaving.aspectinfo.ShadowPointcut(new abc.weaving.aspectinfo.AdviceExecution(), position());
+	return new abc.weaving.aspectinfo.ShadowPointcut
+	    (new abc.weaving.aspectinfo.AdviceExecution(),
+	     position());
     }
 }

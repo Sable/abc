@@ -26,4 +26,8 @@ public class PCHandler_c extends Pointcut_c implements PCHandler
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	return new abc.weaving.aspectinfo.ShadowPointcut
+	    (new abc.weaving.aspectinfo.Handler(pat.makeAIClassnamePattern()), position());
+    }
 }

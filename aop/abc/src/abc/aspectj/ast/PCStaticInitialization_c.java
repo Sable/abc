@@ -28,4 +28,9 @@ public class PCStaticInitialization_c extends Pointcut_c
         w.write(")");
     }
 
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	return new abc.weaving.aspectinfo.ShadowPointcut
+	    (new abc.weaving.aspectinfo.StaticInitialization(pat.makeAIClassnamePattern()),
+	     position());
+    }
 }

@@ -8,11 +8,13 @@ import polyglot.visit.*;
 import java.util.*;
 
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.visit.AspectInfoHarvester;
 
 public class PCIf_c extends Pointcut_c implements PCIf
 {
     protected Expr expr;
     private String methodName;
+    private MethodDecl methodDecl;
 
     public PCIf_c(Position pos, Expr expr)  {
 	super(pos);
@@ -90,4 +92,17 @@ public class PCIf_c extends Pointcut_c implements PCIf
 		Expr exp = nf.Call(position(),methodName);
 		return reconstruct(exp);
 	}
+
+    public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	List vars = new ArrayList();
+	Iterator fi = methodDecl.formals().iterator();
+	while (fi.hasNext()) {
+	    Formal f = (Formal)fi.next();
+	    vars.add(new abc.weaving.aspectinfo.Var(f.name(), f.position()));
+	}
+	return new abc.weaving.aspectinfo.ConditionPointcut
+	    (new abc.weaving.aspectinfo.If(vars, AspectInfoHarvester.makeMethodSig(methodDecl)),
+	     position());
+    }
+
 }
