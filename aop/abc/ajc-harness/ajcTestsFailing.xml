@@ -1,0 +1,157 @@
+
+<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd">
+
+<!-- contains valid tests that the compiler has never passed -->
+
+<suite>
+
+	<ajc-test dir="bugs/extdirs"
+		comment="eclipse bug? batch.FileSystem() takes only lowercase"
+		title="uppercase ZIP and JAR suffixes for classpath entries">
+		<compile files="extdirs-src/main/Main.java"
+			classpath="lib/uppercase/util-jar.JAR,lib/uppercase/util-zip.ZIP"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/privilege"
+		title="omnibus privileged access"
+		comment="from mail ~Problem with interfaces...~; add pr when bug submitted"
+		>
+		<compile files="packageProtected/concern/ContextUser.java,
+			            packageProtected/concern/BaseTarget.java,
+			            packageProtected/core/Base.java"/>
+		<run class="packageProtected.core.Base"/>
+		<run class="packageProtected.concern.BaseTarget"/>
+		</ajc-test>
+		
+	<ajc-test dir="bugs"
+		pr="41888"
+		title="call PCD fails when given subtype of defining type">
+		<compile files="CallReference.java"/>
+		<run class="CallReference"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/options/classpath"
+		pr="41170"
+		title="combine classpath on command line and in .lst file">
+		<compile options="-verbose" argfiles="classpathTest.lst"/>
+		<run class="Client"/>
+		</ajc-test>
+
+	<ajc-test dir="new/pointcutLibrary" title="libraries-pointcuts compiles"
+		comment="interim test just to show library compiles...">
+		<compile files="langlib/Pointcuts.java"/>
+	</ajc-test>
+
+	<ajc-test dir="new/pointcutLibrary" title="libraries-pointcuts sym"
+		comment="BCException: expected state: resolved got: symbolic at Pointcut.java:238,126"
+		>
+		<compile files="langlib/Pointcuts.java,langlib/PointcutsCW.java">
+			<message kind="warning" line="67" text="anyMethodExecution"/>
+			<message kind="warning" line="67" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="67" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="72" text="anyConstructorExecution"/>
+			<message kind="warning" line="74" text="anyConstructorExecution"/>
+			<message kind="warning" line="74" text="anyPublicConstructorExecution"/>
+			<message kind="warning" line="74" text="anyNonPrivateConstructorExecution"/>
+			<message kind="warning" line="76" text="anyConstructorExecution"/>
+			<message kind="warning" line="76" text="anyNonPrivateConstructorExecution"/>
+			<message kind="warning" line="78" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="82" text="anyMethodExecution"/>
+			<message kind="warning" line="82" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="82" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="83" text="toStringExecution "/>
+			<message kind="warning" line="87" text="anyMethodExecution"/>
+			<message kind="warning" line="89" text="anyMethodExecution, "/>
+			<message kind="warning" line="91" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="91" text="withinSetter"/>
+			<message kind="warning" line="97" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="97" text="withinGetter"/>
+			<message kind="warning" line="102" text="anyMethodExecution"/>
+			<message kind="warning" line="102" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="102" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="103" text="runImplementationsInNonRunnable"/>
+			<message kind="warning" line="107" text="anyRunnableImplementation"/>
+			<message kind="warning" line="109" text="anyMethodExecution"/>
+			<message kind="warning" line="109" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="109" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="114" text="anyMethodExecution"/>
+			<message kind="warning" line="114" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="114" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="115" text="cloneImplementationsInNonCloneable"/>
+			<message kind="warning" line="121" text="anyMethodExecution"/>
+			<message kind="warning" line="121" text="anyPublicMethodExecution"/>
+			<message kind="warning" line="121" text="anyNonPrivateMethodExecution"/>
+			<message kind="warning" line="124" text="anyPublicFieldGet"/>
+			<message kind="warning" line="124" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="126" text="anyPublicFieldGet"/>
+			<message kind="warning" line="126" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="132" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="134" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="136" text="anyPublicFieldSet"/>
+			<message kind="warning" line="136" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="138" text="anyPublicFieldSet"/>
+			<message kind="warning" line="138" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="141" text="anyNonPublicFieldSetOutsideConstructorOrSetter"/>
+			<message kind="warning" line="143" text="anyNonPublicFieldSetOutsideConstructorOrSetter"/>
+			<message kind="warning" line="145" text="anyNonPublicFieldSetOutsideConstructorOrSetter"/>
+			<message kind="warning" line="147" text="anyNonPublicFieldSetOutsideConstructorOrSetter"/>
+			<message kind="warning" line="145" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="147" text="anyNonPrivateFieldSet"/>
+			<message kind="warning" line="149" text="anyGetSystemErrOut"/>
+			<message kind="warning" line="149" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="149" text="anyPublicFieldGet"/>
+			<message kind="warning" line="151" text="anyGetSystemErrOut"/>
+			<message kind="warning" line="151" text="anyNonPrivateFieldGet"/>
+			<message kind="warning" line="151" text="anyPublicFieldGet"/>
+			<message kind="warning" line="153" text="anyThreadConstruction"/>
+			<message kind="warning" line="155" text="anyJavaIOCalls"/>
+			<message kind="warning" line="157" text="anyJavaIOCalls"/>
+			<message kind="warning" line="159" text="anyJavaAWTOrSwingCalls"/>
+			<message kind="warning" line="161" text="anyJavaAWTOrSwingCalls"/>
+			<message kind="warning" line="163" text="anyJavaAWTOrSwingCalls"/>
+			<message kind="warning" line="165" text="anyJavaAWTOrSwingCalls"/>
+			<message kind="warning" line="169" text="anySystemClassLoadingCalls"/>
+			<message kind="warning" line="171" text="anySystemReflectiveCalls"/>
+			<message kind="warning" line="173" text="anySystemProcessSpawningCalls"/>
+			<message kind="warning" line="177" text="mostThrowableReadCalls"/>
+			<message kind="warning" line="179" text="mostThrowableReadCalls"/>
+			<message kind="warning" line="181" text="mostThrowableReadCalls"/>
+		</compile>
+		<run class="org.aspectj.langlib.PointcutsCW"/>
+	</ajc-test>
+
+    <ajc-test dir="bugs/interAbstract" 
+		pr="49784"
+		title="aspect declares interface method (abstract decl, default impl)">
+        <compile files="InterfaceMethodDeclarationNonPublic.java" />
+        <run class="InterfaceMethodDeclarationNonPublic"/>
+    </ajc-test>
+
+    <ajc-test dir="bugs" pr="36787"
+      title="interface initialization order">
+        <compile files="InterfaceInitializerOrder.java"/>
+        <run class="InterfaceInitializerOrder"/>
+    </ajc-test>
+
+	<ajc-test dir="bugs/fieldsOnInterfaces"
+		pr="52107"
+		title="declare String field on interface">
+		<compile files="StringFieldOnInterface.java"/>
+		<run class="StringFieldOnInterface"/>
+		</ajc-test>
+
+	<ajc-test dir="bugs/fieldsOnInterfaces"
+		pr="52107"
+		title="declare int field on interface">
+		<compile files="IntFieldOnInterface.java"/>
+		<run class="IntFieldOnInterface"/>
+		</ajc-test>
+	
+	<ajc-test dir="bugs/fieldsOnInterfaces"
+		pr="52107"
+		title="declare Object field on interface">
+		<compile files="ObjectFieldOnInterface.java"/>
+		<run class="ObjectFieldOnInterface"/>
+		</ajc-test>
+
+</suite>

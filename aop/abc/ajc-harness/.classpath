@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="var" path="JRE_LIB" sourcepath="JRE_SRC"/>
+    <classpathentry kind="lib" path="lib/abc-testing-harness.jar"/>
+    <classpathentry kind="src" path="/abc"/>
+    <classpathentry kind="lib" path="/abc-lib/jasminclasses-sable-1.2.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/JFlex.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/polyglot.jar"/>
+    <classpathentry kind="lib" path="/abc-lib/sootclasses-2.1.0.jar"/>
+    <classpathentry kind="output" path="bin"/>
+</classpath>
