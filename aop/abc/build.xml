@@ -84,9 +84,10 @@
         </javac>
     </target>
 
-   <target name="complete-jar" depends="abc-jar,libdir">
+   <target name="complete-jar" depends="abc-jar,libdir,runtime">
         <jar destfile="lib/abc-complete.jar">
             <fileset dir="classes"/>
+            <fileset dir="runtime-classes"/>
             <zipfileset src="${polyglot.loc}"/>
             <zipfileset src="${polyglot.cupclasses.loc}"/>
             <zipfileset src="${soot.loc}"/>
