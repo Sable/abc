@@ -31,6 +31,7 @@ import soot.util.Chain;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.*;
+import abc.soot.util.AfterBeforeInliner;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for before advice.
@@ -72,6 +73,8 @@ public class BeforeAdvice extends AbstractAdviceSpec {
 
         debug("Before weaver running at "+shadowpoints.getShadowMatch());
 
+        AfterBeforeInliner.v().addShadowMethod(method);
+        
         Body b = method.getActiveBody();
         // this non patching chain is needed so that Soot doesn't "Fix"
         // the traps.

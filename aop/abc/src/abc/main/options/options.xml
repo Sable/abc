@@ -188,6 +188,46 @@ any of their subdirectories.
 	and 1 means the standard intra-procedural options.
       </long_desc>
     </intopt>
+    <boolopt>
+      <alias>around-force-closures</alias>
+      <default>false</default>
+      <short_desc>Force closures for around advice.
+      </short_desc>
+      <long_desc>Force closures for around advice.
+      </long_desc>
+    </boolopt>
+    <boolopt>
+      <alias>around-inlining</alias>
+      <default>true</default>
+      <short_desc>Enable inlining of around advice.
+      </short_desc>
+      <long_desc>Enable inlining of around advice. 
+      </long_desc>
+    </boolopt>
+    <boolopt>
+      <alias>around-force-inlining</alias>
+      <default>false</default>
+      <short_desc>Inline around advice whenever possible.
+      </short_desc>
+      <long_desc>Inline around advice whenever possible (as opposed to adaptive inlining).
+      </long_desc>
+    </boolopt>
+     <boolopt>
+      <alias>before-after-inlining</alias>
+      <default>true</default>
+      <short_desc>Enable inlining of before and after advice.
+      </short_desc>
+      <long_desc>Enable inlining of before and after advice. 
+      </long_desc>
+    </boolopt>
+    <boolopt>
+      <alias>before-after-force-inlining</alias>
+      <default>false</default>
+      <short_desc>Inline before and after advice whenever possible.
+      </short_desc>
+      <long_desc>Inline before and after advice whenever possible (as opposed to adaptive inlining).
+      </long_desc>
+    </boolopt>
   </section>
   <section undoc="">
     <name>Debug options</name>

@@ -26,11 +26,16 @@ import soot.jimple.*;
 import soot.jimple.toolkits.scalar.*;
 import java.util.*;
 
+import abc.soot.util.AfterBeforeInliner;
 import abc.soot.util.AroundInliner;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.*;
+import abc.main.AbcTimer;
+import abc.main.Debug;
+import abc.main.Options;
+import abc.main.options.OptionsParser;
 import abc.main.*;
 
 /** The driver for the weaving process.
@@ -65,6 +70,8 @@ public class Weaver {
                 return ut;
     }
     static public void resetForReweaving() {
+    	AroundWeaver.reset();
+    	AfterBeforeInliner.reset();
         // reset all residues
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
@@ -124,7 +131,7 @@ public class Weaver {
                 reportMessages();
                 if( !abc.main.Debug.v().dontWeaveAfterAnalysis ) {
                     unitBindings = unweaver.restore();
-                    AroundWeaver.reset();
+                    
                     resetForReweaving();
                     removeDeclareWarnings();
                     weaveAdvice();
@@ -138,14 +145,14 @@ public class Weaver {
                     debug("unweaver saved state");
                     unitBindings = unweaver.restore();
                     debug("unweaver restored state");
-                    AroundWeaver.reset();
+                    
                     resetForReweaving();
                     weaveAdvice();
                     debug("after weaveAdvice");
                     //if (true==true) return; ///
                     unitBindings = unweaver.restore();
                     debug("unweaver restored state (2)");
-                    AroundWeaver.reset();
+                    
                     resetForReweaving();
                     //throw new RuntimeException("just a test");
                 }
@@ -154,15 +161,26 @@ public class Weaver {
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
-            if (Debug.v().aroundInliner)
-            	runAroundInliner();
+            
         }
         
+        public static void doInlining() {
+        	Scene.v().releaseActiveHierarchy();
+        	
+        	if (OptionsParser.v().around_inlining())          
+            	Weaver.runAroundInliner(); // needs to be called after exception checking
+
+            if (OptionsParser.v().before_after_inlining())
+            	Weaver.runAfterBeforeInliner();
+        }
         public static void runAroundInliner() {
         	for( Iterator mIt = AroundWeaver.state.shadowMethods.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
         	}
+        }
+        public static void runAfterBeforeInliner() {
+        	AfterBeforeInliner.v().doInlining();
         }
 
         static public void weaveGenerateAspectMethods() {

@@ -150,6 +150,7 @@ public class Main {
         abc.weaving.weaver.CflowIntraAggregate.reset();
         abc.soot.util.SwitchFolder.reset();
         abc.soot.util.AroundInliner.reset();
+        abc.soot.util.AfterBeforeInliner.reset();
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();
 
@@ -490,7 +491,9 @@ public class Main {
                     AbcTimer.mark("Exceptions check");
                     phaseDebug("Exceptions check");
                 }
-
+                
+                Weaver.doInlining();
+                
                 abortIfErrors();
 
                 optimize();

@@ -25,8 +25,8 @@ public class AroundShadowInfoTag implements Tag {
     public byte[] getValue() {
 	throw new AttributeValueException();
     }
-    public AroundShadowInfoTag(int shadowSize) {
-    	this.shadowSize=shadowSize;
+    public AroundShadowInfoTag(abc.weaving.weaver.AroundWeaver.ShadowInlineInfo shadowInfo) {
+    	this.shadowInfo=shadowInfo;
     }
-    public final int shadowSize;
+    public final abc.weaving.weaver.AroundWeaver.ShadowInlineInfo shadowInfo;
 }

@@ -9,13 +9,16 @@ package abc.soot.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import soot.Body;
 import soot.BodyTransformer;
 import soot.SootMethod;
+import soot.jimple.AssignStmt;
+import soot.jimple.FieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
-import soot.jimple.*;
+import soot.jimple.Stmt;
 import soot.jimple.StmtBody;
 import soot.jimple.toolkits.invoke.AccessManager;
 import soot.jimple.toolkits.invoke.InlinerSafetyManager;
@@ -29,15 +32,19 @@ import abc.weaving.weaver.AroundWeaver;
  * @author Sascha Kuzins
  *
  */
-public class AroundInliner extends BodyTransformer {
+public class AroundInliner extends AdviceInliner {
 
+	private void debug(String message) {
+		if (abc.main.Debug.v().aroundInliner)
+			System.err.println("ARI*** " + message);
+	}
 	private static AroundInliner instance = 
 		new AroundInliner();
 	public static void reset() { instance = new AroundInliner(); }
 	
 	
 	private boolean forceInline() {
-		return true;
+		return abc.main.options.OptionsParser.v().around_force_inlining();
 	}
 	
 	public static AroundInliner v() { return instance; }
@@ -50,7 +57,7 @@ public class AroundInliner extends BodyTransformer {
 		SwitchFolder.v().transform(body); // TODO: phaseName etc.?
 		UnreachableCodeEliminator.v().transform(body);
 	}
-	final private static int MAX_DEPTH=4;
+
 	protected void internalTransform(Body body, String phaseName, Map options) {
 		
 		// remove dead code from the dynamic residues.
@@ -73,55 +80,47 @@ public class AroundInliner extends BodyTransformer {
 		}
 	}
 
-	private static interface InlineOptions {
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr);
-	}
+	
 	private class AdviceMethodInlineOptions implements InlineOptions {
-		private int getAccessViolationCount(SootMethod container, SootMethod adviceMethod) 
-		{
-			int violations=0;
-			Body body=adviceMethod.getActiveBody();
-			Chain statements=body.getUnits();
-			for (Iterator it=statements.iterator(); it.hasNext();) {
-				Stmt stmt=(Stmt)it.next();
-				if (stmt.containsInvokeExpr()) {
-					if (!AccessManager.isAccessLegal(container, stmt.getInvokeExpr().getMethod()))
-						violations++;
-				} else if (stmt instanceof AssignStmt) {
-					AssignStmt as=(AssignStmt)stmt;
-					if (as.getRightOp() instanceof FieldRef) {
-						FieldRef r=(FieldRef)as.getRightOp();
-						if (!AccessManager.isAccessLegal(container, r.getField()))
-								violations++;
-					}
-					if (as.getLeftOp() instanceof FieldRef) {
-						FieldRef r=(FieldRef)as.getLeftOp();
-						if (!AccessManager.isAccessLegal(container, r.getField()))
-								violations++;
-					}
-				}
-			}
-			return violations;
-		}
+		
 		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
 			SootMethod method=expr.getMethod();
 			if (!AroundWeaver.Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
 				return false;
 			
-			if (forceInline())
-				return true;
+			debug("Trying to inline advice method " + method);
+			
+			if (forceInline()) {
+				debug("force inline on.");
+				return true;	
+			}
 			
 			
 			AroundWeaver.AdviceMethodInlineInfo info=
 					AroundWeaver.state.getAdviceMethodInlineInfo(method);
 			
 			int accessViolations=getAccessViolationCount(container, method);
+			if (accessViolations!=0) {
+				debug("Access violations");
+				debug(" Method: " + container);
+				debug(" Advice method: " + method); 
+				debug(" Violations: " + accessViolations);
+				if (accessViolations>3)
+					return false;					
+			}
 			
-			if (info.nestedClasses)
+			if (info.nestedClasses) {
+				debug(" Skipped (nested classes)");
 				return false;
+			}
 			
 			//if (info.proceedInvocations>1)
-				
+			debug(" Size of advice method: " + info.originalSize);
+			debug(" Number of applications: " + info.applications);
+			debug(" Number of added locals (approximately): " + info.internalLocalCount);
+			debug(" Proceed invocations: " + info.proceedInvocations);
+			
+						
 			if (info.originalSize<4)
 				return true;
 			
@@ -147,63 +146,52 @@ public class AroundInliner extends BodyTransformer {
 			if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
 				return false;
 			
-			if (forceInline())
-				return true;
+			debug("Trying to inline proceed method " + method);
 			
+			if (forceInline()) {
+				debug("force inline on.");
+				return true;
+			}
+			
+						
 			AroundWeaver.ProceedMethodInlineInfo info=					
 				AroundWeaver.state.getProceedMethodInlineInfo(method);
 			
-			int shadowSize=-1;
+			AroundWeaver.ShadowInlineInfo shadowInfo=null;
+			debug("Proceed method: " + method);
+			
 			if (stmt.hasTag("AroundShadowInfoTag"))	{
 				AroundShadowInfoTag tag=
 					(AroundShadowInfoTag)stmt.getTag("AroundShadowInfoTag");
-				
-				shadowSize=tag.shadowSize;
+			
+				debug(" Found tag.");
+				shadowInfo=tag.shadowInfo;
 			} else {
 				soot.Value v=expr.getArg(info.shadowIDParamIndex);
 				if (Evaluator.isValueConstantValued(v)) {
                     v = Evaluator.getConstantValueOf(v);
                     int shadowID=((IntConstant) v).value;
                   
-                    shadowSize=((Integer)info.shadowSizes.get(new Integer(shadowID))).intValue();                    	
+                    shadowInfo=
+                    	(AroundWeaver.ShadowInlineInfo) info.shadowInformation.get(new Integer(shadowID));                 	
                     
-                    stmt.addTag(new AroundShadowInfoTag(shadowSize));
+                    stmt.addTag(new AroundShadowInfoTag(
+                    		shadowInfo));
 				}
 			}
-			
-			if (shadowSize!=-1 && shadowSize<4)
+			if (shadowInfo!=null) {
+				debug(" Shadow size: " + shadowInfo.size);
+				debug(" Number of additional locals (approximately): " + shadowInfo.internalLocals);
+			} else {
+				debug(" Could not find shadow information.");				
+			}
+			if (shadowInfo!=null && shadowInfo.size<6)
 				return true;
+			
+			
 
 			return false;
 		}
 	}
-	private boolean inlineMethods(Body body, Map options, InlineOptions inlineOptions) {
-		StmtBody stmtBody = (StmtBody)body;
-		
-		Chain units = stmtBody.getUnits();
-        ArrayList unitList = new ArrayList(); unitList.addAll(units);
-
-        boolean bDidInline=false;
-        Iterator stmtIt = unitList.iterator();
-        while (stmtIt.hasNext()) {
-        	Stmt stmt = (Stmt)stmtIt.next();
-        	
-        	if (!stmt.containsInvokeExpr())
-                continue;
-        	
-        	InvokeExpr expr=stmt.getInvokeExpr();
-        	
-        	
-        	
-            if (inlineOptions.inline(body.getMethod(),stmt, expr)) {
-            	if (InlinerSafetyManager.ensureInlinability(
-            			expr.getMethod(), stmt, body.getMethod(), "unsafe")) {
-            		SiteInliner.inlineSite(expr.getMethod(), stmt, body.getMethod(), options);
-            		bDidInline=true;
-            	}
-            }           
-        }		
-        return bDidInline;
-	}
-
+	
 }

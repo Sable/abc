@@ -34,6 +34,7 @@ import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.ShadowPoints;
+import abc.soot.util.AfterBeforeInliner;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after throwing advice without exception variable binding. 
@@ -73,7 +74,7 @@ public class AfterThrowingAdvice extends AbstractAfterAdvice {
     void doWeave(SootMethod method, LocalGeneratorEx lg,
 		 AdviceApplication adviceappl,Residue residue,
 		 WeavingContext wc) {
-
+    AfterBeforeInliner.v().addShadowMethod(method);
 	ShadowPoints shadowpoints=adviceappl.shadowmatch.sp;
 	AbstractAdviceDecl advicedecl=adviceappl.advice;
 

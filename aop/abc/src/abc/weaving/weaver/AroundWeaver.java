@@ -71,6 +71,8 @@ import soot.tagkit.Tag;
 import soot.util.Chain;
 import abc.main.Debug;
 import abc.main.Main;
+import abc.main.Options;
+import abc.main.options.OptionsParser;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.DisableExceptionCheckTag;
@@ -613,11 +615,14 @@ public class AroundWeaver {
 			boolean bUseClosureObject;
 			
 			final boolean bAlwaysUseClosures;
-			if (Debug.v().aroundWeaver)	{
+			
+			/*if (Debug.v().aroundWeaver)	{
 				bAlwaysUseClosures=false;//false; // change this to suit your debugging needs...
 			} else {
 				bAlwaysUseClosures=false; // don't change this!
-			}
+			}*/
+			bAlwaysUseClosures=OptionsParser.v().around_force_closures();
+			
 			
 			if (bHasBeenWovenInto || 
 					 bExecutionWeavingIntoSelf)
@@ -658,7 +663,7 @@ public class AroundWeaver {
 		public class ProceedMethod {
 			private Set adviceApplications=new HashSet();
 			
-			private HashMap shadowSizes=new HashMap();
+			private HashMap shadowInformation=new HashMap();
 			
 			
 			ProceedMethod(SootClass shadowClass, boolean bStaticProceedMethod, String proceedMethodName, boolean bClosureMethod) {
@@ -779,6 +784,7 @@ public class AroundWeaver {
 			}
 			public class AdviceApplicationInfo {
 				public final int shadowSize;
+				public int shadowInternalLocalCount;
 				public int getShadowSize() {
 
 					Chain statements = shadowMethodStatements;
@@ -1010,9 +1016,10 @@ public class AroundWeaver {
 								shadowID = getUniqueShadowID();
 							}
 						}
-						ProceedMethod.this.shadowSizes.put(
+						
+						ProceedMethod.this.shadowInformation.put(
 								new Integer(shadowID),
-								new Integer(shadowSize));
+								new ShadowInlineInfo(shadowSize, shadowInternalLocalCount));
 						
 			
 						if (bUseClosureObject) {
@@ -1348,6 +1355,9 @@ public class AroundWeaver {
 						}
 					}
 				}
+				
+				
+				
 				/**
 				 * 
 				 * Algorithm:
@@ -1413,8 +1423,14 @@ public class AroundWeaver {
 							}
 						}
 					}
-					usedInside.retainAll(definedOutside);
-					return new LinkedList(usedInside);
+					
+					int usedInsideCount=usedInside.size();
+					
+					List result=new LinkedList(usedInside);
+					result.retainAll(definedOutside);					
+					
+					shadowInternalLocalCount=usedInsideCount-result.size();
+					return result; 
 				}
 
 				private Stmt weaveDynamicResidue(
@@ -1466,7 +1482,7 @@ public class AroundWeaver {
 								shadowMethodStatements.insertAfter(skipAdvice, failPoint);
 							}
 							skipAdvice.addTag(attachToInvoke);
-							skipAdvice.addTag(new AroundShadowInfoTag(shadowSize));
+							skipAdvice.addTag(new AroundShadowInfoTag(new ShadowInlineInfo(shadowSize, shadowInternalLocalCount)));
 							directInvocationStmts.add(skipAdvice);
 						}
 					}
@@ -1685,7 +1701,8 @@ public class AroundWeaver {
 						invokeStmt = assign;
 					}
 					invokeStmt.addTag(attachToInvoke);
-					invokeStmt.addTag(new AroundShadowInfoTag(shadowSize));
+					invokeStmt.addTag(new AroundShadowInfoTag(
+							new ShadowInlineInfo(shadowSize, shadowInternalLocalCount)));
 					Stmt beforeEnd=Jimple.v().newNopStmt();
 					shadowMethodStatements.insertBefore(beforeEnd, end);
 					shadowMethodStatements.insertBefore(Jimple.v().newGotoStmt(beforeEnd), insertionPoint);
@@ -2878,14 +2895,20 @@ public class AroundWeaver {
 				private final Set nestedInitCalls=new HashSet();
 				private final NopStmt nopAfterEnclosingLocal;
 				public final int originalSize;
+				public final int internalLocalCount;
 				
 				public AdviceLocalMethod(AdviceMethod adviceMethod, SootMethod method) {
 					//this.adviceMethod=adviceMethod;
 					this.sootProceedCallMethod=method;
 					this.methodBody=method.getActiveBody();			
 				
-					this.originalSize=method.getActiveBody().getUnits().size();
-					
+					this.originalSize=methodBody.getUnits().size();
+					this.internalLocalCount =
+						methodBody.getLocalCount() - 
+						method.getParameterCount();
+					if (internalLocalCount<0)
+						throw new InternalAroundError();
+						
 					debug("YYYYYYYYYYYYYYYYYYY creating ProceedCallMethod " + method);
 					
 					this.nopAfterEnclosingLocal=Jimple.v().newNopStmt();
@@ -3233,11 +3256,20 @@ public class AroundWeaver {
 		public int proceedInvocations=0;
 		public boolean nestedClasses=false;
 		public int originalSize=0;
+		public int internalLocalCount=0;
 		public int applications=0;
+	}
+	public static class ShadowInlineInfo {
+		public ShadowInlineInfo(int size, int internalLocals) {
+			this.size=size;
+			this.internalLocals=internalLocals;
+		}
+		public final int size;
+		public final int internalLocals;
 	}
 	public static class ProceedMethodInlineInfo {
 		public int shadowIDParamIndex=-1;
-		public Map shadowSizes;
+		public Map shadowInformation;
 	}
 	public static class State {
 		private Map proceedMethods=new HashMap();
@@ -3261,7 +3293,7 @@ public class AroundWeaver {
 			
 			
 			result.shadowIDParamIndex=pm.shadowIDParamIndex;
-			result.shadowSizes=pm.shadowSizes;
+			result.shadowInformation=pm.shadowInformation;
 			
 			return result;
 		}
@@ -3299,6 +3331,7 @@ public class AroundWeaver {
 				result.proceedInvocations=m.proceedInvocations.size();
 				
 				result.originalSize=m.originalSize;
+				result.internalLocalCount=m.internalLocalCount;
 				
 				for (Iterator it=adviceMethod.getAllProceedMethods().iterator(); it.hasNext();) {
 					AdviceMethod.ProceedMethod pm=

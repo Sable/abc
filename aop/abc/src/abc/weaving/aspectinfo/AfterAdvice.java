@@ -28,6 +28,7 @@ import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.WeavingContext;
+import abc.soot.util.AfterBeforeInliner;
 import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after advice. 
