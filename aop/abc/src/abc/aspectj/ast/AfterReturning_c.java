@@ -21,6 +21,10 @@ public class AfterReturning_c extends AdviceSpec_c
 	super(pos, formals, voidn, returnResult);
     }
     
+    public String kind() {
+    	return "afterReturning";
+    }
+    
 	//	string representation for error messages
 	public String toString() {
 		String s = "after(";

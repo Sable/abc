@@ -19,6 +19,9 @@ public class Around_c extends AdviceSpec_c
 	super(pos, formals, returnType, null);
     }
     
+    public String kind() {
+    	return "around";
+    }
     // string representation for error messages
 	public String toString() {
 		String s = returnType + " around(";

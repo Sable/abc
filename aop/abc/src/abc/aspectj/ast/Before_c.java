@@ -19,6 +19,9 @@ public class Before_c extends AdviceSpec_c
 	super(pos, formals, voidn, null);
     }
 
+	public String kind() {
+		return "before";
+	}
 	// string representation for error messages
 	public String toString() {
 		String s = "before(";

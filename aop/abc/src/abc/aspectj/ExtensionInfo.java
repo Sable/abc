@@ -115,7 +115,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
 	
-	// add new methods for aspectOf, proceed, if-pointcuts
+	// add new methods for proceed and if-pointcuts, and turn advice into methods
 		l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(nf,ts)));
    // to test the above:
    //		l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));

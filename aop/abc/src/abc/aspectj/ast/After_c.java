@@ -17,7 +17,10 @@ public class After_c extends AdviceSpec_c
     {
 	super(pos, formals, voidn, null);
     }
-    
+
+   public String kind() {
+   	return "after";    
+   }
     //	string representation for error messages
 	 public String toString() {
 		 String s = "after(";

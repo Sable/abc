@@ -19,6 +19,9 @@ public class AfterThrowing_c extends AdviceSpec_c
 	super(pos, formals, voidn, exc);
     }
 
+	public String kind() {
+			return "afterThrowing";
+	}
 	//	string representation for error messages
 	public String toString() {
 		String s = "after(";

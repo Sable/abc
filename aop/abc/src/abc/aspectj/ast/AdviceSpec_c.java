@@ -54,4 +54,7 @@ public class AdviceSpec_c extends Node_c implements AdviceSpec
     	return returnVal;
     }
 
+   public String kind() {
+   		return "advice";
+   }
 }

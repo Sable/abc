@@ -11,12 +11,19 @@ import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
 import polyglot.util.TypedList;
+import polyglot.util.InternalCompilerError;
 
 import polyglot.ast.Block;
 import polyglot.ast.Formal;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Node;
 import polyglot.ast.MethodDecl;
+import polyglot.ast.Expr;
+import polyglot.ast.Return;
+import polyglot.ast.IntLit;
+import polyglot.ast.CharLit;
+import polyglot.ast.FloatLit;
+
 
 import polyglot.types.Flags;
 import polyglot.types.Context;
@@ -26,6 +33,8 @@ import polyglot.types.SemanticException;
 import polyglot.types.Type;
 import polyglot.types.TypeSystem;
 import polyglot.types.ClassType;
+import polyglot.types.PrimitiveType;
+import polyglot.types.ReferenceType;
 
 import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.NodeVisitor;
@@ -137,19 +146,62 @@ public class AdviceDecl_c extends MethodDecl_c
 
 		 return ar;
 	 }
+	 
     
-    public MethodDecl proceedDecl(AspectJNodeFactory nf) {
+    private Expr dummyVal(AspectJNodeFactory nf, Type t) {
+    	if (t instanceof ReferenceType) 
+    		return nf.NullLit(position());
+    	if (t instanceof PrimitiveType) {
+    		PrimitiveType pt = (PrimitiveType) t;
+    		if (pt.isChar())
+    			return nf.CharLit(position(),'x');
+    		if (pt.isBoolean())
+    			return nf.BooleanLit(position(),true);
+    		if (pt.isByte())
+    			return nf.IntLit(position(),IntLit.INT,0);
+    		if (pt.isShort())
+    			return nf.IntLit(position(),IntLit.INT,0);
+    		if (pt.isInt())
+    			return nf.IntLit(position(),IntLit.INT,0);
+    		if (pt.isLong())
+    			return nf.IntLit(position(),IntLit.LONG,0);
+    		if (pt.isFloat())
+    			return nf.FloatLit(position(),FloatLit.FLOAT,0.0);
+    		if (pt.isDouble())
+    			return nf.FloatLit(position(),FloatLit.DOUBLE,0.0);	
+    		if (pt.isVoid())
+    			throw new InternalCompilerError("cannot create expression of void type");
+    		else return null;
+    	} else return null;
+    }
+    
+    public MethodDecl proceedDecl(AspectJNodeFactory nf,
+                                                                AspectJTypeSystem ts) {
     if (spec instanceof Around) {
     	TypeNode tn = (TypeNode) returnType().copy();
 		List formals = new LinkedList(formals());
-		Block bl = nf.Block(position());
+		Return ret;
+		if (tn.type() == ts.Void())
+			ret = nf.Return(position());
+		else {
+			Expr dummy = dummyVal(nf, tn.type());
+			ret = nf.Return(position(),dummy);
+		}
+		Block bl = nf.Block(position()).append(ret);
 		List thrws = new LinkedList(throwTypes()); 
 		String name = UniqueID.newID("proceed");
 		MethodDecl md = nf.MethodDecl(position(),Flags.PRIVATE,tn,name,formals,thrws,bl);      
 		return md;
     } else return null;
     }
-     
+    
+    public MethodDecl methodDecl(AspectJNodeFactory nf,
+    															AspectJTypeSystem ts) {
+    	String name = UniqueID.newID(spec.kind());
+    	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,formals(),throwTypes(),body());
+    	return md;
+    }
+    
     /** Type checking of proceed: keep track of the methodInstance for the current proceed
      *  the ProceedCall will query this information via the proceedInstance() 
      *  method

@@ -5,6 +5,8 @@ import polyglot.util.Position;
 import polyglot.types.*;
 import polyglot.frontend.Source;
 
+import polyglot.ast.Expr;
+
 import arc.aspectj.ast.AdviceSpec;
 import arc.aspectj.types.AspectJFlags;
 
@@ -70,5 +72,5 @@ public class AspectJTypeSystem_c
 						   returnType, name, argTypes, excTypes);
 		}	
 	
-
+	
 }

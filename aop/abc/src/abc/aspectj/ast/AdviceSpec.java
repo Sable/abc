@@ -10,4 +10,5 @@ public interface AdviceSpec extends Node
     List formals();
     TypeNode returnType();
     Formal returnVal();
+    String kind();
 }
