@@ -56,10 +56,10 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	    if (parents.size() == 1 && !((ClassType)((TypeNode)parents.get(0)).type()).flags().isInterface()) {
 		// Extending a singe class
 
+		// Change into EXTENDS internally
+		dp.setKind(DeclareParents.EXTENDS);
+
 		ClassType parentct = (ClassType)((TypeNode)parents.get(0)).type();
-		if (dp.kind() != DeclareParents.EXTENDS) {
-		    throw new SemanticException("Type "+parentct+" is not an interface");
-		}
 
 		Iterator cti = new ArrayList(ext.hierarchy.getClassTypes()).iterator();
 		while (cti.hasNext()) {
