@@ -82,15 +82,18 @@ public class AbcTimer {
 	  System.err.println("Breakdown for polyglot phases: ");
 	  System.err.println("-----------------------------  ");
 	  // Iterate through polyglot phases.
+	  long total = 0;
 	  for (Iterator i = polyglot_passes.iterator(); i.hasNext(); )
 	    { Pass pass = (Pass) i.next();  
 	      Pass.ID id = pass.id();
 	      String name = pass.name();
 	      long inclusive_time = polyglot_stats.passTime(id,true);
+	      total += inclusive_time;
 	      long exclusive_time = polyglot_stats.passTime(id,false);
 	      System.err.println(percent(inclusive_time) + name + ":  " 
 		                     + inclusive_time);
 	    }
+	  System.err.println(percent(total) + "ALL  :  " + total);
 	  System.err.println("========================================"); 
           System.err.println("Time spent in Soot resolver: " + 
 	                            sootresolve_total);
