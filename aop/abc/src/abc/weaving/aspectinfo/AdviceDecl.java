@@ -14,6 +14,8 @@ public class AdviceDecl extends Syntax {
     private MethodSig impl;
     private Aspect aspect;
     private int jp,jpsp,ejp;
+    private Position pos;
+
     private int nformals; // the number of formals in the advice implementation
     private int applcount=0; // the number of times this AdviceDecl matches
                              //   (i.e. the number of static join points)
@@ -27,6 +29,10 @@ public class AdviceDecl extends Syntax {
 	this.pc = pc;
 	this.impl = impl;
 	this.aspect = aspect;
+	this.jp = jp;
+	this.jpsp = jpsp;
+	this.ejp = ejp;
+	this.pos = pos;
 
 	if (spec instanceof AbstractAdviceSpec) {
 	    ((AbstractAdviceSpec)spec).setAdvice(this);
