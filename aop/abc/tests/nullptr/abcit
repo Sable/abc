@@ -1,2 +1,2 @@
 #!/bin/csh
-abc $* certrevsim/*.java jsim/*/*.java lib/aspects/*/*.java
+abc $* +soot -d . -soot certrevsim/*.java jsim/*/*.java lib/aspects/*/*.java

@@ -1,2 +1,2 @@
 #!/bin/csh
-abc $* DCM/*.java DCM/handleMetrics/*.java certrevsim/*.java jsim/*/*.java 
+abc $* +soot -d . -soot DCM/*.java DCM/handleMetrics/*.java certrevsim/*.java jsim/*/*.java 
