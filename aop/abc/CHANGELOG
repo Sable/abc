@@ -58,7 +58,9 @@ $Added support for inlining of advice bodies at join point shadows. A
 !The current implementation of advice precedence is broken and needs a 
 ;redesign, which will happen soon. This will likely have an impact on
 ;the doAddAdviceApplication method in subclasses of ShadowMatch.
-!There is a new Jimple type Immediate <insert description>
+!Some abc variables that can only hold Jimple immediates (locals or constants)
+;but previously had the overly generic declared type Value now have the
+;tighter type Immediate.
 
 %1.0.0 1098443519
 
