@@ -1,6 +1,7 @@
 /* *******************************************************************
  * Copyright (c) 1999-2001 Xerox Corporation, 
  *               2002 Palo Alto Research Center, Incorporated (PARC).
+ *               2004 Julian Tibble.
  * All rights reserved. 
  * This program and the accompanying materials are made available 
  * under the terms of the Common Public License v1.0 
@@ -9,6 +10,7 @@
  *  
  * Contributors: 
  *     Xerox/PARC     initial implementation 
+ *     Julian Tibble  modified for EAJ
  * ******************************************************************/
 
 
