@@ -28,15 +28,11 @@ public class ExecutionShadowMatch extends ShadowMatch {
 	String sigMethod;
 	String sig=null;
 	if(container.getName().equals(SootMethod.staticInitializerName)) {
-	    jpKind="constructor-execution";
-	    sigMethod="makeConstructorSig";
-	} else if(container.getName().equals(SootMethod.constructorName)) {
-	    System.out.println("LJH container.getName() " +
-		               container.getName() +
-			       " SootMethod.constructorName " +
-			       SootMethod.constructorName);
 	    jpKind="staticinitialization";
 	    sigMethod=null;
+	} else if(container.getName().equals(SootMethod.constructorName)) {
+	    jpKind="constructor-execution";
+	    sigMethod="makeConstructorSig";
 	} else { // add advice-execution case
 	    jpKind="method-execution";
 	    sigMethod="makeMethodSig";
