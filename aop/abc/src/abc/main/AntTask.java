@@ -93,6 +93,11 @@ public class AntTask extends MatchingTask {
     public Path createSrc() {
         return src.createPath();
     }
+    public void setIncremental(boolean arg) {
+        if(arg) {
+            throw new BuildException("abc does not support incremental compilation of aspects");
+        }
+    }
 
     private ArrayList args = new ArrayList();
     private void addArg( String s ) { args.add(s); }
