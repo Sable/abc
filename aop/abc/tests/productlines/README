@@ -1,0 +1,90 @@
+This directory includes a modified version of the code which can be
+found at:
+
+http://www.cs.utexas.edu/users/rlopez/Publications.html
+
+under the heading for 
+  "Using AspectJ to Implement Product-Lines: A Case Study"
+
+-----------------------------------------------------------------
+
+What was changed:
+
+ 1. made the code work for ajc 1.1 (previously written for ajc 1.0)
+
+      - had to include private constructors in many classes, so that
+          intertype declarations could be used to put the ordinary
+          public constructors there.   If the orginal classes have
+          the default constructor (public), then an aspect class cannot put
+          one there.   This additional check was added in ajc 1.1.
+
+        Here are those changes:
+          FinishTimeWorkSpace.java:{  private FinishTimeWorkSpace() { super(); }
+          Graph.java:{ private Graph() { super(); }
+          Neighbor.java:{ private Neighbor() { super(); }
+          NumberWorkSpace.java:{  private NumberWorkSpace() { super(); }
+          RegionWorkSpace.java:{ private RegionWorkSpace() { super(); }
+          Vertex.java:   private Vertex() {super();}
+          WorkSpaceTranspose.java:{ private WorkSpaceTranspose() { super(); }
+
+     - in Benchmark.java,  replaced
+              static long Graph.last=0, Graph.current=0, Graph.accum=0;
+
+           with
+             static long Graph.last=0; 
+             static long Graph.current=0; 
+             static long Graph.accum=0;
+           (is this a bug in ajc, it would not accept the first one?)
+
+  2. added MyLog.java DoPrinting.java and NoPrinting.java
+         - changed many occurences of System.out.println to MyLog.println
+                               and    System.out.print   to MyLog.print
+
+         - DoPrinting just defines MyLog.println and MyLog.print to call
+              System.out.println and System.out.print
+
+         - NoPrinting just defines MyLog.println and MyLog.print to do
+              nothing
+
+  3. added ProgTime.java so that longer timing runs could be made
+
+  4. edited Example1.lst and Example2.lst to include new files
+
+  5. added Time1.lst, Time2.lst and Time3.lst for timing runs
+
+----------------------------------------------------------------------------
+
+This program can be compiled using ajc -argfile with the following:
+
+  Example1.lst   -   testing example 1
+  Example2.lst   -   testing example 2
+
+  Time1.lst  - timing example 1
+  Time2.lst  - timing example 2
+  Time3.lst  - timing example 3
+
+----------------
+If compiled for the first two cases, then the program is run using 
+a command like:
+
+     java GPL.Prog ./BENCH/MSTExample.bench v0
+
+and by default the file DoPrinting.java is included which will cause
+a lot of output.
+
+----------------
+If compiled for the last three cases, then the program is configured
+to do larger examples suitable for timing and should be run with
+something like:
+
+    java GPL.ProgTime 1000 10000 400 2 13,
+
+where the arguments are:  num_vertices
+                          num_edges
+                          max_weight
+                          num_repetitions
+                          seed
+
+
+and by default the file NoPrinting.java is included instead of 
+DoPrinting.java,  so only the minimal amount of output is given.

@@ -1,0 +1,2 @@
+#!/bin/csh
+java GPL.ProgTime 200 40 400 200 13 
