@@ -39,11 +39,12 @@ import polyglot.types.SemanticException;
  */
 public abstract class Pointcut extends Syntax {
 
+    /** @param The source position of the pointcut */
     public Pointcut(Position pos) {
         super(pos);
     }
 
-    /** Force subclasses to define toString */
+    /** Subclasses must define toString, for debugging purposes */
     public abstract String toString();
 
     /** Given a context and weaving environment,
@@ -55,11 +56,19 @@ public abstract class Pointcut extends Syntax {
         throws SemanticException;
 
     /** Return a "normalized" version of this
-     *  pointcut; with the following properties:
-     *  All named pointcuts inlined
-     *  All locally quantified variables have fresh names
-     *  Converted to DNF
-     *  All cflows/cflowbelows have been "registered" as separate pointcuts
+     *  pointcut with the following properties:
+     *  <ul>
+     *  <li>All named pointcuts inlined
+     *  <li>All locally quantified variables have fresh names
+     *  <li>Converted to DNF
+     *  <li>All <code>cflow</code>s/<code>cflowbelow</code>s have 
+     *  been "registered" as separate pointcuts
+     *  </ul>
+     *  @param pc The pointcut to normalize
+     *  @param formals A list of {@link Formal}s that are in scope for this
+     *                 pointcut
+     *  @param context The aspect in which the pointcut occurs
+     *  @return The normalized pointcut
      */
     public static Pointcut normalize(Pointcut pc,
                                      List/*<Formal>*/ formals,
@@ -91,10 +100,20 @@ public abstract class Pointcut extends Syntax {
         return ret;
     }
 
+    /** This class is used to calculate the disjunctive normal form
+     *  of pointcuts. This needs to happen to efficiently implement 
+     *  the backtracking semantics of disjunction. This structure is
+     *  built compositionally for compound pointcuts, and then converted 
+     *  back to a {@link Pointcut} when the final version is required.
+     *  This structure should only be constructed for pointcuts that
+     *  do not have any name clashes (the pointcuts returned by the inline
+     *  method have this property).
+     */
     protected final static class DNF {
         private List/*<Formal>*/ formals;
         private List/*<List<Pointcut>>*/ disjuncts;
 
+	/** Construct DNF from a singleton pointcut */
         public DNF(Pointcut pc) {
             formals=new ArrayList();
             disjuncts=new ArrayList();
@@ -109,6 +128,10 @@ public abstract class Pointcut extends Syntax {
             return dnf1;
         }
 
+	/** Add a new formal that is in scope somewhere. The precise
+	 *  scope is lost, so this is only safe for pointcuts that are
+         *  valid and contain no name clashes.
+         */
         public static DNF declare(DNF dnf,List formals) {
             dnf.formals.addAll(formals);
             return dnf;
@@ -164,6 +187,10 @@ public abstract class Pointcut extends Syntax {
             return res;
         }
 
+        /** Turn the DNF back into a pointcut
+         *  @param pos The source position of the original pointcut
+	 *  @return The resulting pointcut
+         */
         public Pointcut makePointcut(Position pos) {
             Pointcut pc=makeDisjuncts(disjuncts,pos);
             if(!formals.isEmpty())
@@ -172,13 +199,34 @@ public abstract class Pointcut extends Syntax {
         }
     }
 
-    /** This method should be overridden in any derived class that has pointcut children */
+    /** Return the DNF form of this pointcut. For pointcuts without
+     *  children this default implementation is fine; for pointcuts with
+     *  children it should be overridden so that at the very least 
+     *  the children are converted to DNF.
+     */
     protected DNF dnf() {
         return new DNF(this);
     }
 
-    /** Inlining should remove all PointcutRefs,
-     *  and return a pointcut that is alpha-renamed
+    /** Inlining should remove all PointcutRefs, and return a pointcut 
+     *  that is alpha-renamed
+     *  @param renameEnv  A mapping from pointcut names to the {@link Var}s 
+     *                    they should be renamed to. If a name isn't in the 
+     *                    map, it doesn't need to be renamed.
+     *  @param typeEnv    A mapping from pointcut names to {@link AbcType}s. 
+     *                    Every variable that can appear free in the pointcut 
+     *                    must be listed. The names are those before any
+     *                    renaming takes place.
+     *  @param context    The {@link Aspect} in which the root pointcut is
+     *                    defined. This is required because references to
+     *                    abstract pointcuts must be resolved to the concrete
+     *                    pointcut using this aspect.
+     *  @param cflowdepth The number of surrounding <code>cflow</code>s. 
+     *                    This is required
+     *                    to determine the correct precedence for the 
+     *                    synthetic advice used to implement 
+     *                    <code>cflow</code>.
+     *  @return The inlined pointcut
      */
     // It would be better if the list of parameters was wrapped up into
     // a class, so we don't need to change everything each time we add one
@@ -196,10 +244,21 @@ public abstract class Pointcut extends Syntax {
 
     // changed to protected since other people shouldn't need to call it,
     // but I can't be bothered to change the modifiers on the subclasses
+    /** If any synthetic advice is required to implement this pointcut,
+     *  this method should take care of adding it.
+     *  @param context The aspect in which the pointcut is defined
+     *  @param typeEnv A mapping from formal name to {@link AbcType} for
+     *                 all the formal parameters to the pointcut
+     */
     protected abstract void registerSetupAdvice
-        (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap);
+        (Aspect context,Hashtable/*<String,AbcType>*/ typeEnv);
 
-    // Get a list of free variables bound by this pointcut
+    /** Get a list of free variables bound by this pointcut
+     *   @param result The results should be placed in this set
+     *                 (having it as a parameter allows it to be built up
+     *                 incrementally, which is more efficient than 
+     *                 repeatedly taking the union of sets)
+     */
     public abstract void getFreeVars(Set/*<String>*/ result);
 
     /** Attempt to unify two pointcuts. pc.unify(pc', unification)
