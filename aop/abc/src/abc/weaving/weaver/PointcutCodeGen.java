@@ -136,11 +136,11 @@ public class PointcutCodeGen {
                             LocalGeneratorEx localgen, 
 			    AdviceApplication adviceappl)
     { debug("starting weave_one for "+method.getName());
-      StringBuffer details=new StringBuffer();
-      if(abc.main.Debug.v().pointcutCodeGen)
+      if(abc.main.Debug.v().pointcutCodeGen) {
+	  StringBuffer details=new StringBuffer();
 	  adviceappl.debugInfo("PCG: ",details);
-      System.out.println(details.toString());
-
+	  System.out.println(details.toString());
+      }
 	  AbstractAdviceDecl advicedecl = adviceappl.advice;
 	if ( advicedecl == null) // it was a dummy advice to enforce a SJP
 	  return;
