@@ -75,6 +75,40 @@
         </compile>
         <ajcrun class="KeywordAspect" />
     </ajc-test>
+
+4) A new set/style of keywords is available for <ajctest/> tags. The
+     attribute "keywords" is still valid, in addition each <ajctest>
+     can contain a <abckeywords> element, which in turn contains 
+     keywords *in the form of further elements*. This allows keywords
+     to be taken from a pre-defined list and easily verified.
+
+     An example to make it clear - 
+     
+         <ajc-test dir="base/test100"
+	        abccomment="I have put this comment in as a test, and this is a very
+	       long one over multiple lines too. LJH"
+	         title="static and non-static before methods -- one file"
+		 keywords="from-base">
+		<compile files="Driver.java"/>
+		<run class="Driver"/>
+		<abckeywords>
+		     <laurie/>
+		     <pavel/>
+		</abckeywords>
+         </ajc-test>
+	 
+
+     For now, the keywords available as elements in the DTD are:
+     ganesh, aske, oege, laurie, sascha, pavel, julian, jennifer,
+     abclimitations, introductions, polyglot, soot.
+
+     To extend the DTD with additional keywords as the need arises,
+     (a) EDIT the line starting with <!ELEMENT abckeywords ...> so that
+         the enumeration of possible child elements includes the new
+	 keyword
+     (b) INSERT a line declaring the new element below. It should have
+         the form <!ELEMENT new_keyword EMPTY>.
+
 -->
 
 <!--
