@@ -144,6 +144,18 @@
         </javadoc>
     </target>
 
+    <target name="runtime-javadoc">
+        <javadoc
+                 destdir="runtime-javadoc"
+		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/:http://java.sun.com/j2se/1.4.2/docs/api/"
+                 maxmemory="200m"
+                 windowtitle="ABC compiler"
+                 verbose="true"
+        >
+          <fileset dir="runtime-src" includes="**/*.java" />
+        </javadoc>
+    </target>
+
     <target name="clean" depends="settings">
         <delete quiet="true">
             <fileset dir="runtime-classes" includes="**/*.class" />
