@@ -133,7 +133,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(Pass.DISAM, job,
 			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.ALL)));
 	l.add(new BarrierPass(Pass.DISAM_ALL, job));
-	l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
 	l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
 	l.add(new VisitorPass(Pass.TYPE_CHECK, job, new TypeChecker(job, ts, nf)));
 	l.add(new VisitorPass(Pass.REACH_CHECK, job, new ReachChecker(job, ts, nf)));
