@@ -2541,7 +2541,7 @@ public class AroundWeaver {
 	private static void verifyBindings(Vector bindings) {
 		for (int i = 0; i < bindings.size(); i++) {
 			if (bindings.get(i) == null)
-				throw new InternalError("Not all arguments are bound");
+				throw new InternalError("Argument "+i+" is not bound"); 
 			// TODO:
 		}
 

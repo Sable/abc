@@ -105,6 +105,7 @@ public class ShadowPointsSetter {
         { final AdviceApplication execappl = 
 	     (AdviceApplication) alistIt.next(); 
           execappl.shadowpoints = execution_sp;
+	  execution_sp.setShadowMatch(execappl.shadowmatch);
 	} // each execution advice
   } // insertBodySP
 
@@ -146,6 +147,7 @@ public class ShadowPointsSetter {
 	         insertNopsAroundStmt(stmtappl,method,keystmt);
 	       // put in the AdviceApplication
 	       stmtappl.shadowpoints = sp;
+	       sp.setShadowMatch(stmtappl.shadowmatch);
 	       // put in the SPhashtable
 	       SPhashtable.put(keystmt,sp);
 	     }
@@ -184,7 +186,7 @@ public class ShadowPointsSetter {
     // Now deal with end point.  Rewire all returns to end of method body.
     // Insert a nop just before the return at end of body.
     Stmt endnop = Restructure.restructureReturn(method);
-    return new ShadowPoints(startnop,endnop);
+    return new ShadowPoints(method,startnop,endnop);
   } // method restructureBody 
     
 
@@ -221,7 +223,7 @@ public class ShadowPointsSetter {
        units.insertAfter(startnop,targetstmt);
        // for the special case of a handler, there is no end to the shadow
        debug("Inserting nop after identity stmt " + targetstmt); 
-       return new ShadowPoints(startnop,null);
+       return new ShadowPoints(method,startnop,null);
      }
    else if (stmtappl instanceof NewStmtAdviceApplication)
      { // expecting a new, followed by an <init> (treat these as one unit)
@@ -236,7 +238,7 @@ public class ShadowPointsSetter {
        // if a trap ended just after the new, 
        // it should now extend down to the stmt after the endnop 
        Restructure.resetTrapsEnd(b,nextstmt,(Stmt) units.getSuccOf(endnop));
-       return new ShadowPoints(startnop,endnop);
+       return new ShadowPoints(method,startnop,endnop);
      }
 
    else if (stmtappl instanceof StmtAdviceApplication)
@@ -250,7 +252,7 @@ public class ShadowPointsSetter {
        // if a trap ended just after the targetstmt, 
        // it should now extend down to the stmt after the endnop 
        Restructure.resetTrapsEnd(b,nextstmt,(Stmt) units.getSuccOf(endnop));
-       return new ShadowPoints(startnop,endnop);
+       return new ShadowPoints(method,startnop,endnop);
      }
 
    else
@@ -347,13 +349,14 @@ public class ShadowPointsSetter {
 	  units.insertAfter(startnop,initstmt);
 	  // insert endnop just after just before final ret
 	  units.insertBefore(endnop,units.getLast());
-	  initialization_sp = new ShadowPoints(startnop,endnop); 
+	  initialization_sp = new ShadowPoints(method,startnop,endnop); 
           // make all initializatin AdviceApplications refer to the
           // shadowpoints object just constructed.
           for (Iterator alistIt = advicelist.iterator(); alistIt.hasNext();)
              { final AdviceApplication initappl = 
 	               (AdviceApplication) alistIt.next(); 
                 initappl.shadowpoints = initialization_sp;
+		initialization_sp.setShadowMatch(initappl.shadowmatch);
 	     } // each initialization advice
 	}
      else
@@ -379,13 +382,14 @@ public class ShadowPointsSetter {
           // insert endnop just before call to <init>,  
 	  Stmt initstmt = Restructure.findInitStmt(units);
 	  units.insertBefore(endnop,initstmt);
-	  preinitialization_sp = new ShadowPoints(startnop,endnop); 
+	  preinitialization_sp = new ShadowPoints(method,startnop,endnop); 
           // make all preinitialization AdviceApplications refer to the
           // shadowpoints object just constructed.
           for (Iterator alistIt = advicelist.iterator(); alistIt.hasNext();)
              { final AdviceApplication preinitappl = 
 	               (AdviceApplication) alistIt.next(); 
                 preinitappl.shadowpoints = preinitialization_sp;
+		preinitialization_sp.setShadowMatch(preinitappl.shadowmatch);
 	     } // each initialization advice
 	}
      else

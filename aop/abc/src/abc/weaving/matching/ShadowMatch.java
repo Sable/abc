@@ -41,6 +41,7 @@ public abstract class ShadowMatch {
 				     AbstractAdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication aa=doAddAdviceApplication(mal,ad,residue);
+	aa.setShadowMatch(this);
 	if(ad.hasJoinPoint() || ad.hasJoinPointStaticPart()) {
 	    aa.sjpInfo=getSJPInfo();
 	}
@@ -84,6 +85,11 @@ public abstract class ShadowMatch {
     }
     public boolean supportsAround() {
 	return supportsBefore() && supportsAfter();
+    }
+
+    public abc.weaving.weaver.ShadowPoints sp=null;
+    public void setShadowPoints(abc.weaving.weaver.ShadowPoints sp) {
+	this.sp=sp;
     }
 
 }

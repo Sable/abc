@@ -15,6 +15,10 @@ import java.util.*;
 public class AspectInfoHarvester extends ContextVisitor {
     private static Map pc_decl_map = new HashMap();
 
+    public static void reset() {
+	pc_decl_map=new HashMap();
+    }
+
     private GlobalAspectInfo gai;
     private String current_aspect_name;
     private Aspect current_aspect;

@@ -15,9 +15,9 @@ import abc.weaving.residues.JimpleValue;
  *  @date 05-May-04
  */
 public class ConstructorCallShadowMatch extends StmtShadowMatch {
-    private InvokeExpr invoke;
+    private SpecialInvokeExpr invoke;
         
-    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,InvokeExpr invoke) {
+    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,SpecialInvokeExpr invoke) {
 	super(container,stmt);
 	
 	this.invoke=invoke;
@@ -44,7 +44,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	    throw new Error
 		("INTERNAL ERROR: Didn't find an InvokeStmt after a new: "+pos.getContainer()+" "+current+" "+next);
 	}
-	InvokeExpr invoke=((InvokeStmt) next).getInvokeExpr();
+	SpecialInvokeExpr invoke=(SpecialInvokeExpr) (((InvokeStmt) next).getInvokeExpr());
 	
 	StmtShadowMatch.makeArgumentsUniqueLocals(stmtMP.getContainer(), next);
 	
@@ -70,7 +70,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     public ContextValue getTargetContextValue() {
-	return new JimpleValue(((AssignStmt) stmt).getLeftOp());
+	return new JimpleValue(invoke.getBase());
     }
 
     public ContextValue getReturningContextValue() {

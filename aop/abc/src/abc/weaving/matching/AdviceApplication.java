@@ -71,6 +71,12 @@ public abstract class AdviceApplication {
                                       // where to weave.  Is initialized
                                       // in first pass of weaver. 
 
+    public ShadowMatch shadowmatch=null;
+
+    public final void setShadowMatch(ShadowMatch sm) {
+	shadowmatch=sm;
+    }
+
     public AdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	this.advice=advice;
 	this.residue=residue;
@@ -174,7 +180,8 @@ public abstract class AdviceApplication {
 	
 	HashMap m=new HashMap();
 	m.put("enabled","true");
-	//System.out.println("restructuring "+method);
+	if(abc.main.Debug.v().restructure)
+	    System.out.println("restructuring "+method);
 	(new soot.jimple.toolkits.base.JimpleConstructorFolder())
 	    .transform(method.getActiveBody(),"jtp.jcf",m);
 

@@ -52,7 +52,6 @@ public class BeforeAfterWeaver {
 	AfterThrowingWeaver.doWeave(method,localgen,shadowpoints,afterResidue,advicedecl,wc);
 	cp.setBefore();
 	BeforeWeaver.doWeave(method,localgen,shadowpoints,beforeResidue,advicedecl,wc);
-
       } // method doWeave 
 
 }

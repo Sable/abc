@@ -40,6 +40,7 @@ public class Main {
       //  needs static information reset for repeated calls to main
       abc.main.AbcTimer.reset();
       abc.soot.util.Restructure.reset();
+      abc.aspectj.visit.AspectInfoHarvester.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.weaver.AroundWeaver.reset();
     }
@@ -168,7 +169,11 @@ public class Main {
 
 	    weave();   // Timers marked inside weave()
 
+	    validate();
+	    AbcTimer.mark("Validate jimple");
+
 	    optimize();
+
 	    AbcTimer.mark("Soot Packs");
 
 	    output();
@@ -336,6 +341,13 @@ public class Main {
 
         Weaver weaver = new Weaver();
         weaver.weave(); // timer marks inside weave()
+    }
+
+    public void validate() {
+	for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+	    final AbcClass cl = (AbcClass) clIt.next();
+	    abc.soot.util.Validate.validate(cl.getSootClass());
+	}
     }
 
     public void optimize(){

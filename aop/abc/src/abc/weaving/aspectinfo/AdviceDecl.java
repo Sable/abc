@@ -124,6 +124,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	Residue ret=AlwaysMatch.v;
 
 	// cache the residue in the SJPInfo to avoid multiple field gets?
+	// (could do this in the same place we get the JP stuff if we care)
 
 	if(hasJoinPointStaticPart()) 
 	    ret=AndResidue.construct
@@ -146,8 +147,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	if(hasJoinPoint())
 	    ret=AndResidue.construct
 		(ret,new Load
-		 // FIXME
-		 (new JimpleValue(NullConstant.v()),
+		 (new JoinPointInfo(sm),
 		  new AdviceFormal
 		  (joinPointPos(),
 		   RefType.v("org.aspectj.lang.JoinPoint"))));

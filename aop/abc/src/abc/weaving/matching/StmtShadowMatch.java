@@ -10,6 +10,8 @@ import soot.SootMethod;
 import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.InvokeExpr;
+import soot.jimple.NewExpr;
+import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
@@ -65,6 +67,20 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 		if (bDoModify) {
 			Body body=method.getActiveBody();
 			Chain statements=body.getUnits().getNonPatchingChain();
+
+			// If this is a new+constructor pair, we want to put the moved stuff before
+			// the new
+		        if(stmt instanceof InvokeStmt &&
+			   ((InvokeStmt) stmt).getInvokeExpr()
+			   .getMethod().getName().equals(SootMethod.constructorName)) {
+			    
+			    Stmt prev=(Stmt) statements.getPredOf(stmt);
+
+			    if(prev instanceof AssignStmt && 
+			       ((AssignStmt) prev).getRightOp() instanceof NewExpr)
+				stmt=prev;
+			}
+
 			LocalGeneratorEx lg=new LocalGeneratorEx(body);
 			NopStmt nop=Jimple.v().newNopStmt();
 			statements.insertBefore(nop, stmt);
