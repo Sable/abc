@@ -1,5 +1,6 @@
 /* Abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +20,46 @@
 
 package abc.aspectj;
 
+import java.io.*;
+import java.util.Properties;
+
 /**
  * Version information for aspectj extension
  * @author Aske Simon Christensen
+ * @author Ganesh Sittampalam
  */
 public class Version extends polyglot.main.Version {
     public String name() { return "aspectj"; }
 
-    // TODO: define a version number, the default (below) is 0.1.0
     public int major() { return 0; }
     public int minor() { return 1; }
     public int patch_level() { return 0; }
+
+    protected String properties_file() {
+	return "/abc/main/version.properties";
+    }
+
+    public static void main(String[] args) {
+	System.out.println(new Version().toString());
+    }
+
+    public String prerelease() {
+	InputStream propfile=getClass().getResourceAsStream(properties_file());
+	if(propfile!=null) {
+	    Properties props=new Properties();
+	    try {
+		props.load(propfile);
+		return props.getProperty("prerelease","DEV");
+	    } catch(IOException e) {
+		return "DEV";
+	    }
+	} else return "DEV";
+    }
+
+    public String toString() {
+	String s=super.toString();
+	String prerel=prerelease();
+	if(!prerel.equals("")) s+="."+prerel;
+	return s;
+    }
 }

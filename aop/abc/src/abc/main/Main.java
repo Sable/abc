@@ -8,6 +8,7 @@
  * Copyright (C) 2004 Julian Tibble
  * Copyright (C) 2004 Pavel Avgustinov
  * Copyright (C) 2004 Oege de Moor
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -77,7 +78,8 @@ import java.lang.reflect.*;
  */
 
 public class Main {
-    public static final String abcVersionString = "0.1.0";
+    public static final String abcVersionString 
+	= new abc.aspectj.Version().toString();
 
     private static Main v=null;
     public static Main v() {
@@ -128,6 +130,7 @@ public class Main {
 
     public static void abcPrintVersion() 
       { G.v().out.println("Abc version " + abcVersionString);
+	  // FIXME: should print out any extension version
         G.v().out.println("... using Soot toolkit version " + 
                                   soot.Main.v().versionString);
         G.v().out.println("... using Polyglot compiler toolkit version " + 
