@@ -60,9 +60,9 @@ public class AdviceDecl_c extends MethodDecl_c
 {
     protected AdviceSpec spec;
     protected Pointcut pc;
-  	protected boolean hasJoinPoint;
-  	protected boolean hasJoinPointStaticPart;
-  	
+    protected boolean hasJoinPoint;
+    protected boolean hasJoinPointStaticPart;
+    protected boolean hasEnclosingJoinpoint;
     
     // if the returnVal of "after returning" or "after throwing" is
     // specified, make it an additional parameter to the advice body
@@ -221,6 +221,7 @@ public class AdviceDecl_c extends MethodDecl_c
     public MethodDecl methodDecl(AspectJNodeFactory nf,
     															AspectJTypeSystem ts) {
     	List newformals = new LinkedList(formals());
+	// Add enclosing joinpoint here
     	if (hasJoinPointStaticPart()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
     		Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
@@ -259,7 +260,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		
 		// inside an advice body, thisJoinPoint is in scope, but nowhere else in an aspect
 		AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
-	    LocalInstance jp = ts.localInstance(position(), 
+		LocalInstance jp = ts.localInstance(position(), 
 	                                                                Flags.FINAL, 
 	                                                                ts.JoinPoint(), 
                                                                     "thisJoinPoint");
@@ -274,7 +275,7 @@ public class AdviceDecl_c extends MethodDecl_c
 			proceedInstance = methodInstance().name("proceed");
 		else
 		    proceedInstance = null;
-        scope = nc;
+		scope = nc;
                
 		return nc;
 	}
@@ -395,12 +396,19 @@ public class AdviceDecl_c extends MethodDecl_c
 		}
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	int lastpos = formals().size();
+	int jp = -1, jpsp = -1, ejp = -1;
+	if (hasJoinPoint) jp = --lastpos;
+	if (hasJoinPointStaticPart) jpsp = --lastpos;
+	if (hasEnclosingJoinpoint) ejp = --lastpos;
+
 	abc.weaving.aspectinfo.AdviceDecl ad =
 	    new abc.weaving.aspectinfo.AdviceDecl
 	    (spec.makeAIAdviceSpec(),
 	     pc.makeAIPointcut(),
 	     AspectInfoHarvester.makeMethodSig(this),
 	     current_aspect,
+	     jp, jpsp, ejp,
 	     position());
 	gai.addAdviceDecl(ad);
     }

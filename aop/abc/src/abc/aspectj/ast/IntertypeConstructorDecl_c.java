@@ -188,17 +188,27 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	    Formal f = (Formal)fi.next();
 	    params.add(AspectInfoHarvester.toAbcType(f.type().type()));
 	}
+	List exc = new ArrayList();
+	Iterator ti = throwTypes().iterator();
+	while (ti.hasNext()) {
+	    TypeNode t = (TypeNode)ti.next();
+	    exc.add(t.type().toString());
+	}
 	abc.weaving.aspectinfo.MethodSig impl = new abc.weaving.aspectinfo.MethodSig
-	    (current_aspect.getInstanceClass(),
+	    (AspectInfoHarvester.convertModifiers(flags()),
+	     current_aspect.getInstanceClass(),
 	     new abc.weaving.aspectinfo.AbcType(soot.VoidType.v()),
 	     name(),
 	     params,
+	     exc,
 	     position());
 	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
-	    (gai.getClass(host.toString()),
+	    (AspectInfoHarvester.convertModifiers(flags()),
+	     gai.getClass(host.toString()),
 	     new abc.weaving.aspectinfo.AbcType(soot.VoidType.v()),
 	     name(),
 	     params,
+	     exc,
 	     null);
 	abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
 	    (target, impl, current_aspect, position());

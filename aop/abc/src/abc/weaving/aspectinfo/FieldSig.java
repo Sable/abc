@@ -7,16 +7,34 @@ import soot.*;
 
 /** A field signature. */
 public class FieldSig extends Syntax {
+    private int mod;
     private AbcClass cl;
     private AbcType type;
     private String name;
     private SootField sf;
 
-    public FieldSig(AbcClass cl, AbcType type, String name, Position pos) {
+    public FieldSig(int mod, AbcClass cl, AbcType type, String name, Position pos) {
 	super(pos);
+	this.mod = mod;
 	this.cl = cl;
 	this.type = type;
 	this.name = name;
+    }
+
+    public int getModifiers() {
+	return mod;
+    }
+
+    public AbcClass getDeclaringClass() {
+	return cl;
+    }
+
+    public AbcType getType() {
+	return type;
+    }
+
+    public String getName() {
+	return name;
     }
 
     public SootField getSootField() {
@@ -29,6 +47,6 @@ public class FieldSig extends Syntax {
     }
 
     public String toString() {
-	return type+" "+cl+"."+name;
+	return Modifier.toString(mod)+" "+type+" "+cl+"."+name;
     }
 }

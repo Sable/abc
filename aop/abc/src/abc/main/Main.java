@@ -86,12 +86,15 @@ public class Main {
                             new BeforeAdvice(null),
                             new ShadowPointcut(new SetField(null),null),
                             new MethodSig(
+				0,
                                 aspect.getInstanceClass(),
                                 new AbcType( aspect.getInstanceClass().getSootClass().getType() ),
                                 "before$1",
                                 new ArrayList(),
+                                new ArrayList(),
                                 null),
                             aspect,
+			    -1,-1,-1,
                             null));
             } else {
                 System.out.println( "it's not an aspect");

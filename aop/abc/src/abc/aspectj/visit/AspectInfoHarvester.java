@@ -47,11 +47,17 @@ public class AspectInfoHarvester extends ContextVisitor {
 	return new AbcType(soot.javaToJimple.Util.getSootType(t));
     }
 
+    public static int convertModifiers(Flags flags) {
+	//TODO
+	return 0;
+    }
+
     public static MethodSig makeMethodSig(MethodDecl md) {
 	ReferenceType mcc = md.methodInstance().container();
 	if (!(mcc instanceof ParsedClassType)) {
 	    throw new RuntimeException("Error in aspect info generation: Method is not in a named class");
 	}
+	int mod = convertModifiers(md.flags());
 	AbcClass cl = GlobalAspectInfo.v().getClass(((ParsedClassType)mcc).fullName());
 	AbcType rtype = toAbcType(md.returnType().type());
 	String name = md.name();
@@ -61,7 +67,13 @@ public class AspectInfoHarvester extends ContextVisitor {
 	    Formal mdf = (Formal)mdfi.next();
 	    formals.add(toAbcType((polyglot.types.Type)mdf.type().type()));
 	}
-	return new MethodSig(cl, rtype, name, formals, md.position());
+	List exc = new ArrayList();
+	Iterator ti = md.throwTypes().iterator();
+	while (ti.hasNext()) {
+	    TypeNode t = (TypeNode)ti.next();
+	    exc.add(t.type().toString());
+	}
+	return new MethodSig(mod, cl, rtype, name, formals, exc, md.position());
     }
 
 

@@ -11,8 +11,9 @@ public class AdviceDecl extends Syntax {
     private Pointcut pc;
     private MethodSig impl;
     private Aspect aspect;
+    private int jp,jpsp,ejp;
 
-    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, Position pos) {
+    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, int jp, int jpsp, int ejp, Position pos) {
 	super(pos);
 	this.spec = spec;
 	this.pc = pc;
@@ -45,7 +46,34 @@ public class AdviceDecl extends Syntax {
 	return aspect;
     }
 
+    public boolean hasJoinPoint() {
+	return jp != -1;
+    }
+
+    public boolean hasJoinPointStaticPart() {
+	return jpsp != -1;
+    }
+
+    public boolean hasEnclosingJoinPoint() {
+	return ejp != -1;
+    }
+
+    public int joinPointPos() {
+	return jp;
+    }
+
+    public int joinPointStaticPartPos() {
+	return jpsp;
+    }
+
+    public int enclosingJoinPointPos() {
+	return ejp;
+    }
+
     public String toString() {
-	return "(in aspect "+aspect.getInstanceClass().getName()+") "+spec+": "+pc+" >> "+impl+" <<";
+	return "(in aspect "+aspect.getInstanceClass().getName()+") "+spec+": "+pc+" >> "+impl+" <<"
+	    +(hasJoinPoint() ? " thisJoinPoint" : "")
+	    +(hasJoinPointStaticPart() ? " thisJoinPointStaticPart" : "")
+	    +(hasEnclosingJoinPoint() ? " thisEnclosingJoinPoint" : "");
     }
 }
