@@ -8130,7 +8130,7 @@
         <compile files="DecwClassCastException.java">
         
          <!-- These are the illegal PCDs against a deow -->
- <message kind="error" line="27" text="if() pointcut designator cannot be used"/>
+         <ajcmessage kind="error" line="27" text="if() pointcut designator cannot be used"/>
          <ajcmessage kind="error" line="29" text="if() pointcut designator cannot be used"/>
          <ajcmessage kind="error" line="31" text="cflow() pointcut designator cannot be used"/>
          <ajcmessage kind="error" line="33" text="cflow() pointcut designator cannot be used"/>
