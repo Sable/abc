@@ -548,6 +548,8 @@ SingleCharacter = [^\r\n\'\\]
                                      { yybegin(YYINITIAL);
                                        savedState = IN_JAVA;
                                        javaOrAspect = IN_JAVA;
+                                       // shouldn't the thing on the nesting stack be correct anyway?
+                                       nestingStack.pop();
                                      }
                                    else /* we are in some nesting */
                                      /* if curlyBraceLevel is same as
