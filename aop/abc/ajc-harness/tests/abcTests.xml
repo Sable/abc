@@ -9377,6 +9377,9 @@
     </ajc-test>
     <ajc-test num="1013" dir="abctests/bugs"
          title="circular pointcuts">
-         <compile files="TestAspect.java"/>
+         <compile files="TestAspect.java">
+            <message kind="error" line="11"/>
+            <message kind="error" line="12"/>
+         </compile>
     </ajc-test>
 </suite>
