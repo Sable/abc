@@ -16,17 +16,16 @@ import abc.eaj.visit.GlobalPointcuts;
 
 
 public class GlobalPointcutDecl_c extends PointcutDecl_c
-                                  implements GlobalPointcutDecl,
-                                             ContainsNamePattern
+                                  implements GlobalPointcutDecl
 {
-    NamePattern aspect_pattern; // aspects that match this TypePattern
-    Pointcut pointcut;          // should conjoin this pointcut
-                                // with the pointcut for each piece of
-                                // advice in the matching aspect
+    ClassnamePatternExpr aspect_pattern; // aspects that match this pattern
+    Pointcut pointcut;                   // should conjoin this pointcut
+                                         // with the pointcut for each piece of
+                                         // advice in the matching aspect
     String name;
 
     public GlobalPointcutDecl_c(Position pos,
-                                NamePattern aspect_pattern,
+                                ClassnamePatternExpr aspect_pattern,
                                 Pointcut pointcut,
                                 String name,
                                 TypeNode voidn)
@@ -37,7 +36,8 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
         this.name = name;
     }
 
-    protected Node reconstruct(Node n, NamePattern aspect_pattern, Pointcut pointcut)
+    protected Node reconstruct(Node n, ClassnamePatternExpr aspect_pattern,
+                                       Pointcut pointcut)
     {
         if (   aspect_pattern != this.aspect_pattern
             ||       pointcut != this.pointcut)
@@ -55,17 +55,12 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
     {
         Node n = super.visitChildren(v);
 
-        NamePattern aspect_pattern =
-                (NamePattern) visitChild(this.aspect_pattern, v);
+        ClassnamePatternExpr aspect_pattern =
+                (ClassnamePatternExpr) visitChild(this.aspect_pattern, v);
 
         Pointcut pointcut = (Pointcut) visitChild(this.pointcut, v);
 
         return reconstruct(n, aspect_pattern, pointcut);
-    }
-
-    public NamePattern getNamePattern()
-    {
-        return aspect_pattern;
     }
 
     public void registerGlobalPointcut(GlobalPointcuts visitor,

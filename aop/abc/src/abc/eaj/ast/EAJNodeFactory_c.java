@@ -23,18 +23,22 @@ public class EAJNodeFactory_c extends AspectJNodeFactory_c
         return new PCCast_c(pos, type_pattern);
     }
 
-    public PCLocalVars PCLocalVars(Position pos, List varlist, Pointcut pointcut)
+    public PCLocalVars PCLocalVars(Position pos,
+                                   List varlist,
+                                   Pointcut pointcut)
     {
         return new PCLocalVars_c(pos, varlist, pointcut);
     }
 
-    public GlobalPointcutDecl GlobalPointcutDecl(Position pos,
-                                                 NamePattern aspect_pattern,
-                                                 Pointcut pointcut,
-                                                 String name,
-                                                 TypeNode voidn)
+    public GlobalPointcutDecl GlobalPointcutDecl(
+                                    Position pos,
+                                    ClassnamePatternExpr aspect_pattern,
+                                    Pointcut pointcut,
+                                    String name,
+                                    TypeNode voidn)
     {
-        return new GlobalPointcutDecl_c(pos, aspect_pattern, pointcut, name, voidn);
+        return new GlobalPointcutDecl_c(pos, aspect_pattern,
+                                        pointcut, name, voidn);
     }
 
     public AdviceDecl AdviceDecl(Position pos, Flags flags,

@@ -7,7 +7,7 @@ import polyglot.frontend.*;
 import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
-import abc.aspectj.visit.PatternMatcher;
+import abc.aspectj.visit.*;
 
 import abc.eaj.ast.*;
 import abc.eaj.types.*;
@@ -18,7 +18,7 @@ public class GlobalPointcuts extends ContextVisitor
     public final static int CONJOIN = 2;
 
     // This visitor must maintain state in between jobs.
-    // The mapping from aspect names to applicable global
+    // The mapping from aspect patterns to global
     // pointcuts is therefore kept in a static variable
     //
     // The visitor is also run in two stages COLLECT,
@@ -26,7 +26,7 @@ public class GlobalPointcuts extends ContextVisitor
     // global barrier pass, we can use a static counter
     // to determine when the mapping should be
     // re-initialised.
-    static HashMap /*String,Pointcut*/ matchingpcs = new HashMap();
+    static HashMap /*ClassnamePatternExpr,Pointcut*/ globalpcs = new HashMap();
     static int unmatchedCollectPasses = 0;
 
 
@@ -43,19 +43,14 @@ public class GlobalPointcuts extends ContextVisitor
     /**
      * callback to allow a GlobalPoincutDecl to register itself
      */
-    public void addGlobalPointcut(NamePattern pattern, Pointcut pointcut)
+    public void addGlobalPointcut(ClassnamePatternExpr pattern,
+                                  Pointcut pointcut)
     {
-        Iterator i = PatternMatcher.v().getMatches(pattern).iterator();
-
-        while (i.hasNext()) {
-            String name = i.next().toString().intern();
-
-            if (matchingpcs.containsKey(name)) {
-                Pointcut current = (Pointcut) matchingpcs.get(name);
-                matchingpcs.put(name, conjoinPointcuts(pointcut, current));
-            } else {
-                matchingpcs.put(name, pointcut);
-            }
+        if (globalpcs.containsKey(pattern)) {
+            Pointcut current = (Pointcut) globalpcs.get(pattern);
+            globalpcs.put(pattern, conjoinPointcuts(pointcut, current));
+        } else {
+            globalpcs.put(pattern, pointcut);
         }
     }
 
@@ -79,7 +74,7 @@ public class GlobalPointcuts extends ContextVisitor
         }
 
         if (unmatchedCollectPasses == 0)
-            matchingpcs = new HashMap();
+            globalpcs = new HashMap();
     }
 
     public NodeVisitor enter(Node parent, Node n)
@@ -96,15 +91,29 @@ public class GlobalPointcuts extends ContextVisitor
         n = super.leave(parent, old, n, v);
 
         if (pass == CONJOIN && n instanceof EAJAdviceDecl) {
-            EAJAdviceDecl ad = (EAJAdviceDecl) n;
-            String aspect = context().currentClass().fullName().intern();
+            EAJAdviceDecl adviceDecl = (EAJAdviceDecl) n;
+            PCNode aspect = PCStructure.v().getClass(context().currentClass());
 
-            if (matchingpcs.containsKey(aspect)) {
-                Pointcut global = (Pointcut) matchingpcs.get(aspect);
-                return ad.conjoinPointcutWith(this, global);
-            }
+            return applyMatchingGlobals(aspect, adviceDecl);
         }
 
         return n;
+    }
+
+    protected EAJAdviceDecl applyMatchingGlobals(PCNode aspect,
+                                                 EAJAdviceDecl ad)
+    {
+        Iterator i = globalpcs.keySet().iterator();
+
+        while (i.hasNext()) {
+            ClassnamePatternExpr pattern = (ClassnamePatternExpr) i.next();
+
+            if (pattern.matches(PatternMatcher.v(), aspect)) {
+                Pointcut global = (Pointcut) globalpcs.get(pattern);
+                ad = ad.conjoinPointcutWith(this, global);
+            }
+        }
+
+        return ad;
     }
 }

@@ -9,7 +9,7 @@ import abc.aspectj.visit.ContainsNamePattern;
 import abc.eaj.ast.EAJNodeFactory;
 import abc.eaj.visit.GlobalPointcuts;
 
-public interface GlobalPointcutDecl extends PointcutDecl, ContainsNamePattern
+public interface GlobalPointcutDecl extends PointcutDecl
 {
     public void registerGlobalPointcut(GlobalPointcuts visitor,
                                        Context context,

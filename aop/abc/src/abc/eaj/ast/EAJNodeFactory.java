@@ -14,10 +14,13 @@ public interface EAJNodeFactory extends AspectJNodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
 
     public PCCast PCCast(Position pos, TypePatternExpr type_pattern);
+
     public PCLocalVars PCLocalVars(Position pos, List varlist, Pointcut pointcut);
-    public GlobalPointcutDecl GlobalPointcutDecl(Position pos,
-                                                 NamePattern aspect_pattern,
-                                                 Pointcut pointcut,
-                                                 String name,
-                                                 TypeNode voidn);
+
+    public GlobalPointcutDecl GlobalPointcutDecl(
+                                    Position pos,
+                                    ClassnamePatternExpr aspect_pattern,
+                                    Pointcut pointcut,
+                                    String name,
+                                    TypeNode voidn);
 }
