@@ -1,0 +1,103 @@
+# packaging script will set variables above here
+
+export DH_COMPAT=3
+include /usr/share/dbs/dbs-build.mk
+
+package=abc
+rootdir=debian/$(package)
+
+build: build-stamp
+build-stamp: $(patched)
+	dh_testdir
+
+	mkdir -p lib
+
+	cd build-tree/jasmin-$(JASMIN_VER) && CLASSPATH= bin/compile_all.sh
+	cd build-tree/jasmin-$(JASMIN_VER)/classes && \
+	  jar -cvf ../../../lib/jasminclasses-sable-nocup.jar jas/ jasmin/ scm/
+
+	cd build-tree/polyglot-$(POLYGLOT_VER) && CLASSPATH= ant polyglot-jar
+	cp build-tree/polyglot-$(POLYGLOT_VER)/lib/polyglot.jar lib/
+	cp build-tree/polyglot-$(POLYGLOT_VER)/lib/java_cup.jar lib/
+
+	cd build-tree/soot-$(SOOT_VER) && \
+          (echo polyglot.jar=../../lib/polyglot.jar ; \
+           echo jasmin.jar=../../lib/jasminclasses-sable-nocup.jar ; \
+           echo soot.version=custom ; \
+           echo release.loc=../../lib/ ; \
+           echo jedd.runtime.jar=../../jedd-runtime-$(JEDD_VER).jar) \
+          > ant.settings
+	cd build-tree/soot-$(SOOT_VER) && CLASSPATH= ant classesjar
+
+	cd build-tree/abc-$(ABC_VER) && \
+	  (echo polyglot.loc=../../lib/polyglot.jar ; \
+	   echo polyglot.cupclasses.loc=../../lib/java_cup.jar ; \
+	   echo soot.loc=../../lib/sootclasses-custom.jar ; \
+	   echo jasmin.loc=../../lib/jasminclasses-sable-nocup.jar ; \
+	   echo xact.loc=../../xact-complete-$(XACT_VER).jar) \
+	  > ant.settings
+	mkdir -p build-tree/abc-$(ABC_VER)/classes/abc/main
+	echo "prerelease=$(PREREL)" \
+	   > build-tree/abc-$(ABC_VER)/classes/abc/main/version.properties
+	cd build-tree/abc-$(ABC_VER) && CLASSPATH= ant jars
+
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+
+	rm -rf lib/ $(STAMP_DIR) $(SOURCE_DIR)
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	rm -rf $(rootdir)
+
+	install -d -m755 $(rootdir)/usr/share/abc/lib
+	install -d -m755 $(rootdir)/usr/bin
+
+	for d in abc-complete.jar abc-runtime.jar \
+	         abc-for-ajc-ant.jar ; \
+	   do install -m644 build-tree/abc-$(ABC_VER)/lib/$$d \
+                $(rootdir)/usr/share/abc/lib; \
+	   done
+
+	install -m755 build-tree/abc-$(ABC_VER)/dist/abc-debian $(rootdir)/usr/bin/abc
+
+binary-indep: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_installdocs
+	dh_installexamples
+#       dh_installmenu
+#       dh_installdebconf
+#       dh_installlogrotate
+#       dh_installemacsen
+#       dh_installcatalogs
+#       dh_installpam
+#       dh_installmime
+#       dh_installinit
+#       dh_installcron
+#       dh_installinfo
+#       dh_undocumented
+	dh_installman
+	dh_link
+	dh_compress
+	dh_fixperms
+#       dh_perl
+#       dh_python
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install

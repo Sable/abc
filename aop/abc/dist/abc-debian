@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ "$ABC_HOME" = "" ] ; then ABC_HOME=/usr/share/abc
+fi
+
+java -classpath "$ABC_HOME/lib/abc-complete.jar:$CLASSPATH" -Xmx256M -Dabc.home=$ABC_HOME abc.main.Main "$@"
+

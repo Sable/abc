@@ -1,0 +1,12 @@
+Source: abc
+Section: devel
+Priority: optional
+Maintainer: abc development team <abc-dev@comlab.ox.ac.uk>
+Build-Depends: java-compiler, ant, dbs
+
+Package: abc
+Architecture: all
+Depends: java-virtual-machine, java-runtime
+Description: An AspectJ compiler
+ abc is an optimising, whole program compiler for the AspectJ extension of
+ Java (http://www.aspectj.org).
