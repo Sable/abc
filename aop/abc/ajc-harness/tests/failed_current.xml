@@ -50,12 +50,6 @@
             <message line="3" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="classes that are package prefixes are illegal" pr="574" keywords="from-java,purejava,messages-vary" dir="new/packagePrefix" abccomment="ajc doesn't find this error, send to Nate July 5/04 LJH">
-      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
-        <compile options="!eclipse" files="p/prefix.java,p/prefix/SomeClass.java">
-            <message line="2" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="nested finally blocks have interesting frame location problems" keywords="from-java" dir="pureJava" abccomment="jlc finds an error of return expected, but should                   compile without error.  Reported to Nate July 2/04 LJH">
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="NestedFinally.java"></compile>
@@ -90,15 +84,6 @@
             <message line="12" kind="error"></message>
             <message line="16" kind="error"></message>
             <message line="20" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="two classes with the same fully-qualified names [eachjvm]" pr="388" keywords="from-errors" dir="errors" comment="XXX error not flagging initial type" abccomment="Bogus test, as it contains a syntax error that causes abc to bail out. ODM July 7, 2004">
-        <compile files="DuplicatedNames.java">
-            <ajcmessage line="3" kind="error"></ajcmessage>
-            <ajcmessage line="5" kind="error"></ajcmessage>
-            <ajcmessage line="7" kind="error"></ajcmessage>
-            <ajcmessage line="9" kind="error"></ajcmessage>
-            <message line="9" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="class and interface extension" keywords="from-errors,purejava,messages-vary" dir="errors">
@@ -491,13 +476,6 @@
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message line="5" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="interfaces may not contain initializers (bug found by jacks)" keywords="from-resolved_105,purejava" dir="pureJava" abccomment="syntax errors, abc gives up after the first one, but                   when the first is commented out, it finds the second                   one.  I think this test case is fine.  July 6/04 LJH">
-        <compile files="InterfaceMembersCf.java">
-            <ajcmessage line="2" kind="error"></ajcmessage>
-            <ajcmessage line="3" kind="error"></ajcmessage>
-            <message line="2" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Incrementing interface-introduced field" pr="757" keywords="from-resolved_105" dir="new">
@@ -926,13 +904,6 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
-<ajc-test title="advice on handler join points should not throw unpermitted checked exceptions" pr="37898" keywords="knownLimitation" dir="bugs/handlers">
-        <compile files="ExceptionCheckCE.java">
-			<message text="expected" line="8" kind="warning"></message>
-			<message text="throw checked exception" line="25" kind="error"></message>
-			<message text="throw checked exception" line="8" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="can not resolve this member warning" pr="38212" dir="bugs/accessMethods">
         <compile files="p1/Base.java,p2/Derived.java"></compile>
         <run class="p2.Derived"></run>
@@ -948,26 +919,6 @@
             <message line="30" kind="warning"></message>            
         </compile>
     </ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only" abccomment="only type error, but ok. ODM 19/07/04">
-		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
-			<ajcmessage line="9" kind="error"></ajcmessage>
-			<message line="14" kind="error"></message>
-                        </compile>
-		</ajc-test>
-<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run" abccomment="abc bails out after type checking, but ok. ODM 19/07/04">
-		<compile files="Client.java" classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
-			<ajcmessage line="9" kind="error"></ajcmessage>
-                        <message line="14" kind="error"></message>
-			</compile>
-		</ajc-test>
-<ajc-test title="NPE in concretization error path" pr="43033" keywords="poorErrorMessages" dir="bugs/concretizeNpe" abccomment="parse error location ok. ODM 19/07/04">
-		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
-		
-		  <ajcmessage line="12" kind="error"></ajcmessage>		
-		  <ajcmessage line="13" kind="error"></ajcmessage>
-                  <message line="13" kind="error"></message>
-		</compile>
-	</ajc-test>
 <ajc-test title="Ensure we don't look for source on the classpath when binary not found" pr="46671" dir="bugs/faultingInSource">
         <compile options="-verbose" files="SimpleTracing.java" classpath=".">
 		  <message text="no match for this type name: SampleClass" line="4" kind="warning"></message>
@@ -1035,12 +986,6 @@
         <run class="Test"></run>
 		<compile options="-Xlint:warning" files="Test.java, Util.java, AroundExecutionAdvice.aj"></compile>
         <run class="Util"></run>
-	</ajc-test>
-<ajc-test title="SUID: Around closure execution advice (-Xlint:ignore)" pr="41181" dir="bugs/serialVersionUID" comment="OK because ignoring warnings">
-		<compile files="Test.java, Util.java"></compile>
-        <run class="Test"></run>
-		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj"></compile>
-        <run options="-fail" class="Util"></run>
 	</ajc-test>
 <ajc-test title="SUID: Around closure execution advice" pr="41181" dir="bugs/serialVersionUID" comment="Warning because around_body non-private">
 		<compile files="Test.java, Util.java"></compile>
@@ -1116,24 +1061,6 @@
             <message line="0" kind="warning"></message>
 		</compile>
         <run options="-fail" class="Util"></run>
-	</ajc-test>
-<ajc-test title="declare String field on interface" pr="52107" dir="bugs/fieldsOnInterfaces">
-		<compile files="StringFieldOnInterface.java">
-			<message text="this affected type is not exposed" line="16" kind="warning"></message>
-         	<message text="this affected type is not exposed" line="17" kind="warning"></message>
-		</compile>	   
-	</ajc-test>
-<ajc-test title="declare int field on interface" pr="52107" dir="bugs/fieldsOnInterfaces">
-		<compile files="IntFieldOnInterface.java">
-		<message text="this affected type is not exposed" line="27" kind="warning"></message>
-         	<message text="this affected type is not exposed" line="28" kind="warning"></message>
-		</compile>
-	</ajc-test>
-<ajc-test title="declare Object field on interface" pr="52107" dir="bugs/fieldsOnInterfaces">
-		<compile files="ObjectFieldOnInterface.java">
-			<message text="this affected type is not exposed" line="20" kind="warning"></message>
-         	<message text="this affected type is not exposed" line="21" kind="warning"></message>
-		</compile>
 	</ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" dir="bugs/deprecated">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
@@ -1304,15 +1231,7 @@
         	<message text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></message>
         </compile>
     </ajc-test>
-<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" dir="bugs/IfPerThis">
-        <compile files="Testcase1.java">
-        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="15" kind="error"></ajcmessage>
-        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="23" kind="error"></ajcmessage>
-        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="25" kind="error"></ajcmessage>
-        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="27" kind="error"></ajcmessage>
-        </compile>
-    </ajc-test>
-<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" pr="62458" dir="bugs/IfPerThis">
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" pr="62458" dir="bugs/IfPerThis" abccomment="abc supports if inside perclauses;                             the error we do produce is complaining about a                             reference to a static member of the aspect,                             which we ought to support but don't yet - AGS 6/8/04">
         <compile files="Testcase3.java">
         	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="2" kind="error"></ajcmessage>
         </compile>

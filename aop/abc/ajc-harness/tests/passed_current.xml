@@ -743,6 +743,13 @@
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="classes that are package prefixes are illegal" pr="574" keywords="from-java,purejava,messages-vary" dir="new/packagePrefix" abccomment="abc finds this error, but without a line number, which I think is fine - AGS">
+      <abckeywords> </abckeywords>
+        <compile options="!eclipse" files="p/prefix.java,p/prefix/SomeClass.java">
+            <ajcmessage line="2" kind="error"></ajcmessage>
+            <message kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="valid type expressions for introduced type testing" keywords="from-java,purejava" dir="new/introTypeMissing" abccomment="problem in j2j, won't compile, reported to Jennifer                    on July 2/04, LJH">
         <compile files="TargetClass.java,Util.java"></compile>
         <run class="TargetClass"></run>
@@ -797,11 +804,9 @@
             <message line="11" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="try without catch or finally" pr="643" keywords="from-java,purejava,message-vary" dir="new" abccomment="abc parser throws additional errors when giving up - PA/AGS">
+<ajc-test title="try without catch or finally" pr="643" keywords="from-java,purejava,message-vary" dir="new" abccomment="abc parser throws additional error when giving up - PA/AGS">
         <compile options="!eclipse" files="TryNoCatchCE.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
-            <message kind="error"></message>
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="6" kind="error"></message>
         </compile>
@@ -1162,11 +1167,9 @@
             <message line="9" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Crashes when the closing brace is reversed" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH                 Extra errors without line number are abc parser complaints -    it gives up. PA/AGS">
+<ajc-test title="Crashes when the closing brace is reversed" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH                 Extra error without line number is abc parser giving up                  - PA/AGS">
         <compile options="!eclipse" files="ClosingBrace.java">
             <ajcmessage line="11" kind="error"></ajcmessage>
-            <message kind="error"></message>
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="12" kind="error"></message>
         </compile>
@@ -1257,10 +1260,8 @@
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Missing ;" keywords="from-errors,purejava" dir="errors" abccomment="Extra errors with no line number for parser complaints in abc. PA/AGS">
+<ajc-test title="Missing ;" keywords="from-errors,purejava" dir="errors" abccomment="Extra error with no line number for parser complaint in abc. PA/AGS">
         <compile files="PR405.java">
-            <message kind="error"></message>
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="15" kind="error"></message>
         </compile>
@@ -1358,6 +1359,15 @@
 <ajc-test title="Introducing protected fields is causing a crash" keywords="from-errors" dir="errors">
         <compile files="ProtectedFieldIntro.java">
             <message line="14" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="two classes with the same fully-qualified names [eachjvm]" pr="388" keywords="from-errors" dir="errors" comment="XXX error not flagging initial type" abccomment="Bogus test, as it contains a syntax error that causes abc to bail out. ODM July 7, 2004">
+        <compile files="DuplicatedNames.java">
+            <ajcmessage line="3" kind="error"></ajcmessage>
+            <ajcmessage line="5" kind="error"></ajcmessage>
+            <ajcmessage line="7" kind="error"></ajcmessage>
+            <ajcmessage line="9" kind="error"></ajcmessage>
+            <message line="9" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="Undefined pointcuts were throwing exceptions in 07b11 [callsto]" pr="396" keywords="from-errors" dir="errors" abccomment="An extra error from abc after the first parse error. ODM 07/07/04">
@@ -1585,11 +1595,9 @@
             <message line="11" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="illegal synchronized stmts" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="Parser throws extra errors when giving up. PA/AGS">
+<ajc-test title="illegal synchronized stmts" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="Parser throws extra error when giving up. PA/AGS">
         <compile options="!eclipse" files="BadSynchronized.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
-            <message kind="error"></message>
-            <message kind="error"></message>
             <message kind="error"></message>
             <message line="6" kind="error"></message>
         </compile>
@@ -2702,11 +2710,9 @@
             <message line="1" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="try requires block JLS 14.19" keywords="from-resolved_105,purejava,messages-vary" dir="pureJava" abccomment="abc parser throws more errors. PA/AGS">
+<ajc-test title="try requires block JLS 14.19" keywords="from-resolved_105,purejava,messages-vary" dir="pureJava" abccomment="abc parser throws extra error. PA/AGS">
         <compile options="!eclipse" files="TryBlockRequiredCE.java">
             <ajcmessage line="6" kind="error"></ajcmessage>
-	    <message kind="error"></message>
-	    <message kind="error"></message>
 	    <message kind="error"></message>
             <message line="6" kind="error"></message>
         </compile>
@@ -2762,6 +2768,13 @@
 <ajc-test title="initializer can throw so long as all constructors declare so" keywords="from-resolved_105,purejava" dir="new">
         <compile files="InitializerWithThrow.java"></compile>
         <run class="InitializerWithThrow"></run>
+    </ajc-test>
+<ajc-test title="interfaces may not contain initializers (bug found by jacks)" keywords="from-resolved_105,purejava" dir="pureJava" abccomment="syntax errors, abc gives up after the first one, but                   when the first is commented out, it finds the second                   one.  I think this test case is fine.  July 6/04 LJH">
+        <compile files="InterfaceMembersCf.java">
+            <ajcmessage line="2" kind="error"></ajcmessage>
+            <ajcmessage line="3" kind="error"></ajcmessage>
+            <message line="2" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="ajc dies on cflow into field init anon class see knownbugs.txt" pr="755" keywords="from-resolved_105" dir="new">
         <compile options="!eclipse" files="CflowOfFieldInitAnonMethods.java">
@@ -3172,6 +3185,15 @@
         </compile>
         <run class="app.Main"></run>
     </ajc-test>
+<ajc-test title="advice on handler join points should not throw unpermitted checked exceptions" pr="37898" keywords="knownLimitation" dir="bugs/handlers" abccomment="we only report the error at the join point shadow, not the advice body too">
+        <compile files="ExceptionCheckCE.java">
+			<ajcmessage text="expected" line="8" kind="warning"></ajcmessage>
+			<ajcmessage text="throw checked exception" line="25" kind="error"></ajcmessage>
+			<ajcmessage text="throw checked exception" line="8" kind="error"></ajcmessage>
+			<message text="expected" line="8" kind="warning"></message>
+			<message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="-nowarn suppresses XLint warnings" pr="38134" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
         <compile options="-nowarn" files="XLintWarningTest.java"></compile>
     </ajc-test>
@@ -3273,6 +3295,16 @@
 	                <message text="LibraryInterface" line="9" kind="error"></message>
 			</compile>
 		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only">
+		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">
+			<message line="9" kind="error"></message>
+                        </compile>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnlyBinary.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="works if aspect is only on the classpath?, i.e., no weaving XXX need javac run">
+		<compile files="Client.java" classpath="aspectedInterfaceOnlyBinary.jar,aspectOnly.jar">
+			<message line="9" kind="error"></message>
+			</compile>
+		</ajc-test>
 <ajc-test title="exception clause for aspect-declared interface methods - positive" dir="bugs/interfaceLibrary" abccomment="problem with loosing exception clauses on newly created soot methods. emailed abc list 19/07/04. ODM">
 		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
 		<run class="Client"></run>
@@ -3334,6 +3366,15 @@
         <compile files="AdviceInteraction.java"></compile>
         <run class="AdviceInteraction"></run>
     </ajc-test>
+<ajc-test title="NPE in concretization error path" pr="43033" keywords="poorErrorMessages" dir="bugs/concretizeNpe" abccomment="parse error location ok. ODM 19/07/04 Also extra 'parser couldn't recover' error - AGS">
+		<compile files="base/ExceptionHandling.java,model/ModelExceptionHandling.java">
+		
+		  <ajcmessage line="12" kind="error"></ajcmessage>		
+		  <ajcmessage line="13" kind="error"></ajcmessage>
+                  <message kind="error"></message>
+                  <message line="13" kind="error"></message>
+		</compile>
+	</ajc-test>
 <ajc-test title="JoinPoint Optimization when targetting 1.4" pr="45441" dir="bugs/jpOptimization">
         <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
         <run class="de.test.MyMain"></run>
@@ -3517,6 +3558,12 @@
 		<compile options="-Xlint:warning" files="Test.java, Util.java, BeforeExecutionAdvice.aj"></compile>
         <run class="Util"></run>
 	</ajc-test>
+<ajc-test title="SUID: Around closure execution advice (-Xlint:ignore)" pr="41181" dir="bugs/serialVersionUID" comment="OK because ignoring warnings">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj"></compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
 <ajc-test title="SUID: thisJoinPoint with clinit method" pr="41181" dir="bugs/serialVersionUID" comment="OK if tjp private and existing clinit">
 		<compile files="ClinitTest.java, Util.java"></compile>
         <run class="ClinitTest"></run>
@@ -3540,6 +3587,30 @@
 	</ajc-test>
 <ajc-test title="SUID: Declare implements Serializable (compile)" pr="41181" dir="bugs/serialVersionUID" comment="OK because adding Serializable">
 		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplementsSerializable.aj"></compile>
+	</ajc-test>
+<ajc-test title="declare String field on interface" pr="52107" dir="bugs/fieldsOnInterfaces" abccomment="this is an error for us">
+		<compile files="StringFieldOnInterface.java">
+			<message line="16" kind="error"></message>
+			<message line="17" kind="error"></message>
+			<ajcmessage text="this affected type is not exposed" line="16" kind="warning"></ajcmessage>
+         	<ajcmessage text="this affected type is not exposed" line="17" kind="warning"></ajcmessage>
+		</compile>	   
+	</ajc-test>
+<ajc-test title="declare int field on interface" pr="52107" dir="bugs/fieldsOnInterfaces" abccomment="this is an error for us">
+		<compile files="IntFieldOnInterface.java">
+		<message line="27" kind="error"></message>
+		<message line="28" kind="error"></message>
+		<ajcmessage text="this affected type is not exposed" line="27" kind="warning"></ajcmessage>
+         	<ajcmessage text="this affected type is not exposed" line="28" kind="warning"></ajcmessage>
+		</compile>
+	</ajc-test>
+<ajc-test title="declare Object field on interface" pr="52107" dir="bugs/fieldsOnInterfaces" abccomment="this is an error for us">
+		<compile files="ObjectFieldOnInterface.java">
+			<message line="20" kind="error"></message>
+			<message line="21" kind="error"></message>
+			<ajcmessage text="this affected type is not exposed" line="20" kind="warning"></ajcmessage>
+         	<ajcmessage text="this affected type is not exposed" line="21" kind="warning"></ajcmessage>
+		</compile>
 	</ajc-test>
 <ajc-test title="fail in compiling aspect with overriding method introduction with different throws clause " pr="50776" dir="bugs">
         <compile files="IntertypeDifferentThrows.java"></compile>
@@ -3574,6 +3645,14 @@
 <ajc-test title="nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" pr="61538" dir="bugs">
         <compile files="ConstructorMain.java"></compile>
         <run class="ConstructorMain"></run>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" dir="bugs/IfPerThis" abccomment="abc supports if() inside per clauses">
+        <compile files="Testcase1.java">
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="15" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="23" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="25" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="27" kind="error"></ajcmessage>
+        </compile>
     </ajc-test>
 <ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" pr="62458" dir="bugs/IfPerThis">
         <compile files="Testcase2.java"></compile>
