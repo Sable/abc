@@ -1,23 +1,20 @@
 package arc.aspectj.parse;
 
+import java.util.*;
+import java_cup.runtime.*;
 import polyglot.ast.*;
 import polyglot.lex.*;
 import polyglot.util.*;
 import polyglot.parse.*;
 import polyglot.types.*;
 import polyglot.*;
-import soot.javaToJimple.jj.types.JjTypeSystem;
-import soot.javaToJimple.jj.ast.JjNodeFactory;
-import polyglot.ext.jl.parse.Name;
-import soot.javaToJimple.jj.DPosition;
-import java.util.*;
 import polyglot.ast.Assert;
 import arc.aspectj.types.AspectJTypeSystem;
 import arc.aspectj.ast.AspectJNodeFactory;
 import polyglot.ext.jl.parse.Name;
 import arc.aspectj.ast.*;
 
-parser Grm extends soot.javaToJimple.jj.parse.Grm {:
+parser Grm extends polyglot.ext.jl.parse.Grm {:
 
     public final AspectJTypeSystem ts;
     public final AspectJNodeFactory nf;
@@ -496,8 +493,8 @@ modifiers_opt ::=
 modifiers ::=
     modifier:a {:  RESULT = a;  :}
  |  modifiers:a modifier:b {:
-                           if (a .intersects(b)) parser.die(parser.position());    
-                 RESULT = a.set(b); 
+                           if (a.intersects(b)) parser.die(parser.position());
+               RESULT = a.set(b); 
                            :};
 
 modifier ::=
@@ -671,12 +668,12 @@ method_declaration ::=
 
 method_header ::=
     modifiers_opt:a type:b IDENTIFIER:c LPAREN formal_parameter_list_opt:d RPAREN:g dims_opt:e throws_opt:f {:
-                                                                                                            RESULT = parser.nf.MethodDecl(parser.pos(b, g), a,
+                                                                                                            RESULT = parser.nf.MethodDecl(parser.pos(b, g, c), a,
                 parser.array(b, e.intValue()), c.getIdentifier(),
                 d, f, null); 
                                                                                                             :}
  |  modifiers_opt:a VOID:b IDENTIFIER:c LPAREN formal_parameter_list_opt:d RPAREN:g throws_opt:f {:
-                                                                                                 RESULT = parser.nf.MethodDecl(parser.pos(b, g), a,
+                                                                                                 RESULT = parser.nf.MethodDecl(parser.pos(b, g, c), a,
                 parser.nf.CanonicalTypeNode(parser.pos(b),
                 parser.ts.Void()), c.getIdentifier(), d, f, null); 
                                                                                                  :};
@@ -700,13 +697,13 @@ formal_parameter_list ::=
 
 formal_parameter ::=
     type:a variable_declarator_id:b {:
-                                    RESULT = parser.nf.Formal(parser.pos(a, b), Flags.NONE,
+                                    RESULT = parser.nf.Formal(parser.pos(a, b, b), Flags.NONE,
                                          parser.array(a, b.dims), b.name); 
                                     :}
- |  FINAL:f type:a variable_declarator_id:b {:
-                                            RESULT = parser.nf.Formal(parser.pos(a, b), Flags.FINAL,
+ |  FINAL type:a variable_declarator_id:b {:
+                                          RESULT = parser.nf.Formal(parser.pos(a, b, b), Flags.FINAL,
                      parser.array(a, b.dims), b.name); 
-                                            :};
+                                          :};
 
 throws_opt ::=
     {:
@@ -770,10 +767,10 @@ explicit_constructor_invocation ::=
                                                           RESULT = parser.nf.SuperCall(parser.pos(a, c), b); 
                                                           :}
  |  primary:a DOT THIS:n LPAREN argument_list_opt:b RPAREN SEMICOLON:c {:
-                                                                       RESULT = parser.nf.ThisCall(parser.pos(a, c), a, b); 
+                                                                       RESULT = parser.nf.ThisCall(parser.pos(a, c, n), a, b); 
                                                                        :}
  |  primary:a DOT SUPER:n LPAREN argument_list_opt:b RPAREN SEMICOLON:c {:
-                                                                        RESULT = parser.nf.SuperCall(parser.pos(a, c), a, b); 
+                                                                        RESULT = parser.nf.SuperCall(parser.pos(a, c, n), a, b); 
                                                                         :};
 
 interface_declaration ::=
@@ -1113,7 +1110,7 @@ statement_expression_list ::=
                            :}
  |  statement_expression_list:a COMMA statement_expression:b {:
                                                              RESULT = a;
-               a.add(parser.nf.Eval(parser.pos(a, b), b)); 
+               a.add(parser.nf.Eval(parser.pos(a, b, b), b)); 
                                                              :};
 
 identifier_opt ::=
@@ -1208,21 +1205,21 @@ primary_no_new_array ::=
  |  method_invocation:a {:  RESULT = a;  :}
  |  array_access:a {:  RESULT = a;  :}
  |  primitive_type:a DOT CLASS:n {:
-                                 RESULT = parser.nf.Field(parser.pos(a, n), a, "class"); 
+                                 RESULT = parser.nf.Field(parser.pos(a, n, n), a, "class"); 
                                  :}
  |  VOID:a DOT CLASS:n {:
-                       RESULT = parser.nf.Field(parser.pos(a, n), 
+                       RESULT = parser.nf.Field(parser.pos(a, n, n), 
                 parser.nf.CanonicalTypeNode(parser.pos(a),
                 parser.ts.Void()), "class"); 
                        :}
  |  array_type:a DOT CLASS:n {:
-                             RESULT = parser.nf.Field(parser.pos(a, n), a, "class"); 
+                             RESULT = parser.nf.Field(parser.pos(a, n, n), a, "class"); 
                              :}
  |  name:a DOT CLASS:n {:
-                       RESULT = parser.nf.Field(parser.pos(a, n), a.toType(), "class"); 
+                       RESULT = parser.nf.Field(parser.pos(a, n, n), a.toType(), "class"); 
                        :}
  |  name:a DOT THIS:n {:
-                      RESULT = parser.nf.This(parser.pos(a, n), a.toType()); 
+                      RESULT = parser.nf.This(parser.pos(a, n, n), a.toType()); 
                       :};
 
 class_instance_creation_expression ::=
@@ -1292,7 +1289,9 @@ dim_exprs ::=
                a.add(b);  :};
 
 dim_expr ::=
-    LBRACK expression:a RBRACK {:  RESULT = a;  :};
+    LBRACK:x expression:a RBRACK:y {:
+                                   RESULT = (Expr)a.position(parser.pos(x,y,a)); 
+                                   :};
 
 dims_opt ::=
     {:  RESULT = new Integer(0);  :}
@@ -1306,7 +1305,7 @@ dims ::=
 
 field_access ::=
     primary:a DOT IDENTIFIER:b {:
-                               RESULT = parser.nf.Field(parser.pos(a, b), a,
+                               RESULT = parser.nf.Field(parser.pos(a, b, b), a,
                 b.getIdentifier()); 
                                :}
  |  SUPER:n DOT IDENTIFIER:a {:
@@ -1322,21 +1321,21 @@ field_access ::=
 
 method_invocation ::=
     name:a LPAREN argument_list_opt:b RPAREN:d {:
-                                               RESULT = parser.nf.Call(parser.pos(a, d),
+                                               RESULT = parser.nf.Call(parser.pos(a,d),
                 a.prefix == null ? null : a.prefix.toReceiver(),
                 a.name, b); 
                                                :}
  |  primary:a DOT IDENTIFIER:b LPAREN argument_list_opt:c RPAREN:d {:
-                                                                   RESULT = parser.nf.Call(parser.pos(b, d), a,
+                                                                   RESULT = parser.nf.Call(parser.pos(b,d), a,
                 b.getIdentifier(), c); 
                                                                    :}
  |  SUPER:a DOT IDENTIFIER:b LPAREN argument_list_opt:c RPAREN:d {:
-                                                                 RESULT = parser.nf.Call(parser.pos(b, d),
+                                                                 RESULT = parser.nf.Call(parser.pos(a,d, b),
                 parser.nf.Super(parser.pos(a)),
                 b.getIdentifier(), c); 
                                                                  :}
  |  name:a DOT SUPER:n DOT IDENTIFIER:b LPAREN argument_list_opt:c RPAREN:d {:
-                                                                            RESULT = parser.nf.Call(parser.pos(b, d),
+                                                                            RESULT = parser.nf.Call(parser.pos(b,d),
                 parser.nf.Super(parser.pos(n), a.toType()),
                 b.getIdentifier(), c); 
                                                                             :}
@@ -1373,46 +1372,46 @@ unary_expression ::=
     preincrement_expression:a {:  RESULT = a;  :}
  |  predecrement_expression:a {:  RESULT = a;  :}
  |  PLUS:b unary_expression:a {:
-                              RESULT = parser.nf.Unary(parser.pos(b,a), Unary.POS, a); 
+                              RESULT = parser.nf.Unary(parser.pos(b,a,a), Unary.POS, a); 
                               :}
  |  MINUS:b unary_expression:a {:
-                               RESULT = parser.nf.Unary(parser.pos(b,a), Unary.NEG, a); 
+                               RESULT = parser.nf.Unary(parser.pos(b,a,a), Unary.NEG, a); 
                                :}
  |  unary_expression_not_plus_minus:a {:  RESULT = a;  :};
 
 preincrement_expression ::=
     PLUSPLUS:b unary_expression:a {:
-                                  RESULT = parser.nf.Unary(parser.pos(b,a), Unary.PRE_INC, a); 
+                                  RESULT = parser.nf.Unary(parser.pos(b,a,a), Unary.PRE_INC, a); 
                                   :};
 
 predecrement_expression ::=
     MINUSMINUS:b unary_expression:a {:
-                                    RESULT = parser.nf.Unary(parser.pos(b,a), Unary.PRE_DEC, a); 
+                                    RESULT = parser.nf.Unary(parser.pos(b,a,a), Unary.PRE_DEC, a); 
                                     :};
 
 unary_expression_not_plus_minus ::=
     postfix_expression:a {:  RESULT = a;  :}
  |  COMP:b unary_expression:a {:
-                              RESULT = parser.nf.Unary(parser.pos(b,a), Unary.BIT_NOT, a); 
+                              RESULT = parser.nf.Unary(parser.pos(b,a,a), Unary.BIT_NOT, a); 
                               :}
  |  NOT:b unary_expression:a {:
-                             RESULT = parser.nf.Unary(parser.pos(b,a), Unary.NOT, a); 
+                             RESULT = parser.nf.Unary(parser.pos(b,a,a), Unary.NOT, a); 
                              :}
  |  cast_expression:a {:  RESULT = a;  :};
 
 cast_expression ::=
-    LPAREN primitive_type:a dims_opt:b RPAREN unary_expression:c {:
-                                                                 RESULT = parser.nf.Cast(parser.pos(a, c),
+    LPAREN:p primitive_type:a dims_opt:b RPAREN unary_expression:c {:
+                                                                   RESULT = parser.nf.Cast(parser.pos(p, c,a),
                 parser.array(a, b.intValue()), c); 
-                                                                 :}
- |  LPAREN expression:a RPAREN unary_expression_not_plus_minus:b {:
-                                                                 RESULT = parser.nf.Cast(parser.pos(a, b),
+                                                                   :}
+ |  LPAREN:p expression:a RPAREN unary_expression_not_plus_minus:b {:
+                                                                   RESULT = parser.nf.Cast(parser.pos(p, b,a),
                 parser.exprToType(a), b); 
-                                                                 :}
- |  LPAREN name:a dims:b RPAREN unary_expression_not_plus_minus:c {:
-                                                                  RESULT = parser.nf.Cast(parser.pos(a, c),
+                                                                   :}
+ |  LPAREN:p name:a dims:b RPAREN unary_expression_not_plus_minus:c {:
+                                                                    RESULT = parser.nf.Cast(parser.pos(p, c,a),
                 parser.array(a.toType(), b.intValue()), c); 
-                                                                  :};
+                                                                    :};
 
 multiplicative_expression ::=
     unary_expression:a {:  RESULT = a;  :}

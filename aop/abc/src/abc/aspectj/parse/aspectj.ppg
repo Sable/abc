@@ -1,4 +1,4 @@
-include "jj.ppg"
+include "../../../../../polyglot-1.2.0-src/src/polyglot/ext/jl/parse/java12.cup"
 
 package arc.aspectj.parse;
 
@@ -8,7 +8,7 @@ import polyglot.ext.jl.parse.Name;
 
 import arc.aspectj.ast.*;
 
-parser Grm extends soot.javaToJimple.jj.parse.Grm {:
+parser Grm extends polyglot.ext.jl.parse.Grm {:
     public final AspectJTypeSystem ts;
     public final AspectJNodeFactory nf;
 

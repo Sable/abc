@@ -39,8 +39,9 @@ import polyglot.util.Position;
 import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
 import java.util.Stack;
+import polyglot.ext.jl.parse.*;
 
-import soot.javaToJimple.jj.DPosition;
+//import soot.javaToJimple.jj.DPosition;
 
 
 %%
@@ -161,10 +162,10 @@ import soot.javaToJimple.jj.DPosition;
     }
 
     private Position pos() {
-        return new DPosition(file, yyline+1, yycolumn, yycolumn+yytext().length());
+        return new Position(file, yyline+1, yycolumn, yyline+1, yycolumn+yytext().length());
     }
     private Position pos(int len) {
-        return new DPosition(file, yyline+1, yycolumn-len-1, yycolumn+1);
+        return new Position(file, yyline+1, yycolumn-len-1, yyline+1, yycolumn+1);
     }
 
     private Token key(int symbol) {
