@@ -96,7 +96,7 @@ public class AssignDel_c extends JL_c implements MakesAspectMethods
                     Call getter = at.getAccessorMethods().accessorGetter(nf, ts, fieldleft, targetType, local);
                     Expr result = new Binary_c(assign.position(), 
                             getter,
-                            new Binary.Operator(op, Precedence.MUL), // precedence shouldn't matter here
+                            getBinaryOp(op),
                             assign.right());
                     Call setter = at.getAccessorMethods().accessorSetter(nf, ts, fieldleft, targetType, local, result);
                     exprList.add(setter);
@@ -107,6 +107,49 @@ public class AssignDel_c extends JL_c implements MakesAspectMethods
             }
         }
         return n;
+    }
+    
+    private Binary.Operator getBinaryOp(String op) {
+        if(op.equals("||")) {
+            return Binary.COND_OR;
+        }
+        else if(op.equals("&&")) {
+            return Binary.COND_AND;
+        }
+        else if(op.equals("+")) {
+            return Binary.ADD;
+        }
+        else if(op.equals("-")) {
+            return Binary.SUB;
+        }
+        else if(op.equals("*")) {
+            return Binary.MUL;
+        }
+        else if(op.equals("/")) {
+            return Binary.DIV;
+        }
+        else if(op.equals("%")) {
+            return Binary.MOD;
+        }
+        else if(op.equals("|")) {
+            return Binary.BIT_OR;
+        }
+        else if(op.equals("&")) {
+            return Binary.BIT_AND;
+        }
+        else if(op.equals("^")) {
+            return Binary.BIT_XOR;
+        }
+        else if(op.equals("<<")) {
+            return Binary.SHL;
+        }
+        else if(op.equals(">>")) {
+            return Binary.SHR;
+        }
+        else if(op.equals(">>>")) {
+            return Binary.USHR;
+        }
+        else throw new InternalCompilerError("Unknown binary operator " + op);
     }
 }
 

@@ -69,4 +69,8 @@ public class Comma_c extends Expr_c
         List exprs = visitList(this.exprs, v);
         return reconstruct(locals, exprs);
     }
+    
+    public String toString() {
+        return "Comma_c(" + locals + ", " + exprs + ")";
+    }
 }

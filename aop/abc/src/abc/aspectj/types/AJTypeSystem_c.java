@@ -318,7 +318,7 @@ public class AJTypeSystem_c
 	}
 	
 	/** All flags allowed for a member class. */
-	 protected final Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AJFlags.ASPECTCLASS);
+	 protected final Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AJFlags.ASPECTCLASS).set(AJFlags.PRIVILEGEDASPECT);
 	 public void checkMemberClassFlags(Flags f) throws SemanticException {
 			if (! f.clear(MEMBER_CLASS_FLAGS).equals(Flags.NONE)) {
 			throw new SemanticException(

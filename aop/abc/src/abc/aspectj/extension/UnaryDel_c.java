@@ -111,10 +111,10 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 	    	    localsList.add(local_target);
 		        Expr expr = new LocalAssign_c(unary.position(), local_target, Assign.ASSIGN, targetThis);
 		        exprList.add(expr);
-		        String op = unary.operator().toString().substring(1, 2);
+		        Binary.Operator operator = unary.operator().toString().equals("++") ? Binary.ADD : Binary.SUB;
 		        Call getter = at.getAccessorMethods().accessorGetter(nf, ts, field, targetType, local_target);
 		        Expr result = new Binary_c(unary.position(), getter, 
-		                			new Binary.Operator(op, Precedence.MUL), 
+		                			operator,
 		                			new IntLit_c(unary.position(), new IntLit.Kind("int"), 1));
 		        Call setter = at.getAccessorMethods().accessorSetter(nf, ts, field, targetType, local_target, result);
 	    	    if(unary.operator() == Unary.PRE_DEC || unary.operator() == Unary.PRE_INC) {

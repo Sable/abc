@@ -214,9 +214,14 @@ public class TestCase {
 						args[0] = "-d";
 						args[1] = dir;
 					    args[2] = "-injars";
-					    args[3] = arrJars[0];
+					    // If the path to the jar is not absolute, prepend the intended CWD.
+					    // NOTE: FIXME: XXX: This *will* break if "dir" is empty.
+					    args[3] = (new File(arrJars[0]).getAbsolutePath().equals(arrJars[0]) ? 
+					            arrJars[0] : dir + System.getProperty("file.separator") + arrJars[0]);
 					    for(int j = 1; j < arrJars.length; j++) {
-					        args[3] += System.getProperty("path.separator") + arrJars[j];
+					        args[3] += System.getProperty("path.separator") + 
+					        	(new File(arrJars[j]).getAbsolutePath().equals(arrJars[j]) ? 
+						            arrJars[j] : dir + System.getProperty("file.separator") + arrJars[j]);
 					    }
 					    System.arraycopy(Main.abcArgs.toArray(), 0, args, 4, Main.abcArgs.size());
 						System.arraycopy(arrOptions, 0, args, Main.abcArgs.size() + 4, arrOptions.length);
@@ -571,8 +576,8 @@ public class TestCase {
 		    // Does the line match?
 		    if(errLine > 0 && errLine != pos.line()) {
 		        // TODO: Check this is correct handling (ignoring line if it wasn't specified)
-		        System.err.println("Found an unexpected error - should be on line " + pos.line() + 
-		                ", but is on line " + errLine + ".");
+		        System.err.println("Found an unexpected error - should be on line " + errLine + 
+		                ", but is on line " + pos.line() + ".");
 		        System.err.println("Errors found during this compilation:");
 			    printErrors(errors);
 		        return false;
