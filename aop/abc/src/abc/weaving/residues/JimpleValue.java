@@ -22,6 +22,7 @@ package abc.weaving.residues;
 import polyglot.util.InternalCompilerError;
 import soot.*;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.weaver.Weaver;
 
 
 /** A context value that comes directly from a 
@@ -49,7 +50,11 @@ public class JimpleValue extends ContextValue {
     }
 
     public Value getSootValue() {
-	return value;
+    	Value v=(Value)Weaver.getUnitBindings().get(value);
+    	if (v != null)
+    		return v;
+    	else
+    		return value;
     }
 
 }

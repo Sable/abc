@@ -137,6 +137,7 @@ public class Main {
         abc.aspectj.parse.Lexer_c.reset();
         abc.weaving.aspectinfo.AbcFactory.reset();
         abc.weaving.aspectinfo.GlobalAspectInfo.reset();
+        abc.weaving.weaver.Weaver.reset();
         abc.weaving.weaver.AroundWeaver.reset();
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
@@ -891,8 +892,8 @@ public class Main {
                     System.err.println("--- END ADVICE LISTS ---");
                 }
 
-                Weaver weaver = new Weaver();
-                weaver.weave(); // timer marks inside weave() */
+                //Weaver weaver = new Weaver();
+                Weaver.weave(); // timer marks inside weave() */
             }
             // the intertype adjuster has put dummy fields into interfaces,
             // which now have to be removed

@@ -129,7 +129,7 @@ public class Bind extends Residue {
 					+ ")");
 			}
 		} else {
-		//	throw new InternalError("Expecting bound variables to be of type adviceFormal: " + bind.variable );
+			// throw new InternalError("Expecting bound variables to be of type adviceFormal: " + variable );
 		}
 	}
 	

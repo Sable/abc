@@ -44,17 +44,28 @@ public class Unweaver {
     Map/*SootClass->Collection/SootMethod/*/ classToMethods;
     Map/*SootClass->Collection/SootField/*/ classToFields;
 
+    Set/*SootClass*/ applicationClasses;
+    
+    Map/*SootClass->Set/SootClass/*/ classToInterfaces;
+    
     /** Save Jimple bodies of all weavable classes to be restored later. */
     public void save() {
         savedBodies = new HashMap();
         classToMethods = new HashMap();
         classToFields = new HashMap();
         savedParameters = new HashMap();
+        classToInterfaces = new HashMap();
+        
+        applicationClasses=
+        	new HashSet(Scene.v().getApplicationClasses());
+        
         for( Iterator abcClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
             final AbcClass abcClass = (AbcClass) abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
             classToMethods.put( cl, new HashSet() );
             classToFields.put( cl, new HashSet() );
+            classToInterfaces.put(cl, new HashSet(cl.getInterfaces()) );
+            
             debug( "saving "+cl );
             for( Iterator mIt = cl.getMethods().iterator(); mIt.hasNext(); ) {
                 final SootMethod m = (SootMethod) mIt.next();
@@ -68,6 +79,7 @@ public class Unweaver {
                 final SootField f = (SootField) fIt.next();
                 ((Collection)classToFields.get(cl)).add(f);
             }
+            
         }
     }
 
@@ -103,6 +115,22 @@ public class Unweaver {
                     cl.removeField(f);
                 }
             }
+            // remove added interfaces
+            {
+            	Set intfs=new HashSet(cl.getInterfaces());
+            	intfs.removeAll((HashSet)classToInterfaces.get(cl));
+            	for (Iterator iIt=intfs.iterator(); iIt.hasNext();)
+            		cl.removeInterface((SootClass)iIt.next());
+            }
+        }
+        // remove added classes
+        {
+        	Set cls=new HashSet(Scene.v().getApplicationClasses());
+        	cls.removeAll(applicationClasses);
+        	for (Iterator it=cls.iterator(); it.hasNext();) {
+        		SootClass cl=(SootClass)it.next();
+        		Scene.v().removeClass(cl);
+        	}
         }
         return ret;
     }

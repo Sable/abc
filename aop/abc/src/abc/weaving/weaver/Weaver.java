@@ -43,9 +43,20 @@ public class Weaver {
       { if (abc.main.Debug.v().weaverDriver)
           System.err.println("WEAVER DRIVER ***** " + message);
       }
-    private Map unitBindings = new HashMap();
+    static private Map unitBindings = new HashMap();
     private static boolean doCflowOptimization = true;
-        public void weave() {
+    
+    static public void reset() {
+    	unitBindings=new HashMap();
+    	doCflowOptimization=true;
+    }
+    
+    static public Map getUnitBindings() {
+    	return unitBindings;
+    }
+    
+ 
+        static public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
                 weaveGenerateAspectMethods();
@@ -72,12 +83,13 @@ public class Weaver {
                     weaveAdvice();
                     unitBindings = unweaver.restore();
                     AroundWeaver.reset();
+                    //throw new RuntimeException("just a test");
                 }
                 weaveAdvice();
             }
         }
 
-        public void weaveGenerateAspectMethods() {
+        static public void weaveGenerateAspectMethods() {
                 // Generate methods inside aspects needed for code gen and bodies of
                 //   methods not filled in by front-end (i.e. aspectOf())
                 debug("Generating extra code in aspects");
@@ -90,7 +102,7 @@ public class Weaver {
                 AbcTimer.mark("Add aspect code");
 
         }
-        public void weaveAdvice() {
+        static public void weaveAdvice() {
                 ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
                 PointcutCodeGen pg = new PointcutCodeGen();
                 GenStaticJoinPoints gsjp =

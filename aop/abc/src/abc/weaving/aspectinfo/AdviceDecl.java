@@ -53,26 +53,26 @@ public class AdviceDecl extends AbstractAdviceDecl {
     private Map/*<String,Integer>*/ formal_pos_map = new HashMap();
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
     private List/*<MethodSig>*/ methods;
+    //private List/*<SootMethod>*/ sootMethods;
+    
+    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, int jp, int jpsp, int ejp, List methods, Position pos) {
 
-    public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, 
-		      int jp, int jpsp, int ejp, List methods, Position pos) {
+		super(aspct, spec, pc, impl.getFormals(), pos);
+		this.impl = impl;
+		this.jp = jp;
+		this.jpsp = jpsp;
+		this.ejp = ejp;
+		this.methods = methods;
 
-	super(aspct,spec,pc,impl.getFormals(),pos);
-	this.impl = impl;
-	this.jp = jp;
-	this.jpsp = jpsp;
-	this.ejp = ejp;
-	this.methods = methods;
-
-	int i = 0;
-	nformals = impl.getFormals().size();
-	Iterator fi = impl.getFormals().iterator();
-	while (fi.hasNext()) {
-	    Formal f = (Formal)fi.next();
-	    formal_pos_map.put(f.getName(), new Integer(i++));
-	    formal_type_map.put(f.getName(),f.getType());
+		int i = 0;
+		nformals = impl.getFormals().size();
+		Iterator fi = impl.getFormals().iterator();
+		while (fi.hasNext()) {
+			Formal f = (Formal) fi.next();
+			formal_pos_map.put(f.getName(), new Integer(i++));
+			formal_type_map.put(f.getName(), f.getType());
+		}	
 	}
-    }
 
     public int getFormalIndex(String name) {
 	Integer i = (Integer)formal_pos_map.get(name);
@@ -315,12 +315,12 @@ public class AdviceDecl extends AbstractAdviceDecl {
     		MethodSig ms = (MethodSig) procs.next();
     		// special treatment for around:
     		// ignore the signature because it may have changed
-    		/*if (ms.getName().startsWith("around$") ||
+    		if (ms.getName().startsWith("around$") ||
     			ms.getName().startsWith("<init>")) { // TODO: fix getSootMethod!! this is not safe!!
     			SootClass sc = ms.getDeclaringClass().getSootClass();
     			SootMethod method=sc.getMethodByName(ms.getName());
     			ret.add(method);
-    		} else {*/
+    		} else {
     			try {
     				ret.add(ms.getSootMethod());
     			} catch (RuntimeException e) {
@@ -332,7 +332,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
     				}
     				throw new RuntimeException(e.getMessage() + "\n" + msg);
     			}
-    		//}
+    		}
     		
     	}
     	return ret;
