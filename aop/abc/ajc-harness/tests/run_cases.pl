@@ -5,22 +5,44 @@ use strict;
 my $argc = @ARGV;
 if ($argc<1) {
   print 
-"Usage: run_cases.pl XMLFILE [dir-filter [title-filter]]
+"Usage: run_cases.pl [-list [-xml]] XMLFILE [DIR-FILTER [TITLE-FILTER]] 
 Runs the cases listed in XMLFILE individually. 
 Outputs passed.xml and failed.xml.
 " ;
 exit(0);
 }
 
-my $dirfilter="";
-if ($argc>1) {
-  $dirfilter=$ARGV[1];
+my $arg=0;
+
+my $skiptests=0;
+my $listxml=0;
+if ($ARGV[$arg] eq "-list") {
+	$skiptests=1;
+	$arg++;
+	
+	if ($ARGV[$arg] eq "-xml") {
+		$listxml=1;
+		$arg++;
+	}
+	
 }
 
-my $titlefilter="";
-if ($argc>2) {
-  $titlefilter=$ARGV[2];
+my $inputfile=$ARGV[$arg];
+$arg++;
+
+my $dirfilter="";
+if ($argc>$arg) {
+  $dirfilter=$ARGV[$arg];
 }
+$arg++;
+
+my $titlefilter="";
+if ($argc>$arg) {
+  $titlefilter=$ARGV[$arg];
+}
+$arg++;
+
+
 
 my $failed=0;
 my $succeeded=0; #sanity
@@ -29,13 +51,16 @@ my $succeeded=0; #sanity
 my $xmlprefix="<!DOCTYPE suite SYSTEM \"../tests/ajcTestSuite.dtd\"> \n <suite> \n ";
 my $xmlsuffix="</suite> \n";
 
-system("rm -f failed.output");
+if ($skiptests) {
 
-open(FAILED, "> failed.xml") or die "cannot open failed.xml";
-open(PASSED, "> passed.xml") or die "cannot open passed.xml";
-print FAILED $xmlprefix;
-print PASSED $xmlprefix;
-
+} else {
+	system("rm -f failed.output");
+	
+	open(FAILED, "> failed.xml") or die "cannot open failed.xml";
+	open(PASSED, "> passed.xml") or die "cannot open passed.xml";
+	print FAILED $xmlprefix;
+	print PASSED $xmlprefix;
+}
 
 my $count=0;
 my $countinvalid=0;
@@ -61,6 +86,15 @@ sub do_case {
   $count++;
 #  print "dir: $dir\ntitle: $title\nXML: $xmlpart\n";
 
+	if ($skiptests) {
+		print "Case $count ($dir): $title\n";
+		if ($listxml) {
+			print "$xmlpart\n";
+		}
+		return "";
+	}
+	
+
    open(TMP, "> tmp.xml") || die;
    print TMP "$xmlprefix $xmlpart $xmlsuffix";
    close TMP;
@@ -75,15 +109,16 @@ sub do_case {
    if ($out =~ m/\nFAIL/gs) {
      print "Failed. ";  
      system("cat tmp.output >> failed.output");
+     system("cat tmp.xml >> tmp.output");
      system("mv tmp.output $dir/$filename");
      system("echo '*.output' > $dir/.cvsignore");
      $failed++;
-     print FAILED $xmlpart;
+     print FAILED "$xmlpart\n";
    } elsif ($out =~ m/\nPASS/gs) {
      print "Passed. ";
      system("rm -f $dir/$filename");
      $succeeded++;
-     print PASSED $xmlpart;
+     print PASSED "$xmlpart\n";
    } else {
      system("echo $title >> cases_with_invalid_output.txt");
      $count--;
@@ -93,7 +128,7 @@ sub do_case {
    print "Current status: $failed failed, $succeeded passed.\n";
 }
 
-open(INPUT, "< $ARGV[0]") || die "can't open input file"; 
+open(INPUT, "< $inputfile") || die "can't open input file"; 
 my $file;
 while (<INPUT>) {
   $file .= $_;
@@ -101,17 +136,20 @@ while (<INPUT>) {
 
 $file =~ s/<ajc-test[^>]+dir=\"([^\"]*)\"[^>]+title=\"([^\"]*)\"[^>]*>.*?<\/ajc-test>/do_case($1,$2,$&)/sge;
 
-print "Tests: $count\nFailed: $failed\nPassed: $succeeded\n";
+if ($skiptests) {
 
-if ($countinvalid > 0 ) {
-  print "Tests with invalid output: $countinvalid.\n";
+} else {
+	print "Tests: $count\nFailed: $failed\nPassed: $succeeded\n";
+	
+	if ($countinvalid > 0 ) {
+	  print "Tests with invalid output: $countinvalid.\n";
+	}
+	
+	print FAILED $xmlsuffix;
+	print PASSED $xmlsuffix;
+	
+	$succeeded+$failed==$count || die "i can't count!\n";
+	
 }
-
-print FAILED $xmlsuffix;
-print PASSED $xmlsuffix;
-
-$succeeded+$failed==$count || die "i can't count!\n";
-
-
 
 # s/<ajc-test[^>]+dir=\"([^\"]*)\"[^>]+title=\"([^\"]*)\"[^>]*>.*?<\/ajc-test>/do_case($1,$2,$&)/sge
