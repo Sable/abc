@@ -1,6 +1,7 @@
 package abc.weaving.residues;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -100,15 +101,22 @@ public abstract class Residue {
 		 * Calculate bits to be or'd into the mask
 		 * if this local is bound.
 		 */
-		public int getMaskValue(Local local) {
-			int i=lastIndexOf(local);
-			if (i==-1)
-				throw new RuntimeException();
+		public int getMaskValue(Local local, int i) {
+			//int i=lastIndexOf(local);
+			//if (i==-1)
+			//	throw new RuntimeException();
 			int pos=bitPositions[i];
+			//System.out.println("pos: " + pos);
 			List list=localsFromIndex(i);
 			int index=list.indexOf(local);
+			//System.out.println("index: " + index);
+			if (index==-1)
+				throw new RuntimeException();
 			index=index << pos;
 			return index;
+		}
+		public int numOfFormals() {
+			return arrayList.size();
 		}
 		/**
 		 * Sets the bits of the mask which belong to
@@ -170,5 +178,24 @@ public abstract class Residue {
 		 */
 		final private ArrayList /*List /Local/ */ arrayList=new ArrayList();
 		private boolean ambiguous=false;
+		public String toString() {
+			String result="Bindings\n";
+			for (int i=0; i<arrayList.size(); i++) {
+				result+="Advice-Formal: " + i + ": ";
+				if (bitPositions!=null) {
+					result+="pos: " + bitPositions[i] + " ";
+				}
+				if (bitCounts!=null) {
+					result+="count: " + bitCounts[i] + " ";
+				}
+				List list=localsFromIndex(i);
+				for (Iterator it=list.iterator();it.hasNext();) {
+					Local l=(Local)it.next();
+					result+= l + " ";
+				}
+				result+="\n";
+			}
+			return result;
+		}
 	}
 }

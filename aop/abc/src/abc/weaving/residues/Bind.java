@@ -117,9 +117,9 @@ public class Bind extends Residue {
 			Value val = value.getSootValue();
 			//if (val instanceof Local) {
 			Local local = (Local) val;
-			int index=bindings.lastIndexOf(local);
-			if (bindings.getMaskBits(index)>0) {
-				int mask=bindings.getMaskValue(local);
+			//int index=bindings.lastIndexOf(local);
+			int mask=bindings.getMaskValue(local, formal.pos);
+			if (mask!=0) { 				
 				return new BindMaskResidue(this, bindingsMaskLocal, mask);
 			}
 		}	

@@ -801,6 +801,7 @@ public class AroundWeaver {
 			adviceAppl.residue.getAdviceFormalBindings(staticBindings);
 			staticBindings.calculateBitMaskLayout();
 			
+			debug(" " + staticBindings);
 			
 			Local bindMaskLocal=null;
 			{
@@ -1896,7 +1897,7 @@ public class AroundWeaver {
 			LocalGeneratorEx lg=new LocalGeneratorEx(body);
 			
 			// Assign the correct access parameters to the locals 
-			Stmt insertionPoint = (Stmt) first;
+			Stmt insertionPoint = first;
 			Stmt skippedCase = Jimple.v().newNopStmt();
 			Stmt nonSkippedCase = Jimple.v().newNopStmt();
 			Stmt neverBoundCase = Jimple.v().newNopStmt();
@@ -1911,6 +1912,92 @@ public class AroundWeaver {
 			Local maskLocal=lg.generateLocal(IntType.v(), "maskLocal");
 			
 			Set generatedSwitchStmtsIDs=new HashSet();
+
+			for (int index=staticBindings.numOfFormals()-1; index>=0; index--){
+				List localsFromIndex=staticBindings.localsFromIndex(index);
+				if (localsFromIndex.size()==1) 	{ // non-skipped case: assign advice formal
+					Local paramLocal = (Local) adviceFormalLocals.get(index);
+					Local actual=(Local)localsFromIndex.get(0);
+					Local actual2=(Local)bindings.get(actual);
+					AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
+					statements.insertAfter(s, nonSkippedCase);
+					Restructure.insertBoxingCast(method.getActiveBody(), s, true);
+					/// allow boxing?
+				} else {	
+					NopStmt afterDefault=Jimple.v().newNopStmt();
+					statements.insertAfter(afterDefault, nonSkippedCase);
+					// first do all the dynamic assignments.
+					// the switch statement then overwrites the actual bindings.
+					// this is to prevent a quadratic growth of the switch statement size.
+					//TODO: for the case n=2, an optimization would be good.
+					for (Iterator itl=localsFromIndex.iterator(); itl.hasNext();) {
+						Local l=(Local)itl.next();
+						int id=context.indexOf(l);
+						if (id==-1) {
+							debug(" skipped local: " + l);
+						} else {
+							Local paramLocal = (Local) dynParamLocals.get(argIndex[id]);
+							Local actual3=(Local)bindings.get(l);
+							AssignStmt s = Jimple.v().newAssignStmt(actual3, paramLocal);
+							statements.insertAfter(s, nonSkippedCase);
+							Restructure.insertBoxingCast(method.getActiveBody(), s, true);
+						}
+					}
+					
+					generatedSwitchStmtsIDs.add(new Integer(index));
+					int mask=staticBindings.getMaskBits(index);
+					AssignStmt as=Jimple.v().newAssignStmt(
+						maskLocal, Jimple.v().newAndExpr( skipParamLocal, IntConstant.v(mask)  ));
+					AssignStmt as2=Jimple.v().newAssignStmt(
+						maskLocal, Jimple.v().newShrExpr(
+							maskLocal, IntConstant.v(staticBindings.getMaskPos(index))));
+					
+					statements.insertAfter(as, afterDefault);
+					statements.insertAfter(as2, as);
+					NopStmt endStmt=Jimple.v().newNopStmt();
+					statements.insertAfter(endStmt, as2);
+					
+					int localIndex=0;
+					List lookupValues=new LinkedList();
+					List targets=new LinkedList();
+					for (Iterator itl=localsFromIndex.iterator(); itl.hasNext();localIndex++) {
+						Local l=(Local)itl.next();
+						lookupValues.add(IntConstant.v(localIndex));
+						
+						Local actual3=(Local)bindings.get(l);
+						
+						NopStmt targetNop=Jimple.v().newNopStmt();
+						
+						statements.insertAfter(targetNop, as2);
+						targets.add(targetNop);
+						
+						
+						Local paramLocal = (Local) adviceFormalLocals.get(index);
+						AssignStmt s = Jimple.v().newAssignStmt(actual3, paramLocal);
+						statements.insertAfter(s, targetNop);
+						GotoStmt g=Jimple.v().newGotoStmt(endStmt);
+						statements.insertAfter(g, s);
+						Restructure.insertBoxingCast(method.getActiveBody(), s, true);							
+					}
+					
+	
+					// default case (exception)								
+					SootClass exception = Scene.v().getSootClass("java.lang.RuntimeException");
+					Local ex = lg.generateLocal(exception.getType(), "exception");
+					Stmt newExceptStmt = Jimple.v().newAssignStmt(ex, Jimple.v().newNewExpr(exception.getType()));
+					Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.getMethod("<init>", new ArrayList())));
+					Stmt throwStmt = Jimple.v().newThrowStmt(ex);
+					statements.insertAfter(newExceptStmt, as2);
+					statements.insertAfter(initEx, newExceptStmt);
+					statements.insertAfter(throwStmt, initEx);
+				
+					
+					LookupSwitchStmt lp=Jimple.v().newLookupSwitchStmt(
+						maskLocal, lookupValues, targets, newExceptStmt
+						);
+					statements.insertAfter(lp, as2);
+				}
+			}
 			
 			int i=0;
 			for (Iterator it=context.iterator(); it.hasNext(); i++) {
@@ -1923,7 +2010,7 @@ public class AroundWeaver {
 
 				//Restructure.validateMethod(method);
 
-				Local paramLocal;
+				//Local paramLocal;
 				
 				if (staticBindings.contains(actual)) {
 					debug(" static binding: " + actual.getName());
@@ -1931,93 +2018,11 @@ public class AroundWeaver {
 					// When binding the same value multiple times, ajc's
 					// proceed only regards the last one passed to it.
 					// Can be changed to indexOf to pick the first one 
-					// (which would seem more reasonable). 
+					// (which would also seem reasonable). 
 					int index = staticBindings.lastIndexOf(actual);
-					
-					List localsFromIndex=staticBindings.localsFromIndex(index);
-					if (localsFromIndex.size()==1) 	{ // non-skipped case: assign advice formal
-						paramLocal = (Local) adviceFormalLocals.get(index);
-						AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
-						statements.insertAfter(s, nonSkippedCase);
-						Restructure.insertBoxingCast(method.getActiveBody(), s, true);
-						/// allow boxing?
-					} else if (!generatedSwitchStmtsIDs.contains(new Integer(index))){
-						
-						NopStmt afterDefault=Jimple.v().newNopStmt();
-						statements.insertAfter(afterDefault, nonSkippedCase);
-						// first do all the dynamic assignments.
-						// the switch statement then overwrites the actual bindings.
-						// this is to prevent a quadratic growth of the switch statement size.
-						//TODO: for the case n=2, an optimization would be good.
-						for (Iterator itl=localsFromIndex.iterator(); itl.hasNext();) {
-							Local l=(Local)itl.next();
-							int id=context.indexOf(l);
-							if (id==-1) {
-								debug(" skipped local: " + l);
-							} else {
-								paramLocal = (Local) dynParamLocals.get(argIndex[id]);
-								Local actual3=(Local)bindings.get(l);
-								AssignStmt s = Jimple.v().newAssignStmt(actual3, paramLocal);
-								statements.insertAfter(s, nonSkippedCase);
-								Restructure.insertBoxingCast(method.getActiveBody(), s, true);
-							}
-						}
-						
-						generatedSwitchStmtsIDs.add(new Integer(index));
-						int mask=staticBindings.getMaskBits(index);
-						AssignStmt as=Jimple.v().newAssignStmt(
-							maskLocal, Jimple.v().newAndExpr( skipParamLocal, IntConstant.v(mask)  ));
-						AssignStmt as2=Jimple.v().newAssignStmt(
-							maskLocal, Jimple.v().newShrExpr(
-								maskLocal, IntConstant.v(staticBindings.getMaskPos(index))));
-						
-						statements.insertAfter(as, afterDefault);
-						statements.insertAfter(as2, as);
-						NopStmt endStmt=Jimple.v().newNopStmt();
-						statements.insertAfter(endStmt, as2);
-						
-						int localIndex=0;
-						List lookupValues=new LinkedList();
-						List targets=new LinkedList();
-						for (Iterator itl=localsFromIndex.iterator(); itl.hasNext();localIndex++) {
-							Local l=(Local)itl.next();
-							lookupValues.add(IntConstant.v(localIndex));
-							
-							Local actual3=(Local)bindings.get(l);
-							
-							NopStmt targetNop=Jimple.v().newNopStmt();
-							
-							statements.insertAfter(targetNop, as2);
-							targets.add(targetNop);
-							
-							
-							paramLocal = (Local) adviceFormalLocals.get(index);
-							AssignStmt s = Jimple.v().newAssignStmt(actual3, paramLocal);
-							statements.insertAfter(s, targetNop);
-							GotoStmt g=Jimple.v().newGotoStmt(endStmt);
-							statements.insertAfter(g, s);
-							Restructure.insertBoxingCast(method.getActiveBody(), s, true);							
-						}
-						
-		
-													
-							SootClass exception = Scene.v().getSootClass("java.lang.RuntimeException");
-							Local ex = lg.generateLocal(exception.getType(), "exception");
-							Stmt newExceptStmt = Jimple.v().newAssignStmt(ex, Jimple.v().newNewExpr(exception.getType()));
-							Stmt initEx = Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(ex, exception.getMethod("<init>", new ArrayList())));
-							Stmt throwStmt = Jimple.v().newThrowStmt(ex);
-							statements.insertAfter(newExceptStmt, as2);
-							statements.insertAfter(initEx, newExceptStmt);
-							statements.insertAfter(throwStmt, initEx);
-						
-						
-						LookupSwitchStmt lp=Jimple.v().newLookupSwitchStmt(
-							maskLocal, lookupValues, targets, newExceptStmt
-							);
-						statements.insertAfter(lp, as2);
-					}
+				
 					{ // skipped case: assign dynamic argument
-						paramLocal = (Local) dynParamLocals.get(argIndex[i]);
+						Local paramLocal = (Local) dynParamLocals.get(argIndex[i]);
 						AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
 						statements.insertAfter(s, skippedCase);
 						Restructure.insertBoxingCast(method.getActiveBody(), s, true);
@@ -2026,7 +2031,7 @@ public class AroundWeaver {
 				} else {
 					debug(" no binding: " + actual.getName());
 					// no binding
-					paramLocal = (Local) dynParamLocals.get(argIndex[i]);
+					Local paramLocal = (Local) dynParamLocals.get(argIndex[i]);
 					AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
 					statements.insertAfter(s, neverBoundCase);
 					insertCast(method.getActiveBody(), s, s.getRightOpBox(), actual2.getType());

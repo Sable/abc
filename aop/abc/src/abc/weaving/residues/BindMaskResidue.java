@@ -18,17 +18,16 @@ import abc.weaving.weaver.WeavingContext;
  * @author Sascha Kuzins
  * 
  * Needed for ambiguous bindings.
- * Always contains a Bind residue.
  * Generates code to set bits in a mask that
  * express this particular binding.
  */
 public class BindMaskResidue extends Residue {
 
-	private Bind bind;
+	private Residue op;
 	private Local bindMaskLocal;
 	private int mask;
 	BindMaskResidue(Bind bind, Local bindMaskLocal, int mask) {
-		this.bind=bind;
+		this.op=bind;
 		this.bindMaskLocal=bindMaskLocal;
 		this.mask=mask;
 	}
@@ -41,14 +40,22 @@ public class BindMaskResidue extends Residue {
 		AssignStmt as=Jimple.v().newAssignStmt(
 			bindMaskLocal, Jimple.v().newOrExpr(bindMaskLocal, IntConstant.v(mask)));
 		units.insertAfter(as, begin);
-		return bind.codeGen(method, localgen, units, as, fail, wc);
+		return op.codeGen(method, localgen, units, as, fail, wc);
 	}
 
 	/* 
 	 * 
 	 */
 	public String toString() {
-		return "bindmask(" + bind  + ")";
+		return "bindmask(" + op  + ")";
+	}
+	
+	public void getAdviceFormalBindings(Bindings bindings) {
+		op.getAdviceFormalBindings(bindings);
+	}
+	public Residue restructureToCreateBindingsMask(soot.Local bindingsMaskLocal, Bindings bindings) {
+		op=op.restructureToCreateBindingsMask(bindingsMaskLocal, bindings);
+		return this;
 	}
 
 }
