@@ -28,6 +28,13 @@ public class LocalGeneratorEx extends LocalGenerator {
 		this.body=b;
 	}
 	private Body body;
+
+        /**
+         *  Generate a local with a given type, using a suggested name.
+         *  If that name is already in use, then try using name0, name1 etc
+	 *  @param type The type we want
+         *  @param name The suggested name
+         */
 	public Local generateLocal(soot.Type type, String suggestedName){
 		int i=0;
 		String name=suggestedName;
