@@ -435,11 +435,19 @@ public class GlobalAspectInfo {
     }
 
     public int getSkipFirst(String sig) {
-	return ((Integer)method_skip_first.get(sig)).intValue();
+	if (method_skip_first.containsKey(sig)) {
+	    return ((Integer)method_skip_first.get(sig)).intValue();
+	} else {
+	    return 0;
+	}
     }
 
     public int getSkipLast(String sig) {
-	return ((Integer)method_skip_last.get(sig)).intValue();
+	if (method_skip_last.containsKey(sig)) {
+	    return ((Integer)method_skip_last.get(sig)).intValue();
+	} else {
+	    return 0;
+	}
     }
 
 }
