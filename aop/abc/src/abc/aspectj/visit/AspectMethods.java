@@ -96,8 +96,7 @@ public class AspectMethods extends ContextVisitor {
     private Stack /* Expr */ lhss; /* left-hand sides of assignments */ 
     private Stack /* PCIf */ pcifs;
 
-    private int cflowdepth; // Put in this pass for lack of a better place for it
-    
+
 	public AJNodeFactory nf;
 	public AJTypeSystem ts;
 	
@@ -113,7 +112,6 @@ public class AspectMethods extends ContextVisitor {
 		this.itd = new Stack();
 		this.lhss = new Stack();
 		this.pcifs = new Stack();
-		this.cflowdepth = -1;
 	}
 
         public void pushClass()
@@ -258,8 +256,6 @@ public class AspectMethods extends ContextVisitor {
  
 	protected Node leaveCall(Node old, Node n, NodeVisitor v)  throws SemanticException {
 		JL del = n.del();    
-		if (del instanceof CflowDepth)
-		   n = ((CflowDepth) del).recordCflowDepth(((AJContext)context()).cflowDepth());
 		if (del instanceof MakesAspectMethods) {
 					 n = ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
 				}

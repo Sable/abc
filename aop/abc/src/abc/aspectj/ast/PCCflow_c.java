@@ -37,7 +37,6 @@ import abc.main.Debug;
 public class PCCflow_c extends Pointcut_c implements PCCflow
 {
     protected Pointcut pc;
-    protected int depth=-1;
 
     public PCCflow_c(Position pos, Pointcut pc)  {
 		super(pos);
@@ -56,16 +55,6 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 		return true;
 	}
 	
-    public Node recordCflowDepth(int depth) {
-    	PCCflow_c n = (PCCflow_c) copy();
-	    n.depth=depth;
-	    return n;
-    }
-    
-    public int getCflowDepth() {
-    	return depth;
-    }
-    
 	/** Reconstruct the pointcut. */
 	protected PCCflow_c reconstruct(Pointcut pc) {
 		if (pc != this.pc) {
@@ -111,9 +100,7 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 	}
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	if(depth==-1) throw new InternalCompilerError
-			  ("Depth of cflow should have been recorded by now. This= " + this + " at  " + position());
 	return new abc.weaving.aspectinfo.Cflow
-	    (pc.makeAIPointcut(),position(),depth);
+	    (pc.makeAIPointcut(),position());
     }
 }

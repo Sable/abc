@@ -108,9 +108,6 @@ public interface AJContext extends Context {
 	/** get the names of variables that are bound in the smallest enclosing cflow */
 	Collection getCflowMustBind();
 	
-	/** nesting level of cflows (for codegen) */
-	int cflowDepth();
-	
 	/** inside an if pointcut? */
 	boolean inIf();
 }

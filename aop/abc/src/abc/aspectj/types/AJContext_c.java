@@ -67,7 +67,6 @@ public class AJContext_c extends Context_c implements AJContext {
     protected boolean inCflow;
     protected Collection cflowMustBind;
     protected boolean inIf;
-    protected int cflowDepth;
     protected AspectType currentAspect;
 
         public AJContext_c(TypeSystem ts) {
@@ -83,7 +82,6 @@ public class AJContext_c extends Context_c implements AJContext {
                 inIf = false;
                 cflowMustBind = null;
                 currentAspect = null;
-                cflowDepth = 0;
         }
 
 
@@ -101,7 +99,6 @@ public class AJContext_c extends Context_c implements AJContext {
                 AJContext_c c = (AJContext_c) push();
                 c.inCflow = true;
                 c.cflowMustBind = mustBind;
-                c.cflowDepth = cflowDepth+1;
                 return c;
         }
 
@@ -111,10 +108,6 @@ public class AJContext_c extends Context_c implements AJContext {
 
         public Collection getCflowMustBind() {
                 return cflowMustBind;
-        }
-
-        public int cflowDepth() {
-                return cflowDepth;
         }
 
         public AJContext pushIf() {

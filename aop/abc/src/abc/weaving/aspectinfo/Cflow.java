@@ -37,8 +37,13 @@ import abc.weaving.residues.*;
 public class Cflow extends CflowPointcut {
     private int depth=-1;
 
-    public Cflow(Pointcut pc,Position pos,int depth) {
-	// depth parameter ignored, to be deleted
+    private Cflow(Pointcut pc,Position pos,int depth) {
+	super(pos);
+	setPointcut(pc);
+	this.depth=depth;
+    }
+
+    public Cflow(Pointcut pc,Position pos) {
 	super(pos);
 	setPointcut(pc);
     }
@@ -58,14 +63,13 @@ public class Cflow extends CflowPointcut {
 	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context,cflowdepth+1);
 	Cflow ret;
 	if(pc==this.getPointcut()) ret=this;
-	else ret=new Cflow(pc,getPosition(),-1);
-	ret.depth=depth==-1 ? cflowdepth : depth;
+	else ret=new Cflow(pc,getPosition(),depth);
+	if(depth==-1) ret.depth=cflowdepth;
 	return ret;
     }
 
     protected DNF dnf() {
 	Cflow ret=new Cflow(getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth);
-	ret.depth=depth;
 	return new DNF(ret);
     }
 
