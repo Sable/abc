@@ -28,17 +28,17 @@ public class AdviceDecl extends AbstractAdviceDecl {
 
     private Map/*<String,Integer>*/ formal_pos_map = new HashMap();
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
-    private List/*<MethodSig>*/ proceeds;
+    private List/*<MethodSig>*/ methods;
 
     public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, 
-		      int jp, int jpsp, int ejp, List proceeds, Position pos) {
+		      int jp, int jpsp, int ejp, List methods, Position pos) {
 
 	super(aspct,spec,pc,impl.getFormals(),pos);
 	this.impl = impl;
 	this.jp = jp;
 	this.jpsp = jpsp;
 	this.ejp = ejp;
-	this.proceeds = proceeds;
+	this.methods = methods;
 
 	int i = 0;
 	nformals = impl.getFormals().size();
@@ -271,13 +271,14 @@ public class AdviceDecl extends AbstractAdviceDecl {
 
     }
     
-    public List/*<MethodSig>*/ getProceeds() {
-    	return proceeds;
+    public List/*<MethodSig>*/ getLocalMethods() {
+    	return methods;
     }
     
-    public List/*<SootMethod>*/ getSootProceeds() {
+    
+    public List/*<SootMethod>*/ getLocalSootMethods() {
     	List ret = new ArrayList();
-    	for (Iterator procs = proceeds.iterator(); procs.hasNext(); ) {
+    	for (Iterator procs = methods.iterator(); procs.hasNext(); ) {
     		MethodSig ms = (MethodSig) procs.next();
     		// special treatment for around:
     		// ignore the signature because it may have changed
@@ -291,6 +292,10 @@ public class AdviceDecl extends AbstractAdviceDecl {
     		
     	}
     	return ret;
+    }
+    
+    public List getSootProceeds() {
+    	return getLocalSootMethods();
     }
     	
 }

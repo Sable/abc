@@ -75,7 +75,7 @@ public class AdviceDecl_c extends MethodDecl_c
     protected LocalInstance thisJoinPointStaticPartInstance=null;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
     
-    protected Set/*<CodeInstance>*/ proceedContainers;
+    protected Set/*<CodeInstance>*/ methodsInAdvice;
     
     protected int spec_retval_pos;
 
@@ -113,7 +113,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	          adviceFormals(locs(spec.returnVal(),spec.formals())),
 	          throwTypes,
 	          body);
-	    this.proceedContainers = new HashSet();
+	    this.methodsInAdvice = new HashSet();
 		this.spec = spec;
     	this.pc = pc;
 
@@ -477,8 +477,8 @@ public class AdviceDecl_c extends MethodDecl_c
 			w.end();
 		}
 		
-	public void proceedContainer(CodeInstance ci) {
-		proceedContainers.add(ci);
+	public void localMethod(CodeInstance ci) {
+		methodsInAdvice.add(ci);
 	}
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
@@ -496,13 +496,13 @@ public class AdviceDecl_c extends MethodDecl_c
 	    spec.setReturnVal((Formal)formals().get(spec_retval_pos));
 	}
 	
-	List proceeds = new ArrayList();
-	for (Iterator procs = proceedContainers.iterator(); procs.hasNext(); ) {
+	List methods = new ArrayList();
+	for (Iterator procs = methodsInAdvice.iterator(); procs.hasNext(); ) {
 		CodeInstance ci = (CodeInstance) procs.next();
 		if (ci instanceof MethodInstance)
-			proceeds.add(AbcFactory.MethodSig((MethodInstance)ci));
+			methods.add(AbcFactory.MethodSig((MethodInstance)ci));
 		if (ci instanceof ConstructorInstance)
-			proceeds.add(AbcFactory.MethodSig((ConstructorInstance)ci));
+			methods.add(AbcFactory.MethodSig((ConstructorInstance)ci));
 	}
 
 	abc.weaving.aspectinfo.AdviceDecl ad =
@@ -511,7 +511,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	     pc.makeAIPointcut(),
 	     AbcFactory.MethodSig(this),
 	     current_aspect,
-	     jp, jpsp, ejp, proceeds,
+	     jp, jpsp, ejp, methods,
 	     position());
 	gai.addAdviceDecl(ad);
 	

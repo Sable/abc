@@ -16,5 +16,5 @@ public interface AdviceDecl extends MethodDecl, MakesAspectMethods
    	void joinpointFormals(Local n);
    	boolean hasJoinPoint();
    	boolean hasJoinPointStaticPart();
-   	void proceedContainer(CodeInstance ci);
+   	void localMethod(CodeInstance ci);
 }

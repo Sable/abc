@@ -49,8 +49,7 @@ public class ProceedCall_c extends Call_c
     	super(c.position(),c.target(),c.name(),c.arguments());
     }
     
-    public ProceedCall proceedMethod(MethodDecl md,AdviceDecl ad) {
-    	ad.proceedContainer(ci);
+    public ProceedCall proceedMethod(MethodDecl md) {
     	return (ProceedCall) name(md.name()).methodInstance(md.methodInstance());
     }
     
@@ -98,6 +97,6 @@ public class ProceedCall_c extends Call_c
                 ProceedCall pc = (ProceedCall) this.copy();
                 pc = (ProceedCall) pc.methodInstance(pc.methodInstance().throwTypes(new ArrayList()));
  
-                return pc.proceedMethod(visitor.proceed(),visitor.advice());
+                return pc.proceedMethod(visitor.proceed());
         }
 }
