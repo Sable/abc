@@ -12,8 +12,10 @@ import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
 import polyglot.types.SemanticException;
 
-/** This is the base class for pointcut designators.
- *  A pointcut designator is primarily responsible for 
+/** This is the base class for pointcut designators; it is constructed by the frontend
+ *  A pointcut designator is primarily responsible for calculating the residue for itself
+ *  at a given join point shadow.
+ * 
  *  @author Ganesh Sittampalam
  */
 public abstract class Pointcut extends Syntax {
