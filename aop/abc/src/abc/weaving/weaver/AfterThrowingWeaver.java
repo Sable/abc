@@ -21,7 +21,7 @@ import soot.jimple.IntConstant;
 import soot.util.Chain;
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
-import abc.weaving.aspectinfo.AfterThrowingAdvice;
+import abc.weaving.aspectinfo.ThrowingAdvice;
 import abc.weaving.matching.AdviceApplication;
 
 /** Handle after throwing weaving.
@@ -49,7 +49,7 @@ public class AfterThrowingWeaver {
 	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
 
 	AbstractAdviceDecl advicedecl = adviceappl.advice;
-	AfterThrowingAdvice advicespec = (AfterThrowingAdvice) (advicedecl.getAdviceSpec());
+	ThrowingAdvice advicespec = (ThrowingAdvice) (advicedecl.getAdviceSpec());
 
 	// end of shadow
 	Stmt endshadow = adviceappl.shadowpoints.getEnd();

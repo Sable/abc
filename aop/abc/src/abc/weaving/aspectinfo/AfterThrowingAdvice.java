@@ -3,7 +3,6 @@ package abc.weaving.aspectinfo;
 import polyglot.util.Position;
 
 import soot.*;
-import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
 import abc.weaving.residues.Residue;
@@ -11,7 +10,7 @@ import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for after throwing advice without exception variable binding. */
-public class AfterThrowingAdvice extends AbstractAdviceSpec {
+public class AfterThrowingAdvice extends AbstractAdviceSpec implements ThrowingAdvice {
     public AfterThrowingAdvice(Position pos) {
 	super(pos);
     }
