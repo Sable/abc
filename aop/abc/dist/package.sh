@@ -37,12 +37,14 @@ mkdir -p package/abc-$VERSION
 mkdir -p package/abc-$VERSION/bin
 cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ src/ runtime-src/ testing-src/ ajc-harness/ javadoc/ runtime-javadoc/ package/abc-$VERSION/
 cp dist/abc package/abc-$VERSION/bin/
+cp dist/abc.bat package/abc-$VERSION/bin/
 
 
 cd package
 
 BINS="\
    abc-$VERSION/bin/abc \
+   abc-$VERSION/bin/abc.bat \
    abc-$VERSION/lib \
    abc-$VERSION/runtime-javadoc/ \
 "
@@ -108,6 +110,7 @@ cp /usr/local/src/soot-dev/lib/jedd-runtime-$JEDD.jar \
 
 mkdir ../dists/$VERSION/files/bin
 cp abc-$VERSION/bin/abc ../dists/$VERSION/files/bin
+cp abc-$VERSION/bin/abc.bat ../dists/$VERSION/files/bin
 
 cp -a abc-$VERSION/runtime-javadoc ../dists/$VERSION/files/
 
@@ -133,3 +136,6 @@ ln -sf ../../includes/header.shtml
 
 cd ..
 
+chmod -R g+w $VERSION
+
+echo Done.
