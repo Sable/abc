@@ -9,6 +9,7 @@ import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 import polyglot.frontend.Stats;
 import polyglot.types.SemanticException;
+import polyglot.util.InternalCompilerError;
 import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
 
@@ -19,6 +20,7 @@ import abc.weaving.aspectinfo.*;
 
 import java.util.*;
 import java.io.*;
+import java.lang.reflect.*;
 
 public class Main {
     public Collection/*<String>*/ aspect_sources = new ArrayList();
@@ -132,7 +134,24 @@ public class Main {
                } // output directory 
    	     else if (args[i].equals("-O"))  // -O flag in abc options
 		 optflag=true;
-	     else if (args[i].startsWith("-")) 
+	     else if (args[i].equals("-debug") || args[i].equals("-nodebug"))  // -debug and -nodebug flags in abc options
+	       { if (i+1 < args.length)
+	           { String debug_name = args[i+1];
+		     try {
+			 Field f = abc.main.Debug.class.getField(debug_name);
+			 f.setBoolean(abc.main.Debug.v(), args[i].equals("-debug"));
+		     } catch (NoSuchFieldException e) {
+			 throw new IllegalArgumentException("No such debug option: "+debug_name);
+		     } catch (Exception e) {
+			 throw new InternalCompilerError("Error setting debug field "+debug_name, e);
+		     }
+		     i++;
+	           }
+	         else
+                   throw new IllegalArgumentException(
+                            "Missing argument to " + args[i]);
+               } // output directory 
+   	     else if (args[i].startsWith("-")) 
 	       { throw new IllegalArgumentException("Unknown option "+args[i]);
                } 
 	     else 
