@@ -26,12 +26,19 @@ import soot.SootClass;
 
 import java.util.*;
 
-/*
- * @author Julian Tibble
+/**
+ * This class should be sub-classed to extend the behaviour of abc
+ * <p>
+ * A sub-class, with overriden methods to effect some new behaviour,
+ * can be loaded at runtime by using the "-ext" switch to abc.
  *
+ * @author Julian Tibble
  */
 public class AbcExtension
 {
+    /**
+     * Constructs a version string for all loaded extensions
+     */
     final public String versions()
     {
         StringBuffer versions = new StringBuffer();
@@ -39,6 +46,12 @@ public class AbcExtension
         return versions.toString();
     }
 
+    /*
+     * Override this method to add the version information
+     * for this extension, calling the same method in the
+     * super-class to ensure that all extensions are
+     * reported.
+     */
     protected void collectVersions(StringBuffer versions)
     {
         versions.append("abc version " +
@@ -46,6 +59,10 @@ public class AbcExtension
                         "\n");
     }
 
+    /*
+     * Creates an instance of the <code>ExtensionInfo</code> structure
+     * used for extending the Polyglot-based frontend.
+     */
     public abc.aspectj.ExtensionInfo
             makeExtensionInfo(Collection jar_classes,
                               Collection aspect_sources)
@@ -53,11 +70,20 @@ public class AbcExtension
         return new abc.aspectj.ExtensionInfo(jar_classes, aspect_sources);
     }
 
-    final public Iterator shadowTypes()
+    /**
+     * Get all the shadow joinpoints that are matched
+     * in this extension of AspectJ
+     */
+    final public Iterator /*<ShadowType>*/ shadowTypes()
     {
         return listShadowTypes().iterator();
     }
 
+    /**
+     * Override this method to add new joinpoints to the abc.
+     * calling the same method in the super-class to ensure
+     * the standard joinpoints needed are loaded too.
+     */
     protected List /*<ShadowType>*/ listShadowTypes()
     {
         List /*<ShadowType*/ shadowTypes = new LinkedList();
@@ -80,6 +106,9 @@ public class AbcExtension
         return shadowTypes;
     }
 
+    /**
+     * FIXME : write something here
+     */
     public void addBasicClassesToSoot()
     {
         Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack",
@@ -98,6 +127,11 @@ public class AbcExtension
                                 SootClass.SIGNATURES);
     }
 
+    /**
+     * Create an instance of the Weaver, which is parameterized by
+     * the name of the factory used to create AspectJ objects at
+     * the runtime of the compiled program.
+     */
     public abc.weaving.weaver.Weaver makeWeaver()
     {
          return new abc.weaving.weaver.Weaver(
