@@ -156,8 +156,8 @@ Unexpected exception while compiling: polyglot.util.InternalCompilerError: excep
 polyglot.util.InternalCompilerError: exception while resolving C.B
 	at abc.aspectj.visit.Jimplify$AbcClassSource.resolve(Jimplify.java:88)
 	at soot.SootResolver.bringToHierarchy(SootResolver.java:147)
-	at soot.SootResolver.bringToSignatures(SootResolver.java:168)
-	at soot.SootResolver.bringToBodies(SootResolver.java:210)
+	at soot.SootResolver.bringToSignatures(SootResolver.java:171)
+	at soot.SootResolver.bringToBodies(SootResolver.java:213)
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:102)
 	at soot.SootResolver.resolveClass(SootResolver.java:88)
 	at soot.Scene.loadClass(Scene.java:329)
