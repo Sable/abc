@@ -28,7 +28,9 @@ import polyglot.types.*;
 
 import abc.aspectj.ExtensionInfo;
 
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbcFactory;
+import abc.weaving.aspectinfo.AbcClass;
 
 import java.util.*;
 
@@ -81,7 +83,10 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 							    " is a subclass of child class "+ct);
 			    }
 
-			    dp.addTarget(AbcFactory.AbcClass(ct));
+                            AbcClass cl = AbcFactory.AbcClass(ct);
+			    dp.addTarget(cl);
+                            GlobalAspectInfo.v().registerWeave(cl);
+
 			    PCNode hi_parent = ext.hierarchy.insertClassAndSuperclasses(parentct, false);
 			    hi_cl.addParent(hi_parent);
 			    if (ct instanceof ParsedClassType) {
@@ -119,7 +124,11 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		    ClassType ct = (ClassType)cti.next();
 		    PCNode hi_cl = ext.hierarchy.getClass(ct);
 		    if (hi_cl.isWeavable() && pat.matches(PatternMatcher.v(), hi_cl)) {
-			dp.addTarget(AbcFactory.AbcClass(ct));
+
+                        AbcClass cl = AbcFactory.AbcClass(ct);
+                        dp.addTarget(cl);
+                        GlobalAspectInfo.v().registerWeave(cl);
+
 			if (ct instanceof ParsedClassType) {
 			    ParsedClassType pct = (ParsedClassType)ct;
 			    Iterator incti = ints.iterator();
