@@ -1462,7 +1462,7 @@
       keywords="from-java,purejava">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <ajcmessage kind="error" line="3"/>
-            <message kind="error" line="14"/>
+            <message kind="error" line="8"/>
         </compile>
     </ajc-test>
 
@@ -3022,7 +3022,7 @@
 
     <ajc-test num="314" dir="new" pr="494"
       title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public"
-      abccomment="abc pinpoints first three errors differently, but ok. ODM 11/08/04"
+      abccomment="abc bails out earlier, but ok. ODM 11/08/04"
       keywords="from-errors">
         <compile files="IntroduceInnerInterfaceCF.java" options="-Xlint:ignore">
             <ajcmessage kind="error" line="18"/>
@@ -3034,13 +3034,6 @@
             <ajcmessage kind="error" line="48"/>
             <ajcmessage kind="error" line="50"/>
             <ajcmessage kind="error" line="58"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="23"/>
-            <message kind="error" line="24"/>
-            <message kind="error" line="42"/>
-            <message kind="error" line="45"/>
-            <message kind="error" line="48"/>
-            <message kind="error" line="50"/>
             <message kind="error" line="58"/>
         </compile>
     </ajc-test>
