@@ -74,6 +74,7 @@ public class Main {
       abc.weaving.weaver.AroundWeaver.reset();
       abc.weaving.matching.StmtShadowMatch.reset();
       abc.weaving.matching.ExecutionShadowMatch.reset();
+      abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
 
       v=null;
     }
