@@ -620,6 +620,17 @@
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Error expected for constructor in interfaces" keywords="from-java,purejava" dir="new" abccomment="ajc only finds errors on lines 2 and 8.                    another example of jlc crashing after error detection.                   July 2/04 LJH. abc now finds all three errors. ODM 26/07/04">
+
+        <compile files="InterfaceConstructor.java">
+            <ajcmessage line="2" kind="error"></ajcmessage>
+            <ajcmessage line="6" kind="error"></ajcmessage>
+            <ajcmessage line="8" kind="error"></ajcmessage>
+            <message line="2" kind="error"></message>
+            <message line="6" kind="error"></message>
+            <message line="8" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="class name for identifier as String should provoke error" pr="558" keywords="from-java,purejava" dir="new">
         <compile files="PR558.java">
             <message line="4" kind="error"></message>
@@ -639,6 +650,54 @@
             <message line="11" kind="error"></message>
             <message line="12" kind="error"></message>
             <message line="12" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Type names are not expressions on their own" keywords="from-java,purejava" dir="pureJava" abccomment="jlc misses all errors after the first two.  Example sent to                   Nate on July 2/04.  LJH. Now find one more than ajc on line                   35. javac agrees it's an error, but ajc does not.                   ODM 26/07/04">
+      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
+        <compile files="TypeExprErrors.java">
+            <ajcmessage line="10" kind="error"></ajcmessage>
+            <ajcmessage line="17" kind="error"></ajcmessage>
+            <ajcmessage line="18" kind="error"></ajcmessage>
+            <ajcmessage line="19" kind="error"></ajcmessage>
+            <ajcmessage line="20" kind="error"></ajcmessage>
+            <ajcmessage line="21" kind="error"></ajcmessage>
+            <ajcmessage line="22" kind="error"></ajcmessage>
+            <ajcmessage line="23" kind="error"></ajcmessage>
+            <ajcmessage line="24" kind="error"></ajcmessage>
+            <ajcmessage line="25" kind="error"></ajcmessage>
+            <ajcmessage line="26" kind="error"></ajcmessage>
+            <ajcmessage line="27" kind="error"></ajcmessage>
+            <ajcmessage line="28" kind="error"></ajcmessage>
+            <ajcmessage line="29" kind="error"></ajcmessage>
+            <ajcmessage line="30" kind="error"></ajcmessage>
+            <ajcmessage line="31" kind="error"></ajcmessage>
+            <ajcmessage line="32" kind="error"></ajcmessage>
+            <ajcmessage line="33" kind="error"></ajcmessage>
+            <ajcmessage line="34" kind="error"></ajcmessage>
+            <ajcmessage line="36" kind="error"></ajcmessage>
+            <ajcmessage line="37" kind="error"></ajcmessage>
+            <message line="10" kind="error"></message>
+            <message line="17" kind="error"></message>
+            <message line="18" kind="error"></message>
+            <message line="19" kind="error"></message>
+            <message line="20" kind="error"></message>
+            <message line="21" kind="error"></message>
+            <message line="22" kind="error"></message>
+            <message line="23" kind="error"></message>
+            <message line="24" kind="error"></message>
+            <message line="25" kind="error"></message>
+            <message line="26" kind="error"></message>
+            <message line="27" kind="error"></message>
+            <message line="28" kind="error"></message>
+            <message line="29" kind="error"></message>
+            <message line="30" kind="error"></message>
+            <message line="31" kind="error"></message>
+            <message line="32" kind="error"></message>
+            <message line="33" kind="error"></message>
+            <message line="34" kind="error"></message>
+            <message line="35" kind="error"></message>
+            <message line="36" kind="error"></message>
+            <message line="37" kind="error"></message>
         </compile>
     </ajc-test>
 <ajc-test title="type and package name conflicts are resolved happily (1a)" keywords="from-java,purejava" dir="pureJava/nameConflicts">
@@ -702,6 +761,17 @@
             <message line="10" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="suggested by Jacks 15.28-qualified-namestr tests" keywords="from-java,purejava,messages-vary" dir="pureJava" abccomment="ajc and javac already report different subset of possible                     errors,  abc correctly reports first one and then                     doesn't check rest of switch.  I think it's ok.                     July 5/04 LJH. abc and ajc 1.2 now agree.                     ODM 26/07/04.">
+        <compile options="!eclipse" files="NonConstants.java">
+            <ajcmessage line="13" kind="error"></ajcmessage>
+            <ajcmessage line="14" kind="error"></ajcmessage>
+            <ajcmessage line="15" kind="error"></ajcmessage>
+            <ajcmessage line="16" kind="error"></ajcmessage>
+            <ajcmessage line="17" kind="error"></ajcmessage>
+            <message line="13" kind="error"></message>
+            <message line="17" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="suggested by jacks 3.7-15 all comments must be closed" keywords="from-java,purejava" dir="pureJava" abccomment="we report missing end of comment at end of file                    whereas ajc reports it at the beginning of the                   comment.  I think our error is fine.  July 2/04 LJH">
         <compile files="OpenComment.java">
             <ajcmessage line="7" kind="error"></ajcmessage>
@@ -746,6 +816,14 @@
 <ajc-test title="qualified super call expr" pr="651" keywords="from-java" dir="pureJava">
         <compile files="QualifiedSuperCall.java"></compile>
         <run class="QualifiedSuperCall"></run>
+    </ajc-test>
+<ajc-test title="concrete aspect unable to access abstract package-private method in parent for overriding" pr="647" keywords="from-java,purejava,messages-vary" dir="new/subaspects" comment="XXX fix source - package-private" abccomment="error not detected by jlc, reported to Nate July 3/04 LJH                     now detected, and ajc 1.2 no longer gives the warning.                     ODM 26/09/04">
+      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
+        <compile options="!eclipse" files="parent/ParentMethodCE.java,child/ChildMethodCE.java">
+            <ajcmessage line="28" kind="warning"></ajcmessage>
+            <ajcmessage line="27" kind="error"></ajcmessage>
+            <message line="27" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="super reference used to disambiguate names of different but compatible types" keywords="from-java,purejava" dir="new">
         <compile files="SuperDisambiguatingType.java"></compile>
@@ -962,6 +1040,13 @@
             <message line="17" kind="error"></message>
             <message line="17" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]" keywords="from-errors" dir="new" abccomment="Polyglot fails to check special modifier restrictions for interfaces.                   ODM 5/7/04. This has been fixed and abc now finds an error                   that escapes ajc. ODM 26/07/04">
+        <compile files="StrictFpCErr1.java">
+            <ajcmessage line="3" kind="error"></ajcmessage>
+            <message line="1" kind="error"></message>
+            <message line="3" kind="error"></message> 
+       </compile>
     </ajc-test>
 <ajc-test title="Wrong strictfp keyword usage in field declaration [TODO: move to errors]" keywords="from-errors" dir="new">
         <compile files="StrictFpCErr2.java">
@@ -1993,6 +2078,10 @@
         <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
         <run class="AroundInnerCalls13"></run>
     </ajc-test>
+<ajc-test title="Arguments to runNext should be final when needed" keywords="from-resolved_10x" dir="new">
+        <compile files="Finals.java"></compile>
+        <run class="Finals"></run>
+    </ajc-test>
 <ajc-test title="Putting an introduced method on each interface" keywords="from-resolved_10x" dir="new">
         <compile files="IntroducedMethodsOnEachInterface.java"></compile>
         <run class="IntroducedMethodsOnEachInterface"></run>
@@ -2309,9 +2398,25 @@
         <compile files="AroundCasting.java"></compile>
         <run class="AroundCasting"></run>
     </ajc-test>
+<ajc-test title="aroundInner 1 - around advice inner Thread subclass running proceed but not writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="ThreadNoField.java,Common.java"></compile>
+        <run class="ThreadNoField"></run>
+    </ajc-test>
+<ajc-test title="aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="Proxy.java,Common.java"></compile>
+        <run class="Proxy"></run>
+    </ajc-test>
 <ajc-test title="aroundInner 3 - around advice inner class running proceed and writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
         <compile files="Minimal.java,Common.java"></compile>
         <run class="Minimal"></run>
+    </ajc-test>
+<ajc-test title="aroundInner 4 - around advice inner Thread subclass running proceed and writing field" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="ThreadSub.java,Common.java"></compile>
+        <run class="ThreadSub"></run>
+    </ajc-test>
+<ajc-test title="aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" pr="620" keywords="from-resolved_10x" dir="new/aroundinner">
+        <compile files="RunnableSub.java,Common.java"></compile>
+        <run class="RunnableSub"></run>
     </ajc-test>
 <ajc-test title="Named local class closing over proceed invocation" pr="636" keywords="from-resolved_10x" dir="new">
         <compile files="LocalClassClosingOverProceed.java"></compile>
@@ -3117,6 +3222,10 @@
 		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
 			<message line="5" kind="error" file="ClassClientCE.java"></message>
 			</compile>
+		</ajc-test>
+<ajc-test title="reflective check of declared exceptions from aspect-declared methods" pr="41175" dir="bugs" abccomment="soot seems to loose declared exceptions on new methods. mailed abc list. 19/07/04 ODM.">
+		<compile files="DeclaredExceptions.java"></compile>
+		<run class="DeclaredExceptions"></run>
 		</ajc-test>
 <ajc-test title="Weaving failure when using injars (no jars)" pr="41123" dir="bugs/moreInterfaceLibrary">
 		<compile files="lib/ExecutionMonitor.aj,model/BusObj.java,model/MonitorBusObj.java">
