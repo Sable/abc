@@ -101,6 +101,15 @@ public class Usage {
     // "-help:debug       [abc]"
     );
   }
+  
+  public static String advancedOptions() {
+  return(
+    "\n" +
+    "Advanced Options [abc]: \n" +
+    "----------------------- \n" +
+    "  -noNestedComments      Disable support for nested comments."
+    );
+  }
 
   public static String optimizationOptions() {
   return(
@@ -133,6 +142,7 @@ public class Usage {
     G.v().out.println(errorOptions());
     G.v().out.println(utilityOptions());
     G.v().out.println(debugOptions());
+    G.v().out.println(advancedOptions());
     G.v().out.println(optimizationOptions());
     G.v().out.println(sootPolyglotOptions());
   }
