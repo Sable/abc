@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$JAVA_HOME" = "" ] ; then JAVA_HOME=/usr/lib/j2sdk1.4
+fi
+if [ "$ASPECTJ_HOME" = "" ] ; then ABC_HOME=/home/ganesh/abc-project/abc
+fi
+
+"$JAVA_HOME/bin/java" -classpath "$ABC_HOME/lib/abc-complete.jar:$CLASSPATH" -Xmx256M -Dabc.home=$ABC_HOME abc.main.Main "$@"
+
