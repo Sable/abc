@@ -1,3 +1,5 @@
+package mypackage;
+
 public aspect Aspect pertarget(call (* *..f(..)) 
                  && cflow(execution(* *..main(..)))) {
 
