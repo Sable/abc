@@ -75,11 +75,11 @@ public class HandlerShadowMatch extends StmtShadowMatch {
     }
     
     public SJPInfo makeSJPInfo() {
-	return new SJPInfo
+	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    ("exception-handler",
              "org.aspectj.lang.reflect.CatchClauseSignature",
              "makeCatchClauseSig",
-	     SJPInfo.makeHandlerSigData(container,sootexc,stmt),stmt);
+	     AbcSJPInfo.makeHandlerSigData(container,sootexc,stmt),stmt);
     }
 
     public AdviceApplication  doAddAdviceApplication

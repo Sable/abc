@@ -15,6 +15,8 @@
 package org.aspectbench.eaj.runtime.reflect;
 
 import org.aspectbench.eaj.lang.reflect.*;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.JoinPoint;
 import org.aspectbench.runtime.reflect.Factory;
 
 public class EajFactory extends Factory
@@ -22,6 +24,12 @@ public class EajFactory extends Factory
     Class lexicalClass;
     ClassLoader lookupClassLoader;
     String filename;
+
+    public JoinPoint.StaticPart makeSJP(String kind, Signature sig, int l, int c,
+            int offset) {
+        return new JoinPointImpl.StaticPartImpl(kind, sig, makeSourceLoc(l, c),
+                offset);
+    }
 
     public EajFactory(String filename, Class lexicalClass)
     {

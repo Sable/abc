@@ -142,11 +142,11 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     }
 
     public SJPInfo makeSJPInfo() {
-	return new SJPInfo
+	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    ("method-call",
              "org.aspectj.lang.reflect.MethodSignature",
              "makeMethodSig",
-             SJPInfo.makeMethodSigData(methodref),stmt);
+             AbcSJPInfo.makeMethodSigData(methodref),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

@@ -140,6 +140,8 @@ public class Debug {
     public boolean optimizeResidues = false;
     public boolean constructorInliner = false;
 
+    public boolean countCflowStacks = false;
+
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before

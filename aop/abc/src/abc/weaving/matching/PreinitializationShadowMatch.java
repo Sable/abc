@@ -66,11 +66,11 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
     }
 
     public SJPInfo makeSJPInfo() {
-	return new SJPInfo
+	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    ("preinitialization",
              "org.aspectj.lang.reflect.ConstructorSignature",
              "makeConstructorSig",
-	     SJPInfo.makeConstructorSigData(container),getHost());
+	     AbcSJPInfo.makeConstructorSigData(container),getHost());
     }
 
     protected AdviceApplication doAddAdviceApplication

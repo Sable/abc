@@ -107,10 +107,10 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     public SJPInfo makeSJPInfo() {
-	return new SJPInfo
+	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    ( "constructor-call",
               "org.aspectj.lang.reflect.ConstructorSignature",
-	      "makeConstructorSig",SJPInfo.makeConstructorSigData(getMethodRef().resolve()),stmt);
+	      "makeConstructorSig",AbcSJPInfo.makeConstructorSigData(getMethodRef().resolve()),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

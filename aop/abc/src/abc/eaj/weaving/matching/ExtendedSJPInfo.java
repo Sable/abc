@@ -19,15 +19,32 @@
 
 package abc.eaj.weaving.matching;
 
+import java.util.*;
 import soot.*;
+import soot.jimple.*;
+import soot.util.*;
+import soot.tagkit.*;
 import abc.weaving.matching.SJPInfo;
+import abc.weaving.matching.AbcSJPInfo;
+import soot.javaToJimple.LocalGenerator;
+
 
 
 /**
  * @author Julian Tibble
  */
-public class ExtendedSJPInfo
+public class ExtendedSJPInfo extends AbcSJPInfo implements SJPInfo
 {
+    protected int offset = -1;
+    public ExtendedSJPInfo(String kind,String signatureTypeClass,
+		   String signatureType,String signature,Host host) {
+        super(kind, signatureTypeClass, signatureType, signature, host);
+        if(host != null && host.hasTag("BytecodeOffsetTag")) {
+            BytecodeOffsetTag tag = (BytecodeOffsetTag) host.getTag("BytecodeOffsetTag");
+            this.offset = tag.getBytecodeOffset();
+        }
+    }
+
     public static String makeCastSigData(SootMethod container, Type cast_to)
     {
         StringBuffer sb = new StringBuffer();
@@ -35,7 +52,7 @@ public class ExtendedSJPInfo
         sb.append("-");     // a cast has no associated name-part
         sb.append(container.getDeclaringClass().getName());
         sb.append('-');
-        sb.append(SJPInfo.getTypeString(cast_to));
+        sb.append(AbcSJPInfo.getTypeString(cast_to));
         sb.append('-');
         return sb.toString();
     }
@@ -45,8 +62,39 @@ public class ExtendedSJPInfo
         StringBuffer sb = new StringBuffer();
         sb.append('-');     // a throw has no associated modifiers
         sb.append('-');     // a throw has no associated name-part
-        sb.append(SJPInfo.getTypeString(throw_type));
+        sb.append(AbcSJPInfo.getTypeString(throw_type));
         sb.append('-');
         return sb.toString();
+    }
+    public void createSJPObject() {
+      // get the SJP object
+      sjploc = lg.generateLocal(
+	 RefType.v("org.aspectj.lang.JoinPoint$StaticPart")); 
+
+      List makeSJPParams=new ArrayList(5);
+      makeSJPParams.add(RefType.v("java.lang.String"));
+      makeSJPParams.add(RefType.v("org.aspectj.lang.Signature"));
+      makeSJPParams.add(IntType.v());
+      makeSJPParams.add(IntType.v());
+      makeSJPParams.add(IntType.v());
+      SootMethodRef makeSJP 
+	  = Scene.v().makeMethodRef(fc,
+				    "makeSJP",
+				    makeSJPParams,
+                                    RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
+				    false);
+
+
+      ArrayList args = new ArrayList();
+      args.add(StringConstant.v(kind));
+      args.add(sigloc);
+      args.add(IntConstant.v(row));
+      args.add(IntConstant.v(col));
+      args.add(IntConstant.v(offset));
+
+      Stmt getSJP = Jimple.v().
+	newAssignStmt(sjploc, Jimple.v().
+	  newVirtualInvokeExpr(factory_local,makeSJP,args));
+      units.insertBefore(getSJP,ip);
     }
 }

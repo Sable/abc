@@ -145,11 +145,11 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
     }
     
     public SJPInfo makeSJPInfo() {
-	return new SJPInfo
+	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    ("field-set",
              "org.aspectj.lang.reflect.FieldSignature",
              "makeFieldSig",
-	     SJPInfo.makeFieldSigData(fieldref),stmt);
+	     AbcSJPInfo.makeFieldSigData(fieldref),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

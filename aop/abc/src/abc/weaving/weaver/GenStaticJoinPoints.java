@@ -44,13 +44,8 @@ import abc.weaving.weaver.*;
 
 public class GenStaticJoinPoints {
 
-    private String runtimeFactoryClass;
+    private String runtimeFactoryClass = abc.main.Main.v().getAbcExtension().runtimeSJPFactoryClass();
     
-    public GenStaticJoinPoints(String runtimeFactoryClass)
-    {
-        this.runtimeFactoryClass = runtimeFactoryClass;
-    }
-
     /** only want to generate the factory for the first SJP of a class.
         It should be reset to false at the beginning of each class.  */
     private  boolean factory_generated = false;
@@ -132,7 +127,7 @@ public class GenStaticJoinPoints {
                   genSJPFactory(sc, units, ip, lg);
 		  factory_generated = true; // a field to remember we have one 
 		}
-	      sjpinfo.sjpfield=makeSJPfield(sc,units,ip,lg,method,sjpinfo);
+	      sjpinfo.makeSJPfield(sc,units,ip,lg,method,factory_local,incrNumSJP());
 	 }
       }
     }
@@ -192,104 +187,4 @@ public class GenStaticJoinPoints {
         units.insertBefore(initfactory,ip);
        }
 
-
-  private SootField makeSJPfield(SootClass sc, Chain units, Stmt ip,
-                         LocalGenerator lg, SootMethod method,
-			 SJPInfo sjpInfo) 
-    {
-      // create the name for the SJP field 
-      // the kind of SJP, but made into a valid id
-      String idkind = sjpInfo.kind.replace('-','_');
-      // the method in which the SJP is found, but made into a valid id
-      String idmethod = method.getName().replace('<','I').replace('>','I');
-      // the current number of SJP in this class
-      int sjpcount = incrNumSJP();
-      String SJPName = "SJP" + sjpcount + "$" + idkind + "$" + idmethod;
-      debug("The name of the field being created is " + SJPName);	      
-
-	  int  mod;
-	  if (sc.isInterface())
-	  	mod = Modifier.PUBLIC;
-	  else
-	  	mod = Modifier.PRIVATE;
-	  mod = mod | Modifier.STATIC | Modifier.FINAL;
-      // create the static field
-      SootField newsjpfield = 
-         new SootField( SJPName, 
-			 RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
-			 mod);
-
-      // insert field into class
-      sc.addField(newsjpfield);
-
-      // put initialization for the field in clinit()
-      StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(newsjpfield.makeRef());
-
-
-      String sigtypeclass = sjpInfo.signatureTypeClass;
-      String sigtype = sjpInfo.signatureType;
-      debug("The class of constructor is " + sigtypeclass);
-      debug("The type of constructor is " + sigtype);
-      debug("The kind is " + sjpInfo.kind);
-      debug("The signature is " + sjpInfo.signature);
-      debug("The line is " + sjpInfo.row + 
-  	          " and the column is " + sjpInfo.col);
-
-      // get the signature object
-      Local sigloc = lg.generateLocal(
-	  RefType.v(sigtypeclass));
-
-      SootClass fc = Scene.v().getSootClass(runtimeFactoryClass);
-      debug("Got the factory class: " + fc);
-
-      List sigmethodParams=new ArrayList(1);
-      sigmethodParams.add(RefType.v("java.lang.String"));
-      SootMethodRef sigmethod 
-	  = Scene.v().makeMethodRef(fc,sigtype,sigmethodParams,RefType.v(sigtypeclass),false);
-      debug("Got the sig builder method: " + sigmethod);
-
-      Stmt makesig = Jimple.v().
-	newAssignStmt(sigloc, Jimple.v().
-	   newVirtualInvokeExpr(factory_local,sigmethod,
-	      StringConstant.v(sjpInfo.signature)));
-      debug("Made the sig creation call " + makesig);
-      units.insertBefore(makesig,ip);
-
-      // get the SJP object
-      Local sjploc = lg.generateLocal(
-	 RefType.v("org.aspectj.lang.JoinPoint$StaticPart")); 
-
-      List makeSJPParams=new ArrayList(4);
-      makeSJPParams.add(RefType.v("java.lang.String"));
-      makeSJPParams.add(RefType.v("org.aspectj.lang.Signature"));
-      makeSJPParams.add(IntType.v());
-      makeSJPParams.add(IntType.v());
-      SootMethodRef makeSJP 
-	  = Scene.v().makeMethodRef(fc,
-				    "makeSJP",
-				    makeSJPParams,
-				    RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
-				    false);
-
-
-      ArrayList args = new ArrayList();
-      args.add(StringConstant.v(sjpInfo.kind));
-      args.add(sigloc);
-      args.add(IntConstant.v(sjpInfo.row));
-      args.add(IntConstant.v(sjpInfo.col));
-
-      Stmt getSJP = Jimple.v().
-	newAssignStmt(sjploc, Jimple.v().
-	  newVirtualInvokeExpr(factory_local,makeSJP,args));
-      debug("Made SJP creation call" + getSJP);
-      units.insertBefore(getSJP,ip);
-
-      // assign the SJP object to the field
-      Stmt assignField = 
-	  Jimple.v().newAssignStmt(newfieldref,sjploc);
-      units.insertBefore(assignField,ip);
-
-      // return the field
-      return(newsjpfield);
-    } 
 } // class GenStaticJoinPoints 

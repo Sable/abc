@@ -32,6 +32,7 @@ import soot.SootMethodRef;
 import soot.Transform;
 import soot.Trap;
 import soot.Value;
+import soot.tagkit.Host;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis;
@@ -46,6 +47,8 @@ import abc.soot.util.AroundInliner;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.matching.SJPInfo;
+import abc.weaving.matching.AbcSJPInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ClassInitializationShadowMatch;
 import abc.weaving.matching.ConstructorCallShadowType;
@@ -236,6 +239,17 @@ public class AbcExtension
 	 */
     public String runtimeSJPFactoryClass() {
         return "org.aspectbench.runtime.reflect.Factory";
+    }
+
+    /**
+	 * Create a (compile-time) static join point information object that
+         * generates code to initialize static join point fields with
+         * reflective information about a join point.
+	 */
+    public SJPInfo createSJPInfo(String kind, String signatureTypeClass,
+            String signatureType, String signature, Host host) {
+        return new AbcSJPInfo(kind, signatureTypeClass, signatureType,
+                signature, host);
     }
 
     /**

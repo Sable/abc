@@ -91,25 +91,25 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	    jpKind="staticinitialization";
 	    sigClass="org.aspectj.lang.reflect.InitializerSignature";
 	    sigMethod="makeInitializerSig"; 
-	    sig=SJPInfo.makeStaticInitializerSigData(container);
+	    sig=AbcSJPInfo.makeStaticInitializerSigData(container);
 	} else if(isConstructor()) {
 	    jpKind="constructor-execution";
 	    sigClass="org.aspectj.lang.reflect.ConstructorSignature";
 	    sigMethod="makeConstructorSig";
-	    sig=SJPInfo.makeConstructorSigData(container);
+	    sig=AbcSJPInfo.makeConstructorSigData(container);
 	} else if(isAdviceBody()) {
 	    jpKind="advice-execution";
 	    sigClass="org.aspectj.lang.reflect.AdviceSignature";
 	    sigMethod="makeAdviceSig";
-	    sig=SJPInfo.makeAdviceSigData(container);
+	    sig=AbcSJPInfo.makeAdviceSigData(container);
 	} else {
 	    jpKind="method-execution";
 	    sigClass="org.aspectj.lang.reflect.MethodSignature";
 	    sigMethod="makeMethodSig";
-	    sig=SJPInfo.makeMethodSigData(container);
+	    sig=AbcSJPInfo.makeMethodSigData(container);
 	}
 
-	return new SJPInfo
+	return abc.main.Main.v().getAbcExtension().createSJPInfo
 	    (jpKind,sigClass,sigMethod,sig,getHost());
     }
 

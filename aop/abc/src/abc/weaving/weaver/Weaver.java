@@ -137,6 +137,9 @@ public class Weaver {
                     
                     resetForReweaving();
                     removeDeclareWarnings();
+                    if(abc.main.Debug.v().countCflowStacks) {
+                        new CflowStackCounter().count();
+                    }
                     weaveAdvice();
                 }
             } else {
@@ -162,6 +165,9 @@ public class Weaver {
                 }
                 reportMessages();
                 removeDeclareWarnings();
+                if(abc.main.Debug.v().countCflowStacks) {
+                    new CflowStackCounter().count();
+                }
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
@@ -246,8 +252,7 @@ public class Weaver {
         }
         static public void weaveAdvice() {
                 PointcutCodeGen pg = new PointcutCodeGen();
-                GenStaticJoinPoints gsjp =
-                    new GenStaticJoinPoints(abc.main.Main.v().getAbcExtension().runtimeSJPFactoryClass());
+                GenStaticJoinPoints gsjp = new GenStaticJoinPoints();
 
                 for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 

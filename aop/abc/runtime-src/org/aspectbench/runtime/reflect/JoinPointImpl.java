@@ -21,7 +21,7 @@ import org.aspectj.lang.reflect.SourceLocation;
 public class JoinPointImpl implements JoinPoint {
     // We make StaticPartImpl implement both JoinPoint.StaticPart and JoinPoint,
     // because we optimize some JoinPoints to use StaticPartImpl
-    static class StaticPartImpl implements JoinPoint.StaticPart, JoinPoint {
+    public static class StaticPartImpl implements JoinPoint.StaticPart, JoinPoint {
         String kind;
         Signature signature;
         SourceLocation sourceLocation;

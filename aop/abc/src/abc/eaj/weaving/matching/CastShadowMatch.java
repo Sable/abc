@@ -96,7 +96,7 @@ public class CastShadowMatch extends StmtShadowMatch
 
     public SJPInfo makeSJPInfo()
     {
-        return new SJPInfo
+        return abc.main.Main.v().getAbcExtension().createSJPInfo
           ("cast",
            "org.aspectbench.eaj.lang.reflect.CastSignature",
            "makeCastSig",

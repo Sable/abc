@@ -20,11 +20,13 @@
 package abc.eaj;
 
 import abc.eaj.weaving.matching.*;
+import abc.weaving.matching.SJPInfo;
 
 import abc.aspectj.parse.*;
 
 import soot.Scene;
 import soot.SootClass;
+import soot.tagkit.Host;
 
 import java.util.*;
 
@@ -70,6 +72,18 @@ public class AbcExtension extends abc.main.AbcExtension
     public String runtimeSJPFactoryClass() {
         return "org.aspectbench.eaj.runtime.reflect.EajFactory";
     }
+
+    /**
+	 * Create a (compile-time) static join point information object that
+         * generates code to initialize static join point fields with
+         * reflective information about a join point.
+	 */
+    public SJPInfo createSJPInfo(String kind, String signatureTypeClass,
+            String signatureType, String signature, Host host) {
+        return new ExtendedSJPInfo(kind, signatureTypeClass, signatureType,
+                signature, host);
+    }
+
 
     /* (non-Javadoc)
      * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)

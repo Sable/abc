@@ -90,7 +90,7 @@ public class ThrowShadowMatch extends StmtShadowMatch
 
     public SJPInfo makeSJPInfo()
     {
-        return new SJPInfo
+        return abc.main.Main.v().getAbcExtension().createSJPInfo
           ("throw",
            "org.aspectbench.eaj.lang.reflect.ThrowSignature",
            "makeThrowSig",
