@@ -18,7 +18,7 @@ sub load {
   my $nodeset=$data->find('/suite/ajc-test');
   foreach my $node ($nodeset->get_nodelist) {
     my $str=XML::XPath::XMLParser::as_string($node);
-    my ($dir,$title)=($str=~/dir=\"(.*?)\".*title=\"(.*?)\"/);
+    my ($dir,$title)=($str=~/dir=\"(.*?)\".*title=\"(.*?)\"/m);
     $result->{"$dir - $title"}=1;
   }
 }
