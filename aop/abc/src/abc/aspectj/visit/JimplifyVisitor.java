@@ -14,8 +14,8 @@ import abc.main.AbcTimer;
 public class JimplifyVisitor extends NodeVisitor {
     private Collection classes;
     private PCStructure hierarchy;
-    private SootResolver soot_res = new SootResolver();
-    private InitialResolver res = new InitialResolver();
+    private SootResolver soot_res =  SootResolver.v();
+    private InitialResolver res = SootResolver.v().getInitSourceResolver();
 
     public JimplifyVisitor(Collection classes, PCStructure hierarchy) {
 	this.classes = classes;
