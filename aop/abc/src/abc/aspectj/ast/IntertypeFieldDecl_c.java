@@ -290,6 +290,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	    				AspectInfoHarvester.convertSig(hostInstance.getSet()),  position());
 		gai.addIntertypeFieldDecl(ifd);
 		gai.addSuperDispatches(supers.supercalls(gai));
-		gai.addSuperFieldDispatches(supers.superfields(gai));
+		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
+		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
     }
 }

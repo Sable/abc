@@ -278,7 +278,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	    (target, impl, current_aspect, position());
 	gai.addIntertypeMethodDecl(imd);
 	gai.addSuperDispatches(supers.supercalls(gai));
-	gai.addSuperFieldDispatches(supers.superfields(gai));
+	gai.addSuperFieldGetters(supers.superfieldgetters(gai));
+	gai.addSuperFieldSetters(supers.superfieldsetters(gai));
 
 	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
 	MethodCategory.registerRealNameAndClass(this, name(), host.toString());

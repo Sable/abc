@@ -131,4 +131,6 @@ public class AspectInfoHarvester extends ContextVisitor {
     public static Map pointcutDeclarationMap() {
 	return pc_decl_map;
     }
+    
+  
 }

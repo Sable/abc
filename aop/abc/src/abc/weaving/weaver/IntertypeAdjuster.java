@@ -12,11 +12,16 @@ import abc.weaving.matching.*;
 public class IntertypeAdjuster {
     public void adjust() {
     // Generate Soot signatures for intertype methods and fields
-    // 	generate accessors for references to super.field
-        for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldDispatches().iterator(); spfdIt.hasNext(); ) {
-        	final SuperFieldDispatch sfd = (SuperFieldDispatch) spfdIt.next();
-        	addSuperFieldDispatch( sfd );
+    // 	generate accessors for getters super.field
+        for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldGetters().iterator(); spfdIt.hasNext(); ) {
+        	final SuperFieldGet sfd = (SuperFieldGet) spfdIt.next();
+        	addSuperFieldGetter( sfd );
         }
+	// 	generate accessors for getters super.field
+		for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldSetters().iterator(); spfdIt.hasNext(); ) {
+			final SuperFieldSet sfd = (SuperFieldSet) spfdIt.next();
+				addSuperFieldSetter( sfd );
+		}
     // 	generate accessors for super.call
         for( Iterator spdIt = GlobalAspectInfo.v().getSuperDispatches().iterator(); spdIt.hasNext(); ) {
         	final SuperDispatch sd = (SuperDispatch) spdIt.next();
@@ -39,7 +44,7 @@ public class IntertypeAdjuster {
         }
     }
     
-    private void addSuperFieldDispatch( SuperFieldDispatch sfd ) {
+    private void addSuperFieldGetter( SuperFieldGet sfd ) {
     // 	the field that we wish to access, in the superclass of sd.target()
     	FieldSig field = sfd.getFieldSig();
     	
@@ -80,6 +85,53 @@ public class IntertypeAdjuster {
 		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
 		MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
     }
+    
+	private void addSuperFieldSetter( SuperFieldSet sfd ) {
+			System.out.println("adding super field set" + sfd.getName() + " to "+sfd.getTarget());
+		// 	the field that we wish to access, in the superclass of sd.target()
+			FieldSig field = sfd.getFieldSig();
+    	
+		// 	create a new method for the dispatch
+			Type retType = field.getType().getSootType();
+			List parms = new ArrayList(); // no parameters
+			parms.add(retType);
+			int modifiers = Modifier.PUBLIC;
+    	
+		// 	create the method
+			SootMethod sm = new SootMethod( 
+									  sfd.getName(),   // the new name in the target
+									  parms,
+									  retType,
+									  modifiers );
+		//	create a body
+			Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+			Chain ls = b.getLocals();
+			PatchingChain ss = b.getUnits();
+		//  target of the field reference is "this : targetType"
+			SootClass sc = sfd.getTarget().getSootClass();
+			RefType rt = sc.getType();
+			ThisRef thisref = Jimple.v().newThisRef(rt);
+			Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+			IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
+		//  get the field we want to retrieve
+			SootField sf = field.getSootField();
+			FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
+		//	make a local for the value parameter
+			Local p = Jimple.v().newLocal("param$",sf.getType()); ; ls.add(p);
+			ParameterRef pr = Jimple.v().newParameterRef(sf.getType(),0);
+			IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
+		//  do the assignment
+			AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, p); ss.add(rStmt);
+		// 	return the value
+			ReturnStmt stmt = Jimple.v().newReturnStmt(p); 
+			ss.add(stmt);
+		// 	add method to the target class
+			sfd.getTarget().getSootClass().addMethod(sm);				  
+
+		// This is an accessor method for reading a field
+			MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
+			MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+		}
     
 
 	private void addSuperDispatch( SuperDispatch sd ) {

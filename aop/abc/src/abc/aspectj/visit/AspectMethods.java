@@ -6,6 +6,8 @@ import java.util.Stack;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import polyglot.util.InternalCompilerError;
+
 import polyglot.ast.Node;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.ConstructorCall;
@@ -19,6 +21,7 @@ import polyglot.ast.Special;
 import polyglot.ast.Assign;
 import polyglot.ast.Expr;
 import polyglot.ast.Receiver;
+import polyglot.ast.Binary;
 
 import polyglot.visit.NodeVisitor;
 
@@ -71,6 +74,7 @@ public class AspectMethods extends NodeVisitor {
 		this.lhss = new Stack();
 	}
 	
+	
 	public NodeVisitor enter(Node n) {
 	    if (n instanceof ClassDecl) {
 		methods.push(new LinkedList());
@@ -108,15 +112,25 @@ public class AspectMethods extends NodeVisitor {
 				if  (fieldleft.fieldInstance() instanceof InterTypeFieldInstance_c) {
 					InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) fieldleft.fieldInstance();
 					if (itfi.container().toClass().flags().isInterface()) 
-					{	Assign a = (Assign) n;						
+					{	Assign a = (Assign) n;				
 						Receiver target = null;
 						if (a.left() instanceof Field) 
 							target = ((Field) a.left()).target();
 						if (a.left() instanceof Call)
 							target = ((Call) a.left()).target();
-						return itfi.setCall(nf,ts,target,itfi.container(),((Assign) n).right());	
+						if (target == null)
+							throw new InternalCompilerError("reference to intertype field with receiver that is not a call or a field");
+							return itfi.setCall(nf,ts,target,itfi.container(),a.right());
 					}
 				}
+				if (fieldleft.target() instanceof HostSpecial_c) {
+						HostSpecial_c hs = (HostSpecial_c) fieldleft.target();
+						if (hs.kind() == Special.SUPER) {
+						IntertypeDecl id = (IntertypeDecl) itd.peek();
+						return id.getSupers().superFieldSetter(nf,ts,fieldleft,id.host().type().toClass(),id.thisReference(nf,ts),
+																 ((Assign) n).right());
+				}
+			}
 			}
 			return n;
 		}
@@ -132,7 +146,7 @@ public class AspectMethods extends NodeVisitor {
 				HostSpecial_c hs = (HostSpecial_c) f.target();
 				if (hs.kind() == Special.SUPER) {
 					IntertypeDecl id = (IntertypeDecl) itd.peek();
-					return id.getSupers().superField(nf,ts,f,id.host().type().toClass(),id.thisReference(nf,ts));
+					return id.getSupers().superFieldGetter(nf,ts,f,id.host().type().toClass(),id.thisReference(nf,ts));
 				}
 			}
 			return f;

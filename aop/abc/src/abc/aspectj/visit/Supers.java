@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import polyglot.util.Position;
+import polyglot.util.UniqueID;
 
 import polyglot.ast.TypeNode;
 import polyglot.ast.Call;
 import polyglot.ast.Expr;
 import polyglot.ast.Field;
+import polyglot.ast.Assign;
 
 import polyglot.types.Type;
 import polyglot.types.ClassType;
@@ -75,7 +77,7 @@ public class Supers {
 	}
     
 	public Call superCall(AspectJNodeFactory nf, AspectJTypeSystem ts, Call c, ClassType target, Expr targetThis) {
-		String supername = "super$"+c.name();
+		String supername = UniqueID.newID("super$"+c.name());
 		MethodInstance mi = c.methodInstance();
 		superCalls.add(new SuperCall(supername,mi,target,c.position()));
 		mi = mi.name(supername).container(target);
@@ -91,54 +93,106 @@ public class Supers {
 		return scs;
 	}
     
-	List superFields = new LinkedList();
+	List superFieldGets = new LinkedList();
+	List superFieldSets = new LinkedList();
     
-	   public class SuperField  {
-		   String name;
-		   FieldInstance fi;
-		   ClassType target;
-		   Position position;
-    	
-		   public SuperField(String name, FieldInstance fi, ClassType target, Position position) {
-			   this.name = name;
-			   this.fi = fi;
-			   this.target = target;
-			   this.position = position;
-		   }
-    	
-		   public abc.weaving.aspectinfo.SuperFieldDispatch
-					   convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-				return new abc.weaving.aspectinfo.SuperFieldDispatch(
-						 new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
-								gai.getClass(fi.container().toClass().toString()),   // the containing aspect
-								AspectInfoHarvester.toAbcType(fi.type()),
-								fi.name(), 
-								position),
-								name,
-								gai.getClass(target.toString()));
-					   }
+   public class SuperFieldGetter  {
+	   String name;
+	   FieldInstance fi;
+	   ClassType target;
+	   Position position;
+	
+	   public SuperFieldGetter(String name, FieldInstance fi, ClassType target, Position position) {
+		   this.name = name;
+		   this.fi = fi;
+		   this.target = target;
+		   this.position = position;
 	   }
-    
-	   public Call superField(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
-		   String supername = "super$field$"+f.name();
-		   FieldInstance fi = f.fieldInstance();
-		   superFields.add(new SuperField(supername,fi,target,f.position()));
-		   
-		   // create the call
-		   Call c = nf.Call(f.position(),targetThis,supername);
-		   MethodInstance mi = ts.methodInstance(f.position(),target,Flags.PUBLIC,fi.type(),supername,new LinkedList(),new LinkedList());
-		   c = (Call) c.methodInstance(mi).type(fi.type());
-		   
-		   return c;
+	
+	   public abc.weaving.aspectinfo.SuperFieldGet
+				   convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+			return new abc.weaving.aspectinfo.SuperFieldGet(
+					 new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
+							gai.getClass(fi.container().toClass().toString()),   // the containing aspect
+							AspectInfoHarvester.toAbcType(fi.type()),
+							fi.name(), 
+							position),
+							name,
+							gai.getClass(target.toString()));
+				   }
+   }
+   
+   public class SuperFieldSetter  {
+		 String name;
+		 FieldInstance fi;
+		 ClassType target;
+		 Position position;
+
+	
+		 public SuperFieldSetter(String name, FieldInstance fi, ClassType target, Position position) {
+			 this.name = name;
+			 this.fi = fi;
+			 this.target = target;
+			 this.position = position;
+		 }
+	
+		 public abc.weaving.aspectinfo.SuperFieldSet
+					 convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+			  return new abc.weaving.aspectinfo.SuperFieldSet(
+					   new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
+							  gai.getClass(fi.container().toClass().toString()),   // the containing aspect
+							  AspectInfoHarvester.toAbcType(fi.type()),
+							  fi.name(), 
+							  position),
+							  name,
+							  gai.getClass(target.toString()));
+					 }
+	 }
+
+   public Call superFieldGetter(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
+	   String supername = UniqueID.newID("get$super$"+f.name());
+	   FieldInstance fi = f.fieldInstance();
+	   superFieldGets.add(new SuperFieldGetter(supername,fi,target,f.position()));
+	   
+	   // create the call
+	   Call c = nf.Call(f.position(),targetThis,supername);
+	   MethodInstance mi = ts.methodInstance(f.position(),target,Flags.PUBLIC,fi.type(),supername,new LinkedList(),new LinkedList());
+	   c = (Call) c.methodInstance(mi).type(fi.type());
+	   
+	   return c;
+   }
+
+   public Call superFieldSetter(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f, 
+                                ClassType target, Expr targetThis,  Expr value) {
+		 String supername = UniqueID.newID("set$super$"+f.name());
+		 FieldInstance fi = f.fieldInstance();
+		 superFieldSets.add(new SuperFieldSetter(supername,fi,target,f.position()));
+	   
+		 // create the call
+		 Call c = nf.Call(f.position(),targetThis,supername,value);
+		 List argTypes = new ArrayList(); argTypes.add(fi.type());
+		 MethodInstance mi = ts.methodInstance(f.position(),target,Flags.PUBLIC,fi.type(),supername,argTypes,new LinkedList());
+		 c = (Call) c.methodInstance(mi).type(fi.type());
+	   
+		 return c;
+	}
+	
+   public List /*<SuperFieldGet>*/ superfieldgetters(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+	   List scs = new LinkedList();
+	   for (Iterator i = superFieldGets.iterator(); i.hasNext(); ) {
+		   SuperFieldGetter sc = (SuperFieldGetter) i.next();
+		   scs.add(sc.convert(gai));
 	   }
-    
-	   public List /*<SuperFieldDispatch>*/ superfields(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-		   List scs = new LinkedList();
-		   for (Iterator i = superFields.iterator(); i.hasNext(); ) {
-			   SuperField sc = (SuperField) i.next();
-			   scs.add(sc.convert(gai));
-		   }
-		   return scs;
-	   }
+	   return scs;
+   }
+   
+   public List /*<SuperFieldSet>*/ superfieldsetters(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+		 List scs = new LinkedList();
+		 for (Iterator i = superFieldSets.iterator(); i.hasNext(); ) {
+			 SuperFieldSetter sc = (SuperFieldSetter) i.next();
+			 scs.add(sc.convert(gai));
+		 }
+		 return scs;
+	 }
     
 }

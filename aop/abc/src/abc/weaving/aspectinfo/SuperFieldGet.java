@@ -6,12 +6,12 @@ package abc.weaving.aspectinfo;
  * from intertype declaration
  * @author Oege de Moor
  */
-public class SuperFieldDispatch {
+public class SuperFieldGet {
 	private String name;
 	private AbcClass target;
 	private FieldSig fieldsig;
 	
-	public SuperFieldDispatch(FieldSig fieldsig,String name,AbcClass target) {
+	public SuperFieldGet(FieldSig fieldsig,String name,AbcClass target) {
 		this.fieldsig= fieldsig;
 		this.name = name;
 		this.target = target;
