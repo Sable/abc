@@ -25,6 +25,8 @@ import polyglot.types.ClassType;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import java.util.ArrayList;
+
+import abc.soot.util.QualSpecialAccessorMethodSource;
 import soot.Modifier;
 
 /**
@@ -60,6 +62,10 @@ public class AccessorQualSpecial extends AccessorMethod {
         soot.SootClass sc = AbcFactory.AbcClass(target).getSootClass();
         
         SootMethod sm = new SootMethod(method.getName(), paramTypes, retType, modifiers);
+        
+        QualSpecialAccessorMethodSource qsams = new QualSpecialAccessorMethodSource(method, sc, 
+                    AbcFactory.AbcClass(qualifier).getSootClass(), qualThisNotSuper);
+        sm.setSource(qsams);
         sc.addMethod(sm);
         
         registerMethod(sm);

@@ -48,10 +48,11 @@ import soot.util.Chain;
 public class QualSpecialAccessorMethodSource implements MethodSource {
     boolean qualThisNotSuper;
     MethodSig method;
-    AbcClass target;
-    AbcClass qualifier;
+    soot.SootClass target;
+    soot.SootClass qualifier;
     
-    public QualSpecialAccessorMethodSource(MethodSig method, AbcClass target, AbcClass qualifier, boolean qualThisNotSuper) {
+    public QualSpecialAccessorMethodSource(MethodSig method, soot.SootClass target, 
+                soot.SootClass qualifier, boolean qualThisNotSuper) {
         this.method = method;
         this.target = target;
         this.qualifier = qualifier;
@@ -59,14 +60,13 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
     }
     
     public Body getBody(SootMethod sootMethod, String phaseName) {
-        soot.SootClass sc = target.getSootClass();
         soot.Body body = Jimple.v().newBody(sootMethod);
         LocalGenerator lg = new LocalGenerator(body);
-        ThisRef tr = Jimple.v().newThisRef(sc.getType());
-        soot.Local thisloc = lg.generateLocal(sc.getType());
+        ThisRef tr = Jimple.v().newThisRef(target.getType());
+        soot.Local thisloc = lg.generateLocal(target.getType());
         IdentityStmt ids = Jimple.v().newIdentityStmt(thisloc, tr);
         body.getUnits().add(ids);
-        soot.Local v = getThis(body, qualifier.getSootClass().getType());
+        soot.Local v = getThis(body, qualifier.getType());
         ReturnStmt ret = Jimple.v().newReturnStmt(v); 
         body.getUnits().add(ret);
         return body;
@@ -79,10 +79,10 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
         // if we need the current 'this', just return it
         if(b.getThisLocal().getType().equals(sootType))
             return b.getThisLocal();
-        
+        System.out.println("Trying to get this from body " + b + " of type " + sootType + ", which is not " + b.getThisLocal().getType());
         //otherwise get this$0 from one level up
         soot.SootClass classToInvoke = ((soot.RefType)b.getThisLocal().getType()).getSootClass();
-        soot.SootFieldRef outerThisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType(),false); 
+        soot.SootFieldRef outerThisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getOuterClass().getType(),false); 
         Local t1 = Jimple.v().newLocal(UniqueID.newID("this$0$loc"), outerThisField.type());
         b.getLocals().add(t1);
         
@@ -103,6 +103,7 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
             AssignStmt rStmt = Jimple.v().newAssignStmt(t3, ie);
             b.getUnits().add(rStmt);
             // next iteration
+            System.out.print(".");
             t2 = t3;
         }
         return t2;
@@ -112,14 +113,14 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
 		// create the method
 		String name = UniqueID.newID("access$this$0$");
 		ArrayList paramTypes = new ArrayList();
-		SootMethod meth = new SootMethod(name, paramTypes, classToInvoke.getType(), soot.Modifier.PUBLIC);
+        soot.SootFieldRef sf = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getOuterClass().getType(),false); 
+		SootMethod meth = new SootMethod(name, paramTypes, sf.type(), soot.Modifier.PUBLIC);
 		//	add to target class
 		classToInvoke.addMethod(meth);
 		// now fill in the body
 		Body b = Jimple.v().newBody(meth); meth.setActiveBody(b);
 		Chain ss = b.getUnits(); Chain ls = b.getLocals();
 		// generate local for "this"
-		SootFieldRef sf = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType(),false);
 		ThisRef thiz = Jimple.v().newThisRef(classToInvoke.getType());
 		Local thizloc = Jimple.v().newLocal("this$loc",classToInvoke.getType()); ls.add(thizloc);
 		IdentityStmt ids = Jimple.v().newIdentityStmt(thizloc,thiz); ss.add(ids);
