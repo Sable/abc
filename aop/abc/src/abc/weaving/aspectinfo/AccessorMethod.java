@@ -46,7 +46,7 @@ public abstract class AccessorMethod {
         // list of errors. The closest instance of AspectDecl on the stack will generate 
         // the messages.
         if(!GlobalAspectInfo.v().getWeavableClasses().contains(AbcFactory.AbcClass(target))) {
-            GlobalAspectInfo.v().addClassNotWeavableError(new ErrorInfo(ErrorInfo.WARNING, 
+            GlobalAspectInfo.v().addClassNotWeavableError(new ErrorInfo(ErrorInfo.SEMANTIC_ERROR, 
                     "Need to weave into class " + target + ", but it is not weavable. " +
                     "Execution of compiled code will probably fail.", pos));
         }
