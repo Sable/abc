@@ -11,11 +11,13 @@ import java.util.*;
 
 public class JimplifyVisitor extends NodeVisitor {
     private Collection classes;
+    private PCStructure hierarchy;
     private SootResolver soot_res = new SootResolver();
     private InitialResolver res = new InitialResolver();
 
-    public JimplifyVisitor(Collection classes) {
+    public JimplifyVisitor(Collection classes, PCStructure hierarchy) {
 	this.classes = classes;
+	this.hierarchy = hierarchy;
     }
 
     public Node override(Node n) {
@@ -24,6 +26,9 @@ public class JimplifyVisitor extends NodeVisitor {
 	}
 	if (n instanceof ClassDecl) {
 	    String cname = ((ClassDecl)n).type().fullName();
+	    System.err.println("Before: "+cname);
+	    cname = hierarchy.transformClassName(cname);
+	    System.err.println("After:  "+cname);
 	    res.resolveFromJavaFile(Scene.v().getSootClass(cname), soot_res);
             Scene.v().getSootClass(cname).setApplicationClass();
 	    // System.out.println("Jimplified class: "+cname);

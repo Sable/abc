@@ -1,6 +1,8 @@
 
 package abc.weaving.aspectinfo;
 
+import abc.aspectj.visit.PCStructure;
+
 import soot.*;
 
 /** A weavable class. */
@@ -25,5 +27,9 @@ public class AbcClass {
 
     public String toString() {
 	return name;
+    }
+
+    public void transformName(PCStructure hierarchy) {
+	name = hierarchy.transformClassName(name);
     }
 }

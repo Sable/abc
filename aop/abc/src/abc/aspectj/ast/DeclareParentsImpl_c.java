@@ -51,7 +51,7 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	    Iterator ti = interfaces.iterator();
 	    while (ti.hasNext()) {
 		TypeNode tn = (TypeNode)ti.next();
-		//System.out.println("DeclareParentsImpl 1 "+((AmbTypeNode)tn).name());
+		//System.out.println("DeclareParentsImpl 1 "+tn.type());
 		tn = (TypeNode)tn.disambiguate(ar);
 		//System.out.println("DeclareParentsImpl 2 "+tn.type());
 		interfaces_disam.add(tn);
@@ -75,6 +75,14 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
            }
         }
         w.write(";");
+    }
+
+    public ClassnamePatternExpr pat() {
+	return pat;
+    }
+
+    public List/*<TypeNode>*/ interfaces() {
+	return interfaces;
     }
 
 }

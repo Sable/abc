@@ -89,6 +89,22 @@ public class PCNode {
 	return "";
     }
 
+    public String transformedName() {
+	if (outer != null) {
+	    String ps = outer.toString();
+	    if (ps.equals("")) {
+		return name;
+	    } else {
+		if (outer.isClass()) {
+		    return ps+"$"+name;
+		} else {
+		    return ps+"."+name;
+		}
+	    }
+	}
+	return "";
+    }
+
     public Set/*<PCNode>*/ matchScope(Pattern simple_name_pattern, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set this_scope = matchClass(simple_name_pattern);
 	Set this_scope_names = new HashSet();

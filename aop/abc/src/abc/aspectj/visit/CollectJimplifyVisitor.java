@@ -11,14 +11,17 @@ import java.util.*;
 
 public class CollectJimplifyVisitor extends NodeVisitor {
     private Collection classes;
+    private PCStructure hierarchy;
 
-    public CollectJimplifyVisitor(Collection classes) {
+    public CollectJimplifyVisitor(Collection classes, PCStructure hierarchy) {
 	this.classes = classes;
+	this.hierarchy = hierarchy;
     }
 
     public Node override(Node n) {
 	if (n instanceof ClassDecl) {
 	    String cname = ((ClassDecl)n).type().fullName();
+	    cname = hierarchy.transformClassName(cname);
 	    if (Scene.v().containsClass(cname)) {
 		throw new RuntimeException("Scene already contained class "+cname);
 	    }

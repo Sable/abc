@@ -1,5 +1,7 @@
 package abc.weaving.aspectinfo;
 
+import abc.aspectj.visit.PCStructure;
+
 import polyglot.util.Position;
 
 import soot.*;
@@ -31,6 +33,14 @@ public class GlobalAspectInfo {
 
     public GlobalAspectInfo() {
 	
+    }
+
+    public void transformClassNames(PCStructure hierarchy) {
+	Iterator ci = classes.iterator();
+	while (ci.hasNext()) {
+	    AbcClass c = (AbcClass)ci.next();
+	    c.transformName(hierarchy);
+	}
     }
 
 	/* Returns the list of classes into which weaving can take place.

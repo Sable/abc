@@ -20,6 +20,10 @@ public class PCStructure {
 	return root.insertFullName(full_name, cl, weavable);
     }
 
+    public String transformClassName(String class_name) {
+	return insertFullName(class_name, true, false).transformedName();
+    }
+
     public void declareParent(String child, String parent) throws SemanticException {
 	PCNode cn = root.insertFullName(child, true, false);
 	if (!cn.isWeavable()) {

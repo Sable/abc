@@ -82,7 +82,7 @@ public class Main {
 	loadJars();
 	compile();
 	weave();
-    optimize();
+	optimize();
 	output();
     }
 
@@ -101,7 +101,7 @@ public class Main {
     public void compile() throws CompilerFailedException, IllegalArgumentException {
 	// Invoke polyglot
 	try {
-	    ExtensionInfo ext = new abc.aspectj.ExtensionInfo(weavable_classes);
+	    abc.aspectj.ExtensionInfo ext = new abc.aspectj.ExtensionInfo(weavable_classes);
 	    Options options = ext.getOptions();
 	    options.assertions = true;
 	    options.serialize_type_info = false;
@@ -117,6 +117,7 @@ public class Main {
 	    if (!compiler.compile(aspect_sources)) {
 		throw new CompilerFailedException("Compiler failed.");
 	    }
+	    GlobalAspectInfo.v().transformClassNames(ext.hierarchy);
 	} catch (polyglot.main.UsageError e) {
 	    throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
 	}

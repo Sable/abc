@@ -63,4 +63,11 @@ public class DeclareParentsExt_c extends DeclareDecl_c
         w.write(";");
     }
 
+    public ClassnamePatternExpr pat() {
+	return pat;
+    }
+
+    public TypeNode type() {
+	return type;
+    }
 }
