@@ -951,7 +951,7 @@ public class Restructure {
 		//validateMethod(method);
 		Body body=method.getActiveBody();
 		Chain units=body.getUnits().getNonPatchingChain();
-		List params=method.getParameterTypes();
+		List params=new LinkedList(method.getParameterTypes());
 		
 		IdentityStmt lastIDStmt=null;
 		if (params.isEmpty()) {

@@ -1844,7 +1844,7 @@ public class AroundWeaver {
 		private void addContextParamsToInterfaceDefinition(List addedDynArgsTypes) {
 			{ // modify the interface definition
 				SootMethod m = interfaceInfo.abstractAccessMethod;
-				List p = m.getParameterTypes();
+				List p = new LinkedList(m.getParameterTypes());
 				p.addAll(addedDynArgsTypes);
 				m.setParameterTypes(p);
 			}
