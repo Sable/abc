@@ -25,10 +25,11 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.0.2 1109287327
 $Updated runtime library for a more efficient implementation of cflow. 
-;The abc101runtime option causes abc to generate code for the previous
+;The -abc101runtime option causes abc to generate code for the previous
 ;implementation of cflow for compatibility.
-!Fixed a bug in EAJ with using private pointcut variables together with
+$Fixed a bug in EAJ with using private pointcut variables together with
 ;calls to named pointcuts.
 !Added some javadoc to the abc.weaving.aspectinfo.Pointcut class,
 ;to make it clearer what deriving classes need to do.
