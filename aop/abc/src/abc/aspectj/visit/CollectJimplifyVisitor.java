@@ -42,27 +42,27 @@ public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
     private Node current_ast;
 
     public CollectJimplifyVisitor(Job job, TypeSystem ts, NodeFactory nf,
-				  Collection/*<String>*/ source_files,
-				  Map class_to_ast) {
-	super(job, ts, nf);
-	this.source_files = source_files;
-	this.class_to_ast = class_to_ast;
+                                  Collection/*<String>*/ source_files,
+                                  Map class_to_ast) {
+        super(job, ts, nf);
+        this.source_files = source_files;
+        this.class_to_ast = class_to_ast;
     }
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
-	if (n instanceof SourceFile) {
-	    if (!source_files.contains(((SourceFile)n).source().name())) {
-		throw new SemanticException("Source file was needed but not given on the commandline", n.position());
-	    }
+        if (n instanceof SourceFile) {
+            if (!source_files.contains(((SourceFile)n).source().name())) {
+                throw new SemanticException("Source file was needed but not given on the commandline", n.position());
+            }
             current_ast = n;
-	}
-	if (n instanceof ClassDecl) {
-	    String cname = ((ClassDecl)n).type().fullName();
-	    //System.err.println("Collecting class "+cname);
-            class_to_ast.put(cname, current_ast);
-	    return bypassChildren(n);
         }
-	return this;
+        if (n instanceof ClassDecl) {
+            String cname = ((ClassDecl)n).type().fullName();
+            //System.err.println("Collecting class "+cname);
+            class_to_ast.put(cname, current_ast);
+            return bypassChildren(n);
+        }
+        return this;
     }
 
 }
