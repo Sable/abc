@@ -142,10 +142,16 @@ public class Main {
           	throw new CompilerAbortedException("Acted on -version option.");
           }
         else if (args[i].equals("-injars")) 
-          { while (++i < args.length && !args[i].startsWith("-")) 
-              { in_jars.add(args[i]);
-              }
-             i--;
+          {
+            // a class-path-delimiter separated list should follow -injars
+            if(i + 1 < args.length){
+                String[] jars = args[i + 1].split(System.getProperty("path.separator"));
+                i++;
+                for(int j = 0; j < jars.length; j++) {
+                    // Do we need a sanity check here? !jars[j].equals("") or something like that?
+                    in_jars.add(jars[j]);
+                }
+            } else throw new IllegalArgumentException("Missing argument to " + args[i]);
           } // injars 
         // TODO: -inpath PATH
         // TODO: -argfile File
