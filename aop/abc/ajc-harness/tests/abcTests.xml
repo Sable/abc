@@ -472,6 +472,7 @@
                   FIXED July 1/04 LJH"
       dir="new" title="handle multiple nested inner classes"
       keywords="from-java">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="InnerHell.java"/>
         <run class="InnerHell"/>
     </ajc-test>
@@ -933,7 +934,11 @@
       abccomment="Need to compile second file, loading the CLASS file 
                   produced by the first compile.  Requires modifying 
                   behaviour of polyglot loader.  Aske looking into this
-                  as of July 1/04.  LJH"
+                  as of July 1/04.  LJH
+                  Aske has made it so it can load a class file, but now
+                  abc cannot resolve InnerAspect when compiling the 
+                  second file.  j2j seems to be able to do it, but
+                  not abc. July 6/04. LJH"
       keywords="from-java,purejava">
         <compile files="OuterAbstract_PR408.java"/>
         <compile files="ExtendsOuterAbstract_PR408.java"/>
@@ -1044,6 +1049,7 @@
       abccomment="jlc doesn't report expected error.
                   Reported to Nate on July 1/04.  LJH"
       keywords="from-java">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="pkg1/Main.java,pkg2/Foo.java">
             <message kind="error" line="6"/>
         </compile>
@@ -1099,8 +1105,10 @@
     </ajc-test>
 
     <ajc-test dir="new" title="IOException on windows if nul used as identifier"
-      abccomment="jlc misses error at line 14, reported to Nate July 1/04 LJH"
+      abccomment="jlc misses error at line 14, reported to Nate July 1/04 LJH
+                  Fixed July 6/04"
       keywords="from-java,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="NulIOException.java">
             <message kind="error" line="12"/>
             <message kind="error" line="14"/>
@@ -1340,6 +1348,7 @@
       abccomment="jlc misses all errors after the first two.  Example sent to
                   Nate on July 2/04.  LJH"
       keywords="from-java,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="TypeExprErrors.java">
             <message kind="error" line="10"/>
             <message kind="error" line="17"/>
@@ -1445,6 +1454,7 @@
       title="classes that are package prefixes are illegal"
       abccomment="ajc doesn't find this error, send to Nate July 5/04 LJH"
       keywords="from-java,purejava,messages-vary">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="p/prefix.java,p/prefix/SomeClass.java"
                options="!eclipse">
             <message kind="error" line="2"/>
@@ -1463,8 +1473,10 @@
     <ajc-test dir="new/introTypeMissing"
       title="CF expected when enclosing class superclass used as this qualifier in inner class"
       abccomment="missing error on line 23, example set to Nate
-                  July 2/04. LJH"
+                  July 2/04. LJH
+                  Fixed July 5/04"
       keywords="from-java">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="TargetClassCF.java,Util.java">
             <message kind="error" line="22"/>
             <message kind="error" line="23"/>
@@ -1515,6 +1527,7 @@
       abccomment="jlc finds an error of return expected, but should
                   compile without error.  Reported to Nate July 2/04 LJH"
       keywords="from-java">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="NestedFinally.java"/>
         <run class="NestedFinally"/>
     </ajc-test>
@@ -1543,6 +1556,7 @@
       abccomment="jlc doesn't catch the error, reported to Nate July 3/04 
                   LJH"
       keywords="from-java,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="main/Main.java,pack1/Target.java">
             <message kind="error" line="7"/>
         </compile>
@@ -1591,6 +1605,7 @@
       abccomment = "error not detected by jlc, reported to Nate July 3/04 LJH"
       keywords="from-java,purejava,messages-vary"
       comment="XXX fix source - package-private">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="parent/ParentMethodCE.java,child/ChildMethodCE.java"
                options="!eclipse">
             <message kind="warning" line="28"/>
@@ -1659,6 +1674,7 @@
       title="CE for ambiguous type reference (two inner types)"
       abccomment="error not reported by jlc, reported to Nate July 3/04 LJH"
       keywords="from-java,purejava,messages-vary">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="AmbiguousClassReference4CE.java"
                options="!eclipse">
             <message kind="error" line="10"/>
@@ -1730,6 +1746,7 @@
       abccomment="More jlc constants problems ... reported to Nate and 
                   Jennifer, July 5/04 LJH"
       keywords="from-bigjava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="Ops.java"/>
         <run class="Ops"/>
     </ajc-test>
@@ -2262,6 +2279,7 @@
                   polyglot does not find this error, sent to Nate,
                        July 5/04 LJH"
       keywords="from-errors,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="BadReferences.java">
             <message kind="error" line="3"/>
             <message kind="error" line="5"/>
@@ -2639,7 +2657,10 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="parse-time illegal modifiers"
+      abccomment="Third error not found by jlc, file Modifiers1LJH.java
+                  sent to Nate.  July 6/04 LJH"
       keywords="from-errors,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="Modifiers1.java">
             <message kind="error" line="2"/>
             <message kind="error" line="3"/>
@@ -2648,7 +2669,10 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="check-time illegal modifiers"
+      abccomment="Errors on lines 8 and 11 not caught by jlc.  Reported to
+                  to Nate.  July 6/04 LJH" 
       keywords="from-errors,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="Modifiers.java">
             <message kind="error" line="2"/>
             <message kind="error" line="3"/>
@@ -2670,7 +2694,10 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="modifiers on interface members"
+      abccomment="Errors on lines 2,3,7 and 8 missing for jlc. Reported to
+                  Nate. July 6/04"
       keywords="from-errors,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="InterfaceMembers.java">
             <message kind="error" line="2"/>
             <message kind="error" line="3"/>
@@ -2694,6 +2721,11 @@
 
     <ajc-test dir="errors"
       title="good errors (and not too many) for missing members"
+      abccomment="jlc doesn't find 2 and should.  jlc exits after finding
+                  1.  If 1 is commented out then 2,6,10 are not found, but
+                  this is probably due to other errors that stop jlc from
+                  looking for them.   Reported this case to Nate,
+                  July 6/04 LJH"
       comment="XXX import of class in default package"
 
       keywords="from-errors,purejava">
@@ -2705,11 +2737,20 @@
             <message kind="error" line="10"/>
             <message kind="error" line="14"/>
             <message kind="error" line="16"/>
+            <ajcmessage kind="error" line="1"/>
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="6"/>
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="16"/>
         </compile>
     </ajc-test>
 
     <ajc-test dir="new" pr="536"
       title="expecting compile failures with subclass narrowing scope of superclass methods or accessing private superclass variables"
+      abccomment="jlc missing the error on line 46, reported to Nate,
+                   July 6/04 LJH"
       keywords="from-errors,purejava">
         <compile files="RestrictingVisibilityCF.java">
             <message kind="error" line="27"/>
@@ -2773,9 +2814,12 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="flow analysis with local types"
+      abccomment="abc reports a range of line numbers which is fine
+                  July 6/04 LJH"
       keywords="from-errors,purejava">
         <compile files="InnerFlow.java">
-            <message kind="error" line="5"/>
+            <ajcmessage kind="error" line="5"/>
+            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
 
@@ -2890,19 +2934,6 @@
         <compile files="p1/ScopeIssues.java,p1/C1.java"/>
         <run class="p1.ScopeIssues"/>
     </ajc-test>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     <ajc-test dir="new"
       title="properly make choice between cast and parenthesis in parser"
@@ -3419,9 +3450,17 @@
     </ajc-test>
 
     <ajc-test dir="new" 
-    	title="Cannot bind a name." keywords="from-resolved_10x,purejava">
-        <compile files="CannotReferenceSuper.java"/>
-        <run class="CannotReferenceSuper"/>
+    	title="Cannot bind a name." keywords="from-resolved_10x,purejava"
+        abccomment="ajc now finds a compile-time error in this benchmark,
+                    as does javac.  jlc does not find the error, have
+                    reported the error to Nate.  July 7/04"
+        >
+        <abckeywords> <laurie/> <nate/> </abckeywords>
+        <compile files="CannotReferenceSuper.java">
+           <ajcmessage kind="ignore"/>
+           <message kind="error" line="26"/>
+        </compile>
+        <ajcrun class="CannotReferenceSuper"/>
     </ajc-test>
 
     <ajc-test dir="new/innerAspectAccess" pr="211"
