@@ -13,7 +13,7 @@ public class AbcMain {
 			main.run();
 		} catch (IllegalArgumentException e) {
 			System.out.println("Illegal arguments: "+e.getMessage());
-			throw new CompilationFailedException(main.getErrors());//System.exit(1);
+			throw new CompilationFailedException(null);//System.exit(1);
 		} catch (CompilerFailedException e) {
 			throw new CompilationFailedException(main.getErrors());//System.exit(5);
 		} finally {
