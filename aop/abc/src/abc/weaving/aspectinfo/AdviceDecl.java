@@ -28,15 +28,17 @@ public class AdviceDecl extends AbstractAdviceDecl {
 
     private Map/*<String,Integer>*/ formal_pos_map = new HashMap();
     private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
+    private List/*<MethodSig>*/ proceeds;
 
     public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspct, 
-		      int jp, int jpsp, int ejp, Position pos) {
+		      int jp, int jpsp, int ejp, List proceeds, Position pos) {
 
 	super(aspct,spec,pc,impl.getFormals(),pos);
 	this.impl = impl;
 	this.jp = jp;
 	this.jpsp = jpsp;
 	this.ejp = ejp;
+	this.proceeds = proceeds;
 
 	int i = 0;
 	nformals = impl.getFormals().size();
@@ -268,4 +270,18 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	return GlobalAspectInfo.PRECEDENCE_NONE;
 
     }
+    
+    public List/*<MethodSig>*/ getProceeds() {
+    	return proceeds;
+    }
+    
+    public List/*<SootMethod>*/ getSootProceeds() {
+    	List ret = new ArrayList();
+    	for (Iterator procs = proceeds.iterator(); procs.hasNext(); ) {
+    		MethodSig ms = (MethodSig) procs.next();
+    		ret.add(ms.getSootMethod());
+    	}
+    	return ret;
+    }
+    	
 }

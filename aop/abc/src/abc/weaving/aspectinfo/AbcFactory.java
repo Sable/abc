@@ -116,10 +116,12 @@ public class AbcFactory {
     }
 
     public static MethodSig MethodSig(polyglot.types.MethodInstance mi) {
+    	polyglot.types.Type retType = mi.returnType();
+    	String methodname = mi.name();
 	int mod = soot.javaToJimple.Util.getModifier(mi.flags());
 	AbcClass cl = AbcFactory.AbcClass((polyglot.types.ClassType)mi.container());
-	AbcType rtype = AbcFactory.AbcType(mi.returnType());
-	String name = mi.name();
+	AbcType rtype = AbcFactory.AbcType(retType);
+	String name = methodname;
 	List formals = new ArrayList();
 	int index = 0;
 	Iterator fi = mi.formalTypes().iterator(); 
@@ -136,6 +138,29 @@ public class AbcFactory {
 	}
 	return new MethodSig(mod, cl, rtype, name, formals, exc, mi.position());	
     }
+    
+	public static MethodSig MethodSig(polyglot.types.ConstructorInstance mi) {
+	  int mod = soot.javaToJimple.Util.getModifier(mi.flags());
+	  AbcClass cl = AbcFactory.AbcClass((polyglot.types.ClassType)mi.container());
+	  AbcType rtype = AbcFactory.AbcType(mi.container());
+	  String name = "<init>";
+	  List formals = new ArrayList();
+	  int index = 0;
+	  Iterator fi = mi.formalTypes().iterator(); 
+	  while (fi.hasNext()) {
+		  polyglot.types.Type ft = (polyglot.types.Type)fi.next();
+		  formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(ft),"a$"+index, mi.position()));
+		  index++;
+	  }
+	  List exc = new ArrayList();
+	  Iterator ti = mi.throwTypes().iterator();
+	  while (ti.hasNext()) {
+		  polyglot.types.ClassType t = (polyglot.types.ClassType)ti.next();
+		  exc.add(AbcFactory.AbcClass(t));
+	  }
+	  return new MethodSig(mod, cl, rtype, name, formals, exc, mi.position());	
+	  }
+    
 
     public static MethodSig MethodSig(soot.SootMethod m) {
 	int mod = m.getModifiers();

@@ -65,8 +65,6 @@ public class GlobalAspectInfo {
     private Map/*<FieldSig,String>*/ field_real_names = new HashMap();
     private Map/*<FieldSig,AbcClass>*/ field_real_classes = new HashMap();
     private Map/*<MethodSig,FieldSig>*/ accessor_of_field = new HashMap();
-    
-   
    	
     /** This method builds the aspect_visibility structure,
      *  which is a mapping from classes and abstract aspects to
@@ -555,7 +553,6 @@ public class GlobalAspectInfo {
 	public void registerSourceClass(AbcClass cl) {
 		wovenclasses.remove(cl);
 	}
-    
   
 
 }

@@ -49,6 +49,7 @@ public class HostConstructorCall_c extends ConstructorCall_c
 	AJContext c = (AJContext) tc.context();
 
 	ClassType ct = c.hostClass();
+	Type superType = ct.superType();
 
 		// The qualifier specifies the enclosing instance of this inner class.
 		// The type of the qualifier must be the outer class of this
@@ -70,9 +71,7 @@ public class HostConstructorCall_c extends ConstructorCall_c
 											position());
 			}
 
-
-			Type superType = ct.superType();
-            
+        
 			if (!superType.isClass() || !superType.toClass().isInnerClass() ||
 				superType.toClass().inStaticContext()) {
 				throw new SemanticException("The class \"" + superType + "\"" +
@@ -92,11 +91,38 @@ public class HostConstructorCall_c extends ConstructorCall_c
 		}
 
 	if (kind == SUPER) {
-		if (! ct.superType().isClass()) {
+		if (! superType.isClass()) {
 			throw new SemanticException("Super type of " + ct +
 			" is not a class.", position());
 		}
 
+		// If the super class is an inner class (i.e., has an enclosing
+	   // instance of its container class), then either a qualifier 
+	   // must be provided, or ct must have an enclosing instance of the
+	   // super class's container class, or a subclass thereof.
+	   if (qualifier == null && superType.isClass() && superType.toClass().isInnerClass()) {
+		   ClassType superContainer = superType.toClass().outer();
+		   // ct needs an enclosing instance of superContainer, 
+		   // or a subclass of superContainer.
+		   ClassType e = ct;
+    
+		   while (e != null) {
+			   if (e.isSubtype(superContainer) && ct.hasEnclosingInstance(e)) {
+				   break; 
+			   }
+			   e = e.outer();
+		   }
+    
+		   if (e == null) {
+			   throw new SemanticException(ct + " must have an enclosing instance" +
+				   " that is a subtype of " + superContainer, position());
+		   }               
+		   if (e == ct) {
+			   throw new SemanticException(ct + " is a subtype of " + superContainer + 
+				   "; an enclosing instance that is a subtype of " + superContainer +
+				   " must be specified in the super constructor call.", position());
+		   }
+	   }
 		ct = ct.superType().toClass();
 	}
 

@@ -2,6 +2,7 @@ package abc.aspectj.ast;
 
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Local;
+import polyglot.types.CodeInstance;
 
 import abc.aspectj.types.AspectJTypeSystem;
 
@@ -15,4 +16,5 @@ public interface AdviceDecl extends MethodDecl, MakesAspectMethods
    	void joinpointFormals(Local n);
    	boolean hasJoinPoint();
    	boolean hasJoinPointStaticPart();
+   	void proceedContainer(CodeInstance ci);
 }

@@ -8,6 +8,6 @@ import abc.aspectj.ast.MakesAspectMethods;
 
 public interface ProceedCall extends Call, MakesAspectMethods {
 
-	ProceedCall proceedMethod(MethodDecl md);
+	ProceedCall proceedMethod(MethodDecl md,AdviceDecl ad);
 	
 }

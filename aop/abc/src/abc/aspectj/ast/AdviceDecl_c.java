@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
@@ -30,6 +31,8 @@ import polyglot.types.Flags;
 import polyglot.types.Context;
 import polyglot.types.LocalInstance;
 import polyglot.types.MethodInstance;
+import polyglot.types.CodeInstance;
+import polyglot.types.ConstructorInstance;
 import polyglot.types.SemanticException;
 import polyglot.types.Type;
 import polyglot.types.TypeSystem;
@@ -72,6 +75,8 @@ public class AdviceDecl_c extends MethodDecl_c
     protected LocalInstance thisJoinPointStaticPartInstance;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance;
     
+    protected Set/*<CodeInstance>*/ proceedContainers;
+    
     protected int spec_retval_pos;
 
     // if the returnVal of "after returning" or "after throwing" is
@@ -108,6 +113,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	          adviceFormals(locs(spec.returnVal(),spec.formals())),
 	          throwTypes,
 	          body);
+	    this.proceedContainers = new HashSet();
 		this.spec = spec;
     	this.pc = pc;
 
@@ -469,6 +475,10 @@ public class AdviceDecl_c extends MethodDecl_c
 
 			w.end();
 		}
+		
+	public void proceedContainer(CodeInstance ci) {
+		proceedContainers.add(ci);
+	}
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	int lastpos = formals().size();
@@ -484,6 +494,15 @@ public class AdviceDecl_c extends MethodDecl_c
 	if (spec_retval_pos != -1) {
 	    spec.setReturnVal((Formal)formals().get(spec_retval_pos));
 	}
+	
+	List proceeds = new ArrayList();
+	for (Iterator procs = proceedContainers.iterator(); procs.hasNext(); ) {
+		CodeInstance ci = (CodeInstance) procs.next();
+		if (ci instanceof MethodInstance)
+			proceeds.add(AbcFactory.MethodSig((MethodInstance)ci));
+		if (ci instanceof ConstructorInstance)
+			proceeds.add(AbcFactory.MethodSig((ConstructorInstance)ci));
+	}
 
 	abc.weaving.aspectinfo.AdviceDecl ad =
 	    new abc.weaving.aspectinfo.AdviceDecl
@@ -491,9 +510,11 @@ public class AdviceDecl_c extends MethodDecl_c
 	     pc.makeAIPointcut(),
 	     AbcFactory.MethodSig(this),
 	     current_aspect,
-	     jp, jpsp, ejp,
+	     jp, jpsp, ejp, proceeds,
 	     position());
 	gai.addAdviceDecl(ad);
+	
+
 
 	MethodCategory.register(this, MethodCategory.ADVICE_BODY);
 	if (spec instanceof Around) {

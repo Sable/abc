@@ -19,6 +19,7 @@ import polyglot.types.Context;
 import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
 import polyglot.types.MethodInstance;
+import polyglot.types.CodeInstance;
 
 import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
@@ -35,6 +36,7 @@ public class ProceedCall_c extends Call_c
                            implements ProceedCall, MakesAspectMethods
 {
 	private MethodDecl proceedDecl;
+	private CodeInstance ci;
 	
 	public ProceedCall_c(Position pos, Receiver recv, List arguments) {
 		super(pos,recv,"proceed",arguments);		         	
@@ -44,7 +46,8 @@ public class ProceedCall_c extends Call_c
     	super(c.position(),c.target(),c.name(),c.arguments());
     }
     
-    public ProceedCall proceedMethod(MethodDecl md) {
+    public ProceedCall proceedMethod(MethodDecl md,AdviceDecl ad) {
+    	ad.proceedContainer(ci);
     	return (ProceedCall) name(md.name()).methodInstance(md.methodInstance());
     }
     
@@ -52,6 +55,9 @@ public class ProceedCall_c extends Call_c
 		
 		    TypeSystem ts = tc.typeSystem();
 		    Context c = tc.context();
+		    
+		    // register the containing method for later use
+		    ci = c.currentCode();
 		    
 		    // check whether we are in the scope of an advice declaration,
 		    // and retrieve proceed's intended type
@@ -84,7 +90,9 @@ public class ProceedCall_c extends Call_c
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
                                        AspectJTypeSystem ts)
         {
-                ProceedCall pc = (ProceedCall) this.copy();
-                return pc.proceedMethod(visitor.proceed());
+        		ProceedCall pc = (ProceedCall) this.copy();
+                return pc.proceedMethod(visitor.proceed(),visitor.advice());
         }
+        
+        
 }
