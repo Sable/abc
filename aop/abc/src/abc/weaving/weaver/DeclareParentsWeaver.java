@@ -31,6 +31,8 @@ import java.util.*;
 public class DeclareParentsWeaver {
 
     public void weave() {
+        List classesToReResolve = new ArrayList();
+
 	Iterator dpi = GlobalAspectInfo.v().getDeclareParents().iterator();
 	while (dpi.hasNext()) {
 	    DeclareParents dp = (DeclareParents)dpi.next();
@@ -60,6 +62,7 @@ public class DeclareParentsWeaver {
 			}
 			if (!sc.implementsInterface(si.getName())) {
 			    sc.addInterface(si);
+                            classesToReResolve.add(sc);
 			}
 		    }
 		}
@@ -75,6 +78,7 @@ public class DeclareParentsWeaver {
 			System.out.println(sc+" extends "+sp);
 		    }
 		    sc.setSuperclass(sp);
+                    classesToReResolve.add(sc);
 		}
 	    }
 	}
@@ -82,5 +86,11 @@ public class DeclareParentsWeaver {
 	// Recompute the hierarchy
 	Scene.v().releaseActiveHierarchy();
 	Scene.v().releaseFastHierarchy();
+
+        // Resolve additional supeclasses
+        for( Iterator clsIt = classesToReResolve.iterator(); clsIt.hasNext(); ) {
+            final SootClass cls = (SootClass) clsIt.next();
+            SootResolver.v().reResolve( cls );
+        }
     }
 }

@@ -737,7 +737,6 @@ public class Main {
                 scls.setApplicationClass();
                 Scene.v().loadClass(scls.getName(), SootClass.BODIES);
             }
-            Scene.v().setDoneResolving();
             AbcTimer.mark("Soot resolving");
 
             GlobalAspectInfo.v().buildAspectHierarchy();
@@ -761,7 +760,8 @@ public class Main {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
         AbcTimer.mark("Declare Parents");
-
+        Scene.v().setDoneResolving();
+        
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
         ita.adjust();
