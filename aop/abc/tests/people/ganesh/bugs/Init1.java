@@ -5,20 +5,53 @@ aspect Aspect {
 	return x;
     }
 
-    String I.x = show("x");
-    String I.y = show("y");
     String J.z = show("z");
 
     String C.u = show("u");
 
+    String K.y = show("y");
+    String K.x = show("x");
+
+    pointcut init() : initialization(K.new()) || initialization(J.new())
+	|| initialization(C.new());
+
+    before() : initialization(K.new()) {
+	System.out.println("before K");
+    }
+
+    after() : initialization(K.new()) {
+	System.out.println("after K");
+    }
+    before() : initialization(J.new()) {
+	System.out.println("before J");
+    }
+
+    after() : initialization(J.new()) {
+	System.out.println("after J");
+    }
+    before() : initialization(C.new()) {
+	System.out.println("before C init");
+    }
+
+    after() : initialization(C.new()) {
+	System.out.println("after C init");
+    }
+    before() : execution(C.new()) {
+	System.out.println("before C exec");
+    }
+
+    after() : execution(C.new()) {
+	System.out.println("after C exec");
+    }
+
 }
 
-interface I {}
 interface J {}
+interface K {}
 
-class C implements I,J {}
+class D implements K,J {}
+class C implements J,K {}
 
-class D implements J,I {}
 
 public class Init1 {
 
