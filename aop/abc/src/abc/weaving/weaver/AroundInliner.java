@@ -79,6 +79,8 @@ public class AroundInliner extends AdviceInliner {
 		// to the proceed method.
 		UnreachableCodeEliminator.v().transform(body);
 		
+		inlineMethods(body, options, new IfMethodInlineOptions());
+			
 		// do this in a loop:
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case
@@ -202,6 +204,51 @@ public class AroundInliner extends AdviceInliner {
 			if (shadowInfo!=null && shadowInfo.size<6)
 				return true;
 			
+			
+
+			return false;
+		}
+	}
+	private class IfMethodInlineOptions implements InlineOptions {
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+			SootMethod method=expr.getMethod();
+			
+			if (!expr.getMethodRef().name().startsWith("if$"))
+				return false;
+			
+			if (!method.isStatic())
+				return false;
+			
+			//if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
+			//	return false;
+			
+			debug("Trying to inline if method " + method);
+			
+			if (forceInline()) {
+				debug("force inline on.");
+				return true;
+			}
+
+			int accessViolations=getAccessViolationCount(container, method);
+			if (accessViolations!=0) {
+				debug("Access violations");
+				debug(" Method: " + container);
+				debug(" Advice method: " + method); 
+				debug(" Violations: " + accessViolations);
+				if (accessViolations>0)
+					return false;					
+			}
+			
+			Body body=method.getActiveBody();
+			
+			//if (info.proceedInvocations>1)
+			int size=body.getUnits().size();
+			debug(" Size of if method: " + size);
+			int addedLocals=body.getLocalCount()-method.getParameterCount();
+			debug(" Number of added locals (approximately): " + addedLocals);			
+						
+			if (size<6)
+				return true;
 			
 
 			return false;

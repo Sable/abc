@@ -47,7 +47,8 @@ public class UnusedMethodsRemover {
 	static boolean considerStaticMethod(String methodName) {
 		return 
 		AroundWeaver.Util.isProceedMethodName(methodName) ||
-		methodName.startsWith("proceed$");
+		methodName.startsWith("proceed$") ||
+		methodName.startsWith("if$");
 	}
 	static boolean considerMethod(String methodName) {
 		return considerInstanceMethod(methodName) ||
