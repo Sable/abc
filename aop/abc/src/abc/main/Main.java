@@ -35,6 +35,7 @@ public class Main {
       abc.soot.util.Restructure.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.weaver.AroundWeaver.reset();
+      abc.aspectj.visit.JimplifyVisitor.reset();
     }
     
     public static void main(String[] args) {
@@ -134,9 +135,10 @@ public class Main {
     public void run() throws CompilerFailedException {
         // Timer start stuff
         Date abcstart = new Date(); // wall clock time start
-
-        Timers.v().totalTimer.start(); // Soot timer start
         G.v().out.println("Abc started on " + abcstart);
+
+        if (soot.options.Options.v().time())
+          Timers.v().totalTimer.start(); // Soot timer start
 
         // Main phases
         AbcTimer.start(); // start the AbcTimer
@@ -165,9 +167,10 @@ public class Main {
                 + " min. " + ((runtime % 60000) / 1000) + " sec. )");
 
         // Print out Soot time stats, if Soot -time flag on.   
-        Timers.v().totalTimer.end();
         if (soot.options.Options.v().time())
+          { Timers.v().totalTimer.end();
 	    Timers.v().printProfilingInformation();
+          }
 
         // Print out abc timer information
         AbcTimer.report();
