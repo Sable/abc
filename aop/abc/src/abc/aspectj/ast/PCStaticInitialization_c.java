@@ -44,8 +44,13 @@ public class PCStaticInitialization_c extends Pointcut_c
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	return new abc.weaving.aspectinfo.ShadowPointcut
-	    (new abc.weaving.aspectinfo.StaticInitialization(pat.makeAIClassnamePattern()),
+	return new abc.weaving.aspectinfo.AndPointcut
+	    (new abc.weaving.aspectinfo.Within(pat.makeAIClassnamePattern(),position()),
+	     new abc.weaving.aspectinfo.AndPointcut
+	     (new abc.weaving.aspectinfo.WithinStaticInitializer(position()),
+	      new abc.weaving.aspectinfo.Execution(position()),
+	      position()),
 	     position());
+						    
     }
 }

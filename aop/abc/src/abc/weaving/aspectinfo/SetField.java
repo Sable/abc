@@ -3,14 +3,17 @@ package abc.weaving.aspectinfo;
 import soot.*;
 import soot.jimple.*;
 
+import polyglot.util.Position;
+
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** Handler for <code>set</code> shadow pointcut. */
-public class SetField extends AbstractShadowPointcutHandler {
+public class SetField extends ShadowPointcut {
     private FieldPattern pattern;
 
-    public SetField(FieldPattern pattern) {
+    public SetField(FieldPattern pattern,Position pos) {
+	super(pos);
 	this.pattern = pattern;
     }
 
@@ -21,14 +24,14 @@ public class SetField extends AbstractShadowPointcutHandler {
     static private ShadowType shadowType=new StmtShadowType();
     
     static {
-	AbstractShadowPointcutHandler.registerShadowType(shadowType);
+	ShadowPointcut.registerShadowType(shadowType);
     }
 
     public ShadowType getShadowType() {
 	return shadowType;
     }
 
-    public Residue matchesAt(MethodPosition position) {
+    protected Residue matchesAt(MethodPosition position) {
 	if(!(position instanceof StmtMethodPosition)) return null;
 	Stmt stmt=((StmtMethodPosition) position).getStmt();
 

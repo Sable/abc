@@ -5,6 +5,7 @@ import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.util.*;
 import polyglot.visit.*;
+
 import java.util.*;
 
 public class PCExecution_c extends Pointcut_c implements PCExecution
@@ -44,19 +45,20 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	abc.weaving.aspectinfo.Pointcut withincode;
 	if (pat instanceof MethodPattern) {
-	    withincode=new abc.weaving.aspectinfo.LexicalPointcut
-		(new abc.weaving.aspectinfo.WithinMethod(((MethodPattern)pat).makeAIMethodPattern()),
+	    withincode=new abc.weaving.aspectinfo.WithinMethod
+		(((MethodPattern)pat).makeAIMethodPattern(),
 		 position());
 	} else if (pat instanceof ConstructorPattern) {
-	    withincode=new abc.weaving.aspectinfo.LexicalPointcut
-		(new abc.weaving.aspectinfo.WithinConstructor(((ConstructorPattern)pat).makeAIConstructorPattern()),
+	    withincode=new abc.weaving.aspectinfo.WithinConstructor
+		(((ConstructorPattern)pat).makeAIConstructorPattern(),
 		 position());
 	} else {
-	    throw new RuntimeException("Unexpected MethodConstructorPattern type in execution pointcut: "+pat);
+	    throw new RuntimeException
+		("Unexpected MethodConstructorPattern type in execution pointcut: "+pat);
 	}
 	return (new abc.weaving.aspectinfo.AndPointcut
 		(withincode,
-		 new abc.weaving.aspectinfo.ShadowPointcut(new abc.weaving.aspectinfo.Execution(),position()),
+		 new abc.weaving.aspectinfo.Execution(position()),
 		 position()));
     }
 }

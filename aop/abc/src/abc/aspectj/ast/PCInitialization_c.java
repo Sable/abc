@@ -42,16 +42,10 @@ public class PCInitialization_c extends Pointcut_c implements PCInitialization
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	abc.weaving.aspectinfo.Pointcut withincode;
-	withincode=new abc.weaving.aspectinfo.LexicalPointcut
-	    (new abc.weaving.aspectinfo.WithinConstructor
-	     (pat.makeAIConstructorPattern()),
-	     position());
 	return new abc.weaving.aspectinfo.AndPointcut
-	    (withincode,
-	     new abc.weaving.aspectinfo.ShadowPointcut
-	     (new abc.weaving.aspectinfo.Initialization(),
-	      position()),
+	    (new abc.weaving.aspectinfo.WithinConstructor
+	     (pat.makeAIConstructorPattern(),position()),
+	     new abc.weaving.aspectinfo.Initialization(position()),
 	     position());
     }
 

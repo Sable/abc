@@ -1,14 +1,18 @@
 package abc.weaving.aspectinfo;
 
 import soot.*;
+
+import polyglot.util.Position;
+
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** Handler for <code>handler</code> shadow pointcut. */
-public class Handler extends AbstractShadowPointcutHandler {
+public class Handler extends ShadowPointcut {
     private ClassnamePattern pattern;
 
-    public Handler(ClassnamePattern pattern) {
+    public Handler(ClassnamePattern pattern,Position pos) {
+	super(pos);
 	this.pattern = pattern;
     }
 
@@ -19,14 +23,14 @@ public class Handler extends AbstractShadowPointcutHandler {
     static private ShadowType shadowType=new TrapShadowType();
     
     static {
-	AbstractShadowPointcutHandler.registerShadowType(shadowType);
+	ShadowPointcut.registerShadowType(shadowType);
     }
 
     public ShadowType getShadowType() {
 	return shadowType;
     }
 
-    public Residue matchesAt(MethodPosition position) {
+    protected Residue matchesAt(MethodPosition position) {
 	if(!(position instanceof TrapMethodPosition)) return null;
 	Trap trap=((TrapMethodPosition) position).getTrap();
 
@@ -38,4 +42,7 @@ public class Handler extends AbstractShadowPointcutHandler {
 
     }
 
+    public String toString() {
+	return "handler("+pattern+")";
+    }
 }

@@ -42,8 +42,7 @@ public class PCWithin_c extends Pointcut_c implements PCWithin
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
-	return new abc.weaving.aspectinfo.LexicalPointcut
-	    (new abc.weaving.aspectinfo.Within(pat.makeAIClassnamePattern()),
-	     position());
+	return new abc.weaving.aspectinfo.Within
+	    (pat.makeAIClassnamePattern(),position());
     }
 }

@@ -2,15 +2,21 @@ package abc.weaving.aspectinfo;
 
 import soot.*;
 
+import polyglot.util.Position;
+
 import abc.weaving.residues.*;
 import abc.weaving.matching.*;
 
 /** Handler for <code>preinitialization</code> shadow pointcut. */
-public class Preinitialization extends AbstractShadowPointcutHandler {
+public class Preinitialization extends ShadowPointcut {
+    public Preinitialization(Position pos) {
+	super(pos);
+    }
+
     static private ShadowType shadowType=new PreinitializationShadowType();
     
     static {
-	AbstractShadowPointcutHandler.registerShadowType(shadowType);
+	ShadowPointcut.registerShadowType(shadowType);
     }
 
     public ShadowType getShadowType() {

@@ -43,15 +43,16 @@ public class PCCall_c extends Pointcut_c implements PCCall
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (pat instanceof MethodPattern) {
-	    return new abc.weaving.aspectinfo.ShadowPointcut
-		(new abc.weaving.aspectinfo.MethodCall(((MethodPattern)pat).makeAIMethodPattern()),
+	    return new abc.weaving.aspectinfo.MethodCall
+		(((MethodPattern)pat).makeAIMethodPattern(),
 		 position());
 	} else if (pat instanceof ConstructorPattern) {
-	    return new abc.weaving.aspectinfo.ShadowPointcut
-		(new abc.weaving.aspectinfo.ConstructorCall(((ConstructorPattern)pat).makeAIConstructorPattern()),
+	    return new abc.weaving.aspectinfo.ConstructorCall
+		(((ConstructorPattern)pat).makeAIConstructorPattern(),
 		 position());
 	} else {
-	    throw new RuntimeException("Unexpected MethodConstructorPattern type in call pointcut: "+pat);
+	    throw new RuntimeException
+		("Unexpected MethodConstructorPattern type in call pointcut: "+pat);
 	}
     }
 }

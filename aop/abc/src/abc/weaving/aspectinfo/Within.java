@@ -1,13 +1,15 @@
 package abc.weaving.aspectinfo;
 
 import soot.*;
+import polyglot.util.Position;
 import abc.weaving.residues.*;
 
 /** Handler for <code>within</code> condition pointcut. */
-public class Within extends AbstractLexicalPointcutHandler {
+public class Within extends LexicalPointcut {
     private ClassnamePattern pattern;
 
-    public Within(ClassnamePattern pattern) {
+    public Within(ClassnamePattern pattern,Position pos) {
+	super(pos);
 	this.pattern = pattern;
     }
 
@@ -16,7 +18,7 @@ public class Within extends AbstractLexicalPointcutHandler {
     }
 
 
-    public Residue matchesAt(SootClass cls,SootMethod method) {
+    protected Residue matchesAt(SootClass cls,SootMethod method) {
 	// FIXME: Remove this once pattern is built properly
 	if(getPattern()==null) return AlwaysMatch.v;
 

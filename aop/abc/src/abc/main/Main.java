@@ -87,6 +87,8 @@ public class Main {
     }
 
     // Dummy code to be removed when matcher builds real GAI info
+    // Redundant now, I hope!
+    /* 
     public static void generateDummyGAI() {
         for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
             final SootClass cl = (SootClass) clIt.next();
@@ -116,10 +118,11 @@ public class Main {
             }
         }   
     }
-     private static boolean isAspect( SootClass cl ) {
-         if( cl.getName().equals( "Aspect" ) ) return true;
-         return false;
-     }
+    */
+    private static boolean isAspect( SootClass cl ) {
+	if( cl.getName().equals( "Aspect" ) ) return true;
+	return false;
+    }
 
 
     

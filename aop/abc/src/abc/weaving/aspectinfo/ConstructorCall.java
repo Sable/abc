@@ -3,14 +3,17 @@ package abc.weaving.aspectinfo;
 import soot.*;
 import soot.jimple.*;
 
+import polyglot.util.Position;
+
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** Handler for <code>call</code> shadow pointcut with a constructor pattern. */
-public class ConstructorCall extends AbstractShadowPointcutHandler {
+public class ConstructorCall extends ShadowPointcut {
     private ConstructorPattern pattern;
 
-    public ConstructorCall(ConstructorPattern pattern) {
+    public ConstructorCall(ConstructorPattern pattern,Position pos) {
+	super(pos);
 	this.pattern = pattern;
     }
 
@@ -21,14 +24,14 @@ public class ConstructorCall extends AbstractShadowPointcutHandler {
     static private ShadowType shadowType=new NewStmtShadowType();
     
     static {
-	AbstractShadowPointcutHandler.registerShadowType(shadowType);
+	ShadowPointcut.registerShadowType(shadowType);
     }
 
     public ShadowType getShadowType() {
 	return shadowType;
     }
 
-    public Residue matchesAt(MethodPosition position) {
+    protected Residue matchesAt(MethodPosition position) {
 	if(!(position instanceof NewStmtMethodPosition)) return null;
 
 	NewStmtMethodPosition stmtMP=(NewStmtMethodPosition) position;
@@ -51,6 +54,10 @@ public class ConstructorCall extends AbstractShadowPointcutHandler {
 	if(!getPattern().matchesConstructor(method)) return null;
 	return AlwaysMatch.v;
 
+    }
+
+    public String toString() {
+	return "constructorcall("+pattern+")";
     }
 
 }

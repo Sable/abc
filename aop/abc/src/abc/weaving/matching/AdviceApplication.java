@@ -36,7 +36,7 @@ public abstract class AdviceApplication {
 	    if(pc!=null) {
 		
 		Iterator shadowIt;
-		for(shadowIt=AbstractShadowPointcutHandler.shadowTypesIterator();
+		for(shadowIt=ShadowPointcut.shadowTypesIterator();
 		    shadowIt.hasNext();) {
 		    
 		    ShadowType st=(ShadowType) shadowIt.next();
