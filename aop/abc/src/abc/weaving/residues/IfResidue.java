@@ -23,6 +23,7 @@ import java.util.*;
 import soot.*;
 import soot.util.Chain;
 import soot.jimple.*;
+import abc.soot.util.Restructure;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
@@ -55,8 +56,42 @@ public class IfResidue extends Residue {
 
 	List actuals=new Vector(args.size());
 	Iterator it=args.iterator();
-	while(it.hasNext())
-	    actuals.add(((WeavingVar) (it.next())).get());
+	Stmt currStmt = begin;
+	while(it.hasNext()) {
+		WeavingVar wv = (WeavingVar)it.next();
+		Local loc = wv.get();
+		// The type of the wv may not be the same as the formal type,
+		// if this is a cflow variable of primitive type it will be boxed
+		// In this case need to get the primitive value
+		if (wv.mustBox()) {
+			// The type of wv is necessarily a RefType, as wv is a boxed var
+			RefType type = (RefType)wv.getType();
+			
+			SootClass boxClass=type.getSootClass();
+			Type unboxedType = Restructure.JavaTypeInfo.getBoxingClassPrimType(boxClass);
+			
+			SootMethodRef unboxMethod=Scene.v().makeMethodRef
+				(boxClass,
+				 Restructure.JavaTypeInfo.getBoxingClassMethodName(unboxedType),
+	 			 new ArrayList(),
+	 			 unboxedType,
+	 			 false); 
+
+			Local ifval=localgen.generateLocal(type,"ifparam");
+		
+			InvokeExpr unbox = Jimple.v().newVirtualInvokeExpr(loc, unboxMethod);
+		
+			Stmt assignstmt = Jimple.v().newAssignStmt
+				(ifval, unbox);
+				
+			units.insertAfter(assignstmt, currStmt);
+			currStmt = assignstmt;
+			actuals.add(ifval);
+		} 
+		else
+	    	actuals.add(loc);
+	}
+	
 	Local ifresult=localgen.generateLocal(BooleanType.v(),"ifresult");
 	InvokeExpr ifcall=Jimple.v().newStaticInvokeExpr(impl.makeRef(),actuals);
 	AssignStmt assign=Jimple.v().newAssignStmt(ifresult,ifcall);
@@ -64,7 +99,7 @@ public class IfResidue extends Residue {
 	if(sense) test=Jimple.v().newEqExpr(ifresult,IntConstant.v(0));
 	else test=Jimple.v().newNeExpr(ifresult,IntConstant.v(0));
 	IfStmt abort=Jimple.v().newIfStmt(test,fail);
-	units.insertAfter(assign,begin);
+	units.insertAfter(assign,currStmt);
 	units.insertAfter(abort,assign);
 	return abort;
     }
