@@ -9,6 +9,8 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Term_c;
 
+import abc.aspectj.types.AJContext;
+
 public class DeclareDecl_c extends Term_c implements DeclareDecl
 {
 
@@ -22,6 +24,10 @@ public class DeclareDecl_c extends Term_c implements DeclareDecl
 	
 	public Term entry() {
 		return this;
+	}
+	
+	public Context enterScope(Context c) {
+		return ((AJContext)c).pushDeclare();
 	}
 
 }

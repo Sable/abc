@@ -9,6 +9,7 @@ import java.util.*;
 
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.weaving.aspectinfo.AbcFactory;
+import abc.aspectj.types.AJContext;
 
 public class PCTarget_c extends Pointcut_c implements PCTarget
 {
@@ -42,13 +43,16 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
 	/** type check the use of  target */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 	   TypeSystem ts = tc.typeSystem();
-	   Context c = tc.context();
+	   AJContext c = (AJContext) tc.context();
 
 		if (pat instanceof ArgStar)
 			return this;
 		
 		if (! (((Typed)pat).type() instanceof ReferenceType))
 		   throw new SemanticException("Argument of \"target\" must be of reference type",pat.position());
+		   
+		if (c.inDeclare())
+			throw new SemanticException("target(..) requires a dynamic test and cannot be used inside a \"declare\" statement",position());
 		   
 		return this;
 	}
@@ -76,7 +80,8 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
         print(pat, w, tr);
         w.write(")");
     }
-
+    
+	
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (pat instanceof Local) {
 	    return new abc.weaving.aspectinfo.TargetVar

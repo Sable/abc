@@ -34,16 +34,30 @@ public class AJContext_c extends Context_c implements AJContext {
     protected AJContext_c startHostScope; // the first item on the context stack that signifies an ITD
     protected AJContext_c endHostScope; // the last item on the context stack that signifies an ITD
     protected ClassType fakeType;
+    protected boolean indeclare;
     
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
 		host = null;
 		nested = false;
+		indeclare = false;
 	}
 	
+	
+	public AJContext pushDeclare() {
+		AJContext_c c = (AJContext_c) super.push();
+		c.indeclare = true;
+		return c;
+	}
+	
+	public boolean inDeclare() {
+		return indeclare;
+	}
+
 	public ClassType aspect() {
 		return startHostScope.currentClass();
 	}
+	
 	
 	public boolean inInterType() {
 		return host != null;

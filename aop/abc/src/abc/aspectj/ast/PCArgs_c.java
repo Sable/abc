@@ -8,6 +8,7 @@ import polyglot.visit.*;
 import java.util.*;
 
 import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.types.AJContext;
 
 public class PCArgs_c extends Pointcut_c implements PCArgs
 {
@@ -38,6 +39,13 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 	public Node visitChildren(NodeVisitor v) {
 		List pats = visitList(this.pats, v);
 		return reconstruct(pats);
+	}
+	
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		AJContext c = (AJContext) tc.context();
+		if (c.inDeclare())
+			throw new SemanticException("args(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
+		return this;
 	}
 	
 	

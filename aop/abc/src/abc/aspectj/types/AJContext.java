@@ -16,6 +16,7 @@ import polyglot.types.SemanticException;
  */
 public interface AJContext extends Context {
 	
+/* intertype declarations */
 	ClassType hostClass();
 	
 	/** enter an intertype decl */
@@ -48,5 +49,13 @@ public interface AJContext extends Context {
 	
 	/** was the ITD itself declared static? */
 	public boolean explicitlyStatic();
-	 
+	
+/* declare error/warning */
+ 
+	/** enter a declare warning/error declaration  */
+	AJContext pushDeclare();
+
+	/** are we in a declare decl? */
+	boolean inDeclare(); 
+	
 }

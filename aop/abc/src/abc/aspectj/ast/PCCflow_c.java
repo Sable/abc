@@ -7,6 +7,8 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.types.AJContext;
+
 public class PCCflow_c extends Pointcut_c implements PCCflow
 {
     protected Pointcut pc;
@@ -37,7 +39,13 @@ public class PCCflow_c extends Pointcut_c implements PCCflow
 		 return reconstruct(pc);
     }
 
-
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+			AJContext c = (AJContext) tc.context();
+			if (c.inDeclare())
+				throw new SemanticException("cflow(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
+			return this;
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		w.write("cflow(");
         print(pc, w, tr);
