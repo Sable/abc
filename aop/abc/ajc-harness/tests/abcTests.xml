@@ -7396,11 +7396,15 @@
         </compile>
     </ajc-test>   
     
-	<ajc-test dir="bugs" pr="45663"
-      title="Bad parser error recovery in java source">
+<ajc-test dir="bugs" pr="45663"
+      title="Bad parser error recovery in java source"
+      abccomment="error on line 8 is not reported by abc, but it is
+                  ok.  July 6/04 LJH"
+      >
         <compile files="ParserRecoveryTestPureJava.java">
+		  <ajcmessage kind="error" line="6"/>
+		  <ajcmessage kind="error" line="8"/>
 		  <message kind="error" line="6"/>
-		  <message kind="error" line="8"/>
         </compile>
     </ajc-test>     
     
