@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +27,7 @@ import soot.*;
 import java.util.*;
 
 /** Weave in the effects of declare parents declarations
- *  @author Aske Simon Christensen
+ *  @author Ondrej Lhotak
  */
 public class DeclareParentsWeaver {
 
@@ -57,11 +58,7 @@ public class DeclareParentsWeaver {
 		    while (sii.hasNext()) {
 			SootClass si = (SootClass)sii.next();
 			// Make the class implement the interface
-                        Hierarchy h = Scene.v().getActiveHierarchy();
-                        boolean already = sc.isInterface() ?
-                            (sc.equals(si) || h.isInterfaceSubinterfaceOf(sc, si)) :
-                            h.getImplementersOf(si).contains(sc);
-			if (!already) {
+			if (!already(sc, si)) {
                             if (abc.main.Debug.v().declareParents) {
                                 System.out.println(sc+" implements "+si);
                             }
@@ -78,9 +75,7 @@ public class DeclareParentsWeaver {
 		while (sci.hasNext()) {
 		    SootClass sc = (SootClass)sci.next();
 		    // Make the class extend the parent
-                    Hierarchy h = Scene.v().getActiveHierarchy();
-                    boolean already = h.isClassSubclassOfIncluding(sc, sp);
-                    if (!already) {
+                    if (!already(sc, sp)) {
                         if (abc.main.Debug.v().declareParents) {
                             System.out.println(sc+" extends "+sp);
                         }
@@ -100,5 +95,24 @@ public class DeclareParentsWeaver {
             final SootClass cls = (SootClass) clsIt.next();
             SootResolver.v().reResolve( cls );
         }
+    }
+    private boolean already( SootClass child, SootClass parent ) {
+        HashSet workset = new HashSet();
+        LinkedList worklist = new LinkedList();
+        workset.add(child);
+        worklist.add(child);
+
+        while( !worklist.isEmpty() ) {
+            SootClass sc = (SootClass) worklist.removeFirst();
+            if( sc.equals(parent) ) return true;
+            for( Iterator superinterfaceIt = sc.getInterfaces().iterator(); superinterfaceIt.hasNext(); ) {
+                final SootClass superinterface = (SootClass) superinterfaceIt.next();
+                if( workset.add(superinterface) ) worklist.add(superinterface);
+            }
+            if( !sc.isInterface() && sc.hasSuperclass() ) {
+                if( workset.add(sc.getSuperclass()) ) worklist.add(sc.getSuperclass());
+            }
+        }
+        return false;
     }
 }
