@@ -120,7 +120,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
         if(pc!=null) throw new InternalCompilerError
                          ("Trying to call preprocess on an already normalized advice decl "+this);
         if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("normalizing");
-        System.err.println(origpc);
+        //        System.err.println(origpc);
         pc=Pointcut.normalize(origpc,formals,getAspect());
         if(abc.main.Debug.v.debugPointcutNormalization) System.out.println("done");
     }
@@ -186,6 +186,10 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
     public int incrApplCount() {
         applcount++;
         return(applcount);
+    }
+
+    public int getApplCount() {
+        return applcount;
     }
 
     /** Get the precedence relationship between two aspects.

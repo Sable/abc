@@ -76,6 +76,8 @@ import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AspectJExceptionChecker;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.DeclareParentsExt;
@@ -917,6 +919,15 @@ public class Main {
                         }
                     }
                     System.err.println("--- END ADVICE LISTS ---");
+                }
+
+                for(Iterator adviceIt=GlobalAspectInfo.v().getAdviceDecls().iterator();
+                    adviceIt.hasNext();) {
+                    final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
+
+                    if(ad instanceof AdviceDecl && ad.getApplCount()==0)
+                        error_queue.enqueue(ErrorInfo.WARNING,"Advice declaration doesn't apply anywhere",
+                                            ad.getPosition());
                 }
 
                 //Weaver weaver = new Weaver();
