@@ -141,7 +141,8 @@
         </inc-compile>
 		<run options="in longer packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
     </ajc-test>
-<ajc-test title="Compiler crashes in jar and cflow (with .jar)" pr="39462" dir="bugs/cflowAndJar" comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj">
+<ajc-test title="Compiler crashes in jar and cflow (with .jar)" pr="39462" dir="bugs/cflowAndJar" comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj" abccomment="aspectpath tests should be skipped. ODM 16/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
         <compile files="TestAspect.aj,Test.java" aspectpath="lib.jar">
         	<message line="16" kind="warning"></message>
         </compile>
@@ -198,6 +199,27 @@
 <ajc-test title="Introduced abstract method on interface not implemented by subtype (aspectpath)" pr="49784" dir="bugs/abstractMethods">
         <compile files="interface/C.java" aspectpath="interface/jars/AandB.jar"></compile>
         <run class="C"></run>
+    </ajc-test>
+<ajc-test title="binary compatibility of advice method names - expect no error 1" pr="50641" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
+        <compile files="Main.java,TraceV1.aj"></compile>
+        <abckeywords> <skip></skip> </abckeywords>
+        <run class="Main"></run>
+        <compile files="TraceV2.aj"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="binary compatibility of advice method names - expect error" pr="50641" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
+      <abckeywords> <skip></skip> </abckeywords>
+        <compile files="Main.java,TraceV1.aj"></compile>
+        <run class="Main"></run>
+        <compile files="TraceRE.aj"></compile>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="binary compatibility of advice method names - expect no error 2" pr="50641" dir="bugs/binaryCompat" abccomment="abc does not support binary compatibility. ODM 16/07/04">
+        <abckeywords> <skip></skip> </abckeywords>
+        <compile files="Main.java,TraceWithInnerV1.aj"></compile>
+        <run class="Main"></run>
+        <compile files="TraceWithInnerV2.aj"></compile>
+        <run class="Main"></run>
     </ajc-test>
  
 </suite>

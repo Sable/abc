@@ -134,6 +134,10 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="proper values for thisJoinPoint attributes" keywords="from-base" dir="base/test135" abccomment="Used to be a problem with disambiguation of pointcuts. Fixed that July 6.                     Now seems to fail because of advice and aspect inheritance. ODM">
+        <compile files="Driver.java,JoinPointFields.java,TopFoo.java,pack/PackFoo.java,pack/JoinPointFields.java,pack/PackJoinPointFields.java"></compile>
+        <run class="test135.Driver"></run>
+    </ajc-test>
 <ajc-test title="supers, supers, supers" keywords="from-base" dir="base/test136">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -1622,6 +1626,10 @@
         <compile files="Tricky3.java"></compile>
         <run class="Tricky3"></run>
     </ajc-test>
+<ajc-test title="eachobject: eachobject(receptions(...)) [eachobject]" keywords="from-design" dir="design/eachobject" abccomment="fails on account of aspect inheritance. ODM 09/07/04">
+        <compile files="Tricky1.java"></compile>
+        <run class="Tricky1"></run>
+    </ajc-test>
 <ajc-test title="Checking new joinpoints" keywords="from-design" dir="design/reflect" abccomment="fails on account of problems with aspectOf and aspect inheritance. ODM 09/07/04">
         <compile files="Coverage.java"></compile>
         <run class="Coverage"></run>
@@ -1795,7 +1803,7 @@
         <compile files="AroundCalls.java"></compile>
         <run class="AroundCalls"></run>
     </ajc-test>
-<ajc-test title="! modifier and char in pointcut (no longer an error)" pr="208" keywords="from-resolved_10x" dir="new">
+<ajc-test title="! modifier and char in pointcut (no longer an error)" pr="208" keywords="from-resolved_10x" dir="new" abccomment="NPE in matcher. ODM 16/07/04">
         <compile files="NotCharInPointcut.java"></compile>
         <run class="NotCharInPointcut"></run>
     </ajc-test>
@@ -2035,6 +2043,10 @@
         <compile files="OrderOfCatches.java"></compile>
         <run class="OrderOfCatches"></run>
     </ajc-test>
+<ajc-test title="ordering of advice kinds as well as cflow and dominates" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOrdering.java"></compile>
+        <run class="AdviceOrdering"></run>
+    </ajc-test>
 <ajc-test title="calling and called this params in calls points" pr="289" keywords="from-resolved_10x" dir="new">
         <compile files="CallsParams.java"></compile>
         <run class="CallsParams"></run>
@@ -2054,6 +2066,10 @@
 <ajc-test title="making sure that super calls are bound to the right methods" keywords="from-resolved_10x" dir="new">
         <compile files="SupersAndInterfaces.java"></compile>
         <run class="SupersAndInterfaces"></run>
+    </ajc-test>
+<ajc-test title="inheritance, around advice and abstract pointcuts [eachobject] (still)" pr="317" keywords="from-resolved_10x" dir="new">
+        <compile files="OverridingPointcuts.java"></compile>
+        <run class="OverridingPointcuts"></run>
     </ajc-test>
 <ajc-test title="Not and And operators in pointcuts not working" keywords="from-resolved_10x" dir="new">
         <compile files="NotAndPointcut.java"></compile>
@@ -2199,6 +2215,12 @@
         <compile files="A.java,B.java,Main.java,C.java,My_error.java"></compile>
         <run class="Main"></run>
     </ajc-test>
+<ajc-test title="declare error and abstract pointcuts" keywords="from-resolved_10x" dir="new">
+        <compile files="AbstractDeclare.java">
+            <message line="3" kind="error"></message>
+            <message line="4" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="Exercise runtime classes (optionally in 1.1 VM)" keywords="from-resolved_10x" dir="new/runtime">
         <compile files="AllRuntime.java,TesterDriver.java"></compile>
         <run class="TesterDriver"></run>
@@ -2301,6 +2323,10 @@
 <ajc-test title="aspects should get package access outside the file" pr="556" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
+    </ajc-test>
+<ajc-test title="more issues with abstract aspects and cflow pointcuts" pr="559" keywords="from-resolved_10rc3,fail-unimplemented" dir="new">
+        <compile files="AbstractCflows.java"></compile>
+        <run class="AbstractCflows"></run>
     </ajc-test>
 <ajc-test title="compile fails for aspect derived from percflow base aspect unless pointcut excludes base aspect and subaspects" pr="560" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR560.java"></compile>
@@ -2712,6 +2738,11 @@
             <message line="14" kind="error"></message> 
         </compile>
     </ajc-test>
+<ajc-test title="VerifyError on accessing objects not accessible to the weaver" pr="29662" dir="bugs">
+        <compile files="AroundAccess.java">
+        </compile>
+        <run class="AroundAccess"></run>
+    </ajc-test>
 <ajc-test title="aspect static initializers should run before instance constructed" pr="804" keywords="tofix" dir="new">
         <compile files="AspectStaticInit.java"></compile>
         <run class="AspectStaticInit"></run>
@@ -2893,6 +2924,15 @@
 		<compile files="lib/LibraryInterface.java,       Client.java,       LibraryAspect.java"></compile>
 		<run class="Client"></run>
 		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - positive" dir="bugs/interfaceLibrary">
+		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - negative" dir="bugs/interfaceLibrary">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message line="5" kind="error" file="ClientCE.java"></message>
+			</compile>
+		</ajc-test>
 <ajc-test title="exception clause for aspect-declared class methods - negative" dir="bugs/interfaceLibrary">
 		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
 			<message line="5" kind="error" file="ClassClientCE.java"></message>
@@ -2902,10 +2942,18 @@
 		<compile files="lib/ExecutionMonitor.aj,model/BusObj.java,model/MonitorBusObj.java">
 		</compile>
 	</ajc-test>
+<ajc-test title="percflow aspects compiled from jars share one instance for all entry points" pr="41359" dir="bugs/perCflowAndJar">
+		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"></compile>
+		<run class="PerCFlowCompileFromJarTest"></run>
+	</ajc-test>
 <ajc-test title="perthis and signature bad interaction" pr="42652" dir="bugs">
         <compile files="InterPerCall.java"></compile>
         <run class="InterPerCall"></run>
     </ajc-test>
+<ajc-test title="declare error fails on pointcuts composed from multiple classes" pr="42740" dir="bugs/declareSoftWithin">
+		<compile files="aspects/Softener.aj,test/NoSoftener.java"></compile>
+		<run class="test.NoSoftener"></run>
+	</ajc-test>
 <ajc-test title="Non-functional concretezation of ReferencePointcut" pr="43194" dir="bugs">
         <compile files="AdviceInteraction.java"></compile>
         <run class="AdviceInteraction"></run>
@@ -3026,12 +3074,6 @@
 <ajc-test title="after returning with parameter: matching rules" pr="42668" dir="new">
         <compile files="AfterReturningParamMatching.java"></compile>
         <run class="AfterReturningParamMatching"></run>
-    </ajc-test>
-<ajc-test title="binary compatibility of advice method names - expect error" pr="50641" dir="bugs/binaryCompat">
-        <compile files="Main.java,TraceV1.aj"></compile>
-        <run class="Main"></run>
-        <compile files="TraceRE.aj"></compile>
-        <run class="Main"></run>
     </ajc-test>
  
 </suite>
