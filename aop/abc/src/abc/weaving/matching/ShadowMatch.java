@@ -34,8 +34,9 @@ public abstract class ShadowMatch {
 	    aa.sjpInfo=getSJPInfo();
 	}
 	if(ad.hasEnclosingJoinPoint()) {
-	    aa.sjpEnclosing=getEnclosing().getSJPInfo();
-	    getEnclosing().addDummyAdviceApplication(mal);
+	    ShadowMatch enclosing=getEnclosing();
+	    aa.sjpEnclosing=enclosing.getSJPInfo();
+	    enclosing.addDummyAdviceApplication(mal);
 	}
     }
 
