@@ -68,7 +68,11 @@ public class MethodSig extends Sig {
 	    Iterator ei = exc.iterator();
 	    while (ei.hasNext()) {
 		AbcClass e = (AbcClass)ei.next();
-		sexc.add(e.getSootClass());
+		SootClass sc=e.getSootClass();
+		if(sc==null) 
+		    throw new polyglot.util.InternalCompilerError
+			("Failed to get soot class of "+e);
+		sexc.add(sc);
 	    }
 	}
 	return sexc;

@@ -78,6 +78,8 @@ public class AbcFactory {
 	} else {
 	    soot.RefType rt=(soot.RefType) soot.javaToJimple.Util.getSootType(ct);
 	    SootClass sc = rt.getSootClass();
+	    if(sc==null) 
+		throw new polyglot.util.InternalCompilerError("Failed to get soot class of "+ct);
 	    name_to_ct.put(sc.getName(), ct);
 	    ct_to_name.put(ct, sc.getName());
 	    return sc;
@@ -182,6 +184,8 @@ public class AbcFactory {
 	Iterator ti = m.getExceptions().iterator();
 	while (ti.hasNext()) {
 	    soot.SootClass t = (soot.SootClass)ti.next();
+	    if(t==null) throw new polyglot.util.InternalCompilerError
+			    ("Exception in throws list of soot method "+m+" was null");
 	    exc.add(AbcFactory.AbcClass(t));
 	}
 	return new MethodSig(mod, cl, rtype, name, formals, exc, null);
