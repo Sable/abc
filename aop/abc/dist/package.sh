@@ -2,7 +2,7 @@
 
 # Version of the package-body.shtml file to target; update this if you
 # make an incompatible change in that file
-PACKAGE='1'
+PACKAGE='2'
 # The Jedd runtime version
 JEDD='0.2'
 # The Xact version
@@ -37,6 +37,7 @@ rm -rf package/abc-$VERSION
 
 mkdir -p package/abc-$VERSION
 mkdir -p package/abc-$VERSION/bin
+mkdir -p package/abc-$VERSION/doc
 cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ \
       src/ runtime-src/ testing-src/ generated/ \
       ajc-harness/ javadoc/ runtime-javadoc/ \
@@ -44,7 +45,8 @@ cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ \
       package/abc-$VERSION/
 cp dist/abc package/abc-$VERSION/bin/
 cp dist/abc.bat package/abc-$VERSION/bin/
-
+cp doc/options/usage.pdf package/abc-$VERSION/doc/
+cp doc/options/usage.ps package/abc-$VERSION/doc/
 
 cd package
 
@@ -53,6 +55,8 @@ BINS="\
    abc-$VERSION/bin/abc.bat \
    abc-$VERSION/lib \
    abc-$VERSION/runtime-javadoc/ \
+   abc-$VERSION/doc/usage.pdf \
+   abc-$VERSION/doc/usage.ps \
 "
 
 SRCS="\
@@ -171,6 +175,10 @@ cp /usr/local/src/soot-dev/lib/jedd-runtime-$JEDD.jar \
 mkdir ../dists/$VERSION/files/bin
 cp abc-$VERSION/bin/abc ../dists/$VERSION/files/bin
 cp abc-$VERSION/bin/abc.bat ../dists/$VERSION/files/bin
+
+mkdir ../dists/$VERSION/files/doc
+cp abc-$VERSION/doc/usage.ps ../dists/$VERSION/files/doc
+cp abc-$VERSION/doc/usage.pdf ../dists/$VERSION/files/doc
 
 mkdir ../dists/$VERSION/files/debian
 for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
