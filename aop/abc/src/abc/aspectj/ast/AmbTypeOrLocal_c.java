@@ -82,8 +82,8 @@ public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 	 		/* Prefix pref = null;
 	 		System.out.println("qualifier= "+amb.qual() + " of class "+amb.getClass());
 	 		if (amb.qual() != null)
-	 			pref = (Prefix) amb.qual().disambiguate(ar);
-	 			amb.qual().disambiguateEnter(ar); */
+	 			pref = (Prefix) amb.qual().del().disambiguate(ar);
+	 			amb.qual().del().disambiguateEnter(ar); */
 			Node n = ar.nodeFactory().disamb().disambiguate(amb, ar, position(), amb.qual(),amb.name());
 			// System.out.println("pref="+pref);
 			if (n instanceof TypeNode) {

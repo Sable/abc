@@ -648,7 +648,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 			index++;
 		}
 		List exc = new ArrayList();
-		Iterator ti = throwTypes.iterator();
+		Iterator ti = throwTypes().iterator();
 		while (ti.hasNext()) {
     		TypeNode t = (TypeNode)ti.next();
     		exc.add(t.type().toString());

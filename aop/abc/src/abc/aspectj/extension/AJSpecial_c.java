@@ -60,7 +60,7 @@ public class AJSpecial_c extends Special_c implements Special {
 			// this is a host special
 			AJNodeFactory nf = (AJNodeFactory) ar.nodeFactory();
 			HostSpecial_c hs = (HostSpecial_c) nf.hostSpecial(position,kind,qualifier,((AJContext)c).hostClass());
-			return hs.type(type()).disambiguate(ar);
+			return hs.type(type()).del().disambiguate(ar);
 		}
 	}
 

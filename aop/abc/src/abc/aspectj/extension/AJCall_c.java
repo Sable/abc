@@ -119,7 +119,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
           }
 
           // we call typeCheck on the receiver too.
-          r = (Receiver)r.typeCheck(tc);
+          r = (Receiver)r.del().typeCheck(tc);
           return this.targetImplicit(true).target(r).del().typeCheck(tc);
   }
 

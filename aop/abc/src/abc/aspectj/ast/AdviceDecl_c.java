@@ -356,7 +356,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		
 	public Context enterScope(Node child, Context c) {
 		if (child==body) {
-			AJContext ajc = (AJContext) child.enterScope(c);
+			AJContext ajc = (AJContext) child.del().enterScope(c);
 			 AJTypeSystem ts = (AJTypeSystem)ajc.typeSystem();
 			 LocalInstance jp = thisJoinPointInstance(ts);
 			 ajc.addVariable(jp);
@@ -462,11 +462,11 @@ public class AdviceDecl_c extends MethodDecl_c
 
 			w.begin(0);
 
-			if (! throwTypes.isEmpty()) {
+			if (! throwTypes().isEmpty()) {
 				w.allowBreak(6);
 				w.write("throws ");
 
-				for (Iterator i = throwTypes.iterator(); i.hasNext(); ) {
+				for (Iterator i = throwTypes().iterator(); i.hasNext(); ) {
 					TypeNode tn = (TypeNode) i.next();
 					print(tn, w, tr);
 	

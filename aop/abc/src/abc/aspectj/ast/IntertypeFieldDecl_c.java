@@ -234,7 +234,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		}
 		
 		List throwTypes = new LinkedList();
-		for (Iterator i = init().throwTypes(ts).iterator(); i.hasNext(); ) {
+		for (Iterator i = init().del().throwTypes(ts).iterator(); i.hasNext(); ) {
 			Type t = (Type) i.next();
 			TypeNode ttn = nf.CanonicalTypeNode(position(),t);
 			throwTypes.add(ttn);
@@ -261,7 +261,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		List argtypes = new LinkedList();
 		if (!(flags().isStatic()))
 			argtypes.add(thisParamInstance.type());
-		List exctypes = init().throwTypes(ts);
+		List exctypes = init().del().throwTypes(ts);
 		initmi = ts.methodInstance(position(),fieldInstance().container(),fs,type().type(),name,argtypes,exctypes);
 		md = md.methodInstance(initmi);
 

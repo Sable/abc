@@ -214,7 +214,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		MethodInstance mi = ts.methodInstance(position, container,
 						      Flags.STATIC.Public(), retType.type(), methodName,
 						      new ArrayList(formaltypes),
-						      new ArrayList(expr.throwTypes(ts)));
+						      new ArrayList(expr.del().throwTypes(ts)));
 		container.addMethod(mi);
 		md = md.methodInstance(mi);
 		methodDecl = md;

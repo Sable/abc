@@ -253,7 +253,7 @@ public class AspectDecl_c extends AJClassDecl_c
 				TypeSystem ts = c.typeSystem();
 				c = ((AJContext)c).pushAspect((AspectType) type);
 				// c = c.pushClass(type, ts.staticTarget(type).toClass());
-				return child.enterScope(c);
+				return child.del().enterScope(c);
 			}
 			return super.enterScope(child, c);
 		}

@@ -70,7 +70,7 @@ public class AJConstructorCall_c
 				// this is a host constructor call
 				AJNodeFactory nf = (AJNodeFactory) ar.nodeFactory();
 				HostConstructorCall_c hc = (HostConstructorCall_c) nf.hostConstructorCall(position,kind,qualifier,arguments);
-				return hc.disambiguate(ar);
+				return hc.del().disambiguate(ar);
 			}
 		}
 
