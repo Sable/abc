@@ -109,7 +109,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-creating: A@76ba57
+creating: A@104b2ab
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -470,7 +470,19 @@ PASS: Test 96: "pureJava/Test chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\
 
 Running test 97: pureJava/Checking character values with all the unicode chars.
 Commandline: abc -d pureJava pureJava/CharsUnicode.java 
-PASS: Test 97: "pureJava/Checking character values with all the unicode chars." passed.
+An OutOfMemoryError occured. This means there wasn't enough available
+memory to complete the compilation.
+
+If your computer has additional RAM, you can try increasing the size of
+the heap available to abc by invoking it as
+	java -Xmx512M abc.main.Main [...]
+You can also further increase the size of the heap (in the example, 
+512 MB were speecified). If this doesn't resolve your problem, please
+contact the abc team at http://abc.comlab.ox.ac.uk with the relevant 
+details.
+Unexpected exception while compiling: java.lang.OutOfMemoryError
+java.lang.OutOfMemoryError
+FAIL: Test 97: "pureJava/Checking character values with all the unicode chars." failed.
 
 
 Running test 98: pureJava/Trouble finding methods with the same name and different parameter types
@@ -602,7 +614,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@19152f
+InterfaceAndObject$1@41f367
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2309,7 +2321,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@11e840e, [Ljava.lang.Object;@6fd58f, TwoAnonymous$3@11e840e
+calling run: TwoAnonymous$3@15919a, [Ljava.lang.Object;@a1894, TwoAnonymous$3@15919a
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2426,32 +2438,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1e67fa5.foo calls Outer$Inner@1c656b8.mi
+Outer@1bef3f7.foo calls Outer$Inner@182e63b.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1c656b8.mi calls java.io.PrintStream@677a21.println
+Outer$Inner@182e63b.mi calls java.io.PrintStream@d93371.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1e67fa5.foo calls Outer$InnerRandom@1c67334.nextHook
+Outer@1bef3f7.foo calls Outer$InnerRandom@8a3ac6.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1c67334.nextHook calls Outer$InnerRandom@1c67334.next
+Outer$InnerRandom@8a3ac6.nextHook calls Outer$InnerRandom@8a3ac6.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1e67fa5.foo calls X.nextInt
+Outer@1bef3f7.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1111562.foo calls Outer$Inner@92d88d.mi
+Outer@d8c17.foo calls Outer$Inner@1686209.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@92d88d.mi calls java.io.PrintStream@c74bbf.println
+Outer$Inner@1686209.mi calls java.io.PrintStream@1fc6bc1.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1111562.foo calls Outer$InnerRandom@3dec13.nextHook
+Outer@d8c17.foo calls Outer$InnerRandom@1065d55.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@3dec13.nextHook calls Outer$InnerRandom@3dec13.next
+Outer$InnerRandom@1065d55.nextHook calls Outer$InnerRandom@1065d55.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1111562.foo calls X.nextInt
+Outer@d8c17.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4106,7 +4118,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@2cbc82.x:=-3
+test.Test3@1fb23fb.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4189,8 +4201,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@d30a35
-o: Bar@d30a35, i: 10
+o: Bar@173bdf9
+o: Bar@173bdf9, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4784,7 +4796,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@13f21d5
+LibraryAspect-defined run() for C@1403e48
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5110,7 +5122,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@2b5b77
+? Util.read() obj=Test@718333
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5129,7 +5141,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@4e5d0e
+? Util.read() obj=ClinitTest@962fe0
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5139,7 +5151,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@657951
+? Util.read() obj=SuidTest@2ec093
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5346,12 +5358,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@15184a3
-Invoking command bean:  Command@db247a
-hello(Command@db247a)
-Created a PerThis aspect : Testcase2@137fd6b
-Invoking command bean:  Command@de8fea
-hello again(Command@de8fea)
+Created a PerThis aspect : Testcase2@1e996d5
+Invoking command bean:  Command@ad8a51
+hello(Command@ad8a51)
+Created a PerThis aspect : Testcase2@153dc99
+Invoking command bean:  Command@b7f2ba
+hello again(Command@b7f2ba)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5440,10 +5452,7 @@ PASS: Test 987: "abctests/bugs/method intertype onto inner class" passed.
 Running test 988: abctests/bugs/separate compilation and references to compile time constants
 Commandline: abc -d abctests/bugs abctests/bugs/ConstantInit.java 
 Commandline: abc -cp abctests/bugs:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d abctests/bugs abctests/bugs/ConstantUse.java 
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at abctests/bugs/ConstantUse.java:6,8-28: Case label must be an integral constant.
-FAIL: Test 988: "abctests/bugs/separate compilation and references to compile time constants" failed.
+PASS: Test 988: "abctests/bugs/separate compilation and references to compile time constants" passed.
 
 
 Running test 989: abctests/bugs/lifting if out of cflow, with correct parameters
@@ -5454,5 +5463,42 @@ PASS: Test 989: "abctests/bugs/lifting if out of cflow, with correct parameters"
 Running test 990: abctests/bugs/lifting if out of cflow, with correct parameters 2
 Commandline: abc -d abctests/bugs abctests/bugs/CflowIf2.java 
 PASS: Test 990: "abctests/bugs/lifting if out of cflow, with correct parameters 2" passed.
+
+
+Running test 991: abctests/bugs/declare parents causes interface to implement itself
+Commandline: abc -d abctests/bugs abctests/bugs/foo/Foo.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:643)
+	at abc.testing.TestCase.runTest(TestCase.java:287)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.StackOverflowError
+FAIL: Test 991: "abctests/bugs/declare parents causes interface to implement itself" failed.
+
+
+Running test 992: abctests/bugs/cast pointcut can interact badly with jimple type assignment
+Commandline: abc -d abctests/bugs -injars abctests/bugs/cast.jar -ext abc.eaj abctests/bugs/CastAspect.java 
+Test failed, compiled class behaved incorrectly
+Message: fail [ unexpected event "cast happened" found,  unexpected event "cast happened" found]
+org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  unexpected event "cast happened" found]
+	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
+	at org.aspectj.testing.Tester.handle(Tester.java:963)
+	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
+	at org.aspectj.testing.Tester.check(Tester.java:204)
+	at org.aspectj.testing.Tester.checkEqualIgnoreDups(Tester.java:702)
+	at org.aspectj.testing.Tester.checkEqual(Tester.java:742)
+	at org.aspectj.testing.Tester.checkEvents(Tester.java:922)
+	at org.aspectj.testing.Tester.checkAndClearEvents(Tester.java:933)
+	at org.aspectj.testing.Tester.checkAllEvents(Tester.java:846)
+	at Cast.main(Cast.java)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:393)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed.
 
 

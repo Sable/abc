@@ -365,10 +365,6 @@
         <compile files="CaseClauses.java"></compile>
         <run class="CaseClauses"></run>
     </ajc-test>
-<ajc-test title="Checking character values with all the unicode chars." num="97" keywords="from-java" dir="pureJava" abccomment="Required the fixed jasmin to handle constant                   pool offsets > 32K.  Fixed July 1/04 LJH ">
-        <compile files="CharsUnicode.java"></compile>
-        <run class="CharsUnicode"></run>
-    </ajc-test>
 <ajc-test title="Trouble finding methods with the same name and different parameter types" num="98" keywords="from-java" dir="pureJava">
         <compile files="MethodsWithTheSameName.java"></compile>
         <run class="MethodsWithTheSameName"></run>
@@ -4958,6 +4954,11 @@
 <ajc-test title="method intertype onto inner class" num="987" dir="abctests/bugs" abccomment="abc fails in generation of accessors; ajc fails                     at runtime">
 	<compile files="QualThis.java"></compile>
 	<run class="QualThis"></run>
+    </ajc-test>
+<ajc-test title="separate compilation and references to compile time constants" num="988" dir="abctests/bugs">
+        <compile files="ConstantInit.java"></compile>
+        <compile includeClassesDir="true" files="ConstantUse.java"></compile>
+        <run class="ConstantUse"></run>
     </ajc-test>
 <ajc-test title="lifting if out of cflow, with correct parameters" num="989" dir="abctests/bugs">
         <compile files="CflowIf.java"></compile>
