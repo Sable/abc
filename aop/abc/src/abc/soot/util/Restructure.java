@@ -196,7 +196,7 @@ public class Restructure {
 	     ("trying to inline a this() in a method that is not an <init>");
 
 	// get the body
-	Body b = method.getBody();
+	Body b = method.getActiveBody();
 
 	// get the units
         Chain containerUnits = b.getUnits();

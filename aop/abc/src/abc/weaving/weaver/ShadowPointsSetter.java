@@ -306,7 +306,7 @@ public class ShadowPointsSetter {
 	     boolean inlining_performed;
 	     // keep inlining until no inlining happened
 	     do
-	       inlinining_performed = Restructure.inlineThisCall(method);
+	       inlining_performed = Restructure.inlineThisCall(method);
 	     while (inlining_performed);
 	     methodlist.add(method);
 	   }

@@ -35,8 +35,8 @@ class B extends A {
     }
 
   B (int x, int y) 
-    { super( x + y); 
-      this.y = x + y; 
+    { super( x + y + k);  // this field-get should be in preinit
+      this.y = x + y;  // this field-set should be in constr. exec.
     }
 }
 
