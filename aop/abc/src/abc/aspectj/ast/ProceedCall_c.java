@@ -13,6 +13,7 @@ import polyglot.ast.MethodDecl;
 import polyglot.ast.Receiver;
 import polyglot.ast.Special;
 import polyglot.ast.Call;
+import polyglot.ast.TypeNode;
 import polyglot.ext.jl.ast.Call_c;
 
 import polyglot.types.Context;
@@ -76,9 +77,11 @@ public class ProceedCall_c extends Call_c
 			if (! mi.callValid(argTypes))
 			   throw new SemanticException ("proceed arguments "+argTypes+
                                             " do not match advice formals "+mi.formalTypes());
+             
+            TypeNode tn = tc.nodeFactory().CanonicalTypeNode(position(),mi.container());
                                                                 
              // rewrite the call                                                   
-			return this.methodInstance(mi).type(mi.returnType());
+			return this.methodInstance(mi).target(tn).type(mi.returnType());
 	}
 	
         public void aspectMethodsEnter(AspectMethods visitor)
