@@ -20,10 +20,14 @@ public class PerThis extends PerPointcut {
     }
 
     public Residue matchesAt(Aspect aspct,ShadowMatch sm) {
-	return new HasAspect(aspct.getInstanceClass().getSootClass(),sm.getThisContextValue());
+	ContextValue thisCV=sm.getThisContextValue();
+	if(thisCV==null) return null;
+	return new HasAspect(aspct.getInstanceClass().getSootClass(),thisCV);
     }
 
     public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) {
-	return new AspectOf(aspct.getInstanceClass().getSootClass(),sm.getThisContextValue());
+	ContextValue thisCV=sm.getThisContextValue();
+	if(thisCV==null) return null;
+	return new AspectOf(aspct.getInstanceClass().getSootClass(),thisCV);
     }
 }
