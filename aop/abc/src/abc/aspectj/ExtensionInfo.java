@@ -178,6 +178,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
 	l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
 	l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
+	l.add(new VisitorPass(Pass.FWD_REF_CHECK, job, new FwdReferenceChecker(job, ts, nf)));
 	
 	l.add(new GlobalBarrierPass(CHECKING_DONE, job));
 	
