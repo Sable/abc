@@ -2362,6 +2362,10 @@
         <compile files="Binkley2.java"></compile>
         <run class="Binkley2"></run>
     </ajc-test>
+<ajc-test title="advice on an inherited method" pr="105" num="466" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOnInheritedMethod.java"></compile>
+        <run class="AdviceOnInheritedMethod"></run>
+    </ajc-test>
 <ajc-test title=", PR#115 checks the ordering of catch clauses" pr="114" num="467" keywords="from-resolved_10x" dir="new">
         <compile files="OrderOfCatches.java"></compile>
         <run class="OrderOfCatches"></run>
@@ -2369,10 +2373,6 @@
 <ajc-test title="various declared exception permutations" num="468" keywords="from-resolved_10x" dir="new">
         <compile files="DeclaredExcs.java"></compile>
         <run class="DeclaredExcs"></run>
-    </ajc-test>
-<ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOrdering.java"></compile>
-        <run class="AdviceOrdering"></run>
     </ajc-test>
 <ajc-test title="advice on default constructor for a class only referenced via reflection" pr="241" num="470" keywords="from-resolved_10x" dir="new">
         <compile files="OddConstructors.java"></compile>
@@ -2795,10 +2795,6 @@
             <message line="43" kind="error"></message>
             <message line="46" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="after returning advice order" pr="694" num="572" keywords="from-resolved_10x" dir="new">
-        <compile files="Cricket.java"></compile>
-        <run class="Cricket"></run>
     </ajc-test>
 <ajc-test title="after returning advice param" pr="694" num="573" keywords="from-resolved_10x" dir="new">
         <compile files="AfterReturningParam.java"></compile>
@@ -3437,6 +3433,20 @@
         <compile files="InterFieldArrays.java"></compile>
         <run class="InterFieldArrays"></run>
     </ajc-test>
+<ajc-test title="checking around join point for advice return type - numeric" pr="838" num="735" dir="new" abccomment="we just report the error in one place">
+        <compile files="AroundNumericCastCE.java">
+            <ajcmessage line="12" kind="error"></ajcmessage>
+            <ajcmessage line="17" kind="error"></ajcmessage>
+            <message line="11" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="void around advice without proceed" pr="836" num="736" dir="new" abccomment="we just report the error in one place">
+        <compile files="VoidAround.java">
+            <message line="11" kind="error"></message>
+            <ajcmessage line="11" kind="error"></ajcmessage>
+            <ajcmessage line="29" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
 <ajc-test title="declaring method on superclass and subclass" pr="852" num="737" dir="new/PR852">
         <compile files="aspectPack/Aspect.java,target/SubClass.java,target/SuperClass.java">
           <dir-changes added="target.SubClass,target.SuperClass"></dir-changes>
@@ -3597,6 +3607,10 @@
             <message line="50" kind="error"></message>
 
         </compile>
+    </ajc-test>
+<ajc-test title="cflow binding issues with ignoring state" pr="34858" num="764" dir="bugs">
+        <compile files="CflowBinding.java"></compile>
+        <run class="CflowBinding"></run>
     </ajc-test>
 <ajc-test title="cflow binding -- original weaver crash" pr="34858" num="765" dir="bugs">
         <compile files="CflowBindingOrig.java"></compile>
@@ -4145,6 +4159,11 @@
 <ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
         <compile files="PrivilegedParsing.java"></compile>
         <run class="PrivilegedParsing"></run>
+    </ajc-test>
+<ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" num="898" dir="bugs" abccomment="ITD field initialisers should not appear in the exec jps of host constructors, but                     they do appear in initialisation jps of the same. Need to discuss with Ganesh.                     ODM 19/07/04">
+        <compile files="AfterThrowingCtor.java">
+        </compile>
+  		<run class="AfterThrowingCtor"></run>
     </ajc-test>
 <ajc-test title="Introduced abstract method on interface not implemented by subtype (weave altogether)" pr="49784" num="900" dir="bugs/abstractMethods">
         <compile files="interface/C.java,interface/A.java,interface/B.java"></compile>

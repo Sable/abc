@@ -91,9 +91,9 @@
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
     </ajc-test>
-<ajc-test title="advice on an inherited method" pr="105" num="466" keywords="from-resolved_10x" dir="new">
-        <compile files="AdviceOnInheritedMethod.java"></compile>
-        <run class="AdviceOnInheritedMethod"></run>
+<ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceOrdering.java"></compile>
+        <run class="AdviceOrdering"></run>
     </ajc-test>
 <ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
         <compile files="ObjectForInt.java"></compile>
@@ -126,6 +126,10 @@
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
+    </ajc-test>
+<ajc-test title="after returning advice order" pr="694" num="572" keywords="from-resolved_10x" dir="new">
+        <compile files="Cricket.java"></compile>
+        <run class="Cricket"></run>
     </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
@@ -189,36 +193,22 @@
         <compile files="DeclareClassImplementsClass.java">
         </compile>
     </ajc-test>
-<ajc-test title="checking around join point for advice return type - numeric" pr="838" num="735" dir="new">
-        <compile files="AroundNumericCastCE.java">
-            <message line="12" kind="error"></message>
-            <message line="17" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="void around advice without proceed" pr="836" num="736" dir="new">
-        <compile files="VoidAround.java">
-            <message line="11" kind="error"></message>
-            <message line="29" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="cflow binding issues with ignoring state" pr="34858" num="764" dir="bugs">
-        <compile files="CflowBinding.java"></compile>
-        <run class="CflowBinding"></run>
-    </ajc-test>
 <ajc-test title="declare soft and throw statements" pr="34925" num="772" dir="bugs">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
-<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround">
+<ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround" abccomment="we only report the warning in one location">
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
+            <ajcmessage line="102" kind="warning"></ajcmessage>
+        	<ajcmessage line="124" kind="warning"></ajcmessage>
+        	<ajcmessage line="138" kind="warning"></ajcmessage>
             <message line="102" kind="warning"></message>
         	<message line="124" kind="warning"></message>
-        	<message line="138" kind="warning"></message>
         </compile>
         <run class="cap.OptionList"></run>
     </ajc-test>
@@ -229,11 +219,6 @@
 <ajc-test title="can not resolve this member warning" pr="38212" num="832" dir="bugs/accessMethods">
         <compile files="p1/Base.java,p2/Derived.java"></compile>
         <run class="p2.Derived"></run>
-    </ajc-test>
-<ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" num="898" dir="bugs" abccomment="ITD field initialisers should not appear in the exec jps of host constructors, but                     they do appear in initialisation jps of the same. Need to discuss with Ganesh.                     ODM 19/07/04">
-        <compile files="AfterThrowingCtor.java">
-        </compile>
-  		<run class="AfterThrowingCtor"></run>
     </ajc-test>
 <ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors">
         <compile files="Joinpoints101.jar,DecErrors.aj">
