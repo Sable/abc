@@ -105,13 +105,13 @@ public class CheckType extends Residue {
 
         Residue res=new CheckType(value,type);
 
-        if(!abc.main.Debug.v().ajc120Compliance)
+        if(!abc.main.Debug.v().ajc120Compliance) {
             // When not in ajc 1.2.0 compliance mode, we always consider that null
             // is a valid instance of any (reference) type
             // See ajc bug 68603; hopefully newer versions of ajc will do this too
             res=OrResidue.construct(new IsNull(value),res);
-
-        return new CheckType(value,type);
+        }
+        return res;
     }
 
     public String toString() {
