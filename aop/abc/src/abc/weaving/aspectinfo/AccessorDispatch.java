@@ -47,22 +47,22 @@ import java.util.Set;
  * the same arguments as the method it's wrapping around and returning that method's result.
  */
 public class AccessorDispatch extends AccessorMethod {
-    MethodInstance mi;
+//    MethodInstance mi;
     MethodSig ms;
     
     public AccessorDispatch(String name, MethodInstance mi, ClassType target, Position pos) {
         super(name, target, pos);
-        this.mi = mi;
+        this.inst = mi;
         // If this is a method introduced by an ITD, then the name will be mangled - in fact, our
         // current method instance is useless, use the one that it was transformed to...
         if(mi instanceof InterTypeMethodInstance_c) {
             InterTypeMethodInstance_c imi = (InterTypeMethodInstance_c) mi;
-            this.mi = imi.mangled();
+            this.inst = imi.mangled();
         }
     }
     
     public void addSootMethod(int modifiers) {
-        this.ms = AbcFactory.MethodSig(mi);
+        this.ms = AbcFactory.MethodSig((MethodInstance)inst);
 
         // From InterTypeAdjuster.addSuperDispatch() - specify what flags we want here, ignoring parameter (TODO)
         modifiers = ms.getModifiers();
@@ -71,7 +71,7 @@ public class AccessorDispatch extends AccessorMethod {
 		modifiers &= ~Modifier.PROTECTED;
 		modifiers &= ~Modifier.NATIVE;
 		modifiers &= ~Modifier.ABSTRACT;
-		if(mi.flags().isStatic())
+		if(inst.flags().isStatic())
 		    modifiers |= Modifier.STATIC;
 
         // TODO: Check if this is too expensive
@@ -98,6 +98,7 @@ public class AccessorDispatch extends AccessorMethod {
         
         // This code adapted from soot.javaToJimple.initialResolver.handlePrivateAccessors().
         ArrayList paramTypes = new ArrayList();
+        MethodInstance mi = (MethodInstance) inst;
         Iterator it = mi.formalTypes().iterator();
         while(it.hasNext()) {
             paramTypes.add(Util.getSootType((polyglot.types.Type)it.next()));

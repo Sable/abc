@@ -9,6 +9,8 @@ import polyglot.util.Position;
 import polyglot.types.ClassType;
 import polyglot.types.MemberInstance;
 
+import java.util.ArrayList;
+
 import soot.Modifier;
 
 /**
@@ -21,13 +23,24 @@ import soot.Modifier;
  */
 public abstract class AccessorMethod {
     String name;
-    Position position;
+    // This accessor method could be referenced from several positions
+    ArrayList /*<Position>*/ positions;
     ClassType target;
+    MemberInstance inst;
     
     public AccessorMethod(String name, ClassType target, Position pos) {
         this.name = name;
         this.target = target;
-        this.position = pos;
+        this.positions = new ArrayList();
+        
+        addPosition(pos);
+    }
+    
+    /**
+     * Register the position of a further reference to this accessor method.
+     */
+    public void addPosition(Position pos) {
+        positions.add(pos);
 
         // As there is no way to generate a compiler error/warning from here, add it to a
         // list of errors. The closest instance of AspectDecl on the stack will generate 
@@ -35,7 +48,7 @@ public abstract class AccessorMethod {
         if(!GlobalAspectInfo.v().getWeavableClasses().contains(AbcFactory.AbcClass(target))) {
             GlobalAspectInfo.v().addClassNotWeavableError(new ErrorInfo(ErrorInfo.WARNING, 
                     "Need to weave into class " + target + ", but it is not weavable. " +
-                    "Execution of compiled code will probably fail.", position));
+                    "Execution of compiled code will probably fail.", pos));
         }
     }
     
@@ -45,6 +58,21 @@ public abstract class AccessorMethod {
      */
     public void addSootMethod() {
         addSootMethod(Modifier.PUBLIC);
+    }
+    
+    /**
+     * Get the MemberInstance associated with this accessor method (can be MethodInstance or FieldInstance).
+     */
+    public MemberInstance getMemberInstance() {
+        return inst;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public ClassType getTarget() {
+        return target;
     }
     
     /**

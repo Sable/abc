@@ -17,6 +17,7 @@ import polyglot.ast.Expr;
 import polyglot.ast.Field;
 
 import polyglot.types.ClassType;
+import polyglot.types.MemberInstance;
 import polyglot.types.MethodInstance;
 import polyglot.types.FieldInstance;
 import polyglot.types.Flags;
@@ -64,6 +65,14 @@ public class AccessorMethods {
         return "accessor"; 
     }
     
+    protected AccessorMethod findExistingAccessor(List accessors, MemberInstance mi) {
+        for(Iterator it = accessors.iterator(); it.hasNext(); ) {
+            AccessorMethod am = (AccessorMethod)it.next();
+            if(am.getMemberInstance().equalsImpl(mi)) return am;
+        }
+        return null;
+    }
+    
     List getters = new LinkedList();
     List setters = new LinkedList();
     List dispatchers = new LinkedList();
@@ -74,9 +83,18 @@ public class AccessorMethods {
     }
     
     public Call accessorDispatch(AJNodeFactory nf, AJTypeSystem ts, Call c, ClassType target, Expr targetThis) {
-        String accessorName = UniqueID.newID(tag() + "$" + c.name());
+        String accessorName;
         MethodInstance mi = c.methodInstance();
-        dispatchers.add(createDispatcherObject(accessorName, mi, target, c.position()));
+        AccessorMethod am = (AccessorMethod)findExistingAccessor(dispatchers, mi);
+        if(am != null && target.equals(am.getTarget())) {
+            // we already have an accessor for that member
+            accessorName = am.getName();
+            am.addPosition(c.position());
+        }
+        else {
+            accessorName = UniqueID.newID(tag() + "$" + c.name());
+            dispatchers.add(createDispatcherObject(accessorName, mi, target, c.position()));
+        }
         mi = mi.name(accessorName).container(target);
         if(target.flags().isInterface()) {
             mi = mi.flags(mi.flags().Abstract().clear(Flags.NATIVE));
@@ -96,9 +114,18 @@ public class AccessorMethods {
     }
     
     public Call accessorGetter(AJNodeFactory nf, AJTypeSystem ts, Field f, ClassType target, Expr targetThis) {
-        String accessorName = UniqueID.newID("get$" + tag() + "$" + f.name());
+        String accessorName;
         FieldInstance fi = f.fieldInstance();
-        getters.add(createGetterObject(accessorName, fi, target, f.position()));
+        AccessorMethod am = (AccessorMethod)findExistingAccessor(dispatchers, fi);
+        if(am != null && target.equals(am.getTarget())) {
+            // we already have an accessor for that member
+            accessorName = am.getName();
+            am.addPosition(f.position());
+        }
+        else {
+            accessorName = UniqueID.newID("get$" + tag() + "$" + f.name());
+            dispatchers.add(createGetterObject(accessorName, fi, target, f.position()));
+        }
         
         // Now create the call that should replace the field reference in the AST
         Call c;
@@ -125,9 +152,18 @@ public class AccessorMethods {
 
     public Call accessorSetter(AJNodeFactory nf, AJTypeSystem ts, Field f, ClassType target, 
             Expr targetThis, Expr value) {
-        String accessorName = UniqueID.newID("set$" + tag() + "$" + f.name());
+        String accessorName;
         FieldInstance fi = f.fieldInstance();
-        setters.add(createSetterObject(accessorName, fi, target, f.position()));
+        AccessorMethod am = (AccessorMethod)findExistingAccessor(dispatchers, fi);
+        if(am != null && target.equals(am.getTarget())) {
+            // we already have an accessor for that member
+            accessorName = am.getName();
+            am.addPosition(f.position());
+        }
+        else {
+            accessorName = UniqueID.newID("set$" + tag() + "$" + f.name());
+            dispatchers.add(createSetterObject(accessorName, fi, target, f.position()));
+        }
         
         // Now create the call that should replace the field reference in the AST
         Call c;

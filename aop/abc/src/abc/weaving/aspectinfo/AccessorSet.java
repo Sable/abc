@@ -26,24 +26,25 @@ import java.util.Iterator;
  * new value.
  */
 public class AccessorSet extends AccessorMethod {
-    FieldInstance fi;
+//    FieldInstance fi;
     FieldSig fs;
 
     public AccessorSet (String name, FieldInstance fi, ClassType target, Position pos) {
         super(name, target, pos);
-        this.fi = fi;
+        this.inst = fi;
         // If this is a field introduced by an ITD, then the name will be mangled - in fact, our
         // current field instance is useless, use the one that it was transformed to...
         if(fi instanceof InterTypeFieldInstance_c) {
             InterTypeFieldInstance_c ifi = (InterTypeFieldInstance_c) fi;
-            this.fi = ifi.mangled();
+            this.inst = ifi.mangled();
         }
     }
     
     public void addSootMethod(int modifiers) {
+        FieldInstance fi = (FieldInstance)inst;
         this.fs = AbcFactory.FieldSig(fi);
         
-        if(fi.flags().isStatic())
+        if(inst.flags().isStatic())
             modifiers |= Modifier.STATIC;
         
         ArrayList paramTypes = new ArrayList();
