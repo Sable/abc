@@ -618,18 +618,18 @@ public class AroundWeaver {
 			List dynamicActuals,
 			int shadowID,
 			WeavingContext wc,
-			Stmt beforeFailPoint) {
+			Stmt failPoint) {
 			{
 				LocalGeneratorEx localgen = new LocalGeneratorEx(joinpointBody);	
-				Stmt failPoint = Jimple.v().newNopStmt();
+				//Stmt failPoint = Jimple.v().newNopStmt();
 				
 				joinpointStatements.insertBefore(failPoint, end);
-				joinpointStatements.insertBefore(beforeFailPoint, failPoint);
+				//joinpointStatements.insertBefore(beforeFailPoint, failPoint);
 	
 				// weave in residue
 				Stmt endResidue = adviceAppl.residue.codeGen(joinpointMethod, localgen, joinpointStatements, begin, failPoint, wc);
 	
-				
+				// debug("weaving residue: " + adviceAppl.residue);
 				if (!(adviceAppl.residue instanceof AlwaysMatch)) {
 					InvokeExpr directInvoke;
 					List directParams = new LinkedList();
@@ -967,7 +967,7 @@ public class AroundWeaver {
 					Stmt s=Jimple.v().newAssignStmt(l, 
 						Restructure.JavaTypeInfo.getDefaultValue(adviceMethod.getReturnType()));
 					joinpointStatements.insertAfter(s, begin);
-					returnedLocal=l;					
+					returnedLocal=l;			
 				}
 			} else {
 				// unexpected statement type
