@@ -48,7 +48,6 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
     }
 
     public Node disambiguate(DeclareParentsAmbiguityRemover ar) throws SemanticException {
-	System.err.print("Declare parents impl:");
 	TypedList interfaces_disam = new TypedList(new ArrayList(), TypeNode.class, false);
 	Iterator ti = interfaces.iterator();
 	while (ti.hasNext()) {
@@ -56,7 +55,6 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 	    tn = (TypeNode)ar.disamb(tn);
 	    interfaces_disam.add(tn);
 	}
-	System.err.println();
 	interfaces = interfaces_disam;
 	return this;
     }

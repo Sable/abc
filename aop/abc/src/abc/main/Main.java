@@ -237,6 +237,7 @@ public class Main {
     public void weave() throws CompilerFailedException {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
+        AbcTimer.mark("Declare Parents");
 
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
@@ -262,8 +263,6 @@ public class Main {
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
         
-        // We should now have all classes as jimple
-
         // Make sure that all the standard AspectJ shadow types are loaded
         AspectJShadows.load();
         AbcTimer.mark("Load shadow types");

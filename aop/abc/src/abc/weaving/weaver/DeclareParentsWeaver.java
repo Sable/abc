@@ -37,7 +37,9 @@ public class DeclareParentsWeaver {
 		    while (sii.hasNext()) {
 			SootClass si = (SootClass)sii.next();
 			// Make the class implement the interface
-			System.out.println(sc+" implements "+si);
+			if (abc.main.Debug.v().declareParents) {
+			    System.out.println(sc+" implements "+si);
+			}
 			sc.addInterface(si);
 		    }
 		}
@@ -49,7 +51,9 @@ public class DeclareParentsWeaver {
 		while (sci.hasNext()) {
 		    SootClass sc = (SootClass)sci.next();
 		    // Make the class extend the parent
-		    System.out.println(sc+" extends "+sp);
+		    if (abc.main.Debug.v().declareParents) {
+			System.out.println(sc+" extends "+sp);
+		    }
 		    sc.setSuperclass(sp);
 		}
 	    }
