@@ -140,8 +140,8 @@ public class Main {
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
-		abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
-		abc.weaving.weaver.CflowIntraAggregate.reset();
+                abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
+                abc.weaving.weaver.CflowIntraAggregate.reset();
 
         v=null;
     }
@@ -155,7 +155,7 @@ public class Main {
         // display the abc version along with the version
         // of any loaded extension
         G.v().out.print(getAbcExtension().versions());
- 
+
         G.v().out.println("... using Soot toolkit version " +
                 soot.Main.v().versionString);
         G.v().out.println("... using Polyglot compiler toolkit version " +
@@ -214,7 +214,7 @@ public class Main {
         String argTo() {
             String top = top();
             shift();
-            if(isEmpty()) 
+            if(isEmpty())
                 throw new IllegalArgumentException("Missing argument to " + top);
             return top();
         }
@@ -320,7 +320,7 @@ public class Main {
 
             // -target 1.1,  -target 1.2,  -target 1.3, -target 1.4
             else if (args.top().equals("-target"))
-            { 
+            {
                 String arg = args.argTo();
                 if (arg.equals("1.1") || arg.equals("1.2") ||
                         arg.equals("1.3") || arg.equals("1.4"))
@@ -333,7 +333,7 @@ public class Main {
 
             // -source 1.3,  -source 1.4
             else if (args.top().equals("-source"))
-            { 
+            {
                 String arg = args.argTo();
                 if (arg.equals("1.3"))
                     compilerOptionIgnored("-source 1.3",
@@ -428,7 +428,7 @@ public class Main {
             {
                 abcExtensionPackage = args.argTo();
             }
-            else if (args.top().equals("-v")) {
+            else if (args.top().equals("-verbose") || args.top().equals("--verbose")) {
                 abc.main.Debug.v().verbose=true;
             }
             else if (args.top().startsWith("@") || args.top().equals("-argfile")) {
@@ -487,7 +487,7 @@ public class Main {
             // handle polyglot-specific options,
             //   must be between +polyglot -polyglot
             else if (args.top().equals("+polyglot"))
-            { 
+            {
                 while (!args.isEmpty() && !args.top().equals("-polyglot"))
                 { polyglot_args.add(args.top());
                     args.shift();
