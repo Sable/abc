@@ -66,6 +66,7 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
+import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Tag;
 import soot.util.Chain;
 import abc.main.Debug;
@@ -364,7 +365,17 @@ public class AroundWeaver {
 			//throw new RuntimeException();
 		}
 		
+		if (abc.main.Debug.v().aroundWeaver) {
+			try {
+				UnreachableCodeEliminator.v().transform(shadowMethod.getActiveBody());
+				shadowMethod.getActiveBody().validate();
+			} catch (RuntimeException e ) {
+				debug("shadow method: " + Util.printMethod(shadowMethod));
+				throw e;
+			}
+		}
 		
+		SootMethod adviceMethod=null;
 		try {
 
 			AdviceDecl adviceDecl = (AdviceDecl) adviceAppl.advice;
@@ -373,7 +384,16 @@ public class AroundWeaver {
 			AroundAdvice aroundSpec = (AroundAdvice) adviceSpec;
 			SootClass theAspect = adviceDecl.getAspect().getInstanceClass().getSootClass();
 			SootMethod method = adviceDecl.getImpl().getSootMethod();
-			
+			adviceMethod=method;
+			if (abc.main.Debug.v().aroundWeaver) {
+				try {
+					UnreachableCodeEliminator.v().transform(method.getActiveBody());
+					method.getActiveBody().validate();
+				} catch (RuntimeException e ) {
+					debug("advice method: " + Util.printMethod(method));
+					throw e;
+				}
+			}
 			AdviceMethod adviceMethodInfo = state.getAdviceMethod(method);
 			List sootLocalAdviceMethods=new LinkedList();
 			sootLocalAdviceMethods.addAll(adviceDecl.getLocalSootMethods());
@@ -414,6 +434,24 @@ public class AroundWeaver {
 				state.validate(); 
 				//validate();
 				//abc.soot.util.Validate.validate(Scene.v().getSootClass("org.aspectj.runtime.reflect.Factory"));
+		}
+		if (abc.main.Debug.v().aroundWeaver) {
+			try {
+				UnreachableCodeEliminator.v().transform(shadowMethod.getActiveBody());
+				shadowMethod.getActiveBody().validate();
+			} catch (RuntimeException e ) {
+				debug("shadow method: " + Util.printMethod(shadowMethod));
+				throw e;
+			}
+		}
+		if (abc.main.Debug.v().aroundWeaver) {
+			try {
+				UnreachableCodeEliminator.v().transform(adviceMethod.getActiveBody());
+				adviceMethod.getActiveBody().validate();
+			} catch (RuntimeException e ) {
+				debug("advice method: " + Util.printMethod(adviceMethod));
+				throw e;
+			}
 		}
 	}
 	
@@ -712,6 +750,7 @@ public class AroundWeaver {
 			public int numOfShadows=0;
 			
 			public void doWeave(AdviceApplication adviceAppl, SootMethod shadowMethod) {
+
 				AdviceApplicationInfo adviceApplication=new AdviceApplicationInfo(adviceAppl, shadowMethod);
 				adviceApplication.doWeave();
 				numOfShadows++;
@@ -783,7 +822,7 @@ public class AroundWeaver {
 					}
 					
 				}
-				public void doWeave() {					
+				public void doWeave() {						
 					Local lClosure=null;
 					SootClass closureClass=null;
 					List /*Local*/context=null;
@@ -1595,15 +1634,21 @@ public class AroundWeaver {
 					
 					adviceMethodInvocationStmts.add(invokeStmt);
 					
-					if (abc.main.Debug.v().aroundWeaver)
-						shadowMethodBody.validate();
+					//if (abc.main.Debug.v().aroundWeaver)
+					//	shadowMethodBody.validate();
 				}
 
 				
 				private Local findReturnedLocal() {
 					Body shadowMethodBody = shadowMethod.getActiveBody();
-					if (abc.main.Debug.v().aroundWeaver)
-						shadowMethodBody.validate();
+					if (abc.main.Debug.v().aroundWeaver) {
+						try {
+							shadowMethodBody.validate();
+						} catch (RuntimeException e ) {
+							debug("shadow method: " + Util.printMethod(shadowMethod));
+							throw e;
+						}
+					}
 					Chain shadowMethodStatements = shadowMethodBody.getUnits().getNonPatchingChain();
 					boolean bStatic = shadowMethod.isStatic();
 			
@@ -1641,6 +1686,7 @@ public class AroundWeaver {
 							try {
 								returnStmt = (ReturnStmt) shadowMethodStatements.getSuccOf(end);
 							} catch (Exception ex) {
+								debug(" " + Util.printMethod(shadowMethod));
 								throw new InternalAroundError("Expecting return statement after shadow " + "for execution advice in non-void method");
 							}
 			
@@ -2189,6 +2235,17 @@ public class AroundWeaver {
 				boolean bStaticProceedMethod, boolean bUseClosureObject) {
 			//		determine parameter mappings and necessary additions
 			
+
+			/*if (abc.main.Debug.v().aroundWeaver) {
+				try {
+					UnreachableCodeEliminator.v().transform(adviceBody);
+					adviceBody.validate();
+				} catch (RuntimeException e ) {
+					debug("shadow method: " + Util.printMethod(adviceBody.getMethod()));
+					throw e;
+				}
+			}*/
+
 			List /*Type*/ addedContextArgsTypes = new LinkedList();
 			
 			int[] argIndex;
@@ -2215,8 +2272,15 @@ public class AroundWeaver {
 				modifyDirectInterfaceInvocations(addedDynArgs, addedContextArgsTypes);
 			}
 			
-			if (abc.main.Debug.v().aroundWeaver)
-				adviceBody.validate();
+			/*if (abc.main.Debug.v().aroundWeaver) {
+				try {
+					UnreachableCodeEliminator.v().transform(adviceBody);
+					adviceBody.validate();
+				} catch (RuntimeException e ) {
+					debug("shadow method: " + Util.printMethod(adviceBody.getMethod()));
+					throw e;
+				}
+			}*/
 
 			generateProceedCalls(bStaticProceedMethod, bUseClosureObject, proceedMethod);
 			
