@@ -17,6 +17,7 @@ import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.jimple.ThrowStmt;
+import soot.jimple.IntConstant;
 import soot.util.Chain;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
@@ -62,56 +63,85 @@ public class AfterThrowingWeaver {
 	//    nop2:       nop;
 	//    endshadow:  nop;  
 	
-        Local catchLocal = lg.generateLocal(
+        Local exception = lg.generateLocal(
 	                      RefType.v("java.lang.Throwable"), "exception");
         CaughtExceptionRef exceptRef = Jimple.v().newCaughtExceptionRef();
-        IdentityStmt idStmt = Jimple.v().newIdentityStmt(catchLocal, exceptRef);
+        IdentityStmt idStmt = Jimple.v().newIdentityStmt(exception, exceptRef);
         units.insertAfter(idStmt, goto1);
 
 	//have ... 
-	//    java.lang.Exception catchLocal;
+	//    java.lang.Exception exception;
 	//
 	//    goto1:      goto nop2; 
-	//    idStmt:     catchLocal := @caughtexception
+	//    idStmt:     exception := @caughtexception
 	//    nop2:       nop;  
 	//    endshadow:  nop;
                 
+
         // no params
-        Local l = lg.generateLocal(aspect.getType(), "theAspect");
+        Local theAspect = lg.generateLocal(aspect.getType(), "theAspect");
         AssignStmt assignStmt =  
 	  Jimple.v().
-	    newAssignStmt( l, 
+	    newAssignStmt( theAspect, 
 		           Jimple.v().
 			     newStaticInvokeExpr(aspect.getMethod("aspectOf",
 				                             new ArrayList())));
         units.insertAfter( assignStmt, idStmt);
 
-        ThrowStmt throwStmt = Jimple.v().newThrowStmt(catchLocal);
+        ThrowStmt throwStmt = Jimple.v().newThrowStmt(exception);
         units.insertAfter(throwStmt, assignStmt);
 
         Chain invokestmts =  
                 PointcutCodeGen.makeAdviceInvokeStmt 
-		                      (l,adviceappl,units,lg);
+		                      (theAspect,adviceappl,units,lg);
 	for (Iterator stmtlist = invokestmts.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
 	    units.insertBefore(nextstmt,throwStmt);
+	  }
+
+	if (method.getName().equals("<clinit>")) 
+	  // have to handle case of ExceptionInInitialzerError
+	  {  //  if (exception instanceof java.lang.ExceptionInIntializerError)
+	     //     throw (exception); 
+	     debug("Adding extra check in clinit");
+
+	     Local isInitError = 
+	         lg.generateLocal(soot.BooleanType.v(),"isInitError");
+
+	     Stmt assignbool = Jimple.v().
+	        newAssignStmt(isInitError,   
+		    Jimple.v().
+		      newInstanceOfExpr(
+		        exception, 
+		        RefType.v("java.lang.ExceptionInInitializerError")));
+
+             Stmt ifstmt = Jimple.v().
+	          newIfStmt( Jimple.v().
+		    newEqExpr(isInitError,IntConstant.v(0)), 
+		    assignStmt );
+
+	     ThrowStmt throwInitError = Jimple.v().newThrowStmt(exception);
+
+	     units.insertAfter(throwInitError, idStmt);
+	     units.insertAfter(ifstmt , idStmt);
+	     units.insertAfter(assignbool,idStmt);
 	  }
 
 	Stmt beginshadow = adviceappl.shadowpoints.getBegin();
         Stmt begincode = (Stmt) units.getSuccOf(beginshadow);
 
 	//have ... 
-	//    java.lang.Exception catchLocal;
-	//    <AspectType> l;
+	//    java.lang.Exception exception;
+	//    <AspectType> theAspect;
 	//
 	//    beginshadow:   nop
 	//    begincode:     <some statement>
 	//       ....        <stuff in between>
 	//    goto1:         goto nop2;
-	//    idStmt:        catchLocal := @caughtexception;
-	//    assignStmt:    l = new AspectOf();
+	//    idStmt:        exception := @caughtexception;
+	//    assignStmt:    theAspect = new AspectOf();
 	//             .... invoke statements .... 
-	//    throwStmt:     throw catchLocal;
+	//    throwStmt:     throw exception;
 	//    nop2:          nop;  
 	//    endshadow:     nop;
 

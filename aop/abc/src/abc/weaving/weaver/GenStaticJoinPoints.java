@@ -251,10 +251,12 @@ public class GenStaticJoinPoints {
 	     fc.getMethod(
 			 "void <init>(java.lang.String,java.lang.Class)");
         ArrayList args = new ArrayList(2);
+	debug("tags attached to class are : " + sc.getTags());
+	debug("sourcefilename of sc : " + sc.getTag("SourceFileTag"));
 	// FIXME: should be sourcefile, how to get this info??
         args.add(StringConstant.v(sc.getName()+".java")); 
         args.add(javaclass);
-        Stmt initfactory = Jimple.v().
+         Stmt initfactory = Jimple.v().
 		     newInvokeStmt( Jimple.v().
 			 newSpecialInvokeExpr(factory_local,finit,args));
         debug("Generating init " + initfactory);

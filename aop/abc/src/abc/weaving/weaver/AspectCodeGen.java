@@ -2,7 +2,6 @@ package abc.weaving.weaver;
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
-import soot.javaToJimple.*;
 import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
@@ -66,16 +65,18 @@ public class AspectCodeGen {
 	// get the class for org.aspectj.lang.noAspectBoundException
         SootClass nabe = Scene.v().getSootClass(
 	                          "org.aspectj.lang.NoAspectBoundException");
-        Local r0 = Jimple.v().newLocal("r0", cl.getType());
-        Local r1 = Jimple.v().newLocal("r1", nabe.getType() );
-	Local causeLocal = Jimple.v().
-	  newLocal("r2", RefType.v("java.lang.Throwable"));
+        Local theAspect = Jimple.v().newLocal("theAspect", cl.getType());
+        Local nabException = Jimple.v().newLocal("nabException", 
+	                                         nabe.getType() );
+	Local failureCause = Jimple.v().
+	  newLocal("failureCause", RefType.v("java.lang.Throwable"));
 
-	// add locals:   <AspectType> r0; 
-	//               org.aspectj.lang.NoAspectBoundException r1; 
-        b.getLocals().add(r0);
-        b.getLocals().add(r1);
-        b.getLocals().add(causeLocal);
+	// add locals:   <AspectType> theAspect; 
+	//               org.aspectj.lang.NoAspectBoundException nabException; 
+	//               java.lang.Throwable failurecause; 
+        b.getLocals().add(theAspect);
+        b.getLocals().add(nabException);
+        b.getLocals().add(failureCause);
 
 	// make a field ref to static field ajc$perSingletonInstance
         StaticFieldRef ref = Jimple.v().
@@ -84,10 +85,12 @@ public class AspectCodeGen {
 	// get the units of the body so we can insert new Jimple stmts
         Chain units = b.getUnits(); 
 
-        units.addLast( Jimple.v().newAssignStmt( r0, ref));
-        Stmt newExceptStmt = Jimple.v().newAssignStmt( r1, Jimple.v().newNewExpr( nabe.getType() ) );
-        units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( r0, NullConstant.v() ), newExceptStmt ));
-        units.addLast( Jimple.v().newReturnStmt( r0 ) );
+        units.addLast( Jimple.v().newAssignStmt( theAspect, ref));
+        Stmt newExceptStmt = Jimple.v().newAssignStmt( nabException, 
+	                     Jimple.v().newNewExpr( nabe.getType() ) );
+        units.addLast( Jimple.v().newIfStmt( Jimple.v().
+	          newEqExpr( theAspect, NullConstant.v() ), newExceptStmt ));
+        units.addLast( Jimple.v().newReturnStmt( theAspect ) );
         units.addLast( newExceptStmt );
 	List typelist = new LinkedList();
 	typelist.add(RefType.v("java.lang.String"));
@@ -99,28 +102,31 @@ public class AspectCodeGen {
 	    newStaticFieldRef(cl.getFieldByName("ajc$initFailureCause"));
 	Stmt assigntocause =
 	   Jimple.v().
-	     newAssignStmt(causeLocal,causefield);
+	     newAssignStmt(failureCause,causefield);
 	units.addLast(assigntocause);
 	List arglist = new LinkedList();
         // string constant with name of aspect
 	arglist.add(StringConstant.v(cl.getName())); 
 	// local pointing to cause
-	arglist.add(causeLocal);  
+	arglist.add(failureCause);  
 	// get the cause instance
 	Stmt exceptioninit = 
 	   Jimple.v().
 	     newInvokeStmt( Jimple.v().newSpecialInvokeExpr
-		 ( r1, initthrowmethod, arglist) ) ; 
+		 ( nabException, initthrowmethod, arglist) ) ; 
         units.addLast( exceptioninit );
-        units.addLast( Jimple.v().newThrowStmt( r1 ) );
+        units.addLast( Jimple.v().newThrowStmt( nabException ) );
 
 	// have generated:
-	//    r0 = <AspectType>.ajc$perSingletonInstance;
-	//    if (r0 == null) goto newExceptStmt;
-	//    return(r0)
-	//    newExceptStmt: r1 = new org.aspectj.lang.noAspectBoundException
-	//    org.aspectj.lang.noAspectBoundException.<init>()
-	//    throw r1
+	//    theAspect = <AspectType>.ajc$perSingletonInstance;
+	//    if (theAspect == null) goto newExceptStmt;
+	//    return(theAspect)
+	//    newExceptStmt: nabException = 
+	//                  new org.aspectj.lang.noAspectBoundException
+	//    failureCause = ajc$initFailureCause
+	//    org.aspectj.lang.noAspectBoundException.nabException.<init>
+	//                  ("AspectName",failureCause)
+	//    throw nabException 
     }
 
 
@@ -135,10 +141,10 @@ public class AspectCodeGen {
         hasAspect.setActiveBody(b);
 
 	// make a LocalGenerator (will give new local names)
-        LocalGenerator lg = new LocalGenerator(b);
+        LocalGeneratorEx lg = new LocalGeneratorEx(b);
 
-	// make a local,   <AspectType> r0;
-        Local r0 = lg.generateLocal(cl.getType());
+	// make a local,   <AspectType> theAspect;
+        Local theAspect = lg.generateLocal(cl.getType(),"theAspect");
         
 	// make a static ref,  <AspectType>.ajc$PerSingletonInstance
         StaticFieldRef ref = Jimple.v().
@@ -147,18 +153,18 @@ public class AspectCodeGen {
 	// get a Chain of Jimple stmts so new stmts can be inserted
         Chain units = b.getUnits(); 
         
-        units.addLast( Jimple.v().newAssignStmt( r0, ref));
+        units.addLast( Jimple.v().newAssignStmt( theAspect, ref));
         ReturnStmt ret0 = Jimple.v().newReturnStmt( IntConstant.v(0) );
 
-        units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( r0, 
+        units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( theAspect, 
 		          NullConstant.v() ), ret0 ));
         
         units.addLast( Jimple.v().newReturnStmt( IntConstant.v(1) ) );
 
         units.addLast( ret0);
 	// have generated:
-	//    r0 = <AspectType>.ajc$PerSingleonInstance
-	//    if (r0 == null) goto newReturnStmt
+	//    theAspect = <AspectType>.ajc$PerSingleonInstance
+	//    if (theAspect == null) goto newReturnStmt
 	//    return(1)
 	//    newReturnStmt: return(0)
     }
@@ -182,27 +188,27 @@ public class AspectCodeGen {
         Body b = Jimple.v().newBody(postClinit);
         postClinit.setActiveBody(b);
 
-	// create local:   <AspectType> r0;
-        Local r0 = Jimple.v().newLocal("r0", cl.getType());
-        b.getLocals().add(r0);
+	// create local:   <AspectType> theAspect;
+        Local theAspect = Jimple.v().newLocal("theAspect", cl.getType());
+        b.getLocals().add(theAspect);
 
 	// get the chain of Jimple statments for the body
         Chain units = b.getUnits();
         units.addLast( Jimple.v().
-	  newAssignStmt( r0, Jimple.v().newNewExpr( cl.getType() ) ) );
+	  newAssignStmt( theAspect, Jimple.v().newNewExpr( cl.getType() ) ) );
         units.addLast( Jimple.v().
 	  newInvokeStmt( Jimple.v().
-	    newSpecialInvokeExpr( r0, 
+	    newSpecialInvokeExpr( theAspect, 
 	      cl.getMethod( "<init>", new ArrayList() ) ) ) );
         StaticFieldRef ref = Jimple.v().
 	    newStaticFieldRef(cl.getFieldByName("ajc$perSingletonInstance"));
-        units.addLast( Jimple.v().newAssignStmt( ref, r0 ) );
+        units.addLast( Jimple.v().newAssignStmt( ref, theAspect ) );
         units.addLast( Jimple.v().newReturnVoidStmt() ); 
 
 	// have generated the body:
-	//    r0 = new <AspectType> ();
-	//    <AspectType>.<init>();
-	//    <AspectType>.ajc$perSingletonInstance = r0;
+	//    theAspect = new <AspectType> ();
+	//    theAspect.<init>();
+	//    <AspectType>.ajc$perSingletonInstance = theAspect;
 	//    return;
 
 	// now put call to ajc$postClinit() into body of Clinit()
@@ -230,7 +236,7 @@ public class AspectCodeGen {
 	// then the units
         units = b2.getUnits();
         // get a local generator for the body
-	LocalGenerator localgen = new LocalGenerator(b2);
+	LocalGeneratorEx localgen = new LocalGeneratorEx(b2);
 	// need a snapshotIterator because we are modifying units as we
 	// traverse it
         Iterator it = units.snapshotIterator();
@@ -253,7 +259,8 @@ public class AspectCodeGen {
 		units.insertBefore(goto_s,s);
 	        // catchlocal := @caughtexception
 		Local catchLocal =
-		    localgen.generateLocal(RefType.v("java.lang.Throwable"));
+		    localgen.generateLocal(RefType.v("java.lang.Throwable"),
+			"catchLocal");
 		CaughtExceptionRef exceptRef = 
 		    Jimple.v().newCaughtExceptionRef();
 		Stmt exceptionidentity =
