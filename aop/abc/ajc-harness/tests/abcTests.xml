@@ -9242,5 +9242,12 @@
 	<compile files="foo/Foo.java"/>
     </ajc-test>
 
+    <ajc-test num="992" dir="abctests/bugs"
+        title="cast pointcut can interact badly with jimple type assignment">
+       <compile files="cast.jar,CastAspect.java" options="-ext,abc.eaj"/>
+       <run class="Cast"/>
+    </ajc-test>
+
+
 </suite>
 
