@@ -153,7 +153,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		    
 	String this_type = this.type().toString();
 	String aspectOf = this_type+" "+this_type+".aspectOf("+(per_object?"java.lang.Object":"")+")";
-	String hasAspect = "boolean "+this_type+".hasAspect()";
+	String hasAspect = "boolean "+this_type+".hasAspect("+(per_object?"java.lang.Object":"")+")";
 	MethodCategory.register(aspectOf, MethodCategory.ASPECT_INSTANCE);
 	MethodCategory.register(hasAspect, MethodCategory.ASPECT_INSTANCE);
     }
