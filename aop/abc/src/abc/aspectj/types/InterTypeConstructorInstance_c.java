@@ -4,6 +4,8 @@ package abc.aspectj.types;
 import java.util.List;
 import java.util.LinkedList;
 
+import com.sun.rsasign.f;
+
 import polyglot.util.Position;
 import polyglot.util.UniqueID;
 
@@ -68,25 +70,33 @@ public class InterTypeConstructorInstance_c
 	}
 	
 	public ConstructorInstance mangled() {
-		return mangled;
+		if (flags().isPrivate() || flags().isPackage())
+			return mangled;
+		else
+			return this;
 	}
 	
 	public ConstructorCall mangledCall(ConstructorCall cc, AspectJNodeFactory nf, AspectJTypeSystem ts) {
-		Expr nl = nf.NullLit(cc.position());
-		nl.type(mangleType);
-		List args = new LinkedList(cc.arguments());
-		args.add(nl);
-		ConstructorCall nc = cc.arguments(args);
-		return nc.constructorInstance(mangled());
+		if (flags().isPrivate() || flags.isPackage()) {
+			Expr nl = nf.NullLit(cc.position());
+			nl.type(mangleType);
+			List args = new LinkedList(cc.arguments());
+			args.add(nl);
+			ConstructorCall nc = cc.arguments(args);
+			return nc.constructorInstance(mangled()); 
+		} else return cc;
 	}
 
 	public New mangledNew(New cc, AspectJNodeFactory nf, AspectJTypeSystem ts) {
-		Expr nl = nf.NullLit(cc.position());
-		nl.type(mangleType);
-		List args = new LinkedList(cc.arguments());
-		args.add(nl);
-		New nc = cc.arguments(args);
-		return nc.constructorInstance(mangled());
+		New nc;
+		if (flags().isPrivate() || flags().isPackage()) {
+			Expr nl = nf.NullLit(cc.position());
+			nl.type(mangleType);
+			List args = new LinkedList(cc.arguments());
+			args.add(nl);
+		 	nc = cc.arguments(args);
+			return nc.constructorInstance(mangled()); 
+		} else return cc;
 	}
 	
 	public Formal mangledFormal(AspectJNodeFactory nf, AspectJTypeSystem ts) {

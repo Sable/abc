@@ -29,6 +29,7 @@ import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.PointcutDecl;
 import abc.aspectj.ast.ProceedCall;
 
+import abc.aspectj.ast.IntertypeDecl;
 import abc.aspectj.ast.IntertypeFieldDecl;
 import abc.aspectj.ast.IntertypeMethodDecl;
 import abc.aspectj.ast.IntertypeFieldDecl_c;
@@ -48,7 +49,7 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
     private Stack /* List AdviceDecl */ advices;
     private Stack /* ParsedClassType */ container; // Keep track of current container
-    private Stack /* IntertypeMethodDecl */ itmethod; // Make this a stack of IntertypeDecl
+    private Stack /* IntertypeDecl */ itd;      
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
@@ -62,7 +63,7 @@ public class AspectMethods extends NodeVisitor {
 		this.proceeds = new Stack();
 		this.advices = new Stack();
 		this.container = new Stack();
-		this.itmethod = new Stack();
+		this.itd = new Stack();
 	}
 	
 	public NodeVisitor enter(Node n) {
@@ -81,8 +82,8 @@ public class AspectMethods extends NodeVisitor {
 			formals.push(ad.formals());
 			advices.push(ad);
 		}
-		if (n instanceof IntertypeMethodDecl) {
-			itmethod.push(n);
+		if (n instanceof IntertypeDecl) {
+			itd.push(n);
 		}
 		return this;
 	 }
@@ -90,6 +91,8 @@ public class AspectMethods extends NodeVisitor {
     public Node leave(Node parent, Node old, Node n, NodeVisitor v) {
  
 /* intertype declarations: */
+		if (n instanceof IntertypeDecl)
+			itd.pop(); // fall through to special cases
 		if (n instanceof Field) {
 			Field f = (Field) n;
 			if (f.fieldInstance() instanceof InterTypeFieldInstance_c) {
@@ -99,14 +102,19 @@ public class AspectMethods extends NodeVisitor {
 			if (f.target() instanceof HostSpecial_c) {
 				HostSpecial_c hs = (HostSpecial_c) f.target();
 				if (hs.kind() == Special.SUPER) {
-					IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) itmethod.peek();
-					return itmd.superField(nf,ts,f);
+					IntertypeDecl id = (IntertypeDecl) itd.peek();
+					return id.getSupers().superField(nf,ts,f,id.host().type().toClass(),id.thisReference(nf,ts));
 				}
 			}
 			return n;
 		}
 		if (n instanceof IntertypeFieldDecl_c) {
 			IntertypeFieldDecl_c itfd = (IntertypeFieldDecl_c) n;
+			if (itfd.init() != null) {
+				MethodDecl md = itfd.initMethod(nf,ts);
+				((List)methods.peek()).add(md);
+				itfd = (IntertypeFieldDecl_c) itfd.liftInit(nf,ts);
+			}
 			return itfd.accessChange(); // mangle name if private
 		}
 		if (n instanceof Call) {
@@ -118,10 +126,10 @@ public class AspectMethods extends NodeVisitor {
 			if (c.target() instanceof HostSpecial_c) {
 				HostSpecial_c hs = (HostSpecial_c) c.target();
 				if (hs.kind() == Special.SUPER) {
-					IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) itmethod.peek();
-					return itmd.superCall(nf,ts,c);
+					IntertypeDecl id = (IntertypeDecl) itd.peek();
+					return id.getSupers().superCall(nf,ts,c,id.host().type().toClass(),id.thisReference(nf,ts));
 				}
-			}
+			} // fall through to ProceedCall
 		}
 		if (n instanceof IntertypeMethodDecl_c) {
 			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
@@ -143,12 +151,12 @@ public class AspectMethods extends NodeVisitor {
 		}
 		if (n instanceof IntertypeConstructorDecl_c) {
 			IntertypeConstructorDecl_c itcd = (IntertypeConstructorDecl_c) n;
-			return itcd.accessChange(nf,ts);
+			return  ((IntertypeConstructorDecl_c) itcd.accessChange(nf,ts)).liftMethods(nf,ts,(List) methods.peek());
 		}
 		if (n instanceof HostSpecial_c) {
 			HostSpecial_c hs = (HostSpecial_c) n;
 			if (hs.kind() == Special.THIS)
-				return ((IntertypeMethodDecl_c) itmethod.peek()).thisReference(nf,ts);
+				return ((IntertypeDecl) itd.peek()).thisReference(nf,ts);
 			else return n;
 		}
 /* advice: */

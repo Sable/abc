@@ -11,19 +11,28 @@ import abc.weaving.matching.*;
 
 public class IntertypeAdjuster {
     public void adjust() {
-        // Generate Soot signatures for intertype methods and fields
+    // Generate Soot signatures for intertype methods and fields
+    // 	generate accessors for references to super.field
         for ( Iterator spfdIt = GlobalAspectInfo.v().getSuperFieldDispatches().iterator(); spfdIt.hasNext(); ) {
         	final SuperFieldDispatch sfd = (SuperFieldDispatch) spfdIt.next();
         	addSuperFieldDispatch( sfd );
         }
+    // 	generate accessors for super.call
         for( Iterator spdIt = GlobalAspectInfo.v().getSuperDispatches().iterator(); spdIt.hasNext(); ) {
         	final SuperDispatch sd = (SuperDispatch) spdIt.next();
         	addSuperDispatch( sd );
         }
+    // 	weave in intertype methods
         for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
             final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
             addMethod( imd );
         }
+   // 	weave in intertype constructors
+		for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeConstructorDecls().iterator(); imdIt.hasNext(); ) {
+		 	final IntertypeConstructorDecl icd = (IntertypeConstructorDecl) imdIt.next();
+		 	addConstructor( icd );
+	 	} 
+   	//	weave in intertype fields
         for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
             final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
             addField( ifd );
@@ -31,40 +40,40 @@ public class IntertypeAdjuster {
     }
     
     private void addSuperFieldDispatch( SuperFieldDispatch sfd ) {
-    // the field that we wish to access, in the superclass of sd.target()
+    // 	the field that we wish to access, in the superclass of sd.target()
     	FieldSig field = sfd.getFieldSig();
     	
-    // create a new method for the dispatch
+    // 	create a new method for the dispatch
     	Type retType = field.getType().getSootType();
     	List parms = new ArrayList(); // no parameters
     	int modifiers = Modifier.PUBLIC;
     	
-	// Create the method
+	// 	create the method
 		SootMethod sm = new SootMethod( 
 								  sfd.getName(),   // the new name in the target
 								  parms,
 								  retType,
 								  modifiers );
-	//create a body
+	//	create a body
 		Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
 		Chain ls = b.getLocals();
 		PatchingChain ss = b.getUnits();
-   //	the target of the field reference is "this : TargetType"
+	//  target of the field reference is "this : targetType"
 		SootClass sc = sfd.getTarget().getSootClass();
-		RefType rt = sc.getType(); 
-		ThisRef thisref = Jimple.v().newThisRef(rt); 
-		Local v = Jimple.v().newLocal("this$loc",rt); ls.add(v);
-		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v, thisref); ss.add(thisStmt);
+		RefType rt = sc.getType();
+		ThisRef thisref = Jimple.v().newThisRef(rt);
+		Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
 	//  get the field we want to retrieve
 		SootField sf = field.getSootField();
-		FieldRef sfref = Jimple.v().newInstanceFieldRef(v,sf);
-	// return the value
-		Local r = Jimple.v().newLocal("ret$val",retType);  ls.add(r);
+		FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
+	// 	return the value
+		Local r = Jimple.v().newLocal("$result",retType);  ls.add(r);
 		AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, sfref); ss.add(rStmt);
 		ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
 		ss.add(stmt);
-	// Add method to the target class
-		sc.addMethod(sm);				  
+	// 	add method to the target class
+		sfd.getTarget().getSootClass().addMethod(sm);				  
     }
     
 
@@ -130,7 +139,7 @@ public class IntertypeAdjuster {
 					ReturnVoidStmt stmt2 = Jimple.v().newReturnVoidStmt();
 					ss.add(stmt1); ss.add(stmt2);
 				} else {
-					Local r = Jimple.v().newLocal("another$loc",retType); ; ls.add(r);
+					Local r = Jimple.v().newLocal("result",retType);  ls.add(r);
 					AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, ie); ss.add(rStmt);
 					ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
 					ss.add(stmt);
@@ -219,16 +228,16 @@ public class IntertypeAdjuster {
     // argument set-up
 	    List args = new LinkedList();
     //	the first parameter of the impl is "this : TargetType"
-		RefType rt = sc.getType(); 
-		ThisRef thisref = Jimple.v().newThisRef(rt); 
-		Local v = Jimple.v().newLocal("this$loc",rt); ; ls.add(v);
-		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v, thisref); ss.add(thisStmt);
+		RefType rt = sc.getType();
+		ThisRef thisref = Jimple.v().newThisRef(rt);
+		Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
 		args.add(v);
 	// add references to the other parameters
 		int index = 0;
 		for (Iterator formals=parms.iterator(); formals.hasNext(); ) {
 			final Type formalType = (Type) formals.next();
-			Local p = Jimple.v().newLocal("param$"+index,formalType); ; ls.add(p);
+			Local p = Jimple.v().newLocal("$param"+index,formalType); ; ls.add(p);
 			ParameterRef pr = Jimple.v().newParameterRef(formalType,index);
 			IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
 			args.add(p);
@@ -243,10 +252,10 @@ public class IntertypeAdjuster {
 			ReturnVoidStmt stmt2 = Jimple.v().newReturnVoidStmt();
 			ss.add(stmt1); ss.add(stmt2);
 		} else {
-			            Local r = Jimple.v().newLocal("another$loc",retType); ls.add(r);
-						AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, ie); ss.add(rStmt);
-						ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
-						ss.add(stmt);
+			Local r = Jimple.v().newLocal("$result",retType); ls.add(r);
+			AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, ie); ss.add(rStmt);
+			ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
+			ss.add(stmt);
 		}
     // Add method to the class
         sc.addMethod(sm);
@@ -287,10 +296,126 @@ public class IntertypeAdjuster {
                     field.getType().getSootType(),
                     modifiers );
             cl.addField(newField);
+            
         }
 
         // TODO: Add dispatch methods
     }
+    
+
+	
+	private void addConstructor( IntertypeConstructorDecl icd ) {
+        // the target type: we are going to add the new constructor
+		SootClass scTarget = icd.getTarget().getSootClass();
+		
+		// constructors have void return type
+		Type retType = soot.VoidType.v();
+		
+		// get the types of formal parameters
+		List parms = new ArrayList();
+		for( Iterator formalIt = icd.getFormalTypes().iterator(); formalIt.hasNext(); ) {
+			final AbcType formalType = (AbcType) formalIt.next();
+			parms.add(formalType.getSootType());
+		}
+
+		// set the modifiers
+		int modifiers = icd.getModifiers();
+		modifiers |= Modifier.PUBLIC;
+		modifiers &= ~Modifier.PRIVATE;
+		modifiers &= ~Modifier.PROTECTED;
+       
+		// create the method
+		SootMethod sm = new SootMethod( 
+					  "<init>",   // the name of a constructor is always "<init>"
+					  parms,
+					  retType,
+					  modifiers );
+
+		for( Iterator exceptionIt = icd.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+			final SootClass exception = (SootClass) exceptionIt.next();
+			sm.addException( exception );
+		}
+		
+		// the body of the constructor is of the form
+		//		qualifier.ccall(aspect.e1(f1,f2,...,fn), ..., aspect.ek(f1,f2,...,fn));  // super or this call
+		//		aspect.body(this,f1,f2,...,fn)
+		
+		Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+		Chain ls = b.getLocals();
+		PatchingChain ss = b.getUnits();
+		// get the "this" reference
+		RefType rt = scTarget.getType(); 
+		ThisRef thisref = Jimple.v().newThisRef(rt); 
+		Local thisLoc = Jimple.v().newLocal("this$loc",rt);  ls.add(thisLoc);
+		IdentityStmt thisstmt = Jimple.v().newIdentityStmt(thisLoc,thisref); ss.add(thisstmt);
+		// construct the arguments of the ei's and body: (f1,f2,...,fn)
+		List eiArgs = new ArrayList();
+		int index = 0;
+		for (Iterator formals=parms.iterator(); formals.hasNext(); ) {
+				 final Type formalType = (Type) formals.next();
+				 Local p = Jimple.v().newLocal("$param"+index,formalType); ; ls.add(p);
+				 ParameterRef pr = Jimple.v().newParameterRef(formalType,index);
+				 IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
+				 eiArgs.add(p);
+				 index++;
+		}
+		// now set up the arguments for the ccall itself, by calling each of the ei
+		// and storing the result in a local. Note that some arguments can just be references
+		// to parameters, in which case there is no method to invoke.
+		List ccArgs = new ArrayList(); index = 0;
+		List ccArgsTypes = new ArrayList();
+		for (Iterator args = icd.getArguments().iterator(); args.hasNext(); ) {
+			Object arg = args.next();
+			if (arg instanceof Integer) {
+					int i = ((Integer) arg).intValue();
+					System.out.println("i="+i);
+					ccArgs.add(eiArgs.get(i));
+					ccArgsTypes.add(parms.get(i));
+			}
+			if (arg instanceof MethodSig) {
+				// get the method that needs to be called
+				SootMethod sa = ((MethodSig) arg).getSootMethod()	;			
+				// now invoke the implementation in the originating aspect
+				InvokeExpr ie = Jimple.v().newStaticInvokeExpr(sa,eiArgs);
+				Local p = Jimple.v().newLocal("e"+index, sa.getReturnType());  ls.add(p);
+				AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(p, ie); ss.add(rStmt);
+				ccArgs.add(p); ccArgsTypes.add(sa.getReturnType());
+			}
+			index++;
+		}
+		// do the constructor call
+		SootClass ccReceiver;
+		if (icd.getQualifier() != null) // to an enclosing instance?
+			ccReceiver = icd.getQualifier().getSootClass();
+		else
+			ccReceiver = scTarget;
+		if (icd.getKind() == IntertypeConstructorDecl.SUPER) // go one up if it's super(..)
+			ccReceiver = ccReceiver.getSuperclass();
+		SootMethod constructor = ccReceiver.getMethod("<init>",ccArgsTypes);
+	
+		
+		Expr ccallExpr = Jimple.v().newSpecialInvokeExpr(thisLoc,constructor,ccArgs);
+		InvokeStmt ccall = Jimple.v().newInvokeStmt(ccallExpr);
+		ss.add(ccall);
+		
+		// call static method aspect.body(this,f1,f2,...,fn)
+		//  the first argument is "this"
+		List bodyArgs = new ArrayList(eiArgs);
+		bodyArgs.add(0,thisLoc);
+		SootMethod bodyMethod = icd.getBody().getSootMethod();
+		Expr bodyExpr = Jimple.v().newStaticInvokeExpr(bodyMethod,bodyArgs);
+		InvokeStmt body = Jimple.v().newInvokeStmt(bodyExpr);
+		ss.add(body);
+		
+		//	return
+		ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
+		ss.add(ret);
+		
+		// inject the new constructor into the target type
+		scTarget.addMethod(sm);	
+		
+	}
+	
 
     private boolean implementsInterface( SootClass child, SootClass iface ) {
         while(true) {
@@ -301,5 +426,120 @@ public class IntertypeAdjuster {
             child = superClass;
         }
     }
+    
+	public void initialisers() {
+		//	weave in intertype fields
+			for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
+				final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
+				initialiseField( ifd );
+			}
+		}
+    
+	private void initialiseField( IntertypeFieldDecl ifd ) {
+		if (ifd.getInit() == null)
+			return;
+			FieldSig field = ifd.getTarget();
+
+			int modifiers = field.getModifiers();
+			modifiers |= Modifier.PUBLIC;
+			modifiers &= ~Modifier.PRIVATE;
+			modifiers &= ~Modifier.PROTECTED;
+
+			SootClass cl = field.getDeclaringClass().getSootClass();
+			if( cl.isInterface() ) {
+				for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
+					final SootClass childClass = (SootClass) childClassIt.next();
+					if( childClass.isInterface() ) continue;
+					if( !implementsInterface(childClass, cl) ) continue;
+					if( childClass.hasSuperclass() 
+					&& implementsInterface(childClass.getSuperclass(), cl) )
+						continue;
+
+					// Add the field itself
+					SootField newField = new SootField(
+							field.getName(),
+							field.getType().getSootType(),
+							modifiers );
+					
+				// TODO: also weave into constructors here...
+
+				}
+			} else {
+            
+            	if (Modifier.isStatic(modifiers)) {
+            		// add a call to the initialiser method from clinit of target class
+                    // if it doesn't exist, create one.	
+            			SootMethod clinit; Body b;
+            			try { 
+            				clinit = cl.getMethodByName("<clinit>");
+            				b = clinit.getActiveBody();
+            			} catch (java.lang.RuntimeException s) {
+							clinit = new SootMethod( 
+											  "<clinit>",   
+											  new ArrayList(),
+											  VoidType.v(),
+											  Modifier.STATIC | Modifier.PUBLIC );
+							b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
+							Chain ss = b.getUnits();
+							ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
+							ss.add(ret);
+            			}
+            			Chain ss = b.getUnits();
+            		// find first normal statement
+            			Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(ss);
+            		// get the method that initialises this field
+            		// which is a static method of the aspect that contains the ITD
+            			SootMethod initialiser = ifd.getInit().getSootMethod();
+            		// create the call
+            			List args = new ArrayList();
+            			InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initialiser,args);
+						Local res = Jimple.v().newLocal("result",initialiser.getReturnType()); b.getLocals().add(res);
+						AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
+						ss.insertBefore(as,initstmt);
+            		// get the field we want to initialise
+						SootField sf = field.getSootField();
+						FieldRef sfref = Jimple.v().newStaticFieldRef(sf); 
+					//  assign the value
+						AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
+						ss.insertBefore(rStmt,initstmt);
+            	}
+            	else {
+					// add a call to the initialiser method to any constructor of target class
+					// that calls "super.<init>"
+					for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
+						SootMethod clsm = (SootMethod) ms.next();
+						if (clsm.getName() == "<init>") {
+							Body b = clsm.getActiveBody();
+							Chain ss = b.getUnits();
+							// find unique super.<init>, throw exception if it's not unique
+							Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
+							// the following needs to be inserted right after initstmt
+							if (initstmt.getInvokeExpr().getMethod().getDeclaringClass() == cl.getSuperclass()) {
+								Chain units = b.getUnits();
+								Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
+							// 	the method that initialises this field
+							//	which is a static method of the aspect that contains the ITD
+								SootMethod sm = ifd.getInit().getSootMethod(); 
+							//	now create the call
+								List args = new ArrayList();
+								args.add(b.getThisLocal()); // the only argument is "this"
+								InvokeExpr ie = Jimple.v().newStaticInvokeExpr(sm,args); 
+								Local res = Jimple.v().newLocal("result",sm.getReturnType()); b.getLocals().add(res);
+								AssignStmt as = Jimple.v().newAssignStmt(res,ie); 
+								units.insertBefore(as,followingstmt);
+							//  get the field we want to initialise
+								SootField sf = field.getSootField();
+								FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
+							//  assign the value
+								AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, res); 
+								units.insertBefore(rStmt,followingstmt);
+							}
+						}
+					}
+				}
+			}
+
+			// TODO: Add dispatch methods
+		}
 
 }

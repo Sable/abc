@@ -2,43 +2,140 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
+import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 import soot.*;
 
-/** An intertype constructor declaration. */
+/** An intertype constructor declaration. 
+  * 
+  * given an intertype constructor declaration of the form
+  *     mods A.new(formal1, ...,formaln) {
+  * 		ccall(E1,E2,...,Ek);  // optional call to super or this
+  *         init;
+  *     }
+  * 
+  * the frontend transforms it into the following shape
+  * 
+  * 	mods A.new(formal1, ..., formaln) {
+  *         qualifier.ccall(e1(this,formal1,...,formaln), ..., ek(this,formal1,...,formaln)); // no longer optional
+  * 		body(this,formal1,...,formaln);
+  *     }
+  * where e1,...,ek and body are newly generated methods in the 
+  * originating aspect.
+  * 
+  * The class below encodes the latter scheme, for code generation in the target class.
+  * 
+  * @author Oege de Moor
+  */
+
 public class IntertypeConstructorDecl extends Syntax {
-    private MethodSig target;
-    private MethodSig impl;
-    private Aspect aspect;
+	
+	static public int SUPER = 0;
+	static public int THIS = 1;
+	
+	private Aspect aspect;    								// originating aspect 
+	private AbcClass target;								// target of intertype decl
+	private int mod;												// modifier
+	private List /*<AbcType>*/ formalTypes;	// types of formal parameters
+	private List /*<String>*/ throwTypes;			// names of exceptions
+	private AbcClass qualifier;							// qualifier of inner ccall
+	private int kind;												// kind of inner ccall
+	private List /*<Integer | MethodSig>*/ arguments;	// dispatch methods (in aspect) to create arguments
+																				// of inner ccall
+	private MethodSig body;								// dispatch method (in aspect) to do the body of the
+																				// constructor
+	
 
-    public IntertypeConstructorDecl(MethodSig target, MethodSig impl, Aspect aspect, Position pos) {
-	super(pos);
-	this.target = target;
-	this.impl = impl;
-	this.aspect = aspect;
+    public IntertypeConstructorDecl( AbcClass target, 
+    																Aspect aspect, 
+    																int mod,
+    																List formalTypes,
+    																List throwTypes,
+    																AbcClass qualifier,
+    																int kind,
+    																List arguments,
+    																MethodSig body,
+    																Position pos) {
+		super(pos);
+		this.target = target;
+		this.aspect = aspect;
+		this.mod = mod;
+		this.formalTypes = formalTypes;
+		this.throwTypes = throwTypes;
+		this.qualifier = qualifier;
+		this.kind = kind;
+		this.arguments = arguments;
+		this.body = body;
     }
 
-    /** Get the method signature that this intertype constructor declaration
-     *  will end up having when it is woven in.
-     */
-    public MethodSig getTarget() {
-	return target;
+    /** Get the target where of the intertype decl */
+    public AbcClass getTarget() {
+		return target;
     }
 
-    /** Get the signature of the placeholder method that contains the
-     *  implementation of this intertype constructor declaration.
-     */
-    public MethodSig getImpl() {
-	return impl;
-    }
+	/** Get the modifiers of intertype constructor */
+	public int getModifiers() {
+	  return mod;
+	}
 
-    /** Get the aspect containing this intertype constructor declaration.
-     */
-    public Aspect getAspect() {
-	return aspect;
-    }
+	/** Get the originating aspect */
+	public Aspect getAspect() {
+	  	return aspect;
+	 }
 
-    public String toString() {
-	return "(in aspect "+aspect.getInstanceClass().getName()+") "+target+" { ... }";
-    }
+	/** Get the formal types of the intertype constructor.
+	   *  @return a list of {@link abc.weaving.aspectinfo.AbcType} objects.
+	   */
+	public List getFormalTypes() {
+		return formalTypes;
+	}
+
+	List sexc;
+	 /** Get the exceptions thrown by the method.
+	   *  @return a list of {@link soot.SootClass} objects.
+	   */
+	public List getExceptions() {
+		if (sexc == null) {
+			sexc = new ArrayList();
+			Iterator ei = throwTypes.iterator();
+			while (ei.hasNext()) {
+				String e = (String)ei.next();
+				sexc.add(Scene.v().getSootClass(e));
+		  	}
+	  	}
+	  	return sexc;
+	}
+
+	/* return the qualifier of the inner ccall in this intertype constructor (always an enclosing
+	 * instance of the target class)
+	 */
+	public AbcClass getQualifier() {
+		return qualifier;
+	}
+	
+	/* return the kind of the inner ccall in this intertype constructor: SUPER or THIS */
+	public int getKind() {
+		return kind;
+	}
+	
+	/* return a list that describes how the arguments of the inner ccall in this intertype constructor are to
+	 * be created: either an integer (the position of the formal parameter that is being referenced)
+	 * or a method signature (to be called as static aspect.m(this,f1,...,fk)), where the fi are the formals of this
+	 * constructor declaration.
+	 */
+	public List /*<Integer | MethodSig>*/ getArguments() {
+		return arguments;
+	}
+	
+	/* dispatch for the body of the constructor, to be called as static aspect.m(this,f1,...,fk) */	
+	public MethodSig getBody() {
+		return body;
+	}
+	
+	public String toString() {
+		return (target + ".new(" + formalTypes +") {...} from "+aspect);
+	}
+	
 }

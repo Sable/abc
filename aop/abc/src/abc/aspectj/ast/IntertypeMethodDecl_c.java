@@ -36,6 +36,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     protected TypeNode host;
     protected InterTypeMethodInstance_c itMethodInstance;
     protected LocalInstance thisParamInstance;
+    protected Supers supers;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -48,6 +49,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	super(pos,flags,returnType,
               name,formals,throwTypes,body);
 	this.host = host;
+	this.supers = new Supers();
     }
 
 	public TypeNode host() {
@@ -123,7 +125,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * introduce "this" as first parameter
 	 * @author Oege de Moor
 	 */
-	public IntertypeMethodDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+	public IntertypeDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts) {
 		
 		// create the new list of formals
 		TypeNode tn = nf.CanonicalTypeNode(position,thisParamInstance.type());
@@ -138,7 +140,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		newtypes.add(0,thisParamInstance.type());
 		mi = mi.formalTypes(newtypes);
 		
-		return (IntertypeMethodDecl) formals(formals).methodInstance(mi);
+		return (IntertypeDecl) formals(formals).methodInstance(mi);
 	}
 	
 	/**
@@ -257,111 +259,13 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	abc.weaving.aspectinfo.IntertypeMethodDecl imd = new abc.weaving.aspectinfo.IntertypeMethodDecl
 	    (target, impl, current_aspect, position());
 	gai.addIntertypeMethodDecl(imd);
-	gai.addSuperDispatches(supercalls(gai));
-	gai.addSuperFieldDispatches(superfields(gai));
+	gai.addSuperDispatches(supers.supercalls(gai));
+	gai.addSuperFieldDispatches(supers.superfields(gai));
     }
     
-    List superCalls = new LinkedList();
-    
-    public class SuperCall  {
-    	String name;
-    	MethodInstance mi;
-    	
-    	public SuperCall(String name, MethodInstance mi) {
-    		this.name = name;
-    		this.mi = mi;
-    	}
-    	
-    	public abc.weaving.aspectinfo.SuperDispatch
-    		        convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-					List formals = new ArrayList();
-					Iterator fi = mi.formalTypes().iterator();
-					int i = 0;
-					while (fi.hasNext()) {
-							Type f = (Type)fi.next();
-							String fname = "a$"+i; i++;
-							formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f),
-													  fname, f.position()));
-					}
-					List exc = new ArrayList();
-					Iterator ti = mi.throwTypes().iterator();
-					while (ti.hasNext()) {
-						TypeNode t = (TypeNode)ti.next();
-						exc.add(t.type().toString());
-					}
-    		        return	new abc.weaving.aspectinfo.SuperDispatch(name,
-    		        					new abc.weaving.aspectinfo.MethodSig(AspectInfoHarvester.convertModifiers(mi.flags()),
-																													gai.getClass(mi.container().toString()),
-																													AspectInfoHarvester.toAbcType(returnType().type()),
-																													mi.name(),
-																													formals,
-																													exc,
-																													position()),
-										gai.getClass(host.type().toClass().toString()));
-    		        }
+    public Supers getSupers() {
+    	return supers;
     }
-    
-    public Call superCall(AspectJNodeFactory nf, AspectJTypeSystem ts, Call c) {
-    	String supername = "super$"+c.name();
-    	MethodInstance mi = c.methodInstance();
-    	superCalls.add(new SuperCall(supername,mi));
-        mi = mi.name(supername).container(host.type().toClass());
-    	return c.target(thisReference(nf,ts)).name(supername).methodInstance(mi);
-    }
-    
-    List /*<superDispatch>*/ supercalls(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-    	List scs = new LinkedList();
-    	for (Iterator i = superCalls.iterator(); i.hasNext(); ) {
-    		SuperCall sc = (SuperCall) i.next();
-    		scs.add(sc.convert(gai));
-    	}
-    	return scs;
-    }
-    
-	List superFields = new LinkedList();
-    
-	   public class SuperField  {
-		   String name;
-		   FieldInstance fi;
-    	
-		   public SuperField(String name, FieldInstance fi) {
-			   this.name = name;
-			   this.fi = fi;
-		   }
-    	
-		   public abc.weaving.aspectinfo.SuperFieldDispatch
-					   convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-					   return new abc.weaving.aspectinfo.SuperFieldDispatch(
-					                         new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
-					                         																	gai.getClass(fi.container().toClass().toString()),   // the containing aspect
-					                         																	AspectInfoHarvester.toAbcType(fi.type()),fi.name(), position()),
-					                         																	name,
-																												gai.getClass(host.type().toClass().toString()));
-					   }
-	   }
-    
-	   public Call superField(AspectJNodeFactory nf, AspectJTypeSystem ts, Field f) {
-		   String supername = "super$field$"+f.name();
-		   FieldInstance fi = f.fieldInstance();
-		   superFields.add(new SuperField(supername,fi));
-		   
-		   // create the call
-		   Call c = nf.Call(position(),thisReference(nf,ts),supername);
-		   MethodInstance mi = ts.methodInstance(position(),host.type().toClass(),Flags.PUBLIC,fi.type(),supername,new LinkedList(),new LinkedList());
-		   c = (Call) c.methodInstance(mi).type(fi.type());
-		   
-		   return c;
-	   }
-    
-	   List /*<SuperFieldDispatch>*/ superfields(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
-		   List scs = new LinkedList();
-		   for (Iterator i = superFields.iterator(); i.hasNext(); ) {
-			   SuperField sc = (SuperField) i.next();
-			   scs.add(sc.convert(gai));
-		   }
-		   return scs;
-	   }
-    
     
 }
 	

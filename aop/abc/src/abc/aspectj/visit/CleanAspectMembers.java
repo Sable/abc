@@ -17,7 +17,8 @@ import java.util.*;
  * This visitor cleans up the AST prior to Jimplification, turning it
  * into a Java tree. Advice declarations are rewritten to pure method
  * declarations. Intertype field delcarations, declare declarations and
- * pointcut declarations are completely stripped out of the tree.
+ * pointcut declarations, as well as intertype constructors are completely 
+ * stripped out of the tree.
  * For all intertype declarations, we remove the relevant types 
  * (which were earlier added to do type checking).
  */
@@ -50,7 +51,8 @@ public class CleanAspectMembers extends NodeVisitor {
 		}
 		if (m instanceof IntertypeFieldDecl ||
 		    m instanceof DeclareDecl ||
-		    m instanceof PointcutDecl) {
+		    m instanceof PointcutDecl ||
+		    m instanceof IntertypeConstructorDecl) {
 		    // System.out.println("Cleaning out a node of type "+m.getClass());
 		    if (m instanceof IntertypeFieldDecl) {
 		    	IntertypeFieldDecl itfd = (IntertypeFieldDecl) m;
@@ -62,17 +64,19 @@ public class CleanAspectMembers extends NodeVisitor {
 				PointcutDecl pcd = (PointcutDecl) m;
 				pct.methods().remove(pcd.methodInstance());
 			}
+			if (m instanceof IntertypeConstructorDecl) {
+				// System.out.println("Cleaning out intertype constructor" + m);
+				IntertypeConstructorDecl itmd = (IntertypeConstructorDecl) m;
+				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
+				hostType.constructors().remove(itmd.constructorInstance());
+				pct.constructors().remove(itmd.constructorInstance());
+			}
 		    // This must be removed
 		} else {
 			if (m instanceof IntertypeMethodDecl) {
 				IntertypeMethodDecl itmd = (IntertypeMethodDecl) m;
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
 				hostType.methods().remove(itmd.methodInstance());
-			}
-			if (m instanceof IntertypeConstructorDecl) {
-				IntertypeConstructorDecl itmd = (IntertypeConstructorDecl) m;
-				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
-				hostType.constructors().remove(itmd.constructorInstance());
 			}
 		    newmembers.add(m);
 		}

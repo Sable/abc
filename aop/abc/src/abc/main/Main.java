@@ -132,7 +132,8 @@ public class Main {
 	
     public void weave() throws CompilerFailedException {
         // Adjust Soot types for intertype decls
-        new IntertypeAdjuster().adjust();
+        IntertypeAdjuster ita = new IntertypeAdjuster();
+        ita.adjust();
 
         // retrieve all bodies
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
@@ -143,7 +144,12 @@ public class Main {
                 method.retrieveActiveBody();
             }
         }
+        
+        ita.initialisers(); // weave the field initialisers into the constructors
+        
         // We should now have all classes as jimple
+        
+        
 
 	// Make sure that all the standard AspectJ shadow types are loaded
 	AspectJShadows.load();

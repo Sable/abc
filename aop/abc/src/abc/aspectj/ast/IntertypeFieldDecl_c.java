@@ -13,6 +13,9 @@ import polyglot.ast.Return;
 import polyglot.ast.Expr;
 import polyglot.ast.Node;
 import polyglot.ast.Assign;
+import polyglot.ast.MethodDecl;
+import polyglot.ast.Call;
+import polyglot.ast.Special;
 
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
@@ -33,6 +36,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 {
     protected TypeNode host;
     protected FieldInstance hostInstance;
+    protected LocalInstance thisParamInstance;
+    protected Supers supers;
 
 
     public IntertypeFieldDecl_c(Position pos,
@@ -43,6 +48,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
                                 Expr init){
 	super(pos,flags,type,name,init);
 	this.host = host;
+	this.supers = new Supers();
     }
     
     public TypeNode host() { 
@@ -93,11 +99,91 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 										fieldInstance().name());
 	   	 	((ParsedClassType)ht).addField(fi); // add field for type checking
 	   	 	
-	   	 	
+			/* record instance for "this" parameter */
+			String name = UniqueID.newID("this");
+			thisParamInstance = ts.localInstance(position,Flags.NONE,host.type(),name);
 		}
         return am.bypassChildren(this);
     }
 
+	/**
+	 * create a reference to the "this" parameter
+	 * @author Oege de Moor
+	 */
+	public Expr thisReference(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+		Local x = nf.Local(position,thisParamInstance.name());
+		x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
+		return x;
+	}
+	
+	protected MethodInstance initmi;
+	
+	/** 
+	 * create a new method for the initialiser, that has "this" of host type as 
+	 * a parameter. TODO: If it is static, however, it does not have any parameters.
+	 * @author Oege de Moor
+	 */
+	public MethodDecl initMethod(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+		String name = UniqueID.newID("init$"+name());
+		
+		List formals = new LinkedList();
+		
+		if (!(flags().isStatic())) {
+		// the "this" parameter:
+			TypeNode tn = nf.CanonicalTypeNode(position(),thisParamInstance.type());
+			Formal thisParam = nf.Formal(position(),Flags.FINAL,tn,thisParamInstance.name());
+			thisParam = thisParam.localInstance(thisParamInstance);
+			formals.add(thisParam);
+		}
+		
+		List throwTypes = new LinkedList();
+		for (Iterator i = init().throwTypes(ts).iterator(); i.hasNext(); ) {
+			Type t = (Type) i.next();
+			TypeNode ttn = nf.CanonicalTypeNode(position(),t);
+			throwTypes.add(ttn);
+		}
+		
+		Return ret = nf.Return(init().position(),init());
+		Block body = nf.Block(init().position(),ret);
+		
+		TypeNode rettype = nf.CanonicalTypeNode(position(),init().type());
+		
+		Flags fs = Flags.PUBLIC.set(Flags.STATIC);
+		
+		MethodDecl md = nf.MethodDecl(position(),fs,rettype,name,formals,throwTypes,body);
+		
+		List argtypes = new LinkedList();
+		if (!(flags().isStatic()))
+			argtypes.add(thisParamInstance.type());
+		List exctypes = init().throwTypes(ts);
+		initmi = ts.methodInstance(position(),fieldInstance().container(),fs,init().type(),name,argtypes,exctypes);
+		md = md.methodInstance(initmi);
+		
+		return md;
+	}
+	
+	/** replace init by method call. Note: this methodcall occurs in the host,
+	 * not in the originating aspect.
+	 * @author Oege de Moor
+	 */
+	public IntertypeFieldDecl liftInit(AspectJNodeFactory nf, AspectJTypeSystem ts) {
+		List args = new LinkedList(); 
+		if (!(flags().isStatic())) {
+			Special targetThisRef = nf.Special(position(),Special.THIS,host);
+			targetThisRef = (Special) targetThisRef.type(host.type());
+			args.add(targetThisRef);
+		}
+		Call c = nf.Call(position,host,initmi.name(),args);
+		c = c.methodInstance(initmi);
+		
+		return (IntertypeFieldDecl) init(c);
+	}
+	
+	/** retrieve the supers */
+	public Supers getSupers() {
+		return supers;
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		w.write(flags().translate());
         print(type(), w, tr);
@@ -137,11 +223,13 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * @author Oege de Moor
 	 * record the host type in the environment, for checking of this and super
 	*/
-	public Context enterScope(Context c) {
-			AJContext nc = (AJContext) super.enterScope(c);
+	public Context enterScope(Node n, Context c) {
+		AJContext nc = (AJContext) super.enterScope(n,c);
+		if (n==init()) {
 			TypeSystem ts = nc.typeSystem();
 			return nc.pushHost(ts.staticTarget(host.type()).toClass(),
 												flags().isStatic());
+		} else return nc;
 	}
 	
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
@@ -152,8 +240,37 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	     			AspectInfoHarvester.toAbcType(type().type()),
 	     			name(),
 	     			null);
+	    Call c = (Call) init();
+		abc.weaving.aspectinfo.MethodSig initSig;
+	    if (c != null) {
+	    	MethodInstance mi = c.methodInstance();
+			List formals = new LinkedList(); 
+			Iterator fi = mi.formalTypes().iterator(); int i = 0;
+			while (fi.hasNext()) {
+				Type f = (Type)fi.next();
+				formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f),
+						   "a"+i, position()));
+				i++;
+			}
+			List exc = new LinkedList();
+			Iterator ti = mi.throwTypes().iterator();
+			while (ti.hasNext()) {
+				Type t = (Type)ti.next();
+				exc.add(t.toString());
+			}
+			initSig = new abc.weaving.aspectinfo.MethodSig
+				(AspectInfoHarvester.convertModifiers(mi.flags()),
+				 current_aspect.getInstanceClass(),
+				 AspectInfoHarvester.toAbcType(mi.returnType()),
+				 mi.name(),
+				 formals,
+				 exc,
+				 position());}
+		else initSig = null;
 		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
-	    			(fs, current_aspect, position());
+	    			(fs, current_aspect, initSig, position());
 		gai.addIntertypeFieldDecl(ifd);
+		gai.addSuperDispatches(supers.supercalls(gai));
+		gai.addSuperFieldDispatches(supers.superfields(gai));
     }
 }

@@ -104,6 +104,28 @@ public class AspectInfoHarvester extends ContextVisitor {
 	}
 	return new MethodSig(mod, cl, rtype, name, formals, exc, md.position());
     }
+    
+    
+	public static abc.weaving.aspectinfo.MethodSig convertSig(abc.weaving.aspectinfo.GlobalAspectInfo gai, MethodInstance mi) {
+			List formals = new ArrayList();
+			Iterator fi = mi.formalTypes().iterator(); 
+			int index = 0;
+			while (fi.hasNext()) {
+				Type ft = (Type)fi.next();
+				formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(ft),"a"+index, mi.position()));
+					index++;
+			}
+			List exc = new ArrayList();
+			Iterator ti = mi.throwTypes().iterator();
+			while (ti.hasNext()) {
+				Type t = (Type)ti.next();
+				exc.add(t.toString());
+			}
+			abc.weaving.aspectinfo.AbcClass container = gai.getClass(mi.container().toClass().toString());
+			abc.weaving.aspectinfo.AbcType returnType = AspectInfoHarvester.toAbcType(mi.returnType());
+			int mod = AspectInfoHarvester.convertModifiers(mi.flags());
+			return new abc.weaving.aspectinfo.MethodSig (mod,container,returnType,mi.name(),formals,exc,mi.position());	
+		}
 
     public static Map pointcutDeclarationMap() {
 	return pc_decl_map;
