@@ -79,7 +79,6 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
         // if we need the current 'this', just return it
         if(b.getThisLocal().getType().equals(sootType))
             return b.getThisLocal();
-        System.out.println("Trying to get this from body " + b + " of type " + sootType + ", which is not " + b.getThisLocal().getType());
         //otherwise get this$0 from one level up
         soot.SootClass classToInvoke = ((soot.RefType)b.getThisLocal().getType()).getSootClass();
         soot.SootFieldRef outerThisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getOuterClass().getType(),false); 
@@ -103,7 +102,6 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
             AssignStmt rStmt = Jimple.v().newAssignStmt(t3, ie);
             b.getUnits().add(rStmt);
             // next iteration
-            System.out.print(".");
             t2 = t3;
         }
         return t2;
