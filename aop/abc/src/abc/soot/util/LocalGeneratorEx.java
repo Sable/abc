@@ -29,6 +29,7 @@ public class LocalGeneratorEx extends LocalGenerator {
 	}
 	private Body body;
 
+	private int nextLocal=0;
         /**
          *  Generate a local with a given type, using a suggested name.
          *  If that name is already in use, then try using name0, name1 etc
@@ -36,10 +37,10 @@ public class LocalGeneratorEx extends LocalGenerator {
          *  @param name The suggested name
          */
 	public Local generateLocal(soot.Type type, String suggestedName){
-		int i=0;
+		//int i=0;
 		String name=suggestedName;
 		while (bodyContainsLocal(name)) {
-			name=suggestedName + (++i);
+			name=suggestedName + (++nextLocal);
 		}
 		return createLocal(name, type);
 	}

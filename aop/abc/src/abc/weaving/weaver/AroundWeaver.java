@@ -903,8 +903,8 @@ public class AroundWeaver {
 	
 			if (adviceAppl instanceof ExecutionAdviceApplication) {
 				ExecutionAdviceApplication ea = (ExecutionAdviceApplication) adviceAppl;
-				if (joinpointMethod.getName().startsWith("around$"))
-					throw new CodeGenException("Execution pointcut matching advice method.");
+				//if (joinpointMethod.getName().startsWith("around$"))
+				//	throw new CodeGenException("Execution pointcut matching advice method.");
 	
 				if (!bStatic) {
 					Local lThisCopy = Restructure.getThisCopy(joinpointMethod);
@@ -1518,9 +1518,9 @@ public class AroundWeaver {
 		InterfaceInfo interfaceInfo = null;
 
 		final String dynamicAccessMethodName;
-		String interfaceName;
+		final String interfaceName;
 		final String adviceMethodIdentifierString;
-		List /*type*/ accessMethodParameterTypes;
+		final List /*type*/ accessMethodParameterTypes=new LinkedList();
 
 		SootClass getAspect() {
 			return method.getDeclaringClass();
@@ -1613,8 +1613,6 @@ public class AroundWeaver {
 				//adviceMethodInfo.originalAdviceFormals.addAll(adviceMethod.getParameterTypes());
 			}
 
-			accessMethodParameterTypes = new LinkedList();
-			// accessMethodParameters.add(Scene.v().getSootClass("java.lang.Object").getType()); // target
 			accessMethodParameterTypes.add(IntType.v()); // the shadow id
 			accessMethodParameterTypes.add(BooleanType.v()); // the skip flag
 
@@ -1626,12 +1624,12 @@ public class AroundWeaver {
 				interfaceInfo = new InterfaceInfo();
 
 				interfaceInfo.accessInterface = createAccessInterface(allAccessMethodParameters);
-			}
-			interfaceInfo.abstractAccessMethod = interfaceInfo.accessInterface.getMethodByName(dynamicAccessMethodName);
-
+				interfaceInfo.abstractAccessMethod = interfaceInfo.accessInterface.getMethodByName(dynamicAccessMethodName);
+			}			
 			//			Change advice method: add parameters and replace proceed				
 			doInitialAdviceMethodModification();
 		}
+		
 		public List getAllAccessMethods() {
 			List result = new LinkedList();
 			result.addAll(accessMethodImplementations.values());

@@ -2,22 +2,23 @@ package abc.weaving.matching;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import soot.Body;
 import soot.Local;
 import soot.SootMethod;
+import soot.Type;
 import soot.Value;
 import soot.jimple.AssignStmt;
 import soot.jimple.InvokeExpr;
-import soot.jimple.NewExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
+import soot.jimple.NewExpr;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.residues.ContextValue;
 
 /** A "stmt" shadow match
  *  @author Ganesh Sittampalam
@@ -85,15 +86,23 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 			NopStmt nop=Jimple.v().newNopStmt();
 			statements.insertBefore(nop, stmt);
 			stmt.redirectJumpsToThisTo(nop);
+			SootMethod invokedMethod=invokeEx.getMethod();
+			List parameterTypes=invokedMethod.getParameterTypes();
+			Iterator it=parameterTypes.iterator();
 			for (int i=0; i<invokeEx.getArgCount(); i++) {
+				Type type=(Type)it.next();
 				Value val=invokeEx.getArg(i);
-				Local l=lg.generateLocal(invokeEx.getMethod().getParameterType(i),
-					"uniqueArgLocal");
+				Local l=soot.jimple.Jimple.v().newLocal("uniqueArgLocal" + (nextUniqueID++), 
+					type);
+				body.getLocals().add(l);
+				//lg.generateLocal(type,
+				//		"uniqueArgLocal" + (nextUniqueID++));
 				AssignStmt as=Jimple.v().newAssignStmt(l,val);
 				statements.insertBefore(as, stmt);
 				invokeEx.getArgBox(i).setValue(l);
 			}
 		}
 	}
+	private static int nextUniqueID=0;
 
 }
