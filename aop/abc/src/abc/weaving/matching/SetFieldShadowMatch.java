@@ -55,6 +55,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
         ret = new SetFieldShadowMatch(cim.target(), cim.map(stmt), fieldref);
         cim.add(this, ret);
+        if(sp != null) ret.sp = sp.inline(cim);
         return ret;
     }
 

@@ -24,6 +24,7 @@ package abc.weaving.weaver;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.toolkits.scalar.*;
+import soot.toolkits.scalar.*;
 import java.util.*;
 
 import abc.soot.util.AfterBeforeInliner;
@@ -300,7 +301,11 @@ public class Weaver {
                     for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
                         final SootMethod m = (SootMethod) mIt.next();
                         if( !m.hasActiveBody() ) continue;
-                        CopyPropagator.v().transform(m.getActiveBody());
+                        Body b = m.getActiveBody();
+                        CopyPropagator.v().transform(b);
+                        ConstantPropagatorAndFolder.v().transform(b);
+                        DeadAssignmentEliminator.v().transform(b);
+                        UnusedLocalEliminator.v().transform(b);
                     }
                 }
                 AbcTimer.mark("Weaving advice");

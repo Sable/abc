@@ -53,6 +53,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
         ret = new MethodCallShadowMatch(cim.target(), cim.map(stmt), invoke, methodref);
         cim.add(this, ret);
+        if(sp != null) ret.sp = sp.inline(cim);
         return ret;
     }
 

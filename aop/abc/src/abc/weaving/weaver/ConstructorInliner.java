@@ -75,7 +75,7 @@ public class ConstructorInliner {
             if (GlobalAspectInfo.v().getClassInitializationShadowMatch(method) != null || GlobalAspectInfo.v().getPreinitializationShadowMatch(method) != null)
 
             {
-                debug("Must inline body of " + method.getName());
+                debug("Must inline into " + method.getSignature());
                 // add to list of methods to process
                 // if returns not restructured, do it now 
                 Restructure.restructureReturn(method);
@@ -97,7 +97,7 @@ public class ConstructorInliner {
         debug(" --- END Constructor Inlining for class " + sc.getName() + "\n");
     }
     private static void inlineAdviceApplications(ConstructorInliningMap cim) {
-        debug("   --- BEGIN Inlining advice applications " + cim.inlinee().getName());
+        debug("   --- BEGIN Inlining advice applications " + cim.inlinee().getSignature());
         MethodAdviceList mal = GlobalAspectInfo.v().getAdviceList(cim.inlinee());
         for( Iterator aaIt = mal.bodyAdvice.iterator(); aaIt.hasNext(); ) {
             final AdviceApplication aa = (AdviceApplication) aaIt.next();
@@ -105,6 +105,7 @@ public class ConstructorInliner {
                 GlobalAspectInfo.v().getAdviceList(cim.target());
             AdviceApplication newAA = aa.inline(cim);
             targetMal.addBodyAdvice(newAA);
+            targetMal.flush();
             newAA.shadowmatch.addIfNecessary();
         }
         for( Iterator aaIt = mal.stmtAdvice.iterator(); aaIt.hasNext(); ) {
@@ -112,10 +113,11 @@ public class ConstructorInliner {
             MethodAdviceList targetMal =
                 GlobalAspectInfo.v().getAdviceList(cim.target());
             AdviceApplication newAA = aa.inline(cim);
-            targetMal.addBodyAdvice(newAA);
+            targetMal.addStmtAdvice(newAA);
+            targetMal.flush();
             newAA.shadowmatch.addIfNecessary();
         }
 
-        debug("   --- END Inlining advice applications " + cim.inlinee().getName() + "\n");
+        debug("   --- END Inlining advice applications " + cim.inlinee().getSignature() + "\n");
     }
 }

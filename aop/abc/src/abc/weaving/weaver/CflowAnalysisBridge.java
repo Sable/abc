@@ -122,8 +122,13 @@ public class CflowAnalysisBridge {
                     if( cfr.setup() != stack ) continue;
                     debug("found a residue");
                     if( abc.main.Debug.v().checkCflowOpt ) {
-                        rb.setResidue(AndResidue.construct(rb.getResidue(),
+                        if( bddcfs.alwaysValid(stmt) ) {
+                            rb.setResidue(new AssertResidue("alwaysnever: "
+                                        +rb.getResidue().toString()));
+                        } else {
+                            rb.setResidue(AndResidue.construct(rb.getResidue(),
                                     new AssertResidue("never: "+rb.getResidue().toString())));
+                        }
                     } else {
                         rb.setResidue(NeverMatch.v());
                     }
@@ -162,6 +167,7 @@ public class CflowAnalysisBridge {
             } else {
                 stats("always: "+always+" never: "+never);
             }
+            stats(bddcfs.queryStats());
         }
 
 

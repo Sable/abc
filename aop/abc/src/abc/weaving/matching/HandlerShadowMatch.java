@@ -45,6 +45,7 @@ public class HandlerShadowMatch extends StmtShadowMatch {
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
         ret = new HandlerShadowMatch(cim.target(), cim.map(stmt), sootexc);
         cim.add(this, ret);
+        if(sp != null) ret.sp = sp.inline(cim);
         return ret;
     }
 

@@ -49,6 +49,7 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
         ret = new GetFieldShadowMatch(cim.target(), cim.map(stmt), fieldref);
         cim.add(this, ret);
+        if(sp != null) ret.sp = sp.inline(cim);
         return ret;
     }
     private SootFieldRef fieldref;

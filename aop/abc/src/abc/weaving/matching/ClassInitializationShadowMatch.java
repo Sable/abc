@@ -43,6 +43,7 @@ public class ClassInitializationShadowMatch extends BodyShadowMatch {
                 "inlinee "+cim.inlinee()+" doesn't match container "+container);
         ret = new ClassInitializationShadowMatch(cim.target());
         cim.add(this, ret);
+        if(sp != null) ret.sp = sp.inline(cim);
         return ret;
     }
 

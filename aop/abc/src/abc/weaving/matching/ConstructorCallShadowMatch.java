@@ -47,6 +47,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
         ret = new ConstructorCallShadowMatch(cim.target(), cim.map(stmt),
                 cim.map(next), invoke );
         cim.add(this, ret);
+        if(sp != null) ret.sp = sp.inline(cim);
         return ret;
     }
 
