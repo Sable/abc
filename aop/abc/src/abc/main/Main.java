@@ -104,10 +104,24 @@ public class Main {
                                   soot.Main.v().versionString);
         G.v().out.println("... using Polyglot compiler toolkit version " + 
                                     new polyglot.ext.jl.Version());
-        G.v().out.println("For usage,  java abc.main.Main --help");
-        G.v().out.println("------------------------------------------");
-        G.v().out.println("Abc copyright and license info goes here."); // TODO
-        G.v().out.println("------------------------------------------");
+        G.v().out.println("For usage,  abc --help");
+        G.v().out.println("-------------------------------------------------------------------------------");
+	G.v().out.println("Copyright (C) 2004 The Abc development team. All rights reserved.");
+	G.v().out.println("See the file CREDITS for a list of contributors.");
+	G.v().out.println("See individual source files for details.");
+	G.v().out.println("");
+	G.v().out.println("Soot is Copyright (C) 1997-2004 Raja Vallee-Rai and others.");
+	G.v().out.println("Polyglot is Copyright (C) 2000-2004 Polyglot project group, Cornell University.");
+	G.v().out.println("");
+	G.v().out.println("Abc is distributed in the hope that it will be useful, and comes with");
+	G.v().out.println("ABSOLUTELY NO WARRANTY; without even the implied warranty of MERCHANTABILITY");
+	G.v().out.println("or FITNESS FOR A PARTICULAR PURPOSE.");
+	G.v().out.println("");
+	G.v().out.println("Abc is free software; you can redistribute it and/or modify it under the");
+	G.v().out.println("terms of the GNU Lesser General Public License as published by the Free");
+	G.v().out.println("Software Foundation; either version 2.1 of the License, or (at your option)");
+	G.v().out.println("any later version. See the file LESSER-GPL for details.");
+        G.v().out.println("-------------------------------------------------------------------------------");
       }
     
 
