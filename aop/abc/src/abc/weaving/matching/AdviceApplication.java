@@ -59,7 +59,22 @@ public class AdviceApplication {
 
 			final AdviceDecl ad = (AdviceDecl) adviceIt.next();
 
-			if(ad.getPointcut().matchesAt(sootCls,method,current)) {
+			Pointcut pc=ad.getPointcut();
+		        boolean matches;
+
+			if(pc!=null) {
+			    matches=pc.matchesAt(sootCls,method,current);
+			} else {
+			    // BIG TEMPORARY HACK
+			    matches=false;
+			    if (current instanceof AssignStmt) {
+				AssignStmt as = (AssignStmt) current;
+				Value lhs = as.getLeftOp();
+				if(lhs instanceof FieldRef) matches=true;
+			    }
+			}
+
+			if(matches) {
 			    apps.add(new AdviceApplication(current,current,
 							   ad,null));
 			}    
