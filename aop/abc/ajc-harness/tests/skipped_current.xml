@@ -1,226 +1,203 @@
-<!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
- <suite> 
- <ajc-test dir="new/pr456" pr="456" title="advice on advice in usejavac mode"
-      keywords="from-resolved_10x">
-        <compile options="-usejavac"
-          files="Test_AroundVarBug.java,AroundVarBug.java"/>
-        <run class="Test_AroundVarBug"/>
+<suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
+ <ajc-test title="advice on advice in usejavac mode" pr="456" keywords="from-resolved_10x" dir="new/pr456">
+        <compile options="-usejavac" files="Test_AroundVarBug.java,AroundVarBug.java"></compile>
+        <run class="Test_AroundVarBug"></run>
     </ajc-test>
-<ajc-test dir="new" pr="663"
-      title="no error when public class is in file of a different name"
-      keywords="from-resolved_105,purejava">
+<ajc-test title="no error when public class is in file of a different name" pr="663" keywords="from-resolved_105,purejava" dir="new">
         <compile options="-strict" files="PublicClassWrongFilename.java">
-            <message kind="error" line="3"/>
+            <message line="3" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava" title="compiling asserts in methods"
-      keywords="from-14tests,purejava">
-        <compile options="-source,1.4,-usejavac" files="AssertInMethod.java"/>
-        <run class="AssertInMethod" vm="1.4"/>
+<ajc-test title="VerifyError if nested sync returning result" pr="601" keywords="from-resolved_10final,purejava" dir="new" comment="XXX inconsistent behavior?" abccomment="skipping since javac can't pass this either">
+        <compile files="NestedSyncWithResult.java"></compile>
+        <run class="NestedSyncWithResult"></run>
+        <abckeywords><skip></skip></abckeywords>
     </ajc-test>
-<ajc-test dir="pureJava" pr="725"
-      title="asserts in aspect and declared methods [requires 1.4]"
-      keywords="from-14tests,purejava">
-        <compile options="-source,1.4,-usejavac"
-          files="IntroducedAssertion.java"/>
-        <run class="IntroducedAssertion" vm="1.4"/>
+<ajc-test title="compiling asserts in methods" keywords="from-14tests,purejava" dir="pureJava">
+        <compile options="-source,1.4,-usejavac" files="AssertInMethod.java"></compile>
+        <run vm="1.4" class="AssertInMethod"></run>
     </ajc-test>
-<ajc-test dir="design/around"
-      title="around and return types + inlining optimizations"
-      comment="-XOcodeSize not in 1.1, source uses 1.4 APIs"
-      keywords="from-14tests,knownLimitation">
-        <compile options="-XOcodeSize,-source,1.4"
-          files="ReturnCastProceed.java,StackChecker.java">
-            <message kind="warning" line="68"/>
+<ajc-test title="asserts in aspect and declared methods [requires 1.4]" pr="725" keywords="from-14tests,purejava" dir="pureJava">
+        <compile options="-source,1.4,-usejavac" files="IntroducedAssertion.java"></compile>
+        <run vm="1.4" class="IntroducedAssertion"></run>
+    </ajc-test>
+<ajc-test title="around and return types + inlining optimizations" keywords="from-14tests,knownLimitation" dir="design/around" comment="-XOcodeSize not in 1.1, source uses 1.4 APIs">
+        <compile options="-XOcodeSize,-source,1.4" files="ReturnCastProceed.java,StackChecker.java">
+            <message line="68" kind="warning"></message>
         </compile>
-        <run class="ReturnCastProceed" vm="1.4"/>
+        <run vm="1.4" class="ReturnCastProceed"></run>
     </ajc-test>
-<ajc-test dir="incremental/stringliteral"   
-    	keywords="knownLimitation"
-    	title="incrementally change string size and wire in injar classes">
-        <compile staging="true" options="-incremental" 
-        	files="oneInjar.jar,twoInjar.jar"
-        	sourceroots="src"/>
-		<run class="packageOne.Main"
-			options="in packageOne.Main.main(..),
-					 before main packageOne.Main"/>
+<ajc-test title="testing new options" dir="new/options11" comment="XXX not validated correct yet">
+        <compile files="Main.java,injar.jar,Aspect.java" aspectpath="aspectlib1.jar,aspectlib2.jar"></compile>
+        
+    </ajc-test>
+<ajc-test title="incrementally change string size and wire in injar classes" keywords="knownLimitation" dir="incremental/stringliteral">
+        <compile staging="true" sourceroots="src" options="-incremental" files="oneInjar.jar,twoInjar.jar"></compile>
+		<run options="in packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
         <inc-compile tag="20">
-        	<dir-changes updated="packageOne.Main"/>
+        	<dir-changes updated="packageOne.Main"></dir-changes>
         </inc-compile>
         
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main packageOne.Main"/>
+		<run options="in longer packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
         <inc-compile tag="30">
-        	<dir-changes added="RunInjarMains"/>
+        	<dir-changes added="RunInjarMains"></dir-changes>
         </inc-compile>
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main InjarOneMain,
-					 before main InjarTwoMain,
-					 before main packageOne.Main"/>
+		<run options="in longer packageOne.Main.main(..),       before main InjarOneMain,       before main InjarTwoMain,       before main packageOne.Main" class="packageOne.Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/classAdded" 
-    	title="expect class added in initial incremental tests" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-        	sourceroots="."/>
-        <run class="main.Main"/>
-        <inc-compile tag="20" >
-            <dir-changes added="main.Target"/>
-        </inc-compile>
-        <run class="main.Main"  skipTester="true"/>
-    </ajc-test>
-<ajc-test dir="incremental/initialTests/classRemoved" 
-    	title="expect class removed in initial incremental tests" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental" 
-        	sourceroots="."/>
-        <run class="main.Main"/>
+<ajc-test title="expect class added in initial incremental tests" keywords="incremental-test" dir="incremental/initialTests/classAdded">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
         <inc-compile tag="20">
-            <dir-changes removed="main.Target"/>
+            <dir-changes added="main.Target"></dir-changes>
         </inc-compile>
-        <run class="main.Main"/>
+        <run skipTester="true" class="main.Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/classUpdated" 
-    	title="expect class updated in initial incremental tests" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-        	sourceroots="."/>
-        <run class="main.Main"/>
+<ajc-test title="expect class removed in initial incremental tests" keywords="incremental-test" dir="incremental/initialTests/classRemoved">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
         <inc-compile tag="20">
-            <dir-changes updated="main.Main"/>
+            <dir-changes removed="main.Target"></dir-changes>
         </inc-compile>
-        <run class="main.Main"/>
+        <run class="main.Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/sourceAdded" 
-    	title="add file with class"
-    	comment="only expecting pickup if sourceroots"    
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-        	sourceroots="."/>
-        <run class="main.Main"/>
+<ajc-test title="expect class updated in initial incremental tests" keywords="incremental-test" dir="incremental/initialTests/classUpdated">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
         <inc-compile tag="20">
-            <dir-changes added="main.Target"/>
+            <dir-changes updated="main.Main"></dir-changes>
+        </inc-compile>
+        <run class="main.Main"></run>
+    </ajc-test>
+<ajc-test title="add file with class" keywords="incremental-test" dir="incremental/initialTests/sourceAdded" comment="only expecting pickup if sourceroots">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="main.Main"></run>
+        <inc-compile tag="20">
+            <dir-changes added="main.Target"></dir-changes>
         </inc-compile>
         <inc-compile tag="30">
-            <dir-changes updated="main.Main"/>
+            <dir-changes updated="main.Main"></dir-changes>
         </inc-compile>
-        <run class="main.Main"/>
+        <run class="main.Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/sourceDeleted" 
-        title="delete source file before incremental compile"
-        comment="build config should permit file deletions for incremental (sourceroots)"
-        keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-    		sourceroots="."/>
-        <run class="delete.Main"/>
+<ajc-test title="delete source file before incremental compile" keywords="incremental-test" dir="incremental/initialTests/sourceDeleted" comment="build config should permit file deletions for incremental (sourceroots)">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="delete.Main"></run>
         <inc-compile tag="20">
-            <dir-changes removed="delete.DeleteMe"/>
-        	<message kind="error" line="6" file="delete/Target.java"/>
+            <dir-changes removed="delete.DeleteMe"></dir-changes>
+        	<message line="6" kind="error" file="delete/Target.java"></message>
         </inc-compile>
-        <inc-compile tag="30"/> 
-        <run class="delete.Main"/>
+        <inc-compile tag="30"></inc-compile> 
+        <run class="delete.Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/initialTests/defaultPackage" 
-    	title="do everything in default package (sourceroots)" 
-    	keywords="incremental-test" >
-        <compile staging="true" 
-        	options="-incremental"
-    		sourceroots="."/>
-        <run class="Main"/>
+<ajc-test title="do everything in default package (sourceroots)" keywords="incremental-test" dir="incremental/initialTests/defaultPackage">
+        <compile staging="true" sourceroots="." options="-incremental"></compile>
+        <run class="Main"></run>
         <inc-compile tag="20">
-            <dir-changes added="Target"/>
+            <dir-changes added="Target"></dir-changes>
         </inc-compile>
-        <run class="Target" skipTester="true"/>
+        <run skipTester="true" class="Target"></run>
         <inc-compile tag="30">
-            <dir-changes updated="Main"/>
+            <dir-changes updated="Main"></dir-changes>
         </inc-compile>
-        <run class="Main" skipTester="true"/>
+        <run skipTester="true" class="Main"></run>
         <inc-compile tag="40"> 
-			<message kind="error" line="6" file="Main.java"/>
+			<message line="6" kind="error" file="Main.java"></message>
         </inc-compile>
-        <inc-compile tag="50"/>
-        <run class="Main"/>
+        <inc-compile tag="50"></inc-compile>
+        <run class="Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/defaultPackage"
-    keywords="incremental-test"
-   	title="change sources in default package">
-        <compile 
-        	staging="true"
-        	options="-incremental" 
-        	sourceroots="src"/>
-        <run class="Main"/>
-        <inc-compile tag="20"/>
-        <run class="Main"/>
+<ajc-test title="change sources in default package" keywords="incremental-test" dir="incremental/defaultPackage">
+        <compile staging="true" sourceroots="src" options="-incremental"></compile>
+        <run class="Main"></run>
+        <inc-compile tag="20"></inc-compile>
+        <run class="Main"></run>
     </ajc-test>
-<ajc-test dir="incremental/interPackage"
-    keywords="incremental-test"
-   	title="change source">
-        <compile 
-        	staging="true"
-        	options="-incremental" 
-        	sourceroots="src"/>
-        <run class="app.Main"/>
-        <inc-compile tag="20"/>
-        <run class="app.Main"/>
+<ajc-test title="change source" keywords="incremental-test" dir="incremental/interPackage">
+        <compile staging="true" sourceroots="src" options="-incremental"></compile>
+        <run class="app.Main"></run>
+        <inc-compile tag="20"></inc-compile>
+        <run class="app.Main"></run>
     </ajc-test>
-<ajc-test dir="harness" 
-    	keywords="command-line-error,knownLimitation"
-    	comment="can't test -help: has to abort, but returns 0, normal status"    
-		title="CLE: -help usage">
-        <compile  badInput="true" options="-help">
-            <message kind="abort" text="Usage"/>
+<ajc-test title="CLE: no sourceroot specified for incremental" keywords="command-line-error,knownLimitation-ajdeCompiler" dir="harness" comment="ajde has same errors, different wording">
+        <compile options="-incremental" badInput="true">
+            <message text="no sources specified" kind="error"></message>
+            <message text="specify a source root" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
-<ajc-test dir="harness" keywords="command-line-error"
-    	comment="XXX test skipped - harness ignores -sourceroot option"
-      title="CLE: no dir specified for sourceroots">
-        <compile badInput="true" files="ErrorTest.java" 
-        	options="-sourceroots">
-            <message kind="error" text="no sources specified"/>
-            <message kind="error" text="bad sourceroot"/>
-            <message kind="abort" text="Usage"/>
+<ajc-test title="CLE: file specified with incremental" keywords="command-line-error,knownLimitation-ajdeCompiler" dir="harness" comment="ajde has same errors, different wording">
+        <compile options="-incremental" files="ErrorTest.java" badInput="true">
+            <message text="incremental mode only handles source files using -sourceroots" kind="error"></message>
+            <message text="no sources specified" kind="error"></message>
+            <message text="specify a source root" kind="error"></message>
+            <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
-<ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
-    	comment="ajde has same errors, different wording"
-      title="CLE: no sourceroot specified for incremental">
-        <compile badInput="true" options="-incremental">
-            <message kind="error" text="no sources specified"/>
-            <message kind="error" text="specify a source root"/>
-            <message kind="abort" text="Usage"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="harness" keywords="command-line-error,knownLimitation-ajdeCompiler"
-    	comment="ajde has same errors, different wording"
-      title="CLE: file specified with incremental">
-        <compile badInput="true" files="ErrorTest.java"
-        	options="-incremental">
-            <message kind="error" text="incremental mode only handles source files using -sourceroots"/>
-            <message kind="error" text="no sources specified"/>
-            <message kind="error" text="specify a source root"/>
-            <message kind="abort" text="Usage"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="incremental/stringliteral"
-    	keywords="incremental-test"
-		title="incrementally change only string literal, still expect advice">
-        <compile staging="true" options="-incremental" 
-        	sourceroots="src"/>
-		<run class="packageOne.Main"
-			options="in packageOne.Main.main(..),
-					 before main packageOne.Main"/>
+<ajc-test title="incrementally change only string literal, still expect advice" keywords="incremental-test" dir="incremental/stringliteral">
+        <compile staging="true" sourceroots="src" options="-incremental"></compile>
+		<run options="in packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
         <inc-compile tag="20">
-        	<dir-changes updated="packageOne.Main"/>
+        	<dir-changes updated="packageOne.Main"></dir-changes>
         </inc-compile>
-		<run class="packageOne.Main"
-			options="in longer packageOne.Main.main(..),
-					 before main packageOne.Main"/>
+		<run options="in longer packageOne.Main.main(..),       before main packageOne.Main" class="packageOne.Main"></run>
     </ajc-test>
-</suite> 
+<ajc-test title="Compiler crashes in jar and cflow (with .jar)" pr="39462" dir="bugs/cflowAndJar" comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj">
+        <compile files="TestAspect.aj,Test.java" aspectpath="lib.jar">
+        	<message line="16" kind="warning"></message>
+        </compile>
+        <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - interfaceOnly.jar" dir="new/interfaceLibrary" comment="prove that LibraryAspect is required">
+		<compile files="Client.java" aspectpath="interfaceOnly.jar">
+			<message line="5" kind="error"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectOnly.jar" dir="new/interfaceLibrary">
+		<compile files="lib/LibraryInterface.java,      Client.java" aspectpath="aspectOnly.jar"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectpath=aspectOnly.jar" dir="new/interfaceLibrary" comment="can weave to create library, and then weave clients">
+		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar" aspectpath="aspectOnly.jar"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - positive binary" pr="41175" dir="bugs/interfaceLibrary">
+		<compile files="Client.java" aspectpath="lib.jar"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - negative binary" pr="41175" dir="bugs/interfaceLibrary">
+		<compile files="ClientCE.java" aspectpath="lib.jar">
+			<message line="5" kind="error" file="ClientCE.java"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - positive binary" pr="41175" dir="bugs/interfaceLibrary">
+		<compile files="ClassClient.java" aspectpath="libClass.jar"></compile>
+		<run class="ClassClient"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - negative binary" pr="41175" dir="bugs/interfaceLibrary">
+		<compile files="ClassClientCE.java" aspectpath="libClass.jar">
+			<message line="5" kind="error" file="ClassClientCE.java"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="Weaving failure when using injars (on aspectpath)" pr="41123" dir="bugs/moreInterfaceLibrary">
+		<compile files="model/BusObj.java,model/MonitorBusObj.java" aspectpath="lib.jar">
+		</compile>
+	</ajc-test>
+<ajc-test title="(using aspectpath) percflow aspects compiled from jars share one instance for all entry points" pr="41359" dir="bugs/perCflowAndJar">
+		<compile files="PerCFlowCompileFromJarTest.java" aspectpath="lib.jar"></compile>
+		<run class="PerCFlowCompileFromJarTest"></run>
+	</ajc-test>
+<ajc-test title="zip and jar suffixes for extdirs entries" pr="42574" dir="bugs/extdirs" abccomment="Skipping this case as we're not sure what the extdirs option          is meant to do. PA/AGS">
+		<abckeywords> <skip></skip> </abckeywords>
+		<compile files="extdirs-src/main/Main.java" extdirs="lib/lowercase"></compile>
+	</ajc-test>
+<ajc-test title="Introduced abstract method on abstract class not implemented by subtype" pr="49784" dir="bugs/abstractMethods">
+        <compile files="abstractClass/C.java" aspectpath="abstractClass/jars/AandB.jar">
+            <message line="1" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on interface not implemented by subtype (aspectpath)" pr="49784" dir="bugs/abstractMethods">
+        <compile files="interface/C.java" aspectpath="interface/jars/AandB.jar"></compile>
+        <run class="C"></run>
+    </ajc-test>
+ 
+</suite>
