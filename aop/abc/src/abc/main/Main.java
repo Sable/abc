@@ -80,12 +80,12 @@ public class Main {
                                   soot.Main.v().versionString);
         G.v().out.println("... using Polyglot compiler toolkit version " + 
                                     new polyglot.ext.jl.Version());
+        G.v().out.println("For usage,  java abc.main.Main --help");
+        G.v().out.println("------------------------------------------");
         G.v().out.println("Abc copyright and license info goes here."); // TODO
+        G.v().out.println("------------------------------------------");
       }
     
-    public static void abcPrintHelp()
-      { G.v().out.println("abc options here");
-      }
 
     public static void main(String[] args) {
         try {
@@ -110,7 +110,9 @@ public class Main {
     String outputdir=".";
     boolean optflag=false;
     if (args.length == 0)
-      abcPrintVersion();
+      { abcPrintVersion();
+        System.exit(0);
+      }
 
     for (int i = 0 ; i < args.length ; i++) 
       { /* --------FULLY IMPLEMENTED AJC-COMPLIANT OPTIONS ----------*/
@@ -120,10 +122,13 @@ public class Main {
         // TODO: -help needs to be filled in 
         if (args[i].equals("-help") || args[i].equals("--help") ||
             args[i].equals("-h"))
-          abcPrintHelp();
+           { abc.main.Usage.abcPrintHelp();
+             System.exit(0);
+           }
         else if (args[i].equals("-version") || args[i].equals("--version") ||
             args[i].equals("-v")) 
           { abcPrintVersion();
+            System.exit(0);
           }
         else if (args[i].equals("-injars")) 
           { while (++i < args.length && !args[i].startsWith("-")) 
@@ -256,7 +261,9 @@ public class Main {
          
          // TODO: should actually list only soot options useful for abc
          else if (args[i].equals("-help:soot"))  
-           G.v().out.println(soot.options.Options.v().getUsage());
+           { G.v().out.println(soot.options.Options.v().getUsage());
+             System.exit(0);
+           }
 
         // TODO; should actually list only polyglot options useful for abc
         else if (args[i].equals("-help:polyglot")) 
@@ -264,6 +271,7 @@ public class Main {
                 new abc.aspectj.ExtensionInfo(null, null);
             Options options = ext.getOptions();
             options.usage(G.v().out);
+            System.exit(0);
           }
 
          else if (args[i].equals("-O"))  // -O flag in abc options
