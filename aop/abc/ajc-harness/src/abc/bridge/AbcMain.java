@@ -22,13 +22,11 @@ public class AbcMain {
 	}
     public static class CompilationArgs {
     	String[] args;
-    	public CompilationArgs(String[] args, String cp, String currentSource) {
+    	public CompilationArgs(String[] args, String cp) {
 			ArrayList currentArgs = new ArrayList();
 			boolean cpFound = false;
 			String currentCP = null;;
 			for (int i=0; i<args.length; i++) {
-				if ((args[i].endsWith(".java") || args[i].endsWith(".java")) && !args[i].equals(currentSource))
-					continue; // skip all source files other the current
 				currentArgs.add(args[i]);
 				if ("-cp".equals(args[i]) || "-classpath".equals(args[i])) {
 					if (cp.length()==0)

@@ -1,7 +1,10 @@
 package abc.bridge;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.aspectj.ajdt.internal.compiler.AjCompiler;
 import org.eclipse.jdt.core.compiler.IProblem;
@@ -9,8 +12,10 @@ import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.ICompilerRequestor;
 import org.eclipse.jdt.internal.compiler.IErrorHandlingPolicy;
 import org.eclipse.jdt.internal.compiler.IProblemFactory;
+import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.env.ICompilationUnit;
 import org.eclipse.jdt.internal.compiler.env.INameEnvironment;
+import org.eclipse.jdt.internal.compiler.impl.ReferenceContext;
 import org.eclipse.jdt.internal.compiler.problem.ProblemSeverities;
 
 import polyglot.util.ErrorInfo;
@@ -49,41 +54,59 @@ public class AbcCompiler extends AjCompiler {
 	public void compile(ICompilationUnit[] sourceUnits) {
 		ICompilationUnit unit = null;
 		String classpath = System.getProperty("java.class.path");
-		int i = 0;
-		totalUnits= sourceUnits.length;
-		for (; i < totalUnits; i++) {
-			unit = sourceUnits[i];
-			String currentSource = new String(unit.getFileName());
-			System.out.println("calling abc on file:" + currentSource);
-			CompilationResult compilationResult= new CompilationResult(unit, 1, 1, 1);
-			AbcMain.CompilationArgs abcArgs = new AbcMain.CompilationArgs(savedArgs, classpath, currentSource);
-			try {
-				AbcMain.compile(abcArgs);
-				System.out.println("compilation of " + currentSource + " completed successfully");
-			} catch (AbcMain.CompilationFailedException e) {
+		totalUnits = sourceUnits.length;
+		CompilationResult[] compilationResults = new CompilationResult[totalUnits];
+		Map compilationResultsMap = new HashMap(compilationResults.length); // mapping a source unit name to its corresponding CompilationResult object
+		Set compilationResultsWithErrors = new HashSet();
+		Map referenceContexts = new HashMap(compilationResults.length); // mapping a compilation result to a reference context object
+		String[] sourceUnitNames = new String[totalUnits];
+		for (int i=0; i < totalUnits; i++) {
+			compilationResults[i] = new CompilationResult(sourceUnits[i], 1, 1, 1);
+			sourceUnitNames[i] = new String(sourceUnits[i].getFileName());
+			compilationResultsMap.put(sourceUnitNames[i], compilationResults[i]);
+		}
+		//System.out.println("calling abc on files:" + sourceUnitNames.toString());
+		AbcMain.CompilationArgs abcArgs = new AbcMain.CompilationArgs(savedArgs, classpath);
+		try {
+			AbcMain.compile(abcArgs);
+			//System.out.println("compilation of " + sourceUnitNames.toString() + " completed successfully");
+		} catch (AbcMain.CompilationFailedException e) {
 //				e.printStackTrace();
-				System.out.println("compilation of " + currentSource + " failed");
-				if (e.getErrors() != null)
-					for (Iterator it= e.getErrors().iterator(); it.hasNext();) {
-						ErrorInfo ei= (ErrorInfo) it.next();
-						//this.problemReporter.problemFactory.createProblem(originatingFilaName, problemId, problemArguments, messageArguments, severity, startPos, endPos, lineNumber);
-						if (ei.getPosition() == null) continue; //TODO: see how to report a problem with no location
-						IProblem error= problemReporter.problemFactory.createProblem(
-							ei.getPosition().file().toCharArray(), 
-							0, 
-							new String[] { ei.getErrorString() },
-							new String[] { ei.getMessage() }, 
-							problemId(ei.getErrorKind()), 
-							ei.getPosition().column(), 
-							ei.getPosition().column()+1, 
-							ei.getPosition().line());
-						compilationResult.record(error, problemReporter.referenceContext);	
+			//System.out.println("compilation of " + sourceUnitNames.toString() + " failed");
+			if (e.getErrors() != null)
+				for (Iterator it= e.getErrors().iterator(); it.hasNext();) {
+					ErrorInfo ei= (ErrorInfo) it.next();
+					//this.problemReporter.problemFactory.createProblem(originatingFilaName, problemId, problemArguments, messageArguments, severity, startPos, endPos, lineNumber);
+					if (ei.getPosition() == null) continue; //TODO: see how to report a problem with no location
+					IProblem error= problemReporter.problemFactory.createProblem(
+						ei.getPosition().file().toCharArray(), 
+						0, 
+						new String[] { ei.getErrorString() },
+						new String[] { ei.getMessage() }, 
+						problemId(ei.getErrorKind()), 
+						ei.getPosition().column(), 
+						ei.getPosition().column()+1, 
+						ei.getPosition().line());
+					CompilationResult compilationResult= ((CompilationResult) compilationResultsMap.get(ei.getPosition().file()));
+					ReferenceContext referenceContext= (ReferenceContext) referenceContexts.get(compilationResult);
+					if (referenceContext == null) {
+						referenceContext = new TypeDeclaration(compilationResult);
+						referenceContexts.put(compilationResult, referenceContext);
 					}
-/*			} catch (Throwable e) {
-				e.printStackTrace();
-				throw new RuntimeException();
-*/			}
-			requestor.acceptResult(compilationResult.tagAsAccepted());
+					compilationResultsWithErrors.add(compilationResult);
+					compilationResult.record(error, referenceContext);//problemReporter.referenceContext);	
+				}
+/*		} catch (Throwable e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+*/		}
+		for (Iterator it= compilationResultsWithErrors.iterator(); it.hasNext();) {
+			CompilationResult compilationResult= (CompilationResult) it.next();
+			//try { 
+			requestor.acceptResult(compilationResult.tagAsAccepted()); 
+			//} catch (NullPointerException e) {
+				// TODO: seems like a bug in the harness that somtimes throws a null pointer exception (probably because referenceContext was null at the time of calling .record())
+			//}
 		}
 	}
 	
