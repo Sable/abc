@@ -212,12 +212,6 @@
             <message kind="error" line="16"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors" pr="219" title="extra closing brace"
-      keywords="from-errors">
-        <compile files="ExtraClosingBrace.java">
-            <message kind="error" line="8"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" pr="244"
       title="decent errors for around return type not matching target point"
       keywords="from-errors">

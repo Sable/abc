@@ -27,12 +27,6 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="new" pr="99"
-      title="comment after class closes (with no new line at end)"
-      keywords="from-java,purejava">
-        <compile files="CommentAfterClass.java"/>
-        <run class="CommentAfterClass"/>
-    </ajc-test>
 <ajc-test dir="new" title="handle multiple nested inner classes"
       keywords="from-java">
         <compile files="InnerHell.java"/>
@@ -372,12 +366,6 @@
       keywords="from-errors">
         <compile files="MismatchedParens.java">
             <message kind="error" line="16"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="errors" pr="219" title="extra closing brace"
-      keywords="from-errors">
-        <compile files="ExtraClosingBrace.java">
-            <message kind="error" line="8"/>
         </compile>
     </ajc-test>
 <ajc-test dir="errors" pr="244"
@@ -808,11 +796,6 @@
         </compile>
     </ajc-test>
 <ajc-test dir="design/intro"
-      title="within and introductions behaves correctly" keywords="from-design">
-        <compile files="Within.java"/>
-        <run class="Within"/>
-    </ajc-test>
-<ajc-test dir="design/intro"
       title="introduction of static methods and fields on classes and interfaces"
       keywords="from-design,knownLimitation">
         <compile files="Statics.java"/>
@@ -942,12 +925,6 @@
         <compile files="CatchAdvice.java"/>
         <run class="CatchAdvice"/>
     </ajc-test>
-<ajc-test dir="new" pr="355"
-      title="No boolean appearing in the 'if' clause for around advice with eachJVM()"
-      keywords="from-resolved_10x">
-        <compile files="PR355.java"/>
-        <run class="PR355"/>
-    </ajc-test>
 <ajc-test dir="new" title="Ensuring backdoor methods are produced."
       keywords="from-resolved_10x">
         <compile files="BackdoorMethods.java"/>
@@ -969,22 +946,10 @@
         />
     </ajc-test>
 <ajc-test dir="new"
-      title="Instantiating non-static inner classes in advice."
-      keywords="from-resolved_10x">
-        <compile files="NonstaticInnerClassesInAspects.java"/>
-        <run class="NonstaticInnerClassesInAspects"/>
-    </ajc-test>
-<ajc-test dir="new"
       title="Parsing C+ expressions without parens in super introductions."
       keywords="from-resolved_10x">
         <compile files="ParsingSubtypesIntroductions.java"/>
         <run class="ParsingSubtypesIntroductions"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="Introducing methods on classes that implements inner-interfaces with +implements."
-      keywords="from-resolved_10x">
-        <compile files="IntroducingMethodsOnPlusImplementedInterfaces.java" options="-Xlint:ignore"/>
-        <run class="IntroducingMethodsOnPlusImplementedInterfaces"/>
     </ajc-test>
 <ajc-test dir="new" pr="464"
       title="Methods with the same name are generated when abstract aspects extend another abstract aspect."
@@ -1200,12 +1165,6 @@
         <compile files="IfPCDExprVisibility.java" options="-Xlint:ignore"/>
         <run class="IfPCDExprVisibility"/>
     </ajc-test>
-<ajc-test dir="new"
-      title="pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]"
-      keywords="from-resolved_10x">
-        <compile files="IfPCDAdviceMethods.java"/>
-        <run class="IfPCDAdviceMethods"/>
-    </ajc-test>
 <ajc-test dir="new/innerInterfaces" pr="494"
       title="private inner interfaces and bytecode visibility"
       keywords="from-resolved_10x">
@@ -1252,12 +1211,6 @@
       keywords="from-resolved_10x">
         <compile files="IntroducedModifiers.java"/>
         <run class="IntroducedModifiers"/>
-    </ajc-test>
-<ajc-test dir="new" pr="527"
-      title="compile error using pcd if() with advice on introduced methods."
-      keywords="from-resolved_10x">
-        <compile files="PR527.java"/>
-        <run class="PR527"/>
     </ajc-test>
 <ajc-test dir="new" pr="528"
       title="compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface"

@@ -200,6 +200,12 @@
             <message kind="error" line="8"/>
         </compile>
     </ajc-test>
+<ajc-test dir="errors" pr="219" title="extra closing brace"
+      keywords="from-errors">
+        <compile files="ExtraClosingBrace.java">
+            <message kind="error" line="8"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="errors" title="eachobject: can't extend a concrete aspect"
       keywords="from-errors,fail-unimplemented">
         <compile files="SubAspectsCantExtendNonAbstractAspects.java">
