@@ -63,9 +63,8 @@ public class ThisAny extends DynamicValuePointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		// FIXME ThisAny.equivalent(ThisVar, ren) returns true; is this ok?
-		if (otherpc instanceof ThisAny) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			return true;
 		} else return false;
 	}

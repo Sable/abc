@@ -58,8 +58,8 @@ public class ArgFill extends ArgPattern {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
 	 */
-	public boolean equivalent(ArgPattern p, Hashtable renaming) {
-		if (p instanceof ArgFill) {
+	public boolean canRenameTo(ArgPattern p, Hashtable renaming) {
+		if (p.getClass() == this.getClass()) {
 			return true;
 		} else return false;
 	}

@@ -102,8 +102,8 @@ public class OrPointcut extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof OrPointcut) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			Pointcut otherpc1 = ((OrPointcut)otherpc).getLeftPointcut();
 			Pointcut otherpc2 = ((OrPointcut)otherpc).getRightPointcut();
 			
@@ -114,8 +114,8 @@ public class OrPointcut extends Pointcut {
 			// that it is either new, or that the new binding is the same as
 			// the existing one (ie never override bindings)
 			
-			if (pc1.equivalent(otherpc1, renaming)) {
-				return pc2.equivalent(otherpc2, renaming);
+			if (pc1.canRenameTo(otherpc1, renaming)) {
+				return pc2.canRenameTo(otherpc2, renaming);
 			} else return false;
 		} else return false;
 	}

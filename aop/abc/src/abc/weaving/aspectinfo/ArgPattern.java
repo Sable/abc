@@ -51,10 +51,7 @@ public abstract class ArgPattern extends Syntax {
 
     public abstract void getFreeVars(Set/*<String>*/ result);
 
-    // Force subclasses to implement equals
-    // public abstract boolean equals(Object o);
-
-	public abstract boolean equivalent(ArgPattern p, 
-										  Hashtable/*<Var,Var>*/ renaming);
+	public abstract boolean canRenameTo(ArgPattern p, 
+										  Hashtable/*<Var,PointcutVarEntry>*/ renaming);
 
 }

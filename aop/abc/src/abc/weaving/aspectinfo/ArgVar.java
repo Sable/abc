@@ -90,8 +90,8 @@ public class ArgVar extends ArgAny {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.ArgPattern#equivalent(abc.weaving.aspectinfo.ArgPattern, java.util.Hashtable)
 	 */
-	public boolean equivalent(ArgPattern p, Hashtable renaming) {
-		if (p instanceof ArgVar) {
+	public boolean canRenameTo(ArgPattern p, Hashtable renaming) {
+		if (p.getClass() == this.getClass()) {
 			Var othervar = ((ArgVar)p).getVar(); 
 			return (var.canRenameTo(othervar, renaming));
 		} else return false;

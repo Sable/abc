@@ -59,8 +59,8 @@ public class WithinConstructor extends LexicalPointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof WithinConstructor) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			return pattern.equivalent(((WithinConstructor)otherpc).getPattern());
 		} else return false;
 	}

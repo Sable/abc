@@ -62,9 +62,8 @@ public class Within extends LexicalPointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		//FIXME Within.equivalent(DirectlyWithin, ren) returns true, is this OK?
-		if (otherpc instanceof Within) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			return pattern.equivalent(((Within)otherpc).getPattern());
 		} else return false;
 	}

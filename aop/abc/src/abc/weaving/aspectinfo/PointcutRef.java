@@ -149,7 +149,7 @@ public class PointcutRef extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
 		throw new InternalCompilerError
 			("PointcutRef should have been inlined by now (equivalent(pc, renaming))",
 			 getPosition());

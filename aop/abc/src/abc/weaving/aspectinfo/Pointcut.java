@@ -199,11 +199,24 @@ public abstract class Pointcut extends Syntax {
     // Get a list of free variables bound by this pointcut
     public abstract void getFreeVars(Set/*<String>*/ result);
 
-    /** Compare for equivalence (structural) with another pc.
-     *  Not defined as equals() is we may want it to return true
-     *  for pointcuts that would not be considered equal */
-
-	public abstract boolean equivalent(Pointcut otherpc, 
-									   Hashtable/*<Var,Var>*/ renaming);
+    /** Compare for equivalence to another pc, modulo alpha conversion and 
+     *  abstraction of some free variables
+     *  i.e. pc1.canRenameTo(pc2, renaming) should return true if: pc1 is
+     *  structurally equivalent to pc2, except that the free variables of 
+     *  pc1 can have different names; also, pc1 can have MORE free variables
+     *  than pc2. Sets renaming to map each free var in pc1 that is also in
+     *  pc2 to the corresponding var in pc2, and maps vars in pc1 that aren't
+     *  free in pc2 to a dummy PointcutVarEntry object
+     * 
+     *  Any class that descends from Pointcut should implement/override this   
+     * 
+     * 
+     * @param otherpc The pointcut to compare against
+     * @param renaming A Hashtable<Var,PointcutVarEntry> to contain the renaming.
+     * Should be empty but initialised when calling canRenameTo
+     * @return
+     */
+	public abstract boolean canRenameTo(Pointcut otherpc, 
+									   Hashtable/*<Var,PointcutVarEntry>*/ renaming);
 
 }

@@ -72,8 +72,8 @@ public class TargetVar extends TargetAny {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof TargetVar) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			Var othervar = ((TargetVar)otherpc).getVar();
 			return (var.canRenameTo(othervar, renaming));
 		} else return false;

@@ -149,8 +149,8 @@ public class If extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof If) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			If oif = (If)otherpc;
 			
 			if (this.hasJoinPoint() != oif.hasJoinPoint()) return false;

@@ -93,11 +93,11 @@ public class NotPointcut extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
 		// Renaming is useless here b/c guarantees that no bound vsrs in not
 		// but no harm done
-		if (otherpc instanceof NotPointcut) {
-			return pc.equivalent(((NotPointcut)otherpc).getPointcut(), renaming);
+		if (otherpc.getClass() == this.getClass()) {
+			return pc.canRenameTo(((NotPointcut)otherpc).getPointcut(), renaming);
 		} else return false;
 	}
 

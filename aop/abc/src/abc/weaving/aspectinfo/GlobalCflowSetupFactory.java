@@ -30,7 +30,7 @@ import abc.weaving.residues.*;
  *  creating instances for the same pointcut
  *  to eliminate redundant stacks/counters at
  *  runtime.
- *  @author damien
+ *  @author Damien Sereni
  */ 
 
 public class GlobalCflowSetupFactory {
@@ -57,20 +57,6 @@ public class GlobalCflowSetupFactory {
 
 	private static LinkedList/*<CflowEntry>*/ cfsStore = new LinkedList();
 
-	/* getIfExists(k): returns the elem that k maps to, or null if none 
-
-	static HashSet<CflowSetup> getIfExists(Pointcut k) {
-	    Iterator it = cfsStore.iterator();
-
-	    while (it.hasNext()) {
-		CflowEntry cfe = (CflowEntry)it.next();
-		if (cfe.getPc().equivalent(k)) return cfe.getCfs();
-	    }
-
-	    return null;
-	}
-*/
-
 	private static class AllMatchesIterator implements Iterator {
 		private Pointcut pc;
 		private Iterator it;
@@ -81,31 +67,15 @@ public class GlobalCflowSetupFactory {
 			this.it = CfsStore.cfsStore.iterator();
 		}
 		
-		private static Hashtable/*<Var,Var>*/ 
-						inversemap(Hashtable/*<Var,Var>*/ renaming) {
-			Hashtable/*<Var,Var>*/ newrenaming = new Hashtable();
-			Enumeration enum = renaming.keys();
-			while (enum.hasMoreElements()) {
-				Var k = (Var)enum.nextElement();
-				Var e = (Var)renaming.get(k);
-				newrenaming.put(e, k);	
-			}
-			return newrenaming;
-		}
-		
 		public boolean hasNext() {
 			while (it.hasNext()) {
 				CflowEntry cfe = (CflowEntry)it.next();
-				Hashtable/*<String,Var>*/ renaming = new Hashtable();
+				Hashtable/*<Var, PointcutVarEntry>*/ renaming = new Hashtable();
 				
-				if (cfe.getPc().equivalent(pc, renaming)) {
-					// Check that we can go the other way: 
-					// quick fix for the problem of subclasses and equivalent():
-					if (pc.equivalent(cfe.getPc(), inversemap(renaming))) {
-						cfsc = new
-							CflowSetupContainer(cfe.getCfs(), false, renaming);
-						return true;						
-					}
+				if (cfe.getPc().canRenameTo(pc, renaming)) {
+					cfsc = new
+						CflowSetupContainer(cfe.getPc(), cfe.getCfs(), false, renaming);
+					return true;
 				}
 			}
 			return false;
@@ -208,6 +178,19 @@ public class GlobalCflowSetupFactory {
 	    if (canShare(aspect, isBelow, depth, cfsc.getCfs())) {
 			// We can share the cflowsetup (but to use it may need to apply the
 			// renaming)
+			//System.out.println("******** Found pointcut to share ********");
+			//System.out.println("** "+pc+" ===>");
+			//System.out.println("** "+cfsc.getPointcut());
+			//System.out.println("** with renaming:");
+			//System.out.print("** ");
+				//Enumeration rn = cfsc.getRenaming().keys();
+				//while (rn.hasMoreElements()) {
+				//	Var v = (Var)rn.nextElement();
+				//	PointcutVarEntry pve = (PointcutVarEntry)cfsc.getRenaming().get(v);
+				//	System.out.print(v+"->"+pve);
+				//	if (rn.hasMoreElements()) System.out.print(", ");
+				//}
+				//System.out.println("");
 			return cfsc;
 	    }
 	}
@@ -223,28 +206,75 @@ public class GlobalCflowSetupFactory {
 		// The substitution should be the identity map on the free vars in the pc,
 		// rather than just the empty map 
 		
-		Hashtable/*<Var,Var>*/ newrename = new Hashtable();
+		Hashtable/*<Var,PointcutVarEntry>*/ newrename = new Hashtable();
 		
 		Iterator fvs = ncfs.getActuals().iterator();
 		while (fvs.hasNext()) {
 			Var fv = (Var)fvs.next();
-			newrename.put(fv, fv);
+			newrename.put(fv, new PointcutVarEntry(fv));
 		}
 		
-	return new CflowSetupContainer(ncfs, true, newrename);
+	return new CflowSetupContainer(pc, ncfs, true, newrename);
     }
 
+	/** A wrapper class for an optional Var value (used in Pointcut.canRenameTo)
+	 */
+	public static class PointcutVarEntry {
+
+		private Var var;
+		private boolean hasVar;
+	
+		public PointcutVarEntry() {
+			this.hasVar = false;
+		}
+	
+		public PointcutVarEntry(Var var) {
+			this.var = var;
+			this.hasVar = true;
+		}
+	
+		public boolean hasVar() {
+			return hasVar;
+		}
+		public Var getVar() {
+			return var;
+		}
+	
+		public boolean equals(Object o) {
+			if (o.getClass() == this.getClass()) {
+				if (!this.hasVar) return (!((PointcutVarEntry)o).hasVar());
+				return var.equals(((PointcutVarEntry)o).getVar());
+			} else return false;
+		}
+
+		public boolean equalsvar(Var v) {
+			if (!hasVar) return false;
+			return (var.equals(v));
+		}
+
+		public String toString() {
+			if (hasVar) return var.toString();
+			else return "X";
+		}
+
+	}
 
     public static class CflowSetupContainer {
+    private Pointcut pc;	// The original pc associated with this cfs (DEBUG)
 	private CflowSetup cfs;
 	private boolean isFresh;
-	private Hashtable/*<String, Var>*/ renaming;
+	private Hashtable/*<Var, PointcutVarEntry>*/ renaming;
 
-	public CflowSetupContainer(CflowSetup cfs, boolean isFresh, 
-							   Hashtable/*<String, Var>*/ renaming) {
+	public CflowSetupContainer(Pointcut pc, CflowSetup cfs, boolean isFresh, 
+							   Hashtable/*<Var, PointcutVarEntry>*/ renaming) {
+		this.pc = pc;
 	    this.cfs = cfs;
 	    this.isFresh = isFresh;
 	    this.renaming = renaming;
+	}
+
+	private Pointcut getPointcut() {
+		return pc;
 	}
 
 	public CflowSetup getCfs() {
@@ -255,7 +285,7 @@ public class GlobalCflowSetupFactory {
 	    return isFresh;
 	}
 
-	public Hashtable/*<String, Var>*/ getRenaming() {
+	public Hashtable/*<Var, PointcutVarEntry>*/ getRenaming() {
 		return renaming;
 	}
 

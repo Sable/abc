@@ -100,12 +100,14 @@ public class CflowBelow extends Pointcut {
 	Iterator it=actuals.iterator();
 	while(it.hasNext()) {
 		Var setupvar = (Var) it.next();
-		Var inlinedvar = (Var) renaming.get(setupvar);
+		GlobalCflowSetupFactory.PointcutVarEntry inlinedvar = 
+			(GlobalCflowSetupFactory.PointcutVarEntry) renaming.get(setupvar);
 		if (inlinedvar == null) {
 			throw new RuntimeException("Internal error: Could not find variable "+
 					setupvar.getName() + " in cflow renaming");
 		}
-		weavingActuals.add(env.getWeavingVar(inlinedvar));
+		if (inlinedvar.hasVar())
+			weavingActuals.add(env.getWeavingVar(inlinedvar.getVar()));
 	}
 	return new CflowResidue(setupAdvice,weavingActuals);
     }
@@ -117,9 +119,9 @@ public class CflowBelow extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof CflowBelow) {
-			return pc.equivalent(((CflowBelow)otherpc).getPointcut(), renaming);
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
+			return pc.canRenameTo(((CflowBelow)otherpc).getPointcut(), renaming);
 		} else return false;
 	}
 

@@ -92,8 +92,8 @@ public class CastPointcutVar extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof CastPointcutVar) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			CastPointcutVar othcast = (CastPointcutVar) otherpc;
 			
 			if (from.canRenameTo(othcast.getFrom(), renaming)) {

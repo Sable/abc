@@ -171,8 +171,8 @@ public class Args extends DynamicValuePointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof Args) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			List/*<ArgPattern>*/ otherargs = ((Args)otherpc).getArgs();
 			// Walk through the lists manually b/c want to compute renamings
 			
@@ -181,7 +181,7 @@ public class Args extends DynamicValuePointcut {
 			while (it1.hasNext() && it2.hasNext()) {
 				ArgPattern pat1 = (ArgPattern)it1.next();
 				ArgPattern pat2 = (ArgPattern)it2.next();
-				if (!pat1.equivalent(pat2, renaming)) return false;
+				if (!pat1.canRenameTo(pat2, renaming)) return false;
 			}
 			if (it1.hasNext() || it2.hasNext()) return false;
 			return true;

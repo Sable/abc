@@ -33,6 +33,7 @@ import abc.weaving.residues.*;
 /** Declare local pointcut variables. These can appear
  *  after inlining
  *  @author Ganesh Sittampalam
+ *  @author Damien Sereni
  */
 public class LocalPointcutVars extends Pointcut {
     private Pointcut pc;
@@ -115,15 +116,17 @@ public class LocalPointcutVars extends Pointcut {
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
-	public boolean equivalent(Pointcut otherpc, Hashtable renaming) {
-		if (otherpc instanceof LocalPointcutVars) {
+	public boolean canRenameTo(Pointcut otherpc, Hashtable renaming) {
+		if (otherpc.getClass() == this.getClass()) {
 			LocalPointcutVars other = (LocalPointcutVars) otherpc; 
-			if (pc.equivalent(other.getPointcut(), renaming)) {
+			if (pc.canRenameTo(other.getPointcut(), renaming)) {
 				// The inner pcs are equivalent, and we have the renaming
 				// Are the variables to be abstracted the same?
 				// ie require that corresponding elements in the lists of formals:
 				//   - have the same type
 				//   - are related by the substitution
+				
+				// FIXME This is much too restrictive for comparing pcs with different bound vars
 				
 				Iterator it1 = formals.iterator();
 				Iterator it2 = other.getFormals().iterator();

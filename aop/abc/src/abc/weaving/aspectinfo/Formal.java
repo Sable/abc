@@ -80,8 +80,9 @@ public class Formal extends Syntax {
     		Var otherv = new Var(f.getName(), f.getPosition());
     		
     		if (renaming.containsKey(thisv)) {
-    			Var previous = (Var)renaming.get(thisv);
-    			if (previous.getName().equals(f.getName())) {
+				GlobalCflowSetupFactory.PointcutVarEntry previous = 
+					(GlobalCflowSetupFactory.PointcutVarEntry)renaming.get(thisv);
+    			if (previous.getVar().getName().equals(f.getName())) {
     				return true;
     			} else return false; // Existing match, wrong name 
     		} else return false;     // No match

@@ -63,12 +63,13 @@ public class Var extends Syntax {
      * previous binding, or the existing binding is the one we would have added) 
      * The new binding is added to the mapping */
 
-	public boolean canRenameTo(Var other, Hashtable/*<Var,Var>*/ renaming) {
+	public boolean canRenameTo(Var other, Hashtable/*<Var,PointcutVarEntry>*/ renaming) {
 		if (renaming.containsKey(this)) {
-			Var previous = (Var)renaming.get(this);
-			return previous.equals(other);
+			GlobalCflowSetupFactory.PointcutVarEntry previous = 
+				(GlobalCflowSetupFactory.PointcutVarEntry)renaming.get(this);
+			return previous.equalsvar(other);
 		} else {
-			renaming.put(this, other);
+			renaming.put(this, new GlobalCflowSetupFactory.PointcutVarEntry(other));
 			return true;
 		}
 	}
