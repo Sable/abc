@@ -145,6 +145,10 @@ public class AbcFactory {
 	  AbcType rtype = AbcFactory.AbcType(mi.container());
 	  String name = "<init>";
 	  List formals = new ArrayList();
+	  ClassType cont = mi.container().toClass();
+	  if (cont.isInnerClass()) {
+		formals.add(0,new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(cont.outer()),"outer$",mi.position()));
+	  }
 	  int index = 0;
 	  Iterator fi = mi.formalTypes().iterator(); 
 	  while (fi.hasNext()) {
