@@ -94,7 +94,7 @@ public class Restructure {
 	 
        debug("--- Finished looking through statement list ..... ");
        if (countinits == 0)     
-         throw new CodeGenException("Could not find a matching <init>");
+         throw new InternalCompilerError("Could not find a matching <init>");
 
        return(initstmt);
      }
