@@ -21,6 +21,20 @@ public class TPEArray_c extends TypePatternExpr_c
 	this.dims = dims;
     }
 
+    protected TPEArray_c reconstruct(TypePatternExpr base) {
+	if (base != this.base) {
+	    TPEArray_c n = (TPEArray_c) copy();
+	    n.base = base;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node vistChildren(NodeVisitor v) {
+	TypePatternExpr base = (TypePatternExpr) visitChild(this.base, v);
+	return reconstruct(base);
+    }
+
     public Precedence precedence() {
 	return Precedence.UNARY;
     }

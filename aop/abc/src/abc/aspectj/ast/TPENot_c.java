@@ -18,6 +18,20 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
         this.tpe = tpe;
     }
 
+    protected TPENot_c reconstruct(TypePatternExpr tpe) {
+	if (tpe != this.tpe) {
+	    TPENot_c n = (TPENot_c) copy();
+	    n.tpe = tpe;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	TypePatternExpr tpe = (TypePatternExpr) visitChild(this.tpe, v);
+	return reconstruct(tpe);
+    }
+
     public Precedence precedence() {
 	return Precedence.UNARY;
     }

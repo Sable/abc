@@ -19,6 +19,20 @@ public class CPEName_c extends ClassnamePatternExpr_c
         this.pat = pat;
     }
 
+    protected CPEName_c reconstruct(NamePattern pat) {
+	if (pat != this.pat) {
+	    CPEName_c n = (CPEName_c) copy();
+	    n.pat = pat;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	NamePattern pat = (NamePattern) visitChild(this.pat, v);
+	return reconstruct(pat);
+    }
+
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }

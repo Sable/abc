@@ -27,6 +27,23 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
                                                  true);
     }
 
+    protected DeclareParentsImpl_c reconstruct(ClassnamePatternExpr pat,
+					       TypedList interfaces) {
+	if (pat != this.pat || !CollectionUtil.equals(interfaces, this.interfaces)) {
+	    DeclareParentsImpl_c n = (DeclareParentsImpl_c) copy();
+	    n.pat = pat;
+	    n.interfaces = TypedList.copyAndCheck(interfaces, TypeNode.class, true);
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr pat = (ClassnamePatternExpr) visitChild(this.pat, v);
+	TypedList interfaces = (TypedList) visitList(this.interfaces, v);
+	return reconstruct(pat, interfaces);
+    }
+
     public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 	//System.out.println("DeclareParentsImpl 0 "+ar.kind());
 	if (ar.kind() == DeclareParentsAmbiguityRemover.DECLARE) {

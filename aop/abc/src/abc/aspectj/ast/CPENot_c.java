@@ -18,6 +18,20 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
         this.cpe = cpe;
     }
 
+    protected CPENot_c reconstruct(ClassnamePatternExpr cpe) {
+	if (cpe != this.cpe) {
+	    CPENot_c n = (CPENot_c) copy();
+	    n.cpe = cpe;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr cpe = (ClassnamePatternExpr) visitChild(this.cpe, v);
+	return reconstruct(cpe);
+    }
+
     public Precedence precedence() {
 	return Precedence.UNARY;
     }

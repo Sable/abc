@@ -27,6 +27,23 @@ public class DeclareParentsExt_c extends DeclareDecl_c
         this.type = type;
     }
 
+    protected DeclareParentsExt_c reconstruct(ClassnamePatternExpr pat,
+					      TypeNode type) {
+	if (pat != this.pat || type != this.type) {
+	    DeclareParentsExt_c n = (DeclareParentsExt_c) copy();
+	    n.pat = pat;
+	    n.type = type;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr pat = (ClassnamePatternExpr) visitChild(this.pat, v);
+	TypeNode type = (TypeNode) visitChild(this.type, v);
+	return reconstruct(pat, type);
+    }
+
     public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 	//System.out.println("DeclareParentsExt 0 "+ar.kind());
 	if (ar.kind() == DeclareParentsAmbiguityRemover.DECLARE) {

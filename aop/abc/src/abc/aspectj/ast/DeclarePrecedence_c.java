@@ -22,6 +22,20 @@ public class DeclarePrecedence_c extends DeclareDecl_c
                                            true);
     }
 
+    protected DeclarePrecedence_c reconstruct(TypedList pats) {
+	if (!CollectionUtil.equals(pats, this.pats)) {
+	    DeclarePrecedence_c n = (DeclarePrecedence_c) copy();
+	    n.pats = TypedList.copyAndCheck(pats, ClassnamePatternExpr.class, true);
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	TypedList pats = (typedList) visitList(this.pats, v);
+	return reconstruct(pats);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("declare precedence : ");
         for (Iterator i = pats.iterator(); i.hasNext(); ) {

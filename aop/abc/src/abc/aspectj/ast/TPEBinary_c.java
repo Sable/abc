@@ -28,6 +28,22 @@ public class TPEBinary_c extends TypePatternExpr_c
 	this.precedence = op.precedence();
     }
 
+    protected TPEBinary_c reconstruct(TypePatternExpr left, TypePatternExpr right) {
+	if (left != this.left || right != this.right) {
+	    TPEBinary_c n = (TPEBinary_c) copy();
+	    n.left = left;
+	    n.right = right;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	TypePatternExpr left = (TypePatternExpr) visitChild(this.left, v);
+	TypePatternExpr right = (TypePatternExpr) visitChild(this.right, v);
+	return reconstruct(left, right);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	printSubExpr(left, true, w, tr);
 	w.write(" ");

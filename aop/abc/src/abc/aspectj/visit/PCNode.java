@@ -46,8 +46,8 @@ public class PCNode {
 	if (rest != null) {
 	    return child.insertFullName(rest, cl, weavable);
 	} else {
-	    child.is_class = cl;
-	    child.is_weavable = weavable;
+	    child.is_class |= cl;
+	    child.is_weavable |= weavable;
 	    return child;
 	}
     }
@@ -99,6 +99,7 @@ public class PCNode {
 	    this_scope_names.add(pc.name);
 	}
 	if (is_class) {
+	    // Match inner classes of outer classes or same package
 	    Set outer_scope = outer.matchScope(simple_name_pattern, classes, packages);
 	    Iterator osi = outer_scope.iterator();
 	    while (osi.hasNext()) {
@@ -109,6 +110,7 @@ public class PCNode {
 		}
 	    }
 	} else {
+	    // Match specifically imported classes
 	    Iterator ci = classes.iterator();
 	    while (ci.hasNext()) {
 		PCNode c = (PCNode)ci.next();
@@ -118,6 +120,8 @@ public class PCNode {
 		    this_scope_names.add(c.name);
 		}
 	    }
+	    // Match nonspecifically imported classes
+	    Set/*<String>*/ new_names = new HashSet();
 	    Iterator pi = packages.iterator();
 	    while (pi.hasNext()) {
 		PCNode p = (PCNode)pi.next();
@@ -127,8 +131,20 @@ public class PCNode {
 		    PCNode pc = (PCNode)pci.next();
 		    if (!this_scope_names.contains(pc.name)) {
 			this_scope.add(pc);
-			// Nonspecifically imported classes do not shadow each other
+			// Nonspecifically imported classes do not shadow each other,
+			// but they may shadow toplevel packages
+			new_names.add(pc.name);
 		    }
+		}
+	    }
+	    this_scope_names.addAll(new_names);
+
+	    // Finally, match toplevel classes and packages
+	    Iterator tli = root.root.matchSpecific(simple_name_pattern).iterator();
+	    while (tli.hasNext()) {
+		PCNode tl = (PCNode)tli.next();
+		if (!this_scope_names.contains(tl.name)) {
+		    this_scope.add(tl);
 		}
 	    }
 
@@ -137,6 +153,7 @@ public class PCNode {
     }
 
     public Set/*<PCNode>*/ matchClass(Pattern simple_name_pattern) {
+	//System.out.println(this+".matchClass "+simple_name_pattern.pattern()+": ");
 	Set this_class = matchSpecific(simple_name_pattern);
 	Set this_class_names = new HashSet();
 	Iterator tsi = this_class.iterator();
@@ -147,6 +164,7 @@ public class PCNode {
 	Iterator pi = parents.iterator();
 	while (pi.hasNext()) {
 	    PCNode parent = (PCNode)pi.next();
+	    //System.out.println("Parent: "+parent);
 	    Set parent_class = parent.matchClass(simple_name_pattern);
 	    Iterator osi = parent_class.iterator();
 	    while (osi.hasNext()) {
@@ -164,8 +182,12 @@ public class PCNode {
 	Iterator ii = inners.keySet().iterator();
 	while (ii.hasNext()) {
 	    String inner = (String)ii.next();
+	    //System.out.print("Matching "+inner+" against "+simple_name_pattern.pattern()+": ");
 	    if (simple_name_pattern.matcher(inner).matches()) {
+		//System.out.println("true");
 		matches.add(inners.get(inner));
+	    } else {
+		//System.out.println("false");
 	    }
 	}
 	return matches;

@@ -5,6 +5,7 @@ import arc.aspectj.ast.*;
 
 import polyglot.ast.*;
 import polyglot.visit.*;
+import polyglot.util.*;
 
 import java.util.*;
 
@@ -45,6 +46,8 @@ public class NamePatternEvaluator extends NodeVisitor {
 	    return null;
 	}
 	if (n instanceof NamePattern) {
+	    //Position p = n.position();
+	    //System.out.println("Evaluating name pattern on "+p.file()+":"+p.line());
 	    ext_info.pattern_matcher.computeMatches((NamePattern)n, context, classes, packages);
 	}
 	return null;

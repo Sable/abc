@@ -28,6 +28,22 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
 	this.precedence = op.precedence();
     }
 
+    protected CPEBinary_c reconstruct(ClassnamePatternExpr left, ClassnamePatternExpr right) {
+	if (left != this.left || right != this.right) {
+	    CPEBinary_c n = (CPEBinary_c) copy();
+	    n.left = left;
+	    n.right = right;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	ClassnamePatternExpr left = (ClassnamePatternExpr) visitChild(this.left, v);
+	ClassnamePatternExpr right = (ClassnamePatternExpr) visitChild(this.right, v);
+	return reconstruct(left, right);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	printSubExpr(left, true, w, tr);
 	w.write(" ");

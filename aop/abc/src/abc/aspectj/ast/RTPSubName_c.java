@@ -22,6 +22,22 @@ public class RTPSubName_c extends Node_c
 	super(pos);
         this.pat = pat;
     }
+    
+	/** Reconstruct the pointcut call. */
+	protected RTPSubName_c reconstruct(NamePattern pat) {
+		if (this.pat != pat) {
+			 RTPSubName_c n = (RTPSubName_c) copy();
+			 n.pat = pat;
+			 return n;
+		}
+		return this;
+	}
+
+	/** Visit the children of the pointcut call. */
+	public Node visitChildren(NodeVisitor v) {
+		NamePattern pat = (NamePattern)visitChild(this.pat, v);
+		return reconstruct(pat);
+	}
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	print(pat,w,tr);
