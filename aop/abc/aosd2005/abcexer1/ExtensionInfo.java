@@ -52,13 +52,15 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
 
     protected void passes_patterns_and_parents(List l, Job job)
     {
-        super.passes_patterns_and_parents(l, job);
+        
 
         l.add(new VisitorPass(TRANSFORM_SURROUND_ADVICE,
                               job,
                               new Surround(/*GlobalPointcuts.COLLECT,
                                                    job,
                                                    (EAJTypeSystem) ts,*/
-                                                   (Abcexer1NodeFactory) nf)));        
+                                                   (Abcexer1NodeFactory) nf)));
+        
+        super.passes_patterns_and_parents(l, job);
     }
 }

@@ -32,7 +32,6 @@ public class Surround extends NodeVisitor {
 	}
 	Stack afterAdvices=new Stack();
 	
-	boolean insideSurroundAdviceDecl=false;
 	
 	public NodeVisitor enter(Node n) {		
 		if (n instanceof AspectBody) {
@@ -43,18 +42,23 @@ public class Surround extends NodeVisitor {
 	public Node leave(Node old, Node n, NodeVisitor v) {		
 		if (n instanceof AspectBody) { // leaving the aspect?
 			// add all generated pieces of after advice
-			AspectBody oldBody=(AspectBody)n;
-			List members=oldBody.members();
+			/*AspectBody oldBody=(AspectBody)n;
+			List members=new LinkedList(oldBody.members());
+			
+			for (Iterator it=members.iterator(); it.hasNext();) {
+				Node node=(Node)it.next();
+				System.out.println("member: " +  node + " class: " + node.getClass());
+			}
+				
 			
 			List advices=(List)afterAdvices.peek();
 			for (Iterator it=advices.iterator();it.hasNext();) {
 				SurroundAdviceDecl decl=(SurroundAdviceDecl)it.next();
 				members.add(decl.getAfterAdviceDecl(nodeFactory));
 			}
-			AspectBody aspectBody=nodeFactory.AspectBody(oldBody.position(), members);
-			
 			afterAdvices.pop();
-			return aspectBody;
+			AspectBody aspectBody=nodeFactory.AspectBody(oldBody.position(), members);			
+			return aspectBody;*/
 		} else if (n instanceof SurroundAdviceDecl) {
 			// Turn any surround advice decl into a piece of before advice.
 			// Also store a reference 

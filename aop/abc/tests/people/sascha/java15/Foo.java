@@ -7,7 +7,7 @@ class Container<E> {
 	// fails: Aspect.pc2(this); 
 	Aspect.pc3(this);
     }
-
+    public Container<int[]> makeone() { return null; }
   public void set(Container<? extends E> val) { set(val.get()); }
   
   public E get() { return val; }
@@ -20,6 +20,8 @@ public class Foo {
    c.set("hello"); Aspect.pc1(c); 
 
    String s=c.get(); Aspect.pc4(c.get(), c); Aspect.pc5(c); Aspect.pc6(c); Aspect.pc7(c);
+
+   Number n="test";
  }
 }
 
@@ -49,4 +51,24 @@ class Aspect {
      // <E extends String, T extends Container<E>> pointcut pc7(): call(* T.get(..)) {}
     static public <E extends String, T extends Container<E>> void pc7(T c) { }
    
+}
+
+interface Param<T> {}
+
+class Test {
+    <T> void foo(Container<? super Test> l) {
+	
+    }
+    //  <T> void boo(Container<T<Test>> c) {} // error: found type parameter, required class
+    
+    <T> void boo(T[] arg) {}
+
+    <T> void boo(Container<T[]> arg) {}
+
+    <T> void boo(Container<T>[] arg) {}
+    
+    // <T> void boo(Container<T extends Test> arg) {} illegal
+
+   <T> void boo2(Container<Param<T>[]> arg) {}
+   <T> void boo3(Container<Param<T[]>[]> arg) {}
 }

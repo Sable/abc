@@ -30,6 +30,9 @@ public class Surround_c extends AdviceSpec_c implements Surround {
 	}
 	
 	public Before getBeforeSpec(Abcexer1NodeFactory nodeFactory) {
+		/*if (position()==null)throw new RuntimeException();
+		if (formals()==null)throw new RuntimeException();
+		if (returnType()==null)throw new RuntimeException();*/
 		return nodeFactory.Before(position(),formals(), returnType());
 	}
 	public After getAfterSpec(Abcexer1NodeFactory nodeFactory) {

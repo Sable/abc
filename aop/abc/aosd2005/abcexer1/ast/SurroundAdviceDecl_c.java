@@ -6,24 +6,21 @@
  */
 package abcexer1.ast;
 
-import java.util.HashSet;
 import java.util.List;
 
 import polyglot.ast.Block;
 import polyglot.ast.Node;
-import polyglot.ast.NodeFactory;
 import polyglot.ast.TypeNode;
 import polyglot.types.Flags;
+import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
-import polyglot.util.UniqueID;
 import polyglot.visit.NodeVisitor;
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.AdviceDecl_c;
 import abc.aspectj.ast.AdviceFormal;
 import abc.aspectj.ast.AdviceSpec;
-import abc.aspectj.ast.ClassnamePatternExpr;
+import abc.aspectj.ast.Before;
 import abc.aspectj.ast.Pointcut;
-import abc.eaj.ast.GlobalPointcutDecl_c;
 
 /**
  * @author sascha
@@ -42,12 +39,18 @@ public class SurroundAdviceDecl_c extends AdviceDecl_c
 		this.afterBody=afterBody;
 	}
 	
-	public AdviceSpec spec() { return (AdviceSpec)spec.copy(); }
-	public Pointcut pc() { return (Pointcut)pc; }
-	public Block afterBody() { return (Block) afterBody.copy(); }
+	public AdviceSpec spec() { return (AdviceSpec)spec;}//.copy(); }
+	public Pointcut pc() { return (Pointcut)pc;}//.copy(); }
+	public Block afterBody() { return (Block) afterBody;}//.copy(); }
 	
 	public AdviceDecl getBeforeAdviceDecl(Abcexer1NodeFactory nodeFactory) {
 		Surround spec=(Surround)this.spec;
+		/*Position pos=position();
+		Flags flags=flags();
+		Before bef=spec.getBeforeSpec(nodeFactory);
+		List throwTypes=throwTypes();
+		Pointcut pc=pc();
+		Block body=body();*/	
 		return nodeFactory.AdviceDecl(position(), flags(), 
 				spec.getBeforeSpec(nodeFactory),
 				throwTypes(), pc(), body());
