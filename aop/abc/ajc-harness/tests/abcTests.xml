@@ -19,6 +19,13 @@
         </compile>
     </ajc-test>
 
+    <ajc-test dir="new" pr="415"
+      title="No argthis was being created for calls advice."
+      keywords="from-resolved_10x">
+        <compile files="PR415.java"/>
+        <run class="PR415"/>
+    </ajc-test>
+
     <ajc-test dir="pureJava" title="return;;; is not really legal"
       keywords="from-java,purejava">
         <compile files="ReachableEmpty.java">

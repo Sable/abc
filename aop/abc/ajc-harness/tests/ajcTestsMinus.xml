@@ -3257,13 +3257,6 @@
         <run class="StrictFPAdvice"/>
     </ajc-test>
 
-    <ajc-test dir="new" pr="415"
-      title="No argthis was being created for calls advice."
-      keywords="from-resolved_10x">
-        <compile files="PR415.java"/>
-        <run class="PR415"/>
-    </ajc-test>
-
     <ajc-test dir="new"
       title="Ensuring no advice with instanceof(..) is run on static methods."
       keywords="from-resolved_10x">
