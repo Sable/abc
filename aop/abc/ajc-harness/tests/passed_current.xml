@@ -1421,6 +1421,13 @@
             <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="StackOverFlowException with circular +implements's." num="274" keywords="from-errors" dir="errors" abccomment="Not an ideal error location, but ok for now. ODM July 7, 2004">
+        <compile files="CircularPlusImplementsIntros.java">
+            <message line="19" kind="error"></message>
+            <ajcmessage line="7" kind="error"></ajcmessage>
+            <ajcmessage line="8" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
 <ajc-test title="Introducing protected methods is causing a crash" num="275" keywords="from-errors" dir="errors">
         <compile files="ProtectedIntro.java">
             <message line="14" kind="error"></message>
@@ -4966,7 +4973,7 @@
     </ajc-test>
 <ajc-test title="declare parents causes interface to implement itself" num="991" dir="abctests/bugs">
 	<compile files="foo/Foo.java">
-	    <message line="6" kind="error" file="foo/Foo.java"></message>
+	    <message line="11" kind="error" file="foo/Foo.java"></message>
 	</compile>
     </ajc-test>
 <ajc-test title="Try all advice types on the throw joinpoint" num="993" dir="abctests/eaj/throw_pointcut">

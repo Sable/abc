@@ -12,14 +12,6 @@ Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
 FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed.
 
 
-Running test 274: errors/StackOverFlowException with circular +implements's.
-Commandline: abc -d errors errors/CircularPlusImplementsIntros.java 
-Compilation produced an unexpected number of errors: 1, should be 2
-Actual errors found: 
-Semantic Error at errors/CircularPlusImplementsIntros.java:19,4-36: Interface J cannot extend subinterface I
-FAIL: Test 274: "errors/StackOverFlowException with circular +implements's." failed.
-
-
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
 Test failed, compiled class behaved incorrectly
@@ -103,12 +95,6 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
-
-
-Running test 724: new/declare class implements class
-Commandline: abc -d new new/DeclareClassImplementsClass.java 
-Compilation succeeded but was expected to fail.
-FAIL: Test 724: "new/declare class implements class" failed.
 
 
 Running test 740: new/PR862/import any inner from interface implementor

@@ -201,6 +201,12 @@
         <compile files="AfterReturningConstructor.java"></compile>
         <run class="AfterReturningConstructor"></run>
     </ajc-test>
+<ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="AJC does not treat this as an error, and some                   programs depend on it.                   ASC 27/09/04">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="DeclareClassImplementsClass.java">
+          <message line="10" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="Verify error on non-Throwable in declare soft" pr="28921" num="732" dir="bugs">
     <abckeywords> <warningbehaviour></warningbehaviour> </abckeywords>
         <compile options="-Xlint:warning" files="DeclareSoftCf.java">

@@ -10,13 +10,6 @@
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
     </ajc-test>
-<ajc-test title="StackOverFlowException with circular +implements's." num="274" keywords="from-errors" dir="errors" abccomment="Not an ideal error location, but ok for now. ODM July 7, 2004">
-        <compile files="CircularPlusImplementsIntros.java">
-            <ajcmessage line="19" kind="error"></ajcmessage>
-            <message line="7" kind="error"></message>
-            <message line="8" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="primitive parameters coercable to Object just like return values are" pr="322" num="472" keywords="from-resolved_10x" dir="new">
         <compile files="ObjectForInt.java"></compile>
         <run class="ObjectForInt"></run>
@@ -32,11 +25,6 @@
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
-    </ajc-test>
-<ajc-test title="declare class implements class" pr="853" num="724" dir="new" abccomment="the file itself says it expects an error, and we give it.                   ODM 18/08/04">
-        <compile files="DeclareClassImplementsClass.java">
-          <message line="10" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
