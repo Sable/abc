@@ -7,10 +7,10 @@ FILES="full_current.output failed_current.output \
       passed_check_current.xml"
 
 cd ../../ &&
-CLASSPATH= ant clean &&
+CLASSPATH= ant clobber &&
 CLASSPATH= ant &&
 cd ajc-harness/tests &&
-nice -n 5 ./run_cases.pl ajcTests.xml >full.output 2>&1 &&
+nice -n 5 ./run_cases_abc.pl abcTests.xml >full.output 2>&1 &&
 cvs update $FILES
 ./calc_updates.pl | mail -s"test run results" abc@comlab.ox.ac.uk &&
 cp failed.xml failed_current.xml &&
