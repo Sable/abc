@@ -110,7 +110,6 @@ public class AspectMethods extends NodeVisitor {
 				System.out.println(cc);
 				if (cc.constructorInstance() instanceof InterTypeConstructorInstance_c) {
 					InterTypeConstructorInstance_c itcd = (InterTypeConstructorInstance_c) cc.constructorInstance();
-					System.out.println("mangling constructor call");
 					return itcd.mangledCall(cc,nf,ts);
 				}
 			}
@@ -119,13 +118,11 @@ public class AspectMethods extends NodeVisitor {
 				System.out.println(cc);
 				if (cc.constructorInstance() instanceof InterTypeConstructorInstance_c) {
 					InterTypeConstructorInstance_c itcd = (InterTypeConstructorInstance_c) cc.constructorInstance();
-					System.out.println("mangling new");
 					return itcd.mangledNew(cc,nf,ts);
 			}
 		}
 		if (n instanceof IntertypeConstructorDecl_c) {
 			IntertypeConstructorDecl_c itcd = (IntertypeConstructorDecl_c) n;
-			System.out.println("mangling constructor definition");
 			return itcd.accessChange(nf,ts);
 		}
 /* advice: */
