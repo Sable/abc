@@ -2179,6 +2179,10 @@
         <compile files="Privileged.java"></compile>
         <run class="Privileged"></run>
     </ajc-test>
+<ajc-test title="privileged aspects" num="419" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
+        <run class="main.Main"></run>
+    </ajc-test>
 <ajc-test title="advice on field gets in privileged aspects" num="420" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnPrivileged.java"></compile>
         <run class="AdviceOnPrivileged"></run>
@@ -2459,6 +2463,10 @@
         <compile files="NotThis.java"></compile>
         <run class="NotThis"></run>
     </ajc-test>
+<ajc-test title="private inner interfaces and bytecode visibility" pr="494" num="495" keywords="from-resolved_10x" dir="new/innerInterfaces">
+        <compile files="p/Driver.java,p/InnerTest.java,other/Test.java"></compile>
+        <run class="p.Driver"></run>
+    </ajc-test>
 <ajc-test title="type name hygiene when code comes from aspects in different packages" num="497" keywords="from-resolved_10x" dir="new">
         <compile files="typeNameConflicts/Driver.java,typeNameConflicts/p1/C.java,typeNameConflicts/aspects/A.java"></compile>
         <run class="typeNameConflicts.Driver"></run>
@@ -2486,6 +2494,10 @@
 <ajc-test title="Arguments are not being passed in to calls advice" pr="335" num="504" keywords="from-resolved_10x" dir="new">
         <compile files="PR335.java"></compile>
         <run class="PR335"></run>
+    </ajc-test>
+<ajc-test title="interfaces as mixins with introduction" num="505" keywords="from-resolved_10x" dir="design/intro" abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04">
+        <compile files="Interfaces.java"></compile>
+        <run class="Interfaces"></run>
     </ajc-test>
 <ajc-test title="ExceptionInInitializerError accessing cflow in aspect initialization - before variants" num="507" keywords="from-resolved_10x" dir="new">
         <compile files="CflowInitInAspectVariantsBefore.java"></compile>
@@ -2530,6 +2542,10 @@
 <ajc-test title="introduced inner interfaces accessible inside aspect" pr="494" num="517" keywords="from-resolved_10x" dir="new">
         <compile files="IntroduceInnerInterfaceCP.java"></compile>
         <run class="IntroduceInnerInterfaceCP"></run>
+    </ajc-test>
+<ajc-test title="validate (enclosing) join point and source locations" pr="525" num="518" keywords="from-resolved_10x" dir="new">
+        <compile options="-Xlint:ignore" files="NegativeSourceLocation.java"></compile>
+        <run class="NegativeSourceLocation"></run>
     </ajc-test>
 <ajc-test title="advice formals are just like method formals" pr="544" num="519" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceFormalsCp.java"></compile>
@@ -2820,14 +2836,6 @@
         <compile files="PR554.java"></compile>
         <run class="PR554"></run>
     </ajc-test>
-<ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
-        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
-        <run class="driver.PR555"></run>
-    </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
-        <compile files="InnerClassInPrivilegedAspect.java"></compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
-    </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
@@ -2998,6 +3006,14 @@
         <compile files="TargetObjectReplacement.java"></compile>
         <run class="TargetObjectReplacement"></run>
     </ajc-test>
+<ajc-test title="after returning from initialization and after executing constructor" num="61401" keywords="from-resolved_104" dir="abctests/new">
+        <compile files="ConstructorExecInit.java"></compile>
+        <run class="ConstructorExecInit"></run>
+    </ajc-test>
+<ajc-test title="after returning from initialization causes ExceptionInInitializer in aspect" num="61501" dir="abctests/new">
+        <compile files="ConstructorExecInitFails.java"></compile>
+        <run class="ConstructorExecInitFails"></run>
+    </ajc-test>
 <ajc-test title="name binding in before cflow containing cflowbelow" pr="659" num="616" keywords="from-resolved_104" dir="new">
         <compile options="!eclipse" files="ArgsInCflow.java">
             <ajcmessage line="29" kind="error"></ajcmessage>
@@ -3129,6 +3145,10 @@
             <message line="4" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Incrementing interface-introduced field" pr="757" num="639" keywords="from-resolved_105" dir="new">
+        <compile files="IntroducedFieldInc.java"></compile>
+        <run class="IntroducedFieldInc"></run>
+    </ajc-test>
 <ajc-test title="more tests of super alone" num="640" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="SuperIsWeird.java">
             <message line="9" kind="error"></message>
@@ -3248,6 +3268,11 @@
         <compile options="-source,1.4" files="AssertsCv.java"></compile>
         <run vm="1.4" class="AssertsCv"></run>
     </ajc-test>
+<ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
+        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
+        <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
+        <run vm="1.4" class="AssertInOnePackage"></run>
+    </ajc-test>
 <ajc-test title="assert tests in introduction [requires 1.4]" num="668" keywords="from-14tests,fail-unimplemented" dir="new">
         <compile options="-source,1.4" files="AssertInIntro.java"></compile>
         <run vm="1.4" class="AssertInIntro"></run>
@@ -3350,6 +3375,10 @@
 <ajc-test title="interface self-reference in anonymous instance" pr="774" num="712" dir="new">
         <compile files="AnonymousSelfReference.java"></compile>
         <run class="AnonymousSelfReference"></run>
+    </ajc-test>
+<ajc-test title="self-reference from (aspect-declared) method-local class" pr="776" num="713" dir="new">
+        <compile files="MethodSelfReference.java"></compile>
+        <run class="MethodSelfReference"></run>
     </ajc-test>
 <ajc-test title="expect CE for unterminated declare error" num="714" dir="new" abccomment="the ajc error is much nicer than the abc one">
         <compile files="UnterminatedDeclareErrorCE.java">

@@ -83,10 +83,6 @@
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
     </ajc-test>
-<ajc-test title="privileged aspects" num="419" keywords="from-resolved_10x" dir="new/privilegedAspects">
-        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
-        <run class="main.Main"></run>
-    </ajc-test>
 <ajc-test title="field patterns and subtyping" num="426" keywords="from-resolved_10x" dir="new">
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
@@ -103,10 +99,6 @@
         <compile files="StrictFpReceptions.java"></compile>
         <run class="StrictFpReceptions"></run>
     </ajc-test>
-<ajc-test title="private inner interfaces and bytecode visibility" pr="494" num="495" keywords="from-resolved_10x" dir="new/innerInterfaces">
-        <compile files="p/Driver.java,p/InnerTest.java,other/Test.java"></compile>
-        <run class="p.Driver"></run>
-    </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
@@ -114,14 +106,6 @@
 <ajc-test title="target type matching with messy interface hierarchies" num="499" keywords="from-resolved_10x" dir="new">
         <compile options="-1.4,-Xlint:ignore" files="CallTypesI.java"></compile>
         <run vm="1.4" class="CallTypesI"></run>
-    </ajc-test>
-<ajc-test title="interfaces as mixins with introduction" num="505" keywords="from-resolved_10x" dir="design/intro" abccomment="fails because we don't match I.new(..) correctly. ODM 04/07/04">
-        <compile files="Interfaces.java"></compile>
-        <run class="Interfaces"></run>
-    </ajc-test>
-<ajc-test title="validate (enclosing) join point and source locations" pr="525" num="518" keywords="from-resolved_10x" dir="new">
-        <compile options="-Xlint:ignore" files="NegativeSourceLocation.java"></compile>
-        <run class="NegativeSourceLocation"></run>
     </ajc-test>
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
@@ -131,25 +115,28 @@
         <compile files="Cricket.java"></compile>
         <run class="Cricket"></run>
     </ajc-test>
+<ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
+        <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
+        <run class="driver.PR555"></run>
+    </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
+    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message line="5" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Incrementing interface-introduced field" pr="757" num="639" keywords="from-resolved_105" dir="new">
-        <compile files="IntroducedFieldInc.java"></compile>
-        <run class="IntroducedFieldInc"></run>
+<ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
+        <compile files="test/TypePat.java"></compile>
+        <run class="test.TypePat"></run>
     </ajc-test>
 <ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
 	    <compile files="java/lang/Object.java,java/lang/String.java">
 	    </compile>
 	</ajc-test>
-<ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
-        <run vm="1.4" class="AssertInOnePackage"></run>
-    </ajc-test>
 <ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
@@ -181,10 +168,6 @@
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
         <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
-<ajc-test title="self-reference from (aspect-declared) method-local class" pr="776" num="713" dir="new">
-        <compile files="MethodSelfReference.java"></compile>
-        <run class="MethodSelfReference"></run>
-    </ajc-test>
 <ajc-test title="after returning advice on interface and implementation constructor" pr="827" num="718" keywords="tofix" dir="new" abccomment="use of before keyword inside an aspect; skip this                   when the test harness no longer reports errors where the                   command-line invocation doesn't (are we resetting the lexer                   state?)">
         <compile files="AfterReturningConstructor.java"></compile>
         <run class="AfterReturningConstructor"></run>
@@ -202,9 +185,13 @@
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
     </ajc-test>
+<ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
+    </ajc-test>
 <ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround" abccomment="we only report the warning in one location">
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
-            <ajcmessage line="102" kind="warning"></ajcmessage>
+                <ajcmessage line="102" kind="warning"></ajcmessage>
         	<ajcmessage line="124" kind="warning"></ajcmessage>
         	<ajcmessage line="138" kind="warning"></ajcmessage>
             <message line="102" kind="warning"></message>

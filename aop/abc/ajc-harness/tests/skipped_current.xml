@@ -208,11 +208,6 @@
         <compile files="AspectInitError.java"></compile>
         <run class="AspectInitError"></run>
     </ajc-test>
-<ajc-test title="Declare parents with intermediate ancestor" num="775" keywords="from-new" dir="new/declareParents" abccomment="javac doesn't allow statically incompatible types for instanceofs">
-        <abckeywords><skip></skip></abckeywords>
-        <compile files="Driver.java"></compile>
-        <run class="Driver"></run>
-    </ajc-test>
 <ajc-test title="expect class added in initial incremental tests" num="798" keywords="incremental-test" dir="incremental/initialTests/classAdded">
         <compile staging="true" sourceroots="." options="-incremental"></compile>
         <run class="main.Main"></run>
