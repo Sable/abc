@@ -43,6 +43,9 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
     
     protected PerClause per;
 
+    private MethodDecl aspectOf;
+    private MethodDecl hasAspect;
+
     public AspectDecl_c(Position pos, boolean privileged, Flags flags, String name,
                         TypeNode superClass, List interfaces, PerClause per, AspectBody body) {
 	     super(pos,
@@ -93,10 +96,12 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
     
 	public NodeVisitor buildTypesEnter(TypeBuilder tb) throws SemanticException {
 		if (!flags().isAbstract()) {
-		NodeFactory nf = tb.nodeFactory();
-		AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();      
-		body = body().addMember(aspectOf(nf,ts)).addMember(hasAspect(nf,ts)); 
-		       // against the polyglot doctrine of functional rewrites... 
+		    NodeFactory nf = tb.nodeFactory();
+		    AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();      
+		    aspectOf = aspectOf(nf,ts);
+		    hasAspect = hasAspect(nf,ts);
+		    body = body().addMember(aspectOf).addMember(hasAspect); 
+		    // against the polyglot doctrine of functional rewrites... 
 		}
 		return super.buildTypesEnter(tb);     
 	} 
@@ -140,5 +145,8 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	AbcClass cl = gai.getClass(type().fullName());
 	Aspect a = new Aspect(cl, p, position());
 	gai.addAspect(a);
+		    
+	MethodCategory.register(aspectOf, this.type(), MethodCategory.ASPECT_SPECIAL);
+	MethodCategory.register(hasAspect, this.type(), MethodCategory.ASPECT_SPECIAL);
     }
 }

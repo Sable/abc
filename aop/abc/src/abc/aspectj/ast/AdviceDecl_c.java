@@ -55,6 +55,7 @@ import abc.aspectj.visit.ContainsAspectInfo;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.MethodCategory;
 
 public class AdviceDecl_c extends MethodDecl_c
     implements AdviceDecl, ContainsAspectInfo
@@ -473,8 +474,10 @@ public class AdviceDecl_c extends MethodDecl_c
 	     jp, jpsp, ejp,
 	     position());
 	gai.addAdviceDecl(ad);
+
+	MethodCategory.register(this, (ParsedClassType)this.methodInstance().container(), MethodCategory.ADVICE_BODY);
     }
-    
+
 }
 	
 

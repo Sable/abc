@@ -5,6 +5,7 @@ import soot.SootMethod;
 import soot.Type;
 
 import polyglot.ast.MethodDecl;
+import polyglot.types.ParsedClassType;
 
 import java.util.*;
 
@@ -64,35 +65,29 @@ public class MethodCategory {
 	return weave_inside[cat];
     }
 
-    public static boolean weaveInside(SootMethod m) {
-	return weaveInside(getCategory(m));
-    }
-
-    public static boolean weaveInside(MethodDecl m) {
-	return weaveInside(getCategory(m));
-    }
-
-    public static boolean weaveInside(MethodSig m) {
-	return weaveInside(getCategory(m));
-    }
+    public static boolean weaveInside(SootMethod m) { return weaveInside(getCategory(m)); }
+    public static boolean weaveInside(MethodDecl m, ParsedClassType container) { return weaveInside(getCategory(m, container)); }
+    public static boolean weaveInside(MethodSig m)  { return weaveInside(getCategory(m)); }
 
 
     public static boolean weaveExecution(int cat) {
 	return weave_execution[cat];
     }
 
-    public static boolean weaveExecution(SootMethod m) {
-	return weaveInside(getCategory(m));
+    public static boolean weaveExecution(SootMethod m) { return weaveExecution(getCategory(m)); }
+    public static boolean weaveExecution(MethodDecl m, ParsedClassType container) { return weaveExecution(getCategory(m, container)); }
+    public static boolean weaveExecution(MethodSig m)  { return weaveExecution(getCategory(m)); }
+
+
+    public static boolean adviceBody(int cat) {
+	return cat == ADVICE_BODY;
     }
 
-    public static boolean weaveExecution(MethodDecl m) {
-	return weaveInside(getCategory(m));
-    }
+    public static boolean adviceBody(SootMethod m) { return adviceBody(getCategory(m)); }
+    public static boolean adviceBody(MethodDecl m, ParsedClassType container) { return adviceBody(getCategory(m, container)); }
+    public static boolean adviceBody(MethodSig m)  { return adviceBody(getCategory(m)); }
 
-    public static boolean weaveExecution(MethodSig m) {
-	return weaveInside(getCategory(m));
-    }
-
+    
 
     // CATEGORY QUERY
 
@@ -100,8 +95,8 @@ public class MethodCategory {
 	return GlobalAspectInfo.v().getMethodCategory(signature(m));
     }
 
-    public static int getCategory(MethodDecl m) {
-	return GlobalAspectInfo.v().getMethodCategory(signature(m));
+    public static int getCategory(MethodDecl m, ParsedClassType container) {
+	return GlobalAspectInfo.v().getMethodCategory(signature(m, container));
     }
 
     public static int getCategory(MethodSig m) {
@@ -114,8 +109,8 @@ public class MethodCategory {
 	GlobalAspectInfo.v().registerMethodCategory(signature(m), cat);
     }
 
-    public static void register(MethodDecl m, int cat) {
-	GlobalAspectInfo.v().registerMethodCategory(signature(m), cat);
+    public static void register(MethodDecl m, ParsedClassType container, int cat) {
+	GlobalAspectInfo.v().registerMethodCategory(signature(m, container), cat);
     }
 
     public static void register(MethodSig m, int cat) {
@@ -126,6 +121,8 @@ public class MethodCategory {
 	StringBuffer sb = new StringBuffer();
 	sb.append(d2d(m.getReturnType()));
 	sb.append(" ");
+	sb.append(d2d(m.getDeclaringClass()));
+	sb.append(".");
 	sb.append(m.getName());
 	sb.append("(");
 	Iterator pti = m.getParameterTypes().iterator();
@@ -140,10 +137,12 @@ public class MethodCategory {
 	return sb.toString();
     }
 
-    private static String signature(MethodDecl m) {
+    private static String signature(MethodDecl m, ParsedClassType container) {
 	StringBuffer sb = new StringBuffer();
 	sb.append(d2d(m.returnType()));
 	sb.append(" ");
+	sb.append(d2d(container.fullName()));
+	sb.append(".");
 	sb.append(m.name());
 	sb.append("(");
 	Iterator fi = m.formals().iterator();
@@ -162,6 +161,8 @@ public class MethodCategory {
 	StringBuffer sb = new StringBuffer();
 	sb.append(d2d(m.getReturnType()));
 	sb.append(" ");
+	sb.append(d2d(m.getDeclaringClass()));
+	sb.append(".");
 	sb.append(m.getName());
 	sb.append("(");
 	Iterator fi = m.getFormals().iterator();
