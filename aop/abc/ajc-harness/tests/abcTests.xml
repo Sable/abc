@@ -2482,12 +2482,13 @@
 
     <ajc-test num="271" dir="errors"
       title="circular dominates leading to irresolvable advice precedence"
-      abccomment="Correct error, but thrown as a RuntimeException. ODM July 7, 2004"
+      abccomment="We only report one error, and at the place the advice applies not the advice location"
       keywords="from-errors">
         <compile files="CircularDominates.java">
-            <message kind="error" line="12"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="20"/>
+            <ajcmessage kind="error" line="12"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="20"/>
+            <message kind="error" line="4"/>
         </compile>
     </ajc-test>
 
@@ -8574,11 +8575,13 @@
     </ajc-test>
     
       <ajc-test num="952" dir="bugs" pr="44272"
+            abccomment="we only report one error, at the application location"
     		title="retitle warning to circular {advice} dependency at ...">
         <compile files="CircularAdvicePrecedence.java">
-            <message kind="error" line="4"/> 
-            <message kind="error" line="5"/> 
-            <message kind="error" line="6"/> 
+            <ajcmessage kind="error" line="4"/> 
+            <ajcmessage kind="error" line="5"/> 
+            <ajcmessage kind="error" line="6"/> 
+            <message kind="error" line="11"/> 
         </compile>
     </ajc-test>
     

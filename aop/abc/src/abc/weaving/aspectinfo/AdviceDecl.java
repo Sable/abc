@@ -147,6 +147,8 @@ public class AdviceDecl extends AbstractAdviceDecl {
 		 (ErrorInfo.SEMANTIC_ERROR,
 		  "Advice from aspect "
 		  +getAspect().getInstanceClass().getSootClass()
+		  +" ("+getPosition().file()
+		  +", line "+getPosition().line()+")"
 		  +" applies here, and throws exception "+advicethrow
 		  +" which is not already thrown here",
 		  sm.getContainer(),

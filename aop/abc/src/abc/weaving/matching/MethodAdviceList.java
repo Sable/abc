@@ -10,6 +10,7 @@ import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
 
+import abc.polyglot.util.ErrorInfoFactory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 
@@ -36,10 +37,7 @@ public class MethodAdviceList {
 	    int prec;
 	    prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
 	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT) {
-		// FIXME: Need to provide more info...
-		abc.main.Main.v().error_queue.enqueue
-		    (ErrorInfo.SEMANTIC_ERROR,"Precedence conflict");
-		return;
+		reportPrecedenceConflict(curaa,aa);
 	    }
 	    if(prec==GlobalAspectInfo.PRECEDENCE_FIRST) {
 		it.previous(); // for correct insertion
@@ -52,12 +50,29 @@ public class MethodAdviceList {
 	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
 	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT 
 	       || prec==GlobalAspectInfo.PRECEDENCE_SECOND) {
-		// FIXME: Need to provide more info...
-		abc.main.Main.v().error_queue.enqueue
-		    (ErrorInfo.SEMANTIC_ERROR,"Precedence conflict");
+		reportPrecedenceConflict(curaa,aa);
 		return;
 	    }
 	}
+    }
+
+    private static void reportPrecedenceConflict(AdviceApplication aa1,AdviceApplication aa2) {
+	// FIXME: Should be a multiple position error
+	String msg="";
+
+	msg+="Pieces of advice from aspect "+aa1.advice.getAspect().getInstanceClass().getSootClass()
+	    +" ("+aa1.advice.getPosition().file()
+	    +", line "+aa1.advice.getPosition().line()+") ";
+	msg+="and aspect "+aa2.advice.getAspect().getInstanceClass().getSootClass()
+	    +" ("+aa2.advice.getPosition().file()
+	    +", line "+aa2.advice.getPosition().line()+") ";
+	msg+="are in precedence conflict, and both apply here";
+
+	abc.main.Main.v().error_queue.enqueue
+	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.SEMANTIC_ERROR,
+					   msg,
+					   aa1.shadowmatch.getContainer(),
+					   aa1.shadowmatch.getHost()));
     }
 
     /** {@link AdviceApplication} structures are added to the list
