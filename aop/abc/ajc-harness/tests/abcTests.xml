@@ -9360,4 +9360,9 @@
          <compile files="InlinedCons.java"/>
          <run class="InlinedCons"/>
     </ajc-test>
+    <ajc-test num="1010" dir="abctests/bugs"
+         title="correct handling of methods in source with $ in the name">
+         <compile files="DollarMethod.java"/>
+         <run class="DollarMethod"/>
+    </ajc-test>
 </suite>
