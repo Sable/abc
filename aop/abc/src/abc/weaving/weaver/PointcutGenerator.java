@@ -40,9 +40,11 @@ public class PointcutGenerator {
                     units.insertBefore( 
                                     Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, adviceImpl ) ), aa.begin );
                 } else if( adviceSpec instanceof AfterReturningAdvice ) {
-                    throw new RuntimeException("NYI");
+                    handleAfterReturning(aspect, method, localgen, aa, adviceImpl);
+                    //throw new RuntimeException("NYI");
                 } else if( adviceSpec instanceof AfterThrowingAdvice ) {
-                    throw new RuntimeException("NYI");
+                    handleAfterThrowing(aspect, method, localgen, aa, adviceImpl);
+                    //throw new RuntimeException("NYI");
                 } else if( adviceSpec instanceof AfterAdvice ) {
                     throw new RuntimeException("NYI");
                 } else if( adviceSpec instanceof AroundAdvice ) {
@@ -52,5 +54,56 @@ public class PointcutGenerator {
                 }
 	    }
 	}
+    }
+
+    private void handleAfterReturning(SootClass aspect, SootMethod meth, LocalGenerator lg, AdviceApplication aa, SootMethod adviceImpl){
+      
+        System.out.println("Handling after returning");
+        Body b = meth.getActiveBody();
+        Chain units = b.getUnits();
+        // no params
+        Local l = lg.generateLocal(aspect.getType());
+        AssignStmt assignStmt =  Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList())));
+        units.insertAfter( assignStmt, aa.end);
+        units.insertAfter( Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(l, adviceImpl)), assignStmt);
+         
+    }
+    
+    private void handleAfterThrowing(SootClass aspect, SootMethod meth, LocalGenerator lg, AdviceApplication aa, SootMethod adviceImpl){
+      
+        System.out.println("Handling after throwing");
+        Body b = meth.getActiveBody();
+        Chain units = b.getUnits();
+        
+        // insert nop after aa.end to track region
+        NopStmt nop1 = Jimple.v().newNopStmt();
+        units.insertAfter(nop1, aa.end);
+        
+        NopStmt nop2 = Jimple.v().newNopStmt();
+        units.insertAfter(nop2, nop1);
+       
+        GotoStmt goto1 = Jimple.v().newGotoStmt(nop2);
+        units.insertAfter(goto1, nop1);
+        
+        Local catchLocal = lg.generateLocal(RefType.v("java.lang.Throwable"));
+        CaughtExceptionRef exceptRef = Jimple.v().newCaughtExceptionRef();
+        IdentityStmt idStmt = Jimple.v().newIdentityStmt(catchLocal, exceptRef);
+        
+        System.out.println("inserting: "+idStmt);
+        units.insertAfter(idStmt, goto1);
+                
+        // no params
+        Local l = lg.generateLocal(aspect.getType());
+        AssignStmt assignStmt =  Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList())));
+        units.insertAfter( assignStmt, idStmt);
+        InvokeStmt vInvokeStmt =  Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(l, adviceImpl));
+        units.insertAfter( vInvokeStmt, assignStmt);
+         
+        ThrowStmt throwStmt = Jimple.v().newThrowStmt(catchLocal);
+
+        units.insertAfter(throwStmt, vInvokeStmt);
+
+        b.getTraps().add(Jimple.v().newTrap(Scene.v().getSootClass("java.lang.Throwable"), aa.begin, nop1, idStmt));
+
     }
 }
