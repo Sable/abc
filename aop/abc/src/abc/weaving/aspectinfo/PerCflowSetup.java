@@ -54,7 +54,7 @@ public class PerCflowSetup extends PerSetupAdvice {
 	    SootClass aspectClass=getAspect().getInstanceClass().getSootClass();
 
 	    SootMethodRef push=Scene.v().makeMethodRef
-		(aspectClass,"abc$perCflowPush",new ArrayList(),VoidType.v());
+		(aspectClass,"abc$perCflowPush",new ArrayList(),VoidType.v(),true);
 
 	    c.addLast(Jimple.v().newInvokeStmt
 		      (Jimple.v().newStaticInvokeExpr(push)));
@@ -66,9 +66,9 @@ public class PerCflowSetup extends PerSetupAdvice {
 		.getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	    SootClass aspectClass=getAspect().getInstanceClass().getSootClass();
 
-	    SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v());
+	    SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v(),false);
 	    SootFieldRef perCflowStackField
-		=Scene.v().makeFieldRef(aspectClass,"abc$perCflowStack",stackClass.getType());
+		=Scene.v().makeFieldRef(aspectClass,"abc$perCflowStack",stackClass.getType(),true);
 
 	    Local perCflowStackLoc=localgen.generateLocal(stackClass.getType(),"perCflowStack");
 	    c.addLast(Jimple.v().newAssignStmt

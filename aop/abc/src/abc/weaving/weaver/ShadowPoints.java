@@ -154,7 +154,7 @@ public class ShadowPoints {
 	    (getThisJoinPoint(),
 	     Jimple.v().newStaticInvokeExpr
 	     (Scene.v().makeMethodRef
-	      (factoryclass,"makeJP",constrTypes,RefType.v("org.aspectj.lang.JoinPoint")),
+	      (factoryclass,"makeJP",constrTypes,RefType.v("org.aspectj.lang.JoinPoint"),true),
 	      constrArgs));
 	units.insertAfter(makeJP,last);
 

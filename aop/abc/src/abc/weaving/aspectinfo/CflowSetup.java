@@ -343,7 +343,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 		// call cflowcounter.inc()
 
-	    SootMethodRef inc=Scene.v().makeMethodRef(counterClass,"inc",new ArrayList(),VoidType.v());
+	    SootMethodRef inc=Scene.v().makeMethodRef(counterClass,"inc",new ArrayList(),VoidType.v(),false);
 	    c.addLast(Jimple.v().newAssignStmt
 		      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
 	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,inc)));
@@ -353,7 +353,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 		// call cflowcounter.dec()
 
-	    SootMethodRef dec=Scene.v().makeMethodRef(counterClass,"dec",new ArrayList(),VoidType.v());
+	    SootMethodRef dec=Scene.v().makeMethodRef(counterClass,"dec",new ArrayList(),VoidType.v(),false);
 	    c.addLast(Jimple.v().newAssignStmt
 		      (cflowCounter,Jimple.v().newStaticFieldRef(getCflowCounter())));
 	    c.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(cflowCounter,dec)));
@@ -386,7 +386,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 
 	    ArrayList types=new ArrayList(1);
 	    types.add(ArrayType.v(object,1));
-	    SootMethodRef push=Scene.v().makeMethodRef(stackClass,"push",types,VoidType.v());
+	    SootMethodRef push=Scene.v().makeMethodRef(stackClass,"push",types,VoidType.v(),false);
 
 	    Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
 	    c.addLast(Jimple.v().newAssignStmt
@@ -400,7 +400,7 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    Chain c=new HashChain();
 	    SootClass stackClass=Scene.v()
 		.getSootClass("org.aspectj.runtime.internal.CFlowStack");
-	    SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v());
+	    SootMethodRef pop=Scene.v().makeMethodRef(stackClass,"pop",new ArrayList(),VoidType.v(),false);
 	    Local cflowStack=localgen.generateLocal(stackClass.getType(),"cflowstack");
 	    c.addLast(Jimple.v().newAssignStmt
 		      (cflowStack,Jimple.v().newStaticFieldRef(getCflowStack())));

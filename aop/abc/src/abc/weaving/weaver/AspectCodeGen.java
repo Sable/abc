@@ -112,7 +112,7 @@ public class AspectCodeGen {
 
       // make a field ref to static field abc$perSingletonInstance
       StaticFieldRef ref = Jimple.v().
-          newStaticFieldRef(Scene.v().makeFieldRef(cl,"abc$perSingletonInstance",cl.getType()));
+          newStaticFieldRef(Scene.v().makeFieldRef(cl,"abc$perSingletonInstance",cl.getType(),true));
 
       // get the units of the body so we can insert new Jimple stmts
       Chain units = b.getUnits(); 
@@ -132,7 +132,7 @@ public class AspectCodeGen {
       StaticFieldRef causefield = 
         Jimple.v().
           newStaticFieldRef(Scene.v().makeFieldRef
-			    (cl,"abc$initFailureCause",RefType.v("java.lang.Throwable")));
+			    (cl,"abc$initFailureCause",RefType.v("java.lang.Throwable"),true));
       Stmt assigntocause =
          Jimple.v().
            newAssignStmt(failureCause,causefield);
@@ -183,7 +183,7 @@ public class AspectCodeGen {
         
       // make a static ref,  <AspectType>.abc$PerSingletonInstance
       StaticFieldRef ref = Jimple.v().
-          newStaticFieldRef(Scene.v().makeFieldRef(cl,"abc$perSingletonInstance",cl.getType()));
+          newStaticFieldRef(Scene.v().makeFieldRef(cl,"abc$perSingletonInstance",cl.getType(),true));
         
       // get a Chain of Jimple stmts so new stmts can be inserted
       Chain units = b.getUnits(); 
@@ -235,7 +235,7 @@ public class AspectCodeGen {
           newSpecialInvokeExpr( theAspect, 
 				Scene.v().makeConstructorRef(cl,new ArrayList()))));
       StaticFieldRef ref = Jimple.v().
-	  newStaticFieldRef(Scene.v().makeFieldRef(cl,"abc$perSingletonInstance",cl.getType()));
+	  newStaticFieldRef(Scene.v().makeFieldRef(cl,"abc$perSingletonInstance",cl.getType(),true));
       units.addLast( Jimple.v().newAssignStmt( ref, theAspect ) );
       units.addLast( Jimple.v().newReturnVoidStmt() ); 
 
@@ -293,7 +293,7 @@ public class AspectCodeGen {
                  Jimple.v().
 		 newStaticFieldRef
 		 (Scene.v().makeFieldRef
-		  (cl,"abc$initFailureCause",RefType.v("java.lang.Throwable")));
+		  (cl,"abc$initFailureCause",RefType.v("java.lang.Throwable"),true));
 
              Stmt assigntofield =
                   Jimple.v().
@@ -526,7 +526,7 @@ public class AspectCodeGen {
 
         // get the method for reading the per object
         SootMethodRef getter 
-	    = Scene.v().makeMethodRef(inter,getName,new ArrayList(),acl.getType());
+	    = Scene.v().makeMethodRef(inter,getName,new ArrayList(),acl.getType(),false);
 
         // make a new body for it, and make it the active one
         Body b = Jimple.v().newBody(aspectOf);
@@ -593,7 +593,7 @@ public class AspectCodeGen {
         SootMethod hasAspect = acl.getMethod("hasAspect",hasAspectTypes);
         // get the get and set methods for instance
         SootMethodRef getter 
-	    = Scene.v().makeMethodRef(inter,getName,new ArrayList(),acl.getType());
+	    = Scene.v().makeMethodRef(inter,getName,new ArrayList(),acl.getType(),false);
 
         // make a new body, and make it active
         Body b = Jimple.v().newBody(hasAspect);
@@ -649,10 +649,10 @@ public class AspectCodeGen {
       { String methodname = "abc$per" + perKind + "Bind"; 
         // get the class for java.lang.Object, and set/get methods
         SootClass jlo = Scene.v().getSootClass("java.lang.Object");
-        SootMethodRef getter = Scene.v().makeMethodRef(inter,getName,new ArrayList(),acl.getType());
+        SootMethodRef getter = Scene.v().makeMethodRef(inter,getName,new ArrayList(),acl.getType(),false);
 	ArrayList setParams=new ArrayList(1);
 	setParams.add(acl.getType());
-        SootMethodRef setter = Scene.v().makeMethodRef(inter,setName,setParams,VoidType.v());
+        SootMethodRef setter = Scene.v().makeMethodRef(inter,setName,setParams,VoidType.v(),false);
         SootMethodRef aclinit = Scene.v().makeConstructorRef(acl,new ArrayList());
         
         // make the method and add it to the class
@@ -772,7 +772,7 @@ public class AspectCodeGen {
 	    .getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	RefType stackType=stackClass.getType();
 
-	SootFieldRef perCflowStack=Scene.v().makeFieldRef(cl,"abc$perCflowStack",stackType);
+	SootFieldRef perCflowStack=Scene.v().makeFieldRef(cl,"abc$perCflowStack",stackType,true);
 	Local stackLoc=lg.generateLocal(stackType,"perCflowStack");
       
 	units.addLast(Jimple.v().newAssignStmt
@@ -785,7 +785,7 @@ public class AspectCodeGen {
 		       Jimple.v().newVirtualInvokeExpr
 		       (stackLoc,
 			Scene.v().makeMethodRef
-			(stackClass,"isValid",new ArrayList(),BooleanType.v()))));
+			(stackClass,"isValid",new ArrayList(),BooleanType.v(),false))));
 
 	units.addLast(Jimple.v().newReturnStmt(hasAspectLoc));
     }
@@ -807,7 +807,7 @@ public class AspectCodeGen {
 	    .getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	RefType stackType=stackClass.getType();
 	
-	SootFieldRef perCflowStack=Scene.v().makeFieldRef(cl,"abc$perCflowStack",stackType);
+	SootFieldRef perCflowStack=Scene.v().makeFieldRef(cl,"abc$perCflowStack",stackType,true);
 	Local stackLoc=lg.generateLocal(stackType,"perCflowStack");
       
 	units.addLast(Jimple.v().
@@ -822,7 +822,7 @@ public class AspectCodeGen {
 		       Jimple.v().newVirtualInvokeExpr
 		       (stackLoc,
 			Scene.v().makeMethodRef
-			(stackClass,"peekInstance",new ArrayList(),object))));
+			(stackClass,"peekInstance",new ArrayList(),object,false))));
 
 	Local theAspect=lg.generateLocal(cl.getType(),"theAspect");
 	units.addLast(Jimple.v().newAssignStmt
@@ -852,7 +852,7 @@ public class AspectCodeGen {
 	Chain units=b.getUnits();
 
 	SootFieldRef perCflowStack
-	    =Scene.v().makeFieldRef(aspct,"abc$perCflowStack",stackType);
+	    =Scene.v().makeFieldRef(aspct,"abc$perCflowStack",stackType,true);
 	Local stackLoc=lg.generateLocal(stackType,"perCflowStack");
 
 	units.addLast(Jimple.v().newAssignStmt
@@ -863,8 +863,7 @@ public class AspectCodeGen {
 		      (aspectLoc,Jimple.v().newNewExpr(aspct.getType())));
 	units.addLast(Jimple.v().newInvokeStmt
 		      (Jimple.v().newSpecialInvokeExpr
-		       (aspectLoc,Scene.v().makeMethodRef
-			(aspct,SootMethod.constructorName,new ArrayList(),VoidType.v()))));
+		       (aspectLoc,Scene.v().makeConstructorRef(aspct,new ArrayList()))));
 
 	ArrayList pushArgs=new ArrayList(1);
 	pushArgs.add(object);
@@ -873,7 +872,7 @@ public class AspectCodeGen {
 		      (Jimple.v().newVirtualInvokeExpr
 		       (stackLoc,
 			Scene.v().makeMethodRef
-			(stackClass,"pushInstance",pushArgs,VoidType.v()),
+			(stackClass,"pushInstance",pushArgs,VoidType.v(),false),
 			aspectLoc)));
 
 	units.addLast(Jimple.v().newReturnVoidStmt());

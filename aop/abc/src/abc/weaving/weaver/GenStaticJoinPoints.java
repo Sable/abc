@@ -120,7 +120,7 @@ public class GenStaticJoinPoints {
 	List fornameParams=new ArrayList(1);
 	fornameParams.add(RefType.v("java.lang.String"));
         SootMethodRef forname 
-	    = Scene.v().makeMethodRef(jls,"forName",fornameParams,RefType.v("java.lang.Class"));
+	    = Scene.v().makeMethodRef(jls,"forName",fornameParams,RefType.v("java.lang.Class"),true);
         Value val = Jimple.v().newStaticInvokeExpr(forname,arg);
         Stmt getjavaclass = Jimple.v().newAssignStmt(javaclass,val);
         debug("Generating getjavaclass " + getjavaclass);
@@ -221,7 +221,7 @@ public class GenStaticJoinPoints {
       List sigmethodParams=new ArrayList(1);
       sigmethodParams.add(RefType.v("java.lang.String"));
       SootMethodRef sigmethod 
-	  = Scene.v().makeMethodRef(fc,sigtype,sigmethodParams,RefType.v(classpath+sigtypeclass));
+	  = Scene.v().makeMethodRef(fc,sigtype,sigmethodParams,RefType.v(classpath+sigtypeclass),false);
       debug("Got the sig builder method: " + sigmethod);
 
       Stmt makesig = Jimple.v().
@@ -244,7 +244,8 @@ public class GenStaticJoinPoints {
 	  = Scene.v().makeMethodRef(fc,
 				    "makeSJP",
 				    makeSJPParams,
-				    RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
+				    RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
+				    false);
 
 
       ArrayList args = new ArrayList();

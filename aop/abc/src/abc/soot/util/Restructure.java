@@ -893,7 +893,8 @@ public class Restructure {
 				    (boxClass,
 				     JavaTypeInfo.getBoxingClassMethodName(targetType),
 				     new ArrayList(),
-				     targetType);
+				     targetType,
+				     false);
 				castedExpr=Jimple.v().newVirtualInvokeExpr(box, 
 						 method);		
 				units.insertBefore(newAssignStmt, tmpStmt);						

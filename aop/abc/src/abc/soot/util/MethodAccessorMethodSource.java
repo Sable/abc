@@ -69,7 +69,8 @@ public class MethodAccessorMethodSource implements soot.MethodSource {
                 ((soot.RefType)Util.getSootType(methodInst.container())).getSootClass(), 
                 methodInst.name(), 
                 methParamsTypes, 
-                Util.getSootType(methodInst.returnType()));
+                Util.getSootType(methodInst.returnType()),
+		methodInst.flags().isStatic());
 
         soot.jimple.InvokeExpr invoke = null;
         if (methodInst.flags().isStatic()) {

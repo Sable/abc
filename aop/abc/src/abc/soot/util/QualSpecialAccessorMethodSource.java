@@ -63,7 +63,7 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
         
         //otherwise get this$0 from one level up
         soot.SootClass classToInvoke = ((soot.RefType)b.getThisLocal().getType()).getSootClass();
-        soot.SootFieldRef outerThisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType()); 
+        soot.SootFieldRef outerThisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType(),false); 
         Local t1 = Jimple.v().newLocal(UniqueID.newID("this$0$loc"), outerThisField.type());
         b.getLocals().add(t1);
         
@@ -100,12 +100,12 @@ public class QualSpecialAccessorMethodSource implements MethodSource {
 		Body b = Jimple.v().newBody(meth); meth.setActiveBody(b);
 		Chain ss = b.getUnits(); Chain ls = b.getLocals();
 		// generate local for "this"
-		SootFieldRef sf = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType());
+		SootFieldRef sf = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType(),false);
 		ThisRef thiz = Jimple.v().newThisRef(classToInvoke.getType());
 		Local thizloc = Jimple.v().newLocal("this$loc",classToInvoke.getType()); ls.add(thizloc);
 		IdentityStmt ids = Jimple.v().newIdentityStmt(thizloc,thiz); ss.add(ids);
 		// assign res = this.this$0
-		SootFieldRef thisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType());
+		SootFieldRef thisField = soot.Scene.v().makeFieldRef(classToInvoke, "this$0", classToInvoke.getType(),false);
 		FieldRef fr = Jimple.v().newInstanceFieldRef(thizloc, thisField); 
 		Local res = Jimple.v().newLocal("result",sf.type()); ls.add(res);
 		AssignStmt astmt = Jimple.v().newAssignStmt(res,fr); ss.add(astmt);

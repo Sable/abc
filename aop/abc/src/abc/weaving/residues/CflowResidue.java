@@ -80,7 +80,7 @@ public class CflowResidue extends Residue {
 	debug("checking validity");
 	Local isvalid=localgen.generateLocal(BooleanType.v(),"cflowactive");
 	SootMethodRef isValidMethod=Scene.v().makeMethodRef
-	    (stackorcounterClass,"isValid",new ArrayList(),BooleanType.v());
+	    (stackorcounterClass,"isValid",new ArrayList(),BooleanType.v(),false);
 	Stmt checkvalid=Jimple.v().newAssignStmt
 	    (isvalid,
 	     Jimple.v().newVirtualInvokeExpr(cflowStackOrCounter,isValidMethod));
@@ -102,7 +102,7 @@ public class CflowResidue extends Residue {
 	debug("setting up to get bound values");
 	ArrayList getargs=new ArrayList(1);
 	getargs.add(IntType.v());
-	SootMethodRef getMethod=Scene.v().makeMethodRef(stackorcounterClass,"get",getargs,object);
+	SootMethodRef getMethod=Scene.v().makeMethodRef(stackorcounterClass,"get",getargs,object,false);
 	Local item=localgen.generateLocal(object,"cflowbound");
 
 	debug("starting iteration");
@@ -129,7 +129,8 @@ public class CflowResidue extends Residue {
 		    (boxClass,
 		     Restructure.JavaTypeInfo.getBoxingClassMethodName(type),
 		     new ArrayList(),
-		     type); 
+		     type,
+		     false); 
 
 		Local castval=localgen.generateLocal(boxClass.getType(),"cflowbound");
 		

@@ -54,7 +54,7 @@ public class FieldGetAccessorMethodSource implements soot.MethodSource {
             // create field type local
             soot.Local fieldLocal = lg.generateLocal(fieldType);
             // assign local to fieldRef
-            soot.SootFieldRef field = soot.Scene.v().makeFieldRef(receiver, fieldName, fieldType);
+            soot.SootFieldRef field = soot.Scene.v().makeFieldRef(receiver, fieldName, fieldType, isStatic);
 
             soot.jimple.FieldRef fieldRef = null;
             if (isStatic) {

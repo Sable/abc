@@ -45,7 +45,7 @@ public class FieldSig extends Sig {
 	if (sfr == null) {
 	    SootClass sc = cl.getSootClass();
 	    soot.Type st = type.getSootType();
-	    sfr = Scene.v().makeFieldRef(sc,name,st);
+	    sfr = Scene.v().makeFieldRef(sc,name,st,java.lang.reflect.Modifier.isStatic(mod));
 	}
 	return sfr;
     }
