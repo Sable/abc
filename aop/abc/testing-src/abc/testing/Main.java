@@ -128,13 +128,21 @@ public class Main {
 				(new File("skipped.xml")).delete();
 			
 				BufferedWriter curFile = new BufferedWriter(new FileWriter("passed.xml"));
-				curFile.write(xFile.plug("BODY", xPassed).toString(true));
+				String tmp = xFile.plug("BODY", xPassed).toString(true);
+				// Work around an Xact bug - &'s in the xml file are not turned into entities on toString();
+				// this causes subsequent imports of the exported file to fail.
+				tmp.replaceAll("&", "&amp;");
+				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 				curFile = new BufferedWriter(new FileWriter("failed.xml"));
-				curFile.write(xFile.plug("BODY", xFailed).toString(true));
+				String tmp = xFile.plug("BODY", xFailed).toString(true);
+				tmp.replaceAll("&", "&amp;");
+				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 				curFile = new BufferedWriter(new FileWriter("skipped.xml"));
-				curFile.write(xFile.plug("BODY", xSkipped).toString(true));
+				String tmp = xFile.plug("BODY", xSkipped).toString(true);
+				tmp.replaceAll("&", "&amp;");
+				curFile.write(tmp);
 				curFile.flush(); curFile.close();
 			} catch (IOException e) {
 			    stderr.println("Unexpected IOException while finilising output files: " + e);
