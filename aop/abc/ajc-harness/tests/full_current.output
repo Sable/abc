@@ -602,7 +602,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@17cbe48
+InterfaceAndObject$1@1df8d93
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2309,7 +2309,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@cab96, [Ljava.lang.Object;@1d5361d, TwoAnonymous$3@cab96
+calling run: TwoAnonymous$3@1d5361d, [Ljava.lang.Object;@d3db12, TwoAnonymous$3@1d5361d
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2426,32 +2426,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@104b782.foo calls Outer$Inner@abbf81.mi
+Outer@47bac6.foo calls Outer$Inner@1375adb.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@abbf81.mi calls java.io.PrintStream@1a9ef1f.println
+Outer$Inner@1375adb.mi calls java.io.PrintStream@12df70e.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@104b782.foo calls Outer$InnerRandom@12d9493.nextHook
+Outer@47bac6.foo calls Outer$InnerRandom@1ae8dfa.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@12d9493.nextHook calls Outer$InnerRandom@12d9493.next
+Outer$InnerRandom@1ae8dfa.nextHook calls Outer$InnerRandom@1ae8dfa.next
 Outer.foo() calls Random.nextInt(..)
-Outer@104b782.foo calls X.nextInt
+Outer@47bac6.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@ff2ca9.foo calls Outer$Inner@cd38e4.mi
+Outer@1b2333e.foo calls Outer$Inner@425452.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@cd38e4.mi calls java.io.PrintStream@1522e48.println
+Outer$Inner@425452.mi calls java.io.PrintStream@adf266.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@ff2ca9.foo calls Outer$InnerRandom@5c7dbf.nextHook
+Outer@1b2333e.foo calls Outer$InnerRandom@51a60.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@5c7dbf.nextHook calls Outer$InnerRandom@5c7dbf.next
+Outer$InnerRandom@51a60.nextHook calls Outer$InnerRandom@51a60.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@ff2ca9.foo calls X.nextInt
+Outer@1b2333e.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4106,7 +4106,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-test.Test3@623416.x:=-3
+test.Test3@47afd4.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4189,8 +4189,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
 i: 10
-o: Bar@466402
-o: Bar@466402, i: 10
+o: Bar@131a522
+o: Bar@131a522, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4784,7 +4784,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1b5deea
+LibraryAspect-defined run() for C@14aa2b4
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5110,7 +5110,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@117d331
+? Util.read() obj=Test@e5a0b
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5129,7 +5129,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@5f521c
+? Util.read() obj=ClinitTest@ee6543
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5139,7 +5139,7 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@129241a
+? Util.read() obj=SuidTest@197bc0c
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5346,12 +5346,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@8e2e35
-Invoking command bean:  Command@7ba93f
-hello(Command@7ba93f)
-Created a PerThis aspect : Testcase2@a46b72
-Invoking command bean:  Command@8a421d
-hello again(Command@8a421d)
+Created a PerThis aspect : Testcase2@fc9cca
+Invoking command bean:  Command@99cdc6
+hello(Command@99cdc6)
+Created a PerThis aspect : Testcase2@194bdf8
+Invoking command bean:  Command@43f3f4
+hello again(Command@43f3f4)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
