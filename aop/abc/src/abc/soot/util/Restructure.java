@@ -607,7 +607,7 @@ public class Restructure {
 	 * @param body
 	 * @param stmt
 	 */
-	public static void insertBoxingCast(Body body, AssignStmt stmt) {
+	public static void insertBoxingCast(Body body, AssignStmt stmt, boolean allowBoxing) {
 		ValueBox source=stmt.getRightOpBox();
 		Value targetVal=stmt.getLeftOp();
 		Type targetType=stmt.getLeftOp().getType();
@@ -626,7 +626,7 @@ public class Restructure {
 			Value castedExpr;
 			//debug("boxing: source " + sourceType + " target " + targetType);
 			// boxing
-			if (JavaTypeInfo.sootTypeToInt(sourceType)!=JavaTypeInfo.refType &&
+			if (allowBoxing && JavaTypeInfo.sootTypeToInt(sourceType)!=JavaTypeInfo.refType &&
 				targetType.equals(Scene.v().getSootClass("java.lang.Object").getType())) {
 				SootClass boxClass=JavaTypeInfo.getBoxingClass(sourceType);	
 				 Local box=localgen.generateLocal(boxClass.getType(), "box");
@@ -640,7 +640,7 @@ public class Restructure {
 				units.insertBefore(initBox, tmpStmt);
 				castedExpr=box;
 			} else if /*unboxing*/
-				(JavaTypeInfo.sootTypeToInt(targetType)!=JavaTypeInfo.refType &&
+				(allowBoxing && JavaTypeInfo.sootTypeToInt(targetType)!=JavaTypeInfo.refType &&
 					sourceType.equals(Scene.v().getSootClass("java.lang.Object").getType())	){ 
 				SootClass boxClass=JavaTypeInfo.getBoxingClass(targetType);	
 				Local box=localgen.generateLocal(boxClass.getType(), "box");
@@ -699,7 +699,8 @@ public class Restructure {
 		throw new RuntimeException();
 	}
 	/**
-	 * Adds a new parameter to a method and creates the matching identity statement
+	 * Adds a new parameter to a method and creates the matching identity statement.
+	 * Returns the local of the newly created parameter.
 	 * @param method
 	 * @param type
 	 * @param suggestedName

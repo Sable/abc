@@ -274,6 +274,8 @@ public class AroundWeaver {
 		joinpointBody.validate();
 		
 		boolean bStatic=joinpointMethod.isStatic();
+		boolean bAllwaysStaticAccessMethod=false;
+		
 		Chain joinpointStatements = joinpointBody.getUnits().getNonPatchingChain();
 		AdviceDecl adviceDecl = adviceAppl.advice;
 		AdviceSpec adviceSpec = adviceDecl.getAdviceSpec();
@@ -304,7 +306,7 @@ public class AroundWeaver {
 		String accessMethodName;
 		String dynamicAccessMethodName="abc$proceed$" + adviceMangledReturnTypeName+ 
 			(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");;	
-		if (bStatic) {
+		if (bStatic || bAllwaysStaticAccessMethod) {
 			accessMethodName="abc$static$proceed$" + adviceMangledReturnTypeName+ 
 						(interfacePerAdviceMethod ? adviceMethodIdentifierString : "");	
 		} else {
@@ -331,6 +333,7 @@ public class AroundWeaver {
 			generateAccessMethod(
 				joinpointClass,
 				bStatic,
+				bAllwaysStaticAccessMethod,
 				adviceReturnType,
 				accessMethodName,
 				accessInterface,
@@ -342,7 +345,7 @@ public class AroundWeaver {
 				adviceMethod.getParameterCount()==adviceAppl.advice.numFormals();
 			if (bFirstModification) {
 				modifyAdviceMethod(adviceAppl, adviceMethod, accessInterface, abstractAccessMethod, 
-					bStatic, accessMethodName, joinpointClass,
+					accessMethodName, joinpointClass,
 					theAspect
 					);
 			}			
@@ -355,7 +358,8 @@ public class AroundWeaver {
 			 adviceReturnType,
 			 accessInterface,
 			 accessMethod,
-			 abstractAccessMethod
+			 abstractAccessMethod,
+			 bAllwaysStaticAccessMethod
 			 );
 			 
 		joinpointBody.validate();
@@ -366,6 +370,7 @@ public class AroundWeaver {
 	private static SootMethod generateAccessMethod(
 		SootClass joinpointClass,
 		boolean bStatic,
+		boolean bAllwaysStaticAccessMethod,
 		Type adviceReturnType,
 		String accessMethodName,
 		SootClass accessInterface,
@@ -376,14 +381,15 @@ public class AroundWeaver {
 		
 		String interfaceName=accessInterface.getName();
 			
-		State.AccessMethodInfo accessMethodInfo=state.getAccessMethodInfo(joinpointClass.getName(), interfaceName, bStatic);
+		State.AccessMethodInfo accessMethodInfo=state.getAccessMethodInfo(
+			joinpointClass.getName(), interfaceName, bStatic || bAllwaysStaticAccessMethod);
 		
 		
 		SootMethod accessMethod=null;
 	
 		
 		boolean createdNewAccessMethod=false;		 
-		 if (bStatic) {
+		 if (bStatic || bAllwaysStaticAccessMethod) {
 		 	try {
 				accessMethod=joinpointClass.getMethodByName(accessMethodName);
 		 	}
@@ -428,7 +434,7 @@ public class AroundWeaver {
 			// generate this := @this
 			LocalGeneratorEx lg=new LocalGeneratorEx(accessBody);
 			Local lThis=null;
-			if (!bStatic) {
+			if (!bStatic && !bAllwaysStaticAccessMethod) {
 				lThis=lg.generateLocal(joinpointClass.getType(), "this");
 				accessStatements.addFirst(
 					Jimple.v().newIdentityStmt(lThis, 
@@ -477,7 +483,7 @@ public class AroundWeaver {
 				accessMethodInfo.dynParamLocals.add(l);
 			}
 			
-			if (!bStatic) {
+			if (!bStatic && !bAllwaysStaticAccessMethod) {
 				fixAccessMethodSuperCalls(interfaceName, joinpointClass);
 			}
 		}	
@@ -530,6 +536,7 @@ public class AroundWeaver {
 					SootMethod abstractAccessMethod,
 					Type returnType,
 					boolean bStatic, 
+					boolean bAllwaysStaticAccessMethod,
 					String accessMethodName, 
 					SootClass joinpointClass,
 					SootClass theAspect,
@@ -541,7 +548,7 @@ public class AroundWeaver {
 		
 		
 		String newStaticInvoke=null;
-		if (bStatic) {
+		if (bStatic || bAllwaysStaticAccessMethod) {
 			if (!adviceMethodInfo.staticProceedTypes.contains(joinpointClass.getName())) {
 				newStaticInvoke=joinpointClass.getName();
 				adviceMethodInfo.staticProceedTypes.add(joinpointClass.getName());
@@ -711,7 +718,8 @@ public class AroundWeaver {
 		Type accessReturnType,
 		SootClass accessInterface,
 		SootMethod accessMethod,
-		SootMethod abstractAccessMethod) {
+		SootMethod abstractAccessMethod,
+		boolean bAllwaysStaticAccessMethod) {
 		
 		String interfaceName=accessInterface.getName();
 		String accessMethodName=accessMethod.getName();
@@ -727,7 +735,8 @@ public class AroundWeaver {
 		if (adviceMethod==null)
 			throw new InternalError();
 		
-		State.AccessMethodInfo accessMethodInfo=state.getAccessMethodInfo(joinpointClass.getName(), interfaceName, bStatic);
+		State.AccessMethodInfo accessMethodInfo=
+			state.getAccessMethodInfo(joinpointClass.getName(), interfaceName, bStatic || bAllwaysStaticAccessMethod);
 		State.InterfaceInfo interfaceInfo=state.getInterfaceInfo(interfaceName);
 		
 		Body joinpointBody=joinpointMethod.getActiveBody();
@@ -735,9 +744,6 @@ public class AroundWeaver {
 		
 		Stmt begin=adviceAppl.shadowpoints.getBegin();
 		Stmt end=adviceAppl.shadowpoints.getEnd();
-		
-
-		
 		
 		
 		StmtAdviceApplication stmtAppl=null;
@@ -851,7 +857,7 @@ public class AroundWeaver {
 		
 		List /*ValueBox*/ actuals=new LinkedList();
 		actuals.addAll(findLocalsGoingIn(joinpointBody, begin, end));
-		{
+		{ // print debug information
 			debug("Locals going in: ");
 			debug(" Method + " + joinpointMethod.toString());
 			debug(" Application: " + adviceAppl.toString());
@@ -1031,7 +1037,7 @@ public class AroundWeaver {
 		}
 		{
 			generateProceedCalls(adviceAppl, adviceMethod, accessInterface, abstractAccessMethod, 
-									adviceMethod.getReturnType(), bStatic, accessMethodName, joinpointClass,
+									adviceMethod.getReturnType(), bStatic, bAllwaysStaticAccessMethod, accessMethodName, joinpointClass,
 									theAspect, accessMethod, interfaceName);	
 		}
 
@@ -1114,6 +1120,9 @@ public class AroundWeaver {
 			Stmt insertionPoint=(Stmt)first; 	
 			for (int i=0; i<actuals.size(); i++) {
 				Local l=(Local)bindings.get(actuals.get(i));
+				if (l==null) 
+					throw new InternalError();
+					
 				Restructure.validateMethod(accessMethodInfo.method);
 				Local paramLocal=(Local)accessMethodInfo.dynParamLocals.get(argIndex[i]);
 				AssignStmt s=Jimple.v().newAssignStmt(l, paramLocal);
@@ -1183,7 +1192,7 @@ public class AroundWeaver {
 				//directParams.add(targetLocal);
 				directParams.add(IntConstant.v(shadowID));
 				directParams.addAll(dynamicActuals);
-				if (bStatic) {
+				if (bStatic || bAllwaysStaticAccessMethod) {
 					directInvoke=Jimple.v().newStaticInvokeExpr(accessMethod, directParams);
 				} else {
 					// TODO: can this call be replaced with an InvokeSpecial?
@@ -1194,7 +1203,7 @@ public class AroundWeaver {
 				if (returnedLocal!=null) {				
 					AssignStmt assign=Jimple.v().newAssignStmt(returnedLocal, directInvoke);
 					joinpointStatements.insertAfter(assign, failPoint);
-					Restructure.insertBoxingCast(joinpointBody, assign);
+					Restructure.insertBoxingCast(joinpointBody, assign, true);
 					interfaceInfo.directInvokationStmts.add(assign);
 				} else {
 					Stmt skipAdvice;
@@ -1244,7 +1253,7 @@ public class AroundWeaver {
 		}
 		//params.add(targetLocal);
 		params.add(IntConstant.v(shadowID));
-		if (bStatic) { // pass the static class id
+		if (bStatic || bAllwaysStaticAccessMethod) { // pass the static class id
 			params.add(IntConstant.v(state.getStaticDispatchTypeID(joinpointClass.getType())));
 		} else {
 			params.add(IntConstant.v(0));
@@ -1267,7 +1276,7 @@ public class AroundWeaver {
 		} else {
 			AssignStmt assign=Jimple.v().newAssignStmt(returnedLocal, invokeEx2);
 			joinpointStatements.insertBefore(assign, beforeFailPoint);
-			Restructure.insertBoxingCast(joinpointMethod.getActiveBody(), assign);
+			Restructure.insertBoxingCast(joinpointMethod.getActiveBody(), assign, true);
 			invokeStmt=assign;
 		}
 		joinpointStatements.insertBefore(Jimple.v().newGotoStmt(end), beforeFailPoint);
@@ -1533,6 +1542,7 @@ public class AroundWeaver {
 		while (it2.hasNext())
 			units.remove(it2.next());
 	}
+	
 	private static boolean chainContainsLocal(Chain locals, String name) {
 		Iterator it = locals.iterator();
 		while (it.hasNext()){
@@ -1540,6 +1550,9 @@ public class AroundWeaver {
 		}
 		return false;
 	}
+	/**
+	 *  Assigns a suggested name to a local, dealing with possible collisions
+	 */
 	private static void setLocalName(Chain locals, Local local, String suggestedName) {
 		//if (!locals.contains(local))
 		//	throw new RuntimeException();
@@ -1552,6 +1565,13 @@ public class AroundWeaver {
 		local.setName(name);
 	}
 	
+	/**
+	 * Checks if @param test 
+	 * is in ]@param begin, @param end[
+	 * 
+	 * @param body 
+	 * @return
+	 */
 	private static boolean isInSequence(Body body, Unit begin, Unit end, Unit test) {
 		Chain statements=body.getUnits().getNonPatchingChain();
 		
@@ -1569,8 +1589,15 @@ public class AroundWeaver {
 	}
 	
 
-	
-	public static void validateShadow(Body body, Stmt begin, Stmt end) {
+	/**
+	 * Checks that:
+	 * 	No units outside the shadow point to units inside the shadow
+	 *  No units inside the shadow point to units outside the shadow, including end and start
+	 * @param body
+	 * @param begin
+	 * @param end
+	 */
+	private static void validateShadow(Body body, Stmt begin, Stmt end) {
 		Chain statements=body.getUnits().getNonPatchingChain();
 		
 		if (!statements.contains(begin))
@@ -1708,16 +1735,17 @@ public class AroundWeaver {
 			Body dest, Unit insertAfter,
 				Local returnedLocal, ObjectBox resultingFirstCopy) {
 		
+		boolean bInstance=!source.getMethod().isStatic() && !dest.getMethod().isStatic();
 		Local lThisSource=null;
 		Local lThisCopySource=null;
-		if (!source.getMethod().isStatic()) {
+		if (bInstance) {
 			lThisSource=source.getThisLocal();
 			lThisCopySource=Restructure.getThisCopy(source.getMethod());
 		}
 		
 		Local lThisDest=null;
 		Local lThisCopyDest=null;
-		if (!dest.getMethod().isStatic()) {
+		if (bInstance) {
 			lThisDest=dest.getThisLocal();
 			lThisCopyDest=Restructure.getThisCopy(dest.getMethod());
 		}			
@@ -1858,7 +1886,7 @@ public class AroundWeaver {
 			insertAfter=s;
 			ReturnStmt returnStmt=Jimple.v().newReturnStmt(castLocal);	
 			unitChain.insertAfter(returnStmt, insertAfter);			
-			Restructure.insertBoxingCast(dest, s);
+			Restructure.insertBoxingCast(dest, s, true);
 			//insertBoxingCast(dest, returnStmt, returnStmt.getOpBox(), dest.getMethod().getReturnType());
 			//JasminClass
 			insertAfter=returnStmt;
@@ -1879,7 +1907,6 @@ public class AroundWeaver {
 		SootMethod adviceMethod,
 		SootClass accessInterface,
 		SootMethod abstractAccessMethod,
-		boolean bStatic, 
 		String accessMethodName, 
 		SootClass joinpointClass,
 		SootClass theAspect) {
