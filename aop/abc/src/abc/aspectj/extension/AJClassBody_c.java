@@ -38,7 +38,7 @@ import abc.aspectj.types.AJContext;
 
 import abc.aspectj.visit.AspectMethods;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.IntertypeMethodDecl_c;
 import abc.aspectj.ast.MakesAspectMethods;
 
@@ -206,7 +206,7 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 
 	
 	public Node aspectMethodsLeave(AspectMethods visitor,
-										  AspectJNodeFactory nf,
+										  AJNodeFactory nf,
 										  AJTypeSystem ts)
    {              
 		   return this;

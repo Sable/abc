@@ -1,7 +1,7 @@
 package abc.aspectj.ast;
 
 import polyglot.ast.Node;
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectMethods;
 
@@ -10,5 +10,5 @@ import abc.aspectj.visit.AspectMethods;
 public interface MakesAspectMethods
 {
         void aspectMethodsEnter(AspectMethods visitor);
-        Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf, AJTypeSystem ts);
+        Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf, AJTypeSystem ts);
 }

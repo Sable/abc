@@ -68,7 +68,7 @@ public class TPERefTypePat_c extends TypePatternExpr_c
 	return pat.matchesArray(matcher);
     }
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	return pat.transformToClassnamePattern(nf);
     }
 

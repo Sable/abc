@@ -66,7 +66,7 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
 	return false;
     }
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	throw new SemanticException("Primitive type in classname pattern");
     }
 

@@ -321,7 +321,7 @@ public class AspectDecl_c extends ClassDecl_c
         visitor.pushContainer(type());
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         AspectDecl_c cd = this;

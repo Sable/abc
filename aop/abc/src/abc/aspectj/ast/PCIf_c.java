@@ -7,7 +7,7 @@ import polyglot.visit.*;
 import java.util.*;
 
 import abc.aspectj.ast.MakesAspectMethods;
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.AspectInfoHarvester;
@@ -135,7 +135,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 
     protected boolean canRewriteThisJoinPoint=false;
 
-    public MethodDecl exprMethod(AspectJNodeFactory nf, AJTypeSystem ts, List formals, ParsedClassType container){
+    public MethodDecl exprMethod(AJNodeFactory nf, AJTypeSystem ts, List formals, ParsedClassType container){
 		Return ret = nf.Return(position(),expr);
 		Block bl = nf.Block(position()).append(ret);
 		TypeNode retType = nf.CanonicalTypeNode(position(),ts.Boolean());
@@ -188,7 +188,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		return md;
 	}
 	
-	public PCIf liftMethod(AspectJNodeFactory nf){
+	public PCIf liftMethod(AJNodeFactory nf){
 		Expr exp = nf.Call(position(),methodName);
 		return reconstruct(exp);
 	}
@@ -230,7 +230,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	visitor.pushPCIf(this);
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         // construct method for expression in if(..)
@@ -252,7 +252,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	v.enterAdvice(canRewriteThisJoinPoint ? thisJoinPointStaticPartInstance(ts) : null);
     }
 
-    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AspectJNodeFactory nf) {
+    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AJNodeFactory nf) {
 	v.leaveAdvice();
 	return this;
     }

@@ -119,7 +119,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     }
 
     protected NodeFactory createNodeFactory() {
-        return new AspectJNodeFactory_c();
+        return new AJNodeFactory_c();
     }
 
     protected TypeSystem createTypeSystem() {

@@ -4,7 +4,7 @@ import java.util.*;
 
 import polyglot.ast.Node;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 
 public interface TransformsAspectReflection {
@@ -13,6 +13,6 @@ public interface TransformsAspectReflection {
     public void leaveAspectReflectionInspect(AspectReflectionInspect v);
 
     public void enterAspectReflectionRewrite(AspectReflectionRewrite v,AJTypeSystem ts);
-    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AspectJNodeFactory nf);
+    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AJNodeFactory nf);
 
 }

@@ -3,16 +3,16 @@ package abc.aspectj.ast;
 import polyglot.ast.*;
 import polyglot.ext.jl.ast.*;
 
-public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
-                                                 implements AspectJExtFactory
+public abstract class AJAbstractExtFactory_c extends AbstractExtFactory_c
+                                                 implements AJExtFactory
 {
-    private AspectJAbstractExtFactory_c nextExtFactory;
+    private AJAbstractExtFactory_c nextExtFactory;
 
-    protected AspectJAbstractExtFactory_c() {
+    protected AJAbstractExtFactory_c() {
         this(null);
     }
 
-    protected AspectJAbstractExtFactory_c(AspectJAbstractExtFactory_c nextExtFactory) {
+    protected AJAbstractExtFactory_c(AJAbstractExtFactory_c nextExtFactory) {
         super(nextExtFactory);
         this.nextExtFactory = nextExtFactory;
     }

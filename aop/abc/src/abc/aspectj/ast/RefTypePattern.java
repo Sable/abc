@@ -13,7 +13,7 @@ public interface RefTypePattern extends Node
 
     public boolean matchesArray(PatternMatcher matcher);
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException;
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException;
 
     public boolean equivalent(RefTypePattern p);
 

@@ -65,7 +65,7 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
 	return !tpe.matchesPrimitiveArray(matcher, prim, dim);
     };
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	ClassnamePatternExpr cpe = tpe.transformToClassnamePattern(nf);
 	return nf.CPENot(position, cpe);
     }

@@ -59,7 +59,7 @@ public class RTPName_c extends Node_c
 	return false;
     }
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	return nf.CPEName(position, pat);
     }
 

@@ -88,7 +88,7 @@ public class TPEArray_c extends TypePatternExpr_c
 	return false;
     }
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	throw new SemanticException("Array in classname attern");
     }
 

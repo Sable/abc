@@ -19,27 +19,27 @@ import soot.javaToJimple.jj.ast.JjNodeFactory_c;
 /**
  * NodeFactory for aspectj extension.
  */
-public class AspectJNodeFactory_c 
+public class AJNodeFactory_c 
        extends soot.javaToJimple.jj.ast.JjNodeFactory_c 
-       implements AspectJNodeFactory {
+       implements AJNodeFactory {
 
-    private final AspectJExtFactory extFactory;
-    private final AspectJDelFactory delFactory;
+    private final AJExtFactory extFactory;
+    private final AJDelFactory delFactory;
 
-    public AspectJNodeFactory_c()
+    public AJNodeFactory_c()
     {
-        this(new AspectJAbstractExtFactory_c() {},
-             new AspectJAbstractDelFactory_c() {});
+        this(new AJAbstractExtFactory_c() {},
+             new AJAbstractDelFactory_c() {});
     }
 
-    public AspectJNodeFactory_c(AspectJExtFactory nextExtFactory)
+    public AJNodeFactory_c(AJExtFactory nextExtFactory)
     {
-        this(nextExtFactory, new AspectJAbstractDelFactory_c() {});
+        this(nextExtFactory, new AJAbstractDelFactory_c() {});
     }
 
-    public AspectJNodeFactory_c(AspectJExtFactory
+    public AJNodeFactory_c(AJExtFactory
                                 nextExtFactory,
-                                AspectJDelFactory
+                                AJDelFactory
                                 nextDelFactory)
     {
         this.extFactory = nextExtFactory;

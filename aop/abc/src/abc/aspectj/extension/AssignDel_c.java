@@ -16,7 +16,7 @@ public class AssignDel_c extends JL_c implements MakesAspectMethods
         visitor.pushLhs(((Assign) node()).left());
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         Node n = node();

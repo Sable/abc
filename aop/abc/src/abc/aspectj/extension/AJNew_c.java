@@ -20,7 +20,7 @@ import polyglot.types.ClassType;
 import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.TypeChecker;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.MakesAspectMethods;
 
 import abc.aspectj.types.AJTypeSystem;
@@ -79,7 +79,7 @@ public class AJNew_c extends New_c implements New, MakesAspectMethods {
 				// give it another try, starting from the ITD host(=target)
 				AJTypeSystem ajts = (AJTypeSystem) ts;
 				AJContext ajc = (AJContext) c;
-				AspectJNodeFactory ajnf = (AspectJNodeFactory) nf;
+				AJNodeFactory ajnf = (AJNodeFactory) nf;
 				if (ajc.inInterType()) {
 					outer = findOuter(ct,ts,ajc.hostClass(), outer, name);
 					if (outer == null)
@@ -164,7 +164,7 @@ public class AJNew_c extends New_c implements New, MakesAspectMethods {
                 // do nothing
         }
 
-        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+        public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
                 if (constructorInstance() instanceof InterTypeConstructorInstance_c) {

@@ -13,8 +13,8 @@ public interface AdviceDecl extends MethodDecl,
 {
     /* new stuff to be added */
    
-   	MethodDecl proceedDecl(AspectJNodeFactory nf,AJTypeSystem ts);
-   	MethodDecl methodDecl(AspectJNodeFactory nf,AJTypeSystem ts);
+   	MethodDecl proceedDecl(AJNodeFactory nf,AJTypeSystem ts);
+   	MethodDecl methodDecl(AJNodeFactory nf,AJTypeSystem ts);
    	void joinpointFormals(Local n);
    	boolean hasJoinPoint();
    	boolean hasJoinPointStaticPart();

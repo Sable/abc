@@ -43,7 +43,7 @@ public class TPEUniversal_c extends TypePatternExpr_c implements TPEUniversal
 	return true;
     }
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	return nf.CPEUniversal(position);
     }
 

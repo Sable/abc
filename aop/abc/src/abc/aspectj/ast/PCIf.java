@@ -10,8 +10,8 @@ import abc.aspectj.types.AJTypeSystem;
 
 public interface PCIf extends Pointcut, MakesAspectMethods, TransformsAspectReflection
 {
-	MethodDecl exprMethod(AspectJNodeFactory nf, AJTypeSystem ts, List formals, ParsedClassType container);
-	PCIf liftMethod(AspectJNodeFactory nf);
+	MethodDecl exprMethod(AJNodeFactory nf, AJTypeSystem ts, List formals, ParsedClassType container);
+	PCIf liftMethod(AJNodeFactory nf);
 
     public void joinpointFormals(Local n);
 }

@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * NodeFactory for aspectj extension.
  */
-public interface AspectJNodeFactory 
+public interface AJNodeFactory 
        extends polyglot.ast.NodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
 

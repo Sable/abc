@@ -106,7 +106,7 @@ public class TPEBinary_c extends TypePatternExpr_c
 	throw new RuntimeException("Illegal TPE op");
     }
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException {
 	ClassnamePatternExpr cpe1 = left.transformToClassnamePattern(nf);
 	ClassnamePatternExpr cpe2 = right.transformToClassnamePattern(nf);
 	if (op == COND_OR) {

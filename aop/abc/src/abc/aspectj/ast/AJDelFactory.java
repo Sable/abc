@@ -3,7 +3,7 @@ package abc.aspectj.ast;
 import polyglot.ast.JL;
 import polyglot.ast.DelFactory;
 
-public interface AspectJDelFactory extends DelFactory
+public interface AJDelFactory extends DelFactory
 {
     JL delAspectDecl();
     JL delAspectBody();

@@ -22,7 +22,7 @@ import polyglot.types.ReferenceType;
 
 import polyglot.ext.jl.ast.Call_c;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.HostSpecial_c;
 import abc.aspectj.ast.IntertypeDecl;
 import abc.aspectj.ast.MakesAspectMethods;
@@ -55,7 +55,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
    	*/
   	protected Node typeCheckNullTarget(TypeChecker tc, List argTypes) throws SemanticException {
 	  AJTypeSystem ts = (AJTypeSystem) tc.typeSystem();
-	  AspectJNodeFactory nf = (AspectJNodeFactory) tc.nodeFactory();
+	  AJNodeFactory nf = (AJNodeFactory) tc.nodeFactory();
 	  AJContext c = (AJContext) tc.context();
 
 	  // the target is null, and thus implicit
@@ -169,7 +169,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
                 // do nothing       
         }
 
-        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+        public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
                 Call c = this;

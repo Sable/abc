@@ -24,7 +24,7 @@ public interface TypePatternExpr extends Node
 
     public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim);
 
-    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException;
+    public ClassnamePatternExpr transformToClassnamePattern(AJNodeFactory nf) throws SemanticException;
 
     public abc.weaving.aspectinfo.TypePattern makeAITypePattern();
 

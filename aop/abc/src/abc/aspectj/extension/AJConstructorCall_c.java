@@ -14,7 +14,7 @@ import polyglot.types.SemanticException;
 import polyglot.ext.jl.ast.ConstructorCall_c;
 import polyglot.util.Position;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.ast.HostConstructorCall_c;
 import abc.aspectj.types.AJContext;
@@ -50,7 +50,7 @@ public class AJConstructorCall_c
 				return super.disambiguate(ar);
 		} else {
 				// this is a host constructor call
-				AspectJNodeFactory nf = (AspectJNodeFactory) ar.nodeFactory();
+				AJNodeFactory nf = (AJNodeFactory) ar.nodeFactory();
 				HostConstructorCall_c hc = (HostConstructorCall_c) nf.hostConstructorCall(position,kind,qualifier,arguments);
 				return hc.disambiguate(ar);
 			}
@@ -61,7 +61,7 @@ public class AJConstructorCall_c
                 // do nothing
         }
 
-        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+        public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
                 if (constructorInstance() instanceof InterTypeConstructorInstance_c) {

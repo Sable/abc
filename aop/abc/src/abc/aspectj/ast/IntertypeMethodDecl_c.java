@@ -296,7 +296,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * introduce "this" as first parameter
 	 * @author Oege de Moor
 	 */
-	public IntertypeDecl thisParameter(AspectJNodeFactory nf, AJTypeSystem ts) {	
+	public IntertypeDecl thisParameter(AJNodeFactory nf, AJTypeSystem ts) {	
 		if (!flags().isStatic()) {
 			// create the new list of formals
 			TypeNode tn = nf.CanonicalTypeNode(position,thisParamInstance.type());
@@ -327,7 +327,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * create a reference to the "this" parameter
 	 * @author Oege de Moor
 	 */
-    public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts) {
+    public Expr thisReference(AJNodeFactory nf, AJTypeSystem ts) {
     	Local x = nf.Local(position,thisParamInstance.name());
     	x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
     	return x;
@@ -466,7 +466,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
         visitor.pushIntertypeDecl(this);
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         visitor.popIntertypeDecl();

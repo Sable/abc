@@ -159,7 +159,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	 }
 	 
     
-    private Expr dummyVal(AspectJNodeFactory nf, Type t) {
+    private Expr dummyVal(AJNodeFactory nf, Type t) {
     	if (t instanceof ReferenceType) 
     		return nf.NullLit(position());
     	if (t instanceof PrimitiveType) {
@@ -186,7 +186,7 @@ public class AdviceDecl_c extends MethodDecl_c
     	} else return null;
     }
     
-    public MethodDecl proceedDecl(AspectJNodeFactory nf,
+    public MethodDecl proceedDecl(AJNodeFactory nf,
                                                                 AJTypeSystem ts) {
     if (spec instanceof Around) {
     	TypeNode tn = (TypeNode) returnType().copy();
@@ -235,7 +235,7 @@ public class AdviceDecl_c extends MethodDecl_c
     	hasEnclosingJoinPointStaticPart = hasEnclosingJoinPointStaticPart || (n.name().equals("thisEnclosingJoinPointStaticPart"));
     }
     
-    public MethodDecl methodDecl(AspectJNodeFactory nf,
+    public MethodDecl methodDecl(AJNodeFactory nf,
     															AJTypeSystem ts) {
     	List newformals = new LinkedList(formals());
     	List newformalTypes = new LinkedList(formals());
@@ -496,7 +496,7 @@ public class AdviceDecl_c extends MethodDecl_c
         visitor.pushAdvice(this);
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         MethodDecl md = visitor.proceed();
@@ -523,7 +523,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	v.enterAdvice(canRewriteThisJoinPoint ? thisJoinPointStaticPartInstance(ts) : null);
     }
 
-    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AspectJNodeFactory nf) {
+    public Node leaveAspectReflectionRewrite(AspectReflectionRewrite v,AJNodeFactory nf) {
 	v.leaveAdvice();
 	return this;
     }

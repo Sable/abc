@@ -27,7 +27,7 @@ import polyglot.types.*;
 
 import polyglot.ext.jl.ast.FieldDecl_c;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
@@ -177,7 +177,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * create a reference to the "this" parameter
 	 * @author Oege de Moor
 	 */
-	public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts) {
+	public Expr thisReference(AJNodeFactory nf, AJTypeSystem ts) {
 		Local x = nf.Local(position,thisParamInstance.name());
 		x = (Local) x.localInstance(thisParamInstance).type(thisParamInstance.type());
 		return x;
@@ -190,7 +190,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * a parameter. TODO: If it is static, however, it does not have any parameters.
 	 * @author Oege de Moor
 	 */
-	public MethodDecl initMethod(AspectJNodeFactory nf, AJTypeSystem ts) {
+	public MethodDecl initMethod(AJNodeFactory nf, AJTypeSystem ts) {
 		String name = UniqueID.newID("init$"+name());
 		
 		List formals = new LinkedList();
@@ -237,7 +237,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 * not in the originating aspect.
 	 * @author Oege de Moor
 	 */
-	public IntertypeFieldDecl liftInit(AspectJNodeFactory nf, AJTypeSystem ts) {
+	public IntertypeFieldDecl liftInit(AJNodeFactory nf, AJTypeSystem ts) {
 		List args = new LinkedList(); 
 		if (!(flags().isStatic())) {
 			Special targetThisRef = nf.Special(position(),Special.THIS,host);
@@ -349,7 +349,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
         visitor.pushIntertypeDecl(this);
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         IntertypeFieldDecl_c itfd = this;

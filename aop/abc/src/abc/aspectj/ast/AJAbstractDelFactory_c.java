@@ -5,16 +5,16 @@ import polyglot.ext.jl.ast.*;
 
 import abc.aspectj.extension.*;
 
-public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
-                                                 implements AspectJDelFactory
+public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
+                                                 implements AJDelFactory
 {
-    private AspectJAbstractDelFactory_c nextDelFactory;
+    private AJAbstractDelFactory_c nextDelFactory;
 
-    protected AspectJAbstractDelFactory_c() {
+    protected AJAbstractDelFactory_c() {
         this(null);
     }
 
-    protected AspectJAbstractDelFactory_c(AspectJAbstractDelFactory_c nextDelFactory) {
+    protected AJAbstractDelFactory_c(AJAbstractDelFactory_c nextDelFactory) {
         super(nextDelFactory);
         this.nextDelFactory = nextDelFactory;
     }

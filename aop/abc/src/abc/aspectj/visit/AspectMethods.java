@@ -38,7 +38,7 @@ import polyglot.types.SemanticException;
 import abc.aspectj.ast.PCIf;
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.AspectDecl;
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.PointcutDecl;
 import abc.aspectj.ast.ProceedCall;
 
@@ -72,12 +72,12 @@ public class AspectMethods extends ContextVisitor {
 
     private int cflowdepth; // Put in this pass for lack of a better place for it
     
-	public AspectJNodeFactory nf;
+	public AJNodeFactory nf;
 	public AJTypeSystem ts;
 	
 	public AspectMethods(Job job, NodeFactory nf, TypeSystem ts) {
 		super(job, ts, nf);
-		this.nf = (AspectJNodeFactory) nf;
+		this.nf = (AJNodeFactory) nf;
 		this.ts = (AJTypeSystem) ts;
 		this.methods = new Stack();
 		this.formals = new Stack();

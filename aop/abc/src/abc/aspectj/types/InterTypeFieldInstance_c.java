@@ -28,7 +28,7 @@ import polyglot.types.MethodInstance;
 
 import polyglot.ext.jl.types.FieldInstance_c;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 
 /**
@@ -99,13 +99,13 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 		return flags();
 	}
 	
-	public Expr getCall(AspectJNodeFactory nf, AJTypeSystem ts, Receiver target, ReferenceType container) {
+	public Expr getCall(AJNodeFactory nf, AJTypeSystem ts, Receiver target, ReferenceType container) {
 		Call c = nf.Call(position,target,getInstance.name());
 		MethodInstance mi = getInstance.container(container);
 		return c.methodInstance(mi).type(type());
 	}
 	
-	public Expr setCall(AspectJNodeFactory nf, AJTypeSystem ts, Receiver target, ReferenceType container, 
+	public Expr setCall(AJNodeFactory nf, AJTypeSystem ts, Receiver target, ReferenceType container, 
 							 Expr arg) {
 		Call c = nf.Call(position,target,setInstance.name(),arg);
 		MethodInstance mi = setInstance.container(container);

@@ -244,7 +244,7 @@ public class PointcutDecl_c extends MethodDecl_c
         visitor.pushFormals(formals());
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         return this;

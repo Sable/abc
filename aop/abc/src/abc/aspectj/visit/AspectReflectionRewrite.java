@@ -6,7 +6,7 @@ import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.visit.NodeVisitor;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 
 
@@ -16,12 +16,12 @@ public class AspectReflectionRewrite extends NodeVisitor {
 					       or null if we are not transforming them */
 
 
-    public AspectJNodeFactory nf;
+    public AJNodeFactory nf;
     public AJTypeSystem ts;
 
     public AspectReflectionRewrite(NodeFactory nf,TypeSystem ts) {
 	super();
-	this.nf=(AspectJNodeFactory) nf;
+	this.nf=(AJNodeFactory) nf;
 	this.ts=(AJTypeSystem) ts;
 	this.jpsps=new Stack();
     }

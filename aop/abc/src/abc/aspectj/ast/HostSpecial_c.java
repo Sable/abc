@@ -25,7 +25,7 @@ import polyglot.util.Position;
 
 import polyglot.types.Type;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.IntertypeDecl;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJContext;
@@ -114,7 +114,7 @@ public class HostSpecial_c extends Special_c implements Special, MakesAspectMeth
                 // do nothing
         }
 
-        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+        public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
                 IntertypeDecl id = visitor.intertypeDecl();

@@ -15,10 +15,10 @@ public interface IntertypeDecl extends ClassMember, MakesAspectMethods
     public TypeNode host();
     
   //  /** set the "this" parameter for dealing with hostSpecial */
-  //  public IntertypeDecl thisParameter(AspectJNodeFactory nf, AJTypeSystem ts);
+  //  public IntertypeDecl thisParameter(AJNodeFactory nf, AJTypeSystem ts);
     
     /** create a reference to the "this" parameter for dealing with hostSpecial */
-    public Expr thisReference(AspectJNodeFactory nf, AJTypeSystem ts);
+    public Expr thisReference(AJNodeFactory nf, AJTypeSystem ts);
     
     /** data structure for recording "super" accesses that need to be dispatched */
     public Supers getSupers();

@@ -13,7 +13,7 @@ import java.util.*;
 /**
  * NodeFactory for Extended AspectJ extension.
  */
-public class EAJNodeFactory_c extends AspectJNodeFactory_c
+public class EAJNodeFactory_c extends AJNodeFactory_c
                               implements EAJNodeFactory
 {
     // TODO:  Implement factory methods for new AST nodes.

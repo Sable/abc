@@ -190,7 +190,7 @@ public class PCLocalVars_c extends Pointcut_c
         visitor.pushFormals(newformals);
     }
 
-    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
         visitor.popFormals();

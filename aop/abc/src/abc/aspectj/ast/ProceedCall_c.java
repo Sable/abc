@@ -27,7 +27,7 @@ import polyglot.visit.CFGBuilder;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.HostSpecial_c;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
@@ -93,7 +93,7 @@ public class ProceedCall_c extends Call_c
                 // visitor.advice().addProceedCall(this.)
         }
 
-        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+        public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
                 ProceedCall pc = (ProceedCall) this.copy();

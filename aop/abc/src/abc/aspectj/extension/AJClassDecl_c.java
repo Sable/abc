@@ -36,7 +36,7 @@ import polyglot.visit.TypeChecker;
 
 import polyglot.util.Position;
 
-import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AspectType;
@@ -140,7 +140,7 @@ public class AJClassDecl_c extends ClassDecl_c
         }
 
         public Node aspectMethodsLeave(AspectMethods visitor,
-                                       AspectJNodeFactory nf,
+                                       AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
                                                

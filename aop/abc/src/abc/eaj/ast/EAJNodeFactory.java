@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * NodeFactory for Extended AspectJ extension.
  */
-public interface EAJNodeFactory extends AspectJNodeFactory {
+public interface EAJNodeFactory extends AJNodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
 
     public PCCast PCCast(Position pos, TypePatternExpr type_pattern);

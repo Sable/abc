@@ -3,7 +3,7 @@ package abc.aspectj.ast;
 import polyglot.ast.Ext;
 import polyglot.ast.ExtFactory;
 
-public interface AspectJExtFactory extends ExtFactory
+public interface AJExtFactory extends ExtFactory
 {
     Ext extAspectDecl();
     Ext extAspectBody();
