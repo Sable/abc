@@ -1,3 +1,56 @@
 <!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"> 
  <suite> 
- </suite> 
+ <ajc-test dir="new/pr456" pr="456" title="advice on advice in usejavac mode"
+      keywords="from-resolved_10x">
+        <compile options="-usejavac"
+          files="Test_AroundVarBug.java,AroundVarBug.java"/>
+        <run class="Test_AroundVarBug"/>
+    </ajc-test>
+<ajc-test dir="new" pr="663"
+      title="no error when public class is in file of a different name"
+      keywords="from-resolved_105,purejava">
+        <compile options="-strict" files="PublicClassWrongFilename.java">
+            <message kind="error" line="3"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" title="compiling asserts in methods"
+      keywords="from-14tests,purejava">
+        <compile options="-source,1.4,-usejavac" files="AssertInMethod.java"/>
+        <run class="AssertInMethod" vm="1.4"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="725"
+      title="asserts in aspect and declared methods [requires 1.4]"
+      keywords="from-14tests,purejava">
+        <compile options="-source,1.4,-usejavac"
+          files="IntroducedAssertion.java"/>
+        <run class="IntroducedAssertion" vm="1.4"/>
+    </ajc-test>
+<ajc-test dir="design/around"
+      title="around and return types + inlining optimizations"
+      comment="-XOcodeSize not in 1.1, source uses 1.4 APIs"
+      keywords="from-14tests,knownLimitation">
+        <compile options="-XOcodeSize,-source,1.4"
+          files="ReturnCastProceed.java,StackChecker.java">
+            <message kind="warning" line="68"/>
+        </compile>
+        <run class="ReturnCastProceed" vm="1.4"/>
+    </ajc-test>
+<ajc-test dir="harness" 
+    	keywords="command-line-error,knownLimitation"
+    	comment="can't test -help: has to abort, but returns 0, normal status"    
+		title="CLE: -help usage">
+        <compile  badInput="true" options="-help">
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="harness" keywords="command-line-error"
+    	comment="XXX test skipped - harness ignores -sourceroot option"
+      title="CLE: no dir specified for sourceroots">
+        <compile badInput="true" files="ErrorTest.java" 
+        	options="-sourceroots">
+            <message kind="error" text="no sources specified"/>
+            <message kind="error" text="bad sourceroot"/>
+            <message kind="abort" text="Usage"/>
+        </compile>
+    </ajc-test>
+</suite> 
