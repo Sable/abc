@@ -24,6 +24,12 @@ public class AspectJTypeSystem_c
 		ClassType jp = JoinPoint();
 		return jp.memberClassNamed("StaticPart");
 	}
+	
+	protected ClassType NOASPECTBOUND_;
+	
+	public ClassType NoAspectBound() { if (NOASPECTBOUND_ !=null) return NOASPECTBOUND_;
+										return NOASPECTBOUND_ = load("org.aspectj.lang.NoAspectBoundException");
+	}
     
     // weeding out the wrong flags on aspects
 	protected final Flags ASPECT_FLAGS = AspectJFlags.privileged(AspectJFlags.aspect(ACCESS_FLAGS.Abstract()));

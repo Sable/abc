@@ -17,6 +17,7 @@ public interface AspectJTypeSystem extends JjTypeSystem {
     
 	public ClassType JoinPoint() ;
 	public ClassType JoinPointStaticPart();
+	public ClassType NoAspectBound();
 	
 	public MethodInstance adviceInstance(Position pos,
 											ReferenceType container, Flags flags,
