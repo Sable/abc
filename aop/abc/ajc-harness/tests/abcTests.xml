@@ -1503,12 +1503,13 @@
 
     <ajc-test dir="new/packagePrefix" pr="574"
       title="classes that are package prefixes are illegal"
-      abccomment="ajc doesn't find this error, send to Nate July 5/04 LJH"
+      abccomment="abc finds this error, but without a line number, which I think is fine - AGS"
       keywords="from-java,purejava,messages-vary">
-      <abckeywords> <laurie/> <nate/> </abckeywords>
+      <abckeywords> </abckeywords>
         <compile files="p/prefix.java,p/prefix/SomeClass.java"
                options="!eclipse">
-            <message kind="error" line="2"/>
+            <ajcmessage kind="error" line="2"/>
+            <message kind="error"/>
         </compile>
     </ajc-test>
 
@@ -1623,13 +1624,11 @@
     </ajc-test>
 
     <ajc-test dir="new" pr="643" title="try without catch or finally"
-      abccomment="abc parser throws additional errors when giving up - PA/AGS"
+      abccomment="abc parser throws additional error when giving up - PA/AGS"
       keywords="from-java,purejava,message-vary">
         <compile files="TryNoCatchCE.java"
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
-            <message kind="error"/>
-            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
@@ -2223,14 +2222,12 @@
 
     <ajc-test dir="errors" title="Crashes when the closing brace is reversed"
       abccomment="reports unexptected EOF on line 12, that's ok, July 4/04 LJH
-                Extra errors without line number are abc parser complaints - 
-		it gives up. PA/AGS"
+                Extra error without line number is abc parser giving up 
+                - PA/AGS"
       keywords="from-errors,purejava,messages-vary">
         <compile files="ClosingBrace.java"
                options="!eclipse">
             <ajcmessage kind="error" line="11"/>
-            <message kind="error" />
-            <message kind="error" />
             <message kind="error" />
             <message kind="error" line="12"/>
         </compile>
@@ -2362,10 +2359,8 @@
     </ajc-test>
 
     <ajc-test dir="errors" title="Missing ;" keywords="from-errors,purejava"
-         abccomment="Extra errors with no line number for parser complaints in abc. PA/AGS">
+         abccomment="Extra error with no line number for parser complaint in abc. PA/AGS">
         <compile files="PR405.java">
-            <message kind="error"/>
-            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="15"/>
         </compile>
@@ -2924,12 +2919,10 @@
 
     <ajc-test dir="errors" title="illegal synchronized stmts"
       keywords="from-errors,purejava,messages-vary"
-      abccomment="Parser throws extra errors when giving up. PA/AGS">
+      abccomment="Parser throws extra error when giving up. PA/AGS">
         <compile files="BadSynchronized.java"
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
-            <message kind="error"/>
-            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
@@ -5385,12 +5378,10 @@
 
     <ajc-test dir="pureJava" title="try requires block JLS 14.19"
       keywords="from-resolved_105,purejava,messages-vary"
-      abccomment="abc parser throws more errors. PA/AGS">
+      abccomment="abc parser throws extra error. PA/AGS">
         <compile files="TryBlockRequiredCE.java"
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
-	    <message kind="error"/>
-	    <message kind="error"/>
 	    <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
