@@ -65,7 +65,8 @@ public class Jimplify extends OncePass {
 		String javaClassName = SourceLocator.v().getSourceForClass(className);
 		Node n = (Node) class_to_ast.get(javaClassName);
 		InitialResolver.v().setAst(n);
-		ret = InitialResolver.v().resolveFromJavaFile(sc);
+		InitialResolver.v().resolveAST();
+        ret = InitialResolver.v().resolveFromJavaFile(sc);
 		sc.setApplicationClass();
 	    } catch(InternalCompilerError e) {
 		throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),
