@@ -95,6 +95,11 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         return "java";
     }
 
+    public String[] defaultFileExtensions() {
+       String [] extnames = { "aj","java" };
+       return extnames;
+    }
+
     public String compilerName() {
         return "abc";
     }
