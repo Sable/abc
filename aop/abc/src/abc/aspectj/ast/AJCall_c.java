@@ -12,6 +12,7 @@ import polyglot.ast.Receiver;
 import polyglot.ast.Node;
 import polyglot.ast.Special;
 import polyglot.ast.TypeNode;
+import polyglot.ast.Expr;
 
 import polyglot.visit.TypeChecker;
 
@@ -98,6 +99,50 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
 	  r = (Receiver)r.typeCheck(tc);
 	  return this.target(r).typeCheck(tc);
   }
+  
+  
+  /** in intertype declarations with an interface host, one can
+   *  make calls of the form "super.foo()" - these then have to
+   *  be resolved in the super-interfaces of the host. It is an
+   *  error when there is more than one candidate found in the
+   *  set of interfaces.
+   */
+  public Node typeCheck(TypeChecker tc) throws SemanticException {
+  	AJContext ajc = (AJContext) tc.context();
+  	AspectJTypeSystem ts = (AspectJTypeSystem) tc.typeSystem();
+  	if (ajc.inInterType() && 
+  	    ajc.hostClass().flags().isInterface() &&
+  	    target instanceof HostSpecial_c) {
+  		HostSpecial_c hs = (HostSpecial_c) target;
+  		if (hs.kind() == Special.SUPER) {
+			List argTypes = new ArrayList(this.arguments.size());
+			for (Iterator i = this.arguments.iterator(); i.hasNext(); ) {
+				Expr e = (Expr) i.next();
+				argTypes.add(e.type());
+			}
+			List candidates = new ArrayList(); // perhaps this should be a set
+			ClassType itf = null;
+  			for (Iterator itfs = ajc.hostClass().interfaces().iterator(); itfs.hasNext(); ) {
+  				itf = (ClassType) itfs.next();
+  				MethodInstance mi;
+  				try { mi = ts.findMethod(itf,name(),argTypes,ajc.currentClass());
+  				} catch (SemanticException e) { continue; }
+  				candidates.add(mi);
+  			}
+  			if (candidates.size() > 1)
+  				throw new SemanticException("Ambiguous use of super in intertype declaration",position());
+  			if (candidates.size() == 0)
+  				return super.typeCheck(tc);
+  			MethodInstance mi = (MethodInstance) candidates.get(0);
+			
+			Call_c call = (Call_c)this.target(hs.type(itf)).methodInstance(mi).type(mi.returnType());
+		
+			System.out.println("target ="+call.target()+" of type "+call.target().type());
+		    return call;
+  		}
+  	    }
+  	return super.typeCheck(tc);
+  }
 
         public void aspectMethodsEnter(AspectMethods visitor)
         {
@@ -107,18 +152,32 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
         public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
                                        AspectJTypeSystem ts)
         {
-                if (this.methodInstance() instanceof InterTypeMethodInstance_c) {
-                        InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) this.methodInstance();
-                        return this.methodInstance(itmi.mangled()).name(itmi.mangled().name());
+                Call c = this;
+                if (c.methodInstance() instanceof InterTypeMethodInstance_c) {
+                        InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) c.methodInstance();
+                        c = c.methodInstance(itmi.mangled()).name(itmi.mangled().name());
                 }
-                if (this.target() instanceof HostSpecial_c) {
-                        HostSpecial_c hs = (HostSpecial_c) this.target();
+                if (c.target() instanceof HostSpecial_c) {
+                        HostSpecial_c hs = (HostSpecial_c) c.target();
+						IntertypeDecl id = visitor.intertypeDecl();
                         if (hs.kind() == Special.SUPER) {
-                                IntertypeDecl id = visitor.intertypeDecl();
-                                return id.getSupers().superCall(nf, ts, this, id.host().type().toClass(),
+                        	if (methodInstance() instanceof InterTypeMethodInstance_c) {
+                        		InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) methodInstance();
+                        		List newArgs = new ArrayList(arguments());
+                        		Expr thisref = id.thisReference(nf,ts);
+                        		newArgs.add(0,thisref);
+                        		MethodInstance impl = c.methodInstance();
+                        		List formalTypes = new ArrayList(methodInstance().formalTypes());
+                        		formalTypes.add(0,target.type());
+                        		impl = impl.container(itmi.origin()).formalTypes(formalTypes).flags(itmi.flags().Static());
+                        		TypeNode aspct = nf.CanonicalTypeNode(position,itmi.origin()).type(itmi.origin());                     
+                        		c = (Call) c.target(aspct).methodInstance(impl).arguments(newArgs); 
+                        	} else {
+                                c = id.getSupers().superCall(nf, ts, c, id.host().type().toClass(),
                                                                 id.thisReference(nf, ts));
+                        	}
                         }
                 }
-                return this;
+                return c;
         }
 }

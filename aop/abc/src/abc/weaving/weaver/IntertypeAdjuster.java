@@ -272,6 +272,7 @@ public class IntertypeAdjuster {
 		modifiers &= ~Modifier.PRIVATE;
 		modifiers &= ~Modifier.PROTECTED;
 		modifiers &= ~Modifier.NATIVE;
+		modifiers &= ~Modifier.ABSTRACT;
 		if (abstrct)
 			modifiers |= Modifier.ABSTRACT;
             
@@ -320,7 +321,11 @@ public class IntertypeAdjuster {
 				IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v, thisref); ss.add(thisStmt);
 			// now invoke the method in super class
 				SootMethod ssm = method.getSootMethod();
-				InvokeExpr ie = Jimple.v().newSpecialInvokeExpr(v,ssm,args);
+				InvokeExpr ie;
+				if (ssm.getDeclaringClass().isInterface())
+					ie = Jimple.v().newInterfaceInvokeExpr(v,ssm,args);
+				else
+					ie = Jimple.v().newSpecialInvokeExpr(v,ssm,args);
 			// if this is a void returntype, create call followed by return
 			// otherwise return the value directly
 				if (retType.equals(VoidType.v())) {
@@ -418,7 +423,7 @@ public class IntertypeAdjuster {
 		if (!(Modifier.isAbstract(mi1.getModifiers())) && Modifier.isAbstract(mi2.getModifiers()))
 			return true;
 		// was mi2 then mi1
-		// if (pht.isInterface() && fromInterface(mi2)) return true;
+		if (pht.isInterface() && fromInterface(mi1)) return true;
 		if (!fromInterface(mi1) && fromInterface(mi2)) return true;
 		if (!(isIntertype(mi1)  && isIntertype(mi2))) return false;
 		if (fromInterface(mi1) && fromInterface(mi2) &&

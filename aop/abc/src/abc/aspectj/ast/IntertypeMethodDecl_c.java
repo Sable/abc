@@ -253,8 +253,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	static boolean zaps(MethodInstance mi1,MethodInstance mi2) {
 		if (!(mi1.flags().isAbstract()) && mi2.flags().isAbstract())
 			return true;
-		// if (mi1 instanceof InterTypeMethodInstance_c && mi2.container().toClass().flags().isInterface())
-		//	return true;
+		if (mi1 instanceof InterTypeMethodInstance_c && mi2.container().toClass().flags().isInterface())
+			return true;
 		//System.out.println("not (!mi1.abstract && mi2.abstract)");
 		// was mi2 then mi1
  	    if (!fromInterface(mi1) && fromInterface(mi2)) return true;

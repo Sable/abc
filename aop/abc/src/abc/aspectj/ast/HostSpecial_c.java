@@ -87,6 +87,13 @@ public class HostSpecial_c extends Special_c implements Special, MakesAspectMeth
 		   return type(t);
 	   }
 	   else if (kind == SUPER) {
+	   		if (t.flags().isInterface()) {
+	   			if (t.interfaces().size() > 1)
+	   				throw new SemanticException("Use of super not allowed, because "+t+
+                              " extends multiple interfaces",position);
+	   			if (t.interfaces().size() == 1)
+	   				return type((Type)t.interfaces().get(0));
+	   		}
 		   return type(t.superType());
 	   }
 		   return this;
