@@ -14,7 +14,7 @@ public class ExecutionShadowType implements ShadowType {
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos) {
-	mal.stmtAdvice.add
+	mal.bodyAdvice.add
 	    (new ExecutionAdviceApplication(ad,residue));
     }
 }
