@@ -315,7 +315,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	    Call c = (Call) init();
 		abc.weaving.aspectinfo.MethodSig initSig;
 	    if (c != null) {
-	    	MethodInstance mi = c.methodInstance();
+			MethodInstance mi = c.methodInstance();
+		/*
 			List formals = new LinkedList(); 
 			Iterator fi = mi.formalTypes().iterator(); int i = 0;
 			while (fi.hasNext()) {
@@ -337,11 +338,17 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 				 mi.name(),
 				 formals,
 				 exc,
-				 position());}
+				 position());
+		*/
+			initSig = AbcFactory.MethodSig(mi);
+		}
 		else initSig = null;
+		MethodInstance get = hostInstance.getGet();
+		MethodInstance set = hostInstance.getSet();
+		abc.weaving.aspectinfo.MethodSig getsig = get == null ? null : AbcFactory.MethodSig(get);
+		abc.weaving.aspectinfo.MethodSig setsig = set == null ? null : AbcFactory.MethodSig(set);
 		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
-	    			(fs, current_aspect, initSig, AspectInfoHarvester.convertSig(hostInstance.getGet()),
-	    				AspectInfoHarvester.convertSig(hostInstance.getSet()),  position());
+		    (fs, current_aspect, initSig, getsig, setsig, position());
 		gai.addIntertypeFieldDecl(ifd);
 		gai.addSuperDispatches(supers.supercalls(gai));
 		gai.addSuperFieldGetters(supers.superfieldgetters(gai));

@@ -343,7 +343,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	Iterator ti = throwTypes().iterator();
 	while (ti.hasNext()) {
 	    TypeNode t = (TypeNode)ti.next();
-	    exc.add(t.type().toString());
+	    exc.add(AbcFactory.AbcClass((ClassType)t.type()));
 	}
 	abc.weaving.aspectinfo.MethodSig impl = new abc.weaving.aspectinfo.MethodSig
 	    (AspectInfoHarvester.convertModifiers(flags()),

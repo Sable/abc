@@ -634,12 +634,12 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 				arguments.add(arg);
 			if (arg instanceof MethodInstance) {
 				MethodInstance mi = (MethodInstance) arg;
-				abc.weaving.aspectinfo.MethodSig sig = AspectInfoHarvester.convertSig(mi);
+				abc.weaving.aspectinfo.MethodSig sig = AbcFactory.MethodSig(mi);
 				arguments.add(sig);
 				MethodCategory.register(sig, MethodCategory.INTERTYPE_CONSTRUCTOR_SPECIAL_ARG);
 			}
 		}
-		abc.weaving.aspectinfo.MethodSig body = AspectInfoHarvester.convertSig(aiBody);
+		abc.weaving.aspectinfo.MethodSig body = AbcFactory.MethodSig(aiBody);
 		abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
     		(target, current_aspect,mod, formalTypes, exc, qualifier, kind, arguments, body, position());
 		gai.addIntertypeConstructorDecl(icd);

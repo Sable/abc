@@ -14,13 +14,13 @@ public class MethodSig extends Syntax {
     private AbcType rtype;
     private String name;
     private List/*<Formal>*/ formals;
-    private List/*<String>*/ exc;
+    private List/*<AbcClass>*/ exc;
     private SootMethod sm;
     private List/*<SootClass>*/ sexc;
 
     /** Create a method signature.
      *  @param formals a list of {@link abc.weaving.aspectinfo.Formal} objects
-     *  @param exc a list of {@link java.lang.String} objects
+     *  @param exc a list of {@link abc.weaving.aspectinfo.AbcClass} objects
      */
     public MethodSig(int mod, AbcClass cl, AbcType rtype, String name, List formals, List exc, Position pos) {
 	super(pos);
@@ -63,8 +63,8 @@ public class MethodSig extends Syntax {
 	    sexc = new ArrayList();
 	    Iterator ei = exc.iterator();
 	    while (ei.hasNext()) {
-		String e = (String)ei.next();
-		sexc.add(Scene.v().getSootClass(e));
+		AbcClass e = (AbcClass)ei.next();
+		sexc.add(e.getSootClass());
 	    }
 	}
 	return sexc;
@@ -110,7 +110,7 @@ public class MethodSig extends Syntax {
 	    sb.append(" throws ");
 	    Iterator ei = exc.iterator();
 	    while (ei.hasNext()) {
-		String e = (String)ei.next();
+		AbcClass e = (AbcClass)ei.next();
 		sb.append(e);
 		if (ei.hasNext()) {
 		    sb.append(", ");
@@ -118,28 +118,6 @@ public class MethodSig extends Syntax {
 	    }
 	}
 	return sb.toString();
-    }
-
-    private boolean compareFormals(List a, List b) {
-	Iterator ai = a.iterator();
-	Iterator bi = b.iterator();
-	while (ai.hasNext() && bi.hasNext()) {
-	    Formal af = (Formal)ai.next();
-	    Formal bf = (Formal)bi.next();
-	    if (!af.getType().equals(bf.getType())) return false;
-	}
-	return !ai.hasNext() && !bi.hasNext();
-    }
-
-    private boolean compareExceptions(List a, List b) {
-	Iterator ai = a.iterator();
-	Iterator bi = b.iterator();
-	while (ai.hasNext() && bi.hasNext()) {
-	    String af = (String)ai.next();
-	    String bf = (String)bi.next();
-	    if (!af.equals(bf)) return false;
-	}
-	return !ai.hasNext() && !bi.hasNext();
     }
 
     public boolean equals(Object other) {
@@ -151,8 +129,8 @@ public class MethodSig extends Syntax {
 	    cl.equals(os.cl) &&
 	    rtype.equals(os.rtype) &&
 	    name.equals(os.name) &&
-	    compareFormals(formals, os.formals) &&
-	    compareExceptions(exc, os.exc);
+	    formals.equals(os.formals) &&
+	    exc.equals(os.exc);
 	//System.err.println(result);
 	return result;
     }

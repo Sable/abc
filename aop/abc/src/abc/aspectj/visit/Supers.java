@@ -49,6 +49,7 @@ public class Supers {
     	
 		public abc.weaving.aspectinfo.SuperDispatch
 					convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+		    /*
 			List formals = new ArrayList();
 			Iterator fi = mi.formalTypes().iterator();
 			int i = 0;
@@ -64,8 +65,10 @@ public class Supers {
 				TypeNode t = (TypeNode)ti.next();
 				exc.add(t.type().toString());
 			}
+		    */
 			return	new abc.weaving.aspectinfo.SuperDispatch(
 							name,
+							/*
 							new abc.weaving.aspectinfo.MethodSig(
 								AspectInfoHarvester.convertModifiers(mi.flags()),
 									gai.getClass(mi.container()),
@@ -74,6 +77,8 @@ public class Supers {
 									formals,
 									exc,
 									position),
+							*/
+							AbcFactory.MethodSig(mi),
 							gai.getClass(target));
 					}
 	}
@@ -114,11 +119,14 @@ public class Supers {
 	   public abc.weaving.aspectinfo.SuperFieldGet
 				   convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
 			return new abc.weaving.aspectinfo.SuperFieldGet(
+									/*
 					 new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
 							gai.getClass(fi.container()),   // the containing aspect
 							AbcFactory.AbcType(fi.type()),
 							fi.name(), 
 							position),
+									*/
+									AbcFactory.FieldSig(fi),
 							name,
 							gai.getClass(target));
 				   }
@@ -141,11 +149,14 @@ public class Supers {
 		 public abc.weaving.aspectinfo.SuperFieldSet
 					 convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
 			  return new abc.weaving.aspectinfo.SuperFieldSet(
+									  /*
 					   new abc.weaving.aspectinfo.FieldSig(AspectInfoHarvester.convertModifiers(fi.flags()),
 							  gai.getClass(fi.container()),   // the containing aspect
 							  AbcFactory.AbcType(fi.type()),
 							  fi.name(), 
 							  position),
+									  */
+									  AbcFactory.FieldSig(fi),
 							  name,
 							  gai.getClass(target));
 					 }
@@ -220,6 +231,7 @@ public class Supers {
     	
 		public abc.weaving.aspectinfo.QualThis
 					convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+		    /*
 			List formals = new ArrayList();
 			Iterator fi = mi.formalTypes().iterator();
 			int i = 0;
@@ -235,7 +247,9 @@ public class Supers {
 				TypeNode t = (TypeNode)ti.next();
 				exc.add(t.type().toString());
 			}
+		    */
 			return	new abc.weaving.aspectinfo.QualThis(
+								    /*
 							new abc.weaving.aspectinfo.MethodSig(
 								AspectInfoHarvester.convertModifiers(mi.flags()),
 									gai.getClass(mi.container()),
@@ -244,6 +258,8 @@ public class Supers {
 									formals,
 									exc,
 									position),
+								    */
+								    AbcFactory.MethodSig(mi),
 							gai.getClass(target),
 							gai.getClass(qualifier));
 					}
