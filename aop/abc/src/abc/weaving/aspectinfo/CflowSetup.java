@@ -11,6 +11,7 @@ import abc.weaving.residues.*;
 import abc.weaving.weaver.AspectCodeGen;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.Restructure;
 
 public class CflowSetup extends AbstractAdviceDecl {
 
@@ -86,14 +87,16 @@ public class CflowSetup extends AbstractAdviceDecl {
 	}
     }
 
-    public static class CflowSetupBound implements WeavingVar {
-	public int pos;
-	public Type type;
+    public static class CflowSetupBound extends WeavingVar {
+	private int pos;
+	private Type type;
+	private boolean mustbox;
 	private Local loc=null;
 
-	public CflowSetupBound(int pos,Type type) {
+	public CflowSetupBound(int pos,Type type,boolean mustbox) {
 	    this.pos=pos;
 	    this.type=type;
+	    this.mustbox=mustbox;
 	}
 
 	public String toString() {
@@ -126,6 +129,10 @@ public class CflowSetup extends AbstractAdviceDecl {
 	    return type;
 	}
 	
+	public boolean mustBox() {
+	    return mustbox;
+	}
+	
     }
 
     // not static deliberately
@@ -155,7 +162,13 @@ public class CflowSetup extends AbstractAdviceDecl {
 		    ("Variable "+v.getName()+" not found in context",
 		     v.getPosition());
 
-	    CflowSetupBound setupbound=new CflowSetupBound(index,type);
+	    boolean mustbox;
+	    if(type instanceof PrimType) {
+		type=Restructure.JavaTypeInfo.getBoxingClass(type).getType();
+		mustbox=true;
+	    } else mustbox=false;
+
+	    CflowSetupBound setupbound=new CflowSetupBound(index,type,mustbox);
 
 	    setupbounds.put(v.getName(),setupbound);
 	    return setupbound;
@@ -173,7 +186,11 @@ public class CflowSetup extends AbstractAdviceDecl {
 		throw new InternalCompilerError
 		    ("Variable "+v.getName()+" not found in context",
 		     v.getPosition());
-
+	    /*
+	      if(type.getSootType() instanceof PrimType)
+	      type=new AbcType(Restructure.JavaTypeInfo.getBoxingClass
+	      (type.getSootType()).getType());
+	    */
 	    return type;
 	}
     }

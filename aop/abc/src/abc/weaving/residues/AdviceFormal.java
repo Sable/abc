@@ -15,7 +15,7 @@ import abc.weaving.weaver.AdviceWeavingContext;
  *  @date 04-May-04
  */ 
 
-public class AdviceFormal implements WeavingVar {
+public class AdviceFormal extends WeavingVar {
     public int pos;
     public Type type;
     private Local loc=null;

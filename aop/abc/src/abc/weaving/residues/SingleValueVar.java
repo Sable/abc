@@ -16,7 +16,7 @@ import abc.weaving.weaver.SingleValueWeavingContext;
  *  @author Ganesh Sittampalam
  */ 
 
-public class SingleValueVar implements WeavingVar {
+public class SingleValueVar extends WeavingVar {
     public Type type;
     public Value value;
 

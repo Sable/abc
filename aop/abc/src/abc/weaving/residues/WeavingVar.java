@@ -11,20 +11,31 @@ import abc.weaving.weaver.WeavingContext;
  *  @date 04-May-04
  */
 
-public interface WeavingVar {
+public abstract class WeavingVar {
     /** Set the variable to the value v and return the last statement added 
      *  (or begin if none)
      */
-    public Stmt set(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val);
+    public abstract Stmt set
+	(LocalGeneratorEx localgen,Chain units,Stmt begin,WeavingContext wc,Value val);
 
     /** Get the soot local corresponding to this variable (only valid once it has been set) */
-    public Local get();
+    public abstract Local get();
 
     /** Has this variable got a type yet? */
-    public boolean hasType();
+    public abstract boolean hasType();
 
     /** Get the soot type corresponding to this variable
      */
-    public Type getType();
+    public abstract Type getType();
+    
+    /** Should primitive typed values be boxed if necessary when writing to this variable? */
+    public boolean maybeBox() {
+	return getType().equals(Scene.v().getSootClass("java.lang.Object").getType());
+    }
+
+    /** Should we reject any binding value that isn't the appropriate type to box to this variable? */
+    public boolean mustBox() {
+	return false;
+    }
     
 }

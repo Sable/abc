@@ -20,7 +20,7 @@ public class CflowResidue extends Residue {
 
    public static void debug(String message)
      { if (abc.main.Debug.v().residueCodeGen) 
-          System.err.println(message);
+          System.err.println("RCG: "+message);
      }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
@@ -65,7 +65,7 @@ public class CflowResidue extends Residue {
 	while(it.hasNext()) {
 	    WeavingVar to=(WeavingVar) (it.next());
 	    
-	    debug("handling weaving var"+to);
+	    debug("handling weaving var "+to);
 
 	    Type type=to.getType();
 
@@ -73,6 +73,7 @@ public class CflowResidue extends Residue {
 		(item,
 		 Jimple.v().newVirtualInvokeExpr(cflowStack,getMethod,IntConstant.v(index)));
 	    units.insertAfter(getItem,last);
+	    last=getItem;
 
 	    Value result;
 	    
@@ -80,14 +81,22 @@ public class CflowResidue extends Residue {
 		SootClass boxClass=Restructure.JavaTypeInfo.getBoxingClass(type);
 		SootMethod unboxMethod=boxClass.getMethod
 		    (Restructure.JavaTypeInfo.getBoxingClassMethodName(type),new ArrayList()); 
+
+		Local castval=localgen.generateLocal(boxClass.getType(),"cflowbound");
 		
-		result=Jimple.v().newVirtualInvokeExpr(item,unboxMethod);
+		Stmt caststmt=Jimple.v().newAssignStmt
+		    (castval,Jimple.v().newCastExpr(item,boxClass.getType()));
+		
+		units.insertAfter(caststmt,last);
+		last=caststmt;
+
+		result=Jimple.v().newVirtualInvokeExpr(castval,unboxMethod);
 		
 	    } else {
 
 		result=Jimple.v().newCastExpr(item,type);
 	    }
-	    last=to.set(localgen,units,getItem,wc,result);
+	    last=to.set(localgen,units,last,wc,result);
 	    index++;
 	}
 	debug("done with cflow codegen");

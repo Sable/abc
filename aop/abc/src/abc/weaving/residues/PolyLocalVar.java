@@ -12,7 +12,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @author Ganesh Sittampalam
  */ 
 
-public class PolyLocalVar implements WeavingVar {
+public class PolyLocalVar extends WeavingVar {
     public String name;
     private Local loc;
     private Type type;

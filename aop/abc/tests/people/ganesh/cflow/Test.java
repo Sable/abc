@@ -1,6 +1,6 @@
 public class Test {
 
-    void bar() {
+    void bar(int x) {
 	baz();
     }
 
@@ -13,19 +13,19 @@ public class Test {
 
     }
 
-    void foo() {
-	bar();
+    void foo(double x) {
+	bar(5);
     }
 
     public static void main(String[] args) {
-	new Test2().foo();
+	new Test2().foo(5.0);
     }
 }
 
 class Test2 extends Test {}
 
 aspect Aspect {
-    before(Test2 x,Test2 y,Test2 z) : execution(void baz()) && cflow(this(x) && target(z)) && target(y)
+    before(Test2 x,Test2 y,Test2 z,int a) : execution(void baz()) && cflow(this(x) && target(z) && args(a)) && target(y)
 	{
            System.out.println("before");	
 	}

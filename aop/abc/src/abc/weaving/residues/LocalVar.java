@@ -14,7 +14,7 @@ import abc.weaving.weaver.WeavingContext;
  *  @date 04-May-04
  */ 
 
-public class LocalVar implements WeavingVar {
+public class LocalVar extends WeavingVar {
     public Type type;
     public String name;
     private Local loc;

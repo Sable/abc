@@ -23,14 +23,26 @@ public class Bind extends Residue {
 	this.variable=variable;
     }
 
+    // FIXME : restructure WeavingVars and delegate this all to that. In fact,
+    // redesign ContextValue/WeavingVar structure so it's all uniform.
+    // I *think* the type parameter is redundant except in the case of CflowSetup
+    // where it will be the primitive type, but the variable will have the boxed type,
+    // and mustBox will be true. In other boxing situations they will also differ, but
+    // we don't currently inspect the type anyway.
     public static Residue construct(ContextValue value,Type type,WeavingVar variable) {
-	if(variable.getType().equals(Scene.v().getSootClass("java.lang.Object").getType())) {
+	if(variable.mustBox()) {
+	    if(!value.getSootType().equals(type)) return NeverMatch.v;
 	    PolyLocalVar temp=new PolyLocalVar("box");
 	    return AndResidue.construct
 		(new Bind(value,temp),
 		 new Box(temp,variable));
 	}
-	// FIXME check for subtype and eliminate 
+	if(variable.maybeBox()) { // && value.getSootType() instanceof PrimType) {
+	    PolyLocalVar temp=new PolyLocalVar("box");
+	    return AndResidue.construct
+		(new Bind(value,temp),
+		 new Box(temp,variable));
+	}
 	else return AndResidue.construct
 		 (CheckType.construct(value,type),
 		  new Bind(value,variable));

@@ -45,13 +45,20 @@ public class Validate {
 	    if(iexpr!=null) {
 		SootMethod called=iexpr.getMethod();
 
+		if(iexpr instanceof InstanceInvokeExpr) {
+		    InstanceInvokeExpr iiexpr=(InstanceInvokeExpr) iexpr;
+		    checkCopy(called.getDeclaringClass().getType(),
+			      iiexpr.getBase().getType(),
+			      " in receiver of call"+errorSuffix);
+		}
+
 		if(called.getParameterCount() != iexpr.getArgCount())
 		    System.err.println("Warning: Argument count doesn't match up with signature in call"+errorSuffix);
 		else 
 		    for(int i=0;i<iexpr.getArgCount();i++)
 			checkCopy(Type.toMachineType(called.getParameterType(i)),
 				  Type.toMachineType(iexpr.getArg(i).getType()),
-				  " in call"+errorSuffix);
+				  " in argument "+i+" of call"+errorSuffix);
 	    }
 	}
     }
@@ -94,7 +101,7 @@ public class Validate {
 				       +errorSuffix);
 		} else {
 		    if(!Scene.v().getActiveHierarchy().isClassSubclassOfIncluding(rightClass,leftClass))
-			System.err.println("Warning: Badly use of class type"+errorSuffix);
+			System.err.println("Warning: Bad use of class type"+errorSuffix);
 		}
 	    }
 	    return;
