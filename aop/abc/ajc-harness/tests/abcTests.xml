@@ -1297,9 +1297,7 @@
         message.  LJH July 2/04" 
       keywords="from-java,purejava">
         <compile files="CyclicClassInheritance.java">
-            <ajcmessage kind="error" line="11"/>
-            <ajcmessage kind="error" line="12"/>
-            <message kind="error" line="8"/>
+            <message kind="error" line="11"/>
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
@@ -1411,6 +1409,7 @@
 
     <ajc-test dir="new/packagePrefix" pr="574"
       title="classes that are package prefixes are illegal"
+      abccomment="ajc doesn't find this error, send to Nate July 5/04 LJH"
       keywords="from-java,purejava,messages-vary">
         <compile files="p/prefix.java,p/prefix/SomeClass.java"
                options="!eclipse">
@@ -1459,16 +1458,21 @@
         </compile>
     </ajc-test>
 
-    <ajc-test dir="pureJava"
+<ajc-test dir="pureJava"
       title="suggested by Jacks 15.28-qualified-namestr tests"
+      abccomment="ajc and javac already report different subset of possible
+                    errors,  abc correctly reports first one and then
+                    doesn't check rest of switch.  I think it's ok.
+                    July 5/04 LJH"
       keywords="from-java,purejava,messages-vary">
         <compile files="NonConstants.java" 
                options="!eclipse">
+            <ajcmessage kind="error" line="13"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="15"/>
+            <ajcmessage kind="error" line="16"/>
+            <ajcmessage kind="error" line="17"/>
             <message kind="error" line="13"/>
-            <message kind="error" line="14"/>
-            <message kind="error" line="15"/>
-            <message kind="error" line="16"/>
-            <message kind="error" line="17"/>
         </compile>
     </ajc-test>
 
@@ -1634,6 +1638,7 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="private super access in inners"
+      abccomment="runs fine when not in harness, July 5/04 LJH"
       keywords="from-java,purejava">
         <compile files="PrivateSuperInnerAccess.java"/>
         <run class="PrivateSuperInnerAccess"/>
@@ -1688,6 +1693,8 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="Operands work correctly"
+      abccomment="More jlc constants problems ... reported to Nate and 
+                  Jennifer, July 5/04 LJH"
       keywords="from-bigjava">
         <compile files="Ops.java"/>
         <run class="Ops"/>
@@ -2181,6 +2188,9 @@
 
     <ajc-test dir="errors"
       title="cast expressions should not allow casts between ifaces and array types"
+      abccomment="abc doesn't emit the second error, although it is found
+                  if first line commented out.   Need to establish how
+                  we will report errors.  July 5/04 LJH"
       keywords="from-errors,purejava">
         <compile files="InterfaceArrayCast.java">
             <message kind="error" line="9"/>
@@ -2214,6 +2224,9 @@
 
     <ajc-test dir="errors"
       title="good error for bad field and inner class references"
+      abccomment="not pure java July 5/04 LJH
+                  polyglot does not find this error, sent to Nate,
+                       July 5/04 LJH"
       keywords="from-errors,purejava">
         <compile files="BadReferences.java">
             <message kind="error" line="3"/>
