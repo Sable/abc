@@ -103,12 +103,22 @@ public class Restructure {
     *  stmt (i.e. not an identity stmt or the copy of "this" we often make) 
     *  and return a reference to it.
     */
-   public static Stmt findFirstRealStmt(SootMethod m,Chain units)
+    public static Stmt findFirstRealStmt(SootMethod m,Chain units)
+    {
+	return findFirstRealStmt(m,units,false);
+    }
+
+    public static Stmt findFirstRealStmtOrNop(SootMethod m,Chain units)
+    {
+	return findFirstRealStmt(m,units,true);
+    }
+
+    private static Stmt findFirstRealStmt(SootMethod m,Chain units,boolean allowNops)
      { Iterator it = units.snapshotIterator();
        while ( it.hasNext() ) { 
 	     Stmt u = (Stmt) it.next();
 	     if(u instanceof IdentityStmt) continue;
-	     if(u instanceof NopStmt) continue;
+	     if(u instanceof NopStmt && !allowNops) continue;
 	     // skip over any copy of "this" we made
 	     if(u instanceof AssignStmt)
 		 if(thiscopies.containsKey(m)) 

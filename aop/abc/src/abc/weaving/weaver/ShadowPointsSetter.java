@@ -178,8 +178,8 @@ public class ShadowPointsSetter {
       }
     else
       { debug("Need to insert at beginning of method.");  	     
-        // now insert a nop for the beginning of real stmts
-	Stmt firstrealstmt = Restructure.findFirstRealStmt(method,units);
+	// now insert a nop for the beginning of real stmts
+	Stmt firstrealstmt = Restructure.findFirstRealStmtOrNop(method,units); 
 	units.insertBefore(startnop,firstrealstmt);
       }
 
