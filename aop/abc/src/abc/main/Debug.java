@@ -97,7 +97,7 @@ public class Debug {
     public boolean showBinds=false;
     public boolean showAdviceFormalSets=false;
     public boolean warnUntaggedSourceInfo=false;
-    public boolean warnUnusedAdvice=false;
+    public boolean warnUnusedAdvice=true;
 
 
     public boolean doValidate=false;  // validate jimple
