@@ -15,13 +15,40 @@ import java.util.*;
 public abstract class AdviceApplication {
     public AdviceDecl advice;
     public Residue residue;
+
+    public static class SJPInfo {
+	String kind;            // first parameter to makeSJP
+	String signatureType;   // name of method to call for second parameter
+        String signature;       // parameter for call in second parameter
+        int row;                // row
+	int col;                // col
+
+	// Where do we get this stuff from? 
+	// The kind comes from the shadow type.
+	// so does the signature type
+	// The shadow match presumably needs to pick up the signature.
+	// Hopefully it can get the line/column information too.
+
+	SJPInfo(String kind,String signatureType,String signature,int row,int col) {
+	    this.kind=kind;
+	    this.signatureType=signatureType;
+	    this.signature=signature;
+	    this.row=row;
+	    this.col=col;
+	}
+    };
+
+    SJPInfo sjpInfo;
+	
+
     public ShadowPoints shadowpoints; // added by LJH to keep track of
                                       // where to weave.  Is initialized
                                       // in first pass of weaver. 
 
-    public AdviceApplication(AdviceDecl advice,Residue residue) {
+    public AdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
 	this.advice=advice;
 	this.residue=residue;
+	this.sjpInfo=sjpInfo;
     }
 
     private static void doStatement(GlobalAspectInfo info,
@@ -100,7 +127,7 @@ public abstract class AdviceApplication {
 		MethodAdviceList mal=new MethodAdviceList();
 
 		// Do whole body shadows
-		doStatement(info,mal,sootCls,method,new WholeMethodPosition());
+		doStatement(info,mal,sootCls,method,new WholeMethodPosition(method));
 
 		// Do statement shadows
 		Chain stmtsChain=method.getActiveBody().getUnits();

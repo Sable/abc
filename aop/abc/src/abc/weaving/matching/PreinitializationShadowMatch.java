@@ -22,8 +22,10 @@ public class PreinitializationShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
+	AdviceApplication.SJPInfo sjpInfo
+	    = new AdviceApplication.SJPInfo("preinitialization","makeConstructorSig",null,-1,-1);
 	mal.addPreinitializationAdvice
-	    (new PreinitializationAdviceApplication(ad,residue));
+	    (new PreinitializationAdviceApplication(ad,residue,sjpInfo));
     }
 
     public ContextValue getThisContextValue(SootMethod method) {

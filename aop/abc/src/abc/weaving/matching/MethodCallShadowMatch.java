@@ -44,6 +44,8 @@ public class MethodCallShadowMatch extends ShadowMatch {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
-        mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,stmt));
+	AdviceApplication.SJPInfo sjpInfo
+	    = new AdviceApplication.SJPInfo("method-call","makeMethodSig",null,-1,-1);
+        mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }
