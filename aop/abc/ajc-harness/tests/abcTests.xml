@@ -3,9 +3,7 @@
 
 <!--
 
---------------------------------------------------------------------
-ABC Boys and Girls .... Rules for editing this file.
---------------------------------------------------------------------
+***** ABC Boys and Girls .... Rules for editing this file. ******
 
 1)  you may add an abccomment to an ajc-test entry,  here is an
     example I have added to the first entry of abcTests.xml.
@@ -608,7 +606,8 @@ ABC Boys and Girls .... Rules for editing this file.
       title="inner classes accessing outers and some more inner class names"
       abccomment="works outside of testHarness, but gets a
             reflection error from inside testHarness, may be fixed with
-            new test harness.   LJH"
+            new test harness. LJH  
+            FIXED July 2/04 LJH"
       keywords="from-java">
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
@@ -918,7 +917,8 @@ ABC Boys and Girls .... Rules for editing this file.
     <ajc-test dir="pureJava"
       title="finally at the end of a method that needs to return"
       abccomment="incorrect code generation by j2j for m().  Problem
-                  reported to Jennifer July 1/04.  LJH "
+                  reported to Jennifer July 1/04.  LJH 
+                  FIXED July 2/04 LJH"
       keywords="from-java">
         <compile files="FinallyAndReturns.java"/>
         <run class="FinallyAndReturns"/>
@@ -1016,6 +1016,9 @@ ABC Boys and Girls .... Rules for editing this file.
     </ajc-test>
 
     <ajc-test dir="pureJava"
+      abccomment="InterfaceAndClass.java not in directory p.  javac
+                    and jlc can compile without it being in correct directory.
+                  abc requires it to be in the directory p. July 1/04  LJH"
       title="packages and generated inner types (for I.class)"
       keywords="from-java">
         <compile files="InterfaceAndClass.java"/>
@@ -1023,6 +1026,8 @@ ABC Boys and Girls .... Rules for editing this file.
     </ajc-test>
 
     <ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
+      abccomment="Polyglot does not catch error on line 14. Sent to Nate
+                  July 1/04. LJH"
       keywords="from-java">
         <compile files="QualifiedThisMatchesExactly.java">
             <message kind="error" line="14"/>
@@ -1038,6 +1043,7 @@ ABC Boys and Girls .... Rules for editing this file.
     </ajc-test>
 
     <ajc-test dir="pureJava"
+      abccomment="runs ok without harness ... July 1/04 LJH"
       title="Inners can reference protected fields of their outer's super."
       keywords="from-java">
         <compile
@@ -1046,6 +1052,7 @@ ABC Boys and Girls .... Rules for editing this file.
     </ajc-test>
 
     <ajc-test dir="new" title="IOException on windows if nul used as identifier"
+      abccomment="jlc misses error at line 14, reported to Nate July 1/04 LJH"
       keywords="from-java,purejava">
         <compile files="NulIOException.java">
             <message kind="error" line="12"/>
@@ -1077,6 +1084,8 @@ ABC Boys and Girls .... Rules for editing this file.
     </ajc-test>
 
     <ajc-test dir="pureJava"
+      abccomment="problem with j2j treatment of Nan, Jennifer has been
+                  informed July 1/04  LJH"
       title="Primitives that special case for a constant arm should work"
       keywords="from-java">
         <compile files="OneArmedPrimitiveTests.java"/>
@@ -1139,6 +1148,10 @@ ABC Boys and Girls .... Rules for editing this file.
     </ajc-test>
 
     <ajc-test dir="pureJava" title="invalid numeric literals"
+      abccomment="abc doesn't do a good job on these,  needs a parser
+                  that doesn't give up after the first error, and
+                  then each case needs to be check.  jlc probably does
+                  not catch all of them either.  July 1/04 LJH"
       keywords="from-java">
         <compile files="LiteralsCf.java">
             <message kind="error" line="8"/>
@@ -5045,7 +5058,7 @@ ABC Boys and Girls .... Rules for editing this file.
     <ajc-test dir="pureJava"
       title="Locals inside other locals, ordering of processing [eh]"
       abccomment="Verify error in abc and j2j (when --app used).
-                  Reported to Jennifer, July 1/04 LJH"
+                  Reported to Jennifer, July 1/04 LJH, Fixed July 2/04"
       keywords="from-resolved_105">
         <compile files="LocalInners2.java"/>
         <run class="LocalInners2"/>
