@@ -18,11 +18,12 @@ import abc.weaving.residues.JimpleValue;
  *  @date 05-May-04
  */
 public class ConstructorCallShadowMatch extends StmtShadowMatch {
+    private Stmt next;
     private SpecialInvokeExpr invoke;
         
-    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,SpecialInvokeExpr invoke) {
+    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,Stmt next,SpecialInvokeExpr invoke) {
 	super(container,stmt);
-	
+	this.next=next;
 	this.invoke=invoke;
     }
 
@@ -64,11 +65,12 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
-	return new ConstructorCallShadowMatch(pos.getContainer(),current,siexpr);
+	return new ConstructorCallShadowMatch(pos.getContainer(),current,next,siexpr);
     }
 
     public Host getHost() {
-	return stmt;
+	if(stmt.hasTag("SourceLnPosTag") || stmt.hasTag("LineNumberTag")) return stmt;
+	return next;
     }
 
     public SJPInfo makeSJPInfo() {

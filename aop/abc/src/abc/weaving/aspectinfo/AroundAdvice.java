@@ -65,7 +65,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
 	    return null;
     	}
     	Type shadowType=sm.getReturningContextValue().getSootType();
-    	Type originalShadowType=shadowType;
+
     	if (shadowType.equals(NullType.v()))
     		shadowType=VoidType.v();
     	Type adviceType=getReturnType().getSootType();
@@ -77,7 +77,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		reportError(
     				"Invalid application of around advice: " +
     				e.getMessage() +
-					" (shadow type: " + originalShadowType + 
+					" (shadow type: " + shadowType + 
 					"; advice return type: " + adviceType + ")",sm);
     		return null; // don't weave if type error
     	}

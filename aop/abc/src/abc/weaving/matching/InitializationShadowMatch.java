@@ -31,11 +31,6 @@ public class InitializationShadowMatch extends BodyShadowMatch {
 	return new InitializationShadowMatch(container);
     }
 
-    public Host getHost() {
-	// FIXME: should point to first real statement or something
-	return container;
-    }
-
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("initialization","ConstructorSignature","makeConstructorSig",

@@ -1948,15 +1948,16 @@
 
     <ajc-test num="219" dir="errors" pr="244"
       title="decent errors for around return type not matching target point"
-      abccomment="abc doesn't report this kind of error in both places"
+      abccomment="abc doesn't report this kind of error in both places 
+                  and our positions are a bit different"
       keywords="from-errors">
         <compile files="AroundReturnType.java">
             <ajcmessage kind="error" line="3"/>
             <ajcmessage kind="error" line="7"/>
             <ajcmessage kind="error" line="16"/>
             <ajcmessage kind="error" line="21"/>
-	    <message kind="error" line="3"/>
-	    <message kind="error" line="7"/>
+	    <message kind="error" line="2"/>
+	    <message kind="error" line="6"/>
 	    <message kind="error" line="7"/>
         </compile>
     </ajc-test>
@@ -5510,9 +5511,11 @@
     </ajc-test>
 
     <ajc-test num="632" dir="new" title="simple declare warning (NPE)"
+      abccomment="we move the warning to a different line"
       keywords="from-resolved_105">
         <compile files="DeclareWarningMain.java">
-            <message kind="warning" line="5"/>
+            <ajcmessage kind="warning" line="5"/>
+            <message kind="warning" line="4"/>
         </compile>
         <run class="DeclareWarningMain"/>
     </ajc-test>
@@ -6821,9 +6824,28 @@
     </ajc-test>
 
     <ajc-test num="793" dir="new/binaryWarnings/src" pr="37020"
+         abccomment="we report slightly different positions"
    	 title="declare warnings on main">
         <compile files="aspects/MainWarnings.java,app/Main.java">
-        	<message line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="6"  text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="8"  text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="12" text="get(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="14" text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="16" text="call(Main.new())" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="19" text="call(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="23" text="initialization(Main.new())" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="23" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="23" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="26" text="execution(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="29" text="get(String Main.s)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="31" text="set(String Main.s)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="32" text="D.go withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="33" text="handler(RuntimeException)" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="35" text="withincode(void Main.go(String))" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="42" text="withincode(void Main.stop())" kind="warning" file="app/Main.java" />
+        	<ajcmessage line="50" text="preinitialization(app.C.new())" kind="warning" file="app/Main.java" />
+        	<message line="4"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />
         	<message line="6"  text="set(String Main.staticString)" kind="warning" file="app/Main.java" />
         	<message line="8"  text="set(String Main.s)" kind="warning" file="app/Main.java" />
         	<message line="12" text="get(String Main.staticString)" kind="warning" file="app/Main.java" />
@@ -6871,6 +6893,7 @@
     </ajc-test>
     
    <ajc-test num="795" dir="new/binaryWarnings/src" pr="37023"
+        abccomment="we fail because of an off-by one error on the handler line number info"
    	title="declare warnings on binary ajc 1.1 classes">
         <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
         	<message line="6"  text="staticinitialization(Main)" kind="warning" file="app/Main.java" />

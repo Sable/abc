@@ -91,25 +91,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	return MethodCategory.adviceBody(container);
     }
 
-    public Host getHost() {
-	// FIXME:  this is close to what we want,  but in the case of
-	//            a constructor execution we really want the position
-	//            of the first statement after the super()
-	// FIXME:  this works for static initialization when there are
-	//         real static initializers in there.  Otherwise we
-	//         should report the line number of the beginning of
-	//         the class being initialized.
-        // TODO:  rethink the structure of this code .... where should we
-	//          find the position??  should have some utililty 
-	//          methods?
-	// Want to return the first "real" statement of the body that
-	//   is not an identity statement or a nop
 
-	Stmt firstRealStmt = Restructure.findFirstRealStmt
-	    (container,container.getActiveBody().getUnits());
-
-	return firstRealStmt;
-    }
 
     protected AdviceApplication doAddAdviceApplication
 	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
