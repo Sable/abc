@@ -7,14 +7,18 @@ import soot.jimple.*;
  *  @date 29-Apr-04                                  
  */
 
-// FIXME: Can't do this, it makes things think they are StmtMethodPositions
-// when they aren't
-public class NewStmtMethodPosition extends StmtMethodPosition {
+
+public class NewStmtMethodPosition implements MethodPosition {
+    private Stmt stmt;
     private Stmt nextStmt;
     
     public NewStmtMethodPosition(Stmt stmt,Stmt nextStmt) {
-	super(stmt);
+	this.stmt=stmt;
 	this.nextStmt=nextStmt;
+    }
+
+    public Stmt getStmt() {
+	return stmt;
     }
 
     public Stmt getNextStmt() {
