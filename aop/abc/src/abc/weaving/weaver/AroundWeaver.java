@@ -71,6 +71,7 @@ import soot.tagkit.Tag;
 import soot.util.Chain;
 import abc.main.Debug;
 import abc.main.Main;
+import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.DisableExceptionCheckTag;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.RedirectedExceptionSpecTag;
@@ -86,6 +87,7 @@ import abc.weaving.matching.ConstructorAdviceApplication;
 import abc.weaving.matching.ExecutionAdviceApplication;
 import abc.weaving.matching.HandlerAdviceApplication;
 import abc.weaving.matching.NewStmtAdviceApplication;
+import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.residues.Residue;
@@ -797,8 +799,13 @@ public class AroundWeaver {
 					debug("CLOSURE: " + (bUseClosureObject ? "Using closure" : "Not using closure"));
 
 					if (bUseClosureObject) {
-						Main.v().error_queue.enqueue(
-							ErrorInfo.WARNING, "Using closure object. This may impact performance.");
+						ShadowMatch sm=adviceAppl.shadowmatch;
+						abc.main.Main.v().error_queue.enqueue
+	                    (ErrorInfoFactory.newErrorInfo
+	                     (ErrorInfo.WARNING,
+	                     		"Using closure object. This may impact performance.",
+	                      sm.getContainer(),
+	                      sm.getHost()));
 					}
 					
 					// if the target is an around-advice method, 
