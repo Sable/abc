@@ -82,6 +82,7 @@ public class ArrayGetShadowMatch extends StmtShadowMatch {
         	Local l=lg.generateLocal(index.getType());
         	AssignStmt as=Jimple.v().newAssignStmt(l, index);
         	statements.insertBefore(as,stmt);
+        	//FIXME: add and test this: stmt.redirectJumpsToThisTo(as);
         	ref.setIndex(l);
         }
         
