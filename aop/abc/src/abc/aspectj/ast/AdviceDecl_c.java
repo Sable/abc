@@ -223,12 +223,10 @@ public class AdviceDecl_c extends MethodDecl_c
 		List thrws = new LinkedList(throwTypes()); 
 		String name = UniqueID.newID("proceed");
 		MethodDecl md = nf.MethodDecl(position(),
-						Flags.PRIVATE
-						//Flags.PUBLIC.set(Flags.FINAL)
+						Flags.PUBLIC.set(Flags.FINAL)
 						,tn,name,formals,thrws,bl);      
 		MethodInstance mi = ts.methodInstance(position(), methodInstance().container(),
-						      Flags.PRIVATE 
-						      //Flags.PUBLIC.set(Flags.FINAL)
+						      Flags.PUBLIC.set(Flags.FINAL)
 						      , tn.type(), name,
 						      new ArrayList(methodInstance().formalTypes()),
 						      new ArrayList(throwTypes()));
@@ -349,7 +347,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		nc.addVariable(ejpsp);
 		
 		if (spec instanceof Around)
-			proceedInstance = methodInstance().name("proceed");
+			proceedInstance = methodInstance().name("proceed").flags(flags().Public());
 		else
 		    proceedInstance = null;
 		scope = nc;
