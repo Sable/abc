@@ -287,15 +287,22 @@ public class AdviceDecl extends AbstractAdviceDecl {
     			SootMethod method=sc.getMethodByName(ms.getName());
     			ret.add(method);
     		} else {
-    			ret.add(ms.getSootMethod());
+    			try {
+    				ret.add(ms.getSootMethod());
+    			} catch (RuntimeException e) {
+    				String msg="Methods of class " + ms.getDeclaringClass().toString() + "\n";
+    				SootClass sc = ms.getDeclaringClass().getSootClass();
+    				for (Iterator it=sc.getMethods().iterator(); it.hasNext();) {
+    					SootMethod m=(SootMethod)it.next();
+    					msg+=" " + m.toString() + "\n";
+    				}
+    				throw new RuntimeException(e.getMessage() + "\n" + msg);
+    			}
     		}
     		
     	}
     	return ret;
     }
     
-    public List getSootProceeds() {
-    	return getLocalSootMethods();
-    }
     	
 }
