@@ -19,7 +19,6 @@ public class IntertypeAdjuster {
         }
     }
 
-    // TODO: When Aske gives us modifiers, use them
     // TODO: When Aske gives us a throws list, use it
     private void addMethod( IntertypeMethodDecl imd ) {
         MethodSig method = imd.getTarget();
@@ -32,12 +31,23 @@ public class IntertypeAdjuster {
             parms.add(parmType.getSootType());
         }
 
+        int modifiers = method.getModifiers();
+        modifiers |= Modifier.PUBLIC;
+        modifiers &= ~Modifier.PRIVATE;
+        modifiers &= ~Modifier.PROTECTED;
+            
         // Create the method
         SootMethod sm = new SootMethod( 
                 method.getName(),
                 parms,
                 retType,
-                Modifier.PUBLIC );
+                modifiers );
+
+        for( Iterator exceptionIt = imd.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+
+            final SootClass exception = (SootClass) exceptionIt.next();
+            sm.addException( exception );
+        }
 
         // Fool Soot into generating Jimple for this method from 
         // implementation dummy method code
@@ -47,7 +57,6 @@ public class IntertypeAdjuster {
         sc.addMethod(sm);
     }
 
-    // TODO: When Aske gives us modifiers, use them
     private void addField( IntertypeFieldDecl ifd ) {
         FieldSig field = ifd.getTarget();
 
@@ -56,11 +65,16 @@ public class IntertypeAdjuster {
             // TODO: deal with interfaces 
             throw new RuntimeException( "NYI" );
         } else {
+            int modifiers = field.getModifiers();
+            modifiers |= Modifier.PUBLIC;
+            modifiers &= ~Modifier.PRIVATE;
+            modifiers &= ~Modifier.PROTECTED;
+            
             // Add the field itself
             SootField newField = new SootField(
                     field.getName(),
                     field.getType().getSootType(),
-                    Modifier.PUBLIC );
+                    modifiers );
             field.getDeclaringClass().getSootClass().addField(newField);
         }
 
