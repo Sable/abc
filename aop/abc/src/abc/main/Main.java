@@ -590,6 +590,7 @@ public class Main {
 	    } finally {
 		error_queue = compiler.errorQueue(); 
 	    }
+		abortIfErrors();
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
@@ -639,9 +640,9 @@ public class Main {
         }
         AbcTimer.mark("Retrieving bodies");
 
-	PatternMatcher.v().updateWithAllSootClasses();
-	PatternMatcher.v().recomputeAllMatches();
-	AbcTimer.mark("Update pattern matcher");
+        PatternMatcher.v().updateWithAllSootClasses();
+        PatternMatcher.v().recomputeAllMatches();
+        AbcTimer.mark("Update pattern matcher");
 
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
