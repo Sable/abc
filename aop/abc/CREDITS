@@ -36,7 +36,7 @@ Laurie Hendren <hendren at sable.mcgill.ca>
 John Jorgensen <jorgnsn at lcd.uregina.ca>
  - Soot support
 
-Sascha Kuzins <sascha.kuzins at lady-margaret-hall.oxford.ac.uk>
+Sascha Kuzins <sascha.kuzins at comlab.ox.ac.uk>
  - Designed and implemented the around weaver
 
 Jennifer Lhotak <jlhotak at sable.mcgill.ca>
@@ -59,7 +59,7 @@ Jane Panangaden
 Damien Sereni <dsereni at comlab.ox.ac.uk>
  - Simple cflow optimisations (counters, instance sharing)
 
-Ganesh Sittampalam <ganesh at comlab.ox.ac.uk>
+Ganesh Sittampalam <ganesh at earth.li>
  - Designed and implemented pointcut matcher
  - Implemented large portions of the weaver
  - Various minor frontend fixes
