@@ -80,6 +80,8 @@ public class Debug {
 
     public boolean dontUseCflowCounter=false;
 
+    public boolean dontShareCflowStacks=false;
+
     // Config stuff - to be moved, probably (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
 }
