@@ -1,4 +1,4 @@
 #!/bin/sh
 CLASSPATH=$CLASSPATH:../lib/abc-testing-harness.jar:../lib/abc-tests.jar
-java org.aspectj.testing.Harness $1
+java org.aspectj.testing.Harness -logAll $1
 
