@@ -1,0 +1,69 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage}
+\usepackage{epsfig}
+\usepackage{pstricks}
+\usepackage{pst-node}
+\usepackage{cite}
+\usepackage{fancyvrb}
+\usepackage{xspace}
+%\usepackage{alltt}
+%\usepackage{times,mathptmx}
+%\usepackage{helvet}
+%\usepackage{courier}
+\usepackage{soul}
+\usepackage{syntax}
+\usepackage{java}
+
+%%\newcommand{\comment}[1]{}
+\renewcommand{\thetable}{\Roman{table}}
+
+%\newcommand{\mynote}[1]{\marginpar{\tiny{#1}}}
+\newcommand{\mynote}[1]{}
+\newcommand{\emf}[1]{\textbf{\textit{#1}}}
+\DefineVerbatimEnvironment{myverb}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{myverbfoot}{Verbatim}{fontsize=\small}
+\DefineVerbatimEnvironment{boxverb}{Verbatim}{fontsize=\small,frame=single,numbers=left}
+
+% get more figures/text on a page
+\begin{comment}
+\def\topfraction{.9}
+\def\bottomfraction{.9}
+\setcounter{totalnumber}{5}
+\def\textfraction{.1}
+\def\floatpagefraction{.9}
+\setcounter{dbltopnumber}{5}
+\def\dbltopfraction{.9}
+\def\dblfloatpagefraction{.95}
+\end{comment}
+
+\def\mytitle{The \texttt{abc} scanner and parser, including an LALR(1) grammar for AspectJ }
+\def\myauthors{Laurie Hendren,  Oege De Moor, Aske Simon Christensen and the \texttt{abc} team}
+\def\myack{This work was supported, in part, by EPSRC and NSERC.}
+
+%\setlength{\grammarindent}{5em}
+
+\title{\mytitle}
+
+\author{\myauthors}
+
+\begin{document}
+
+\maketitle
+
+%%% SECTIONS, one per file
+\section{Introduction \label{INTRODUCTION}}
+\input{Text/intro}
+
+\section{Lexical Structure \label{LEXICAL}}
+\input{Text/lexical}
+
+\section{LALR(1) Grammar \label{GRAMMAR}}
+\input{Text/grammar}
+
+\subsection*{Acknowledgments}
+\myack
+
+\bibliographystyle{plain}
+\bibliography{local}
+
+\end{document}
