@@ -1693,7 +1693,8 @@ public class AroundWeaver {
 						
 							// Create a new local inside the shadow.
 							// Assign the return value to that local, 
-							// and then return the local.
+  						// 	and then return the local.
+							if (!(returnStmt.getOp() instanceof Local)) {							  
 							LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
 							Local l=lg.generateLocal(
 									shadowMethod.getReturnType(), "returnedLocal");
@@ -1702,6 +1703,20 @@ public class AroundWeaver {
 							returnStmt.setOp(l);
 							shadowMethodStatements.insertBefore(s, end);
 							returnedLocal=l;	
+							} else {
+							LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
+							Local l=lg.generateLocal(
+									shadowMethod.getReturnType(), "tmp");
+							Stmt s=Jimple.v().newAssignStmt(l, 
+								returnStmt.getOp());
+							shadowMethodStatements.insertBefore(s, end);
+							s=Jimple.v().newAssignStmt( 
+									returnStmt.getOp(), l);
+							shadowMethodStatements.insertBefore(s, end);
+							}
+							//returnStmt.setOp(l);
+							
+							returnedLocal=(Local)returnStmt.getOp();	
 
 							
 						}
@@ -1753,6 +1768,8 @@ public class AroundWeaver {
 							}
 						} else if (applStmt instanceof InvokeStmt) {
 							InvokeStmt invStmt=(InvokeStmt)applStmt;
+							
+							//if (true) throw new RuntimeException();
 							
 							// if advice method is non-void, we have to return something
 							// TODO: type checking to throw out invalid cases?
