@@ -38,12 +38,18 @@ public abstract class AdviceApplication {
 	}
     };
 
+    /** information for generating the SJP */
     public SJPInfo sjpInfo;
-	
 
+    /** the SootField corresponding to a static join point */
+    public SootField sjpfield;
+
+    /** where we store the begin and end points for weaving */
     public ShadowPoints shadowpoints; // added by LJH to keep track of
                                       // where to weave.  Is initialized
                                       // in first pass of weaver. 
+
+
 
     public AdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
 	this.advice=advice;
