@@ -31,6 +31,8 @@ public class Main {
 	
 	static ArrayList abcArgs = new ArrayList();
 	
+	static ArrayList numberFilter = null;
+	
 	static Runtime runtime;
 
 	/* Pitfall: All XML.select operations need fully qualified node
@@ -162,6 +164,12 @@ public class Main {
 		 */
 		String dir = xTest.select("/abc:ajc-test/@dir")[0].text();
 		String title = xTest.select("/abc:ajc-test/@title")[0].text();
+		String number;
+		try {
+		    number = xTest.select("/abc:ajc-test/@num")[0].text();
+		} catch(Exception e) {
+		    number = "";
+		}
 		
 		/* TODO: Find out if dirFilter/titleFilter are meant to be
 		 * regexps or contain wildcards etc.
@@ -180,6 +188,14 @@ public class Main {
 				// skipped++; don't count tests not matching filters
 				return false;
 			}
+		}
+		
+		if(numberFilter != null) {
+		    if(!numberFilter.contains(number)) {
+		        // If the test case is not numbered (i.e. number == ""), then it can never be selected
+		        // if a number filter is used.
+		        return false;
+		    }
 		}
 		
 		count++;
@@ -298,6 +314,25 @@ public class Main {
 					arg++;
 					cutoff = Integer.parseInt(args[arg]);
 				}
+			}
+			else if(args[arg].equals("-n")) {
+			    String numbers = args[++arg];
+			    ArrayList nums = new ArrayList();
+			    String[] arrNum = numbers.split(",");
+			    for(int cur = 0; cur < arrNum.length; cur++) {
+			        int idx = arrNum[cur].indexOf("-");
+			        if(idx > 0) {
+			            int lower = Integer.parseInt(arrNum[cur].substring(0, idx));
+			            int upper = Integer.parseInt(arrNum[cur].substring(idx + 1, arrNum[cur].length()));
+			            for(int i = lower; i <= upper; i++) {
+			                nums.add("" + i);
+			            }
+			        }
+			        else {
+			            nums.add(arrNum[cur]);
+			        }
+			    }
+			    numberFilter = nums;
 			}
 			else if(!doneXmlFile) {
 			    inputFileName = args[arg];
