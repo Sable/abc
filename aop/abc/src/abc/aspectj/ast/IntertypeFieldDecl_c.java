@@ -31,6 +31,8 @@ import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo
 {
@@ -158,7 +160,9 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		List exctypes = init().throwTypes(ts);
 		initmi = ts.methodInstance(position(),fieldInstance().container(),fs,init().type(),name,argtypes,exctypes);
 		md = md.methodInstance(initmi);
-		
+
+		MethodCategory.register(md, MethodCategory.INTERTYPE_FIELD_INITIALIZER);
+
 		return md;
 	}
 	

@@ -74,6 +74,10 @@ public class IntertypeAdjuster {
 		ss.add(stmt);
 	// 	add method to the target class
 		sfd.getTarget().getSootClass().addMethod(sm);				  
+
+
+		// This is an accessor method for reading a field
+		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
     }
     
 
@@ -146,6 +150,9 @@ public class IntertypeAdjuster {
 				}
 			// Add method to the target class
 				sc.addMethod(sm);
+
+				// This is an intertype special call delegator
+				MethodCategory.register(sm, MethodCategory.INTERTYPE_SPECIAL_CALL_DELEGATOR);
 	}
 	
 	private void addMethod( IntertypeMethodDecl imd ) {
@@ -259,6 +266,9 @@ public class IntertypeAdjuster {
 		}
     // Add method to the class
         sc.addMethod(sm);
+
+		// This is a stub for an intertype method decl
+		MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
     }
 
     private void addField( IntertypeFieldDecl ifd ) {
@@ -414,6 +424,8 @@ public class IntertypeAdjuster {
 		// inject the new constructor into the target type
 		scTarget.addMethod(sm);	
 		
+		// This is a stub for an intertype constructor decl
+		MethodCategory.register(sm, MethodCategory.INTERTYPE_CONSTRUCTOR_DELEGATOR);
 	}
 	
 

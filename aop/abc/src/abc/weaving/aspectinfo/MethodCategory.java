@@ -15,46 +15,87 @@ public class MethodCategory {
 
     /** A normal method */
     public static final int NORMAL = 0;
+
     /** A special aspect method, i.e. <code>aspectOf</code>... */
+    // Generated in abc/aspectj/ast/AspectDecl_c.java
     public static final int ASPECT_SPECIAL = 1;
+
     /** An advice body */
+    // Generated in abc/aspectj/ast/AdviceDecl_c.java
     public static final int ADVICE_BODY = 2;
+
     /** The expression in an <code>if</code> pointcut */
+    // Generated in abc/aspectj/ast/PCIf_c.java
     public static final int IF_EXPR = 3;
 
+    // **********
+
     /** The implementation placeholder of an intertype method declaration */
+    // Generated in abc/aspectj/ast/IntertypeMethodDecl_c.java
     public static final int INTERTYPE_METHOD_SOURCE = 4;
-    /** The implementation placeholder of an intertype constructor declaration */
-    public static final int INTERTYPE_CONSTRUCTOR_SOURCE = 5;
+
     /** A woven intertype method declaration, delegating to the actual implementation */
-    public static final int INTERTYPE_METHOD_DELEGATOR = 6;
+    // Generated in abc/weaving/weaver/IntertypeAdjuster.java
+    public static final int INTERTYPE_METHOD_DELEGATOR = 5;
+
+    // **********
+
+    /** The body of an intertype constructor declaration, without field initializers */
+    // Generated in abc/aspectj/ast/IntertypeConstructorDecl_c.java
+    public static final int INTERTYPE_CONSTRUCTOR_BODY = 6;
+
+    /** The encapsulation of an argument to a <code>this</code> or <code>super</code> call
+     *  in an intertype constructor declaration */
+    // Generated in abc/aspectj/ast/IntertypeConstructorDecl_c.java
+    public static final int INTERTYPE_CONSTRUCTOR_SPECIAL_ARG = 7;
+
     /** A woven intertype constructor declaration, delegating to the actual implementation */
-    public static final int INTERTYPE_CONSTRUCTOR_DELEGATOR = 7;
+    // Generated in abc/weaving/weaver/IntertypeAdjuster.java
+    public static final int INTERTYPE_CONSTRUCTOR_DELEGATOR = 8;
+
+    // **********
+
     /** The initializer for an intertype field declaration */
-    public static final int INTERTYPE_FIELD_INITIALIZER = 8;
+    // Generated in abc/aspectj/ast/IntertypeFieldDecl_c.java
+    public static final int INTERTYPE_FIELD_INITIALIZER = 9;
+
     /** A method delegating a <code>this</code> or <code>super</code> call from an
      *  intertype method or constructor */
-    public static final int INTERTYPE_CALL_DELEGATOR = 9;
+    // Generated in abc/weaving/weaver/IntertypeAdjuster.java
+    public static final int INTERTYPE_SPECIAL_CALL_DELEGATOR = 10;
+
+    // **********
 
     /** An accessor method to get the value of a field */
-    public static final int ACCESSOR_GET = 10;
+    // Generated in abc/weaving/weaver/IntertypeAdjuster.java
+    public static final int ACCESSOR_GET = 11;
     /** An accessor method to set the value of a field */
-    public static final int ACCESSOR_SET = 11;
+    public static final int ACCESSOR_SET = 12;
 
 
     // CATEGORY PROPERTY TABLES
 
+    // normal, aspect, asvice, if,
+    // it_m_src, it_m_del,
+    // it_c_body, it_c_arg, it_c_del,
+    // it_f_init, it_spec_del,
+    // acc_get, acc_set
+
     private static boolean[] weave_inside =
     {
 	true, false, true, false/*AJC doesn't, but why not?*/,
-	true, true, false, false, true, false,
+	true, false,
+	true, true, false,
+	true, false,
 	true/*?*/, true/*?*/
     };
 
     private static boolean[] weave_execution =
     {
 	true, false, true, false,
-	true, true, false, false, false, false,
+	true, false,
+	true, false, false,
+	false, false,
 	false/*?*/, false/*?*/
     };
 
@@ -65,27 +106,30 @@ public class MethodCategory {
 	return weave_inside[cat];
     }
 
-    public static boolean weaveInside(SootMethod m) { return weaveInside(getCategory(m)); }
-    public static boolean weaveInside(MethodDecl m, ParsedClassType container) { return weaveInside(getCategory(m, container)); }
-    public static boolean weaveInside(MethodSig m)  { return weaveInside(getCategory(m)); }
+    public static boolean weaveInside(SootMethod m)
+    { return weaveInside(getCategory(m)); }
+    public static boolean weaveInside(MethodSig m)
+    { return weaveInside(getCategory(m)); }
 
 
     public static boolean weaveExecution(int cat) {
 	return weave_execution[cat];
     }
 
-    public static boolean weaveExecution(SootMethod m) { return weaveExecution(getCategory(m)); }
-    public static boolean weaveExecution(MethodDecl m, ParsedClassType container) { return weaveExecution(getCategory(m, container)); }
-    public static boolean weaveExecution(MethodSig m)  { return weaveExecution(getCategory(m)); }
+    public static boolean weaveExecution(SootMethod m)
+    { return weaveExecution(getCategory(m)); }
+    public static boolean weaveExecution(MethodSig m)
+    { return weaveExecution(getCategory(m)); }
 
 
     public static boolean adviceBody(int cat) {
 	return cat == ADVICE_BODY;
     }
 
-    public static boolean adviceBody(SootMethod m) { return adviceBody(getCategory(m)); }
-    public static boolean adviceBody(MethodDecl m, ParsedClassType container) { return adviceBody(getCategory(m, container)); }
-    public static boolean adviceBody(MethodSig m)  { return adviceBody(getCategory(m)); }
+    public static boolean adviceBody(SootMethod m)
+    { return adviceBody(getCategory(m)); }
+    public static boolean adviceBody(MethodSig m)
+    { return adviceBody(getCategory(m)); }
 
     
 
@@ -93,10 +137,6 @@ public class MethodCategory {
 
     public static int getCategory(SootMethod m) {
 	return GlobalAspectInfo.v().getMethodCategory(signature(m));
-    }
-
-    public static int getCategory(MethodDecl m, ParsedClassType container) {
-	return GlobalAspectInfo.v().getMethodCategory(signature(m, container));
     }
 
     public static int getCategory(MethodSig m) {
@@ -107,6 +147,14 @@ public class MethodCategory {
 
     public static void register(SootMethod m, int cat) {
 	GlobalAspectInfo.v().registerMethodCategory(signature(m), cat);
+    }
+
+    public static void register(MethodDecl m, int cat) {
+	try {
+	    GlobalAspectInfo.v().registerMethodCategory(signature(m, (ParsedClassType)m.methodInstance().container()), cat);
+	} catch (ClassCastException e) {
+	    throw new RuntimeException("Tried to register category of method "+m.name()+" in unnamed class");
+	}
     }
 
     public static void register(MethodDecl m, ParsedClassType container, int cat) {

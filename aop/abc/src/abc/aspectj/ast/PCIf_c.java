@@ -10,6 +10,8 @@ import java.util.*;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 public class PCIf_c extends Pointcut_c implements PCIf
 {
     protected Expr expr;
@@ -107,6 +109,8 @@ public class PCIf_c extends Pointcut_c implements PCIf
 	}
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	MethodCategory.register(methodDecl, MethodCategory.IF_EXPR);
+
 	List vars = new ArrayList();
 	Iterator fi = methodDecl.formals().iterator();
 	while (fi.hasNext()) {

@@ -35,6 +35,8 @@ import abc.aspectj.visit.*;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     implements IntertypeConstructorDecl, ContainsAspectInfo
 {
@@ -546,10 +548,13 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 				arguments.add(arg);
 			if (arg instanceof MethodInstance) {
 				MethodInstance mi = (MethodInstance) arg;
-				arguments.add(AspectInfoHarvester.convertSig(gai,mi));
+				abc.weaving.aspectinfo.MethodSig sig = AspectInfoHarvester.convertSig(gai,mi);
+				arguments.add(sig);
+				MethodCategory.register(sig, MethodCategory.INTERTYPE_CONSTRUCTOR_SPECIAL_ARG);
 			}
 		}
 		abc.weaving.aspectinfo.MethodSig body = AspectInfoHarvester.convertSig(gai,aiBody);
+		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
 		abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
     		(target, current_aspect,mod, formalTypes, exc, qualifier, kind, arguments, body, position());
 		gai.addIntertypeConstructorDecl(icd);

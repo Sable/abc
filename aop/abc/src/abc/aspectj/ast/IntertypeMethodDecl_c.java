@@ -30,6 +30,8 @@ import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.*;
 import abc.weaving.aspectinfo.FieldSig;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 public class IntertypeMethodDecl_c extends MethodDecl_c
     implements IntertypeMethodDecl, ContainsAspectInfo
 {
@@ -261,6 +263,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addIntertypeMethodDecl(imd);
 	gai.addSuperDispatches(supers.supercalls(gai));
 	gai.addSuperFieldDispatches(supers.superfields(gai));
+
+	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
     }
     
     public Supers getSupers() {
