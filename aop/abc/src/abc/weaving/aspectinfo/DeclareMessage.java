@@ -106,9 +106,6 @@ public class DeclareMessage extends AbstractAdviceDecl {
                           LocalGeneratorEx localgen,
                           AdviceApplication adviceappl) {
 
-            if(Weaver.finalWeave && !NeverMatch.neverMatches(adviceappl.getResidue()))
-                ((DeclareMessage) adviceappl.advice).generateMessage(adviceappl.shadowmatch);
-
         }
     }
 
@@ -131,5 +128,11 @@ public class DeclareMessage extends AbstractAdviceDecl {
         (AdviceApplication aa,LocalGeneratorEx localgen,WeavingContext wc) {
         throw new InternalCompilerError
             ("declare warning/error cannot be woven");
+    }
+    /** Report any errors or warnings for this advice application. */
+    public void reportMessages(AdviceApplication adviceappl) {
+        if(!NeverMatch.neverMatches(adviceappl.getResidue())) {
+            ((DeclareMessage) adviceappl.advice).generateMessage(adviceappl.shadowmatch);
+        }
     }
 }

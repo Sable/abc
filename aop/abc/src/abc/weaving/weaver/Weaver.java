@@ -107,10 +107,7 @@ public class Weaver {
 
     }
 
-    public static boolean finalWeave;
-
         static public void weave() {
-            finalWeave=false;
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
                 weaveGenerateAspectMethods();
@@ -119,15 +116,14 @@ public class Weaver {
                 unitBindings = unweaver.restore();
 
                 // We could do several passes, but for now, just do one.
-                if(abc.main.Debug.v().dontWeaveAfterAnalysis) finalWeave=true;
                 weaveAdvice();
                 CflowAnalysisBridge cfab = new CflowAnalysisBridge();
                 cfab.run();
+                reportMessages();
                 if( !abc.main.Debug.v().dontWeaveAfterAnalysis ) {
                     unitBindings = unweaver.restore();
                     AroundWeaver.reset();
                     resetForReweaving();
-                    finalWeave=true;
                     weaveAdvice();
                 }
             } else {
@@ -150,7 +146,7 @@ public class Weaver {
                     resetForReweaving();
                     //throw new RuntimeException("just a test");
                 }
-                finalWeave=true;
+                reportMessages();
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
@@ -168,6 +164,21 @@ public class Weaver {
 
                 AbcTimer.mark("Add aspect code");
 
+        }
+        static public void reportMessages() {
+            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                final AbcClass cl = (AbcClass) clIt.next();
+                for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                    final SootMethod method = (SootMethod) methodIt.next();
+                    if( !method.isConcrete() ) continue;
+                    MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
+                    if(adviceList == null) continue;
+                    for( Iterator aaIt = adviceList.allAdvice().iterator(); aaIt.hasNext(); ) {
+                        final AdviceApplication aa = (AdviceApplication) aaIt.next();
+                        aa.reportMessages();
+                    }
+                }
+            }
         }
         static public void weaveAdvice() {
                 ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);

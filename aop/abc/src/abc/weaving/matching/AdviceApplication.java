@@ -291,4 +291,9 @@ public abstract class AdviceApplication {
         }
         return ret;
     }
+
+    /** Report any errors or warnings for this advice application. */
+    public void reportMessages() {
+        advice.reportMessages(this);
+    }
 }

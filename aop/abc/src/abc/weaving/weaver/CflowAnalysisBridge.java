@@ -99,6 +99,7 @@ public class CflowAnalysisBridge {
                 new BDDCflowStack(cflowAnalysis, si.shadows, si.stmtMap.keySet() );
             for( Iterator stmtIt = bddcfs.neverValid(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
+                debug("found never: "+stmt);
                 stmt.addTag(new StringTag("never: "+stack));
                 for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
                     final ResidueBox rb = (ResidueBox) rbIt.next();
@@ -116,6 +117,7 @@ public class CflowAnalysisBridge {
             }
             for( Iterator stmtIt = bddcfs.alwaysValid(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
+                debug("found always: "+stmt);
                 stmt.addTag(new StringTag("always: "+stack));
                 for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
                     final ResidueBox rb = (ResidueBox) rbIt.next();
@@ -135,6 +137,7 @@ public class CflowAnalysisBridge {
             &&  !abc.main.Debug.v().checkCflowOpt ) {
                 for( Iterator shIt = bddcfs.unnecessaryShadows(); shIt.hasNext(); ) {
                     final Shadow sh = (Shadow) shIt.next();
+                    debug("removing shadow: "+sh);
                     sh.aa().setResidue(NeverMatch.v());
                 }
             }
@@ -170,6 +173,7 @@ public class CflowAnalysisBridge {
                     CflowResidue cfr = (CflowResidue) rb.getResidue();
                     StackInfo si = stackInfo(cfr.setup());
                     Stmt s = cfr.getIsValidStmt();
+                    debug("found isValidStmt: "+s);
                     if(s != null) si.stmtMap.put(s, aa);
                 } else if( rb.getResidue() instanceof Load) {
                     Load load = (Load) rb.getResidue();

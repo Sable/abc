@@ -250,5 +250,8 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
             +", line "+getPosition().line()+")";
     }
 
-
+    /** Report any errors or warnings for this advice application. */
+    public void reportMessages(AdviceApplication aa) {
+        // Default is to not report anything
+    }
 }
