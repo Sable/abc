@@ -29,9 +29,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 \section{<xsl:value-of select="name"/>}
 <xsl:apply-templates mode="to_latex" select="long_desc"/>
 
-<xsl:if test="boolopt|pathopt|intopt">
+<xsl:if test="boolopt|pathopt|intopt|stringopt|argfileopt">
 \begin{description}
-<xsl:for-each select="boolopt|pathopt|intopt">
+<xsl:for-each select="boolopt|pathopt|intopt|stringopt|argfileopt">
   <xsl:call-template name="opt"/>
 </xsl:for-each>
 \end{description}
@@ -48,12 +48,24 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:variable name="argLabel">
     <xsl:choose>
       <xsl:when test="name()='boolopt'"></xsl:when>
-      <xsl:when test="set_arg_label">{ \it <xsl:value-of select="set_arg_label"/>}</xsl:when>
-      <xsl:otherwise>{ \it arg}</xsl:otherwise>
+      <xsl:when test="set_arg_label">{\it <xsl:value-of select="set_arg_label"/>}</xsl:when>
+      <xsl:otherwise>{\it arg}</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="argspace">
+    <xsl:choose>
+      <xsl:when test="name()='intopt'"></xsl:when>
+      <xsl:otherwise>{ }</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="argfile">
+    <xsl:choose>
+      <xsl:when test="name()='argfileopt'">@<xsl:value-of select="$argLabel"/>, </xsl:when>
+      <xsl:otherwise></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
   \item[<xsl:for-each select="alias">
-  {\tt -<xsl:value-of select="."/>}<xsl:value-of select="$argLabel"/><xsl:if test="following-sibling::alias"><xsl:text>, </xsl:text></xsl:if>
+  {\tt <xsl:value-of select="$argfile"/>-<xsl:value-of select="."/>}<xsl:value-of select="$argspace"/><xsl:value-of select="$argLabel"/><xsl:if test="following-sibling::alias"><xsl:text>, </xsl:text></xsl:if>
   </xsl:for-each>]
 <xsl:if test="default|value/default">
 (default value: {\tt <xsl:choose>  

@@ -43,7 +43,7 @@ public class Usage extends UsageBase {
   <xsl:template mode="usage" match="section">
        <xsl:if test="count(undocumented)=0">
 +"\n<xsl:value-of select="name"/>:\n"
-        <xsl:apply-templates mode="usage" select="boolopt|pathopt|intopt"/>
+        <xsl:apply-templates mode="usage" select="boolopt|pathopt|intopt|stringopt|argfileopt"/>
       </xsl:if>
   </xsl:template>
 
@@ -56,10 +56,10 @@ public class Usage extends UsageBase {
   <xsl:template mode="usage" match="pathopt">
     <xsl:for-each select="alias">
       <xsl:if test="position() != last()">
-+padOpt("-<xsl:value-of select="."/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "" )<xsl:text/>
++padOpt(" -<xsl:value-of select="."/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "" )<xsl:text/>
        </xsl:if>
      </xsl:for-each>
-+padOpt("-<xsl:value-of select="alias[last()]"/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "<xsl:apply-templates mode="desc" select="short_desc"/>" )<xsl:text/>
++padOpt(" -<xsl:value-of select="alias[last()]"/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "<xsl:apply-templates mode="desc" select="short_desc"/>" )<xsl:text/>
   </xsl:template>
 
 <!--* INT_OPTION *******************************************************-->
@@ -67,6 +67,26 @@ public class Usage extends UsageBase {
 +padOpt("<xsl:for-each select="alias"> -<xsl:value-of select="."/><xsl:text></xsl:text><xsl:call-template name="arg-label"/></xsl:for-each>", "<xsl:apply-templates mode="desc" select="short_desc"/>" )<xsl:text/>
   </xsl:template>
 
+<!--* STRING_OPTION *******************************************************-->
+  <xsl:template mode="usage" match="stringopt">
+    <xsl:for-each select="alias">
+      <xsl:if test="position() != last()">
++padOpt(" -<xsl:value-of select="."/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "" )<xsl:text/>
+       </xsl:if>
+     </xsl:for-each>
++padOpt(" -<xsl:value-of select="alias[last()]"/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "<xsl:apply-templates mode="desc" select="short_desc"/>" )<xsl:text/>
+  </xsl:template>
+
+<!--* ARGFILE_OPTION *******************************************************-->
+  <xsl:template mode="usage" match="argfileopt">
++padOpt(" @<xsl:call-template name="arg-label"/>", "" )<xsl:text/>
+    <xsl:for-each select="alias">
+      <xsl:if test="position() != last()">
++padOpt(" -<xsl:value-of select="."/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "" )<xsl:text/>
+       </xsl:if>
+     </xsl:for-each>
++padOpt(" -<xsl:value-of select="alias[last()]"/><xsl:text> </xsl:text><xsl:call-template name="arg-label"/>", "<xsl:apply-templates mode="desc" select="short_desc"/>" )<xsl:text/>
+  </xsl:template>
 
 <!-- code to justify comments -->
   <xsl:template name="wrap-string">

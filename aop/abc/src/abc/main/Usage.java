@@ -36,9 +36,7 @@ public class Usage {
     "   -or- abc <abc_options> <filenames>\n\n" +
     "   where a useful <java_option> is -Xmx512M, to provide a large heap\n" +
     "     and <filenames> should end in .java or .aj .\n\n" +
-    "   <abc_options> are listed below, where \n" +
-    "      [ajc] indicates an option also available for ajc, and \n" +
-    "      [abc] indicates an option specific to abc.\n" 
+    "   <abc_options> are listed below.\n"
     );
   }
   
