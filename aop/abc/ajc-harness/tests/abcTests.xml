@@ -3575,6 +3575,7 @@
 
     <ajc-test dir="new" pr="208"
       title="! modifier and char in pointcut (no longer an error)"
+      abccomment="NPE in matcher. ODM 16/07/04"
       keywords="from-resolved_10x">
         <compile files="NotCharInPointcut.java"/>
         <run class="NotCharInPointcut"/>
@@ -7192,7 +7193,9 @@
 
     <ajc-test dir="bugs/cflowAndJar" pr="39462"
    	 title="Compiler crashes in jar and cflow (with .jar)"
+         abccomment = "aspectpath tests should be skipped. ODM 16/07/04"
    	 comment="make lib.jar with ajc -outjar lib.jar AbstractAspect.aj">
+        <abckeywords> <skip/> </abckeywords>
         <compile files="TestAspect.aj,Test.java" aspectpath="lib.jar">
         	<message kind="warning" line="16"/>
         </compile>
@@ -7888,15 +7891,19 @@
     </ajc-test>
     
     <ajc-test dir="bugs/binaryCompat" pr="50641"
+      abccomment= "abc does not support binary compatibility. ODM 16/07/04"
       title="binary compatibility of advice method names - expect no error 1">
         <compile files="Main.java,TraceV1.aj"/>
+        <abckeywords> <skip/> </abckeywords>
         <run class="Main"/>
         <compile files="TraceV2.aj"/>
         <run class="Main"/>
     </ajc-test>
    
     <ajc-test dir="bugs/binaryCompat" pr="50641"
+      abccomment = "abc does not support binary compatibility. ODM 16/07/04"
       title="binary compatibility of advice method names - expect error">
+      <abckeywords> <skip/> </abckeywords>
         <compile files="Main.java,TraceV1.aj"/>
         <run class="Main"/>
         <compile files="TraceRE.aj"/>
@@ -7904,8 +7911,9 @@
     </ajc-test>
     
      <ajc-test dir="bugs/binaryCompat" pr="50641"
-      abccomment="crash in jasmin upon second compilation. Sent to Jennifer 14/07/04. ODM"
+      abccomment="abc does not support binary compatibility. ODM 16/07/04"
       title="binary compatibility of advice method names - expect no error 2">
+        <abckeywords> <skip/> </abckeywords>
         <compile files="Main.java,TraceWithInnerV1.aj"/>
         <run class="Main"/>
         <compile files="TraceWithInnerV2.aj"/>
@@ -7913,6 +7921,8 @@
     </ajc-test>
     
 	<ajc-test dir="bugs/protectedvf"
+         abccomment="Need to make all aspects public prior to jimplification.
+                     ODM 16/07/04"
 		title="mail list VerifyError with protected access">
 		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"/>
 		<run class="main.Driver"/>
