@@ -282,12 +282,12 @@ public class AdviceDecl extends AbstractAdviceDecl {
     		MethodSig ms = (MethodSig) procs.next();
     		// special treatment for around:
     		// ignore the signature because it may have changed
-    		if (ms.getName().startsWith("around$") ||
+    		/*if (ms.getName().startsWith("around$") ||
     			ms.getName().startsWith("<init>")) { // TODO: fix getSootMethod!! this is not safe!!
     			SootClass sc = ms.getDeclaringClass().getSootClass();
     			SootMethod method=sc.getMethodByName(ms.getName());
     			ret.add(method);
-    		} else {
+    		} else {*/
     			try {
     				ret.add(ms.getSootMethod());
     			} catch (RuntimeException e) {
@@ -299,7 +299,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
     				}
     				throw new RuntimeException(e.getMessage() + "\n" + msg);
     			}
-    		}
+    		//}
     		
     	}
     	return ret;
