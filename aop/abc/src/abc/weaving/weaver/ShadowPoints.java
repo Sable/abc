@@ -43,6 +43,7 @@ import abc.soot.util.LocalGeneratorEx;
  *   @date 03-May-04
  *   @author Ondrej Lhotak
  *   @date 04-Oct-04
+ *   @author Ganesh Sittampalam
  */
 
 public class ShadowPoints {
@@ -59,24 +60,24 @@ public class ShadowPoints {
      *  will initially be right next to the starting nop.
      */
     public ShadowPoints(SootMethod container,Stmt b, Stmt e){
-        if (b == null) 
+        if (b == null)
             throw new InternalCompilerError("Beginning of shadow point must be non-null");
         if (!(b instanceof NopStmt))
             throw new InternalCompilerError("Beginning of shadow point must be NopStmt");
-        if (e == null) 
+        if (e == null)
             throw new InternalCompilerError("Ending of shadow point must be non-null");
         if(!(e instanceof NopStmt))
             throw new InternalCompilerError("Ending of shadow point must be NopStmt");
         begin = b;
         end = e;
         this.container=container;
-        
+
         { /// debug
-        	if (!container.getActiveBody().getUnits().contains(b))
-        		throw new InternalCompilerError("Method " + container + " does not contain begin shadow point " + b);
-        	if (!container.getActiveBody().getUnits().contains(e))
-        		throw new InternalCompilerError("Method " + container + " does not contain end shadow point " + e);
-        	
+                if (!container.getActiveBody().getUnits().contains(b))
+                        throw new InternalCompilerError("Method " + container + " does not contain begin shadow point " + b);
+                if (!container.getActiveBody().getUnits().contains(e))
+                        throw new InternalCompilerError("Method " + container + " does not contain end shadow point " + e);
+
         }
     }
 
@@ -195,10 +196,10 @@ public class ShadowPoints {
         List/*<SootType>*/ constrTypes=new LinkedList();
 
         constrTypes.add(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"));
-        constrArgs.add(sjpVal.get()); 
+        constrArgs.add(sjpVal.get());
 
         constrTypes.add(object);
-        constrArgs.add(thisVal.get()); 
+        constrArgs.add(thisVal.get());
 
         constrTypes.add(object);
         constrArgs.add(targetVal.get());
@@ -221,6 +222,10 @@ public class ShadowPoints {
         return makeJP;
     }
 
+    public void resetForReweaving() {
+        thisJoinPoint=null;
+    }
+
     private Local thisJoinPoint=null;
     public Local getThisJoinPoint() {
         if(thisJoinPoint==null) {
@@ -232,11 +237,11 @@ public class ShadowPoints {
                 (RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint");
 
             Stmt startJP=Jimple.v().newNopStmt();
-            units.insertBefore(startJP,begin);
+            units.insertBefore(startJP,getBegin());
 
             Stmt assignStmt=Jimple.v().newAssignStmt(thisJoinPoint,NullConstant.v());
             units.insertAfter(assignStmt,startJP);
-            //	    initThisJoinPoint(lg,units,startJP);
+            //      initThisJoinPoint(lg,units,startJP);
         }
         return thisJoinPoint;
     }

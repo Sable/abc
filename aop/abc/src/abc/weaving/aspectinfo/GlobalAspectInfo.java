@@ -36,7 +36,7 @@ import java.util.*;
 import abc.weaving.matching.*;
 
 
-/** All aspect-specific information for an entire program. 
+/** All aspect-specific information for an entire program.
  *  @author Aske Simon Christensen
  *  @author Ganesh Sittampalam
  *  @author Damien Sereni
@@ -47,7 +47,7 @@ public class GlobalAspectInfo {
     public static GlobalAspectInfo v() { return instance; }
 
     public static void reset() {
-	instance = new GlobalAspectInfo();
+        instance = new GlobalAspectInfo();
     }
 
     public static final int PRECEDENCE_NONE = 0;
@@ -58,7 +58,7 @@ public class GlobalAspectInfo {
     private Set/*<AbcClass>*/ classes = new LinkedHashSet();
     private List/*<Aspect>*/ aspects = new ArrayList();
     private Set/*<AbcClass>*/ wovenclasses = new HashSet(); // classes that ITDs have been woven into
-    
+
     private List/*<IntertypeFieldDecl>*/ ifds = new LinkedList(); // because we want to add at the front
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
@@ -68,13 +68,13 @@ public class GlobalAspectInfo {
     private List/*<DeclarePrecedence>*/ dprs = new ArrayList();
 
     private List /*<ClassType>*/ ctmps = new ArrayList();
-    
+
     // Just stored in the ads list instead
     //    private List/*<DeclareSoft>*/ dss = new ArrayList();
-	
-	// additional generated classes that need to be output in the end
-	//private Collection/*<String>*/ generated_classes = new ArrayList();
-	
+
+        // additional generated classes that need to be output in the end
+        //private Collection/*<String>*/ generated_classes = new ArrayList();
+
     private Map/*<AbcClass,Aspect>*/ aspects_map = new HashMap();
     private Map/*<String,Set<PointcutDecl>>*/ pc_map = new HashMap();
     private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();
@@ -85,14 +85,14 @@ public class GlobalAspectInfo {
     private Map/*<MethodSig,AbcClass>*/ method_real_classes = new HashMap();
     private Map/*<MethodSig,Integer>*/ method_skip_first = new HashMap();
     private Map/*<MethodSig,Integer>*/ method_skip_last = new HashMap();
-    
+
     private Map/*<FieldSig,Integer>*/ field_real_mods = new HashMap();
     private Map/*<FieldSig,String>*/ field_real_names = new HashMap();
     private Map/*<FieldSig,AbcClass>*/ field_real_classes = new HashMap();
     private Map/*<MethodSig,FieldSig>*/ accessor_of_field = new HashMap();
-    
+
     private List /*<ErrorInfo>*/nonWeavableClassErrors = new ArrayList();
-   	
+
     /** This method builds the aspect_visibility structure,
      *  which is a mapping from classes and abstract aspects to
      *  the concrete aspects that extend them.
@@ -100,78 +100,78 @@ public class GlobalAspectInfo {
      *  registering the necessary pieces of advice to implement those clauses
      */
     public void buildAspectHierarchy() {
-	// Build the aspect hierarchy
-	Iterator ai = aspects.iterator();
-	while (ai.hasNext()) {
-	    Aspect a = (Aspect)ai.next();
-	    aspect_visibility.put(a, new HashSet());
-	}
+        // Build the aspect hierarchy
+        Iterator ai = aspects.iterator();
+        while (ai.hasNext()) {
+            Aspect a = (Aspect)ai.next();
+            aspect_visibility.put(a, new HashSet());
+        }
 
-	Iterator cai = aspects.iterator();
-	while (cai.hasNext()) {
-	    Aspect ca = (Aspect)cai.next();
-	    if (!ca.getInstanceClass().getSootClass().isAbstract()) {
-		Aspect sa = ca;
-		while (sa != null) {
-		    ((Set)aspect_visibility.get(sa)).add(ca);
-		    sa = (Aspect)aspects_map.get(AbcFactory.AbcClass(sa.getInstanceClass().getSootClass().getSuperclass()));
-		    if(ca.getPer()==null && sa!=null) ca.setPer(sa.getPer());
-		}
-		if(ca.getPer()==null) ca.setPer(new Singleton(ca.getPosition()));
-		ca.getPer().registerSetupAdvice(ca);
-	    }
-	}
+        Iterator cai = aspects.iterator();
+        while (cai.hasNext()) {
+            Aspect ca = (Aspect)cai.next();
+            if (!ca.getInstanceClass().getSootClass().isAbstract()) {
+                Aspect sa = ca;
+                while (sa != null) {
+                    ((Set)aspect_visibility.get(sa)).add(ca);
+                    sa = (Aspect)aspects_map.get(AbcFactory.AbcClass(sa.getInstanceClass().getSootClass().getSuperclass()));
+                    if(ca.getPer()==null && sa!=null) ca.setPer(sa.getPer());
+                }
+                if(ca.getPer()==null) ca.setPer(new Singleton(ca.getPosition()));
+                ca.getPer().registerSetupAdvice(ca);
+            }
+        }
     }
 
-	/* Returns the list of classes into which weaving can take place.
-		 *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
-	 */
-	/*public Collection getGeneratedClasses() {
-		return generated_classes;
-	}*/
-	
+        /* Returns the list of classes into which weaving can take place.
+                 *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
+         */
+        /*public Collection getGeneratedClasses() {
+                return generated_classes;
+        }*/
+
     /** Returns the list of classes into which weaving can take place.
      *  @return a list of {@link abc.weaving.aspectinfo.AbcClass} objects.
      */
     public Set getWeavableClasses() {
-	return classes;
+        return classes;
     }
 
     /** Returns the list of all aspects.
      *  @return a list of {@link abc.weaving.aspectinfo.Aspect} objects.
      */
     public List getAspects() {
-	return aspects;
+        return aspects;
     }
 
     /** Returns the list of all intertype field declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeFieldDecl} objects.
      */
     public List getIntertypeFieldDecls() {
-	return ifds;
+        return ifds;
     }
-    
+
     /** Returns the list of all intertype method declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeMethodDecl} objects.
      */
     public List getIntertypeMethodDecls() {
-	return imds;
+        return imds;
     }
 
     /** Returns the list of all intertype constructor declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeConstructorDecl} objects.
      */
     public List getIntertypeConstructorDecls() {
-	return icds;
+        return icds;
     }
 
     /** Returns the list of all advice declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.AbstractAdviceDecl} objects.
      */
     public List getAdviceDecls() {
-	return ads;
+        return ads;
     }
-    
+
     /** Returns the list of errors about classes which are not currently being woven, but which we would
      * really need to insert accessor methods into. This is populated in the AJTypeSystem and added to
      * the error queue in AspectDecl.typeCheck().
@@ -185,117 +185,117 @@ public class GlobalAspectInfo {
      *  @return a list of {@link abc.weaving.aspectinfo.PointcutDecl} objects.
      */
     public List getPointcutDecls() {
-	return pcds;
+        return pcds;
     }
 
     public PointcutDecl getPointcutDecl(String name, Aspect context) {
-	Set matching_pcds = (Set)pc_map.get(name);
-	Iterator pi = matching_pcds.iterator();
-	while (pi.hasNext()) {
-	    PointcutDecl p = (PointcutDecl)pi.next();
-	    if (!p.isAbstract() && ((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
-		return p;
-	    }
-	}
-	throw new InternalCompilerError("Pointcut "+name+" was not found in "+context);
+        Set matching_pcds = (Set)pc_map.get(name);
+        Iterator pi = matching_pcds.iterator();
+        while (pi.hasNext()) {
+            PointcutDecl p = (PointcutDecl)pi.next();
+            if (!p.isAbstract() && ((Set)aspect_visibility.get(p.getAspect())).contains(context)) {
+                return p;
+            }
+        }
+        throw new InternalCompilerError("Pointcut "+name+" was not found in "+context);
     }
 
     /** Returns the list of all <code>declare parents</code> declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.DeclareParents} objects.
      */
     public List getDeclareParents() {
-	return dps;
+        return dps;
     }
 
     /** Returns the list of all <code>declare precedence</code> declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.DeclarePrecedence} objects.
      */
     public List getDeclarePrecedence() {
-	return dprs;
+        return dprs;
     }
 
     public Aspect getAspect(AbcClass cl) {
-	return (Aspect)aspects_map.get(cl);
+        return (Aspect)aspects_map.get(cl);
     }
 
     public List getClassesToMakePublic() {
         return ctmps;
     }
-    
+
     public void addWeavableClass(AbcClass cl) {
         if(classes.contains(cl)) {
             throw new InternalCompilerError("Attempted to add duplicate anonymous weavable class");
         }
-	classes.add(cl);
+        classes.add(cl);
     }
 
     public void addAspect(Aspect aspct) {
-	if (!aspects_map.containsKey(aspct.getInstanceClass())) {
-	    aspects.add(aspct);
-	    aspects_map.put(aspct.getInstanceClass(),aspct);
-	}
+        if (!aspects_map.containsKey(aspct.getInstanceClass())) {
+            aspects.add(aspct);
+            aspects_map.put(aspct.getInstanceClass(),aspct);
+        }
     }
 
     public void addIntertypeFieldDecl(IntertypeFieldDecl ifd) {
-	ifds.add(0,ifd); // order is important, because of initialisers
+        ifds.add(0,ifd); // order is important, because of initialisers
     }
 
     public void addIntertypeMethodDecl(IntertypeMethodDecl imd) {
-	imds.add(imd);
+        imds.add(imd);
     }
-    
+
     public void addIntertypeConstructorDecl(IntertypeConstructorDecl imd) {
-	icds.add(imd);
+        icds.add(imd);
     }
 
     public void addAdviceDecl(AbstractAdviceDecl ad) {
-	ads.add(ad);
+        ads.add(ad);
     }
 
     public void addPointcutDecl(PointcutDecl pcd) {
-	pcds.add(pcd);
-	String name = pcd.getName();
-	if (!pc_map.containsKey(name)) {
-	    pc_map.put(name, new HashSet());
-	}
-	((Set)pc_map.get(name)).add(pcd);
+        pcds.add(pcd);
+        String name = pcd.getName();
+        if (!pc_map.containsKey(name)) {
+            pc_map.put(name, new HashSet());
+        }
+        ((Set)pc_map.get(name)).add(pcd);
     }
 
     public void addDeclareParents(DeclareParents dp) {
-	dps.add(dp);
+        dps.add(dp);
     }
 
     public void addDeclarePrecedence(DeclarePrecedence dpr) {
-	dprs.add(dpr);
+        dprs.add(dpr);
     }
 
     public void addDeclareMessage(DeclareMessage dm) {
-	ads.add(dm);
+        ads.add(dm);
     }
 
     public void addDeclareSoft(DeclareSoft ds) {
-	ads.add(ds);
+        ads.add(ds);
     }
 
-	public void addClassToMakePublic(ClassType c) {
-	    ctmps.add(c);
-	}
-	
-	public void addClassNotWeavableError(ErrorInfo ei) {
-	    nonWeavableClassErrors.add(ei);
-	}
-	
+        public void addClassToMakePublic(ClassType c) {
+            ctmps.add(c);
+        }
+
+        public void addClassNotWeavableError(ErrorInfo ei) {
+            nonWeavableClassErrors.add(ei);
+        }
+
     public void print(java.io.PrintStream p) {
-	p.println();
-	printSet(p, classes, "Classes:");
-	printList(p, aspects, "Aspects:");
-	printList(p, ifds, "Intertype field decls:");
-	printList(p, imds, "Intertype method decls:");
-	printList(p, icds, "Intertype constructor decls:");
-	printList(p, ads, "Advice decls:");
-	printList(p, pcds, "Pointcut decls:");
-	printList(p, dps, "Declare parents:");
-	printList(p, dprs, "Declare precedence:");
+        p.println();
+        printSet(p, classes, "Classes:");
+        printList(p, aspects, "Aspects:");
+        printList(p, ifds, "Intertype field decls:");
+        printList(p, imds, "Intertype method decls:");
+        printList(p, icds, "Intertype constructor decls:");
+        printList(p, ads, "Advice decls:");
+        printList(p, pcds, "Pointcut decls:");
+        printList(p, dps, "Declare parents:");
+        printList(p, dprs, "Declare precedence:");
     }
 
     private void printList(java.io.PrintStream p, List l, String name) {
@@ -323,10 +323,10 @@ public class GlobalAspectInfo {
     private Map/*<Aspect,Set<Aspect>>*/ prec_rel = new HashMap();
 
     public void initPrecedenceRelation(Map prec_rel) {
-	this.prec_rel = prec_rel;
+        this.prec_rel = prec_rel;
     }
 
-    /** Get the precedence relationship between two aspect names, 
+    /** Get the precedence relationship between two aspect names,
      *  just using declare precedence relations
      *  @param a the name of the first aspect.
      *  @param b the name of the second aspect.
@@ -337,18 +337,18 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(String a, String b) {
-	int prec;
-	if (!prec_rel.containsKey(a) || !prec_rel.containsKey(b))
-	    return PRECEDENCE_NONE;
+        int prec;
+        if (!prec_rel.containsKey(a) || !prec_rel.containsKey(b))
+            return PRECEDENCE_NONE;
 
-	boolean ab = ((Set)prec_rel.get(a)).contains(b);
-	boolean ba = ((Set)prec_rel.get(b)).contains(a);
-	return ab ?
-	    ba ? PRECEDENCE_CONFLICT : PRECEDENCE_FIRST :
-	    ba ? PRECEDENCE_SECOND : PRECEDENCE_NONE;
+        boolean ab = ((Set)prec_rel.get(a)).contains(b);
+        boolean ba = ((Set)prec_rel.get(b)).contains(a);
+        return ab ?
+            ba ? PRECEDENCE_CONFLICT : PRECEDENCE_FIRST :
+            ba ? PRECEDENCE_SECOND : PRECEDENCE_NONE;
     }
 
-    /** Get the precedence relationship between two aspects, 
+    /** Get the precedence relationship between two aspects,
      * using both declare precedence relations and aspect inheritance
      *  @param a the first aspect.
      *  @param b the second aspect.
@@ -359,282 +359,295 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(Aspect a, Aspect b) {
-	//	System.out.println("Comparing precedence of "+a.getName()+" and "+b.getName());
+        //      System.out.println("Comparing precedence of "+a.getName()+" and "+b.getName());
 
-	int prec=getPrecedence(a.getName(), b.getName());
-	if(prec!=PRECEDENCE_NONE) return prec;
+        int prec=getPrecedence(a.getName(), b.getName());
+        if(prec!=PRECEDENCE_NONE) return prec;
 
-	//	System.out.println("Trying inheritance");
+        //      System.out.println("Trying inheritance");
 
-	// Can't use aspect_visibility since that just maps to concrete aspects.
-	// So just walk up from each one to try to find the other.
+        // Can't use aspect_visibility since that just maps to concrete aspects.
+        // So just walk up from each one to try to find the other.
 
-	Aspect sa=a;
-	while(sa!=null) {
-	    sa=(Aspect)aspects_map.get(AbcFactory.AbcClass
-				       (sa.getInstanceClass().getSootClass().getSuperclass()));
-	    if(sa==b) return PRECEDENCE_FIRST;
-	}
+        Aspect sa=a;
+        while(sa!=null) {
+            sa=(Aspect)aspects_map.get(AbcFactory.AbcClass
+                                       (sa.getInstanceClass().getSootClass().getSuperclass()));
+            if(sa==b) return PRECEDENCE_FIRST;
+        }
 
-	Aspect sb=b;
-	while(sb!=null) {
-	    sb=(Aspect)aspects_map.get(AbcFactory.AbcClass
-				       (sb.getInstanceClass().getSootClass().getSuperclass()));
-	    if(sb==a) return PRECEDENCE_SECOND;
-	}
-	return PRECEDENCE_NONE;
+        Aspect sb=b;
+        while(sb!=null) {
+            sb=(Aspect)aspects_map.get(AbcFactory.AbcClass
+                                       (sb.getInstanceClass().getSootClass().getSuperclass()));
+            if(sb==a) return PRECEDENCE_SECOND;
+        }
+        return PRECEDENCE_NONE;
     }
 
     public void sinkAdviceDecls() {
-	List/*<AbstractAdviceDecl>*/ newAds=new LinkedList();
-	Iterator it=ads.iterator();
-	while(it.hasNext()) {
-	    AbstractAdviceDecl ad=(AbstractAdviceDecl) it.next();
-	    if(ad.getAspect().getInstanceClass().getSootClass().isAbstract()) {
-		Set/*<Aspect>*/ concreteset=(Set) aspect_visibility.get(ad.getAspect());
-		Iterator concreteit=concreteset.iterator();
-		while(concreteit.hasNext()) {
-		    Aspect concrete=(Aspect) concreteit.next();
-		    newAds.add(ad.makeCopyInAspect(concrete));
-		}
-	    }
-	    else newAds.add(ad);
-	}
-	ads=newAds;
+        List/*<AbstractAdviceDecl>*/ newAds=new LinkedList();
+        Iterator it=ads.iterator();
+        while(it.hasNext()) {
+            AbstractAdviceDecl ad=(AbstractAdviceDecl) it.next();
+            if(ad.getAspect().getInstanceClass().getSootClass().isAbstract()) {
+                Set/*<Aspect>*/ concreteset=(Set) aspect_visibility.get(ad.getAspect());
+                Iterator concreteit=concreteset.iterator();
+                while(concreteit.hasNext()) {
+                    Aspect concrete=(Aspect) concreteit.next();
+                    newAds.add(ad.makeCopyInAspect(concrete));
+                }
+            }
+            else newAds.add(ad);
+        }
+        ads=newAds;
     }
 
     private Hashtable /*<SootMethod,MethodAdviceList>*/ adviceLists=null;
 
     /** Computes the lists of advice application points for all weavable classes */
     public void computeAdviceLists() throws SemanticException {
-	sinkAdviceDecls();
+        sinkAdviceDecls();
 
-	// manual iterator because we want to add things as we go
-	for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
+        // manual iterator because we want to add things as we go
+        for(int i=0;i<ads.size();i++) ((AbstractAdviceDecl) (ads.get(i))).preprocess();
 
-	// We may now need to remove some unused CFlowSetups (the CSE for sharing CFlowSetups
-	// can make CFS instance redundant - if we have cfs1 and we want cfs2, and they can be
-	// unified to cfs3, then all pcs using cfs1 are changed to use cfs3, making cfs1 redundant)
-	int i = 0;
-	while (i < ads.size()) {
-		if (ads.get(i) instanceof CflowSetup) {
-			CflowSetup cfs = (CflowSetup)ads.get(i);
-			if (cfs.isUsed()) {
-				// Don't do anything
-				i++;
-			} else {
-				// Remove it, but don't increment i as ads(i) will now be
-				// the next advice on the list
-				ads.remove(i);
-				if (abc.main.Debug.v().debugCflowSharing)
-					System.out.println("Removed CflowSetup: \n"+cfs.getPointcut());
-			}
-		} else i++;
-	}
-	
-	adviceLists=abc.weaving.matching.AdviceApplication.computeAdviceLists(this);
+        // We may now need to remove some unused CFlowSetups (the CSE for sharing CFlowSetups
+        // can make CFS instance redundant - if we have cfs1 and we want cfs2, and they can be
+        // unified to cfs3, then all pcs using cfs1 are changed to use cfs3, making cfs1 redundant)
+        int i = 0;
+        while (i < ads.size()) {
+                if (ads.get(i) instanceof CflowSetup) {
+                        CflowSetup cfs = (CflowSetup)ads.get(i);
+                        if (cfs.isUsed()) {
+                                // Don't do anything
+                                i++;
+                        } else {
+                                // Remove it, but don't increment i as ads(i) will now be
+                                // the next advice on the list
+                                ads.remove(i);
+                                if (abc.main.Debug.v().debugCflowSharing)
+                                        System.out.println("Removed CflowSetup: \n"+cfs.getPointcut());
+                        }
+                } else i++;
+        }
+
+        adviceLists=abc.weaving.matching.AdviceApplication.computeAdviceLists(this);
     }
 
     /** Returns the list of AdviceApplication structures for the given method */
     public MethodAdviceList getAdviceList(SootMethod m) {
 
-	if(adviceLists==null) 
-	    throw new InternalCompilerError
-		("Must compute advice lists before trying to get them");
+        if(adviceLists==null)
+            throw new InternalCompilerError
+                ("Must compute advice lists before trying to get them");
 
-	return (MethodAdviceList) adviceLists.get(m);
+        return (MethodAdviceList) adviceLists.get(m);
     }
 
     private Hashtable/*<SootMethod,List<SJPInfo>*/ sjpInfoLists=new Hashtable();
     public void addSJPInfo(SootMethod method,SJPInfo sjpInfo) {
-	List/*<SJPInfo>*/ list;
-	if(sjpInfoLists.containsKey(method)) {
-	    list = (List) sjpInfoLists.get(method);
-	} else {
-	    list = new LinkedList();
-	    sjpInfoLists.put(method,list);
-	}
-	list.add(sjpInfo);
+        List/*<SJPInfo>*/ list;
+        if(sjpInfoLists.containsKey(method)) {
+            list = (List) sjpInfoLists.get(method);
+        } else {
+            list = new LinkedList();
+            sjpInfoLists.put(method,list);
+        }
+        list.add(sjpInfo);
     }
     public List/*<SJPInfo>*/ getSJPInfoList(SootMethod method) {
-	if(sjpInfoLists.containsKey(method)) {
-	    return (List) sjpInfoLists.get(method);
-	} else {
-	    return new LinkedList();
-	}
+        if(sjpInfoLists.containsKey(method)) {
+            return (List) sjpInfoLists.get(method);
+        } else {
+            return new LinkedList();
+        }
+    }
+
+    public List/*<ShadowMatch>*/ getShadowMatchList(SootMethod method) {
+        LinkedList res=new LinkedList();
+        res.addAll(getStmtShadowMatchList(method));
+        res.addAll(getInterfaceInitializationShadowMatchList(method));
+        ShadowMatch esm=getExecutionShadowMatch(method);
+        if(esm!=null) res.add(esm);
+        ShadowMatch cism=getClassInitializationShadowMatch(method);
+        if(cism!=null) res.add(cism);
+        ShadowMatch pism=getPreinitializationShadowMatch(method);
+        if(pism!=null) res.add(pism);
+        return res;
     }
 
     private Hashtable/*<SootMethod,List<StmtShadowMatch>*/ stmtShadowMatchLists=new Hashtable();
     public List/*<StmtShadowMatch>*/ getStmtShadowMatchList(SootMethod method) {
-	if(stmtShadowMatchLists.containsKey(method)) {
-	    return (List) stmtShadowMatchLists.get(method);
-	} else {
-	    return new LinkedList();
-	}
+        if(stmtShadowMatchLists.containsKey(method)) {
+            return (List) stmtShadowMatchLists.get(method);
+        } else {
+            return new LinkedList();
+        }
     }
 
-    private Hashtable/*<SootMethod,List<InterfaceInitializationShadowMatch>*/ 
-	interfaceinitShadowMatchLists=new Hashtable();
+    private Hashtable/*<SootMethod,List<InterfaceInitializationShadowMatch>*/
+        interfaceinitShadowMatchLists=new Hashtable();
     public List/*<StmtShadowMatch>*/ getInterfaceInitializationShadowMatchList(SootMethod method) {
-	if(interfaceinitShadowMatchLists.containsKey(method)) {
-	    return (List) interfaceinitShadowMatchLists.get(method);
-	} else {
-	    return new LinkedList();
-	}
+        if(interfaceinitShadowMatchLists.containsKey(method)) {
+            return (List) interfaceinitShadowMatchLists.get(method);
+        } else {
+            return new LinkedList();
+        }
     }
 
-    private Hashtable/*<SootMethod,ExecutionShadowMatch>*/ 
-	executionShadowMatches=new Hashtable();
-    private Hashtable/*<SootMethod,PreintializationShadowMatch>*/ 
-	preinitShadowMatches=new Hashtable();
-    private Hashtable/*<SootMethod,ClassInitializationShadowMatch>*/ 
-	classinitShadowMatches=new Hashtable();
+    private Hashtable/*<SootMethod,ExecutionShadowMatch>*/
+        executionShadowMatches=new Hashtable();
+    private Hashtable/*<SootMethod,PreintializationShadowMatch>*/
+        preinitShadowMatches=new Hashtable();
+    private Hashtable/*<SootMethod,ClassInitializationShadowMatch>*/
+        classinitShadowMatches=new Hashtable();
 
 
     public ExecutionShadowMatch getExecutionShadowMatch(SootMethod method) {
-	return (ExecutionShadowMatch) executionShadowMatches.get(method);
+        return (ExecutionShadowMatch) executionShadowMatches.get(method);
     }
     public ClassInitializationShadowMatch getClassInitializationShadowMatch(SootMethod method) {
-	return (ClassInitializationShadowMatch) classinitShadowMatches.get(method);
+        return (ClassInitializationShadowMatch) classinitShadowMatches.get(method);
     }
     public PreinitializationShadowMatch getPreinitializationShadowMatch(SootMethod method) {
-	return (PreinitializationShadowMatch) preinitShadowMatches.get(method);
+        return (PreinitializationShadowMatch) preinitShadowMatches.get(method);
     }
 
     public void addShadowMatch(SootMethod method,ShadowMatch sm) {
-	if(sm instanceof StmtShadowMatch) {
-	    List/*<StmtShadowMatch>*/ list;
-	    if(stmtShadowMatchLists.containsKey(method)) {
-		list = (List) stmtShadowMatchLists.get(method);
-	    } else {
-		list = new LinkedList();
-		stmtShadowMatchLists.put(method,list);
-	    }
-	    list.add(sm);
-	} else if(sm instanceof InterfaceInitializationShadowMatch) {
-	    List/*<InterfaceInitializationShadowMatch>*/ list;
-	    if(interfaceinitShadowMatchLists.containsKey(method)) {
-		list = (List) interfaceinitShadowMatchLists.get(method);
-	    } else {
-		list = new LinkedList();
-		interfaceinitShadowMatchLists.put(method,list);
-	    }
-	    list.add(sm);
-	} else if(sm instanceof ExecutionShadowMatch) {
-	    if(executionShadowMatches.containsKey(method))
-		throw new InternalCompilerError
-		    ("Something tried to record two ExecutionShadowMatches for method "+method);
-	    executionShadowMatches.put(method,sm);
-	} else if(sm instanceof PreinitializationShadowMatch) {
-	    if(preinitShadowMatches.containsKey(method))
-		throw new InternalCompilerError
-		    ("Something tried to record two PreinitializationShadowMatches for method "+method);
-	    preinitShadowMatches.put(method,sm);
-	} else if(sm instanceof ClassInitializationShadowMatch) {
-	    if(classinitShadowMatches.containsKey(method))
-		throw new InternalCompilerError
-		    ("Something tried to record two ClassInitializationShadowMatches for method "+method);
-	    classinitShadowMatches.put(method,sm);
-	} else throw new InternalCompilerError
-	      ("Unknown ShadowMatch type "+sm+" for method "+method);
+        if(sm instanceof StmtShadowMatch) {
+            List/*<StmtShadowMatch>*/ list;
+            if(stmtShadowMatchLists.containsKey(method)) {
+                list = (List) stmtShadowMatchLists.get(method);
+            } else {
+                list = new LinkedList();
+                stmtShadowMatchLists.put(method,list);
+            }
+            list.add(sm);
+        } else if(sm instanceof InterfaceInitializationShadowMatch) {
+            List/*<InterfaceInitializationShadowMatch>*/ list;
+            if(interfaceinitShadowMatchLists.containsKey(method)) {
+                list = (List) interfaceinitShadowMatchLists.get(method);
+            } else {
+                list = new LinkedList();
+                interfaceinitShadowMatchLists.put(method,list);
+            }
+            list.add(sm);
+        } else if(sm instanceof ExecutionShadowMatch) {
+            if(executionShadowMatches.containsKey(method))
+                throw new InternalCompilerError
+                    ("Something tried to record two ExecutionShadowMatches for method "+method);
+            executionShadowMatches.put(method,sm);
+        } else if(sm instanceof PreinitializationShadowMatch) {
+            if(preinitShadowMatches.containsKey(method))
+                throw new InternalCompilerError
+                    ("Something tried to record two PreinitializationShadowMatches for method "+method);
+            preinitShadowMatches.put(method,sm);
+        } else if(sm instanceof ClassInitializationShadowMatch) {
+            if(classinitShadowMatches.containsKey(method))
+                throw new InternalCompilerError
+                    ("Something tried to record two ClassInitializationShadowMatches for method "+method);
+            classinitShadowMatches.put(method,sm);
+        } else throw new InternalCompilerError
+              ("Unknown ShadowMatch type "+sm+" for method "+method);
     }
 
     public void registerMethodCategory(MethodSig sig, int cat) {
-	//System.out.println("Method registered: "+sig+" ("+cat+")");
-	method_categories.put(sig, new Integer(cat));
+        //System.out.println("Method registered: "+sig+" ("+cat+")");
+        method_categories.put(sig, new Integer(cat));
     }
 
     public int getMethodCategory(MethodSig sig) {
-	if (method_categories.containsKey(sig)) {
-	    return ((Integer)method_categories.get(sig)).intValue();
-	} else {
-	    return MethodCategory.NORMAL;
-	}
+        if (method_categories.containsKey(sig)) {
+            return ((Integer)method_categories.get(sig)).intValue();
+        } else {
+            return MethodCategory.NORMAL;
+        }
     }
 
     public void registerRealNameAndClass(MethodSig sig, int mods, String real_name, AbcClass real_class,
-					 int skip_first, int skip_last) {
-	//System.out.println("Method registered: "+sig+" ("+cat+")");
-	method_real_mods.put(sig, new Integer(mods));
-	method_real_names.put(sig, real_name);
-	method_real_classes.put(sig, real_class);
-	method_skip_first.put(sig, new Integer(skip_first));
-	method_skip_last.put(sig, new Integer(skip_last));
+                                         int skip_first, int skip_last) {
+        //System.out.println("Method registered: "+sig+" ("+cat+")");
+        method_real_mods.put(sig, new Integer(mods));
+        method_real_names.put(sig, real_name);
+        method_real_classes.put(sig, real_class);
+        method_skip_first.put(sig, new Integer(skip_first));
+        method_skip_last.put(sig, new Integer(skip_last));
     }
 
     public int getRealModifiers(MethodSig sig, int defmods) {
-	if (method_real_mods.containsKey(sig)) {
-	    return ((Integer)method_real_mods.get(sig)).intValue();
-	} else {
-	    return defmods;
-	}
+        if (method_real_mods.containsKey(sig)) {
+            return ((Integer)method_real_mods.get(sig)).intValue();
+        } else {
+            return defmods;
+        }
     }
 
     public String getRealName(MethodSig sig) {
-	return (String)method_real_names.get(sig);
+        return (String)method_real_names.get(sig);
     }
 
     public AbcClass getRealClass(MethodSig sig) {
-	return (AbcClass)method_real_classes.get(sig);
+        return (AbcClass)method_real_classes.get(sig);
     }
 
     public int getSkipFirst(MethodSig sig) {
-	if (method_skip_first.containsKey(sig)) {
-	    return ((Integer)method_skip_first.get(sig)).intValue();
-	} else {
-	    return 0;
-	}
+        if (method_skip_first.containsKey(sig)) {
+            return ((Integer)method_skip_first.get(sig)).intValue();
+        } else {
+            return 0;
+        }
     }
 
     public int getSkipLast(MethodSig sig) {
-	if (method_skip_last.containsKey(sig)) {
-	    return ((Integer)method_skip_last.get(sig)).intValue();
-	} else {
-	    return 0;
-	}
+        if (method_skip_last.containsKey(sig)) {
+            return ((Integer)method_skip_last.get(sig)).intValue();
+        } else {
+            return 0;
+        }
     }
-    
-	public void registerRealNameAndClass(FieldSig sig, int mods, String real_name, AbcClass real_class) {
-	  field_real_mods.put(sig, new Integer(mods));
-	  field_real_names.put(sig, real_name);
-	  field_real_classes.put(sig, real_class);
-	}
-	
-	public int getRealModifiers(FieldSig sig, int defmods) {
-	  if (field_real_mods.containsKey(sig)) {
-		  return ((Integer)field_real_mods.get(sig)).intValue();
-	  } else {
-		  return defmods;
-	  }
-	}
-	
-	public String getRealName(FieldSig sig) {
-	  return (String)field_real_names.get(sig);
-	}
-	
-	public AbcClass getRealClass(FieldSig sig) {
-	  return (AbcClass)field_real_classes.get(sig);
-	}
-	
-	public FieldSig getField(MethodSig sig) {
-		return (FieldSig) accessor_of_field.get(sig);
-	}
-	
-	public void registerFieldAccessor(FieldSig fs, MethodSig ms) {
-		accessor_of_field.put(ms,fs);
-	}
 
-	public void registerWeave(AbcClass cl) {
-		wovenclasses.add(cl);
-	}
-	
-	public Set getWovenClasses() {
-		return wovenclasses;
-	}
-	
-	public void registerSourceClass(AbcClass cl) {
-		wovenclasses.remove(cl);
-	}
-  
+        public void registerRealNameAndClass(FieldSig sig, int mods, String real_name, AbcClass real_class) {
+          field_real_mods.put(sig, new Integer(mods));
+          field_real_names.put(sig, real_name);
+          field_real_classes.put(sig, real_class);
+        }
+
+        public int getRealModifiers(FieldSig sig, int defmods) {
+          if (field_real_mods.containsKey(sig)) {
+                  return ((Integer)field_real_mods.get(sig)).intValue();
+          } else {
+                  return defmods;
+          }
+        }
+
+        public String getRealName(FieldSig sig) {
+          return (String)field_real_names.get(sig);
+        }
+
+        public AbcClass getRealClass(FieldSig sig) {
+          return (AbcClass)field_real_classes.get(sig);
+        }
+
+        public FieldSig getField(MethodSig sig) {
+                return (FieldSig) accessor_of_field.get(sig);
+        }
+
+        public void registerFieldAccessor(FieldSig fs, MethodSig ms) {
+                accessor_of_field.put(ms,fs);
+        }
+
+        public void registerWeave(AbcClass cl) {
+                wovenclasses.add(cl);
+        }
+
+        public Set getWovenClasses() {
+                return wovenclasses;
+        }
+
+        public void registerSourceClass(AbcClass cl) {
+                wovenclasses.remove(cl);
+        }
+
 
 }

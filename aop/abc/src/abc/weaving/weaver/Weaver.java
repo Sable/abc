@@ -46,42 +46,62 @@ public class Weaver {
       }
     static private Map unitBindings = new HashMap();
     private static boolean doCflowOptimization = true;
-    
+
     static public void reset() {
-    	unitBindings=new HashMap();
-    	doCflowOptimization=true;
+        unitBindings=new HashMap();
+        doCflowOptimization=true;
     }
-    
+
     static public Map getUnitBindings() {
-    	return unitBindings;
+        return unitBindings;
     }
     static public Unit rebind(Unit ut) {
-    	Unit result=(Unit)unitBindings.get(ut);
-    	if (result!=null)
-    		return result;
-    	else
-    		return ut;
+        Unit result=(Unit)unitBindings.get(ut);
+        if (result!=null)
+                return result;
+        else
+                return ut;
     }
     static public void resetResiduesForReweaving() {
-    	//debug("resetResiduesForReweaving");
-    	for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        //debug("resetResiduesForReweaving");
+        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
-            
+
                 MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
-                if (adviceList!=null) {			
-          //      	debug("found advice list for " + method);
-                	Iterator appIt=adviceList.allAdvice().iterator();
-                	while (appIt.hasNext()) {
-                		AdviceApplication appl=(AdviceApplication)appIt.next();
-            //    		debug(" " + appl.getResidue());
-                		appl.getResidue().resetForReweaving();
-                	}
+                if (adviceList!=null) {
+          //            debug("found advice list for " + method);
+                        Iterator appIt=adviceList.allAdvice().iterator();
+                        while (appIt.hasNext()) {
+                                AdviceApplication appl=(AdviceApplication)appIt.next();
+            //                  debug(" " + appl.getResidue());
+                                appl.getResidue().resetForReweaving();
+                        }
                 }
             }
         }
     }
+    // Iterate through all ShadowPoints structures and reset them
+    // In practice most will be thrown away later,
+    // but InterfaceInitialization ones won't and to keep things robust
+    // just reset the lot.
+    static public void resetShadowPointsForReweaving() {
+        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                final SootMethod method = (SootMethod) methodIt.next();
+
+                List/*<ShadowMatch>*/ shadowList=GlobalAspectInfo.v().getShadowMatchList(method);
+                Iterator smIt=shadowList.iterator();
+                while (smIt.hasNext()) {
+                    ShadowMatch sm=(ShadowMatch) smIt.next();
+                    if(sm.sp!=null) sm.sp.resetForReweaving();
+                }
+            }
+        }
+    }
+
         static public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
@@ -109,6 +129,7 @@ public class Weaver {
                     debug("unweaver restored state");
                     AroundWeaver.reset();
                     resetResiduesForReweaving();
+                    resetShadowPointsForReweaving();
                     weaveAdvice();
                     debug("after weaveAdvice");
                     //if (true==true) return; ///
@@ -116,6 +137,7 @@ public class Weaver {
                     debug("unweaver restored state (2)");
                     AroundWeaver.reset();
                     resetResiduesForReweaving();
+                    resetShadowPointsForReweaving();
                     //throw new RuntimeException("just a test");
                 }
                 weaveAdvice();
