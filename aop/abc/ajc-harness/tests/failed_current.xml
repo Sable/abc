@@ -3,9 +3,13 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
-<ajc-test title="checks if the class field can be used on all of the primitive types" pr="109" keywords="from-java,purejava" dir="new" abccomment="works for ajc, jlc                      doesn't work for j2j or abc                     file ClassFieldOnPrimitiveTypeLJH.java sent to Jennifer                        June 30/04 LJH                     FIXED July 1/04 LJH">
-        <compile files="ClassFieldOnPrimitiveType.java"></compile>
-        <run class="ClassFieldOnPrimitiveType"></run>
+<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
+        <compile files="NestedInners.java"></compile>
+        <run class="NestedInners"></run>
+    </ajc-test>
+<ajc-test title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" keywords="from-java" dir="pureJava">
+        <compile files="MisplacedThisInAnnonymousInnerClasses.java"></compile>
+        <run class="MisplacedThisInAnnonymousInnerClasses"></run>
     </ajc-test>
 <ajc-test title="Not binding constructor when using more than one compilation" pr="408" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
         <compile files="OuterAbstract_PR408.java"></compile>
@@ -466,6 +470,10 @@
         <compile files="PR559.java"></compile>
         <run class="PR559"></run>
     </ajc-test>
+<ajc-test title="anon class written to wrong directory" pr="569" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
+        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
+        <run class="a.IntroAnon"></run>
+    </ajc-test>
 <ajc-test title="around name-binding in cflows using factorial" pr="677" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="FactorialCflow.java"></compile>
         <run class="FactorialCflow"></run>
@@ -515,6 +523,11 @@
             <message line="15" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="interface using preceding subinterface in its definition" pr="728" keywords="from-resolved_105,purejava" dir="pureJava" abccomment="in abc get IncompatibleClassChangeError. Example sent                   to Jennifer.  July 6/04 LJH">
+        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
+        <compile files="ParentUsingChild.java"></compile>
+        <run class="ParentUsingChild"></run>
+    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
@@ -553,6 +566,10 @@
             <message line="70" kind="error"></message>
             <message line="72" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="subclass access to enclosing super class private members" pr="752" keywords="from-resolved_105,purejava,fail-unimplemented" dir="pureJava">
+        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
+        <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
     </ajc-test>
 <ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
 	    <compile files="java/lang/Object.java,java/lang/String.java">
@@ -693,10 +710,6 @@
         <compile files="CflowBinding.java">
           <message line="13" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="assert and pertarget crashes compiler" pr="28703" dir="bugs">
-        <compile options="-source,1.4" files="EnsureOverriding.java"></compile>
-        <run vm="1.4" class="EnsureOverriding"></run>
     </ajc-test>
 <ajc-test title="inter-type fields with array types" pr="29113" dir="bugs">
         <compile files="InterFieldArrays.java"></compile>
@@ -986,10 +999,6 @@
             <message line="29" kind="warning"></message>        
             <message line="30" kind="warning"></message>            
         </compile>
-    </ajc-test>
-<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
-        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
-        <run vm="1.4" class="ClassLiteralField"></run>
     </ajc-test>
 <ajc-test title="aspect-declared interface members in libraries - aspectedInterfaceOnly.jar,aspectOnly.jar" dir="new/interfaceLibrary" comment="weaving required for implementations of interface?             XXX Would prefer to support javac compiles of Client here, mimicked with classpath only" abccomment="only type error, but ok. ODM 19/07/04">
 		<compile files="Client.java" classpath="aspectedInterfaceOnly.jar,aspectOnly.jar">

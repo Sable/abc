@@ -195,6 +195,10 @@
         <compile files="ExceptionNames.java"></compile>
         <run class="ExceptionNames"></run>
     </ajc-test>
+<ajc-test title="checks if the class field can be used on all of the primitive types" pr="109" keywords="from-java,purejava" dir="new" abccomment="works for ajc, jlc                      doesn't work for j2j or abc                     file ClassFieldOnPrimitiveTypeLJH.java sent to Jennifer                        June 30/04 LJH                     FIXED July 1/04 LJH">
+        <compile files="ClassFieldOnPrimitiveType.java"></compile>
+        <run class="ClassFieldOnPrimitiveType"></run>
+    </ajc-test>
 <ajc-test title="advice on a static method" pr="151" keywords="from-java" dir="new/volatileKeyword">
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
@@ -246,10 +250,6 @@
 <ajc-test title="Boundary base values can be parsed" keywords="from-java" dir="pureJava">
         <compile files="BoundaryNums.java"></compile>
         <run class="BoundaryNums"></run>
-    </ajc-test>
-<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
-        <compile files="NestedInners.java"></compile>
-        <run class="NestedInners"></run>
     </ajc-test>
 <ajc-test title="?: expressions should typecheck in interesting ways" keywords="from-java" dir="pureJava">
         <compile files="TriTestTypecheck.java"></compile>
@@ -384,10 +384,6 @@
 <ajc-test title="Fully qualifying inner classes within annonymous classes causes problems." keywords="from-java" dir="pureJava">
         <compile files="InnerClassesInAnnonymousClasses.java"></compile>
         <run class="InnerClassesInAnnonymousClasses"></run>
-    </ajc-test>
-<ajc-test title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" keywords="from-java" dir="pureJava">
-        <compile files="MisplacedThisInAnnonymousInnerClasses.java"></compile>
-        <run class="MisplacedThisInAnnonymousInnerClasses"></run>
     </ajc-test>
 <ajc-test title="Reading inner classes from source and bytecode (1) -- was failing" keywords="from-java" dir="pureJava/innersFromSourceAndBytecode">
         <compile files="C.java,D.java"></compile>
@@ -2577,10 +2573,6 @@
         <compile files="introductionPackage/two/C.java,introductionPackage/one/C.java,introductionPackage/one/Aspect.java,introductionPackage/one/TestAspect.java"></compile>
         <run class="one.TestAspect"></run>
     </ajc-test>
-<ajc-test title="anon class written to wrong directory" pr="569" keywords="from-resolved_104,from-resolved_104" dir="new/PR569">
-        <compile files="a/IntroAnon.java,a/MyInterface.java,b/Dest.java"></compile>
-        <run class="a.IntroAnon"></run>
-    </ajc-test>
 <ajc-test title="unqualified transitive pointcut references not resolved" pr="603" keywords="from-resolved_104" dir="new">
         <compile files="PointcutQualification.java"></compile>
         <run class="PointcutQualification"></run>
@@ -2657,11 +2649,6 @@
 <ajc-test title="file order in type searching" pr="728" keywords="from-resolved_105" dir="new/pr728">
         <compile files="AnotherClass.java,Interface.java"></compile>
         <run class="AnotherClass"></run>
-    </ajc-test>
-<ajc-test title="interface using preceding subinterface in its definition" pr="728" keywords="from-resolved_105,purejava" dir="pureJava" abccomment="in abc get IncompatibleClassChangeError. Example sent                   to Jennifer.  July 6/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile files="ParentUsingChild.java"></compile>
-        <run class="ParentUsingChild"></run>
     </ajc-test>
 <ajc-test title="Parent interface using public inner interface of child in same file" pr="645" keywords="from-resolved_105,purejava" dir="new" abccomment="in abc get IncompatibleClassChangeError. Example sent                   to Jennifer.  July 6/04 LJH">
         <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
@@ -2783,10 +2770,6 @@
 <ajc-test title="Locals inside other locals, ordering of processing [eh]" keywords="from-resolved_105" dir="pureJava" abccomment="Verify error in abc and j2j (when --app used).                   Reported to Jennifer, July 1/04 LJH, Fixed July 2/04">
         <compile files="LocalInners2.java"></compile>
         <run class="LocalInners2"></run>
-    </ajc-test>
-<ajc-test title="subclass access to enclosing super class private members" pr="752" keywords="from-resolved_105,purejava,fail-unimplemented" dir="pureJava">
-        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
-        <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
     </ajc-test>
 <ajc-test title="method-local class defined in around return statement" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
@@ -2938,6 +2921,10 @@
 <ajc-test title="percflow code hangs compiler" pr="28702" dir="bugs">
         <compile files="CloseConnectionsCflow.java">
         </compile>
+    </ajc-test>
+<ajc-test title="assert and pertarget crashes compiler" pr="28703" dir="bugs">
+        <compile options="-source,1.4" files="EnsureOverriding.java"></compile>
+        <run vm="1.4" class="EnsureOverriding"></run>
     </ajc-test>
 <ajc-test title="Verification error tracing constructor that takes arguments" pr="28852" dir="bugs">
         <compile files="ConstructorArgTracing.java"></compile>
@@ -3173,6 +3160,10 @@
 <ajc-test title="Default method impl for interface causes internal exception." pr="40589" dir="bugs">
         <compile files="CloneMethod.java"></compile>
         <run class="CloneMethod"></run>
+    </ajc-test>
+<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" dir="bugs">
+        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
+        <run vm="1.4" class="ClassLiteralField"></run>
     </ajc-test>
 <ajc-test title="compile error expected for abstract pointcut outside abstract aspect" dir="errors" abccomment="better errors from abc. 19/07/04 ODM">
 		<compile files="AbstractPointcutCE.java">
