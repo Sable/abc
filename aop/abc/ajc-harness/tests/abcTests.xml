@@ -1635,6 +1635,7 @@
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
             <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -1917,6 +1918,7 @@
       keywords="from-errors">
         <compile files="MismatchedParens.java">
             <ajcmessage kind="error" line="16"/>
+            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="17"/>
 	    <message kind="error" line="17"/>
@@ -2234,6 +2236,7 @@
                options="!eclipse">
             <ajcmessage kind="error" line="11"/>
             <message kind="error" />
+            <message kind="error" />
             <message kind="error" line="12"/>
         </compile>
     </ajc-test>
@@ -2366,6 +2369,7 @@
     <ajc-test num="261" dir="errors" title="Missing ;" keywords="from-errors,purejava"
          abccomment="Extra error with no line number for parser complaint in abc. PA/AGS">
         <compile files="PR405.java">
+            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="15"/>
         </compile>
@@ -2907,15 +2911,15 @@
     </ajc-test>
 
     <ajc-test num="307" dir="errors" title="parse-time illegal modifiers"
-      abccomment="Third error not found by jlc, file Modifiers1LJH.java
-                  sent to Nate.  July 6/04 LJH"
+      abccomment="abc bails out early, but ok. ODM 18/07/04"
       keywords="from-errors,purejava">
-      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="Modifiers1.java">
-            <message kind="error" line="2"/>
-            <message kind="error" line="3"/>
-            <message kind="error" line="6"/>
-        </compile>
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="3"/>
+            <ajcmessage kind="error" line="6"/>
+            <message kind="error"/>
+            <message kind="error" line="2"/> 
+       </compile>
     </ajc-test>
 
     <ajc-test num="308" dir="errors" title="check-time illegal modifiers"
@@ -2941,6 +2945,7 @@
         <compile files="BadSynchronized.java"
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
+            <message kind="error"/>
             <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
@@ -5466,6 +5471,7 @@
                options="!eclipse">
             <ajcmessage kind="error" line="6"/>
 	    <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
@@ -7870,6 +7876,7 @@
 		-->
 		  <ajcmessage line="12" kind="error" />		
 		  <ajcmessage line="13" kind="error" />
+                  <message kind="error" />
                   <message kind="error" />
                   <message line="13" kind="error" />
 		</compile>
