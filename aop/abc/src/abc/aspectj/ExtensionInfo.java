@@ -64,6 +64,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	
     public static final polyglot.frontend.Pass.ID CLEAN_DECLARE = new polyglot.frontend.Pass.ID("clean-declare");
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
+    public static final polyglot.frontend.Pass.ID STRICTFP_PROP = new polyglot.frontend.Pass.ID("strictfp-prop");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
 
 	public static final polyglot.frontend.Pass.ID ASPECT_PREPARE = new polyglot.frontend.Pass.ID("aspect-prepare");
@@ -220,6 +221,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         // Exceptions are now checked after weaving, because of softening
         // l.add(new VisitorPass(Pass.EXC_CHECK, job, new ExceptionChecker(job,ts,nf)));
         l.add(new VisitorPass(CAST_INSERTION, job, new CastInsertionVisitor(job, ts, nf)));
+        l.add(new VisitorPass(STRICTFP_PROP, job, new StrictFPPropagator(false)));
         l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
