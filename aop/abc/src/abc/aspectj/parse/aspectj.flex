@@ -791,9 +791,13 @@ SingleCharacter = [^\r\n\'\\]
   \\.                            { eq.enqueue(ErrorInfo.LEXICAL_ERROR,
                                               "Illegal escape sequence \""+yytext()+"\"",
 					      pos()); }
-  {LineTerminator}               { eq.enqueue(ErrorInfo.LEXICAL_ERROR,
+
+  {LineTerminator}               { // Move row position back one to handle end-of-line
+                                   Position adjPos = new Position(file(), pos().line(), pos().column() - 1);
+                                   eq.enqueue(ErrorInfo.LEXICAL_ERROR,
 					      "Unterminated string at end of line",
-					      pos()); }
+					      adjPos);
+                                   returnFromStringChar(); return string_token(); }
 }
 
 <CHARLITERAL> {
