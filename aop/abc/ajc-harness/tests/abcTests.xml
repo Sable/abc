@@ -6840,6 +6840,7 @@
 	         the main class is not declared public, which makes
 		 this fail from the test harness. Cloned. PA"
       title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds">
+      <abckeywords><skip/></abckeywords>
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">
                 <ajcmessage kind="warning" line="102"/>
         	<ajcmessage kind="warning" line="124"/>
