@@ -157,16 +157,22 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 		   throw new SemanticException("Pointcut " + name + " not found.", position());
 	   }
 
-   public List methodsNamed(ClassType ct, String name){
-   	  List result = ct.methodsNamed(name);
-   	  if (result.size() == 0 && ct.superType() != null) {
-   	  	 ClassType outer = ct.superType().toClass();
-   	  	 if (outer != null)
-   	  	 	return methodsNamed(outer,name);
-   	  	 else
-   	  	 	return result;
-   	  }
-   	  return result;
+   
+   private Set methodsNamed(ClassType ct, String name) {
+		Set result = new HashSet();
+		List toCheck = new LinkedList();
+		toCheck.add(ct);
+		while (! toCheck.isEmpty()) {
+			ClassType nct = (ClassType) toCheck.remove(0);
+			List rs = nct.methodsNamed(name);
+			if (rs.size() == 0) {
+				if (nct.superType() != null)
+				   toCheck.add(nct.superType().toClass());
+				toCheck.addAll(nct.interfaces());
+			}
+			result.addAll(rs);
+		}
+		return result;
    }
    
 	/** type check the pointcut reference */
@@ -210,9 +216,12 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
        		ct = findPointcutScope((Context_c)c,name);
        else 
        		ct = target.type().toClass(); // will return non-null because of above checks
-       List ms = methodsNamed(ct,"$pointcut$"+name);
+       Set ms = methodsNamed(ct,"$pointcut$"+name);
        if (ms.size() == 0)
        		throw new SemanticException("Pointcut "+name+" not found.", position());
+       if (ms.size() > 1)
+       		throw new SemanticException("Ambiguous pointcut reference.",position());
+       		
        mi = (MethodInstance) ms.iterator().next(); // PointcutInstance_c
       
        // get the formal types

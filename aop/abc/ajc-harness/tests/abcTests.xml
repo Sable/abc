@@ -7826,8 +7826,11 @@
                 <message kind="error" line="15"/>
         	<message kind="error" line="16"/>
                 <message kind="error" line="16"/>
-        	<message kind="error" line="18"/>
+                <message kind="error" line="17"/>
+                <message kind="error" line="18"/>
+        	<message kind="error" line="19"/>
         	<message kind="error" line="20"/>
+                <message kind="error" line="21"/>
         </compile>
     </ajc-test>
 
