@@ -20,6 +20,7 @@ sub load {
     my $str=XML::XPath::XMLParser::as_string($node);
     my ($dir,$title)=($str=~/dir=\"(.*?)\".*title=\"(.*?)\"/m);
     ($title,$dir)=($str=~/title=\"(.*?)\".*dir=\"(.*?)\"/m) unless defined $title;
+    if(exists $result->{"$dir - $title"}) { print STDERR "duplicated: $dir - $title\n"; }
     $result->{"$dir - $title"}=1;
   }
 }
