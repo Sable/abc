@@ -37,4 +37,8 @@ public class IntertypeMethodDecl extends Syntax {
     public Aspect getAspect() {
 	return aspect;
     }
+
+    public String toString() {
+	return "(in aspect "+aspect.getInstanceClass().getName()+") "+target+" { ... }";
+    }
 }

@@ -2,6 +2,7 @@ package abc.aspectj.ast;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
@@ -98,7 +99,28 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     }
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
-
+	System.out.println("IMD host: "+host.toString());
+	List params = new ArrayList();
+	Iterator fi = formals().iterator();
+	while (fi.hasNext()) {
+	    Formal f = (Formal)fi.next();
+	    params.add(AspectInfoHarvester.toAbcType(f.type().type()));
+	}
+	abc.weaving.aspectinfo.MethodSig impl = new abc.weaving.aspectinfo.MethodSig
+	    (current_aspect.getInstanceClass(),
+	     AspectInfoHarvester.toAbcType(returnType().type()),
+	     name(),
+	     params,
+	     position());
+	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
+	    (gai.getClass(host.toString()),
+	     AspectInfoHarvester.toAbcType(returnType().type()),
+	     name(),
+	     params,
+	     null);
+	abc.weaving.aspectinfo.IntertypeMethodDecl imd = new abc.weaving.aspectinfo.IntertypeMethodDecl
+	    (target, impl, current_aspect, position());
+	gai.addIntertypeMethodDecl(imd);
     }
 }
 	

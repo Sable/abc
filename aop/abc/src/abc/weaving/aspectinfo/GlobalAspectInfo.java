@@ -108,8 +108,9 @@ public class GlobalAspectInfo {
     public void print(java.io.PrintStream p) {
 	printList(p, classes, "Classes:");
 	printList(p, aspects, "Aspects:");
-	printList(p, imds, "Intertype method decls:");
 	printList(p, ifds, "Intertype field decls:");
+	printList(p, imds, "Intertype method decls:");
+	printList(p, icds, "Intertype constructor decls:");
 	printList(p, ads, "Advice decls:");
     }
 

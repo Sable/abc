@@ -28,4 +28,7 @@ public class FieldSig extends Syntax {
 	return sf;
     }
 
+    public String toString() {
+	return type+" "+cl+"."+name;
+    }
 }

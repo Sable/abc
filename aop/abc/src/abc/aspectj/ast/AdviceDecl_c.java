@@ -94,7 +94,7 @@ public class AdviceDecl_c extends MethodDecl_c
 		super(pos,
 	    	  flags, 
 	     	  spec.returnType(),
-	     	  UniqueID.newID("$advice$"),
+	     	  UniqueID.newID(spec.kind()),
 	          adviceFormals(locs(spec.returnVal(),spec.formals())),
 	          throwTypes,
 	          body);
