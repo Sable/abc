@@ -29,6 +29,7 @@ import polyglot.util.ErrorInfo;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.TypeBuilder;
+import polyglot.visit.AmbiguityRemover;
 
 import polyglot.types.Context;
 import polyglot.types.TypeSystem;
@@ -185,6 +186,20 @@ public class AspectDecl_c extends ClassDecl_c
 	}
 	return am;
 	}
+	
+	public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
+		   if (ar.kind() == AmbiguityRemover.SUPER) {
+		   		List noSuper = new ArrayList();
+		   		noSuper.add(body); noSuper.add(per);
+			   	return ar.bypass(noSuper);
+		   }
+		   
+		   if (ar.kind() == AmbiguityRemover.SIGNATURES) {
+		   		return ar.bypass(per);
+		   }
+
+		   return ar;
+	   }
 		
 	protected AspectDecl_c reconstruct(TypeNode superClass, List interfaces, PerClause per, ClassBody body) {
 		   if (superClass != this.superClass || ! CollectionUtil.equals(interfaces, this.interfaces) || 
@@ -213,6 +228,7 @@ public class AspectDecl_c extends ClassDecl_c
 			if (child == this.per ) {
 				TypeSystem ts = c.typeSystem();
 				c = c.pushClass(type, ts.staticTarget(type).toClass());
+				return child.enterScope(c);
 			}
 			return super.enterScope(child, c);
 		}

@@ -38,7 +38,7 @@ public abstract class PerClause_c extends Node_c implements PerClause,
 	
 	protected void addMembers(Context c, ReferenceType type,
 							   Set visited, boolean inherit) {
-
+		
 		 if (visited.contains(type)) {
 			 return;
 		 }

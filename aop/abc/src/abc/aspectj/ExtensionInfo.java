@@ -144,8 +144,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         passes_disambiguate_signatures(l, job);
         passes_add_members(l, job);
         passes_interface_ITDs(l, job);
-        passes_disambiguate_all(l, job);
-        passes_fold_and_checkcode(l, job);
+        passes_disambiguate_all(l, job); 
+        passes_fold_and_checkcode(l, job); 
         passes_saveAST(l, job);
         passes_mangle_names(l, job);
         passes_aspectj_transforms(l, job);
@@ -176,7 +176,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
         l.add(new GlobalBarrierPass(Pass.BUILD_TYPES_ALL, job));
         l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
-                              new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
+                             new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
         l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
     }
 
