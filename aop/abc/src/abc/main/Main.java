@@ -403,79 +403,89 @@ public class Main {
 
 
     public void run() throws CompilerFailedException {
-	try {
-	    // Timer start stuff
-	    Date abcstart = new Date(); // wall clock time start
-	    G.v().out.println("Abc started on " + abcstart);
+		try {
+			// Timer start stuff
+			Date abcstart = new Date(); // wall clock time start
+			G.v().out.println("Abc started on " + abcstart);
 
-	    if (soot.options.Options.v().time())
-		Timers.v().totalTimer.start(); // Soot timer start
+			if (soot.options.Options.v().time())
+				Timers.v().totalTimer.start(); // Soot timer start
 
-	    // Main phases
-	    
-	    AbcTimer.start(); // start the AbcTimer
-	    
-	    addJarsToClasspath();
-	    initSoot();
-	    AbcTimer.mark("Init. of Soot");
-	    
-	    loadJars();
-	    AbcTimer.mark("Loading Jars");
-	    
-	    // if something to compile
-	    compile(); // Timers marked inside compile()
-	    // The compile method itself aborts if there is an error
-	    
-	    if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty())
-		{ weave();   // Timers marked inside weave()
-	      
-		abortIfErrors();
+			// Main phases
 
-		if(!abc.main.Debug.v().dontCheckExceptions) 
-		    { checkExceptions();
-		    AbcTimer.mark("Exceptions check");
-		    }
-        
-		abortIfErrors();
-		
-		if (Debug.v().doValidate) validate();
-		AbcTimer.mark("Validate jimple");
-		
-		optimize();
+			AbcTimer.start(); // start the AbcTimer
 
-		AbcTimer.mark("Soot Packs");
-		
-		output();
-		AbcTimer.mark("Soot Writing Output");
+			addJarsToClasspath();
+			initSoot();
+			AbcTimer.mark("Init. of Soot");
+
+			loadJars();
+			AbcTimer.mark("Loading Jars");
+
+			// if something to compile
+			compile(); // Timers marked inside compile()
+			// The compile method itself aborts if there is an error
+
+			if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty()) {
+				weave(); // Timers marked inside weave()
+
+				abortIfErrors();
+
+				if (!abc.main.Debug.v().dontCheckExceptions) {
+					checkExceptions();
+					AbcTimer.mark("Exceptions check");
+				}
+
+				abortIfErrors();
+
+				if (Debug.v().doValidate)
+					validate();
+				AbcTimer.mark("Validate jimple");
+
+				optimize();
+
+				AbcTimer.mark("Soot Packs");
+
+				output();
+				AbcTimer.mark("Soot Writing Output");
+			}
+
+			// Timer end stuff
+			Date abcfinish = new Date(); // wall clock time finish
+			G.v().out.print("Abc finished on " + abcfinish + ".");
+			long runtime = abcfinish.getTime() - abcstart.getTime();
+			G.v().out.println(" ( " + (runtime / 60000) + " min. " + ((runtime % 60000) / 1000) + " sec. )");
+
+			// Print out Soot time stats, if Soot -time flag on.
+			if (soot.options.Options.v().time()) {
+				Timers.v().totalTimer.end();
+				Timers.v().printProfilingInformation();
+			}
+
+			// Print out abc timer information
+			AbcTimer.report();
+		} catch (CompilerFailedException e) {
+			throw e;
+		} catch (InternalCompilerError e) {
+			// Polyglot adds something to the error queue for
+			// InternalCompilerErrors,
+			// and we only want to ignore the error if there are *other* errors
+			abortIfErrors(1);
+			throw e;
+		} catch (Throwable e) {
+			/*System.err.println("stack trace " + e.getMessage() + " " + e.getClass().getName());
+			try {
+				e.printStackTrace(System.err);
+			}catch (Throwable e2) {
+				System.err.println("/stack trace ex " + e2.getClass().getName());
+				System.err.println(e.hashCode() + ": " + e2.hashCode());
+				e2.printStackTrace();
+			}
+			System.err.println("/stack trace ");*/
+			abortIfErrors();
+			throw new InternalCompilerError("unhandled exception during compilation", e);
 		}
-
-	    // Timer end stuff
-	    Date abcfinish = new Date(); // wall clock time finish
-	    G.v().out.print("Abc finished on " + abcfinish + ".");
-	    long runtime = abcfinish.getTime() - abcstart.getTime();
-	    G.v().out.println( " ( " + (runtime / 60000)
-			       + " min. " + ((runtime % 60000) / 1000) + " sec. )");
-
-	    // Print out Soot time stats, if Soot -time flag on.   
-	    if (soot.options.Options.v().time())
-		{ Timers.v().totalTimer.end();
-		Timers.v().printProfilingInformation();
-		}
-
-	    // Print out abc timer information
-	    AbcTimer.report();
-	} catch(CompilerFailedException e) {
-	    throw e;
-	} catch(InternalCompilerError e) {
-	    // Polyglot adds something to the error queue for InternalCompilerErrors, 
-	    // and we only want to ignore the error if there are *other* errors
-	    abortIfErrors(1);
-	    throw e;
-        } catch(Throwable e) {
-	    abortIfErrors();
-	    throw new InternalCompilerError("unhandled exception during compilation",e);
 	}
-    }
 
     private void abortIfErrors() throws CompilerFailedException {
 	abortIfErrors(0);

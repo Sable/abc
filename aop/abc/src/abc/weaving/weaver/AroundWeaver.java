@@ -115,7 +115,7 @@ public class AroundWeaver {
 		public static boolean isAroundAdviceMethod(SootMethod method) {
 			return method.getName().startsWith("around$"); // TODO: something more solid
 		}
-
+		
 		private static boolean chainContainsLocal(Chain locals, String name) {
 			Iterator it = locals.iterator();
 			while (it.hasNext()) {
@@ -124,6 +124,7 @@ public class AroundWeaver {
 			}
 			return false;
 		}
+		
 
 		/**
 		 * Removes all unused locals from the local chain
@@ -1537,8 +1538,10 @@ public class AroundWeaver {
 							}
 							if (returnStmt.getOp() instanceof Local) {
 								returnedLocal = (Local) returnStmt.getOp();
-							} else { // Some other value. This may never occur...it seems some earlier stage ensures it's always a local.
-								// make local to be returned. assign default value.
+							} else { 
+								// Some other value. This may never occur...
+								// it seems some earlier stage ensures it's always a local.
+								// anyways. make local to be returned.
 								LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
 								Local l=lg.generateLocal(getAdviceReturnType(), "returnedLocal");
 								Stmt s=Jimple.v().newAssignStmt(l, 
@@ -1601,7 +1604,7 @@ public class AroundWeaver {
 								! getAdviceReturnType().equals(VoidType.v())					 
 								) { 
 								// make dummy local to be returned. assign default value.
-								Type returnType=invStmt.getInvokeExpr().getType(); // used to be adviceMethod.getReturnType()
+								Type returnType=getAdviceReturnType(); 
 								
 								LocalGeneratorEx lg=new LocalGeneratorEx(joinpointBody);
 								Local l=lg.generateLocal(returnType, "returnedLocal"); 
@@ -2437,7 +2440,7 @@ public class AroundWeaver {
 						if (!bDefault)
 							pm.modifyInterfaceInvokations(addedAdviceParameterLocals, addedDynArgsTypes);	
 					}
-				} 
+				}
 				//return addedAdviceParameterLocals;
 			}
 			
