@@ -153,7 +153,9 @@ public class CflowAnalysisBridge {
                     si.stmtMap.put(cfr.getIsValidStmt(), aa);
                 } else if( rb.getResidue() instanceof Load) {
                     Load load = (Load) rb.getResidue();
-                    joinPointLocalMap.put(load.variable.get(), load);
+                    if(load.value instanceof JoinPointInfo) {
+                        joinPointLocalMap.put(load.variable.get(), load);
+                    }
                 }
             }
         }
