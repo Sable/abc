@@ -135,22 +135,23 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * introduce "this" as first parameter
 	 * @author Oege de Moor
 	 */
-	public IntertypeDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts) {
-		
-		// create the new list of formals
-		TypeNode tn = nf.CanonicalTypeNode(position,thisParamInstance.type());
-		Formal newformal = nf.Formal(position,thisParamInstance.flags(),tn,thisParamInstance.name());
-		newformal = newformal.localInstance(thisParamInstance);
-		List formals = new LinkedList(formals());
-		formals.add(0,newformal);
-		
-		// create the new methodinstance
-		MethodInstance mi = methodInstance();
-		List newtypes = new LinkedList(mi.formalTypes());
-		newtypes.add(0,thisParamInstance.type());
-		mi = mi.formalTypes(newtypes);
-		
-		return (IntertypeDecl) formals(formals).methodInstance(mi);
+	public IntertypeDecl thisParameter(AspectJNodeFactory nf, AspectJTypeSystem ts) {	
+		if (!flags().isStatic()) {
+			// create the new list of formals
+			TypeNode tn = nf.CanonicalTypeNode(position,thisParamInstance.type());
+			Formal newformal = nf.Formal(position,thisParamInstance.flags(),tn,thisParamInstance.name());
+			newformal = newformal.localInstance(thisParamInstance);
+			List formals = new LinkedList(formals());
+			formals.add(0,newformal);
+			
+			// create the new methodinstance
+			MethodInstance mi = methodInstance();
+			List newtypes = new LinkedList(mi.formalTypes());
+			newtypes.add(0,thisParamInstance.type());
+			mi = mi.formalTypes(newtypes);
+			
+			return (IntertypeDecl) formals(formals).methodInstance(mi);
+		} else return this;
 	}
 	
 	/**

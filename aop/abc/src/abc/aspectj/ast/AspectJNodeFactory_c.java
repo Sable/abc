@@ -489,6 +489,10 @@ public class AspectJNodeFactory_c
 		return new AJNew_c(pos,qualifier,tn,arguments,body);
 	}
 	
+	public ClassBody ClassBody(Position pos, List members) {
+		return new AJClassBody_c(pos, members);
+    }
+    
     /*
 	public ConstructorDecl ConstructorDecl(Position pos, Flags flags, String name, 
 											List formals, List throwTypes, Block body) {

@@ -480,9 +480,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 			TypeSystem ts = nc.typeSystem();
 			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
 											   flags.isStatic());
-			System.out.println("entering the body of "+host+"."+name);
-			if (host.type().toClass() == null)
-				System.out.println("type of host is null");
 			ncc.addITMembers(host.type().toClass());
 			return ncc;
 		} else return nc;	

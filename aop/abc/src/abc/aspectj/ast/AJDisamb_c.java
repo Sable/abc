@@ -40,7 +40,10 @@ public class AJDisamb_c extends Disamb_c implements Disamb {
 				AspectJNodeFactory ajnf = (AspectJNodeFactory) nf;
 				// first check whether this is a reference to the host of an ITD
 				if (ajts.refHostOfITD((AJContext)c,null,fi)) {
-					r = ajnf.hostSpecial(pos,Special.THIS,nf.CanonicalTypeNode(pos,fi.container()));
+					if (! ts.equals(scope,((AJContext)c).currentClass()))
+						r = ajnf.hostSpecial(pos,Special.THIS,nf.CanonicalTypeNode(pos,fi.container()));
+					else
+						r = ajnf.hostSpecial(pos,Special.THIS,null);
 				} else
 					if (! ts.equals(scope, c.currentClass())) {
 						r = nf.This(pos, nf.CanonicalTypeNode(pos, scope));

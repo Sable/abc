@@ -206,7 +206,8 @@ public class IntertypeAdjuster {
             final AbcType formalType = ((Formal) formalIt.next()).getType();
             parms.add(formalType.getSootType());
         }
-        parms.remove(0); // drop the "this" parameter
+        if ( ! Modifier.isStatic(method.getModifiers()) )
+        	parms.remove(0); // drop the "this" parameter
 
         int modifiers = method.getModifiers();
         modifiers |= Modifier.PUBLIC;
@@ -236,10 +237,12 @@ public class IntertypeAdjuster {
 	    List args = new LinkedList();
     //	the first parameter of the impl is "this : TargetType"
 		RefType rt = sc.getType();
-		ThisRef thisref = Jimple.v().newThisRef(rt);
-		Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
-		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
-		args.add(v);
+		if (!Modifier.isStatic(modifiers)) {
+			ThisRef thisref = Jimple.v().newThisRef(rt);
+			Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+			IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
+			args.add(v);
+		}
 	// add references to the other parameters
 		int index = 0;
 		for (Iterator formals=parms.iterator(); formals.hasNext(); ) {

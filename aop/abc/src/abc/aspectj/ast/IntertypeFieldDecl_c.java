@@ -242,7 +242,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	}
 	
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
-		MethodCategory.register(initm, MethodCategory.INTERTYPE_FIELD_INITIALIZER);
+    	if (init() != null)
+			MethodCategory.register(initm, MethodCategory.INTERTYPE_FIELD_INITIALIZER);
 
 		// System.out.println("IFD host: "+host.toString());
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
