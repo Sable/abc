@@ -125,16 +125,6 @@
             </classpath>
             <arg line="-d generated/abc/aspectj/parse src/abc/aspectj/parse/aspectj.flex"/>
         </java>
-        <java classname="JFlex.Main"
-            fork="true"
-            dir="."
-            failonerror="true"
-        >
-            <classpath>
-                <pathelement location="${jflex.loc}"/>
-            </classpath>
-            <arg line="-d generated/abc/eaj/parse src/abc/eaj/parse/eaj.flex"/>
-        </java>
     </target>
 
     <target name="jflex-dep" depends="settings">

@@ -20,7 +20,7 @@
 package abc.eaj;
 
 import polyglot.lex.Lexer;
-import abc.eaj.parse.Lexer_c;
+import abc.aspectj.parse.Lexer_c;
 import abc.eaj.parse.Grm;
 import abc.eaj.ast.*;
 import abc.eaj.types.*;

@@ -40,7 +40,7 @@ import java.math.BigInteger;
 
 %public
 %class Lexer_c
-%implements Lexer
+%implements AbcLexer
 %type Token
 %function nextToken
 
@@ -144,8 +144,36 @@ import java.math.BigInteger;
     StringBuffer sb = new StringBuffer();
     String file;
     ErrorQueue eq;
-    HashMap javaKeywords, pointcutKeywords, aspectJReservedWords;
+    HashMap javaKeywords, pointcutKeywords, aspectJKeywords, pointcutIfExprKeywords;
     boolean lastTokenWasDot;
+
+	public void addJavaKeyword(String keyword, LexerAction la) {
+		javaKeywords.put(keyword, la);
+	}
+	
+	public void addAspectJKeyword(String keyword, LexerAction la) {
+		aspectJKeywords.put(keyword, la);
+	}
+	
+	public void addPointcutKeyword(String keyword, LexerAction la) {
+		pointcutKeywords.put(keyword, la);
+	}
+	
+	public void addPointcutIfExprKeyword(String keyword, LexerAction la) {
+		pointcutIfExprKeywords.put(keyword, la);
+	}
+	
+	public void addGlobalKeyword(String keyword, LexerAction la) {
+		addJavaKeyword(keyword, la);
+		addAspectJKeyword(keyword, la);
+		addPointcutKeyword(keyword, la);
+		addPointcutIfExprKeyword(keyword, la);
+	}
+	
+	public void addAspectJContextKeyword(String keyword, LexerAction la) {
+		addAspectJKeyword(keyword, la);
+		addPointcutIfExprKeyword(keyword, la);
+	}
 
     public Lexer_c(java.io.InputStream in, String file, ErrorQueue eq) {
         this(new java.io.BufferedReader(new java.io.InputStreamReader(in)),
@@ -158,112 +186,30 @@ import java.math.BigInteger;
         this.eq = eq;
         this.javaKeywords = new HashMap();
         this.pointcutKeywords = new HashMap();
-        this.aspectJReservedWords = new HashMap();
-        init_keywords();
+        this.aspectJKeywords = new HashMap();
+        this.pointcutIfExprKeywords = new HashMap();
+        abc.main.Main.v().getAbcExtension().initLexerKeywords(this);
     }
 
-    protected void init_keywords() {
-        javaKeywords.put("abstract",      new Integer(sym.ABSTRACT));
-        javaKeywords.put("assert",        new Integer(sym.ASSERT));
-        javaKeywords.put("boolean",       new Integer(sym.BOOLEAN));
-        javaKeywords.put("break",         new Integer(sym.BREAK));
-        javaKeywords.put("byte",          new Integer(sym.BYTE));
-        javaKeywords.put("case",          new Integer(sym.CASE));
-        javaKeywords.put("catch",         new Integer(sym.CATCH));
-        javaKeywords.put("char",          new Integer(sym.CHAR));
-        javaKeywords.put("class",         new Integer(sym.CLASS));
-        javaKeywords.put("const",         new Integer(sym.CONST));
-        javaKeywords.put("continue",      new Integer(sym.CONTINUE));
-        javaKeywords.put("default",       new Integer(sym.DEFAULT));
-        javaKeywords.put("do",            new Integer(sym.DO));
-        javaKeywords.put("double",        new Integer(sym.DOUBLE));
-        javaKeywords.put("else",          new Integer(sym.ELSE));
-        javaKeywords.put("extends",       new Integer(sym.EXTENDS));
-        javaKeywords.put("final",         new Integer(sym.FINAL));
-        javaKeywords.put("finally",       new Integer(sym.FINALLY));
-        javaKeywords.put("float",         new Integer(sym.FLOAT));
-        javaKeywords.put("for",           new Integer(sym.FOR));
-        javaKeywords.put("goto",          new Integer(sym.GOTO));
-        // if is handled specifically, as it differs in pointcuts and non-pointcuts.
-        //javaKeywords.put("if",            new Integer(sym.IF));
-        javaKeywords.put("implements",    new Integer(sym.IMPLEMENTS));
-        javaKeywords.put("import",        new Integer(sym.IMPORT));
-        javaKeywords.put("instanceof",    new Integer(sym.INSTANCEOF));
-        javaKeywords.put("int",           new Integer(sym.INT));
-        javaKeywords.put("interface",     new Integer(sym.INTERFACE));
-        javaKeywords.put("long",          new Integer(sym.LONG));
-        javaKeywords.put("native",        new Integer(sym.NATIVE));
-        javaKeywords.put("new",           new Integer(sym.NEW));
-        javaKeywords.put("package",       new Integer(sym.PACKAGE));
-        javaKeywords.put("private",       new Integer(sym.PRIVATE));
-        /* ------------  keyword added to the Java part ------------------ */
-        javaKeywords.put("privileged",	  new Integer(sym.PRIVILEGED));
-        /* ------------  keyword added to the Java part ------------------ */
-        javaKeywords.put("protected",     new Integer(sym.PROTECTED));
-        javaKeywords.put("public",        new Integer(sym.PUBLIC));
-        javaKeywords.put("return",        new Integer(sym.RETURN));
-        javaKeywords.put("short",         new Integer(sym.SHORT));
-        javaKeywords.put("static",        new Integer(sym.STATIC));
-        javaKeywords.put("strictfp",      new Integer(sym.STRICTFP));
-        javaKeywords.put("super",         new Integer(sym.SUPER));
-        javaKeywords.put("switch",        new Integer(sym.SWITCH));
-        javaKeywords.put("synchronized",  new Integer(sym.SYNCHRONIZED));
-        // this is handled explicitly, as it differs in pointcuts and non-pointcuts.
-        //javaKeywords.put("this",          new Integer(sym.THIS));
-        javaKeywords.put("throw",         new Integer(sym.THROW));
-        javaKeywords.put("throws",        new Integer(sym.THROWS));
-        javaKeywords.put("transient",     new Integer(sym.TRANSIENT));
-        javaKeywords.put("try",           new Integer(sym.TRY));
-        javaKeywords.put("void",          new Integer(sym.VOID));
-        javaKeywords.put("volatile",      new Integer(sym.VOLATILE));
-        javaKeywords.put("while",         new Integer(sym.WHILE));
-        
-        pointcutKeywords.put("adviceexecution", new Integer(sym.PC_ADVICEEXECUTION));
-        pointcutKeywords.put("args", new Integer(sym.PC_ARGS));
-        pointcutKeywords.put("call", new Integer(sym.PC_CALL));
-        pointcutKeywords.put("cflow", new Integer(sym.PC_CFLOW));
-        pointcutKeywords.put("cflowbelow", new Integer(sym.PC_CFLOWBELOW));
-        pointcutKeywords.put("error", new Integer(sym.PC_ERROR));
-        pointcutKeywords.put("execution", new Integer(sym.PC_EXECUTION));
-        pointcutKeywords.put("get", new Integer(sym.PC_GET));
-        pointcutKeywords.put("handler", new Integer(sym.PC_HANDLER));
-        pointcutKeywords.put("if", new Integer(sym.PC_IF));
-        pointcutKeywords.put("initialization", new Integer(sym.PC_INITIALIZATION));
-        pointcutKeywords.put("parents", new Integer(sym.PC_PARENTS));
-        pointcutKeywords.put("precedence", new Integer(sym.PC_PRECEDENCE));
-        pointcutKeywords.put("preinitialization", new Integer(sym.PC_PREINITIALIZATION));
-        pointcutKeywords.put("returning", new Integer(sym.PC_RETURNING));
-        pointcutKeywords.put("set", new Integer(sym.PC_SET));
-        pointcutKeywords.put("soft", new Integer(sym.PC_SOFT));
-        pointcutKeywords.put("staticinitialization", new Integer(sym.PC_STATICINITIALIZATION));
-        pointcutKeywords.put("target", new Integer(sym.PC_TARGET));
-        pointcutKeywords.put("this", new Integer(sym.PC_THIS));
-        pointcutKeywords.put("throwing", new Integer(sym.PC_THROWING));
-        pointcutKeywords.put("warning", new Integer(sym.PC_WARNING));
-        pointcutKeywords.put("within", new Integer(sym.PC_WITHIN));
-        pointcutKeywords.put("withincode", new Integer(sym.PC_WITHINCODE));
-        
-        /* Special redefinition of aspect keyword so that we don't go out of ASPECTJ state
-        	and remain in POINTCUT state */
-        pointcutKeywords.put("aspect", new Integer(sym.ASPECT));
-        
-        /* ASPECTJ reserved words - these cannot be used as the names of any identifiers within
-           aspect code. */
-        aspectJReservedWords.put("after", new Integer(sym.AFTER));
-        aspectJReservedWords.put("around", new Integer(sym.AROUND));
-        aspectJReservedWords.put("before", new Integer(sym.BEFORE));
-        aspectJReservedWords.put("declare", new Integer(sym.DECLARE));
-        aspectJReservedWords.put("issingleton", new Integer(sym.ISSINGLETON));
-        aspectJReservedWords.put("percflow", new Integer(sym.PERCFLOW));
-        aspectJReservedWords.put("percflowbelow", new Integer(sym.PERCFLOWBELOW));
-        aspectJReservedWords.put("pertarget", new Integer(sym.PERTARGET));
-        aspectJReservedWords.put("perthis", new Integer(sym.PERTHIS));
-        aspectJReservedWords.put("proceed", new Integer(sym.PROCEED));
-/*        aspectJReservedWords.put("thisEnclosingJoinPointStaticPart", new Integer(sym.THISENCLOSINGJOINPOINTSTATICPART));
-        aspectJReservedWords.put("thisJoinPoint", new Integer(sym.THISJOINPOINT));
-        aspectJReservedWords.put("thisJoinPointStaticPart", new Integer(sym.THISJOINPOINTSTATIPART));*/
-    }
+	// These methods should be used to access the values of the state constants,
+	// which could be required when constructing LexerAction objects.
+	public int java_state() { return YYINITIAL; }
+	public int aspectj_state() { return ASPECTJ; }
+	public int pointcut_state() { return POINTCUT; }
+	public int pointcutifexpr_state() { return POINTCUTIFEXPR; }
 
+	public void setInPerPointcut(boolean b) {
+		inPerPointcut = b;
+	}
+	
+	public int currentState() {
+		return yystate();
+	}
+	
+	public boolean getLastTokenWasDot() {
+		return lastTokenWasDot;
+	}
+	
     public String file() {
         return file;
     }
@@ -536,23 +482,6 @@ OctalEscape = \\ [0-7]
 %state POINTCUT
 
 %%
-/* overloaded keywords, mean different things in POINTCUTS */
-<YYINITIAL,ASPECTJ,POINTCUTIFEXPR> {
-	"if"						{ return key(sym.IF); }
-	"this"						{ return key(sym.THIS); }
-	/* ------------  keyword added to the Java part ------------------ */
-	"aspect"                       { enterLexerState(ASPECTJ); 
-           		                       //currentState = IN_ASPECTJ;
-                	                   //javaOrAspect = IN_ASPECTJ;  
-                     	               return key(sym.ASPECT); 
-                         	        }
-    "pointcut"                      { enterLexerState(POINTCUT);
-    	                              //currentState = IN_POINTCUT;
-        	                          return key(sym.POINTCUT);
-            	                    }
-  /* ----------------------------------------------------------------*/
-}
-
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
     /* 3.7 Comments */
 	"/*"                       { if(abc.main.Debug.v().allowNestedComments) 
@@ -613,8 +542,6 @@ OctalEscape = \\ [0-7]
                                           { // don't change the state
                                             // hand over token for parser to
                                             // find sytax error
-                                            //currentState = IN_JAVA;
-                                            //yybegin(YYINITIAL);
                                           }
                                         return op(sym.RBRACE); 
                                  }
@@ -758,55 +685,31 @@ OctalEscape = \\ [0-7]
     /* 3.8 Identifiers */
     {Identifier}   { 
     	// Keywords common to all states first.
-    	Integer i = (Integer) javaKeywords.get(yytext());
-    	// System.out.println("J/AJ/PC/PCIE: " + YYINITIAL + "/"+ASPECTJ+"/"+POINTCUT+"/"+POINTCUTIFEXPR+", currernt state: " + yystate() + " for token " + yytext());
-		if(i != null) {
-			// Some special handling is required...
-			if(yytext().equals("class")) {
-				if(!lastTokenWasDot) {
-					// if in ASPECCTJ state, stay there.
-					int newState = (yystate() == ASPECTJ ? ASPECTJ : YYINITIAL);
-					enterLexerState(newState);
-					}
-			}
-			else if(yytext().equals("interface")) {
-				enterLexerState(YYINITIAL);
-			}
-			// all other keywords can be handled generically
-			return key(i.intValue());
+    	LexerAction la;
+    	switch(yystate()) {
+    		case YYINITIAL:
+    			la = (LexerAction) javaKeywords.get(yytext());
+				break;
+				
+    		case ASPECTJ:
+    			la = (LexerAction) aspectJKeywords.get(yytext());
+				break;
+				
+    		case POINTCUT:
+    			la = (LexerAction) pointcutKeywords.get(yytext());
+				break;
+				
+    		case POINTCUTIFEXPR:
+    			la = (LexerAction) pointcutIfExprKeywords.get(yytext());
+				break;
+			
+			default:
+				la = null; // Will never happen - this pattern only matches if state is one of the 4.
 		}
 		
-		// AspectJ-specific keywords
-		if(yystate() == ASPECTJ || yystate() == POINTCUTIFEXPR) {
-			i = (Integer) aspectJReservedWords.get(yytext());
-			if(i != null) {
-				// these keywords require some special handling, as many of them can trigger
-				// a lexer state change.
-				if(yytext().equals("percflow") || yytext().equals("percflowbelow") ||
-						yytext().equals("pertarget") || yytext().equals("perthis")) {
-					enterLexerState(POINTCUT);
-					inPerPointcut = true;
-				}
-				else if(yytext().equals("after") || yytext().equals("around") ||
-						yytext().equals("before") || yytext().equals("declare")) {
-					enterLexerState(POINTCUT);
-				}
-				// all other cases handled generically.
-				return key(i.intValue());
-			}
+		if(la != null) {
+			return key(la.getToken(this));
 		}
-		
-        // pointcut-specific keywords
-        if(yystate() == POINTCUT) {
-            i = (Integer) pointcutKeywords.get(yytext());
-            if(i != null)  {
-            	if(yytext().equals("if")) {
-            		enterLexerState(POINTCUTIFEXPR);
-            	}
-            	// all other keywords can be handled generically
-	            return key(i.intValue());
-	        }
-        }
 		
 		// OK, it's not a keyword, so it's an identifier.
 		/* Note that if both Identifier and Name Pattern match, then    

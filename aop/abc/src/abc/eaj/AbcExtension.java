@@ -21,6 +21,8 @@ package abc.eaj;
 
 import abc.eaj.weaving.matching.*;
 
+import abc.aspectj.parse.*;
+
 import soot.Scene;
 import soot.SootClass;
 
@@ -68,5 +70,16 @@ public class AbcExtension extends abc.main.AbcExtension
     {
         return new abc.weaving.weaver.Weaver(
                         "uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory");
+    }
+    /* (non-Javadoc)
+     * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.Lexer)
+     */
+    public void initLexerKeywords(AbcLexer lexer) {
+        // keyword for the "cast" pointcut extension
+        lexer.addPointcutKeyword("cast", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CAST)));
+        // keyword for the "global pointcut" extension
+        lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(abc.eaj.parse.sym.GLOBAL),
+                            new Integer(lexer.pointcut_state())));    
+        super.initLexerKeywords(lexer);
     }
 }
