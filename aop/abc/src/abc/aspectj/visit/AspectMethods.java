@@ -16,6 +16,9 @@ import polyglot.ast.Field;
 import polyglot.ast.Call;
 import polyglot.ast.New;
 import polyglot.ast.Special;
+import polyglot.ast.Assign;
+import polyglot.ast.Expr;
+import polyglot.ast.Receiver;
 
 import polyglot.visit.NodeVisitor;
 
@@ -49,7 +52,8 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
     private Stack /* List AdviceDecl */ advices;
     private Stack /* ParsedClassType */ container; // Keep track of current container
-    private Stack /* IntertypeDecl */ itd;      
+    private Stack /* IntertypeDecl */ itd;     
+    private Stack /* Expr */ lhss; /* left-hand sides of assignments */ 
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;
@@ -64,6 +68,7 @@ public class AspectMethods extends NodeVisitor {
 		this.advices = new Stack();
 		this.container = new Stack();
 		this.itd = new Stack();
+		this.lhss = new Stack();
 	}
 	
 	public NodeVisitor enter(Node n) {
@@ -85,6 +90,9 @@ public class AspectMethods extends NodeVisitor {
 		if (n instanceof IntertypeDecl) {
 			itd.push(n);
 		}
+		if (n instanceof Assign) {
+			lhss.push(((Assign)n).left());
+		}
 		return this;
 	 }
 	 
@@ -93,10 +101,31 @@ public class AspectMethods extends NodeVisitor {
 /* intertype declarations: */
 		if (n instanceof IntertypeDecl)
 			itd.pop(); // fall through to special cases
+		if (n instanceof Assign) {
+			Expr oldleft = (Expr) lhss.pop();
+			if (oldleft instanceof Field) {
+				Field fieldleft = (Field) oldleft;
+				if  (fieldleft.fieldInstance() instanceof InterTypeFieldInstance_c) {
+					InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) fieldleft.fieldInstance();
+					if (itfi.container().toClass().flags().isInterface()) 
+					{	Assign a = (Assign) n;						
+						Receiver target = null;
+						if (a.left() instanceof Field) 
+							target = ((Field) a.left()).target();
+						if (a.left() instanceof Call)
+							target = ((Call) a.left()).target();
+						return itfi.setCall(nf,ts,target,itfi.container(),((Assign) n).right());	
+					}
+				}
+			}
+			return n;
+		}
 		if (n instanceof Field) {
 			Field f = (Field) n;
 			if (f.fieldInstance() instanceof InterTypeFieldInstance_c) {
 				InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) f.fieldInstance();
+				if (itfi.container().toClass().flags().isInterface())
+					return itfi.getCall(nf,ts,f.target(),itfi.container());
 				f =  f.fieldInstance(itfi.mangled()).name(itfi.mangled().name()).targetImplicit(false);
 			}
 			if (f.target() instanceof HostSpecial_c) {

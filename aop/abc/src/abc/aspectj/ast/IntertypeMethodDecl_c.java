@@ -167,6 +167,8 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		if (flags().isProtected())
 			throw new SemanticException("Intertype methods cannot be protected",position());
+		if (flags().isStatic() && tc.context().currentClass().flags().isInterface())
+			throw new SemanticException("Cannot declare static intertype method on interface",position());
 		return super.typeCheck(tc);
 	}
 	
@@ -176,19 +178,17 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 * also add fields and methods of the host that are visible from the aspect.
 	 */
 	
-	public Context enterScope(Node n, Context c) {
+	public Context enterScope(Context c) {
 		AJContext nc = (AJContext) super.enterScope(c);
-		if (n==body) {
-			TypeSystem ts = nc.typeSystem();
-			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
+		TypeSystem ts = nc.typeSystem();
+		AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
 			                               flags.isStatic());
-			ncc.addITMembers(host.type().toClass());
-			return ncc;
-		} else return nc;
-		
+		ncc.addITMembers(host.type().toClass());
+		return ncc;		
 	}
 	
-
+	
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.begin(0);
 	w.write(flags.translate());

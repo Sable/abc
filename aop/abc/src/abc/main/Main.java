@@ -252,6 +252,7 @@ public class Main {
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
                 if( !method.isConcrete() ) continue;
+                // System.out.println("retrieve "+method+ " from "+cl);
                 method.retrieveActiveBody();
             }
         }

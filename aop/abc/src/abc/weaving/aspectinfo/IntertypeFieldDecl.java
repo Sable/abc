@@ -10,12 +10,17 @@ public class IntertypeFieldDecl extends Syntax {
     private FieldSig target;
     private Aspect aspect;
     private MethodSig init;
+    private MethodSig setter;
+    private MethodSig getter;
 
-    public IntertypeFieldDecl(FieldSig target, Aspect aspect, MethodSig init, Position pos) {
+    public IntertypeFieldDecl(FieldSig target, Aspect aspect, MethodSig init, 
+    							MethodSig getter, MethodSig setter, Position pos) {
 	super(pos);
 	this.target = target;
 	this.aspect = aspect;
 	this.init = init;
+	this.getter = getter;
+	this.setter = setter;
     }
 
     /** Get the field signature that this intertype field declaration
@@ -37,6 +42,14 @@ public class IntertypeFieldDecl extends Syntax {
      */
     public MethodSig getInit() {
    	return init;
+    }
+    
+    public MethodSig getGetter() {
+    	return getter;
+    }
+    
+    public MethodSig getSetter() {
+    	return setter;
     }
 
     public String toString() {

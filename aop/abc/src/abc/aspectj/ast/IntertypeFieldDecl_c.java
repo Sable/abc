@@ -37,7 +37,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo
 {
     protected TypeNode host;
-    protected FieldInstance hostInstance;
+    protected InterTypeFieldInstance_c hostInstance;
     protected LocalInstance thisParamInstance;
     protected Supers supers;
 
@@ -101,6 +101,10 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 										fieldInstance().type(),
 										fieldInstance().name());
 	   	 	((ParsedClassType)ht).addField(fi); // add field for type checking
+	   	 	
+	   	 	hostInstance = fi;
+	   	 	
+	   	 	
 	   	 	
 			/* record instance for "this" parameter */
 			String name = UniqueID.newID("this");
@@ -280,7 +284,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 				 position());}
 		else initSig = null;
 		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
-	    			(fs, current_aspect, initSig, position());
+	    			(fs, current_aspect, initSig, AspectInfoHarvester.convertSig(hostInstance.getGet()),
+	    				AspectInfoHarvester.convertSig(hostInstance.getSet()),  position());
 		gai.addIntertypeFieldDecl(ifd);
 		gai.addSuperDispatches(supers.supercalls(gai));
 		gai.addSuperFieldDispatches(supers.superfields(gai));

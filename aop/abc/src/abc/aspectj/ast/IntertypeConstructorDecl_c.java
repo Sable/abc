@@ -474,15 +474,13 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	* also add fields and methods of the host that are visible from the aspect.
 	*/
 	
-	public Context enterScope(Node n, Context c) {
+	public Context enterScope(Context c) {
 		AJContext nc = (AJContext) super.enterScope(c);
-		if (n==body) {
-			TypeSystem ts = nc.typeSystem();
-			AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
+		TypeSystem ts = nc.typeSystem();
+		AJContext ncc = (AJContext) nc.pushHost(ts.staticTarget(host.type()).toClass(),
 											   flags.isStatic());
-			ncc.addITMembers(host.type().toClass());
-			return ncc;
-		} else return nc;	
+		ncc.addITMembers(host.type().toClass());
+		return ncc;
 	}
     
     public Supers getSupers() {

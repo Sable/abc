@@ -52,6 +52,9 @@ public class AJClassBody_c extends ClassBody_c {
 				 ConstructorInstance cj = (ConstructorInstance) l.get(j);
 
 				 if (ci.hasFormals(cj.formalTypes()) && !ITDoks(ci,cj)) {
+				 	if (ci instanceof InterTypeMemberInstance)
+				 		throw new SemanticException("Duplicate constructor \"" + ci + "\".", ci.position());
+				 	else
 					 throw new SemanticException("Duplicate constructor \"" + cj + "\".", cj.position());
 				 }
 			 }
@@ -85,6 +88,9 @@ public class AJClassBody_c extends ClassBody_c {
 				  FieldInstance fj = (FieldInstance) l.get(j);
 
 				  if (fi.name().equals(fj.name()) && !ITDoks(fi,fj)) {
+				  	if (fi instanceof InterTypeMemberInstance)
+				  		throw new SemanticException("Duplicate field \"" + fi + "\".", fi.position());
+				  	else
 					  throw new SemanticException("Duplicate field \"" + fj + "\".", fj.position());
 				  }
 			  }
@@ -105,7 +111,10 @@ public class AJClassBody_c extends ClassBody_c {
 				MethodInstance mj = (MethodInstance) l.get(j);
 
 				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj)) {
-					throw new SemanticException("Duplicate method \"" + mj + "\".", mj.position());
+					if (mi instanceof InterTypeMemberInstance)
+						throw new SemanticException("Duplicate method \"" + mi + "\".", mi.position());
+					else
+						throw new SemanticException("Duplicate method \"" + mj + "\".", mj.position());
 				}
 			}
 		}

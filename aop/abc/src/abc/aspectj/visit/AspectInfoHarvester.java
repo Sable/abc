@@ -106,6 +106,8 @@ public class AspectInfoHarvester extends ContextVisitor {
     }
     
     public static MethodSig convertSig(MethodInstance mi) {
+    if (mi==null)
+    	return null;
 	List formals = new ArrayList();
 	Iterator fi = mi.formalTypes().iterator(); 
 	int index = 0;

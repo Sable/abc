@@ -68,7 +68,7 @@ public class IntertypeAdjuster {
 		SootField sf = field.getSootField();
 		FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),sf);
 	// 	return the value
-		Local r = Jimple.v().newLocal("$result",retType);  ls.add(r);
+		Local r = Jimple.v().newLocal("result$",retType);  ls.add(r);
 		AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, sfref); ss.add(rStmt);
 		ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
 		ss.add(stmt);
@@ -294,6 +294,78 @@ public class IntertypeAdjuster {
 				// This is a stub for an intertype method decl
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
 	}
+	
+	
+	private SootMethod makeSootMethod(MethodSig method,int modifiers,SootClass cl) {
+		Type retType = method.getReturnType().getSootType();
+		List parms = new ArrayList();
+		for( Iterator formalIt = method.getFormals().iterator(); formalIt.hasNext(); ) {
+			final AbcType formalType = ((Formal) formalIt.next()).getType();
+			parms.add(formalType.getSootType());
+		}
+		SootMethod sm = new SootMethod( method.getName(),  
+											parms,
+											retType,
+											modifiers );
+		for( Iterator exceptionIt = method.getExceptions().iterator(); exceptionIt.hasNext(); ) {
+				final SootClass exception = (SootClass) exceptionIt.next();
+				sm.addException( exception );
+		}
+		cl.addMethod(sm);
+		return sm;
+	}
+	
+	private SootMethod getMethod(MethodSig getSig, SootField field,SootClass cl) {
+		SootMethod sm = makeSootMethod(getSig,Modifier.PUBLIC,cl);
+		//		create a body
+		Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+		Chain ls = b.getLocals();
+		PatchingChain ss = b.getUnits();
+		//  target of the field reference is "this : targetType"
+		SootClass sc = field.getDeclaringClass();
+		RefType rt = sc.getType();
+		ThisRef thisref = Jimple.v().newThisRef(rt);
+		Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
+		//  get the field we want to retrieve
+		FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),field);
+		// 	return the value
+		Local r = Jimple.v().newLocal("result$",field.getType());  ls.add(r);
+		AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(r, sfref); ss.add(rStmt);
+		ReturnStmt stmt = Jimple.v().newReturnStmt(r); 
+		ss.add(stmt);
+		// This is an accessor method for reading a field
+		MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
+	    return sm;
+	}
+	
+	private SootMethod setMethod(MethodSig getSig, SootField field,SootClass cl) {
+		SootMethod sm = makeSootMethod(getSig,Modifier.PUBLIC,cl);
+		//		create a body
+		Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+		Chain ls = b.getLocals();
+		PatchingChain ss = b.getUnits();
+		//  target of the field reference is "this : targetType"
+		SootClass sc = field.getDeclaringClass();
+		RefType rt = sc.getType();
+		ThisRef thisref = Jimple.v().newThisRef(rt);
+		Local v = Jimple.v().newLocal("this$",rt); ls.add(v);
+		IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
+		//  get the field we want to update
+		FieldRef sfref = Jimple.v().newInstanceFieldRef(b.getThisLocal(),field);
+		// 	get the parameter that we want to store
+		Local p = Jimple.v().newLocal("param$",field.getType()); ; ls.add(p);
+		ParameterRef pr = Jimple.v().newParameterRef(field.getType(),0);
+		IdentityStmt prStmt = soot.jimple.Jimple.v().newIdentityStmt(p, pr); ss.add(prStmt);
+		// now do the assignment
+		AssignStmt rStmt = soot.jimple.Jimple.v().newAssignStmt(sfref, p); ss.add(rStmt);
+		ReturnStmt stmt = Jimple.v().newReturnStmt(p); 
+		ss.add(stmt);
+		// This is an accessor method for writing a field
+		MethodCategory.register(sm, MethodCategory.ACCESSOR_SET);
+		return sm;
+	}
+	
 
     private void addField( IntertypeFieldDecl ifd ) {
         FieldSig field = ifd.getTarget();
@@ -305,6 +377,11 @@ public class IntertypeAdjuster {
 
         SootClass cl = field.getDeclaringClass().getSootClass();
         if( cl.isInterface() ) {
+        	// add the accessor methods to the interface
+        	
+        	makeSootMethod(ifd.getGetter(),modifiers | Modifier.ABSTRACT,cl);
+			makeSootMethod(ifd.getSetter(),modifiers | Modifier.ABSTRACT,cl);
+        
             for( Iterator childClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); childClassIt.hasNext(); ) {
                 final SootClass childClass = ((AbcClass) childClassIt.next()).getSootClass();
                 if( childClass.isInterface() ) continue;
@@ -319,6 +396,10 @@ public class IntertypeAdjuster {
                         field.getType().getSootType(),
                         modifiers );
                 childClass.addField(newField);
+                
+                // Add the accessor methods and their implementation to the implementing class
+                getMethod(ifd.getGetter(),newField,childClass);
+                setMethod(ifd.getSetter(),newField,childClass);
                 
                 
                 // System.out.println("added field "+field.getName() + " to class " + childClass);

@@ -82,7 +82,8 @@ public class AJContext_c extends Context_c implements AJContext {
 	}
 	
 	public void addITMembers(ReferenceType type) {
-		addMembers(type,new HashSet());
+		if (type !=	null)
+			addMembers(type,new HashSet());
 	}
 	
 	private void addMembers(ReferenceType type, Set visited) {
