@@ -5965,6 +5965,17 @@
     
     
     <ajc-test num="689" dir="new" pr="885" keywords="knownLimitation"
+      abccomment="the pointcut in the source file refers to the wrong class, which means
+                  that neither abc nor ajc can pass. Cloned in 68901"
+      comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved"
+      title="source locations within expressions (hard case of constructor start)">
+        <abckeywords><skip/></abckeywords>
+        <compile files="SourceLocationWithinExprHard.java"/>
+        <run class="SourceLocationWithinExprHard"/>
+    </ajc-test>
+
+    <ajc-test num="68901" dir="abctests/new" pr="885" keywords="knownLimitation"
+      abccomment="cloned from 689 and source file changed slightly"
       comment="this behaves differently in 1.3 from 1.4 for unknown reasons, merge with above when resolved"
       title="source locations within expressions (hard case of constructor start)">
         <compile files="SourceLocationWithinExprHard.java"/>
