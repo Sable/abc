@@ -46,7 +46,21 @@ public class Main {
 	    System.exit(5);
 	}
 
-	// We should now have all classes as jimple
+        // Adjust Soot types for intertype decls
+        new IntertypeAdjuster().adjust();
+
+        // retrieve all bodies
+        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                final SootMethod method = (SootMethod) methodIt.next();
+                if( !method.isConcrete() ) continue;
+                method.retrieveActiveBody();
+            }
+        }
+        // We should now have all classes as jimple
+
+        GlobalAspectInfo.v().computeAdviceLists();
 	
 	// Output the aspect info
 	GlobalAspectInfo.v().print(System.err);

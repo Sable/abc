@@ -9,7 +9,16 @@ import abc.weaving.matching.*;
 public class Weaver {
 
     public void weave() {
-        // TODO: add intertype declaration stuff
+        // Generate intertype methods and fields
+        IntertypeGenerator ig = new IntertypeGenerator();
+        for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
+            final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
+            ig.addMethod( imd );
+        }
+        for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
+            final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
+            ig.addField( ifd );
+        }
 
         // Generate methods inside aspects
         AspectCodeGen ag = new AspectCodeGen();

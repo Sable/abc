@@ -141,7 +141,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
                                                            version())));
 	}
 
-	//l.add(new OutputPass(Pass.OUTPUT, job, new Translator(job, ts, nf, targetFactory())));
+	l.add(new OutputPass(Pass.OUTPUT, job, new Translator(job, ts, nf, targetFactory())));
 
         return l;
     }
