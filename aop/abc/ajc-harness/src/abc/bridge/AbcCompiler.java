@@ -86,7 +86,7 @@ public class AbcCompiler extends AjCompiler {
 						problemId(ei.getErrorKind()), 
 						ei.getPosition().column(), 
 						ei.getPosition().column()+1, 
-						ei.getPosition().line());
+						ei.getPosition().line()==-1?0:ei.getPosition().line());
 					String file=ei.getPosition().file();
 					CompilationResult compilationResult= ((CompilationResult) compilationResultsMap.get(file));
 					
