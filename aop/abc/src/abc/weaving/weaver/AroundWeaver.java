@@ -2080,7 +2080,7 @@ public class AroundWeaver {
 			
 			if (s instanceof AssignStmt) {
 				AssignStmt assign=(AssignStmt)s;
-				if (proceedActuals.contains(assign.getLeftOp())) {
+				/*if (proceedActuals.contains(assign.getLeftOp())) {
 					throw new CodeGenException(
 						"Passing modified values to proceed is not yet implemented. \n" +
 						"Found assignment to local passed to proceed. \n" +
@@ -2088,7 +2088,7 @@ public class AroundWeaver {
 						" Advice method: " + adviceMethod.getName() + "\n" +  
 						" Statement: " + s.toString() 
 						 );		
-				}
+				}*/
 			}
 		}
 	}
