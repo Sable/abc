@@ -65,13 +65,17 @@ public class MethodAccessorMethodSource implements soot.MethodSource {
 
         //System.out.println("meth param types: "+methParamsTypes);
         // assign local to meth
-        soot.SootMethod meth = ((soot.RefType)Util.getSootType(methodInst.container())).getSootClass().getMethod(methodInst.name(), methParamsTypes, Util.getSootType(methodInst.returnType()));
+        soot.SootMethodRef meth = soot.Scene.v().makeMethodRef(
+                ((soot.RefType)Util.getSootType(methodInst.container())).getSootClass(), 
+                methodInst.name(), 
+                methParamsTypes, 
+                Util.getSootType(methodInst.returnType()));
 
         soot.jimple.InvokeExpr invoke = null;
         if (methodInst.flags().isStatic()) {
             invoke = soot.jimple.Jimple.v().newStaticInvokeExpr(meth, methParams);
         }
-        else if(meth.getDeclaringClass().isInterface()) {
+        else if(meth.declaringClass().isInterface()) {
             // TODO: Check this is the correct behaviour - adopted from InterTypeAdjuster
             invoke = soot.jimple.Jimple.v().newInterfaceInvokeExpr(base, meth, methParams);
         }

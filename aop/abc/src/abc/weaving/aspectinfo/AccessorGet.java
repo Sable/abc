@@ -52,7 +52,7 @@ public class AccessorGet extends AccessorMethod {
         
         soot.SootMethod accessMeth = new soot.SootMethod(name, paramTypes, returnType, modifiers);
         
-        FieldGetAccessorMethodSource fgams = new FieldGetAccessorMethodSource(Util.getSootType(fi.type()), fi.name(), sc);
+        FieldGetAccessorMethodSource fgams = new FieldGetAccessorMethodSource(Util.getSootType(fi.type()), fi.name(), sc, fi.flags().isStatic());
         accessMeth.setSource(fgams);
         
         sc.addMethod(accessMeth);

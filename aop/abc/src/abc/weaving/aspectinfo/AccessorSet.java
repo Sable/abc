@@ -54,7 +54,7 @@ public class AccessorSet extends AccessorMethod {
         paramTypes.add(returnType);
         
         soot.SootMethod accessMeth = new soot.SootMethod(name, paramTypes, returnType, modifiers);
-        FieldSetAccessorMethodSource fsams = new FieldSetAccessorMethodSource(returnType, fi.name(), sc);
+        FieldSetAccessorMethodSource fsams = new FieldSetAccessorMethodSource(returnType, fi.name(), sc, fi.flags().isStatic());
         
         accessMeth.setSource(fsams);
         

@@ -18,11 +18,13 @@ public class FieldGetAccessorMethodSource implements soot.MethodSource {
     private soot.Type fieldType;
     private String fieldName;
     private soot.SootClass receiver;
+    private boolean isStatic;
 
-    public FieldGetAccessorMethodSource(soot.Type fieldType, String fieldName, soot.SootClass receiver) {
+    public FieldGetAccessorMethodSource(soot.Type fieldType, String fieldName, soot.SootClass receiver, boolean isStatic) {
         this.fieldType = fieldType;
         this.fieldName = fieldName;
         this.receiver = receiver;
+        this.isStatic = isStatic;
     }
     
         
@@ -52,10 +54,10 @@ public class FieldGetAccessorMethodSource implements soot.MethodSource {
             // create field type local
             soot.Local fieldLocal = lg.generateLocal(fieldType);
             // assign local to fieldRef
-            soot.SootField field = receiver.getField(fieldName, fieldType);
+            soot.SootFieldRef field = soot.Scene.v().makeFieldRef(receiver, fieldName, fieldType);
 
             soot.jimple.FieldRef fieldRef = null;
-            if (field.isStatic()) {
+            if (isStatic) {
                 fieldRef = soot.jimple.Jimple.v().newStaticFieldRef(field);
             }
             else {
