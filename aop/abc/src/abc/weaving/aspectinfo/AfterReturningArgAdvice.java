@@ -27,8 +27,8 @@ public class AfterReturningArgAdvice extends AfterReturningAdvice {
 	return "after returning arg";
     }
 
-    public Residue matchesAt(WeavingEnv we,ShadowMatch sm) {
-	if(!sm.supportsAfter()) return null;
+    public Residue matchesAt(WeavingEnv we,ShadowMatch sm,AbstractAdviceDecl ad) {
+	if(super.matchesAt(we,sm,ad)==null) return null;
 	ContextValue cv=sm.getReturningContextValue();
 	Var v=new Var(formal.getName(),formal.getPosition());
 	return Bind.construct
