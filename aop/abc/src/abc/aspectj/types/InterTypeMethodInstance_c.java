@@ -90,25 +90,36 @@ public class InterTypeMethodInstance_c
 		return interfaceTarget;
 	}
 
-	/** fix up the mangled instance to agree with super type */
+	/** fix up the mangled instance to agree with super type and interfaces. What to do if there
+	 *   are multiple interfaces? FIX THIS: all interfaces would need to use the same mangled name.
+	 *  */
+	
 	public void setMangle(AJTypeSystem ts) {
-		if (container.superType() != null) {
-			if (container.superType().toReference().hasMethod(this)) {
-				MethodInstance superInstance = null;
-				try {
-				 superInstance = ts.findMethod(container.superType().toReference(),this.name(),this.formalTypes(),
-				                               origin);
-				} catch (SemanticException e) { throw new InternalCompilerError("could not find method"+e.getMessage()) ; }
-				if (superInstance instanceof InterTypeMethodInstance_c)
-				{	
-					mangled = mangled.name(((InterTypeMethodInstance_c)superInstance).mangled().name());
+			MethodInstance superInstance = null;
+		    if (container.superType() != null) {
+					if (container.superType().toReference().hasMethod(this)) {
+						try {
+						 superInstance = ts.findMethod(container.superType().toReference(),this.name(),this.formalTypes(),
+													   origin);
+						} catch (SemanticException e) { throw new InternalCompilerError("could not find method"+e.getMessage()) ; }
+					}
+		    }
+		    MethodInstance intfInstance = null;
+			if (superInstance==null) {
+		 		List impls = implemented();
+				do intfInstance = (MethodInstance) impls.remove(0);
+				while (!impls.isEmpty() && 
+				             intfInstance.container().toClass().flags().isInterface());
+			} 
+			if (intfInstance != null && intfInstance.container().toClass().flags().isInterface())
+				superInstance = intfInstance;
+			if (superInstance != null && superInstance.flags().isAbstract())
+				{if (superInstance instanceof InterTypeMethodInstance_c)
+						mangled = mangled.name(((InterTypeMethodInstance_c)superInstance).mangled().name());
+			  	  else 
+			    		mangled = mangled.name(superInstance.name());
 				}
-			    else {
-			    	mangled = mangled.name(superInstance.name());
-			    }
-			}
-		}
-			
+			else /* skip */;
 	}
 	
 	public MethodInstance mangled() {
