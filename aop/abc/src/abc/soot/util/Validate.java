@@ -5,7 +5,8 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.*;
 import soot.toolkits.scalar.FlowSet;
-import soot.toolkits.graph.TrapUnitGraph;
+import soot.toolkits.graph.ExceptionalUnitGraph;
+import soot.toolkits.exceptions.PedanticThrowAnalysis;
 import soot.util.cfgcmd.*;
 import soot.util.dot.*;
 
@@ -118,7 +119,11 @@ public class Validate {
 
         Body b = method.getActiveBody();
 	Chain units=b.getUnits();
-        TrapUnitGraph g = new TrapUnitGraph(b);
+        ExceptionalUnitGraph g = new ExceptionalUnitGraph
+	    (b, PedanticThrowAnalysis.v(), false);
+
+	// FIXME: Work around for bug in soot
+	Scene.v().releaseActiveHierarchy();
 
         // print out the cfg as a dot file
         if (abc.main.Debug.v().doValidateDumpCFG)
