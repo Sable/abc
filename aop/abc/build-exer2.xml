@@ -132,7 +132,7 @@ source="1.4"
             <src path="generated"/>
             <sourcepath>
 		      <pathelement path="aosd2005"/>
-		      <fileset dir="aosd2005/abcexer1">
+		      <fileset dir="aosd2005/abcexer2">
 		        <include name="**/*.java"/>
 		      </fileset>
 		    </sourcepath>
@@ -149,7 +149,7 @@ source="1.4"
     <target name="flex-translator" depends="settings,jflex-dep" unless="jflex-up-to-date">
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
-        <mkdir dir="generated/abcexer1/parse"/>
+        <mkdir dir="generated/abcexer2/parse"/>
         <java classname="JFlex.Main"
             fork="true"
             dir="."
@@ -178,7 +178,7 @@ source="1.4"
     <target name="cup-translator" depends="settings,flex-translator,cup-dep,ppg-translator" unless="cup-up-to-date">
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
-        <mkdir dir="generated/abcexer1/parse"/>
+        <mkdir dir="generated/abcexer2/parse"/>
         <java classname="java_cup.Main"
             fork="true"
             dir="generated/abc/aspectj/parse"
@@ -203,14 +203,14 @@ source="1.4"
         </java>
         <java classname="java_cup.Main"
             fork="true"
-            dir="generated/abcexer1/parse"
+            dir="generated/abcexer2/parse"
             failonerror="true"
         >
             <classpath>
                 <pathelement location="${polyglot.loc}"/>
                 <pathelement location="${polyglot.cupclasses.loc}"/>
             </classpath>
-            <arg line="abcexer1_ppg.cup"/>
+            <arg line="abcexer2_ppg.cup"/>
         </java>
     </target>
 
@@ -226,8 +226,8 @@ source="1.4"
                 includes="Grm.java,sym.java"/>
         </dependset>
          <dependset>
-            <srcfileset dir="generated/abcexer1/parse" includes="abcexer1_ppg.cup"/>
-            <targetfileset dir="generated/abcexer1/parse"
+            <srcfileset dir="generated/abcexer2/parse" includes="abcexer2_ppg.cup"/>
+            <targetfileset dir="generated/abcexer2/parse"
                 includes="Grm.java,sym.java"/>
         </dependset>
         <condition property="cup-up-to-date">
@@ -236,8 +236,8 @@ source="1.4"
                 <available file="generated/abc/aspectj/parse/sym.java"/>
                 <available file="generated/abc/eaj/parse/Grm.java"/>
                 <available file="generated/abc/eaj/parse/sym.java"/>
-                <available file="generated/abcexer1/parse/Grm.java"/>
-                <available file="generated/abcexer1/parse/sym.java"/>
+                <available file="generated/abcexer2/parse/Grm.java"/>
+                <available file="generated/abcexer2/parse/sym.java"/>
             </and>
         </condition>
     </target>
@@ -245,7 +245,7 @@ source="1.4"
     <target name="ppg-translator" depends="settings,ppg-dep,flex-translator" unless="ppg-up-to-date">
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
-        <mkdir dir="generated/abcexer1/parse"/>
+        <mkdir dir="generated/abcexer2/parse"/>
         <java classname="ppg.PPG"
             fork="true"
             dir="src/abc/aspectj/parse"
@@ -272,15 +272,15 @@ source="1.4"
         </java>
         <java classname="ppg.PPG"
             fork="true"
-            dir="aosd2005/abcexer1/parse"
+            dir="aosd2005/abcexer2/parse"
             failonerror="true"
-            output="generated/abcexer1/parse/abcexer1_ppg.cup"
+            output="generated/abcexer2/parse/abcexer2_ppg.cup"
         >
             <classpath>
                 <pathelement location="${polyglot.loc}"/>
                 <pathelement location="${polyglot.cupclasses.loc}"/>
             </classpath>
-            <arg line="abcexer1.ppg"/>
+            <arg line="abcexer2.ppg"/>
         </java>
     </target>
     <target name="ppg-dep" depends="settings">
@@ -295,15 +295,15 @@ source="1.4"
                 includes="eaj_ppg.cup"/>
         </dependset>
         <dependset>
-            <srcfileset dir="aosd2005/abcexer1/parse" includes="aspectj.ppg"/>
-            <targetfileset dir="generated/abcexer1/parse"
-                includes="abcexer1_ppg.cup"/>
+            <srcfileset dir="aosd2005/abcexer2/parse" includes="aspectj.ppg"/>
+            <targetfileset dir="generated/abcexer2/parse"
+                includes="abcexer2_ppg.cup"/>
         </dependset>
         <condition property="ppg-up-to-date">
             <and> 
                 <available file="generated/abc/aspectj/parse/aspectj_ppg.cup"/>
                 <available file="generated/abc/eaj/parse/eaj_ppg.cup"/>
-                <available file="generated/abcexer1/parse/abcexer1_ppg.cup"/>
+                <available file="generated/abcexer2/parse/abcexer2_ppg.cup"/>
             </and>
         </condition>
     </target>
