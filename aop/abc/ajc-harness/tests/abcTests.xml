@@ -3003,13 +3003,20 @@
 
     <ajc-test num="314" dir="new" pr="494"
       title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public"
-      abccomment="abc gets most of these, but some of the messages are wrong. This is related to the class conformance
-                  check bug that I reported to polyglot today. 07/07/04"
+      abccomment="abc pinpoints first three errors differently, but ok. ODM 11/08/04"
       keywords="from-errors">
         <compile files="IntroduceInnerInterfaceCF.java" options="-Xlint:ignore">
-            <message kind="error" line="18"/>
-            <message kind="error" line="19"/>
-            <message kind="error" line="20"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="19"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="24"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="48"/>
+            <ajcmessage kind="error" line="50"/>
+            <ajcmessage kind="error" line="58"/>
+            <message kind="error" line="16"/>
+            <message kind="error" line="23"/>
             <message kind="error" line="24"/>
             <message kind="error" line="42"/>
             <message kind="error" line="45"/>
@@ -3578,6 +3585,8 @@
     </ajc-test>
 
     <ajc-test num="385" dir="new" title="Compiler can compile correct strictfp modifiers"
+      abccomment="abc fails with a compile error, which is a polyglot bug: it contradicts JLS 9.1.1.2.
+                  Easy fix (just delete the relevant test), entered onto bugzilla. ODM 11/08/04"
       keywords="from-resolved_10x">
         <compile files="StrictFpCompile.java"/>
         <run class="StrictFpCompile"/>
@@ -4440,6 +4449,18 @@
 
     <ajc-test num="506" dir="new"
       title="functional modifiers work correctly with introduced members"
+      abccomment="test depends on implementation-specific naming convention, via reflection.
+                  Cloned as 50601. ODM 11/08/04"
+      keywords="from-resolved_10x">
+    <abckeywords> <skip/> </abckeywords>
+        <compile files="IntroducedModifiers.java"/>
+        <run class="IntroducedModifiers"/>
+    </ajc-test>
+
+    <ajc-test num="50601" dir="abctests/new"
+      title="functional modifiers work correctly with introduced members"
+      abccomment="test depends on implementation-specific naming convention, via reflection.
+                  Cloned from 506. ODM 11/08/04"
       keywords="from-resolved_10x">
         <compile files="IntroducedModifiers.java"/>
         <run class="IntroducedModifiers"/>
