@@ -5082,5 +5082,17 @@
          <compile files="CflowInliningDepth.java"></compile>
          <run class="CflowInliningDepth"></run>
     </ajc-test>
+<ajc-test title="checks for declare parents on binary classes" num="1016" dir="abctests/bugs">
+         <compile files="declareparentsbinary/DP.jar,DeclareParentsBinaryAspect.java">
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+         </compile>
+    </ajc-test>
  
 </suite>

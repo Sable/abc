@@ -188,12 +188,3 @@ Semantic Error at abctests/bugs/PrecedenceSort.java:2,18-3:5: Pieces of advice f
 FAIL: Test 1015: "abctests/bugs/correct topological sorting of precedence" failed.
 
 
-Running test 1016: abctests/bugs/checks for declare parents on binary classes
-Commandline: abc -d abctests/bugs -injars abctests/bugs/declareparentsbinary/DP.jar -warn-unused-advice:off abctests/bugs/DeclareParentsBinaryAspect.java 
-Compilation produced an unexpected number of errors: 2, should be 9
-Actual errors found: 
-Semantic Error at DP7.class: while weaving into jarred class: DP7. DP7 should be declared abstract; it does not define interfacemethod(), which is declared in DPI
-Semantic Error at DP5.class: while weaving into jarred class: DP5. DP5 should be declared abstract; it does not define abstractmethod(), which is declared in DPA
-FAIL: Test 1016: "abctests/bugs/checks for declare parents on binary classes" failed.
-
-
