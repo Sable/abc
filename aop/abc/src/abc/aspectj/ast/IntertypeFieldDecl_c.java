@@ -79,6 +79,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     public Node typeCheck(TypeChecker tc) throws SemanticException {
     	if (flags().isProtected())
     		throw new SemanticException("Intertype fields cannot be protected",position());
+    	if (flags().isStatic() && host.type().toClass().flags().isInterface())
+    		throw new SemanticException("Intertype fields on interfaces cannot be static");
     	return super.typeCheck(tc);
     }
 

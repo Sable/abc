@@ -146,7 +146,7 @@ public class PointcutCodeGen {
            AfterThrowingWeaver.doWeave(method, localgen, adviceappl);
 	else if (advicespec instanceof AfterAdvice)
 	   {  
-	      AfterThrowingWeaver.doWeave(method,localgen,adviceappl);
+	      // AfterThrowingWeaver.doWeave(method,localgen,adviceappl);
 	      AfterReturningWeaver.doWeave(method,localgen,adviceappl);
 	   }
 	else if (advicespec instanceof AroundAdvice ) 
