@@ -1,0 +1,69 @@
+Abc is a joint project between the Programming Tools Group at Oxford
+University, UK and the Sable Research Group at McGill University,
+Quebec.
+
+Abc is built on a number of existing efforts:
+ - AspectJ language design <http://www.aspectj.org>
+ - ajc runtime library and testing harness <http://www.aspectj.org>
+ - Polyglot, an extensible compiler framework for Java 
+   <http://www.cs.cornell.edu/Projects/polyglot/>
+ - Soot, a Java optimisation framework <http://www.sable.mcgill.ca/soot/>
+
+In alphabetical order of surname, the following people have contributed
+directly to abc:
+
+Pavel Avgustinov <pavel.avgustinov at magdalen.oxford.ac.uk>
+ - Designed and implemented the abc test harness
+ - Implemented privileged aspects along with a generic accessor 
+   method infrastructure
+ - Re-wrote the lexer to make an LGPL'd version
+
+Aske Simon Christensen <aske at brics.dk>
+ - Designed the overall compiler structure, and the connection
+   between the frontend and backend
+ - Designed and implemented the pattern matcher
+ - Implemented declare parents and declare precedence
+
+Christopher Goard <cgoard at cs.mcgill.ca>
+ - prototype implementation of cflow counters in ajc
+
+Laurie Hendren <hendren at sable.mcgill.ca>
+ - Project leader (McGill)
+ - Grammar, Scanner and Parser
+ - Initial weaver
+
+John Jorgensen <jorgnsn at lcd.uregina.ca>
+ - Soot support
+
+Sascha Kuzins <sascha.kuzins at lady-margaret-hall.oxford.ac.uk>
+ - Designed and implemented the around weaver
+
+Jennifer Lhotak <jlhotak at sable.mcgill.ca>
+ - Java to Jimple
+ - initial weaver
+
+Ondrej Lhotak <olhotak at sable.mcgill.ca>
+ - initial weaver
+ - Work on Soot class and method handling
+
+Oege de Moor <oege at comlab.ox.ac.uk>
+ - Project leader
+ - Implemented frontend
+ - Designed and implemented intertype weaver
+
+Jane Panangaden
+ - Poinsettiacus logo design
+ - General consultant
+
+Damien Sereni <dsereni at comlab.ox.ac.uk>
+ - Simple cflow optimisations (counters, instance sharing)
+
+Ganesh Sittampalam <ganesh at comlab.ox.ac.uk>
+ - Designed and implemented pointcut matcher
+ - Implemented large portions of the weaver
+ - Various minor frontend fixes
+ - Some small backend optimisations
+ - Work on Soot class handling
+
+Julian Tibble <julian.tibble at worcester.oxford.ac.uk>
+ - EAJ language

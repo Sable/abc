@@ -16,6 +16,13 @@
     <target name="jars" 
             depends="abc-jar,runtime-jar,testing-jar,complete-jar,abc-for-ajc-ant-jar"/>
 
+    <target name="copy-jars" depends="settings">
+        <copy file="${polyglot.loc}" tofile="lib/polyglot.jar" />
+        <copy file="${polyglot.cupclasses.loc}" tofile="lib/java_cup.jar" />
+        <copy file="${soot.loc}" tofile="lib/sootclasses.jar" />
+        <copy file="${jasmin.loc}" tofile="lib/jasminclasses-sable-nocup.jar" />
+    </target>
+
     <target name="abc-for-ajc-ant-jar" depends="settings">
        <jar destfile="lib/abc-for-ajc-ant.jar">
            <fileset dir="dist/abc-for-ajc-ant"/>
@@ -243,7 +250,7 @@
     <target name="javadoc">
         <javadoc
                  destdir="javadoc"
-		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/:http://java.sun.com/j2se/1.4.2/docs/api/"
+		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/1.4.2/docs/api/"
                  maxmemory="200m"
                  windowtitle="ABC compiler"
                  verbose="true"
@@ -255,7 +262,7 @@
     <target name="runtime-javadoc">
         <javadoc
                  destdir="runtime-javadoc"
-		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/:http://java.sun.com/j2se/1.4.2/docs/api/"
+		 link="http://musketeer.comlab.ox.ac.uk/javadoc/soot-dev/;http://java.sun.com/j2se/1.4.2/docs/api/"
                  maxmemory="200m"
                  windowtitle="ABC compiler"
                  verbose="true"
@@ -272,7 +279,7 @@
             <fileset dir="lib" includes="**/*.jar" />
             <fileset dir="ajc-harness/classes" includes="**" />
             <fileset dir="ajc-harness/lib" includes="abc-tests.jar" />
-        </delete>
+        </delete> 
     </target>
 
     <target name="clobber" depends="veryclean"/>

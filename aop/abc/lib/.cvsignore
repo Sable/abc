@@ -3,3 +3,8 @@ abc-testing.jar
 abc-complete.jar
 abc-runtime.jar
 abc-for-ajc-ant.jar
+jasminclasses-sable-nocup.jar
+java_cup.jar
+polyglot.jar
+sootclasses.jar
+
