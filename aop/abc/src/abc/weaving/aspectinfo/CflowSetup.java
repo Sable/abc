@@ -1,4 +1,4 @@
-/* Abc - The AspectBench Compiler
+/* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Damien Sereni
  *

@@ -38,7 +38,7 @@ mkdir -p package/abc-$VERSION/bin
 cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ \
       src/ runtime-src/ testing-src/ generated/ \
       ajc-harness/ javadoc/ runtime-javadoc/ \
-      dist/abc-for-ajc-ant/ \
+      dist/ \
       package/abc-$VERSION/
 cp dist/abc package/abc-$VERSION/bin/
 cp dist/abc.bat package/abc-$VERSION/bin/
@@ -66,6 +66,9 @@ SRCS="\
    abc-$VERSION/testing-src/ \
    abc-$VERSION/ajc-harness/ \
    abc-$VERSION/dist/abc-for-ajc-ant/ \
+   abc-$VERSION/dist/abc-debian \
+   abc-$VERSION/dist/abc \
+
 "
 
 
@@ -93,6 +96,8 @@ tar --exclude CVS --exclude update.sh --exclude lib/ --exclude classes/ \
     --exclude cup-classes/ --exclude \*.class --exclude lib/*.jar \
     -czvf polyglot-dev-$DATE.tar.gz polyglot-dev-$DATE/
 
+rm -rf tmp
+
 for d in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE polyglot-dev-$DATE \
          jasmin-dev-$DATE
  do mkdir tmp
@@ -102,6 +107,51 @@ for d in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE polyglot-dev-$DATE \
     cd ..
     rm -rf tmp
 done
+
+mkdir -p tmp/abc-$VERSION
+cd tmp/abc-$VERSION
+
+for root in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE \
+            polyglot-dev-$DATE jasmin-dev-$DATE
+ do cp ../../$root.tar.gz .
+done
+
+cp /usr/local/src/xact/java/xact-complete.jar \
+    xact-complete-$XACT.jar
+cp /usr/local/src/soot-dev/lib/jedd-runtime-$JEDD.jar \
+    jedd-runtime-$JEDD.jar
+
+mkdir debian
+
+cp ../../../dist/debian/control debian/
+touch debian/rules
+chmod 755 debian/rules
+echo '#!/usr/bin/make -f' >> debian/rules
+echo "export PREREL=$PREREL" >> debian/rules
+echo "export ABC_VER=$VERSION" >> debian/rules
+echo "export JEDD_VER=$JEDD" >> debian/rules
+echo "export XACT_VER=$XACT" >> debian/rules
+echo "export SOOT_VER=dev-$DATE" >> debian/rules
+echo "export POLYGLOT_VER=dev-$DATE" >> debian/rules
+echo "export JASMIN_VER=dev-$DATE" >> debian/rules
+cat ../../../dist/debian/rules >> debian/rules
+
+echo "abc ($VERSION) unstable; urgency=low" > debian/changelog
+echo >> debian/changelog
+echo "  * Built from source" >> debian/changelog
+echo >> debian/changelog
+echo -n " -- abc development team <abc-dev@comlab.ox.ac.uk>  " \
+   >> debian/changelog
+date +'%a, %e %b %Y %T %z' >> debian/changelog
+
+dpkg-buildpackage -rfakeroot -uc -us
+
+cd ../..
+for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
+         abc_${VERSION}_i386.changes
+   do mv tmp/$d .
+done
+rm -rf tmp
 
 mkdir -p ../dists
 
@@ -122,6 +172,12 @@ cp /usr/local/src/soot-dev/lib/jedd-runtime-$JEDD.jar \
 mkdir ../dists/$VERSION/files/bin
 cp abc-$VERSION/bin/abc ../dists/$VERSION/files/bin
 cp abc-$VERSION/bin/abc.bat ../dists/$VERSION/files/bin
+
+mkdir ../dists/$VERSION/files/debian
+for d in abc_$VERSION.dsc abc_$VERSION.tar.gz abc_${VERSION}_all.deb \
+         abc_${VERSION}_i386.changes
+   do cp $d ../dists/$VERSION/files/debian
+done
 
 cp -a abc-$VERSION/runtime-javadoc ../dists/$VERSION/files/
 

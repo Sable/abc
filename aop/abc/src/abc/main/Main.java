@@ -1,4 +1,4 @@
-/* Abc - The AspectBench Compiler
+/* abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Laurie Hendren
  * Copyright (C) 2004 Ganesh Sittampalam
@@ -21,8 +21,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL;
- * if not, write to the Free Software Foundation, Inc.,
+ * License along with this compiler, in the file LESSER-GPL; 
+ * if not, write to the Free Software Foundation, Inc., 
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -147,7 +147,7 @@ public class Main {
       }
 
     public static void abcPrintVersion()
-      { G.v().out.println("Abc version " + abcVersionString);
+      { G.v().out.println("abc version " + abcVersionString);
           // FIXME: should print out any extension version
         G.v().out.println("... using Soot toolkit version " +
                                   soot.Main.v().versionString);
@@ -155,18 +155,18 @@ public class Main {
                                     new polyglot.ext.jl.Version());
         G.v().out.println("For usage,  abc --help");
         G.v().out.println("-------------------------------------------------------------------------------");
-        G.v().out.println("Copyright (C) 2004 The Abc development team. All rights reserved.");
+        G.v().out.println("Copyright (C) 2004 The abc development team. All rights reserved.");
         G.v().out.println("See the file CREDITS for a list of contributors.");
         G.v().out.println("See individual source files for details.");
         G.v().out.println("");
         G.v().out.println("Soot is Copyright (C) 1997-2004 Raja Vallee-Rai and others.");
         G.v().out.println("Polyglot is Copyright (C) 2000-2004 Polyglot project group, Cornell University.");
         G.v().out.println("");
-        G.v().out.println("Abc is distributed in the hope that it will be useful, and comes with");
+        G.v().out.println("abc is distributed in the hope that it will be useful, and comes with");
         G.v().out.println("ABSOLUTELY NO WARRANTY; without even the implied warranty of MERCHANTABILITY");
         G.v().out.println("or FITNESS FOR A PARTICULAR PURPOSE.");
         G.v().out.println("");
-        G.v().out.println("Abc is free software; you can redistribute it and/or modify it under the");
+        G.v().out.println("abc is free software; you can redistribute it and/or modify it under the");
         G.v().out.println("terms of the GNU Lesser General Public License as published by the Free");
         G.v().out.println("Software Foundation; either version 2.1 of the License, or (at your option)");
         G.v().out.println("any later version. See the file LESSER-GPL for details.");
@@ -493,7 +493,7 @@ public class Main {
                         // Timer start stuff
                         Date abcstart = new Date(); // wall clock time start
                         if(abc.main.Debug.v().verbose)
-                            G.v().out.println("Abc started on " + abcstart);
+                            G.v().out.println("abc started on " + abcstart);
                         else
                             soot.G.v().out=new java.io.PrintStream
                                 (new java.io.OutputStream() {
@@ -546,7 +546,7 @@ public class Main {
                         // Timer end stuff
                         Date abcfinish = new Date(); // wall clock time finish
                         if(abc.main.Debug.v().verbose) {
-                            G.v().out.print("Abc finished on " + abcfinish + ".");
+                            G.v().out.print("abc finished on " + abcfinish + ".");
                             long runtime = abcfinish.getTime() - abcstart.getTime();
                             G.v().out.println(" ( " + (runtime / 60000) + " min. " + ((runtime % 60000) / 1000) + " sec. )");
                         }

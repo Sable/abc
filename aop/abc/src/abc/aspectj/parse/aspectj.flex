@@ -1,4 +1,4 @@
-/* Abc - The AspectBench Compiler
+/* abc - The AspectBench Compiler
  * Copyright (C) 2004 Polyglot project group
  * Copyright (C) 2004 Laurie Hendren
  * Copyright (C) 2004 Pavel Avgustinov

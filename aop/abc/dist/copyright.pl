@@ -2,7 +2,7 @@
 
 use strict;
 
-my $header='/* Abc - The AspectBench Compiler';
+my $header='/* abc - The AspectBench Compiler';
 my $footer=' */';
 
 my $lgpl=<< 'ENDLGPL';

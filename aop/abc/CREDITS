@@ -1,8 +1,8 @@
-Abc is a joint project between the Programming Tools Group at Oxford
+abc is a joint project between the Programming Tools Group at Oxford
 University, UK and the Sable Research Group at McGill University,
 Quebec.
 
-Abc is built on a number of existing efforts:
+abc is built on a number of existing efforts:
  - AspectJ language design <http://www.aspectj.org>
  - ajc runtime library and testing harness <http://www.aspectj.org>
  - Polyglot, an extensible compiler framework for Java 

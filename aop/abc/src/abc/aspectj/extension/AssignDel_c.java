@@ -1,4 +1,4 @@
-/* Abc - The AspectBench Compiler
+/* abc - The AspectBench Compiler
  * Copyright (C) 2004 Pavel Avgustinov
  * Copyright (C) 2004 Oege de Moor
  *

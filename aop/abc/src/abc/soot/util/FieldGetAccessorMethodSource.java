@@ -1,4 +1,4 @@
-/* Abc - The AspectBench Compiler
+/* abc - The AspectBench Compiler
  * Copyright (C) 2004 pavel
  *
  * This compiler is free software; you can redistribute it and/or

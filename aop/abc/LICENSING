@@ -4,27 +4,32 @@ Licensing details
 Compiler
 --------
 
-The abc compiler itself is licensed under the GNU Lesser General Public License, version 2.1, or (at
-your option) any later version. See the file LESSER-GPL for the licence text. Copyright is held by
-the individual contributors, a list of which can be found in the CREDITS file. Detailed copyright
-information can be found from individual source files.
+The abc compiler itself is licensed under the GNU Lesser General Public
+License, version 2.1, or (at your option) any later version. See the
+file LESSER-GPL for the licence text. Copyright is held by the
+individual contributors, a list of which can be found in the CREDITS
+file. Detailed copyright information can be found from individual source
+files.
 
-Soot and Polyglot are also LGPL licensed. A list of contributors to Soot can be found at
-http://www.sable.mcgill.ca/soot/credits and a list of contributors to Polyglot is at the bottom of
+Soot and Polyglot are also LGPL licensed. A list of contributors to Soot
+can be found at http://www.sable.mcgill.ca/soot/credits and a list of
+contributors to Polyglot is at the bottom of
 http://www.cs.cornell.edu/Projects/polyglot/. 
 
 Runtime library
 ---------------
 
-Our runtime library is built on the runtime library for the ajc compiler and is licensed under the
-Common Public License 1.0, which can be found in the file CPL. As with the ajc runtime library, it
-may be freely distributed in binary form. 
+Our runtime library is built on the runtime library for the ajc compiler
+and is licensed under the Common Public License 1.0, which can be found
+in the file CPL. As with the ajc runtime library, it may be freely
+distributed in binary form. 
 
 Testing harness
 ---------------
 
-Our testing harness is also built in part using the ajc harness and test cases, and is similarly
-licensed under the Common Public License 1.0.
+Our testing harness is also built in part using the ajc harness and test
+cases, and is similarly licensed under the Common Public License 1.0.
 
-The harness also uses the Xact library for XML processing, which is under a BSD licence.
+The harness also uses the Xact library for XML processing, which is
+under a BSD licence.
 
