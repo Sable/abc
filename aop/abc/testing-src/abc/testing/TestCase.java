@@ -390,6 +390,7 @@ public class TestCase {
 			            argsForMain[0] = (mainArgs == null ? new String[0] : mainArgs);
 			            // Some tests refer to files in their respective directories...
 			            Tester.setBASEDIR(new File(dir));
+			            //System.out.println("Attempting to invoke " + mainMethod + " with " + argsForMain + " Classdir: " + classDir);
 			            mainMethod.invoke(null, argsForMain); // the null argument is the class instance; main is static
 			        } catch (ClassNotFoundException e) { //TODO: Differentiate exceptions - add further catches.
 			            System.err.println("Failed to find class " + runClass);
@@ -760,6 +761,11 @@ public class TestCase {
             if(c != null) return c;
             
             File file = new File(directory.getAbsoluteFile() + System.getProperty("file.separator") + className.replaceAll("\\.", "/") + ".class");
+            if (!file.exists()) {
+            	System.err.println("File " + file.toString() + " not found, skipping...");
+                return super.findClass(className);
+            }
+				
             long length = file.length();
             if(length > Integer.MAX_VALUE) {
                 // We're stuffed now - array declarations expect an int as the array size
@@ -794,7 +800,7 @@ public class TestCase {
                 result = defineClass(className, classBytes, 0, (int) length);
                 resolveClass(result);
             } catch (Throwable t) {
-                System.out.println("Failed to define or resolve class " + className + " from " + directory.toString());
+                System.out.println("Failed to define or resolve class " + className + " from " + directory.toString() + " Length: " + length);
                 t.printStackTrace();
                 return super.findClass(className);
             }
