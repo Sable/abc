@@ -139,7 +139,9 @@ screen:
 	as 1.
       </long_desc>
     </intopt>
+  </section>
   <section>
+  <undocumented/>
     <name>Debug options</name>
     <debugopt>
       <undocumented/>
