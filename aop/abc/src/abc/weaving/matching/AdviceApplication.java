@@ -31,6 +31,9 @@ public abstract class AdviceApplication {
 	// so does the signature type
 	// The shadow match presumably needs to pick up the signature.
 	// Hopefully it can get the line/column information too.
+	
+        /** the SootField corresponding to a static join point */
+        public SootField sjpfield;
 
 	SJPInfo(String kind,String signatureTypeClass,
 	    String signatureType,String signature,Host host) {
@@ -56,15 +59,10 @@ public abstract class AdviceApplication {
     /** information for generating the SJP */
     public SJPInfo sjpInfo;
 
-    /** the SootField corresponding to a static join point */
-    public SootField sjpfield;
-
     /** where we store the begin and end points for weaving */
     public ShadowPoints shadowpoints; // added by LJH to keep track of
                                       // where to weave.  Is initialized
                                       // in first pass of weaver. 
-
-
 
     public AdviceApplication(AdviceDecl advice,Residue residue,SJPInfo sjpInfo) {
 	this.advice=advice;
