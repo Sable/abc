@@ -139,9 +139,12 @@ non terminal List aspect_body_declaration;
 
 non terminal DeclareDecl declare_declaration;
 
+
 non terminal PointcutDecl pointcut_declaration;
+non terminal PointcutDecl pointcut_declaration_nomods;
 
 non terminal AdviceDecl advice_declaration;
+//non terminal AdviceDecl advice_declaration_nomods;
 non terminal AdviceSpec advice_spec;
 
 non terminal IntertypeDecl intertype_member_declaration;
@@ -153,6 +156,7 @@ non terminal Pointcut unary_pointcut_expr;
 non terminal Pointcut basic_pointcut_expr;
 
 non terminal NamePattern name_pattern;
+non terminal SimpleNamePattern generic_simple_name_pattern;
 non terminal SimpleNamePattern simple_name_pattern;
 non terminal Token aspectj_reserved_identifier;
 
@@ -281,8 +285,12 @@ extend interface_member_declaration ::=
    another rule which can go to epsilon,  then there is a shift reduce
    conflict with modifiers_opt, which can also go to epsilon. */
 
+//GEN Added type parameters analogous to class_declaration
+//class_declaration ::= 
+//	modifiers_opt CLASS IDENTIFIER type_parameters_opt
+
 aspect_declaration ::= 
-      modifiers_opt:a PRIVILEGED modifiers_opt:a1 ASPECT:n IDENTIFIER:b
+      modifiers_opt:a PRIVILEGED modifiers_opt:a1 ASPECT:n IDENTIFIER:b type_parameters_opt //GEN
                          super_opt:c interfaces_opt:d  perclause_opt:f  
                          aspect_body:g
        {: Grm.parserTrace( "PRIVILEGED aspect declaration: " + 
@@ -296,7 +304,7 @@ aspect_declaration ::=
                                         f,
                                         g); // ignore per-clause for now
        :}
-   |  modifiers_opt:a ASPECT:n IDENTIFIER:b
+   |  modifiers_opt:a ASPECT:n IDENTIFIER:b type_parameters_opt //GEN
                          super_opt:c interfaces_opt:d  perclause_opt:f  
                          aspect_body:g
        {: Grm.parserTrace( "aspect declaration: " + 
@@ -453,11 +461,22 @@ declare_declaration ::=
        :}
   ;
 
-pointcut_declaration ::=
-     modifiers_opt:a POINTCUT IDENTIFIER:b 
+pointcut_declaration ::= // JSR-175-LALR : expand modifier_opt //GEN
+	pointcut_declaration_nomods
+ |  modifiers:a pointcut_declaration_nomods
+ ;
+
+
+//GEN Added type parameters analogous to method_header_nomods:
+//method_header_nomods ::= ..
+//  |	LT type_parameter_list_1 type method_declarator throws_opt
+
+// have to expand type_parameters_opt here
+pointcut_declaration_nomods ::= //GEN
+	LT type_parameter_list_1 POINTCUT IDENTIFIER:b 
              LPAREN formal_parameter_list_opt:c RPAREN SEMICOLON:e
      /* must check that modifiers include ABSTRACT */
-     {: Grm.parserTrace("abstract pointcut declaration");
+    /* {: Grm.parserTrace("abstract pointcut declaration");
          TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
                                                         parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
@@ -467,12 +486,17 @@ pointcut_declaration ::=
                                                   parser.nf.PCEmpty(parser.pos(e)),
                                                   voidn);
         RESULT = pcd;
-     :}
-  |  modifiers_opt:a POINTCUT IDENTIFIER:b 
+     :}*/
+  | POINTCUT IDENTIFIER:b 
+           LPAREN formal_parameter_list_opt:c RPAREN SEMICOLON:e           
+  | LT type_parameter_list_1 POINTCUT IDENTIFIER:b 
+             LPAREN formal_parameter_list_opt:c RPAREN 
+             COLON pointcut_expr:d SEMICOLON:e 
+  |  POINTCUT IDENTIFIER:b 
              LPAREN formal_parameter_list_opt:c RPAREN 
              COLON pointcut_expr:d SEMICOLON:e 
      /* must check that modifiers DO NOT include ABSTRACT */
-     {: Grm.parserTrace("non-abstract pointcut declaration");
+     /*{: Grm.parserTrace("non-abstract pointcut declaration");
         TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(b),
                                                         parser.ts.Void());
         PointcutDecl pcd = parser.nf.PointcutDecl(parser.pos(b,e),
@@ -481,14 +505,17 @@ pointcut_declaration ::=
                                                   c,
                                                   d, voidn);
         RESULT = pcd;
-     :}
+     :}*/
   ;
 
+
+//GEN Added type parameters analogous to pointcut_declaration_nomods:
 advice_declaration ::= // JSR-175-LALR: expand modifiers_opt to avoid conflicts
-      modifiers:m advice_spec:a throws_opt:b COLON pointcut_expr:c 
+					   // Also have to expand type_parameters_opt here
+    modifiers:m advice_spec:a throws_opt:b COLON pointcut_expr:c 
      /* only valid modifier is strictfp */
-        method_body:d 
-       {: Grm.parserTrace("advice declaration without strictfp");
+         method_body:d 
+      /* {: Grm.parserTrace("advice declaration without strictfp");
           AdviceDecl ad = parser.nf.AdviceDecl(parser.pos(a,d),
 					       m,
                                                a,
@@ -496,8 +523,11 @@ advice_declaration ::= // JSR-175-LALR: expand modifiers_opt to avoid conflicts
 					       c,
 	                                       d);
           RESULT = ad;
-       :}
-  |  advice_spec:a throws_opt:b COLON pointcut_expr:c 
+       :}*/
+ | 	modifiers:m LT type_parameter_list_1 advice_spec:a throws_opt:b COLON pointcut_expr:c 
+ 	 /* only valid modifier is strictfp */
+    	method_body:d 
+ |  advice_spec:a throws_opt:b COLON pointcut_expr:c 
      /* only valid modifier is strictfp */
         method_body:d 
        {: Grm.parserTrace("advice declaration without strictfp");
@@ -509,6 +539,9 @@ advice_declaration ::= // JSR-175-LALR: expand modifiers_opt to avoid conflicts
 	                                       d);
           RESULT = ad;
        :}
+  | LT type_parameter_list_1 advice_spec:a throws_opt:b COLON pointcut_expr:c 
+     /* only valid modifier is strictfp */
+        method_body:d 
   ;
 
 advice_spec ::=
@@ -800,10 +833,12 @@ basic_pointcut_expr ::=
           RESULT = parser.nf.PCArgs(parser.pos(x,y),a);
        :}   
    // for named pointcuts, ajc allows only * or fully-defined type/id
-    |  name:a LPAREN type_id_star_list_opt:b RPAREN:y
+   //GEN Added type arguments analogous to method_invocation
+    |  type_arguments_opt name:a LPAREN type_id_star_list_opt:b RPAREN:y
             {: RESULT = parser.nf.PCName(parser.pos(a,y),
                 a.prefix == null ? null : a.prefix.toReceiver(),
                 a.name, b); :}
+              
   ;
 
 
@@ -811,17 +846,24 @@ basic_pointcut_expr ::=
 
 /* ------------------- NAME PATTERNS ---------------------------------- */
 
+//GEN
 name_pattern ::=
-      simple_name_pattern:a
+      generic_simple_name_pattern:a
         {: RESULT = a;
         :}
-   |  name_pattern:a DOT simple_name_pattern:b
+   |  name_pattern:a DOT generic_simple_name_pattern:b
         {: RESULT = parser.nf.DotNamePattern(parser.pos(a,b),a,b);
         :}
-   |  name_pattern:a PC_DOTDOT:d simple_name_pattern:b
+   |  name_pattern:a PC_DOTDOT:d generic_simple_name_pattern:b
         {: DotDotNamePattern ddnp = parser.nf.DotDotNamePattern(parser.pos(a,d),a);
            RESULT = parser.nf.DotNamePattern(parser.pos(a,b),ddnp,b);
         :}
+   ;
+
+//GEN
+generic_simple_name_pattern ::=
+     simple_name_pattern
+   | simple_name_pattern type_arguments
    ;
 
 simple_name_pattern ::= 
