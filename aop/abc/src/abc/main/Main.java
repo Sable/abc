@@ -67,6 +67,7 @@ public class Main {
       abc.aspectj.visit.OncePass.reset();
       abc.aspectj.visit.PCStructure.reset();
       abc.aspectj.visit.AspectInfoHarvester.reset();
+      abc.aspectj.parse.Lexer_c.reset();
       abc.weaving.aspectinfo.AbcFactory.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.matching.ShadowType.reset();

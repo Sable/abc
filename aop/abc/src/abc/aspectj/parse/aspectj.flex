@@ -86,6 +86,9 @@ import polyglot.ext.jl.parse.*;
        java or in an aspect */
 
     private static int javaOrAspect = IN_JAVA;
+    
+   
+    	
 
     public void returnFromPointcut() {
         switch (javaOrAspect) {
@@ -139,6 +142,16 @@ import polyglot.ext.jl.parse.*;
              state = s;
            }
      }
+     
+      public static void reset() {
+    	curlyBraceLevel = 0;
+    	parenLevel = 0;
+    	inPerPointcut = false;
+    	reportedUnclosedComment = false;
+    	inComment = false;
+    	savedState = IN_JAVA;
+    	nestingStack = new Stack();
+    }
 
 /* ------------------------------------------------------------------- */
 
@@ -533,7 +546,7 @@ SingleCharacter = [^\r\n\'\\]
   "proceed"                       { return key(sym.PROCEED); }
   "thisEnclosingJoinPointStaticPart"  { return key(sym.THISENCLOSINGJOINPOINTSTATICPART); }
   "thisJoinPoint"                 { return key(sym.THISJOINPOINT); }
-  "thisJoinPointStaticPart"       { return key(sym.THISJOINPOINTSTATICPART); }
+  "thisJoinPointStaticPart"       { return key(sym.THISJOINPOINTSTATICPART); } 
 }
 
 

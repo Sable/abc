@@ -43,7 +43,7 @@ public class InterfaceITDs extends OncePass {
 		 		ClassType ctype = ((AbcClass) weavableClasses.next()).getPolyglotType();
 				if (ctype.flags().isInterface())
 					continue;
-				System.out.println("processing "+ctype);
+				// System.out.println("processing "+ctype);
 				Stack interfaces = new Stack();
 				Set visited = new HashSet();
 				interfaces.addAll(ctype.interfaces());
@@ -52,7 +52,7 @@ public class InterfaceITDs extends OncePass {
 					if (visited.contains(interf))
 								continue;
 					visited.add(interf);
-					System.out.println("ctype="+ctype+" intrf="+interf);
+					// System.out.println("ctype="+ctype+" intrf="+interf);
 							
 					// does the super type of ctype also implement this interface?
 					// if so, we'll add it to the super type instead

@@ -184,6 +184,7 @@ extend method_invocation ::=
   ;
 
 /* add the possiblity of a simple_name for this_ aspectj vars */
+
 extend simple_name ::= 
      THISJOINPOINT:a
        {: RESULT = new Name(parser, parser.pos(a), "thisJoinPoint"); 
@@ -196,6 +197,7 @@ extend simple_name ::=
                                 "thisEnclosingJoinPointStaticPart"); 
        :}
   ;
+  
 
 extend class_member_declaration ::=
     aspect_declaration:a

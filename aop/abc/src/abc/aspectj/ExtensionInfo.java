@@ -179,6 +179,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
                              new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
         l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
+        l.add(new VisitorPass(Pass.CLEAN_SIGS,job, new AmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
     }
 
     protected void passes_patterns_and_parents(List l, Job job)

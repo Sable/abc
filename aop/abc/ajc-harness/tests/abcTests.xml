@@ -1938,10 +1938,10 @@
 
     <ajc-test num="218" dir="errors" pr="219" title="extra closing brace"
       keywords="from-errors" abccomment="abc complains about both superfluous
-              braces -- quite correctly. PA/AGS">
+              braces -- quite correctly. PA/AGS. But when we reset the
+              lexer state correctly, it doesn't. ODM.">
         <compile files="ExtraClosingBrace.java">
 	    <ajcmessage kind="error" line="8"/>
-            <message kind="error" line="8"/>
             <message kind="error" line="8"/>
         </compile>
     </ajc-test>
@@ -7747,14 +7747,11 @@
 	
 	<ajc-test num="872" dir="bugs/throwsSignature"
 		pr="42539"
-                abccomment ="abc bails out after error but ok. ODM 19/07/04"
 		title="throw derivative pointcuts not advised">
 		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
-		    <ajcmessage line="5" kind="warning" text="throws both"/>
-		    <ajcmessage line="5" kind="error" text="throws Exception"/>
-		    <ajcmessage line="7" kind="warning" text="throws both"/>
-		    <message line="5" kind="warning"/>
-                    <message line="5" kind="error"/>
+		    <message line="5" kind="warning" text="throws both"/>
+		    <message line="5" kind="error" text="throws Exception"/>
+		    <message line="7" kind="warning" text="throws both"/>
                 </compile>
 	</ajc-test>
 	
