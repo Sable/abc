@@ -16,9 +16,24 @@ public class Test  {
       r=(double) x;
    }
 
+   int foo(int x) {
+      return 5;
+   }
+
+   double foo(double x) {
+      return x;
+   }
+
+   int bar(int x) {
+      return x;
+   }
+
    public static void main (String args[])
      { int k = new Integer(4).intValue();
        Test t = new Test(3+k);
+       t.foo(3);
+       t.bar(3);
+       t.foo(3.0);
        Test t2 = new Test(k+5);
        t.r = 10.0;
        System.out.println("j is " + j);
