@@ -14,10 +14,10 @@ polyglot.cupclasses.loc=/usr/local/src/polyglot-dev/lib/java_cup.jar
 jflex.loc=/usr/local/src/polyglot-dev/lib/JFlex.jar
 
 ## Location of Soot classes (can also be sootclasses jar)
-soot.loc=/usr/local/src/soot-dev/lib/sootclasses-2.1.0-shortresolve.jar
+soot.loc=/usr/local/src/soot-dev/lib/sootclasses-custom.jar
 
 ## Location of Jasmin classes
-jasmin.loc=/usr/local/src/jasmin-dev/lib/jasminclasses-sable-nocup.jar
+jasmin.loc=/usr/local/src/jasmin-dev/lib/jasminclasses-custom.jar
 
 ## Location of xact jar
 xact.loc=/usr/local/src/xact/java/xact-complete.jar
