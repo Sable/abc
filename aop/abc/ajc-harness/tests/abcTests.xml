@@ -5865,8 +5865,10 @@
     </ajc-test>
 
     <ajc-test num="674" dir="pureJava" pr="386"
+      abccomment="tries to import inner classes invalidly"
       title="Referencing static interfaces with import statements"
       keywords="from-broken14usejavac,purejava">
+        <abckeywords><skip/></abckeywords>
         <compile files="ClassWithStaticInnerInterfaces.java"/>
         <compile includeClassesDir="true"
                  files="ImportingStaticInnerInterfaces_PR386.java"/>
@@ -5874,6 +5876,8 @@
     </ajc-test>
 
     <ajc-test num="675" dir="pureJava" pr="386"
+      abccomment="tries to import inner classes invalidly, 
+                   but we don't flag the error at import time (cf 679)"
       title="Referencing static interfaces with import statements stars"
       keywords="purejava,from-broken14usejavac">
         <compile files="ClassWithStaticInnerInterfaces.java"/>
@@ -5883,6 +5887,8 @@
     </ajc-test>
 
     <ajc-test num="676" dir="pureJava" pr="386"
+      abccomment="tries to import inner classes invalidly, 
+                   but we don't flag the error at import time (cf 679)"
       title="Referencing static interfaces with import statements stars 2"
       keywords="purejava,from-broken14usejavac">
         <compile files="ClassWithStaticInnerInterfaces.java"/>
@@ -5892,6 +5898,8 @@
     </ajc-test>
 
     <ajc-test num="677" dir="pureJava" pr="386"
+      abccomment="tries to import inner classes invalidly, 
+                   but we don't flag the error at import time (cf 679)"
       title="Referencing static interfaces with import statements stars 3"
       keywords="purejava,from-broken14usejavac">
         <compile files="ClassWithStaticInnerInterfaces.java"/>
