@@ -9,6 +9,8 @@ import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 import polyglot.frontend.Stats;
 import polyglot.types.SemanticException;
+import polyglot.util.ErrorQueue;
+import polyglot.util.ErrorInfo;
 
 import abc.aspectj.visit.PatternMatcher;
 
@@ -28,6 +30,8 @@ public class Main {
 
     public String classpath = System.getProperty("java.class.path");
     public String classes_destdir = ""; // TODO: LJH - fixed with -d option?
+
+    public ErrorQueue error_queue; // For reporting errors and warnings
 
     /** reset all static information so main can be called again */
     public static void reset() {
@@ -152,6 +156,7 @@ public class Main {
 	try {
 	    AbcTimer.start(); // start the AbcTimer
 
+	    addJarsToClasspath();
 	    initSoot();
 	    AbcTimer.mark("Init. of Soot");
 
@@ -188,6 +193,17 @@ public class Main {
         AbcTimer.report();
     }
 
+    public void addJarsToClasspath() {
+	StringBuffer sb = new StringBuffer(classpath);
+	Iterator jari = in_jars.iterator();
+	while (jari.hasNext()) {
+	    String jar = (String)jari.next();
+	    sb.append(":");
+	    sb.append(jar);
+	}
+	classpath = sb.toString();
+    }
+
     public void initSoot() throws IllegalArgumentException {
         Scene.v().setSootClassPath(classpath);
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
@@ -205,7 +221,7 @@ public class Main {
         // Invoke polyglot
         try {
             abc.aspectj.ExtensionInfo ext = 
-                new abc.aspectj.ExtensionInfo(weavable_classes);
+                new abc.aspectj.ExtensionInfo(weavable_classes, aspect_sources);
             Options options = ext.getOptions();
             options.assertions = true;
             options.serialize_type_info = false;
@@ -222,6 +238,7 @@ public class Main {
             if (!compiler.compile(aspect_sources)) {
                 throw new CompilerFailedException("Compiler failed.");
             }
+	    error_queue = compiler.errorQueue();
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());

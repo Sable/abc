@@ -25,6 +25,8 @@ import java.io.*;
  */
 public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
+    public static final polyglot.frontend.Pass.ID COLLECT_SOURCE_FILES = new polyglot.frontend.Pass.ID("collect-source-files");
+
     public static final polyglot.frontend.Pass.ID CHECKING_DONE = new polyglot.frontend.Pass.ID("checking-done");
     public static final polyglot.frontend.Pass.ID ASPECT_METHODS = new polyglot.frontend.Pass.ID("aspect-methods");
     public static final polyglot.frontend.Pass.ID INSPECT_AST = new polyglot.frontend.Pass.ID("inspect-ast");
@@ -50,13 +52,15 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID GOING_TO_JIMPLIFY = new polyglot.frontend.Pass.ID("going-to-jimplify");
     public static final polyglot.frontend.Pass.ID JIMPLIFY = new polyglot.frontend.Pass.ID("jimplify");
 
-    public Collection weavable_classes;
-    public Map class_to_ast;
+    public Collection/*<String>*/ weavable_classes;
+    public Collection/*<String>*/ source_files;
+    public Map/*<String,Node>*/ class_to_ast;
     public PCStructure hierarchy;
     public PatternMatcher pattern_matcher;
 
-    public ExtensionInfo(Collection weavable_classes) {
+    public ExtensionInfo(Collection weavable_classes, Collection source_files) {
 	this.weavable_classes = weavable_classes;
+	this.source_files = source_files;
 	this.class_to_ast = new HashMap();
 	this.hierarchy = new PCStructure();
 	this.pattern_matcher = PatternMatcher.create(hierarchy);
@@ -147,7 +151,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf)));
 	// l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
 	
-	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job, new CollectJimplifyVisitor(class_to_ast, hierarchy)));
+	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job,
+			      new CollectJimplifyVisitor(job, ts, nf, source_files, class_to_ast, hierarchy)));
 	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
 	l.add(new Jimplify(JIMPLIFY, class_to_ast));
 	
