@@ -42,8 +42,8 @@ public class ExecutionShadowMatch extends ShadowMatch {
 	    sigMethod="makeMethodSig";
 	}
 	AdviceApplication.SJPInfo sjpInfo
-	    =new AdviceApplication.SJPInfo(jpKind,sigClass, 
-		                               sigMethod,sig,container);
+	    =new AdviceApplication.SJPInfo(jpKind,sigClass,sigMethod,
+					   sig,container.getActiveBody());
 	mal.addBodyAdvice(new ExecutionAdviceApplication(ad,residue,sjpInfo));
     }
 }
