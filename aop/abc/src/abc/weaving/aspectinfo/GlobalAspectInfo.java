@@ -342,12 +342,12 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(Aspect a, Aspect b) {
-	System.out.println("Comparing precedence of "+a.getName()+" and "+b.getName());
+	//	System.out.println("Comparing precedence of "+a.getName()+" and "+b.getName());
 
 	int prec=getPrecedence(a.getName(), b.getName());
 	if(prec!=PRECEDENCE_NONE) return prec;
 
-	System.out.println("Trying inheritance");
+	//	System.out.println("Trying inheritance");
 
 	// Can't use aspect_visibility since that just maps to concrete aspects.
 	// So just walk up from each one to try to find the other.
