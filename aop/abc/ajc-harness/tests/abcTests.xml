@@ -3305,7 +3305,9 @@
     <ajc-test num="343" dir="new" title="introducing extends and implements"
       abccomment="Need to support I1 extends I2,I3,I4. ODM 09/07/04"
       keywords="from-resolved_10x">
-        <compile files="HierarchyIntroductions.java"/>
+        <compile files="HierarchyIntroductions.java">
+        <message kind="warning" line="29"/>
+        </compile>
         <run class="HierarchyIntroductions"/>
     </ajc-test>
 
@@ -6838,7 +6840,9 @@
     <ajc-test num="775" dir="new/declareParents"
       title="Declare parents with intermediate ancestor"
       keywords="from-new">
-        <compile files="Driver.java"/>
+        <compile files="Driver.java">
+        <message kind="warning" line="29"/>
+        </compile>
         <run class="Driver"/>
     </ajc-test>
     
