@@ -12,11 +12,13 @@ import java.util.*;
 import abc.aspectj.ast.*;
 import polyglot.ext.jl.parse.Name;
 
+import soot.javaToJimple.jj.ast.JjNodeFactory_c;
+
 /**
  * NodeFactory for aspectj extension.
  */
 public class AspectJNodeFactory_c 
-       extends polyglot.ext.jl.ast.NodeFactory_c 
+       extends soot.javaToJimple.jj.ast.JjNodeFactory_c 
        implements AspectJNodeFactory {
 
     public ClassnamePatternExpr constructClassnamePatternFromTypePattern(TypePatternExpr tpe) throws SemanticException {
