@@ -2,6 +2,7 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.types.ClassType;
+import polyglot.util.InternalCompilerError;
 
 import abc.aspectj.visit.PCStructure;
 
@@ -42,7 +43,11 @@ public class AbcClass {
     public String getJvmName() {
 	if (jvm_name == null) {
 	    //System.err.println(((polyglot.types.ClassType)polyglot_type).fullName());
-	    jvm_name = AbcFactory.classTypeToSootClass(polyglot_type).toString();
+	    try {
+		jvm_name = AbcFactory.classTypeToSootClass(polyglot_type).toString();
+	    } catch (NullPointerException e) {
+		throw new InternalCompilerError("SootClass of AbcClass "+polyglot_type+" not ready yet");
+	    }
 	}
 	return jvm_name;
     }

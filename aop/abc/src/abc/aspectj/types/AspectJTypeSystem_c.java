@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.Iterator;
 
+import polyglot.frontend.ExtensionInfo;
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import polyglot.types.*;
@@ -20,6 +21,15 @@ public class AspectJTypeSystem_c
        extends JjTypeSystem_c 
        implements AspectJTypeSystem {
     
+    // Make sure we only load from class files
+    public void initialize(LoadedClassResolver loadedResolver, ExtensionInfo extInfo)
+                           throws SemanticException {
+	loadedResolver = new LoadedClassResolver(this, extInfo.getOptions().constructFullClasspath(),
+						 extInfo.compiler().loader(), extInfo.version(), true);
+	super.initialize(loadedResolver, extInfo);
+	//this.systemResolver = new CachingResolver(loadedResolver, extInfo);
+    }
+
     // importing the aspectJ runtime classes
 	protected ClassType JOINPOINT_;
 	

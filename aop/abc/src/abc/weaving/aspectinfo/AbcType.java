@@ -2,6 +2,7 @@
 package abc.weaving.aspectinfo;
 
 import polyglot.types.ClassType;
+import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
@@ -24,7 +25,11 @@ public class AbcType {
 	if (st == null) {
 	    //System.out.println("Getting soot type for "+pt);
 	    if (pt instanceof ClassType) {
-		st = AbcFactory.classTypeToSootClass((ClassType)pt).getType();
+		try {
+		    st = AbcFactory.classTypeToSootClass((ClassType)pt).getType();
+		} catch (NullPointerException e) {
+		    throw new InternalCompilerError("Soot type of AbcType "+pt+" not ready yet");
+		}
 	    } else {
 		st = soot.javaToJimple.Util.getSootType(pt);
 	    }
