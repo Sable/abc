@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import soot.Body;
 import soot.IntType;
 import soot.Local;
@@ -23,7 +22,8 @@ import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.AssignStmt;
 import soot.jimple.FieldRef;
-import soot.jimple.IdentityStmt;import soot.jimple.InstanceFieldRef;
+import soot.jimple.IdentityStmt;
+import soot.jimple.InstanceFieldRef;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
@@ -59,12 +59,12 @@ import abc.weaving.matching.StmtAdviceApplication;
 public class AroundWeaver {
 
 	/** set to false to disable debugging messages for Around Weaver */
-	public static boolean debug = true;
+	public static boolean debugflag = true;
 
-	private static void arddebug(String message) {
-		if (debug)
-			System.err.println("ARD *** " + message);
-	}
+	private static void debug(String message)
+	 { if (abc.main.Debug.v().aroundWeaver) 
+		  System.err.println("ARD*** " + message);
+	 }
 
 
 	public static class State {
@@ -127,7 +127,7 @@ public class AroundWeaver {
 					SootMethod method,
 					LocalGenerator localgen,
 					AdviceApplication adviceappl) {
-		arddebug("Handling aound: " + adviceappl);
+		debug("Handling aound: " + adviceappl);
 		//if (cl!=null) return;
 		SootClass cl2=cl;
 		Body b = method.getActiveBody();
@@ -141,23 +141,23 @@ public class AroundWeaver {
 	
 		Type adviceReturnType=adviceMethod.getReturnType();
 	
-		arddebug("Advice application - kind:" + adviceappl.sjpInfo.kind + 
+		debug("Advice application - kind:" + adviceappl.sjpInfo.kind + 
 				" signatureType: " + adviceappl.sjpInfo.signatureType +
 				" signature: " + adviceappl.sjpInfo.signature);
 	
 		// find out what kind of pointcut 
 		if (adviceappl instanceof StmtAdviceApplication) {
-			arddebug("found statement advice application");
+			debug("found statement advice application");
 			StmtAdviceApplication stmtAdv=(StmtAdviceApplication) adviceappl;
 			//stmtAdv.
 			//advicedecl.
 			// is it an assignment?
 			if (adviceappl.sjpInfo.kind.equals("field-get")) {
-				arddebug("found field-get");
+				debug("found field-get");
 				if (!(stmtAdv.stmt instanceof AssignStmt)) {
 					throw new RuntimeException(); // TODO: 
 				}
-				arddebug("found assignment statement");
+				debug("found assignment statement");
 				AssignStmt assignStmt=(AssignStmt)stmtAdv.stmt;
 				
 				Value rightOp=assignStmt.getRightOp();
@@ -182,12 +182,12 @@ public class AroundWeaver {
 					 );
 								
 			} else {
-				arddebug("NYI: type of stmt advice application " + adviceappl);
+				debug("NYI: type of stmt advice application " + adviceappl);
 			}			
 		} else if (adviceappl instanceof ExecutionAdviceApplication) {
-			arddebug("NYI: execution advice application: " + adviceappl);
+			debug("NYI: execution advice application: " + adviceappl);
 		} else {
-			arddebug("NYI: advice application: " + adviceappl);
+			debug("NYI: advice application: " + adviceappl);
 		}
 	} // method doWeave 
 
@@ -232,11 +232,11 @@ public class AroundWeaver {
 		SootMethod accessMethod;
 		// create "get" interface if it doesn't exist
 		if (Scene.v().containsClass(interfaceName)) {
-			arddebug("found access interface in scene");
+			debug("found access interface in scene");
 			accessInterface=Scene.v().getSootClass(interfaceName);
 			accessMethod=accessInterface.getMethodByName(methodName);
 		} else {
-			arddebug("generating access interface for scene");
+			debug("generating access interface for scene");
 			accessInterface=new SootClass(interfaceName, 
 				Modifier.INTERFACE | Modifier.PUBLIC);						
 			
@@ -331,13 +331,13 @@ public class AroundWeaver {
 		State.AccessMethodInfo info=state.getMethodInfo(cl.getName(), interfaceName);
 		
 		if (cl.implementsInterface(interfaceName)){
-			arddebug("found interface " + interfaceName + " in class: " + cl.getName());
+			debug("found interface " + interfaceName + " in class: " + cl.getName());
 			SootClass cl2=cl;
 			localGetMethod=cl2.getMethodByName(accessMethodName);
 			accessBody=localGetMethod.getActiveBody();
 			accessStatements=accessBody.getUnits();
 		} else {
-			arddebug("adding interface " + interfaceName + " to class " + cl.getName());
+			debug("adding interface " + interfaceName + " to class " + cl.getName());
 			
 			cl.addInterface(accessInterface);
 	
@@ -356,7 +356,7 @@ public class AroundWeaver {
 			accessBody=Jimple.v().newBody(localGetMethod);
 		
 			localGetMethod.setActiveBody(accessBody);
-			arddebug("adding method " + localGetMethod.getName() + " to class " + cl.getName());
+			debug("adding method " + localGetMethod.getName() + " to class " + cl.getName());
 			cl.addMethod(localGetMethod);
 			
 			accessStatements=accessBody.getUnits();
@@ -368,7 +368,7 @@ public class AroundWeaver {
 				Jimple.v().newIdentityStmt(lThis, 
 					Jimple.v().newThisRef(
 						RefType.v(cl))));
-			lThis.setName("this");
+			//lThis.setName("this");
 			//getBody.getThisLocal();
 			// $i0 := @parameter0: int;
 			info.idParamLocal=lg.generateLocal(IntType.v());
@@ -437,11 +437,11 @@ public class AroundWeaver {
 		RemoveStatements(joinpointBody, begin, end, assignStmt);
 		
 		Local lThis=joinpointBody.getThisLocal();
-		lThis.setName("this");
+		//lThis.setName("this");
 		
 		LocalGenerator localgen=new LocalGenerator(joinpointBody);	
 		
-		arddebug("replacing former code with call to advice method");
+		debug("replacing former code with call to advice method");
 		// add another this id statement.
 		// why? have to keep this code independent of the rest of the method.
 		/*Local lThis=localgen.generateLocal(cl.getType());
@@ -457,7 +457,7 @@ public class AroundWeaver {
 				aspectref, 
 					Jimple.v().newStaticInvokeExpr(
 						theAspect.getMethod("aspectOf", new ArrayList())));
-		arddebug("Generated stmt1: " + stmt1);
+		debug("Generated stmt1: " + stmt1);
 
 		units.insertBefore(stmt1,assignStmt);
  
@@ -560,6 +560,8 @@ public class AroundWeaver {
 	 * 
 	 * If returnedLocal is not null, the corresponding new local is returned after the 
 	 * copy of the block.
+	 * 
+	 * The former local "this" is mapped to the new "this". 
 	 * 
 	 * This is a modified version of Body.importBodyContentsFrom()
 	 * */
@@ -703,7 +705,7 @@ public class AroundWeaver {
 		boolean bSet=!bGet;
 			
 			
-		arddebug("modifying advice method: " + adviceMethod.toString());
+		debug("modifying advice method: " + adviceMethod.toString());
 		List aroundParameters=adviceMethod.getParameterTypes();
 		// params are added in reverse order...
 		/*if (bSet) {
@@ -746,10 +748,10 @@ public class AroundWeaver {
 			Stmt s=(Stmt)it.next();
 			if (s instanceof InvokeStmt) {
 				InvokeStmt i=(InvokeStmt)s;
-				arddebug("found invoke statement in around() method " + 
+				debug("found invoke statement in around() method " + 
 					i.getInvokeExpr().getMethod().getName());
 				if (i.getInvokeExpr().getMethod().getName().startsWith("proceed$")) {
-					arddebug("modifying proceed call in around() method ");
+					debug("modifying proceed call in around() method ");
 					IdentityStmt id=(IdentityStmt) statements.getFirst();
 					Local local= aroundBody.getParameterLocal(0);								
 					InvokeExpr invokeExpr=
@@ -763,7 +765,7 @@ public class AroundWeaver {
 				if (r instanceof InvokeExpr) {
 					InvokeExpr invokeExpr=(InvokeExpr) r;									
 					if (invokeExpr.getMethod().getName().startsWith("proceed$")) {
-						arddebug("replacing proceed$ call (invoke expression) in advice method");		
+						debug("replacing proceed$ call (invoke expression) in advice method");		
 						IdentityStmt id=(IdentityStmt) statements.getFirst();
 						Local local= aroundBody.getParameterLocal(0);								
 						invokeExpr=

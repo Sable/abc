@@ -37,5 +37,5 @@ public class Debug {
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
-    
+    public boolean aroundWeaver=false;
 }
