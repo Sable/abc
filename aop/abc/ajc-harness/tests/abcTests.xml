@@ -389,7 +389,10 @@
     </ajc-test>
 
     <ajc-test dir="new/innerConsSyntax" pr="192"
-      title="inner constructor syntax causes compile error" keywords="from-java">
+      title="inner constructor syntax causes compile error" keywords="from-java"
+      abccomment="fails for j2j and abc, works for jlc,javac and ajc
+                  file DriverLJH.java sent to Jennifer June 30/04  LJH "
+    >
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
@@ -425,6 +428,9 @@
     </ajc-test>
 
     <ajc-test dir="new" title="order of type declarations shouldn't matter"
+      abccomment = "doesn't work for abc,  No field this$0 in class Second
+                    same behavior for soot -f src-prec java --app 
+                    Reported to Jennifer on June 30/04.  LJH "
       keywords="from-java">
         <compile files="OrderOfTypes.java"/>
         <run class="OrderOfTypes"/>
@@ -517,6 +523,10 @@
 
     <ajc-test dir="pureJava"
       title="inner classes accessing outers and some more inner class names"
+      abccomment="doesn't compile with soot or j2j, compiles with abc, but
+                  gives incorrect results,  correct for ajc and jlc.
+                  Reported to Jennifer and Ondrej, June 30/04 LJH"
+
       keywords="from-java">
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
