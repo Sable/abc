@@ -605,6 +605,18 @@
            <message kind="error" line="10"/>
         </compile>
     </ajc-test>
+<ajc-test dir="pureJava" title="assert flow - 2"
+      keywords="from-14tests,purejava">
+        <compile options="-source,1.4" files="AssertsCF2.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" title="assert typing"
+      keywords="from-14tests,purejava,fail-publicType">
+        <compile options="-source,1.4" files="AssertsCF1.java">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="new" pr="829"
       title="CE expected when declaring fields on arrays" keywords="tofix">
         <compile files="ArrayFieldDeclarationCE.java">

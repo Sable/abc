@@ -2055,6 +2055,12 @@
         <compile files="Cricket.java"/>
         <run class="Cricket"/>
     </ajc-test>
+<ajc-test dir="new" pr="695"
+      title="! and declaring types with callee-side call join points"
+      keywords="from-resolved_10x">
+        <compile files="NotAndDeclaringTypes.java" options="-Xlint:ignore"/>
+        <run class="NotAndDeclaringTypes"/>
+    </ajc-test>
 <ajc-test dir="new" pr="479"
       title=". Binding the wrong arguments in withincode(..)."
       keywords="from-resolved_10x">
@@ -2270,6 +2276,22 @@
            <message kind="error" line="10"/>
         </compile>
     </ajc-test>
+<ajc-test dir="pureJava" title="assert flow - 2"
+      keywords="from-14tests,purejava">
+        <compile options="-source,1.4" files="AssertsCF2.java">
+            <message kind="error" line="6"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" title="assert typing"
+      keywords="from-14tests,purejava,fail-publicType">
+        <compile options="-source,1.4" files="AssertsCF1.java">
+            <message kind="error" line="5"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" title="asserts" keywords="from-14tests">
+        <compile options="-source,1.4" files="Asserts.java"/>
+        <run class="Asserts" vm="1.4"/>
+    </ajc-test>
 <ajc-test dir="base/test131"
       title="various forms of package name pattern matching work"
       keywords="from-broken14usejavac">
@@ -2349,24 +2371,9 @@
         </compile>
     </ajc-test>
 <ajc-test dir="options" 
-      title="options negative -Xlint args()" 
-      keywords="lint">
-        <compile files="XLintTypeArgsPCD.java" options="-Xlint:ignore"/>
-    </ajc-test>
-<ajc-test dir="options" 
       title="options negative -Xlint declare parent" 
       keywords="lint">
         <compile files="XLintTypeDeclareParent.java" options="-Xlint:ignore"/>
-    </ajc-test>
-<ajc-test dir="options" 
-      title="options negative -Xlint target()" 
-      keywords="lint">
-        <compile files="XLintTypeTargetPCD.java" options="-Xlint:ignore"/>
-    </ajc-test>
-<ajc-test dir="options" 
-      title="options negative -Xlint this()" 
-      keywords="lint">
-        <compile files="XLintTypeThisPCD.java" options="-Xlint:ignore"/>
     </ajc-test>
 <ajc-test dir="options/injars/simple" 
       title="source for options -injars">
@@ -2417,6 +2424,10 @@
 <ajc-test dir="bugs" pr="28702" title="percflow code hangs compiler">
         <compile files="CloseConnectionsCflow.java">
         </compile>
+    </ajc-test>
+<ajc-test dir="bugs" pr="28703" title="assert and pertarget crashes compiler">
+        <compile files="EnsureOverriding.java" options="-source,1.4"/>
+        <run class="EnsureOverriding" vm="1.4"/>
     </ajc-test>
 <ajc-test dir="bugs" pr="28852"
       title="Verification error tracing constructor that takes arguments">
@@ -2615,6 +2626,11 @@
         	<message kind="error" line="14"/>
         </compile>
     </ajc-test>
+<ajc-test dir="bugs" pr="39711"
+   	 title="Class Literals as non final fields (also assert, and this$0)">
+        <compile files="ClassLiteralField.java" options="-source,1.4"/>
+        <run vm="1.4" class="ClassLiteralField"/>
+    </ajc-test>
 <ajc-test dir="bugs"
 		pr="40876"
 		title="subtype-qualified pointcut reference">
@@ -2703,12 +2719,27 @@
         <compile files="AdviceInteraction.java"/>
         <run class="AdviceInteraction"/>
     </ajc-test>
+<ajc-test dir="bugs/jpOptimization" 
+    	pr="45441"
+    	title="JoinPoint Optimization when targetting 1.4">
+        <compile 
+        	files="de/test/MyMain.java,
+        		   de/test/MyAspect.java"
+            options="-1.4"/>
+        <run class="de.test.MyMain"/>
+    </ajc-test>
 <ajc-test dir="bugs/extdirs" 
 		pr="42574"
 		title="zip and jar suffixes for extdirs entries">
 		<compile files="extdirs-src/main/Main.java"
 			extdirs="lib/lowercase"/>
 	</ajc-test>
+<ajc-test dir="bugs" pr="49250"
+      title="alias getCause for getWrappedThrowable in SoftException">
+        <compile files="GetCauseOnSoftException.java" options="-Xlint:warning">
+        </compile>
+        <run vm="1.3" class="GetCauseOnSoftException"/>
+    </ajc-test>
 <ajc-test dir="bugs"
 		title="XLint warning for call PCD's using subtype of defining type (-1.3 -Xlint:ignore)"
 		pr="41952"
