@@ -5,6 +5,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.*;
 import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 import abc.weaving.weaver.WeavingContext;
@@ -169,7 +170,10 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	}
 
 	if (hasJoinPoint()) {
-	    PointcutCodeGen.debug("The index for hasJoinPoint is " + joinPointPos());
+	    // FIXME
+	    int position = joinPointPos();
+	    PointcutCodeGen.debug("The index for hasJoinPoint is " + position);
+	    awc.arglist.setElementAt(NullConstant.v(),position);
 	}
 
 	if (hasEnclosingJoinPoint()) {
@@ -187,21 +191,18 @@ public class AdviceDecl extends AbstractAdviceDecl {
 	    awc.arglist.setElementAt(sjpencloc, position);
 	}
 
-	boolean alldone = true;
 	for (int i = 0; i < awc.arglist.size(); i++)
-	    alldone = alldone && awc.arglist.get(i) != null;
+	    if(awc.arglist.get(i)==null)
+		throw new InternalCompilerError
+		    ("Formal "+i+" to advice "+advicemethod.getSignature()+" not filled in",getPosition());
 
-	if (alldone) {
-	    Stmt s =Jimple.v().newInvokeStmt
-		(Jimple.v().newVirtualInvokeExpr
-		 (awc.aspectinstance,advicemethod,awc.arglist)
-		 );
-	    c.addLast(s);
-	    return (c);
-	} else
-	    throw new CodeGenException
-		("case not handled yet in making invoke to "
-		 + advicemethod.getName());
+	Stmt s =Jimple.v().newInvokeStmt
+	    (Jimple.v().newVirtualInvokeExpr
+	     (awc.aspectinstance,advicemethod,awc.arglist)
+	     );
+	c.addLast(s);
+	return (c);
+	    
     }
 
 

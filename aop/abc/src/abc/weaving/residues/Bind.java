@@ -29,6 +29,7 @@ public class Bind extends Residue {
 		(new Bind(value,temp),
 		 new Box(temp,variable));
 	}
+	// FIXME check for subtype and eliminate 
 	else return AndResidue.construct
 		 (new CheckType(value,type),
 		  new Bind(value,variable));
