@@ -24,15 +24,16 @@ public class ShadowPoints {
 
  private final Stmt end;
 
- /** Should always get references to NopStmts */
+ /** Should always get references to NopStmts.  For all types of pointcuts
+  *  except for handle pointcuts, both b and e will be non-null,  for
+  *  handle pointcuts e will be null.
+  */
  public ShadowPoints(Stmt b, Stmt e){
     if (b == null) 
       throw new CodeGenException("Beginning of shadow point must be non-null");
-    if (e == null) 
-      throw new CodeGenException("Ending of shadow point must be non-null");
     if (!(b instanceof NopStmt))
       throw new CodeGenException("Beginning of shadow point must be NopStmt");
-    if (!(e instanceof NopStmt))
+    if ((e != null) && !(e instanceof NopStmt))
       throw new CodeGenException("Ending of shadow point must be NopStmt");
     begin = b;
     end = e;
@@ -43,7 +44,12 @@ public class ShadowPoints {
   }
 
   public Stmt getEnd(){
-    return end;
+    if (end != null)
+      return end;
+    else
+      throw new CodeGenException(
+	  "Shouldn't be asking for end of this shadowpoint, " + 
+	  " it is probably associated with a handle pointcut");
   }
         
   public String toString(){

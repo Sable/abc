@@ -111,7 +111,9 @@ public class ShadowPointsSetter {
      // set up an empty hash table to store shadow points for pointcuts
      //   attached to statements
 	 
-     Hashtable SPhashtable = new Hashtable();
+     // note use of IdentityHashMap because we want to match by ref
+     //   to keystmt
+     IdentityHashMap SPhashtable = new IdentityHashMap();
      // iterate through all stmtAdvice ...  
      for (Iterator stmtlist = advicelist.iterator(); stmtlist.hasNext();)
         { final AdviceApplication stmtappl = 
@@ -129,11 +131,23 @@ public class ShadowPointsSetter {
 		           stmtappl);
 
 	   debug("... " + keystmt + " [" + stmtappl + "]");
-
 	   // If stmt is in Hashtable,  use SP entry assciated with it
 	   // else, introduce new nops before and after stmt and 
 	   // create new SP.
-	      
+	   if (SPhashtable.containsKey(keystmt))
+	     { debug("Already in body ");
+	       stmtappl.shadowpoints = 
+	        (ShadowPoints) SPhashtable.get(keystmt);
+	     }
+	   else
+	     { debug("Creating a new ShadowPoints");
+	       ShadowPoints sp =
+	         insertNopsAroundStmt(stmtappl,method,keystmt);
+	       // put in the AdviceApplication
+	       stmtappl.shadowpoints = sp;
+	       // put in the SPhashtable
+	       SPhashtable.put(keystmt,sp);
+	     }
          } // for each statement
   } // insertStmtSP
 
@@ -173,6 +187,55 @@ public class ShadowPointsSetter {
     return new ShadowPoints(startnop,endnop);
   } // method restructureBody 
     
+
+  /** Transform body of method so that a nop is placed both before and
+   *  after the given stmt.   Branches to the initial stmt must be rewired
+   *  to go to the first nop.   Exeception blocks that end at stmt must
+   *  be extended to include the second nop.
+   */
+  private ShadowPoints insertNopsAroundStmt(
+      AdviceApplication stmtappl, SootMethod method, Stmt targetstmt) {
+    Body b = method.getActiveBody();
+    // use a nonPatchingChain because we want to do our own fix of branches
+    // and exceptions.
+    Chain units = b.getUnits().getNonPatchingChain();  
+
+    // create the beginning and ending nop statements
+    Stmt startnop = Jimple.v().newNopStmt();
+    Stmt endnop = Jimple.v().newNopStmt();
+
+    // insert new nop stmts into body around targetstmt
+   if (stmtappl instanceof HandlerAdviceApplication)
+     { units.insertAfter(startnop,targetstmt);
+       // for the special case of a handler, there is not end to the shadow
+       debug("Inserting nop after identity stmt " + targetstmt); 
+       return new ShadowPoints(startnop,null);
+     }
+   else if (stmtappl instanceof NewStmtAdviceApplication)
+     { // expecting a new, followed by an <init> (treat these as one unit)
+       // just check that the correct kind of stmts have been put together
+       Stmt nextstmt = (Stmt) units.getSuccOf(targetstmt);
+       debug("Inserting nops around pair of stmts " + targetstmt +
+	         " ; " + nextstmt);
+       units.insertBefore(startnop,targetstmt);
+       targetstmt.redirectJumpsToThisTo(startnop);
+       units.insertAfter(endnop,nextstmt);
+       return new ShadowPoints(startnop,endnop);
+     }
+
+   else if (stmtappl instanceof StmtAdviceApplication)
+     { debug("Inserting nops around stmt: " + targetstmt);
+       units.insertBefore(startnop,targetstmt);
+       targetstmt.redirectJumpsToThisTo(startnop);
+       units.insertAfter(endnop,targetstmt);
+       return new ShadowPoints(startnop,endnop);
+     }
+
+   else
+     throw new CodeGenException(
+                 "Unknown kind of advice for inside method body: " + 
+                 stmtappl);
+  } // method insertNopAroundStmt
 
     /* --------------------------- PASS 2 --------------------------*/
 

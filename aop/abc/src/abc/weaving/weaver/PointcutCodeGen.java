@@ -57,7 +57,7 @@ public class PointcutCodeGen {
 	     alistIt.hasNext();)
            { final AdviceApplication execappl = 
 	          (AdviceApplication) alistIt.next(); 
-	     //TODO: weave_one(cl,method,localgen,execappl);
+	      weave_one(cl,method,localgen,execappl);
 	   }  // each stmt advice
 	 
          debug("   --- END weaveInAspectsPass1 for method " + 
