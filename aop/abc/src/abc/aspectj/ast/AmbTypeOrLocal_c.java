@@ -11,6 +11,7 @@ import polyglot.ast.Node;
 import polyglot.ast.AmbTypeNode;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Prefix;
+import polyglot.ast.QualifierNode;
 
 import polyglot.types.SemanticException;
 
@@ -18,9 +19,13 @@ import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.ExceptionChecker;
 import polyglot.visit.TypeChecker;
+import polyglot.visit.TypeBuilder;
+import polyglot.visit.NodeVisitor;
+import polyglot.types.UnknownType;
 
 import polyglot.ext.jl.ast.Node_c;
 import polyglot.ext.jl.ast.TypeNode_c;
+import polyglot.ext.jl.ast.AmbTypeNode_c;
 
 
 public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
@@ -34,6 +39,7 @@ public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 	/** Disambiguate the expression. */
 	 public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 	 	// first try to produce a local that refers to an advice formal
+	 	// System.out.println("disambiguating: "+type);
 	 	if (type instanceof AmbTypeNode) {
 	 		AmbTypeNode amb = (AmbTypeNode) type;
 			// need to check it is actually an advice formal and not a field
@@ -48,20 +54,43 @@ public class AmbTypeOrLocal_c extends ArgPattern_c implements AmbTypeOrLocal {
 				}
 	 		}
 	 		// resolving to a local failed, so it must be a type
-	 		Prefix pref = null;
+	 		/* Prefix pref = null;
+	 		System.out.println("qualifier= "+amb.qual() + " of class "+amb.getClass());
 	 		if (amb.qual() != null)
 	 			pref = (Prefix) amb.qual().disambiguate(ar);
-			Node n = ar.nodeFactory().disamb().disambiguate(amb, ar, position(), pref,amb.name());
-			 if (n instanceof TypeNode) {
-				return n;
-			 }
-			 throw new SemanticException("Could not find advice formal or type \"" + amb.name() +
+	 			amb.qual().disambiguateEnter(ar); */
+			Node n = ar.nodeFactory().disamb().disambiguate(amb, ar, position(), amb.qual(),amb.name());
+			// System.out.println("pref="+pref);
+			if (n instanceof TypeNode) {
+					return n;
+			}
+			throw new SemanticException("Could not find advice formal or type \"" + amb.name() +
 										  "\". ", position());
 	 	}
 		return type;
 	  }
 	  
+	protected AmbTypeOrLocal reconstruct(QualifierNode qual) {
+		if (!(type instanceof AmbTypeNode))
+			return this;
+		AmbTypeNode atn = (AmbTypeNode) type;
+	  	if (atn.qual() != qual) {
+			AmbTypeNode_c n = (AmbTypeNode_c) atn.copy();
+		type = n.qual(qual);
+	  }
 
+	  return this;
+	}
+
+	public Node visitChildren(NodeVisitor v) {
+		if (!(type instanceof AmbTypeNode))
+			return this;
+		AmbTypeNode atn = (AmbTypeNode) type;
+	  	QualifierNode qual = (QualifierNode) visitChild(atn.qual(), v);
+	  	return reconstruct(qual);
+	}
+	
+	  
 	/** Type check the expression. */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 	  throw new InternalCompilerError(position(),

@@ -45,10 +45,14 @@ public class PCThis_c extends Pointcut_c implements PCThis
 	   TypeSystem ts = tc.typeSystem();
 	   Context c = tc.context();
 	   
+	   	
 		if (pat instanceof TPEUniversal)
 			return this;
 		
-		if (! (((Typed)pat).type() instanceof ReferenceType))
+		if (pat instanceof ArgStar)
+			return this;
+		
+		if (! ((pat instanceof Typed) && ((Typed)pat).type() instanceof ReferenceType))
 		   throw new SemanticException("Argument of \"this\" must be of reference type",pat.position());
 		   
 		return this;

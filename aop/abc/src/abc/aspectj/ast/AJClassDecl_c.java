@@ -18,6 +18,7 @@ import polyglot.frontend.Job;
 import polyglot.ast.ClassBody;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Node;
+import polyglot.ast.ClassDecl;
 
 import polyglot.ext.jl.ast.ClassDecl_c;
 import polyglot.types.Flags;
@@ -28,8 +29,11 @@ import polyglot.types.ClassType;
 import polyglot.types.Type;
 
 import polyglot.visit.AmbiguityRemover;
+import polyglot.visit.TypeChecker;
 
 import polyglot.util.Position;
+
+import abc.aspectj.types.AspectJFlags;
 
 /**
  * @author oege
@@ -111,5 +115,14 @@ public class AJClassDecl_c extends ClassDecl_c {
 			}
 
 		}
+
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		ClassDecl n = (ClassDecl) super.typeCheck(tc);
+		if (superClass() != null &&
+		     AspectJFlags.isAspectclass(n.type().toClass().superType().toClass().flags()) &&
+		    !AspectJFlags.isAspectclass(n.type().toClass().flags()))
+		   throw new SemanticException("A normal class cannot extend an aspect",superClass.position());
+		return n;
+	}
 			
 }

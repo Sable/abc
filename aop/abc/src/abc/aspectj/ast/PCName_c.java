@@ -201,6 +201,10 @@ public class PCName_c extends Pointcut_c implements PCName
        		throw new SemanticException("Pointcut "+name+" not found.", position());
        mi = (MethodInstance) ms.iterator().next(); // PointcutInstance_c
       
+       if (target != null && target instanceof TypeNode && mi.flags().isAbstract())
+       		throw new SemanticException("Cannot make a static reference to an abstract pointcut",
+       		                             position());
+      
        // get the formal types
        List formalTypes = mi.formalTypes();
        

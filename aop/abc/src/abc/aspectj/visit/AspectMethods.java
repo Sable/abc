@@ -42,6 +42,7 @@ import abc.aspectj.ast.IntertypeFieldDecl_c;
 import abc.aspectj.ast.IntertypeMethodDecl_c;
 import abc.aspectj.ast.IntertypeConstructorDecl_c;
 import abc.aspectj.ast.HostSpecial_c;
+import abc.aspectj.ast.AspectDecl_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeFieldInstance_c;
@@ -248,7 +249,9 @@ public class AspectMethods extends NodeVisitor {
 				MethodDecl md = (MethodDecl) i.next();
 				cd = cd.body(cd.body().addMember(md));
 			}
-			return cd;
+			if (cd instanceof AspectDecl_c)
+			    return ((AspectDecl_c)cd).addAspectMembers(nf, ts);
+			else return cd;
 		}
 	    return super.leave(old, n, v);
 }

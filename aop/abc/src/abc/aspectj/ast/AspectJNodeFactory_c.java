@@ -517,12 +517,12 @@ public class AspectJNodeFactory_c
 		return new PCEmpty_c(pos);
 	}
 	
-    /*
+   
 	public ConstructorDecl ConstructorDecl(Position pos, Flags flags, String name, 
 											List formals, List throwTypes, Block body) {
 		ConstructorDecl cd = new AJConstructorDecl_c(pos,flags,name,formals,throwTypes,body);
 		return cd;
-	} */
+	} 
 	
 	
 }

@@ -31,6 +31,7 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.ast.Pointcut;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.ContainsAspectInfo;
 
@@ -167,9 +168,16 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, Contai
 		   throw new SemanticException(
 		   "An abstract pointcut cannot have a body.", position());
 	   }
-		   overrideMethodCheck(tc);
+		
+	   if (!(AspectJFlags.isAspectclass(methodInstance().container().toClass().flags()))
+	        && flags().isAbstract())
+	   		throw new SemanticException("Abstract pointcut cannot be a member" +
+	   		                            " of a class that is not an aspect.",position());
+	  
+	  	                            
+	   overrideMethodCheck(tc);
 
-	  if (pc != null)
+	  if (!flags().isAbstract())
 	  	pc.checkFormals(formals,null);
 	  	
 	   return this;

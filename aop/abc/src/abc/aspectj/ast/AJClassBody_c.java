@@ -27,7 +27,7 @@ import polyglot.types.FieldInstance;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
 import abc.aspectj.types.AspectJTypeSystem_c;
-
+import abc.aspectj.types.PointcutInstance_c;
 /**
  * @author oege
  *
@@ -127,8 +127,9 @@ public class AJClassBody_c extends ClassBody_c {
 					if (mi instanceof InterTypeMemberInstance)
 						throw new SemanticException("Duplicate method \"" + mi + "\" in class \"" +
 						                            mi.container() + "\".", mi.position());
-					else
-						throw new SemanticException("Duplicate method \"" + mj + "\" in class \"" +
+					else if (mi instanceof PointcutInstance_c)
+					    throw new SemanticException("Duplicate "+mj+" in class "+mj.container() +".",mj.position());
+					else throw new SemanticException("Duplicate method \"" + mj + "\" in class \"" +
 						                            mi.container() + "\".", mj.position());
 				}
 			}

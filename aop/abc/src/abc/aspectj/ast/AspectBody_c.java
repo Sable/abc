@@ -11,7 +11,7 @@ import polyglot.util.Position;
  * An <code>AspectBody</code> represents the body of an aspect
  * declaration 
  */
-public class AspectBody_c extends ClassBody_c implements AspectBody
+public class AspectBody_c extends AJClassBody_c implements AspectBody
 {
 
     public AspectBody_c(Position pos, List members) {

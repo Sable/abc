@@ -295,6 +295,8 @@ public class AdviceDecl_c extends MethodDecl_c
 		   return proceedInstance;
 		else return proceedInstance(c.pop());
 	}
+	
+
 
     private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
     	if (thisJoinPointInstance==null)
