@@ -35,12 +35,12 @@ public interface EAJNodeFactory extends AJNodeFactory {
 
     public PCCast PCCast(Position pos, TypePatternExpr type_pattern);
 
-    public PCLocalVars PCLocalVars(Position pos, List varlist, Pointcut pointcut);
+    public PCLocalVars PCLocalVars(Position pos, List varlist, Pointcut pc);
 
     public GlobalPointcutDecl GlobalPointcutDecl(
                                     Position pos,
                                     ClassnamePatternExpr aspect_pattern,
-                                    Pointcut pointcut,
+                                    Pointcut pc,
                                     String name,
                                     TypeNode voidn);
 }

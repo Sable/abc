@@ -67,13 +67,13 @@ public class GlobalPointcuts extends ContextVisitor
      * callback to allow a GlobalPoincutDecl to register itself
      */
     public void addGlobalPointcut(ClassnamePatternExpr pattern,
-                                  Pointcut pointcut)
+                                  Pointcut pc)
     {
         if (globalpcs.containsKey(pattern)) {
             Pointcut current = (Pointcut) globalpcs.get(pattern);
-            globalpcs.put(pattern, conjoinPointcuts(pointcut, current));
+            globalpcs.put(pattern, conjoinPointcuts(pc, current));
         } else {
-            globalpcs.put(pattern, pointcut);
+            globalpcs.put(pattern, pc);
         }
     }
 
@@ -84,7 +84,7 @@ public class GlobalPointcuts extends ContextVisitor
 
 
     // Methods implementing ContextVisitor interface
- 
+
     // maintain the static state
     public void finish()
     {

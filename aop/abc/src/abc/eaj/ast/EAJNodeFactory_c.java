@@ -47,20 +47,20 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
 
     public PCLocalVars PCLocalVars(Position pos,
                                    List varlist,
-                                   Pointcut pointcut)
+                                   Pointcut pc)
     {
-        return new PCLocalVars_c(pos, varlist, pointcut);
+        return new PCLocalVars_c(pos, varlist, pc);
     }
 
     public GlobalPointcutDecl GlobalPointcutDecl(
                                     Position pos,
                                     ClassnamePatternExpr aspect_pattern,
-                                    Pointcut pointcut,
+                                    Pointcut pc,
                                     String name,
                                     TypeNode voidn)
     {
         return new GlobalPointcutDecl_c(pos, aspect_pattern,
-                                        pointcut, name, voidn);
+                                        pc, name, voidn);
     }
 
     public AdviceDecl AdviceDecl(Position pos, Flags flags,

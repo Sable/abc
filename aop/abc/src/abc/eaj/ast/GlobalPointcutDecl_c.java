@@ -39,32 +39,32 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
                                   implements GlobalPointcutDecl
 {
     ClassnamePatternExpr aspect_pattern; // aspects that match this pattern
-    Pointcut pointcut;                   // should conjoin this pointcut
+    Pointcut pc;                         // should conjoin this pointcut
                                          // with the pointcut for each piece of
                                          // advice in the matching aspect
     String name;
 
     public GlobalPointcutDecl_c(Position pos,
                                 ClassnamePatternExpr aspect_pattern,
-                                Pointcut pointcut,
+                                Pointcut pc,
                                 String name,
                                 TypeNode voidn)
     {
-        super(pos, Flags.PUBLIC, name, new LinkedList(), pointcut, voidn);
+        super(pos, Flags.PUBLIC, name, new LinkedList(), pc, voidn);
         this.aspect_pattern = aspect_pattern;
-        this.pointcut = pointcut;
+        this.pc = pc;
         this.name = name;
     }
 
     protected Node reconstruct(Node n, ClassnamePatternExpr aspect_pattern,
-                                       Pointcut pointcut)
+                                       Pointcut pc)
     {
         if (   aspect_pattern != this.aspect_pattern
-            ||       pointcut != this.pointcut)
+            ||             pc != this.pc)
         {
             GlobalPointcutDecl_c new_n = (GlobalPointcutDecl_c) n.copy();
             new_n.aspect_pattern = aspect_pattern;
-            new_n.pointcut = pointcut;
+            new_n.pc = pc;
 
             return new_n;
         }
@@ -78,9 +78,9 @@ public class GlobalPointcutDecl_c extends PointcutDecl_c
         ClassnamePatternExpr aspect_pattern =
                 (ClassnamePatternExpr) visitChild(this.aspect_pattern, v);
 
-        Pointcut pointcut = (Pointcut) visitChild(this.pointcut, v);
+        Pointcut pc = (Pointcut) visitChild(this.pc, v);
 
-        return reconstruct(n, aspect_pattern, pointcut);
+        return reconstruct(n, aspect_pattern, pc);
     }
 
     public void registerGlobalPointcut(GlobalPointcuts visitor,
