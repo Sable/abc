@@ -53,6 +53,7 @@ public class Main {
       // TODO: add a call here to the reset method for any class that
       //  needs static information reset for repeated calls to main
       abc.main.AbcTimer.reset();
+      abc.main.Options.reset();
       abc.soot.util.Restructure.reset();
       abc.aspectj.visit.PCStructure.reset();
       abc.aspectj.visit.AspectInfoHarvester.reset();
@@ -93,11 +94,11 @@ public class Main {
         }
     }
 
-    public Main(String[] args) throws IllegalArgumentException {
-        parseArgs(args);
-    }
+  public Main(String[] args) throws IllegalArgumentException {
+     parseArgs(args);
+  }
 
-    public void parseArgs(String[] args) throws IllegalArgumentException {
+  public void parseArgs(String[] args) throws IllegalArgumentException {
     String outputdir=".";
     boolean optflag=false;
     if (args.length == 0)
@@ -108,7 +109,7 @@ public class Main {
         // abc options that we handle completely, 
         //     and correspond to ajc options
             
-        // TODO: -help 
+        // TODO: -help needs to be filled in 
         if (args[i].equals("-help") || args[i].equals("--help") ||
             args[i].equals("-h"))
           abcPrintHelp();
@@ -159,14 +160,19 @@ public class Main {
          //    want to stop compilation
              
          // -Xlint, -Xlint:ignore, -Xlint:warning, -Xlint:errror
-         else if (args[i].equals("-Xlint:ignore"))
-           { // this one is ok, because we don't have Xlint anyway
-           } 
          else if (args[i].equals("-Xlint") || 
                   args[i].equals("-Xlint:warning") ||
-                  args[i].equals("-Xlint:error"))
-            compilerOptionIgnored(args[i],
-               "abc does not yet support Xlint");
+                  args[i].equals("-Xlint:error") ||
+                  args[i].equals("-Xlint:ignore"))
+           { compilerOptionIgnored(args[i],
+                 "abc does not yet support Xlint");
+             if (args[i].equals("Xlint") || args[i].equals("Xlint:warning"))
+               abc.main.Options.v().Xlint = abc.main.Options.WARNING;
+             else if (args[i].equals("Xlint:error"))
+               abc.main.Options.v().Xlint = abc.main.Options.ERROR;
+             else
+               abc.main.Options.v().Xlint = abc.main.Options.IGNORE;
+           }
 
          // -1.3, -1.4
          else if (args[i].equals("-1.3") || args[i].equals("-1.4"))
@@ -200,12 +206,33 @@ public class Main {
            }
 
          // -nowarn, -warn:items  where items is a comma-delmited list
-         else if (args[i].equals("-nowarn")) // TODO: should implement 
-           compilerOptionIgnored(args[i], 
-             " warnings not disabled.");
-         else if (args[i].startsWith("-warn"))
-           compilerOptionIgnored(args[i],
-             " warning flags no implemented yet.");
+         else if (args[i].equals("-nowarn"))
+           { // TODO: remove following line when compiler looks at flag 
+             compilerOptionIgnored(args[i], "warnings not disabled.");
+             abc.main.Options.v().warn = abc.main.Options.NOWARNINGS;
+           }
+         else if (args[i].startsWith("-warn:"))
+          { // TODO: remove following line when compiler looks at flag 
+            compilerOptionIgnored(args[i],
+                        " warning flags not implemented yet.");
+            // special case of -warn:none 
+            if (args[i].equals("-warn:none"))
+                abc.main.Options.v().warn = abc.main.Options.NOWARNINGS;
+            else
+              { String kindList = args[i].substring(6); // strip off "-warn:"
+                StringTokenizer kinds = new StringTokenizer(kindList,",");
+                // iterate through rest of list, adding them if they are allowed
+                { while (kinds.hasMoreTokens())
+                    { String nextKind = kinds.nextToken();
+                      if (abc.main.Options.v().isValidWarningName(nextKind))
+                        abc.main.Options.v().addWarning(nextKind);
+                      else
+                        compilerOptionIgnored("-warn:" + nextKind,
+                            "is not a valid warning kind.");
+                 }
+               }
+             }
+          }
 
          // -g, -g:none, -g:{items} where items can 
          //              contain lines,vars,source
@@ -220,11 +247,11 @@ public class Main {
          // abc-specific options which have no ajc equivalents
          
          // TODO: should actually list only soot options useful for abc
-         else if (args[i].equals("-help:soot"))  // abc-specific
+         else if (args[i].equals("-help:soot"))  
            G.v().out.println(soot.options.Options.v().getUsage());
 
         // TODO; should actually list only polyglot options useful for abc
-        else if (args[i].equals("-help:polyglot")) // abc-specific
+        else if (args[i].equals("-help:polyglot")) 
           { abc.aspectj.ExtensionInfo ext = 
                 new abc.aspectj.ExtensionInfo(null, null);
             Options options = ext.getOptions();
