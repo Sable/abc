@@ -3,7 +3,6 @@ package abc.weaving.aspectinfo;
 import abc.aspectj.visit.PCStructure;
 
 import polyglot.util.Position;
-import polyglot.types.ClassType;
 import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
 
