@@ -39,7 +39,7 @@ public class LocalGeneratorEx extends LocalGenerator {
 		int i=0;
 		String name=suggestedName;
 		while (bodyContainsLocal(name)) {
-			name=suggestedName + (i++);
+			name=suggestedName + (++i);
 		}
 		return createLocal(name, type);
 	}
