@@ -249,10 +249,12 @@ public class PointcutCodeGen {
 		if (alldone) {
 			Stmt s =
 				Jimple.v().newInvokeStmt(
+					//Jimple.v().newSpecialInvokeExpr(aspectref, advicemethod, wc.arglist)
 					Jimple.v().newVirtualInvokeExpr(
 						aspectref,
 						advicemethod,
-						wc.arglist));
+						wc.arglist)
+						);
 			c.addLast(s);
 			return (c);
 		} else

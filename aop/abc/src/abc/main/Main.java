@@ -179,6 +179,7 @@ public class Main {
     public void initSoot() throws IllegalArgumentException {
         Scene.v().setSootClassPath(classpath);
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
+        //System.out.println(classpath);
         if (!soot.options.Options.v().parse(soot_argv)) {
             throw new IllegalArgumentException("Soot usage error");
         }
