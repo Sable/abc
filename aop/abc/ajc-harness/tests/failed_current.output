@@ -2,7 +2,7 @@ Running test 141: pureJava/Parenthesized true and false don't parse
 Commandline: abc -d pureJava pureJava/ParenKeywords.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:593)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -34,18 +34,14 @@ Caused by: java.lang.ClassCastException: polyglot.visit.InitChecker$1
 	at polyglot.frontend.AbstractExtensionInfo.runAllPasses(AbstractExtensionInfo.java:190)
 	at polyglot.frontend.AbstractExtensionInfo.runToCompletion(AbstractExtensionInfo.java:109)
 	at polyglot.frontend.Compiler.compile(Compiler.java:95)
-	at abc.main.Main.compile(Main.java:732)
-	at abc.main.Main.run(Main.java:518)
+	at abc.main.Main.compile(Main.java:764)
+	at abc.main.Main.run(Main.java:545)
 	... 3 more
 FAIL: Test 141: "pureJava/Parenthesized true and false don't parse" failed.
 
 
 Running test 165: pureJava/nameConflicts/type and package name conflicts caught as errors (1)
 Commandline: abc -d pureJava/nameConflicts pureJava/nameConflicts/p1/p2.java pureJava/nameConflicts/p1/Main1.java pureJava/nameConflicts/p1/Foo.java pureJava/nameConflicts/p1/p2/Foo.java 
-expr: "p1.Foo"
-getConstant: p1.Foo
-expr: "p1.p2$Foo"
-getConstant: p1.p2$Foo
 Compilation succeeded but was expected to fail.
 FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught as errors (1)" failed.
 
@@ -60,116 +56,6 @@ FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location 
 
 Running test 418: new/join points exist in the execution of field initializers
 Commandline: abc -d new new/FieldInitializerJoinPoints.java 
-expr: 97
-getConstant: 97
-expr: 96
-getConstant: 96
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 0
-expr: 0
-getConstant: 0
-initExpr: 99
-expr: 99
-getConstant: 99
-initExpr: 98
-expr: 98
-getConstant: 98
-initExpr: n()
-initExpr: o()
-expr: 97
-getConstant: 97
-expr: l
-getConstant: 97
-expr: 95
-getConstant: 95
-expr: 94
-getConstant: 94
-expr: 93
-getConstant: 93
-expr: 92
-getConstant: 92
-expr: 0
-getConstant: 0
-expr: "jcount"
-getConstant: jcount
-expr: 1
-getConstant: 1
-expr: "kcount"
-getConstant: kcount
-expr: 0
-getConstant: 0
-expr: "lcount"
-getConstant: lcount
-expr: 2
-getConstant: 2
-expr: "mcount"
-getConstant: mcount
-expr: 1
-getConstant: 1
-expr: "ncount"
-getConstant: ncount
-expr: 1
-getConstant: 1
-expr: "ocount"
-getConstant: ocount
-expr: 2
-getConstant: 2
-expr: "pcount"
-getConstant: pcount
-expr: 2
-getConstant: 2
-expr: "qcount"
-getConstant: qcount
-expr: 1
-getConstant: 1
-expr: "nMcount"
-getConstant: nMcount
-expr: 1
-getConstant: 1
-expr: "oMcount"
-getConstant: oMcount
-expr: 2
-getConstant: 2
-expr: "pMcount"
-getConstant: pMcount
-expr: 2
-getConstant: 2
-expr: "qMcount"
-getConstant: qMcount
-expr: true
-getConstant: true
 Test failed, compiled class behaved incorrectly
 Message: fail ncount: 0 < 1
 org.aspectj.bridge.AbortException: ncount: 0 < 1
@@ -190,24 +76,6 @@ FAIL: Test 418: "new/join points exist in the execution of field initializers" f
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-expr: 10
-getConstant: 10
-expr: "Test.a"
-getConstant: Test.a
-expr: 4
-getConstant: 4
-expr: "beforeA"
-getConstant: beforeA
-initExpr: -1
-expr: -1
-getConstant: -1
-expr: 4
-getConstant: 4
-initExpr: null
-expr: 10
-getConstant: 10
-expr: true
-getConstant: true
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
 org.aspectj.bridge.AbortException: Test.a: 4 < 10
@@ -228,307 +96,6 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-expr: "9"
-getConstant: 9
-expr: 42
-getConstant: 42
-expr: 1
-getConstant: 1
-binary: "x = " + x
-node in is string lit: "x = " + x kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "x = " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: x kind: class abc.aspectj.extension.AJField_c
-expr: "x = "
-getConstant: x = 
-expr: 23
-getConstant: 23
-expr: "2"
-getConstant: 2
-expr: "C()"
-getConstant: C()
-binary: "C(" + s + ")"
-node in is string lit: "C(" + s + ")" kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "C(" + s kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "C(" kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: s kind: class polyglot.ext.jl.ast.Local_c
-expr: "C("
-getConstant: C(
-expr: ")"
-getConstant: )
-binary: "y = " + y
-node in is string lit: "y = " + y kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "y = " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: y kind: class abc.aspectj.extension.AJField_c
-expr: "y = "
-getConstant: y = 
-binary: "SuperC(" + x + ")"
-node in is string lit: "SuperC(" + x + ")" kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "SuperC(" + x kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "SuperC(" kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: x kind: class polyglot.ext.jl.ast.Local_c
-expr: "SuperC("
-getConstant: SuperC(
-expr: ")"
-getConstant: )
-expr: true
-getConstant: true
-initExpr: new java.lang.String[...]
-expr: "enter st..."
-getConstant: enter staticinitialization(AroundAll.<clinit>)
-expr: "exit sta..."
-getConstant: exit staticinitialization(AroundAll.<clinit>)
-expr: "enter ex..."
-getConstant: enter execution(void AroundAll.main(String[]))
-expr: "enter ca..."
-getConstant: enter call(C())
-expr: "enter st..."
-getConstant: enter staticinitialization(SuperC.<clinit>)
-expr: "exit sta..."
-getConstant: exit staticinitialization(SuperC.<clinit>)
-expr: "enter st..."
-getConstant: enter staticinitialization(C.<clinit>)
-expr: "exit sta..."
-getConstant: exit staticinitialization(C.<clinit>)
-expr: "enter ca..."
-getConstant: enter call(Integer java.lang.Integer.valueOf(String))
-expr: "exit cal..."
-getConstant: exit call(Integer java.lang.Integer.valueOf(String))
-expr: "enter ca..."
-getConstant: enter call(int java.lang.Integer.intValue())
-expr: "exit cal..."
-getConstant: exit call(int java.lang.Integer.intValue())
-expr: "enter ex..."
-getConstant: enter execution(SuperC(int))
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "SuperC(2)"
-getConstant: SuperC(2)
-expr: "exit exe..."
-getConstant: exit execution(SuperC(int))
-expr: "enter ex..."
-getConstant: enter execution(C(int))
-expr: "enter se..."
-getConstant: enter set(int C.y)
-expr: "exit set..."
-getConstant: exit set(int C.y)
-expr: "enter se..."
-getConstant: enter set(int C.x)
-expr: "exit set..."
-getConstant: exit set(int C.x)
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ge..."
-getConstant: enter get(int C.x)
-expr: "exit get..."
-getConstant: exit get(int C.x)
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "x = 2"
-getConstant: x = 2
-expr: "exit exe..."
-getConstant: exit execution(C(int))
-expr: "enter ex..."
-getConstant: enter execution(C(String))
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "C(2)"
-getConstant: C(2)
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ge..."
-getConstant: enter get(int C.y)
-expr: "exit get..."
-getConstant: exit get(int C.y)
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "y = 42"
-getConstant: y = 42
-expr: "exit exe..."
-getConstant: exit execution(C(String))
-expr: "enter ex..."
-getConstant: enter execution(C())
-expr: "C()"
-getConstant: C()
-expr: "exit exe..."
-getConstant: exit execution(C())
-expr: "exit cal..."
-getConstant: exit call(C())
-expr: "enter ca..."
-getConstant: enter call(C(String))
-expr: "enter ca..."
-getConstant: enter call(Integer java.lang.Integer.valueOf(String))
-expr: "exit cal..."
-getConstant: exit call(Integer java.lang.Integer.valueOf(String))
-expr: "enter ca..."
-getConstant: enter call(int java.lang.Integer.intValue())
-expr: "exit cal..."
-getConstant: exit call(int java.lang.Integer.intValue())
-expr: "enter ex..."
-getConstant: enter execution(SuperC(int))
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "SuperC(9)"
-getConstant: SuperC(9)
-expr: "exit exe..."
-getConstant: exit execution(SuperC(int))
-expr: "enter ex..."
-getConstant: enter execution(C(int))
-expr: "enter se..."
-getConstant: enter set(int C.y)
-expr: "exit set..."
-getConstant: exit set(int C.y)
-expr: "enter se..."
-getConstant: enter set(int C.x)
-expr: "exit set..."
-getConstant: exit set(int C.x)
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ge..."
-getConstant: enter get(int C.x)
-expr: "exit get..."
-getConstant: exit get(int C.x)
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "x = 9"
-getConstant: x = 9
-expr: "exit exe..."
-getConstant: exit execution(C(int))
-expr: "enter ex..."
-getConstant: enter execution(C(String))
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(String))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "C(9)"
-getConstant: C(9)
-expr: "enter ca..."
-getConstant: enter call(java.lang.StringBuffer(String))
-expr: "exit cal..."
-getConstant: exit call(java.lang.StringBuffer(String))
-expr: "enter ge..."
-getConstant: enter get(int C.y)
-expr: "exit get..."
-getConstant: exit get(int C.y)
-expr: "enter ca..."
-getConstant: enter call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "exit cal..."
-getConstant: exit call(StringBuffer java.lang.StringBuffer.append(int))
-expr: "enter ca..."
-getConstant: enter call(String java.lang.StringBuffer.toString())
-expr: "exit cal..."
-getConstant: exit call(String java.lang.StringBuffer.toString())
-expr: "y = 42"
-getConstant: y = 42
-expr: "exit exe..."
-getConstant: exit execution(C(String))
-expr: "exit cal..."
-getConstant: exit call(C(String))
-initExpr: new java.util.ArrayList(...)
-binary: "        \"" + i.next() + "\", "
-node in is string lit: "        \"" + i.next() + "\", " kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "        \"" + i.next() kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "        \"" kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: i.next() kind: class abc.aspectj.extension.AJCall_c
-expr: "        \""
-getConstant:         "
-expr: "\", "
-getConstant: ", 
-expr: "steps"
-getConstant: steps
-expr: "steps"
-getConstant: steps
-expr: true
-getConstant: true
-binary: "enter " + thisJoinPoint
-node in is string lit: "enter " + thisJoinPoint kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "enter " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: thisJoinPoint kind: class polyglot.ext.jl.ast.Local_c
-expr: "enter "
-getConstant: enter 
-binary: "exit " + thisJoinPoint
-node in is string lit: "exit " + thisJoinPoint kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "exit " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: thisJoinPoint kind: class polyglot.ext.jl.ast.Local_c
-expr: "exit "
-getConstant: exit 
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 126
 org.aspectj.bridge.AbortException: steps expected array of length 114 got 126
@@ -552,28 +119,6 @@ FAIL: Test 496: "new/elaborated into testing of around on all join points" faile
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-expr: 8
-getConstant: 8
-binary: "new Sub(..." + result
-node in is string lit: "new Sub(..." + result kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "new Sub(..." kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: result kind: class polyglot.ext.jl.ast.Local_c
-expr: "new Sub(..."
-getConstant: new Sub().getInt() !8==
-expr: "null new..."
-getConstant: null new ObjectSub().getClone()
-expr: "null new..."
-getConstant: null new ObjectSub().getSuperClone()
-expr: 1
-getConstant: 1
-expr: 1
-getConstant: 1
-expr: true
-getConstant: true
-expr: false
-getConstant: false
-expr: "expectin..."
-getConstant: expecting CloneNotSupportedException
 InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -592,56 +137,6 @@ FAIL: Test 555: "new/accessing protected superclass members in and outside CCC f
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
 Commandline: abc -d abctests/new abctests/new/test/TypePat.java 
-expr: "A.before..."
-getConstant: A.before1: TypePat.Inner.m()
-expr: "InnerA.b..."
-getConstant: InnerA.before: TypePat.Inner.m()
-expr: "A.before..."
-getConstant: A.before2: C.foo()
-expr: "TypePat...."
-getConstant: TypePat.Inner.m
-expr: "a"
-getConstant: a
-expr: "b"
-getConstant: b
-expr: "A.before..."
-getConstant: A.before3: Map.Entry.getKey()
-expr: "A.before..."
-getConstant: A.before2: C.foo()
-expr: "TypePat...."
-getConstant: TypePat.Runnable.run
-expr: "TypePat...."
-getConstant: TypePat.Runnable.run
-expr: "TypePat...."
-getConstant: TypePat.Inner.m
-binary: "InnerA.b..." + thisJoinPointStaticPart.getSignature().toShortString()
-node in is string lit: "InnerA.b..." + thisJoinPointStaticPart.getSignature().toShortString() kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "InnerA.b..." kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: thisJoinPointStaticPart.getSignature().toShortString() kind: class abc.aspectj.extension.AJCall_c
-expr: "InnerA.b..."
-getConstant: InnerA.before: 
-expr: true
-getConstant: true
-expr: true
-getConstant: true
-binary: "A.before1: " + thisJoinPointStaticPart.getSignature().toShortString()
-node in is string lit: "A.before1: " + thisJoinPointStaticPart.getSignature().toShortString() kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "A.before1: " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: thisJoinPointStaticPart.getSignature().toShortString() kind: class abc.aspectj.extension.AJCall_c
-expr: "A.before1: "
-getConstant: A.before1: 
-binary: "A.before2: " + thisJoinPointStaticPart.getSignature().toShortString()
-node in is string lit: "A.before2: " + thisJoinPointStaticPart.getSignature().toShortString() kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "A.before2: " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: thisJoinPointStaticPart.getSignature().toShortString() kind: class abc.aspectj.extension.AJCall_c
-expr: "A.before2: "
-getConstant: A.before2: 
-binary: "A.before3: " + thisJoinPointStaticPart.getSignature().toShortString()
-node in is string lit: "A.before3: " + thisJoinPointStaticPart.getSignature().toShortString() kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: "A.before3: " kind: class polyglot.ext.jl.ast.StringLit_c
-node in is string lit: thisJoinPointStaticPart.getSignature().toShortString() kind: class abc.aspectj.extension.AJCall_c
-expr: "A.before3: "
-getConstant: A.before3: 
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "A.before2: C.foo()" not found]
 org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not found]
@@ -666,115 +161,9 @@ FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ke
 
 Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertInOnePackage.java 
-expr: "StaticIn..."
-getConstant: StaticInitializerOnHelper
-expr: true
-getConstant: true
-expr: "StaticIn..."
-getConstant: StaticInitializerOffHelper
-expr: false
-getConstant: false
-expr: "Construc..."
-getConstant: ConstructorOnHelper
-expr: true
-getConstant: true
-expr: "Construc..."
-getConstant: ConstructorOffHelper
-expr: false
-getConstant: false
-expr: "InnerSta..."
-getConstant: InnerStaticInitializerOnHelper
-expr: true
-getConstant: true
-expr: "InnerSta..."
-getConstant: InnerStaticInitializerOffHelper
-expr: false
-getConstant: false
-expr: "InnerSta..."
-getConstant: InnerStaticInitializerOnHelperI
-expr: true
-getConstant: true
-expr: "InnerSta..."
-getConstant: InnerStaticInitializerOffHelperI
-expr: false
-getConstant: false
-expr: "CycleSubOn"
-getConstant: CycleSubOn
-expr: true
-getConstant: true
-expr: "CycleSubOff"
-getConstant: CycleSubOff
-expr: false
-getConstant: false
-expr: true
-getConstant: true
-expr: "static i..."
-getConstant: static initializer should throw
-expr: false
-getConstant: false
-expr: "static i..."
-getConstant: static initializer should not throw
-expr: true
-getConstant: true
-expr: "construc..."
-getConstant: constructor should throw
-expr: false
-getConstant: false
-expr: "static i..."
-getConstant: static initializer should not throw
-expr: true
-getConstant: true
-expr: "inner st..."
-getConstant: inner static initializer should throw
-expr: false
-getConstant: false
-expr: "inner st..."
-getConstant: inner static initializer should not throw
-expr: true
-getConstant: true
-expr: "inner st..."
-getConstant: inner static initializer of interface should throw
-expr: false
-getConstant: false
-expr: "inner st..."
-getConstant: inner static initializer of interface should not throw
-expr: true
-getConstant: true
-expr: "static i..."
-getConstant: static initializer in cyclic should throw
-expr: true
-getConstant: true
-expr: "static i..."
-getConstant: static initializer in cyclic should always throw
-expr: false
-getConstant: false
-expr: true
-getConstant: true
-expr: false
-getConstant: false
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
-expr: 3
-getConstant: 3
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:593)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -783,8 +172,8 @@ Caused by: java.util.NoSuchElementException: No such class: InnerStaticInitializ
 	at abc.aspectj.visit.PCStructure.insertClassAndSuperclasses(PCStructure.java:163)
 	at abc.aspectj.visit.PCStructure.updateWithAllSootClasses(PCStructure.java:178)
 	at abc.aspectj.visit.PatternMatcher.updateWithAllSootClasses(PatternMatcher.java:125)
-	at abc.main.Main.weave(Main.java:802)
-	at abc.main.Main.run(Main.java:522)
+	at abc.main.Main.weave(Main.java:834)
+	at abc.main.Main.run(Main.java:549)
 	... 3 more
 FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" failed.
 
@@ -799,76 +188,18 @@ FAIL: Test 740: "new/PR862/import any inner from interface implementor" failed.
 
 Running test 752: bugs/problems with finalize call
 Commandline: abc -d bugs bugs/Finalizer.java 
-expr: true
-getConstant: true
 Compilation succeeded but was expected to fail.
 FAIL: Test 752: "bugs/problems with finalize call" failed.
 
 
 Running test 769: new/illegal name binding in around cflow
 Commandline: abc -d new new/ArgsInCflowCf.java 
-expr: "1-2"
-getConstant: 1-2
-expr: 3
-getConstant: 3
-expr: 1
-getConstant: 1
-expr: "3==foo(1)"
-getConstant: 3==foo(1)
-expr: 1
-getConstant: 1
-expr: 1
-getConstant: 1
-expr: true
-getConstant: true
-binary: x + "-" + y
-node in is string lit: x + "-" + y kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: x + "-" kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: x kind: class polyglot.ext.jl.ast.Local_c
-expr: "-"
-getConstant: -
-binary: x + "-" + y
-node in is string lit: x + "-" + y kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: x + "-" kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: x kind: class polyglot.ext.jl.ast.Local_c
-expr: "-"
-getConstant: -
-binary: x + "-" + y
-node in is string lit: x + "-" + y kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: x + "-" kind: class soot.javaToJimple.jj.ast.JjBinary_c
-node in is string lit: x kind: class polyglot.ext.jl.ast.Local_c
-expr: "-"
-getConstant: -
-expr: 1
-getConstant: 1
-expr: 1
-getConstant: 1
 Compilation succeeded but was expected to fail.
 FAIL: Test 769: "new/illegal name binding in around cflow" failed.
 
 
 Running test 77201: abctests/bugs/declare soft and throw statements
 Commandline: abc -d abctests/bugs abctests/bugs/ConvertToUnchecked.java 
-expr: "hello"
-getConstant: hello
-expr: false
-getConstant: false
-expr: "shouldn\'..."
-getConstant: shouldn't get here
-expr: true
-getConstant: true
-expr: "bad"
-getConstant: bad
-expr: "hi"
-getConstant: hi
-expr: false
-getConstant: false
-expr: "bar"
-getConstant: bar
-expr: false
-getConstant: false
-expr: "bar"
-getConstant: bar
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
@@ -879,14 +210,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:593)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:680)
-	at abc.main.Main.loadSourceRoots(Main.java:697)
-	at abc.main.Main.run(Main.java:513)
+	at abc.main.Main.findSourcesInDir(Main.java:712)
+	at abc.main.Main.loadSourceRoots(Main.java:729)
+	at abc.main.Main.run(Main.java:540)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -908,8 +239,8 @@ polyglot.util.InternalCompilerError: exception while resolving C.B
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:102)
 	at soot.SootResolver.resolveClass(SootResolver.java:88)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:750)
-	at abc.main.Main.run(Main.java:518)
+	at abc.main.Main.compile(Main.java:782)
+	at abc.main.Main.run(Main.java:545)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -933,16 +264,12 @@ FAIL: Test 982: "abctests/bugs/needing declare parents to resolve inner class re
 
 Running test 983: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses.jar abctests/bugs/declareparentsbinary/Aspect.java 
-expr: true
-getConstant: true
 Failed to find class BinaryClass
 FAIL: Test 983: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 1" failed.
 
 
 Running test 984: abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2
 Commandline: abc -d abctests/bugs/declareparentsbinary -injars abctests/bugs/declareparentsbinary/BinaryClasses2.jar abctests/bugs/declareparentsbinary/Aspect.java 
-expr: true
-getConstant: true
 Compilation succeeded but was expected to fail.
 FAIL: Test 984: "abctests/bugs/declareparentsbinary/declare parents on binary classes needs to modify constructor calls 2" failed.
 
