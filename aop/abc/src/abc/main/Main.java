@@ -46,6 +46,8 @@ import java.io.*;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
+import polyglot.frontend.Pass;
+import polyglot.frontend.Job;
 import polyglot.main.Options;
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
@@ -68,6 +70,8 @@ import soot.jimple.toolkits.base.ExceptionChecker;
 import soot.jimple.toolkits.base.ExceptionCheckerError;
 import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
+import abc.aspectj.visit.NoSourceJob;
+import abc.aspectj.visit.OncePass;
 import abc.aspectj.visit.PatternMatcher;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AspectJExceptionChecker;
@@ -773,8 +777,21 @@ public class Main {
 
             AbcTimer.mark("Create polyglot compiler");
             try {
-                if (!compiler.compile(aspect_sources)) {
-                    throw new CompilerFailedException("Compiler failed.");
+                if (!aspect_sources.isEmpty()) {
+                    if (!compiler.compile(aspect_sources)) {
+                        throw new CompilerFailedException("Compiler failed.");
+                    }
+                } else {
+                    // No source files. Run all once-passes.
+                    Job job = new NoSourceJob(ext);
+                    List passes = ext.passes(job);
+                    Iterator pi = passes.iterator();
+                    while (pi.hasNext()) {
+                        Pass p = (Pass)pi.next();
+                        if (p instanceof OncePass) {
+                            ((OncePass)p).run();
+                        }
+                    }
                 }
             } finally {
                 // we need the error queue in the frontend, too, to generate warnings,
