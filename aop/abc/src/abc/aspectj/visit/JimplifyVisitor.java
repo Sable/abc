@@ -26,9 +26,7 @@ public class JimplifyVisitor extends NodeVisitor {
 	}
 	if (n instanceof ClassDecl) {
 	    String cname = ((ClassDecl)n).type().fullName();
-	    System.err.println("Before: "+cname);
 	    cname = hierarchy.transformClassName(cname);
-	    System.err.println("After:  "+cname);
 	    res.resolveFromJavaFile(Scene.v().getSootClass(cname), soot_res);
             Scene.v().getSootClass(cname).setApplicationClass();
 	    // System.out.println("Jimplified class: "+cname);
