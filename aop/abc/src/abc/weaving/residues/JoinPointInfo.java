@@ -22,6 +22,7 @@ package abc.weaving.residues;
 import soot.*;
 import soot.util.Chain;
 import soot.jimple.Stmt;
+import soot.jimple.AssignStmt;
 import abc.weaving.matching.ShadowMatch;
 import abc.soot.util.LocalGeneratorEx;
 
@@ -48,7 +49,9 @@ public class JoinPointInfo extends ContextValue {
 	return sm.sp.getThisJoinPoint();
     }
 
-    public Stmt doInit(LocalGeneratorEx lg,Chain units,Stmt begin) {
-	return sm.sp.lazyInitThisJoinPoint(lg,units,begin);
+    public Stmt doInit(LocalGeneratorEx lg,Chain units,Stmt begin,boolean isStatic) {
+	return sm.sp.lazyInitThisJoinPoint(lg,units,begin,isStatic);
     }
+
+    public AssignStmt getMakeJPStmt() { return sm.sp.getMakeJPStmt(); }
 }

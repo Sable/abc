@@ -25,6 +25,7 @@ import java.util.*;
 import soot.*;
 import soot.jimple.*;
 import soot.jimple.paddle.*;
+import soot.options.PaddleOptions;
 
 /** Bridge between abc and Soot Paddle cflow analysis.
  *  @author Ondrej Lhotak
@@ -45,8 +46,10 @@ public class CflowAnalysisBridge {
     }
 
     private Map/*CflowSetup, StackInfo*/ stackInfoMap = new HashMap();
+    private Map/*Stmt, Load*/ joinPointStmtMap = new HashMap();
 
     public void run() {
+
         debug("processing advices");
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
@@ -57,9 +60,33 @@ public class CflowAnalysisBridge {
                 processAdvices(mal.allAdvice());
             }
         }
-        debug("building call graph");
-        buildCallGraph();
+
+
+        debug("setting up paddle");
+        List entryPoints = new ArrayList();
+        entryPoints.addAll(EntryPoints.v().implicit());
+        entryPoints.addAll(EntryPoints.v().mainsOfApplicationClasses());
+        Scene.v().setEntryPoints(entryPoints);
+        PhaseOptions.v().setPhaseOption("cg", "enabled:false");
+        PhaseOptions.v().setPhaseOption("cg.paddle", "enabled:false");
+        PaddleOptions paddleOpts = new soot.options.PaddleOptions(PhaseOptions.v().getPhaseOptions("cg.paddle"));
+        PaddleTransformer.v().setup(paddleOpts);
+
+
+        debug("making join point analysis");
+        JoinPointAnalysis jpa = new JoinPointAnalysis( 
+            RefType.v("org.aspectj.lang.JoinPoint"),
+            Scene.v().getSootClass("org.aspectbench.runtime.reflect.JoinPointImpl") );
+        jpa.setup(new HashSet(joinPointStmtMap.keySet()));
+
+
+        debug("running paddle");
+        PaddleTransformer.v().solve(paddleOpts);
+
+
         debug("starting cflow analysis");
+        debug("skipping cflow analysis");
+        if(false){
         BDDCflow cflowAnalysis = new BDDCflow();
         for( Iterator stackIt = stackInfoMap.keySet().iterator(); stackIt.hasNext(); ) {
             final CflowSetup stack = (CflowSetup) stackIt.next();
@@ -89,16 +116,18 @@ public class CflowAnalysisBridge {
                 }
             }
         }
+        }
+
+
+        debug("getting join point analysis result");
+        for( Iterator optimizableIt = jpa.getResult().iterator(); optimizableIt.hasNext(); ) {
+            final Stmt optimizable = (Stmt) optimizableIt.next();
+            Load load = (Load) joinPointStmtMap.get(optimizable);
+            if( load != null ) load.makeStatic();
+        }
+
+
         debug("done cflow analysis");
-    }
-    private void buildCallGraph() {
-        List entryPoints = new ArrayList();
-        entryPoints.addAll(EntryPoints.v().implicit());
-        entryPoints.addAll(EntryPoints.v().mainsOfApplicationClasses());
-        Scene.v().setEntryPoints(entryPoints);
-        PackManager.v().getPack("cg").apply();
-        PhaseOptions.v().setPhaseOption("cg", "enabled:fales");
-        PhaseOptions.v().setPhaseOption("cg.paddle", "enabled:false");
     }
     private StackInfo stackInfo( CflowSetup cfs ) {
         StackInfo ret = (StackInfo) stackInfoMap.get(cfs);
@@ -113,10 +142,14 @@ public class CflowAnalysisBridge {
             if( ad instanceof CflowSetup ) processCflowSetup( aa );
             for( Iterator rbIt = aa.getResidueBoxes().iterator(); rbIt.hasNext(); ) {
                 final ResidueBox rb = (ResidueBox) rbIt.next();
-                if( !(rb.getResidue() instanceof CflowResidue) ) continue;
-                CflowResidue cfr = (CflowResidue) rb.getResidue();
-                StackInfo si = stackInfo(cfr.setup());
-                si.stmtMap.put(cfr.getIsValidStmt(), aa);
+                if( rb.getResidue() instanceof CflowResidue) {
+                    CflowResidue cfr = (CflowResidue) rb.getResidue();
+                    StackInfo si = stackInfo(cfr.setup());
+                    si.stmtMap.put(cfr.getIsValidStmt(), aa);
+                } else if( rb.getResidue() instanceof Load) {
+                    Load load = (Load) rb.getResidue();
+                    joinPointStmtMap.put(load.getJoinPointStmt(), load);
+                }
             }
         }
     }

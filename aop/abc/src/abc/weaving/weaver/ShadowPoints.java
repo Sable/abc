@@ -41,6 +41,8 @@ import abc.soot.util.LocalGeneratorEx;
  * AdviceApplications that apply to a specific pointcut.
  *   @author Laurie Hendren
  *   @date 03-May-04
+ *   @author Ondrej Lhotak
+ *   @date 04-Oct-04
  */
 
 public class ShadowPoints {
@@ -90,18 +92,45 @@ public class ShadowPoints {
         return shadowmatch;
     }
 
-    public Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
+    private AssignStmt makeJPStmt;
+    public AssignStmt getMakeJPStmt() { return makeJPStmt; }
+    public Stmt lazyInitThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start,boolean isStatic) {
         Stmt skip=Jimple.v().newNopStmt();
         Stmt jump=Jimple.v().newIfStmt
             (Jimple.v().newNeExpr(getThisJoinPoint(),NullConstant.v()),skip);
         units.insertAfter(jump,start);
-        Stmt init=initThisJoinPoint(lg,units,jump);
+        Stmt init;
+        if( isStatic ) {
+            init = initThisJoinPointStatic(lg,units,jump);
+        } else {
+            makeJPStmt = initThisJoinPoint(lg,units,jump);
+            init = makeJPStmt;
+        }
         units.insertAfter(skip,init);
         return skip;
 
     }
 
-    private Stmt initThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
+    private Stmt initThisJoinPointStatic(LocalGeneratorEx lg,Chain units,Stmt start) {
+        Type object=Scene.v().getSootClass("java.lang.Object").getType();
+        WeavingContext wc=new WeavingContext();
+
+        WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
+                "sjpinfo");
+        Stmt bindSJPInfo
+            =new Load(new StaticJoinPointInfo(shadowmatch.getSJPInfo()),sjpVal)
+            .codeGen(container,lg,units,start,null,true,wc);
+
+        Stmt ret=Jimple.v().newAssignStmt(
+                getThisJoinPoint(),
+                Jimple.v().newCastExpr(sjpVal.get(),
+                    RefType.v("org.aspectj.lang.JoinPoint")));
+
+        units.insertAfter(ret,bindSJPInfo);
+
+        return ret;
+    }
+    private AssignStmt initThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
         Type object=Scene.v().getSootClass("java.lang.Object").getType();
         WeavingContext wc=new WeavingContext();
 
@@ -173,7 +202,7 @@ public class ShadowPoints {
         SootClass factoryclass=Scene.v().getSootClass
             ("org.aspectbench.runtime.reflect.Factory");
 
-        Stmt makeJP=Jimple.v().newAssignStmt
+        AssignStmt makeJP=Jimple.v().newAssignStmt
             (getThisJoinPoint(),
              Jimple.v().newStaticInvokeExpr
              (Scene.v().makeMethodRef
@@ -203,5 +232,4 @@ public class ShadowPoints {
         }
         return thisJoinPoint;
     }
-
 }

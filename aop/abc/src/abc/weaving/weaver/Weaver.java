@@ -49,17 +49,17 @@ public class Weaver {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
                 weaveGenerateAspectMethods();
-                Unweaver unweaver = new Unweaver();
-                unweaver.save();
-                unitBindings = unweaver.restore();
+                //Unweaver unweaver = new Unweaver();
+                //unweaver.save();
+                //unitBindings = unweaver.restore();
 
                 // We could do several passes, but for now, just do one.
                 weaveAdvice();
                 CflowAnalysisBridge cfab = new CflowAnalysisBridge();
                 cfab.run();
-                unitBindings = unweaver.restore();
-                AroundWeaver.reset();
-                weaveAdvice();
+                //unitBindings = unweaver.restore();
+                //AroundWeaver.reset();
+                //weaveAdvice();
 
             } else {
                 // add aspectOf(), hasAspect(), ...

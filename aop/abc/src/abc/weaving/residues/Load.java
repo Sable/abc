@@ -23,6 +23,7 @@ import java.util.Vector;
 import soot.*;
 import soot.util.Chain;
 import soot.jimple.Stmt;
+import soot.jimple.AssignStmt;
 import soot.jimple.Jimple;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
@@ -44,6 +45,14 @@ public class Load extends Residue {
     public String toString() {
 	return "load("+value+","+variable+")";
     }
+    private boolean isStatic = false;
+    /** Set the static flag on this load residue, meaning that the
+     * join point info only needs static parts, and therefore can be
+     * optimized to not include dynamic parts.
+     */
+    public void makeStatic() { isStatic = true; }
+    private AssignStmt joinPointStmt = null;
+    public AssignStmt getJoinPointStmt() { return joinPointStmt; }
 	public Stmt codeGen(
 		SootMethod method,
 		LocalGeneratorEx localgen,
@@ -53,8 +62,11 @@ public class Load extends Residue {
 		boolean sense,
 		WeavingContext wc) {
 
-	    if(value instanceof JoinPointInfo) 
-		begin=((JoinPointInfo) value).doInit(localgen,units,begin);
+            if(value instanceof JoinPointInfo) {
+                JoinPointInfo jpi = (JoinPointInfo) value;
+		begin=jpi.doInit(localgen,units,begin,isStatic);
+                if(!isStatic) joinPointStmt = jpi.getMakeJPStmt();
+            }
 
 	    return succeed(units,
 			   variable.set(localgen,units,begin,wc,value.getSootValue()),
