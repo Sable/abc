@@ -9178,5 +9178,10 @@
       <run class="BindProblem"/>
     </ajc-test>
 
+    <ajc-test num="981" dir="abctests/bugs"
+        title="problem with byte constants">
+       <compile files="ByteProblem.java"/>
+    </ajc-test>
+
 </suite>
 
