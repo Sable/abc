@@ -6357,9 +6357,11 @@
     </ajc-test>
 
     <ajc-test num="724" dir="new" pr="853"
-      abccomment="we should accept implements instead of extends"
+      abccomment="the file itself says it expects an error, and we give it.
+                  ODM 18/08/04"
       title="declare class implements class">
         <compile files="DeclareClassImplementsClass.java">
+          <message kind="error" line="10"/>
         </compile>
     </ajc-test>
 
