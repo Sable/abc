@@ -142,11 +142,11 @@ public class ShadowPointsSetter {
 	                  "Unknown kind of advice for inside method body: " + 
 		           stmtappl);
 
-	    spsdebug("dealing with stmt: " + keystmt);
+	   spsdebug("... " + keystmt + " [" + stmtappl + "]");
 
-	    // If stmt is in Hashtable,  use SP entry assciated with it
-	    // else, introduce new nops before and after stmt and 
-	    // create new SP.
+	   // If stmt is in Hashtable,  use SP entry assciated with it
+	   // else, introduce new nops before and after stmt and 
+	   // create new SP.
 	      
          } // for each statement
   } // insertStmtSP
@@ -160,11 +160,69 @@ public class ShadowPointsSetter {
   private ShadowPoints restructureBody(SootMethod method) {
     Body b = method.getActiveBody();
     LocalGenerator localgen = new LocalGenerator(b);
-    Chain units = b.getUnits();
+    Chain units = b.getUnits().getNonPatchingChain();
      
-    // Here we move all returns to the end, and set up first and last
-    Stmt first = (Stmt) units.getFirst();
+    // First look for beginning of shadow point.  If it is a method,
+    // a new nop inserted at the beginning of method body.  
+    // If it is a constructor, a new nop is inserted
+    // right after the call to <init> in the body.    Assume
+    // we get code from a Java compiler, and there is only one
+    // <init>.  If there is more than one <init> throw an exception.
+    Stmt startnop = Jimple.v().newNopStmt();
+    if (method.getName().equals("<init>"))
+      { spsdebug("Need to insert after call to <init>");
+	// look for the <init> 
+        Iterator it = units.snapshotIterator();
+	// get the "this", should be first identity statement
+	Stmt first = (Stmt) it.next();
+	Local thisloc = null;
+        if (first instanceof IdentityStmt)
+	  thisloc = (Local) 
+	              ((IdentityStmt) first).getLeftOp();//the local for "this" 
+	else
+	  throw new CodeGenException("Expecting an identify stmt for this");
+	
+	int countinits = 0;
+        while ( it.hasNext() )
+          { Stmt u = (Stmt) it.next();
+	    spsdebug("Looking at stmt " + u);
+	    if ((u instanceof InvokeStmt) && 
+		((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
+		((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).
+		                                  getBase().equals(thisloc) )
+	       { spsdebug("Found <init> " + u);
+		 countinits++;
+		 if (countinits == 1) // great, found it
+		   // TODO:  have to fix this
+		   units.insertAfter(startnop,u);
+		 else
+		   throw new CodeGenException("Expecting only one <init>");
+               }	 
+          } // all units
+	 
+        if (countinits == 0)     
+	  throw new CodeGenException("Could not find a matching <init>");
+      }
+    else
+      { spsdebug("Need to insert at beginning of method.");  	     
+        // now insert a nop for the beginning of real stmts
+	// find first statement after identity statements
+	Iterator it = units.snapshotIterator();
+	while ( it.hasNext() )
+          { Stmt u = (Stmt) it.next();
+	    if (! (u instanceof IdentityStmt)) // first non-IdentityStmt
+	      { units.insertBefore(startnop,u);
+		break;
+              }
+           }
+      }
+
+    // Now deal with end point.  Rewire all returns to end of method body.
+    // Insert a nop just before the return at end of body.
+    Stmt endnop = Jimple.v().newNopStmt();
     Stmt last = (Stmt) units.getLast();
+    units = b.getUnits();  // want a patching chain here, to make sure
+                           // gotos are rewired to go to the inserted nop
 
     Local ret = null;
     if( last instanceof ReturnStmt ) 
@@ -204,7 +262,6 @@ public class ShadowPointsSetter {
       }
 
     // insert the nop just before the return stmt
-    Stmt endnop = Jimple.v().newNopStmt();
     units.insertBefore( endnop, units.getLast() );
 
     // update any traps to end at nop
@@ -239,22 +296,6 @@ public class ShadowPointsSetter {
 	  } // if return stmt
       } // each stmt in body
 
-
-    // now look for beginning of shadow point.  If it is a method,
-    // beginning is a new nop inserted at the beginning of method
-    // body.    If it is a constructor, it is a new nop inserted
-    // right after the call to <init> in the body.    Assuming 
-    // we get code from a Java compiler, and there is only one
-    // <init>.
-    if (method.getName().equals("<init>"))
-      spsdebug("Need to insert after call to <init>");
-    else
-      spsdebug("Need to insert at beginning of method.");  	     
-
-    // now insert a nop for the beginning
-    // TODO: must check for <init> and put it just after <init> call
-    Stmt startnop = Jimple.v().newNopStmt();
-    units.insertBefore(startnop,first);
 
     return new ShadowPoints(startnop,endnop);
   } // method restructureBody 
