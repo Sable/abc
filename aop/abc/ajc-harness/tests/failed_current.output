@@ -196,14 +196,7 @@ FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type
 
 Running test 997: abctests/bugs/verify error with calls to outer methods from inner classes
 Commandline: abc -d abctests/bugs abctests/bugs/PatternMatcher.java 
-Unexpected exception while trying to run compiled class: java.lang.VerifyError: (class: PatternMatcher$AIMethodPattern, method: matchesExecution signature: ()Z) Accessing value from uninitialized register 2
-java.lang.VerifyError: (class: PatternMatcher$AIMethodPattern, method: matchesExecution signature: ()Z) Accessing value from uninitialized register 2
-	at java.lang.Class.getDeclaredMethods0(Native Method)
-	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
-	at java.lang.Class.getDeclaredMethod(Class.java:1254)
-	at abc.testing.TestCase.runTest(TestCase.java:383)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
+Failed to find main() method in class PatternMatcher$AIMethodPattern
 FAIL: Test 997: "abctests/bugs/verify error with calls to outer methods from inner classes" failed.
 
 
