@@ -46,6 +46,8 @@ public class InitClasses extends AbstractPass {
 		GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);
 
 		ext.pattern_matcher = PatternMatcher.create(ext.hierarchy);
+
+		has_been_run = true;
 	    }
 	    return true;
 	} catch (SemanticException e) {

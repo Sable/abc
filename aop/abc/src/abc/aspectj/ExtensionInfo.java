@@ -65,6 +65,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID COLLECT_JIMPLIFY_CLASSES = new polyglot.frontend.Pass.ID("collect-jimplify");
     public static final polyglot.frontend.Pass.ID GOING_TO_JIMPLIFY = new polyglot.frontend.Pass.ID("going-to-jimplify");
     public static final polyglot.frontend.Pass.ID JIMPLIFY = new polyglot.frontend.Pass.ID("jimplify");
+    public static final polyglot.frontend.Pass.ID JIMPLIFY_DONE = new polyglot.frontend.Pass.ID("jimplify-done");
+    public static final polyglot.frontend.Pass.ID EVALUATE_PATTERNS_FINALLY = new polyglot.frontend.Pass.ID("evaluate-patterns-finally");
 
     /** The JVM names for all classes loaded from jar files */
     public Collection/*<String>*/ jar_classes;
@@ -135,7 +137,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
  	l.add(new GlobalBarrierPass(PATTERNS_EVALUATED, job));
 	l.add(new VisitorPass(DECLARE_PARENTS, job, new ParentDeclarer(job, ts, nf, this)));
  	l.add(new GlobalBarrierPass(PARENTS_DECLARED, job));
-	l.add(new VisitorPass(EVALUATE_PATTERNS_AGAIN, job, new NamePatternEvaluator(this)));
+	l.add(new NamePatternReevaluator(EVALUATE_PATTERNS_AGAIN));
  	l.add(new GlobalBarrierPass(PATTERNS_EVALUATED_AGAIN, job));
 
 	l.add(new VisitorPass(COMPUTE_PRECEDENCE_RELATION, job, new ComputePrecedenceRelation(job, ts, nf, this)));
@@ -183,7 +185,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 			      new CollectJimplifyVisitor(job, ts, nf, source_files, class_to_ast)));
 	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
 	l.add(new Jimplify(JIMPLIFY, class_to_ast));
-	
+	l.add(new GlobalBarrierPass(JIMPLIFY_DONE, job));
+	l.add(new NamePatternReevaluator(EVALUATE_PATTERNS_AGAIN));
+
 	if (compiler.serializeClassInfo()) {
 	    l.add(new VisitorPass(Pass.SERIALIZE,
 				  job, new ClassSerializer(ts, nf,

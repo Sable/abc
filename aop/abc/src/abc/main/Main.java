@@ -310,11 +310,6 @@ public class Main {
         new DeclareParentsWeaver().weave();
         AbcTimer.mark("Declare Parents");
         
-		//		Update pattern matcher class hierarchy and recompute pattern matches
-		PatternMatcher.v().updateWithAllSootClasses();
-		PatternMatcher.v().recomputeAllMatches();
-		AbcTimer.mark("Recompute name pattern matches");
-        
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
         ita.adjust();
