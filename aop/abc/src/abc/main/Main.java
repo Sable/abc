@@ -52,6 +52,8 @@ public class Main {
 
     public ErrorQueue error_queue; // For reporting errors and warnings
 
+    private String extinfo_classname = "abc.aspectj.ExtensionInfo";
+
     /** reset all static information so main can be called again */
     public static void reset() {
       soot.G.reset(); // reset all of Soot's global info
@@ -317,7 +319,17 @@ public class Main {
               else
                 throw new IllegalArgumentException(
                     "Missing argument to " + args[i]);
-           } 
+           }
+         else if (args[i].equals("-ext"))
+           {
+                i++;
+                if (i < args.length) {
+                    extinfo_classname = args[i];
+                } else {
+                    throw new IllegalArgumentException(
+                         "Missing argument to  " + args[i-1]);
+                }
+           }
 
          /* -------------------  SOOT OPTIONS -------------------------*/
          // handle soot-specific options, must be between +soot -soot 
@@ -494,7 +506,7 @@ public class Main {
         // Invoke polyglot
         try {
             abc.aspectj.ExtensionInfo ext = 
-                new abc.aspectj.ExtensionInfo(jar_classes, aspect_sources);
+                loadExtensionInfo(jar_classes, aspect_sources);
             Options options = ext.getOptions();
             options.assertions = true;
             options.serialize_type_info = false;
@@ -653,5 +665,23 @@ public class Main {
       PackManager.v().writeOutput();
     }
 
-    
+    private abc.aspectj.ExtensionInfo loadExtensionInfo(Collection jar_classes, Collection aspect_sources)
+    {
+        Class[] types = new Class[] { Collection.class, Collection.class };
+        Object[] args = new Object[] { jar_classes, aspect_sources };
+
+        Class extinfo;
+        Constructor cons;
+        abc.aspectj.ExtensionInfo extensionInfoInstance;
+
+        try {
+            extinfo = Class.forName(extinfo_classname);
+            cons = extinfo.getConstructor(types);
+            extensionInfoInstance = (abc.aspectj.ExtensionInfo) cons.newInstance(args);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot load extension class " + extinfo_classname);
+        }
+
+        return extensionInfoInstance;
+    }
 }
