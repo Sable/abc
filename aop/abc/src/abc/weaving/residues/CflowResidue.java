@@ -45,13 +45,14 @@ public class CflowResidue extends Residue {
         this.useCounter=setup.useCounter();
     }
 
-    public void resetForReweaving() {
+    public Residue resetForReweaving() {
         if (vars!=null)
             for(Iterator it=vars.iterator();it.hasNext();) {
                 WeavingVar variable=(WeavingVar)it.next();
                 if (variable!=null)
                     variable.resetForReweaving();
             }
+        return this;
     }
 
    public static void debug(String message)

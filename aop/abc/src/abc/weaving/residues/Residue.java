@@ -74,8 +74,9 @@ public abstract class Residue {
     /** Must provide a toString method */
     public abstract String toString();
 
-    public void resetForReweaving() { 
+    public Residue resetForReweaving() { 
     	//System.out.println("resetForWeaving: " + this.getClass().getName());
+    	return this;
     	}
     
     /**

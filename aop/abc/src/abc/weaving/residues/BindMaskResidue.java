@@ -70,7 +70,10 @@ public class BindMaskResidue extends Residue {
         public String toString() {
                 return "bindmask(" + op + ", " + mask  + ")";
         }
-        public void resetForReweaving() {op.getResidue().resetForReweaving();}
+        // remove this node
+        public Residue resetForReweaving() {
+        	return op.getResidue().resetForReweaving();
+        	}
         
         public void getAdviceFormalBindings(Bindings bindings) {
                 getOp().getAdviceFormalBindings(bindings);

@@ -43,11 +43,12 @@ public class IfResidue extends Residue {
     }
 
 
-    public void resetForReweaving() {
+    public Residue resetForReweaving() {
     	for(Iterator it=args.iterator();it.hasNext();) {
     		WeavingVar variable=(WeavingVar)it.next();
     		variable.resetForReweaving();
     	}
+    	return this;
     }
 
     

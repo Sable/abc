@@ -53,8 +53,9 @@ public class OptimizationCheckResidue extends Residue {
         return childBox.getResidue();
     }
 
-    public void resetForReweaving() {
-        child().resetForReweaving();
+    public Residue resetForReweaving() {
+        childBox.setResidue(child().resetForReweaving());
+        return this;
     }
 
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,

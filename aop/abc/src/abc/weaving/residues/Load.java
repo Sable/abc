@@ -43,7 +43,10 @@ public class Load extends Residue {
     }
 
 
-    public void resetForReweaving() {variable.resetForReweaving();}
+    public Residue resetForReweaving() {
+    	variable.resetForReweaving();
+    	return this;
+    }
 
     
     public String toString() {

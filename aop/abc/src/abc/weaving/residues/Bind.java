@@ -43,7 +43,10 @@ public class Bind extends Residue {
 	this.variable=variable;
     }
 
-    public void resetForReweaving() {variable.resetForReweaving();}
+    public Residue resetForReweaving() {
+    	variable.resetForReweaving();
+    	return this;
+    }
     
     // FIXME : restructure WeavingVars and delegate this all to that. In fact,
     // redesign ContextValue/WeavingVar structure so it's all uniform.

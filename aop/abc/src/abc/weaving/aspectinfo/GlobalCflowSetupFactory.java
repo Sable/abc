@@ -37,13 +37,13 @@ public class GlobalCflowSetupFactory {
 	
 	private static void debugMapping(Hashtable/*<Var,PointcutVarEntry>*/ renaming) {
 		if (Debug.v().debugCflowSharing) {
-		Enumeration enum = renaming.keys();
-		while (enum.hasMoreElements()) {
-			Var v = (Var)enum.nextElement();
+		Enumeration e = renaming.keys();
+		while (e.hasMoreElements()) {
+			Var v = (Var)e.nextElement();
 			VarBox ve = 
 				(VarBox)renaming.get(v);
 			System.out.print(v+"->"+ve);
-			if (enum.hasMoreElements()) 
+			if (e.hasMoreElements()) 
 				System.out.print(", ");
 		}
 		System.out.println();

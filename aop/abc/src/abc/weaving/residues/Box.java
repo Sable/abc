@@ -40,9 +40,10 @@ public class Box extends Residue {
 	this.to=to;
     }
 
-    public void resetForReweaving() {
+    public Residue resetForReweaving() {
     	from.resetForReweaving();
     	to.resetForReweaving();
+    	return this;
     }
     
     public String toString() {

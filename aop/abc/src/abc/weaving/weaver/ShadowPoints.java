@@ -70,6 +70,7 @@ public class ShadowPoints {
             throw new InternalCompilerError("Ending of shadow point must be NopStmt");
         begin = b;
         end = e;
+        //body=container.getActiveBody();
         this.container=container;
 
         { /// debug
@@ -81,11 +82,16 @@ public class ShadowPoints {
         }
     }
 
+    //private final Body body; /// for debugging
     public Stmt getBegin(){
+    	//if (body!=container.getActiveBody())
+    		//throw new InternalCompilerError("Body has been replaced, invalidating shadow points.");
         return begin;
     }
 
     public Stmt getEnd(){
+    	//if (body!=container.getActiveBody())
+    		//throw new InternalCompilerError("Body has been replaced, invalidating shadow points.");
         return end;
     }
 

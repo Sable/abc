@@ -38,7 +38,10 @@ public class NotResidue extends Residue {
 	return op.getResidue();
     }
 
-    public void resetForReweaving() {op.getResidue().resetForReweaving();}
+    public Residue resetForReweaving() {
+    	op.setResidue(op.getResidue().resetForReweaving());
+    	return this;
+    }
     
         /** Private constructor to force use of smart constructor */
     private NotResidue(Residue op) {

@@ -58,9 +58,10 @@ public class AndResidue extends Residue {
         return "("+getLeftOp()+") && ("+getRightOp()+")";
     }
 
-    public void resetForReweaving() {
-    	left.getResidue().resetForReweaving();
-    	right.getResidue().resetForReweaving();
+    public Residue resetForReweaving() {
+    	left.setResidue(left.getResidue().resetForReweaving());
+    	right.setResidue(right.getResidue().resetForReweaving());
+    	return this;
     }
     
     public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,

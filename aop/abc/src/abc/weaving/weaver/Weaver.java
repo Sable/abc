@@ -74,7 +74,8 @@ public class Weaver {
                     Iterator appIt=adviceList.allAdvice().iterator();
                     while (appIt.hasNext()) {
                         AdviceApplication appl=(AdviceApplication)appIt.next();
-                        appl.getResidue().resetForReweaving();
+                        appl.setResidue(
+                        		appl.getResidue().resetForReweaving());
                     }
                 }
             }

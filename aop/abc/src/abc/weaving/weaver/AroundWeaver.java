@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import polyglot.util.ErrorInfo;
 import polyglot.util.InternalCompilerError;
@@ -58,7 +59,6 @@ import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
-import soot.jimple.LookupSwitchStmt;
 import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.ReturnStmt;
@@ -87,7 +87,6 @@ import abc.weaving.matching.HandlerAdviceApplication;
 import abc.weaving.matching.NewStmtAdviceApplication;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.residues.AlwaysMatch;
-import abc.weaving.residues.AspectOf;
 import abc.weaving.residues.Residue;
 
 /** Handle around weaving.
@@ -110,6 +109,29 @@ public class AroundWeaver {
 	}
 
 	public static class Util {
+		
+		public static Stmt newSwitchStmt(Value key, List lookupValues, List targets, Unit defaultTarget) {
+			int min=Integer.MAX_VALUE;
+			int max=Integer.MIN_VALUE;
+			int count=lookupValues.size();
+			TreeMap map=new TreeMap();
+			Iterator itTg=targets.iterator();
+			for (Iterator it=lookupValues.iterator();it.hasNext();) {
+				IntConstant intConst=(IntConstant)it.next();
+				Unit target=(Unit)itTg.next();
+				int val=intConst.value;
+				max = (val>max ? val : max);
+				min = (val<min ? val : min);
+				map.put(new Integer(val), target);
+			}
+			if (max-min+1==count) {
+				targets=new LinkedList(map.values()); /// is this map necessary, or are lookupValues always sorted?
+				return Jimple.v().newTableSwitchStmt(key, min, max, targets, defaultTarget);
+			} else {
+				return Jimple.v().newLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
+			}
+		}
+		
 		public static void validateMethod(SootMethod method) {
 			if (abc.main.Debug.v().aroundWeaver)
 				Restructure.validateMethod(method);
@@ -424,12 +446,17 @@ public class AroundWeaver {
 
 			
 			String aspectName = getAspect().getName();
+			String shortAspectName = getAspect().getShortName();
+			String packageName=getAspect().getPackageName();
 			String mangledAspectName = Util.mangleTypeName(aspectName);
 
 			adviceMethodIdentifierString = mangledAspectName + "$" + method.getName();
 
-			interfaceName = "Abc$proceed$" + adviceMethodIdentifierString;
-
+			
+			interfaceName =
+				(packageName.length()==0 ? "" : packageName + ".") +
+				"Abc$proceed$" + adviceMethodIdentifierString;
+			
 			instanceProceedMethodName = "abc$proceed$" + adviceMethodIdentifierString;
 			;
 
@@ -677,17 +704,17 @@ public class AroundWeaver {
 					proceedStatements.insertAfter(lookupStmt, lastIDStmt);
 				}
 				
-				// fixSuperCalls used to be here...
-
 				Util.validateMethod(sootProceedMethod);
 
 				proceedMethodBody=sootProceedMethod.getActiveBody();
 				proceedMethodStatements=proceedMethodBody.getUnits().getNonPatchingChain();
 			}
-
+			public int numOfShadows=0;
+			
 			public void doWeave(AdviceApplication adviceAppl, SootMethod shadowMethod) {
 				AdviceApplicationInfo adviceApplication=new AdviceApplicationInfo(adviceAppl, shadowMethod);
 				adviceApplication.doWeave();
+				numOfShadows++;
 			}
 			public class AdviceApplicationInfo {
 //				final boolean bHasProceed;
@@ -828,11 +855,11 @@ public class AroundWeaver {
 									interfaceInfo.abstractProceedMethod.getName(), 
 									sootProceedMethod, context);
 						}
-						// copy shadow into access method with a return returning the relevant local.
+						// copy shadow into proceed method with a return returning the relevant local.
 						Stmt first;
 						HashMap localMap;
 						Stmt switchTarget;
-						{ // copy shadow into access method
+						{ // copy shadow into proceed method
 							ObjectBox result = new ObjectBox();
 							if (lookupStmt==null)	
 								throw new InternalAroundError();
@@ -1351,8 +1378,12 @@ public class AroundWeaver {
 						String closureRunMethodName, SootMethod targetProceedMethod,
 						List /*Local*/ context) {
 					
+					final String packageName=targetProceedMethod.getDeclaringClass().getPackageName();
+					final String className=
+						(packageName.length()==0 ? "" : packageName + "." ) + 
+						"Abc$closure$" + state.getUniqueID();
 					SootClass closureClass = 
-						new SootClass("Abc$closure$" + state.getUniqueID(), 
+						new SootClass(className, 
 							Modifier.PUBLIC);
 
 					closureClass.setSuperclass(Scene.v().getSootClass("java.lang.Object"));
@@ -1724,12 +1755,16 @@ public class AroundWeaver {
 				//public final AdviceMethod.ProceedMethod proceedMethod;	
 			}
 			public void modifyLookupStatement(Stmt switchTarget, int shadowID) {
-				// modify the lookup statement in the access method
+				// modify the lookup statement in the proceed method
 				lookupValues.add(IntConstant.v(shadowID));
 				proceedMethodTargets.add(switchTarget);
 				// generate new lookup statement and replace the old one
-				Stmt newLookupStmt =
-					Jimple.v().newLookupSwitchStmt(
+				Stmt newLookupStmt;
+				if (bStaticProceedMethod && numOfShadows==0)
+					newLookupStmt=Jimple.v().newNopStmt();
+				else
+					newLookupStmt=
+					Util.newSwitchStmt(// Jimple.v().newLookupSwitchStmt(
 						shadowIdParamLocal,
 						lookupValues,
 						proceedMethodTargets,
@@ -1799,6 +1834,8 @@ public class AroundWeaver {
 				Local maskLocal=lg.generateLocal(IntType.v(), "maskLocal");
 				
 				Set defaultLocals=new HashSet();
+				
+				boolean emptyIf=true;
 
 				// Process the bindings.
 				// The order is important.
@@ -1806,6 +1843,7 @@ public class AroundWeaver {
 					List localsFromIndex=bindings.localsFromIndex(index);
 					if (localsFromIndex==null) { 
 					} else {
+						emptyIf=false;
 						
 						if (localsFromIndex.size()==1) 	{ // non-skipped case: assign advice formal
 							Local paramLocal = (Local) adviceFormalLocals.get(index);
@@ -1814,6 +1852,7 @@ public class AroundWeaver {
 							AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
 							proceedMethodStatements.insertAfter(s, nonSkippedCase);
 							Restructure.insertBoxingCast(sootProceedMethod.getActiveBody(), s, true);
+							
 							/// allow boxing?
 						} else {	
 							// Before all the switch statements, the default values are
@@ -1835,6 +1874,7 @@ public class AroundWeaver {
 										AssignStmt s = Jimple.v().newAssignStmt(actual3, paramLocal);
 										proceedMethodStatements.insertBefore(s, afterDefault);
 										Restructure.insertBoxingCast(sootProceedMethod.getActiveBody(), s, true);
+										emptyIf=false;
 									}
 								}
 							}
@@ -1872,7 +1912,8 @@ public class AroundWeaver {
 								proceedMethodStatements.insertAfter(s, targetNop);
 								GotoStmt g=Jimple.v().newGotoStmt(endStmt);
 								proceedMethodStatements.insertAfter(g, s);
-								Restructure.insertBoxingCast(sootProceedMethod.getActiveBody(), s, true);							
+								Restructure.insertBoxingCast(sootProceedMethod.getActiveBody(), s, true);
+						
 							}
 							
 			
@@ -1887,7 +1928,7 @@ public class AroundWeaver {
 							proceedMethodStatements.insertAfter(throwStmt, initEx);
 						
 							
-							LookupSwitchStmt lp=Jimple.v().newLookupSwitchStmt(
+							Stmt lp=Util.newSwitchStmt(// Jimple.v().newLookupSwitchStmt(
 								maskLocal, lookupValues, targets, newExceptStmt
 								);
 							proceedMethodStatements.insertAfter(lp, as2);
@@ -1898,6 +1939,7 @@ public class AroundWeaver {
 				int i=0;
 				// process the context
 				for (Iterator it=context.iterator(); it.hasNext(); i++) {
+					
 					Local actual = (Local) it.next(); // context.get(i);
 					Local actual2 = (Local) localMap.get(actual);
 					if (!proceedMethodBody.getLocals().contains(actual2))
@@ -1924,6 +1966,7 @@ public class AroundWeaver {
 							Restructure.insertBoxingCast(sootProceedMethod.getActiveBody(), s, true);
 							/// allow boxing?
 						}
+						emptyIf=false;
 					} else {
 						debug(" no binding: " + actual.getName());
 						// no binding
@@ -1933,6 +1976,10 @@ public class AroundWeaver {
 						insertCast(sootProceedMethod.getActiveBody(), s, s.getRightOpBox(), actual2.getType());
 					}
 				}
+				
+				if (emptyIf)
+					proceedMethodStatements.remove(ifStmt);
+				
 				debug("done: Access method: assigning correct parameters to locals*********************");
 			}
 		
@@ -2930,7 +2977,8 @@ public class AroundWeaver {
 							lookupValues.addAll(this.staticLookupValues);
 						
 							Local key = staticDispatchLocal; ///
-							LookupSwitchStmt lookupStmt = Jimple.v().newLookupSwitchStmt(key, lookupValues, targets, (Unit) this.defaultTargetStmts.get(0));
+							Stmt lookupStmt = Util.newSwitchStmt(//Jimple.v().newLookupSwitchStmt(									
+									key, lookupValues, targets, (Unit) this.defaultTargetStmts.get(0));
 						
 							statements.insertBefore(lookupStmt, this.end);
 							if (this.dynamicInvoke != null) {
