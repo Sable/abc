@@ -1,14 +1,26 @@
 package abc.soot.util;
 
+import java.util.*;
 import soot.*;
 import soot.jimple.*;
+import soot.util.*;
 import soot.toolkits.scalar.*;
 import soot.toolkits.graph.*;
 
 
 public class InitAnalysis extends ForwardFlowAnalysis {
+    FlowSet allLocals;
+
     public InitAnalysis(UnitGraph g) {
 	super(g);
+	Chain locs=g.getBody().getLocals();
+	allLocals=new ArraySparseSet();
+	Iterator it=locs.iterator();
+	while(it.hasNext()) {
+	    Local loc=(Local) it.next();
+	    allLocals.add(loc);
+	}
+
 	doAnalysis();
     }
 
@@ -16,7 +28,9 @@ public class InitAnalysis extends ForwardFlowAnalysis {
 	return new ArraySparseSet();
     }
     protected Object newInitialFlow() {
-	return new ArraySparseSet();
+	FlowSet ret=new ArraySparseSet();
+	allLocals.copy(ret);
+	return ret;
     }
 
     protected void flowThrough(Object in,Object unit,Object out) {
