@@ -64,15 +64,6 @@
         <compile files="ConstructorNotFound_PR408.java"/>
         <run class="ConstructorNotFound_PR408"/>
     </ajc-test>
-<ajc-test dir="pureJava"
-      title="overriding methods from object in interfaces and multiple-inheritance"
-      abccomment="Polyglot bug in checking class conformance. Entered into bugzilla
-                  07/07/04. Don't forget to make corresponding changes in 
-                  AspectJTypeSystem_c.java when it's been fixed. ODM"
-      keywords="from-java">
-        <compile files="InterfaceAndObject.java"/>
-        <run class="InterfaceAndObject"/>
-    </ajc-test>
 <ajc-test dir="pureJava/innerTypeModifiers"
       title="Inner types must generate classfiles with only Public/Default access flags."
       keywords="from-java">
@@ -97,14 +88,6 @@
       keywords="from-java">
         <compile files="InterfaceAndClass.java"/>
         <run class="p.InterfaceAndClass"/>
-    </ajc-test>
-<ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
-      abccomment="Polyglot does not catch error on line 14. Sent to Nate
-                  July 1/04. LJH"
-      keywords="from-java">
-        <compile files="QualifiedThisMatchesExactly.java">
-            <message kind="error" line="14"/>
-        </compile>
     </ajc-test>
 <ajc-test dir="pureJava"
       abccomment="runs ok without harness ... July 1/04 LJH"
@@ -163,6 +146,12 @@
       keywords="from-java">
         <compile files="BigString.java"/>
         <run class="BigString"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="547"
+      title="local types can be bound in the signatures of other local types"
+      keywords="from-resolved_10rc3,from-java">
+        <compile files="LocalInners.java"/>
+        <run class="LocalInners"/>
     </ajc-test>
 <ajc-test dir="new" title="Error expected for constructor in interfaces"
       abccomment="ajc only finds errors on lines 2 and 8. 
@@ -362,17 +351,6 @@
             <message kind="error" line="38"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="should give an error for introducing two members with the same name"
-      abccomment="abc pinpoints one cause of all four ajc messages. ODM 07/07/04"
-      keywords="from-errors">
-        <compile files="TwoIntros1.java">
-            <ajcmessage kind="error" line="10"/>
-            <ajcmessage kind="error" line="14"/>
-            <ajcmessage kind="error" line="16"/>
-            <message kind="error" line="14"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" title="protected accessibility"
       keywords="from-errors,purejava">
         <compile files="protectedAccess/Main.java,protectedAccess/p1/C1.java">
@@ -443,42 +421,117 @@
         </compile>
     </ajc-test>
 <ajc-test dir="design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods"
+      title="correct inheritance of multiple concrete methods"
       keywords="from-design">
-        <compile files="MultiInheritCF.java">
-            <message kind="error" line="21"/>
-            <message kind="error" line="41"/>
-            <message kind="error" line="42"/>
-            <message kind="error" line="43"/>
-            <message kind="error" line="45"/>
+        <compile files="MultiInheritCP.java"/>
+        <run class="MultiInheritCP"/>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 1"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF1.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
             <message kind="error" line="46"/>
+            <message kind="error" line="42"/>
+            <message kind="error" line="42"/>
         </compile>
     </ajc-test>
-<ajc-test dir="design/intro"
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 2"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF2.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="43"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 3"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF3.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="41"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 4"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF4.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="41"/>        
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
       title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF.java">
+        <compile files="ExceptionsCF1.java">
             <message kind="error" line="8"/>
             <message kind="error" line="23"/>
         </compile>
     </ajc-test>
+<ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF1.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="23"/>
+            <message kind="error" line="23"/> 
+       </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF2.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="23"/>
+            <message kind="error" line="8"/> 
+       </compile>
+    </ajc-test>
 <ajc-test dir="design/eachobject"
       title="eachobject: eachobject(receptions(...)) [eachobject]"
+      abccomment="fails on account of aspect inheritance. ODM 09/07/04"
       keywords="from-design">
         <compile files="Tricky1.java"/>
         <run class="Tricky1"/>
     </ajc-test>
 <ajc-test dir="design/reflect" title="Checking new joinpoints"
+      abccomment="fails on account of problems with aspectOf and aspect inheritance. ODM 09/07/04"
       keywords="from-design">
         <compile files="Coverage.java"/>
         <run class="Coverage"/>
     </ajc-test>
 <ajc-test dir="design/eachobject"
+      abccomment="fails on account of aspect inheritance. ODM 09/07/04"
       title="eachobject: simple test [eachobject] (still)"
       keywords="from-design">
         <compile files="Simple.java"/>
         <run class="Simple"/>
     </ajc-test>
 <ajc-test dir="new" title="introducing extends and implements"
+      abccomment="Need to support I1 extends I2,I3,I4. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="HierarchyIntroductions.java"/>
         <run class="HierarchyIntroductions"/>
@@ -492,29 +545,39 @@
     </ajc-test>
 <ajc-test dir="new"
       title="non-static advice on inner class defined inside of method body"
+     abccomment="fails on use of thisJoinPoint when advice applies inside inner class;
+                 generates verify error. error goes away when use of thisJoinPoint is
+                 commented out. Emailed Ganesh. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="MethodInner.java"/>
         <run class="MethodInner"/>
     </ajc-test>
 <ajc-test dir="new" pr="242"
       title="generating the right throws clause for call-site advice (and around)"
+      abccomment="exception checker does not work in the presence of around.
+                  ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="ComputedThrows.java"/>
         <run class="ComputedThrows"/>
     </ajc-test>
 <ajc-test dir="new" pr="246"
       title="advice on calls to static methods using several syntax"
+      abccomment="reachability checker needs to be hacked so that proceed may throw
+                  any exception. On Ganesh's list. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="StaticCalls.java"/>
         <run class="StaticCalls"/>
     </ajc-test>
 <ajc-test dir="new" pr="248"
       title=", PR#249, PR#250 advice on constructor sites"
+      abccomment="reachability checker needs to be hacked so that proceed may throw
+                  any exception. On Ganesh's list. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="NewSiteAdvice.java"/>
         <run class="NewSiteAdvice"/>
     </ajc-test>
 <ajc-test dir="new" title="test after throwing advice in several ways"
+      abccomment="the usual problem with around and exception checker. ODM 09/07/04"
       keywords="from-resolved_10x">
         <compile files="AfterThrowing.java"/>
         <run class="AfterThrowing"/>
@@ -539,6 +602,11 @@
       keywords="from-resolved_10x">
         <compile files="StrictFpCompile.java"/>
         <run class="StrictFpCompile"/>
+    </ajc-test>
+<ajc-test dir="new" title="package wildcards in packages"
+      keywords="from-resolved_10x">
+        <compile files="pack/PackageWildcards.java"/>
+        <run class="pack.PackageWildcards"/>
     </ajc-test>
 <ajc-test dir="new" title="advice on catch clauses"
       keywords="from-resolved_10x,knownLimitation">
@@ -589,19 +657,6 @@
         <compile files="DeclareSoft.java"/>
         <run class="DeclareSoft"/>
     </ajc-test>
-<ajc-test dir="new" 
-    	title="Cannot bind a name." keywords="from-resolved_10x,purejava"
-        abccomment="ajc now finds a compile-time error in this benchmark,
-                    as does javac.  jlc does not find the error, have
-                    reported the error to Nate.  July 7/04"
-        >
-        <abckeywords> <laurie/> <nate/> </abckeywords>
-        <compile files="CannotReferenceSuper.java">
-           <ajcmessage kind="ignore"/>
-           <message kind="error" line="26"/>
-        </compile>
-        <ajcrun class="CannotReferenceSuper"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="join points exist in the execution of field initializers"
       keywords="from-resolved_10x">
@@ -624,12 +679,6 @@
       keywords="from-resolved_10x">
         <compile files="InitializerTest.java"/>
         <run class="InitializerTest"/>
-    </ajc-test>
-<ajc-test dir="new" pr="98"
-      title="introduction of an initializer into a class"
-      keywords="from-resolved_10x">
-        <compile files="IntroductionOfInitializer.java"/>
-        <run class="IntroductionOfInitializer"/>
     </ajc-test>
 <ajc-test dir="new/access"
       title="some method accessibility tests, particularly package-protected and inheritance"
@@ -1113,12 +1162,6 @@
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" pr="666" title="name binding in around cflow"
-      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
-      keywords="from-resolved_104">
-        <compile files="AroundCall.java"/>
-        <run class="AroundCall"/>
-    </ajc-test>
 <ajc-test dir="new" pr="677"
       title="around name-binding in cflows using factorial"
       abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
@@ -1208,15 +1251,6 @@
             <message kind="error" line="15"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="a type is not allowed to extend or implement its own innner type"
-      abccomment="jlc does not catch error, reported to Nate July 6/04 LJH"
-      keywords="from-resolved_105,purejava">
-        <abckeywords> <nate/> <laurie/> </abckeywords>
-        <compile files="NestedInterfaceTest.java">
-            <message kind="error" line="1"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new"
       title="package typepattern with no packages (in default package)"
       keywords="from-resolved_105,knownLimitation">
@@ -1237,18 +1271,6 @@
         <compile
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message kind="error" line="5"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="initializers must be able to complete normally (found by jacks)"
-      abccomment="errors of abnormal exit from init and clinit not
-                  found by jlc.  Example sent to Nate July 6/04 LJH"
-      keywords="from-resolved_105,purejava,messages-vary">
-      <abckeywords> <nate/> <laurie/> </abckeywords>
-        <compile files="InitializerFlowCf.java"
-               options="!eclipse">
-            <message kind="error" line="2"/>
-            <message kind="error" line="4"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new" pr="757" title="Incrementing interface-introduced field"
@@ -1312,6 +1334,14 @@
       keywords="from-resolved_105">
         <compile files="IndeterminateHandlerArg.java"/>
         <run class="IndeterminateHandlerArg"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Locals inside other locals, ordering of processing [eh]"
+      abccomment="Verify error in abc and j2j (when --app used).
+                  Reported to Jennifer, July 1/04 LJH, Fixed July 2/04"
+      keywords="from-resolved_105">
+        <compile files="LocalInners2.java"/>
+        <run class="LocalInners2"/>
     </ajc-test>
 <ajc-test dir="new/nolang" pr="762"
 	  title="Compiling java.lang.Object with ajc yields non-verifying bytecode"
@@ -1407,6 +1437,13 @@
         <run class="ImportingStaticInnerInterfacesStars3_PR386"/>
     </ajc-test>
 <ajc-test dir="pureJava" pr="386"
+      title="Referencing interfaces with import statements"
+      keywords="purejava,from-broken14usejavac">
+        <compile
+          files="ClassWithInnerInterfaces.java,ImportingInnerInterfaces_PR386.java"/>
+        <run class="ImportingInnerInterfaces_PR386"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="386"
       title="Referencing interfaces with import statements stars"
       keywords="purejava,from-broken14usejavac">
         <compile
@@ -1455,15 +1492,6 @@
       title="after returning advice on interface constructor">
         <compile files="AfterReturningInterfaceConstructor.java"/>
         <run class="AfterReturningInterfaceConstructor"/>
-    </ajc-test>
-<ajc-test dir="bugs" pr="909"
-      abccomment="LJH - the Soot -O option breaks on this one,  with
-                   creating code with a bad stack height.  Comments in
-                   the benchmark indicate that is it intended to cause
-                   an error like this. LJH  July 10/04"
-      title="using instance as class reference to constant field"
-      comment="XXX need to verify run">
-        <compile files="InstanceAsClassRefToConstant.java"/>
     </ajc-test>
 <ajc-test dir="options/deprecated" 
       title="options -warn:deprecation">

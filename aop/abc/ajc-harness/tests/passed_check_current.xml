@@ -46,6 +46,14 @@
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
+<ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
+      abccomment="Polyglot does not catch error on line 14. Sent to Nate
+                  July 1/04. LJH"
+      keywords="from-java">
+        <compile files="QualifiedThisMatchesExactly.java">
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="pureJava"
       title="Implicit this for new inner instance must be avaliable"
       keywords="from-java">
@@ -999,6 +1007,17 @@
         </compile>
     </ajc-test>
 <ajc-test dir="errors"
+      title="should give an error for introducing two members with the same name"
+      abccomment="abc pinpoints one cause of all four ajc messages. ODM 07/07/04"
+      keywords="from-errors">
+        <compile files="TwoIntros.java">
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="16"/>
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors"
       title="wimpy test for undeclared and uncaught exceptions"
       abccomment="abc bails out after reachability fails. ODM 07/07/04"
       keywords="from-errors">
@@ -1246,6 +1265,19 @@
         <message kind="error" line="29"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new" 
+    	title="Cannot bind a name." keywords="from-resolved_10x,purejava"
+        abccomment="ajc now finds a compile-time error in this benchmark,
+                    as does javac.  jlc does not find the error, have
+                    reported the error to Nate.  July 7/04"
+        >
+        <abckeywords> <laurie/> <nate/> </abckeywords>
+        <compile files="CannotReferenceSuper.java">
+           <ajcmessage kind="ignore"/>
+           <message kind="error" line="26"/>
+        </compile>
+        <ajcrun class="CannotReferenceSuper"/>
+    </ajc-test>
 <ajc-test dir="new"
       title="accessing private superclass members from body of method introduction"
       keywords="from-resolved_10x">
@@ -1312,6 +1344,15 @@
             <message kind="error" line="17"/>
             <message kind="error" line="18"/>
             <message kind="error" line="19"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors"
+      title="a type is not allowed to extend or implement its own innner type"
+      abccomment="jlc does not catch error, reported to Nate July 6/04 LJH"
+      keywords="from-resolved_105,purejava">
+        <abckeywords> <nate/> <laurie/> </abckeywords>
+        <compile files="NestedInterfaceTest.java">
+            <message kind="error" line="1"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="try requires block JLS 14.19"
@@ -1389,6 +1430,18 @@
             <ajcmessage kind="error" line="2"/>
             <ajcmessage kind="error" line="3"/>
             <message kind="error" line="2"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="initializers must be able to complete normally (found by jacks)"
+      abccomment="errors of abnormal exit from init and clinit not
+                  found by jlc.  Example sent to Nate July 6/04 LJH"
+      keywords="from-resolved_105,purejava,messages-vary">
+      <abckeywords> <nate/> <laurie/> </abckeywords>
+        <compile files="InitializerFlowCf.java"
+               options="!eclipse">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
         </compile>
     </ajc-test>
 <ajc-test dir="new" pr="770" title="cflow pcd syntax error"
@@ -1524,7 +1577,9 @@
         </compile>
     </ajc-test>
 <ajc-test dir="harness" keywords="command-line-error"
-      title="CLE: no sources">
+      title="CLE: no sources" abccomment="abc fails this test because
+      when invoked without sources, it runs through and does nothing,
+      while ajc aborts with an error.">
         <compile badInput="true">
             <message kind="error" text="no sources"/>
             <message kind="abort" text="Usage"/>

@@ -668,6 +668,15 @@
         <run class="FalseThrowsCE"/>
     </ajc-test>
 <ajc-test dir="pureJava"
+      title="overriding methods from object in interfaces and multiple-inheritance"
+      abccomment="Polyglot bug in checking class conformance. Entered into bugzilla
+                  07/07/04. Don't forget to make corresponding changes in 
+                  AspectJTypeSystem_c.java when it's been fixed. ODM"
+      keywords="from-java">
+        <compile files="InterfaceAndObject.java"/>
+        <run class="InterfaceAndObject"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
       title="private fields in an outer class accessed by an inner which also extends the outer"
       keywords="from-java">
         <compile files="PrivateFields.java"/>
@@ -707,6 +716,14 @@
       keywords="from-java">
         <compile files="Flow.java"/>
         <run class="Flow"/>
+    </ajc-test>
+<ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
+      abccomment="Polyglot does not catch error on line 14. Sent to Nate
+                  July 1/04. LJH"
+      keywords="from-java">
+        <compile files="QualifiedThisMatchesExactly.java">
+            <message kind="error" line="14"/>
+        </compile>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="Implicit this for new inner instance must be avaliable"
@@ -808,12 +825,6 @@
       keywords="from-java">
         <compile files="TryCatchFinally.java"/>
         <run class="TryCatchFinally"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="547"
-      title="local types can be bound in the signatures of other local types"
-      keywords="from-resolved_10rc3,from-java">
-        <compile files="LocalInners.java"/>
-        <run class="LocalInners"/>
     </ajc-test>
 <ajc-test dir="new"
       title="final constructor parameter causes incorrect compiler error"
@@ -1856,6 +1867,17 @@
         </compile>
     </ajc-test>
 <ajc-test dir="errors"
+      title="should give an error for introducing two members with the same name"
+      abccomment="abc pinpoints one cause of all four ajc messages. ODM 07/07/04"
+      keywords="from-errors">
+        <compile files="TwoIntros.java">
+            <ajcmessage kind="error" line="10"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="16"/>
+            <message kind="error" line="14"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="errors"
       title="wimpy test for undeclared and uncaught exceptions"
       abccomment="abc bails out after reachability fails. ODM 07/07/04"
       keywords="from-errors">
@@ -2111,12 +2133,6 @@
         </compile>
         <ajcrun class="Statics"/>
     </ajc-test>
-<ajc-test dir="design/intro" pr="570"
-      title="correct inheritance of multiple concrete methods"
-      keywords="from-design">
-        <compile files="MultiInheritCP.java"/>
-        <run class="MultiInheritCP"/>
-    </ajc-test>
 <ajc-test dir="design/intro"
       title="declared exceptions are checked correctly on intros">
         <compile files="ExceptionsCP.java"/>
@@ -2357,11 +2373,6 @@
         <compile files="CallsTo.java"/>
         <run class="CallsTo"/>
     </ajc-test>
-<ajc-test dir="new" title="package wildcards in packages"
-      keywords="from-resolved_10x">
-        <compile files="pack/PackageWildcards.java"/>
-        <run class="pack.PackageWildcards"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="around advice on calls and receptions with lots of context"
       keywords="from-resolved_10x">
@@ -2459,6 +2470,19 @@
         <compile files="NewAnonymous.java"/>
         <run class="NewAnonymous"/>
     </ajc-test>
+<ajc-test dir="new" 
+    	title="Cannot bind a name." keywords="from-resolved_10x,purejava"
+        abccomment="ajc now finds a compile-time error in this benchmark,
+                    as does javac.  jlc does not find the error, have
+                    reported the error to Nate.  July 7/04"
+        >
+        <abckeywords> <laurie/> <nate/> </abckeywords>
+        <compile files="CannotReferenceSuper.java">
+           <ajcmessage kind="ignore"/>
+           <message kind="error" line="26"/>
+        </compile>
+        <ajcrun class="CannotReferenceSuper"/>
+    </ajc-test>
 <ajc-test dir="new/innerAspectAccess" pr="211"
       title="inner aspects can't access outer pointcuts"
       keywords="from-resolved_10x">
@@ -2486,6 +2510,12 @@
       keywords="from-resolved_10x">
         <compile files="TwoAnonymous.java"/>
         <run class="TwoAnonymous"/>
+    </ajc-test>
+<ajc-test dir="new" pr="98"
+      title="introduction of an initializer into a class"
+      keywords="from-resolved_10x">
+        <compile files="IntroductionOfInitializer.java"/>
+        <run class="IntroductionOfInitializer"/>
     </ajc-test>
 <ajc-test dir="new"
       title="fairly monotonous (and non-covering) tests for expanded dot patterns"
@@ -3134,6 +3164,12 @@
         <compile files="CallNotTarget.java"/>
         <run class="CallNotTarget"/>
     </ajc-test>
+<ajc-test dir="new" pr="666" title="name binding in around cflow"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
+      keywords="from-resolved_104">
+        <compile files="AroundCall.java"/>
+        <run class="AroundCall"/>
+    </ajc-test>
 <ajc-test dir="new" pr="660" title="name binding in around cflow - 2"
       abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
@@ -3186,6 +3222,15 @@
         <abckeywords> <jennifer/> <laurie/> </abckeywords>
         <compile files="ParentInterfaceUsingChildInnerInterface.java"/>
         <run class="ParentInterfaceUsingChildInnerInterface"/>
+    </ajc-test>
+<ajc-test dir="errors"
+      title="a type is not allowed to extend or implement its own innner type"
+      abccomment="jlc does not catch error, reported to Nate July 6/04 LJH"
+      keywords="from-resolved_105,purejava">
+        <abckeywords> <nate/> <laurie/> </abckeywords>
+        <compile files="NestedInterfaceTest.java">
+            <message kind="error" line="1"/>
+        </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="try requires block JLS 14.19"
       keywords="from-resolved_105,purejava,messages-vary">
@@ -3283,6 +3328,18 @@
         </compile>
         <run class="CflowOfFieldInitAnonMethods" options="!eclipse"/>
     </ajc-test>
+<ajc-test dir="pureJava"
+      title="initializers must be able to complete normally (found by jacks)"
+      abccomment="errors of abnormal exit from init and clinit not
+                  found by jlc.  Example sent to Nate July 6/04 LJH"
+      keywords="from-resolved_105,purejava,messages-vary">
+      <abckeywords> <nate/> <laurie/> </abckeywords>
+        <compile files="InitializerFlowCf.java"
+               options="!eclipse">
+            <message kind="error" line="2"/>
+            <message kind="error" line="4"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="new"
       abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       title="bad interaction with after returning, around and void methods (from Rich Price)"
@@ -3306,14 +3363,6 @@
       keywords="from-resolved_105">
         <compile files="IndeterminateArg.java"/>
         <run class="IndeterminateArg"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Locals inside other locals, ordering of processing [eh]"
-      abccomment="Verify error in abc and j2j (when --app used).
-                  Reported to Jennifer, July 1/04 LJH, Fixed July 2/04"
-      keywords="from-resolved_105">
-        <compile files="LocalInners2.java"/>
-        <run class="LocalInners2"/>
     </ajc-test>
 <ajc-test dir="pureJava" pr="752"
       title="subclass access to enclosing super class private members"
@@ -3377,13 +3426,6 @@
         <compile files="Driver.java,p1/C1.java,p1/p2/C2.java" />
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="pureJava" pr="386"
-      title="Referencing interfaces with import statements"
-      keywords="purejava,from-broken14usejavac">
-        <compile
-          files="ClassWithInnerInterfaces.java,ImportingInnerInterfaces_PR386.java"/>
-        <run class="ImportingInnerInterfaces_PR386"/>
-    </ajc-test>
 <ajc-test dir="new" pr="829"
       title="CE expected when declaring fields on arrays" keywords="tofix">
         <compile files="ArrayFieldDeclarationCE.java">
@@ -3432,6 +3474,15 @@
       title="simple cflow of method execution">
         <compile files="ExecutionCflow.java"/>
         <run class="ExecutionCflow"/>
+    </ajc-test>
+<ajc-test dir="bugs" pr="909"
+      abccomment="LJH - the Soot -O option breaks on this one,  with
+                   creating code with a bad stack height.  Comments in
+                   the benchmark indicate that is it intended to cause
+                   an error like this. LJH  July 10/04"
+      title="using instance as class reference to constant field"
+      comment="XXX need to verify run">
+        <compile files="InstanceAsClassRefToConstant.java"/>
     </ajc-test>
 <ajc-test dir="options/deprecated" 
       title="options -warn:deprecation not enabled">
@@ -3669,7 +3720,9 @@
         <run class="LongFile"/>
     </ajc-test>
 <ajc-test dir="harness" keywords="command-line-error"
-      title="CLE: no sources">
+      title="CLE: no sources" abccomment="abc fails this test because
+      when invoked without sources, it runs through and does nothing,
+      while ajc aborts with an error.">
         <compile badInput="true">
             <message kind="error" text="no sources"/>
             <message kind="abort" text="Usage"/>

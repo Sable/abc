@@ -10,14 +10,6 @@
             <message kind="error" line="6"/>
         </compile>
     </ajc-test>
-<ajc-test dir="pureJava" title="A.this exprs match by exact type matching"
-      abccomment="Polyglot does not catch error on line 14. Sent to Nate
-                  July 1/04. LJH"
-      keywords="from-java">
-        <compile files="QualifiedThisMatchesExactly.java">
-            <message kind="error" line="14"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="pureJava" title="invalid numeric literals"
       abccomment="abc doesn't do a good job on these,  needs a parser
                   that doesn't give up after the first error, and
@@ -207,17 +199,6 @@
             <message kind="error" line="38"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="should give an error for introducing two members with the same name"
-      abccomment="abc pinpoints one cause of all four ajc messages. ODM 07/07/04"
-      keywords="from-errors">
-        <compile files="TwoIntros1.java">
-            <ajcmessage kind="error" line="10"/>
-            <ajcmessage kind="error" line="14"/>
-            <ajcmessage kind="error" line="16"/>
-            <message kind="error" line="14"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="errors" title="protected accessibility"
       keywords="from-errors,purejava">
         <compile files="protectedAccess/Main.java,protectedAccess/p1/C1.java">
@@ -287,37 +268,89 @@
             <message kind="error" line="58"/>
         </compile>
     </ajc-test>
-<ajc-test dir="design/intro" pr="570"
-      title="errors in inheritance of multiple concrete methods"
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 1"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
       keywords="from-design">
-        <compile files="MultiInheritCF.java">
-            <message kind="error" line="21"/>
-            <message kind="error" line="41"/>
-            <message kind="error" line="42"/>
-            <message kind="error" line="43"/>
-            <message kind="error" line="45"/>
+        <compile files="MultiInheritCF1.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
             <message kind="error" line="46"/>
+            <message kind="error" line="42"/>
+            <message kind="error" line="42"/>
         </compile>
     </ajc-test>
-<ajc-test dir="design/intro"
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 2"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF2.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="43"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 3"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF3.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="41"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro" pr="570"
+      title="errors in inheritance of multiple concrete methods 4"
+      abccomment="abc bails out early, split into several cases. ODM 08/07/04"
+      keywords="from-design">
+        <compile files="MultiInheritCF4.java">
+            <ajcmessage kind="error" line="21"/>
+            <ajcmessage kind="error" line="41"/>
+            <ajcmessage kind="error" line="42"/>
+            <ajcmessage kind="error" line="43"/>
+            <ajcmessage kind="error" line="45"/>
+            <ajcmessage kind="error" line="46"/>
+            <message kind="error" line="41"/>        
+        </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
       title="declared exceptions are checked correctly on intros (errors)">
-        <compile files="ExceptionsCF.java">
+        <compile files="ExceptionsCF1.java">
             <message kind="error" line="8"/>
             <message kind="error" line="23"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new" 
-    	title="Cannot bind a name." keywords="from-resolved_10x,purejava"
-        abccomment="ajc now finds a compile-time error in this benchmark,
-                    as does javac.  jlc does not find the error, have
-                    reported the error to Nate.  July 7/04"
-        >
-        <abckeywords> <laurie/> <nate/> </abckeywords>
-        <compile files="CannotReferenceSuper.java">
-           <ajcmessage kind="ignore"/>
-           <message kind="error" line="26"/>
-        </compile>
-        <ajcrun class="CannotReferenceSuper"/>
+<ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF1.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="23"/>
+            <message kind="error" line="23"/> 
+       </compile>
+    </ajc-test>
+<ajc-test dir="abctests/design/intro"
+     abccomment="abc bails out early, so copied. ODM 09/07/04"
+      title="declared exceptions are checked correctly on intros (errors)">
+        <compile files="ExceptionsCF2.java">
+            <ajcmessage kind="error" line="8"/>
+            <ajcmessage kind="error" line="23"/>
+            <message kind="error" line="8"/> 
+       </compile>
     </ajc-test>
 <ajc-test dir="new" pr="544"
       title="advice formals produce errors just like method formals"
@@ -476,15 +509,6 @@
             <message kind="error" line="15"/>
         </compile>
     </ajc-test>
-<ajc-test dir="errors"
-      title="a type is not allowed to extend or implement its own innner type"
-      abccomment="jlc does not catch error, reported to Nate July 6/04 LJH"
-      keywords="from-resolved_105,purejava">
-        <abckeywords> <nate/> <laurie/> </abckeywords>
-        <compile files="NestedInterfaceTest.java">
-            <message kind="error" line="1"/>
-        </compile>
-    </ajc-test>
 <ajc-test dir="new"
       title="package typepattern with no packages (in default package)"
       keywords="from-resolved_105,knownLimitation">
@@ -505,18 +529,6 @@
         <compile
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message kind="error" line="5"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="initializers must be able to complete normally (found by jacks)"
-      abccomment="errors of abnormal exit from init and clinit not
-                  found by jlc.  Example sent to Nate July 6/04 LJH"
-      keywords="from-resolved_105,purejava,messages-vary">
-      <abckeywords> <nate/> <laurie/> </abckeywords>
-        <compile files="InitializerFlowCf.java"
-               options="!eclipse">
-            <message kind="error" line="2"/>
-            <message kind="error" line="4"/>
         </compile>
     </ajc-test>
 <ajc-test dir="pureJava" title="more tests of super alone"
