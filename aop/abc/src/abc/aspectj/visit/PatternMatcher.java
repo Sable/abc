@@ -103,6 +103,7 @@ public class PatternMatcher {
 	}
 	if (abc.main.Debug.v().namePatternMatches)
 	    System.err.println("Compiling the name pattern component "+name_pat+" into "+pat);
+	pat = pat.replaceAll("\\$","\\\\\\$");
 	Pattern p = Pattern.compile("^"+pat+"$");
 	name_pattern_cache.put(name_pat, p);
 	return p;

@@ -22,6 +22,10 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+$Fixed bug 35, Java identifiers containing '$' are not "visible" from
+;pointcuts. Thanks to Kevin Viggers for a clear description of the
+;precise problem and the code for the fix.
+
 %1.0.0 1098443519
 
 $Changed package root for runtime stuff from uk.ac.ox.comlab.abc 
