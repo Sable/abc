@@ -37,13 +37,12 @@ public class AJSpecial_c extends Special_c implements Special {
 		    || (c.inInterType() && qualifier() != null && 
 		    	c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))) {		       
 			// this is an ordinary special
-			System.out.println("ordinary");
-			return this;
+			return super.disambiguate(ar);
 		} else {
 			// this is a host special
 			AspectJNodeFactory nf = (AspectJNodeFactory) ar.nodeFactory();
 			HostSpecial_c hs = (HostSpecial_c) nf.hostSpecial(position,kind,qualifier);
-			return hs.type(type());
+			return hs.type(type()).disambiguate(ar);
 		}
 	}
 

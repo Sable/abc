@@ -36,7 +36,6 @@ public class HostSpecial_c extends Special_c implements Special {
 
 	/** Type check the expression. */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
-		System.out.println("in AJSpecial.typeCheck");
 		   TypeSystem ts = tc.typeSystem();
 		   AJContext c = (AJContext) tc.context();
 

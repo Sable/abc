@@ -456,10 +456,11 @@ public class AspectJNodeFactory_c
 	return new ArgDotDot_c(pos);
     }
     
-	public Special Special(Position pos, Special.Kind kind, TypeNode outer) {
+    public Special Special(Position pos, Special.Kind kind, TypeNode outer) {
 		   Special n = new AJSpecial_c(pos, kind, outer);
 		   return n;
 	   }
+	  
 	   
  
 	public Special hostSpecial(Position pos, Special.Kind kind, TypeNode outer) {
