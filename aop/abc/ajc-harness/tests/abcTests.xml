@@ -5014,20 +5014,26 @@
       abccomment="in abc get IncompatibleClassChangeError. Example sent
                   to Jennifer.  July 6/04 LJH"
       keywords="from-resolved_105,purejava">
+        <abckeywords> <jennifer/> <laurie/> </abckeywords>
         <compile files="ParentUsingChild.java"/>
         <run class="ParentUsingChild"/>
     </ajc-test>
 
     <ajc-test dir="new" pr="645"
       title="Parent interface using public inner interface of child in same file"
+      abccomment="in abc get IncompatibleClassChangeError. Example sent
+                  to Jennifer.  July 6/04 LJH"
       keywords="from-resolved_105,purejava">
+        <abckeywords> <jennifer/> <laurie/> </abckeywords>
         <compile files="ParentInterfaceUsingChildInnerInterface.java"/>
         <run class="ParentInterfaceUsingChildInnerInterface"/>
     </ajc-test>
 
     <ajc-test dir="errors"
       title="a type is not allowed to extend or implement its own innner type"
+      abccomment="jlc does not catch error, reported to Nate July 6/04 LJH"
       keywords="from-resolved_105,purejava">
+        <abckeywords> <nate/> <laurie/> </abckeywords>
         <compile files="NestedInterfaceTest.java">
             <message kind="error" line="1"/>
         </compile>
@@ -5063,7 +5069,12 @@
 
     <ajc-test dir="pureJava" pr="739"
       title="local variables must be final to be accessed from inner class"
+      abccomment="ajc finds spurious errors about not being able to
+                     resolve anonymous classes.   Found another bug
+                   about not finding a uninit var and reported both
+                   to Nate July 6/04 LJH"
       keywords="from-resolved_105,purejava">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="LocalsFromInnerCE.java">
             <message kind="error" line="6"/>
             <message kind="error" line="13"/>
@@ -5096,7 +5107,9 @@
 
     <ajc-test dir="pureJava" pr="721"
       title="interface declaration not permitted in local method scope"
+      abccomment="jlc doesn't find illegal nested interfaces"
       keywords="from-resolved_105">
+      <abckeywords> <laurie/> <nate/> </abckeywords>
         <compile files="LocalInterfaceCE.java">
             <message kind="error" line="5"/>
             <message kind="error" line="8"/>
@@ -5127,13 +5140,15 @@
 
     <ajc-test dir="new" pr="701"
       title="CE for ambiguous type reference (two files in package)"
+      abccomment="jlc doesn't find error when two classes in same package
+                  have same name.  Reported to Nate July 6/04. LJH"
       keywords="from-resolved_105,purejava">
+     <abckeywords> <nate/> <laurie/> </abckeywords>
         <compile
           files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
             <message kind="error" line="5"/>
         </compile>
     </ajc-test>
-
 
     <ajc-test dir="new"
       title="initializer can throw so long as all constructors declare so"
@@ -5144,18 +5159,16 @@
 
     <ajc-test dir="pureJava"
       title="interfaces may not contain initializers (bug found by jacks)"
+      abccomment="syntax errors, abc gives up after the first one, but
+                  when the first is commented out, it finds the second
+                  one.  I think this test case is fine.  July 6/04 LJH"
       keywords="from-resolved_105,purejava">
         <compile files="InterfaceMembersCf.java">
+            <ajcmessage kind="error" line="2"/>
+            <ajcmessage kind="error" line="3"/>
             <message kind="error" line="2"/>
-            <message kind="error" line="3"/>
         </compile>
     </ajc-test>
-
-
-
-
-
-
 
     <ajc-test dir="new" pr="755"
       title="ajc dies on cflow into field init anon class see knownbugs.txt"
@@ -5167,7 +5180,10 @@
 
     <ajc-test dir="pureJava"
       title="initializers must be able to complete normally (found by jacks)"
+      abccomment="errors of abnormal exit from init and clinit not
+                  found by jlc.  Example sent to Nate July 6/04 LJH"
       keywords="from-resolved_105,purejava,messages-vary">
+      <abckeywords> <nate/> <laurie/> </abckeywords>
         <compile files="InitializerFlowCf.java"
                options="!eclipse">
             <message kind="error" line="2"/>
@@ -5183,11 +5199,19 @@
 
 
     <ajc-test dir="pureJava" title="more tests of super alone"
+      abccomment="abc (and javac) find syntax errors on lines 13 and 21
+                  and then don't do the semantic check that finds errors
+                  on lines 9 and 20.  If the syntax errors on 13 and 21 are
+                  commented out, then both javac and abc find the illegal
+                  uses of super on lines 9 and 20.  So this test case looks
+                  fine.  July 6/04 LJH"
       keywords="from-resolved_105,purejava">
         <compile files="SuperIsWeird.java">
-            <message kind="error" line="9"/>
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="13"/>
+            <ajcmessage kind="error" line="20"/>
+            <ajcmessage kind="error" line="21"/>
             <message kind="error" line="13"/>
-            <message kind="error" line="20"/>
             <message kind="error" line="21"/>
         </compile>
     </ajc-test>
