@@ -44,7 +44,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 {
     protected TypeNode host;
     protected LocalInstance thisParamInstance;
-    protected Supers supers;
     protected String identifier;
     protected Flags originalFlags;
 	
@@ -57,7 +56,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	  	                 		Block body) {
 	super(pos,flags,name,formals,throwTypes,body);
 	this.host = host;
-	this.supers = new Supers();
 	this.identifier = UniqueID.newID("id");
 	this.originalFlags = flags;
     }
@@ -568,10 +566,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		return ncc.addITMembers(host.type().toClass());
 	}
     
-    public Supers getSupers() {
-    	return supers;
-    }
-    
 	private List /*<Type>*/ aiFormalTypes;
 	private ReferenceType aiQualifier;  // may be null
 	private ConstructorCall.Kind aiKind;
@@ -647,10 +641,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
     		(target, current_aspect, mod, origmod, originalFlags.isPrivate() || originalFlags.isPackage(), formalTypes, exc, qualifier, kind, arguments, body, position());
 		gai.addIntertypeConstructorDecl(icd);
-		gai.addSuperDispatches(supers.supercalls(gai));
-		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
-		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
-		gai.addQualThiss(supers.qualthiss(gai));
 
 		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
 		// FIXME: First argument is this, right?

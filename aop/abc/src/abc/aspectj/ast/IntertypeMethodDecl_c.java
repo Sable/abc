@@ -52,7 +52,6 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     protected TypeNode host;
     public 	  InterTypeMethodInstance_c itMethodInstance;
     protected LocalInstance thisParamInstance;
-    protected Supers supers;
     protected Flags origflags;
     protected String identifier;
     protected String originalName;
@@ -70,7 +69,6 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	super(pos,AJFlags.intertype(flags),returnType,
               name,formals,throwTypes,body);
 	this.host = host;
-	this.supers = new Supers();
 	this.origflags = flags;
 	this.identifier = UniqueID.newID("id");
 	this.originalName = name;
@@ -447,20 +445,12 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	abc.weaving.aspectinfo.IntertypeMethodDecl imd = new abc.weaving.aspectinfo.IntertypeMethodDecl
 	    (target, impl, current_aspect, originalName, position());
 	gai.addIntertypeMethodDecl(imd);
-	gai.addSuperDispatches(supers.supercalls(gai));
-	gai.addSuperFieldGetters(supers.superfieldgetters(gai));
-	gai.addSuperFieldSetters(supers.superfieldsetters(gai));
-	gai.addQualThiss(supers.qualthiss(gai));
 	
 	MethodCategory.register(impl, MethodCategory.INTERTYPE_METHOD_SOURCE);
 	MethodCategory.registerRealNameAndClass(impl, AbcFactory.modifiers(origflags), originalName, AbcFactory.AbcClass((ClassType)host.type()),
 						(origflags.isStatic()?0:1),0);
     }
     
-    public Supers getSupers() {
-    	return supers;
-    }
-
     public void aspectMethodsEnter(AspectMethods visitor)
     {
         visitor.pushIntertypeDecl(this);

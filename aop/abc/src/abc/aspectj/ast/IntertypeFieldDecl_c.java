@@ -43,7 +43,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     protected TypeNode host;
     protected InterTypeFieldInstance_c hostInstance;
     protected LocalInstance thisParamInstance;
-    protected Supers supers;
     protected String identifier;
     protected String originalName;
     protected Flags originalFlags;
@@ -58,7 +57,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
                                 Expr init){
 	super(pos,flags,type,name,init);
 	this.host = host;
-	this.supers = new Supers();
 	this.identifier = UniqueID.newID("id");
 	this.originalName = name;
 	this.originalFlags = flags;
@@ -250,11 +248,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		return (IntertypeFieldDecl) init(c);
 	}
 	
-	/** retrieve the supers */
-	public Supers getSupers() {
-		return supers;
-	}
-	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		w.write(flags().translate());
         print(type(), w, tr);
@@ -337,10 +330,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
 		    (fs, current_aspect, initSig, getsig, setsig, position());
 		gai.addIntertypeFieldDecl(ifd);
-		gai.addSuperDispatches(supers.supercalls(gai));
-		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
-		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
-		gai.addQualThiss(supers.qualthiss(gai));
 		
     }
 
