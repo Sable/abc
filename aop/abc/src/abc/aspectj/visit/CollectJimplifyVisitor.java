@@ -16,17 +16,15 @@ import java.util.*;
 public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
     private Collection/*<String>*/ source_files;
     private Map class_to_ast;
-    private PCStructure hierarchy;
 
     private Node current_ast;
 
     public CollectJimplifyVisitor(Job job, TypeSystem ts, NodeFactory nf,
 				  Collection/*<String>*/ source_files,
-				  Map class_to_ast, PCStructure hierarchy) {
+				  Map class_to_ast) {
 	super(job, ts, nf);
 	this.source_files = source_files;
 	this.class_to_ast = class_to_ast;
-	this.hierarchy = hierarchy;
     }
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
@@ -38,9 +36,9 @@ public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
 	}
 	if (n instanceof ClassDecl) {
 	    String cname = ((ClassDecl)n).type().fullName();
-	    cname = hierarchy.transformClassName(cname);
+	    //System.err.println("Collecting class "+cname);
             class_to_ast.put(cname, current_ast);
-	    return bypass(n);
+	    return bypassChildren(n);
         }
 	return this;
     }
