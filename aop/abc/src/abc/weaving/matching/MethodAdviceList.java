@@ -26,7 +26,7 @@ public class MethodAdviceList {
 	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT)
 		// FIXME to SemanticException with more info
 		throw new RuntimeException("Precedence conflict");
-	    if(prec==GlobalAspectInfo.PRECEDENCE_SECOND) {
+	    if(prec==GlobalAspectInfo.PRECEDENCE_FIRST) {
 		it.previous(); // for correct insertion
 		break;
 	    }
@@ -36,7 +36,7 @@ public class MethodAdviceList {
 	    AdviceApplication curaa=(AdviceApplication) (it.next());
 	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
 	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT 
-	       || prec==GlobalAspectInfo.PRECEDENCE_FIRST)
+	       || prec==GlobalAspectInfo.PRECEDENCE_SECOND)
 		// FIXME to SemanticException with more info
 		throw new RuntimeException("Precedence conflict");
 	}
