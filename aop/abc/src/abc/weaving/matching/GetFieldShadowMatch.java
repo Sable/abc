@@ -14,21 +14,19 @@ import abc.weaving.residues.JimpleValue;
 
 /** The results of matching at a field get
  *  @author Ganesh Sittampalam
- *  @date 05-May-04
- *  Changes by Oege de Moor to deal with mangled names
- *  and accessor methods.
+ *  @author Oege de Moor
  */
 public class GetFieldShadowMatch extends StmtShadowMatch {
     
-    private SootField field;
+    private SootFieldRef fieldref;
     
-    private GetFieldShadowMatch(SootMethod container,Stmt stmt,SootField field) {
+    private GetFieldShadowMatch(SootMethod container,Stmt stmt,SootFieldRef fieldref) {
 	super(container,stmt);
-	this.field=field;
+	this.fieldref=fieldref;
     }
 
-    public SootField getField() {
-	return field;
+    public SootFieldRef getFieldRef() {
+	return fieldref;
     }
 
     public static GetFieldShadowMatch matchesAt(MethodPosition pos) {
@@ -42,16 +40,17 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	Value rhs = as.getRightOp();
        	if(rhs instanceof FieldRef) {
 	    FieldRef fr = (FieldRef) rhs;
-		if (MethodCategory.weaveSetGet(fr.getField()))
-	    	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+		if (MethodCategory.weaveSetGet(fr.getFieldRef()))
+	    	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getFieldRef());
 	    else
 	    	return null;
 	} else if(rhs instanceof InvokeExpr) {
 		InvokeExpr ie = (InvokeExpr) rhs;
-		SootMethod sm = ie.getMethod();
-	    if(MethodCategory.getCategory(sm)
+		SootMethodRef smr = ie.getMethodRef();
+	    if(MethodCategory.getCategory(smr)
 	       ==MethodCategory.ACCESSOR_GET) {
-			return new GetFieldShadowMatch(pos.getContainer(),stmt,MethodCategory.getField(sm));
+			return new GetFieldShadowMatch
+			    (pos.getContainer(),stmt,MethodCategory.getFieldRef(smr));
 	    }
 	    else return null;
 	} else {
@@ -66,7 +65,7 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("field-get","FieldSignature","makeFieldSig",
-	     SJPInfo.makeFieldSigData(container,field),stmt);
+	     SJPInfo.makeFieldSigData(container,fieldref.resolve()),stmt);
     }
 
 
@@ -90,14 +89,16 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 				return new JimpleValue(ifr.getBase());
 			} else if (rhs instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr vie = (InstanceInvokeExpr) rhs;
-				if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_GET)
+				if (MethodCategory.getCategory(vie.getMethodRef()) 
+				    == MethodCategory.ACCESSOR_GET)
 					return new JimpleValue(vie.getBase());
 			} 
 		} else if (stmt instanceof InvokeStmt) {
 			InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
 			if (ie instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
-				if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_GET)
+				if (MethodCategory.getCategory(vie.getMethodRef()) 
+				    == MethodCategory.ACCESSOR_GET)
 					return new JimpleValue(vie.getBase());
 			}
 		}

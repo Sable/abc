@@ -25,10 +25,7 @@ public class ConstructorCall extends ShadowPointcut {
 	if(!(sm instanceof ConstructorCallShadowMatch)) return null;
 	ConstructorCallShadowMatch csm=(ConstructorCallShadowMatch) sm;
 
-	// FIXME: Hack should be removed when patterns are added
-	if(getPattern()==null) return AlwaysMatch.v;
-		
-	if(!getPattern().matchesConstructor(csm.getMethod())) return null;
+	if(!getPattern().matchesConstructorRef(csm.getMethodRef())) return null;
 	return AlwaysMatch.v;
     }
 

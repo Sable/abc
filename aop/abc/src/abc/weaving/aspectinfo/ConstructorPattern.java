@@ -4,7 +4,7 @@ import soot.*;
 
 /** A constructor pattern. */
 public interface ConstructorPattern {
-    public boolean matchesConstructor(SootMethod sc);
+    public boolean matchesConstructorRef(SootMethodRef scr);
 
     public boolean equivalent(ConstructorPattern p);
 

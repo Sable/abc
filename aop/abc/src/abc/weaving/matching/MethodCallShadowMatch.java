@@ -1,26 +1,9 @@
 package abc.weaving.matching;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import soot.Body;
-import soot.Local;
-import soot.SootMethod;
-import soot.Value;
-import soot.VoidType;
-import soot.Scene;
-import soot.SootClass;
-import soot.jimple.AssignStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.SpecialInvokeExpr;
-import soot.jimple.InvokeExpr;
-import soot.jimple.InvokeStmt;
-import soot.jimple.Jimple;
-import soot.jimple.NopStmt;
-import soot.jimple.Stmt;
+import soot.*;
+import soot.jimple.*;
 import soot.tagkit.Host;
 import soot.util.Chain;
 
@@ -38,22 +21,22 @@ import abc.weaving.residues.Residue;
  */
 public class MethodCallShadowMatch extends StmtShadowMatch {
     
-    private SootMethod method;
+    private SootMethodRef methodref;
     private InvokeExpr invoke;
     
     private MethodCallShadowMatch(SootMethod container,Stmt stmt,
-				  InvokeExpr invoke,SootMethod method) {
+				  InvokeExpr invoke,SootMethodRef methodref) {
 	super(container,stmt);
-	this.method=method;
+	this.methodref=methodref;
 	this.invoke=invoke;
     }
 
-    public SootMethod getMethod() {
-	return method;
+    public SootMethodRef getMethodRef() {
+	return methodref;
     }
 
     public List/*<SootClass>*/ getExceptions() {
-	return method.getExceptions();
+	return methodref.resolve().getExceptions();
     }
 
     public static MethodCallShadowMatch matchesAt(MethodPosition pos) {
@@ -73,17 +56,19 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	    if(!(rhs instanceof InvokeExpr)) return null;
 	    invoke=(InvokeExpr) rhs;
 	} else return null;
-	SootMethod method=invoke.getMethod();
+	SootMethodRef methodref=invoke.getMethodRef();
 
-	if(!MethodCategory.weaveCalls(method)) return null;
+	if(!MethodCategory.weaveCalls(methodref)) return null;
 
-	if(method.getName().equals(SootMethod.constructorName)) return null;
+	if(methodref.name().equals(SootMethod.constructorName)) return null;
 	// The next one really ought not to happen...
-	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
+	if(methodref.name().equals(SootMethod.staticInitializerName)) return null;
 
 	if(abc.main.Debug.v().ajcCompliance) {
 	    // eliminate super calls, following the specification for such
 	    // calls described in 'invokespecial' in the JVM spec
+
+	    SootMethod method=methodref.resolve();
 
 	    // We already know it is not a <init>
 	    if(invoke instanceof SpecialInvokeExpr && 
@@ -107,14 +92,14 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	// Eagerly restructure non-constructor InvokeStmts to AssignStmts, 
 	// because it saves us from having to fix up the AdviceApplications later
 	// We may wish to improve this behaviour later.
-	if(stmt instanceof InvokeStmt && !(method.getReturnType() instanceof VoidType))
+	if(stmt instanceof InvokeStmt && !(methodref.returnType() instanceof VoidType))
 	    stmt=Restructure.getEquivAssignStmt(pos.getContainer(),(InvokeStmt) stmt);
 
 	if(abc.main.Debug.v().traceMatcher) System.err.print("args -> unique locals...");
 	StmtShadowMatch.makeArgumentsUniqueLocals(((StmtMethodPosition) pos).getContainer(), stmt);
 	if(abc.main.Debug.v().traceMatcher) System.err.println("done");
 
-	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,method);
+	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,methodref);
     }
 
     public Host getHost() {
@@ -124,7 +109,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("method-call","MethodSignature","makeMethodSig",
-	     SJPInfo.makeMethodSigData(method),stmt);
+	     SJPInfo.makeMethodSigData(methodref.resolve()),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication
@@ -143,7 +128,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     }
 
     public ContextValue getReturningContextValue() {
-	if(method.getReturnType() instanceof VoidType)
+	if(methodref.returnType() instanceof VoidType)
 	    return super.getReturningContextValue();  // null value
 
 	// This shouldn't get triggered as long as we are eagerly restructuring

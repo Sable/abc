@@ -3,20 +3,10 @@ package abc.weaving.matching;
 import java.util.ArrayList;
 import java.util.List;
 
-import soot.Body;
-import soot.JimpleBodyPack;
-import soot.Local;
-import soot.SootField;
-import soot.SootMethod;
-import soot.Value;
-import soot.jimple.AssignStmt;
-import soot.jimple.FieldRef;
-import soot.jimple.InstanceFieldRef;
-import soot.jimple.InvokeExpr;
-import soot.jimple.InvokeStmt;
-import soot.jimple.InstanceInvokeExpr;
-import soot.jimple.Jimple;
-import soot.jimple.Stmt;
+import polyglot.util.InternalCompilerError;
+
+import soot.*;
+import soot.jimple.*;
 import soot.tagkit.Host;
 import soot.util.Chain;
 
@@ -29,21 +19,19 @@ import abc.weaving.aspectinfo.MethodCategory;
 
 /** The results of matching at a field set
  *  @author Ganesh Sittampalam
- *  @date 05-May-04
- *  Changes by Oege de Moor to deal with mangled names and
- *  accessor methods.
+ *  @author Oege de Moor
  */
 public class SetFieldShadowMatch extends StmtShadowMatch {
     
-    private SootField field;
+    private SootFieldRef fieldref;
 
-    private SetFieldShadowMatch(SootMethod container,Stmt stmt,SootField field) {
+    private SetFieldShadowMatch(SootMethod container,Stmt stmt,SootFieldRef fieldref) {
 	super(container,stmt);
-	this.field=field;
+	this.fieldref=fieldref;
     }
 
-    public SootField getField() {
-	return field;
+    public SootFieldRef getFieldRef() {
+	return fieldref;
     }
 
     public static SetFieldShadowMatch matchesAt(MethodPosition pos) {
@@ -52,14 +40,14 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 
 	Stmt stmt=((StmtMethodPosition) pos).getStmt();
 	
-	SootField sf = null;
+	SootFieldRef sfr = null;
 	if(stmt instanceof AssignStmt) {
 		AssignStmt as = (AssignStmt) stmt;
 		Value lhs = as.getLeftOp();
 		if (lhs instanceof FieldRef) {
 			FieldRef fr = (FieldRef) lhs;
-			sf = fr.getField();
-			if (!MethodCategory.weaveSetGet(sf))
+			sfr = fr.getFieldRef();
+			if (!MethodCategory.weaveSetGet(sfr))
 				return null;
 			makeLocalForRHS(((StmtMethodPosition) pos).getContainer(), as);
 		} else return null;
@@ -67,10 +55,10 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		InvokeStmt is = (InvokeStmt) stmt;
 		// System.out.println("stmt="+stmt);
 		InvokeExpr ie = is.getInvokeExpr();
-		SootMethod sm = ie.getMethod();
-		if(MethodCategory.getCategory(sm)
+		SootMethodRef smr = ie.getMethodRef();
+		if(MethodCategory.getCategory(smr)
 				   ==MethodCategory.ACCESSOR_SET) {
-					sf = MethodCategory.getField(sm);
+					sfr = MethodCategory.getFieldRef(smr);
 					// FIXME: make local for argument?
 		}
 		else return null;
@@ -78,7 +66,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
      
 	
 
-	return new SetFieldShadowMatch(pos.getContainer(),stmt,sf);
+	return new SetFieldShadowMatch(pos.getContainer(),stmt,sfr);
     }
     /**
      * Ensures that the rhs of the set is a local.
@@ -110,7 +98,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("field-set","FieldSignature","makeFieldSig",
-	     SJPInfo.makeFieldSigData(container,field),stmt);
+	     SJPInfo.makeFieldSigData(container,fieldref.resolve()),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication
@@ -137,14 +125,16 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 			Value rhs = a.getRightOp();
 			if (rhs instanceof InvokeExpr) {
 			InstanceInvokeExpr vie = (InstanceInvokeExpr) rhs;
-			if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_SET)
+			if (MethodCategory.getCategory(vie.getMethodRef()) 
+			    == MethodCategory.ACCESSOR_SET)
 				return new JimpleValue(vie.getBase());
 		}
 		} else if (stmt instanceof InvokeStmt) {
 			InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
 			if (ie instanceof InstanceInvokeExpr) {
 				InstanceInvokeExpr vie = (InstanceInvokeExpr) ie;
-				if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_SET)
+				if (MethodCategory.getCategory(vie.getMethodRef()) 
+				    == MethodCategory.ACCESSOR_SET)
 					return new JimpleValue(vie.getBase());
 			}
 
@@ -161,13 +151,14 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		Value rhs = a.getRightOp();
 		if (rhs instanceof InvokeExpr) {
 			InvokeExpr vie = (InvokeExpr) rhs;
-			if (MethodCategory.getCategory(vie.getMethod()) == MethodCategory.ACCESSOR_SET)
+			if (MethodCategory.getCategory(vie.getMethodRef()) 
+			    == MethodCategory.ACCESSOR_SET)
 				ret.add(new JimpleValue(vie.getArg(0)));
 		}
 	} else if (stmt instanceof InvokeStmt) {
 		InvokeExpr ie = ((InvokeStmt)stmt).getInvokeExpr();
 		ret.add(new JimpleValue(ie.getArg(0)));
-	} else throw new RuntimeException("stmt neither an assignment nor an invoke");
+	} else throw new InternalCompilerError("stmt neither an assignment nor an invoke");
 	return ret;
     }
 

@@ -4,7 +4,7 @@ import soot.*;
 
 /** A method pattern. */
 public interface MethodPattern {
-    public boolean matchesMethod(SootMethod sm);
+    public boolean matchesMethodRef(SootMethodRef smr);
 
     public boolean equivalent(MethodPattern p);
 

@@ -7,18 +7,8 @@ import java.util.Set;
 
 import polyglot.util.InternalCompilerError;
 
-import soot.Body;
-import soot.Local;
-import soot.SootMethod;
-import soot.Type;
-import soot.Value;
-import soot.jimple.AssignStmt;
-import soot.jimple.InvokeExpr;
-import soot.jimple.InvokeStmt;
-import soot.jimple.Jimple;
-import soot.jimple.NewExpr;
-import soot.jimple.NopStmt;
-import soot.jimple.Stmt;
+import soot.*;
+import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.residues.ContextValue;
@@ -64,8 +54,8 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 	public static void makeArgumentsUniqueLocals(SootMethod method, Stmt stmt) {
 		InvokeExpr invokeEx=stmt.getInvokeExpr();
 		
-		SootMethod invokedMethod=invokeEx.getMethod();
-		List parameterTypes=invokedMethod.getParameterTypes();
+		SootMethodRef invokedMethod=invokeEx.getMethodRef();
+		List parameterTypes=invokedMethod.parameterTypes();
 		
 		boolean bDoModify=false;	
 		{
@@ -103,7 +93,7 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 			// the new
 		        if(stmt instanceof InvokeStmt &&
 			   ((InvokeStmt) stmt).getInvokeExpr()
-			   .getMethod().getName().equals(SootMethod.constructorName)) {
+			   .getMethodRef().name().equals(SootMethod.constructorName)) {
 			    
 			    Stmt prev=(Stmt) statements.getPredOf(stmt);
 

@@ -5,7 +5,9 @@ import polyglot.util.InternalCompilerError;
 
 import soot.SootClass;
 import soot.SootMethod;
+import soot.SootMethodRef;
 import soot.SootField;
+import soot.SootFieldRef;
 import soot.Type;
 
 import polyglot.ast.MethodDecl;
@@ -159,6 +161,10 @@ public class MethodCategory {
 	return weave_calls[cat];
     }
 
+    // FIXME: Temporary stub
+    public static boolean weaveCalls(SootMethodRef mr)
+    { return weaveCalls(getCategory(mr.resolve())); }
+
     public static boolean weaveCalls(SootMethod m)
     { return weaveCalls(getCategory(m)); }
     public static boolean weaveCalls(MethodSig m)
@@ -184,6 +190,11 @@ public class MethodCategory {
 
     public static int getCategory(MethodSig m) {
 	return GlobalAspectInfo.v().getMethodCategory(m);
+    }
+
+    // FIXME: Temporary stub
+    public static int getCategory(SootMethodRef mr) {
+	return getCategory(mr.resolve());
     }
 
     // REGISTRATION METHODS
@@ -272,6 +283,11 @@ public class MethodCategory {
 	return GlobalAspectInfo.v().getRealModifiers(m, m.getModifiers());
     }
 
+    // FIXME: temporary stub
+    public static int getModifiers(SootMethodRef m) {
+	return getModifiers(m.resolve());
+    }
+
     public static String getName(SootMethod m) {
 	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.MethodSig(m));
 	if (real_name == null) {
@@ -288,6 +304,11 @@ public class MethodCategory {
 	} else {
 	    return real_name;
 	}
+    }
+
+    // FIXME: temporary stub
+    public static String getName(SootMethodRef m) {
+	return getName(m.resolve());
     }
 
     public static SootClass getClass(SootMethod m) {
@@ -308,12 +329,28 @@ public class MethodCategory {
 	}
     }
 
+    // FIXME: temporary stub
+    public static SootClass getClass(SootMethodRef m) {
+	return getClass(m.resolve());
+    }
+
     public static int getSkipFirst(SootMethod m) {
 	return GlobalAspectInfo.v().getSkipFirst(AbcFactory.MethodSig(m));
     }
 
+    // FIXME: temporary stub
+    public static int getSkipFirst(SootMethodRef m) {
+	return getSkipFirst(m.resolve());
+    }
+
+
     public static int getSkipLast(SootMethod m) {
 	return GlobalAspectInfo.v().getSkipLast(AbcFactory.MethodSig(m));
+    }
+
+    // FIXME: temporary stub
+    public static int getSkipLast(SootMethodRef m) {
+	return getSkipLast(m.resolve());
     }
     
 	public static int getModifiers(SootField m) {
@@ -323,6 +360,12 @@ public class MethodCategory {
 	public static int getModifiers(FieldSig m) {
 	   return GlobalAspectInfo.v().getRealModifiers(m, m.getModifiers());
 	}
+
+    //FIXME: temporary stub
+    public static int getModifiers(SootFieldRef f) {
+	return getModifiers(f.resolve());
+    }
+
 
 	public static String getName(SootField m) {
 	   FieldSig fs = AbcFactory.FieldSig(m);
@@ -343,6 +386,11 @@ public class MethodCategory {
 	   }
 	}
 
+    //FIXME: temporary stub
+    public static String getName(SootFieldRef f) {
+	return getName(f.resolve());
+    }
+
 	public static SootClass getClass(SootField m) {
 	   AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.FieldSig(m));
 	   if (real_class == null) {
@@ -360,6 +408,12 @@ public class MethodCategory {
 		   return real_class.getSootClass();
 	   }
 	}
+
+    //FIXME: temporary stub
+    public static SootClass getClass(SootFieldRef f) {
+	return getClass(f.resolve());
+    }
+
 	
 	public static SootField getField(SootMethod sm) {
 		FieldSig fs = GlobalAspectInfo.v().getField(AbcFactory.MethodSig(sm));
@@ -369,7 +423,11 @@ public class MethodCategory {
 			return fs.getSootField();
 		}
 	}
-	
+
+    // FIXME: Temporary stub
+    public static SootFieldRef getFieldRef(SootMethodRef smr) {
+	return getField(smr.resolve()).makeRef();
+    }
 	
 	public static void registerFieldGet(FieldSig fs, MethodSig sig) {
 	   GlobalAspectInfo.v().registerMethodCategory(sig, MethodCategory.ACCESSOR_GET);
@@ -381,11 +439,21 @@ public class MethodCategory {
 		GlobalAspectInfo.v().registerFieldAccessor(fs,sig);
 	}
 
+    // FIXME: Temporary stub
+    public static void registerFieldGet(SootFieldRef sfsr, SootMethod ssig) {
+	registerFieldGet(sfsr.resolve(),ssig);
+    }
+
 	public static void registerFieldGet(SootField sfs, SootMethod ssig) {
 		FieldSig fs = AbcFactory.FieldSig(sfs);
 		MethodSig sig = AbcFactory.MethodSig(ssig);
 		registerFieldGet(fs,sig);
 	}
+
+    // FIXME: Temporary stub
+    public static void registerFieldSet(SootFieldRef sfsr, SootMethod ssig) {
+	registerFieldSet(sfsr.resolve(),ssig);
+    }
 
 	public static void registerFieldSet(SootField sfs, SootMethod ssig) {
 		FieldSig fs = AbcFactory.FieldSig(sfs);
@@ -399,6 +467,11 @@ public class MethodCategory {
 		return !((GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(sfs)) == null) &&
 		         (sfs.getName().indexOf('$') != -1));
 	}
+
+    // FIXME: Temporary stub
+    public static boolean weaveSetGet(SootFieldRef sfr) {
+	return weaveSetGet(sfr.resolve());
+    }
 	
     /** is this an ITD (method or field initialiser) that has "this"
      *  as a parameter?

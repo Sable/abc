@@ -23,9 +23,9 @@ public class GetField extends ShadowPointcut {
 
     protected Residue matchesAt(ShadowMatch sm) {
 	if(!(sm instanceof GetFieldShadowMatch)) return null;
-	SootField field=((GetFieldShadowMatch) sm).getField();
+	SootFieldRef fieldref=((GetFieldShadowMatch) sm).getFieldRef();
 
-	if(!getPattern().matchesField(field)) return null;
+	if(!getPattern().matchesFieldRef(fieldref)) return null;
 	return AlwaysMatch.v;
 
 

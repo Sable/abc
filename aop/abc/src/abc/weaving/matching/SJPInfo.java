@@ -51,6 +51,9 @@ public class SJPInfo {
 	else return type.toString();
     }
 
+    // REVIEW/FIXME: This takes a SootMethod always, rather than an option of a SootMethodRef,
+    // because we will need to resolve a ref anyway to find the exceptions.
+    // We should work out if this is actually correct.
     public static String makeMethodSigData(SootMethod method) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());
@@ -182,7 +185,9 @@ public class SJPInfo {
 	return sb.toString();
     }
 
-	// FIXME: (oege) I think the first parameter is obsolete
+    // FIXME: (oege) I think the first parameter is obsolete
+    // REVIEW/FIXME: This takes a SootField always, rather than an option of a SootFieldRef,
+    // for consistency with makeMethodSigData
     public static String makeFieldSigData(SootMethod container,SootField field) {
 	StringBuffer sb=new StringBuffer();
 	//sb.append(new Integer(container.getModifiers()).toString());

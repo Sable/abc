@@ -26,12 +26,12 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	this.invoke=invoke;
     }
 
-    public SootMethod getMethod() {
-	return invoke.getMethod();
+    public SootMethodRef getMethodRef() {
+	return invoke.getMethodRef();
     }
 
     public List/*<SootClass>*/ getExceptions() {
-	return invoke.getMethod().getExceptions();
+	return invoke.getMethodRef().resolve().getExceptions();
     }
 
     public static ConstructorCallShadowMatch matchesAt(MethodPosition pos) {
@@ -74,7 +74,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ( "constructor-call","ConstructorSignature",
-	      "makeConstructorSig",SJPInfo.makeConstructorSigData(getMethod()),stmt);
+	      "makeConstructorSig",SJPInfo.makeConstructorSigData(getMethodRef().resolve()),stmt);
     }
 
     protected AdviceApplication doAddAdviceApplication

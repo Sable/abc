@@ -25,10 +25,7 @@ public class MethodCall extends ShadowPointcut {
 	if(!(sm instanceof MethodCallShadowMatch)) return null;
 	MethodCallShadowMatch msm=(MethodCallShadowMatch) sm;
 
-	// FIXME: Hack should be removed when patterns are added
-	if(getPattern()==null) return AlwaysMatch.v;
-
-	if(!getPattern().matchesMethod(msm.getMethod())) return null;
+	if(!getPattern().matchesMethodRef(msm.getMethodRef())) return null;
 
 	return AlwaysMatch.v;
     }

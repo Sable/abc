@@ -4,7 +4,7 @@ import soot.*;
 
 /** A field pattern. */
 public interface FieldPattern {
-    public boolean matchesField(SootField sf);
+    public boolean matchesFieldRef(SootFieldRef sfr);
     public boolean matchesMethod(SootMethod sf);
 
     public boolean equivalent(FieldPattern p);
