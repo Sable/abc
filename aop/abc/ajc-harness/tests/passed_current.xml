@@ -548,6 +548,10 @@
         <compile files="NulIOException2.java"></compile>
         <run class="NulIOException2"></run>
     </ajc-test>
+<ajc-test title="Primitives that special case for a constant arm should work" keywords="from-java" dir="pureJava" abccomment="problem with j2j treatment of Nan, Jennifer has been                   informed July 1/04  LJH">
+        <compile files="OneArmedPrimitiveTests.java"></compile>
+        <run class="OneArmedPrimitiveTests"></run>
+    </ajc-test>
 <ajc-test title="Parenthesized true and false don't parse" keywords="from-java" dir="pureJava">
         <compile files="ParenKeywords.java"></compile>
         <run class="ParenKeywords"></run>
@@ -2241,6 +2245,10 @@
             <message line="71" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="multi-dispatch implemented through around + args" pr="632" keywords="from-resolved_10x" dir="new">
+        <compile files="MultiDispatchCp.java"></compile>
+        <run class="MultiDispatchCp"></run>
+    </ajc-test>
 <ajc-test title="unrecognized aspect should not net Cloneable and Serializable warnings" keywords="from-resolved_10x" dir="new">
         <compile files="UnrecognizedAspectCE.java">
             <message line="3" kind="error"></message>
@@ -2333,6 +2341,10 @@
 <ajc-test title="around all execution with double assignment in initializer (coverage)" pr="687" keywords="from-resolved_104" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundDoubleAssignmentC.java"></compile>
         <run class="AroundDoubleAssignmentC"></run>
+    </ajc-test>
+<ajc-test title="changing this in around's proceed reported by Rich Price" keywords="from-resolved_104" dir="new">
+        <compile options="-1.4" files="AroundChangeThis.java"></compile>
+        <run class="AroundChangeThis"></run>
     </ajc-test>
 <ajc-test title="default package for aspect introductions is not the current package" pr="548" keywords="from-resolved_10rc3,from-resolved_104" dir="new">
         <compile files="introductionPackage/two/C.java,introductionPackage/one/C.java,introductionPackage/one/Aspect.java,introductionPackage/one/TestAspect.java"></compile>
@@ -2687,11 +2699,11 @@
             <message line="6" kind="error"></message>        
         </compile>
     </ajc-test>
-<ajc-test title="Static inner aspects cannot reference user defined pointcuts" pr="29691" dir="bugs">
+<ajc-test title="Static inner aspects cannot reference user defined pointcuts 1" pr="29691" dir="bugs">
         <compile files="PcdLookup.java"></compile>
         <run class="PcdLookup"></run>
     </ajc-test>
-<ajc-test title="Static inner aspects cannot reference user defined pointcuts" pr="29691" dir="bugs">
+<ajc-test title="Static inner aspects cannot reference user defined pointcuts 2" pr="29691" dir="bugs">
         <compile files="SoftWithin.java"></compile>
         <run class="SoftWithin"></run>
     </ajc-test>
@@ -2733,6 +2745,10 @@
         <compile files="UnfoundConstructor.java">
         	<message line="25" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowCycles.java"></compile>
+        <run class="CflowCycles"></run>
     </ajc-test>
 <ajc-test title="type not imported in around advice" dir="errors">
         <compile files="TypeNotImportedInAroundCE.java">
@@ -2843,6 +2859,12 @@
         	<message line="14" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Compiler crashes in jar and cflow (with no .jar)" pr="39462" dir="bugs/cflowAndJar">
+        <compile files="TestAspect.aj,Test.java,AbstractAspect.aj">
+        	<message line="16" kind="warning"></message>
+        </compile>
+        <run class="Test"></run>
+    </ajc-test>
 <ajc-test title="subtype-qualified pointcut reference" pr="40876" dir="bugs">
 		<compile files="PointcutLibraryTest.java"></compile>
 		<run class="PointcutLibraryTest"></run>
@@ -2871,15 +2893,6 @@
 		<compile files="lib/LibraryInterface.java,       Client.java,       LibraryAspect.java"></compile>
 		<run class="Client"></run>
 		</ajc-test>
-<ajc-test title="exception clause for aspect-declared interface methods - positive" dir="bugs/interfaceLibrary">
-		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
-		<run class="Client"></run>
-		</ajc-test>
-<ajc-test title="exception clause for aspect-declared interface methods - negative" dir="bugs/interfaceLibrary">
-		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
-			<message line="5" kind="error" file="ClientCE.java"></message>
-			</compile>
-		</ajc-test>
 <ajc-test title="exception clause for aspect-declared class methods - negative" dir="bugs/interfaceLibrary">
 		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
 			<message line="5" kind="error" file="ClassClientCE.java"></message>
@@ -2888,10 +2901,6 @@
 <ajc-test title="Weaving failure when using injars (no jars)" pr="41123" dir="bugs/moreInterfaceLibrary">
 		<compile files="lib/ExecutionMonitor.aj,model/BusObj.java,model/MonitorBusObj.java">
 		</compile>
-	</ajc-test>
-<ajc-test title="percflow aspects compiled from jars share one instance for all entry points" pr="41359" dir="bugs/perCflowAndJar">
-		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"></compile>
-		<run class="PerCFlowCompileFromJarTest"></run>
 	</ajc-test>
 <ajc-test title="perthis and signature bad interaction" pr="42652" dir="bugs">
         <compile files="InterPerCall.java"></compile>

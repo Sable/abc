@@ -31,10 +31,6 @@
         <compile files="protectedFieldRefInInner/Main.java,protectedFieldRefInInner/p1/C.java"></compile>
         <run class="protectedFieldRefInInner.Main"></run>
     </ajc-test>
-<ajc-test title="Primitives that special case for a constant arm should work" keywords="from-java" dir="pureJava" abccomment="problem with j2j treatment of Nan, Jennifer has been                   informed July 1/04  LJH">
-        <compile files="OneArmedPrimitiveTests.java"></compile>
-        <run class="OneArmedPrimitiveTests"></run>
-    </ajc-test>
 <ajc-test title="invalid numeric literals" keywords="from-java" dir="pureJava" abccomment="abc doesn't do a good job on these,  needs a parser                   that doesn't give up after the first error, and                   then each case needs to be check.  jlc probably does                   not catch all of them either.  July 1/04 LJH">
         <compile files="LiteralsCf.java">
             <message line="8" kind="error"></message>
@@ -622,10 +618,6 @@
         <compile files="LocalClassClosingOverProceed.java"></compile>
         <run class="LocalClassClosingOverProceed"></run>
     </ajc-test>
-<ajc-test title="multi-dispatch implemented through around + args" pr="632" keywords="from-resolved_10x" dir="new">
-        <compile files="MultiDispatchCp.java"></compile>
-        <run class="MultiDispatchCp"></run>
-    </ajc-test>
 <ajc-test title="Overriding method implementations using introduction on interfaces" pr="654" keywords="from-resolved_10x,fail-unimplemented" dir="new">
         <compile options="-Xlint:ignore" files="IntroductionsOverriding.java"></compile>
         <run class="IntroductionsOverriding"></run>
@@ -666,10 +658,6 @@
 <ajc-test title="pertarget stack overflow getting name of anonymous (Interface) class" pr="573" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR573.java"></compile>
         <run class="PR573"></run>
-    </ajc-test>
-<ajc-test title="changing this in around's proceed reported by Rich Price" keywords="from-resolved_104" dir="new">
-        <compile options="-1.4" files="AroundChangeThis.java"></compile>
-        <run class="AroundChangeThis"></run>
     </ajc-test>
 <ajc-test title="indirect use outside aspect of undefined abstract pointcut" pr="619" keywords="from-resolved_104" dir="new">
         <compile files="AbstractPointcutIndirectCE.java">
@@ -1069,10 +1057,6 @@
             <message text="adviceExecution() &amp;&amp; within(A)" line="74" kind="warning"></message>
         </compile>
     </ajc-test>
-<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" keywords="from-resolved_10x" dir="new">
-        <compile files="CflowCycles.java"></compile>
-        <run class="CflowCycles"></run>
-    </ajc-test>
 <ajc-test title="incompatible advice throws clause are a compile-time error" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceThrowsCf.java">
             <message line="13" kind="error"></message>
@@ -1340,12 +1324,6 @@
         <compile files="OverridingInterfaceObjectMethod.java"></compile>
         <run class="OverridingInterfaceObjectMethod"></run>
     </ajc-test>
-<ajc-test title="Compiler crashes in jar and cflow (with no .jar)" pr="39462" dir="bugs/cflowAndJar">
-        <compile files="TestAspect.aj,Test.java,AbstractAspect.aj">
-        	<message line="16" kind="warning"></message>
-        </compile>
-        <run class="Test"></run>
-    </ajc-test>
 <ajc-test title="Default method impl for interface causes internal exception." pr="40589" dir="bugs">
         <compile files="CloneMethod.java"></compile>
         <run class="CloneMethod"></run>
@@ -1388,6 +1366,15 @@
 			
 		<run class="Client"></run>
 		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - positive" dir="bugs/interfaceLibrary">
+		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - negative" dir="bugs/interfaceLibrary">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message line="5" kind="error" file="ClientCE.java"></message>
+			</compile>
+		</ajc-test>
 <ajc-test title="exception clause for aspect-declared class methods - positive" dir="bugs/interfaceLibrary">
 		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"></compile>
 		<run class="ClassClient"></run>
@@ -1407,6 +1394,10 @@
 		<compile files="model/BusObj.java,model/MonitorBusObj.java,lib.jar">
 		    <message line="3" kind="error"></message>
 		</compile>
+	</ajc-test>
+<ajc-test title="percflow aspects compiled from jars share one instance for all entry points" pr="41359" dir="bugs/perCflowAndJar">
+		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"></compile>
+		<run class="PerCFlowCompileFromJarTest"></run>
 	</ajc-test>
 <ajc-test title="throw derivative pointcuts not advised" pr="42539" dir="bugs/throwsSignature">
 		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
@@ -1522,13 +1513,13 @@
         	<message line="3" kind="error"></message>
        </compile>
     </ajc-test>
-<ajc-test title="binary compatibility of advice method names - expect no error" pr="50641" dir="bugs/binaryCompat">
+<ajc-test title="binary compatibility of advice method names - expect no error 1" pr="50641" dir="bugs/binaryCompat">
         <compile files="Main.java,TraceV1.aj"></compile>
         <run class="Main"></run>
         <compile files="TraceV2.aj"></compile>
         <run class="Main"></run>
     </ajc-test>
-<ajc-test title="binary compatibility of advice method names - expect no error" pr="50641" dir="bugs/binaryCompat" abccomment="crash in jasmin upon second compilation. Sent to Jennifer 14/07/04. ODM">
+<ajc-test title="binary compatibility of advice method names - expect no error 2" pr="50641" dir="bugs/binaryCompat" abccomment="crash in jasmin upon second compilation. Sent to Jennifer 14/07/04. ODM">
         <compile files="Main.java,TraceWithInnerV1.aj"></compile>
         <run class="Main"></run>
         <compile files="TraceWithInnerV2.aj"></compile>
