@@ -1355,6 +1355,14 @@
             <message line="6" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="circular dominates leading to irresolvable advice precedence" num="271" keywords="from-errors" dir="errors" abccomment="We only report one error, and at the place the advice applies not the advice location">
+        <compile files="CircularDominates.java">
+            <ajcmessage line="12" kind="error"></ajcmessage>
+            <ajcmessage line="16" kind="error"></ajcmessage>
+            <ajcmessage line="20" kind="error"></ajcmessage>
+            <message line="4" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="Should issue an error for using 'class' instead of 'aspect'" num="272" keywords="from-errors" dir="errors">
         <compile files="NoAspect.java">
             <message line="12" kind="error"></message>
@@ -2243,6 +2251,10 @@
 <ajc-test title="around advice on calls within inner classes (including protected method calls) 1" num="440" keywords="from-resolved_10x" dir="new">
         <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
         <run class="AroundInnerCalls13"></run>
+    </ajc-test>
+<ajc-test title="around advice on calls within inner classes (including protected method calls) 2" num="441" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4" files="AroundInnerCalls.java"></compile>
+        <run class="AroundInnerCalls"></run>
     </ajc-test>
 <ajc-test title="Arguments to runNext should be final when needed" num="442" keywords="from-resolved_10x" dir="new">
         <compile files="Finals.java"></compile>
@@ -3150,6 +3162,10 @@
         <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
         <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
     </ajc-test>
+<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
+	    <compile files="java/lang/Object.java,java/lang/String.java">
+	    </compile>
+	</ajc-test>
 <ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
         <run class="MethodLocalAroundReturns"></run>
@@ -3460,6 +3476,42 @@
         <compile files="DeclareWarningEmpty.java">
             <message text="2 - initialization(DeclareWarningEmpty)" line="3" kind="warning"></message>
             <message text="1 - staticinitialization(DeclareWarningEmpty)" line="3" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="omnibus declare warning context" pr="31724" num="761" dir="new/declare" abccomment="different positions for execution-type joinpoints">
+        <compile files="DeclareWarning.java">
+            <ajcmessage text="staticinitialization(DeclareWarning)" line="5" kind="warning"></ajcmessage>
+            <ajcmessage text="call(DeclareWarning.new())" line="12" kind="warning"></ajcmessage>
+            <ajcmessage text="get staticInt" line="13" kind="warning"></ajcmessage>
+            <ajcmessage text="get instanceInt" line="14" kind="warning"></ajcmessage>
+            <ajcmessage text="set staticInt" line="15" kind="warning"></ajcmessage>
+            <ajcmessage text="set instanceInt" line="16" kind="warning"></ajcmessage>
+            <ajcmessage text="call(void run())" line="17" kind="warning"></ajcmessage>
+            <ajcmessage text="call(void irun())" line="18" kind="warning"></ajcmessage>
+            <ajcmessage text="execution(void run())" line="21" kind="warning"></ajcmessage>
+            <ajcmessage text="execution(void irun())" line="22" kind="warning"></ajcmessage>
+            <ajcmessage text="execution(DeclareWarning.new())" line="23" kind="warning"></ajcmessage>
+            <ajcmessage text="initialization(DeclareWarning)" line="23" kind="warning"></ajcmessage>
+            <ajcmessage text="handler(OutOfMemoryError) &amp;&amp; within(DeclareWarning)" line="33" kind="warning"></ajcmessage>
+            <ajcmessage text="handler(Error)" line="36" kind="warning"></ajcmessage>
+            <ajcmessage text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())" line="39" kind="warning"></ajcmessage>
+            <ajcmessage text="adviceExecution() &amp;&amp; within(A)" line="74" kind="warning"></ajcmessage>
+            <message text="staticinitialization(DeclareWarning)" line="3" kind="warning"></message>
+            <message text="call(DeclareWarning.new())" line="12" kind="warning"></message>
+            <message text="get staticInt" line="13" kind="warning"></message>
+            <message text="get instanceInt" line="14" kind="warning"></message>
+            <message text="set staticInt" line="15" kind="warning"></message>
+            <message text="set instanceInt" line="16" kind="warning"></message>
+            <message text="call(void run())" line="17" kind="warning"></message>
+            <message text="call(void irun())" line="18" kind="warning"></message>
+            <message text="execution(void run())" line="21" kind="warning"></message>
+            <message text="execution(void irun())" line="22" kind="warning"></message>
+            <message text="execution(DeclareWarning.new())" line="23" kind="warning"></message>
+            <message text="initialization(DeclareWarning)" line="23" kind="warning"></message>
+            <message text="handler(OutOfMemoryError) &amp;&amp; within(DeclareWarning)" line="33" kind="warning"></message>
+            <message text="handler(Error)" line="36" kind="warning"></message>
+            <message text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())" line="39" kind="warning"></message>
+            <message text="adviceExecution() &amp;&amp; within(A)" line="72" kind="warning"></message>
         </compile>
     </ajc-test>
 <ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
@@ -4289,6 +4341,14 @@
         <compile files="SuperClosure.java"></compile>
         <run class="SuperClosure"></run>
     </ajc-test>
+<ajc-test title="retitle warning to circular {advice} dependency at ..." pr="44272" num="952" dir="bugs" abccomment="we only report one error, at the application location">
+        <compile files="CircularAdvicePrecedence.java">
+            <ajcmessage line="4" kind="error"></ajcmessage> 
+            <ajcmessage line="5" kind="error"></ajcmessage> 
+            <ajcmessage line="6" kind="error"></ajcmessage> 
+            <message line="11" kind="error"></message> 
+        </compile>
+    </ajc-test>
 <ajc-test title="Introduce Unknown Type to class causes Null pointer exception" pr="51322" num="953" dir="bugs">
         <compile files="Pr51322.java"> 
         	<message line="5" kind="error"></message>
@@ -4304,12 +4364,86 @@
           <message text="Non-aspect types can only be specified" line="10" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="declare precedence on a class should be a compile-time error 2" pr="53012" num="959" dir="bugs/declarePrecedenceWithClasses">
+        <compile files="Priority.aj"></compile>
+    </ajc-test>
 <ajc-test title="error Type mismatch: cannot convert from java.lang.String to java.lang.String" pr="55341" num="960" keywords="" dir="bugs/StringToString" comment="make helloworld.jar with 'ajc -outjar helloworld.jar HW.java' or run BcweaverJarMaker" abccomment="we think this is an error">
         <compile files="X.java" classpath="helloworld.jar">
         	<ajcmessage line="3" kind="warning"></ajcmessage>
         	<ajcmessage line="7" kind="warning"></ajcmessage>
         	<message line="3" kind="error"></message>
         	<message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error binary-weaving NPE 1" pr="57432" num="961" dir="bugs/systemouts" abccomment="we correctly report two errors at line 13">
+        <compile files="injar-debug.jar,A.java">
+			<ajcmessage line="12" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="13" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="20" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="22" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="23" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="27" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="28" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="29" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="30" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="31" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="32" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="33" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="34" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="35" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="36" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="37" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="38" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="39" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="40" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="41" kind="error" file="X.java"></ajcmessage>
+			<message line="12" kind="error" file="X.java"></message>
+			<message line="13" kind="error" file="X.java"></message>
+			<message line="13" kind="error" file="X.java"></message>
+			<message line="20" kind="error" file="X.java"></message>
+			<message line="22" kind="error" file="X.java"></message>
+			<message line="23" kind="error" file="X.java"></message>
+			<message line="27" kind="error" file="X.java"></message>
+			<message line="28" kind="error" file="X.java"></message>
+			<message line="29" kind="error" file="X.java"></message>
+			<message line="30" kind="error" file="X.java"></message>
+			<message line="31" kind="error" file="X.java"></message>
+			<message line="32" kind="error" file="X.java"></message>
+			<message line="33" kind="error" file="X.java"></message>
+			<message line="34" kind="error" file="X.java"></message>
+			<message line="35" kind="error" file="X.java"></message>
+			<message line="36" kind="error" file="X.java"></message>
+			<message line="37" kind="error" file="X.java"></message>
+			<message line="38" kind="error" file="X.java"></message>
+			<message line="39" kind="error" file="X.java"></message>
+			<message line="40" kind="error" file="X.java"></message>
+			<message line="41" kind="error" file="X.java"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error binary-weaving NPE 2 " pr="57432" num="962" dir="bugs/systemouts" abccomment="we generate 21 errors, just like ajc..">
+        <compile files="injar-nodebug.jar,A.java">
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<ajcmessage line="0" kind="error"></ajcmessage>
         </compile>
     </ajc-test>
 <ajc-test title="NPE when binary weaving a ctor ITD" pr="59440" num="964" dir="bugs">

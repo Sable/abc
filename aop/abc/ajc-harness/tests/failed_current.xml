@@ -54,13 +54,6 @@
             <message line="5" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="circular dominates leading to irresolvable advice precedence" num="271" keywords="from-errors" dir="errors" abccomment="Correct error, but thrown as a RuntimeException. ODM July 7, 2004">
-        <compile files="CircularDominates.java">
-            <message line="12" kind="error"></message>
-            <message line="16" kind="error"></message>
-            <message line="20" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="class and interface extension" num="285" keywords="from-errors,purejava,messages-vary" dir="errors" abccomment="jlc not catching missing return statements">
         <compile options="!eclipse" files="BadExtension.java">
             <message line="7" kind="error"></message>
@@ -105,10 +98,6 @@
 <ajc-test title="field patterns and subtyping" num="426" keywords="from-resolved_10x" dir="new">
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
-    </ajc-test>
-<ajc-test title="around advice on calls within inner classes (including protected method calls) 2" num="441" keywords="from-resolved_10x" dir="new">
-        <compile options="-1.4" files="AroundInnerCalls.java"></compile>
-        <run class="AroundInnerCalls"></run>
     </ajc-test>
 <ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" num="464" keywords="from-resolved_10x" dir="new">
         <compile files="Fixes.java"></compile>
@@ -181,10 +170,6 @@
             <message line="72" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
-	    <compile files="java/lang/Object.java,java/lang/String.java">
-	    </compile>
-	</ajc-test>
 <ajc-test title="CE expected for assignment to arg in if pcd" num="655" keywords="from-resolved_105" dir="new">
         <compile files="IfPCDAssignmentCE.java">
             <message line="16" kind="error"></message>
@@ -279,26 +264,6 @@
         <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"></compile>
         <run class="TransactionTest"></run>
     </ajc-test>
-<ajc-test title="omnibus declare warning context" pr="31724" num="761" dir="new/declare">
-        <compile files="DeclareWarning.java">
-            <message text="staticinitialization(DeclareWarning)" line="5" kind="warning"></message>
-            <message text="call(DeclareWarning.new())" line="12" kind="warning"></message>
-            <message text="get staticInt" line="13" kind="warning"></message>
-            <message text="get instanceInt" line="14" kind="warning"></message>
-            <message text="set staticInt" line="15" kind="warning"></message>
-            <message text="set instanceInt" line="16" kind="warning"></message>
-            <message text="call(void run())" line="17" kind="warning"></message>
-            <message text="call(void irun())" line="18" kind="warning"></message>
-            <message text="execution(void run())" line="21" kind="warning"></message>
-            <message text="execution(void irun())" line="22" kind="warning"></message>
-            <message text="execution(DeclareWarning.new())" line="23" kind="warning"></message>
-            <message text="initialization(DeclareWarning)" line="23" kind="warning"></message>
-            <message text="handler(OutOfMemoryError) &amp;&amp; within(DeclareWarning)" line="33" kind="warning"></message>
-            <message text="handler(Error)" line="36" kind="warning"></message>
-            <message text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())" line="39" kind="warning"></message>
-            <message text="adviceExecution() &amp;&amp; within(A)" line="74" kind="warning"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="cflow binding issues with ignoring state" pr="34858" num="764" dir="bugs">
         <compile files="CflowBinding.java"></compile>
         <run class="CflowBinding"></run>
@@ -332,45 +297,6 @@
         <compile files="AfterThrowingCtor.java">
         </compile>
   		<run class="AfterThrowingCtor"></run>
-    </ajc-test>
-<ajc-test title="retitle warning to circular {advice} dependency at ..." pr="44272" num="952" dir="bugs">
-        <compile files="CircularAdvicePrecedence.java">
-            <message line="4" kind="error"></message> 
-            <message line="5" kind="error"></message> 
-            <message line="6" kind="error"></message> 
-        </compile>
-    </ajc-test>
-<ajc-test title="declare precedence on a class should be a compile-time error 2" pr="53012" num="959" dir="bugs/declarePrecedenceWithClasses">
-        <compile files="Priority.aj"></compile>
-    </ajc-test>
-<ajc-test title="declare error binary-weaving NPE 1" pr="57432" num="961" dir="bugs/systemouts">
-        <compile files="injar-debug.jar,A.java">
-			<message line="12" kind="error" file="X.java"></message>
-			<message line="13" kind="error" file="X.java"></message>
-			<message line="20" kind="error" file="X.java"></message>
-			<message line="22" kind="error" file="X.java"></message>
-			<message line="23" kind="error" file="X.java"></message>
-			<message line="27" kind="error" file="X.java"></message>
-			<message line="28" kind="error" file="X.java"></message>
-			<message line="29" kind="error" file="X.java"></message>
-			<message line="30" kind="error" file="X.java"></message>
-			<message line="31" kind="error" file="X.java"></message>
-			<message line="32" kind="error" file="X.java"></message>
-			<message line="33" kind="error" file="X.java"></message>
-			<message line="34" kind="error" file="X.java"></message>
-			<message line="35" kind="error" file="X.java"></message>
-			<message line="36" kind="error" file="X.java"></message>
-			<message line="37" kind="error" file="X.java"></message>
-			<message line="38" kind="error" file="X.java"></message>
-			<message line="39" kind="error" file="X.java"></message>
-			<message line="40" kind="error" file="X.java"></message>
-			<message line="41" kind="error" file="X.java"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="declare error binary-weaving NPE 2 " pr="57432" num="962" dir="bugs/systemouts">
-        <compile files="injar-nodebug.jar,A.java">
-			<message line="0" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors">
         <compile files="Joinpoints101.jar,DecErrors.aj">
