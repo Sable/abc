@@ -612,7 +612,10 @@ public class TestCase {
 		    }
 		    
 		    // Does the file match?
-		    if (!errFile.equals("") && (pos.file() == null || !(errFile.endsWith(pos.file()) || pos.file().endsWith(errFile)))) {
+		    boolean sameFiles = (pos.file() == null) ? false : 
+		        				(errFile.endsWith(pos.file().replaceAll("\\\\", "/")) 
+		        				        || pos.file().replaceAll("\\\\", "/").endsWith(errFile));
+		    if (!errFile.equals("") && !sameFiles) {
 		        System.err.println("Found an unexpected error - should be in file " + pos.file() + 
 		                ", but is in " + errFile + ".");
 		        System.err.println("Errors found during this compilation:");
