@@ -11,6 +11,8 @@ import polyglot.ast.MethodDecl;
 import polyglot.ast.ClassDecl;
 import polyglot.ast.NodeFactory;
 import polyglot.ast.Local;
+import polyglot.ast.Field;
+import polyglot.ast.Call;
 
 import polyglot.visit.NodeVisitor;
 
@@ -24,7 +26,13 @@ import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.PointcutDecl;
 import abc.aspectj.ast.ProceedCall;
 
+import abc.aspectj.ast.IntertypeFieldDecl;
+import abc.aspectj.ast.IntertypeFieldDecl_c;
+import abc.aspectj.ast.IntertypeMethodDecl_c;
+
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.InterTypeFieldInstance_c;
+import abc.aspectj.types.InterTypeMethodInstance_c;
 
 public class AspectMethods extends NodeVisitor {
 
@@ -79,6 +87,29 @@ public class AspectMethods extends NodeVisitor {
 			MethodDecl md = ifpcd.exprMethod(nf,ts,(List) formals.peek(), (ParsedClassType) container.peek()); // construct method for expression in if(..)
 			((List)methods.peek()).add(md);
 			return ifpcd.liftMethod(nf); // replace expression by method call
+		}
+		if (n instanceof Field) {
+			Field f = (Field) n;
+			if (f.fieldInstance() instanceof InterTypeFieldInstance_c) {
+				InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) f.fieldInstance();
+				return f.fieldInstance(itfi.mangled()).name(itfi.mangled().name());
+			}
+			return n;
+		}
+		if (n instanceof IntertypeFieldDecl_c) {
+			IntertypeFieldDecl_c itfd = (IntertypeFieldDecl_c) n;
+			return itfd.accessChange(); // mangle name if private
+		}
+		if (n instanceof Call) {
+			Call c = (Call) n;
+			if (c.methodInstance() instanceof InterTypeMethodInstance_c) {
+				InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) c.methodInstance();
+				return c.methodInstance(itmi.mangled()).name(itmi.mangled().name());
+			}
+		}
+		if (n instanceof IntertypeMethodDecl_c) {
+			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
+			return itmd.accessChange();
 		}
 		if (n instanceof AdviceDecl) {
 			formals.pop();

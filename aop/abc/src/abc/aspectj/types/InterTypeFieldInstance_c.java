@@ -7,12 +7,14 @@
 package abc.aspectj.types;
 
 import polyglot.util.Position;
+import polyglot.util.UniqueID;
 
 import polyglot.types.ClassType;
 import polyglot.types.TypeSystem;
 import polyglot.types.Flags;
 import polyglot.types.ReferenceType;
 import polyglot.types.Type;
+import polyglot.types.FieldInstance;
 
 import polyglot.ext.jl.types.FieldInstance_c;
 
@@ -23,6 +25,7 @@ import polyglot.ext.jl.types.FieldInstance_c;
 public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTypeMemberInstance {
 	
 	protected ClassType origin;
+	protected FieldInstance mangled;
 	
 	public InterTypeFieldInstance_c(TypeSystem ts, Position pos,
 						ClassType origin,
@@ -30,10 +33,19 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 						Flags flags, Type type, String name) {
 		 super(ts, pos, container, flags, type, name);
 	 	this.origin = origin;
+		//		prepare for later transformation to mangled form:
+		if (flags.isPrivate()){
+			Flags newFlags = flags.clearPrivate().set(Flags.PUBLIC);
+			String mangledName = UniqueID.newID("private$"+name);
+			mangled = flags(newFlags).name(mangledName);
+		} else mangled = this;  // no mangling
 	 }
 	
 	public ClassType origin() {
 		return origin;
 	}
 
+	public FieldInstance mangled() {
+		return mangled;
+	}
 }

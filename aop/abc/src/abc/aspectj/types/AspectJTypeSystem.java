@@ -5,6 +5,7 @@ import polyglot.util.Position;
 
 
 import polyglot.types.ClassType;
+import polyglot.types.ConstructorInstance;
 import polyglot.types.MethodInstance;
 import polyglot.types.FieldInstance;
 import polyglot.types.ReferenceType;
@@ -34,5 +35,15 @@ public interface AspectJTypeSystem extends JjTypeSystem {
 	public FieldInstance interTypeFieldInstance(
 										  Position pos, ClassType origin,
 										  ReferenceType container, Flags flags,
-							             Type type, String name);
+							              Type type, String name);
+	
+	public MethodInstance interTypeMethodInstance(Position pos,ClassType origin,
+												ReferenceType container, Flags flags,
+												Type returnType, String name,
+												List argTypes, List excTypes);
+	
+	public ConstructorInstance interTypeConstructorInstance(Position pos,ClassType origin,
+													ClassType container, Flags flags,
+													List argTypes, List excTypes);
+							              
 }

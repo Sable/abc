@@ -72,13 +72,38 @@ public class AspectJTypeSystem_c
 						   returnType, name, argTypes, excTypes);
 		}	
 	
-		public FieldInstance interTypeFieldInstance(
-		                                  Position pos, ClassType origin,
-										  ReferenceType container, Flags flags,
-							  Type type, String name) {
-			   assert_(container);
-			   assert_(type);
-		   return new InterTypeFieldInstance_c(this, pos, origin, container, flags, type, name);
+	public FieldInstance interTypeFieldInstance(
+		                                 	Position pos, ClassType origin,
+										  	ReferenceType container, Flags flags,
+							  				Type type, String name) {
+		assert_(origin);
+		assert_(container);
+		assert_(type);
+		return new InterTypeFieldInstance_c(this, pos, origin, container, flags, type, name);
+	}
+	
+	public MethodInstance interTypeMethodInstance(Position pos,ClassType origin,
+													ReferenceType container, Flags flags,
+													Type returnType, String name,
+													List argTypes, List excTypes){
+		assert_(origin);
+		assert_(container);
+		assert_(returnType);
+		assert_(argTypes);
+		assert_(excTypes);
+		return new InterTypeMethodInstance_c(this, pos, origin, container, flags,
+		  										returnType, name, argTypes, excTypes);
+														
+	}
+	
+	public ConstructorInstance interTypeConstructorInstance(Position pos,ClassType origin,
+														ClassType container, Flags flags,
+														List argTypes, List excTypes) {
+		assert_(origin);
+		assert_(container);
+		assert_(argTypes);
+		assert_(excTypes);
+		return new InterTypeConstructorInstance_c(this,pos,origin,container,flags,argTypes,excTypes);														
 	}
 		   
     protected boolean isAccessible(MemberInstance mi, ClassType ctc) {

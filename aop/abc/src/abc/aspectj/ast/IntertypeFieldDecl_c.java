@@ -2,12 +2,18 @@ package abc.aspectj.ast;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Formal;
+import polyglot.ast.Field;
+import polyglot.ast.Local;
+import polyglot.ast.Return;
 import polyglot.ast.Expr;
 import polyglot.ast.Node;
+import polyglot.ast.Assign;
+
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
 import polyglot.util.Position;
@@ -19,11 +25,14 @@ import polyglot.ext.jl.ast.FieldDecl_c;
 
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.InterTypeFieldInstance_c;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo
 {
     protected TypeNode host;
+    protected FieldInstance hostInstance;
+
 
     public IntertypeFieldDecl_c(Position pos,
                                 Flags flags,
@@ -75,12 +84,16 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			// need to make a copy because the container has changed
 			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
 			
-			FieldInstance fi = ts.interTypeFieldInstance(position(),(ClassType) fieldInstance().container(), // origin
-			                                                                                                (ReferenceType) ht, 
-			                                                                                                fieldInstance().flags(),
-																											fieldInstance().type(),
-																											fieldInstance().name());
-	   	 	((ParsedClassType)ht).addField(fi);
+			InterTypeFieldInstance_c fi = 
+			  (InterTypeFieldInstance_c)
+			  ts.interTypeFieldInstance(position(),(ClassType) fieldInstance().container(), // origin
+			                            (ReferenceType) ht, 
+			                            fieldInstance().flags(),
+										fieldInstance().type(),
+										fieldInstance().name());
+	   	 	((ParsedClassType)ht).addField(fi); // add field for type checking
+	   	 	
+	   	 	
 		}
         return am.bypassChildren(this);
     }
@@ -101,7 +114,25 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 
         w.write(";");
     }
-
+    
+    /**
+     * @author Oege de Moor
+     * change private intertype field decl into public,
+     * mangling the name.
+     */
+    public IntertypeFieldDecl accessChange() {
+    	if (flags().isPrivate()) {
+    		ParsedClassType ht = (ParsedClassType) host.type();
+    		InterTypeFieldInstance_c fi = (InterTypeFieldInstance_c) ht.fieldNamed(name());
+    		ht.fields().remove(fi); // remove old instance from host type    		
+    		FieldInstance mi = fi.mangled();  // retrieve the mangled instance 		
+    		ht.addField(mi); // add new instance to host type   		
+    		return (IntertypeFieldDecl) name(mi.name()).fieldInstance(mi).flags(mi.flags());
+    	}
+    	return this;
+    }
+    
+   
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
 		System.out.println("IFD host: "+host.toString());
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig

@@ -18,6 +18,7 @@ import polyglot.types.*;
 
 import polyglot.ext.jl.ast.ConstructorDecl_c;
 
+import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.*;
 
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
@@ -71,12 +72,19 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {
-		   // need to change the container
-		   ConstructorInstance ci = constructorInstance().container((ClassType)ht);
+		   AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
+		   ConstructorInstance ci = ts.interTypeConstructorInstance(position(),
+		   							(ClassType) constructorInstance().container(),
+		   							(ClassType) ht,
+		   							constructorInstance().flags(),
+		   							constructorInstance().formalTypes(),
+		   							constructorInstance().throwTypes());
+		   
 	  	  ((ParsedClassType)ht).addConstructor(ci);
 		}
         return am.bypassChildren(this);
     }
+    
 
     /** Duplicate most of the things for ConstructorDecl here to avoid comparing
      *  the name against the contaning class.

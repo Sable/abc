@@ -17,12 +17,15 @@ import polyglot.types.*;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
 
+import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.visit.*;
 
 public class IntertypeMethodDecl_c extends MethodDecl_c
     implements IntertypeMethodDecl, ContainsAspectInfo
 {
     protected TypeNode host;
+    protected InterTypeMethodInstance_c itMethodInstance;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -67,13 +70,41 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     }
 
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
-	Type ht = host.type();
-	if (ht instanceof ParsedClassType) {
-		MethodInstance mi = methodInstance().container((ReferenceType)ht);
-	    ((ParsedClassType)ht).addMethod(mi);
-	}
+		Type ht = host.type();
+		if (ht instanceof ParsedClassType) {
+			AspectJTypeSystem ts = (AspectJTypeSystem) am.typeSystem();
+			
+			MethodInstance mi = ts.interTypeMethodInstance(position(),
+		                                	               	(ClassType) methodInstance().container(),
+		                                               		(ReferenceType)ht,
+		                                              		methodInstance().flags(),
+		                                               		methodInstance().returnType(),
+		                                               		methodInstance().name(),
+		                                               		methodInstance().formalTypes(),
+		                                               		methodInstance().throwTypes());
+	    	((ParsedClassType)ht).addMethod(mi);
+	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
+		}
         return am.bypassChildren(this);
     }
+    
+	
+	/**
+	* @author Oege de Moor
+	* change private intertype field decl into public,
+	* mangling the name.
+	*/
+	public IntertypeMethodDecl accessChange() {
+		if (flags().isPrivate()) {
+			ParsedClassType ht = (ParsedClassType) host.type();
+			ht.fields().remove(itMethodInstance); // remove old instance from host type    		
+			MethodInstance mmi = itMethodInstance.mangled();  // retrieve the mangled instance 		
+			ht.addMethod(mmi); // add new instance to host type   		
+			return (IntertypeMethodDecl) name(mmi.name()).methodInstance(mmi).flags(mmi.flags());
+		}
+		return this;
+	}
+    
 
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		if (flags().isProtected())
