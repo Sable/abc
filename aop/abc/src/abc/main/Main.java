@@ -604,14 +604,17 @@ public class Main {
             }
             Options.global = options;
             Compiler compiler = createCompiler(ext);
-
+	        error_queue = compiler.errorQueue(); 
+	        
             AbcTimer.mark("Create polyglot compiler");
 	    try {
 		if (!compiler.compile(aspect_sources)) {
 		    throw new CompilerFailedException("Compiler failed.");
 		}
 	    } finally {
-		error_queue = compiler.errorQueue(); 
+	   	// we need the error queue in the frontend, too, to generate warnings,
+	   	// so this assignment was moved up.
+		// error_queue = compiler.errorQueue(); 
 	    }
 		abortIfErrors();
 

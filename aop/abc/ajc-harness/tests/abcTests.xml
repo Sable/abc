@@ -6067,6 +6067,7 @@
         	<ajcmessage kind="warning" line="30"/>
                 <message kind="error" line="26"/>
                 <message kind="error" line="26"/>
+                <message kind="warning" line="30"/>
         </compile>
     </ajc-test>
 
