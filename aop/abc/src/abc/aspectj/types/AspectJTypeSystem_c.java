@@ -149,21 +149,11 @@ public class AspectJTypeSystem_c
     }
     
     public boolean refHostOfITD(AJContext c, Typed qualifier, MemberInstance mi) {
-		/* return !(!c.inInterType() 
+	   return !(!c.inInterType() 
 					|| c.staticInterType()      // not so sure about this
 					|| (c.nested() && qualifier == null) // and this
 					|| (c.inInterType() && qualifier != null && 
-						c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))); */
-		return c.inInterType() && 
-		       (!(qualifier != null && 
-		       	  qualifier instanceof polyglot.ast.TypeNode &&
-		          c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))
-		        || 
-		        !(qualifier == null && c.nested())
-		        ||
-		        !c.staticInterType()
-		        ||
-		        (mi != null && mi.container() == c.hostClass()));
+						c.currentClass().hasEnclosingInstance(qualifier.type().toClass())));  
     }
     
 	public Context createContext() {

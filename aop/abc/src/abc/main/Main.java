@@ -172,7 +172,7 @@ public class Main {
         // Print out Soot time stats, if Soot -time flag on.   
         Timers.v().totalTimer.end();
         if (soot.options.Options.v().time())
-          Timers.v().printProfilingInformation();
+	    Timers.v().printProfilingInformation();
 
         // Print out abc timer information
         AbcTimer.report();
