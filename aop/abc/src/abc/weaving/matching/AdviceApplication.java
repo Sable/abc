@@ -110,7 +110,7 @@ public abstract class AdviceApplication {
 			    sm.addAdviceApplication(mal,ad,residue);
 			
 		    } else {
-			if(MyDebug.v.matcherWarnUnimplemented)
+			if(abc.main.Debug.v.matcherWarnUnimplemented)
 			    System.err.println("Got a null pointcut");
 		    }
 		}
