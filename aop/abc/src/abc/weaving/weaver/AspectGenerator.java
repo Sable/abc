@@ -17,6 +17,7 @@ public class AspectGenerator {
         cl.addField( instance );
         generateAspectOfBody(cl);
         generateClinitBody(cl);
+        generateHasAspectBody(cl);
     }
 
     private void generateAspectOfBody( SootClass cl ) {
@@ -48,7 +49,15 @@ public class AspectGenerator {
     }
 
     private void generateHasAspectBody(SootClass cl){
-        SootMethod hasAspect = cl.getMethodByName("hasAspect");
+        SootMethod hasAspect;
+        if (!cl.declaresMethod("boolean hasAspect()")){
+            hasAspect = new SootMethod("hasAspect", new ArrayList(), BooleanType.v(), Modifier.PUBLIC | Modifier.STATIC);
+            cl.addMethod(hasAspect);
+        }
+        else {
+            hasAspect = cl.getMethodByName("hasAspect");
+        }
+
         Body b = Jimple.v().newBody(hasAspect);
         hasAspect.setActiveBody(b);
 
