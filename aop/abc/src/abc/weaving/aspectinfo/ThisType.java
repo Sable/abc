@@ -31,7 +31,7 @@ public class ThisType extends ThisAny {
 
     public boolean equivalent(Pointcut otherpc) {
 	if (otherpc instanceof ThisType) {
-	    othertype = ((ThisType)otherpc).getType();
+	    AbcType othertype = ((ThisType)otherpc).getType();
 	    return (othertype.equals(type));
 	} else return false;
     }

@@ -45,7 +45,7 @@ public class TargetVar extends TargetAny {
 
     public boolean equivalent(Pointcut otherpc) {
 	if (otherpc instanceof TargetVar) {
-	    othervar = ((TargetVar)otherpc).getVar();
+	    Var othervar = ((TargetVar)otherpc).getVar();
 	    return (othervar.equals(var));
 	} else return false;
     }

@@ -44,7 +44,7 @@ public class ThisVar extends ThisAny {
 
     public boolean equivalent(Pointcut otherpc) {
 	if (otherpc instanceof ThisVar) {
-	    othervar = ((ThisVar)otherpc).getVar();
+	    Var othervar = ((ThisVar)otherpc).getVar();
 	    return (othervar.equals(var));
 	} else return false;
     }

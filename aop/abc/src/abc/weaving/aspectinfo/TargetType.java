@@ -30,7 +30,7 @@ public class TargetType extends TargetAny {
 
     public boolean equivalent(Pointcut otherpc) {
 	if (otherpc instanceof TargetType) {
-	    othertype = ((TargetType)otherpc).getType();
+	    AbcType othertype = ((TargetType)otherpc).getType();
 	    return (othertype.equals(type));
 	} else return false;
     }
