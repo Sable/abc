@@ -45,6 +45,7 @@ import polyglot.ast.IntLit;
 import polyglot.ast.CharLit;
 import polyglot.ast.FloatLit;
 import polyglot.ast.Local;
+import polyglot.ast.Term;
 
 
 import polyglot.types.Flags;
@@ -390,6 +391,7 @@ public class AdviceDecl_c extends MethodDecl_c
 				TypeSystem ts = tc.typeSystem();
 				throw new SemanticException("type \"" + t + "\" is not a subclass of \" +" +					                        ts.Throwable() + "\".", spec.returnVal().type().position());
 			}
+	   
 		}
 		
 		pc.checkFormals(formals);
@@ -577,6 +579,13 @@ public class AdviceDecl_c extends MethodDecl_c
 	return this;
     }
     
+    
+	public Term entry() {
+		   return listEntry(formals(), (retval == null ?
+		                                              (body()==null? this : body().entry()) :
+		                                               retval.entry()));
+	 }
+	   
 	/**
 	  * Visit this term in evaluation order.
 	  */
