@@ -3083,8 +3083,12 @@
     </ajc-test>
 
     <ajc-test num="320" dir="design/intro"
-      title="initial tests for new introduction style" keywords="from-design">
-        <compile files="Simple.java"/>
+      title="initial tests for new introduction style" keywords="from-design"
+      abccomment="we signal itd inits without a specific order">
+        <compile files="Simple.java">
+            <message kind="warning" line="67"/>
+            <message kind="warning" line="67"/>
+        </compile>
         <run class="Simple"/>
     </ajc-test>
 
@@ -5051,8 +5055,11 @@
 
     <ajc-test num="580" dir="new" pr="555"
       title="inner classes of privileged aspects cannot see target class private members"
+      abccomment="we give a warning about unspecified init order. ODM 12/08/04"
       keywords="from-resolved_10rc3">
-        <compile files="InnerClassInPrivilegedAspect.java"/>
+        <compile files="InnerClassInPrivilegedAspect.java">
+             <message kind="warning" line="109"/>
+        </compile>
         <run class="InnerClassInPrivilegedAspect"/>
     </ajc-test>
 
