@@ -52,4 +52,15 @@ public abstract class ShadowMatch {
     public ContextValue getThisContextValue(SootMethod method) {
         return method.isStatic() ? null : new This();
     }
+
+    public boolean supportsBefore() {
+	return true;
+    }
+    public boolean supportsAfter() {
+	return true;
+    }
+    public boolean supportsAround() {
+	return supportsBefore() && supportsAfter();
+    }
+
 }

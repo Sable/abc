@@ -21,4 +21,5 @@ public abstract class AbstractAdviceSpec extends Syntax implements AdviceSpec {
     public AdviceDecl getAdvice() {
 	return advice;
     }
+
 }

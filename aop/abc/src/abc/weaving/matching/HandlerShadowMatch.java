@@ -50,4 +50,8 @@ public class HandlerShadowMatch extends ShadowMatch {
         mal.addStmtAdvice(aa);
 	return aa;
     }
+
+    public boolean supportsAfter() {
+	return false;
+    }
 }

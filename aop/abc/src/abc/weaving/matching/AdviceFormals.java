@@ -16,7 +16,9 @@ public class AdviceFormals implements WeavingEnv {
     }
 
     public WeavingVar getWeavingVar(Var v) {
-	return new AdviceFormal(ad.getFormalIndex(v.getName()));
+	return new AdviceFormal
+	    (ad.getFormalIndex(v.getName()),
+	     ad.getFormalType(v.getName()).getSootType());
     }
 
     public AbcType getAbcType(Var v) {

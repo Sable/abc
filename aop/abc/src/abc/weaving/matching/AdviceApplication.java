@@ -86,11 +86,11 @@ public abstract class AdviceApplication {
 	sb.append(prefix+"---"+"\n");
     }
 
-    private static void doStatement(GlobalAspectInfo info,
-				    MethodAdviceList mal,
-				    SootClass cls,
-				    SootMethod method,
-				    MethodPosition pos) {
+    private static void doShadows(GlobalAspectInfo info,
+				  MethodAdviceList mal,
+				  SootClass cls,
+				  SootMethod method,
+				  MethodPosition pos) {
 	
 	Iterator shadowIt;
 	for(shadowIt=ShadowType.shadowTypesIterator();
@@ -105,6 +105,7 @@ public abstract class AdviceApplication {
 		for(adviceIt=info.getAdviceDecls().iterator();
 		    adviceIt.hasNext();) {
 		    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
+		    // cache this in the AdviceDecl
 		    WeavingEnv we=new AdviceFormals(ad);
 	    
 		    Pointcut pc=ad.getPointcut();
@@ -113,7 +114,12 @@ public abstract class AdviceApplication {
 		    // implemented
 		    if(pc!=null) {
 			Residue residue=pc.matchesAt(we,cls,method,sm);
-			
+
+			// manual short-circuit logic
+			if(!NeverMatch.neverMatches(residue))
+			    residue=AndResidue.construct
+				(residue,ad.getAdviceSpec().matchesAt(we,sm));
+
 			if(false) 
 			    System.out.println("residue: "+residue);
 			
@@ -168,7 +174,7 @@ public abstract class AdviceApplication {
 	MethodAdviceList mal=new MethodAdviceList();
 
 	// Do whole body shadows
-	doStatement(info,mal,cls,method,new WholeMethodPosition(method));
+	doShadows(info,mal,cls,method,new WholeMethodPosition(method));
 	
 	// Do statement shadows
 	Chain stmtsChain=method.getActiveBody().getUnits();
@@ -180,8 +186,8 @@ public abstract class AdviceApplication {
 		current=next) {
 
 		next=(Stmt) stmtsChain.getSuccOf(current);
-		doStatement(info,mal,cls,method,new StmtMethodPosition(method,current));
-		doStatement(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
+		doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
+		doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
 	    }
 	}
 	
@@ -194,7 +200,7 @@ public abstract class AdviceApplication {
 		currentTrap!=null;
 		currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
 		
-		doStatement(info,mal,cls,method,new TrapMethodPosition(method,currentTrap));
+		doShadows(info,mal,cls,method,new TrapMethodPosition(method,currentTrap));
 	}
 
 
