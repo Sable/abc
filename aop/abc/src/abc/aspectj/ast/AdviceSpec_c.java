@@ -54,6 +54,10 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
     	return returnVal;
     }
 
+    public void setReturnType(TypeNode rt) {
+	returnType = rt;
+    }
+
    public String kind() {
    		return "advice";
    }

@@ -423,6 +423,10 @@ public class AdviceDecl_c extends MethodDecl_c
 	if (hasJoinPointStaticPart) jpsp = --lastpos;
 	if (hasEnclosingJoinpoint) ejp = --lastpos;
 
+	// Since the spec is not visited, we copy the (checked)
+	// return type node from the advice declaration
+	spec.setReturnType(returnType());
+
 	abc.weaving.aspectinfo.AdviceDecl ad =
 	    new abc.weaving.aspectinfo.AdviceDecl
 	    (spec.makeAIAdviceSpec(),
