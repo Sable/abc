@@ -1,5 +1,5 @@
 
-package abc.aspectj.ast;
+package abc.aspectj.extension;
 
 import polyglot.util.Position;
 
@@ -14,6 +14,7 @@ import polyglot.types.TypeSystem;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.AmbiguityRemover;
 
+import abc.aspectj.ast.*;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectJTypeSystem;
 

@@ -10,7 +10,9 @@ import polyglot.types.SemanticException;
 import polyglot.util.*;
 import java.util.*;
 import abc.aspectj.ast.*;
+import abc.aspectj.extension.*;
 import polyglot.ext.jl.parse.Name;
+
 
 import soot.javaToJimple.jj.ast.JjNodeFactory_c;
 

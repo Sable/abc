@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package abc.aspectj.ast;
+package abc.aspectj.extension;
 
 import java.util.List;
 import java.util.Iterator;
@@ -38,7 +38,9 @@ import abc.aspectj.types.AJContext;
 
 import abc.aspectj.visit.AspectMethods;
 
+import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.IntertypeMethodDecl_c;
+import abc.aspectj.ast.MakesAspectMethods;
 
 /**
  * @author oege

@@ -1,5 +1,4 @@
-
-package abc.aspectj.ast;
+package abc.aspectj.extension;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import polyglot.ext.jl.ast.Call_c;
 
 import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.HostSpecial_c;
+import abc.aspectj.ast.IntertypeDecl;
 import abc.aspectj.ast.MakesAspectMethods;
 
 import abc.aspectj.types.AspectJTypeSystem;

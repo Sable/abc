@@ -3,6 +3,7 @@ package abc.aspectj.ast;
 import java.util.List;
 
 import abc.aspectj.ast.AspectBody;
+import abc.aspectj.extension.AJClassBody_c;
 import polyglot.ast.ClassBody;
 import polyglot.ext.jl.ast.ClassBody_c;
 import polyglot.util.Position;

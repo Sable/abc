@@ -1,5 +1,5 @@
 
-package abc.aspectj.ast;
+package abc.aspectj.extension;
 
 import polyglot.ast.Disamb;
 import polyglot.ast.Receiver;

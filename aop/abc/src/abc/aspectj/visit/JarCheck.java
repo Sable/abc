@@ -19,7 +19,7 @@ import polyglot.frontend.Source;
 import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
 
-import abc.aspectj.ast.AJClassBody_c;
+import abc.aspectj.extension.AJClassBody_c;
 import abc.aspectj.types.AspectJTypeSystem;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;

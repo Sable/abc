@@ -4,7 +4,7 @@
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-package abc.aspectj.ast;
+package abc.aspectj.extension;
 
 import java.util.List;
 import java.util.Stack;
@@ -37,6 +37,7 @@ import polyglot.visit.TypeChecker;
 import polyglot.util.Position;
 
 import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AspectType;
 import abc.aspectj.visit.AspectMethods;

@@ -1,5 +1,5 @@
 
-package abc.aspectj.ast;
+package abc.aspectj.extension;
 
 import java.util.List;
 
@@ -16,6 +16,7 @@ import polyglot.util.Position;
 
 import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.ast.MakesAspectMethods;
+import abc.aspectj.ast.HostConstructorCall_c;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
