@@ -2,7 +2,7 @@ import org.aspectj.testing.Tester;
 
 import java.io.IOException;
 
-public class ExceptionsCF1 {
+public class ExceptionsCF2 {
     public static void main(String[] args) {
         C c = new C();
         c.foo();  // ERR: can't throw IOException here

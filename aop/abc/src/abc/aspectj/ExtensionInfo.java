@@ -27,6 +27,7 @@ import java.io.*;
 public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     public static final polyglot.frontend.Pass.ID COLLECT_SOURCE_FILES = new polyglot.frontend.Pass.ID("collect-source-files");
+    public static final polyglot.frontend.Pass.ID CHECK_PACKAGE_NAMES = new polyglot.frontend.Pass.ID("check-package-names");
 
     public static final polyglot.frontend.Pass.ID INIT_CLASSES = new polyglot.frontend.Pass.ID("init-classes");
 
@@ -170,8 +171,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     protected void passes_parse_and_clean(List l, Job job)
     {
         l.add(new ParserPass(Pass.PARSE,compiler,job));
-	
-        l.add(new VisitorPass(Pass.BUILD_TYPES, job, new AJTypeBuilder(job, ts, nf))); 
+
+        l.add(new VisitorPass(Pass.BUILD_TYPES, job, new AJTypeBuilder(job, ts, nf)));
+
         l.add(new GlobalBarrierPass(Pass.BUILD_TYPES_ALL, job));
         l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
@@ -186,6 +188,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(COLLECT_ASPECT_NAMES, job, new AspectNameCollector(aspect_names)));
         l.add(new VisitorPass(BUILD_HIERARCHY, job, new HierarchyBuilder(this)));
         l.add(new GlobalBarrierPass(HIERARCHY_BUILT, job));
+
+	l.add(new CheckPackageNames(CHECK_PACKAGE_NAMES,job));
         l.add(new VisitorPass(EVALUATE_PATTERNS, job, new NamePatternEvaluator(this)));
         if (abc.main.Debug.v().namePatternMatches) {
             l.add(new VisitorPass(TEST_PATTERNS, job, new PatternTester(this)));

@@ -467,7 +467,9 @@ public class Main {
 	} catch(CompilerFailedException e) {
 	    throw e;
 	} catch(InternalCompilerError e) {
-	    abortIfErrors();
+	    // Polyglot adds something to the error queue for InternalCompilerErrors, 
+	    // and we only want to ignore the error if there are *other* errors
+	    abortIfErrors(1);
 	    throw e;
         } catch(Throwable e) {
 	    abortIfErrors();
@@ -476,7 +478,11 @@ public class Main {
     }
 
     private void abortIfErrors() throws CompilerFailedException {
-        if(error_queue!=null && error_queue.hasErrors()) {
+	abortIfErrors(0);
+    }
+
+    private void abortIfErrors(int n) throws CompilerFailedException {
+        if(error_queue!=null && error_queue.errorCount()>n) {
             error_queue.flush();
             throw new CompilerFailedException("Compiler failed.");
         }

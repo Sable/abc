@@ -1,4 +1,4 @@
-public class MultipleIntros {
+public class MultipleIntros2 {
     public static void main(String[] args) { new C().publicM(); }
 }
 
