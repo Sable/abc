@@ -8,6 +8,7 @@ import polyglot.visit.*;
 import java.util.*;
 
 import abc.aspectj.ast.IsSingleton;
+import abc.aspectj.types.AspectType;
 
 public class IsSingleton_c extends PerClause_c implements IsSingleton
 {
@@ -22,6 +23,10 @@ public class IsSingleton_c extends PerClause_c implements IsSingleton
         w.write("issingleton()"); // ajc requires the brackets
     }
 
+	public int kind() {
+		return AspectType.PER_SINGLETON;
+	}
+	
     public abc.weaving.aspectinfo.Per makeAIPer() {
 	return new abc.weaving.aspectinfo.Singleton(position());
     }

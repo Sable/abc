@@ -7,6 +7,8 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.types.AspectType;
+
 public class PerTarget_c extends PerClause_c implements PerTarget
 {
 
@@ -18,6 +20,11 @@ public class PerTarget_c extends PerClause_c implements PerTarget
         this.pc = pc;
     }
 
+
+	public int kind() {
+		return AspectType.PER_TARGET;
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("pertarget (");
         print(pc, w, tr);

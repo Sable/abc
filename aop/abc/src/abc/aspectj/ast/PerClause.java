@@ -12,5 +12,7 @@ public interface PerClause extends Node
 {
     /* new stuff to be added */
 
+	int kind();
+	
     public Per makeAIPer();
 }

@@ -40,8 +40,10 @@ import polyglot.ext.jl.ast.ClassDecl_c;
 
 import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AspectType;
 
 import abc.aspectj.visit.ContainsAspectInfo;
+import abc.aspectj.visit.AJTypeBuilder;
 
 import abc.weaving.aspectinfo.*;
 
@@ -58,7 +60,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
     protected MethodInstance hasAspectInstance;
     protected MethodInstance aspectOfInstance;
 
-    private boolean per_object;
+   
 
     public AspectDecl_c(Position pos, boolean is_privileged, Flags flags, String name,
                         TypeNode superClass, List interfaces, PerClause per, AspectBody body) {
@@ -66,7 +68,6 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	           AspectJFlags.aspectclass(is_privileged ? AspectJFlags.privilegedaspect(flags): flags),
 	           name,superClass,interfaces,body);
          this.per = per;
-	 this.per_object = per instanceof PerThis || per instanceof PerTarget;
     }
     
     
@@ -84,7 +85,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		TypeNode nab = nf.CanonicalTypeNode(position(),ts.NoAspectBound()).type(ts.NoAspectBound());
 		List thrws = new LinkedList(); thrws.add(nab);
 		List args = new LinkedList(); 
-		if (per_object) {
+		if (((AspectType)type()).perObject()) {
 			TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object()).type(ts.Object());
 			LocalInstance li = ts.localInstance(position(),Flags.NONE,ts.Object(),"thisparam");
 			polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam").localInstance(li);
@@ -104,7 +105,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
     	Block bl = nf.Block(position()).append(nf.Return(position(),b));
     	
     	List args = new LinkedList();
-		if (per_object) {
+		if (((AspectType)type()).perObject()) {
 		    TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object()).type(ts.Object());
 		    LocalInstance li = ts.localInstance(position(),Flags.NONE,ts.Object(),"thisparam");
 		    polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam").localInstance(li);
@@ -128,17 +129,39 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		} else return this;
     }
     
+	
+	
 	public NodeVisitor buildTypesEnter(TypeBuilder tb) throws SemanticException {
+		AJTypeBuilder ajtb = (AJTypeBuilder) tb;
+	   	ajtb = ajtb.pushAspect(position(), flags, name, (per == null ? AspectType.PER_NONE : per.kind()));
+        
+		AspectType ct = (AspectType) ajtb.currentClass();
 
-		return super.buildTypesEnter(tb);    
-	} 
+	   // Member classes of interfaces are implicitly public and static.
+	   if (ct.isMember() && ct.outer().flags().isInterface()) {
+		   ct.flags(ct.flags().Public().Static());
+	   }
+
+	   // Member interfaces are implicitly static. 
+	   if (ct.isMember() && ct.flags().isInterface()) {
+		   ct.flags(ct.flags().Static());
+	   }
+
+	   // Interfaces are implicitly abstract. 
+	   if (ct.flags().isInterface()) {
+		   ct.flags(ct.flags().Abstract());
+	   }
+
+	   return ajtb;
+	}
+
 	
 	public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 	if (!flags().isAbstract()) {
 		TypeSystem ts = am.typeSystem();
 		List hasAspectparams = new ArrayList();
 		List aspectOfparams = new ArrayList();
-		if (per_object) {
+		if (((AspectType)type()).perObject()) {
 			hasAspectparams.add(ts.Object());
 			aspectOfparams.add(ts.Object());
 		}
@@ -240,7 +263,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	gai.addAspect(a);
 		    
 	List fl = new ArrayList();
-	if (per_object) {
+	if (((AspectType) type()).perObject()) {
 	    fl.add(new Formal(AbcFactory.AbcType(soot.RefType.v("java.lang.Object")), "obj", position()));
 	}
 

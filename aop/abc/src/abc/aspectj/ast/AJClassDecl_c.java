@@ -33,7 +33,7 @@ import polyglot.visit.TypeChecker;
 
 import polyglot.util.Position;
 
-import abc.aspectj.types.AspectJFlags;
+import abc.aspectj.types.AspectType;
 
 /**
  * @author oege
@@ -119,8 +119,8 @@ public class AJClassDecl_c extends ClassDecl_c {
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		ClassDecl n = (ClassDecl) super.typeCheck(tc);
 		if (superClass() != null &&
-		     AspectJFlags.isAspectclass(n.type().toClass().superType().toClass().flags()) &&
-		    !AspectJFlags.isAspectclass(n.type().toClass().flags()))
+		     (n.type().toClass().superType() instanceof AspectType) &&
+		    !(n.type() instanceof AspectType))
 		   throw new SemanticException("A normal class cannot extend an aspect",superClass.position());
 		return n;
 	}

@@ -6,6 +6,8 @@ import java.util.Stack;
 import java.util.Iterator;
 
 import polyglot.frontend.ExtensionInfo;
+import polyglot.frontend.Source;
+
 import polyglot.util.InternalCompilerError;
 import polyglot.util.Position;
 import polyglot.types.*;
@@ -528,6 +530,14 @@ public class AspectJTypeSystem_c
 	public List findAcceptableMethods(ReferenceType container, String name,
 											List argTypes, ClassType currClass) throws SemanticException {
 		return super.findAcceptableMethods(container,name,argTypes,currClass);
+	}
+	
+	public final AspectType createAspectType(Source fromSource, int perKind) {
+		  return createAspectType(defaultClassInitializer(), fromSource, perKind);
+	}
+
+	public AspectType createAspectType(LazyClassInitializer init, Source fromSource, int perKind) {
+		  return new AspectType_c(this, init, fromSource, perKind);
 	}
 
 }

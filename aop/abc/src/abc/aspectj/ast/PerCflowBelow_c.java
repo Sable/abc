@@ -7,6 +7,7 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.types.AspectType;
 
 public class PerCflowBelow_c extends PerClause_c implements PerCflowBelow
 {
@@ -28,6 +29,9 @@ public class PerCflowBelow_c extends PerClause_c implements PerCflowBelow
 		return this;
 	}
 
+	public int kind() {
+		return AspectType.PER_CFLOWBELOW;
+	}
 
 	public Node visitChildren(NodeVisitor v) {
 		Pointcut pc = (Pointcut) visitChild(this.pc, v);

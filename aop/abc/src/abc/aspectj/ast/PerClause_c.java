@@ -10,6 +10,8 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+import abc.aspectj.types.AspectType;
+
 public abstract class PerClause_c extends Node_c implements PerClause
 {
 
@@ -25,6 +27,10 @@ public abstract class PerClause_c extends Node_c implements PerClause
 		ClassType type = c.currentClass();
 		addMembers(c, type, new HashSet(), inherit);
 		return c;
+	}
+	
+	public int kind() {
+		return AspectType.PER_NONE;
 	}
 	
 	protected void addMembers(Context c, ReferenceType type,

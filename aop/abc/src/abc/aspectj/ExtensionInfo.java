@@ -131,7 +131,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
 	l.add(new ParserPass(Pass.PARSE,compiler,job));
 	
-	l.add(new VisitorPass(Pass.BUILD_TYPES, job, new TypeBuilder(job, ts, nf))); 
+	l.add(new VisitorPass(Pass.BUILD_TYPES, job, new AJTypeBuilder(job, ts, nf))); 
 	l.add(new GlobalBarrierPass(Pass.BUILD_TYPES_ALL, job));
 	l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
 			      new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));

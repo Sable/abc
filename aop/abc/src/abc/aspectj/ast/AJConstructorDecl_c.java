@@ -16,7 +16,7 @@ import polyglot.util.Position;
 import polyglot.visit.TypeChecker;
 import polyglot.ast.Node;
 
-import abc.aspectj.types.AspectJFlags;
+import abc.aspectj.types.AspectType;
 
 
 /**
@@ -41,7 +41,7 @@ public class AJConstructorDecl_c extends ConstructorDecl_c {
 
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		Node n = super.typeCheck(tc);
-		if (AspectJFlags.isAspectclass(this.constructorInstance().container().toClass().flags()) &&
+		if ((constructorInstance().container() instanceof AspectType) &&
 		    constructorInstance().formalTypes().size() > 0)
 		    throw new SemanticException("Aspects can only have nullary constructors",position());
 		return n;

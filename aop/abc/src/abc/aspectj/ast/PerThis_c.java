@@ -7,6 +7,7 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.types.AspectType;
 
 public class PerThis_c extends PerClause_c implements PerThis
 {
@@ -17,6 +18,10 @@ public class PerThis_c extends PerClause_c implements PerThis
     {
 	super(pos);
         this.pc = pc;
+    }
+    
+    public int kind() {
+    	return AspectType.PER_THIS;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {

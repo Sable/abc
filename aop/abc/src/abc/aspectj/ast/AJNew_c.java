@@ -22,7 +22,7 @@ import polyglot.visit.TypeChecker;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AJContext;
-import abc.aspectj.types.AspectJFlags;
+import abc.aspectj.types.AspectType;
 
 import polyglot.ext.jl.ast.New_c;
 import polyglot.util.Position;
@@ -148,7 +148,7 @@ public class AJNew_c extends New_c implements New {
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		Node n = super.typeCheck(tc);
 		if ((tn!=null) && (tn.type() instanceof ClassType) &&
-		     AspectJFlags.isAspectclass(tn.type().toClass().flags()))
+		    (tn.type() instanceof AspectType))
 		   throw new SemanticException("Cannot instantiate an aspect with new.");
 		return n;
 	}

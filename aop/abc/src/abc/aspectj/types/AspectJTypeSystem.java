@@ -13,6 +13,8 @@ import polyglot.types.Flags;
 import polyglot.types.Type;
 import polyglot.types.MemberInstance;
 
+import polyglot.frontend.Source;
+
 import polyglot.ast.Typed;
 
 import abc.aspectj.ast.AdviceSpec;
@@ -50,5 +52,8 @@ public interface AspectJTypeSystem extends JjTypeSystem {
 													List argTypes, List excTypes);
 
 	public boolean refHostOfITD(AJContext c, MemberInstance mi); 	
-	public boolean refHostOfITD(AJContext c, Typed qualifier); 						              
+	public boolean refHostOfITD(AJContext c, Typed qualifier); 		
+	
+	public AspectType createAspectType(Source source, int perKind);
+					              
 }
