@@ -2,6 +2,7 @@ package abc.weaving.weaver;
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
+import soot.javaToJimple.*;
 import java.util.*;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
@@ -46,6 +47,28 @@ public class AspectGenerator {
         units.addLast( Jimple.v().newThrowStmt( r1 ) );
     }
 
+    private void generateHasAspectBody(SootClass cl){
+        SootMethod hasAspect = cl.getMethodByName("hasAspect");
+        Body b = Jimple.v().newBody(hasAspect);
+        hasAspect.setActiveBody(b);
+
+        LocalGenerator lg = new LocalGenerator(b);
+        Local r0 = lg.generateLocal(cl.getType());
+        
+        StaticFieldRef ref = Jimple.v().newStaticFieldRef(cl.getFieldByName("ajc$perSingletonInstance"));
+        
+        Chain units = b.getUnits(); 
+        
+        units.addLast( Jimple.v().newAssignStmt( r0, ref));
+        ReturnStmt ret0 = Jimple.v().newReturnStmt( IntConstant.v(0) );
+
+        units.addLast( Jimple.v().newIfStmt( Jimple.v().newEqExpr( r0, NullConstant.v() ), ret0 ));
+        
+        units.addLast( Jimple.v().newReturnStmt( IntConstant.v(1) ) );
+
+        units.addLast( ret0);
+    }
+    
     private void generateClinitBody( SootClass cl ) {
         SootMethod postClinit = new SootMethod( "ajc$postClinit", new ArrayList(), VoidType.v(), Modifier.PRIVATE | Modifier.STATIC );
         cl.addMethod( postClinit );
