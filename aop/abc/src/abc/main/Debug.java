@@ -72,6 +72,8 @@ public class Debug {
 
     public boolean dontCheckExceptions=false;
 
+    public boolean dontUseCflowCounter=true;
+
     // Config stuff - to be moved, probably (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
 }
