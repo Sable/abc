@@ -15,9 +15,13 @@ public class IfResidue extends Residue {
     private SootMethod impl;
     private List/*<WeavingVar>*/ args;
 
-    public IfResidue(SootMethod impl,List args) {
+    private IfResidue(SootMethod impl,List args) {
 	this.impl=impl;
 	this.args=args;
+    }
+
+    public static IfResidue construct(SootMethod impl,List args) {
+	return new IfResidue(impl,args);
     }
 
     public String toString() {

@@ -60,6 +60,7 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* ParsedClassType */ container; // Keep track of current container
     private Stack /* IntertypeDecl */ itd;     
     private Stack /* Expr */ lhss; /* left-hand sides of assignments */ 
+    private Stack /* PCIf */ pcifs;
 
     private int cflowdepth; // Put in this pass for lack of a better place for it
     
@@ -77,6 +78,7 @@ public class AspectMethods extends NodeVisitor {
 		this.container = new Stack();
 		this.itd = new Stack();
 		this.lhss = new Stack();
+		this.pcifs = new Stack();
 	}
 
         public void pushClass()
@@ -193,6 +195,22 @@ public class AspectMethods extends NodeVisitor {
         {
                 lhss.pop();
         }
+
+    public void pushPCIf(PCIf pcif) {
+	pcifs.push(pcif);
+    }
+
+    public PCIf pcif() {
+	return (PCIf) pcifs.peek();
+    }
+
+    public boolean isPCIf() {
+	return !pcifs.isEmpty();
+    }
+
+    public void popPCIf() {
+	pcifs.pop();
+    }
 	
 	public NodeVisitor enter(Node n)
         {

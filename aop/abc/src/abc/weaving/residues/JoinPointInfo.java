@@ -1,15 +1,13 @@
 package abc.weaving.residues;
 
-import polyglot.util.InternalCompilerError;
 import soot.*;
-import soot.jimple.Jimple;
-import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ShadowMatch;
 
 public class JoinPointInfo extends ContextValue {
 
-    private abc.weaving.matching.ShadowMatch sm;
+    private ShadowMatch sm;
 
-    public JoinPointInfo(abc.weaving.matching.ShadowMatch sm) {
+    public JoinPointInfo(ShadowMatch sm) {
 	this.sm=sm;
     }
 

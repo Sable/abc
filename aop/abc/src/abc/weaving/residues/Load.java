@@ -32,7 +32,6 @@ public class Load extends Residue {
 		Stmt begin,
 		Stmt fail,
 		WeavingContext wc) {
-	
 	    return variable.set(localgen,units,begin,wc,value.getSootValue());
 	}
 

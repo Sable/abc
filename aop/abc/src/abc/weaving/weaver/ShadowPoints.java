@@ -144,9 +144,11 @@ public class ShadowPoints {
 	    constrArgs.add(argsVal);
 	    
 	    
-	    thisJoinPoint=lg.generateLocal(RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint");
+	    thisJoinPoint=lg.generateLocal
+		(RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint");
 	    
-	    SootClass factoryclass=Scene.v().loadClassAndSupport("org.aspectj.runtime.reflect.Factory");
+	    SootClass factoryclass=Scene.v().loadClassAndSupport
+		("org.aspectj.runtime.reflect.Factory");
 	    
 	    Stmt makeJP=Jimple.v().newAssignStmt
 		(thisJoinPoint,

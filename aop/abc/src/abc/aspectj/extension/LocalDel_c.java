@@ -25,6 +25,14 @@ public class LocalDel_c extends JL_c implements MakesAspectMethods
             currentAdvice.joinpointFormals(m);
         }
 
+        if (visitor.isPCIf()) {
+            Local m = (Local) node();
+            PCIf currentPCIf = visitor.pcif();
+
+            // add joinpoint formals where necessary
+            currentPCIf.joinpointFormals(m);
+        }
+
         return node();
     }
 }

@@ -67,13 +67,13 @@ public class AdviceDecl_c extends MethodDecl_c
 {
     protected AdviceSpec spec;
     protected Pointcut pc;
-    protected boolean hasJoinPoint;
-    protected boolean hasJoinPointStaticPart;
-    protected boolean hasEnclosingJoinPointStaticPart;
+    protected boolean hasJoinPoint=false;
+    protected boolean hasJoinPointStaticPart=false;
+    protected boolean hasEnclosingJoinPointStaticPart=false;
 
-    protected LocalInstance thisJoinPointInstance;
-    protected LocalInstance thisJoinPointStaticPartInstance;
-    protected LocalInstance thisEnclosingJoinPointStaticPartInstance;
+    protected LocalInstance thisJoinPointInstance=null;
+    protected LocalInstance thisJoinPointStaticPartInstance=null;
+    protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
     
     protected Set/*<CodeInstance>*/ proceedContainers;
     

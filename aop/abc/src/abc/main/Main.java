@@ -561,9 +561,15 @@ public class Main {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
-                if( !method.isConcrete() ) continue;
-                // System.out.println("retrieve "+method+ " from "+cl);
-                method.retrieveActiveBody();
+		try {
+		    if( !method.isConcrete() ) continue;
+		    // System.out.println("retrieve "+method+ " from "+cl);
+		    method.retrieveActiveBody();
+		} catch(InternalCompilerError e) {
+		    throw e;
+		} catch(Throwable e) {
+		    throw new InternalCompilerError("Exception while processing "+method.getSignature(),e);
+		}
             }
         }
         AbcTimer.mark("Retrieving bodies");

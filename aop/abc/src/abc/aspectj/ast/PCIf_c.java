@@ -77,6 +77,53 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		return child.type();
 	}
 
+    protected boolean hasJoinPoint=false;
+    protected boolean hasJoinPointStaticPart=false;
+    protected boolean hasEnclosingJoinPointStaticPart=false;
+
+    public boolean hasJoinPointStaticPart() {
+    	return hasJoinPointStaticPart;
+    }
+    
+    public boolean hasJoinPoint() {
+    	return hasJoinPoint;
+    }
+    
+    public boolean hasEnclosingJoinPointStaticPart() {
+    	return hasEnclosingJoinPointStaticPart;
+    }
+
+    public void joinpointFormals(Local n) {
+    	hasJoinPoint = hasJoinPoint || (n.name().equals("thisJoinPoint"));
+    	hasJoinPointStaticPart = hasJoinPointStaticPart || (n.name().equals("thisJoinPointStaticPart"));
+    	hasEnclosingJoinPointStaticPart = hasEnclosingJoinPointStaticPart 
+	    || (n.name().equals("thisEnclosingJoinPointStaticPart"));
+    }
+
+    protected LocalInstance thisJoinPointInstance=null;
+    protected LocalInstance thisJoinPointStaticPartInstance=null;
+    protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
+
+    private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
+    	if (thisJoinPointInstance==null)
+    		thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
+    	return thisJoinPointInstance;
+    }
+    
+    private LocalInstance thisJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+	if (thisJoinPointStaticPartInstance==null)
+	    thisJoinPointStaticPartInstance = ts.localInstance
+		(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisJoinPointStaticPart");
+	return thisJoinPointStaticPartInstance;
+    }
+	 
+    private LocalInstance thisEnclosingJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+	if (thisEnclosingJoinPointStaticPartInstance==null)
+	    thisEnclosingJoinPointStaticPartInstance = ts.localInstance
+		(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisEnclosingJoinPointStaticPart");
+	return thisEnclosingJoinPointStaticPartInstance;
+    }
+
 	public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, ParsedClassType container){
 		Return ret = nf.Return(position(),expr);
 		Block bl = nf.Block(position()).append(ret);
@@ -93,6 +140,30 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		while (fi.hasNext()) {
 		    Formal f = (Formal)fi.next();
 		    formaltypes.add(f.type().type());
+		}
+		if (hasJoinPointStaticPart()) {
+		    TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
+		    Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
+		    LocalInstance li = thisJoinPointStaticPartInstance(ts);
+		    jpsp = jpsp.localInstance(li);
+		    args.add(jpsp);
+		    formaltypes.add(ts.JoinPointStaticPart());
+		}
+		if (hasJoinPoint()) {
+		    TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
+		    Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
+		    LocalInstance li = thisJoinPointInstance(ts);
+		    jp = jp.localInstance(li);
+		    args.add(jp);
+		    formaltypes.add(ts.JoinPoint());
+		}
+		if (hasEnclosingJoinPointStaticPart()) {
+		    TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
+		    Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisEnclosingJoinPointStaticPart");
+		    LocalInstance li = thisEnclosingJoinPointStaticPartInstance(ts);
+		    jp = jp.localInstance(li);
+		    args.add(jp);
+		    formaltypes.add(ts.JoinPoint());
 		}
 		methodName = UniqueID.newID("if");
 		MethodDecl md = nf.MethodDecl(position(),Flags.STATIC.Public(),retType,methodName,args,throwTypes,bl);
@@ -112,6 +183,12 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	}
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
+	int lastpos = methodDecl.formals().size();
+	int jp = -1, jpsp = -1, ejp = -1;
+	if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
+	if (hasJoinPoint) jp = --lastpos;
+	if (hasJoinPointStaticPart) jpsp = --lastpos;
+
 	MethodCategory.register(methodDecl, MethodCategory.IF_EXPR);
 
 	List vars = new ArrayList();
@@ -121,12 +198,30 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	    vars.add(new abc.weaving.aspectinfo.Var(f.name(), f.position()));
 	}
 	return new abc.weaving.aspectinfo.If
-	    (vars, AbcFactory.MethodSig(methodDecl),position);
+	    (vars, AbcFactory.MethodSig(methodDecl),jp,jpsp,ejp,position);
+    }
+
+    public Context enterScope(Context c) {
+	// FIXME: the super class doesn't do anything, but for maintainability
+	// should we do super.enterScope(c).pushBlock(); ?
+
+	Context nc = c.pushBlock(); 
+		
+	// inside an if pointcut, thisJoinPoint etc is in scope
+	AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
+	LocalInstance jp = thisJoinPointInstance(ts);
+	nc.addVariable(jp);
+	LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
+	nc.addVariable(sjp);
+	LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
+	nc.addVariable(ejpsp);
+	
+	return nc;
     }
 
     public void aspectMethodsEnter(AspectMethods visitor)
     {
-        // do nothing
+	visitor.pushPCIf(this);
     }
 
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
@@ -135,6 +230,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
         // construct method for expression in if(..)
         MethodDecl md = exprMethod(nf, ts, visitor.formals(), visitor.container());
         visitor.addMethod(md);
+	visitor.popPCIf();
         return liftMethod(nf); // replace expression by method call
     }
 }
