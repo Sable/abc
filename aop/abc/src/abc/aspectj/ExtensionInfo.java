@@ -242,7 +242,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     protected void passes_fold_and_checkcode(List l, Job job)
     {
-        // l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
+        l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
         l.add(new VisitorPass(Pass.TYPE_CHECK, job, new TypeChecker(job, ts, nf)));
         l.add(new VisitorPass(Pass.REACH_CHECK, job, new ReachChecker(job, ts, nf)));
         // Exceptions are now checked after weaving, because of softening
