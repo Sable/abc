@@ -74,4 +74,8 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 	return new abc.weaving.aspectinfo.CflowBelow
 	    (pc.makeAIPointcut(),position(),depth);
     }
+
+    public String toString() {
+	return "cflowbelow("+pc+")";
+    }
 }

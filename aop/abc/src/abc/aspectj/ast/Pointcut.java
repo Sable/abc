@@ -18,8 +18,8 @@ public interface Pointcut extends Node
     void printSubExpr(Pointcut pc, boolean associative,
                       CodeWriter w, PrettyPrinter pp);
                       
-    Collection mayBind() throws SemanticException;
-    Collection mustBind();
+    Collection/*<String>*/ mayBind() throws SemanticException;
+    Collection/*<String>*/ mustBind();
     void checkFormals(List formals) throws SemanticException;
 
     abc.weaving.aspectinfo.Pointcut makeAIPointcut();
