@@ -85,8 +85,6 @@ public class CflowAnalysisBridge {
 
 
         debug("starting cflow analysis");
-        debug("skipping cflow analysis");
-        if(false){
         BDDCflow cflowAnalysis = new BDDCflow();
         for( Iterator stackIt = stackInfoMap.keySet().iterator(); stackIt.hasNext(); ) {
             final CflowSetup stack = (CflowSetup) stackIt.next();
@@ -115,7 +113,6 @@ public class CflowAnalysisBridge {
                     }
                 }
             }
-        }
         }
 
 
