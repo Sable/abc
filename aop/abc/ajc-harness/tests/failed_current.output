@@ -117,25 +117,6 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
 
 
-Running test 667: pureJava/assert coverage tests in one package [requires 1.4]
-Commandline: abc -d pureJava -source 1.4 pureJava/AssertInOnePackage.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:620)
-	at abc.testing.TestCase.runTest(TestCase.java:287)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.util.NoSuchElementException: No such class: InnerStaticInitializerOnHelperI$11
-	at abc.weaving.aspectinfo.AbcFactory.sootClassToClassType(AbcFactory.java:93)
-	at abc.aspectj.visit.PCStructure.insertClassAndSuperclasses(PCStructure.java:163)
-	at abc.aspectj.visit.PCStructure.updateWithAllSootClasses(PCStructure.java:178)
-	at abc.aspectj.visit.PatternMatcher.updateWithAllSootClasses(PatternMatcher.java:125)
-	at abc.main.Main.weave(Main.java:834)
-	at abc.main.Main.run(Main.java:549)
-	... 3 more
-FAIL: Test 667: "pureJava/assert coverage tests in one package [requires 1.4]" failed.
-
-
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 Compilation produced an unexpected number of errors: 1, should be 0
@@ -168,14 +149,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:620)
+	at abc.main.Main.run(Main.java:643)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:712)
-	at abc.main.Main.loadSourceRoots(Main.java:729)
-	at abc.main.Main.run(Main.java:540)
+	at abc.main.Main.findSourcesInDir(Main.java:724)
+	at abc.main.Main.loadSourceRoots(Main.java:741)
+	at abc.main.Main.run(Main.java:563)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -197,8 +178,8 @@ polyglot.util.InternalCompilerError: exception while resolving C.B
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:102)
 	at soot.SootResolver.resolveClass(SootResolver.java:88)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:782)
-	at abc.main.Main.run(Main.java:545)
+	at abc.main.Main.compile(Main.java:794)
+	at abc.main.Main.run(Main.java:568)
 	at abc.testing.TestCase.runTest(TestCase.java:287)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -239,5 +220,14 @@ Actual errors found:
 Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error.
 Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error.
 FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
+
+
+Running test 988: abctests/bugs/separate compilation and references to compile time constants
+Commandline: abc -d abctests/bugs abctests/bugs/ConstantInit.java 
+Commandline: abc -cp abctests/bugs:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d abctests/bugs abctests/bugs/ConstantUse.java 
+Compilation produced an unexpected number of errors: 1, should be 0
+Actual errors found: 
+Semantic Error at abctests/bugs/ConstantUse.java:6,8-28: Case label must be an integral constant.
+FAIL: Test 988: "abctests/bugs/separate compilation and references to compile time constants" failed.
 
 

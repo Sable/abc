@@ -30,11 +30,6 @@
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="assert coverage tests in one package [requires 1.4]" num="667" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
-        <run vm="1.4" class="AssertInOnePackage"></run>
-    </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">
           <dir-changes added="pack.ImportInnerFromInterfaceImplementor"></dir-changes>
@@ -89,6 +84,11 @@
 <ajc-test title="Matching int[].clone()" num="986" dir="abctests/bugs" abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.         Both work fine with 'call(* Object.clone())'.">
 	<compile files="IntArray.java"></compile>
 	<run class="IntArray"></run>
+    </ajc-test>
+<ajc-test title="separate compilation and references to compile time constants" num="988" dir="abctests/bugs">
+        <compile files="ConstantInit.java"></compile>
+        <compile includeClassesDir="true" files="ConstantUse.java"></compile>
+        <run class="ConstantUse"></run>
     </ajc-test>
  
 </suite>
