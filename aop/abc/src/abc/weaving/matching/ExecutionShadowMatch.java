@@ -136,22 +136,23 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 
     public ContextValue getReturningContextValue() {
 
-	if(container.getName().equals(SootMethod.staticInitializerName) ||
-	   container.getName().equals(SootMethod.constructorName))
-	    return super.getReturningContextValue();  // null value
+		if (container.getName().equals(SootMethod.staticInitializerName)
+				|| container.getName().equals(SootMethod.constructorName))
+			return super.getReturningContextValue(); // null value
 
-	Stmt nop=Restructure.restructureReturn(container);
-	Chain units=container.getActiveBody().getUnits();
-	Stmt ret=(Stmt) units.getSuccOf(nop);
+		Stmt nop = Restructure.restructureReturn(container);
+		Chain units = container.getActiveBody().getUnits();
+		Stmt ret = (Stmt) units.getSuccOf(nop);
 
-	if(ret instanceof ReturnVoidStmt)
-	    return super.getReturningContextValue();  // null value
-	else if(ret instanceof ReturnStmt)
-	    return new JimpleValue((Immediate)((ReturnStmt) ret).getOp());
-	else throw new RuntimeException
-		 ("restructureReturn didn't restructure returns correctly");
-	   
-    }
+		if (ret instanceof ReturnVoidStmt)
+			return super.getReturningContextValue(); // null value
+		else if (ret instanceof ReturnStmt)
+			return new JimpleValue((Immediate) ((ReturnStmt) ret).getOp());
+		else
+			throw new RuntimeException(
+					"restructureReturn didn't restructure returns correctly: " + ret.getClass() + "(" + ret + ")");
+
+	}
 
     public boolean supportsAround() {
 	if(isStaticInitializer() && container.getDeclaringClass().isInterface()) return false;

@@ -51,7 +51,7 @@ import abc.weaving.aspectinfo.MethodCategory;
 public class Restructure {
 
     public static void reset() {
-	returns=new Hashtable();
+	//returns=new Hashtable();
 	//thiscopies=new Hashtable();
 	invokeassignstmts=new Hashtable();
     }
@@ -174,7 +174,7 @@ public class Restructure {
 	  }
       }
 
-  private static Map/*<Body,Stmt>*/ returns=new Hashtable();
+  //private static Map/*<Body,Stmt>*/ returns=new Hashtable();
 
   /** Given a SootMethod, restructure its body so that the body ends
    *  with   L1:nop; return;    or   L1:nop; return(<local>);.
@@ -182,91 +182,91 @@ public class Restructure {
    *  goto L1.   Return a reference to the nop at L1.
    */
   public static Stmt restructureReturn(SootMethod method) {
-    Body b = method.getActiveBody();
-    if(returns.containsKey(b)) return ((Stmt) returns.get(b));
-    LocalGenerator localgen = new LocalGenerator(b);
-    Stmt endnop = Jimple.v().newNopStmt();
-    Chain units = b.getUnits();  // want a patching chain here, to make sure
-                             // gotos are rewired to go to the inserted nop
-    Stmt last = (Stmt) units.getLast();
+		Body b = method.getActiveBody();
+		//if (returns.containsKey(b)) {			
+		//	return ((Stmt) returns.get(b));
+		//}
+		LocalGenerator localgen = new LocalGenerator(b);
+		Stmt endnop = Jimple.v().newNopStmt();
+		Chain units = b.getUnits(); // want a patching chain here, to make sure
+		// gotos are rewired to go to the inserted nop
+		Stmt last = (Stmt) units.getLast();
 
-    Local ret = null;
-    if( last instanceof ReturnStmt ) 
-      { ReturnStmt lastRet = (ReturnStmt) last;
-	Value op = lastRet.getOp();
-        if (op instanceof Local) // return(<local>)
-          ret = (Local) op; // remember this local
-	else if (op instanceof Constant) // return(<constant>)
-	  { // change to ret := <constant>; return(ret); 
-	    Type returnType = method.getReturnType();
-	    ret = localgen.generateLocal(returnType);
-	    units.insertBefore(Jimple.v().newAssignStmt(ret,op),lastRet); 
-            lastRet.setOp(ret);
-	  }
-	else
-	  throw new InternalCompilerError(
-	                  "Expecting return of <local> or <constant>");
-      } 
-    else if( last instanceof ReturnVoidStmt ) 
-      { // do nothing 
-      } 
-    else 
-      { Type returnType = method.getReturnType();
-        if(returnType instanceof VoidType) {
-	   units.insertAfter( Jimple.v().newReturnVoidStmt(), last );
-        } else {
-           ret = localgen.generateLocal(returnType);
-           units.insertAfter( Jimple.v().newReturnStmt(ret), last );
-        }
-      }
+		Local ret = null;
+		if (last instanceof ReturnStmt) {
+			ReturnStmt lastRet = (ReturnStmt) last;
+			Value op = lastRet.getOp();
+			if (op instanceof Local) // return(<local>)
+				ret = (Local) op; // remember this local
+			else if (op instanceof Constant) // return(<constant>)
+			{ // change to ret := <constant>; return(ret);
+				Type returnType = method.getReturnType();
+				ret = localgen.generateLocal(returnType);
+				units.insertBefore(Jimple.v().newAssignStmt(ret, op), lastRet);
+				lastRet.setOp(ret);
+			} else
+				throw new InternalCompilerError(
+						"Expecting return of <local> or <constant>");
+		} else if (last instanceof ReturnVoidStmt) { // do nothing
+		} else {
+			Type returnType = method.getReturnType();
+			if (returnType instanceof VoidType) {
+				units.insertAfter(Jimple.v().newReturnVoidStmt(), last);
+			} else {
+				ret = localgen.generateLocal(returnType);
+				units.insertAfter(Jimple.v().newReturnStmt(ret), last);
+			}
+		}
 
-    // now the last stmt should always be return ret; or return;
-    if( units.getLast() instanceof ReturnStmt ) 
-      { ReturnStmt lastRet = (ReturnStmt) units.getLast();
-        if( lastRet.getOp() != ret ) 
-           throw new InternalCompilerError("Expecting last stmt to Return ret");
-      }  
-    else if ( !(units.getLast() instanceof ReturnVoidStmt ) ) 
-      { throw new InternalCompilerError(
-	           "Last stmt should be ReturnStmt or ReturnVoidStmt");
-      }
+		// now the last stmt should always be return ret; or return;
+		if (units.getLast() instanceof ReturnStmt) {
+			ReturnStmt lastRet = (ReturnStmt) units.getLast();
+			if (lastRet.getOp() != ret)
+				throw new InternalCompilerError(
+						"Expecting last stmt to Return ret");
+		} else if (!(units.getLast() instanceof ReturnVoidStmt)) {
+			throw new InternalCompilerError(
+					"Last stmt should be ReturnStmt or ReturnVoidStmt");
+		}
 
-    // insert the nop just before the return stmt
-    units.insertBefore( endnop, units.getLast() );
+		// insert the nop just before the return stmt
+		units.insertBefore(endnop, units.getLast());
 
-    resetTrapsEnd(b,(Stmt) units.getLast(),endnop);
+		resetTrapsEnd(b, (Stmt) units.getLast(), endnop);
 
-    // Look for returns in the middle of the method
-    Iterator it = units.snapshotIterator();
-    while( it.hasNext() ) 
-      { Stmt u = (Stmt) it.next();
-        if( u == units.getLast() ) continue;
-        if( u instanceof ReturnStmt ) 
-	  { ReturnStmt ur = (ReturnStmt) u;
-            units.insertBefore( 
-		Jimple.v().newAssignStmt( ret, ur.getOp() ), ur );
-           }
-        if( u instanceof ReturnVoidStmt  || u instanceof ReturnStmt) 
-	  { Stmt gotoStmt = Jimple.v().newGotoStmt(endnop);
-            units.swapWith( u, gotoStmt );
-            for( Iterator trIt = b.getTraps().iterator(); trIt.hasNext(); ) 
-	      { final Trap tr = (Trap) trIt.next();
-                for( Iterator boxIt = tr.getUnitBoxes().iterator(); 
-		    boxIt.hasNext(); ) 
-		  { final UnitBox box = (UnitBox) boxIt.next();
-                    if( box.getUnit() == u ) 
-                      box.setUnit( gotoStmt );
-                  } // each box in trap 
-              } // each trap
-	  } // if return stmt
-      } // each stmt in body
-    returns.put(b,endnop);
-    return(endnop);
-  }
+		// Look for returns in the middle of the method
+		Iterator it = units.snapshotIterator();
+		while (it.hasNext()) {
+			Stmt u = (Stmt) it.next();
+			if (u == units.getLast())
+				continue;
+			if (u instanceof ReturnStmt) {
+				ReturnStmt ur = (ReturnStmt) u;
+				units.insertBefore(Jimple.v().newAssignStmt(ret, ur.getOp()),
+						ur);
+			}
+			if (u instanceof ReturnVoidStmt || u instanceof ReturnStmt) {
+				Stmt gotoStmt = Jimple.v().newGotoStmt(endnop);
+				units.swapWith(u, gotoStmt);
+				for (Iterator trIt = b.getTraps().iterator(); trIt.hasNext();) {
+					final Trap tr = (Trap) trIt.next();
+					for (Iterator boxIt = tr.getUnitBoxes().iterator(); boxIt
+							.hasNext();) {
+						final UnitBox box = (UnitBox) boxIt.next();
+						if (box.getUnit() == u)
+							box.setUnit(gotoStmt);
+					} // each box in trap
+				} // each trap
+			} // if return stmt
+		} // each stmt in body
+		//returns.put(b, endnop);
+		return (endnop);
+	}
 
 
-  /** inline a call to this() if one exists, return a ConstructorInliningMap if an inlining
-   *  was done, null otherwise (no this() to inline).
+  /**
+   * inline a call to this() if one exists, return a ConstructorInliningMap if
+   * an inlining was done, null otherwise (no this() to inline).
    */
   public static ConstructorInliningMap inlineThisCall(SootMethod method){
         // assure body is a constructor

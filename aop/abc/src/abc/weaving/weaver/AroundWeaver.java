@@ -1738,6 +1738,26 @@ public class AroundWeaver {
 
 				
 				private Local findReturnedLocal() {
+					
+					Value v=adviceAppl.shadowmatch.getReturningContextValue().getSootValue();
+					
+					if (v instanceof Local) {
+						return (Local)v;
+					} else if (true){
+						LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
+						Type type=getAdviceReturnType();
+						if (type.equals(VoidType.v())) {
+							return null;
+						} else {
+							Local l=lg.generateLocal(type , "returnedLocal");
+							Stmt s=Jimple.v().newAssignStmt(l, v);
+							shadowMethodStatements.insertAfter(s, begin);
+							return l;
+						}
+					}
+					
+					// ***** the code below is unreachable *****
+					
 					Body shadowMethodBody = shadowMethod.getActiveBody();
 					if (abc.main.Debug.v().aroundWeaver) {
 						try {
@@ -1753,7 +1773,7 @@ public class AroundWeaver {
 					Stmt begin = adviceAppl.shadowmatch.sp.getBegin();
 					Stmt end = adviceAppl.shadowmatch.sp.getEnd();
 			
-					Local returnedLocal = null;
+					Local returnedLocal;// = null;
 					
 					Type objectType=Scene.v().getRefType("java.lang.Object");
 			
@@ -1778,6 +1798,8 @@ public class AroundWeaver {
 									Restructure.JavaTypeInfo.getDefaultValue(getAdviceReturnType()));
 								shadowMethodStatements.insertAfter(s, begin);
 								returnedLocal=l;			
+							} else {
+								returnedLocal=null;
 							}
 						} else {
 							ReturnStmt returnStmt;
@@ -1785,32 +1807,34 @@ public class AroundWeaver {
 								returnStmt = (ReturnStmt) shadowMethodStatements.getSuccOf(end);
 							} catch (Exception ex) {
 								debug(" " + Util.printMethod(shadowMethod));
-								throw new InternalAroundError("Expecting return statement after shadow " + "for execution advice in non-void method");
+								throw new InternalAroundError("Expecting return statement after shadow " + 
+										"for execution advice in non-void method");
 							}
 			
 						
 							// Create a new local inside the shadow.
 							// Assign the return value to that local, 
   						// 	and then return the local.
-							if (!(returnStmt.getOp() instanceof Local)) {							  
 							LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
-							Local l=lg.generateLocal(
-									shadowMethod.getReturnType(), "returnedLocal");
-							Stmt s=Jimple.v().newAssignStmt(l, 
-								returnStmt.getOp());
-							returnStmt.setOp(l);
-							shadowMethodStatements.insertBefore(s, end);
-							returnedLocal=l;	
+							
+							if (returnStmt.getOp() instanceof Local) {	
+								Local l=lg.generateLocal(
+										shadowMethod.getReturnType(), "tmp");
+								Stmt s=Jimple.v().newAssignStmt(l, 
+										returnStmt.getOp());
+								shadowMethodStatements.insertBefore(s, end);
+								s=Jimple.v().newAssignStmt( 
+										returnStmt.getOp(), l);
+								shadowMethodStatements.insertBefore(s, end);
 							} else {
-							LocalGeneratorEx lg=new LocalGeneratorEx(shadowMethodBody);
-							Local l=lg.generateLocal(
-									shadowMethod.getReturnType(), "tmp");
-							Stmt s=Jimple.v().newAssignStmt(l, 
-								returnStmt.getOp());
-							shadowMethodStatements.insertBefore(s, end);
-							s=Jimple.v().newAssignStmt( 
-									returnStmt.getOp(), l);
-							shadowMethodStatements.insertBefore(s, end);
+								Local l=lg.generateLocal(
+										shadowMethod.getReturnType(), "returnedLocal");
+								Stmt s=Jimple.v().newAssignStmt(l, 
+										returnStmt.getOp());
+								returnStmt.setOp(l);
+								
+								shadowMethodStatements.insertBefore(s, end);
+								//returnedLocal=l;	
 							}
 							//returnStmt.setOp(l);
 							
@@ -1853,10 +1877,10 @@ public class AroundWeaver {
 							    // but extenders might want things like ArrayRefs here too. Should check
 							    // the Jimple grammar to see if anything else would make sense here.
 
-							        if(!(rightOp instanceof Local || rightOp instanceof Constant)) {
-								        // violates the Jimple grammar
- 								        throw new InternalAroundError();
-       	                                                        }
+						        if(!(rightOp instanceof Local || rightOp instanceof Constant)) {
+							        // violates the Jimple grammar
+							        throw new InternalAroundError();
+   	                            }
 
 								
 								// special case: with return type object, set() returns null.
@@ -1896,11 +1920,15 @@ public class AroundWeaver {
 									Restructure.JavaTypeInfo.getDefaultValue(returnType));
 								shadowMethodStatements.insertAfter(s, begin);
 								returnedLocal=l;			
+							} else {
+								returnedLocal=null;															
 							}
 						} else {
 							// unexpected statement type
 							throw new InternalAroundError();
 						}
+					} else {
+						throw new InternalAroundError("Unkown type of advice application: " + adviceAppl.getClass());
 					}
 					return returnedLocal;
 				}
