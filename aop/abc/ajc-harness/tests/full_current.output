@@ -1,68 +1,25 @@
 Running test 7: base/test100/static and non-static before methods -- one file
 Commandline: abc -d base/test100 base/test100/Driver.java 
-this
-this
-this
-this
-this
 PASS: Test 7: "base/test100/static and non-static before methods -- one file" passed.
 
 
 Running test 8: base/test101/static and non-static before methods -- many files
 Commandline: abc -d base/test101 base/test101/Driver.java base/test101/Foo.java base/test101/Bar.java base/test101/Pos.java 
-this
-this
-this
-this
-this
 PASS: Test 8: "base/test101/static and non-static before methods -- many files" passed.
 
 
 Running test 9: base/test102/this redirection in non-static before methods
 Commandline: abc -d base/test102 base/test102/Driver.java 
-this
-this
 PASS: Test 9: "base/test102/this redirection in non-static before methods" passed.
 
 
 Running test 10: base/test103/DEPRECATED: introductions
 Commandline: abc -d base/test103 base/test103/Driver.java 
-this
-this
-this
-this
 PASS: Test 10: "base/test103/DEPRECATED: introductions" passed.
 
 
 Running test 11: base/test104/before constructors -- one file
 Commandline: abc -d base/test104 base/test104/Driver.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 11: "base/test104/before constructors -- one file" passed.
 
 
@@ -83,10 +40,6 @@ PASS: Test 14: "base/test107/make sure new weaves work inside of packages (again
 
 Running test 15: base/test108/Inheritance of class and aspect vars in weaves
 Commandline: abc -d base/test108 base/test108/Driver.java 
-this
-this
-this
-this
 PASS: Test 15: "base/test108/Inheritance of class and aspect vars in weaves" passed.
 
 
@@ -102,10 +55,6 @@ PASS: Test 17: "base/test110/Packaged aspects referring to packaged classes" pas
 
 Running test 18: base/test111/Inheritance of methods advised by aspects
 Commandline: abc -d base/test111 base/test111/Driver.java base/test111/SubClass.java base/test111/SuperClass.java base/test111/SuperAspect.java 
-this
-this
-this
-this
 PASS: Test 18: "base/test111/Inheritance of methods advised by aspects" passed.
 
 
@@ -121,8 +70,6 @@ PASS: Test 20: "base/test113/Initializers in Aspect and Class Bodies" passed.
 
 Running test 21: base/test114/Weaver Resolution of method names in method calls passed as args
 Commandline: abc -d base/test114 base/test114/Driver.java 
-this
-this
 PASS: Test 21: "base/test114/Weaver Resolution of method names in method calls passed as args" passed.
 
 
@@ -162,8 +109,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 base/test121/Driver.java 
-this
-creating: A@dd4383
+creating: A@1e5cd7a
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -187,12 +133,6 @@ PASS: Test 31: "base/test124/empty modifier pattern" passed.
 
 Running test 32: base/test125/Alpha conversion of argument names in designators
 Commandline: abc -d base/test125 base/test125/Driver.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 32: "base/test125/Alpha conversion of argument names in designators" passed.
 
 
@@ -223,14 +163,11 @@ PASS: Test 37: "base/test130/multiple arounds successfully intercept and return 
 
 Running test 38: base/test132/proper matching of overloaded constructors
 Commandline: abc -d base/test132 base/test132/Driver.java 
-this
 PASS: Test 38: "base/test132/proper matching of overloaded constructors" passed.
 
 
 Running test 39: base/test133/correct super call lookup for method().name()
 Commandline: abc -d base/test133 base/test133/Driver.java 
-this
-this
 PASS: Test 39: "base/test133/correct super call lookup for method().name()" passed.
 
 
@@ -241,13 +178,6 @@ PASS: Test 40: "base/test134/proper handling of formals in catch advice" passed.
 
 Running test 41: base/test135/proper values for thisJoinPoint attributes
 Commandline: abc -d base/test135 base/test135/Driver.java base/test135/JoinPointFields.java base/test135/TopFoo.java base/test135/pack/PackFoo.java base/test135/pack/JoinPointFields.java base/test135/pack/PackJoinPointFields.java 
-this
-this
-this
-this
-this
-this
-this
 call(void test135.TopFoo.bar(int, String))
 test135.TopFoo
 DONE: call(void test135.TopFoo.bar(int, String))
@@ -262,32 +192,11 @@ PASS: Test 41: "base/test135/proper values for thisJoinPoint attributes" passed.
 
 Running test 42: base/test136/supers, supers, supers
 Commandline: abc -d base/test136 base/test136/Driver.java 
-super
-this
-super
-super
-super
-this
-super
 PASS: Test 42: "base/test136/supers, supers, supers" passed.
 
 
 Running test 43: base/test137/operations on private and protected aspect members (++, -- in partciular)
 Commandline: abc -d base/test137 base/test137/Driver.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 43: "base/test137/operations on private and protected aspect members (++, -- in partciular)" passed.
 
 
@@ -313,7 +222,6 @@ PASS: Test 47: "base/test141/thisResultObject for primitives" passed.
 
 Running test 48: base/test142/introductions calling super.
 Commandline: abc -d base/test142 base/test142/Driver.java 
-this
 PASS: Test 48: "base/test142/introductions calling super." passed.
 
 
@@ -324,7 +232,6 @@ PASS: Test 49: "base/allow one argument calls even when there's a comma in the a
 
 Running test 50: new/advice on calls to static methods even works when called on super
 Commandline: abc -d new new/SuperStaticCallJoinPoint.java 
-super
 PASS: Test 50: "new/advice on calls to static methods even works when called on super" passed.
 
 
@@ -385,7 +292,6 @@ PASS: Test 61: "new/parenthesized string literals matching primitive type names"
 
 Running test 62: pureJava/anonInnerClass/anonymous inner class
 Commandline: abc -d pureJava/anonInnerClass pureJava/anonInnerClass/Driver.java 
-this
 PASS: Test 62: "pureJava/anonInnerClass/anonymous inner class" passed.
 
 
@@ -401,7 +307,6 @@ PASS: Test 64: "new/order of type declarations shouldn't matter" passed.
 
 Running test 65: pureJava/parsing of parenthesized 'this' (in returns)
 Commandline: abc -d pureJava pureJava/ReturnThis.java 
-this
 PASS: Test 65: "pureJava/parsing of parenthesized 'this' (in returns)" passed.
 
 
@@ -428,76 +333,11 @@ PASS: Test 69: "pureJava/Boundary base values can be parsed" passed.
 
 Running test 70: pureJava/State is passed correctly across nested annonymous inners
 Commandline: abc -d pureJava pureJava/NestedInners.java 
-this
-<anon subtype of java.lang.Object>.this
 PASS: Test 70: "pureJava/State is passed correctly across nested annonymous inners" passed.
 
 
 Running test 71: pureJava/?: expressions should typecheck in interesting ways
 Commandline: abc -d pureJava pureJava/TriTestTypecheck.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 71: "pureJava/?: expressions should typecheck in interesting ways" passed.
 
 
@@ -508,16 +348,11 @@ PASS: Test 72: "pureJava/cast expressions should allow casts to/from interfaces 
 
 Running test 73: pureJava/various anonymous inner classes plus super types tests
 Commandline: abc -d pureJava pureJava/InnerSuper.java 
-this
-this
-this
 PASS: Test 73: "pureJava/various anonymous inner classes plus super types tests" passed.
 
 
 Running test 74: new/Doesn't parse an array-returning method that throws an exception
 Commandline: abc -d new new/ArrayMethod.java 
-this
-this
 PASS: Test 74: "new/Doesn't parse an array-returning method that throws an exception" passed.
 
 
@@ -533,19 +368,11 @@ PASS: Test 76: "pureJava/Various comment syntaxes should be handled." passed.
 
 Running test 77: pureJava/abstractInner/Abstract inner classes across package boundaries
 Commandline: abc -d pureJava/abstractInner pureJava/abstractInner/C.java pureJava/abstractInner/pkg/A.java 
-this
 PASS: Test 77: "pureJava/abstractInner/Abstract inner classes across package boundaries" passed.
 
 
 Running test 78: pureJava/inner classes accessing outers and some more inner class names
 Commandline: abc -d pureJava pureJava/InnerAccess.java 
-C.this
-C.this
-C.this
-C.this
-Outer.Middle.Inner.this
-Outer.Middle.this
-Outer.this
 PASS: Test 78: "pureJava/inner classes accessing outers and some more inner class names" passed.
 
 
@@ -618,1083 +445,16 @@ PASS: Test 91: "pureJava/conflictingPackageNamesWithPackages/Looking in class Ja
 
 Running test 92: pureJava/Testing ternary operations.
 Commandline: abc -d pureJava pureJava/MultiTernaryOps.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 92: "pureJava/Testing ternary operations." passed.
 
 
 Running test 93: pureJava/Lifting locals in switch statements.
 Commandline: abc -d pureJava pureJava/SwitchStmtLocals.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 93: "pureJava/Lifting locals in switch statements." passed.
 
 
 Running test 94: pureJava/Getting confused when looking up method signatures
 Commandline: abc -d pureJava pureJava/MethodSigs.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-super
-super
-super
-super
-super
-super
-super
-super
-super
 PASS: Test 94: "pureJava/Getting confused when looking up method signatures" passed.
 
 
@@ -1715,12 +475,6 @@ PASS: Test 97: "pureJava/Checking character values with all the unicode chars." 
 
 Running test 98: pureJava/Trouble finding methods with the same name and different parameter types
 Commandline: abc -d pureJava pureJava/MethodsWithTheSameName.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 98: "pureJava/Trouble finding methods with the same name and different parameter types" passed.
 
 
@@ -1741,23 +495,16 @@ PASS: Test 101: "pureJava/Members with the same name as their package cause conf
 
 Running test 102: pureJava/Fully-qual'ed names with same start as variable names
 Commandline: abc -d pureJava pureJava/FullNames.java 
-this
-this
-this
 PASS: Test 102: "pureJava/Fully-qual'ed names with same start as variable names" passed.
 
 
 Running test 103: pureJava/Fully qualifying inner classes within annonymous classes causes problems.
 Commandline: abc -d pureJava pureJava/InnerClassesInAnnonymousClasses.java 
-this
 PASS: Test 103: "pureJava/Fully qualifying inner classes within annonymous classes causes problems." passed.
 
 
 Running test 104: pureJava/Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'
 Commandline: abc -d pureJava pureJava/MisplacedThisInAnnonymousInnerClasses.java 
-<anon subtype of java.lang.Object>.this
-<anon subtype of java.lang.Object>.this
-<anon subtype of java.lang.Object>.this
 PASS: Test 104: "pureJava/Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" passed.
 
 
@@ -1785,371 +532,11 @@ PASS: Test 108: "pureJava/Not lifting types correctly with bytes and shorts with
 
 Running test 109: pureJava/Not looking up methods inside of anonymous declarations correctly.
 Commandline: abc -d pureJava pureJava/AnonymousMethodLookup.java 
-this
 PASS: Test 109: "pureJava/Not looking up methods inside of anonymous declarations correctly." passed.
 
 
 Running test 110: pureJava/Resolving extended classes with array parameters
 Commandline: abc -d pureJava pureJava/ResolvingArrayParameters.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 110: "pureJava/Resolving extended classes with array parameters" passed.
 
 
@@ -2178,7 +565,6 @@ PASS: Test 114: "pureJava/Conflicting inner classes with interfaces." passed.
 Running test 115: new/Not binding constructor when using more than one compilation
 Commandline: abc -d new new/OuterAbstract_PR408.java 
 Commandline: abc -cp new:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new new/ExtendsOuterAbstract_PR408.java 
-this
 Commandline: abc -cp new:/usr/local/src/abc-dev/lib/abc-complete.jar:/usr/local/src/abc-dev/lib/abc-testing.jar:/usr/local/src/abc-dev/lib/abc-runtime.jar -d new new/ConstructorNotFound_PR408.java 
 PASS: Test 115: "new/Not binding constructor when using more than one compilation" passed.
 
@@ -2195,7 +581,6 @@ PASS: Test 117: "pureJava/default constructors seen by inner classes subtyping o
 
 Running test 118: pureJava/folding fields set to anonymous instances containing self-references
 Commandline: abc -d pureJava pureJava/AnonFolding.java 
-this
 PASS: Test 118: "pureJava/folding fields set to anonymous instances containing self-references" passed.
 
 
@@ -2217,7 +602,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@d32ebb
+InterfaceAndObject$1@ccedbd
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2234,9 +619,6 @@ PASS: Test 124: "pureJava/breaking out of a labeled block inside of an if" passe
 
 Running test 125: pureJava/abstractifying a method and getting it back through super
 Commandline: abc -d pureJava pureJava/Abstracts.java 
-super
-super
-this
 PASS: Test 125: "pureJava/abstractifying a method and getting it back through super" passed.
 
 
@@ -2247,9 +629,6 @@ PASS: Test 126: "new/package protected classes becoming public" passed.
 
 Running test 127: pureJava/Packages and static classes with the same name produce compile errors.
 Commandline: abc -d pureJava pureJava/PackagesAndStaticClassesWithTheSameName.java 
-this
-this
-this
 PASS: Test 127: "pureJava/Packages and static classes with the same name produce compile errors." passed.
 
 
@@ -2288,9 +667,6 @@ PASS: Test 134: "pureJava/Implicit this for new inner instance must be avaliable
 
 Running test 135: pureJava/Inners can reference protected fields of their outer's super.
 Commandline: abc -d pureJava pureJava/protectedFieldRefInInner/Main.java pureJava/protectedFieldRefInInner/p1/C.java 
-protectedFieldRefInInner.Main.this
-protectedFieldRefInInner.Main.this
-protectedFieldRefInInner.Main.this
 PASS: Test 135: "pureJava/Inners can reference protected fields of their outer's super." passed.
 
 
@@ -2323,13 +699,11 @@ PASS: Test 140: "pureJava/Primitives that special case for a constant arm should
 
 Running test 141: pureJava/Parenthesized true and false don't parse
 Commandline: abc -d pureJava pureJava/ParenKeywords.java 
-this
 PASS: Test 141: "pureJava/Parenthesized true and false don't parse" passed.
 
 
 Running test 142: pureJava/Field sets to public fields of private fields of enclosing types
 Commandline: abc -d pureJava pureJava/InnerFieldRef.java 
-InnerFieldRef.this
 PASS: Test 142: "pureJava/Field sets to public fields of private fields of enclosing types" passed.
 
 
@@ -2388,14 +762,11 @@ PASS: Test 153: "pureJava/test try/catch/finally statements" passed.
 
 Running test 154: pureJava/local types can be bound in the signatures of other local types
 Commandline: abc -d pureJava pureJava/LocalInners.java 
-this
 PASS: Test 154: "pureJava/local types can be bound in the signatures of other local types" passed.
 
 
 Running test 155: new/final constructor parameter causes incorrect compiler error
 Commandline: abc -d new new/FinalConstructorParm.java 
-this
-this
 PASS: Test 155: "new/final constructor parameter causes incorrect compiler error" passed.
 
 
@@ -2459,28 +830,16 @@ FAIL: Test 165: "pureJava/nameConflicts/type and package name conflicts caught a
 
 Running test 166: pureJava/flow analysis where final variable set in another constructor
 Commandline: abc -d pureJava pureJava/ConstructorFlow.java 
-this
-this
-this
-this
 PASS: Test 166: "pureJava/flow analysis where final variable set in another constructor" passed.
 
 
 Running test 167: new/Can construct inner classes using qualified expressions
 Commandline: abc -d new new/PR584.java 
-this
-this
-Foo.this
-Foo.this
 PASS: Test 167: "new/Can construct inner classes using qualified expressions" passed.
 
 
 Running test 168: new/protectedStatic/subclass unable to access protected static methods using type-qualified references
 Commandline: abc -d new/protectedStatic new/protectedStatic/SubClass.java new/protectedStatic/pack/SuperClass.java 
-this
-this
-this
-this
 PASS: Test 168: "new/protectedStatic/subclass unable to access protected static methods using type-qualified references" passed.
 
 
@@ -2509,64 +868,6 @@ PASS: Test 172: "new/packagePrefix/classes that are package prefixes are illegal
 
 Running test 173: new/introTypeMissing/valid type expressions for introduced type testing
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
 PASS: Test 173: "new/introTypeMissing/valid type expressions for introduced type testing" passed.
 
 
@@ -2578,13 +879,6 @@ PASS: Test 174: "new/introTypeMissing/CF expected when enclosing class superclas
 
 Running test 175: new/introTypeMissing/enclosing class may be used as this qualifier in inner class
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/TargetClassCP.java new/introTypeMissing/Util.java 
-this
-this
-SubClass.this
-SubClass.this
-SubClass.this
-SubClass.this
-SubClass.this
 PASS: Test 175: "new/introTypeMissing/enclosing class may be used as this qualifier in inner class" passed.
 
 
@@ -2649,9 +943,6 @@ PASS: Test 184: "new/invalid floating-point constant" passed.
 
 Running test 185: pureJava/anonymous inner classes with inner types
 Commandline: abc -d pureJava pureJava/AnonymousWithInner.java 
-this
-this
-AnonymousWithInner.this
 PASS: Test 185: "pureJava/anonymous inner classes with inner types" passed.
 
 
@@ -2668,38 +959,11 @@ PASS: Test 187: "new/subaspects/concrete aspect unable to access abstract packag
 
 Running test 188: new/super reference used to disambiguate names of different but compatible types
 Commandline: abc -d new new/SuperDisambiguatingType.java 
-this
-this
-super
-this
-this
-super
-this
-this
-super
-this
-this
-this
-super
-this
-super
-this
-this
-super
-this
-this
-super
-this
-this
-this
-super
-this
 PASS: Test 188: "new/super reference used to disambiguate names of different but compatible types" passed.
 
 
 Running test 189: pureJava/anonymous explicit inner constructors
 Commandline: abc -d pureJava pureJava/QualifiedNewCP.java 
-this
 m
 mi
 helper
@@ -2748,7 +1012,6 @@ PASS: Test 196: "new/final assignment in loop" passed.
 
 Running test 197: pureJava/private super access in inners
 Commandline: abc -d pureJava pureJava/PrivateSuperInnerAccess.java 
-super
 PASS: Test 197: "pureJava/private super access in inners" passed.
 
 
@@ -3572,9 +1835,6 @@ PASS: Test 331: "design/intro/declared exceptions are checked correctly on intro
 
 Running test 332: design/reflect/Joinpoint is not created for foo(String) when before() advice is present.
 Commandline: abc -d design/reflect design/reflect/SimpleAround1.java 
-this
-this
-this
 PASS: Test 332: "design/reflect/Joinpoint is not created for foo(String) when before() advice is present." passed.
 
 
@@ -3585,11 +1845,6 @@ PASS: Test 333: "design/eachobject/more tests of eachobject with some difficult 
 
 Running test 334: design/eachobject/eachobject: eachobject(receptions(...)) [eachobject]
 Commandline: abc -d design/eachobject design/eachobject/Tricky1.java 
-this
-this
-this
-this
-this
 PASS: Test 334: "design/eachobject/eachobject: eachobject(receptions(...)) [eachobject]" passed.
 
 
@@ -3600,12 +1855,6 @@ PASS: Test 335: "design/reflect/Checking new joinpoints" passed.
 
 Running test 336: design/eachobject/eachobject: simple test [eachobject] (still)
 Commandline: abc -d design/eachobject design/eachobject/Simple.java 
-this
-this
-super
-this
-this
-this
 PASS: Test 336: "design/eachobject/eachobject: simple test [eachobject] (still)" passed.
 
 
@@ -3646,9 +1895,6 @@ PASS: Test 343: "new/introducing extends and implements" passed.
 
 Running test 344: new/(related) aspect on interface
 Commandline: abc -d new new/AspectOnInterface.java 
-this
-this
-this
 PASS: Test 344: "new/(related) aspect on interface" passed.
 
 
@@ -3671,8 +1917,6 @@ PASS: Test 347: "new/advice on implied empty constructor" passed.
 
 Running test 348: new/advice on * *(..) not mapping to initializers
 Commandline: abc -d new new/InitializerAdvice.java 
-this
-this
 PASS: Test 348: "new/advice on * *(..) not mapping to initializers" passed.
 
 
@@ -3708,7 +1952,6 @@ PASS: Test 354: "new/aspect of eachobject(instanceof(Interface))" passed.
 
 Running test 355: new/finalMemInit/final member initialization broken with JDK before 1.1.8
 Commandline: abc -d new/finalMemInit new/finalMemInit/Driver.java 
-this
 PASS: Test 355: "new/finalMemInit/final member initialization broken with JDK before 1.1.8" passed.
 
 
@@ -3731,17 +1974,6 @@ PASS: Test 358: "new/non-static advice on inner class defined inside of method b
 
 Running test 359: new/simple single-threaded eachcflow test (includes aspectOf)
 Commandline: abc -d new new/Client.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 359: "new/simple single-threaded eachcflow test (includes aspectOf)" passed.
 
 
@@ -3757,7 +1989,6 @@ PASS: Test 361: "new/generating the right throws clause for call-site advice (an
 
 Running test 362: new/advice on calls to static methods using several syntax
 Commandline: abc -d new new/StaticCalls.java 
-this
 PASS: Test 362: "new/advice on calls to static methods using several syntax" passed.
 
 
@@ -3778,13 +2009,11 @@ PASS: Test 365: "new/fancy name patterns for method names" passed.
 
 Running test 366: design/calls/calls: calls(...)
 Commandline: abc -d design/calls -Xlint:ignore design/calls/Simple.java 
-this
 PASS: Test 366: "design/calls/calls: calls(...)" passed.
 
 
 Running test 367: new/extraThrows/throws Exception clause is unnecessarily added to Driver.main method
 Commandline: abc -d new/extraThrows new/extraThrows/Driver.java 
-this
 PASS: Test 367: "new/extraThrows/throws Exception clause is unnecessarily added to Driver.main method" passed.
 
 
@@ -3805,7 +2034,6 @@ PASS: Test 370: "new/calls to methods to which we don't have source" passed.
 
 Running test 371: new/beforeNotRun/more aspect inheritance
 Commandline: abc -d new/beforeNotRun new/beforeNotRun/Driver.java 
-this
 PASS: Test 371: "new/beforeNotRun/more aspect inheritance" passed.
 
 
@@ -3831,7 +2059,6 @@ PASS: Test 375: "new/eachcflow only instantiated if the aspect has some advice i
 
 Running test 376: new/(DESIGN QUESTION) aspect of eachJVM advising its own initializer
 Commandline: abc -d new new/EachJVMOnSelf.java 
-this
 PASS: Test 376: "new/(DESIGN QUESTION) aspect of eachJVM advising its own initializer" passed.
 
 
@@ -3847,8 +2074,6 @@ PASS: Test 378: "new/Does annotating 'new' with a type work as desired?" passed.
 
 Running test 379: new/Referring to inner classes as {super}.{inner} confused ajc.
 Commandline: abc -d new new/InnerClassNaming.java 
-this
-this
 PASS: Test 379: "new/Referring to inner classes as {super}.{inner} confused ajc." passed.
 
 
@@ -3861,7 +2086,6 @@ Running test 381: new/Introductions on other introductions
 Commandline: abc -d new new/IntroOnIntro.java 
 Creating getInstance method public abstract java.lang.String get$my_manager$662() for itfi field private java.lang.String my_manager
 Creating getInstance method public abstract java.lang.String get$m$666() for itfi field java.lang.String m
-this
 PASS: Test 381: "new/Introductions on other introductions" passed.
 
 
@@ -3877,14 +2101,11 @@ PASS: Test 383: "new/call points within block inner classes are doubled" passed.
 
 Running test 384: new/Gets and sets with other advice
 Commandline: abc -d new new/Counting3.java 
-this
-this
 PASS: Test 384: "new/Gets and sets with other advice" passed.
 
 
 Running test 385: new/Compiler can compile correct strictfp modifiers
 Commandline: abc -d new new/StrictFpCompile.java 
-this
 PASS: Test 385: "new/Compiler can compile correct strictfp modifiers" passed.
 
 
@@ -3905,23 +2126,11 @@ PASS: Test 389: "new/around advice on calls and receptions with lots of context"
 
 Running test 390: new/! modifier and char in pointcut (no longer an error)
 Commandline: abc -d new new/NotCharInPointcut.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 390: "new/! modifier and char in pointcut (no longer an error)" passed.
 
 
 Running test 391: new/right number of aspect instances per cflow
 Commandline: abc -d new new/CFlowObjects.java 
-this
 PASS: Test 391: "new/right number of aspect instances per cflow" passed.
 
 
@@ -3937,51 +2146,26 @@ PASS: Test 393: "new/Ensures introduction methods can have advice placed on them
 
 Running test 394: new/No boolean appearing in the 'if' clause for around advice with eachJVM()
 Commandline: abc -d new new/PR355.java 
-this
 PASS: Test 394: "new/No boolean appearing in the 'if' clause for around advice with eachJVM()" passed.
 
 
 Running test 395: new/Order of super introductions.
 Commandline: abc -d new new/OrderOfExtendsPlusAndImplementsPlus.java 
-this
 PASS: Test 395: "new/Order of super introductions." passed.
 
 
 Running test 396: new/Ensuring backdoor methods are produced.
 Commandline: abc -d new new/BackdoorMethods.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 396: "new/Ensuring backdoor methods are produced." passed.
 
 
 Running test 397: new/no duplicate advice methods in abstract aspects
 Commandline: abc -d new new/GeneratingDuplicateNamedAdviceMethodsInAbstractAspects.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 397: "new/no duplicate advice methods in abstract aspects" passed.
 
 
 Running test 398: new/no duplicate advice methods in abstract aspects extended
 Commandline: abc -d new new/GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 398: "new/no duplicate advice methods in abstract aspects extended" passed.
 
 
@@ -3992,21 +2176,6 @@ PASS: Test 399: "new/Putting after-constructor advice on the wrong types impleme
 
 Running test 400: new/Instantiating non-static inner classes in advice.
 Commandline: abc -d new new/NonstaticInnerClassesInAspects.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 400: "new/Instantiating non-static inner classes in advice." passed.
 
 
@@ -4017,14 +2186,11 @@ PASS: Test 401: "new/Referring to pointcut in of clauses" passed.
 
 Running test 402: new/Confused referring to instance variables and locals
 Commandline: abc -d new new/ScopesAndFields_PR191.java 
-this
-this
 PASS: Test 402: "new/Confused referring to instance variables and locals" passed.
 
 
 Running test 403: new/Parsing C+ expressions without parens in super introductions.
 Commandline: abc -d new new/ParsingSubtypesIntroductions.java 
-this
 PASS: Test 403: "new/Parsing C+ expressions without parens in super introductions." passed.
 
 
@@ -4045,27 +2211,11 @@ PASS: Test 406: "new/Making sure final variables stay final." passed.
 
 Running test 407: new/Problem resolving meta-joinpoint names with around advice on methods called from around advice.
 Commandline: abc -d new new/AroundAdviceOnMethodsCalledInAroundAdvice.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 407: "new/Problem resolving meta-joinpoint names with around advice on methods called from around advice." passed.
 
 
 Running test 408: new/Make sure that names of lifted local classes are right when referenced in call-site advice
 Commandline: abc -d new new/CallsAndLocalClasses.java 
-Outer.this
-this
 before toString
 before toString
 PASS: Test 408: "new/Make sure that names of lifted local classes are right when referenced in call-site advice" passed.
@@ -4078,19 +2228,16 @@ PASS: Test 409: "new/matching for throws clause" passed.
 
 Running test 41001: abctests/new/holding onto proceed calls in a closure-like way
 Commandline: abc -d abctests/new abctests/new/HoldProceed.java 
-A.this
 PASS: Test 41001: "abctests/new/holding onto proceed calls in a closure-like way" passed.
 
 
 Running test 411: new/basic test of declare soft
 Commandline: abc -d new new/DeclareSoft.java 
-this
 PASS: Test 411: "new/basic test of declare soft" passed.
 
 
 Running test 412: new/advice on calls to constructors of anonymous inners and access to context
 Commandline: abc -d new new/NewAnonymous.java 
-C.this
 PASS: Test 412: "new/advice on calls to constructors of anonymous inners and access to context" passed.
 
 
@@ -4149,16 +2296,14 @@ PASS: Test 419: "new/privilegedAspects/privileged aspects" passed.
 
 Running test 420: new/advice on field gets in privileged aspects
 Commandline: abc -d new new/AdviceOnPrivileged.java 
-this
 got C.x
 PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 
 
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new new/TwoAnonymous.java 
-this
 setting x
-calling run: TwoAnonymous$3@935f1, [Ljava.lang.Object;@b49693, TwoAnonymous$3@935f1
+calling run: TwoAnonymous$3@a19e2d, [Ljava.lang.Object;@97af24, TwoAnonymous$3@a19e2d
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -4166,9 +2311,6 @@ PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
 
 Running test 422: new/basic tests for initializer and staticinitializer PCDs
 Commandline: abc -d new new/InitializerTest.java 
-this
-this
-this
 PASS: Test 422: "new/basic tests for initializer and staticinitializer PCDs" passed.
 
 
@@ -4179,8 +2321,6 @@ PASS: Test 423: "new/introduction of an initializer into a class" passed.
 
 Running test 424: new/access/some method accessibility tests, particularly package-protected and inheritance
 Commandline: abc -d new/access new/access/Test1.java new/access/pc/C.java new/access/psub/SubC.java new/access/psub/A.java 
-this
-this
 PASS: Test 424: "new/access/some method accessibility tests, particularly package-protected and inheritance" passed.
 
 
@@ -4209,57 +2349,16 @@ PASS: Test 426: "new/field patterns and subtyping" passed.
 
 Running test 427: new/Checking formal matching as in Roeder's bug in 0.7b10
 Commandline: abc -d new new/FormalMatching.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 427: "new/Checking formal matching as in Roeder's bug in 0.7b10" passed.
 
 
 Running test 428: new/Introducing synchronized methods on interfaces.
 Commandline: abc -d new new/SynchronizedMethodsOnInterfaces.java 
-this
-this
 PASS: Test 428: "new/Introducing synchronized methods on interfaces." passed.
 
 
 Running test 429: new/The pointcut params (..,int..) is not recognizing (Object,int,Object).
 Commandline: abc -d new new/Params.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 429: "new/The pointcut params (..,int..) is not recognizing (Object,int,Object)." passed.
 
 
@@ -4281,7 +2380,6 @@ PASS: Test 432: "new/Handlers problem" passed.
 
 Running test 433: new/work nicely with inner class method look-up rules and call-site advice
 Commandline: abc -d new new/InnerMethods.java 
-this
 PASS: Test 433: "new/work nicely with inner class method look-up rules and call-site advice" passed.
 
 
@@ -4292,12 +2390,6 @@ PASS: Test 434: "new/strictfp modifier allowed on advice" passed.
 
 Running test 435: new/No argthis was being created for calls advice.
 Commandline: abc -d new new/PR415.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 435: "new/No argthis was being created for calls advice." passed.
 
 
@@ -4327,39 +2419,33 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -1.3 new/AroundInnerCalls13.java 
-this
-this
-this
 Outer.foo() calls Outer.Inner.mi()
-Outer@1ddfcc6.foo calls Outer$Inner@fe2f32.mi
+Outer@1bbd31c.foo calls Outer$Inner@20e7a5.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@fe2f32.mi calls java.io.PrintStream@1ccbcc0.println
+Outer$Inner@20e7a5.mi calls java.io.PrintStream@481010.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1ddfcc6.foo calls Outer$InnerRandom@1de77ac.nextHook
+Outer@1bbd31c.foo calls Outer$InnerRandom@1bb419f.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1de77ac.nextHook calls Outer$InnerRandom@1de77ac.next
+Outer$InnerRandom@1bb419f.nextHook calls Outer$InnerRandom@1bb419f.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1ddfcc6.foo calls X.nextInt
+Outer@1bbd31c.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -1.4 new/AroundInnerCalls.java 
-this
-this
-this
 Outer.foo() calls Outer.Inner.mi()
-Outer@129ec00.foo calls Outer$Inner@145156c.mi
+Outer@1957d63.foo calls Outer$Inner@15b2cf1.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@145156c.mi calls java.io.PrintStream@817998.println
+Outer$Inner@15b2cf1.mi calls java.io.PrintStream@e3a5c9.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@129ec00.foo calls Outer$InnerRandom@55feee.nextHook
+Outer@1957d63.foo calls Outer$InnerRandom@129ec00.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@55feee.nextHook calls Outer$InnerRandom@55feee.next
+Outer$InnerRandom@129ec00.nextHook calls Outer$InnerRandom@129ec00.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@129ec00.foo calls X.nextInt
+Outer@1957d63.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4380,14 +2466,6 @@ PASS: Test 444: "new/Putting an introduced method on each interface" passed.
 
 Running test 445: new/Extending interfaces
 Commandline: abc -d new new/BindingInterfaces.java 
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 445: "new/Extending interfaces" passed.
 
 
@@ -4418,7 +2496,6 @@ PASS: Test 450: "new/twofiles/Doesn't import MightHaveAspect when compiling with
 
 Running test 451: new/test binding to formals in calls to constructors (binding to null) (eachobject !!! now misnamed)
 Commandline: abc -d new new/BindingThisInsteadOfFormal.java 
-this
 PASS: Test 451: "new/test binding to formals in calls to constructors (binding to null) (eachobject !!! now misnamed)" passed.
 
 
@@ -4430,8 +2507,6 @@ PASS: Test 452: "new/After advice isn't being woven into after throwing advice" 
 
 Running test 453: new/Throwing an EmptyStackException.
 Commandline: abc -d new new/EmptyStack.java 
-this
-this
 PASS: Test 453: "new/Throwing an EmptyStackException." passed.
 
 
@@ -4447,16 +2522,6 @@ PASS: Test 455: "new/Defines clfow$ajc0 more once. [eachcflow]" passed.
 
 Running test 456: new/Various calls, receptions, and callsto tests [callsto]
 Commandline: abc -d new new/CallsReceptionsCallsto.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 456: "new/Various calls, receptions, and callsto tests [callsto]" passed.
 
 
@@ -4473,8 +2538,6 @@ PASS: Test 458: "new/different version of aspect inheritance, particularly empty
 
 Running test 459: new/set advice on member initing throwing exception [eachobject]
 Commandline: abc -d new new/PR339.java 
-this
-this
 PASS: Test 459: "new/set advice on member initing throwing exception [eachobject]" passed.
 
 
@@ -4490,129 +2553,57 @@ PASS: Test 461: "new/Null pointer on gets advice with coverage [painful]" passed
 
 Running test 462: new/Basic test for cflow pointcuts [eachcflow]
 Commandline: abc -d new new/CFlowPoints.java 
-this
-this
-this
-this
 PASS: Test 462: "new/Basic test for cflow pointcuts [eachcflow]" passed.
 
 
 Running test 463: new/Crashing when looking up the type of array members.
 Commandline: abc -d new new/ArrayCasts.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 463: "new/Crashing when looking up the type of array members." passed.
 
 
 Running test 464: new/PostfixExprs to various synthetic things are fixed correctly [eachobject]
 Commandline: abc -d new new/Fixes.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 464: "new/PostfixExprs to various synthetic things are fixed correctly [eachobject]" passed.
 
 
 Running test 465: new/Dave Binkley's problem with eachcflowroot. [eachcflow]
 Commandline: abc -d new new/Binkley2.java 
-this
-this
-this
-this
 PASS: Test 465: "new/Dave Binkley's problem with eachcflowroot. [eachcflow]" passed.
 
 
 Running test 466: new/advice on an inherited method
 Commandline: abc -d new new/AdviceOnInheritedMethod.java 
-this
-this
-this
-this
-super
 PASS: Test 466: "new/advice on an inherited method" passed.
 
 
 Running test 467: new/, PR#115 checks the ordering of catch clauses
 Commandline: abc -d new new/OrderOfCatches.java 
-this
 PASS: Test 467: "new/, PR#115 checks the ordering of catch clauses" passed.
 
 
 Running test 468: new/various declared exception permutations
 Commandline: abc -d new new/DeclaredExcs.java 
-this
-this
-this
-this
 PASS: Test 468: "new/various declared exception permutations" passed.
 
 
 Running test 469: new/ordering of advice kinds as well as cflow and dominates
 Commandline: abc -d new new/AdviceOrdering.java 
-this
 PASS: Test 469: "new/ordering of advice kinds as well as cflow and dominates" passed.
 
 
 Running test 470: new/advice on default constructor for a class only referenced via reflection
 Commandline: abc -d new new/OddConstructors.java 
-this
 PASS: Test 470: "new/advice on default constructor for a class only referenced via reflection" passed.
 
 
 Running test 471: new/calling and called this params in calls points
 Commandline: abc -d new new/CallsParams.java 
-this
 
 PASS: Test 471: "new/calling and called this params in calls points" passed.
 
 
 Running test 472: new/primitive parameters coercable to Object just like return values are
 Commandline: abc -d new new/ObjectForInt.java 
-this
 Test failed, compiled class behaved incorrectly
 Message: fail Test.a: 4 < 10
 org.aspectj.bridge.AbortException: Test.a: 4 < 10
@@ -4633,20 +2624,6 @@ FAIL: Test 472: "new/primitive parameters coercable to Object just like return v
 
 Running test 473: new/Does the matrix coverage thing for the new method signatures
 Commandline: abc -d new -1.4 -Xlint:ignore new/MethodSignatures.java 
-super
-super
-super
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 473: "new/Does the matrix coverage thing for the new method signatures" passed.
 
 
@@ -4657,27 +2634,6 @@ PASS: Test 474: "new/join points in static/dynamic initializers aren't showing u
 
 Running test 475: new/Gets and sets on a number of variables (field access ???)
 Commandline: abc -d new new/Gets.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 475: "new/Gets and sets on a number of variables (field access ???)" passed.
 
 
@@ -4688,31 +2644,11 @@ PASS: Test 476: "new/correct types of parameters at call-sites" passed.
 
 Running test 477: new/Joinpoints are showing up on intermediate call sites
 Commandline: abc -d new new/Counting1.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 477: "new/Joinpoints are showing up on intermediate call sites" passed.
 
 
 Running test 478: new/Reception based on strictfp modifier
 Commandline: abc -d new new/StrictFpReceptions.java 
-this
 PASS: Test 478: "new/Reception based on strictfp modifier" passed.
 
 
@@ -4723,187 +2659,16 @@ PASS: Test 479: "new/Subclasses that do not redefine a method are not being hand
 
 Running test 480: new/making sure that super calls are bound to the right methods
 Commandline: abc -d new new/SupersAndInterfaces.java 
-super
-super
 PASS: Test 480: "new/making sure that super calls are bound to the right methods" passed.
 
 
 Running test 481: new/inheritance, around advice and abstract pointcuts [eachobject] (still)
 Commandline: abc -d new new/OverridingPointcuts.java 
-this
 PASS: Test 481: "new/inheritance, around advice and abstract pointcuts [eachobject] (still)" passed.
 
 
 Running test 482: new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]
 Commandline: abc -d new/foemmel new/foemmel/TheAspect.java new/foemmel/TheObject.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 482: "new/foemmel/Priviledged aspect methods are missing for privates. [eachobject]" passed.
 
 
@@ -4919,156 +2684,11 @@ PASS: Test 484: "new/Not and And operators in pointcuts not working" passed.
 
 Running test 485: new/Member initializers should run before the current class constructor
 Commandline: abc -d new new/MemberInitializationsAfterExplicitConstructorCalls.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 485: "new/Member initializers should run before the current class constructor" passed.
 
 
 Running test 486: new/Coverage tests for Member initializers should run before the current class constructor and after super
 Commandline: abc -d new new/MemberInitializationsAfterExplicitConstructorCallsCoverage.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-ThisCallEnclosing.this
-ThisCallEnclosing.this
-this
-ThisCallEnclosing.this
-ThisCallEnclosing.this
-this
-ThisCallEnclosing.this
-ThisCallEnclosing.this
-this
 PASS: Test 486: "new/Coverage tests for Member initializers should run before the current class constructor and after super" passed.
 
 
@@ -5098,30 +2718,16 @@ PASS: Test 490: "new/pcd if() dup methods produced when pointcut after advice et
 
 Running test 491: new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]
 Commandline: abc -d new new/IfPCDAdviceMethods.java 
-this
-this
-this
 PASS: Test 491: "new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]" passed.
 
 
 Running test 493: new/initialization order with this
 Commandline: abc -d new new/InitializationOrder.java 
-this
-this
-this
 PASS: Test 493: "new/initialization order with this" passed.
 
 
 Running test 494: new/!within and !this handling for callee-side call points
 Commandline: abc -d new new/NotThis.java 
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 494: "new/!within and !this handling for callee-side call points" passed.
 
 
@@ -5133,9 +2739,6 @@ PASS: Test 495: "new/innerInterfaces/private inner interfaces and bytecode visib
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new new/AroundAll.java 
-this
-this
-this
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 126
 org.aspectj.bridge.AbortException: steps expected array of length 114 got 126
@@ -5159,8 +2762,6 @@ FAIL: Test 496: "new/elaborated into testing of around on all join points" faile
 
 Running test 497: new/type name hygiene when code comes from aspects in different packages
 Commandline: abc -d new new/typeNameConflicts/Driver.java new/typeNameConflicts/p1/C.java new/typeNameConflicts/aspects/A.java 
-this
-this
 about to run
 running
 PASS: Test 497: "new/type name hygiene when code comes from aspects in different packages" passed.
@@ -5168,7 +2769,6 @@ PASS: Test 497: "new/type name hygiene when code comes from aspects in different
 
 Running test 498: new/cflowbelow dependencies (from Chris Dutchyn)
 Commandline: abc -d new new/CflowBelowTest.java 
-this
 PASS: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" passed.
 
 
@@ -5184,9 +2784,6 @@ PASS: Test 500: "new/PR#458 Compiler was incorrectly flagging error in advice on
 
 Running test 501: new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)
 Commandline: abc -d new new/NonAlphaSignaturePatternCE.java 
-this
-this
-this
 PASS: Test 501: "new/Compiler incorrectly flagging *1 (non-alphabetic start to signature pattern)" passed.
 
 
@@ -5198,18 +2795,11 @@ PASS: Test 502: "new/Unable to bind privately-introduced field name from introdu
 
 Running test 503: new/anonInnerClass/anonymous inner class with aspect
 Commandline: abc -d new/anonInnerClass new/anonInnerClass/Driver.java 
-this
-this
-this
-Test.this
 PASS: Test 503: "new/anonInnerClass/anonymous inner class with aspect" passed.
 
 
 Running test 504: new/Arguments are not being passed in to calls advice
 Commandline: abc -d new new/PR335.java 
-this
-this
-this
 PASS: Test 504: "new/Arguments are not being passed in to calls advice" passed.
 
 
@@ -5224,13 +2814,11 @@ PASS: Test 505: "design/intro/interfaces as mixins with introduction" passed.
 
 Running test 507: new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants
 Commandline: abc -d new new/CflowInitInAspectVariantsBefore.java 
-this
 PASS: Test 507: "new/ExceptionInInitializerError accessing cflow in aspect initialization - before variants" passed.
 
 
 Running test 508: new/NoClassDefFoundError accessing cflow in aspect initialization - after variants
 Commandline: abc -d new new/CflowInitInAspectVariantsAfter.java 
-this
 PASS: Test 508: "new/NoClassDefFoundError accessing cflow in aspect initialization - after variants" passed.
 
 
@@ -5256,46 +2844,16 @@ PASS: Test 512: "new/aspect as member of interface" passed.
 
 Running test 513: new/missing method name to synthetic invocation
 Commandline: abc -d new new/PR535.java 
-this
 PASS: Test 513: "new/missing method name to synthetic invocation" passed.
 
 
 Running test 514: new/protected subclass impl of superclass method with default access and variants
 Commandline: abc -d new new/RestrictingVisibilityCP.java 
-this
-this
-this
-this
-super
-this
-super
-super
-super
-super
-super
-super
-super
-this
-super
-super
-super
-super
-super
-this
-this
-this
 PASS: Test 514: "new/protected subclass impl of superclass method with default access and variants" passed.
 
 
 Running test 515: new/Exception planning advice
 Commandline: abc -d new -Xlint:ignore new/PR519.java 
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 515: "new/Exception planning advice" passed.
 
 
@@ -5327,12 +2885,6 @@ PASS: Test 517: "new/introduced inner interfaces accessible inside aspect" passe
 
 Running test 518: new/validate (enclosing) join point and source locations
 Commandline: abc -d new -Xlint:ignore new/NegativeSourceLocation.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 518: "new/validate (enclosing) join point and source locations" passed.
 
 
@@ -5375,233 +2927,31 @@ PASS: Test 526: "new/cflow alone with around produces compiler bcg StackOverflow
 
 Running test 527: new/get/set join points run for complex assignment operators (+=, etc.) (working)
 Commandline: abc -d new new/AssignOps.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 527: "new/get/set join points run for complex assignment operators (+=, etc.) (working)" passed.
 
 
 Running test 528: new/introTypeMissing/this available in introduced field initializers
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/ThisInIntroFieldInit.java 
-this
-this
-this
-this
-TargetClass.this
-this
-this
-TargetClass.this
-TargetClass.this
-TargetClass.this
-TargetClass.this
-TargetClass.this
 PASS: Test 528: "new/introTypeMissing/this available in introduced field initializers" passed.
 
 
 Running test 529: new/introTypeMissing/Introduced type unavailable to cast expressions in introduced methods
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/Cast.java new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
 PASS: Test 529: "new/introTypeMissing/Introduced type unavailable to cast expressions in introduced methods" passed.
 
 
 Running test 530: new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced methods
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/Inner.java new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
 PASS: Test 530: "new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced methods" passed.
 
 
 Running test 531: new/introTypeMissing/Introduced type unavailable to cast expressions in introduced field initializers
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/CastInFieldInit.java new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
 PASS: Test 531: "new/introTypeMissing/Introduced type unavailable to cast expressions in introduced field initializers" passed.
 
 
 Running test 532: new/introTypeMissing/Aspect type unavailable to qualified new expressions in body of introduced methods
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/AspectInIntroducedMethod.java 
-this
-this
 PASS: Test 532: "new/introTypeMissing/Aspect type unavailable to qualified new expressions in body of introduced methods" passed.
 
 
@@ -5613,70 +2963,11 @@ PASS: Test 533: "new/introTypeMissing/Introduced type unavailable to instanceof 
 
 Running test 534: new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced field initializers
 Commandline: abc -d new/introTypeMissing new/introTypeMissing/InnerInFieldInit.java new/introTypeMissing/TargetClass.java new/introTypeMissing/Util.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
-PureJava.this
 PASS: Test 534: "new/introTypeMissing/Introduced type unavailable to qualified new expressions in introduced field initializers" passed.
 
 
 Running test 535: new/variable slots and finally/catch causing verify errors
 Commandline: abc -d new new/AfterFinally.java 
-this
 execution(void AfterFinally.main(String[]))
 execution(Collection AfterFinally.m(String))
 execution(String AfterFinally.getX())
@@ -5761,84 +3052,6 @@ PASS: Test 544: "new/declare error and abstract pointcuts" passed.
 
 Running test 545: new/runtime/Exercise runtime classes (optionally in 1.1 VM)
 Commandline: abc -d new/runtime new/runtime/AllRuntime.java new/runtime/TesterDriver.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" passed.
 
 
@@ -5892,8 +3105,6 @@ PASS: Test 554: "new/private inner interface accessible in scope when declared o
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
 Commandline: abc -d new new/SuperInIntroduction.java 
-this
-this
 InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: getClone signature: (LObjectSub;)LObjectSub;) Bad access to protected data
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
@@ -5928,27 +3139,22 @@ PASS: Test 558: "new/aroundinner/aroundInner 1 - around advice inner Thread subc
 
 Running test 559: new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy
 Commandline: abc -d new/aroundinner new/aroundinner/Proxy.java new/aroundinner/Common.java 
-this
 PASS: Test 559: "new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" passed.
 
 
 Running test 560: new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field
 Commandline: abc -d new/aroundinner new/aroundinner/Minimal.java new/aroundinner/Common.java 
-this
 PASS: Test 560: "new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field" passed.
 
 
 Running test 561: new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field
 Commandline: abc -d new/aroundinner new/aroundinner/ThreadSub.java new/aroundinner/Common.java 
-this
 PASS: Test 561: "new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field" passed.
 
 
 Running test 562: new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface
 Commandline: abc -d new/aroundinner new/aroundinner/RunnableSub.java new/aroundinner/Common.java 
 Creating getInstance method public abstract int get$result$2041() for itfi field int result
-this
-this
 PASS: Test 562: "new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" passed.
 
 
@@ -5970,9 +3176,6 @@ PASS: Test 565: "new/multi-dispatch not used for named pcd references" passed.
 
 Running test 566: new/multi-dispatch implemented through around + args
 Commandline: abc -d new new/MultiDispatchCp.java 
-this
-this
-this
 PASS: Test 566: "new/multi-dispatch implemented through around + args" passed.
 
 
@@ -6005,23 +3208,11 @@ PASS: Test 571: "new/invalid number and type of proceed arguments" passed.
 
 Running test 572: new/after returning advice order
 Commandline: abc -d new new/Cricket.java 
-this
-this
 PASS: Test 572: "new/after returning advice order" passed.
 
 
 Running test 573: new/after returning advice param
 Commandline: abc -d new new/AfterReturningParam.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 573: "new/after returning advice param" passed.
 
 
@@ -6042,7 +3233,6 @@ PASS: Test 576: "new/. Matching arguments in cflow correctly." passed.
 
 Running test 577: new/. Binding variables with numbers in their name with pertarget(..)'s.
 Commandline: abc -d new new/PerTargetAndVariablesWithNumbersInTheirNames.java 
-this
 PASS: Test 577: "new/. Binding variables with numbers in their name with pertarget(..)'s." passed.
 
 
@@ -6073,11 +3263,6 @@ PASS: Test 582: "new/subclass advice not run for join points selected by supercl
 
 Running test 583: new/more issues with abstract aspects and cflow pointcuts
 Commandline: abc -d new new/AbstractCflows.java 
-this
-this
-this
-this
-this
 PASS: Test 583: "new/more issues with abstract aspects and cflow pointcuts" passed.
 
 
@@ -6109,22 +3294,16 @@ PASS: Test 588: "new/pertarget runtime stack overflow (getting name of anonymous
 
 Running test 589: new/PR584 Can construct inner classes using qualified expressions
 Commandline: abc -d new new/PR584.java 
-this
-this
-Foo.this
-Foo.this
 PASS: Test 589: "new/PR584 Can construct inner classes using qualified expressions" passed.
 
 
 Running test 590: new/subaspect method declaration on superaspect inner interface (names)
 Commandline: abc -d new new/InnerInterfaceNames.java 
-this
 PASS: Test 590: "new/subaspect method declaration on superaspect inner interface (names)" passed.
 
 
 Running test 591: new/subaspect method declaration on superaspect inner interface (access)
 Commandline: abc -d new new/InnerInterfaceAccess.java 
-this
 PASS: Test 591: "new/subaspect method declaration on superaspect inner interface (access)" passed.
 
 
@@ -6145,21 +3324,11 @@ PASS: Test 594: "new/around all execution with double assignment in initializer 
 
 Running test 595: new/around all execution with double assignment in initializer (coverage)
 Commandline: abc -d new new/AroundDoubleAssignmentC.java 
-this
-this
-this
-this
-this
-this
 PASS: Test 595: "new/around all execution with double assignment in initializer (coverage)" passed.
 
 
 Running test 596: new/changing this in around's proceed reported by Rich Price
 Commandline: abc -d new -1.4 new/AroundChangeThis.java 
-this
-this
-this
-this
 PASS: Test 596: "new/changing this in around's proceed reported by Rich Price" passed.
 
 
@@ -6212,7 +3381,6 @@ PASS: Test 605: "new/!target with second advice on casted call" passed.
 
 Running test 606: new/name binding in around cflow
 Commandline: abc -d new new/AroundCall.java 
-this
 PASS: Test 606: "new/name binding in around cflow" passed.
 
 
@@ -6278,13 +3446,6 @@ PASS: Test 612: "new/incrementing objects, arrays" passed.
 
 Running test 613: new/replacing this or target in around advice
 Commandline: abc -d new new/TargetObjectReplacement.java 
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 613: "new/replacing this or target in around advice" passed.
 
 
@@ -6328,7 +3489,6 @@ PASS: Test 620: "pureJava/should have circular inheritance errors (2)" passed.
 
 Running test 621: new/pr728/file order in type searching
 Commandline: abc -d new/pr728 new/pr728/AnotherClass.java new/pr728/Interface.java 
-this
 PASS: Test 621: "new/pr728/file order in type searching" passed.
 
 
@@ -6339,7 +3499,6 @@ PASS: Test 622: "pureJava/interface using preceding subinterface in its definiti
 
 Running test 623: new/Parent interface using public inner interface of child in same file
 Commandline: abc -d new new/ParentInterfaceUsingChildInnerInterface.java 
-this
 PASS: Test 623: "new/Parent interface using public inner interface of child in same file" passed.
 
 
@@ -6413,7 +3572,6 @@ PASS: Test 636: "pureJava/interfaces may not contain initializers (bug found by 
 
 Running test 637: new/ajc dies on cflow into field init anon class see knownbugs.txt
 Commandline: abc -d new new/CflowOfFieldInitAnonMethods.java 
-this
 PASS: Test 637: "new/ajc dies on cflow into field init anon class see knownbugs.txt" passed.
 
 
@@ -6483,30 +3641,6 @@ PASS: Test 645: "new/cflow pcd syntax error" passed.
 
 Running test 646: new/binding args with indeterminate prefix and suffix
 Commandline: abc -d new new/IndeterminateArgs.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 646: "new/binding args with indeterminate prefix and suffix" passed.
 
 
@@ -6518,67 +3652,16 @@ PASS: Test 647: "new/flag errors when binding args with indeterminate prefix and
 
 Running test 648: new/check arg types with indeterminate prefix and suffix
 Commandline: abc -d new new/IndeterminateArgType.java 
-this
-this
-this
-this
-this
 PASS: Test 648: "new/check arg types with indeterminate prefix and suffix" passed.
 
 
 Running test 649: new/testing and binding args with single indeterminate prefix and suffix
 Commandline: abc -d new new/IndeterminateArg.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 649: "new/testing and binding args with single indeterminate prefix and suffix" passed.
 
 
 Running test 650: new/binding handler args with indeterminate prefix and suffix
 Commandline: abc -d new new/IndeterminateHandlerArg.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 650: "new/binding handler args with indeterminate prefix and suffix" passed.
 
 
@@ -6589,19 +3672,6 @@ PASS: Test 651: "pureJava/Locals inside other locals, ordering of processing [eh
 
 Running test 652: pureJava/subclass access to enclosing super class private members
 Commandline: abc -d pureJava pureJava/SubclassAccessToEnclosingSuperClassPrivate.java 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-SuperEnclosing.SubInner.this
-SuperEnclosing.SubInner.this
-this
-this
 PASS: Test 652: "pureJava/subclass access to enclosing super class private members" passed.
 
 
@@ -6623,12 +3693,6 @@ PASS: Test 655: "new/CE expected for assignment to arg in if pcd" passed.
 
 Running test 656: new/advising field get/sets when accessing via super
 Commandline: abc -d new new/SuperField.java 
-this
-this
-super
-super
-super
-super
 PASS: Test 656: "new/advising field get/sets when accessing via super" passed.
 
 
@@ -6679,31 +3743,6 @@ PASS: Test 665: "pureJava/asserts" passed.
 
 Running test 666: pureJava/assert coverage tests [requires 1.4]
 Commandline: abc -d pureJava -source 1.4 pureJava/AssertsCv.java 
-this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-AssertTest.this
-this
-this
-this
 PASS: Test 666: "pureJava/assert coverage tests [requires 1.4]" passed.
 
 
@@ -6777,10 +3816,6 @@ PASS: Test 687: "new/signature of handler join point" passed.
 
 Running test 688: new/source locations within expressions
 Commandline: abc -d new new/SourceLocationWithinExpr.java 
-this
-this
-this
-this
 C() - 9
 getD() - 12
 getE() - 14
@@ -6790,10 +3825,6 @@ PASS: Test 688: "new/source locations within expressions" passed.
 
 Running test 68901: abctests/new/source locations within expressions (hard case of constructor start)
 Commandline: abc -d abctests/new abctests/new/SourceLocationWithinExprHard.java 
-this
-this
-this
-this
 C() - 9
 getD() - 12
 getE() - 14
@@ -6827,8 +3858,6 @@ PASS: Test 693: "bugs/after advice on static call join point" passed.
 
 Running test 694: bugs/incompatible class change error
 Commandline: abc -d bugs bugs/IncompatibleClassChangeErrorBug.java 
-this
-this
 PASS: Test 694: "bugs/incompatible class change error" passed.
 
 
@@ -6878,8 +3907,6 @@ PASS: Test 712: "new/interface self-reference in anonymous instance" passed.
 Running test 713: new/self-reference from (aspect-declared) method-local class
 Commandline: abc -d new new/MethodSelfReference.java 
 Creating getInstance method public abstract java.lang.Runnable get$runnable$2491() for itfi field java.lang.Runnable runnable
-this
-this
 PASS: Test 713: "new/self-reference from (aspect-declared) method-local class" passed.
 
 
@@ -6965,19 +3992,11 @@ PASS: Test 727: "bugs/circularity in declare dominates" passed.
 
 Running test 728: bugs/percflow code hangs compiler
 Commandline: abc -d bugs bugs/CloseConnectionsCflow.java 
-this
-this
-this
 PASS: Test 728: "bugs/percflow code hangs compiler" passed.
 
 
 Running test 729: bugs/assert and pertarget crashes compiler
 Commandline: abc -d bugs -source 1.4 bugs/EnsureOverriding.java 
-super
-this
-this
-this
-this
 PASS: Test 729: "bugs/assert and pertarget crashes compiler" passed.
 
 
@@ -7062,11 +4081,6 @@ PASS: Test 746: "bugs/Declare precedence should not allow multiple * patterns" p
 
 Running test 747: bugs/VerifyError on accessing objects not accessible to the weaver
 Commandline: abc -d bugs bugs/AroundAccess.java 
-this
-this
-super
-this
-this
 PASS: Test 747: "bugs/VerifyError on accessing objects not accessible to the weaver" passed.
 
 
@@ -7077,19 +4091,12 @@ PASS: Test 748: "new/aspect static initializers should run before instance const
 
 Running test 749: bugs/super call in intertype method declaration body causes VerifyError
 Commandline: abc -d bugs bugs/SuperToIntro.java 
-this
-this
-this
-super
-super
-super
 PASS: Test 749: "bugs/super call in intertype method declaration body causes VerifyError" passed.
 
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes bugs/crashes/test/Test3.java 
-this
-test.Test3@7511c7.x:=-3
+test.Test3@55d267.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -7123,7 +4130,6 @@ PASS: Test 755: "bugs/can't use pointcuts defined in inner aspects " passed.
 
 Running test 756: bugs/interfaceNames/can't resolve nested public interfaces (also PR#32399)
 Commandline: abc -d bugs/interfaceNames bugs/interfaceNames/TransactionTest.java bugs/interfaceNames/sub/ExecutionMonitor.java bugs/interfaceNames/sub/ObserverProtocol.aj 
-this
 PASS: Test 756: "bugs/interfaceNames/can't resolve nested public interfaces (also PR#32399)" passed.
 
 
@@ -7166,17 +4172,15 @@ PASS: Test 762: "new/can't apply around advice to the execution of around advice
 
 Running test 763: new/incompatible advice throws clause are a compile-time error
 Commandline: abc -d new new/AdviceThrowsCf.java 
-this
 Compilation failed with 8 errors, which were matched and verified against the expected errors.
 PASS: Test 763: "new/incompatible advice throws clause are a compile-time error" passed.
 
 
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs bugs/CflowBinding.java 
-this
 i: 10
-o: Bar@1abb01
-o: Bar@1abb01, i: 10
+o: Bar@a3f7a
+o: Bar@a3f7a, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -7206,7 +4210,6 @@ PASS: Test 768: "errors/class extending abstract aspect" passed.
 
 Running test 77201: abctests/bugs/declare soft and throw statements
 Commandline: abc -d abctests/bugs abctests/bugs/ConvertToUnchecked.java 
-this
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
 Semantic Error at ConvertToUnchecked.java:44,2-11: The exception java.io.IOException must be either caught or declared to be thrown
@@ -7274,58 +4277,17 @@ PASS: Test 782: "bugs/Internal compiler error with thisJoinPoint.getStaticPart()
 
 Running test 783: bugs/Inconsistant stack height with around
 Commandline: abc -d bugs bugs/StackError.java 
-this
 PASS: Test 783: "bugs/Inconsistant stack height with around" passed.
 
 
 Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
 Commandline: abc -d abctests/bugs/messyAround abctests/bugs/messyAround/aspects/Trace.aj abctests/bugs/messyAround/cap/OptionList.java abctests/bugs/messyAround/DebugTrace.aj 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
 PASS: Test 78401: "abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed" passed.
 
 
 Running test 785: new/try/finally in around advice (same as ...messy arounds?)
 Commandline: abc -d new new/TryFinallyInAround.java 
-this
-this
-this
 PASS: Test 785: "new/try/finally in around advice (same as ...messy arounds?)" passed.
 
 
@@ -7366,11 +4328,6 @@ PASS: Test 792: "new/arrays via Class.forName()" passed.
 
 Running test 793: new/binaryWarnings/src/declare warnings on main
 Commandline: abc -d new/binaryWarnings/src new/binaryWarnings/src/aspects/MainWarnings.java new/binaryWarnings/src/app/Main.java 
-this
-this
-this
-this
-this
 Compilation succeeded with 18 warnings, which were matched and verified against the expected warnings.
 PASS: Test 793: "new/binaryWarnings/src/declare warnings on main" passed.
 
@@ -7406,14 +4363,6 @@ PASS: Test 803: "incremental/initialTests/expClasses/expected class tree" passed
 
 Running test 805: bugs/inlineAround/perthis and inline arounds
 Commandline: abc -d bugs/inlineAround bugs/inlineAround/aspect1/Base.java bugs/inlineAround/aspect2/Concrete.java bugs/inlineAround/p1/Main.java 
-this
-this
-this
-this
-this
-this
-this
-this
 helperhelperhelper3.1423
 85
 PASS: Test 805: "bugs/inlineAround/perthis and inline arounds" passed.
@@ -7441,7 +4390,6 @@ PASS: Test 811: "harness/CLE: bad filename" passed.
 
 Running test 815: bugs/Unexpected Xlint:unresolvableMember warning with withincode
 Commandline: abc -d bugs bugs/CatchSig.java 
-this
 from: call(Class B.findClass())
 from B.new()
 from: call(Class B.findClass())
@@ -7472,11 +4420,6 @@ PASS: Test 820: "harness/XLint:ignore suppresses XLint warnings" passed.
 
 Running test 822: new/binaryWarnings/src/declare warnings on main - constructor execution
 Commandline: abc -d new/binaryWarnings/src new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java new/binaryWarnings/src/app/Main.java 
-this
-this
-this
-this
-this
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 822: "new/binaryWarnings/src/declare warnings on main - constructor execution" passed.
 
@@ -7511,10 +4454,6 @@ PASS: Test 828: "harness/warn:none suppresses XLint warnings" passed.
 
 Running test 832: bugs/accessMethods/can not resolve this member warning
 Commandline: abc -d bugs/accessMethods bugs/accessMethods/p1/Base.java bugs/accessMethods/p2/Derived.java 
-p2.Derived.this
-p2.Derived.this
-p2.Derived.this
-p2.Derived.this
 Base:Base:0:0
 PASS: Test 832: "bugs/accessMethods/can not resolve this member warning" passed.
 
@@ -7550,7 +4489,6 @@ PASS: Test 837: "bugs/switch statement in aspects crashes weaving" passed.
 Running test 838: bugs/ajc stack trace on declaring hashcode() method in aspect
 Commandline: abc -d bugs bugs/OverridingInterfaceObjectMethod.java 
 Creating getInstance method public abstract Id get$id$2730() for itfi field private Id id
-this
 PASS: Test 838: "bugs/ajc stack trace on declaring hashcode() method in aspect" passed.
 
 
@@ -7562,8 +4500,6 @@ PASS: Test 839: "bugs/using super in method introduced on interface with multipl
 
 Running test 840: bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .jar)
 Commandline: abc -d bugs/cflowAndJar bugs/cflowAndJar/TestAspect.aj bugs/cflowAndJar/Test.java bugs/cflowAndJar/AbstractAspect.aj 
-this
-this
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 hello.
 hello.
@@ -7572,17 +4508,12 @@ PASS: Test 840: "bugs/cflowAndJar/Compiler crashes in jar and cflow (with no .ja
 
 Running test 842: bugs/Default method impl for interface causes internal exception.
 Commandline: abc -d bugs bugs/CloneMethod.java 
-this
-this
-this
-this
 ... done.
 PASS: Test 842: "bugs/Default method impl for interface causes internal exception." passed.
 
 
 Running test 843: bugs/Class Literals as non final fields (also assert, and this$0)
 Commandline: abc -d bugs -source 1.4 bugs/ClassLiteralField.java 
-ClassLiteralField.this
 PASS: Test 843: "bugs/Class Literals as non final fields (also assert, and this$0)" passed.
 
 
@@ -7594,7 +4525,6 @@ PASS: Test 844: "errors/compile error expected for abstract pointcut outside abs
 
 Running test 845: bugs/subtype-qualified pointcut reference
 Commandline: abc -d bugs bugs/PointcutLibraryTest.java 
-this
 Test.prun()
 PASS: Test 845: "bugs/subtype-qualified pointcut reference" passed.
 
@@ -7619,7 +4549,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@a7991
+LibraryAspect-defined run() for C@167c801
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -7675,16 +4605,11 @@ PASS: Test 866: "bugs/moreInterfaceLibrary/Weaving failure when using injars (no
 
 Running test 870: bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points
 Commandline: abc -d bugs/perCflowAndJar bugs/perCflowAndJar/PerCFlowCompileFromJar.java bugs/perCflowAndJar/PerCFlowCompileFromJarTest.java 
-this
-this
-this
 PASS: Test 870: "bugs/perCflowAndJar/percflow aspects compiled from jars share one instance for all entry points" passed.
 
 
 Running test 872: bugs/throwsSignature/throw derivative pointcuts not advised
 Commandline: abc -d bugs/throwsSignature bugs/throwsSignature/ExceptionBugTest.java bugs/throwsSignature/ExceptionAspect.java 
-this
-this
 Compilation failed with 3 errors, which were matched and verified against the expected errors.
 PASS: Test 872: "bugs/throwsSignature/throw derivative pointcuts not advised" passed.
 
@@ -7798,17 +4723,12 @@ PASS: Test 896: "bugs/Bad parser error recovery in java source" passed.
 
 Running test 897: bugs/compiler issues error on inner aspects when privilieged
 Commandline: abc -d bugs bugs/PrivilegedParsing.java 
-this
-this
-this
-this
 3, 3
 PASS: Test 897: "bugs/compiler issues error on inner aspects when privilieged" passed.
 
 
 Running test 898: bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits
 Commandline: abc -d bugs bugs/AfterThrowingCtor.java 
-this
 PASS: Test 898: "bugs/After throwing advice on ctors doesn't execute for inter-type decl field inits" passed.
 
 
@@ -7903,16 +4823,6 @@ PASS: Test 918: "new/after returning with parameter: matching rules" passed.
 
 Running test 922: bugs/protectedvf/mail list VerifyError with protected access
 Commandline: abc -d bugs/protectedvf bugs/protectedvf/main/Driver.java bugs/protectedvf/main/p2/AbstractTest.aj bugs/protectedvf/main/p1/ConcreteTest.aj 
-this
-this
-this
-this
-this
-this
-this
-this
-this
-this
 The value of the field is 1
 test: test-1, test-1, test-1
 The value of the field when replacing is 1
@@ -7960,22 +4870,18 @@ PASS: Test 92701: "abctests/bugs/ClasscastException on concretization of if(fals
 
 Running test 928: bugs/serialVersionUID/SUID: Before execution advice
 Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
-this
 Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
-this
-? Util.read() obj=Test@18fba00
+? Util.read() obj=Test@1239c8d
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
 Running test 930: bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)
 Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
-this
 Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:ignore bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AroundClosureExecutionAdvice.aj 
-this
 ? Util.fail() ex=java.io.InvalidClassException: Test; local class incompatible: stream classdesc serialVersionUID = 6093543801813805496, local class serialVersionUID = 7648213635056152197
 PASS: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" passed.
 
@@ -7984,7 +4890,7 @@ Running test 933: bugs/serialVersionUID/SUID: thisJoinPoint with clinit method
 Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java 
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
-? Util.read() obj=ClinitTest@16badfc
+? Util.read() obj=ClinitTest@626175
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -7993,30 +4899,26 @@ Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/SuidTest.java bu
 ? Util.write() suid=SuidTest: static final long serialVersionUID = 8904684881596717140L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@f20470
+? Util.read() obj=SuidTest@1860b5b
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
 Running test 938: bugs/serialVersionUID/SUID: Declare extends
 Commandline: abc -d bugs/serialVersionUID bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java 
-this
 Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/DeclareExtends.aj 
-this
 ? Util.read() obj=Thread[Thread-947,5,main]
 PASS: Test 938: "bugs/serialVersionUID/SUID: Declare extends" passed.
 
 
 Running test 940: bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/NonSerializableTest.java bugs/serialVersionUID/DeclareImplements.aj 
-this
 PASS: Test 940: "bugs/serialVersionUID/SUID: Declare implements non-Serializable (compile)" passed.
 
 
 Running test 941: bugs/serialVersionUID/SUID: Declare implements Serializable (compile)
 Commandline: abc -d bugs/serialVersionUID -Xlint:warning bugs/serialVersionUID/NonSerializableTest.java bugs/serialVersionUID/DeclareImplementsSerializable.aj 
-this
 PASS: Test 941: "bugs/serialVersionUID/SUID: Declare implements Serializable (compile)" passed.
 
 
@@ -8043,13 +4945,11 @@ PASS: Test 947: "bugs/fieldsOnInterfaces/declare Object field on interface" pass
 
 Running test 948: bugs/fail in compiling aspect with overriding method introduction with different throws clause 
 Commandline: abc -d bugs bugs/IntertypeDifferentThrows.java 
-this
 PASS: Test 948: "bugs/fail in compiling aspect with overriding method introduction with different throws clause " passed.
 
 
 Running test 949: new/super call in anonymous class created in around advice
 Commandline: abc -d new new/SuperClosure.java 
-super
 PASS: Test 949: "new/super call in anonymous class created in around advice" passed.
 
 
@@ -8170,13 +5070,6 @@ PASS: Test 967: "bugs/compileOrdering/InterTypeMethodDeclaration.java:104" passe
 
 Running test 968: bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts
 Commandline: abc -d bugs bugs/ConstructorMain.java 
-this
-this
-this
-this
-this
-this
-this
 PASS: Test 968: "bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" passed.
 
 
@@ -8204,25 +5097,17 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase2.java 
-this
-this
-this
-this
-Created a PerThis aspect : Testcase2@c04000
-Invoking command bean:  Command@1a9ea71
-hello(Command@1a9ea71)
-Created a PerThis aspect : Testcase2@5ec786
-Invoking command bean:  Command@7d2e9a
-hello again(Command@7d2e9a)
+Created a PerThis aspect : Testcase2@9a9745
+Invoking command bean:  Command@14144c2
+hello(Command@14144c2)
+Created a PerThis aspect : Testcase2@94741
+Invoking command bean:  Command@1252eaf
+hello again(Command@1252eaf)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
 Running test 974: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3
 Commandline: abc -d bugs/IfPerThis bugs/IfPerThis/Testcase3.java 
-this
-this
-this
-this
 PASS: Test 974: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" passed.
 
 
@@ -8233,7 +5118,6 @@ PASS: Test 975: "abctests/eaj/casting/Test of cast pointcuts" passed.
 
 Running test 976: abctests/eaj/global_pointcuts/Test of global and private pointcuts
 Commandline: abc -d abctests/eaj/global_pointcuts -ext abc.eaj.ExtensionInfo abctests/eaj/global_pointcuts/aaa/A.java abctests/eaj/global_pointcuts/bbb/B.java 
-this
 PASS: Test 976: "abctests/eaj/global_pointcuts/Test of global and private pointcuts" passed.
 
 
