@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+java -Xmx512M abc.testing.Main $*

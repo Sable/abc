@@ -15,3 +15,6 @@ soot.loc=${user.home}/soot/classes
 ## Location of Jasmin classes
 jasmin.loc=${user.home}/jasminclasses-sable-1.2.jar
 
+## Location of xact jar
+xact.loc=/usr/local/src/xact/java/xact-complete.jar
+

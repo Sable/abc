@@ -10,7 +10,7 @@
         />
     </target>
 
-    <target name="jars" depends="abc-jar,runtime-jar,harness-jar"/>
+    <target name="jars" depends="abc-jar,runtime-jar,harness-jar,testing-jar"/>
 
     <target name="abc-jar" depends="settings,abc">
         <jar destfile="lib/abc.jar">
@@ -39,10 +39,12 @@
     <target name="testing-jar" depends="settings,testing">
         <jar destfile="lib/abc-testing.jar">
             <fileset dir="testing-classes"/>
+            <zipfileset src="ajc-harness/lib/abc-testing-ajc-part.jar"/>
+            <zipfileset src="${xact.loc}"/>
         </jar>
     </target>
     
-    <target name="testing" depends="settings">
+    <target name="testing" depends="settings,abc">
         <mkdir dir="testing-classes"/>
         <javac
             destdir="testing-classes"
@@ -50,6 +52,13 @@
         >
             <src path="testing-src"/>
             <classpath>
+              <pathelement location="${polyglot.loc}"/>
+              <pathelement location="classes"/>
+              <pathelement location="${polyglot.cupclasses.loc}"/>
+              <pathelement location="${soot.loc}"/>
+              <pathelement location="${jasmin.loc}"/>
+              <pathelement location="${xact.loc}"/>
+              <pathelement location="ajc-harness/lib/abc-testing-ajc-part.jar"/>
             </classpath>
         </javac>
     </target>
@@ -196,6 +205,7 @@
         <delete quiet="true">
             <fileset dir="runtime-classes" includes="**/*.class" />
             <fileset dir="classes" includes="**/*.class" />
+            <fileset dir="testing-classes" includes="**/*.class" />
             <fileset dir="lib" includes="**/*.jar" />
             <fileset dir="ajc-harness/classes" includes="**/*.class" />
             <fileset dir="ajc-harness/lib" includes="abc-tests.jar" />
