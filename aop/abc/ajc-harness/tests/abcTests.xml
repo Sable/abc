@@ -9176,5 +9176,10 @@
        <compile files="ByteProblem.java"/>
     </ajc-test>
 
+    <ajc-test num="982" dir="abctests/bugs"
+        title="needing declare parents to resolve inner class reference">
+       <compile files="DeclareParentsInner.java"/>
+    </ajc-test>
+
 </suite>
 
