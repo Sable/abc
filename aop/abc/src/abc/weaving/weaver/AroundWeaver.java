@@ -155,7 +155,8 @@ public class AroundWeaver {
 			if (adviceappl.sjpInfo.kind.equals("field-get")) {
 				debug("found field-get");
 				if (!(stmtAdv.stmt instanceof AssignStmt)) {
-					throw new RuntimeException(); // TODO: 
+					throw new CodeGenException(
+						"StmtAdviceApplication.stms is expected to be instanceof AssignStmt"); // TODO: 
 				}
 				debug("found assignment statement");
 				AssignStmt assignStmt=(AssignStmt)stmtAdv.stmt;
