@@ -160,7 +160,7 @@ public class Args extends DynamicValuePointcut {
         }
 
     public void registerSetupAdvice
-        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+        (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
 
     public void getFreeVars(Set/*<Var>*/ result) {
         Iterator it=args.iterator();

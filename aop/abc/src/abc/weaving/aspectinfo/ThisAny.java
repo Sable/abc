@@ -57,7 +57,7 @@ public class ThisAny extends DynamicValuePointcut {
         return "this(*)";
     }
     public void registerSetupAdvice
-        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+        (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<String>*/ result) {}
 
         /* (non-Javadoc)

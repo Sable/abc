@@ -56,7 +56,7 @@ public class TargetAny extends DynamicValuePointcut {
         return "target(*)";
     }
     public void registerSetupAdvice
-        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+        (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
     public void getFreeVars(Set/*<Var>*/ result) {}
 
         /* (non-Javadoc)

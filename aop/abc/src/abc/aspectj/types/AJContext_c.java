@@ -147,7 +147,7 @@ public class AJContext_c extends Context_c implements AJContext {
                 return proceed;
         }
 
-        public ClassType aspect() {
+        public ClassType getAspect() {
                 return startHostScope.currentClass();
         }
 

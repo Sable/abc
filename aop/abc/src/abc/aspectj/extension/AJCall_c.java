@@ -238,12 +238,12 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
                                 //                                id.thisReference(nf, ts));
                                     // We are in an aspect method. The SuperAccessorMethods object is stored in the
                                     // enclosing aspect.
-                                    AspectType aspect = ((AJContext)visitor.context()).currentAspect();
-                                    if(aspect == null) {
+                                    AspectType aspct = ((AJContext)visitor.context()).currentAspect();
+                                    if(aspct == null) {
                                         // Is this really impossible? Depends on how exactly the nesting works, investigate
                                         throw new InternalCompilerError("Intertype method " + c.name() + " not enclosed by aspect");
                                     }
-                                    c = aspect.getAccessorMethods().accessorDispatch(nf, ts, c, id.host().type().toClass(),
+                                    c = aspct.getAccessorMethods().accessorDispatch(nf, ts, c, id.host().type().toClass(),
                                                 id.thisReference(nf, ts));
                                 }
                         }

@@ -56,7 +56,7 @@ public abstract class LexicalPointcut extends Pointcut {
     }
 
     public void registerSetupAdvice
-        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap) {}
+        (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap) {}
 
     public void getFreeVars(Set/*<String>*/ result) {}
 

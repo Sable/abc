@@ -82,14 +82,14 @@ public class FieldDel_c extends JL_c implements MakesAspectMethods
                 IntertypeDecl id = (IntertypeDecl) visitor.intertypeDecl();
                 /*return id.getSupers().superFieldGetter(nf, ts, f, id.host().type().toClass(),
                                                                   id.thisReference(nf, ts));*/
-                    AspectType aspect = ((AJContext)visitor.context()).currentAspect();
-                    if(aspect == null) {
+                    AspectType aspct = ((AJContext)visitor.context()).currentAspect();
+                    if(aspct == null) {
                         // Is this really impossible? Depends on how exactly the nesting works, investigate
                         throw new InternalCompilerError("Intertype method not enclosed by aspect");
                     }
-                    getter = aspect.getAccessorMethods().accessorGetter(nf, ts, f, id.host().type().toClass(),
+                    getter = aspct.getAccessorMethods().accessorGetter(nf, ts, f, id.host().type().toClass(),
                         id.thisReference(nf, ts));
-                    setter = aspect.getAccessorMethods().accessorSetter(nf, ts, f, id.host().type().toClass(),
+                    setter = aspct.getAccessorMethods().accessorSetter(nf, ts, f, id.host().type().toClass(),
                         id.thisReference(nf, ts), (Expr)f);
                     return new JjAccessField_c(f.position(), getter, setter, f);
             }

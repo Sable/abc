@@ -37,7 +37,7 @@ public class PCLocalVars_c extends Pointcut_c
                            implements PCLocalVars
 {
     protected List formals;
-    protected Pointcut pointcut;
+    protected Pointcut pc;
 
     public Set pcRefs() {
         return new HashSet();
@@ -80,27 +80,27 @@ public class PCLocalVars_c extends Pointcut_c
 
         // write pointcut
         w.begin(2);
-        printBlock(pointcut, w, pp);
+        printBlock(pc, w, pp);
         w.end();
 
         w.write(")");
     }
 
-    public PCLocalVars_c(Position pos, List formals, Pointcut pointcut)
+    public PCLocalVars_c(Position pos, List formals, Pointcut pc)
     {
         super(pos);
         this.formals = formals;
-        this.pointcut = pointcut;
+        this.pc = pc;
     }
 
     public Precedence precedence()
     {
-        return pointcut.precedence();
+        return pc.precedence();
     }
 
     public Collection mayBind() throws SemanticException
     {
-        Collection results = pointcut.mayBind();
+        Collection results = pc.mayBind();
         Formal f;
         Iterator i = formals.iterator();
 
@@ -116,7 +116,7 @@ public class PCLocalVars_c extends Pointcut_c
 
     public Collection mustBind()
     {
-        Collection results = pointcut.mustBind();
+        Collection results = pc.mustBind();
         Formal f;
         Iterator i = formals.iterator();
 
@@ -127,14 +127,14 @@ public class PCLocalVars_c extends Pointcut_c
         return results;
     }
 
-    protected Node reconstruct(List formals, Pointcut pointcut)
+    protected Node reconstruct(List formals, Pointcut pc)
     {
         if (!CollectionUtil.equals(formals, this.formals) ||
-                pointcut != this.pointcut)
+                pc != this.pc)
         {
             PCLocalVars_c n = (PCLocalVars_c) copy();
             n.formals = formals;
-            n.pointcut = pointcut;
+            n.pc = pc;
             return n;
         }
         return this;
@@ -150,8 +150,8 @@ public class PCLocalVars_c extends Pointcut_c
     public Node visitChildren(NodeVisitor v)
     {
         List formals = visitList(this.formals, v);
-        Pointcut pointcut = (Pointcut) visitChild(this.pointcut, v);
-        return reconstruct(formals, pointcut);
+        Pointcut pc = (Pointcut) visitChild(this.pc, v);
+        return reconstruct(formals, pc);
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut()
@@ -171,7 +171,7 @@ public class PCLocalVars_c extends Pointcut_c
         }
 
         return new abc.weaving.aspectinfo.LocalPointcutVars(
-                               pointcut.makeAIPointcut(), wfs, position());
+                               pc.makeAIPointcut(), wfs, position());
     }
 
     public void aspectMethodsEnter(AspectMethods visitor)
@@ -202,7 +202,7 @@ public class PCLocalVars_c extends Pointcut_c
     }
 
     public boolean isDynamic() {
-        return pointcut.isDynamic();
+        return pc.isDynamic();
     }
 
 

@@ -194,7 +194,7 @@ public abstract class Pointcut extends Syntax {
     // changed to protected since other people shouldn't need to call it,
     // but I can't be bothered to change the modifiers on the subclasses
     protected abstract void registerSetupAdvice
-        (Aspect aspect,Hashtable/*<String,AbcType>*/ typeMap);
+        (Aspect aspct,Hashtable/*<String,AbcType>*/ typeMap);
 
     // Get a list of free variables bound by this pointcut
     public abstract void getFreeVars(Set/*<String>*/ result);
