@@ -519,27 +519,28 @@ public class Main {
     }
 
     public void initSoot() throws IllegalArgumentException {
+        String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
+        //System.out.println(classpath);
+        if (!soot.options.Options.v().parse(soot_argv)) {
+            throw new IllegalArgumentException("Soot usage error");
+        }
+
 	Scene.v().setSootClassPath(classpath);
 
-	Scene.v().addBasicClass("org.aspectj.runtime.internal.CFlowStack");
-	Scene.v().addBasicClass("org.aspectj.runtime.reflect.Factory");
+	Scene.v().addBasicClass("org.aspectj.runtime.internal.CFlowStack",SootClass.SIGNATURES);
+	Scene.v().addBasicClass("org.aspectj.runtime.reflect.Factory",SootClass.SIGNATURES);
 	Scene.v().addBasicClass("org.aspectj.lang.JoinPoint");
 	Scene.v().addBasicClass("org.aspectj.lang.JoinPoint$StaticPart");
-	Scene.v().addBasicClass("org.aspectj.lang.SoftException");
+	Scene.v().addBasicClass("org.aspectj.lang.SoftException",SootClass.SIGNATURES);
 	Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException");
-	Scene.v().addBasicClass("abc.runtime.internal.CFlowCounter");
-	Scene.v().addBasicClass("abc.runtime.reflect.AbcFactory");
+	Scene.v().addBasicClass("abc.runtime.internal.CFlowCounter",SootClass.SIGNATURES);
+	Scene.v().addBasicClass("abc.runtime.reflect.AbcFactory",SootClass.SIGNATURES);
 
 	// FIXME: make ClassLoadException in soot, and catch it here 
 	// and check what was wrong
 
 	Scene.v().loadBasicClasses();
 
-        String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
-        //System.out.println(classpath);
-        if (!soot.options.Options.v().parse(soot_argv)) {
-            throw new IllegalArgumentException("Soot usage error");
-        }
     }
 
     public void loadJars() throws CompilerFailedException {
@@ -711,10 +712,14 @@ public class Main {
                 if(!method.isConcrete()) continue;
                 if(method.getName().equals(SootMethod.staticInitializerName)) 
                     continue;
-
-                //FIXME: is "jtp.jec" sensible?
-                exccheck.transform(method.getActiveBody(),"jtp.jec",options);
-
+		try {
+		    //FIXME: is "jtp.jec" sensible?
+		    exccheck.transform(method.getActiveBody(),"jtp.jec",options);
+		} catch(InternalCompilerError e) {
+		    throw e;
+		} catch(Throwable e) {
+		    throw new InternalCompilerError("Exception while checking exceptions in "+method,e);
+		}
             }
         }
     }
