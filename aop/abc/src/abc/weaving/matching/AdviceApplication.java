@@ -38,7 +38,7 @@ public abstract class AdviceApplication {
 	}
     };
 
-    SJPInfo sjpInfo;
+    public SJPInfo sjpInfo;
 	
 
     public ShadowPoints shadowpoints; // added by LJH to keep track of
