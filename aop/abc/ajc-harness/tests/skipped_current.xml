@@ -1,6 +1,12 @@
 <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="new" pr="663"
+ <ajc-test dir="new/pr456" pr="456" title="advice on advice in usejavac mode"
+      keywords="from-resolved_10x">
+        <compile options="-usejavac"
+          files="Test_AroundVarBug.java,AroundVarBug.java"/>
+        <run class="Test_AroundVarBug"/>
+    </ajc-test>
+<ajc-test dir="new" pr="663"
       title="no error when public class is in file of a different name"
       keywords="from-resolved_105,purejava">
         <compile options="-strict" files="PublicClassWrongFilename.java">
