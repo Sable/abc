@@ -676,25 +676,222 @@ public class IntertypeAdjuster {
 	}
 	
 
-    private boolean implementsInterface( SootClass child, SootClass iface ) {
-        while(true) {
-            if( child.getInterfaces().contains( iface ) ) return true;
-            if( !child.hasSuperclass() ) return false;
-            SootClass superClass = child.getSuperclass();
-            if( superClass == child ) throw new RuntimeException( "Error: cycle in class hierarchy" );
-            child = superClass;
-        }
+   
+    
+    /** weaving of intertype field initialisations.
+     *
+     * initialisers for intertype fields are woven into each super-calling constructor of the target class,
+     * immediately after the super call.
+     * 
+     * The order in which the initialisations occur is determined as follows: 
+     * 
+     * - multiple initialisations from the same aspect onto the same class occur in 
+     *   the same textual order as in the aspect
+     * 
+     * - when there are multiple aspects that introduce initialisers onto the same class, the order is determined
+     *   by precedence: if A precedes B, then A:(C.foo) is initialised before B:(C.bar) 
+     *   An error should be flagged if A and B are in the same precedence cycle.
+     * 
+     * - in cases where the field arrived via an interface, the order is determined by the order of
+     *   the interface initialisation joinpoints, as defined below.
+     * 
+     *   Every super-calling constructor contains, immediately after the super call, a
+	 *   sequence of interface initialization joinpoints. The list of interfaces in this
+     *   sequence can be constructed as follows:
+     * 
+     *   Call the class of the constructor C, and call the superclass of C D.
+     * 
+     *      For each interface I directly implemented by C in textual order
+     *         process(I)
+     *
+     *   where process(I) is
+     *      if D does not (directly or indirectly) implement I and I is not in the list
+     *       for each direct superinterface J of I in textual order
+     *          process(J)
+     *       add I to the list
+     *
+     */
+    
+       
+    private List getInterfaceInits(SootClass c) {
+		SootClass d = c.getSuperclass();
+		List initJoinPoints = new LinkedList();
+		for (Iterator itfs = c.getInterfaces().iterator(); itfs.hasNext(); ) {
+			SootClass i = (SootClass) itfs.next();
+			process(d,i,initJoinPoints);
+		}
+		return initJoinPoints;
     }
     
-	public void initialisers() {
-		//	weave in intertype fields
-			for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
-				final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
-				initialiseField( ifd );
+    
+    private void process(SootClass d, SootClass i, List list) {
+    	// not entirely sure about the first conjunct
+    	if (!hierarchy.canStoreType(d.getType(),i.getType()) && !list.contains(i)) {
+    		for (Iterator itfs = i.getInterfaces().iterator(); itfs.hasNext(); ) {
+    			SootClass j = (SootClass) itfs.next();
+    			process(d,j,list);
+    		}
+    		list.add(i);
+    	}
+    }
+    
+    
+    private boolean precedes(IntertypeFieldDecl ifd1, IntertypeFieldDecl ifd2) {
+    	if (ifd1.getInit() == null || ifd2.getInit()== null) return false;
+    	if (ifd1.getAspect() == ifd2.getAspect())
+    		return ifd1.getPosition().line() < ifd2.getPosition().line();
+    	else { int cmp = GlobalAspectInfo.v().getPrecedence(ifd1.getAspect(),ifd2.getAspect()) ;
+    			if (cmp == GlobalAspectInfo.PRECEDENCE_NONE)
+			       abc.main.Main.v().error_queue.enqueue(new polyglot.util.ErrorInfo(
+														   polyglot.util.ErrorInfo.WARNING,
+														   "Unspecified order with intertype initialiser at "+ ifd1.getPosition() +
+														   "(consider using a precedence declaration).",
+														   ifd2.getPosition()));
+    		   return (cmp == GlobalAspectInfo.PRECEDENCE_FIRST);
+    	}
+    }
+    
+    
+    private IntertypeFieldDecl findNoPrec(List ifds) {
+    	for (Iterator ifdsIt = ifds.iterator(); ifdsIt.hasNext(); ) {
+    		IntertypeFieldDecl cand = (IntertypeFieldDecl) ifdsIt.next();
+    		boolean noprec = true;
+    		for (Iterator ifdsIt2 = ifds.iterator(); ifdsIt2.hasNext() && noprec; ) {
+    			IntertypeFieldDecl cmp = (IntertypeFieldDecl) ifdsIt2.next();
+    			noprec = !precedes(cmp,cand);
+    		}
+    		if (noprec) return cand;
+    	}
+    	IntertypeFieldDecl cand1 = (IntertypeFieldDecl) ifds.get(0);
+    	IntertypeFieldDecl cand2 = (IntertypeFieldDecl) ifds.get(1);
+    	abc.main.Main.v().error_queue.enqueue(new polyglot.util.ErrorInfo(
+	    	                                           polyglot.util.ErrorInfo.SEMANTIC_ERROR,
+	    	                                           "Precedence conflict with intertype initialiser at "+cand1.getPosition()+".",
+	    	                                           cand2.getPosition()));
+    	return (IntertypeFieldDecl) ifds.get(0);
+    }
+    
+    private List sortWithPrec(List ifds) {
+    	List result = new LinkedList();
+    	List work = new LinkedList(ifds);
+    	while (!work.isEmpty()) {
+    		IntertypeFieldDecl ifd = findNoPrec(work);
+    		work.remove(ifd);
+    		result.add(0,ifd); // reverse order!
+    	}
+    	return result;
+    }
+    
+	private class InterfaceInits {
+		SootClass intrface;
+		List/*<IntertypeFieldDecl>*/ ifds = new LinkedList(); 
+		InterfaceInits(SootClass itf) {
+			intrface = itf;
+		}
+	}
+	
+	private void sortWithPrec(InterfaceInits ifis) {
+		ifis.ifds = sortWithPrec(ifis.ifds);
+	}
+	
+	private class ITDInits {
+		List/*<InterfaceInits>*/ interfaceInits = new LinkedList();
+		List/*<IntertypeFieldDecl>*/ instanceInits = new LinkedList();
+		List/*<IntertypeFieldDecl>*/ staticInits = new LinkedList();
+		private void add(IntertypeFieldDecl ifd) {
+			if (Modifier.isStatic(ifd.getTarget().getModifiers())) {
+				staticInits.add(ifd); return;
+			}
+			SootClass targetClass = ifd.getTarget().getDeclaringClass().getSootClass();
+			if (Modifier.isInterface(ifd.getTarget().getDeclaringClass().getSootClass().getModifiers())) {
+				for (Iterator itfi = interfaceInits.iterator(); itfi.hasNext(); ) {
+					InterfaceInits itf = (InterfaceInits) itfi.next();
+					if (itf.intrface.equals(targetClass)) {
+						itf.ifds.add(ifd);
+						return;
+					}
+				}
+				throw new InternalCompilerError("Interface init without an initialisation joinpoint");
+			}
+			instanceInits.add(ifd);
+		}
+		
+	}
+	
+	private void sortWithPrec(ITDInits itdinits) {
+		for (Iterator itfis = itdinits.interfaceInits.iterator(); itfis.hasNext(); ) {
+			InterfaceInits ifi = (InterfaceInits) itfis.next();
+			sortWithPrec(ifi);
+		}
+		itdinits.instanceInits = sortWithPrec(itdinits.instanceInits);
+		itdinits.staticInits = sortWithPrec(itdinits.staticInits);
+	}
+	
+	
+	private Set getITDFieldsOfclass(Map classToITDfields, SootClass cl) {
+		if (classToITDfields.containsKey(cl)) {
+			return (Set) classToITDfields.get(cl);
+		} else return new HashSet();
+	}
+	
+	private Map invertFieldITTargetsMap() {
+		Map result = new HashMap();
+		for (Iterator entries = fieldITtargets.entrySet().iterator(); entries.hasNext(); ) {
+			Map.Entry e = (Map.Entry) entries.next();
+			IntertypeFieldDecl ifd = (IntertypeFieldDecl) e.getKey();
+			Set classes = (Set) e.getValue();
+			for (Iterator cls = classes.iterator(); cls.hasNext(); ) {
+				SootClass cl = (SootClass) cls.next();
+				Set ifds;
+				if (result.containsKey(cl))
+					ifds = (Set) result.get(cl);
+				else
+					ifds = new HashSet();
+				ifds.add(ifd);
+				result.put(cl,ifds);
 			}
 		}
+		return result;
+	}
+	
+	public void initialisers() {
+		Map classToITDfields = invertFieldITTargetsMap();
+		for (Iterator wit = GlobalAspectInfo.v().getWeavableClasses().iterator(); wit.hasNext(); ) {
+			SootClass cl = ((AbcClass) wit.next()).getSootClass();
+			ITDInits itdins = new ITDInits();
+			List initItfs = getInterfaceInits(cl);
+			for (Iterator iitfs = initItfs.iterator(); iitfs.hasNext(); ) {
+				SootClass iitf = (SootClass) iitfs.next();
+				itdins.interfaceInits.add(new InterfaceInits(iitf));
+			}
+			for (Iterator cls = getITDFieldsOfclass(classToITDfields,cl).iterator(); cls.hasNext(); ) {
+				IntertypeFieldDecl ifd = (IntertypeFieldDecl) cls.next();
+				itdins.add(ifd);
+			}
+			sortWithPrec(itdins);
+			initialiseFields(cl,itdins);
+		}
+	}
+	
+	
+	public void initialiseFields(SootClass cl, ITDInits itdins) {
+		for (Iterator ifds = itdins.staticInits.iterator(); ifds.hasNext(); ) {
+			IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
+			initialiseStaticField(cl,ifd);
+		}
+		for (Iterator ifds = itdins.instanceInits.iterator(); ifds.hasNext(); ) {
+			IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
+			initialiseInstanceField(cl,ifd);
+		}
+		for (Iterator ifisIt = itdins.interfaceInits.iterator(); ifisIt.hasNext(); ) {
+			InterfaceInits ifis = (InterfaceInits) ifisIt.next();
+			initialiseInterfaceFields(cl,ifis);
+		}
+	}
+	
+	
     
-	private void initialiseField( IntertypeFieldDecl ifd ) {
+	private void initialiseInstanceField( SootClass cl, IntertypeFieldDecl ifd ) {
 		if (ifd.getInit() == null)
 			return;
 		FieldSig field = ifd.getTarget();
@@ -704,12 +901,27 @@ public class IntertypeAdjuster {
 		modifiers &= ~Modifier.PRIVATE;
 		modifiers &= ~Modifier.PROTECTED;
 
-		Set targets = (Set) fieldITtargets.get(ifd);
-		for (Iterator classIt = targets.iterator(); classIt.hasNext(); ) {
-			SootClass cl = (SootClass) classIt.next();
-			// The field should definitely be in the class itself
-			weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
+		weaveInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
+	}
+	
+	private void initialiseInterfaceFields( SootClass cl, InterfaceInits ifis ) {
+		for (Iterator ifds = ifis.ifds.iterator(); ifds.hasNext() ; ) {
+			IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
+			initialiseInstanceField(cl,ifd);
 		}
+	}
+	
+	private void initialiseStaticField( SootClass cl, IntertypeFieldDecl ifd ) {
+		if (ifd.getInit() == null)
+			return;
+		FieldSig field = ifd.getTarget();
+
+		int modifiers = field.getModifiers();
+		modifiers |= Modifier.PUBLIC;
+		modifiers &= ~Modifier.PRIVATE;
+		modifiers &= ~Modifier.PROTECTED;
+
+		weaveStaticInit(ifd,cl.getField(field.getName(),field.getType().getSootType()),modifiers, cl);
 	}
 	
 	private SootMethod addStaticInitToAspect(IntertypeFieldDecl ifd, SootField sf, int modifiers, SootClass cl) {
@@ -813,66 +1025,69 @@ public class IntertypeAdjuster {
 		SootField sf,
 		int modifiers,
 		SootClass cl) {
-		if (Modifier.isStatic(modifiers)) {
-			// add a call to the initialiser method from clinit of target class
-		    // if it doesn't exist, create one.	
-				SootMethod clinit; Body b;
-				try { 
-				    clinit = cl.getMethod(SootMethod.staticInitializerName,
-							   new ArrayList());
-					b = clinit.getActiveBody();
-				} catch (java.lang.RuntimeException s) {
-					clinit = new SootMethod( 
-								SootMethod.staticInitializerName,   
-								new ArrayList(),
-								VoidType.v(),
-								Modifier.STATIC | Modifier.PUBLIC );
-					b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
-					cl.addMethod(clinit);
-					Chain ss = b.getUnits();
-					ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
-					ss.add(ret);
-				}
+		// add a call to the initialiser method to any constructor of target class
+		// that calls "super.<init>"
+		for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
+			SootMethod clsm = (SootMethod) ms.next();
+			if (clsm.getName() == "<init>") {
+				Body b = clsm.getActiveBody();
 				Chain ss = b.getUnits();
-			// find first normal statement
-				Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
-			// create a call to a method that calls the appropriate init from the aspect.
-			// this method is necessary to handle "within" correctly: the init happens
-			// lexically within the aspect
-				SootMethod initdel = addStaticInitToAspect(ifd,sf,modifiers,cl);
-				List args = new ArrayList();
-				InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initdel.makeRef(),args);
-				InvokeStmt is = Jimple.v().newInvokeStmt(ie);
-				ss.insertBefore(is,initstmt);
-		}
-		else {
-			// add a call to the initialiser method to any constructor of target class
-			// that calls "super.<init>"
-			for (Iterator ms = cl.methodIterator(); ms.hasNext(); ) {
-				SootMethod clsm = (SootMethod) ms.next();
-				if (clsm.getName() == "<init>") {
-					Body b = clsm.getActiveBody();
-					Chain ss = b.getUnits();
-					// find unique super.<init>, throw exception if it's not unique
-					Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
-					// the following needs to be inserted right after initstmt
-					if (initstmt.getInvokeExpr().getMethodRef().declaringClass() == cl.getSuperclass()) {
-						Chain units = b.getUnits();
-						Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
-						// create a call to a method that calls the appropriate init from the aspect.
-						// this method is necessary to handle "within" correctly: the init happens
-						// lexically within the aspect
-					    SootMethod initdel = addInstInitToAspect(ifd, sf, modifiers, cl);
-					    List args = new ArrayList();
-						args.add(b.getThisLocal());
-					    InvokeExpr ie = Jimple.v().newStaticInvokeExpr
-						(initdel.makeRef(),args);
-					    InvokeStmt is = Jimple.v().newInvokeStmt(ie);
-					    units.insertBefore(is,followingstmt);
-					}
+				// find unique super.<init>, throw exception if it's not unique
+				Stmt initstmt = abc.soot.util.Restructure.findInitStmt(ss);
+				// the following needs to be inserted right after initstmt
+				if (initstmt.getInvokeExpr().getMethodRef().declaringClass() == cl.getSuperclass()) {
+					Chain units = b.getUnits();
+					Stmt followingstmt = (Stmt) units.getSuccOf(initstmt);
+					// create a call to a method that calls the appropriate init from the aspect.
+					// this method is necessary to handle "within" correctly: the init happens
+					// lexically within the aspect
+				    SootMethod initdel = addInstInitToAspect(ifd, sf, modifiers, cl);
+				    List args = new ArrayList();
+					args.add(b.getThisLocal());
+				    InvokeExpr ie = Jimple.v().newStaticInvokeExpr
+					(initdel.makeRef(),args);
+				    InvokeStmt is = Jimple.v().newInvokeStmt(ie);
+				    units.insertBefore(is,followingstmt);
 				}
 			}
 		}
+	}
+
+	private void weaveStaticInit(
+		IntertypeFieldDecl ifd,
+		SootField sf,
+		int modifiers,
+		SootClass cl) {
+		// add a call to the initialiser method from clinit of target class
+		// if it doesn't exist, create one.	
+			SootMethod clinit; Body b;
+			try { 
+			    clinit = cl.getMethod(SootMethod.staticInitializerName,
+						   new ArrayList());
+				b = clinit.getActiveBody();
+			} catch (java.lang.RuntimeException s) {
+				clinit = new SootMethod( 
+							SootMethod.staticInitializerName,   
+							new ArrayList(),
+							VoidType.v(),
+							Modifier.STATIC | Modifier.PUBLIC );
+				b = Jimple.v().newBody(clinit); clinit.setActiveBody(b);
+				cl.addMethod(clinit);
+				Chain ss = b.getUnits();
+				ReturnVoidStmt ret = Jimple.v().newReturnVoidStmt();
+				ss.add(ret);
+			}
+			Chain ss = b.getUnits();
+		// find first normal statement
+			Stmt initstmt = abc.soot.util.Restructure.findFirstRealStmt(clinit,ss);
+		// create a call to a method that calls the appropriate init from the aspect.
+		// this method is necessary to handle "within" correctly: the init happens
+		// lexically within the aspect
+			SootMethod initdel = addStaticInitToAspect(ifd,sf,modifiers,cl);
+			List args = new ArrayList();
+			InvokeExpr ie = Jimple.v().newStaticInvokeExpr(initdel.makeRef(),args);
+			InvokeStmt is = Jimple.v().newInvokeStmt(ie);
+			ss.insertBefore(is,initstmt);
 	}
 
 	
