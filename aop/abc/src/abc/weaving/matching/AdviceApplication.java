@@ -94,7 +94,7 @@ public abstract class AdviceApplication {
 			// Mostly this is just to eliminate advice at shadow points
 			// where it can't apply - e.g. after advice at handlers
 			// ajc gives a warning if we throw away a match here; 
-			// we probably should too.
+			// we probably should too. (FIXME)
 			// In the case of AfterReturningArg it does generate a real 
 			// residue, but this may go away if we put the return value
 			// in the shadowpoints.
