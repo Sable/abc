@@ -34,6 +34,7 @@ import abc.aspectj.types.InterTypeFieldInstance_c;
 
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo
@@ -136,10 +137,11 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	}
 	
 	public static void overrideITDField(ClassType pht, FieldInstance fi) {
-		FieldInstance toInsert = fi; //.container(pht);	
+		FieldInstance toInsert = fi; //.container(pht);
+		boolean added = false;
 		if (pht.fieldNamed(fi.name())!= null) {
 			List fis = fieldsNamed(pht,fi.name());
-			boolean added = false;
+			
 			for (Iterator fisIt = fis.iterator(); fisIt.hasNext(); ) {
 				FieldInstance finst = (FieldInstance) fisIt.next();
 				if (zaps(fi,finst) && !added){   
@@ -152,7 +154,9 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 					}
 				else if (!added) { pht.fields().add(toInsert); added = true; } 
 			}
-		} else pht.fields().add(toInsert); 
+		} else  {pht.fields().add(toInsert); added=true;}
+		if (added)
+			GlobalAspectInfo.v().registerWeave(AbcFactory.AbcClass(pht));
 	}
 	
 	// replace this by a call to the appropriate structure!

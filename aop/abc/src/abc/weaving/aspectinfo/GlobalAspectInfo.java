@@ -30,6 +30,7 @@ public class GlobalAspectInfo {
 
     private List/*<AbcClass>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();
+    private Set/*<AbcClass>*/ wovenclasses = new HashSet(); // classes that ITDs have been woven into
     
     private List/*<IntertypeFieldDecl>*/ ifds = new LinkedList(); // because we want to add at the front
     private List/*<IntertypeMethodDecl>*/ imds = new ArrayList();
@@ -515,6 +516,17 @@ public class GlobalAspectInfo {
 		accessor_of_field.put(ms,fs);
 	}
 
+	public void registerWeave(AbcClass cl) {
+		wovenclasses.add(cl);
+	}
+	
+	public Set getWovenClasses() {
+		return wovenclasses;
+	}
+	
+	public void registerSourceClass(AbcClass cl) {
+		wovenclasses.remove(cl);
+	}
     
   
 

@@ -37,6 +37,7 @@ import abc.aspectj.types.InterTypeConstructorInstance_c;
 
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     implements IntertypeConstructorDecl, ContainsAspectInfo
@@ -145,10 +146,10 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 			// System.out.println("instance to insert:"+ " origin=" + toinsert.origin() +
 			//										  " container=" + toinsert.container() +
 			//										  " flags=" + toinsert.flags())	;
+			boolean added = false;
 			if (hasConstructor(pht,mi)) {
 				// System.out.println("it has the constructor already");
 				List mis = constructors(pht,mi.formalTypes());
-				boolean added = false;
 				for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
 					// System.out.println("try next instance");
 					ConstructorInstance minst = (ConstructorInstance) misIt.next();
@@ -166,9 +167,12 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 										} 
 				}
 			} else {pht.constructors().add(toinsert);
+					added = true;
 				// System.out.println("added");
 				} 
 			// System.out.println("exit overrideITDconstructor");
+			if (added) 
+				GlobalAspectInfo.v().registerWeave(AbcFactory.AbcClass(pht));
 		}
 	
 		static boolean fromInterface(ConstructorInstance mi) {

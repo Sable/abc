@@ -149,10 +149,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		// System.out.println("instance to insert:"+ " origin=" + toinsert.origin() +
 		//                                          " container=" + toinsert.container() +
 		//                                          " flags=" + toinsert.flags())	;
+		boolean added = false;
 		if (pht.hasMethod(mi)) {
 			// System.out.println("it has the method already");
 			List mis = pht.methods(mi.name(),mi.formalTypes());
-			boolean added = false;
 			for (Iterator misIt = mis.iterator(); misIt.hasNext(); ) {
 				MethodInstance minst = (MethodInstance) misIt.next();
 				if (zaps(mi,minst) && !added){   
@@ -168,8 +168,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 									// System.out.println("added1");
 									} 
 			}
-		} else {pht.methods().add(toinsert); // System.out.println("added2");
+		} else {pht.methods().add(toinsert); added=true; // System.out.println("added2");
 					} 
+		if (added)
+			GlobalAspectInfo.v().registerWeave(AbcFactory.AbcClass(pht));
 		// System.out.println("exit overrideITDmethod");
 	}
 

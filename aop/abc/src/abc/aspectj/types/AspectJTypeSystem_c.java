@@ -474,6 +474,14 @@ public class AspectJTypeSystem_c
 
 				   // did we find a suitable implementation of the method mi?
 				   if (!implFound && !ct.flags().isAbstract()) {
+					   	if (mi instanceof InterTypeMemberInstance) {
+					   		InterTypeMemberInstance itmi = (InterTypeMemberInstance) mi;
+							throw new SemanticException(ct.fullName() + " should be " +
+														   "declared abstract; it does not define " +
+														   mi.signature() + ", which was injected into " +
+														   rt.toClass().fullName() + " by aspect " +itmi.origin(), 
+														   itmi.position());
+					   	}
 					   throw new SemanticException(ct.fullName() + " should be " +
 							   "declared abstract; it does not define " +
 							   mi.signature() + ", which is declared in " +

@@ -68,7 +68,7 @@ public class CleanAspectMembers extends NodeVisitor {
 		    if (m instanceof IntertypeFieldDecl) {
 		    	IntertypeFieldDecl itfd = (IntertypeFieldDecl) m;
 		    	ParsedClassType hostType = (ParsedClassType)itfd.host().type();
-		    	hostType.fields().remove(hostType.fieldNamed(itfd.name()));
+		    	// hostType.fields().remove(hostType.fieldNamed(itfd.name()));
 		    	pct.fields().remove(itfd.fieldInstance());
 		    }
 			if (m instanceof PointcutDecl) {
@@ -79,7 +79,7 @@ public class CleanAspectMembers extends NodeVisitor {
 				// System.out.println("Cleaning out intertype constructor" + m);
 				IntertypeConstructorDecl itmd = (IntertypeConstructorDecl) m;
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
-				hostType.constructors().remove(itmd.constructorInstance());
+				// hostType.constructors().remove(itmd.constructorInstance());
 				pct.constructors().remove(itmd.constructorInstance());
 			}
 		    // This must be removed
@@ -87,19 +87,21 @@ public class CleanAspectMembers extends NodeVisitor {
 			if (m instanceof IntertypeMethodDecl) {
 				IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) m;
 				ParsedClassType hostType = (ParsedClassType) itmd.host().type();
-				if (!(itmd.host().type().toClass().flags().isInterface()))
-					hostType.methods().remove(itmd.itMethodInstance);
+			//	if (!(itmd.host().type().toClass().flags().isInterface()))
+			//		hostType.methods().remove(itmd.itMethodInstance);
 				if (!itmd.flags().isAbstract()) // || (itmd.host().type().toClass().flags().isInterface()))
 					newmembers.add(itmd);
 			} else
 		    	newmembers.add(m);
 			}
 	    }
+	 
+	 	/*
 	    if (cd.type().toClass().flags().isInterface()) {
 	    	List mis = cd.type().toClass().methods();
 	    	for (Iterator miss = mis.iterator(); miss.hasNext(); ) {
 	    		MethodInstance mii = (MethodInstance) miss.next();
-	    		if (mii instanceof InterTypeMethodInstance_c /* && !(cd.type().toClass().hasMethod(mii)) */ ) {
+	    		if (mii instanceof InterTypeMethodInstance_c  ) {
 	    			boolean nonITDtoo = false; // is there another instance of mii in cd that is not put there by an ITD?
 	    			for (Iterator miIt = mis.iterator(); miIt.hasNext(); ) {
 	    				MethodInstance miLoc = (MethodInstance) miIt.next();
@@ -132,7 +134,7 @@ public class CleanAspectMembers extends NodeVisitor {
 	    			}
 	    		}
 	    	}
-	    }
+	    } */
 	    return nf.ClassDecl(cd.position(), cd.flags(), cd.name(), cd.superClass(), cd.interfaces(),
 				nf.ClassBody(cd.body().position(), newmembers))
 		.type(pct);

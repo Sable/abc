@@ -48,7 +48,10 @@ public class AJClassBody_c extends ClassBody_c {
 	}
 	
 	protected void duplicateConstructorCheck(TypeChecker tc) throws SemanticException {
-		 ClassType type = tc.context().currentClass();
+		duplicateConstructorCheck(tc.context().currentClass());
+	}
+	
+	static void duplicateConstructorCheck(ClassType type) throws SemanticException {
 
 		 ArrayList l = new ArrayList(type.constructors());
 
@@ -68,11 +71,11 @@ public class AJClassBody_c extends ClassBody_c {
 		 }
 	 }
 	
-	private boolean ITDoks(MemberInstance ci, MemberInstance cj) {
+	private static boolean ITDoks(MemberInstance ci, MemberInstance cj) {
 			return ITDok(ci,cj) || ITDok(cj,ci);
 	}
 	
-	private boolean ITDok(MemberInstance ci, MemberInstance cj) {
+	private static boolean ITDok(MemberInstance ci, MemberInstance cj) {
 		AspectJTypeSystem_c ts = (AspectJTypeSystem_c) ci.typeSystem();
 		return // a private ITD cannot conflict with anything that's already there
 		            ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate()) &&
@@ -97,8 +100,10 @@ public class AJClassBody_c extends ClassBody_c {
 	}
 	
 	protected void duplicateFieldCheck(TypeChecker tc) throws SemanticException {
-		  ClassType type = tc.context().currentClass();
-
+		duplicateFieldCheck(tc.context().currentClass());
+	}
+	
+	static void duplicateFieldCheck(ClassType type) throws SemanticException {
 		  ArrayList l = new ArrayList(type.fields());
 
 		  for (int i = 0; i < l.size(); i++) {
@@ -119,8 +124,10 @@ public class AJClassBody_c extends ClassBody_c {
 	  
 
 	protected void duplicateMethodCheck(TypeChecker tc) throws SemanticException {
-		ClassType type = tc.context().currentClass();
-		TypeSystem ts = tc.typeSystem();
+		duplicateMethodCheck(tc.context().currentClass());
+	}
+	
+	static void duplicateMethodCheck(ClassType type) throws SemanticException {
 
 		ArrayList l = new ArrayList(type.methods());
 
@@ -130,7 +137,7 @@ public class AJClassBody_c extends ClassBody_c {
 			for (int j = i+1; j < l.size(); j++) {
 				MethodInstance mj = (MethodInstance) l.get(j);
 
-				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj)) {
+				if (mi.isSameMethod(mj) && !ITDoks(mi,mj)) {
 					if (mi instanceof InterTypeMemberInstance) {
 						InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) mi;
 						if (mj instanceof InterTypeMemberInstance) {
@@ -165,6 +172,12 @@ public class AJClassBody_c extends ClassBody_c {
 		Node n = super.typeCheck(tc);
 		IntertypeMethodDecl_c.intertypeMethodChecks(tc.context().currentClass());
 		return n;
+	}
+	
+	public static void checkDuplicates(ClassType ct) throws SemanticException{
+		duplicateConstructorCheck(ct);
+		duplicateFieldCheck(ct);
+		duplicateMethodCheck(ct);
 	}
 	
 }

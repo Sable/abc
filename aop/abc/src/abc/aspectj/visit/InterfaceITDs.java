@@ -13,7 +13,7 @@ import polyglot.ast.Node;
 import polyglot.ast.ClassDecl;
 import polyglot.ast.TypeNode;
 
-import polyglot.frontend.Job;
+import polyglot.frontend.Pass;
 
 import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
@@ -27,100 +27,63 @@ import polyglot.visit.ContextVisitor;
 
 import abc.aspectj.ExtensionInfo;
 import abc.aspectj.types.InterTypeMemberInstance;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.AbcClass;
 
-/**
- * Visitor that injects ITDs on interfaces into the classes that implement them.
- * @author oege
- */
-public class InterfaceITDs extends NodeVisitor {
+public class InterfaceITDs extends OncePass {
 
-	Job job;
-	
-	public InterfaceITDs(Job j, TypeSystem ts, NodeFactory nf) {
-		super();
-		this.job = j;
+
+	public InterfaceITDs(Pass.ID id) {
+	super(id);
 	}
 	
-	public NodeVisitor enter(Node n) {
-		
-	 if (n instanceof ClassDecl) {
-		// System.out.println("**************************");
-		ClassDecl cd = (ClassDecl) n;
-		// System.out.println("class= "+cd.name());
-		// System.out.println("methods="+cd.type().toClass().methods());
-		// System.out.println("fields="+cd.type().toClass().fields());
-		// System.out.println("constructors="+cd.type().toClass().constructors());
-		
-		if (cd.type().flags().isInterface())
-			return this; // never apply ITDs to extends of interfaces
-	
-		 List methods = cd.type().methods();
-		 List fields = cd.type().fields();
-		 List constructors = cd.type().constructors();
-		 Stack interfaces = new Stack();
-		 Set visited = new HashSet();
-		 interfaces.addAll(cd.type().interfaces());
-		 while(!(interfaces.isEmpty())) {
-		 	ClassType interf = ((ClassType) interfaces.pop());
-		 	if (visited.contains(interf))
-		 		continue;
-		 	visited.add(interf);
-		 	// System.out.println("processing interface "+interf);
-		 	// does the super type of cd also implement this interface?
-			// if so, we'll add it to the super type instead
-	 	    if (cd.type().superType() != null)
-				if (cd.type().superType().descendsFrom(interf)) 
-					continue; 
-			//	also add ITDS in the interfaces that interf extends
-			// System.out.println(interf + " extends " + interf.interfaces());
-		 	interfaces.addAll(interf.interfaces()); 
-			for (Iterator mit = interf.methods().iterator(); mit.hasNext(); ) {
-				 MethodInstance mi = (MethodInstance) mit.next();
-				 // System.out.println("processing method "+ mi);
-				 if (mi instanceof InterTypeMemberInstance) {
-					// System.out.println("attempting to add method "+mi + " to " + cd.type() + " which implements " + interf +
-					//	", which received method from " + ((InterTypeMemberInstance) mi).origin());
-					abc.aspectj.ast.IntertypeMethodDecl_c.overrideITDmethod(cd.type(),
-					           mi.container(cd.type()).flags(((InterTypeMemberInstance)mi).origFlags()));
+	public void once() {
+		for (Iterator weavableClasses = GlobalAspectInfo.v().getWeavableClasses().iterator();
+		 	weavableClasses.hasNext(); ) {
+		 		ClassType ctype = ((AbcClass) weavableClasses.next()).getPolyglotType();
+				if (ctype.flags().isInterface())
+					continue;
+				Stack interfaces = new Stack();
+				Set visited = new HashSet();
+				interfaces.addAll(ctype.interfaces());
+				while(!(interfaces.isEmpty())) {
+					ClassType interf = ((ClassType) interfaces.pop());
+					if (visited.contains(interf))
+								continue;
+					visited.add(interf);
+							
+					// does the super type of ctype also implement this interface?
+					// if so, we'll add it to the super type instead
+					if (ctype.superType() != null)
+						if (ctype.superType().descendsFrom(interf)) 
+							continue; 
+					//	also add ITDS in the interfaces that interf extends
+					interfaces.addAll(interf.interfaces()); 
+					for (Iterator mit = interf.methods().iterator(); mit.hasNext(); ) {
+						MethodInstance mi = (MethodInstance) mit.next();
+						if (mi instanceof InterTypeMemberInstance) {
+							abc.aspectj.ast.IntertypeMethodDecl_c.overrideITDmethod(ctype,
+											   mi.container(ctype).flags(((InterTypeMemberInstance)mi).origFlags()));
 				 	
-				 }
-			}
-			for (Iterator fit = interf.fields().iterator(); fit.hasNext(); ) {
-				FieldInstance fi = (FieldInstance) fit.next();
-				// System.out.println("processing field "+fi);
-				if (fi instanceof InterTypeMemberInstance) {
-					// System.out.println("attempting to add field "+fi + " to " + cd.type() + " which implements " + interf + 
-                     //   ", which received field from " +  ((InterTypeMemberInstance) fi).origin());
-                    abc.aspectj.ast.IntertypeFieldDecl_c.overrideITDField(cd.type(),fi);
-				}	
-			}
-			for (Iterator cit = interf.constructors().iterator(); cit.hasNext(); ) {
-				ConstructorInstance ci = (ConstructorInstance) cit.next();
-				if (ci instanceof InterTypeMemberInstance)
-					abc.aspectj.ast.IntertypeConstructorDecl_c.overrideITDconstructor(cd.type(),
-					         ci.container(cd.type()).flags(((InterTypeMemberInstance)ci).origFlags()));
-			}
-		 }
-	 }
-	 return this;
+						}
+					}
+					for (Iterator fit = interf.fields().iterator(); fit.hasNext(); ) {
+						FieldInstance fi = (FieldInstance) fit.next();
+						if (fi instanceof InterTypeMemberInstance) {
+							abc.aspectj.ast.IntertypeFieldDecl_c.overrideITDField(ctype,fi);
+						}	
+					}
+					for (Iterator cit = interf.constructors().iterator(); cit.hasNext(); ) {
+						ConstructorInstance ci = (ConstructorInstance) cit.next();
+						if (ci instanceof InterTypeMemberInstance) {
+							abc.aspectj.ast.IntertypeConstructorDecl_c.overrideITDconstructor(ctype,
+											 ci.container(ctype).flags(((InterTypeMemberInstance)ci).origFlags()));
+						}
+					}
+				}
+		 	}
 	}
-	
 
-/*
-	public Node leave(Node old, Node n, NodeVisitor v) {
-		if (n instanceof ClassDecl) {
-			ClassDecl cd = (ClassDecl) n;
-			System.out.println("******************************************");
-			System.out.println("class= "+cd.name());
-			System.out.println("methods="+cd.type().toClass().methods());
-			System.out.println("fields="+cd.type().toClass().fields());
-			System.out.println("constructors="+cd.type().toClass().constructors());
-			
-		}
-		return n;
-	}
-	
-*/
 
 
 }
