@@ -1,0 +1,30 @@
+include "../../aspectj/parse/aspectj.ppg"
+
+package abc.eaj.parse;
+
+import abc.eaj.types.EAJTypeSystem;
+import abc.eaj.ast.EAJNodeFactory;
+import polyglot.ext.jl.parse.Name;
+
+parser Grm extends abc.aspectj.parse.Grm {:
+    public final EAJTypeSystem ts;
+    public final EAJNodeFactory nf;
+
+    public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
+        super(l, t, n, q);
+        ts = (EAJTypeSystem) t;
+        nf = (EAJNodeFactory) n;
+    }
+:};
+
+
+start with goal;
+
+extend basic_pointcut_expr ::=
+
+        PRIVATE LPAREN formal_parameter_list_opt:a RPAREN LPAREN pointcut_expr:b RPAREN
+        {:
+            Grm.parserTrace("PRIVATE formal_parameter_list, pointcut_expr");
+            RESULT = parser.nf.PCLocalVars(parser.pos(a), a, b);
+        :}
+    ;
