@@ -266,6 +266,11 @@
         <compile files="StrictFp.java"/>
         <run class="StrictFp"/>
     </ajc-test>
+<ajc-test dir="pureJava" title="Strings are folded and interned correctly"
+      keywords="from-java">
+        <compile files="StringFold.java"/>
+        <run class="StringFold"/>
+    </ajc-test>
 <ajc-test dir="pureJava" title="Cast binds tighter than equality tests"
       keywords="from-java">
         <compile files="CastAndBinary.java"/>
@@ -1584,6 +1589,11 @@
         <compile files="PR355.java"/>
         <run class="PR355"/>
     </ajc-test>
+<ajc-test dir="new" title="Order of super introductions."
+      keywords="from-resolved_10x">
+        <compile files="OrderOfExtendsPlusAndImplementsPlus.java"/>
+        <run class="OrderOfExtendsPlusAndImplementsPlus"/>
+    </ajc-test>
 <ajc-test dir="new"
       title="Putting after-constructor advice on the wrong types implementing the same interface."
       keywords="from-resolved_10x">
@@ -2164,6 +2174,11 @@
         </compile>
         <run class="CflowOfFieldInitAnonMethods" options="!eclipse"/>
     </ajc-test>
+<ajc-test dir="new" pr="771" title="static initializer member name"
+      keywords="from-resolved_105">
+        <compile files="StaticInitName.java"/>
+        <run class="StaticInitName"/>
+    </ajc-test>
 <ajc-test dir="new" pr="770" title="cflow pcd syntax error"
       keywords="from-resolved_105">
         <compile files="IllegalCflowCE.java">
@@ -2181,6 +2196,12 @@
       keywords="from-resolved_105">
         <compile files="LocalInners2.java"/>
         <run class="LocalInners2"/>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="752"
+      title="subclass access to enclosing super class private members"
+      keywords="from-resolved_105,purejava,fail-unimplemented">
+        <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"/>
+        <run class="SubclassAccessToEnclosingSuperClassPrivate"/>
     </ajc-test>
 <ajc-test dir="new"
       title="method-local class defined in around return statement"
@@ -2227,6 +2248,11 @@
         <compile files="ArrayFieldDeclarationCE.java">
             <message kind="error" line="14"/>
         </compile>
+    </ajc-test>
+<ajc-test dir="pureJava" pr="866"
+      title="non-constant static final fields marked as final in .class">
+        <compile files="FinalStaticField.java"/>
+        <run class="FinalStaticField"/>
     </ajc-test>
 <ajc-test dir="new" pr="883"
       title="signature of handler join point">
