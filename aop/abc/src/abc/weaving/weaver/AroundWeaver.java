@@ -63,6 +63,7 @@ import abc.weaving.aspectinfo.AroundAdvice;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ExecutionAdviceApplication;
 import abc.weaving.matching.StmtAdviceApplication;
+import abc.weaving.residues.AlwaysMatch;
 
 /** Handle around weaving.
  * @author Sascha Kuzins 
@@ -266,8 +267,12 @@ public class AroundWeaver {
 					LocalGeneratorEx localgen,
 					AdviceApplication adviceAppl) {
 		debug("Handling aound: " + adviceAppl);
-		
+		//if (joinpointClass!=null)
+		//	return;
+			
 		Body joinpointBody = joinpointMethod.getActiveBody();
+		joinpointBody.validate();
+		
 		boolean bStatic=joinpointMethod.isStatic();
 		Chain joinpointStatements = joinpointBody.getUnits().getNonPatchingChain();
 		AdviceDecl adviceDecl = adviceAppl.advice;
@@ -276,6 +281,7 @@ public class AroundWeaver {
 		SootClass theAspect =
 			adviceDecl.getAspect().getInstanceClass().getSootClass();
 		SootMethod adviceMethod = adviceDecl.getImpl().getSootMethod();
+		adviceMethod.getActiveBody().validate();
 	
 		Type adviceReturnType=adviceMethod.getReturnType();
 	
@@ -351,6 +357,9 @@ public class AroundWeaver {
 			 accessMethod,
 			 abstractAccessMethod
 			 );
+			 
+		joinpointBody.validate();
+		accessMethod.getActiveBody().validate();
 	}
 
 
@@ -728,31 +737,31 @@ public class AroundWeaver {
 		Stmt end=adviceAppl.shadowpoints.getEnd();
 		
 
+		
+		
+		
 		StmtAdviceApplication stmtAppl=null;
 		if (adviceAppl instanceof StmtAdviceApplication) {
 			stmtAppl=(StmtAdviceApplication)adviceAppl;
-			if (!joinpointChain.contains(stmtAppl.stmt))
-				throw new InternalError(); /// This will actually happen	
+			//if (!joinpointChain.contains(stmtAppl.stmt))
+			//	throw new InternalError(); /// This will actually happen	
 		}
-		
-		
-		
 		Local returnedLocal=null;
-		
-		
-		//ValueBox invokeTarget=null;
-		//Stmt invokeStmt=null;
-		//ValueBox theTarget=null;
 		if (adviceAppl instanceof ExecutionAdviceApplication) {
 			ExecutionAdviceApplication ea=(ExecutionAdviceApplication)adviceAppl;
-			Local lThisCopy=Restructure.getThisCopy(joinpointMethod);
-			Stmt succ=(Stmt)joinpointStatements.getSuccOf(begin);
-			if (succ instanceof AssignStmt) {
-				AssignStmt s=(AssignStmt)succ;
-				if (s.getLeftOp()==lThisCopy) {
-					debug("moving 'thisCopy=this' out of execution shadow."); // TODO: fix thisCopy strategy.
-					joinpointStatements.remove(s);
-					joinpointStatements.insertBefore(s, begin);				
+			if (joinpointMethod.getName().startsWith("around$"))
+				throw new CodeGenException("Execution pointcut matching advice method.");
+				
+			if (!bStatic) {
+				Local lThisCopy=Restructure.getThisCopy(joinpointMethod);
+				Stmt succ=(Stmt)joinpointStatements.getSuccOf(begin);
+				if (succ instanceof AssignStmt) {
+					AssignStmt s=(AssignStmt)succ;
+					if (s.getLeftOp()==lThisCopy) {
+						debug("moving 'thisCopy=this' out of execution shadow."); // TODO: fix thisCopy strategy.
+						joinpointStatements.remove(s);
+						joinpointStatements.insertBefore(s, begin);				
+					}
 				}
 			}
 			if (joinpointMethod.getReturnType().equals(VoidType.v())) {
@@ -853,6 +862,14 @@ public class AroundWeaver {
 				debug(" " + l.toString());
 			}
 		}
+		
+		NopStmt beforeEndShadow=Jimple.v().newNopStmt();
+		{
+			joinpointStatements.insertBefore(beforeEndShadow, end);
+			end.redirectJumpsToThisTo(beforeEndShadow);
+		}
+		
+		validateShadow(joinpointBody, begin, end);
 		/*List /*Type/ actualsTypes=new LinkedList();
 		{
 			Iterator it=acu
@@ -1046,7 +1063,7 @@ public class AroundWeaver {
 			adviceMethodInfo.proceedParameters.addAll(addedAdviceParameterLocals);
 		}
 		
-		
+		adviceBody.validate();
 		
 		// add parameters to all access method implementations
 		{
@@ -1160,33 +1177,32 @@ public class AroundWeaver {
 			endResidue=adviceAppl.residue.codeGen
 				(joinpointMethod,localgen,joinpointStatements,beginshadow,failPoint,wc);
 			//removeStatements(joinpointBody, beginshadow, endResidue, null);
-			
-				
-			InvokeExpr directInvoke;
-			List directParams=new LinkedList();
-			//directParams.add(targetLocal);
-			directParams.add(IntConstant.v(shadowID));
-			directParams.addAll(dynamicActuals);
-			if (bStatic) {
-				directInvoke=Jimple.v().newStaticInvokeExpr(accessMethod, directParams);
-			} else {
-				// TODO: can this call be replaced with an InvokeSpecial?
-				directInvoke=Jimple.v().newInterfaceInvokeExpr(
-					Restructure.getThisCopy(joinpointMethod), abstractAccessMethod, directParams);
-			}
-
-			if (returnedLocal!=null) {				
-				AssignStmt assign=Jimple.v().newAssignStmt(returnedLocal, directInvoke);
-				joinpointStatements.insertAfter(assign, failPoint);
-				Restructure.insertBoxingCast(joinpointBody, assign);
-				interfaceInfo.directInvokationStmts.add(assign);
-			} else {
-				Stmt skipAdvice;
-				skipAdvice=Jimple.v().newInvokeStmt(directInvoke);
-				joinpointStatements.insertAfter(skipAdvice, failPoint);
-				interfaceInfo.directInvokationStmts.add(skipAdvice);
-			}
-			
+			if (!(adviceAppl.residue instanceof AlwaysMatch)) {				
+				InvokeExpr directInvoke;
+				List directParams=new LinkedList();
+				//directParams.add(targetLocal);
+				directParams.add(IntConstant.v(shadowID));
+				directParams.addAll(dynamicActuals);
+				if (bStatic) {
+					directInvoke=Jimple.v().newStaticInvokeExpr(accessMethod, directParams);
+				} else {
+					// TODO: can this call be replaced with an InvokeSpecial?
+					directInvoke=Jimple.v().newInterfaceInvokeExpr(
+						Restructure.getThisCopy(joinpointMethod), abstractAccessMethod, directParams);
+				}
+	
+				if (returnedLocal!=null) {				
+					AssignStmt assign=Jimple.v().newAssignStmt(returnedLocal, directInvoke);
+					joinpointStatements.insertAfter(assign, failPoint);
+					Restructure.insertBoxingCast(joinpointBody, assign);
+					interfaceInfo.directInvokationStmts.add(assign);
+				} else {
+					Stmt skipAdvice;
+					skipAdvice=Jimple.v().newInvokeStmt(directInvoke);
+					joinpointStatements.insertAfter(skipAdvice, failPoint);
+					interfaceInfo.directInvokationStmts.add(skipAdvice);
+				}
+			}			
 			//skipAdvice
 			/*
 				Jimple.v().
@@ -1551,6 +1567,62 @@ public class AroundWeaver {
 		}
 		return false;
 	}
+	
+
+	
+	public static void validateShadow(Body body, Stmt begin, Stmt end) {
+		Chain statements=body.getUnits().getNonPatchingChain();
+		
+		if (!statements.contains(begin))
+			throw new RuntimeException();
+			
+		if (!statements.contains(end))
+					throw new RuntimeException();
+			
+			
+		boolean insideRange=false;
+		
+		Iterator it=statements.iterator();
+		while (it.hasNext()) {
+			Stmt s=(Stmt)it.next();
+			if (s==begin) {
+				if (insideRange)
+					throw new RuntimeException();
+						
+				insideRange=true;
+			}
+					
+			if (s==end) {
+				if (!insideRange)
+					throw new RuntimeException();
+					
+				insideRange=false;
+			}
+					
+			
+			List unitBoxes=s.getUnitBoxes();
+			Iterator it2=unitBoxes.iterator();
+			while (it2.hasNext()) {
+				UnitBox box=(UnitBox)it2.next();
+				if (insideRange) {
+					if (!isInSequence(body,begin, end, box.getUnit())) {
+						if (box.getUnit()==end) {
+							throw new InternalError("Unit in shadow points to endshadow");	
+						} else if (box.getUnit()==begin) {
+							throw new InternalError("Unit in shadow points to beginshadow");	
+						} else 
+							throw new InternalError("Unit in shadow points outside of the shadow" +	
+								body.toString());					
+					}
+				} else {
+					if (isInSequence(body,begin, end, box.getUnit())) {
+						throw new InternalError("Unit outside of shadow points inside the shadow");					
+					}
+				}
+			}
+		}
+	}
+	
 	/**
 	 * 
 	 * Algorithm:
@@ -1576,7 +1648,6 @@ public class AroundWeaver {
 		boolean insideRange=false;
 		{
 			Iterator it=statements.iterator();
-			it.next();
 			while (it.hasNext()) {
 				Stmt s=(Stmt)it.next();
 				if (s==begin) {
