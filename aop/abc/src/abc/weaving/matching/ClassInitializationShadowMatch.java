@@ -60,7 +60,9 @@ public class ClassInitializationShadowMatch extends BodyShadowMatch {
 
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
-	    ("initialization","ConstructorSignature","makeConstructorSig",
+	    ("initialization",
+             "org.aspectj.lang.reflect.ConstructorSignature",
+             "makeConstructorSig",
 	     SJPInfo.makeConstructorSigData(container),getHost());
     }
 

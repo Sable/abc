@@ -85,7 +85,9 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
     
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
-	    ("field-get","FieldSignature","makeFieldSig",
+	    ("field-get",
+             "org.aspectj.lang.reflect.FieldSignature",
+             "makeFieldSig",
 	     SJPInfo.makeFieldSigData(fieldref),stmt);
     }
 

@@ -74,22 +74,22 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	String sig;
 	if(isStaticInitializer()) {
 	    jpKind="staticinitialization";
-	    sigClass="InitializerSignature";
+	    sigClass="org.aspectj.lang.reflect.InitializerSignature";
 	    sigMethod="makeInitializerSig"; 
 	    sig=SJPInfo.makeStaticInitializerSigData(container);
 	} else if(isConstructor()) {
 	    jpKind="constructor-execution";
-	    sigClass="ConstructorSignature";
+	    sigClass="org.aspectj.lang.reflect.ConstructorSignature";
 	    sigMethod="makeConstructorSig";
 	    sig=SJPInfo.makeConstructorSigData(container);
 	} else if(isAdviceBody()) {
 	    jpKind="advice-execution";
-	    sigClass="AdviceSignature";
+	    sigClass="org.aspectj.lang.reflect.AdviceSignature";
 	    sigMethod="makeAdviceSig";
 	    sig=SJPInfo.makeAdviceSigData(container);
 	} else {
 	    jpKind="method-execution";
-	    sigClass="MethodSignature";
+	    sigClass="org.aspectj.lang.reflect.MethodSignature";
 	    sigMethod="makeMethodSig";
 	    sig=SJPInfo.makeMethodSigData(container);
 	}

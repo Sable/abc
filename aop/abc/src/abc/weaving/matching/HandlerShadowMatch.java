@@ -61,7 +61,9 @@ public class HandlerShadowMatch extends StmtShadowMatch {
     
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
-	    ("exception-handler","CatchClauseSignature","makeCatchClauseSig",
+	    ("exception-handler",
+             "org.aspectj.lang.reflect.CatchClauseSignature",
+             "makeCatchClauseSig",
 	     SJPInfo.makeHandlerSigData(container,sootexc,stmt),stmt);
     }
 

@@ -196,10 +196,7 @@ public class GenStaticJoinPoints {
   private SootField makeSJPfield(SootClass sc, Chain units, Stmt ip,
                          LocalGenerator lg, SootMethod method,
 			 SJPInfo sjpInfo) 
-    { // look for interfaces in the right place
-	// FIXME: shouldn't know about the extension in the base code
-      String classpath = sjpInfo.kind.equals("cast") ? "uk.ac.ox.comlab.abc.eaj.lang.reflect." : "org.aspectj.lang.reflect.";
-            
+    {
       // create the name for the SJP field 
       // the kind of SJP, but made into a valid id
       String idkind = sjpInfo.kind.replace('-','_');
@@ -240,7 +237,7 @@ public class GenStaticJoinPoints {
 
       // get the signature object
       Local sigloc = lg.generateLocal(
-	  RefType.v(classpath+sigtypeclass));
+	  RefType.v(sigtypeclass));
 
       SootClass fc = Scene.v().getSootClass(runtimeFactoryClass);
       debug("Got the factory class: " + fc);
@@ -248,7 +245,7 @@ public class GenStaticJoinPoints {
       List sigmethodParams=new ArrayList(1);
       sigmethodParams.add(RefType.v("java.lang.String"));
       SootMethodRef sigmethod 
-	  = Scene.v().makeMethodRef(fc,sigtype,sigmethodParams,RefType.v(classpath+sigtypeclass),false);
+	  = Scene.v().makeMethodRef(fc,sigtype,sigmethodParams,RefType.v(sigtypeclass),false);
       debug("Got the sig builder method: " + sigmethod);
 
       Stmt makesig = Jimple.v().
