@@ -70,22 +70,11 @@
         <compile files="InnerAccess.java"/>
         <run class="InnerAccess"/>
     </ajc-test>
-<ajc-test dir="pureJava" title="Testing ternary operations."
-      keywords="from-java">
-        <compile files="MultiTernaryOps.java"/>
-        <run class="MultiTernaryOps"/>
-    </ajc-test>
 <ajc-test dir="pureJava"
       title="Checking character values with all the unicode chars."
       keywords="from-java">
         <compile files="CharsUnicode.java"/>
         <run class="CharsUnicode"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Not lifting types correctly with bytes and shorts with ternary ops"
-      keywords="from-java">
-        <compile files="TernaryPrimitiveOps.java"/>
-        <run class="TernaryPrimitiveOps"/>
     </ajc-test>
 <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
       keywords="from-java,purejava">
@@ -1141,18 +1130,6 @@
         <compile files="IntroducingPrivateMethodsOnInterfaces.java"/>
         <run class="IntroducingPrivateMethodsOnInterfaces"/>
     </ajc-test>
-<ajc-test dir="new/cflowObjectCreations" pr="307"
-      title="cflow and object creations [of eachcflow]"
-      keywords="from-resolved_10x">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="After advice isn't being woven into after throwing advice"
-      keywords="from-resolved_10x">
-        <compile files="AfterThrowingNotWoven.java"/>
-        <run class="AfterThrowingNotWoven"/>
-    </ajc-test>
 <ajc-test dir="new" title="Throwing an EmptyStackException."
       keywords="from-resolved_10x">
         <compile files="EmptyStack.java"/>
@@ -1164,11 +1141,6 @@
 	      <compile files="p/EachObjectTarget.java,the/deep/pkg/EachObjectInDeepPackage.java"/>
 	      <run class="p.EachObjectTarget"/>
 	</ajc-test>
-<ajc-test dir="new" title="Defines clfow$ajc0 more once. [eachcflow]"
-      keywords="from-resolved_10x">
-        <compile files="Binkley.java"/>
-        <run class="Binkley"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="Various calls, receptions, and callsto tests [callsto]"
       keywords="from-resolved_10x">
@@ -1187,11 +1159,6 @@
         <compile files="NullPointerOnGets.java"/>
         <run class="NullPointerOnGets"/>
     </ajc-test>
-<ajc-test dir="new" title="Basic test for cflow pointcuts [eachcflow]"
-      keywords="from-resolved_10x">
-        <compile files="CFlowPoints.java"/>
-        <run class="CFlowPoints"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="Crashing when looking up the type of array members."
       keywords="from-resolved_10x">
@@ -1203,12 +1170,6 @@
       keywords="from-resolved_10x">
         <compile files="Fixes.java"/>
         <run class="Fixes"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="Dave Binkley's problem with eachcflowroot. [eachcflow]"
-      keywords="from-resolved_10x">
-        <compile files="Binkley2.java"/>
-        <run class="Binkley2"/>
     </ajc-test>
 <ajc-test dir="new" pr="105" title="advice on an inherited method"
       keywords="from-resolved_10x">
@@ -1333,11 +1294,6 @@
         <compile
           files="typeNameConflicts/Driver.java,typeNameConflicts/p1/C.java,typeNameConflicts/aspects/A.java"/>
         <run class="typeNameConflicts.Driver"/>
-    </ajc-test>
-<ajc-test dir="new" title="cflowbelow dependencies (from Chris Dutchyn)"
-      keywords="from-resolved_10x">
-        <compile files="CflowBelowTest.java"/>
-        <run class="CflowBelowTest"/>
     </ajc-test>
 <ajc-test dir="new"
       title="target type matching with messy interface hierarchies"
@@ -2082,12 +2038,6 @@
         <run class="IndeterminateArgType"/>
     </ajc-test>
 <ajc-test dir="new" pr="764"
-      title="testing and binding args with single indeterminate prefix and suffix"
-      keywords="from-resolved_105">
-        <compile files="IndeterminateArg.java"/>
-        <run class="IndeterminateArg"/>
-    </ajc-test>
-<ajc-test dir="new" pr="764"
       title="binding handler args with indeterminate prefix and suffix"
       keywords="from-resolved_105">
         <compile files="IndeterminateHandlerArg.java"/>
@@ -2365,10 +2315,6 @@
       title="if and cflow arg binding">
         <compile files="CflowBinding.java">
           <message kind="error" line="13"/>
-        </compile>
-    </ajc-test>
-<ajc-test dir="bugs" pr="28702" title="percflow code hangs compiler">
-        <compile files="CloseConnectionsCflow.java">
         </compile>
     </ajc-test>
 <ajc-test dir="bugs" pr="28703" title="assert and pertarget crashes compiler">
@@ -3194,11 +3140,6 @@
 		    <message line="7" kind="warning" text="throws both"/>
 		</compile>
 	</ajc-test>
-<ajc-test dir="bugs" pr="42652"
-   	 title="perthis and signature bad interaction">
-        <compile files="InterPerCall.java"/>
-        <run class="InterPerCall"/>
-    </ajc-test>
 <ajc-test dir="bugs/declareBinding"
 		pr="42740"
 		title="declare error fails on pointcuts composed from multiple classes">

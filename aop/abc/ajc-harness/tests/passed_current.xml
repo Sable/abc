@@ -406,6 +406,11 @@
         <compile files="Main.java,Java.java"/>
         <run class="conflictingPackageNamesWithPackages.Main"/>
     </ajc-test>
+<ajc-test dir="pureJava" title="Testing ternary operations."
+      keywords="from-java">
+        <compile files="MultiTernaryOps.java"/>
+        <run class="MultiTernaryOps"/>
+    </ajc-test>
 <ajc-test dir="pureJava" title="Lifting locals in switch statements."
       keywords="from-java">
         <compile files="SwitchStmtLocals.java"/>
@@ -493,6 +498,12 @@
         <compile files="Main.java,C.java,D.java"
         	includeClassesDir="true"/>
         <run class="Main"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Not lifting types correctly with bytes and shorts with ternary ops"
+      keywords="from-java">
+        <compile files="TernaryPrimitiveOps.java"/>
+        <run class="TernaryPrimitiveOps"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="Not looking up methods inside of anonymous declarations correctly."
@@ -1714,6 +1725,12 @@
         <compile files="StaticIntroducedReferences.java"/>
         <run class="StaticIntroducedReferences"/>
     </ajc-test>
+<ajc-test dir="new/cflowObjectCreations" pr="307"
+      title="cflow and object creations [of eachcflow]"
+      keywords="from-resolved_10x">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
 <ajc-test dir="new/twofiles"
       title="Doesn't import MightHaveAspect when compiling with more than 1 file. [eachobject]"
       keywords="from-resolved_10x">
@@ -1725,6 +1742,17 @@
       keywords="from-resolved_10x">
         <compile files="BindingThisInsteadOfFormal.java"/>
         <run class="BindingThisInsteadOfFormal"/>
+    </ajc-test>
+<ajc-test dir="new"
+      title="After advice isn't being woven into after throwing advice"
+      keywords="from-resolved_10x">
+        <compile files="AfterThrowingNotWoven.java"/>
+        <run class="AfterThrowingNotWoven"/>
+    </ajc-test>
+<ajc-test dir="new" title="Defines clfow$ajc0 more once. [eachcflow]"
+      keywords="from-resolved_10x">
+        <compile files="Binkley.java"/>
+        <run class="Binkley"/>
     </ajc-test>
 <ajc-test dir="new" pr="320"
       title="Was throwing exception, now just an error. [eachobject]"
@@ -1743,6 +1771,17 @@
       keywords="from-resolved_10x">
         <compile files="test/TraceAspect.java,test/Test.java"/>
         <run class="test.Test"/>
+    </ajc-test>
+<ajc-test dir="new" title="Basic test for cflow pointcuts [eachcflow]"
+      keywords="from-resolved_10x">
+        <compile files="CFlowPoints.java"/>
+        <run class="CFlowPoints"/>
+    </ajc-test>
+<ajc-test dir="new"
+      title="Dave Binkley's problem with eachcflowroot. [eachcflow]"
+      keywords="from-resolved_10x">
+        <compile files="Binkley2.java"/>
+        <run class="Binkley2"/>
     </ajc-test>
 <ajc-test dir="new"
       title="join points in static/dynamic initializers aren't showing up."
@@ -1808,6 +1847,11 @@
       keywords="from-resolved_10x">
         <compile files="NotThis.java"/>
         <run class="NotThis"/>
+    </ajc-test>
+<ajc-test dir="new" title="cflowbelow dependencies (from Chris Dutchyn)"
+      keywords="from-resolved_10x">
+        <compile files="CflowBelowTest.java"/>
+        <run class="CflowBelowTest"/>
     </ajc-test>
 <ajc-test dir="new" pr="490"
       title="PR#458 Compiler was incorrectly flagging error in advice on initialization and static initialization"
@@ -2070,6 +2114,12 @@
             <message kind="error" line="4"/>
         </compile>
     </ajc-test>
+<ajc-test dir="new" pr="764"
+      title="testing and binding args with single indeterminate prefix and suffix"
+      keywords="from-resolved_105">
+        <compile files="IndeterminateArg.java"/>
+        <run class="IndeterminateArg"/>
+    </ajc-test>
 <ajc-test dir="pureJava"
       title="Locals inside other locals, ordering of processing [eh]"
       keywords="from-resolved_105">
@@ -2258,6 +2308,10 @@
       title="circularity in declare dominates">
         <compile files="CircularDominates.java">
 		  <message kind="error" line="18"/>
+        </compile>
+    </ajc-test>
+<ajc-test dir="bugs" pr="28702" title="percflow code hangs compiler">
+        <compile files="CloseConnectionsCflow.java">
         </compile>
     </ajc-test>
 <ajc-test dir="bugs" pr="28852"
@@ -2556,6 +2610,11 @@
 		    <message kind="error" line="3"/>
 		</compile>
 	</ajc-test>
+<ajc-test dir="bugs" pr="42652"
+   	 title="perthis and signature bad interaction">
+        <compile files="InterPerCall.java"/>
+        <run class="InterPerCall"/>
+    </ajc-test>
 <ajc-test dir="bugs" pr="43194"
    	 title="Non-functional concretezation of ReferencePointcut">
         <compile files="AdviceInteraction.java"/>
