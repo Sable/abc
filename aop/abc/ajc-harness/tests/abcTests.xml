@@ -2424,14 +2424,14 @@
 
     <ajc-test dir="errors" title="errors in aspect inheritance - 3"
       abccomment="ajc fails to find an additional error involving unbound
-                  pointcut formals at line 15. ODM July 5, 2004"
+                  pointcut formals at line 15; abc bails out earlier, but ok. 
+                 ODM July 5, 2004"
       keywords="from-errors">
         <compile files="AspectInheritance3.java">
             <ajcmessage kind="error" line="19"/>
             <ajcmessage kind="error" line="24"/>
             <message kind="error" line="15"/>
             <message kind="error" line="19"/>
-            <message kind="error" line="24"/>
         </compile>
     </ajc-test>
 
@@ -2530,8 +2530,11 @@
     </ajc-test>
 
     <ajc-test dir="errors" pr="240" title="advice on abstract pointcuts"
+      abccomment = "abc catches one more error than ajc. ODM 20/07/04"
       keywords="from-errors">
         <compile files="StaticAdviceOnAbstract.java">
+            <ajcmessage kind="error" line="17"/>
+            <message kind="error" line="12"/>
             <message kind="error" line="17"/>
         </compile>
     </ajc-test>
