@@ -121,14 +121,14 @@ public class AspectMethods extends NodeVisitor {
 							target = ((Call) a.left()).target();
 						if (target == null)
 							throw new InternalCompilerError("reference to intertype field with receiver that is not a call or a field");
-							return itfi.setCall(nf,ts,target,itfi.container(),a.right());
+						return itfi.setCall(nf,ts,target,itfi.container(),a.right());
 					}
 				}
 				if (fieldleft.target() instanceof HostSpecial_c) {
 						HostSpecial_c hs = (HostSpecial_c) fieldleft.target();
 						if (hs.kind() == Special.SUPER) {
-						IntertypeDecl id = (IntertypeDecl) itd.peek();
-						return id.getSupers().superFieldSetter(nf,ts,fieldleft,id.host().type().toClass(),id.thisReference(nf,ts),
+							IntertypeDecl id = (IntertypeDecl) itd.peek();
+							return id.getSupers().superFieldSetter(nf,ts,fieldleft,id.host().type().toClass(),id.thisReference(nf,ts),
 																 ((Assign) n).right());
 				}
 			}
@@ -173,8 +173,8 @@ public class AspectMethods extends NodeVisitor {
 					IntertypeDecl id = (IntertypeDecl) itd.peek();
 					return id.getSupers().superCall(nf,ts,c,id.host().type().toClass(),id.thisReference(nf,ts));
 				}
-			} // fall through to ProceedCall
-		}
+			}
+		} // fall through to ProceedCall
 		if (n instanceof IntertypeMethodDecl_c) {
 			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
 			return ((IntertypeMethodDecl_c) itmd.accessChange()).thisParameter(nf,ts);
@@ -199,8 +199,13 @@ public class AspectMethods extends NodeVisitor {
 		}
 		if (n instanceof HostSpecial_c) {
 			HostSpecial_c hs = (HostSpecial_c) n;
-			if (hs.kind() == Special.THIS)
-				return ((IntertypeDecl) itd.peek()).thisReference(nf,ts);
+			if (hs.kind() == Special.THIS) 
+				if (hs.qualifier() == null)
+					return ((IntertypeDecl) itd.peek()).thisReference(nf,ts);
+			 	else {
+					IntertypeDecl id = (IntertypeDecl) itd.peek();
+					return id.getSupers().qualThis(nf,ts,id.host().type().toClass(),id.thisReference(nf,ts),hs.qualifier().type().toClass());
+				}
 			else return n;
 		}
 /* advice: */

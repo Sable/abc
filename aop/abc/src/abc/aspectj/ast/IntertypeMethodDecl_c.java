@@ -286,6 +286,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	gai.addSuperDispatches(supers.supercalls(gai));
 	gai.addSuperFieldGetters(supers.superfieldgetters(gai));
 	gai.addSuperFieldSetters(supers.superfieldsetters(gai));
+	gai.addQualThiss(supers.qualthiss(gai));
 
 	MethodCategory.register(this, MethodCategory.INTERTYPE_METHOD_SOURCE);
 	MethodCategory.registerRealNameAndClass(this, name(), host.toString());

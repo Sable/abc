@@ -27,6 +27,12 @@ public class IntertypeAdjuster {
         	final SuperDispatch sd = (SuperDispatch) spdIt.next();
         	addSuperDispatch( sd );
         }
+        /*
+    //  generate accessors for qualifier.this
+    	for( Iterator qtsIt = GlobalAspectInfo.v().getQualThiss().iterator(); qtsIt.hasNext(); ) {
+    		final QualThis qts = (QualThis) qtsIt.next();
+    		addQualThis( qts );
+    	} */
     // 	weave in intertype methods
         for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
             final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
@@ -44,6 +50,40 @@ public class IntertypeAdjuster {
         }
     }
     
+	private void addQualThis( QualThis qts ) {
+	   // the signature of the method that we should generate
+	   		MethodSig method = qts.getMethod();  		
+	   // 	create a new method for the dispatch
+		   Type retType = method.getReturnType().getSootType();
+		   List parms = new ArrayList(); // no parameters
+		   int modifiers = Modifier.PUBLIC;	
+	   // 	create the method
+		  	SootMethod sm = new SootMethod( 
+									 method.getName(),   // the new name in the target
+									 parms,
+									 retType,
+									 modifiers );
+	   //	create a body
+		   	Body b = Jimple.v().newBody(sm); sm.setActiveBody(b);
+		   	Chain ls = b.getLocals();
+		   	PatchingChain ss = b.getUnits();
+		   	
+	   //  	target of the field reference is "this : targetType"
+	   	   	SootClass scQualifier = qts.getQualifier().getSootClass();
+		   	ThisRef thisref = Jimple.v().newThisRef(scQualifier.getType());
+		   	Local v = Jimple.v().newLocal("this$",scQualifier.getType()); ls.add(v);
+		   	IdentityStmt thisStmt = soot.jimple.Jimple.v().newIdentityStmt(v,thisref); ss.add(thisStmt);
+	   // 	return the value
+		   	ReturnStmt stmt = Jimple.v().newReturnStmt(v); 
+		   	ss.add(stmt);
+	   // 	add method to the target class
+		   	qts.getTarget().getSootClass().addMethod(sm);				  
+
+
+	   //  	This is an accessor method for reading a field
+	   //   MethodCategory.register(sm, MethodCategory.ACCESSOR_GET);
+	   //	MethodCategory.registerRealNameAndClass(sm, field.getName(), field.getDeclaringClass().getName());
+	   }
     private void addSuperFieldGetter( SuperFieldGet sfd ) {
     // 	the field that we wish to access, in the superclass of sd.target()
     	FieldSig field = sfd.getFieldSig();

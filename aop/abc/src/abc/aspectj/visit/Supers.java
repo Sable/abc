@@ -194,5 +194,69 @@ public class Supers {
 		 }
 		 return scs;
 	 }
+	 
+	List /*<QualThis>*/ qualThiss = new LinkedList();
+    
+	public class QualThis  {
+		MethodInstance mi;
+		ClassType target;
+    	ClassType qualifier;
+    	Position position;
+    	
+		public QualThis( MethodInstance mi,ClassType target, ClassType qualifier,Position pos) {
+			this.mi = mi;
+			this.target = target;
+			this.qualifier = qualifier;
+			this.position = pos;
+		}
+    	
+		public abc.weaving.aspectinfo.QualThis
+					convert(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+			List formals = new ArrayList();
+			Iterator fi = mi.formalTypes().iterator();
+			int i = 0;
+			while (fi.hasNext()) {
+				Type f = (Type)fi.next();
+				String fname = "a$"+i; i++;
+				formals.add(new abc.weaving.aspectinfo.Formal(AspectInfoHarvester.toAbcType(f),
+													  fname, f.position()));
+			}
+			List exc = new ArrayList();
+			Iterator ti = mi.throwTypes().iterator();
+			while (ti.hasNext()) {
+				TypeNode t = (TypeNode)ti.next();
+				exc.add(t.type().toString());
+			}
+			return	new abc.weaving.aspectinfo.QualThis(
+							new abc.weaving.aspectinfo.MethodSig(
+								AspectInfoHarvester.convertModifiers(mi.flags()),
+									gai.getClass(mi.container().toString()),
+									AspectInfoHarvester.toAbcType(mi.returnType()),
+									mi.name(),
+									formals,
+									exc,
+									position),
+							gai.getClass(target.toString()),
+							gai.getClass(qualifier.toString()));
+					}
+	}
+    
+	public Call qualThis(AspectJNodeFactory nf, AspectJTypeSystem ts, ClassType target, Expr targetThis, ClassType qualifier) {
+		String qualThisName = UniqueID.newID(qualifier + "$this");
+		Call c = nf.Call(targetThis.position(),targetThis,qualThisName);
+		MethodInstance mi = ts.methodInstance(targetThis.position(),target,Flags.PUBLIC,qualifier,qualThisName,new ArrayList(),new ArrayList());
+		qualThiss.add(new QualThis(mi,target,qualifier,c.position()));
+		return (Call) c.methodInstance(mi).type(qualifier);
+	}
+    
+	public List /*<superDispatch>*/ qualthiss(abc.weaving.aspectinfo.GlobalAspectInfo gai) {
+		List scs = new LinkedList();
+		for (Iterator i = qualThiss.iterator(); i.hasNext(); ) {
+			QualThis sc = (QualThis) i.next();
+			scs.add(sc.convert(gai));
+		}
+		return scs;
+	}
+    
     
 }

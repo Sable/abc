@@ -32,6 +32,7 @@ public class GlobalAspectInfo {
     private List/*<SuperDispatch>*/ spds = new ArrayList();
     private List/*<SuperFieldGet>*/ spfgs = new ArrayList();
     private List/*<SuperFieldSet>*/ spfss = new ArrayList();
+    private List/*<QualThis>*/ qtss = new ArrayList();
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AbstractAdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
@@ -123,6 +124,13 @@ public class GlobalAspectInfo {
 	 */
 	public List getSuperFieldGetters() {
 		return spfgs;
+	}
+	
+	/** Returns the list of all qualified this references
+	* @return a list of {@link abc.weaving.aspectinfo.QualThis} objects.
+	*/
+	public List getQualThiss() {
+		return qtss;
 	}
 	
 	/** Returns the list of all super field getter methods.
@@ -235,6 +243,10 @@ public class GlobalAspectInfo {
     	spfss.addAll(sfds);
     }
 
+	public void addQualThiss(List qts) {
+		qtss.addAll(qts);
+	}
+	
     public void addIntertypeConstructorDecl(IntertypeConstructorDecl imd) {
 	icds.add(imd);
     }

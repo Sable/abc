@@ -296,5 +296,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		gai.addSuperDispatches(supers.supercalls(gai));
 		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
 		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
+		gai.addQualThiss(supers.qualthiss(gai));
     }
 }
