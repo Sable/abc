@@ -782,7 +782,7 @@ public class AroundWeaver {
 			ArrayList staticBindings = getStaticBinding();
 			verifyBindings(staticBindings);
 		
-			Stmt beforeFailPoint = Jimple.v().newNopStmt();
+			Stmt failPoint = Jimple.v().newNopStmt();
 			WeavingContext wc = PointcutCodeGen.makeWeavingContext(adviceAppl);
 			
 			
@@ -791,7 +791,7 @@ public class AroundWeaver {
 				dynamicActuals,
 				shadowID,
 				wc,					
-				beforeFailPoint);
+				failPoint);
 		
 			
 			accessMethod.assignCorrectParametersToLocals(
@@ -802,7 +802,7 @@ public class AroundWeaver {
 				staticBindings);
 			accessMethod.modifyLookupStatement(switchTarget, shadowID);
 			
-			makeAdviceInvokation(returnedLocal, dynamicActuals, lThis, shadowID, beforeFailPoint, wc);
+			makeAdviceInvokation(returnedLocal, dynamicActuals, lThis, shadowID, failPoint, wc);
 			accessMethod.method.getActiveBody().validate();
 
 			
