@@ -94,9 +94,9 @@ public class AssignDel_c extends JL_c implements MakesAspectMethods
                 else {
                     Local local = new Local_c(assign.position(), UniqueID.newID("local$assign"));
                     local = (Local)local.type(targetType);
-                    List exprList = new LinkedList();
-                    Expr expr = new LocalAssign_c(assign.position(), local, Assign.ASSIGN, targetThis);
-                    exprList.add(expr);
+                    //List exprList = new LinkedList();
+                    //Expr expr = new LocalAssign_c(assign.position(), local, Assign.ASSIGN, targetThis);
+                    //exprList.add(expr);
                     // Stripping off the trailing "=" leaves the binary operator string
                     String op = assign.operator().toString().replaceAll("=", "");
                     Call getter = null, setter = null;
@@ -110,16 +110,18 @@ public class AssignDel_c extends JL_c implements MakesAspectMethods
                             getter,
                             getBinaryOp(op),
                             assign.right());
-                    
+                    //Call setter = at.getAccessorMethods().accessorSetter(nf, ts, fieldleft, targetType, local, result);
                     if(itfi == null) 
                         setter = at.getAccessorMethods().accessorSetter(nf, ts, fieldleft, targetType, local, result);
                     else
                         setter = (Call)itfi.setCall(nf, ts, itfiTarget, itfi.container(), result);
                     
-                    exprList.add(setter);
-                    List localsList = new LinkedList();
-                    localsList.add(local);
-                    return new Comma_c(assign.position(), localsList, exprList);
+                    //exprList.add(setter);
+                    //List localsList = new LinkedList();
+                    //localsList.add(local);
+                    return new soot.javaToJimple.jj.ast.JjAccessField_c(assign.position(), getter, setter, fieldleft);
+                    //return new Comma_c(assign.position(), localsList, exprList);
+                    
                 }
             }
         }

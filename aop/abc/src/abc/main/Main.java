@@ -10,6 +10,7 @@ import soot.jimple.Stmt;
 import soot.jimple.toolkits.base.ExceptionChecker;
 import soot.jimple.toolkits.base.ExceptionCheckerError;
 import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
+import soot.javaToJimple.*;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
@@ -536,6 +537,14 @@ public class Main {
             throw new IllegalArgumentException("Soot usage error");
         }
 
+        InitialResolver.v().setJBBFactory(new AbstractJBBFactory(){
+            protected AbstractJimpleBodyBuilder createJimpleBodyBuilder(){
+                JimpleBodyBuilder jbb = new JimpleBodyBuilder();
+                AccessFieldJBB afjbb = new AccessFieldJBB();
+                afjbb.ext(jbb);
+                return afjbb;
+            }
+        });
 	Scene.v().setSootClassPath(classpath);
 
 	Scene.v().addBasicClass("org.aspectj.runtime.internal.CFlowStack",SootClass.SIGNATURES);

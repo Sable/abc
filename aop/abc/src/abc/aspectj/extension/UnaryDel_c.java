@@ -102,11 +102,11 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 	    	    
 	    	    Local local_target = new Local_c(unary.position(), UniqueID.newID("local$assign"));
 	    	    local_target = (Local)local_target.type(targetType);
-	    	    List exprList = new LinkedList();
-	    	    List localsList = new LinkedList();
-	    	    localsList.add(local_target);
-		        Expr expr = new LocalAssign_c(unary.position(), local_target, Assign.ASSIGN, targetThis);
-		        exprList.add(expr);
+	    	    //List exprList = new LinkedList();
+	    	    //List localsList = new LinkedList();
+	    	    //localsList.add(local_target);
+		        //Expr expr = new LocalAssign_c(unary.position(), local_target, Assign.ASSIGN, targetThis);
+		        //exprList.add(expr);
 		        Binary.Operator operator = unary.operator().toString().equals("++") ? Binary.ADD : Binary.SUB;
 		        
 		        if(field.fieldInstance() instanceof InterTypeFieldInstance_c) {
@@ -132,6 +132,7 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 		        Expr result = new Binary_c(unary.position(), getter, 
 		                			operator,
 		                			new IntLit_c(unary.position(), IntLit.INT, 1));
+		        //Call setter = at.getAccessorMethods().accessorSetter(nf, ts, field, targetType, local_target, result);
 		        
 		        if(field.fieldInstance() instanceof InterTypeFieldInstance_c) {
 	                InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) field.fieldInstance();
@@ -142,7 +143,7 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 		            setter = at.getAccessorMethods().accessorSetter(nf, ts, field, targetType, local_target, result);
 		        }
 	    	    
-		        if(unary.operator() == Unary.PRE_DEC || unary.operator() == Unary.PRE_INC) {
+		        /*if(unary.operator() == Unary.PRE_DEC || unary.operator() == Unary.PRE_INC) {
 	    	        // Return incremented value
 	    	        exprList.add(setter);
 	    	    }
@@ -155,8 +156,9 @@ public class UnaryDel_c extends JL_c implements MakesAspectMethods {
 	    	        exprList.add(expr);
 	    	        exprList.add(setter);
 	    	        exprList.add(local_orig);
-	    	    }
-		        return new Comma_c(unary.position(), localsList, exprList);
+	    	    }*/
+                return new soot.javaToJimple.jj.ast.JjAccessField_c(unary.position(), getter, setter, field);
+		        //return new Comma_c(unary.position(), localsList, exprList);
 	        }
 	    }
     return node();
