@@ -7,8 +7,10 @@ use XML::XPath::XMLParser;
 
 my %oldfailed=();
 my %oldpassed=();
+my %oldskipped=();
 my %newfailed=();
 my %newpassed=();
+my %newskipped=();
 
 sub load {
   my ($file,$result)=@_;
@@ -65,11 +67,16 @@ sub dodiff {
 &load('failed.xml',\%newfailed);
 &load('passed_current.xml',\%oldpassed);
 &load('passed.xml',\%newpassed);
+&load('skipped_current.xml',\%oldskipped);
+&load('skipped.xml',\%newskipped);
 
 print "Pass: ";
 &dodiffnum(\%newpassed,\%oldpassed);
 
 print "Fail: ";
 &dodiffnum(\%newfailed,\%oldfailed);
+
+print "Skipped: ";
+&dodiffnum(\%newskipped,\%oldskipped);
 
 &dodiff(\%newpassed,\%oldpassed);
