@@ -1,4 +1,4 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"> 
+<!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
  <ajc-test dir="new/pr456" pr="456" title="advice on advice in usejavac mode"
       keywords="from-resolved_10x">

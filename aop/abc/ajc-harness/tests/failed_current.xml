@@ -1,11 +1,6 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"> 
+<!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="base/test103" title="DEPRECATED: introductions"
-      keywords="from-base">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
-    </ajc-test>
-<ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
+ <ajc-test dir="base/test117" title="DEPRECATED: introduce of variables"
       keywords="from-base,knownLimitation">
         <compile files="Driver.java"/>
         <run class="Driver"/>
@@ -33,68 +28,31 @@
         <run class="Driver"/>
     </ajc-test>
 <ajc-test dir="new/innerConsSyntax" pr="192"
-      title="inner constructor syntax causes compile error" keywords="from-java">
+      title="inner constructor syntax causes compile error" keywords="from-java"
+      abccomment="fails for abc, 
+                    classCastException in ConstructorCallShadowMatch
+                  works for soot,j2j,jlc,javac and ajc
+                  file DriverLJH.java sent to Ganesh June 30/04  LJH "
+    >
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="pureJava" title="Cast binds tighter than equality tests"
-      keywords="from-java">
-        <compile files="CastAndBinary.java"/>
-        <run class="CastAndBinary"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="inner classes accessing outers and some more inner class names"
-      keywords="from-java">
-        <compile files="InnerAccess.java"/>
-        <run class="InnerAccess"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="421"
-      title="More thourough test of static members using full names"
-      keywords="from-java">
-        <compile
-          files="Statics.java,StaticMembers_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
-        <run class="StaticMembers_PR421"/>
-    </ajc-test>
-<ajc-test dir="pureJava" pr="421"
-      title="More thourough test of static members using imports"
-      keywords="from-java">
-        <compile
-          files="Statics.java,StaticMembersImports_PR421.java,p1/C1.java,p1/P1Statics.java,p1/subp1/SubC1.java,p1/p2/P1P2Statics.java"/>
-        <run class="StaticMembersImports_PR421"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Not lifting types correctly with bytes and shorts with ternary ops"
-      keywords="from-java">
-        <compile files="TernaryPrimitiveOps.java"/>
-        <run class="TernaryPrimitiveOps"/>
-    </ajc-test>
-<ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
-      keywords="from-java,purejava">
-        <compile files="KeywordAspect.java"/>
-        <run class="KeywordAspect"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Using 'pointcut' as identifier is legal TODO"
-      keywords="from-java,purejava">
-        <compile files="KeywordPointcut.java"/>
-        <run class="KeywordPointcut"/>
-    </ajc-test>
 <ajc-test dir="new" pr="408"
       title="Not binding constructor when using more than one compilation"
+      abccomment="Need to compile second file, loading the CLASS file 
+                  produced by the first compile.  Requires modifying 
+                  behaviour of polyglot loader.  Aske looking into this
+                  as of July 1/04.  LJH"
       keywords="from-java,purejava">
         <compile files="OuterAbstract_PR408.java"/>
         <compile files="ExtendsOuterAbstract_PR408.java"/>
         <compile files="ConstructorNotFound_PR408.java"/>
         <run class="ConstructorNotFound_PR408"/>
     </ajc-test>
-<ajc-test dir="pureJava"
-      title="finally at the end of a method that needs to return"
-      keywords="from-java">
-        <compile files="FinallyAndReturns.java"/>
-        <run class="FinallyAndReturns"/>
-    </ajc-test>
 <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
+      abccomment="jlc doesn't report expected error.
+                  Reported to Nate on July 1/04.  LJH"
       keywords="from-java">
         <compile files="pkg1/Main.java,pkg2/Foo.java">
             <message kind="error" line="6"/>
@@ -378,6 +336,7 @@
     </ajc-test>
 <ajc-test dir="errors" pr="244"
       title="decent errors for around return type not matching target point"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-errors">
         <compile files="AroundReturnType.java">
             <message kind="error" line="3"/>
@@ -394,6 +353,7 @@
     </ajc-test>
 <ajc-test dir="errors"
       title="eachobject: only zero-argument constructors allowed in an aspect"
+      abccomment="Exception from weaver; Frontend should report error - AGS 1/7/04"
       keywords="from-errors,fail-unimplemented">
         <compile files="AspectsCantHaveYesArgumentConstructors.java">
             <message kind="error" line="8"/>
@@ -795,11 +755,6 @@
         </compile>
     </ajc-test>
 <ajc-test dir="design/intro"
-      title="initial tests for new introduction style" keywords="from-design">
-        <compile files="Simple.java"/>
-        <run class="Simple"/>
-    </ajc-test>
-<ajc-test dir="design/intro"
       title="introduction of static methods and fields on classes and interfaces"
       keywords="from-design,knownLimitation">
         <compile files="Statics.java"/>
@@ -929,12 +884,6 @@
         <compile files="CatchAdvice.java"/>
         <run class="CatchAdvice"/>
     </ajc-test>
-<ajc-test dir="new" pr="208"
-      title="! modifier and char in pointcut (no longer an error)"
-      keywords="from-resolved_10x">
-        <compile files="NotCharInPointcut.java"/>
-        <run class="NotCharInPointcut"/>
-    </ajc-test>
 <ajc-test dir="new" title="Ensuring backdoor methods are produced."
       keywords="from-resolved_10x">
         <compile files="BackdoorMethods.java"/>
@@ -1026,12 +975,6 @@
         <run class="CallsToArray"/>
     </ajc-test>
 <ajc-test dir="new"
-      title="Null pointer on gets advice showing the case causing the error"
-      keywords="from-resolved_10x">
-        <compile files="NullPointerOnGetsSimple.java"/>
-        <run class="NullPointerOnGetsSimple"/>
-    </ajc-test>
-<ajc-test dir="new"
       title="within and withincode (doesn't all work due to local class name issues)"
       keywords="from-resolved_10x">
         <compile files="WithinInners.java"/>
@@ -1058,12 +1001,6 @@
       keywords="from-resolved_10x">
         <compile files="MethodIntroductions.java"/>
         <run class="MethodIntroductions"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="After advice isn't being woven into after throwing advice"
-      keywords="from-resolved_10x">
-        <compile files="AfterThrowingNotWoven.java"/>
-        <run class="AfterThrowingNotWoven"/>
     </ajc-test>
 <ajc-test dir="new" title="Throwing an EmptyStackException."
       keywords="from-resolved_10x">
@@ -1189,6 +1126,7 @@
     </ajc-test>
 <ajc-test dir="new" pr="490"
       title="elaborated into testing of around on all join points"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_10x">
         <compile files="AroundAll.java"/>
         <run class="AroundAll"/>
@@ -1205,12 +1143,6 @@
       keywords="from-resolved_10x">
         <compile files="CallTypesI.java" options="-1.4,-Xlint:ignore"/>
         <run class="CallTypesI" vm="1.4"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="Unable to bind privately-introduced field name from introduced method in the same aspect"
-      keywords="from-resolved_10x">
-        <compile files="IntroducedFieldsNotBinding.java"/>
-        <run class="IntroducedFieldsNotBinding"/>
     </ajc-test>
 <ajc-test dir="new/anonInnerClass" pr="297"
       title="anonymous inner class with aspect" keywords="from-resolved_10x">
@@ -1236,12 +1168,14 @@
     </ajc-test>
 <ajc-test dir="new" pr="528"
       title="compile errors boolean using cflow and unimplemented method using around advice on methods introduced by interface"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_10x">
         <compile files="PR528.java"/>
         <run class="PR528"/>
     </ajc-test>
 <ajc-test dir="new" pr="535"
       title="missing method name to synthetic invocation"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_10x,new-messages-vary">
         <compile files="PR535.java"/>
         <run class="PR535"/>
@@ -1368,12 +1302,6 @@
             <message kind="error" line="4"/>
         </compile>
     </ajc-test>
-<ajc-test dir="new/runtime"
-      title="Exercise runtime classes (optionally in 1.1 VM)"
-      keywords="from-resolved_10x">
-        <compile files="AllRuntime.java,TesterDriver.java"/>
-        <run class="TesterDriver"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="VerifyError after around advice falls off end of tryCatch"
       keywords="from-resolved_10x">
@@ -1480,6 +1408,7 @@
     </ajc-test>
 <ajc-test dir="new"
       title="unreachable code generated by around advice on the execution of void methods"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_10x">
         <compile files="AroundVoid.java"/>
         <run class="AroundVoid"/>
@@ -1566,18 +1495,21 @@
         <run class="PR573"/>
     </ajc-test>
 <ajc-test dir="new" pr="691" title="around AST type XXX"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
         <compile files="PR691.java"/>
         <run class="PR691"/>
     </ajc-test>
 <ajc-test dir="new" pr="687"
       title="around all execution with double assignment in initializer (simple)"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
         <compile files="AroundDoubleAssignment.java"/>
         <run class="AroundDoubleAssignment"/>
     </ajc-test>
 <ajc-test dir="new" pr="687"
       title="around all execution with double assignment in initializer (coverage)"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
         <compile files="AroundDoubleAssignmentC.java"/>
         <run class="AroundDoubleAssignmentC"/>
@@ -1611,17 +1543,20 @@
         </compile>
     </ajc-test>
 <ajc-test dir="new" pr="666" title="name binding in around cflow"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
         <compile files="AroundCall.java"/>
         <run class="AroundCall"/>
     </ajc-test>
 <ajc-test dir="new" pr="660" title="name binding in around cflow - 2"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
         <compile files="ArgsInCflow2.java"/>
         <run class="ArgsInCflow2"/>
     </ajc-test>
 <ajc-test dir="new" pr="677"
       title="around name-binding in cflows using factorial"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104">
         <compile files="FactorialCflow.java"/>
         <run class="FactorialCflow"/>
@@ -1803,6 +1738,7 @@
         <run class="StaticTypeInIf"/>
     </ajc-test>
 <ajc-test dir="new"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       title="bad interaction with after returning, around and void methods (from Rich Price)"
       keywords="from-resolved_105">
         <compile files="AfterReturningResult.java"/>
@@ -1841,12 +1777,6 @@
       keywords="from-resolved_105">
         <compile files="IndeterminateHandlerArg.java"/>
         <run class="IndeterminateHandlerArg"/>
-    </ajc-test>
-<ajc-test dir="pureJava"
-      title="Locals inside other locals, ordering of processing [eh]"
-      keywords="from-resolved_105">
-        <compile files="LocalInners2.java"/>
-        <run class="LocalInners2"/>
     </ajc-test>
 <ajc-test dir="new/nolang" pr="762"
 	  title="Compiling java.lang.Object with ajc yields non-verifying bytecode"
@@ -2153,21 +2083,6 @@
         </compile>
         <run class="pack.ImportInnerFromInterfaceImplementor"/>
     </ajc-test>
-<ajc-test dir="new/finalfield" pr="28974"
-      title="introducing final fields (simple)">
-        <compile files="Introducer.java,Receiver.java,User1.java"/>
-        <run class="User1"/>
-    </ajc-test>
-<ajc-test dir="new/finalfield" pr="28974"
-      title="introducing final fields and using as constants">
-        <compile files="Introducer.java,Receiver.java,User2.java"/>
-        <run class="User2"/>
-    </ajc-test>
-<ajc-test dir="bugs" pr="29691"
-    		title="Static inner aspects cannot reference user defined pointcuts">
-        <compile files="SoftWithin.java" />
-        <run class="SoftWithin"/>
-    </ajc-test>
 <ajc-test dir="bugs" pr="29662"
     		title="VerifyError on accessing objects not accessible to the weaver">
         <compile files="AroundAccess.java">
@@ -2264,6 +2179,7 @@
         </compile>
     </ajc-test>
 <ajc-test dir="new" pr="660" title="illegal name binding in around cflow"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104,knownLimitation">
         <compile files="ArgsInCflowCf.java">
             <message kind="error" line="19"/>
@@ -2338,6 +2254,7 @@
         <run class="cap.OptionList"/>
     </ajc-test>
 <ajc-test dir="new"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       title="try/finally in around advice (same as ...messy arounds?)">
         <compile files="TryFinallyInAround.java"/>
         <run class="TryFinallyInAround"/>
@@ -2712,12 +2629,16 @@
 			</compile>
 		</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"
+        abccomment = "need to have aspectjrt.jar on classpath by
+                          default"
 		pr="41123"
 		title="Weaving failure when using injars (on classpath)">
 		<compile
 			files="model/BusObj.java,model/MonitorBusObj.java"
 			classpath="lib.jar">
+		    <ajcmessage kind="error" line="3"/>
 		    <message kind="error" line="3"/>
+		    <message kind="error" line="6"/>
 		</compile>
 	</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"
@@ -2799,12 +2720,6 @@
         	<message kind="error" line="20" text="incompatible type"/>
         </compile>
     </ajc-test>
-<ajc-test dir="bugs" pr="49250"
-      title="alias getCause for getWrappedThrowable in SoftException">
-        <compile files="GetCauseOnSoftException.java" options="-Xlint:warning">
-        </compile>
-        <run vm="1.3" class="GetCauseOnSoftException"/>
-    </ajc-test>
 <ajc-test dir="bugs" pr="48522"
       title="Declare soft softening other exception types">
         <compile files="SofteningTooMuch.java">
@@ -2878,10 +2793,6 @@
         <compile files="SimpleTracing.java" classpath="." options="-verbose">
 		  <message kind="warning" line="4" text="no match for this type name: SampleClass"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="bugs" pr="46750" title="inner aspect containing declare soft">
-       <compile files="TestSoftening.java">
-       </compile>
     </ajc-test>
 <ajc-test dir="bugs" pr="45663"
       title="Bad parser error recovery in java source">

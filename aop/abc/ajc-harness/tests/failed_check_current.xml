@@ -1,7 +1,9 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"> 
+<!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
  <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
+      abccomment="jlc doesn't report expected error.
+                  Reported to Nate on July 1/04.  LJH"
       keywords="from-java">
         <compile files="pkg1/Main.java,pkg2/Foo.java">
             <message kind="error" line="6"/>
@@ -214,6 +216,7 @@
     </ajc-test>
 <ajc-test dir="errors" pr="244"
       title="decent errors for around return type not matching target point"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-errors">
         <compile files="AroundReturnType.java">
             <message kind="error" line="3"/>
@@ -230,6 +233,7 @@
     </ajc-test>
 <ajc-test dir="errors"
       title="eachobject: only zero-argument constructors allowed in an aspect"
+      abccomment="Exception from weaver; Frontend should report error - AGS 1/7/04"
       keywords="from-errors,fail-unimplemented">
         <compile files="AspectsCantHaveYesArgumentConstructors.java">
             <message kind="error" line="8"/>
@@ -1122,6 +1126,7 @@
         </compile>
     </ajc-test>
 <ajc-test dir="new" pr="660" title="illegal name binding in around cflow"
+      abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04"
       keywords="from-resolved_104,knownLimitation">
         <compile files="ArgsInCflowCf.java">
             <message kind="error" line="19"/>
@@ -1314,12 +1319,16 @@
 			</compile>
 		</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"
+        abccomment = "need to have aspectjrt.jar on classpath by
+                          default"
 		pr="41123"
 		title="Weaving failure when using injars (on classpath)">
 		<compile
 			files="model/BusObj.java,model/MonitorBusObj.java"
 			classpath="lib.jar">
+		    <ajcmessage kind="error" line="3"/>
 		    <message kind="error" line="3"/>
+		    <message kind="error" line="6"/>
 		</compile>
 	</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"

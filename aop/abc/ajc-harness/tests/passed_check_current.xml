@@ -1,7 +1,29 @@
-<!DOCTYPE suite SYSTEM "../tests/ajcTestSuite.dtd"> 
+<!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> 
  <suite> 
- <ajc-test dir="pureJava" title="return;;; is not really legal"
+ <ajc-test dir="pureJava" title="Using 'aspect' as identifier is legal TODO"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
       keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <message kind="error" line="7"/> 
+          <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+<ajc-test dir="pureJava"
+      abccomment = "abc doesn't allow keywords, added error. LJH "
+      title="Using 'pointcut' as identifier is legal TODO"
+      keywords="from-java,purejava">
+        <compile files="KeywordPointcut.java">
+           <message kind="error" line="7" />
+           <ajcmessage kind="ignore" />
+        </compile>
+        <ajcrun class="KeywordPointcut"/>
+    </ajc-test>
+<ajc-test dir="pureJava" title="return;;; is not really legal"
+      keywords="from-java,purejava"
+      abccomment="ajc doesn't report one error per spurious ;, abc does"
+    >
         <compile files="ReachableEmpty.java">
             <message kind="error" line="5"/>
             <message kind="error" line="9"/>
