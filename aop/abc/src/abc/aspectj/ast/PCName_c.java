@@ -216,7 +216,8 @@ public class PCName_c extends Pointcut_c implements PCName
        	    Type formaltype = (Type)b.next();
        	    if (arg instanceof Typed){
        	        Type argtype = ((Typed)arg).type();
-       	        if (!(ts.isImplicitCastValid(formaltype,argtype) || (formaltype instanceof PrimitiveType)))
+       	        if (!(ts.isImplicitCastValid(formaltype,argtype) || 
+       	             (formaltype instanceof PrimitiveType && argtype.equals(ts.Object()))))
        	        		throw new SemanticException("Wrong argument type "+argtype+
        	        	                                                             " expected " + formaltype + "." ,arg.position()); 
        	    }
