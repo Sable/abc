@@ -13,7 +13,15 @@ public abstract class AbstractPointcut extends Syntax implements Pointcut {
 	super(pos);
     }
 
+
+    /* This should all be removed when all the subclasses implement it */
+    private boolean warnedUnimplemented=false;
+
     public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
+	if(!warnedUnimplemented) {
+	    System.out.println("returning false for an unimplemented pointcut");
+	    warnedUnimplemented=true;
+	}
 	return false;
     }
 }

@@ -66,7 +66,6 @@ public class AdviceApplication {
 			if(pc!=null) {
 			    matches=pc.matchesAt(sootCls,method,current);
 			} else {
-			    System.out.println("Got a null pointcut");
 			    // BIG TEMPORARY HACK
 			    matches=false;
 			    if (current instanceof AssignStmt) {
