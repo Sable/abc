@@ -25,9 +25,40 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+$Fixed bug 34, in which arithmetic calculations within strings were sometimes
+;misinterpreted as string concatenation. Thanks to Jonathan Churchill for
+;reporting this bug.
 $Fixed bug 35, Java identifiers containing '$' are not "visible" from
-;pointcuts. Thanks to Kevin Viggers for a clear description of the
+;pointcuts. Thanks to Kevin Viggers for an extremely clear description of the
 ;precise problem and the code for the fix.
+$Fixed bug 36, in which circularly references to named pointcuts within
+;cflow caused a stack overflow.
+$Fixed bug 37, named pointcuts and multiply nested cflows interact badly.
+$Added support for inlining of advice bodies at join point shadows. A 
+;heuristic is used to decide when to do this. Inlining also exposes 
+;opportunities for removing the boxing that is sometimes associated with
+;advice implementation. The original advice bodies are also removed
+;if rendered redundant by inlining.
+
+!If you extend ShadowMatch, AdviceApplication, Residue, 
+;WeavingVar or ContextValue, you will need to implement a new method called 
+;inline. The purpose of this method is to handle a new implementation of 
+;constructor inlining. It should normally be straightforward to implement 
+;this method; if your class contains any references to Jimple values you 
+;will need to look up new versions of these references using a mapping that 
+;is provided, and construct a new copy of the object. The implementations 
+;in the standard abc classes should be easy to adapt.
+!If you extend Residue, you will also need to implement a new optimize()
+;method. If your residue does not itself contain residues, you can just
+;return the same object.
+!If you extend Pointcut, the inline method has acquired a new parameter
+;which you can normally just ignore, or pass unchanged to any contained
+;pointcuts. The sensible thing to do would be to replace this set of
+;parameters with an object, and this may happen in future.
+!The current implementation of advice precedence is broken and needs a 
+;redesign, which will happen soon. This will likely have an impact on
+;the doAddAdviceApplication method in subclasses of ShadowMatch.
+!There is a new Jimple type Immediate <insert description>
 
 %1.0.0 1098443519
 
