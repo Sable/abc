@@ -146,6 +146,9 @@ public abstract class AdviceApplication {
 	// Either that or pre-compute the list of all classes that our
 	// pointcuts could match
 	
+	if(abc.main.Debug.v().traceMatcher)
+	    System.out.println("Doing method: "+method);
+
 	HashMap m=new HashMap();
 	m.put("enabled","true");
 	if(abc.main.Debug.v().restructure)
@@ -174,6 +177,8 @@ public abstract class AdviceApplication {
 	    doShadows(info,mal,cls,method,new WholeMethodPosition(method));
 	
 	// Do statement shadows
+	if(abc.main.Debug.v().traceMatcher) 
+	    System.err.println("Doing statement shadows");
 	if(MethodCategory.weaveInside(method)) {
 	    Chain stmtsChain=method.getActiveBody().getUnits();
 	    Stmt current,next;
@@ -182,7 +187,8 @@ public abstract class AdviceApplication {
 		for(current=(Stmt) stmtsChain.getFirst();
 		    current!=null;
 		    current=next) {
-		    
+		    if(abc.main.Debug.v().traceMatcher)
+			System.err.println("Stmt = "+current);
 		    next=(Stmt) stmtsChain.getSuccOf(current);
 		    doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
 		    doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
@@ -191,6 +197,10 @@ public abstract class AdviceApplication {
 	}
 	
 	// Do exception handler shadows
+
+	if(abc.main.Debug.v().traceMatcher) 
+	    System.err.println("Doing exception shadows");
+
 	Chain trapsChain=method.getActiveBody().getTraps();
 	Trap currentTrap;
 	

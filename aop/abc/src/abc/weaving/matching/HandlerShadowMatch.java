@@ -28,6 +28,8 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 
     public static HandlerShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof TrapMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("Handler");
+
 	Trap trap=((TrapMethodPosition) pos).getTrap();
 	Stmt stmt=(Stmt) trap.getHandlerUnit();
 	return new HandlerShadowMatch(pos.getContainer(),stmt,trap.getException());

@@ -21,6 +21,8 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 
     public static ExecutionShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("Execution");
+
 	return new ExecutionShadowMatch(pos.getContainer());
     }
 

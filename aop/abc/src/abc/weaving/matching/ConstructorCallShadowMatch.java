@@ -29,6 +29,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 
     public static ConstructorCallShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof NewStmtMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("ConstructorCall");
 
 	NewStmtMethodPosition stmtMP=(NewStmtMethodPosition) pos;
 	Stmt current=stmtMP.getStmt();
@@ -69,11 +70,11 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     public ContextValue getTargetContextValue() {
-	return new JimpleValue(invoke.getBase());
+	return null;
     }
 
     public ContextValue getReturningContextValue() {
-	return getTargetContextValue();
+	return new JimpleValue(invoke.getBase());
     }
 
     public List/*<ContextValue>*/ getArgsContextValues() {

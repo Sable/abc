@@ -39,6 +39,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 
     public static SetFieldShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof StmtMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("SetField");
 
 	Stmt stmt=((StmtMethodPosition) pos).getStmt();
 	if(!(stmt instanceof AssignStmt)) return null;

@@ -49,6 +49,8 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 
     public static MethodCallShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof StmtMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("MethodCall");
+
 	Stmt stmt=((StmtMethodPosition) pos).getStmt();
 
 	InvokeExpr invoke;
@@ -70,13 +72,16 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	// The next one really ought not to happen...
 	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
 
+	if(abc.main.Debug.v().traceMatcher) System.err.print("Restructuring...");
 	// Eagerly restructure non-constructor InvokeStmts to AssignStmts, 
 	// because it saves us from having to fix up the AdviceApplications later
 	// We may wish to improve this behaviour later.
 	if(stmt instanceof InvokeStmt && !(method.getReturnType() instanceof VoidType))
 	    stmt=Restructure.getEquivAssignStmt(pos.getContainer(),(InvokeStmt) stmt);
 
+	if(abc.main.Debug.v().traceMatcher) System.err.print("args -> unique locals...");
 	StmtShadowMatch.makeArgumentsUniqueLocals(((StmtMethodPosition) pos).getContainer(), stmt);
+	if(abc.main.Debug.v().traceMatcher) System.err.println("done");
 
 	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,method);
     }

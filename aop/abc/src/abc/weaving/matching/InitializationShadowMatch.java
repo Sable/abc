@@ -17,6 +17,8 @@ public class InitializationShadowMatch extends BodyShadowMatch {
 
     public static InitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("Initialization");
+
 	SootMethod container=pos.getContainer();
 	if(!container.getName().equals(SootMethod.constructorName)) return null;
 	return new InitializationShadowMatch(container);

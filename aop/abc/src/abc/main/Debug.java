@@ -44,6 +44,7 @@ public class Debug {
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher
                                                    // or things it sees (like patterns)
+    public boolean traceMatcher=false;
 
     // Weaver
     public boolean weaverDriver=false;  // main driver for weaver

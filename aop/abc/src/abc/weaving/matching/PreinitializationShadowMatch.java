@@ -17,6 +17,8 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
 
     public static PreinitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
+	if(abc.main.Debug.v().traceMatcher) System.err.println("Preinitialization");
+
 	SootMethod container=pos.getContainer();
 	if(!container.getName().equals(SootMethod.constructorName)) return null;
 	return new PreinitializationShadowMatch(container);

@@ -64,7 +64,7 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 					args.add(val);
 				}
 			}
-		}
+			} 
 		if (bDoModify) {
 			Body body=method.getActiveBody();
 			Chain statements=body.getUnits().getNonPatchingChain();
