@@ -100,7 +100,10 @@ public class AroundWeaver {
 
 
 	public static class Util {
-
+		public static void validateMethod(SootMethod method) {
+			if (abc.main.Debug.v().aroundWeaver)
+				Restructure.validateMethod(method);
+		}
 		public static String printMethod(SootMethod m) {
 			String result=m + "\n";
 			for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
@@ -498,6 +501,10 @@ public class AroundWeaver {
 		 * @param end
 		 */
 		private static void validateShadow(Body body, Stmt begin, Stmt end) {
+			
+			if (!abc.main.Debug.v().aroundWeaver)
+				return;
+			
 			Chain statements = body.getUnits().getNonPatchingChain();
 	
 			if (!statements.contains(begin))
@@ -792,8 +799,7 @@ public class AroundWeaver {
 				}
 			}
 				
-			
-			Restructure.validateMethod(accessMethod);
+			Util.validateMethod(accessMethod);
 			//Local lThis=body.getThisLocal();
 			
 			
@@ -823,7 +829,8 @@ public class AroundWeaver {
 				statements.add(as);
 				statements.add(Jimple.v().newReturnStmt(returnedLocal));
 			}
-			Restructure.validateMethod(accessMethod);
+			
+			Util.validateMethod(accessMethod);
 					
 			return closureClass;
 		}
@@ -877,6 +884,7 @@ public class AroundWeaver {
 				}
 			}
 
+			 
 			validateShadow(joinpointBody, begin, end);
 						 
 			Local lClosure=null;
@@ -1006,8 +1014,10 @@ public class AroundWeaver {
 			
 			
 			makeAdviceInvokation(bindMaskLocal,returnedLocal, dynamicActuals, 
-				bUseClosureObject ? lClosure : lThis, shadowID, failPoint, wc);
-			accessMethod.method.getActiveBody().validate();
+				 (bUseClosureObject ? lClosure : lThis), shadowID, failPoint, wc);
+				
+			if (abc.main.Debug.v().aroundWeaver)
+				accessMethod.method.getActiveBody().validate();
 		}
 		
 		/*
@@ -1088,9 +1098,12 @@ public class AroundWeaver {
 			
 			// we need to add some of our own parameters to the invokation
 			List params = new LinkedList();
-			if (lThis == null) {
+			if (bStaticJoinPoint || adviceMethod.bAlwaysStaticAccessMethod) {
 				params.add(NullConstant.v());
 			} else {
+				if (lThis==null)
+					throw new InternalAroundError();
+					
 				params.add(lThis); // pass the closure
 			}
 			//params.add(targetLocal);
@@ -1132,13 +1145,15 @@ public class AroundWeaver {
 			
 			adviceMethod.adviceMethodInvokationStmts.add(invokeStmt);
 			
-			joinpointBody.validate();
+			if (abc.main.Debug.v().aroundWeaver)
+				joinpointBody.validate();
 		}
 
 		
 		private Local findReturnedLocal() {
 			Body joinpointBody = joinpointMethod.getActiveBody();
-			joinpointBody.validate();
+			if (abc.main.Debug.v().aroundWeaver)
+				joinpointBody.validate();
 			Chain joinpointStatements = joinpointBody.getUnits().getNonPatchingChain();
 			boolean bStatic = joinpointMethod.isStatic();
 	
@@ -1520,7 +1535,7 @@ public class AroundWeaver {
 						Local lThis = body.getThisLocal();
 	
 						String accessMethodName = accessInfo.method.getName();
-						Restructure.validateMethod(accessInfo.method);
+						Util.validateMethod(accessInfo.method);
 						SpecialInvokeExpr ex =
 							Jimple.v().newSpecialInvokeExpr(lThis, accessInfo.superCallTarget.getMethodByName(accessMethodName), Util.getParameterLocals(body));
 	
@@ -1587,20 +1602,24 @@ public class AroundWeaver {
 				modifyDirectInterfaceInvokations(addedDynArgs);
 			}
 			
-			body.validate();
+			if (abc.main.Debug.v().aroundWeaver)
+				body.validate();
 
 			//if (!bUseClosureObject)
 			List addedAdviceParameterLocals = addParameters(addedDynArgsTypes);
 
-			body.validate();
+			if (abc.main.Debug.v().aroundWeaver)
+				body.validate();
 
 			generateProceedCalls(bStatic, bAlwaysStaticAccessMethod, bUseClosureObject, accessMethod);
 
-			body.validate();
+			if (abc.main.Debug.v().aroundWeaver)
+				body.validate();
 
 			modifyInterfaceInvokations(addedAdviceParameterLocals);
 
-			body.validate();
+			if (abc.main.Debug.v().aroundWeaver)
+				body.validate();
 
 			// add parameters to all access method implementations
 			addParametersToAccessMethodImplementations(addedDynArgsTypes);
@@ -1886,7 +1905,8 @@ public class AroundWeaver {
 		private void doInitialAdviceMethodModification() {
 			debug("modifying advice method: " + method.toString());
 
-			Restructure.validateMethod(method);
+			
+			Util.validateMethod(method);
 
 			Local lInterface = Restructure.addParameterToMethod(method, interfaceInfo.accessInterface.getType(), "accessInterface");
 			//Local lTarget=Restructure.addParameterToMethod(adviceMethod, 
@@ -1895,7 +1915,7 @@ public class AroundWeaver {
 			staticDispatchLocal = Restructure.addParameterToMethod(method, IntType.v(), "staticClassID");
 			bindMaskLocal = Restructure.addParameterToMethod(method, IntType.v(), "bindMask");
 
-			Restructure.validateMethod(method);
+			Util.validateMethod(method);
 
 			//adviceMethodInfo.proceedParameters.add(lTarget);
 			implicitProceedParameters.add(idLocal);
@@ -2173,7 +2193,7 @@ public class AroundWeaver {
 		//HashMap /*String, Integer*/ fieldIDs=new HashMap();
 		private void addParameters(List addedDynArgsTypes)  {
 			debug("adding parameters to access method " + method);
-			Restructure.validateMethod(method);
+			Util.validateMethod(method);
 
 			Iterator it2 = addedDynArgsTypes.iterator();
 			while (it2.hasNext()) {
@@ -2403,7 +2423,7 @@ public class AroundWeaver {
 				lThis = lg.generateLocal(joinpointClass.getType(), "this");
 				accessStatements.addFirst(Jimple.v().newIdentityStmt(lThis, Jimple.v().newThisRef(RefType.v(joinpointClass))));
 			}
-			Restructure.validateMethod(method);
+			Util.validateMethod(method);
 			//accessMethodInfo.targetLocal=Restructure.addParameterToMethod(
 			//	accessMethod, (Type)accessMethodParameters.get(0), "targetArg");
 
@@ -2414,11 +2434,11 @@ public class AroundWeaver {
 					//System.out.println(" " +method.getActiveBody().getUnits());
 					Local l = Restructure.addParameterToMethod(method, type, "orgAdviceFormal");
 					//System.out.println(" " +method.getActiveBody().getUnits());
-					Restructure.validateMethod(method);
+					Util.validateMethod(method);
 					adviceFormalLocals.add(l);
 				}
 			}
-			Restructure.validateMethod(method);
+			Util.validateMethod(method);
 
 			shadowIdParamLocal = Restructure.addParameterToMethod(method, (Type) adviceMethod.accessMethodParameterTypes.get(0), "shadowID");
 			bindMaskParamLocal = Restructure.addParameterToMethod(method, (Type) adviceMethod.accessMethodParameterTypes.get(1), "skipAdvice");
@@ -2468,7 +2488,7 @@ public class AroundWeaver {
 			
 			// fixSuperCalls used to be here...
 
-			Restructure.validateMethod(method);
+			Util.validateMethod(method);
 
 			body=method.getActiveBody();
 			statements=body.getUnits().getNonPatchingChain();

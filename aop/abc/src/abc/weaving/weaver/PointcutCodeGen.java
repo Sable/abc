@@ -248,8 +248,12 @@ public class PointcutCodeGen {
 	void weaveInAroundAdviceExecutionsPass() {		
 		debug("********* Weaving around/adviceexecution");
 		
-		//if (!aroundAdviceExecutionApplications.isEmpty())
-		//	sortAroundAdviceExecutionApplications();
+		if (!aroundAdviceExecutionApplications.isEmpty()) {
+			try {
+				sortAroundAdviceExecutionApplications();
+			} catch (Exception e) {
+			}
+		}
 			
 		for (Iterator it=aroundAdviceExecutionApplications.iterator();
 				it.hasNext();) {
