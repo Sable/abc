@@ -2618,19 +2618,23 @@ public class AroundWeaver {
 	public static void doWeave(SootClass joinpointClass, SootMethod joinpointMethod, LocalGeneratorEx localgen, AdviceApplication adviceAppl) {
 		debug("Weaving advice application: " + adviceAppl);
 		if (abc.main.Debug.v().aroundWeaver) {
-			//if (joinpointClass!=null)
-				//	return;			
+			// uncomment to skip around weaving (for debugging)
+		//	if (joinpointClass!=null)	return;			
 		}
 		
 		AdviceApplicationInfo adviceApplication=new AdviceApplicationInfo(adviceAppl, joinpointMethod);
 		adviceApplication.doWeave();
 		
 		if (abc.main.Debug.v().aroundWeaver) {
-				state.validate(); // TODO: don't leave this on!
+				//state.validate(); 
+				//validate();
+				//abc.soot.util.Validate.validate(Scene.v().getSootClass("org.aspectj.runtime.reflect.Factory"));
 		}
-		//	validate();	
+		
+				
 	}
 	
+    
 	public static void validate() {
     for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
         final AbcClass cl = (AbcClass) clIt.next();

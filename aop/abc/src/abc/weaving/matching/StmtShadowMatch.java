@@ -57,17 +57,31 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 	 */
 	public static void makeArgumentsUniqueLocals(SootMethod method, Stmt stmt) {
 		InvokeExpr invokeEx=stmt.getInvokeExpr();
-		boolean bDoModify=false;
+		
+		SootMethod invokedMethod=invokeEx.getMethod();
+		List parameterTypes=invokedMethod.getParameterTypes();
+		
+		boolean bDoModify=false;	
 		{
+			
 			Set args=new HashSet(); 
 			Iterator it=invokeEx.getArgs().iterator();
+			Iterator itType=parameterTypes.iterator();				
 			while (it.hasNext()) {
+				Type type=(Type)itType.next();
 				Value val=(Value)it.next();
 				if (!(val instanceof Local)) {
 					bDoModify=true;
 					break;
 				} else {
+					Local l=(Local)val;
 					if (args.contains(val)) {
+						bDoModify=true;
+						break;
+					}
+					// The local must have the type of the formal of the method.
+					// 
+					if (!l.getType().equals(type)) {
 						bDoModify=true;
 						break;
 					}
@@ -96,8 +110,7 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 			NopStmt nop=Jimple.v().newNopStmt();
 			statements.insertBefore(nop, stmt);
 			stmt.redirectJumpsToThisTo(nop);
-			SootMethod invokedMethod=invokeEx.getMethod();
-			List parameterTypes=invokedMethod.getParameterTypes();
+		
 			Iterator it=parameterTypes.iterator();
 			for (int i=0; i<invokeEx.getArgCount(); i++) {
 				Type type=(Type)it.next();
