@@ -18,6 +18,49 @@ public class PCLocalVars_c extends Pointcut_c
     protected List formals;
     protected Pointcut pointcut;
 
+    public String toString()
+    {
+        String s = "";
+
+        for (Iterator i = formals.iterator(); i.hasNext(); ) {
+            Formal f = (Formal) i.next();
+            s += f.toString();
+
+            if (i.hasNext())
+                s += ", ";
+        }
+
+        return "private (" + s + ") (...)";
+    }
+
+    public void prettyPrint(CodeWriter w, PrettyPrinter pp)
+    {
+        w.write("private(");
+
+        // write formals
+        w.begin(0);
+        for (Iterator i = formals.iterator(); i.hasNext(); ) {
+            Formal f = (Formal) i.next();
+
+            print(f, w, pp);
+            if (i.hasNext()) {
+                w.write(",");
+                w.allowBreak(0, " ");
+            }
+        }
+        w.end();
+
+        w.write(") (");
+        w.allowBreak(2, "");
+
+        // write pointcut
+        w.begin(2);
+        printBlock(pointcut, w, pp);
+        w.end();
+
+        w.write(")");
+    }
+
     public List formals()
     {
         return formals;
