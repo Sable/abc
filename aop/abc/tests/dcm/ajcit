@@ -1,0 +1,2 @@
+#!/bin/csh
+ajc $* DCM/*.java DCM/handleMetrics/*.java certrevsim/*.java jsim/*/*.java 
