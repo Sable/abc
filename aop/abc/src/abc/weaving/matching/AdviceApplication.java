@@ -3,6 +3,8 @@ package abc.weaving.matching;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
+import soot.tagkit.SourceLnPosTag;
+import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
@@ -29,12 +31,18 @@ public abstract class AdviceApplication {
 	// The shadow match presumably needs to pick up the signature.
 	// Hopefully it can get the line/column information too.
 
-	SJPInfo(String kind,String signatureType,String signature,int row,int col) {
+	SJPInfo(String kind,String signatureType,String signature,Host host) {
 	    this.kind=kind;
 	    this.signatureType=signatureType;
 	    this.signature=signature;
-	    this.row=row;
-	    this.col=col;
+	    if(host!=null && host.hasTag("SourceLnPosTag")) {
+		SourceLnPosTag slpTag=(SourceLnPosTag) host.getTag("SourceLnPosTag");
+		this.row=slpTag.startLn();
+		this.col=slpTag.startPos();
+	    } else {
+		this.row=-1;
+		this.col=-1;
+	    }
 	}
     };
 

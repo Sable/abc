@@ -42,6 +42,9 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
 		("INTERNAL ERROR: Didn't find an InvokeStmt after a new");
 	}
 	SootMethod method=((InvokeStmt) next).getInvokeExpr().getMethod();
+	// We assume the method we just got must be a constructor, because
+	// we've already done the moving stuff around thing.
+	// FIXME: Does this break with arrays?
 	return new ConstructorCallShadowMatch(current,method);
     }
 
@@ -49,7 +52,7 @@ public class ConstructorCallShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("constructor-call","makeConstructorSig","",-1,-1);
+	    = new AdviceApplication.SJPInfo("constructor-call","makeConstructorSig","",stmt);
         mal.addStmtAdvice(new NewStmtAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }

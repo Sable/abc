@@ -38,7 +38,7 @@ public class ExecutionShadowMatch extends ShadowMatch {
 	    sigMethod="makeMethodSig";
 	}
 	AdviceApplication.SJPInfo sjpInfo
-	    =new AdviceApplication.SJPInfo(jpKind,sigMethod,sig,-1,-1);
+	    =new AdviceApplication.SJPInfo(jpKind,sigMethod,sig,container);
 	mal.addBodyAdvice(new ExecutionAdviceApplication(ad,residue,sjpInfo));
     }
 }

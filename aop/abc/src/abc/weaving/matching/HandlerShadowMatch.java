@@ -35,7 +35,7 @@ public class HandlerShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("exception-handler","makeCatchClauseSig","",-1,-1);
+	    = new AdviceApplication.SJPInfo("exception-handler","makeCatchClauseSig","",stmt);
         mal.addStmtAdvice(new HandlerAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }

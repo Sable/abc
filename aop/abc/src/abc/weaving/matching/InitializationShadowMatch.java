@@ -10,13 +10,17 @@ import abc.weaving.residues.Residue;
  *  @date 05-May-04
  */
 public class InitializationShadowMatch extends ShadowMatch {
-    private InitializationShadowMatch() {
+    private SootMethod container;
+
+    private InitializationShadowMatch(SootMethod container) {
+	this.container=container;
     }
 
     public static InitializationShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof WholeMethodPosition)) return null;
-	if(!((WholeMethodPosition) pos).container.getName().equals(SootMethod.constructorName)) return null;
-	return new InitializationShadowMatch();
+	SootMethod container=((WholeMethodPosition) pos).container;
+	if(!container.getName().equals(SootMethod.constructorName)) return null;
+	return new InitializationShadowMatch(container);
     }
 
 
@@ -24,7 +28,8 @@ public class InitializationShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("initialization","makeConstructorSig","",-1,-1);
+	    = new AdviceApplication.SJPInfo
+	    ("initialization","makeConstructorSig","",container);
 	mal.addInitializationAdvice
 	    (new InitializationAdviceApplication(ad,residue,sjpInfo));
     }

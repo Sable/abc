@@ -2,6 +2,7 @@ package abc.weaving.matching;
 
 import soot.*;
 import soot.jimple.*;
+import soot.tagkit.SourceLnPosTag;
 
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.residues.Residue;
@@ -27,25 +28,30 @@ public class MethodCallShadowMatch extends ShadowMatch {
     public static MethodCallShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof StmtMethodPosition)) return null;
 	Stmt stmt=((StmtMethodPosition) pos).getStmt();
+	SootMethod method=null;
 
 	if (stmt instanceof InvokeStmt) {
-	    SootMethod method 
-		= ((InvokeStmt) stmt).getInvokeExpr().getMethod();
-	    return new MethodCallShadowMatch(stmt,method);
+	    method = ((InvokeStmt) stmt).getInvokeExpr().getMethod();
 	} else if(stmt instanceof AssignStmt) {
 	    AssignStmt as = (AssignStmt) stmt;
 	    Value rhs = as.getRightOp();
 	    if(!(rhs instanceof InvokeExpr)) return null;
-	    return new MethodCallShadowMatch(stmt,
-					     ((InvokeExpr) rhs).getMethod());
+	    method=((InvokeExpr) rhs).getMethod();
 	} else return null;
+
+	if(method.getName().equals(SootMethod.constructorName)) return null;
+	if(method.getName().equals(SootMethod.staticInitializerName)) return null;
+
+	return new MethodCallShadowMatch(stmt,method);
+
     }
 
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue) {
+
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("method-call","makeMethodSig","",-1,-1);
+	    = new AdviceApplication.SJPInfo("method-call","makeMethodSig","",stmt);
         mal.addStmtAdvice(new StmtAdviceApplication(ad,residue,sjpInfo,stmt));
     }
 }
