@@ -1,0 +1,156 @@
+\documentclass[12pt,a4paper]{report}
+
+\usepackage{version}
+\usepackage{verbatim}
+
+\includeversion{extension:private-pointcut-vars}
+
+\newcommand\extensionbegin[1]{%
+\begin{extension:#1}
+\hrule
+\noindent
+If the {\em #1} extension is enabled:
+
+\noindent
+}
+\newcommand\extensionend[1]{%
+\hrule
+\end{extension:#1}}
+
+\newcommand\abcdistinctionbegin[0]{%
+\hrule
+\noindent
+The following is specific to abc:
+
+\noindent
+}
+\newcommand\abcdistinctionend[0]{%
+\hrule
+}
+
+\begin{document}
+
+\chapter{Aspects}
+
+\abcdistinctionbegin
+The source code of all aspects must be available at compile time.
+\abcdistinctionend
+
+\section{Weavable classes}
+
+\chapter{Patterns}
+
+\chapter{Static crosscutting}
+
+\chapter{Join points and pointcuts}
+\section{Join points}
+
+\extensionbegin{private-pointcut-vars}
+The {\em cast} join point occurs every time a value is cast from one type
+to another. This includes both reference and primitive type casts.
+\extensionend{private-pointcut-vars}
+
+\section{Join point shadows}
+
+\section{Pointcut language}
+
+\subsection{Inspecting and binding values from the context}
+
+If the static type of the object being inspected is equal to or a subtype of
+the requested type, then a null value will cause the match to succeed.
+If this is not the case, the a null value will cause the match to fail.
+
+Explanation: In the former case, there is no runtime check, and so any
+runtime value including null will be accepted. In the latter case a runtime
+check is done using the \verb|instanceof| operator, and this returns false
+if the argument is null.
+
+
+\subsection{If}
+Expressions inside an if pointcut should not make use of side effects. 
+The order of evaluation of such expressions is undefined; as is the number
+of times they will be evaluated at any given join point shadow.
+
+\chapter{Declaring new warnings and errors}
+
+\chapter{Advice}
+
+\chapter{Aspect inheritance}
+Aspects may be declared abstract. Any aspect may extend either a class
+or an abstract aspect, using the {\bf extends} keyword as with classes.
+It is not legal for an aspect to extend a non-abstract aspect, or
+for a class to extend any kind of aspect.
+
+An abstract aspect may declare abstract pointcuts, using the following
+syntax:
+
+\begin{verbatim}
+abstract pointcut pc(int x);
+\end{verbatim}
+
+Advice in an abstract
+aspect may refer to abstract pointcuts. An concrete 
+aspect which extends an abstract
+aspect must provide an implementation for the abstract pointcuts of its
+base aspect. An abstract aspect which extends another abstract aspect
+may choose to provide such an implementation; if it does not, then 
+such pointcuts are also treated as abstract pointcuts of the extending aspect.
+
+Advice in abstract aspects has no direct effect. However, the advice
+will be applied once for each concrete aspect that extends the abstract 
+aspect, either directly or indirectly. Any direct or indirect 
+references to abstract pointcuts will be resolved in the concrete aspects.
+
+\chapter{Non-standard aspect instantiation}
+
+If no instantiation clause is specified, then it is inherited from the parent
+aspect if there is one, or defaults to \verb|issingleton| otherwise.
+
+\chapter{Declare soft}
+
+\chapter{Precedence}
+\section{Aspect precedence}
+If not overridden by a \verb|declare precedence| declaration, an aspect 
+has precedence over any aspect it extends.
+
+\section{Advice precedence}
+Advice precedence affects the order in which multiple pieces of advice
+at a given join point are executed. A piece of advice may either have 
+{\em higher precedence} than another piece of advice, 
+{\em lower precedence} than it, 
+no precedence relationship with it, 
+or be in {\em precedence conflict} with it.
+
+If two pieces of advice in precedence conflict might apply at the same
+join point shadow, a compile-time error occurs.
+
+It is also possible for {\em precedence circularities} to exist --- for example
+A might have higher precedence than B which has higher precedence than C
+which has higher precedence than A. If such a circularity exists between
+any of the advice that might apply at a given shadow, then a compile-time
+error also occurs.
+
+Conceptually, advice is woven from inside to out, starting with the lowest
+precedence advice. The practical effect of this is that higher precedence
+before or around advice will start to execute before lower precedence before
+or around advice, and that lower precedence around or after advice will 
+finish executing before higher precedence around or after advice. 
+
+--- Discuss abnormal termination here and how it can be intercepted with
+after throwing advice - but not stopped, except by throwing a different
+exception
+
+If two pieces of advice are defined 
+in different aspects, then their precedence is defined by the precedence
+of those aspects.
+
+If two pieces of advice are defined in the same aspect, and either is after
+advice, then the piece of advice that appears later in the aspect has 
+precedence over the one that appears earlier. If neither is after advice,
+the one appearing earlier has precedence.
+
+If the same piece of advice applies multiple times at one join point
+(this can happen if multiple concrete aspects extend the abstract aspect
+containing the advice), the order in which they are executed is undefined.
+
+\end{document}
