@@ -182,7 +182,8 @@ public class Main {
 		
 		count++;
 		
-		if(xTest.has("//abc:abckeywords/abc:skip")) {
+		if(xTest.has("//abc:abckeywords/abc:skip") ||
+                   xTest.has("//abc:abckeywords/abc:warningbehaviour")) {
 		    // A test that the XML file advises us to skip
 		    stdout.println("Skipping test \"" + dir + "/" + title + "\" as instructed in xml file.");
 		    skipped++;
