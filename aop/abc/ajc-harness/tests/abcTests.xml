@@ -9382,4 +9382,13 @@
             <message kind="error" line="12"/>
          </compile>
     </ajc-test>
+    <ajc-test num="1014" dir="abctests/bugs"
+         title="interaction of named pointcuts and nested cflow">
+         <compile files="CflowInliningDepth.java"/>
+         <run class="CflowInliningDepth"/>
+    </ajc-test>
+    <ajc-test num="1015" dir="abctests/bugs"
+         title="correct topological sorting of precedence">
+         <compile files="PrecedenceSort.java"/>
+    </ajc-test>
 </suite>
