@@ -26,6 +26,16 @@ public class Debug {
     }
 
 
-    boolean matcherTest=false;
+    public boolean matcherTest=false;
+
+    // Weaver
+    public boolean weaverDriver=false;  // main driver for weaver
+    public boolean aspectCodeGen=false; // inserting stuff into aspect class
+    public boolean genStaticJoinPoints=false; // collect and gen SJP
+    public boolean shadowPointsSetter=false; // collect shadow points
+    public boolean pointcutCodeGen=false; // main pointcut generator
+    public boolean beforeWeaver=false;
+    public boolean afterReturningWeaver=false;
+    public boolean afterThrowingWeaver=false;
     
 }
