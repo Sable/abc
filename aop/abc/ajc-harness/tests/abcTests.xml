@@ -7983,4 +7983,9 @@
 		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"/>
 		<run class="main.Driver"/>
 	</ajc-test>
+
+        <ajc-test dir="abctests/design/reflection" title="thisJoinPoint etc inside if pointcut">
+           <compile files="InsideIf.java"/>
+           <run class="InsideIf"/>
+        </ajc-test>
 </suite>
