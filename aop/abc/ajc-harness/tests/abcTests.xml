@@ -805,7 +805,9 @@
     </ajc-test>
 
     <ajc-test dir="pureJava" title="return;;; is not really legal"
-      keywords="from-java,purejava">
+      keywords="from-java,purejava"
+      abccomment="ajc doesn't report one error per spurious ;, abc does"
+    >
         <compile files="ReachableEmpty.java">
             <message kind="error" line="5"/>
             <message kind="error" line="9"/>
