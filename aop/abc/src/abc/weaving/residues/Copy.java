@@ -47,11 +47,6 @@ public class Copy extends Residue {
 	 Chain units,Stmt begin,Stmt fail,boolean sense,
 	 WeavingContext wc) {
 
-	if(!sense) {
-	    Stmt jump=Jimple.v().newGotoStmt(fail);
-	    units.insertAfter(jump,begin);
-	    return jump;
-	}
-	return to.set(localgen,units,begin,wc,from.get());
+	return succeed(units,to.set(localgen,units,begin,wc,from.get()),fail,sense);
     }
 }

@@ -67,10 +67,10 @@ public class Box extends Residue {
 		 (to.get(),Scene.v().makeConstructorRef(boxClass,paramTypeList),from.get()));
 	    units.insertAfter(constrStmt,newStmt);
 	    
-	    return constrStmt;
+	    return succeed(units,constrStmt,fail,sense);
 
 	} else {
-	    return to.set(localgen,units,begin,wc,from.get());
+	    return succeed(units,to.set(localgen,units,begin,wc,from.get()),fail,sense);
 	}
     }
 

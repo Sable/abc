@@ -27,14 +27,13 @@ import java.util.List;
 
 import soot.Local;
 import soot.SootMethod;
-import soot.jimple.Stmt;
+import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.weaver.WeavingContext;
 
 /** The base class defining dynamic residues of pointcuts
  *  @author Ganesh Sittampalam
- *  @date 28-Apr-04
  */ 
 
 public abstract class Residue {
@@ -53,6 +52,15 @@ public abstract class Residue {
 				 Chain units,Stmt begin,Stmt fail,boolean sense,
 				 WeavingContext wc);
 
+    protected static Stmt succeed(Chain units,Stmt begin,Stmt fail,boolean sense) {
+	if(sense) return begin;
+	else 		{
+	    Stmt jump=Jimple.v().newGotoStmt(fail);
+	    units.insertAfter(jump,begin);
+	    return jump;
+	}
+    }
+    
     /** Must provide a toString method */
     public abstract String toString();
 
