@@ -1,5 +1,11 @@
 package abc.weaving.residues;
 
+import soot.SootMethod;
+import soot.util.Chain;
+import soot.jimple.Stmt;
+import abc.weaving.weaver.LocalGeneratorEx;
+import abc.weaving.weaver.WeavingContext;
+
 /** Conjunction of two residues
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
@@ -20,6 +26,13 @@ public class AndResidue extends AbstractResidue {
 
     public String toString() {
 	return "("+left+") && ("+right+")";
+    }
+
+    public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
+			Chain units,Stmt begin,Stmt fail,WeavingContext wc) {
+
+	Stmt middle=left.codeGen(method,localgen,units,begin,fail,wc);
+	return right.codeGen(method,localgen,units,middle,fail,wc);
     }
 
     /** Private constructor to force use of smart constructor */

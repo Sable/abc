@@ -1,5 +1,11 @@
 package abc.weaving.residues;
 
+import soot.SootMethod;
+import soot.util.Chain;
+import soot.jimple.Stmt;
+import abc.weaving.weaver.LocalGeneratorEx;
+import abc.weaving.weaver.WeavingContext;
+
 /** A "dynamic" residue that can never match. 
  *  Intended for convenience during generation and residue analysis process.
  *  @author Ganesh Sittampalam
@@ -13,4 +19,11 @@ public class AlwaysMatch extends AbstractResidue {
     public String toString() {
 	return "always";
     }
+
+    public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
+			Chain units,Stmt begin,Stmt fail,WeavingContext wc) {
+
+	return begin;
+    }
+
 }
