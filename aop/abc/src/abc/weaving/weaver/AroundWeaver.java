@@ -621,31 +621,19 @@ public class AroundWeaver {
 				LocalGeneratorEx localgen = new LocalGeneratorEx(joinpointBody);	
 				Stmt failPoint = Jimple.v().newNopStmt();
 				
-				// weave in dynamic residue
-	
-				//			find location to weave in statements, 
-	
 				joinpointStatements.insertBefore(failPoint, end);
 				joinpointStatements.insertBefore(beforeFailPoint, failPoint);
 	
 				// weave in residue
 				Stmt endResidue = adviceAppl.residue.codeGen(joinpointMethod, localgen, joinpointStatements, begin, failPoint, wc);
 	
-				/*AdviceWeavingContext awc = (AdviceWeavingContext) wc;
-				{
-					Iterator it = awc.arglist.iterator();
-					while (it.hasNext()) {
-						Local l = (Local) it.next();
-						//actuals.contain)
-					}
-				}*/
-	
+				
 				if (!(adviceAppl.residue instanceof AlwaysMatch)) {
 					InvokeExpr directInvoke;
 					List directParams = new LinkedList();
 					//directParams.add(targetLocal);
 					
-					List defaultValues = getDefaultValues(adviceMethod.originalAdviceFormals);
+					List defaultValues = getDefaultValues(adviceMethod.originalAdviceFormalTypes);
 					directParams.addAll(defaultValues);
 					directParams.add(IntConstant.v(shadowID));
 					directParams.add(IntConstant.v(1)); // skipAdvice parameter
@@ -722,7 +710,7 @@ public class AroundWeaver {
 			}
 	
 		}
-		String accessMethodName;
+		public final String accessMethodName;
 		public void doWeave() {		
 			//Body accessBody = accessMethod.method.getActiveBody();
 			//Chain accessStatements = accessBody.getUnits().getNonPatchingChain();
@@ -745,11 +733,11 @@ public class AroundWeaver {
 				}
 			}
 
-			NopStmt beforeEndShadow = Jimple.v().newNopStmt();
+			/*NopStmt beforeEndShadow = Jimple.v().newNopStmt();
 			{ // should be unnecessary
 				joinpointStatements.insertBefore(beforeEndShadow, end);
 				end.redirectJumpsToThisTo(beforeEndShadow);
-			}
+			}*/
 
 			validateShadow(joinpointBody, begin, end);
 			
@@ -885,7 +873,9 @@ public class AroundWeaver {
 				Restructure.insertBoxingCast(joinpointMethod.getActiveBody(), assign, true);
 				invokeStmt = assign;
 			}
-			joinpointStatements.insertBefore(Jimple.v().newGotoStmt(end), insertionPoint);
+			Stmt beforeEnd=Jimple.v().newNopStmt();
+			joinpointStatements.insertBefore(beforeEnd, end);
+			joinpointStatements.insertBefore(Jimple.v().newGotoStmt(beforeEnd), insertionPoint);
 			
 			if (invokeStmt == null)
 				throw new InternalError();
@@ -996,13 +986,13 @@ public class AroundWeaver {
 			}
 	
 	
-	
+			AccessMethod accessMethod;
 			accessMethod = adviceMethod.getAccessMethod(joinpointMethod.getDeclaringClass().getName(), bStaticJoinPoint || adviceMethod.bAllwaysStaticAccessMethod);
 			if (accessMethod == null) {
 				accessMethod = new AccessMethod(adviceMethod, joinpointMethod.getDeclaringClass(), bStaticJoinPoint || adviceMethod.bAllwaysStaticAccessMethod, accessMethodName);
 				adviceMethod.setAccessMethod(joinpointMethod.getDeclaringClass().getName(), bStaticJoinPoint || adviceMethod.bAllwaysStaticAccessMethod, accessMethod);
 			}
-
+			this.accessMethod=accessMethod;
 		}
 		public final Stmt begin;
 		public final Stmt end;
@@ -1013,7 +1003,7 @@ public class AroundWeaver {
 		public final Chain joinpointStatements;
 		public final Body joinpointBody;
 		public final boolean bStaticJoinPoint;
-		public AccessMethod accessMethod;	
+		public final AccessMethod accessMethod;	
 	}
 	
 	
@@ -1029,6 +1019,10 @@ public class AroundWeaver {
 		 */
 		private void fixAccessMethodSuperCalls(SootClass newAccessClass) {
 			//AdviceMethod adviceMethodInfo = state.getInterfaceInfo(interfaceName);
+			
+			if (!accessMethodImplementations.containsKey(newAccessClass.getName()))
+				throw new InternalError();
+			
 			Set keys = accessMethodImplementations.keySet();
 	
 			boolean bAddSuperToNewMethod = false;
@@ -1273,7 +1267,7 @@ public class AroundWeaver {
 
 				List parameters = new LinkedList();
 				parameters.addAll(invokation.originalActuals);
-				parameters.addAll(proceedParameters);
+				parameters.addAll(implicitProceedParameters);
 				if (invokation.dynamicInvoke == null && hasDynamicProceed) {
 					InvokeExpr newInvokeExpr = Jimple.v().newInterfaceInvokeExpr(interfaceLocal, interfaceInfo.abstractAccessMethod, parameters);
 					Stmt s;
@@ -1384,7 +1378,7 @@ public class AroundWeaver {
 
 				AdviceMethod adviceMethodInfo1 = state.getAdviceMethod(method);
 
-				adviceMethodInfo1.proceedParameters.addAll(addedAdviceParameterLocals);
+				adviceMethodInfo1.implicitProceedParameters.addAll(addedAdviceParameterLocals);
 			}
 		}
 
@@ -1441,8 +1435,8 @@ public class AroundWeaver {
 			Restructure.validateMethod(method);
 
 			//adviceMethodInfo.proceedParameters.add(lTarget);
-			proceedParameters.add(lShadowID);
-			proceedParameters.add(IntConstant.v(0));
+			implicitProceedParameters.add(lShadowID);
+			implicitProceedParameters.add(IntConstant.v(0));
 			// skipAdvice parameter
 
 			interfaceLocal = lInterface;
@@ -1523,11 +1517,10 @@ public class AroundWeaver {
 		}
 		InterfaceInfo interfaceInfo = null;
 
-		String dynamicAccessMethodName;
+		final String dynamicAccessMethodName;
 		String interfaceName;
-		String adviceMethodIdentifierString;
-		List /*type*/
-		accessMethodParameters;
+		final String adviceMethodIdentifierString;
+		List /*type*/ accessMethodParameterTypes;
 
 		SootClass getAspect() {
 			return method.getDeclaringClass();
@@ -1538,16 +1531,15 @@ public class AroundWeaver {
 		public final Body body;
 		public final Chain statements;
 
-		public List originalAdviceFormals = new LinkedList();
-		public List proceedParameters = new LinkedList();
+		final public List originalAdviceFormalTypes = new LinkedList();
+		final public List /*Value*/ implicitProceedParameters = new LinkedList();
 		public Local interfaceLocal;
 		//public Local targetLocal;
 		public Local idLocal;
 		public Local staticDispatchLocal;
-		public HashSet /*String*/
-		staticProceedTypes = new HashSet();
+		final public HashSet /*String*/ staticProceedTypes = new HashSet();
 		public boolean hasDynamicProceed = false;
-		public boolean bAllwaysStaticAccessMethod = false;//true; //false;
+		public final boolean bAllwaysStaticAccessMethod = false;//true; //false;
 
 		public static class ProceedInvokation {
 			public Local lhs;
@@ -1564,17 +1556,16 @@ public class AroundWeaver {
 
 			List originalActuals = new LinkedList();
 		}
-		private List proceedInvokations = new LinkedList();
+		final private List proceedInvokations = new LinkedList();
 
-		public Set interfaceInvokationStmts = new HashSet();
-		public Set adviceMethodInvokationStmts = new HashSet();
-		public Set directInvokationStmts = new HashSet();
+		final public Set interfaceInvokationStmts = new HashSet();
+		final public Set adviceMethodInvokationStmts = new HashSet();
+		final public Set directInvokationStmts = new HashSet();
 		//public Set superInvokationStmts=new HashSet();
 		//public HashMap /*InvokeExpr, ValueBox*/ invokationBoxes=new HashMap();
-		List /*Type*/
-		dynamicArguments = new LinkedList();
+		final List /*Type*/ dynamicArguments = new LinkedList();
 
-		List[] dynamicArgsByType = new List[Restructure.JavaTypeInfo.typeCount];
+		final List[] dynamicArgsByType = new List[Restructure.JavaTypeInfo.typeCount];
 
 		AdviceMethod(SootMethod method, AdviceDecl adviceDecl) {
 			this.method = method;
@@ -1601,36 +1592,36 @@ public class AroundWeaver {
 
 			{ // store original advice formals in adviceMethodInfo
 
-				if (!originalAdviceFormals.isEmpty())
+				if (!originalAdviceFormalTypes.isEmpty())
 					throw new InternalError();
 
 				Iterator it = adviceDecl.getImpl().getFormals().iterator();
 				while (it.hasNext()) {
 					Formal formal = (Formal) it.next();
-					originalAdviceFormals.add(formal.getType().getSootType());
+					originalAdviceFormalTypes.add(formal.getType().getSootType());
 					//formal.
 				}
 				// TODO: clean up the following 7 lines
-				int size = originalAdviceFormals.size();
+				int size = originalAdviceFormalTypes.size();
 				if (adviceDecl.hasEnclosingJoinPoint())
-					originalAdviceFormals.remove(--size);
+					originalAdviceFormalTypes.remove(--size);
 				if (adviceDecl.hasJoinPoint())
-					originalAdviceFormals.remove(--size);
+					originalAdviceFormalTypes.remove(--size);
 				if (adviceDecl.hasJoinPointStaticPart())
-					originalAdviceFormals.remove(--size);
+					originalAdviceFormalTypes.remove(--size);
 
 				//adviceMethodInfo.originalAdviceFormals.addAll(adviceMethod.getParameterTypes());
 			}
 
-			accessMethodParameters = new LinkedList();
+			accessMethodParameterTypes = new LinkedList();
 			// accessMethodParameters.add(Scene.v().getSootClass("java.lang.Object").getType()); // target
-			accessMethodParameters.add(IntType.v()); // the shadow id
-			accessMethodParameters.add(BooleanType.v()); // the skip flag
+			accessMethodParameterTypes.add(IntType.v()); // the shadow id
+			accessMethodParameterTypes.add(BooleanType.v()); // the skip flag
 
 			{
 				List allAccessMethodParameters = new LinkedList();
-				allAccessMethodParameters.addAll(originalAdviceFormals);
-				allAccessMethodParameters.addAll(accessMethodParameters);
+				allAccessMethodParameters.addAll(originalAdviceFormalTypes);
+				allAccessMethodParameters.addAll(accessMethodParameterTypes);
 
 				interfaceInfo = new InterfaceInfo();
 
@@ -1661,10 +1652,8 @@ public class AroundWeaver {
 				accessMethodImplementations.put(className, accessMethod);
 			}
 		}
-		private HashMap /*String, AccessMethodInfo*/
-		accessMethodImplementations = new HashMap();
-		private HashMap /*String, AccessMethodInfo*/
-		accessMethodImplementationsStatic = new HashMap();
+		final private HashMap /*String, AccessMethodInfo*/ accessMethodImplementations = new HashMap();
+		final private HashMap /*String, AccessMethodInfo*/ accessMethodImplementationsStatic = new HashMap();
 
 		public int getUniqueShadowID() {
 			return currentUniqueShadowID++;
@@ -1783,8 +1772,8 @@ public class AroundWeaver {
 		public final AdviceMethod adviceMethod;
 		public final SootClass joinpointClass;
 		public final boolean bStaticAccessMethod;
-		Body body;
-		Chain statements;
+		public final Body body;
+		public final Chain statements;
 			
 		AccessMethod(AdviceMethod parent, SootClass joinpointClass, boolean bStaticAccessMethod, String accessMethodName) {
 			this.bStaticAccessMethod=bStaticAccessMethod;
@@ -1823,7 +1812,7 @@ public class AroundWeaver {
 			//	accessMethod, (Type)accessMethodParameters.get(0), "targetArg");
 
 			{
-				Iterator it = adviceMethod.originalAdviceFormals.iterator();
+				Iterator it = adviceMethod.originalAdviceFormalTypes.iterator();
 				while (it.hasNext()) {
 					Type type = (Type) it.next();
 					Local l = Restructure.addParameterToMethod(method, type, "orgAdviceFormal");
@@ -1832,10 +1821,10 @@ public class AroundWeaver {
 			}
 			Restructure.validateMethod(method);
 
-			idParamLocal = Restructure.addParameterToMethod(method, (Type) adviceMethod.accessMethodParameters.get(0), "shadowID");
-			skipParamLocal = Restructure.addParameterToMethod(method, (Type) adviceMethod.accessMethodParameters.get(1), "skipAdvice");
+			idParamLocal = Restructure.addParameterToMethod(method, (Type) adviceMethod.accessMethodParameterTypes.get(0), "shadowID");
+			skipParamLocal = Restructure.addParameterToMethod(method, (Type) adviceMethod.accessMethodParameterTypes.get(1), "skipAdvice");
 
-			if (adviceMethod.accessMethodParameters.size() != 2)
+			if (adviceMethod.accessMethodParameterTypes.size() != 2)
 				throw new InternalError();
 
 			Stmt lastIDStmt = Restructure.getParameterIdentityStatement(method, method.getParameterCount() - 1);
@@ -1876,18 +1865,18 @@ public class AroundWeaver {
 			statements=body.getUnits().getNonPatchingChain();
 		}
 
-		List targets = new LinkedList();
-		List lookupValues = new LinkedList();
-		NopStmt defaultTarget;
-		NopStmt defaultEnd;
+		final List targets = new LinkedList();
+		final List lookupValues = new LinkedList();
+		final NopStmt defaultTarget;
+		final NopStmt defaultEnd;
 		Stmt lookupStmt;
 		int nextID;
 		public final Local idParamLocal;
 		public final Local skipParamLocal;
 		//Local targetLocal;
 
-		List dynParamLocals = new LinkedList();
-		List adviceFormalLocals = new LinkedList();
+		final List dynParamLocals = new LinkedList();
+		final List adviceFormalLocals = new LinkedList();
 
 		public final SootMethod method;
 
@@ -1952,8 +1941,7 @@ public class AroundWeaver {
 		}
 		int currentUniqueID;
 
-		private HashMap /* AdviceApplication,  */
-		adviceApplications = new HashMap();
+		final private HashMap /* AdviceApplication,  */ adviceApplications = new HashMap();
 		/*AdviceApplicationInfo getApplicationInfo(AdviceApplication app) {
 			if (!adviceApplications.containsKey(app)) {
 				adviceApplications.put(app, new AdviceApplicationInfo());
@@ -1968,11 +1956,9 @@ public class AroundWeaver {
 			return ((Integer) staticDispatchTypeIDs.get(name)).intValue();
 		}
 		int nextStaticTypeDispatchID = 1; // 0 is a special value
-		HashMap /*String, int*/
-		staticDispatchTypeIDs = new HashMap();
+		final HashMap /*String, int*/ staticDispatchTypeIDs = new HashMap();
 
-		private HashMap /* String, AdviceMethod */
-		adviceMethods = new HashMap();
+		final private HashMap /* String, AdviceMethod */ adviceMethods = new HashMap();
 		void setAdviceMethod(SootMethod adviceMethod, AdviceMethod m) {
 			adviceMethods.put(adviceMethod, m);
 		}
