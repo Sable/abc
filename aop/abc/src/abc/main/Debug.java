@@ -64,7 +64,8 @@ public class Debug {
     public boolean sootResolverTimer=false;
     public boolean timerTrace=false; // print time of phases as they run
     public boolean doValidate=false;  // validate jimple
-
+    // dump CFG as dot plot, doValidate must also be true to enable it
+    public boolean doValidateDumpCFG=false; 
     // Config stuff - to be moved, probably (FIXME)
 
     public boolean ajcCompliance=true; // strict ajc compliance
