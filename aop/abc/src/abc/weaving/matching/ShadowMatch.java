@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL; 
- * if not, write to the Free Software Foundation, Inc., 
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -40,7 +40,8 @@ public abstract class ShadowMatch {
     protected SootMethod container;
 
     protected ShadowMatch(SootMethod container) {
-	this.container=container;
+        this.container=container;
+        cachedThisContextValue=findThisContextValue();
     }
 
     /** return the enclosing ShadowMatch */
@@ -48,11 +49,11 @@ public abstract class ShadowMatch {
 
     /** return the method that this ShadowMatch occurs within */
     public SootMethod getContainer() {
-	return container;
+        return container;
     }
 
     /** Get the host that this ShadowMatch corresponds to,
-     *  for positional information 
+     *  for positional information
      */
     public abstract Host getHost();
 
@@ -61,55 +62,63 @@ public abstract class ShadowMatch {
 
     private SJPInfo sjpInfo=null;
 
-    /** Construct the sjpInfo structure and register it with the 
+    /** Construct the sjpInfo structure and register it with the
      *  global list in GlobalAspectInfo, unless this has already been done */
     public final void recordSJPInfo() {
-	if(sjpInfo!=null) return;
-	sjpInfo=makeSJPInfo();
-	GlobalAspectInfo.v().addSJPInfo(container,sjpInfo);
+        if(sjpInfo!=null) return;
+        sjpInfo=makeSJPInfo();
+        GlobalAspectInfo.v().addSJPInfo(container,sjpInfo);
     }
 
     /** Retrieve the sjpInfo structure, creating it if necessary */
     public final SJPInfo getSJPInfo() {
-	recordSJPInfo();
-	return sjpInfo;
+        recordSJPInfo();
+        return sjpInfo;
     }
-    
+
     private boolean recorded=false;
 
-    /** Add a new advice application to the appropriate bit of a 
-	method advice list */
+    /** Add a new advice application to the appropriate bit of a
+        method advice list */
     public void addAdviceApplication(MethodAdviceList mal,
-				     AbstractAdviceDecl ad,
-				     Residue residue) {
-	AdviceApplication aa=doAddAdviceApplication(mal,ad,residue);
-	ad.incrApplCount();
-	aa.setShadowMatch(this);
-	if(!recorded) {
+                                     AbstractAdviceDecl ad,
+                                     Residue residue) {
+        AdviceApplication aa=doAddAdviceApplication(mal,ad,residue);
+        ad.incrApplCount();
+        aa.setShadowMatch(this);
+        if(!recorded) {
             GlobalAspectInfo.v().addShadowMatch(container,this);
             recorded=true;
         }
     }
 
     protected abstract AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue);
+        (MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue);
 
-    /** Return a ContextValue that represents the runtime value 
-     *  that is bound by a this() pointcut 
+
+    /* Cache this during matching time to avoid calls into MethodCategory at weave
+     * time which might cause a field write, which is against policy for the weaver
+     * because of the need to undo changes to reweave. This one would be benign,
+     * but it's better to avoid confusion.
      */
-    public ContextValue getThisContextValue() {
-        if(container.isStatic()   && 
-        	!MethodCategory.hasThisAsFirstParameter(container) ) return null;
-        	
-        	//System.out.println(" " + container + " : " + 
-        	//				container.getActiveBody().getLocalCount());
-        	//System.out.println(container.getActiveBody().getUnits().getFirst());
-        	//System.out.println(container.isStatic());
-		return new JimpleValue(Restructure.getThisLocal(container));
+    private ContextValue cachedThisContextValue;
+
+    private ContextValue findThisContextValue() {
+        if(container.isStatic()   &&
+           !MethodCategory.hasThisAsFirstParameter(container) ) return null;
+
+        return new JimpleValue(Restructure.getThisLocal(container));
     }
 
-    /** Return a ContextValue that represents the runtime value 
-     *  that is bound by a target() pointcut 
+    /** Return a ContextValue that represents the runtime value
+     *  that is bound by a this() pointcut
+     */
+    public ContextValue getThisContextValue() {
+        return cachedThisContextValue;
+    }
+
+    /** Return a ContextValue that represents the runtime value
+     *  that is bound by a target() pointcut
      */
     // no sensible default - unless null?
     public abstract ContextValue getTargetContextValue();
@@ -118,38 +127,38 @@ public abstract class ShadowMatch {
      *  that could be bound by an args() pointcut
      */
     public List/*<ContextValue>*/ getArgsContextValues() {
-	// replace by empty list later?
-	throw new RuntimeException("args not yet implemented for "+this);
+        // replace by empty list later?
+        throw new RuntimeException("args not yet implemented for "+this);
     }
 
-    /** Return a ContextValue that represents the runtime value 
+    /** Return a ContextValue that represents the runtime value
      *  that is bound by after returning() advice
      */
     public ContextValue getReturningContextValue() {
-	return new JimpleValue(NullConstant.v());
+        return new JimpleValue(NullConstant.v());
     }
 
     /** Does this shadow support before advice? */
     public boolean supportsBefore() {
-	return true;
+        return true;
     }
     /** Does this shadow support after advice? */
     public boolean supportsAfter() {
-	return true;
+        return true;
     }
     /** Does this shadow support around advice? */
     public boolean supportsAround() {
-	return supportsBefore() && supportsAfter();
+        return supportsBefore() && supportsAfter();
     }
 
     /** The list of exceptions that this shadow is declared to throw */
     public List/*<SootClass>*/ getExceptions() {
-	/* default to empty */
-	return new ArrayList();
+        /* default to empty */
+        return new ArrayList();
     }
 
     /** The ShadowPoints of a specific shadow match are the nop statements
-     *  that are inserted to make weaving easier. 
+     *  that are inserted to make weaving easier.
      *  They are set by the ShadowPointsSetter
      */
     public abc.weaving.weaver.ShadowPoints sp=null;
@@ -158,8 +167,8 @@ public abstract class ShadowMatch {
      *  ShadowPoints for this shadow
      */
     public void setShadowPoints(abc.weaving.weaver.ShadowPoints sp) {
-	this.sp=sp;
-	sp.setShadowMatch(this);
+        this.sp=sp;
+        sp.setShadowMatch(this);
     }
 
     public abstract String joinpointName();
