@@ -1,7 +1,20 @@
 package abc.weaving.matching;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+import soot.Body;
+import soot.Local;
 import soot.SootMethod;
+import soot.Value;
+import soot.jimple.AssignStmt;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Jimple;
+import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.util.Chain;
+import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.residues.ContextValue;
 
 /** A "stmt" shadow match
@@ -20,5 +33,51 @@ public abstract class StmtShadowMatch extends ShadowMatch {
 	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
 	return new ExecutionShadowMatch(container);
     }
+
+	/**
+	 * Lazily replaces the arguments of the invokeExpr of stmt with
+	 * unique locals and inserts assignment statements before stmt,
+	 * assigning the original values to the locals.
+	 * Needed for around().
+	 * @param method
+	 * @param stmt
+	 */
+	public static void makeArgumentsUniqueLocals(SootMethod method, Stmt stmt) {
+		InvokeExpr invokeEx=stmt.getInvokeExpr();
+		boolean bDoModify=false;
+		{
+			Set args=new HashSet(); 
+			Iterator it=invokeEx.getArgs().iterator();
+			while (it.hasNext()) {
+				Value val=(Value)it.next();
+				if (!(val instanceof Local)) {
+					bDoModify=true;
+					break;
+				} else {
+					if (args.contains(val)) {
+						bDoModify=true;
+						break;
+					}
+					args.add(val);
+				}
+			}
+		}
+		if (bDoModify) {
+			Body body=method.getActiveBody();
+			Chain statements=body.getUnits().getNonPatchingChain();
+			LocalGeneratorEx lg=new LocalGeneratorEx(body);
+			NopStmt nop=Jimple.v().newNopStmt();
+			statements.insertBefore(nop, stmt);
+			stmt.redirectJumpsToThisTo(nop);
+			for (int i=0; i<invokeEx.getArgCount(); i++) {
+				Value val=invokeEx.getArg(i);
+				Local l=lg.generateLocal(invokeEx.getMethod().getParameterType(i),
+					"uniqueArgLocal");
+				AssignStmt as=Jimple.v().newAssignStmt(l,val);
+				statements.insertBefore(as, stmt);
+				invokeEx.getArgBox(i).setValue(l);
+			}
+		}
+	}
 
 }

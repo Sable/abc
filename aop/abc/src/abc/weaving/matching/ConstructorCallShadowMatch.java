@@ -45,6 +45,9 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 		("INTERNAL ERROR: Didn't find an InvokeStmt after a new");
 	}
 	InvokeExpr invoke=((InvokeStmt) next).getInvokeExpr();
+	
+	StmtShadowMatch.makeArgumentsUniqueLocals(stmtMP.getContainer(), next);
+	
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
 	// FIXME: Does this break with arrays?
