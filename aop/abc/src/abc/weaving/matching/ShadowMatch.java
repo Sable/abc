@@ -58,7 +58,14 @@ public abstract class ShadowMatch {
         return container.isStatic() ? null : new This();
     }
 
-    //    public ContextValue getReturningContextValue(
+    // no sensible default
+    public abstract ContextValue getTargetContextValue();
+
+    // no sensible default
+    public ContextValue getReturningContextValue() {
+	// remove when subclasses implement it
+	throw new RuntimeException("No returning context value implemented "+this);
+    }
 
     public boolean supportsBefore() {
 	return true;

@@ -12,20 +12,13 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class MethodCallShadowMatch extends ShadowMatch {
+public class MethodCallShadowMatch extends StmtShadowMatch {
     
-    private Stmt stmt;
     private SootMethod method;
     
     private MethodCallShadowMatch(SootMethod container,Stmt stmt,SootMethod method) {
-	super(container);
-	this.stmt=stmt;
+	super(container,stmt);
 	this.method=method;
-    }
-
-    public ShadowMatch getEnclosing() {
-	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
-	return new ExecutionShadowMatch(container);
     }
 
     public SootMethod getMethod() {

@@ -9,14 +9,10 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class InitializationShadowMatch extends ShadowMatch {
+public class InitializationShadowMatch extends BodyShadowMatch {
 
     private InitializationShadowMatch(SootMethod container) {
 	super(container);
-    }
-
-    public ShadowMatch getEnclosing() {
-	return this;
     }
 
     public static InitializationShadowMatch matchesAt(MethodPosition pos) {

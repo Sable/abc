@@ -9,14 +9,10 @@ import abc.weaving.residues.*;
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class PreinitializationShadowMatch extends ShadowMatch {
+public class PreinitializationShadowMatch extends BodyShadowMatch {
 
     private PreinitializationShadowMatch(SootMethod container) {
 	super(container);
-    }
-
-    public ShadowMatch getEnclosing() {
-	return this;
     }
 
     public static PreinitializationShadowMatch matchesAt(MethodPosition pos) {
@@ -40,7 +36,7 @@ public class PreinitializationShadowMatch extends ShadowMatch {
 	return aa;
     }
 
-    public ContextValue getThisContextValue(SootMethod method) {
+    public ContextValue getThisContextValue() {
         return null;
     }
 

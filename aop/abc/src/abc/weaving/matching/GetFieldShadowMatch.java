@@ -10,20 +10,13 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class GetFieldShadowMatch extends ShadowMatch {
+public class GetFieldShadowMatch extends StmtShadowMatch {
     
-    private Stmt stmt;
     private SootField field;
     
     private GetFieldShadowMatch(SootMethod container,Stmt stmt,SootField field) {
-	super(container);
-	this.stmt=stmt;
+	super(container,stmt);
 	this.field=field;
-    }
-
-    public ShadowMatch getEnclosing() {
-	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
-	return new ExecutionShadowMatch(container);
     }
 
     public SootField getField() {

@@ -10,21 +10,14 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class HandlerShadowMatch extends ShadowMatch {
+public class HandlerShadowMatch extends StmtShadowMatch {
     
-    private Stmt stmt;
     private SootClass sootexc;
 
     
     private HandlerShadowMatch(SootMethod container,Stmt stmt,SootClass sootexc) {
-	super(container);
-	this.stmt=stmt;
+	super(container,stmt);
 	this.sootexc=sootexc;
-    }
-
-    public ShadowMatch getEnclosing() {
-	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
-	return new ExecutionShadowMatch(container);
     }
 
     public SootClass getException() {

@@ -11,7 +11,7 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 05-May-04
  */
-public class ExecutionShadowMatch extends ShadowMatch {
+public class ExecutionShadowMatch extends BodyShadowMatch {
     public ShadowMatch getEnclosing() {
 	return this;
     }
