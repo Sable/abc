@@ -206,10 +206,6 @@
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="can't resolve nested public interfaces (also PR#32399)" pr="32421" num="756" dir="bugs/interfaceNames">
-        <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"></compile>
-        <run class="TransactionTest"></run>
-    </ajc-test>
 <ajc-test title="cflow binding issues with ignoring state" pr="34858" num="764" dir="bugs">
         <compile files="CflowBinding.java"></compile>
         <run class="CflowBinding"></run>
@@ -217,11 +213,6 @@
 <ajc-test title="declare soft and throw statements" pr="34925" num="772" dir="bugs">
         <compile files="ConvertToUnchecked.java"></compile>
         <run class="ConvertToUnchecked"></run>
-    </ajc-test>
-<ajc-test title="Declare parents removing ancestor" num="776" keywords="from-new" dir="new/declareParents">
-        <compile files="IllegalAdoption.java">
-            <message line="13" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="Ajc 1.1 rc1 java.lang.VerifyError with messy arounds" pr="36056" num="784" dir="bugs/messyAround">
         <compile files="aspects/Trace.aj,cap/OptionList.java,DebugTrace.aj">

@@ -1005,10 +1005,9 @@
             <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="extra closing brace" pr="219" num="218" keywords="from-errors" dir="errors" abccomment="abc complains about both superfluous               braces -- quite correctly. PA/AGS">
+<ajc-test title="extra closing brace" pr="219" num="218" keywords="from-errors" dir="errors" abccomment="abc complains about both superfluous               braces -- quite correctly. PA/AGS. But when we reset the               lexer state correctly, it doesn't. ODM.">
         <compile files="ExtraClosingBrace.java">
 	    <ajcmessage line="8" kind="error"></ajcmessage>
-            <message line="8" kind="error"></message>
             <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
@@ -3509,6 +3508,10 @@
         <compile files="InnerPointcut.java"></compile>
         <run class="InnerPointcut"></run>
     </ajc-test>
+<ajc-test title="can't resolve nested public interfaces (also PR#32399)" pr="32421" num="756" dir="bugs/interfaceNames">
+        <compile files="TransactionTest.java,sub/ExecutionMonitor.java,sub/ObserverProtocol.aj"></compile>
+        <run class="TransactionTest"></run>
+    </ajc-test>
 <ajc-test title="thisJoinPoint.getArgs() causes IncompatibleClassChangeError" pr="34210" num="757" dir="bugs">
         <compile files="ThisJoinPointAndVerifier.java"></compile>
         <run class="ThisJoinPointAndVerifier"></run>
@@ -3621,6 +3624,11 @@
 <ajc-test title="Inter type declaration to base class not seen by derived class" pr="35725" num="774" dir="bugs/interInherit">
         <compile files="a_impl/AImpl.java,a_impl/Af.java,a_intf/A.java,b_impl/BImpl.java,b_intf/B.java"></compile>
         <run class="b_impl.BImpl"></run>
+    </ajc-test>
+<ajc-test title="Declare parents removing ancestor" num="776" keywords="from-new" dir="new/declareParents">
+        <compile files="IllegalAdoption.java">
+            <message line="13" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="options -injars checking declare parents interactions" pr="35865" num="777" dir="options/injars/simple">
         <compile options="!eclipse" files="DecParents.java,main.jar"></compile>
@@ -4014,13 +4022,11 @@
 		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"></compile>
 		<run class="PerCFlowCompileFromJarTest"></run>
 	</ajc-test>
-<ajc-test title="throw derivative pointcuts not advised" pr="42539" num="872" dir="bugs/throwsSignature" abccomment="abc bails out after error but ok. ODM 19/07/04">
+<ajc-test title="throw derivative pointcuts not advised" pr="42539" num="872" dir="bugs/throwsSignature">
 		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
-		    <ajcmessage text="throws both" line="5" kind="warning"></ajcmessage>
-		    <ajcmessage text="throws Exception" line="5" kind="error"></ajcmessage>
-		    <ajcmessage text="throws both" line="7" kind="warning"></ajcmessage>
-		    <message line="5" kind="warning"></message>
-                    <message line="5" kind="error"></message>
+		    <message text="throws both" line="5" kind="warning"></message>
+		    <message text="throws Exception" line="5" kind="error"></message>
+		    <message text="throws both" line="7" kind="warning"></message>
                 </compile>
 	</ajc-test>
 <ajc-test title="perthis and signature bad interaction" pr="42652" num="873" dir="bugs">
