@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@1053d6d
+creating: A@6d0391
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2403,32 +2403,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1017ed2.foo calls Outer$Inner@12d4b0e.mi
+Outer@1bcea37.foo calls Outer$Inner@1b4f409.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@12d4b0e.mi calls java.io.PrintStream@9aadc4.println
+Outer$Inner@1b4f409.mi calls java.io.PrintStream@1017ed2.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1017ed2.foo calls Outer$InnerRandom@2a7b88.nextHook
+Outer@1bcea37.foo calls Outer$InnerRandom@9aadc4.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@2a7b88.nextHook calls Outer$InnerRandom@2a7b88.next
+Outer$InnerRandom@9aadc4.nextHook calls Outer$InnerRandom@9aadc4.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1017ed2.foo calls X.nextInt
+Outer@1bcea37.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1549688.foo calls Outer$Inner@66f4d8.mi
+Outer@f1f042.foo calls Outer$Inner@1d4abb3.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@66f4d8.mi calls java.io.PrintStream@154c674.println
+Outer$Inner@1d4abb3.mi calls java.io.PrintStream@1549688.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1549688.foo calls Outer$InnerRandom@111b2e8.nextHook
+Outer@f1f042.foo calls Outer$InnerRandom@154c674.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@111b2e8.nextHook calls Outer$InnerRandom@111b2e8.next
+Outer$InnerRandom@154c674.nextHook calls Outer$InnerRandom@154c674.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1549688.foo calls X.nextInt
+Outer@f1f042.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4045,7 +4045,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@202b78.x:=-3
+test.Test3@758a3d.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4128,8 +4128,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@124364b
-o: Bar@124364b, i: 10
+o: Bar@13b56f4
+o: Bar@13b56f4, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -5045,7 +5045,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@171f90d
+? Util.read() obj=Test@11e5082
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5065,7 +5065,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1d9e851
+? Util.read() obj=ClinitTest@f8a40b
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5075,7 +5075,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@d61029
+? Util.read() obj=SuidTest@599ddb
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5278,12 +5278,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@16f336d
-Invoking command bean:  Command@1995690
-hello(Command@1995690)
-Created a PerThis aspect : Testcase2@22267
-Invoking command bean:  Command@20a481
-hello again(Command@20a481)
+Created a PerThis aspect : Testcase2@1102be3
+Invoking command bean:  Command@b16a95
+hello(Command@b16a95)
+Created a PerThis aspect : Testcase2@1cc65c9
+Invoking command bean:  Command@2e8ed1
+hello again(Command@2e8ed1)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
