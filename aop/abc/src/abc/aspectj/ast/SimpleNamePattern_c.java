@@ -30,7 +30,7 @@ public class SimpleNamePattern_c extends NamePattern_c
     }
 
     public Pattern getPattern() {
-	return PCStructure.compilePattern(pat);
+	return PatternMatcher.v().compileNamePattern(pat);
     }
 
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {

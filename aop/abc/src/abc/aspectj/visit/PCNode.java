@@ -136,9 +136,12 @@ public class PCNode {
 	    while (ci.hasNext()) {
 		PCNode c = (PCNode)ci.next();
 		if (!this_scope_names.contains(c.name)) {
-		    this_scope.add(c);
 		    // Add name to list to shadow nonspecifically imported classes
 		    this_scope_names.add(c.name);
+		    // If it matches the pattern, add it to the list of matches
+		    if (simple_name_pattern.matcher(c.name).matches()) {
+			this_scope.add(c);
+		    }
 		}
 	    }
 	    // Match nonspecifically imported classes
@@ -151,10 +154,13 @@ public class PCNode {
 		while (pci.hasNext()) {
 		    PCNode pc = (PCNode)pci.next();
 		    if (!this_scope_names.contains(pc.name)) {
-			this_scope.add(pc);
 			// Nonspecifically imported classes do not shadow each other,
 			// but they may shadow toplevel packages
 			new_names.add(pc.name);
+			// If it matches the pattern, add it to the list of matches
+			if (simple_name_pattern.matcher(pc.name).matches()) {
+			    this_scope.add(pc);
+			}
 		    }
 		}
 	    }
@@ -165,16 +171,20 @@ public class PCNode {
 	    while (tli.hasNext()) {
 		PCNode tl = (PCNode)tli.next();
 		if (!this_scope_names.contains(tl.name)) {
-		    this_scope.add(tl);
+		    // If it matches the pattern, add it to the list of matches
+		    if (simple_name_pattern.matcher(tl.name).matches()) {
+			this_scope.add(tl);
+		    }
 		}
 	    }
 
 	}
+	if (abc.main.Debug.v().namePatternMatches)
+	    System.out.println(this+".matchScope "+simple_name_pattern.pattern()+": "+this_scope);
 	return this_scope;
     }
 
     public Set/*<PCNode>*/ matchClass(Pattern simple_name_pattern) {
-	//System.out.println(this+".matchClass "+simple_name_pattern.pattern()+": ");
 	Set this_class = matchSpecific(simple_name_pattern);
 	Set this_class_names = new HashSet();
 	Iterator tsi = this_class.iterator();
@@ -195,6 +205,8 @@ public class PCNode {
 		}
 	    }
 	}
+	if (abc.main.Debug.v().namePatternMatches)
+	    System.out.println(this+".matchClass "+simple_name_pattern.pattern()+": "+this_class);
 	return this_class;
     }
 

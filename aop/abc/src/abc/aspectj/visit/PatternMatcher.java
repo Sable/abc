@@ -7,6 +7,7 @@ import polyglot.ast.*;
 import polyglot.visit.*;
 
 import java.util.*;
+import java.util.regex.*;
 
 import soot.*;
 
@@ -18,6 +19,8 @@ public class PatternMatcher {
     private Map/*<NamePattern,PCNode>*/ pattern_context = new HashMap();
 
     private Set/*<String>*/ prim_types;
+
+    private Map/*<String,Pattern>*/ name_pattern_cache = new HashMap();
 
     private static PatternMatcher instance;
 
@@ -43,6 +46,38 @@ public class PatternMatcher {
     public static PatternMatcher create(PCStructure hierarchy) {
 	instance = new PatternMatcher(hierarchy);
 	return instance;
+    }
+
+    public Pattern compileNamePattern(String name_pat) {
+	if (name_pattern_cache.containsKey(name_pat)) {
+	    return (Pattern)name_pattern_cache.get(name_pat);
+	}
+	String pat;
+	// Make sure that the pattern never matches a pure integer name
+	if (name_pat.equals("*")) {
+	    pat = "[^0-9].*";
+	} else if (name_pat.startsWith("*")) {
+	    String pat_start;
+	    char after_star = name_pat.charAt(1);
+	    if (after_star >= '0' && after_star <= '9') {
+		pat_start = "[^0-9].*";
+	    } else {
+		pat_start = "([^0-9].*)?";
+	    }
+	    pat = pat_start + name_pat.substring(1).replaceAll("\\*", ".*");
+	} else {
+	    char first = name_pat.charAt(0);
+	    if (first >= '0' && first <= '9') {
+		pat = "[a&&b]"; // The nonmatching pattern. Any better way to do it?
+	    } else {
+		pat = name_pat.replaceAll("\\*", ".*");
+	    }
+	}
+	if (abc.main.Debug.v().namePatternMatches)
+	    System.err.println("Compiling the name pattern component "+name_pat+" into "+pat);
+	Pattern p = Pattern.compile("^"+pat+"$");
+	name_pattern_cache.put(name_pat, p);
+	return p;
     }
 
     public void computeMatches(NamePattern pat, PCNode context, Set/*<String>*/ classes, Set/*<String>*/ packages) {

@@ -2,7 +2,6 @@
 package abc.aspectj.visit;
 
 import java.util.*;
-import java.util.regex.*;
 
 import abc.aspectj.ast.*;
 
@@ -115,12 +114,6 @@ public class PCStructure {
 	}
 	//System.out.println("Nodes: "+nodes);
 	return nodes;
-    }
-
-    public static Pattern compilePattern(String name_pat) {
-	// FIXME: "*" should match anything, but anything else
-	// FIXME: should not match pure numbers (anonymous classes)
-	return Pattern.compile(name_pat.replaceAll("\\*", ".*"));
     }
 
 }

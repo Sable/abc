@@ -36,7 +36,7 @@ public class DotNamePattern_c extends NamePattern_c
     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set/*<PCNode>*/ init_matches = init.match(context, classes, packages);
 	Set/*<PCNode>*/ result = new HashSet();
-	Pattern lp = PCStructure.compilePattern(((SimpleNamePattern_c)last).pat);
+	Pattern lp = PatternMatcher.v().compileNamePattern(((SimpleNamePattern_c)last).pat);
 	Iterator imi = init_matches.iterator();
 	while (imi.hasNext()) {
 	    PCNode im = (PCNode)imi.next();
