@@ -24,7 +24,7 @@ public class PreinitializationShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("preinitialization","makeConstructorSig",null,-1,-1);
+	    = new AdviceApplication.SJPInfo("preinitialization","makeConstructorSig","",-1,-1);
 	mal.addPreinitializationAdvice
 	    (new PreinitializationAdviceApplication(ad,residue,sjpInfo));
     }

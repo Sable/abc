@@ -24,7 +24,7 @@ public class InitializationShadowMatch extends ShadowMatch {
 				     AdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication.SJPInfo sjpInfo
-	    = new AdviceApplication.SJPInfo("initialization","makeConstructorSig",null,-1,-1);
+	    = new AdviceApplication.SJPInfo("initialization","makeConstructorSig","",-1,-1);
 	mal.addInitializationAdvice
 	    (new InitializationAdviceApplication(ad,residue,sjpInfo));
     }

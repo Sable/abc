@@ -26,10 +26,10 @@ public class ExecutionShadowMatch extends ShadowMatch {
 				     Residue residue) {
 	String jpKind;
 	String sigMethod;
-	String sig=null;
+	String sig="";
 	if(container.getName().equals(SootMethod.staticInitializerName)) {
 	    jpKind="staticinitialization";
-	    sigMethod=null;
+	    sigMethod="makeConstructorSig"; // FIXME: find the right thing to do here
 	} else if(container.getName().equals(SootMethod.constructorName)) {
 	    jpKind="constructor-execution";
 	    sigMethod="makeConstructorSig";
