@@ -212,6 +212,8 @@ public class Main {
                 throw new CompilerFailedException("Compiler failed.");
             }
 
+            abc.aspectj.visit.JimplifyVisitor.resolve();
+
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
             GlobalAspectInfo.v().transformClassNames(ext.hierarchy);

@@ -19,6 +19,7 @@ public class CollectJimplifyVisitor extends NodeVisitor {
     }
 
     public Node override(Node n) {
+        /*
 	if (n instanceof ClassDecl) {
 	    String cname = ((ClassDecl)n).type().fullName();
 	    cname = hierarchy.transformClassName(cname);
@@ -30,6 +31,7 @@ public class CollectJimplifyVisitor extends NodeVisitor {
 	    classes.add(cname);
 	    // System.out.println("Jimplify class: "+cname);
 	}
+        */
 	return null;
     }
 

@@ -14,18 +14,21 @@ import abc.main.AbcTimer;
 public class JimplifyVisitor extends NodeVisitor {
     private Collection classes;
     private PCStructure hierarchy;
-    private InitialResolver res = SootResolver.v().getInitSourceResolver();
-    private Map classToAST = new HashMap();
-    private Node currentAST = null;
+    static private InitialResolver res = SootResolver.v().getInitSourceResolver();
+    static private Map classToAST = new HashMap();
+    static private Node currentAST = null;
+
+    static {
+        List classProviders = new LinkedList();
+        classProviders.add( new AbcClassProvider() );
+        classProviders.add( new CoffiClassProvider() );
+        SourceLocator.v().setClassProviders(classProviders);
+    }
 
     public JimplifyVisitor(Collection classes, PCStructure hierarchy) {
 	this.classes = classes;
 	this.hierarchy = hierarchy;
 
-        List classProviders = new LinkedList();
-        classProviders.add( new AbcClassProvider() );
-        classProviders.add( new CoffiClassProvider() );
-        SourceLocator.v().setClassProviders(classProviders);
     }
 
     public Node override(Node n) {
@@ -53,7 +56,7 @@ public class JimplifyVisitor extends NodeVisitor {
 	return null;
     }
 
-    public void finish(Node n) {
+    public static void resolve() {
         // NOTE: if you move where the resolveClassAndSupportClasses is
         //   called,  please also move the timer code with it. LJH
 	long beforetime = System.currentTimeMillis();
@@ -78,22 +81,24 @@ public class JimplifyVisitor extends NodeVisitor {
 	}
     }
 */
-    private class AbcClassProvider implements ClassProvider {
+    private static class AbcClassProvider implements ClassProvider {
         public ClassSource find( String className ) {
-            if( !classes.contains(className) ) return null;
+            if( !classToAST.containsKey(className) ) {
+                return null;
+            }
             return new AbcClassSource(className);
         }
     }
 
-    private class AbcClassSource extends ClassSource {
+    private static class AbcClassSource extends ClassSource {
         AbcClassSource( String className ) {
             super(className);
         }
         public void resolve( SootClass sc ) {
+            if(soot.options.Options.v().verbose())
+                G.v().out.println("resolving [from abc AST]: " + className );
+
             Node n = (Node) classToAST.get(className);
-            if( n == null ) {
-                throw new RuntimeException( "Frontend bug: The class "+className+" was listed in the parameter classes to JimplifyVisitor, but there's no AST for it." );
-            }
 	    res.setAst(n);
 	    res.resolveFromJavaFile(sc);
             sc.setApplicationClass();
