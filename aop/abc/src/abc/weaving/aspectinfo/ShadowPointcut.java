@@ -9,14 +9,15 @@ import java.util.*;
 
 import polyglot.util.Position;
 
-import abc.weaving.matching.MethodPosition;
+import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 
 /** A pointcut designator representing a set of joinpoint shadows
  *  at which the pointcut will match.
  */
 public abstract class ShadowPointcut extends AbstractPointcut {
-    public final Residue matchesAt(ShadowType st,
+    public final Residue matchesAt(WeavingEnv env,
+				   ShadowType st,
 				   SootClass cls,
 				   SootMethod method,
 				   MethodPosition position) {
@@ -45,6 +46,4 @@ public abstract class ShadowPointcut extends AbstractPointcut {
     /** Shadow pointcuts just need to know the position for matching */
     protected abstract Residue matchesAt(MethodPosition position);
 
-    // force there to be a toString
-    public abstract String toString();
 }

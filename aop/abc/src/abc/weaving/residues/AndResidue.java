@@ -18,6 +18,10 @@ public class AndResidue extends AbstractResidue {
 	return right;
     }
 
+    public String toString() {
+	return "("+left+") && ("+right+")";
+    }
+
     /** Private constructor to force use of smart constructor */
     private AndResidue(Residue left,Residue right) {
 	this.left=left;
@@ -28,9 +32,9 @@ public class AndResidue extends AbstractResidue {
      *  to mimic ajc behaviour
      */
     public static Residue construct(Residue left,Residue right) {
-	if(left instanceof NeverMatch || right instanceof AlwaysMatch) 
+	if(NeverMatch.neverMatches(left) || right instanceof AlwaysMatch) 
 	    return left;
-	if(left instanceof AlwaysMatch || right instanceof NeverMatch)
+	if(left instanceof AlwaysMatch || NeverMatch.neverMatches(right))
 	    return right;
 	return new AndResidue(left,right);
     }

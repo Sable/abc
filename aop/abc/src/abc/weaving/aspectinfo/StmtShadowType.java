@@ -9,11 +9,12 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 29-Apr-04
  */
-public class StmtShadowType implements ShadowType {
+public class StmtShadowType extends AbstractShadowType {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos) {
+	System.out.println("pos: "+pos.getClass());
 	mal.stmtAdvice.add
 	    (new StmtAdviceApplication
 	     (ad,

@@ -1,12 +1,15 @@
 package abc.weaving.aspectinfo;
 
-import soot.*;
+import polyglot.util.Position;
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.*;
 
 /** Handler for <code>this</code> condition pointcut with a type argument. */
-public class ThisType extends AbstractOtherPointcutHandler {
+public class ThisType extends ThisAny {
     private AbcType type;
 
-    public ThisType(AbcType type) {
+    public ThisType(AbcType type,Position pos) {
+	super(pos);
 	this.type = type;
     }
 
@@ -17,4 +20,11 @@ public class ThisType extends AbstractOtherPointcutHandler {
 	return type;
     }
 
+    public String toString() {
+	return "this("+type+")";
+    }
+
+    protected Residue matchesAt(WeavingEnv we,ContextValue cv) {
+	return new CheckType(cv,type.getSootType());
+    }
 }

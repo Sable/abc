@@ -5,5 +5,8 @@ package abc.weaving.residues;
  *  @date 30-Apr-04
  */ 
 
-public abstract class This extends AbstractContextValue {
+public class This extends AbstractContextValue {
+    public String toString() {
+	return "this";
+    }
 }

@@ -8,12 +8,16 @@ import soot.*;
  */ 
 
 public class CheckType extends AbstractResidue {
-    private ContextValue value;
-    private Type type;
+    public ContextValue value;
+    public Type type;
 
     public CheckType(ContextValue value,Type type) {
 	this.value=value;
 	this.type=type;
+    }
+
+    public String toString() {
+	return "checktype("+value+","+type+")";
     }
 
 }

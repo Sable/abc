@@ -5,7 +5,7 @@ import polyglot.util.Position;
 import soot.*;
 import soot.jimple.*;
 
-import abc.weaving.matching.MethodPosition;
+import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
 /** Pointcut conjunction. */
@@ -27,11 +27,16 @@ public class AndPointcut extends AbstractPointcut {
 	return pc2;
     }
 
-    public Residue matchesAt(ShadowType st,
+    public Residue matchesAt(WeavingEnv we,
+			     ShadowType st,
 			     SootClass cls,
 			     SootMethod method,
 			     MethodPosition pos) {
-	return AndResidue.construct(pc1.matchesAt(st,cls,method,pos),
-				    pc2.matchesAt(st,cls,method,pos));
+	return AndResidue.construct(pc1.matchesAt(we,st,cls,method,pos),
+				    pc2.matchesAt(we,st,cls,method,pos));
+    }
+    
+    public String toString() {
+	return "("+pc1+") && ("+pc2+")";
     }
 }

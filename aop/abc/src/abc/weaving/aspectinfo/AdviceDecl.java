@@ -15,7 +15,8 @@ public class AdviceDecl extends Syntax {
     private Aspect aspect;
     private int jp,jpsp,ejp;
 
-    private Map/*<String,Integer>*/ formal_map = new HashMap();
+    private Map/*<String,Integer>*/ formal_pos_map = new HashMap();
+    private Map/*<String,AbcType>*/ formal_type_map = new HashMap();
 
     public AdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl, Aspect aspect, int jp, int jpsp, int ejp, Position pos) {
 	super(pos);
@@ -32,17 +33,27 @@ public class AdviceDecl extends Syntax {
 	Iterator fi = impl.getFormals().iterator();
 	while (fi.hasNext()) {
 	    Formal f = (Formal)fi.next();
-	    formal_map.put(f.getName(), new Integer(i++));
+	    formal_pos_map.put(f.getName(), new Integer(i++));
+	    formal_type_map.put(f.getName(),f.getType());
 	}
     }
 
     public int getFormalIndex(String name) {
-	Integer i = (Integer)formal_map.get(name);
+	Integer i = (Integer)formal_pos_map.get(name);
 	if (i == null) {
 	    throw new RuntimeException("Advice formal "+name+" not found");
 	}
 	return i.intValue();
     }
+
+    public AbcType getFormalType(String name) {
+	AbcType t = (AbcType)formal_type_map.get(name);
+	if(t==null) {
+	    throw new RuntimeException("Advice formal "+name+" not found");
+	}
+	return t;
+    }
+	
 
     public AdviceSpec getAdviceSpec() {
 	return spec;

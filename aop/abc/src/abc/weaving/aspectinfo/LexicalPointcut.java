@@ -5,7 +5,7 @@ import polyglot.util.Position;
 import soot.*;
 import soot.jimple.*;
 
-import abc.weaving.matching.MethodPosition;
+import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 
 /** A pointcut designator representing a condition on the 
@@ -18,7 +18,8 @@ public abstract class LexicalPointcut extends AbstractPointcut {
 	super(pos);
     }
 
-    public final Residue matchesAt(ShadowType st,
+    public final Residue matchesAt(WeavingEnv env,
+				   ShadowType st,
 				   SootClass cls,
 				   SootMethod method,
 				   MethodPosition position) {
@@ -28,8 +29,5 @@ public abstract class LexicalPointcut extends AbstractPointcut {
     /** Do we match at a particular class and method? */
     protected abstract Residue matchesAt(SootClass cls,
 					 SootMethod method);
-
-    /** subclasses must define toString for debugging purposes */
-    public abstract String toString();
 
 }

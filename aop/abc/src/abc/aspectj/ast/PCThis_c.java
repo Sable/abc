@@ -80,21 +80,19 @@ public class PCThis_c extends Pointcut_c implements PCThis
     
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (pat instanceof Local) {
-	    return new abc.weaving.aspectinfo.OtherPointcut
-		(new abc.weaving.aspectinfo.ThisVar
-		 (new abc.weaving.aspectinfo.Var(((Local)pat).name(),((Local)pat).position())),
+	    return new abc.weaving.aspectinfo.ThisVar
+		(new abc.weaving.aspectinfo.Var(((Local)pat).name(),
+						((Local)pat).position()),
 		 position());
 	} else if (pat instanceof TypeNode) {
-	    return new abc.weaving.aspectinfo.OtherPointcut
-		(new abc.weaving.aspectinfo.ThisType
-		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type())),
+	    return new abc.weaving.aspectinfo.ThisType
+		(AspectInfoHarvester.toAbcType(((TypeNode)pat).type()),
 		 position());
 	} else if (pat instanceof ArgStar) {
-	    return new abc.weaving.aspectinfo.OtherPointcut
-		(new abc.weaving.aspectinfo.ThisAny(),
-		 position());
+	    return new abc.weaving.aspectinfo.ThisAny(position());
 	} else {
-	    throw new RuntimeException("Unexpected pattern in this pointcut: "+pat);
+	    throw new RuntimeException("Unexpected pattern in this pointcut: "
+				       +pat);
 	}
     }
     

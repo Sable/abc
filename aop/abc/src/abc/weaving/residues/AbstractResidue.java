@@ -6,5 +6,7 @@ package abc.weaving.residues;
  */ 
 
 public abstract class AbstractResidue implements Residue {
+    /** Must provide a toString method */
+    public abstract String toString();
 
 }

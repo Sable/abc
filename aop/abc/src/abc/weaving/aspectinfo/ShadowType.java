@@ -3,7 +3,7 @@ package abc.weaving.aspectinfo;
 import soot.*;
 
 import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
+import abc.weaving.residues.*;
 
 /** A category of joinpoint shadows.
  *  @author Ganesh Sittampalam
@@ -15,4 +15,6 @@ public interface ShadowType {
 				     AdviceDecl ad,
 				     Residue residue,
 				     MethodPosition pos);
+
+    public ContextValue getThisContextValue(SootMethod method);
 }

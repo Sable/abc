@@ -7,6 +7,8 @@ import soot.jimple.*;
  *  @date 29-Apr-04                                  
  */
 
+// FIXME: Can't do this, it makes things think they are StmtMethodPositions
+// when they aren't
 public class NewStmtMethodPosition extends StmtMethodPosition {
     private Stmt nextStmt;
     

@@ -3,7 +3,7 @@ package abc.weaving.aspectinfo;
 import soot.*;
 import soot.jimple.*;
 
-import abc.weaving.matching.MethodPosition;
+import abc.weaving.matching.*;
 import abc.weaving.residues.Residue;
 
 /** A pointcut designator.
@@ -14,5 +14,9 @@ public interface Pointcut {
     /** Given a statement + context, do we match? 
      *  If stmt is null, then shadow is the entire execution
      */
-    public Residue matchesAt(ShadowType ShadowType,SootClass cls,SootMethod method,MethodPosition pos);
+    public Residue matchesAt(WeavingEnv env,
+			     ShadowType ShadowType,
+			     SootClass cls,
+			     SootMethod method,
+			     MethodPosition pos);
 }

@@ -9,7 +9,7 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 29-Apr-04
  */
-public class PreinitializationShadowType implements ShadowType {
+public class PreinitializationShadowType extends AbstractShadowType {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue,

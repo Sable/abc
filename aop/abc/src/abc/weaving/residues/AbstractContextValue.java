@@ -6,4 +6,6 @@ package abc.weaving.residues;
  */ 
 
 public abstract class AbstractContextValue implements ContextValue {
+    /** Force subclasses to implement toString */
+    public abstract String toString();
 }

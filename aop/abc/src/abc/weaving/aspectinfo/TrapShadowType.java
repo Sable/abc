@@ -10,7 +10,7 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  *  @date 29-Apr-04
  */
-public class TrapShadowType implements ShadowType {
+public class TrapShadowType extends AbstractShadowType {
     public void addAdviceApplication(MethodAdviceList mal,
 				     AdviceDecl ad,
 				     Residue residue,

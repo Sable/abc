@@ -9,4 +9,8 @@ package abc.weaving.residues;
 public class AlwaysMatch extends AbstractResidue {
     // is this worthwhile? (save on heap turnover)
     public final static AlwaysMatch v=new AlwaysMatch();
+
+    public String toString() {
+	return "always";
+    }
 }

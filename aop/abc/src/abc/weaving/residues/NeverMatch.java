@@ -15,4 +15,8 @@ public class NeverMatch extends AbstractResidue {
     public static boolean neverMatches(Residue r) {
 	return r==null || r instanceof NeverMatch;
     }
+
+    public String toString() {
+	return "never";
+    }
 }
