@@ -22,7 +22,7 @@ import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 
 import abc.aspectj.visit.PatternMatcher;
-
+import abc.polyglot.util.ErrorInfoFactory;
 import abc.weaving.matching.StmtAdviceApplication;
 import abc.weaving.matching.StmtShadowMatch;
 import abc.weaving.weaver.*;
@@ -34,6 +34,11 @@ import java.lang.reflect.*;
 
 public class Main {
     public static final String abcVersionString = "0.1.0";
+
+    private static Main v=null;
+    public static Main v() {
+	return v;
+    }
 
     public Collection/*<String>*/ aspect_sources = new ArrayList();
     public Collection/*<String>*/ jar_classes = new ArrayList();
@@ -61,6 +66,8 @@ public class Main {
       abc.weaving.matching.ShadowType.reset();
       abc.weaving.weaver.AroundWeaver.reset();
       abc.weaving.matching.StmtShadowMatch.reset();
+
+      v=null;
     }
 
     public static void compilerOptionIgnored(String option, String message)
@@ -96,6 +103,7 @@ public class Main {
 
   public Main(String[] args) throws IllegalArgumentException {
      parseArgs(args);
+     v=this;
   }
 
   public void parseArgs(String[] args) throws IllegalArgumentException {
@@ -369,7 +377,7 @@ public class Main {
 
         if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty())
           { weave();   // Timers marked inside weave()
-
+	      
             abortIfErrors();
 
             if(!abc.main.Debug.v().dontCheckExceptions) 
@@ -560,29 +568,14 @@ public class Main {
         public void reportError(ExceptionCheckerError err) {
             SootClass exctype=err.excType();
         
-            String message="The exception "+exctype+" must be either caught "+
-                "or declared to be thrown";
-            Stmt stmt=err.throwing();
-            Position pos=null;
-            if(err.method().getDeclaringClass().hasTag("SourceFileTag")) {
-                SourceFileTag sfTag=(SourceFileTag) err.method()
-            .getDeclaringClass().getTag("SourceFileTag");
-                if(stmt.hasTag("SourceLnPosTag")) {
-                    SourceLnPosTag slpTag=(SourceLnPosTag) stmt.getTag("SourceLnPosTag");
-                    pos=new Position(sfTag.getSourceFile(),
-                                     slpTag.startLn(),slpTag.startPos(),
-                                     slpTag.endLn(),slpTag.endPos());
-                } else {
-                    pos=new Position(sfTag.getSourceFile());
-                    message+=" in method "+err.method();
-                }
-            } else {
-                message+=" in method "+err.method()
-                    +" in class "+err.method().getDeclaringClass();
-            }
+            ErrorInfo e=ErrorInfoFactory.newErrorInfo
+		(ErrorInfo.SEMANTIC_ERROR,
+		 "The exception "+exctype+" must be either caught "+
+		 "or declared to be thrown",
+		 err.method(),
+		 err.throwing());
 
-            if(pos==null) error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,message);
-            else error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,message,pos);
+	    error_queue.enqueue(e);
         }
     }
 

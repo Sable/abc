@@ -20,7 +20,9 @@ import soot.jimple.InvokeStmt;
 import soot.jimple.Jimple;
 import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
+import soot.tagkit.Host;
 import soot.util.Chain;
+
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -105,6 +107,10 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	if(abc.main.Debug.v().traceMatcher) System.err.println("done");
 
 	return new MethodCallShadowMatch(pos.getContainer(),stmt,invoke,method);
+    }
+
+    public Host getHost() {
+	return stmt;
     }
 
     public SJPInfo makeSJPInfo() {

@@ -1,9 +1,11 @@
 package abc.weaving.matching;
 
+import java.util.*;
+
 import soot.*;
 import soot.jimple.*;
 import soot.util.Chain;
-import java.util.*;
+import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.*;
 import abc.weaving.residues.*;
@@ -53,6 +55,11 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	    sig=SJPInfo.makeMethodSigData(container);
 	}
 
+	return new SJPInfo
+	    (jpKind,sigClass,sigMethod,sig,getHost());
+    }
+
+    public Host getHost() {
 	// FIXME:  this is close to what we want,  but in the case of
 	//            a constructor execution we really want the position
 	//            of the first statement after the super()
@@ -69,8 +76,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	Stmt firstRealStmt = Restructure.findFirstRealStmt
 	    (container,container.getActiveBody().getUnits());
 
-	return new SJPInfo
-	    (jpKind,sigClass,sigMethod,sig,firstRealStmt);
+	return firstRealStmt;
     }
 
     protected AdviceApplication doAddAdviceApplication

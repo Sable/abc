@@ -4,6 +4,7 @@ import java.util.*;
 
 import soot.*;
 import soot.jimple.*;
+import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
@@ -53,6 +54,10 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	// we've already done the moving stuff around thing.
 	// FIXME: Does this break with arrays?
 	return new ConstructorCallShadowMatch(pos.getContainer(),current,invoke);
+    }
+
+    public Host getHost() {
+	return stmt;
     }
 
     public SJPInfo makeSJPInfo() {

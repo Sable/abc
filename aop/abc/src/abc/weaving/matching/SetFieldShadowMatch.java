@@ -13,7 +13,9 @@ import soot.jimple.FieldRef;
 import soot.jimple.InstanceFieldRef;
 import soot.jimple.Jimple;
 import soot.jimple.Stmt;
+import soot.tagkit.Host;
 import soot.util.Chain;
+
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.ContextValue;
@@ -73,7 +75,11 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 			stmt.redirectJumpsToThisTo(as);
     	}
     }
-
+   
+    public Host getHost() {
+	return stmt;
+    }
+    
     public SJPInfo makeSJPInfo() {
 	return new SJPInfo
 	    ("field-set","FieldSignature","makeFieldSig",

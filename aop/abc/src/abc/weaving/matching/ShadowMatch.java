@@ -3,7 +3,9 @@ package abc.weaving.matching;
 import java.util.*;
 import soot.*;
 import soot.jimple.*;
+import soot.tagkit.Host;
 import soot.util.*;
+
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.*;
 import abc.soot.util.LocalGeneratorEx;
@@ -22,6 +24,15 @@ public abstract class ShadowMatch {
 
     /** return the enclosing ShadowMatch */
     public abstract ShadowMatch getEnclosing();
+
+    public SootMethod getContainer() {
+	return container;
+    }
+
+    /** Get the host that this ShadowMatch corresponds to,
+     *  for positional information 
+     */
+    public abstract Host getHost();
 
     /** construct the sjpInfo structure */
     protected abstract SJPInfo makeSJPInfo();

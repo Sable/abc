@@ -28,6 +28,20 @@ public class DeclareError_c extends DeclareDecl_c
         this.text = text;
     }
 
+    protected DeclareError_c reconstruct(Pointcut pc) {
+	if (pc != this.pc) {
+	    DeclareError_c n = (DeclareError_c) copy();
+	    n.pc = pc;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	Pointcut pc = (Pointcut) visitChild(this.pc, v);
+	return reconstruct(pc);
+    }
+
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("declare error : ");
         print(pc, w, tr);

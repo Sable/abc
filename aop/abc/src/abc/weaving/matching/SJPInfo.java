@@ -34,7 +34,7 @@ public class SJPInfo {
 	} else {
 	    this.row=-1;
 	    this.col=-1;
-	    System.err.println("getting SJPInfo for a untagged source line "+host);
+	    System.err.println("Getting position for a untagged source line "+host);
 	}
     }
     

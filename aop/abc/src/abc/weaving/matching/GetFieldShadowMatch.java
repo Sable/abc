@@ -4,6 +4,7 @@ import java.util.*;
 
 import soot.*;
 import soot.jimple.*;
+import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
@@ -36,10 +37,25 @@ public class GetFieldShadowMatch extends StmtShadowMatch {
 	if (!(stmt instanceof AssignStmt)) return null;
 	AssignStmt as = (AssignStmt) stmt;
 	Value rhs = as.getRightOp();
-       	if(!(rhs instanceof FieldRef)) return null;
-	FieldRef fr = (FieldRef) rhs;
+       	if(rhs instanceof FieldRef) {
+	    FieldRef fr = (FieldRef) rhs;
 
-	return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+	    return new GetFieldShadowMatch(pos.getContainer(),stmt,fr.getField());
+	    /*
+	} else if(rhs instanceof InvokeExpr) {
+	    if(MethodCategory.getCategory(rhs.getMethod())
+	       ==MethodCategory.ACCESSOR_GET) {
+		
+		return new GetFieldShadowMatch(pos.getContainer(),stmt,null);
+	    }
+	    */
+	} else {
+	    return null;
+	}
+    }
+
+    public Host getHost() {
+	return stmt;
     }
     
     public SJPInfo makeSJPInfo() {

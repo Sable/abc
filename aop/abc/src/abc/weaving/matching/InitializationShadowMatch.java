@@ -1,6 +1,7 @@
 package abc.weaving.matching;
 
 import soot.*;
+import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
@@ -24,12 +25,15 @@ public class InitializationShadowMatch extends BodyShadowMatch {
 	return new InitializationShadowMatch(container);
     }
 
+    public Host getHost() {
+	// FIXME: should point to first real statement or something
+	return container;
+    }
 
     public SJPInfo makeSJPInfo() {
-	// FIXME: dummy string
 	return new SJPInfo
 	    ("initialization","ConstructorSignature","makeConstructorSig",
-	     SJPInfo.makeConstructorSigData(container),container);
+	     SJPInfo.makeConstructorSigData(container),getHost());
     }
 
     protected AdviceApplication doAddAdviceApplication

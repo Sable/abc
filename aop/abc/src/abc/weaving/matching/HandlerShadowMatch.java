@@ -4,6 +4,7 @@ import java.util.*;
 
 import soot.*;
 import soot.jimple.*;
+import soot.tagkit.Host;
 
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.*;
@@ -35,8 +36,11 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 	return new HandlerShadowMatch(pos.getContainer(),stmt,trap.getException());
     }
 
+    public Host getHost() {
+	return stmt;
+    }
+    
     public SJPInfo makeSJPInfo() {
-	// FIXME: dummy string
 	return new SJPInfo
 	    ("exception-handler","CatchClauseSignature","makeCatchClauseSig",
 	     SJPInfo.makeHandlerSigData(container,sootexc),stmt);

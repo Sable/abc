@@ -36,6 +36,20 @@ public class DeclareWarning_c extends DeclareDecl_c
         w.write(";");
     }
 
+    protected DeclareWarning_c reconstruct(Pointcut pc) {
+	if (pc != this.pc) {
+	    DeclareWarning_c n = (DeclareWarning_c) copy();
+	    n.pc = pc;
+	    return n;
+	}
+	return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+	Pointcut pc = (Pointcut) visitChild(this.pc, v);
+	return reconstruct(pc);
+    }
+
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	gai.addDeclareMessage(new DeclareMessage
 			      (DeclareMessage.WARNING,
