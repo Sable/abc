@@ -74,9 +74,8 @@ public abstract class AdviceApplication {
 		// Either that or pre-compute the list of all classes that our
 		// pointcuts could match
 
-		// This breaks
-		//(new soot.jimple.toolkits.base.JimpleConstructorFolder())
-		//   .transform(method.getActiveBody(),null,null);
+		(new soot.jimple.toolkits.base.JimpleConstructorFolder())
+		    .transform(method.getActiveBody(),"jtp.jcf",new HashMap());
 
 		if(method.isAbstract()) continue;
 		if(method.isNative()) continue;
