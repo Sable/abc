@@ -19,6 +19,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.residues.ContextValue;
 
 /** A "stmt" shadow match
  *  @author Ganesh Sittampalam
@@ -39,6 +40,11 @@ public abstract class StmtShadowMatch extends ShadowMatch {
     public ShadowMatch getEnclosing() {
 	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return this;
 	return ExecutionShadowMatch.construct(container);
+    }
+
+    public ContextValue getThisContextValue() {
+	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return null;
+	return super.getThisContextValue();
     }
 
 	/**
