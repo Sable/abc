@@ -493,7 +493,6 @@ public class Main {
     }
 
     public void initSoot() throws IllegalArgumentException {
-	System.out.println(classpath);
 	Scene.v().setSootClassPath(classpath);
 
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
