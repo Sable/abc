@@ -7746,9 +7746,11 @@
     </ajc-test>
     
     <ajc-test dir="bugs/abstractMethods" pr="49784"
+         abccomment="abc gives message at intertype decl rather than class. ODM July 14,2004"
    	 title="Introduced abstract method on abstract class not implemented by subtype (single source file)">
         <compile files="singlesource/C.java">
-        	<message kind="error" line="9"/>
+        	<ajcmessage kind="error" line="9"/>
+                <message kind="error" line="4"/>
         </compile>
     </ajc-test>
 
@@ -7858,10 +7860,13 @@
         
     <ajc-test dir="bugs" 
 		pr="49295"
+                abccomment="Fixed grammar to allow space between dots in formal pattern. ODM 14/07/04"
 		title="declare warning on subtype constructor">
         <compile files="SubtypeConstructorCW.java" >
-			<message kind="warning" line="5" text="String as first"/>
-			<message kind="warning" line="10" text="String as first"/>
+			<ajcmessage kind="warning" line="5" text="String as first"/>
+			<ajcmessage kind="warning" line="10" text="String as first"/>
+                        <message kind="warning" line="5"/>
+                        <message kind="warning" line="10"/>
         </compile>
         <run class="SubtypeConstructorCW"/>
     </ajc-test>
@@ -7896,6 +7901,7 @@
     </ajc-test>
     
      <ajc-test dir="bugs/binaryCompat" pr="50641"
+      abccomment="crash in jasmin upon second compilation. Sent to Jennifer 14/07/04. ODM"
       title="binary compatibility of advice method names - expect no error">
         <compile files="Main.java,TraceWithInnerV1.aj"/>
         <run class="Main"/>
