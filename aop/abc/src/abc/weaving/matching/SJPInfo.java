@@ -58,7 +58,7 @@ public class SJPInfo {
 	sb.append('-');
 	sb.append(MethodCategory.getClass(method).getName());
 	sb.append('-');
-	List parameterTypes = method.getParameterTypes();
+	List parameterTypes = new ArrayList(method.getParameterTypes());
 	for (int i = 0; i < MethodCategory.getSkipFirst(method); i++)
 		parameterTypes.remove(0);
 	for (int j = 0; j < MethodCategory.getSkipLast(method); j++)
@@ -108,7 +108,7 @@ public class SJPInfo {
 	sb.append('-');
 	sb.append(method.getDeclaringClass().getName());
 	sb.append('-');
-	List parameterTypes = method.getParameterTypes();
+	List parameterTypes = new ArrayList(method.getParameterTypes());
 	for (int i = 0; i < MethodCategory.getSkipFirst(method); i++)
 		parameterTypes.remove(0);
 	for (int j = 0; j < MethodCategory.getSkipLast(method); j++)
