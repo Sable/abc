@@ -60,13 +60,9 @@ public class MethodAdviceList {
 	// FIXME: Should be a multiple position error
 	String msg="";
 
-	msg+="Pieces of advice from aspect "+aa1.advice.getAspect().getInstanceClass().getSootClass()
-	    +" ("+aa1.advice.getPosition().file()
-	    +", line "+aa1.advice.getPosition().line()+") ";
-	msg+="and aspect "+aa2.advice.getAspect().getInstanceClass().getSootClass()
-	    +" ("+aa2.advice.getPosition().file()
-	    +", line "+aa2.advice.getPosition().line()+") ";
-	msg+="are in precedence conflict, and both apply here";
+	msg+="Pieces of advice from "+aa1.advice.errorInfo()
+	    +" and "+aa2.advice.errorInfo()
+	    +" are in precedence conflict, and both apply here";
 
 	abc.main.Main.v().error_queue.enqueue
 	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.SEMANTIC_ERROR,

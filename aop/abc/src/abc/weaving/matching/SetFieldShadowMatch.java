@@ -64,7 +64,7 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 		}
 		else return null;
 	} else return null;
-     
+	if(sfr.resolve().isFinal()) return null;
 	return new SetFieldShadowMatch(pos.getContainer(),stmt,sfr);
     }
     /**

@@ -21,8 +21,8 @@ public abstract class AbstractAfterAdvice extends AbstractAdviceSpec {
 	    abc.main.Main.v().error_queue.enqueue
 		(ErrorInfoFactory.newErrorInfo
 		 (ErrorInfo.WARNING,
-		  sm.joinpointName()+" join points do not support after advice, but some advice from aspect "
-		  +ad.getAspect().getName()+" would otherwise apply here",
+		  sm.joinpointName()+" join points do not support after advice, but some advice from "+ad.errorInfo()
+		  +" would otherwise apply here",
 		  sm.getContainer(),
 		  sm.getHost()));
 	      

@@ -877,11 +877,29 @@ public class IntertypeAdjuster {
 	}
 	
 	
+    public static class ITDInitEndNopTag implements Tag {
+	public final static String name="ITDInitEndNopTag";
+	
+	public String getName() {
+	    return name;
+	}
+	
+	public byte[] getValue() {
+	    throw new AttributeValueException();
+	}
+
+	public String toString() {
+	    return "End of ITD field inits";
+	}
+    }
+
+
 	public void initialiseFields(SootClass cl, ITDInits itdins) {
 		for (Iterator ifds = itdins.staticInits.iterator(); ifds.hasNext(); ) {
 			IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
 			initialiseStaticField(cl,ifd);
 		}
+		weaveInitNopWithTag(new ITDInitEndNopTag(),cl);
 		for (Iterator ifds = itdins.instanceInits.iterator(); ifds.hasNext(); ) {
 			IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifds.next();
 			initialiseInstanceField(cl,ifd);

@@ -59,7 +59,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
 		    (ErrorInfoFactory.newErrorInfo
 		     (ErrorInfo.WARNING,
 		      sm.joinpointName()+" join points do not support around advice, but some advice "
-		      +"from aspect "+ad.getAspect().getName()+" would otherwise apply here",
+		      +"from "+ad.errorInfo()+" would otherwise apply here",
 		      sm.getContainer(),
 		      sm.getHost()));
 	    return null;
@@ -75,7 +75,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		checkTypes(shadowType, adviceType);
     	} catch (RuntimeException e) {
     		reportError(
-    				"Invalid application of around advice: " +
+  			    "Invalid application of around advice from "+ad.errorInfo()+" : " +
     				e.getMessage() +
 					" (shadow type: " + shadowType + 
 					"; advice return type: " + adviceType + ")",sm);
@@ -102,7 +102,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		final boolean bVoidShadow=shadowType.equals(VoidType.v());
     		if (bVoidAdvice && !bVoidShadow)
     			throw new RuntimeException(
-    					"Can't apply around advice with void return type to a non void shadow.");
+    					"Can't apply around advice with void return type to a non void shadow");
 			
     		if (!bVoidAdvice && bVoidShadow)
     			throw new RuntimeException(

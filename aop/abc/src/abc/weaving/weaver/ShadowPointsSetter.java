@@ -137,7 +137,9 @@ public class ShadowPointsSetter {
 	// Find the last statement with an InterfaceInitNopTag, if any
 	Stmt nextstmt = startstmt;
 	while(nextstmt!=null) {
-	    if(nextstmt.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name))
+	    if(nextstmt.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name) ||
+	       (abc.main.Debug.v().ajcCompliance && 
+		nextstmt.hasTag(IntertypeAdjuster.ITDInitEndNopTag.name)))
 		startstmt=nextstmt;
 	    nextstmt=(Stmt) units.getSuccOf(nextstmt);
 	}
@@ -326,12 +328,18 @@ public class ShadowPointsSetter {
 	    // Find call to <init>,  
 	    Stmt startstmt = Restructure.findInitStmt(units);
 
-	    // Find the last statement with an InterfaceInitNopTag, if any
-	    Stmt nextstmt = startstmt;
-	    while(nextstmt!=null) {
-		if(nextstmt.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name))
-		    startstmt=nextstmt;
-		nextstmt=(Stmt) units.getSuccOf(nextstmt);
+	    if(!abc.main.Debug.v().ajcCompliance) {
+		// We consider that the class initialisation only starts once interface
+		// initialisation has finished; after all, superclass initialisation
+		// isn't included in the joinpoint either.
+
+		// Find the last statement with an InterfaceInitNopTag, if any
+		Stmt nextstmt = startstmt;
+		while(nextstmt!=null) {
+		    if(nextstmt.hasTag(IntertypeAdjuster.InterfaceInitNopTag.name))
+			startstmt=nextstmt;
+		    nextstmt=(Stmt) units.getSuccOf(nextstmt);
+		}
 	    }
 
 	    units.insertAfter(startnop,startstmt);

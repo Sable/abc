@@ -199,4 +199,14 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 					     d.getPosition());
     }
 
+    /** Return a string describing the current piece of advice, for use in
+     *  error messages
+     */
+    public String errorInfo() {
+	return "aspect "+getAspect().getName().replace('$','.')
+	    +" ("+getPosition().file()
+	    +", line "+getPosition().line()+")";
+    }
+    
+
 }
