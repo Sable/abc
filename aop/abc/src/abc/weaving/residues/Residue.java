@@ -189,9 +189,11 @@ public abstract class Residue {
 					result+="count: " + bitCounts[i] + " ";
 				}
 				List list=localsFromIndex(i);
-				for (Iterator it=list.iterator();it.hasNext();) {
-					Local l=(Local)it.next();
-					result+= l + " ";
+				if (list!=null) {
+					for (Iterator it=list.iterator();it.hasNext();) {
+						Local l=(Local)it.next();
+						result+= l + " ";
+					}
 				}
 				result+="\n";
 			}
