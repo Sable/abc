@@ -97,13 +97,14 @@ public class Main {
 			
 			for(int i = 0; i < xTests.length; i++) {
 			    try {
-			        doCase(xTests[i]);
+			        if(doCase(xTests[i])) {
+				    System.out.println("Current status: " + succeeded + " passed, " + failed + " failed and " + skipped + " skipped, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");
+				}
 			    } catch(Exception e) {
 			        stderr.println("Unexpected exception: " + e);
 			        System.setErr(stderr);
 			        e.printStackTrace();
 			    }
-				System.out.println("Current status: " + succeeded + " passed, " + failed + " failed and " + skipped + " skipped, memory usage: " + (runtime.totalMemory() - runtime.freeMemory()) + ".");
 			}
 	
 			if(succeeded + failed + skipped != count) { // sanity
@@ -141,7 +142,7 @@ public class Main {
 		}
 	}
 	
-	protected static void doCase(XML xTest) {
+	protected static boolean doCase(XML xTest) {
 		/* I think that if there are no dir/title attributes present,
 		 * the import of the document should have failed as they are
 		 * marked as REQUIRED in the DTD, so I don't test for an 
@@ -157,7 +158,7 @@ public class Main {
 			if(dir.indexOf(dirFilter) == -1) {
 			    //				stdout.println("Skipping case \"" + dir + "/" + title + "\" as it doesn't match the directory filter.");
 				// skipped++; don't count tests not matching filters
-				return;
+				return false;
 			}
 		}
 		
@@ -165,7 +166,7 @@ public class Main {
 			if(title.indexOf(titleFilter) == -1) {
 			    //				stdout.println("Skipping case \""+ dir + "/" + title + "\" as it doesn't match the title filter.");
 				// skipped++; don't count tests not matching filters
-				return;
+				return false;
 			}
 		}
 		
@@ -193,7 +194,7 @@ public class Main {
 		            skipped++;
 		            xSkipped = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD",
 		                    xSkipped.plug("NEXT", xTest));
-		            return;
+		            return false;
 		        }
 		    }
 		}
@@ -205,7 +206,7 @@ public class Main {
 			if(listxml) {
 				stdout.println(xTest.toString());
 			}
-			return;
+			return false;
 		}
 		
 		/* run the test case
@@ -229,6 +230,7 @@ public class Main {
 				System.exit(1);
 			}
 		}
+		return true;
 	}
 	
 	protected static void parseArgs(String[] args) {
