@@ -9351,4 +9351,8 @@
          <compile files="PerTarget.java" options="-debug,doValidate"/>
          <run class="PerTarget"/>
     </ajc-test>
+    <ajc-test num="1008" dir="abctests/bugs/percflowinterfaces"
+         title="precedence of percflowsetups">
+         <compile files="F.java"/>
+    </ajc-test>
 </suite>
