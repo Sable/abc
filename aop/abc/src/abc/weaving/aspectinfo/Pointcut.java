@@ -35,6 +35,9 @@ public abstract class Pointcut extends Syntax {
     /** Return a "normalized" version of this
      *  pointcut; with the following properties:
      *  All named pointcuts inlined
+     *  All locally quantified variables have fresh names
+     *  Converted to DNF
+     *  All cflows/cflowbelows have been "registered" as separate pointcuts
      */
     // Ought to lift local variables to one block at
     // the top and cache the weaving env or something
@@ -53,7 +56,10 @@ public abstract class Pointcut extends Syntax {
 	    }
 	}
 
-	Pointcut ret=pc.inline(renameEnv,typeEnv,context);
+	Pointcut inlined=pc.inline(renameEnv,typeEnv,context);
+
+	Pointcut ret=inlined.dnf().makePointcut(pc.getPosition());
+
 	if(abc.main.Debug.v().showNormalizedPointcuts)
 	    System.err.println("normalized pointcut: "+ret);
 
@@ -61,6 +67,89 @@ public abstract class Pointcut extends Syntax {
 	return ret;
     }
 
+    protected final static class DNF {
+	private List/*<Formal>*/ formals;
+	private List/*<List<Pointcut>>*/ disjuncts;
+
+	public DNF(Pointcut pc) {
+	    formals=new ArrayList();
+	    disjuncts=new ArrayList();
+	    List conjuncts=new ArrayList(1);
+	    conjuncts.add(pc);
+	    disjuncts.add(conjuncts);
+	}
+
+	public static DNF or(DNF dnf1,DNF dnf2) {
+	    dnf1.formals.addAll(dnf2.formals);
+	    dnf1.disjuncts.addAll(dnf2.disjuncts);
+	    return dnf1;
+	}
+
+	public static DNF declare(DNF dnf,List formals) {
+	    dnf.formals.addAll(formals);
+	    return dnf;
+	}
+
+	private DNF() {
+	}
+
+	public static DNF and(DNF dnf1,DNF dnf2) {
+	    DNF res=new DNF();
+	    res.formals=dnf1.formals;
+	    res.formals.addAll(dnf2.formals);
+
+	    res.disjuncts=new ArrayList(dnf1.disjuncts.size()*dnf2.disjuncts.size());
+
+	    Iterator left=dnf1.disjuncts.iterator();
+	    while(left.hasNext()) {
+		final List/*<Pointcut>*/ leftConjuncts=(List) left.next();
+		Iterator right=dnf2.disjuncts.iterator();
+		while(right.hasNext()) {
+		    final List/*<Pointcut>*/ rightConjuncts=(List) right.next();
+                    
+		    List conjuncts=new ArrayList(leftConjuncts.size()+rightConjuncts.size());
+		    conjuncts.addAll(leftConjuncts);
+		    conjuncts.addAll(rightConjuncts);
+		    res.disjuncts.add(conjuncts);
+		}
+	    }
+	    return res;
+	}
+
+	private static Pointcut makeConjuncts(List/*<Pointcut>*/ conjuncts,Position pos) {
+	    Iterator it=conjuncts.iterator();
+	    Pointcut res=(Pointcut) it.next();
+	    while(it.hasNext()) {
+		res=new AndPointcut(res,(Pointcut) it.next(),pos);
+	    }
+	    return res;
+	}
+
+	private static Pointcut makeDisjuncts(List/*<List<Pointcut>>*/ disjuncts,Position pos) {
+	    Iterator it=disjuncts.iterator();
+	    Pointcut res=makeConjuncts((List) it.next(),pos);
+	    while(it.hasNext()) {
+		res=new OrPointcut(res,makeConjuncts((List) it.next(),pos),pos);
+	    }
+	    return res;
+	}
+
+	public Pointcut makePointcut(Position pos) {
+	    Pointcut pc=makeDisjuncts(disjuncts,pos);
+	    if(!formals.isEmpty())
+		pc=new LocalPointcutVars(pc,formals,pos);
+	    return pc;
+	}
+    }
+
+    /** This method should be overridden in any derived class that has pointcut children */
+    protected DNF dnf() {
+	return new DNF(this);
+    }
+
+    /** Inlining should remove all PointcutRefs, 
+     *  and return a pointcut that is alpha-renamed
+     */
     protected abstract Pointcut inline
 	(Hashtable/*<String,Var>*/ renameEnv,
 	 Hashtable/*<String,AbcType>*/ typeEnv,

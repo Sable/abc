@@ -47,10 +47,31 @@ public class LocalPointcutVars extends Pointcut {
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context) {
-	Pointcut pc=this.pc.inline(renameEnv,typeEnv,context);
+
+	List/*<Formal>*/ newFormals=new ArrayList(formals.size());
+
+	Hashtable newRenameEnv=new Hashtable(renameEnv);
+
+	Iterator it=formals.iterator();
+	while(it.hasNext()) {
+	    Formal old=(Formal) it.next();
+
+	    String newName=Pointcut.freshVar();
+	    newFormals.add(new Formal(old.getType(),newName,old.getPosition()));
+
+	    newRenameEnv.put(old.getName(),new Var(newName,old.getPosition()));
+	}
+	
+	Pointcut pc=this.pc.inline(newRenameEnv,typeEnv,context);
 	if(pc==this.pc) return this;
-	else return new LocalPointcutVars(pc,formals,getPosition());
+	else return new LocalPointcutVars(pc,newFormals,getPosition());
     }
+
+    protected DNF dnf() {
+	return DNF.declare(pc.dnf(),formals);
+    }
+
+
 
     public String toString() {
 	return "local"+formals+" ("+pc+")";

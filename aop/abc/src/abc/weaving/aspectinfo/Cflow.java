@@ -37,6 +37,11 @@ public class Cflow extends Pointcut {
 	else return new Cflow(pc,getPosition(),depth);
     }
 
+    protected DNF dnf() {
+	return new DNF
+	    (new Cflow(pc.dnf().makePointcut(pc.getPosition()),getPosition(),depth));
+    }
+
     private CflowSetup setupAdvice;
 
     public void registerSetupAdvice(Aspect context,Hashtable typeMap) {

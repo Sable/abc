@@ -41,6 +41,11 @@ public class NotPointcut extends Pointcut {
 	else return new NotPointcut(pc,getPosition());
     }
 
+    protected DNF dnf() {
+	return new DNF(new NotPointcut
+		       (pc.dnf().makePointcut(pc.getPosition()),getPosition()));
+    }
+
     public String toString() {
 	return "!("+pc+")";
     }

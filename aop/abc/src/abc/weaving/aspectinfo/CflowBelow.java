@@ -25,6 +25,12 @@ public class CflowBelow extends Pointcut {
 	return depth;
     }
 
+    protected DNF dnf() {
+	return new DNF
+	    (new CflowBelow
+	     (pc.dnf().makePointcut(pc.getPosition()),getPosition(),depth));
+    }
+
     public String toString() {
 	return "cflowbelow("+pc+")";
     }

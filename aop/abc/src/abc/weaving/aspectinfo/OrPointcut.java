@@ -47,6 +47,12 @@ public class OrPointcut extends Pointcut {
 	else return new OrPointcut(pc1,pc2,getPosition());
     }
 
+    protected DNF dnf() {
+	DNF dnf1=pc1.dnf();
+	DNF dnf2=pc2.dnf();
+	return DNF.or(dnf1,dnf2);
+    }
+
     public String toString() {
 	return "("+pc1+") || ("+pc2+")";
     }
