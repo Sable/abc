@@ -1118,7 +1118,13 @@ public class AroundWeaver {
 			
 			// we need to add some of our own parameters to the invokation
 			List params = new LinkedList();
-			if (bStaticJoinPoint || adviceMethod.bAlwaysStaticAccessMethod) {
+			if (bUseClosureObject)  {
+				if (lThis==null)
+					throw new InternalAroundError();
+					
+				params.add(lThis); // pass the closure
+			} else if (bStaticJoinPoint || 
+					adviceMethod.bAlwaysStaticAccessMethod) { 
 				params.add(NullConstant.v());
 			} else {
 				if (lThis==null)
@@ -1907,7 +1913,7 @@ public class AroundWeaver {
 		
 		final public HashSet /*String*/ staticProceedTypes = new HashSet();
 		public boolean hasDynamicProceed = false;
-		public final boolean bAlwaysStaticAccessMethod = true;//false;//true; //false;
+		public final boolean bAlwaysStaticAccessMethod = true;//true;//false;//true; //false;
 
 		public boolean bHasBeenWovenInto=false;
 		

@@ -1,5 +1,6 @@
 package abc.aspectj.visit;
 
+import java.io.File;
 import java.util.Iterator;
 
 import polyglot.frontend.*;
@@ -37,7 +38,7 @@ public class CheckPackageNames extends OncePass {
 	    int dotindex=filename.lastIndexOf(".");
 
 	    String gotname=filename.substring(0,dotindex).toLowerCase();
-	    String expectedname=classname.replaceAll("\\.",System.getProperty("file.separator")).toLowerCase();
+	    String expectedname=classname.replace('.',File.separatorChar).toLowerCase();
 	    
 	    if(!gotname.endsWith(expectedname)) {
 		job.compiler().errorQueue().enqueue

@@ -55,6 +55,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		return null;
     	
     	Type shadowType=sm.getReturningContextValue().getSootType();
+    	Type originalShadowType=shadowType;
     	if (shadowType.equals(NullType.v()))
     		shadowType=VoidType.v();
     	Type adviceType=getReturnType().getSootType();
@@ -63,7 +64,11 @@ public class AroundAdvice extends AbstractAdviceSpec {
     	try {
     		checkTypes(shadowType, adviceType);
     	} catch (RuntimeException e) {
-    		reportError(e.getMessage(),sm);
+    		reportError(e.getMessage() +
+					"***  Shadow type: " + originalShadowType + " Advice Type: " + adviceType
+					+ " ShadowMatch: " + sm.toString() + 
+					  " Type: " + sm.getClass().getName()
+					,sm);
     		return null; // don't weave if type error
     	}
     	
@@ -87,8 +92,7 @@ public class AroundAdvice extends AbstractAdviceSpec {
     		final boolean bVoidShadow=shadowType.equals(VoidType.v());
     		if (bVoidAdvice && !bVoidShadow)
     			throw new RuntimeException(
-    					"Can't apply around advice with void return type to a non void shadow." +
-						"Shadow type: " + shadowType);
+    					"Can't apply around advice with void return type to a non void shadow.");
 			
     		if (!bVoidAdvice && bVoidShadow)
     			throw new RuntimeException(
