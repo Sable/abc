@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project default="abc-jar">
+<project default="jars">
 
     <target name="settings">
         <property file="ant.settings"/>
@@ -10,12 +10,32 @@
         />
     </target>
 
+    <target name="jars" depends="abc-jar,runtime-jar"/>
+
     <target name="abc-jar" depends="settings,abc">
         <jar destfile="lib/abc.jar">
             <fileset dir="classes"/>
         </jar>
     </target>
     
+    <target name="runtime-jar" depends="settings,runtime">
+        <jar destfile="lib/aspectjrt.jar">
+            <fileset dir="runtime-classes"/>
+        </jar>
+    </target>
+    
+    <target name="runtime" depends="settings">
+        <mkdir dir="runtime-classes"/>
+        <javac
+            destdir="runtime-classes"
+            debug="true"
+        >
+            <src path="runtime-src"/>
+            <classpath>
+            </classpath>
+        </javac>
+    </target>
+
     <target name="abc" depends="settings,flex-translator,cup-translator">
         <mkdir dir="classes"/>
         <javac
@@ -111,6 +131,7 @@
 
     <target name="clean" depends="settings">
         <delete quiet="true">
+            <fileset dir="runtime-classes" includes="**/*.class" />
             <fileset dir="classes" includes="**/*.class" />
             <fileset dir="lib" includes="**/*.jar" />
         </delete>
