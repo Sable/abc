@@ -16,7 +16,8 @@ public class PointcutCodeGen {
             if( method.isNative() ) continue;
 
 	    List/*<AdviceApplication>*/ adviceList = GlobalAspectInfo.v().getAdviceList(method);
-	    System.out.println("AdviceList for " + method );
+            if( adviceList == null ) adviceList = new ArrayList();
+            System.out.println("AdviceList for " + method );
 	    System.out.println(adviceList.toString());
 
             Body b = method.getActiveBody();
@@ -35,31 +36,33 @@ public class PointcutCodeGen {
                 final SootMethod adviceImpl =
                     advicedecl.getImpl().getSootMethod();
 
-                if( adviceSpec instanceof BeforeAdvice ) {
-                    Local l = localgen.generateLocal( aspect.getType() );
-                    units.insertBefore( Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList()))), aa.begin);
-                    units.insertBefore( 
-                                    Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, adviceImpl ) ), aa.begin );
-                } else if( adviceSpec instanceof AfterReturningAdvice ) {
-                    handleAfterReturning(aspect, method, localgen, aa, adviceImpl);
-                    //throw new RuntimeException("NYI");
-                } else if( adviceSpec instanceof AfterThrowingAdvice ) {
-                    handleAfterThrowing(aspect, method, localgen, aa, adviceImpl);
-                    //throw new RuntimeException("NYI");
-                } else if( adviceSpec instanceof AfterAdvice ) {
-                    handleAfterReturning(aspect, method, localgen, aa, adviceImpl);
-                    handleAfterThrowing(aspect, method, localgen, aa, adviceImpl);
-                    //throw new RuntimeException("NYI");
-                } else if( adviceSpec instanceof AroundAdvice ) {
+                if( aa instanceof StmtAdviceApplication ) {
+                    StmtAdviceApplication saa = (StmtAdviceApplication) aa;
+                    if( adviceSpec instanceof BeforeAdvice ) {
+                        Local l = localgen.generateLocal( aspect.getType() );
+                        units.insertBefore( Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList()))), saa.stmt);
+                        units.insertBefore( 
+                                        Jimple.v().newInvokeStmt( Jimple.v().newVirtualInvokeExpr( l, adviceImpl ) ), saa.stmt );
+                    } else if( adviceSpec instanceof AfterReturningAdvice ) {
+                        handleAfterReturning(aspect, method, localgen, saa, adviceImpl);
+                    } else if( adviceSpec instanceof AfterThrowingAdvice ) {
+                        handleAfterThrowing(aspect, method, localgen, saa, adviceImpl);
+                    } else if( adviceSpec instanceof AfterAdvice ) {
+                        handleAfterReturning(aspect, method, localgen, saa, adviceImpl);
+                        handleAfterThrowing(aspect, method, localgen, saa, adviceImpl);
+                    } else if( adviceSpec instanceof AroundAdvice ) {
+                        throw new RuntimeException("NYI");
+                    } else {
+                        throw new RuntimeException("Unrecognized advice type: "+adviceSpec);
+                    }
+                } else if( aa instanceof BodyAdviceApplication ) {
                     throw new RuntimeException("NYI");
-                } else {
-                    throw new RuntimeException("Unrecognized advice type: "+adviceSpec);
-                }
+                } else throw new RuntimeException("Unrecognized advice application");
 	    }
 	}
     }
 
-    private void handleAfterReturning(SootClass aspect, SootMethod meth, LocalGenerator lg, AdviceApplication aa, SootMethod adviceImpl){
+    private void handleAfterReturning(SootClass aspect, SootMethod meth, LocalGenerator lg, StmtAdviceApplication aa, SootMethod adviceImpl){
       
         System.out.println("Handling after returning");
         Body b = meth.getActiveBody();
@@ -67,20 +70,20 @@ public class PointcutCodeGen {
         // no params
         Local l = lg.generateLocal(aspect.getType());
         AssignStmt assignStmt =  Jimple.v().newAssignStmt( l, Jimple.v().newStaticInvokeExpr( aspect.getMethod("aspectOf", new ArrayList())));
-        units.insertAfter( assignStmt, aa.end);
+        units.insertAfter( assignStmt, aa.stmt);
         units.insertAfter( Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(l, adviceImpl)), assignStmt);
          
     }
     
-    private void handleAfterThrowing(SootClass aspect, SootMethod meth, LocalGenerator lg, AdviceApplication aa, SootMethod adviceImpl){
+    private void handleAfterThrowing(SootClass aspect, SootMethod meth, LocalGenerator lg, StmtAdviceApplication aa, SootMethod adviceImpl){
       
         System.out.println("Handling after throwing");
         Body b = meth.getActiveBody();
         Chain units = b.getUnits();
         
-        // insert nop after aa.end to track region
+        // insert nop after aa.stmt to track region
         NopStmt nop1 = Jimple.v().newNopStmt();
-        units.insertAfter(nop1, aa.end);
+        units.insertAfter(nop1, aa.stmt);
         
         NopStmt nop2 = Jimple.v().newNopStmt();
         units.insertAfter(nop2, nop1);
@@ -106,7 +109,7 @@ public class PointcutCodeGen {
 
         units.insertAfter(throwStmt, vInvokeStmt);
 
-        b.getTraps().add(Jimple.v().newTrap(Scene.v().getSootClass("java.lang.Throwable"), aa.begin, nop1, idStmt));
+        b.getTraps().add(Jimple.v().newTrap(Scene.v().getSootClass("java.lang.Throwable"), aa.stmt, nop1, idStmt));
 
     }
 
