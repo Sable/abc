@@ -212,11 +212,3 @@ Caused by: java.lang.StackOverflowError
 FAIL: Test 998: "abctests/bugs/declare parents causes interface to implement itself" failed.
 
 
-Running test 999: abctests/bugs/declareparentsprotectedaccessinnerclasses/declare parents/protected access/inner classes
-Commandline: abc -d abctests/bugs/declareparentsprotectedaccessinnerclasses abctests/bugs/declareparentsprotectedaccessinnerclasses/A.java abctests/bugs/declareparentsprotectedaccessinnerclasses/bar/C.java 
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at abctests/bugs/declareparentsprotectedaccessinnerclasses/A.java:3,8-16: No valid constructor found for bar.C.D().
-FAIL: Test 999: "abctests/bugs/declareparentsprotectedaccessinnerclasses/declare parents/protected access/inner classes" failed.
-
-
