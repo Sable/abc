@@ -46,7 +46,7 @@
    <!ATTLIST ajcrun errStreamIsError CDATA #IMPLIED >
    <!ATTLIST ajcrun outStreamIsError CDATA #IMPLIED >
 
-   <!ELEMENT abckeywords (ganesh | aske | oege | laurie | sascha | pavel | julian | jennifer | nate | abclimitation | introductions | polyglot | soot)*>
+   <!ELEMENT abckeywords (ganesh | aske | oege | laurie | sascha | pavel | julian | jennifer | nate | abclimitation | introductions | polyglot | soot | skip)*>
    
    <!ELEMENT ganesh EMPTY>
    <!ELEMENT aske EMPTY>

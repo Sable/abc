@@ -5648,9 +5648,11 @@
     <ajc-test dir="new" pr="601"
       title="VerifyError if nested sync returning result"
       comment="XXX inconsistent behavior?"
+      abccomment="skipping since javac can't pass this either"
       keywords="from-resolved_10final,purejava">
         <compile files="NestedSyncWithResult.java"/>
         <run class="NestedSyncWithResult"/>
+        <abckeywords><skip/></abckeywords>
     </ajc-test>
 
     <ajc-test dir="new" pr="853"
