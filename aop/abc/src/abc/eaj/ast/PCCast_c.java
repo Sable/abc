@@ -56,6 +56,11 @@ public class PCCast_c extends Pointcut_c
         return reconstruct(type_pattern);
     }
 
+
+    public boolean isDynamic() {
+	return true;
+    }
+
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut()
     {
         return new abc.eaj.weaving.aspectinfo.Cast

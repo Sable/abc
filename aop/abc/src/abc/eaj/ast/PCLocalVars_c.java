@@ -179,6 +179,11 @@ public class PCLocalVars_c extends Pointcut_c
         visitor.pushFormals(newformals);
     }
 
+    public boolean isDynamic() {
+	return pointcut.isDynamic();
+    }
+
+
     public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
