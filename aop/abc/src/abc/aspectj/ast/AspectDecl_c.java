@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import polyglot.util.CollectionUtil;
 import polyglot.util.TypedList;
+import polyglot.util.InternalCompilerError;
 
 import polyglot.ast.Block;
 import polyglot.ast.TypeNode;
@@ -23,8 +24,12 @@ import polyglot.util.CodeWriter;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.TypeBuilder;
+
+import polyglot.types.Context;
+import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
 import polyglot.types.Type;
+import polyglot.visit.TypeChecker;
 
 import polyglot.ext.jl.ast.ClassDecl_c;
 
@@ -137,6 +142,14 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		return reconstruct(superClass, interfaces, per, body);
 	}
 	
+	public Context enterScope(Node child, Context c) {
+			if (child == this.per ) {
+				TypeSystem ts = c.typeSystem();
+				c = c.pushClass(type, ts.staticTarget(type).toClass());
+			}
+			return super.enterScope(child, c);
+		}
+	
 	public void prettyPrintHeader(CodeWriter w, PrettyPrinter tr) {
 		
 		    // need to overwrite, because ClassDecl_c only knows of interfaces and classes
@@ -170,7 +183,13 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 
 			w.write(" {");
 		}
-
+		
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		if (type().isInnerClass())
+			throw new InternalCompilerError("Inner aspects have not been implemented yet.");
+		return super.typeCheck(tc);
+	}
+	
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	Per p = (per == null ? new Singleton(position()) : per.makeAIPer());
 	AbcClass cl = gai.getClass(type());
