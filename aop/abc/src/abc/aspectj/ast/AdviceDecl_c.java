@@ -220,7 +220,6 @@ public class AdviceDecl_c extends MethodDecl_c
     
     public MethodDecl methodDecl(AspectJNodeFactory nf,
     															AspectJTypeSystem ts) {
-    	String name = UniqueID.newID(spec.kind());
     	List newformals = new LinkedList(formals());
     	if (hasJoinPointStaticPart()) {
     		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
@@ -232,11 +231,11 @@ public class AdviceDecl_c extends MethodDecl_c
     		Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
     		newformals.add(jp);
     	}
-    	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,
-    	                                                            newformals,throwTypes(),body());
+    	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc);
+	//nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,newformals,throwTypes(),body());
     	return md;
     }
-    
+
     /** Type checking of proceed: keep track of the methodInstance for the current proceed
      *  the ProceedCall will query this information via the proceedInstance() 
      *  method

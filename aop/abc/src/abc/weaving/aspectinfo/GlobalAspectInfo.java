@@ -68,13 +68,17 @@ public class GlobalAspectInfo {
     }
 
     public void addClass(AbcClass cl) {
-	classes.add(cl);
-	classes_map.put(cl.getName(),cl);
+	if (!classes_map.containsKey(cl.getName())) {
+	    classes.add(cl);
+	    classes_map.put(cl.getName(),cl);
+	}
     }
 
     public void addAspect(Aspect aspect) {
-	aspects.add(aspect);
-	aspects_map.put(aspect.getInstanceClass().getName(),aspect);
+	if (!aspects_map.containsKey(aspect.getInstanceClass().getName())) {
+	    aspects.add(aspect);
+	    aspects_map.put(aspect.getInstanceClass().getName(),aspect);
+	}
     }
 
     public void addIntertypeMethodDecl(IntertypeMethodDecl imd) {
