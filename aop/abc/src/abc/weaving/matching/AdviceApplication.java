@@ -159,14 +159,20 @@ public abstract class AdviceApplication {
 	    .transform(method.getActiveBody(),"jtp.jcf",m);
 
 	// Identify whether we're in a constructor, and if we are identify
-	// the position of the 'this' or 'super' call
-	if(method.getName().equals(SootMethod.constructorName)) {
+	// the position of the 'this' or 'super' call. 
+	// Uniquely, the constructor of java.lang.Object has none.
+	if(method.getName().equals(SootMethod.constructorName)
+	   && !cls.getName().equals("java.lang.Object")) {
 	    Stmt thisOrSuper;
 	    try {
 		thisOrSuper=Restructure.findInitStmt(method.getActiveBody().getUnits());
-	    } catch(RuntimeException e) {
-		System.err.println("Method was "+method);
-		throw e;
+	  } catch(InternalCompilerError e) {
+		System.err.println(method.getActiveBody().getUnits());
+		throw new InternalCompilerError(e.message()+" while processing "+method,
+						e.position(),
+						e.getCause());
+	    } catch(Throwable e) {
+		throw new InternalCompilerError("exception while processing "+method,e);
 	    }
 
 	    Iterator stmtsIt=method.getActiveBody().getUnits().iterator();

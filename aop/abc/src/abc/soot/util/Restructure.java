@@ -1,5 +1,7 @@
 package abc.soot.util;
 
+import java.util.*;
+
 import polyglot.util.InternalCompilerError;
 
 import soot.*;
@@ -7,10 +9,8 @@ import soot.util.*;
 import soot.jimple.*;
 import soot.javaToJimple.LocalGenerator;
 import soot.jimple.toolkits.scalar.*;
-import java.util.*;
 
 import abc.weaving.weaver.AroundWeaver;
-import abc.weaving.weaver.CodeGenException;
 import abc.weaving.aspectinfo.MethodCategory;
 
 
@@ -43,7 +43,7 @@ public class Restructure {
   /** Given a Chain for a body of an <init> method, find the call to
    *  the <init> corresponding to either a this() or super() call.  Check
    *  that there is exactly one such <init>, otherwise throw a 
-   *  CodeGenException.   Return the <init> Stmt.
+   *  InternalCompilerError.   Return the <init> Stmt.
    */
   public static InvokeStmt findInitStmt(Chain units)
     { // look for the <init> 
@@ -65,7 +65,7 @@ public class Restructure {
           receivercopies.add(thisloc);
 	}
 	else
-	  throw new CodeGenException("Expecting an identity stmt for this");
+	  throw new InternalCompilerError("Expecting an identity stmt for this");
 	
       int countinits = 0;
       debug("--- Starting to look through statement list ..... ");
@@ -90,7 +90,7 @@ public class Restructure {
 	      if (countinits == 1) // great, found it
 	        initstmt = (InvokeStmt) u;  
 	      else
-	        throw new CodeGenException("Expecting only one <init>");
+	        throw new InternalCompilerError("Expecting only one <init>");
              }	 
           } // all units
 	 
@@ -128,7 +128,7 @@ public class Restructure {
 			 //continue;
 	     return u;
           }
-        throw new CodeGenException("Expecting to find a real stmt");
+        throw new InternalCompilerError("Expecting to find a real stmt");
       }
 
    /** update all traps that used to end at oldend to now end at newend
@@ -181,7 +181,7 @@ public class Restructure {
             lastRet.setOp(ret);
 	  }
 	else
-	  throw new CodeGenException(
+	  throw new InternalCompilerError(
 	                  "Expecting return of <local> or <constant>");
       } 
     else if( last instanceof ReturnVoidStmt ) 
@@ -201,10 +201,10 @@ public class Restructure {
     if( units.getLast() instanceof ReturnStmt ) 
       { ReturnStmt lastRet = (ReturnStmt) units.getLast();
         if( lastRet.getOp() != ret ) 
-           throw new CodeGenException("Expecting last stmt to Return ret");
+           throw new InternalCompilerError("Expecting last stmt to Return ret");
       }  
     else if ( !(units.getLast() instanceof ReturnVoidStmt ) ) 
-      { throw new CodeGenException(
+      { throw new InternalCompilerError(
 	           "Last stmt should be ReturnStmt or ReturnVoidStmt");
       }
 
@@ -248,7 +248,7 @@ public class Restructure {
   public static boolean inlineThisCall(SootMethod method){
         // assure body is a constructor
         if (!method.getName().equals("<init>"))
-	   throw new CodeGenException 
+	   throw new InternalCompilerError 
 	     ("trying to inline a this() in a method that is not an <init>");
 
 	// get the body
