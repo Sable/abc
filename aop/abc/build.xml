@@ -14,7 +14,13 @@
     </target>
 
     <target name="jars" 
-            depends="abc-jar,runtime-jar,testing-jar,complete-jar"/>
+            depends="abc-jar,runtime-jar,testing-jar,complete-jar,abc-for-ajc-ant-jar"/>
+
+    <target name="abc-for-ajc-ant-jar" depends="settings">
+       <jar destfile="lib/abc-for-ajc-ant.jar">
+           <fileset dir="dist/abc-for-ajc-ant"/>
+       </jar>
+    </target>
 
     <target name="abc-jar" depends="settings,abc">
         <jar destfile="lib/abc.jar">
