@@ -528,6 +528,10 @@
         <compile files="ParentUsingChild.java"></compile>
         <run class="ParentUsingChild"></run>
     </ajc-test>
+<ajc-test title="final local variables may be accessed from inner class" pr="739" keywords="from-resolved_105,purejava" dir="pureJava">
+        <compile files="LocalsFromInnerCP.java"></compile>
+        <run class="LocalsFromInnerCP"></run>
+    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">

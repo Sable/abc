@@ -2694,10 +2694,6 @@
             <message line="81" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="final local variables may be accessed from inner class" pr="739" keywords="from-resolved_105,purejava" dir="pureJava">
-        <compile files="LocalsFromInnerCP.java"></compile>
-        <run class="LocalsFromInnerCP"></run>
-    </ajc-test>
 <ajc-test title="missing package identifier" pr="723" keywords="from-resolved_105,purejava" dir="pureJava">
         <compile files="MissingPackageCE.java">
             <message line="2" kind="error"></message>
