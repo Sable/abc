@@ -1,0 +1,29 @@
+# This file is parsed to produce changelog information in a variety
+# of formats. Start new entries with a '$', and continuation lines 
+# with a ';'. Normally lines denoting a new release are added automatically,
+# but the format is "%<version number> <unixtime>" if you need 
+# to make one of your own. Lines beginning with '#' are ignored, predictably
+# enough. 
+# 
+# You should generally avoid changing the file below a line starting
+# with '%', as this would alter the changelog for versions that are already
+# released.
+#
+# If you mess around with the packaging for a specific distribution,
+# add a line saying "^debian:" before the changelog entry (currently only
+# debian and redhat are understood here, and we don't actually have a 
+# redhat package).
+# 
+# If you want to change the name that is recorded as making a release,
+# add a line in the form "&name of releaser <email@address>".
+#
+# The scripts that process this file are:
+# dist/makechangelogs.pl - to generate various formats for it
+# dist/addchangelogrelease.pl - to record a new release in the file, below
+# these comments.
+
+$Changed package root for runtime stuff from uk.ac.ox.comlab.abc 
+;to org.aspectbench
+$Started keeping changelog (so this one will be incomplete)
+
+&abc development team <abc-dev@comlab.ox.ac.uk>

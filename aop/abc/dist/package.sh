@@ -8,6 +8,8 @@ JEDD='0.2'
 # The Xact version
 XACT='1.0-1'
 
+# these will potentially be out of sync slightly, but never mind
+UNIXTIME=`date +%s`
 DATE=`date +%Y%m%d%H%M%S`
 
 case "$1" in
@@ -135,6 +137,9 @@ echo "export SOOT_VER=dev-$DATE" >> debian/rules
 echo "export POLYGLOT_VER=dev-$DATE" >> debian/rules
 echo "export JASMIN_VER=dev-$DATE" >> debian/rules
 cat ../../../dist/debian/rules >> debian/rules
+
+dist/addchangelogrelease.pl $VERSION `date +%s` < ../../../CHANGELOG | \
+   dist/makechangelogs.pl debian > debian/changelog
 
 echo "abc ($VERSION) unstable; urgency=low" > debian/changelog
 echo >> debian/changelog

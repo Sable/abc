@@ -39,6 +39,10 @@ public class Version extends polyglot.main.Version {
 	return "/abc/main/version.properties";
     }
 
+    /** A 'main' method provided so we can run this class directly
+     *  to find out the current version. This is useful for the packaging
+     *  scripts, for example.
+     */
     public static void main(String[] args) {
 	System.out.println(new Version().toString());
     }
