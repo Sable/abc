@@ -5049,5 +5049,12 @@
          <compile options="-debug,doValidate" files="PerTarget.java"></compile>
          <run class="PerTarget"></run>
     </ajc-test>
+<ajc-test title="precedence of percflowsetups" num="1008" dir="abctests/bugs/percflowinterfaces">
+         <compile files="F.java"></compile>
+    </ajc-test>
+<ajc-test title="correct interaction of advice and constructor inlining" num="1009" dir="abctests/bugs">
+         <compile files="InlinedCons.java"></compile>
+         <run class="InlinedCons"></run>
+    </ajc-test>
  
 </suite>
