@@ -437,7 +437,7 @@ public class CflowSetup extends AbstractAdviceDecl {
         }
         
         return c;
-        
+
     }
 
     public static int getPrecedence(CflowSetup a,CflowSetup b) {

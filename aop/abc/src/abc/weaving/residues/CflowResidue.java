@@ -70,7 +70,6 @@ public class CflowResidue extends Residue {
           System.err.println("RCG: "+message);
      }
 
-    // XXX I've broken the interprocedural stuff. Need to fix isValidStmt. DS 
     private Stmt isValidStmt;
     /** Returns the statement that was woven to test isValid(). */
     public Stmt getIsValidStmt() { return isValidStmt; }
@@ -119,6 +118,7 @@ public class CflowResidue extends Residue {
         else { failStmt = afterAbort; succeedStmt = fail;  }
         
         Local isvalid=localgen.generateLocal(BooleanType.v(),"cflowactive");
+
         ChainStmtBox isValidCheck = codegen.genIsValid(cflowLocal, isvalid, succeedStmt, failStmt);
         last = (Stmt)insertChainAfter(units, isValidCheck.getChain(), last);
         isValidStmt = isValidCheck.getStmt();
@@ -136,6 +136,7 @@ public class CflowResidue extends Residue {
         if (sense && vars.size() > 0) {
         	
         debug("setting up to get bound values");
+
         List reslocals = new LinkedList();
         List realwvars = new LinkedList();
         Iterator it = vars.iterator();
@@ -146,6 +147,7 @@ public class CflowResidue extends Residue {
         		reslocals.add(newLocal);
         		realwvars.add(to);
         	}
+
         }
         
         debug("get bound values");
@@ -160,6 +162,8 @@ public class CflowResidue extends Residue {
         	Local res = (Local)it2.next();
         	last = to.set(localgen, units, last, wc, res);
         }
+
+		*/
 
         }
 
