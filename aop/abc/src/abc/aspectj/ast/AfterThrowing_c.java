@@ -77,13 +77,13 @@ public class AfterThrowing_c extends AdviceSpec_c
 
     public abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec() {
 	if (returnVal == null) {
-	    return new abc.weaving.aspectinfo.AfterReturningAdvice(position());
+	    return new abc.weaving.aspectinfo.AfterThrowingAdvice(position());
 	} else {
 	    abc.weaving.aspectinfo.Formal f = new abc.weaving.aspectinfo.Formal
 		(AspectInfoHarvester.toAbcType(returnVal.type().type()),
 		 returnVal.name(),
 		 returnVal.position());
-	    return new abc.weaving.aspectinfo.AfterReturningArgAdvice(f, position());
+	    return new abc.weaving.aspectinfo.AfterThrowingArgAdvice(f, position());
 	}
     }
 }
