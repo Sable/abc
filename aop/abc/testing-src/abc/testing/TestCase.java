@@ -291,6 +291,7 @@ public class TestCase {
 						        failTest();
 						        return;
 						        }
+							System.out.println("Compilation succeeded with " + warnings.size() + " warnings, which were matched and verified against the expected warnings.");
 						} else if(warnings != null && warnings.size() > 0) {
 						    // If we're here, then the XML file didn't specify any warnings, but we threw
 						    // some => test failed.
@@ -327,6 +328,7 @@ public class TestCase {
 						    failTest();
 						    return;
 						}
+						System.out.println("Compilation failed with " + errors.size() + " errors, which were matched and verified against the expected errors.");
 					} catch (Throwable e) {
 					    // all other exceptions should indicate an error - e.g. a soot weaving error, which
 					    // threw a RuntimeException in one case
@@ -640,7 +642,6 @@ public class TestCase {
 		        	return false;
 		        }
 		}
-		System.out.println("Compilation failed with " + errors.size() + " errors, which were matched and verified against the expected errors.");
 		return true;
 	}
 	
