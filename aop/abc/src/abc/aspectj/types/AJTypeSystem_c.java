@@ -231,71 +231,72 @@ public class AJTypeSystem_c
     // Original isAccessible method - the separation is needed to see which members are only visible because an aspect
     // is privileged. We can check (isAccessible(...) && !isAccessibleIgnorePrivileged(...)).
     public boolean isAccessibleIgnorePrivileged(MemberInstance mi, ClassType ctc) {
-        if (mi instanceof InterTypeMemberInstance) {
-        	
-        	// the following code has been copied from TypeSystem_c.isAccessible
-        	// the only change is the definition of target, which is normally mi.container()
-        	// also we omit the class accessibility check
-			ReferenceType target = ((InterTypeMemberInstance) mi).origin(); 
-														// accessibility of intertype declarations
-		                                                // is with respect to origin, not container
+    	ReferenceType target;
+        if (mi instanceof InterTypeMemberInstance) 
+			target = ((InterTypeMemberInstance) mi).origin();
+        	// accessibility of intertype declarations
+        	// is with respect to origin, not container
+		else
+			target = mi.container();
+														
 		    
-			Flags flags = mi.flags();
+		Flags flags = mi.flags();
 
-			if (! target.isClass()) {
-				// public members of non-classes are accessible;
-				// non-public members of non-classes are inaccessible
-				return flags.isPublic();
+		if (! target.isClass()) {
+			// public members of non-classes are accessible;
+			// non-public members of non-classes are inaccessible
+			return flags.isPublic();
+		}
+
+		ClassType ctt = target.toClass();
+
+		/* the following code is in TypeSystem_c.isAccessible, but at least two
+		 * test cases suggest that it should not be there:
+		 * see test cases 598 and 999 in abcTests.xml
+		 * commented out for now, but beware!
+		 * 
+		if (! classAccessible(ctt, ctc)) {
+			return false;
+		} */
+
+		if (equals(ctt, ctc))
+			return true;
+			
+		// If the current class and the target class are both in the
+		// same class body, then protection doesn't matter, i.e.
+		// protected and private members may be accessed. Do this by 
+		// working up through ctc's containers.
+		if (isEnclosed(ctc, ctt) || isEnclosed(ctt,ctc)) return true;                    
+		                  
+		ClassType ctcContainer = ctc;
+		while (!ctcContainer.isTopLevel()) {
+			ctcContainer = ctcContainer.outer();
+			if (isEnclosed(ctt, ctcContainer)) return true;                        
+		};
+
+		// protected
+		if (flags.isProtected()) {
+			// If the current class is in a
+			// class body that extends/implements the target class, then
+			// protected members can be accessed. Do this by
+			// working up through ctc's containers.
+			if (descendsFrom(ctc, ctt)) {
+				return true;
 			}
 
-			ClassType ctt = target.toClass();
-
-			/*// Omitted: see new/PR569
-			if (! classAccessible(ctt, ctc)) {
-				return false;
-			} */
-
-			if (equals(ctt, ctc))
-				return true;
-				
-			// If the current class and the target class are both in the
-			// same class body, then protection doesn't matter, i.e.
-			// protected and private members may be accessed. Do this by 
-			// working up through ctc's containers.
-			if (isEnclosed(ctc, ctt) || isEnclosed(ctt,ctc)) return true;                    
-			                  
-			ClassType ctcContainer = ctc;
+			ctcContainer = ctc;
 			while (!ctcContainer.isTopLevel()) {
 				ctcContainer = ctcContainer.outer();
-				if (isEnclosed(ctt, ctcContainer)) return true;                        
-			};
-
-			// protected
-			if (flags.isProtected()) {
-				// If the current class is in a
-				// class body that extends/implements the target class, then
-				// protected members can be accessed. Do this by
-				// working up through ctc's containers.
-				if (descendsFrom(ctc, ctt)) {
+				if (descendsFrom(ctcContainer, ctt)) {
 					return true;
 				}
-
-				ctcContainer = ctc;
-				while (!ctcContainer.isTopLevel()) {
-					ctcContainer = ctcContainer.outer();
-					if (descendsFrom(ctcContainer, ctt)) {
-						return true;
-					}
-				}
 			}
+		}
 
-			return accessibleFromPackage(flags, ctt.package_(), ctc.package_());
-        }
-    	else return super.isAccessible(mi,ctc);
+		return accessibleFromPackage(flags, ctt.package_(), ctc.package_());
     }
     
-    
-  
+   
     private boolean hostHasMember(AJContext c, MemberInstance mi) {
        if (mi instanceof FieldInstance)
        		return c.varInHost(((FieldInstance)mi).name());

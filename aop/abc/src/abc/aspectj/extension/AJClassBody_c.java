@@ -55,6 +55,7 @@ import polyglot.frontend.Job;
 import polyglot.frontend.Pass;
 
 import abc.aspectj.types.InterTypeConstructorInstance_c;
+import abc.aspectj.types.InterTypeMethodInstance;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
@@ -175,9 +176,9 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 
 				if (mi.isSameMethod(mj) && !ITDoks(mi,mj)) {
 					if (mi instanceof InterTypeMemberInstance) {
-						InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) mi;
+						InterTypeMethodInstance itmi = (InterTypeMethodInstance) mi;
 						if (mj instanceof InterTypeMemberInstance) {
-							InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
+							InterTypeMethodInstance itmj = (InterTypeMethodInstance) mj;
 						    throw new SemanticException("Duplicate method \"" + mi.signature() + "\" introduced by " +
 						                "aspects \""+itmi.origin() + "\" and \"" + itmj.origin() + 
                                         "\" into class \"" + mi.container() + "\".", mi.position());
@@ -188,7 +189,7 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 						                mi.position());
 					}
 					if (mj instanceof InterTypeMemberInstance) {
-						InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
+						InterTypeMethodInstance itmj = (InterTypeMethodInstance) mj;
 						throw new SemanticException("Duplicate method \"" + mj.signature() + "\" introduced by " +
 										"aspect \""+itmj.origin() +"\" into class \""+
 										mj.container() + "\", which already contains that method.", 

@@ -53,6 +53,7 @@ import polyglot.ext.jl.ast.Node_c;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.InterTypeConstructorInstance;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.types.AspectType;
 
@@ -201,8 +202,8 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		}
 	
 		static boolean fromInterface(ConstructorInstance mi) {
-			return mi instanceof InterTypeConstructorInstance_c &&
-				   (((InterTypeConstructorInstance_c)mi).interfaceTarget() != null);
+			return mi instanceof InterTypeConstructorInstance &&
+				   (((InterTypeConstructorInstance)mi).interfaceTarget() != null);
 		}
 	
 		// replace this by a call to the appropriate structure!
@@ -211,10 +212,10 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		}
 	
 		static boolean zaps(ConstructorInstance mi1,ConstructorInstance mi2) {
-			if (!(mi1 instanceof InterTypeConstructorInstance_c &&
-				  mi2 instanceof InterTypeConstructorInstance_c)) return false;
-			InterTypeConstructorInstance_c itmi1 = (InterTypeConstructorInstance_c) mi1;
-			InterTypeConstructorInstance_c itmi2 = (InterTypeConstructorInstance_c) mi2;
+			if (!(mi1 instanceof InterTypeConstructorInstance &&
+				  mi2 instanceof InterTypeConstructorInstance)) return false;
+			InterTypeConstructorInstance itmi1 = (InterTypeConstructorInstance) mi1;
+			InterTypeConstructorInstance itmi2 = (InterTypeConstructorInstance) mi2;
 			return precedes(itmi1.origin(),itmi2.origin());	    
 		}
     

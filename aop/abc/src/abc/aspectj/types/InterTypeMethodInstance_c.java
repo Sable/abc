@@ -43,7 +43,7 @@ import polyglot.util.UniqueID;
  */
 public class InterTypeMethodInstance_c
 	extends MethodInstance_c
-	implements InterTypeMemberInstance {
+	implements InterTypeMemberInstance, InterTypeMethodInstance {
 
 	protected ClassType origin;
 	protected MethodInstance mangled;

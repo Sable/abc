@@ -42,7 +42,7 @@ import polyglot.ext.jl.types.MethodInstance_c;
  * @author Oege de Moor
  *
  */
-public class PointcutInstance_c extends MethodInstance_c {
+public class PointcutInstance_c extends MethodInstance_c implements PointcutInstance {
 
     String localName;
     
@@ -130,7 +130,7 @@ public class PointcutInstance_c extends MethodInstance_c {
 			if (!ref.qualified) {
 				// this might be an override, so check in the context
 				try {
-				PointcutInstance_c refhere = ajts.findPointCutNamed(c.findPointcutScope(ref.ref.localName),ref.ref.localName);
+				PointcutInstance refhere = ajts.findPointCutNamed(c.findPointcutScope(ref.ref.localName),ref.ref.localName);
 	            result |= refhere.checkAbstract(c);
 				} catch (SemanticException e) {
 					result |= ref.ref.flags().isAbstract();
@@ -161,7 +161,7 @@ public class PointcutInstance_c extends MethodInstance_c {
 			if (!ref.qualified) {
 				// this might be an override, so check in the context
 				try {
-				PointcutInstance_c refhere = ajts.findPointCutNamed(c.findPointcutScope(ref.ref.localName),ref.ref.localName);
+				PointcutInstance refhere = ajts.findPointCutNamed(c.findPointcutScope(ref.ref.localName),ref.ref.localName);
 				result |= refhere.checkDynamic(c);
 				} catch (SemanticException e) {
 					result |= ref.ref.isDynamic();

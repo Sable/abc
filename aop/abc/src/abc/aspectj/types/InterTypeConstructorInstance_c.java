@@ -49,7 +49,7 @@ import abc.aspectj.ast.AJNodeFactory;
 
 public class InterTypeConstructorInstance_c
 	extends ConstructorInstance_c
-	implements InterTypeMemberInstance {
+	implements InterTypeMemberInstance, InterTypeConstructorInstance {
 		
 	protected ConstructorInstance mangled;
 	protected ClassType mangleType;

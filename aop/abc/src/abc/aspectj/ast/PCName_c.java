@@ -30,6 +30,7 @@ import java.util.*;
 
 
 import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.types.PointcutInstance;
 import abc.aspectj.types.PointcutInstance_c;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectType;
@@ -240,7 +241,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 	
 	public Node checkDepends(DependsChecker dc) throws SemanticException {
 		AJContext c = (AJContext) dc.context();
-		PointcutInstance_c pci = (PointcutInstance_c) pointcutInstance();
+		PointcutInstance pci = (PointcutInstance) pointcutInstance();
 		if (pci.checkAbstract(c) && 
 		    !(c.currentClass().flags().isAbstract()) &&
 		    (c.currentClass() instanceof AspectType))

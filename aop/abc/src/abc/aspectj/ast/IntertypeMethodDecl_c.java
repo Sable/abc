@@ -53,6 +53,7 @@ import polyglot.ext.jl.types.TypeSystem_c;
 import abc.aspectj.ExtensionInfo;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJTypeSystem_c;
+import abc.aspectj.types.InterTypeMethodInstance;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
@@ -75,7 +76,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     implements IntertypeMethodDecl, ContainsAspectInfo, MakesAspectMethods
 {
     protected TypeNode host;
-    public 	  InterTypeMethodInstance_c itMethodInstance;
+    public 	  InterTypeMethodInstance itMethodInstance;
     protected LocalInstance thisParamInstance;
     protected Flags origflags;
     protected String identifier;
@@ -160,7 +161,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		   overrideITDmethod(pht, mi);
 	    	
     	
-	    	itMethodInstance = (InterTypeMethodInstance_c) mi;
+	    	itMethodInstance = (InterTypeMethodInstance) mi;
 	    	
 	    	/* record instance for "this" parameter */
 	    	String name = UniqueID.newID("this");
@@ -249,7 +250,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			    MethodInstance mi2 = mi.flags(mi.origFlags());
 				MethodInstance mj2;
 				if (mj instanceof InterTypeMethodInstance_c) {
-					InterTypeMethodInstance_c mji = (InterTypeMethodInstance_c) mj;
+					InterTypeMethodInstance mji = (InterTypeMethodInstance) mj;
 				    mj2 = mj.flags(mji.origFlags());
 				}
 				else
@@ -273,7 +274,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	
 	static boolean fromInterface(MethodInstance mi) {
 		return ((mi instanceof InterTypeMethodInstance_c &&
-		       (((InterTypeMethodInstance_c)mi).interfaceTarget() != null)));
+		       (((InterTypeMethodInstance)mi).interfaceTarget() != null)));
 	}
 	
 	// replace this by a call to the appropriate structure!

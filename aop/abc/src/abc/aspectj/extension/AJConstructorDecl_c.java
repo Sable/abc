@@ -33,12 +33,14 @@ import polyglot.ext.jl.ast.ConstructorDecl_c;
 import polyglot.types.Flags;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
+import polyglot.visit.AmbiguityRemover;
+import polyglot.visit.NodeVisitor;
 import polyglot.visit.TypeChecker;
 import polyglot.ast.Node;
 
 import abc.aspectj.ast.HostConstructorCall_c;
 import abc.aspectj.types.AspectType;
-
+import abc.aspectj.visit.AJAmbiguityRemover;
 
 /**
  * @author Oege de Moor
@@ -57,7 +59,18 @@ public class AJConstructorDecl_c extends ConstructorDecl_c {
 		super(pos, flags, name, formals, throwTypes, body);
 		
 	}
+	 public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
+        if (ar.kind() == AmbiguityRemover.SUPER || ar instanceof AJAmbiguityRemover) {
+            return ar.bypassChildren(this);
+        }
+        else if (ar.kind() == AmbiguityRemover.SIGNATURES) {
+            if (body != null) {
+                return ar.bypass(body);
+            }
+        }
 
+        return ar;
+    }
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		Node n = super.typeCheck(tc);
 		if ((constructorInstance().container() instanceof AspectType) &&

@@ -52,6 +52,7 @@ import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.InterTypeFieldInstance;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 
 import abc.weaving.aspectinfo.AbcFactory;
@@ -68,7 +69,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     implements IntertypeFieldDecl, ContainsAspectInfo, MakesAspectMethods
 {
     protected TypeNode host;
-    protected InterTypeFieldInstance_c hostInstance;
+    protected InterTypeFieldInstance hostInstance;
     protected LocalInstance thisParamInstance;
     protected String identifier;
     protected String originalName;
@@ -198,8 +199,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	static boolean zaps(FieldInstance mi1,FieldInstance mi2) {
 		if (!(mi1 instanceof InterTypeFieldInstance_c &&
 			  mi2 instanceof InterTypeFieldInstance_c)) return false;
-		InterTypeFieldInstance_c itmi1 = (InterTypeFieldInstance_c) mi1;
-		InterTypeFieldInstance_c itmi2 = (InterTypeFieldInstance_c) mi2;
+		InterTypeFieldInstance itmi1 = (InterTypeFieldInstance) mi1;
+		InterTypeFieldInstance itmi2 = (InterTypeFieldInstance) mi2;
 		return precedes(itmi1.origin(),itmi2.origin());	    
 	}
     
@@ -311,7 +312,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     public IntertypeFieldDecl accessChange() {
     	if (flags().isPrivate() || flags().isPackage() || host.type().toClass().flags().isInterface()) {
     		ParsedClassType ht = (ParsedClassType) host.type();
-    		InterTypeFieldInstance_c fi = hostInstance; // was findFieldNamed...
+    		InterTypeFieldInstance fi = hostInstance; // was findFieldNamed...
     		ht.fields().remove(fi); // remove old instance from host type    		
     		FieldInstance mi = fi.mangled();  // retrieve the mangled instance 		
     		ht.addField(mi); // add new instance to host type   		

@@ -333,6 +333,7 @@ public class IntertypeAdjuster {
 				// System.out.println("added target method "+method);
 				// This is a stub for an intertype method decl
 				MethodCategory.register(sm, MethodCategory.INTERTYPE_METHOD_DELEGATOR);
+				// System.out.println("registered "+sm+" with original name "+originalName);
 				MethodCategory.registerRealNameAndClass(sm, method.getModifiers(), originalName, method.getDeclaringClass(),
 									0,0); //FIXME: Extra formals?
 	}

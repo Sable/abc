@@ -53,6 +53,7 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 import abc.aspectj.ast.Pointcut;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AspectType;
+import abc.aspectj.types.PointcutInstance;
 import abc.aspectj.types.PointcutInstance_c;
 
 import abc.aspectj.visit.AspectInfoHarvester;
@@ -215,14 +216,14 @@ public class PointcutDecl_c extends MethodDecl_c
 	  if (!flags().isAbstract())
 	  	pc.checkFormals(formals);
 	  	
-	  ((PointcutInstance_c)methodInstance()).setRefersTo(pc.pcRefs()) ;
-	  ((PointcutInstance_c)methodInstance()).setDynamic(pc.isDynamic());
+	  ((PointcutInstance)methodInstance()).setRefersTo(pc.pcRefs()) ;
+	  ((PointcutInstance)methodInstance()).setDynamic(pc.isDynamic());
 	  	
 	   return this;
 	}
 	
 	public Node checkDepends(DependsChecker dc ) throws SemanticException {
-		PointcutInstance_c pci = (PointcutInstance_c) methodInstance();
+		PointcutInstance pci = (PointcutInstance) methodInstance();
 		if (pci.cyclic())
 			throw new SemanticException("Pointcuts cannot be recursive.",position());
 		return this;

@@ -37,6 +37,7 @@ import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.ast.HostConstructorCall_c;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.types.InterTypeConstructorInstance;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 import abc.aspectj.visit.AspectMethods;
 
@@ -82,9 +83,9 @@ public class AJConstructorCall_c
         public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
-                if (constructorInstance() instanceof InterTypeConstructorInstance_c) {
-                        InterTypeConstructorInstance_c itcd =
-                                (InterTypeConstructorInstance_c) constructorInstance();
+                if (constructorInstance() instanceof InterTypeConstructorInstance) {
+                        InterTypeConstructorInstance itcd =
+                                (InterTypeConstructorInstance) constructorInstance();
                         return itcd.mangledCall(this, nf, ts);
                 }
                 return this;

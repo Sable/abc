@@ -25,6 +25,7 @@ import polyglot.types.FieldInstance;
 import polyglot.types.ClassType;
 
 import soot.javaToJimple.Util;
+import abc.aspectj.types.InterTypeFieldInstance;
 import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.soot.util.FieldGetAccessorMethodSource;
 import soot.Modifier;
@@ -49,7 +50,7 @@ public class AccessorGet extends AccessorMethod {
         // If this is a field introduced by an ITD, then the name will be mangled - in fact, our
         // current field instance is useless, use the one that it was transformed to...
         if(fi instanceof InterTypeFieldInstance_c) {
-            InterTypeFieldInstance_c ifi = (InterTypeFieldInstance_c) fi;
+            InterTypeFieldInstance ifi = (InterTypeFieldInstance) fi;
             this.inst = ifi.mangled();
         }
     }

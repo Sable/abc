@@ -45,6 +45,7 @@ import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectType;
+import abc.aspectj.types.InterTypeConstructorInstance;
 import abc.aspectj.types.InterTypeConstructorInstance_c;
 
 import abc.aspectj.visit.AspectMethods;
@@ -195,9 +196,9 @@ public class AJNew_c extends New_c implements New, MakesAspectMethods {
         public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                        AJTypeSystem ts)
         {
-                if (constructorInstance() instanceof InterTypeConstructorInstance_c) {
-                        InterTypeConstructorInstance_c itcd =
-                                (InterTypeConstructorInstance_c) constructorInstance();
+                if (constructorInstance() instanceof InterTypeConstructorInstance) {
+                        InterTypeConstructorInstance itcd =
+                                (InterTypeConstructorInstance) constructorInstance();
                         return itcd.mangledNew(this, nf, ts);
                 }
                 return this;

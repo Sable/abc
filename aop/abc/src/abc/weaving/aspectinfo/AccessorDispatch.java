@@ -26,6 +26,7 @@ import polyglot.types.ClassType;
 
 import soot.javaToJimple.Util;
 import abc.aspectj.types.InterTypeFieldInstance_c;
+import abc.aspectj.types.InterTypeMethodInstance;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.soot.util.MethodAccessorMethodSource;
 import soot.jimple.AssignStmt;
@@ -71,7 +72,7 @@ public class AccessorDispatch extends AccessorMethod {
         // If this is a method introduced by an ITD, then the name will be mangled - in fact, our
         // current method instance is useless, use the one that it was transformed to...
         if(mi instanceof InterTypeMethodInstance_c) {
-            InterTypeMethodInstance_c imi = (InterTypeMethodInstance_c) mi;
+            InterTypeMethodInstance imi = (InterTypeMethodInstance) mi;
             this.inst = imi.mangled();
         }
     }

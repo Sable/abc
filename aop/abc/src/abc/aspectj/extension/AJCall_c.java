@@ -48,6 +48,7 @@ import abc.aspectj.ast.MakesAspectMethods;
 
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.InterTypeMethodInstance;
 import abc.aspectj.types.InterTypeMethodInstance_c;
 import abc.aspectj.types.AspectType;
 import abc.aspectj.types.AJFlags;
@@ -215,7 +216,7 @@ public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
                     throw new InternalCompilerError("Problem determining whether or not we're in a privileged aspect");
                 }
                 if (c.methodInstance() instanceof InterTypeMethodInstance_c) {
-                        InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) c.methodInstance();
+                        InterTypeMethodInstance itmi = (InterTypeMethodInstance) c.methodInstance();
                         c = c.methodInstance(itmi.mangled()).name(itmi.mangled().name());
                 }
                 if (c.target() instanceof HostSpecial_c) {
