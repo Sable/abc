@@ -24,7 +24,7 @@ while(<>) {
     if(!$indashlist) { 
       $indashlist=1;
       $inpara=0;
-      print "</p><ul><li>\n"; 
+      print qq{</p><ul class="credits"><li>\n}; 
     }
     else { print "</li><li>\n"; }
     print "$1\n";
