@@ -19,20 +19,50 @@
 
 package abc.main;
 
-import abc.soot.util.SwitchFolder;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
-import abc.weaving.weaver.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
-import soot.*;
-import soot.jimple.*;
-import soot.jimple.toolkits.annotation.nullcheck.*;
+import soot.PackManager;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Transform;
+import soot.Trap;
+import soot.Value;
+import soot.jimple.InvokeExpr;
+import soot.jimple.Stmt;
+import soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis;
+import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
-import soot.util.*;
-
-import java.util.*;
-
-import abc.aspectj.parse.*;
+import soot.util.Chain;
+import abc.aspectj.parse.AbcLexer;
+import abc.aspectj.parse.LexerAction_c;
+import abc.aspectj.parse.PerClauseLexerAction_c;
+import abc.aspectj.parse.sym;
+import abc.soot.util.AroundInliner;
+import abc.soot.util.SwitchFolder;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ClassInitializationShadowMatch;
+import abc.weaving.matching.ConstructorCallShadowType;
+import abc.weaving.matching.ExecutionShadowType;
+import abc.weaving.matching.GetFieldShadowType;
+import abc.weaving.matching.HandlerShadowType;
+import abc.weaving.matching.InterfaceInitializationShadowMatch;
+import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.matching.MethodCallShadowType;
+import abc.weaving.matching.NewStmtMethodPosition;
+import abc.weaving.matching.PreinitializationShadowType;
+import abc.weaving.matching.SetFieldShadowType;
+import abc.weaving.matching.StmtMethodPosition;
+import abc.weaving.matching.TrapMethodPosition;
+import abc.weaving.matching.WholeMethodPosition;
+import abc.weaving.weaver.CflowIntraAggregate;
+import abc.weaving.weaver.CflowIntraproceduralAnalysis;
 
 /**
  * This class should be sub-classed to extend the behaviour of abc
@@ -168,10 +198,11 @@ public class AbcExtension
 
 		if (Debug.v().switchFolder) {
 			// must be inserted somewhere before the unreachable code eliminator
-			//PackManager.v().getPack("jop").add(new Transform("jtp.sf", SwitchFolder.v()));
-		//	PackManager.v().getPack("jop").insertBefore(new Transform("jtp.sf", SwitchFolder.v()), "jop.cse");
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
 		}
+		//if (Debug.v().aroundInliner) {
+		//	PackManager.v().getPack("jop").add(new Transform("jop.aroundinliner", AroundInliner.v()));
+		//}
 	}
 
     /**

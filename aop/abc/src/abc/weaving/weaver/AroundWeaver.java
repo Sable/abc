@@ -147,9 +147,14 @@ public class AroundWeaver {
 			return result;
 		}
 		public static boolean isAroundAdviceMethod(SootMethod method) {
-			return method.getName().startsWith("around$"); // TODO: something more solid
+			return isAroundAdviceMethodName(method.getName()); // TODO: something more solid
 		}
-		
+		public static boolean isAroundAdviceMethodName(String methodName) {
+			return methodName.startsWith("around$"); // TODO: something more solid
+		}
+		public static boolean isProceedMethodName(String methodName) {
+			return methodName.contains("$proceed$"); // TODO: something much more solid!
+		}
 		private static boolean chainContainsLocal(Chain locals, String name) {
 			Iterator it = locals.iterator();
 			while (it.hasNext()) {
@@ -360,6 +365,9 @@ public class AroundWeaver {
 	}*/
 
 	public static void doWeave(SootClass shadowClass, SootMethod shadowMethod, LocalGeneratorEx localgen, AdviceApplication adviceAppl) {
+		
+		state.shadowMethods.add(shadowMethod);
+		
 		debug("Weaving advice application: " + adviceAppl);
 		if (abc.main.Debug.v().aroundWeaver) {
 			// uncomment to skip around weaving (for debugging)
@@ -3170,6 +3178,8 @@ public class AroundWeaver {
 	}
 	
 	public static class State {
+		public Set shadowMethods=new HashSet();
+		
 		private void validate() {
 			Iterator it=adviceMethods.values().iterator();
 			while (it.hasNext()) {

@@ -29,12 +29,12 @@ import soot.options.Options;
 import soot.util.Chain;
 
 /**
- * @author kuzins
+ * @author Sascha Kuzins
  *
  */
 public class SwitchFolder extends BodyTransformer {
 
-	//public static SwitchFolder v() { return new SwitchFolder(); }
+	
 	private static SwitchFolder instance = 
 		new SwitchFolder();
 	public static void reset() { instance = new SwitchFolder(); }
@@ -76,11 +76,9 @@ public class SwitchFolder extends BodyTransformer {
 		} else 
 			throw new RuntimeException("");
 	}
-	/* (non-Javadoc)
-	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
-	 */
+
 	protected void internalTransform(Body body, String phaseName, Map options) {
-		// TODO Auto-generated method stub
+
 
 		StmtBody stmtBody = (StmtBody)body;
 		

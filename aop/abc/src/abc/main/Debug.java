@@ -117,7 +117,8 @@ public class Debug {
     public boolean nullCheckElim=true;
     public boolean allowDynamicTests = false;
     public boolean switchFolder = true;
-
+    public boolean aroundInliner = false;
+    
     public boolean traceAntTask=false;
 
     public boolean printWeavableClasses = false;

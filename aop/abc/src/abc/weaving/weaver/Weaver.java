@@ -26,10 +26,12 @@ import soot.util.*;
 import soot.jimple.*;
 import java.util.*;
 
+import abc.soot.util.AroundInliner;
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
 import abc.main.AbcTimer;
+import abc.main.Debug;
 
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
@@ -150,6 +152,16 @@ public class Weaver {
                 weaveAdvice();
                 debug("after weaveAdvice (2)");
             }
+            if (Debug.v().aroundInliner)
+            	runAroundInliner();
+        }
+        
+        public static void runAroundInliner() {
+        	for (Iterator it=AroundWeaver.state.shadowMethods.iterator();
+        		it.hasNext();) {
+        		SootMethod m=(SootMethod)it.next();
+        		AroundInliner.v().transform(m.getActiveBody());
+        	}
         }
 
         static public void weaveGenerateAspectMethods() {
