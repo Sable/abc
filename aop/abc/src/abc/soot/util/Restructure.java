@@ -860,6 +860,33 @@ public class Restructure {
 			else 
 				throw new RuntimeException();
 		}
+		
+		/** Given the boxing class, what was the primitive type?
+		 * 
+		 * @param boxingClass the boxing class (eg Integer)
+		 * @return the primitive type (eg int)
+		 */
+		public static Type getBoxingClassPrimType(SootClass boxingClass) {
+			if (boxingClass.equals(getBoxingClass(IntType.v())))
+				return IntType.v();
+			else if (boxingClass.equals(getBoxingClass(BooleanType.v()))) 
+				return BooleanType.v();
+			else if (boxingClass.equals(getBoxingClass(ByteType.v()))) 
+				return ByteType.v();
+			else if (boxingClass.equals(getBoxingClass(ShortType.v()))) 
+				return ShortType.v();
+			else if (boxingClass.equals(getBoxingClass(CharType.v()))) 
+				return CharType.v();
+			else if (boxingClass.equals(getBoxingClass(LongType.v()))) 
+				return LongType.v();
+			else if (boxingClass.equals(getBoxingClass(FloatType.v())))
+				return FloatType.v();
+			else if (boxingClass.equals(getBoxingClass(DoubleType.v()))) 
+				return DoubleType.v();
+			else 
+				throw new RuntimeException();
+		}
+		
 	}
 	/**
 	 * Converts the assignment statement into a sequence 
