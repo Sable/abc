@@ -621,7 +621,7 @@ public class AJTypeSystem_c
 			  
 		  }
 		  
-	protected final Flags POINTCUT_FLAGS = ACCESS_FLAGS.Abstract();
+	protected final Flags POINTCUT_FLAGS = ACCESS_FLAGS.Abstract().Final();
 	
 	public void checkPointcutFlags(Flags f) throws SemanticException {
 		if (! f.clear(POINTCUT_FLAGS).equals(Flags.NONE)) {
