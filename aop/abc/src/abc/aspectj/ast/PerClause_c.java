@@ -11,8 +11,11 @@ import java.util.*;
 import polyglot.ext.jl.ast.Node_c;
 
 import abc.aspectj.types.AspectType;
+import abc.aspectj.types.AJTypeSystem;
+import abc.aspectj.visit.AspectMethods;
 
-public abstract class PerClause_c extends Node_c implements PerClause
+public abstract class PerClause_c extends Node_c implements PerClause,
+							    MakesAspectMethods
 {
 
     public PerClause_c(Position pos) {
@@ -90,5 +93,16 @@ public abstract class PerClause_c extends Node_c implements PerClause
 		 }
 	 }
 
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushFormals(new LinkedList());
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
+                                   AJTypeSystem ts)
+    {
+        visitor.popFormals();
+        return this;
+    }
 
 }

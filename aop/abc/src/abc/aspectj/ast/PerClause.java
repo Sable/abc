@@ -8,7 +8,7 @@ import abc.weaving.aspectinfo.*;
  * A <code>PerClause</code> represents the per-clause of an aspect
  * declaration.
  */
-public interface PerClause extends Node
+public interface PerClause extends Node,MakesAspectMethods
 {
     /* new stuff to be added */
 
