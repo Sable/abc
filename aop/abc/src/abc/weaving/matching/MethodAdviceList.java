@@ -5,6 +5,10 @@ import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import polyglot.types.SemanticException;
+import polyglot.util.ErrorInfo;
+import polyglot.util.ErrorQueue;
+
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
 
@@ -31,18 +35,13 @@ public class MethodAdviceList {
 	while(it.hasNext()) {
 	    AdviceApplication curaa=(AdviceApplication) (it.next());
 	    int prec;
-	    // try {
 	    prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
-	    /*} catch(RuntimeException e) {
-	      StringBuffer details=new StringBuffer();
-	      curaa.debugInfo("current: ",details);
-	      aa.debugInfo("new: ",details);
-	      System.err.println(details);
-	      throw e;
-	      }*/
-	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT)
-		// FIXME to SemanticException with more info
-		throw new RuntimeException("Precedence conflict");
+	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT) {
+		// FIXME: Need to provide more info...
+		abc.main.Main.v().error_queue.enqueue
+		    (ErrorInfo.SEMANTIC_ERROR,"Precedence conflict");
+		return;
+	    }
 	    if(prec==GlobalAspectInfo.PRECEDENCE_FIRST) {
 		it.previous(); // for correct insertion
 		break;
@@ -53,9 +52,12 @@ public class MethodAdviceList {
 	    AdviceApplication curaa=(AdviceApplication) (it.next());
 	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
 	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT 
-	       || prec==GlobalAspectInfo.PRECEDENCE_SECOND)
-		// FIXME to SemanticException with more info
-		throw new RuntimeException("Precedence conflict");
+	       || prec==GlobalAspectInfo.PRECEDENCE_SECOND) {
+		// FIXME: Need to provide more info...
+		abc.main.Main.v().error_queue.enqueue
+		    (ErrorInfo.SEMANTIC_ERROR,"Precedence conflict");
+		return;
+	    }
 	}
     }
 
