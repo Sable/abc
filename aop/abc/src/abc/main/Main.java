@@ -60,6 +60,7 @@ public class Main {
 
     public void parseArgs(String[] args) throws IllegalArgumentException {
         String outputdir=".";
+	boolean optflag=false;
 
         soot_args.add("-keep-line-number"); // always want line number info
         // soot_args.add("-xml-attributes"); // FIXME: want to remove this
@@ -77,6 +78,8 @@ public class Main {
                           throw new IllegalArgumentException(
                             "Missing argument to " + args[i]);
                        }
+  		    else if (args[i].equals("-O"))
+		       optflag = true;
 		    else
 		       if(!args[i].equals("-keep-line-number") && 
                            !args[i].equals("-xml-attributes"))
@@ -121,6 +124,8 @@ public class Main {
                    throw new IllegalArgumentException(
                             "Missing argument to " + args[i]);
                } // output directory 
+   	     else if (args[i].equals("-O"))  // -O flag in abc options
+		 optflag=true;
 	     else if (args[i].startsWith("-")) 
 	       { throw new IllegalArgumentException("Unknown option "+args[i]);
                } 
@@ -132,6 +137,7 @@ public class Main {
         // handle output directory, -d . is default
         soot_args.add("-d");
         soot_args.add(outputdir);
+	if(optflag) soot_args.add("-O");
     }
 
     public void run() throws CompilerFailedException {
