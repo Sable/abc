@@ -6755,11 +6755,13 @@
     </ajc-test>
     
     <ajc-test num="787" dir="new" pr="36778"
+      abccomment="we just produce a warning, and just in one place"
       title="can't put around advice on interface static initializer"
       comment="this tests for a nice message given a compiler limitation">
         <compile files="EmptyInterfaceCE.java">
-        	<message kind="error" line="20"/>
-        	<message kind="error" line="23"/>
+        	<ajcmessage kind="error" line="20"/>
+        	<ajcmessage kind="error" line="23"/>
+        	<message kind="warning" line="20"/>
         </compile>
     </ajc-test>
     
