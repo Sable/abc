@@ -5,6 +5,8 @@ import soot.*;
 import soot.jimple.*;
 import abc.weaving.residues.*;
 
+import abc.weaving.aspectinfo.MethodCategory;
+
 /** A "body" shadow match
  *  @author Ganesh Sittampalam
  */
@@ -31,14 +33,18 @@ public abstract class BodyShadowMatch extends ShadowMatch {
 	int offset=container.isStatic() ? 0 : 1; 
 	while(stmtsIt.hasNext()) {
 	    Stmt stmt=(Stmt) stmtsIt.next();
-	    if(!(stmt instanceof IdentityStmt)) return ret;
+	    if(!(stmt instanceof IdentityStmt)) break;
 	    IdentityStmt istmt=(IdentityStmt) stmt;
 	    Value right=istmt.getRightOp();
 	    if(!(right instanceof ParameterRef)) continue;
 	    ParameterRef param=(ParameterRef) right;
 	    ret.set(param.getIndex(),new JimpleValue(istmt.getLeftOp()));
 	}
-
+	
+	// change by Oege: some parameters are implicit
+	// List cvs = ret.subList(MethodCategory.getSkipFirst(container),count-MethodCategory.getSkipLast(container));
+	// return cvs;
+	
 	return ret;
     }
 }

@@ -61,6 +61,7 @@ public class Args extends DynamicValuePointcut {
     public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm)
 	throws SemanticException
     {
+    	// System.out.println("args="+args+"sm="+sm+" of type "+sm.getClass());
 	Residue ret=AlwaysMatch.v;
 	ListIterator formalsIt=args.listIterator();
 	List actuals=sm.getArgsContextValues();
