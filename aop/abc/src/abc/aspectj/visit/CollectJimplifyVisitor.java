@@ -30,6 +30,7 @@ import soot.*;
 import soot.javaToJimple.*;
 
 import java.util.*;
+import java.io.*;
 
 /** Collects the AST roots of all top-level weavable classes, to give
  *  to the later {@link Jimplify} pass.
@@ -51,7 +52,18 @@ public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
 
     protected NodeVisitor enterCall(Node n) throws SemanticException {
         if (n instanceof SourceFile) {
-            if (!source_files.contains(((SourceFile)n).source().path())) {
+        	boolean found = false;
+        	File nfile = null;
+        	try {nfile = (new File(((SourceFile) n).source().path())).getCanonicalFile();
+        	} catch (IOException e) {}
+            for (Iterator it = source_files.iterator(); !found && it.hasNext(); ) {
+            	String name = (String) it.next();
+            	File f = null;
+            	try {f = (new File(name)).getCanonicalFile();
+            	} catch (IOException e) {}
+            	found = (f.compareTo(nfile) == 0);
+            }
+            if (!found) {
                 throw new SemanticException("Source file was needed but not given on the commandline", n.position());
             }
             current_ast = n;
