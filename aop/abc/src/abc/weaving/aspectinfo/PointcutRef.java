@@ -37,6 +37,8 @@ public class PointcutRef extends Pointcut {
 	    decl = getDirectDecl();
 	    if (decl.isAbstract()) {
 		decl = GlobalAspectInfo.v().getPointcutDecl(decl.getName(), context);
+		if(decl.isAbstract()) 
+		    throw new InternalCompilerError("decl for "+this+" in context "+context+" was abstract");
 	    }
 	    decls.put(context, decl);
 	}
@@ -85,8 +87,16 @@ public class PointcutRef extends Pointcut {
 	    declRenameEnv.put(formal.getName(),param);
 	}
 
-	Pointcut pc=getDecl(context).getPointcut()
-	    .inline(declRenameEnv,declTypeEnv,context);
+	Pointcut pc;
+	try {
+	    PointcutDecl d=getDecl(context);
+	    if(d.isAbstract()) 
+		throw new InternalCompilerError("Got an abstract pointcut decl while inlining "+this);
+	    pc=getDecl(context).getPointcut()
+		.inline(declRenameEnv,declTypeEnv,context);
+	} catch(NullPointerException e) {
+	    throw new InternalCompilerError("NPE while trying to inline "+this+" with context "+context,e);
+	}
 
 	Iterator castsIt=newCasts.iterator();
 	while(castsIt.hasNext()) {

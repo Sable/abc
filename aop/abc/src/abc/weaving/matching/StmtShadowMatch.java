@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.Body;
 import soot.Local;
 import soot.SootMethod;
@@ -43,7 +45,11 @@ public abstract class StmtShadowMatch extends ShadowMatch {
     }
 
     public ContextValue getThisContextValue() {
-	if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return null;
+	try {
+	    if(stmt.hasTag(abc.soot.util.InPreinitializationTag.name)) return null;
+	} catch(Throwable e) {
+	    throw new InternalCompilerError("NPE while looking for tags on stmt "+stmt,e);
+	}
 	return super.getThisContextValue();
     }
 
