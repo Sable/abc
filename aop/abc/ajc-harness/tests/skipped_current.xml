@@ -18,6 +18,11 @@
         <compile options="-usejavac" files="Test_AroundVarBug.java,AroundVarBug.java"></compile>
         <run class="Test_AroundVarBug"></run>
     </ajc-test>
+<ajc-test title="functional modifiers work correctly with introduced members" num="506" keywords="from-resolved_10x" dir="new" abccomment="test depends on implementation-specific naming convention, via reflection.                   Cloned as 50601. ODM 11/08/04">
+    <abckeywords> <skip></skip> </abckeywords>
+        <compile files="IntroducedModifiers.java"></compile>
+        <run class="IntroducedModifiers"></run>
+    </ajc-test>
 <ajc-test title="AspectOf available for different aspect types" num="524" keywords="from-resolved_10x" dir="new" abccomment="we don't support aspect as a variable name">
         <abckeywords><skip></skip></abckeywords>
         <compile files="AspectOf.java"></compile>
@@ -116,6 +121,22 @@
         <compile options="!Xlint" files="XLintTypeThisPCD.java">
             <message line="10" kind="warning"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint args()" num="705" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeArgsPCD.java"></compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint declare parent" num="706" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeDeclareParent.java"></compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint target()" num="707" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeTargetPCD.java"></compile>
+    </ajc-test>
+<ajc-test title="options negative -Xlint this()" num="708" keywords="lint" dir="options">
+        <abckeywords><skip></skip></abckeywords>
+        <compile options="-Xlint:ignore" files="XLintTypeThisPCD.java"></compile>
     </ajc-test>
 <ajc-test title="testing new options" num="711" dir="new/options11" comment="XXX not validated correct yet">
         <compile files="Main.java,injar.jar,Aspect.java" aspectpath="aspectlib1.jar,aspectlib2.jar"></compile>

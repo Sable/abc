@@ -1008,14 +1008,14 @@
             <message line="8" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="decent errors for around return type not matching target point" pr="244" num="219" keywords="from-errors" dir="errors" abccomment="abc doesn't report this kind of error in both places">
+<ajc-test title="decent errors for around return type not matching target point" pr="244" num="219" keywords="from-errors" dir="errors" abccomment="abc doesn't report this kind of error in both places                    and our positions are a bit different">
         <compile files="AroundReturnType.java">
             <ajcmessage line="3" kind="error"></ajcmessage>
             <ajcmessage line="7" kind="error"></ajcmessage>
             <ajcmessage line="16" kind="error"></ajcmessage>
             <ajcmessage line="21" kind="error"></ajcmessage>
-	    <message line="3" kind="error"></message>
-	    <message line="7" kind="error"></message>
+	    <message line="2" kind="error"></message>
+	    <message line="6" kind="error"></message>
 	    <message line="7" kind="error"></message>
         </compile>
     </ajc-test>
@@ -1077,11 +1077,9 @@
             <message line="17" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]" num="231" keywords="from-errors" dir="new" abccomment="Polyglot fails to check special modifier restrictions for interfaces.                   ODM 5/7/04. This has been fixed and abc now finds an error                   that escapes ajc. ODM 26/07/04">
+<ajc-test title="Wrong strictfp keyword usage in interface function prototype [TODO: move to errors]" num="231" keywords="from-errors" dir="new" abccomment="Polyglot fails to check special modifier restrictions for interfaces.                   ODM 5/7/04. This has been fixed. ODM 11/08/04">
         <compile files="StrictFpCErr1.java">
-            <ajcmessage line="3" kind="error"></ajcmessage>
-            <message line="1" kind="error"></message>
-            <message line="3" kind="error"></message> 
+            <message line="3" kind="error"></message>
        </compile>
     </ajc-test>
 <ajc-test title="Wrong strictfp keyword usage in field declaration [TODO: move to errors]" num="232" keywords="from-errors" dir="new">
@@ -1682,6 +1680,27 @@
             <message line="53" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="introduced inner interfaces - compile should fail to bind interface name outside of Aspect or if implementing method is not public" pr="494" num="314" keywords="from-errors" dir="new" abccomment="abc pinpoints first three errors differently, but ok. ODM 11/08/04">
+        <compile options="-Xlint:ignore" files="IntroduceInnerInterfaceCF.java">
+            <ajcmessage line="18" kind="error"></ajcmessage>
+            <ajcmessage line="19" kind="error"></ajcmessage>
+            <ajcmessage line="20" kind="error"></ajcmessage>
+            <ajcmessage line="24" kind="error"></ajcmessage>
+            <ajcmessage line="42" kind="error"></ajcmessage>
+            <ajcmessage line="45" kind="error"></ajcmessage>
+            <ajcmessage line="48" kind="error"></ajcmessage>
+            <ajcmessage line="50" kind="error"></ajcmessage>
+            <ajcmessage line="58" kind="error"></ajcmessage>
+            <message line="16" kind="error"></message>
+            <message line="23" kind="error"></message>
+            <message line="24" kind="error"></message>
+            <message line="42" kind="error"></message>
+            <message line="45" kind="error"></message>
+            <message line="48" kind="error"></message>
+            <message line="50" kind="error"></message>
+            <message line="58" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="aspects may not implement Serializable or Cloneable" num="315" keywords="from-errors" dir="errors">
         <compile files="AspectInterfaces.java">
             <message line="4" kind="error"></message>
@@ -1856,6 +1875,10 @@
         <compile files="AspectRedefinesParam.java"></compile>
         <run class="AspectRedefinesParam"></run>
     </ajc-test>
+<ajc-test title="introducing extends and implements" num="343" keywords="from-resolved_10x" dir="new" abccomment="Need to support I1 extends I2,I3,I4. ODM 09/07/04">
+        <compile files="HierarchyIntroductions.java"></compile>
+        <run class="HierarchyIntroductions"></run>
+    </ajc-test>
 <ajc-test title="(related) aspect on interface" pr="104" num="344" keywords="from-resolved_10x" dir="new">
         <compile files="AspectOnInterface.java"></compile>
         <run class="AspectOnInterface"></run>
@@ -1921,6 +1944,22 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
+<ajc-test title="generating the right throws clause for call-site advice (and around)" pr="242" num="361" keywords="from-resolved_10x" dir="new" abccomment="exception checker does not work in the presence of around.                   ODM 09/07/04">
+        <compile files="ComputedThrows.java"></compile>
+        <run class="ComputedThrows"></run>
+    </ajc-test>
+<ajc-test title="advice on calls to static methods using several syntax" pr="246" num="362" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
+        <compile files="StaticCalls.java"></compile>
+        <run class="StaticCalls"></run>
+    </ajc-test>
+<ajc-test title=", PR#249, PR#250 advice on constructor sites" pr="248" num="363" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
+        <compile files="NewSiteAdvice.java"></compile>
+        <run class="NewSiteAdvice"></run>
+    </ajc-test>
+<ajc-test title="test after throwing advice in several ways" num="364" keywords="from-resolved_10x" dir="new" abccomment="the usual problem with around and exception checker. ODM 09/07/04">
+        <compile files="AfterThrowing.java"></compile>
+        <run class="AfterThrowing"></run>
+    </ajc-test>
 <ajc-test title="fancy name patterns for method names" num="365" keywords="from-resolved_10x" dir="new">
         <compile files="WildNames.java"></compile>
         <run class="WildNames"></run>
@@ -1928,6 +1967,10 @@
 <ajc-test title="calls: calls(...)" num="366" keywords="from-resolved_10x" dir="design/calls">
         <compile options="-Xlint:ignore" files="Simple.java"></compile>
         <run class="Simple"></run>
+    </ajc-test>
+<ajc-test title="throws Exception clause is unnecessarily added to Driver.main method" pr="259" num="367" keywords="from-resolved_10x" dir="new/extraThrows">
+        <compile files="Driver.java"></compile>
+        <run class="Driver"></run>
     </ajc-test>
 <ajc-test title="javac fails when this is referenced in the static main method" pr="262" num="368" keywords="from-resolved_10x" dir="new/thisUsedInMain">
         <compile files="Driver.java"></compile>
@@ -1996,6 +2039,10 @@
 <ajc-test title="Gets and sets with other advice" num="384" keywords="from-resolved_10x" dir="new">
         <compile files="Counting3.java"></compile>
         <run class="Counting3"></run>
+    </ajc-test>
+<ajc-test title="Compiler can compile correct strictfp modifiers" num="385" keywords="from-resolved_10x" dir="new" abccomment="abc fails with a compile error, which is a polyglot bug: it contradicts JLS 9.1.1.2.                   Easy fix (just delete the relevant test), entered onto bugzilla. ODM 11/08/04">
+        <compile files="StrictFpCompile.java"></compile>
+        <run class="StrictFpCompile"></run>
     </ajc-test>
 <ajc-test title="basic test of callsto pointcuts" num="386" keywords="from-resolved_10x" dir="new">
         <compile files="CallsTo.java"></compile>
@@ -2089,6 +2136,10 @@
         <compile files="ThrowsMatching.java"></compile>
         <run class="ThrowsMatching"></run>
     </ajc-test>
+<ajc-test title="basic test of declare soft" num="411" keywords="from-resolved_10x" dir="new">
+        <compile files="DeclareSoft.java"></compile>
+        <run class="DeclareSoft"></run>
+    </ajc-test>
 <ajc-test title="advice on calls to constructors of anonymous inners and access to context" num="412" keywords="from-resolved_10x" dir="new">
         <compile files="NewAnonymous.java"></compile>
         <run class="NewAnonymous"></run>
@@ -2148,6 +2199,10 @@
 <ajc-test title="The pointcut params (..,int..) is not recognizing (Object,int,Object)." num="429" keywords="from-resolved_10x" dir="new">
         <compile files="Params.java"></compile>
         <run class="Params"></run>
+    </ajc-test>
+<ajc-test title="calls advice on array objects causes error in code generation" num="430" keywords="from-resolved_10x" dir="new">
+        <compile files="CallsToArray.java"></compile>
+        <run class="CallsToArray"></run>
     </ajc-test>
 <ajc-test title="join points in field initializers aren't showing up." num="431" keywords="from-resolved_10x" dir="new">
         <compile files="NonexistentFieldInitializers.java"></compile>
@@ -2272,6 +2327,10 @@
         <compile files="CFlowPoints.java"></compile>
         <run class="CFlowPoints"></run>
     </ajc-test>
+<ajc-test title="Crashing when looking up the type of array members." num="463" keywords="from-resolved_10x" dir="new">
+        <compile files="ArrayCasts.java"></compile>
+        <run class="ArrayCasts"></run>
+    </ajc-test>
 <ajc-test title="Dave Binkley's problem with eachcflowroot. [eachcflow]" num="465" keywords="from-resolved_10x" dir="new">
         <compile files="Binkley2.java"></compile>
         <run class="Binkley2"></run>
@@ -2279,6 +2338,10 @@
 <ajc-test title=", PR#115 checks the ordering of catch clauses" pr="114" num="467" keywords="from-resolved_10x" dir="new">
         <compile files="OrderOfCatches.java"></compile>
         <run class="OrderOfCatches"></run>
+    </ajc-test>
+<ajc-test title="various declared exception permutations" num="468" keywords="from-resolved_10x" dir="new">
+        <compile files="DeclaredExcs.java"></compile>
+        <run class="DeclaredExcs"></run>
     </ajc-test>
 <ajc-test title="ordering of advice kinds as well as cflow and dominates" num="469" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOrdering.java"></compile>
@@ -2319,6 +2382,10 @@
 <ajc-test title="inheritance, around advice and abstract pointcuts [eachobject] (still)" pr="317" num="481" keywords="from-resolved_10x" dir="new">
         <compile files="OverridingPointcuts.java"></compile>
         <run class="OverridingPointcuts"></run>
+    </ajc-test>
+<ajc-test title="exceptions thrown and caught in advice, particularly try+proceed" num="483" keywords="from-resolved_10x" dir="new">
+        <compile files="TryAndProceed.java"></compile>
+        <run class="TryAndProceed"></run>
     </ajc-test>
 <ajc-test title="Not and And operators in pointcuts not working" num="484" keywords="from-resolved_10x" dir="new">
         <compile files="NotAndPointcut.java"></compile>
@@ -2420,6 +2487,10 @@
         <compile files="PR520.java"></compile>
         <run class="PR520"></run>
     </ajc-test>
+<ajc-test title="introduced inner interfaces accessible inside aspect" pr="494" num="517" keywords="from-resolved_10x" dir="new">
+        <compile files="IntroduceInnerInterfaceCP.java"></compile>
+        <run class="IntroduceInnerInterfaceCP"></run>
+    </ajc-test>
 <ajc-test title="advice formals are just like method formals" pr="544" num="519" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceFormalsCp.java"></compile>
         <run class="AdviceFormalsCp"></run>
@@ -2434,9 +2505,21 @@
             <message line="36" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="advice throws clauses must be compatible with joinpoints they apply to" num="521" keywords="from-resolved_10x" dir="new">
+        <compile files="AdviceThrowsCp.java"></compile>
+        <run class="AdviceThrowsCp"></run>
+    </ajc-test>
 <ajc-test title="potential method conflicts with introductions and interfaces and PR#561" pr="570" num="522" keywords="from-resolved_10x" dir="new">
         <compile files="MethodConflictsCP.java"></compile>
         <run class="MethodConflictsCP"></run>
+    </ajc-test>
+<ajc-test title="illegal method conflicts with introductions and interfaces and PR#561" pr="570" num="523" keywords="from-resolved_10x" dir="new" abccomment="abc gives one error for one mistake, and ajc gives several. ODM 11/08/04">
+        <compile files="MethodConflictsCF.java">
+            <ajcmessage line="8" kind="error"></ajcmessage>
+            <ajcmessage line="20" kind="error"></ajcmessage>
+            <ajcmessage line="28" kind="error"></ajcmessage>
+            <message line="28" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="access to all members of class and inner class from privileged aspect" pr="35593" num="525" keywords="from-resolved_10x" dir="new/privilegedAspects">
         <compile files="driver/PrivilegedAspect.java,util/Util.java,pack/DefaultTarget.java,pack/PublicTarget.java"></compile>
@@ -2553,6 +2636,23 @@
         <compile files="NamedWithinPointcuts.java"></compile>
         <run class="NamedWithinPointcuts"></run>
     </ajc-test>
+<ajc-test title="aspect with private abstract pointcut" pr="647" num="548" keywords="from-resolved_10x,fail-unimplemented" dir="new/subaspects">
+        <compile files="PrivatePointcutCE.java">
+            <message line="5" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="concrete aspect unable to access abstract package-private pointcut in parent for overriding" pr="647" num="549" keywords="from-resolved_10x" dir="new/subaspects" comment="XXX getting error - confirm line numbers" abccomment="abc bails out early, but ok. ODM 11/08/04">
+        <compile files="parent/ParentCE.java,child/ChildCE.java">
+            <ajcmessage line="21" kind="error" file="child/ChildCE.java"></ajcmessage>
+            <ajcmessage line="31" kind="error" file="child/ChildCE.java"></ajcmessage>
+            <ajcmessage line="8" kind="error" file="parent/ParentCE.java"></ajcmessage>
+            <ajcmessage line="10" kind="error" file="parent/ParentCE.java"></ajcmessage>
+            <ajcmessage line="12" kind="error" file="parent/ParentCE.java"></ajcmessage>
+            <ajcmessage line="22" kind="error" file="parent/ParentCE.java"></ajcmessage>
+            <message line="22" kind="error" file="parent/ParentCE.java"></message>
+            <message line="31" kind="error" file="child/ChildCE.java"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="inner, outer, and outside-package subaspects of an aspect with abstract protected-, public-, and default-access pointcuts" pr="647" num="550" keywords="from-resolved_10x" dir="new/subaspects">
         <compile files="parent/SubAspectVisibility.java,parent/ForeignChildHelper.java,child/ForeignChildAspect.java"></compile>
         <run class="parent.SubAspectVisibility"></run>
@@ -2568,6 +2668,10 @@
 <ajc-test title="abstract aspect used statically should not cause instantiation of advice or pointcut" pr="647" num="553" keywords="from-resolved_10x" dir="new/subaspects">
         <compile files="AbstractAspectUsedStatically.java"></compile>
         <run class="AbstractAspectUsedStatically"></run>
+    </ajc-test>
+<ajc-test title="private inner interface accessible in scope when declared on outer class" num="554" keywords="from-resolved_10x" dir="new" abccomment="declare parents on a private interface goes wrong">
+        <compile files="DeclareAccess.java"></compile>
+        <run class="DeclareAccess"></run>
     </ajc-test>
 <ajc-test title="accessing private superclass members from body of method introduction" num="556" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroductionCE.java">
@@ -2947,9 +3051,10 @@
             <message line="15" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="simple declare warning (NPE)" num="632" keywords="from-resolved_105" dir="new">
+<ajc-test title="simple declare warning (NPE)" num="632" keywords="from-resolved_105" dir="new" abccomment="we move the warning to a different line">
         <compile files="DeclareWarningMain.java">
-            <message line="5" kind="warning"></message>
+            <ajcmessage line="5" kind="warning"></ajcmessage>
+            <message line="4" kind="warning"></message>
         </compile>
         <run class="DeclareWarningMain"></run>
     </ajc-test>
@@ -3040,6 +3145,11 @@
 <ajc-test title="various tests of switch bounds" num="658" keywords="from-resolved_106,purejava" dir="pureJava">
         <compile files="SwitchBounds.java"></compile>
         <run class="SwitchBounds"></run>
+    </ajc-test>
+<ajc-test title="declare interface extends class" pr="853" num="660" dir="new">
+        <compile files="DeclareInterfaceExtendsClass.java">
+           <message line="10" kind="error"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="declare interface implements class" pr="853" num="661" dir="new">
         <compile files="DeclareInterfaceImplementsClass.java">
@@ -3146,9 +3256,6 @@
             <message line="10" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="options negative -Xlint declare parent" num="706" keywords="lint" dir="options">
-        <compile options="-Xlint:ignore" files="XLintTypeDeclareParent.java"></compile>
-    </ajc-test>
 <ajc-test title="source for options -injars" num="709" dir="options/injars/simple">
         <compile files="Simple.java,Main.java"></compile>
         <run class="Main"></run>
@@ -3167,6 +3274,18 @@
             <message line="5" kind="error"></message>
             <message line="7" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="expect CE for declaration collision between subaspects instead of domination order" num="715" dir="new">
+        <compile files="DeclarationCollisionCE.java">
+            <ajcmessage line="10" kind="error"></ajcmessage>
+            <ajcmessage line="20" kind="error"></ajcmessage>
+            <ajcmessage line="27" kind="error"></ajcmessage>
+	    <message line="20" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="subtype pattern in dominates should pick out aspect subtypes" num="716" dir="new">
+        <compile files="DominatesTypePattern.java"></compile>
+        <run class="DominatesTypePattern"></run>
     </ajc-test>
 <ajc-test title="subtype pattern in dominates will conflict with type pattern" num="717" dir="new">
         <compile files="DominatesTypePatternCE.java">
@@ -3366,6 +3485,10 @@
         <compile files="Privilege.java"></compile>
         <run class="Privilege"></run>
     </ajc-test>
+<ajc-test title="Internal compiler error with thisJoinPoint.getStaticPart()" pr="36564" num="782" dir="bugs">
+        <compile files="tjpStaticPart/Test.java,tjpStaticPart/Exceptions.java"></compile>
+        <run class="tjpStaticPart.Test"></run>
+    </ajc-test>
 <ajc-test title="Inconsistant stack height with around" pr="29665" num="783" dir="bugs">
         <compile files="StackError.java"></compile>
         <run class="StackError"></run>
@@ -3373,6 +3496,13 @@
 <ajc-test title="advise join points in subclass of empty interface" pr="36778" num="786" dir="new">
         <compile files="EmptyInterface.java"></compile>
         <run class="EmptyInterface"></run>
+    </ajc-test>
+<ajc-test title="can't put around advice on interface static initializer" pr="36778" num="787" dir="new" comment="this tests for a nice message given a compiler limitation" abccomment="we just produce a warning, and just in one place">
+        <compile files="EmptyInterfaceCE.java">
+        	<ajcmessage line="20" kind="error"></ajcmessage>
+        	<ajcmessage line="23" kind="error"></ajcmessage>
+        	<message line="20" kind="warning"></message>
+        </compile>
     </ajc-test>
 <ajc-test title="cflow concretization causing assertion failure" pr="36803" num="788" dir="bugs">
         <compile files="CflowConcrete.java"></compile>
@@ -3396,6 +3526,93 @@
         <compile files="ClassForName.java"></compile>
         <run class="ClassForName"></run>
     </ajc-test>
+<ajc-test title="declare warnings on main" pr="37020" num="793" dir="new/binaryWarnings/src" abccomment="we report slightly different positions">
+        <compile files="aspects/MainWarnings.java,app/Main.java">
+        	<ajcmessage text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></ajcmessage>
+        	<ajcmessage text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></ajcmessage>
+        	<message text="staticinitialization(Main)" line="4" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
+        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
+        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
+        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
+        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
+        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
+        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="declare warnings on binary javac 1.4 classes" pr="37020" num="794" dir="new/binaryWarnings/src">
+        <compile files="aspects/MainWarnings.java,../injars/app-javac-1.4.jar">
+        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
+        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
+        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
+        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
+        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
+        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
+        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="declare warnings on binary ajc 1.1 classes" pr="37023" num="795" dir="new/binaryWarnings/src" abccomment="we fail because of an off-by one error on the handler line number info">
+        <compile files="aspects/MainWarnings.java,../injars/app-ajc-1.1.jar">
+        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
+        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
+        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
+        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
+        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
+        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
+        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+	</ajc-test>
 <ajc-test title="expected class tree" num="803" dir="incremental/initialTests/expClasses">
         <compile files="Main.java">
             <dir-changes expDir="expected"></dir-changes>
