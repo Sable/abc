@@ -1,5 +1,11 @@
 package abc.weaving.residues;
 
+import soot.SootMethod;
+import soot.util.Chain;
+import soot.jimple.*;
+import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.weaver.WeavingContext;
+
 /** Disjunction of two residues
  *  @author Ganesh Sittampalam
  *  @date 28-Apr-04
@@ -29,4 +35,17 @@ public class NotResidue extends Residue {
 	if(op instanceof AlwaysMatch) return null;
 	return new NotResidue(op);
     }
+
+    public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
+			Chain units,Stmt begin,Stmt fail,
+			WeavingContext wc) {
+
+	Stmt nopStmt=Jimple.v().newNopStmt();
+	Stmt notResidueEnd=op.codeGen(method,localgen,units,begin,nopStmt,wc);
+	Stmt abort=Jimple.v().newGotoStmt(fail);
+	units.insertAfter(abort,notResidueEnd);
+	units.insertAfter(nopStmt,abort);
+	return nopStmt;
+    }
+
 }

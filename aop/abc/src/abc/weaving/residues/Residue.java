@@ -16,12 +16,9 @@ public abstract class Residue {
      *  "units", starting just after "begin". Jump to "fail" if the residue
      *  fails. Return the final statement that was inserted.
      */
-    // make this abstract once everything implements it
-    public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
-			Chain units,Stmt begin,Stmt fail,
-			WeavingContext wc) {
-	throw new RuntimeException("residue not implemented for "+this);
-    }
+    public abstract Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
+				 Chain units,Stmt begin,Stmt fail,
+				 WeavingContext wc);
 
     /** Must provide a toString method */
     public abstract String toString();

@@ -1,5 +1,11 @@
 package abc.weaving.residues;
 
+import soot.SootMethod;
+import soot.util.Chain;
+import soot.jimple.*;
+import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.weaver.WeavingContext;
+
 /** A "dynamic" residue that can never match. 
  *  Intended for convenience during generation and residue analysis process.
  *  Can also use null to represent this; need to decide whether keeping
@@ -18,5 +24,14 @@ public class NeverMatch extends Residue {
 
     public String toString() {
 	return "never";
+    }
+
+    // this ought not to get called
+    public Stmt codeGen(SootMethod method,LocalGeneratorEx localgen,
+			Chain units,Stmt begin,Stmt fail,
+			WeavingContext wc) {
+	Stmt abort=Jimple.v().newGotoStmt(fail);
+	units.insertAfter(abort,begin);
+	return abort;
     }
 }
