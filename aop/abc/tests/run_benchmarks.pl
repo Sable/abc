@@ -3,7 +3,8 @@
 $argc=@ARGV;
 if ($argc==0) {
 	@benchmarks=('bean', 'gregor_bean', 'gof_adapter', 'gof_bridge', 'nullptr', 'nullptrafter', 
-		'productlines', 'telecom', 'figure',  'quicksort', 'gregor_quicksort', 'oege_quicksort', 'LoD');
+		'productlines', 'telecom', 'figure',  'quicksort', 'gregor_quicksort', 'oege_quicksort', 
+                'dcm', 'LoD');
 } else {
 	@benchmarks=@ARGV;
 }
