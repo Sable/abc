@@ -3042,32 +3042,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@13f811c.foo calls Outer$Inner@35830a.mi
+Outer@1f55e2.foo calls Outer$Inner@13f811c.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@35830a.mi calls java.io.PrintStream@12e32c4.println
+Outer$Inner@13f811c.mi calls java.io.PrintStream@35830a.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@13f811c.foo calls Outer$InnerRandom@338160.nextHook
+Outer@1f55e2.foo calls Outer$InnerRandom@6f2e0.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@338160.nextHook calls Outer$InnerRandom@338160.next
+Outer$InnerRandom@6f2e0.nextHook calls Outer$InnerRandom@6f2e0.next
 Outer.foo() calls Random.nextInt(..)
-Outer@13f811c.foo calls X.nextInt
+Outer@1f55e2.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@47211.foo calls Outer$Inner@1dceb56.mi
+Outer@153267f.foo calls Outer$Inner@47211.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1dceb56.mi calls java.io.PrintStream@de7de8.println
+Outer$Inner@47211.mi calls java.io.PrintStream@1dceb56.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@47211.foo calls Outer$InnerRandom@11c39fa.nextHook
+Outer@153267f.foo calls Outer$InnerRandom@de7de8.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@11c39fa.nextHook calls Outer$InnerRandom@11c39fa.next
+Outer$InnerRandom@de7de8.nextHook calls Outer$InnerRandom@de7de8.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@47211.foo calls X.nextInt
+Outer@153267f.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -4427,8 +4427,8 @@ PASS: Test 579: "new/privilegedAspects/access to private members from privileged
 
 Running test 580: new/inner classes of privileged aspects cannot see target class private members
 Commandline: abc -d new -warn-unused-advice:off new/InnerClassInPrivilegedAspect.java 
-Failed to define or resolve class PrivilegedAspectAround from new Length: 2806
-java.lang.ClassFormatError: PrivilegedAspectAround (Repetitive method name/signature)
+Failed to define or resolve class PrivilegedAspectBefore from new Length: 2488
+java.lang.ClassFormatError: PrivilegedAspectBefore (Repetitive method name/signature)
 	at java.lang.ClassLoader.defineClass0(Native Method)
 	at java.lang.ClassLoader.defineClass(ClassLoader.java:537)
 	at java.lang.ClassLoader.defineClass(ClassLoader.java:448)
@@ -4445,7 +4445,7 @@ java.lang.ClassFormatError: PrivilegedAspectAround (Repetitive method name/signa
 	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: PrivilegedAspectAround
+InvocationTargetException while trying to run compiled class: java.lang.NoClassDefFoundError: PrivilegedAspectBefore
 java.lang.reflect.InvocationTargetException
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4454,7 +4454,7 @@ java.lang.reflect.InvocationTargetException
 	at abc.testing.TestCase.runTest(TestCase.java:394)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.NoClassDefFoundError: PrivilegedAspectAround
+Caused by: java.lang.NoClassDefFoundError: PrivilegedAspectBefore
 	at Target.<clinit>(InnerClassInPrivilegedAspect.java)
 	at InnerClassInPrivilegedAspect.main(InnerClassInPrivilegedAspect.java:7)
 	... 7 more
@@ -5701,7 +5701,7 @@ FAIL: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1077e42.x:=-3
+test.Test3@1c8c5da.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -5784,8 +5784,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@1b1e2f6
-o: Bar@1b1e2f6, i: 10
+o: Bar@10739b3
+o: Bar@10739b3, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -7099,7 +7099,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@19ba1a3
+? Util.read() obj=Test@e5a7ae
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
