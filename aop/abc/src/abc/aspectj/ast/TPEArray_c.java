@@ -9,13 +9,16 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-public class TPEType_c extends TypePatternExpr_c implements TPEType
+public class TPEArray_c extends TypePatternExpr_c 
+    implements TPEArray
 {
-    protected TypeNode type;
+    protected TypePatternExpr base;
+    protected int dims;
 
-    public TPEType_c(Position pos, TypeNode type)  {
+    public TPEArray_c(Position pos, TypePatternExpr base, int dims)  {
 	super(pos);
-        this.type = type;
+        this.base = base;
+	this.dims = dims;
     }
 
     public Precedence precedence() {
@@ -23,7 +26,9 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-        print(type, w, tr);
+	print(base, w, tr);
+	for (int i = 0; i < dims; i++) 
+	    w.write("[]");
     }
 
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
@@ -31,19 +36,32 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
     }
 
     public boolean matchesClassArray(PatternMatcher matcher, PCNode cl, int dim) {
+	if (dim == dims) {
+	    return base.matchesClass(matcher, cl);
+	}
+	if (dim > dims) {
+	    return base.matchesClassArray(matcher, cl, dim-dims);
+	}
 	return false;
     }
 
     public boolean matchesPrimitive(PatternMatcher matcher, String prim) {
-	return type.toString().equals(prim);
+	return false;
     }
 
     public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim) {
+	if (dim == dims) {
+	    return base.matchesPrimitive(matcher, prim);
+	}
+	if (dim > dims) {
+	    return base.matchesPrimitiveArray(matcher, prim, dim-dims);
+	}
 	return false;
     }
 
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
-	throw new SemanticException("Primitive type in classname pattern");
+	throw new SemanticException("Array in classname attern");
     }
+
 
 }

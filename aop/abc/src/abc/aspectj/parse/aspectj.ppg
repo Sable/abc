@@ -83,8 +83,9 @@ terminal Token PC_NOT;
 terminal Token PC_ANDAND;
 terminal Token PC_OROR;
 terminal Token PC_PLUS;
+terminal Token PC_MULT;
 
-terminal Token IDENTIFIERPATTERN;
+terminal Identifier IDENTIFIERPATTERN;
 
 /* ---------------------------------------------------------*/
 /* ----          NON-TERMINALS added for AspectJ        --- */
@@ -121,7 +122,7 @@ non terminal TypePatternExpr type_pattern_expr;
 non terminal TypePatternExpr or_type_pattern_expr;
 non terminal TypePatternExpr unary_type_pattern_expr;
 non terminal TypePatternExpr basic_type_pattern;
-non terminal RefTypePattern reference_type_pattern;
+non terminal TypePatternExpr base_type_pattern;
 
 non terminal List classname_pattern_expr_list;
 non terminal ClassnamePatternExpr classname_pattern_expr;
@@ -726,33 +727,33 @@ basic_pointcut_expr ::=
 /* ------------------- NAME PATTERNS ---------------------------------- */
 
 name_pattern ::=
-     simple_name_pattern:a
-        {: Grm.parserTrace("name_pattern is just a simple_name_pattern");
-           RESULT = a;
+      simple_name_pattern:a
+        {: RESULT = a;
         :}
-  |  name_pattern:a  DOT simple_name_pattern:b
-        {: Grm.parserTrace("name_pattern is np . snp");
-           RESULT = parser.nf.DotNamePattern(parser.pos(a,b),a,b);
+   |  name_pattern:a DOT simple_name_pattern:b
+        {: RESULT = parser.nf.DotNamePattern(parser.pos(a,b),a,b);
         :}
-  |  name_pattern:a  PC_DOTDOT:b simple_name_pattern:c
-        {: Grm.parserTrace("name_pattern is np ..  snp");
-	   // Create a DotNamePattern with a DotDot on its left.
-	   DotDotNamePattern dotdot = parser.nf.DotDotNamePattern(parser.pos(a,b),a);
-           RESULT = parser.nf.DotNamePattern(parser.pos(a,c),dotdot,c);
+   |  name_pattern:a PC_DOTDOT:d simple_name_pattern:b
+        {: DotDotNamePattern ddnp = parser.nf.DotDotNamePattern(parser.pos(a,d),a);
+           RESULT = parser.nf.DotNamePattern(parser.pos(a,b),ddnp,b);
         :}
-  ;
+   ;
 
 simple_name_pattern ::= 
-     IDENTIFIERPATTERN:a
-        {: Grm.parserTrace("simple_name_pattern is identifier pattern: " + a);
-           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),((Identifier)a).getIdentifier());
+     PC_MULT:m
+        {: Grm.parserTrace("name_pattern is a star: ");
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(m),"*");
+        :}
+   | IDENTIFIERPATTERN:a
+        {: Grm.parserTrace("name_pattern is simple name pattern: " + a);
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),a.getIdentifier());
         :}
    | IDENTIFIER:a
-        {: Grm.parserTrace("simple_name_pattern is identifer: " + a);
+        {: Grm.parserTrace("name_pattern is identifer: " + a);
            RESULT = parser.nf.SimpleNamePattern(parser.pos(a),a.getIdentifier());
         :}
    | aspectj_reserved_identifier:a
-        {: Grm.parserTrace("aspectj_reserved_identifier");
+        {: Grm.parserTrace("name_pattern is aspectj_reserved_identifier");
 	   String token = a.toString();
            String keyword = token.substring(8,token.length()-1);
            RESULT = parser.nf.SimpleNamePattern(parser.pos(a),keyword);
@@ -856,63 +857,91 @@ aspectj_reserved_identifier ::=
 
 classtype_dot_id ::=
      simple_name_pattern:b
-       {: Grm.parserTrace("classtype_dot_id is a name_pattern");
-          RESULT = parser.nf.ClassTypeDotId(parser.pos(b),null,b);
-       :}
-  |  name_pattern:a DOT simple_name_pattern:b
-       {: Grm.parserTrace("classtype_dot_id is a name_pattern");
-	  TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
-                                parser.nf.RTPName(parser.pos(a),a,null)); // dodgy!
-          RESULT = parser.nf.ClassTypeDotId(parser.pos(a),aa,b);
-       :}
-  |  name_pattern:a PC_DOTDOT simple_name_pattern:b
-       {: Grm.parserTrace("classtype_dot_id is a name_pattern");
-	  TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
-                                parser.nf.RTPName(parser.pos(a),
-				 parser.nf.DotDotNamePattern(parser.pos(a),a),null)); // dodgy?
-          RESULT = parser.nf.ClassTypeDotId(parser.pos(a),aa,b);
-       :}
-  |  name_pattern:a PLUS DOT simple_name_pattern:b
-       {: Grm.parserTrace("classtype_dot_id is np + . snp");
-          TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
-                                parser.nf.RTPSubName(parser.pos(a),a,null));
-          RESULT = parser.nf.ClassTypeDotId(parser.pos(a,b),aa,b);
-       :}
-  |  LPAREN:x type_pattern_expr:a RPAREN DOT simple_name_pattern:b 
-       /* must check it is a class pattern expr */
-       {: Grm.parserTrace("classtype_dot_id is (tpe) . snp");
-          RESULT = parser.nf.ClassTypeDotId(parser.pos(x,b),a,b);
+        {: Grm.parserTrace("classtype_dot_id is simple_name_pattern: ");
+           ClassnamePatternExpr cpe = parser.nf.CPEUniversal(parser.pos(b));
+	   RESULT = parser.nf.ClassTypeDotId(parser.pos(b),cpe,b);
+        :}
+  |  name_pattern:a DOT simple_name_pattern:b 
+        {: Grm.parserTrace("classtype_dot_id is np . simple_name_pattern");
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   } else {
+	       cpe = parser.nf.CPEName(parser.pos(a), a);
+	   }
+           RESULT = parser.nf.ClassTypeDotId(parser.pos(a,b),cpe,b);
+        :}
+  |  name_pattern:a PLUS:p DOT simple_name_pattern:b 
+        {: Grm.parserTrace("classtype_dot_id is np + . simple_name_pattern");
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   } else {
+	       cpe = parser.nf.CPESubName(parser.pos(a,p), a);
+	   }
+           RESULT = parser.nf.ClassTypeDotId(parser.pos(a,b),cpe,b);
+        :}
+  |  name_pattern:a PC_DOTDOT:d simple_name_pattern:b 
+        {: Grm.parserTrace("classtype_dot_id is np . simple_name_pattern");
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   } else {
+	       DotDotNamePattern np = parser.nf.DotDotNamePattern(parser.pos(a,d),a);
+	       cpe = parser.nf.CPEName(parser.pos(np), np);
+	   }
+           RESULT = parser.nf.ClassTypeDotId(parser.pos(a,b),cpe,b);
+        :}
+  |  LPAREN:x type_pattern_expr:a RPAREN:y DOT simple_name_pattern:b
+        /* must check it is a class pattern expr */
+       {: Grm.parserTrace("(tpe) . new");
+          ClassnamePatternExpr cpe = parser.nf.constructClassnamePatternFromTypePattern(a);
+          RESULT = parser.nf.ClassTypeDotId(parser.pos(x,y),cpe,b);
        :}
   ;
 
 classtype_dot_new ::=
      NEW:a
         {: Grm.parserTrace("classtype_dot_new is NEW: ");
-           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a),null);
+           ClassnamePatternExpr cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   RESULT = parser.nf.ClassTypeDotNew(parser.pos(a),cpe);
         :}
   |  name_pattern:a DOT NEW:y 
         {: Grm.parserTrace("classtype_dot_new is np . NEW");
-	   TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
-                                parser.nf.RTPName(parser.pos(a),a,null));
-           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   } else {
+	       cpe = parser.nf.CPEName(parser.pos(a), a);
+	   }
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),cpe);
         :}
-  |  name_pattern:a PC_DOTDOT NEW:y 
-        {: Grm.parserTrace("classtype_dot_new is np . NEW");
-	   TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
-				parser.nf.RTPName(parser.pos(a),
-				parser.nf.DotDotNamePattern(parser.pos(a),a),null));
-           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
-        :}
-  |  name_pattern:a PLUS DOT NEW:y 
+  |  name_pattern:a PLUS:p DOT NEW:y 
         {: Grm.parserTrace("classtype_dot_new is np + . NEW");
-           TypePatternExpr aa = parser.nf.TPERefTypePat(parser.pos(a),
-                                parser.nf.RTPSubName(parser.pos(a),a,null));
-           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),aa);
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a,p));
+	   } else {
+	       cpe = parser.nf.CPESubName(parser.pos(a,p), a);
+	   }
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),cpe);
+        :}
+  |  name_pattern:a PC_DOTDOT:d NEW:y 
+        {: Grm.parserTrace("classtype_dot_new is np . NEW");
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   } else {
+	       DotDotNamePattern np = parser.nf.DotDotNamePattern(parser.pos(a,d),a);
+	       cpe = parser.nf.CPEName(parser.pos(np), np);
+	   }
+           RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),cpe);
         :}
   |  LPAREN:x type_pattern_expr:a RPAREN DOT NEW:y
         /* must check it is a class pattern expr */
        {: Grm.parserTrace("(tpe) . new");
-          RESULT = parser.nf.ClassTypeDotNew(parser.pos(x,y),a);
+          ClassnamePatternExpr cpe = parser.nf.constructClassnamePatternFromTypePattern(a);
+          RESULT = parser.nf.ClassTypeDotNew(parser.pos(x,y),cpe);
        :}
   ;
 
@@ -966,42 +995,48 @@ basic_type_pattern ::=
        {: Grm.parserTrace("VOID type");
           TypeNode vn = parser.nf.CanonicalTypeNode(parser.pos(a),
                                                     parser.ts.Void());
-          RESULT = parser.nf.TPEType(parser.pos(a),vn, null);
+          RESULT = parser.nf.TPEType(parser.pos(a),vn);
        :}
-  |  primitive_type:a
-       {: Grm.parserTrace("basic_type_pattern is just a primitive_type");
-          RESULT = parser.nf.TPEType(parser.pos(a),a, null);
-       :}
-  |  primitive_type:a dims:b
-       {: Grm.parserTrace("basic_type_pattern is just a primitive_type");
-          RESULT = parser.nf.TPEType(parser.pos(a),a, b);
-       :}
-  |  reference_type_pattern:a
+  |  base_type_pattern:a
        {: Grm.parserTrace("basic_type_pattern is a reference_type_pattern");
-          RESULT = parser.nf.TPERefTypePat(parser.pos(a),a);
+          RESULT = a;
        :} 
+  |  base_type_pattern:a dims:b
+       {: Grm.parserTrace("basic_type_pattern is just a primitive_type");
+          RESULT = parser.nf.TPEArray(parser.pos(a),a,b.intValue());
+       :}
   |  LPAREN:lp type_pattern_expr:a RPAREN:rp
        {: Grm.parserTrace("basic_type_pattern is a ( type_pattern_expr )");
           RESULT = a;
        :}
   ;
 
-reference_type_pattern ::=
-     name_pattern:a 
+base_type_pattern ::=
+     primitive_type:a
+       {: Grm.parserTrace("basic_type_pattern is just a primitive_type");
+          RESULT = parser.nf.TPEType(parser.pos(a),a);
+       :}
+  |  name_pattern:a 
        {: Grm.parserTrace("reference_type_pattern is a name_pattern");
-          RESULT = parser.nf.RTPName(parser.pos(a),a,null);
+          TypePatternExpr tpe;
+          if (a.universal()) {
+	      tpe = parser.nf.TPEUniversal(parser.pos(a));
+          } else {
+	      tpe = parser.nf.TPERefTypePat(parser.pos(a),
+					    parser.nf.RTPName(parser.pos(a),a));
+	  }
+	  RESULT = tpe;
        :}
-  |  name_pattern:a dims:b
-       {: Grm.parserTrace("reference_type_pattern is name_pattern []...");
-          RESULT = parser.nf.RTPName(parser.pos(a,b),a,b);
-       :}
-  |  name_pattern:a PC_PLUS:y 
+  |  name_pattern:a PC_PLUS:p 
        {: Grm.parserTrace("reference_type_pattern is name_pattern +");
-          RESULT = parser.nf.RTPSubName(parser.pos(a,y),a,null);
-       :}
-  |  name_pattern:a PC_PLUS dims:b
-       {: Grm.parserTrace("reference_type_pattern is name_pattern + []...");
-          RESULT = parser.nf.RTPSubName(parser.pos(a,b),a,b);
+          TypePatternExpr tpe;
+          if (a.universal()) {
+	      tpe = parser.nf.TPEUniversal(parser.pos(a,p));
+          } else {
+	      tpe = parser.nf.TPERefTypePat(parser.pos(a),
+					    parser.nf.RTPSubName(parser.pos(a,p),a));
+	  }
+          RESULT = tpe;
        :}
   ;
 
@@ -1060,17 +1095,29 @@ unary_classname_pattern_expr ::=
 
 basic_classname_pattern ::=
      name_pattern:a 
-       {: Grm.parserTrace("classname_type_pattern is a name_pattern");
-          RESULT = parser.nf.CPEName(parser.pos(a),a);
-       :}
-  |  name_pattern:a PC_PLUS:y 
-       {: Grm.parserTrace("classname_type_pattern is name_pattern +");
-          RESULT = parser.nf.CPESubName(parser.pos(a,y),a);
-       :}
+        {: Grm.parserTrace("classname_type_pattern is a name_pattern");
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a));
+	   } else {
+	       cpe = parser.nf.CPEName(parser.pos(a), a);
+	   }
+	   RESULT = cpe;
+        :}
+  |  name_pattern:a PC_PLUS:p 
+        {: Grm.parserTrace("classname_type_pattern is name_pattern +");
+	   ClassnamePatternExpr cpe;
+	   if (a.universal()) {
+	       cpe = parser.nf.CPEUniversal(parser.pos(a,p));
+	   } else {
+	       cpe = parser.nf.CPESubName(parser.pos(a,p), a);
+	   }
+           RESULT = cpe;
+        :}
   |  LPAREN:lp classname_pattern_expr:a RPAREN:rp
-       {: Grm.parserTrace("basic_classname_pattern is a ( classname_pattern_expr )");
-          RESULT = a;
-       :}
+        {: Grm.parserTrace("basic_classname_pattern is a ( classname_pattern_expr )");
+           RESULT = a;
+        :}
   ;
 
 /* ----------------------- MODIFIER PATTERNS ---------------------------- */

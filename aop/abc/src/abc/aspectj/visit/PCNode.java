@@ -10,18 +10,22 @@ public class PCNode {
     private PCNode outer;
     private Set/*<PCNode>*/ parents;
     private Set/*<PCNode>*/ children;
-    boolean is_class;
+    private boolean is_class;
+    private boolean is_weavable;
+    private PCStructure root;
 
-    public PCNode(String name, PCNode outer) {
+    public PCNode(String name, PCNode outer, PCStructure root) {
 	this.name = name;
 	this.outer = outer;
+	this.root = root;
 	inners = new HashMap();
 	parents = new HashSet();
 	children = new HashSet();
 	is_class = false;
+	is_weavable = false;
     }
     
-    public PCNode insertFullName(String full_name) {
+    public PCNode insertFullName(String full_name, boolean cl, boolean weavable) {
 	int dotpos = full_name.indexOf('.');
 	String head;
 	String rest;
@@ -34,15 +38,16 @@ public class PCNode {
 	}
 	PCNode child;
 	if (!inners.containsKey(head)) {
-	    child = new PCNode(head, this);
+	    child = new PCNode(head, this, root);
 	    inners.put(head, child);
 	} else {
 	    child = (PCNode)inners.get(head);
 	}
 	if (rest != null) {
-	    return child.insertFullName(rest);
+	    return child.insertFullName(rest, cl, weavable);
 	} else {
-	    child.is_class = true;
+	    child.is_class = cl;
+	    child.is_weavable = weavable;
 	    return child;
 	}
     }
@@ -56,12 +61,20 @@ public class PCNode {
 	return is_class;
     }
 
+    public boolean isWeavable() {
+	return is_weavable;
+    }
+
     public Set/*<PCNode>*/ getInners() {
 	return new HashSet(inners.values());
     }
 
     public Set/*<PCNode>*/ getParents() {
 	return parents;
+    }
+
+    public PCStructure getRoot() {
+	return root;
     }
 
     public String toString() {
@@ -76,23 +89,49 @@ public class PCNode {
 	return "";
     }
 
-    public Set/*<PCNode>*/ matchScope(Pattern simple_name_pattern) {
+    public Set/*<PCNode>*/ matchScope(Pattern simple_name_pattern, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
 	Set this_scope = matchClass(simple_name_pattern);
 	Set this_scope_names = new HashSet();
 	Iterator tsi = this_scope.iterator();
 	while (tsi.hasNext()) {
 	    PCNode pc = (PCNode)tsi.next();
+	    // Add name to shadow outer classes
 	    this_scope_names.add(pc.name);
 	}
-	if (outer != null) {
-	    Set outer_scope = outer.matchScope(simple_name_pattern);
+	if (is_class) {
+	    Set outer_scope = outer.matchScope(simple_name_pattern, classes, packages);
 	    Iterator osi = outer_scope.iterator();
 	    while (osi.hasNext()) {
 		PCNode pc = (PCNode)osi.next();
 		if (!this_scope_names.contains(pc.name)) {
 		    this_scope.add(pc);
+		    // Nothing to shadow here
 		}
 	    }
+	} else {
+	    Iterator ci = classes.iterator();
+	    while (ci.hasNext()) {
+		PCNode c = (PCNode)ci.next();
+		if (!this_scope_names.contains(c.name)) {
+		    this_scope.add(c);
+		    // Add name to list to shadow nonspecifically imported classes
+		    this_scope_names.add(c.name);
+		}
+	    }
+	    Iterator pi = packages.iterator();
+	    while (pi.hasNext()) {
+		PCNode p = (PCNode)pi.next();
+		Set/*<PCNode>*/ p_matches = p.matchSpecific(simple_name_pattern);
+		Iterator pci = p_matches.iterator();
+		while (pci.hasNext()) {
+		    PCNode pc = (PCNode)pci.next();
+		    if (!this_scope_names.contains(pc.name)) {
+			this_scope.add(pc);
+			// Nonspecifically imported classes do not shadow each other
+		    }
+		}
+	    }
+
 	}
 	return this_scope;
     }

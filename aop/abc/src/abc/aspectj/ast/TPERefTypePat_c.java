@@ -27,20 +27,24 @@ public class TPERefTypePat_c extends TypePatternExpr_c
 	print(pat, w, tr);
     }
 
-    public boolean matchesClass(PCNode context, PCNode cl) {
-	return pat.matchesClass(context, cl);
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
+	return pat.matchesClass(matcher, cl);
     }
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
-	return pat.matchesClassArray(context, cl, dim);
+    public boolean matchesClassArray(PatternMatcher matcher, PCNode cl, int dim) {
+	return pat.matchesArray(matcher);
     }
 
-    public boolean matchesPrimitive(String prim) {
+    public boolean matchesPrimitive(PatternMatcher matcher, String prim) {
 	return false;
     }
 
-    public boolean matchesPrimitiveArray(String prim, int dim) {
-	return false;
+    public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim) {
+	return pat.matchesArray(matcher);
+    }
+
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+	return pat.transformToClassnamePattern(nf);
     }
 
 }

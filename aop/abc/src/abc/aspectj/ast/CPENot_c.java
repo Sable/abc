@@ -27,8 +27,8 @@ public class CPENot_c extends ClassnamePatternExpr_c implements CPENot
         printSubExpr(cpe, true, w, tr);
     }
 
-    public boolean matches(PCNode context, PCNode cl) {
-	return !cpe.matches(context, cl);
+    public boolean matches(PatternMatcher matcher, PCNode cl) {
+	return !cpe.matches(matcher, cl);
     }
 
 

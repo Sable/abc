@@ -36,12 +36,12 @@ public class CPEBinary_c extends ClassnamePatternExpr_c
 	printSubExpr(right, false, w, tr);
     }
 
-    public boolean matches(PCNode context, PCNode cl) {
+    public boolean matches(PatternMatcher matcher, PCNode cl) {
 	if (op == COND_OR) {
-	    return left.matches(context, cl) || right.matches(context, cl);
+	    return left.matches(matcher, cl) || right.matches(matcher, cl);
 	}
 	if (op == COND_AND) {
-	    return left.matches(context, cl) && right.matches(context, cl);
+	    return left.matches(matcher, cl) && right.matches(matcher, cl);
 	}
 	throw new RuntimeException("Illegal CPE op");
     }

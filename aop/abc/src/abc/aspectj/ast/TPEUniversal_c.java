@@ -9,13 +9,10 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-public class TPEType_c extends TypePatternExpr_c implements TPEType
+public class TPEUniversal_c extends TypePatternExpr_c implements TPEUniversal
 {
-    protected TypeNode type;
-
-    public TPEType_c(Position pos, TypeNode type)  {
+    public TPEUniversal_c(Position pos)  {
 	super(pos);
-        this.type = type;
     }
 
     public Precedence precedence() {
@@ -23,27 +20,27 @@ public class TPEType_c extends TypePatternExpr_c implements TPEType
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-        print(type, w, tr);
+	w.write("*");
     }
 
     public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
-	return false;
+	return true;
     }
 
     public boolean matchesClassArray(PatternMatcher matcher, PCNode cl, int dim) {
-	return false;
+	return true;
     }
 
     public boolean matchesPrimitive(PatternMatcher matcher, String prim) {
-	return type.toString().equals(prim);
+	return true;
     }
 
     public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim) {
-	return false;
+	return true;
     }
 
     public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
-	throw new SemanticException("Primitive type in classname pattern");
+	return nf.CPEUniversal(position);
     }
 
 }

@@ -16,7 +16,7 @@ public interface ClassnamePatternExpr extends Node
     void printSubExpr(ClassnamePatternExpr expr, boolean associative,
                       CodeWriter w, PrettyPrinter pp);
 
-    public boolean matches(PCNode context, PCNode cl);
+    public boolean matches(PatternMatcher matcher, PCNode cl);
 
 }
 

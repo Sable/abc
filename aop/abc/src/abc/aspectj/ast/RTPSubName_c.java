@@ -16,35 +16,28 @@ public class RTPSubName_c extends Node_c
                           implements RTPSubName
 {
     protected NamePattern pat;
-    protected Integer dims;
 
     public RTPSubName_c(Position pos, 
-                        NamePattern pat,
-                        Integer dims)  {
+                        NamePattern pat)  {
 	super(pos);
         this.pat = pat;
-        this.dims = dims;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	print(pat,w,tr);
         w.write("+");
-	if (dims != null) {
-	    for (int i = 0; i < dims.intValue(); i++) 
-		w.write("[]");
-	}
     }
 
-    public boolean matchesClass(PCNode context, PCNode cl) {
-	return dims == null && matches(context, cl);
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
+	return matches(matcher, cl);
     }
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
-	return dims != null && dims.intValue() == dim && matches(context, cl);
+    public boolean matchesArray(PatternMatcher matcher) {
+	return matcher.matchesObject(pat);
     }
 
-    private boolean matches(PCNode context, PCNode cl) {
-	Set pat_matches = pat.match(context);
+    private boolean matches(PatternMatcher matcher, PCNode cl) {
+	Set pat_matches = matcher.getMatches(pat);
 	if (pat_matches.contains(cl)) {
 	    return true;
 	}
@@ -66,5 +59,9 @@ public class RTPSubName_c extends Node_c
 	    }
 	}
 	return false;
+    }
+
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+	return nf.CPESubName(position, pat);
     }
 }

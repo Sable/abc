@@ -6,10 +6,11 @@ import polyglot.types.Flags;
 import polyglot.types.Package;
 import polyglot.types.Type;
 import polyglot.types.Qualifier;
+import polyglot.types.SemanticException;
 import polyglot.util.*;
 import java.util.*;
 
-
+import arc.aspectj.lex.*;
 
 /**
  * NodeFactory for aspectj extension.
@@ -17,6 +18,12 @@ import java.util.*;
 public interface AspectJNodeFactory 
        extends soot.javaToJimple.jj.ast.JjNodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
+
+    // Special helper methods for the parser
+
+    ClassnamePatternExpr constructClassnamePatternFromTypePattern(TypePatternExpr tpe) throws SemanticException;
+
+    // Factory methods
 
     AspectDecl AspectDecl(Position pos,
                           boolean privileged,
@@ -184,6 +191,8 @@ public interface AspectJNodeFactory
 
     DotDotNamePattern DotDotNamePattern(Position pos, NamePattern init);
 
+    CPEUniversal CPEUniversal(Position pos);
+
     CPEBinary CPEBinary(Position pos,
 		        ClassnamePatternExpr left,
                         CPEBinary.Operator op,
@@ -195,6 +204,8 @@ public interface AspectJNodeFactory
 
     CPESubName CPESubName(Position pos, NamePattern pat);
 
+    TPEUniversal TPEUniversal(Position pos);
+
     TPEBinary TPEBinary(Position pos,
 			TypePatternExpr left,
 			TPEBinary.Operator op,
@@ -202,13 +213,15 @@ public interface AspectJNodeFactory
 
     TPENot TPENot(Position pos, TypePatternExpr tpe);
 
-    TPEType TPEType(Position pos, TypeNode type, Integer dims);
+    TPEType TPEType(Position pos, TypeNode type);
+
+    TPEArray TPEArray(Position pos, TypePatternExpr base, int dims);
 
     TPERefTypePat TPERefTypePat(Position pos, RefTypePattern pat);
 
-    RTPName RTPName(Position pos, NamePattern pat, Integer dims);
+    RTPName RTPName(Position pos, NamePattern pat);
 
-    RTPSubName RTPSubName(Position pos, NamePattern pat, Integer dims);
+    RTPSubName RTPSubName(Position pos, NamePattern pat);
 
     MethodPattern MethodPattern(Position pos,
 				List modifiers,
@@ -234,11 +247,11 @@ public interface AspectJNodeFactory
 
 
     ClassTypeDotId ClassTypeDotId(Position pos, 
-			          TypePatternExpr base,
+			          ClassnamePatternExpr base,
 			          SimpleNamePattern name) ;
     
     ClassTypeDotNew ClassTypeDotNew(Position pos,
-				    TypePatternExpr base);
+				    ClassnamePatternExpr base);
 
     DotDotFormalPattern DotDotFormalPattern(Position pos);
 

@@ -16,30 +16,27 @@ public class RTPName_c extends Node_c
                        implements RTPName
 {
     protected NamePattern pat;
-    protected Integer dims;
 
     public RTPName_c(Position pos, 
-                     NamePattern pat,
-                     Integer dims)  {
+                     NamePattern pat)  {
 	super(pos);
         this.pat = pat;
-        this.dims = dims;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	print(pat,w,tr);
-	if (dims != null) {
-	    for (int i = 0; i < dims.intValue(); i++) 
-		w.write("[]");
-	}
     }
 
-    public boolean matchesClass(PCNode context, PCNode cl) {
-	return dims == null && pat.match(context).contains(cl);
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
+	return matcher.getMatches(pat).contains(cl);
     }
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
-	return dims != null && dims.intValue() == dim && pat.match(context).contains(cl);
+    public boolean matchesArray(PatternMatcher matcher) {
+	return false;
+    }
+
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+	return nf.CPEName(position, pat);
     }
 
 }

@@ -24,12 +24,29 @@ import java.io.*;
  */
 public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
+    public static final polyglot.frontend.Pass.ID BUILD_HIERARCHY = new polyglot.frontend.Pass.ID("build-hierarchy");
+    public static final polyglot.frontend.Pass.ID EVALUATE_PATTERNS = new polyglot.frontend.Pass.ID("evaluate-patterns");
+    public static final polyglot.frontend.Pass.ID TEST_PATTERNS = new polyglot.frontend.Pass.ID("test-patterns");
+
     public static final polyglot.frontend.Pass.ID CLEAN_DECLARE = new polyglot.frontend.Pass.ID("clean-declare");
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
 
     public static final polyglot.frontend.Pass.ID GOING_TO_JIMPLIFY = new polyglot.frontend.Pass.ID("going-to-jimplify");
     public static final polyglot.frontend.Pass.ID JIMPLIFY = new polyglot.frontend.Pass.ID("jimplify");
+
+    public PCStructure hierarchy;
+    public PatternMatcher pattern_matcher;
+
+    // For temporary compatibility
+    public ExtensionInfo() {
+	this(new PCStructure());
+    }
+
+    public ExtensionInfo(PCStructure hierarchy) {
+	this.hierarchy = hierarchy;
+	this.pattern_matcher = new PatternMatcher(hierarchy);
+    }
 
     static {
         // force Topics to load
@@ -66,8 +83,14 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(Pass.CLEAN_SUPER, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SUPER)));
 	l.add(new BarrierPass(Pass.CLEAN_SUPER_ALL, job));
+
+	// Pattern and declare parents stuff
 	//	l.add(new VisitorPass(CLEAN_DECLARE, job,
         //                      new AmbiguityRemover(job, ts, nf, DeclareParentsAmbiguityRemover.DECLARE)));
+	l.add(new VisitorPass(BUILD_HIERARCHY, job, new HierarchyBuilder(hierarchy)));
+	l.add(new VisitorPass(EVALUATE_PATTERNS, job, new NamePatternEvaluator(this)));
+	l.add(new VisitorPass(TEST_PATTERNS, job, new PatternTester(this)));
+
 	l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));
 	l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));

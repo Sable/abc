@@ -11,11 +11,11 @@ import polyglot.ext.jl.ast.Node_c;
 
 public class ClassTypeDotId_c extends Node_c implements ClassTypeDotId
 {
-    protected TypePatternExpr base;
+    protected ClassnamePatternExpr base;
     protected SimpleNamePattern name;
    
     public ClassTypeDotId_c(Position pos, 
-			    TypePatternExpr base,
+			    ClassnamePatternExpr base,
 			    SimpleNamePattern name)  {
 	super(pos);
         this.base = base;

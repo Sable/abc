@@ -6,6 +6,7 @@ import polyglot.types.Flags;
 import polyglot.types.Package;
 import polyglot.types.Type;
 import polyglot.types.Qualifier;
+import polyglot.types.SemanticException;
 import polyglot.util.*;
 import java.util.*;
 import arc.aspectj.ast.*;
@@ -17,6 +18,12 @@ import polyglot.ext.jl.parse.Name;
 public class AspectJNodeFactory_c 
        extends soot.javaToJimple.jj.ast.JjNodeFactory_c 
        implements AspectJNodeFactory {
+
+    public ClassnamePatternExpr constructClassnamePatternFromTypePattern(TypePatternExpr tpe) throws SemanticException {
+	return tpe.transformToClassnamePattern(this);
+    }
+
+
     public  AspectDecl AspectDecl(Position pos,
                                   boolean privileged,
                                   Flags flags,
@@ -307,6 +314,10 @@ public class AspectJNodeFactory_c
 	return new DotDotNamePattern_c(pos,init);
     }
 
+    public CPEUniversal CPEUniversal(Position pos) {
+	return new CPEUniversal_c(pos);
+    }
+
     public CPEBinary CPEBinary(Position pos,
 			       ClassnamePatternExpr left,
 			       CPEBinary.Operator op,
@@ -327,6 +338,10 @@ public class AspectJNodeFactory_c
 	return new CPESubName_c(pos,pat);
     }
 
+    public TPEUniversal TPEUniversal(Position pos) {
+	return new TPEUniversal_c(pos);
+    }
+
     public TPEBinary TPEBinary(Position pos,
 			       TypePatternExpr left,
 			       TPEBinary.Operator op,
@@ -339,20 +354,24 @@ public class AspectJNodeFactory_c
 	return new TPENot_c(pos,expr);
     }
 
-    public TPEType TPEType(Position pos, TypeNode type, Integer dims) {
-	return new TPEType_c(pos,type,dims);
+    public TPEType TPEType(Position pos, TypeNode type) {
+	return new TPEType_c(pos,type);
+    }
+
+    public TPEArray TPEArray(Position pos, TypePatternExpr base, int dims) {
+	return new TPEArray_c(pos,base,dims);
     }
 
     public TPERefTypePat TPERefTypePat(Position pos, RefTypePattern pat) {
 	return new TPERefTypePat_c(pos,pat);
     }
 
-    public RTPName RTPName(Position pos, NamePattern pat, Integer dims) {
-	return new RTPName_c(pos,pat,dims);
+    public RTPName RTPName(Position pos, NamePattern pat) {
+	return new RTPName_c(pos,pat);
     }
 
-    public RTPSubName RTPSubName(Position pos, NamePattern pat, Integer dims){
-	return new RTPSubName_c(pos,pat,dims);
+    public RTPSubName RTPSubName(Position pos, NamePattern pat){
+	return new RTPSubName_c(pos,pat);
     }
 
     public MethodPattern MethodPattern(Position pos,
@@ -390,13 +409,13 @@ public class AspectJNodeFactory_c
     }
 
     public ClassTypeDotId ClassTypeDotId(Position pos, 
-					 TypePatternExpr base,
+					 ClassnamePatternExpr base,
 					 SimpleNamePattern name) {
 	return new ClassTypeDotId_c(pos,base,name);
     }
 
     public ClassTypeDotNew ClassTypeDotNew(Position pos,
-					   TypePatternExpr base) {
+					   ClassnamePatternExpr base) {
 	return new ClassTypeDotNew_c(pos,base);
     }
 

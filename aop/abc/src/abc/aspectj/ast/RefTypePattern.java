@@ -3,13 +3,15 @@ package arc.aspectj.ast;
 import arc.aspectj.visit.*;
 
 import polyglot.ast.Node;
+import polyglot.types.SemanticException;
 
 public interface RefTypePattern extends Node
 {
     /* new stuff to be added */
 
-    public boolean matchesClass(PCNode context, PCNode cl);
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl);
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim);
+    public boolean matchesArray(PatternMatcher matcher);
 
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException;
 }

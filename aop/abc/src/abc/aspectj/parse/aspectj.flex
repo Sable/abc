@@ -183,8 +183,8 @@ import soot.javaToJimple.jj.DPosition;
     }
 
     /* ---- added for id patterns, needed in Pointcuts  --- */
-    private Token idpattern() {
-        /* System.out.println("ID pattern: " + yytext()); */
+    private Token id_pattern() {
+	//System.out.println("ID pattern: " + yytext());
         lastTokenWasDot = false;
         return new Identifier(pos(), yytext(), sym.IDENTIFIERPATTERN);
     }
@@ -283,7 +283,7 @@ Identifier = [:jletter:][:jletterdigit:]*
 
 /* Used in pointcut names */
 IdentifierPattern = 
-   ( "*" | [:jletter:] ) ( "*" | [:jletterdigit:] )*
+    ( "*" | [:jletter:] ) ( "*" | [:jletterdigit:] )*
 
 /* integer literals */
 DecIntegerLiteral =  (0 | [1-9][0-9]*)
@@ -725,20 +725,21 @@ SingleCharacter = [^\r\n\'\\]
   "&&"                           { return op(sym.PC_ANDAND); }
   "||"                           { return op(sym.PC_OROR); }
   "+"                            { return op(sym.PC_PLUS); }
+  "*"                            { return op(sym.PC_MULT); }
 
 
-/* Note that if both Identifier and Identifer Pattern match, then
+/* Note that if both Identifier and Name Pattern match, then
    Identifier will be chosen first, since it is an earlier rule.
 */
   {Identifier}                   { return id(); }  
 
-/* Identifier patterns,  to handle things like ..foo *foo *1a and so on. 
+/* Identifier patterns,  to handle things like foo.. *foo *1a and so on.
    We don't want to parse them further because it is certainly meaningful
    to say things like *if*while*for  and we don't want to have to include
    reserved words explicitly.
 */
   
-  {IdentifierPattern}            { return idpattern(); }
+  {IdentifierPattern}      { return id_pattern(); }
 }
 
 

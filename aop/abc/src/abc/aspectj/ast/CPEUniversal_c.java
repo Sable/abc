@@ -9,26 +9,21 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
-public class CPEName_c extends ClassnamePatternExpr_c 
-                       implements CPEName
+public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUniversal
 {
-    protected NamePattern pat;
-
-    public CPEName_c(Position pos, NamePattern pat)  {
+    public CPEUniversal_c(Position pos)  {
 	super(pos);
-        this.pat = pat;
     }
 
     public Precedence precedence() {
-	return Precedence.LITERAL;
+	return Precedence.UNARY;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-	print(pat,w,tr);
+	w.write("*");
     }
 
     public boolean matches(PatternMatcher matcher, PCNode cl) {
-	return matcher.getMatches(pat).contains(cl);
+	return true;
     }
-
 }

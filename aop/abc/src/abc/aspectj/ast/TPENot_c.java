@@ -27,19 +27,25 @@ public class TPENot_c extends TypePatternExpr_c implements TPENot
         printSubExpr(tpe, true, w, tr);
     }
 
-    public boolean matchesClass(PCNode context, PCNode cl) {
-	return !tpe.matchesClass(context, cl);
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
+	return !tpe.matchesClass(matcher, cl);
     }
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
-	return !tpe.matchesClassArray(context, cl, dim);
+    public boolean matchesClassArray(PatternMatcher matcher, PCNode cl, int dim) {
+	return !tpe.matchesClassArray(matcher, cl, dim);
     }
 
-    public boolean matchesPrimitive(String prim) {
-	return !tpe.matchesPrimitive(prim);
+    public boolean matchesPrimitive(PatternMatcher matcher, String prim) {
+	return !tpe.matchesPrimitive(matcher, prim);
     }
 
-    public boolean matchesPrimitiveArray(String prim, int dim) {
-	return !tpe.matchesPrimitiveArray(prim, dim);
+    public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim) {
+	return !tpe.matchesPrimitiveArray(matcher, prim, dim);
     };
+
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+	ClassnamePatternExpr cpe = tpe.transformToClassnamePattern(nf);
+	return nf.CPENot(position, cpe);
+    }
+
 }

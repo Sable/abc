@@ -16,12 +16,14 @@ public interface TypePatternExpr extends Node
     void printSubExpr(TypePatternExpr expr, boolean associative,
                       CodeWriter w, PrettyPrinter pp);
 
-    public boolean matchesClass(PCNode context, PCNode cl);
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl);
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim);
+    public boolean matchesClassArray(PatternMatcher matcher, PCNode cl, int dim);
 
-    public boolean matchesPrimitive(String prim);
+    public boolean matchesPrimitive(PatternMatcher matcher, String prim);
 
-    public boolean matchesPrimitiveArray(String prim, int dim);
+    public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim);
+
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException;
 }
 

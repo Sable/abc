@@ -28,8 +28,8 @@ public class CPESubName_c extends ClassnamePatternExpr_c
 	w.write("+");
     }
 
-    public boolean matches(PCNode context, PCNode cl) {
-	Set pat_matches = pat.match(context);
+    public boolean matches(PatternMatcher matcher, PCNode cl) {
+	Set pat_matches = matcher.getMatches(pat);
 	if (pat_matches.contains(cl)) {
 	    return true;
 	}

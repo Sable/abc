@@ -27,8 +27,8 @@ public class DotDotNamePattern_c extends NamePattern_c
 	// Print one extra dot here - that makes two of them.
     }
 
-     public Set/*<PCNode>*/ match(PCNode context) {
-	Set/*<PCNode>*/ matches = init.match(context);
+     public Set/*<PCNode>*/ match(PCNode context, Set/*<PCNode>*/ classes, Set/*<PCNode>*/ packages) {
+	Set/*<PCNode>*/ matches = init.match(context, classes, packages);
 	LinkedList worklist = new LinkedList(matches);
 	while (!worklist.isEmpty()) {
 	    PCNode n = (PCNode)worklist.removeFirst();
@@ -44,5 +44,8 @@ public class DotDotNamePattern_c extends NamePattern_c
 	return matches;
     }
 
+    public boolean universal() {
+	return false;
+    }
 
 }

@@ -36,44 +36,56 @@ public class TPEBinary_c extends TypePatternExpr_c
 	printSubExpr(right, false, w, tr);
     }
 
-    public boolean matchesClass(PCNode context, PCNode cl) {
+    public boolean matchesClass(PatternMatcher matcher, PCNode cl) {
 	if (op == COND_OR) {
-	    return left.matchesClass(context, cl) || right.matchesClass(context, cl);
+	    return left.matchesClass(matcher, cl) || right.matchesClass(matcher, cl);
 	}
 	if (op == COND_AND) {
-	    return left.matchesClass(context, cl) && right.matchesClass(context, cl);
+	    return left.matchesClass(matcher, cl) && right.matchesClass(matcher, cl);
 	}
-	throw new RuntimeException("Illegal CPE op");
+	throw new RuntimeException("Illegal TPE op");
     }
 
-    public boolean matchesClassArray(PCNode context, PCNode cl, int dim) {
+    public boolean matchesClassArray(PatternMatcher matcher, PCNode cl, int dim) {
 	if (op == COND_OR) {
-	    return left.matchesClassArray(context, cl, dim) || right.matchesClassArray(context, cl, dim);
+	    return left.matchesClassArray(matcher, cl, dim) || right.matchesClassArray(matcher, cl, dim);
 	}
 	if (op == COND_AND) {
-	    return left.matchesClassArray(context, cl, dim) && right.matchesClassArray(context, cl, dim);
+	    return left.matchesClassArray(matcher, cl, dim) && right.matchesClassArray(matcher, cl, dim);
 	}
-	throw new RuntimeException("Illegal CPE op");
+	throw new RuntimeException("Illegal TPE op");
     }
 
-    public boolean matchesPrimitive(String prim) {
+    public boolean matchesPrimitive(PatternMatcher matcher, String prim) {
 	if (op == COND_OR) {
-	    return left.matchesPrimitive(prim) || right.matchesPrimitive(prim);
+	    return left.matchesPrimitive(matcher, prim) || right.matchesPrimitive(matcher, prim);
 	}
 	if (op == COND_AND) {
-	    return left.matchesPrimitive(prim) && right.matchesPrimitive(prim);
+	    return left.matchesPrimitive(matcher, prim) && right.matchesPrimitive(matcher, prim);
 	}
-	throw new RuntimeException("Illegal CPE op");
+	throw new RuntimeException("Illegal TPE op");
     }
 
-    public boolean matchesPrimitiveArray(String prim, int dim) {
+    public boolean matchesPrimitiveArray(PatternMatcher matcher, String prim, int dim) {
 	if (op == COND_OR) {
-	    return left.matchesPrimitiveArray(prim, dim) || right.matchesPrimitiveArray(prim, dim);
+	    return left.matchesPrimitiveArray(matcher, prim, dim) || right.matchesPrimitiveArray(matcher, prim, dim);
 	}
 	if (op == COND_AND) {
-	    return left.matchesPrimitiveArray(prim, dim) && right.matchesPrimitiveArray(prim, dim);
+	    return left.matchesPrimitiveArray(matcher, prim, dim) && right.matchesPrimitiveArray(matcher, prim, dim);
 	}
-	throw new RuntimeException("Illegal CPE op");
+	throw new RuntimeException("Illegal TPE op");
+    }
+
+    public ClassnamePatternExpr transformToClassnamePattern(AspectJNodeFactory nf) throws SemanticException {
+	ClassnamePatternExpr cpe1 = left.transformToClassnamePattern(nf);
+	ClassnamePatternExpr cpe2 = right.transformToClassnamePattern(nf);
+	if (op == COND_OR) {
+	    return nf.CPEBinary(position, cpe1, CPEBinary.COND_OR, cpe2);
+	}
+	if (op == COND_AND) {
+	    return nf.CPEBinary(position, cpe1, CPEBinary.COND_AND, cpe2);
+	}
+	throw new RuntimeException("Illegal TPE op");
     }
 
 }
