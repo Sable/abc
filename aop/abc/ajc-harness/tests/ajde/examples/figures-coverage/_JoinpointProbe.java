@@ -1,3 +1,0 @@
-aspect JoinpointProbe { 
-before(): null
-{ } }

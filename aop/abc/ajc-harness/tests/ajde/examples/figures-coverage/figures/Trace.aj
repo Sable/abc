@@ -1,4 +1,0 @@
-
-aspect Trace {
-
-}

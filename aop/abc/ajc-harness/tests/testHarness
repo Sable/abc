@@ -1,4 +1,0 @@
-#!/bin/sh
-
-java -Xmx256M -Dabc.compiler.rootdir=$2 org.aspectj.testing.Harness -logMinAll $1
-
