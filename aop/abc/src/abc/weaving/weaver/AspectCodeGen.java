@@ -266,7 +266,7 @@ public class AspectCodeGen {
 		// add nop before return
 		units.insertBefore(nop,s);
 		// add the try ... catch
-                b.getTraps().
+                b2.getTraps().
 		  add(Jimple.v().
 		        newTrap(Scene.v().getSootClass("java.lang.Throwable"),
 			invokepostClinit,goto_s,exceptionidentity));

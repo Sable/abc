@@ -66,9 +66,12 @@ public class PointcutCodeGen {
 	 case 2: // ----------------------- PASS 2 ----------------
 	 // if no advice list for this method, nothing to do
 	 if ( (adviceList == null) || 
-	      (!adviceList.hasInitializationAdvice() && 
-	       !adviceList.hasPreinitializationAdvice())
-	    )
+	      ( !adviceList.hasInitializationAdvice() && 
+	        !adviceList.hasPreinitializationAdvice()
+              )  ||
+	     // FIXME: shouldn't need this check
+	     (!method.getName().equals("<init>"))
+	    ) 
            { debug("No init or preinit advice for method " + method.getName());
 	     continue;
 	   }
