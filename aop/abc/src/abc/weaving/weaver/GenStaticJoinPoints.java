@@ -122,7 +122,7 @@ public class GenStaticJoinPoints {
 
         // make sure the Factory class is loaded in Soot
         if (!factory_loaded)
-          {  Scene.v().loadClassAndSupport(
+          {  Scene.v().getSootClass(
 	             "abc.runtime.reflect.AbcFactory");
              factory_loaded = true;
            }

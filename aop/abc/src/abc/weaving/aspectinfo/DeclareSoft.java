@@ -73,7 +73,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
 	Chain units=new HashChain();
 
-	SootClass soft=Scene.v().loadClassAndSupport("org.aspectj.lang.SoftException");
+	SootClass soft=Scene.v().getSootClass("org.aspectj.lang.SoftException");
 
 	Value ex=((SingleValueWeavingContext) wc).value;
 	Local softexc=localgen.generateLocal(soft.getType(),"softexception");

@@ -147,7 +147,7 @@ public class ShadowPoints {
 	constrArgs.add(argsVal);
 	
 	
-	SootClass factoryclass=Scene.v().loadClassAndSupport
+	SootClass factoryclass=Scene.v().getSootClass
 	    ("org.aspectj.runtime.reflect.Factory");
 	
 	Stmt makeJP=Jimple.v().newAssignStmt
