@@ -942,7 +942,7 @@ classtype_dot_new ::=
            RESULT = parser.nf.ClassTypeDotNew(parser.pos(a,y),cpe);
         :}
   |  name_pattern:a PC_DOTDOT:d NEW:y 
-        {: Grm.parserTrace("classtype_dot_new is np . NEW");
+        {: Grm.parserTrace("classtype_dot_new is np .. NEW");
 	   ClassnamePatternExpr cpe;
 	   if (a.universal()) {
 	       cpe = parser.nf.CPEUniversal(parser.pos(a));
@@ -1159,7 +1159,7 @@ modifier_pattern_expr ::=
        :}
   |  modifier_pattern_expr:a PC_NOT:c modifier:b
        {: Grm.parserTrace("another modifier is NOT" + b);
-          a.add(parser.nf.ModifierPattern(parser.pos(c),b,true)); 
+          a.add(parser.nf.ModifierPattern(parser.pos(c),b,false)); 
           RESULT = a;
        :}
   ;

@@ -159,8 +159,18 @@ public class PatternMatcher {
 	}
     }
 
-    public boolean matchesModifiers(List /*<ModifierPattern>*/ mods, soot.ClassMember thing) {
-	// FIXME
+    public boolean matchesModifiers(List /*<ModifierPattern>*/ modps, soot.ClassMember thing) {
+	int thing_mods = thing.getModifiers();
+	Iterator modpi = modps.iterator();
+	while (modpi.hasNext()) {
+	    ModifierPattern modp = (ModifierPattern)modpi.next();
+	    int mods = soot.javaToJimple.Util.getModifier(modp.modifier());
+	    if (modp.positive()) {
+		if ((mods & thing_mods) == 0) return false;
+	    } else {
+		if ((mods & thing_mods) != 0) return false;
+	    }
+	}
 	return true;
     }
 
