@@ -708,7 +708,7 @@ public class AspectCodeGen {
 	SootField perCflowStack;
 
 	SootClass stackClass=Scene.v()
-	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	    .getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	RefType stackType=stackClass.getType();
 
 	perCflowStack=new SootField("abc$perCflowStack",stackType,
@@ -754,7 +754,7 @@ public class AspectCodeGen {
 	Chain units = b.getUnits(); 
 	
 	SootClass stackClass=Scene.v()
-	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	    .getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	RefType stackType=stackClass.getType();
 
 	SootField perCflowStack=cl.getFieldByName("abc$perCflowStack");
@@ -787,7 +787,7 @@ public class AspectCodeGen {
 	Chain units = b.getUnits(); 
 
 	SootClass stackClass=Scene.v()
-	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	    .getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	RefType stackType=stackClass.getType();
 	
 	SootField perCflowStack=cl.getFieldByName("abc$perCflowStack");
@@ -817,7 +817,7 @@ public class AspectCodeGen {
     /** create method public static void abc$perCflowPush() */
     private void genPerCflowPushMethod(SootClass aspct) {
 	SootClass stackClass=Scene.v()
-	    .loadClassAndSupport("org.aspectj.runtime.internal.CFlowStack");
+	    .getSootClass("org.aspectj.runtime.internal.CFlowStack");
 	RefType stackType=stackClass.getType();
 
 	Type object=Scene.v().getSootClass("java.lang.Object").getType();

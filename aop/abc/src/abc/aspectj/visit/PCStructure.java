@@ -117,7 +117,7 @@ public class PCStructure {
 
 	autosootify = true;
 
-	Iterator sci = Scene.v().getClasses().iterator();
+	Iterator sci = Scene.v().resolvedClasses().iterator();
 	while (sci.hasNext()) {
 	    SootClass sc = (SootClass)sci.next();
 	    insertClassAndSuperclasses(sc, false);

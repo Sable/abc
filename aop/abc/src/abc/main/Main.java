@@ -521,9 +521,19 @@ public class Main {
     public void initSoot() throws IllegalArgumentException {
 	Scene.v().setSootClassPath(classpath);
 
-	Scene.v().loadClassAndSupport("java.lang.Thread");
-	Scene.v().loadClassAndSupport("java.lang.Runnable");
-	Scene.v().loadClassAndSupport("java.lang.Cloneable");
+	Scene.v().addBasicClass("org.aspectj.runtime.internal.CFlowStack");
+	Scene.v().addBasicClass("org.aspectj.runtime.reflect.Factory");
+	Scene.v().addBasicClass("org.aspectj.lang.JoinPoint");
+	Scene.v().addBasicClass("org.aspectj.lang.JoinPoint$StaticPart");
+	Scene.v().addBasicClass("org.aspectj.lang.SoftException");
+	Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException");
+	Scene.v().addBasicClass("abc.runtime.internal.CFlowCounter");
+	Scene.v().addBasicClass("abc.runtime.reflect.AbcFactory");
+
+	// FIXME: make ClassLoadException in soot, and catch it here 
+	// and check what was wrong
+
+	Scene.v().loadBasicClasses();
 
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
         //System.out.println(classpath);
