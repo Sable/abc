@@ -31,26 +31,29 @@ import abc.weaving.aspectinfo.AccessorSet;
 import abc.weaving.aspectinfo.AccessorDispatch;
 import abc.weaving.aspectinfo.AccessorQualSpecial;
 
-/**
+/** Container class for storing accessor methods related to an aspect.
+ * 
+ * AccessorDecl has an instance of this as a member.
+ * 
+ * We have several kinds of accessor methods - field getter and setter methods, method dispatch accessors,
+ * and methods to access the this pointer of textually enclosing classes.
+ * 
+ * You can create an accessor method (or obtain an existing one, if it was created earlier) by calling
+ * one of the <code>accessor*()</code> methods with the appropriate arguments. Most things are taken care
+ * of automatically - methods are registered with MethodCategory using the right values etc. The only
+ * thing that needs to be done is to invoke <code>addAllSootMethods()</code> from the inter-type adjuster
+ * in order to insert the method bodies into the corresponding classes. 
+ * 
  * @author pavel
- *
- * Base class for several classes that replace member accesses with calls to accessor methods,
- * which are generated. Two examples are references to super.{member} in advice code, and references
- * to members which would normally not be visible from privileged aspects (and nested classes/aspects).
- * 
- * We distinguish three types of accessor methods - getters, setters and dispatchers. Get/Set methods
- * are needed for the obvious operations on fields. Their return type is the type of the field, getter
- * methods take no arguments, setter methods take a single argument - the new value of the field. 
- * Dispatchers are a public wrapper around methods that wouldn't normally be visible. They take the same
- * arguments as the method they're wrapped around, and return the same type.
- * 
- * In this class, we maintain lists of the accessor methods of all three types, plus accessor methods for
- * qualified 'this' references.
  */
 public class AccessorMethods {
     /**
      * Subclasses should override this to alter how names are generated. For example, for a "Get" accessor
      * method, the name will be a unique ID based on "get$" + tag() + "$" + {fieldname}.
+     * 
+     * ...although this behaviour is somewhat deprecated, as all accessors are created in this class.
+     * Perhaps we should have a "tag" argument to the accessor* calls, so that we can have
+     * get$super$f() and get$privileged$f() - it's certainly not important, though.
      */
     protected String tag() {
         return "accessor"; 
