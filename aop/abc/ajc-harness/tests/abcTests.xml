@@ -4535,7 +4535,7 @@
 
     <ajc-test num="520" dir="new" pr="544"
       title="advice formals produce errors just like method formals"
-      abcomment="we give up in each method after finding the first error"
+      abccomment="we give up in each method after finding the first error"
       keywords="from-resolved_10x">
         <compile files="AdviceFormalsCf.java">
             <ajcmessage kind="error" line="28"/>
@@ -5301,7 +5301,7 @@
 
     <ajc-test num="614" dir="new"
       title="after returning from initialization and after executing constructor"
-      abccomments="we don't support target as a variable name in pointcuts"
+      abccomment="we don't support target as a variable name in pointcuts"
       keywords="from-resolved_104">
         <abckeywords><skip/></abckeywords>
         <compile files="ConstructorExecInit.java"/>
@@ -5309,7 +5309,7 @@
     </ajc-test>
     
     <ajc-test num="615" dir="new"
-      abccomments="we don't support target as a variable name in pointcuts"
+      abccomment="we don't support target as a variable name in pointcuts"
       title="after returning from initialization causes ExceptionInInitializer in aspect">
         <abckeywords><skip/></abckeywords>
         <compile files="ConstructorExecInitFails.java"/>
