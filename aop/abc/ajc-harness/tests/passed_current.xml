@@ -251,6 +251,10 @@
         <compile files="BoundaryNums.java"></compile>
         <run class="BoundaryNums"></run>
     </ajc-test>
+<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
+        <compile files="NestedInners.java"></compile>
+        <run class="NestedInners"></run>
+    </ajc-test>
 <ajc-test title="?: expressions should typecheck in interesting ways" keywords="from-java" dir="pureJava">
         <compile files="TriTestTypecheck.java"></compile>
         <run class="TriTestTypecheck"></run>
@@ -2006,10 +2010,6 @@
         <compile files="Privileged.java"></compile>
         <run class="Privileged"></run>
     </ajc-test>
-<ajc-test title="privileged aspects" keywords="from-resolved_10x" dir="new/privilegedAspects">
-        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
-        <run class="main.Main"></run>
-    </ajc-test>
 <ajc-test title="advice on field gets in privileged aspects" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnPrivileged.java"></compile>
         <run class="AdviceOnPrivileged"></run>
@@ -2157,10 +2157,6 @@
 <ajc-test title="Basic test for cflow pointcuts [eachcflow]" keywords="from-resolved_10x" dir="new">
         <compile files="CFlowPoints.java"></compile>
         <run class="CFlowPoints"></run>
-    </ajc-test>
-<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" keywords="from-resolved_10x" dir="new">
-        <compile files="Fixes.java"></compile>
-        <run class="Fixes"></run>
     </ajc-test>
 <ajc-test title="Dave Binkley's problem with eachcflowroot. [eachcflow]" keywords="from-resolved_10x" dir="new">
         <compile files="Binkley2.java"></compile>
@@ -3395,11 +3391,6 @@
 <ajc-test title="Introduced abstract method on interface not implemented by subtype (weave altogether)" pr="49784" dir="bugs/abstractMethods">
         <compile files="interface/C.java,interface/A.java,interface/B.java"></compile>
         <run class="C"></run>
-    </ajc-test>
-<ajc-test title="Introduced abstract method on interface not implemented by subtype (injars)" pr="49784" dir="bugs/abstractMethods">
-       <compile files="interface/C.java,interface/jars/AandB.jar"> 
-            <message line="1" kind="error"></message>
-        </compile>
     </ajc-test>
 <ajc-test title="Introduced abstract method on abstract class not implemented by subtype (single source file)" pr="49784" dir="bugs/abstractMethods" abccomment="abc gives message at intertype decl rather than class. ODM July 14,2004">
         <compile files="singlesource/C.java">

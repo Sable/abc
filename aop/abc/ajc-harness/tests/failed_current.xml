@@ -3,10 +3,6 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
-<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
-        <compile files="NestedInners.java"></compile>
-        <run class="NestedInners"></run>
-    </ajc-test>
 <ajc-test title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" keywords="from-java" dir="pureJava">
         <compile files="MisplacedThisInAnnonymousInnerClasses.java"></compile>
         <run class="MisplacedThisInAnnonymousInnerClasses"></run>
@@ -260,6 +256,10 @@
         <compile files="FieldInitializerJoinPoints.java"></compile>
         <run class="FieldInitializerJoinPoints"></run>
     </ajc-test>
+<ajc-test title="privileged aspects" keywords="from-resolved_10x" dir="new/privilegedAspects">
+        <compile files="main/Main.java,fish/PrivateClass.java,fish/B.java,fowl/C.java,fowl/D.java"></compile>
+        <run class="main.Main"></run>
+    </ajc-test>
 <ajc-test title="basic tests for initializer and staticinitializer PCDs" keywords="from-resolved_10x" dir="new">
         <compile files="InitializerTest.java"></compile>
         <run class="InitializerTest"></run>
@@ -287,6 +287,10 @@
 <ajc-test title="Crashing when looking up the type of array members." keywords="from-resolved_10x" dir="new">
         <compile files="ArrayCasts.java"></compile>
         <run class="ArrayCasts"></run>
+    </ajc-test>
+<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" keywords="from-resolved_10x" dir="new">
+        <compile files="Fixes.java"></compile>
+        <run class="Fixes"></run>
     </ajc-test>
 <ajc-test title="advice on an inherited method" pr="105" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnInheritedMethod.java"></compile>
@@ -1005,6 +1009,11 @@
         <compile files="AfterThrowingCtor.java">
         </compile>
   		<run class="AfterThrowingCtor"></run>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on interface not implemented by subtype (injars)" pr="49784" dir="bugs/abstractMethods">
+       <compile files="interface/C.java,interface/jars/AandB.jar"> 
+            <message line="1" kind="error"></message>
+        </compile>
     </ajc-test>
  
 </suite>
