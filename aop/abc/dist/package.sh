@@ -35,7 +35,11 @@ rm -rf package/abc-$VERSION
 
 mkdir -p package/abc-$VERSION
 mkdir -p package/abc-$VERSION/bin
-cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ src/ runtime-src/ testing-src/ ajc-harness/ javadoc/ runtime-javadoc/ package/abc-$VERSION/
+cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ \
+      src/ runtime-src/ testing-src/ generated/ \
+      ajc-harness/ javadoc/ runtime-javadoc/ \
+      dist/abc-for-ajc-ant/ \
+      package/abc-$VERSION/
 cp dist/abc package/abc-$VERSION/bin/
 cp dist/abc.bat package/abc-$VERSION/bin/
 
@@ -51,11 +55,17 @@ BINS="\
 
 SRCS="\
    abc-$VERSION/build.xml \
+   abc-$VERSION/CREDITS \
+   abc-$VERSION/LESSER-GPL \
+   abc-$VERSION/CPL \
+   abc-$VERSION/LICENSING \
    abc-$VERSION/ant.settings.template \
    abc-$VERSION/src/ \
+   abc-$VERSION/generated/ \
    abc-$VERSION/runtime-src/ \
    abc-$VERSION/testing-src/ \
    abc-$VERSION/ajc-harness/ \
+   abc-$VERSION/dist/abc-for-ajc-ant/ \
 "
 
 
@@ -67,6 +77,7 @@ tar --exclude-from ../dist/tar-excludes -czvf abc-$VERSION-src.tar.gz $SRCS
 rm -rf soot-dev-$DATE/
 rm -f soot-dev-$DATE.tar.gz soot-dev-$DATE.zip
 svn export /usr/local/src/soot-dev soot-dev-$DATE
+find soot-dev-$DATE/generated/ -name \*.java -exec touch {} \;
 tar -czvf soot-dev-$DATE.tar.gz soot-dev-$DATE/
 
 rm -rf jasmin-dev-$DATE/
@@ -79,7 +90,7 @@ rm -f polyglot-dev-$DATE.tar.gz polyglot-dev-$DATE.zip
 cp -a /usr/local/src/polyglot-dev ./polyglot-dev-$DATE
 # only a rough approximation of what's needed...
 tar --exclude CVS --exclude update.sh --exclude lib/ --exclude classes/ \
-    --exclude cup-classes/ --exclude \*.class \
+    --exclude cup-classes/ --exclude \*.class --exclude lib/*.jar \
     -czvf polyglot-dev-$DATE.tar.gz polyglot-dev-$DATE/
 
 for d in abc-$VERSION-bin abc-$VERSION-src soot-dev-$DATE polyglot-dev-$DATE \

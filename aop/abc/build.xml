@@ -16,26 +16,30 @@
     <target name="jars" 
             depends="abc-jar,runtime-jar,testing-jar,complete-jar,abc-for-ajc-ant-jar"/>
 
-    <target name="copy-jars" depends="settings">
+    <target name="copy-jars" depends="settings,libdir">
         <copy file="${polyglot.loc}" tofile="lib/polyglot.jar" />
         <copy file="${polyglot.cupclasses.loc}" tofile="lib/java_cup.jar" />
         <copy file="${soot.loc}" tofile="lib/sootclasses.jar" />
         <copy file="${jasmin.loc}" tofile="lib/jasminclasses-sable-nocup.jar" />
     </target>
 
-    <target name="abc-for-ajc-ant-jar" depends="settings">
+    <target name="abc-for-ajc-ant-jar" depends="settings,libdir">
        <jar destfile="lib/abc-for-ajc-ant.jar">
            <fileset dir="dist/abc-for-ajc-ant"/>
        </jar>
     </target>
 
-    <target name="abc-jar" depends="settings,abc">
+    <target name="libdir">
+       <mkdir dir="lib"/>
+    </target>
+
+    <target name="abc-jar" depends="settings,abc,libdir">
         <jar destfile="lib/abc.jar">
             <fileset dir="classes"/>
         </jar>
     </target>
     
-    <target name="runtime-jar" depends="settings,runtime">
+    <target name="runtime-jar" depends="settings,runtime,libdir">
         <jar destfile="lib/abc-runtime.jar">
             <fileset dir="runtime-classes"/>
         </jar>
@@ -53,7 +57,7 @@
         </javac>
     </target>
 
-    <target name="testing-jar" depends="settings,testing">
+    <target name="testing-jar" depends="settings,testing,libdir">
         <jar destfile="lib/abc-testing.jar">
             <fileset dir="testing-classes"/>
             <zipfileset src="ajc-harness/lib/abc-testing-ajc-part.jar"/>
@@ -80,7 +84,7 @@
         </javac>
     </target>
 
-   <target name="complete-jar" depends="abc-jar">
+   <target name="complete-jar" depends="abc-jar,libdir">
         <jar destfile="lib/abc-complete.jar">
             <fileset dir="classes"/>
             <zipfileset src="${polyglot.loc}"/>
