@@ -6279,7 +6279,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test num="718" dir="new" pr="827"
+    <ajc-test num="71801" dir="new" pr="827"
       abccomment="abc doesn't support 'before' as an identifier inside an aspect.
                 Cloned test case with different identifier name. PA"
       title="after returning advice on interface and implementation constructor"
@@ -6292,7 +6292,7 @@
     <ajc-test num="718" dir="abctests/new" pr="827"
       abccomment="abc doesn't support 'before' as an identifier inside an aspect.
                 Cloned test case with different identifier name. PA"
-      title="after returning advice on interface and implementation constructor"
+      title="after returning advice on interface and implementation constructor - fixed"
       keywords="tofix">
         <compile files="AfterReturningConstructor.java"/>
         <run class="AfterReturningConstructor"/>
