@@ -106,12 +106,7 @@ public class Main {
         } catch (CompilerFailedException e) {
             System.out.println(e.getMessage());
             System.exit(5);
-	} catch(InternalCompilerError e) {
-	    // this clause is solely to avoid the next one matching
-	    throw e;
-        } catch(Throwable e) {
-	    throw new InternalCompilerError("unhandled exception during compilation",e);
-	}
+	} 
     }
     
   public Main(String[] args) throws IllegalArgumentException, CompilerAbortedException {
@@ -119,9 +114,10 @@ public class Main {
      v=this;
   }
 
+  boolean optflag=true;
+    
   public void parseArgs(String[] args) throws IllegalArgumentException, CompilerAbortedException {
     String outputdir=".";
-    boolean optflag=true;
     if (args.length == 0)
       { abcPrintVersion();
       	throw new CompilerAbortedException("No arguments provied.");
@@ -408,67 +404,74 @@ public class Main {
 
 
     public void run() throws CompilerFailedException {
-        //System.out.println(classpath);
-        // Timer start stuff
-        Date abcstart = new Date(); // wall clock time start
-        G.v().out.println("Abc started on " + abcstart);
+	try {
+	    // Timer start stuff
+	    Date abcstart = new Date(); // wall clock time start
+	    G.v().out.println("Abc started on " + abcstart);
 
-        if (soot.options.Options.v().time())
-          Timers.v().totalTimer.start(); // Soot timer start
+	    if (soot.options.Options.v().time())
+		Timers.v().totalTimer.start(); // Soot timer start
 
-        // Main phases
-
-        AbcTimer.start(); // start the AbcTimer
-
-        addJarsToClasspath();
-        initSoot();
-        AbcTimer.mark("Init. of Soot");
-
-        loadJars();
-        AbcTimer.mark("Loading Jars");
-
-        // if something to compile
-        compile(); // Timers marked inside compile()
-        // The compile method itself aborts if there is an error
-
-        if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty())
-          { weave();   // Timers marked inside weave()
+	    // Main phases
+	    
+	    AbcTimer.start(); // start the AbcTimer
+	    
+	    addJarsToClasspath();
+	    initSoot();
+	    AbcTimer.mark("Init. of Soot");
+	    
+	    loadJars();
+	    AbcTimer.mark("Loading Jars");
+	    
+	    // if something to compile
+	    compile(); // Timers marked inside compile()
+	    // The compile method itself aborts if there is an error
+	    
+	    if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty())
+		{ weave();   // Timers marked inside weave()
 	      
-            abortIfErrors();
+		abortIfErrors();
 
-            if(!abc.main.Debug.v().dontCheckExceptions) 
-              { checkExceptions();
-                AbcTimer.mark("Exceptions check");
-              }
+		if(!abc.main.Debug.v().dontCheckExceptions) 
+		    { checkExceptions();
+		    AbcTimer.mark("Exceptions check");
+		    }
         
-            abortIfErrors();
+		abortIfErrors();
+		
+		if (Debug.v().doValidate) validate();
+		AbcTimer.mark("Validate jimple");
+		
+		optimize();
 
-            if (Debug.v().doValidate) validate();
-            AbcTimer.mark("Validate jimple");
+		AbcTimer.mark("Soot Packs");
+		
+		output();
+		AbcTimer.mark("Soot Writing Output");
+		}
 
-            optimize();
+	    // Timer end stuff
+	    Date abcfinish = new Date(); // wall clock time finish
+	    G.v().out.print("Abc finished on " + abcfinish + ".");
+	    long runtime = abcfinish.getTime() - abcstart.getTime();
+	    G.v().out.println( " ( " + (runtime / 60000)
+			       + " min. " + ((runtime % 60000) / 1000) + " sec. )");
 
-            AbcTimer.mark("Soot Packs");
+	    // Print out Soot time stats, if Soot -time flag on.   
+	    if (soot.options.Options.v().time())
+		{ Timers.v().totalTimer.end();
+		Timers.v().printProfilingInformation();
+		}
 
-            output();
-            AbcTimer.mark("Soot Writing Output");
-          }
-
-        // Timer end stuff
-        Date abcfinish = new Date(); // wall clock time finish
-        G.v().out.print("Abc finished on " + abcfinish + ".");
-        long runtime = abcfinish.getTime() - abcstart.getTime();
-        G.v().out.println( " ( " + (runtime / 60000)
-                + " min. " + ((runtime % 60000) / 1000) + " sec. )");
-
-        // Print out Soot time stats, if Soot -time flag on.   
-        if (soot.options.Options.v().time())
-          { Timers.v().totalTimer.end();
-            Timers.v().printProfilingInformation();
-          }
-
-        // Print out abc timer information
-        AbcTimer.report();
+	    // Print out abc timer information
+	    AbcTimer.report();
+	} catch(CompilerFailedException e) {
+	    throw e;
+	} catch(InternalCompilerError e) {
+	    throw e;
+        } catch(Throwable e) {
+	    throw new InternalCompilerError("unhandled exception during compilation",e);
+	}
     }
 
     private void abortIfErrors() throws CompilerFailedException {
@@ -697,6 +700,11 @@ public class Main {
     }
 
     public void optimize(){
+	if(optflag)
+	    for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+		final AbcClass cl = (AbcClass) clIt.next();
+		abc.soot.util.NullEliminator.transform(cl.getSootClass());
+	    }
 	PackManager.v().runPacks();
     }
     
