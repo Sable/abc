@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import org.aspectj.lang.reflect.ConstructorSignature;
 
-class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorSignature {
+public class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorSignature {
     ConstructorSignatureImpl(int modifiers, Class declaringType, 
         Class[] parameterTypes, String[] parameterNames, Class[] exceptionTypes)
     {
@@ -29,7 +29,7 @@ class ConstructorSignatureImpl extends CodeSignatureImpl implements ConstructorS
     
     public String getName() { return "<init>"; }
     
-    String toString(StringMaker sm) {
+    public String toString(StringMaker sm) {
         StringBuffer buf = new StringBuffer();
         buf.append(sm.makeModifiersString(getModifiers()));
         buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));

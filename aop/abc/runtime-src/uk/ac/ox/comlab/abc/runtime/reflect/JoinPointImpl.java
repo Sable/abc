@@ -18,7 +18,7 @@ import org.aspectj.lang.*;
 
 import org.aspectj.lang.reflect.SourceLocation;
 
-class JoinPointImpl implements JoinPoint {
+public class JoinPointImpl implements JoinPoint {
     static class StaticPartImpl implements JoinPoint.StaticPart {
         String kind;
         Signature signature;

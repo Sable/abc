@@ -41,6 +41,7 @@ parser Grm extends abc.aspectj.parse.Grm {:
 // ------- new tokens ------------------------------
 
 terminal Token PC_CAST;
+terminal Token PC_THROW;
 terminal Token GLOBAL;
 
 // ------- new non-terminals -----------------------
@@ -53,7 +54,6 @@ non terminal GlobalPointcutDecl global_pointcut_decl;
 start with goal;
 
 extend basic_pointcut_expr ::=
-
         PRIVATE:x LPAREN formal_parameter_list_opt:a RPAREN LPAREN pointcut_expr:b RPAREN:y
         {:
             Grm.parserTrace("PRIVATE formal_parameter_list, pointcut_expr");
@@ -64,6 +64,18 @@ extend basic_pointcut_expr ::=
         {:
             Grm.parserTrace("CAST pointcut");
             RESULT = parser.nf.PCCast(parser.pos(x,y), a);
+        :}
+    |
+        PC_THROW:x LPAREN RPAREN:y
+        {:
+            Grm.parserTrace("THROW pointcut");
+            RESULT = parser.nf.PCThrow(parser.pos(x,y), parser.nf.TPEUniversal(parser.pos(x,y)));
+        :}
+    |
+        PC_THROW:x LPAREN type_pattern_expr:a RPAREN:y
+        {:
+            Grm.parserTrace("THROW pointcut with type_pattern_expr");
+            RESULT = parser.nf.PCThrow(parser.pos(x,y), a);
         :}
     ;
 

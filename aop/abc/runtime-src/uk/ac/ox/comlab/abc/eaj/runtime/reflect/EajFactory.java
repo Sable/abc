@@ -14,11 +14,8 @@
 
 package uk.ac.ox.comlab.abc.eaj.runtime.reflect;
 
-import uk.ac.ox.comlab.abc.eaj.lang.reflect.CastSignature;
+import uk.ac.ox.comlab.abc.eaj.lang.reflect.*;
 import uk.ac.ox.comlab.abc.runtime.reflect.Factory;
-
-import org.aspectj.lang.*;
-import org.aspectj.lang.reflect.*;
 
 public class EajFactory extends Factory
 {
@@ -36,6 +33,12 @@ public class EajFactory extends Factory
     
     public CastSignature makeCastSig(String stringRep) {
         CastSignatureImpl ret = new CastSignatureImpl(stringRep);
+        ret.setLookupClassLoader(lookupClassLoader);
+        return ret;
+    }
+    
+    public ThrowSignature makeThrowSig(String stringRep) {
+        ThrowSignatureImpl ret = new ThrowSignatureImpl(stringRep);
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
     }

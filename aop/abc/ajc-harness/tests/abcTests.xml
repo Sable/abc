@@ -9250,6 +9250,12 @@
        <run class="Cast"/>
     </ajc-test>
 
+    <ajc-test num="993" dir="abctests/eaj/throw_pointcut"
+        title="Try all advice types on the throw joinpoint">
+        <compile files="Throw.java" options="-ext,abc.eaj">
+            <message kind="warning" line="18" />
+        </compile>
+        <run class="Throw"/>
+    </ajc-test>
 
 </suite>
-

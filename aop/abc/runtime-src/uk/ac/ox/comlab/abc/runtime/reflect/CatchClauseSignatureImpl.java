@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import org.aspectj.lang.reflect.CatchClauseSignature;
 
-class CatchClauseSignatureImpl extends SignatureImpl implements CatchClauseSignature {
+public class CatchClauseSignatureImpl extends SignatureImpl implements CatchClauseSignature {
     Class parameterType;
     String parameterName;
     
@@ -41,7 +41,7 @@ class CatchClauseSignatureImpl extends SignatureImpl implements CatchClauseSigna
         return parameterName;
     }
     
-    String toString(StringMaker sm) {
+    public String toString(StringMaker sm) {
         return "catch(" + sm.makeTypeName(getParameterType()) + ")";
     }    
 }

@@ -44,6 +44,12 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     {
         return new PCCast_c(pos, type_pattern);
     }
+    
+    public PCThrow PCThrow(Position pos, TypePatternExpr type_pattern)
+    {
+    	
+    	return new PCThrow_c(pos, type_pattern);
+    }
 
     public PCLocalVars PCLocalVars(Position pos,
                                    List varlist,

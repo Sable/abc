@@ -19,19 +19,19 @@ import org.aspectj.lang.Signature;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-abstract class SignatureImpl implements Signature {
+public abstract class SignatureImpl implements Signature {
     int modifiers = -1;
     String name;
     String declaringTypeName;
     Class declaringType;
     
-    SignatureImpl(int modifiers, String name, Class declaringType) {
+    protected SignatureImpl(int modifiers, String name, Class declaringType) {
         this.modifiers = modifiers;
         this.name = name;
         this.declaringType = declaringType;
     }
     
-    abstract String toString(StringMaker sm);
+    public abstract String toString(StringMaker sm);
     
     public final String toString() { return toString(StringMaker.middleStringMaker); }
     public final String toShortString() { return toString(StringMaker.shortStringMaker); }
@@ -110,7 +110,7 @@ abstract class SignatureImpl implements Signature {
     
     static final char SEP = '-';
    
-    String extractString(int n) {
+    public String extractString(int n) {
         //System.out.println(n + ":  from " + stringRep);        
         
         int startIndex = 0;
@@ -131,7 +131,7 @@ abstract class SignatureImpl implements Signature {
         return Integer.parseInt(s, 16);
     }
     
-    Class extractType(int n) {
+    public Class extractType(int n) {
         String s = extractString(n);
         return makeClass(s);
     }

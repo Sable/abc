@@ -18,7 +18,7 @@ import org.aspectj.lang.reflect.InitializerSignature;
 
 import java.lang.reflect.Modifier;
 
-class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerSignature {
+public class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerSignature {
     InitializerSignatureImpl(int modifiers, Class declaringType) {
         super(modifiers, Modifier.isStatic(modifiers) ? "<clinit>" : "<init>", declaringType, EMPTY_CLASS_ARRAY, 
               EMPTY_STRING_ARRAY, EMPTY_CLASS_ARRAY);
@@ -32,7 +32,7 @@ class InitializerSignatureImpl extends CodeSignatureImpl implements InitializerS
     	return Modifier.isStatic(getModifiers()) ? "<clinit>": "<init>";
     }
 
-    String toString(StringMaker sm) {
+    public String toString(StringMaker sm) {
         StringBuffer buf = new StringBuffer();
         buf.append(sm.makeModifiersString(getModifiers()));    
         buf.append(sm.makePrimaryTypeName(getDeclaringType(),getDeclaringTypeName()));

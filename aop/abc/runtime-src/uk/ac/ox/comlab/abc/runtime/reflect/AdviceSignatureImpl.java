@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import org.aspectj.lang.reflect.AdviceSignature;
 
-class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
+public class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
     Class returnType;
     
     AdviceSignatureImpl(int modifiers, String name, Class declaringType, 
@@ -39,7 +39,7 @@ class AdviceSignatureImpl extends CodeSignatureImpl implements AdviceSignature {
         return returnType;
     }
 
-    String toString(StringMaker sm) {
+    public String toString(StringMaker sm) {
         //XXX this signature needs a lot of work        
         StringBuffer buf = new StringBuffer("ADVICE: ");
         buf.append(sm.makeModifiersString(getModifiers()));

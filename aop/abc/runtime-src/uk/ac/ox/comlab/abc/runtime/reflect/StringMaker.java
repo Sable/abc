@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import java.lang.reflect.Modifier;
 
-class StringMaker {
+public class StringMaker {
     boolean shortTypeNames = true;
     boolean includeArgs = true;
     boolean includeThrows = false;

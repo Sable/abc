@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import org.aspectj.lang.reflect.MethodSignature;
 
-class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
+public class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
     Class returnType;
     
     MethodSignatureImpl(int modifiers, String name, Class declaringType, 
@@ -38,7 +38,7 @@ class MethodSignatureImpl extends CodeSignatureImpl implements MethodSignature {
         return returnType;
     }
     
-    String toString(StringMaker sm) {
+    public String toString(StringMaker sm) {
         StringBuffer buf = new StringBuffer();
         buf.append(sm.makeModifiersString(getModifiers()));
         if (sm.includeArgs) buf.append(sm.makeTypeName(getReturnType()));

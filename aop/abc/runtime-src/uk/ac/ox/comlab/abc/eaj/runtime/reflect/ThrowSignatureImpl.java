@@ -7,41 +7,29 @@
  * http://www.eclipse.org/legal/cpl-v10.html 
  *  
  * Contributors: 
- *     Julian Tibble     initial implementation
+ *     Jim Hugunin    initial implementation
  * ******************************************************************/
 
 package uk.ac.ox.comlab.abc.eaj.runtime.reflect;
-
-import uk.ac.ox.comlab.abc.eaj.lang.reflect.CastSignature;
+import uk.ac.ox.comlab.abc.eaj.lang.reflect.ThrowSignature;
 import uk.ac.ox.comlab.abc.runtime.reflect.SignatureImpl;
 import uk.ac.ox.comlab.abc.runtime.reflect.StringMaker;
 
-public class CastSignatureImpl extends SignatureImpl
-                               implements CastSignature
+public class ThrowSignatureImpl extends SignatureImpl
+                                implements ThrowSignature
 {
-    Class castType;
-    
-    CastSignatureImpl(int modifiers, String name, Class declaringType, 
-                      Class castType)
+    ThrowSignatureImpl(Class declaringType)
     {
-        super(modifiers, name, declaringType);
-        this.castType = castType;
+        super(0, "throw", declaringType);
     }
     
-    CastSignatureImpl(String stringRep)
+    ThrowSignatureImpl(String stringRep)
     {
         super(stringRep);
     }
-    
-    public Class getCastType()
-    {
-        if (castType == null)
-            castType = extractType(3);
-        return castType;
-    }
-    
+
     public String toString(StringMaker sm)
     {
-        return "(" + getCastType().getName() + ") ...";
+        return "throw";
     } 
 }

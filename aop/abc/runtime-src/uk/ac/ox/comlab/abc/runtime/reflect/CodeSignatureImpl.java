@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import org.aspectj.lang.reflect.CodeSignature;
 
-abstract class CodeSignatureImpl extends MemberSignatureImpl implements CodeSignature {
+public abstract class CodeSignatureImpl extends MemberSignatureImpl implements CodeSignature {
     Class[] parameterTypes;
     String[] parameterNames;
     Class[] exceptionTypes;

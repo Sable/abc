@@ -31,11 +31,21 @@ public class ExtendedSJPInfo
     public static String makeCastSigData(SootMethod container, Type cast_to)
     {
         StringBuffer sb = new StringBuffer();
-        sb.append("0-");        // a cast has no associated modifiers
-        sb.append("cast-");     // a cast has no associated name-part
+        sb.append("-");     // a cast has no associated modifiers
+        sb.append("-");     // a cast has no associated name-part
         sb.append(container.getDeclaringClass().getName());
         sb.append('-');
         sb.append(SJPInfo.getTypeString(cast_to));
+        sb.append('-');
+        return sb.toString();
+    }
+    
+    public static String makeThrowSigData(SootMethod container, Type throw_type)
+    {
+        StringBuffer sb = new StringBuffer();
+        sb.append('-');     // a throw has no associated modifiers
+        sb.append('-');     // a throw has no associated name-part
+        sb.append(SJPInfo.getTypeString(throw_type));
         sb.append('-');
         return sb.toString();
     }

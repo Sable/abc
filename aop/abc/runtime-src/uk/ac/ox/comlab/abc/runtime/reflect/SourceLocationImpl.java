@@ -16,7 +16,7 @@ package uk.ac.ox.comlab.abc.runtime.reflect;
 
 import org.aspectj.lang.reflect.SourceLocation;
 
-class SourceLocationImpl implements SourceLocation {
+public class SourceLocationImpl implements SourceLocation {
     Class withinType;
     String fileName;
     int line;

@@ -54,6 +54,7 @@ public class AbcExtension extends abc.main.AbcExtension
         List/*<ShadowType*/ shadowTypes = super.listShadowTypes();
 
         shadowTypes.add(CastShadowMatch.shadowType());
+        shadowTypes.add(ThrowShadowMatch.shadowType());
 
         return shadowTypes;
     }
@@ -75,14 +76,17 @@ public class AbcExtension extends abc.main.AbcExtension
      * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
      */
     public void initLexerKeywords(AbcLexer lexer) {
+		// Add the base keywords
+		super.initLexerKeywords(lexer);
+		
         // keyword for the "cast" pointcut extension
         lexer.addPointcutKeyword("cast", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CAST)));
+        
+        // keyword for the "throw" pointcut extension
+        lexer.addPointcutKeyword("throw", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_THROW)));
 
         // keyword for the "global pointcut" extension
         lexer.addGlobalKeyword("global", new LexerAction_c(new Integer(abc.eaj.parse.sym.GLOBAL),
                             new Integer(lexer.pointcut_state())));
-
-        // Add the base keywords
-        super.initLexerKeywords(lexer);
     }
 }
