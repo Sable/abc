@@ -66,12 +66,14 @@ public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
 			    }
 			    */
 			    if (pat.matches(PatternMatcher.v(), cl)) {
+				/* It is, after all, not the case that...
 				// It is an error if an aspect is matched twice on the same list
 				if (passed.contains(a)) {
 				    throw new SemanticException("Aspect "+a+
 								" is matched by more than one pattern on the precedence list",
 								dpr.position());
 				}
+				*/
 				// Mark this aspect as being preceded by all passed aspects
 				Iterator pai = passed.iterator();
 				while (pai.hasNext()) {

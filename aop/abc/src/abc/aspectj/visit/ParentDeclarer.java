@@ -44,29 +44,25 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 		    ClassType ct = (ClassType)cti.next();
 		    PCNode hi_cl = ext.hierarchy.getClass(ct);
 		    if (hi_cl.isWeavable() && pat.matches(PatternMatcher.v(), hi_cl)) {
+			System.out.println(ct);
 			if (ct.flags().isInterface()) {
 			    throw new SemanticException("Interface "+ct+" cannot be extended by a class",dp.position());
 			}
+			if (!ts.isSubtype(parentct, ct.superType())) {
+			    throw new SemanticException("Declared parent class "+parentct+
+							" is not a subclass of original superclass "+ct.superType());
+			}
+			if (ts.isSubtype(parentct, ct)) {
+			    throw new SemanticException("Declared parent class "+parentct+
+							" is a subclass of child class "+ct);
+			}
+
 			dp.addTarget(AbcFactory.AbcClass(ct));
+			PCNode hi_parent = ext.hierarchy.insertClassAndSuperclasses(parentct, false);
+			hi_cl.addParent(hi_parent);
 			if (ct instanceof ParsedClassType) {
 			    ParsedClassType pct = (ParsedClassType)ct;
-			    /* FIXME: What are the exact type rules here?
-			       if (!ts.isSubtype(type.type(), pct.superType())) {
-			       throw new SemanticException("Declared parent class "+type.type()+
-			       " is not a subclass of original superclass "+pct.superType());
-			       }
-			       if (ts.isSubtype(type.type(), pct)) {
-			       throw new SemanticException("Declared parent class "+type.type()+
-			       " is a subclass of child class "+pct);
-			       }
-			    */
-			    PCNode hi_parent = ext.hierarchy.insertClassAndSuperclasses(parentct, false);
-			    
-			    //System.err.println("Declared "+ct.fullName()+" to extend "+typect.fullName());
-			    
 			    pct.superType(parentct);
-			    hi_cl.addParent(hi_parent);
-			    //System.out.println(hi_cl+" extends "+hi_type);
 			}
 		    }
 		}

@@ -13,17 +13,29 @@ abstract class O implements I,K {}
 
 class A extends O implements I,J,K {
     public String fa;
+    public String fab;
+    public static String fsa;
+    public static String fsab;
     public void xia()  { System.out.println("ia");  }
     public void xiab() { System.out.println("iab"); }
     public void xa()   { System.out.println("a");   }
     public void xab()  { System.out.println("ab");  }
+    public static void xsa()  { System.out.println("sa");  }
+    public static void xsab() { System.out.println("sab"); }
 }
 
-class B extends A {
+class X extends A {}
+
+class B extends X {
     public String fb;
+    public String fab;
+    public static String fsb;
+    public static String fsab;
     public void xiab() { System.out.println("iab"); }
     public void xab()  { System.out.println("ab");  }
     public void xb()   { System.out.println("b");   }
+    public static void xsb()  { System.out.println("sb");  }
+    public static void xsab() { System.out.println("sab"); }
 }
 
 class C {
@@ -44,6 +56,7 @@ class C {
 	a.xa();
 	a.xab();
 	a.fa = "AA.a";
+	a.fab = "AA.ab";
 	System.out.println("Receiver type A, runtime type B");
 	a = new B();
 	a.xia();
@@ -51,6 +64,7 @@ class C {
 	a.xa();
 	a.xab();
 	a.fa = "AB.a";
+	a.fab = "AB.ab";
 
 	System.out.println("Receiver type B, runtime type B");
 	B b = new B();
@@ -61,5 +75,21 @@ class C {
 	b.xb();
 	b.fa = "BB.a";
 	b.fb = "BB.b";
+	b.fab = "BB.ab";
+
+	System.out.println("Static calls on A");
+	A.xsa();
+	A.xsab();
+	System.out.println("Static calls on B");
+	B.xsa();
+	B.xsb();
+	B.xsab();
+
+	System.out.println("Static fields");
+	A.fsa = "A.sa";
+	A.fsab = "A.sab";
+	B.fsa = "B.sa";
+	B.fsb = "B.sb";
+	B.fsab = "B.sab";
     }
 }
