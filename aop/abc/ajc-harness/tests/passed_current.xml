@@ -209,6 +209,12 @@
         <compile files="OneArgCallsIsOkay.java"/>
         <run class="OneArgCallsIsOkay"/>
     </ajc-test>
+<ajc-test dir="new"
+      title="advice on calls to static methods even works when called on super"
+      keywords="from-base">
+        <compile files="SuperStaticCallJoinPoint.java"/>
+        <run class="SuperStaticCallJoinPoint"/>
+    </ajc-test>
 <ajc-test dir="new" pr="99"
       title="combined logic expression (handling coericions vs. parens)"
       keywords="from-java,purejava">
@@ -333,6 +339,12 @@
       keywords="from-java">
         <compile files="CastingFoldedValues.java"/>
         <run class="CastingFoldedValues"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="inner classes can be built using protected constructors in super"
+      keywords="from-java">
+        <compile files="VariousConstructors.java"/>
+        <run class="VariousConstructors"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="check that nested constructions of local classes work"
@@ -559,6 +571,12 @@
         <run class="FalseThrowsCE"/>
     </ajc-test>
 <ajc-test dir="pureJava"
+      title="overriding methods from object in interfaces and multiple-inheritance"
+      keywords="from-java">
+        <compile files="InterfaceAndObject.java"/>
+        <run class="InterfaceAndObject"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
       title="private fields in an outer class accessed by an inner which also extends the outer"
       keywords="from-java">
         <compile files="PrivateFields.java"/>
@@ -647,6 +665,12 @@
       keywords="from-java">
         <compile files="ConstantValueConversion.java"/>
         <run class="ConstantValueConversion"/>
+    </ajc-test>
+<ajc-test dir="pureJava"
+      title="Local variables in initializers should not be treated as blank final fields"
+      keywords="from-java">
+        <compile files="LocalInitializerVariableNotBlank.java"/>
+        <run class="LocalInitializerVariableNotBlank"/>
     </ajc-test>
 <ajc-test dir="pureJava"
       title="Binops aren't allowed as update stmts in for loops"
@@ -1432,22 +1456,10 @@
         <compile files="Driver.java"/>
         <run class="Driver"/>
     </ajc-test>
-<ajc-test dir="new" pr="242"
-      title="generating the right throws clause for call-site advice (and around)"
-      keywords="from-resolved_10x">
-        <compile files="ComputedThrows.java"/>
-        <run class="ComputedThrows"/>
-    </ajc-test>
 <ajc-test dir="new" title="fancy name patterns for method names"
       keywords="from-resolved_10x">
         <compile files="WildNames.java"/>
         <run class="WildNames"/>
-    </ajc-test>
-<ajc-test dir="new/extraThrows" pr="259"
-      title="throws Exception clause is unnecessarily added to Driver.main method"
-      keywords="from-resolved_10x">
-        <compile files="Driver.java"/>
-        <run class="Driver"/>
     </ajc-test>
 <ajc-test dir="new/thisUsedInMain" pr="262"
       title="javac fails when this is referenced in the static main method"
@@ -1503,6 +1515,12 @@
         <compile files="ConstructorSignatures.java"/>
         <run class="ConstructorSignatures"/>
     </ajc-test>
+<ajc-test dir="new"
+      title="Referring to inner classes as {super}.{inner} confused ajc."
+      keywords="from-resolved_10x">
+        <compile files="InnerClassNaming.java"/>
+        <run class="InnerClassNaming"/>
+    </ajc-test>
 <ajc-test dir="new" title="Advice on advice" keywords="from-resolved_10x">
         <compile files="AdviceOnAdvice.java"/>
         <run class="AdviceOnAdvice"/>
@@ -1544,12 +1562,6 @@
         <compile files="AroundCalls.java"/>
         <run class="AroundCalls"/>
     </ajc-test>
-<ajc-test dir="new" pr="208"
-      title="! modifier and char in pointcut (no longer an error)"
-      keywords="from-resolved_10x">
-        <compile files="NotCharInPointcut.java"/>
-        <run class="NotCharInPointcut"/>
-    </ajc-test>
 <ajc-test dir="new" pr="308"
       title="right number of aspect instances per cflow"
       keywords="from-resolved_10x">
@@ -1567,12 +1579,6 @@
         <compile files="Dominates.java"/>
         <run class="Dominates"/>
     </ajc-test>
-<ajc-test dir="new" pr="355"
-      title="No boolean appearing in the 'if' clause for around advice with eachJVM()"
-      keywords="from-resolved_10x">
-        <compile files="PR355.java"/>
-        <run class="PR355"/>
-    </ajc-test>
 <ajc-test dir="new" title="Order of super introductions."
       keywords="from-resolved_10x">
         <compile files="OrderOfExtendsPlusAndImplementsPlus.java"/>
@@ -1583,12 +1589,6 @@
       keywords="from-resolved_10x">
         <compile files="AfterAdviceOnConstructorsOnTheWrongType.java"/>
         <run class="AfterAdviceOnConstructorsOnTheWrongType"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="Instantiating non-static inner classes in advice."
-      keywords="from-resolved_10x">
-        <compile files="NonstaticInnerClassesInAspects.java"/>
-        <run class="NonstaticInnerClassesInAspects"/>
     </ajc-test>
 <ajc-test dir="new" pr="316" title="Referring to pointcut in of clauses"
       keywords="from-resolved_10x">
@@ -1617,11 +1617,6 @@
       keywords="from-resolved_10x">
         <compile files="CallsAndLocalClasses.java"/>
         <run class="CallsAndLocalClasses"/>
-    </ajc-test>
-<ajc-test dir="new" title="matching for throws clause"
-      keywords="from-resolved_10x">
-        <compile files="ThrowsMatching.java"/>
-        <run class="ThrowsMatching"/>
     </ajc-test>
 <ajc-test dir="new"
       title="advice on calls to constructors of anonymous inners and access to context"
@@ -1816,6 +1811,12 @@
         <compile files="Binkley2.java"/>
         <run class="Binkley2"/>
     </ajc-test>
+<ajc-test dir="new" pr="114"
+      title=", PR#115 checks the ordering of catch clauses"
+      keywords="from-resolved_10x">
+        <compile files="OrderOfCatches.java"/>
+        <run class="OrderOfCatches"/>
+    </ajc-test>
 <ajc-test dir="new"
       title="join points in static/dynamic initializers aren't showing up."
       keywords="from-resolved_10x">
@@ -1869,12 +1870,6 @@
       keywords="from-resolved_10x">
         <compile files="IfPCDDupMethod.java"/>
         <run class="IfPCDDupMethod"/>
-    </ajc-test>
-<ajc-test dir="new"
-      title="pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]"
-      keywords="from-resolved_10x">
-        <compile files="IfPCDAdviceMethods.java"/>
-        <run class="IfPCDAdviceMethods"/>
     </ajc-test>
 <ajc-test dir="new" pr="476" title="initialization order with this"
       keywords="from-resolved_10x">
@@ -2204,12 +2199,6 @@
         <compile files="MissingPackageCE.java">
             <message kind="error" line="2"/>
         </compile>
-    </ajc-test>
-<ajc-test dir="new"
-      title="initializer can throw so long as all constructors declare so"
-      keywords="from-resolved_105,purejava">
-        <compile files="InitializerWithThrow.java"/>
-        <run class="InitializerWithThrow"/>
     </ajc-test>
 <ajc-test dir="new" pr="755"
       title="ajc dies on cflow into field init anon class see knownbugs.txt"
@@ -2580,11 +2569,6 @@
             <message kind="abort" text="Usage"/>
         </compile>
     </ajc-test>
-<ajc-test dir="bugs" pr="37304"
-   	 title="public static fields being ignored">
-        <compile files="FinalFields.java"/>
-        <run class="FinalFields"/>
-    </ajc-test>
 <ajc-test dir="harness" 
         title="XLint:ignore suppresses XLint warnings">
         <compile files="XLintWarningTest.java" options="-Xlint:ignore"/>
@@ -2670,6 +2654,20 @@
 		title="exception clause for aspect-declared interface methods - positive">
 		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"/>
 		<run class="Client"/>
+		</ajc-test>
+<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared interface methods - negative">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message kind="error" file="ClientCE.java" line="5"/>
+			</compile>
+		</ajc-test>
+<ajc-test 
+		dir="bugs/interfaceLibrary"
+		title="exception clause for aspect-declared class methods - negative">
+		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
+			<message kind="error" file="ClassClientCE.java" line="5"/>
+			</compile>
 		</ajc-test>
 <ajc-test dir="bugs/moreInterfaceLibrary"
 		pr="41123"
