@@ -59,7 +59,7 @@ public class Main {
         String outputdir=".";
 
         soot_args.add("-keep-line-number"); // always want line number info
-        soot_args.add("-xml-attributes"); // FIXME: want to remove this
+        // soot_args.add("-xml-attributes"); // FIXME: want to remove this
 
         for (int i = 0 ; i < args.length ; i++) 
 	  { if (args[i].equals("+soot")) 
@@ -134,7 +134,6 @@ public class Main {
     public void run() throws CompilerFailedException {
         // Timer start stuff
         Date abcstart = new Date(); // wall clock time start
-        long abcstart_time = System.currentTimeMillis(); // java timer
 
         Timers.v().totalTimer.start(); // Soot timer start
         G.v().out.println("Abc started on " + abcstart);
@@ -160,14 +159,10 @@ public class Main {
 
         // Timer end stuff
         Date abcfinish = new Date(); // wall clock time finish
-        long abcfinish_time = System.currentTimeMillis(); // java timer
-        G.v().out.println("Abc finished on " + abcfinish);
+        G.v().out.print("Abc finished on " + abcfinish + ".");
         long runtime = abcfinish.getTime() - abcstart.getTime();
-        G.v().out.println( "Abc has run for " + (runtime / 60000)
-                + " min. " + ((runtime % 60000) / 1000) + " sec. (wall clock)");
-        G.v().out.println("Elapsed time is " + 
-                          (abcfinish_time - abcstart_time) + 
-                          " milliseconds.");
+        G.v().out.println( " ( " + (runtime / 60000)
+                + " min. " + ((runtime % 60000) / 1000) + " sec. )");
 
         // Print out Soot time stats, if Soot -time flag on.   
         Timers.v().totalTimer.end();
@@ -212,12 +207,15 @@ public class Main {
                 throw new CompilerFailedException("Compiler failed.");
             }
 
-            abc.aspectj.visit.JimplifyVisitor.resolve();
-
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
+
+            abc.aspectj.visit.JimplifyVisitor.resolve();
+            AbcTimer.mark("Soot Resolving");
+
             GlobalAspectInfo.v().transformClassNames(ext.hierarchy);
             AbcTimer.mark("Transform class names");
+
         } catch (polyglot.main.UsageError e) {
             throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
         }

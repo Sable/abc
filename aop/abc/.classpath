@@ -5,7 +5,8 @@
     <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="lib" path="/abc-lib/jasminclasses-sable-1.2.jar"/>
     <classpathentry kind="lib" path="/abc-lib/JFlex.jar"/>
-    <classpathentry kind="lib" path="/abc-lib/sootclasses-2.1.0.jar"/>
     <classpathentry kind="lib" path="/abc-lib/polyglot.jar"/>
+    <classpathentry kind="lib"
+        path="/home/hendren/Jars/sootclasses-2.1.0.jar" sourcepath="/home/hendren/soot-dev/src"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

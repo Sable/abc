@@ -76,20 +76,26 @@ public class AbcTimer {
    */
   public static void report()
     { if (Debug.v().abcTimer)
-	{ System.err.println("========================================"); 
-          System.err.println("Total of all phases: " + total + " millisec."); 
-	  System.err.println("========================================"); 
-	  System.err.println("Breakdown of abc phases: ");
-	  System.err.println("----------------------- ");
+	{ System.err.println(
+            "================================================"); 
+	  System.err.println("Breakdown of abc phases  (total: " + total + 
+                             " millisec.)");
+	  System.err.println(
+            "------------------------------------------------");
 	  for (Iterator i = history.iterator(); i.hasNext(); )
 	    { TimerPhase next = (TimerPhase) i.next();
               String name = next.name;
 	      long time = next.time;
 	      System.err.println(percent(time) + name + ":  " + time  );
 	    }
-	  System.err.println("========================================"); 
-	  if (polyglot_passes != null)
-	    { System.err.println("Breakdown for polyglot phases: ");
+	  System.err.println(
+            "================================================"); 
+        }
+      if (Debug.v().polyglotTimer)
+	{ if (polyglot_passes != null)
+	    { System.err.println(
+                "================================================"); 
+	      System.err.println("Breakdown for polyglot phases: ");
 	      System.err.println("-----------------------------  ");
 	      // Iterate through polyglot phases.
 	      long total = 0;
@@ -104,11 +110,17 @@ public class AbcTimer {
 		                     + inclusive_time);
 	        }
 	      System.err.println(percent(total) + "ALL  :  " + total);
-	      System.err.println("========================================"); 
+	      System.err.println(
+                  "================================================"); 
 	    }
+        }
+      if (Debug.v().sootResolverTimer)
+	{ System.err.println(
+            "================================================"); 
           System.err.println("Time spent in Soot resolver: " + 
 	                            sootresolve_total);
-	  System.err.println("========================================"); 
+	  System.err.println(
+            "================================================"); 
         }
     }
 
