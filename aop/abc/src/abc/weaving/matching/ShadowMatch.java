@@ -77,7 +77,12 @@ public abstract class ShadowMatch {
     public ContextValue getThisContextValue() {
         if(container.isStatic()   && 
         	!MethodCategory.hasThisAsFirstParameter(container) ) return null;
-		return new JimpleValue(Restructure.getThisCopy(container));
+        	
+        	//System.out.println(" " + container + " : " + 
+        	//				container.getActiveBody().getLocalCount());
+        	//System.out.println(container.getActiveBody().getUnits().getFirst());
+        	//System.out.println(container.isStatic());
+		return new JimpleValue(Restructure.getThisLocal(container));
     }
 
     // no sensible default - unless null?

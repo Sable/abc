@@ -27,7 +27,7 @@ public class Restructure {
 
     public static void reset() {
 	returns=new Hashtable();
-	thiscopies=new Hashtable();
+	//thiscopies=new Hashtable();
 	invokeassignstmts=new Hashtable();
     }
 
@@ -120,10 +120,10 @@ public class Restructure {
 	     if(u instanceof IdentityStmt) continue;
 	     if(u instanceof NopStmt && !allowNops) continue;
 	     // skip over any copy of "this" we made
-	     if(u instanceof AssignStmt)
-		 if(thiscopies.containsKey(m)) 
-		     if(((AssignStmt) u).getLeftOp()==thiscopies.get(m))
-			 continue;
+	     //if(u instanceof AssignStmt)
+		 //if(thiscopies.containsKey(m)) 
+		   //  if(((AssignStmt) u).getLeftOp()==thiscopies.get(m))
+			 //continue;
 	     return u;
           }
         throw new CodeGenException("Expecting to find a real stmt");
@@ -402,7 +402,7 @@ public class Restructure {
         return null;
     }
 
-    private static Map/*<SootMethod,Local>*/ thiscopies=new Hashtable();
+    //private static Map/*<SootMethod,Local>*/ thiscopies=new Hashtable();
 
     /** Restructure the method to place a copy of 'this' in a new local
      *  variable. Why is this useful? The local bound by the relevant 
@@ -412,14 +412,23 @@ public class Restructure {
      *  and we want to be sure we really have a handle on the value of
      *  'this', not whatever it gets reused for later (which might even
      *  be the wrong type).
+     * 
+     *  UPDATE: Experiments show that the this-local never changes throughout the method,
+     *  even if the byte-code assigns to slot 0. In this case, Jimple creates a new local
+     *  to assign to.
      */
-    public static Local getThisCopy(SootMethod m) {
-	if(thiscopies.containsKey(m)) return ((Local) thiscopies.get(m));
+    public static Local getThisLocal(SootMethod m) {
+	//if(thiscopies.containsKey(m)) return ((Local) thiscopies.get(m));
 	
 	Body b=m.getActiveBody();
-	Local l=new LocalGeneratorEx(b).generateLocal
-	    (MethodCategory.getClass(m).getType(),"thisCopy");
-
+	if (MethodCategory.hasThisAsFirstParameter(m)) {
+		return b.getParameterLocal(0);
+	} else {
+		return b.getThisLocal();
+	}
+	
+	/*
+	
 	// don't want exceptions "fixed" up
 	Chain units=b.getUnits().getNonPatchingChain();
 	for(Stmt stmt=(Stmt) units.getFirst(); ;
@@ -458,7 +467,7 @@ public class Restructure {
 	    }
 	}
 	thiscopies.put(m,l);
-	return l;
+	return l;*/
     }
 
     private static Map/*<InvokeStmt,AssignStmt>*/ invokeassignstmts=new Hashtable();

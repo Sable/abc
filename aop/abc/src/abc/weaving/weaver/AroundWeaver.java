@@ -98,8 +98,16 @@ public class AroundWeaver {
 		Object object;
 	}
 
+
 	public static class Util {
 
+		public static String printMethod(SootMethod m) {
+			String result=m + "\n";
+			for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
+				result += it.next().toString() + "\n";
+			}
+			return result;
+		}
 		public static boolean isAroundAdviceMethod(SootMethod method) {
 			return method.getName().startsWith("around$"); // TODO: something more solid
 		}
@@ -316,17 +324,17 @@ public class AroundWeaver {
 	
 			boolean bInstance = !source.getMethod().isStatic() && !dest.getMethod().isStatic();
 			Local lThisSource = null;
-			Local lThisCopySource = null;
+			//Local lThisCopySource = null;
 			if (bInstance) {
 				lThisSource = source.getThisLocal();
-				lThisCopySource = Restructure.getThisCopy(source.getMethod());
+			//	lThisCopySource = Restructure.getThisCopy(source.getMethod());
 			}
 	
 			Local lThisDest = null;
-			Local lThisCopyDest = null;
+			//Local lThisCopyDest = null;
 			if (bInstance) {
 				lThisDest = dest.getThisLocal();
-				lThisCopyDest = Restructure.getThisCopy(dest.getMethod());
+			//	lThisCopyDest = Restructure.getThisCopy(dest.getMethod());
 			}
 	
 			HashMap bindings = new HashMap();
@@ -389,8 +397,8 @@ public class AroundWeaver {
 	
 				if (original == lThisSource) {
 					bindings.put(lThisSource, lThisDest);
-				} else if (original == lThisCopySource) {
-					bindings.put(lThisCopySource, lThisCopyDest);
+				//} else if (original == lThisCopySource) {
+				//	bindings.put(lThisCopySource, lThisCopyDest);
 				} else {
 					//copy.setName(copy.getName() + "$abc$" + state.getUniqueID());
 					Util.setLocalName(destLocals, copy, original.getName());
@@ -645,7 +653,7 @@ public class AroundWeaver {
 					directInvoke = Jimple.v().newStaticInvokeExpr(accessMethod.method, directParams);
 				} else {
 					// TODO: can this call be replaced with an InvokeSpecial?
-					directInvoke = Jimple.v().newInterfaceInvokeExpr(Restructure.getThisCopy(joinpointMethod), adviceMethod.interfaceInfo.abstractAccessMethod, directParams);
+					directInvoke = Jimple.v().newInterfaceInvokeExpr(joinpointBody.getThisLocal() , adviceMethod.interfaceInfo.abstractAccessMethod, directParams);
 				}
 				{
 					Stmt skipAdvice;
@@ -852,9 +860,13 @@ public class AroundWeaver {
 			// find returned local
 			Local returnedLocal = findReturnedLocal();
 
+			{
+				debug("Locals going in: ");
+				debug(Util.printMethod(joinpointMethod));
+			}
 			List /*Local*/context=findLocalsGoingIn(joinpointBody, begin, end, returnedLocal);
 			{ // print debug information
-				debug("Locals going in: ");
+				
 				debug(" Method: " + joinpointMethod.toString());
 				debug(" Application: " + adviceAppl.toString());
 				//debug("Method + " + joinpointMethod.toString());
@@ -932,7 +944,7 @@ public class AroundWeaver {
 
 			Local lThis = null;
 			if (!bStaticJoinPoint)
-				lThis = Restructure.getThisCopy(joinpointMethod);
+				lThis = joinpointBody.getThisLocal();
 
 			int shadowID;
 			{ // determine shadow ID
@@ -1149,8 +1161,8 @@ public class AroundWeaver {
 				//if (joinpointMethod.getName().startsWith("around$"))
 				//	throw new CodeGenException("Execution pointcut matching advice method.");
 	
-				if (!bStatic) {
-					Local lThisCopy = Restructure.getThisCopy(joinpointMethod);
+				/*if (!bStatic) {
+					Local lThisCopy = joinpointBody.getThisLocal();
 					Stmt succ = (Stmt) joinpointStatements.getSuccOf(begin);
 					if (succ instanceof AssignStmt) {
 						AssignStmt s = (AssignStmt) succ;
@@ -1161,7 +1173,7 @@ public class AroundWeaver {
 							joinpointStatements.insertBefore(s, begin);
 						}
 					}
-				}
+				}*/
 				if (joinpointMethod.getReturnType().equals(VoidType.v())) {
 					if (
 						! adviceMethod.getReturnType().equals(VoidType.v())					 
@@ -1327,8 +1339,8 @@ public class AroundWeaver {
 					advdecl=getAdviceDecl(method);
 					adviceMethodWovenInto = new AdviceMethod(method, 
 							AdviceMethod.getOriginalAdviceFormals(advdecl));
-					adviceMethodWovenInto.generateProceedCalls(false, false, true, null);
 				}			
+				adviceMethodWovenInto.generateProceedCalls(false, false, true, null);
 				adviceMethodWovenInto.bHasBeenWovenInto=true;
 			}
 			
@@ -1380,11 +1392,11 @@ public class AroundWeaver {
 		public final AccessMethod accessMethod;	
 	}
 	
-	public static class ClosureClass {
+	/*public static class ClosureClass {
 		AdviceMethod adviceMethod;
 		
 		SootMethod staticProceedMethod;
-	}
+	}*/
 	
 	public static class AdviceMethod {
 		private void validate() {
@@ -1992,7 +2004,7 @@ public class AroundWeaver {
 		public Local bindMaskLocal;
 		final public HashSet /*String*/ staticProceedTypes = new HashSet();
 		public boolean hasDynamicProceed = false;
-		public final boolean bAlwaysStaticAccessMethod = false;//true; //false;
+		public final boolean bAlwaysStaticAccessMethod = true;//false;//true; //false;
 
 		public boolean bHasBeenWovenInto=false;
 
@@ -2027,7 +2039,10 @@ public class AroundWeaver {
 		 * searched.
 		 * 
 		 */
-		AdviceMethod(SootMethod method, List originalAdviceFormalTypes) {
+		AdviceMethod(SootMethod method, final List originalAdviceFormalTypes) {
+			
+			if (originalAdviceFormalTypes==null)
+				throw new InternalAroundError();
 			
 			this.originalAdviceFormalTypes=originalAdviceFormalTypes;
 			
@@ -2582,8 +2597,11 @@ public class AroundWeaver {
 
 	public static void doWeave(SootClass joinpointClass, SootMethod joinpointMethod, LocalGeneratorEx localgen, AdviceApplication adviceAppl) {
 		debug("Weaving advice application: " + adviceAppl);
-		//if (joinpointClass!=null)
-		//	return;		
+		if (abc.main.Debug.v().aroundWeaver) {
+			//if (joinpointClass!=null)
+				//	return;			
+		}
+		
 		AdviceApplicationInfo adviceApplication=new AdviceApplicationInfo(adviceAppl, joinpointMethod);
 		adviceApplication.doWeave();
 		
@@ -2647,6 +2665,10 @@ public class AroundWeaver {
 				// this is only necessary if proceed calls are ever part of a shadow,
 				// for example if the advice body were to be matched by an adviceexecution pointcut. 
 				// TODO: does this kind of thing ever happen?
+				// Doesn't matter. Once an advice method has been woven into,
+				// the proceeds aren't changed anymore anyways.
+				// So we might as well keep all these references updated.
+				// (or delete them otherwise).
 				if (adviceMethodInfo.interfaceInvokationStmts.contains(old)) {
 					adviceMethodInfo.interfaceInvokationStmts.remove(old);
 					adviceMethodInfo.interfaceInvokationStmts.add(bindings.get(old));
