@@ -717,6 +717,7 @@ public class Main {
         // FIXME: make ClassLoadException in soot, and catch it here
         // and check what was wrong
         Scene.v().loadBasicClasses();
+        if(abc.main.Debug.v().doValidate) soot.options.Options.v().set_validate(true);
     }
 
     private void findSourcesInDir(String dir, Collection sources) throws IllegalArgumentException {
@@ -808,6 +809,7 @@ public class Main {
                 scls.setApplicationClass();
                 Scene.v().loadClass(scls.getName(), SootClass.BODIES);
             }
+            Scene.v().setMainClassFromOptions();
             AbcTimer.mark("Soot resolving");
 
             GlobalAspectInfo.v().buildAspectHierarchy();
