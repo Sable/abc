@@ -34,6 +34,10 @@ public class PCPreinitialization_c extends Pointcut_c
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
+	
     public Node visitChildren(NodeVisitor v) {
 	ConstructorPattern pat
 	    = (ConstructorPattern) visitChild(this.pat,v);

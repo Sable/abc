@@ -27,6 +27,9 @@ public class PointcutInstance_c extends MethodInstance_c {
     Set transRefs;
     boolean transComputed;
     boolean transAbstract;
+    boolean dynamic; /* does this pointcut require dynamic tests? */
+    boolean transDynamicComputed;
+    boolean transDynamic;
 
 	public PointcutInstance_c(TypeSystem ts, Position pos,
 												ReferenceType container,
@@ -37,6 +40,7 @@ public class PointcutInstance_c extends MethodInstance_c {
 		refersTo = null;
 		transRefs = null;
 		transComputed = false;
+		transDynamicComputed = false;
 	}	
  	
 	public String toString() {
@@ -44,6 +48,14 @@ public class PointcutInstance_c extends MethodInstance_c {
 					  signature();
 
 	   return s;
+	}
+	
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
+	}
+	
+	public boolean isDynamic() {
+		return dynamic;
 	}
 	
 	public void setRefersTo(Set x) {
@@ -77,6 +89,18 @@ public class PointcutInstance_c extends MethodInstance_c {
 			transComputed = true;
 			return transAbstract;
 		} else return transAbstract;
+	}
+	
+	public boolean transDynamic() {
+		if (!transDynamicComputed) {
+			transDynamic = isDynamic();
+			for (Iterator refs = transRefs().iterator(); refs.hasNext(); ) {
+				PointcutInstance_c ref = (PointcutInstance_c) refs.next();
+				transDynamic |= ref.isDynamic();
+			}
+			transDynamicComputed = true;
+			return transDynamic;
+		} else return transDynamic;
 	}
 	
 	public String signature() {

@@ -104,7 +104,6 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	 */
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
-		System.out.println("host type is "+ht);
 		if (ht instanceof ParsedClassType) {
 			// need to make a copy because the container has changed
 			AJTypeSystem ts = (AJTypeSystem) am.typeSystem();

@@ -26,6 +26,10 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
 		return pc.pcRefs();
 	}
 
+	public boolean isDynamic() {
+		return true;
+	}
+	
     public void recordCflowDepth(int depth) {
 	this.depth=depth;
     }

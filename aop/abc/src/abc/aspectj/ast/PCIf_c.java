@@ -38,6 +38,10 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return true;
+	}
+	
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		w.write("if(");

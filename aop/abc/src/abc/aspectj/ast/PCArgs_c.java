@@ -27,6 +27,10 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return true;
+	}
+	
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }

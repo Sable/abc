@@ -24,6 +24,10 @@ public class PCWithin_c extends Pointcut_c implements PCWithin
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
+	
     protected PCWithin_c reconstruct(ClassnamePatternExpr pat) {
 	if (pat != this.pat) {
 	    PCWithin_c n = (PCWithin_c) copy();

@@ -24,6 +24,10 @@ public class PCCall_c extends Pointcut_c implements PCCall
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
+	
     protected PCCall_c reconstruct(MethodConstructorPattern pat) {
 	if(pat != this.pat) {
 	    PCCall_c n=(PCCall_c) copy();

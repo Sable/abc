@@ -34,6 +34,10 @@ public class PCStaticInitialization_c extends Pointcut_c
     public Set pcRefs() {
     	return new HashSet();
     }
+    
+    public boolean isDynamic() {
+    	return false;
+    }
 
     public Node visitChildren(NodeVisitor v) {
 	ClassnamePatternExpr pat=

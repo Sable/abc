@@ -21,6 +21,9 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
 
     public Precedence precedence() {
 	return Precedence.LITERAL;

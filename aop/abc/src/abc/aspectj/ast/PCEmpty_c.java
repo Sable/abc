@@ -20,6 +20,9 @@ public class PCEmpty_c extends Pointcut_c implements PCEmpty {
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
 
 	public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	  return new EmptyPointcut(position);

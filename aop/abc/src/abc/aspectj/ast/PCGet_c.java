@@ -24,6 +24,10 @@ public class PCGet_c extends Pointcut_c implements PCGet
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("get(");
         print(pat, w, tr);

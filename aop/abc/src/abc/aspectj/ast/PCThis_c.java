@@ -28,6 +28,10 @@ public class PCThis_c extends Pointcut_c implements PCThis
     	return new HashSet();
     }
     
+    public boolean isDynamic() {
+    	return true;
+    }
+    
 	/** Reconstruct the pointcut. */
 	protected PCThis_c reconstruct(Node pat) {
 	 if (pat != this.pat) {

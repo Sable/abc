@@ -22,6 +22,8 @@ public interface Pointcut extends Node
     Collection/*<String>*/ mustBind();
     void checkFormals(List formals) throws SemanticException;
 
+	boolean isDynamic();
+	
     abc.weaving.aspectinfo.Pointcut makeAIPointcut();
     
     Set pcRefs();

@@ -29,6 +29,10 @@ public class PCNot_c extends Pointcut_c implements PCNot
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return pc.isDynamic();
+	}
+	
 	/** Reconstruct the pointcut. */
 	protected PCNot_c reconstruct(Pointcut pc) {
 		 if (pc != this.pc) {

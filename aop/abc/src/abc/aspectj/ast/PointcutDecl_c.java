@@ -182,6 +182,7 @@ public class PointcutDecl_c extends MethodDecl_c
 	  	pc.checkFormals(formals);
 	  	
 	  ((PointcutInstance_c)methodInstance()).setRefersTo(pc.pcRefs()) ;
+	  ((PointcutInstance_c)methodInstance()).setDynamic(pc.isDynamic());
 	  	
 	   return this;
 	}

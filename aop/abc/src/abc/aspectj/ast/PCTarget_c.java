@@ -27,6 +27,11 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
     public Set pcRefs() {
     	return new HashSet();
     }
+    
+    public boolean isDynamic() {
+    	return true;
+    }
+    
 	/** Reconstruct the pointcut. */
 	protected PCTarget_c reconstruct(Node pat) {
 	   if (pat != this.pat) {

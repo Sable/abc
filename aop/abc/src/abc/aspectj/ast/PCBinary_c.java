@@ -34,6 +34,9 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
 		return left.pcRefs();
 	}
 	
+	public boolean isDynamic() {
+		return left.isDynamic() || right.isDynamic();
+	}
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		printSubExpr(left, true, w, tr);

@@ -23,6 +23,10 @@ public class PCAdviceExecution_c extends Pointcut_c
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("adviceexecution()");
     }

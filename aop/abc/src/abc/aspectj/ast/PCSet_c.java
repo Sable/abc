@@ -30,6 +30,10 @@ public class PCSet_c extends Pointcut_c implements PCSet
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
+	
     protected PCSet_c reconstruct(FieldPattern pat) {
 	if (pat != this.pat) {
 	    PCSet_c n = (PCSet_c) copy();

@@ -47,7 +47,10 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 		return a;
 	}
 	
-
+	public boolean isDynamic() {
+		return false;
+	}
+	
 	/** Get the target type of the pointcut reference. */
 	public Receiver target() {
 	  return this.target;
@@ -244,6 +247,8 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 		    (c.currentClass() instanceof AspectType))
 				   throw new SemanticException("Cannot refer to an abstract pointcut inside a concrete aspect.",
 												position());
+	    if (pci.transDynamic() && c.inDeclare())
+	    	throw new SemanticException("Cannot refer to a dynamic pointcut inside a declare statement.",position());
       	return this;
 	}
 	 

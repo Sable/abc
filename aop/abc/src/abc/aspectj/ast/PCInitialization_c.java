@@ -33,7 +33,10 @@ public class PCInitialization_c extends Pointcut_c implements PCInitialization
 		return new HashSet();
 	}
 	
-
+	public boolean isDynamic() {
+		return false;
+	}
+	
     public Node visitChildren(NodeVisitor v) {
 	ConstructorPattern pat
 	    = (ConstructorPattern) visitChild(this.pat,v);

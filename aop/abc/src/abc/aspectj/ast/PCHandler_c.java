@@ -24,6 +24,9 @@ public class PCHandler_c extends Pointcut_c implements PCHandler
 		return new HashSet();
 	}
 	
+	public boolean isDynamic() {
+		return false;
+	}
 
     protected PCHandler_c reconstruct(ClassnamePatternExpr pat) {
 	if (pat != this.pat) {
