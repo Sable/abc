@@ -56,6 +56,7 @@
         <javac
             destdir="paddle-classes"
             debug="true"
+            deprecation="true"
         >
             <src path="paddle-src"/>
             <classpath>
@@ -71,8 +72,9 @@
         <javac
             destdir="runtime-classes"
             debug="true"
-target="1.4"
-source="1.4"
+            deprecation="true"
+            target="1.4"
+            source="1.4"
         >
             <src path="runtime-src"/>
             <classpath>
@@ -93,8 +95,9 @@ source="1.4"
         <javac
             destdir="testing-classes"
             debug="true"
-target="1.4"
-source="1.4"
+            deprecation="true"
+            target="1.4"
+            source="1.4"
         >
             <src path="testing-src"/>
             <classpath>
@@ -125,8 +128,9 @@ source="1.4"
         <javac
             destdir="classes"
             debug="true"
-target="1.4"
-source="1.4"
+            deprecation="true"
+            target="1.4"
+            source="1.4"
         >
             <src path="src"/>
             <src path="generated"/>

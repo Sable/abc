@@ -40,27 +40,27 @@ public class AntTask extends MatchingTask {
         if(arg) addArg("-version");
     }
     public void setSourceroots(Path path) {
-        if( sourceroots == null ) sourceroots = new Path(project);
+        if( sourceroots == null ) sourceroots = new Path(getProject());
         sourceroots = appendToPath(sourceroots, path);
     }
     public Path createSourceroots() {
-        if( sourceroots == null ) sourceroots = new Path(project);
+        if( sourceroots == null ) sourceroots = new Path(getProject());
         return sourceroots.createPath();
     }
     public void setInjars(Path path) {
-        if( injars == null ) injars = new Path(project);
+        if( injars == null ) injars = new Path(getProject());
         injars = appendToPath(injars, path);
     }
     public Path createInjars() {
-        if( injars == null ) injars = new Path(project);
+        if( injars == null ) injars = new Path(getProject());
         return injars.createPath();
     }
     public void setClasspath(Path path) {
-        if( classpath == null ) classpath = new Path(project);
+        if( classpath == null ) classpath = new Path(getProject());
         classpath = appendToPath(classpath, path);
     }
     public Path createClasspath() {
-        if( classpath == null ) classpath = new Path(project);
+        if( classpath == null ) classpath = new Path(getProject());
         return classpath.createPath();
     }
     public void setClasspathRef(Reference ref) {
@@ -97,25 +97,25 @@ public class AntTask extends MatchingTask {
         if(arg) addArg("-g");
     }
     public void setArgfiles(Path arg) {
-        if( argfiles == null ) argfiles = new Path(project);
+        if( argfiles == null ) argfiles = new Path(getProject());
         argfiles = appendToPath(argfiles, arg);
     }
     public Path createArgfiles() {
-        if( argfiles == null ) argfiles = new Path(project);
+        if( argfiles == null ) argfiles = new Path(getProject());
         return argfiles.createPath();
     }
     public void setOutjar(File arg) {
         addArg( "-outjar", arg.getAbsolutePath());
     }
     public void setSrcdir(Path arg) {
-        if( src == null ) src = new Path(project);
+        if( src == null ) src = new Path(getProject());
         src = appendToPath(src, arg);
     }
     public Path createSrcdir() {
         return createSrc();
     }
     public Path createSrc() {
-        if( src == null ) src = new Path(project);
+        if( src == null ) src = new Path(getProject());
         return src.createPath();
     }
     private List soots = new ArrayList();
@@ -204,9 +204,9 @@ public class AntTask extends MatchingTask {
         if(Debug.v().traceAntTask) System.err.print("argfiles: ");
 
         for(int i = 0; i < af.length; i++) {
-            addArg("@"+project.resolveFile(af[i]).getAbsolutePath());
+            addArg("@"+getProject().resolveFile(af[i]).getAbsolutePath());
             if(Debug.v().traceAntTask)
-                System.err.print("@"+project.resolveFile(af[i]).getAbsolutePath()+" ");
+                System.err.print("@"+getProject().resolveFile(af[i]).getAbsolutePath()+" ");
         }
         if(Debug.v().traceAntTask) System.err.println("");
     }
@@ -217,7 +217,7 @@ public class AntTask extends MatchingTask {
         if(Debug.v().traceAntTask)
             System.err.print("sources: ");
         for(int i = 0; i < srcs.length; i++) {
-            File dir = project.resolveFile(srcs[i]);
+            File dir = getProject().resolveFile(srcs[i]);
             String[] files = getDirectoryScanner(dir).getIncludedFiles();
             for(int j = 0; j < files.length; j++) {
                 File f = new File(dir, files[j]);
