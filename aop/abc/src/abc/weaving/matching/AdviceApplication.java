@@ -104,10 +104,11 @@ public abstract class AdviceApplication {
 		for(adviceIt=info.getAdviceDecls().iterator();
 		    adviceIt.hasNext();) {
 		    final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
-		    WeavingEnv we=ad.getWeavingEnv();
+
 	    	    Pointcut pc=ad.getPointcut();
-	    
-		    // remove the null check once everything is properly 
+		    WeavingEnv we=ad.getWeavingEnv();	    
+
+		    // FIXME: remove the null check once everything is properly 
 		    // implemented
 		    if(pc!=null) {
 			// manual short-circuit logic
