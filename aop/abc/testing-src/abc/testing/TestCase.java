@@ -174,7 +174,7 @@ public class TestCase {
 					 */
 					
 					for(int j = 0; j < arrFiles.length; j++) {
-					    arrFiles[j] = dir + "/" + arrFiles[j];
+					    arrFiles[j] = dir + "/" + arrFiles[j].trim();
 					}
 					// Combine flag and file arguments into a single array
 					String[] args;
