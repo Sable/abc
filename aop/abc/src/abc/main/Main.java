@@ -76,6 +76,9 @@ import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AspectJExceptionChecker;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.DeclareParents;
+import abc.weaving.aspectinfo.DeclareParentsImpl;
+import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.Weaver;
@@ -809,6 +812,28 @@ public class Main {
                 scls.setApplicationClass();
                 Scene.v().loadClass(scls.getName(), SootClass.BODIES);
             }
+
+            // Make sure that anything mentioned on the RHS of a declare parents
+            // clause is resolved to HIERARCHY, so that the declare parents
+            // weaver knows what to do with it
+            for(Iterator dpIt = GlobalAspectInfo.v().getDeclareParents().iterator();
+                dpIt.hasNext(); ) {
+
+                final DeclareParents dp = (DeclareParents) dpIt.next();
+                if(dp instanceof DeclareParentsImpl) {
+                    final DeclareParentsImpl dpi = (DeclareParentsImpl) dp;
+                    for(Iterator iIt = dpi.getInterfaces().iterator();
+                        iIt.hasNext(); ) {
+                        final AbcClass i=(AbcClass) iIt.next();
+                        Scene.v().loadClass(i.getSootClass().getName(),SootClass.HIERARCHY);
+                    }
+                } else if(dp instanceof DeclareParentsExt) {
+                    final DeclareParentsExt dpe = (DeclareParentsExt) dp;
+                    Scene.v().loadClass(dpe.getParent().getSootClass().getName(),
+                                        SootClass.HIERARCHY);
+                } else throw new InternalCompilerError("Unknown kind of declare parents");
+            }
+
             Scene.v().setMainClassFromOptions();
             AbcTimer.mark("Soot resolving");
 
