@@ -22,6 +22,8 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.0.0 1098443519
+
 $Changed package root for runtime stuff from uk.ac.ox.comlab.abc 
 ;to org.aspectbench
 $Started keeping changelog (the one for this release is incomplete)
