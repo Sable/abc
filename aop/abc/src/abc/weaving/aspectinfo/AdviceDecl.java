@@ -17,7 +17,7 @@ import abc.weaving.weaver.CodeGenException;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
 
-/** An advice declaration. */
+/** A concrete advice declaration. */
 public class AdviceDecl extends AbstractAdviceDecl {
 
     private MethodSig impl;
@@ -53,7 +53,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
     public int getFormalIndex(String name) {
 	Integer i = (Integer)formal_pos_map.get(name);
 	if (i == null) {
-	    throw new RuntimeException("Advice formal "+name+" not found");
+	    throw new InternalCompilerError("Advice formal "+name+" not found");
 	}
 	return i.intValue();
     }
@@ -61,7 +61,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
     public AbcType getFormalType(String name) {
 	AbcType t = (AbcType)formal_type_map.get(name);
 	if(t==null) {
-	    throw new RuntimeException("Advice formal "+name+" not found");
+	    throw new InternalCompilerError("Advice formal "+name+" not found");
 	}
 	return t;
     }

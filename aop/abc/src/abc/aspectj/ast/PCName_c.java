@@ -138,6 +138,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 	   return this.pointcutInstance(mi);
 	 }
 	 
+    // FIXME: shouldn't this be Context, not Context_c ?
 	public ClassType findPointcutScope(Context_c c, String name) throws SemanticException {	
 		   ClassType container = c.findMethodContainerInThisScope("$pointcut$"+name);
 
