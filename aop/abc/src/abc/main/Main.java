@@ -7,6 +7,8 @@ import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
 import polyglot.main.Options;
 
+import arc.weaving.weaver.*;
+
 import java.util.*;
 
 public class Main {
@@ -46,6 +48,8 @@ public class Main {
 	// We should now have all classes as jimple
 	
 	// TODO: WEAVE!
+        Weaver weaver = new Weaver();
+        weaver.weave();
 
 	// Write classes
 

@@ -35,6 +35,7 @@ public class JimplifyVisitor extends NodeVisitor {
 	while (ci.hasNext()) {
 	    String cname = (String)ci.next();
 	    res.resolveFromJavaFile(Scene.v().getSootClass(cname), soot_res);
+            Scene.v().getSootClass(cname).setApplicationClass();
 	    System.out.println("Jimplified class: "+cname);
 	}
 	soot_res.resolveClassAndSupportClasses("java.lang.Object");
