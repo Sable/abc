@@ -129,6 +129,20 @@ screen:
       Java source files of the woven code rather than outputing class files.
       </long_desc>
     </boolopt>
+    <stringopt>
+      <alias>outjar</alias>
+      <set_arg_label>jar</set_arg_label>
+      <short_desc>Write output class files into a jar file.</short_desc>
+      <long_desc>Write output class files into the jar file specified by
+         <use_arg_label/>.</long_desc>
+    </stringopt>
+    <pathopt>
+      <alias>d</alias>
+      <set_arg_label>path</set_arg_label>
+      <short_desc>Write output class files into a directory.</short_desc>
+      <long_desc>Write output class files into the directory specified by
+         <use_arg_label/>.</long_desc>
+    </pathopt>
   </section>
   <section>
     <name>Warning/Error Reporting Options</name>
