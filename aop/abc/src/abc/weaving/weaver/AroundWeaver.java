@@ -1,13 +1,43 @@
 package abc.weaving.weaver;
 
-import soot.*;
-import soot.util.*;
-import soot.jimple.*;
-import java.util.*;
-import abc.weaving.aspectinfo.*;
-import abc.weaving.matching.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import soot.Body;
+import soot.IntType;
+import soot.Local;
+import soot.Modifier;
+import soot.RefType;
+import soot.Scene;
+import soot.SootClass;
+import soot.SootField;
+import soot.SootMethod;
+import soot.Type;
+import soot.Unit;
+import soot.Value;
+import soot.VoidType;
 import soot.javaToJimple.LocalGenerator;
-import sun.rmi.runtime.NewThreadAction;
+import soot.jimple.AssignStmt;
+import soot.jimple.IdentityStmt;import soot.jimple.InstanceFieldRef;
+import soot.jimple.IntConstant;
+import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
+import soot.jimple.Jimple;
+import soot.jimple.ReturnStmt;
+import soot.jimple.StaticFieldRef;
+import soot.jimple.Stmt;
+import soot.util.Chain;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AdviceSpec;
+import abc.weaving.aspectinfo.AroundAdvice;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.matching.ExecutionAdviceApplication;
+import abc.weaving.matching.StmtAdviceApplication;
 
 /** Handle around weaving.
  * @author Sascha Kuzins 
@@ -23,6 +53,58 @@ public class AroundWeaver {
 		if (debug)
 			System.err.println("ARD *** " + message);
 	}
+
+
+	public static class State {
+		private static class ClassInterfacePair {
+			String className;
+			String interfaceName;		
+			ClassInterfacePair(String className, String interfaceName) {
+				this.className=className;
+				this.interfaceName=interfaceName;
+			}
+
+			public boolean equals(Object arg0) {
+				if (!(arg0 instanceof ClassInterfacePair))
+					return false;
+				ClassInterfacePair rhs=(ClassInterfacePair)arg0;
+				return className.equals(rhs.className) && 
+						interfaceName.equals(rhs.interfaceName);
+			}
+			public int hashCode() {
+				return className.hashCode()+interfaceName.hashCode();
+			}
+
+		}
+		public static class AccessMethodInfo {
+			HashMap /*String, Integer*/ fieldIDs=new HashMap();
+			
+			List targets=new LinkedList();
+			List lookupValues=new LinkedList();
+			Unit defaultTarget;
+			int nextID;
+			
+			
+			public boolean implementsField(String field) {
+				return fieldIDs.containsKey(field);
+			}
+		}
+		HashMap /*ClassInterfacePair, AccessMethodInfo*/ accessInterfacesGet=new HashMap();
+		
+		/*public boolean hasInterface(String className, String interfaceName) {
+			ClassInterfacePair key=new ClassInterfacePair(className, interfaceName);
+			return accessInterfacesGet.containsKey(key);
+		}*/
+		public AccessMethodInfo getMethodInfo(String className, String interfaceName) {
+			ClassInterfacePair key=new ClassInterfacePair(className, interfaceName);
+			if (!accessInterfacesGet.containsKey(key)) {
+				accessInterfacesGet.put(key, new AccessMethodInfo());
+			}
+			return (AccessMethodInfo)accessInterfacesGet.get(key);
+		}
+	}
+	public static State state=new State();
+
 
 	public static void doWeave(
 					SootClass cl,
@@ -41,10 +123,18 @@ public class AroundWeaver {
 			advicedecl.getAspect().getInstanceClass().getSootClass();
 		SootMethod adviceMethod = advicedecl.getImpl().getSootMethod();
 	
+		Type adviceReturnType=adviceMethod.getReturnType();
+	
+		arddebug("Advice application - kind:" + adviceappl.sjpInfo.kind + 
+				" signatureType: " + adviceappl.sjpInfo.signatureType +
+				" signature: " + adviceappl.sjpInfo.signature);
+	
 		// find out what kind of pointcut 
 		if (adviceappl instanceof StmtAdviceApplication) {
 			arddebug("found statement advice application");
 			StmtAdviceApplication stmtAdv=(StmtAdviceApplication) adviceappl;
+			//stmtAdv.
+			//advicedecl.
 			// is it an assignment?
 			if (stmtAdv.stmt instanceof AssignStmt) {
 				arddebug("found assignment statement");
@@ -97,11 +187,13 @@ public class AroundWeaver {
 		boolean bDynamic=!bStatic;
 		
 		InstanceFieldRef fieldRef=(InstanceFieldRef) accessFieldRef;
-		arddebug("found field access" + fieldRef.getField().getName());
+		arddebug("found field access: " + fieldRef.getField().getName());
 		
+		Type adviceReturnType=adviceMethod.getReturnType();
+		Type accessInterfaceType=adviceReturnType;
 		
 		String typeName=
-			accessFieldRef.getType().toString();// .getClass().getName();
+			accessInterfaceType.toString();// .getClass().getName();
 		
 		String accessTypeString= bGet ? "get" : "set";
 		
@@ -112,7 +204,7 @@ public class AroundWeaver {
 		List /*type*/ accessMethodParameters=new LinkedList();
 		accessMethodParameters.add(IntType.v());
 		if (bSet) {
-			accessMethodParameters.add(accessFieldRef.getType());
+			accessMethodParameters.add(accessInterfaceType);
 		}
 		
 		SootClass accessInterface;
@@ -131,7 +223,7 @@ public class AroundWeaver {
 			
 			accessMethod=
 				new SootMethod(methodName, accessMethodParameters, 
-					bGet ? accessFieldRef.getType() : VoidType.v(),
+					bGet ? accessInterfaceType : VoidType.v(),
 						Modifier.ABSTRACT | 
 						Modifier.PUBLIC);
 			
@@ -190,6 +282,7 @@ public class AroundWeaver {
 			 !adviceMethod.getParameterType(0).toString().equals(interfaceName)) {
 			modifyAdviceMethod(adviceMethod, accessInterface, accessMethod, 
 			    fieldRef.getType(),
+				accessInterfaceType,
 				bGet, bStatic
 				);
 		}
@@ -233,18 +326,19 @@ public class AroundWeaver {
 		SootClass accessInterface,
 		SootMethod accessMethod,
 		Type fieldType,
+		Type accessInterfaceType,
 		boolean bGet,
 		boolean bStatic) {
 		
 		boolean bSet=!bGet;
 			
 			
-		arddebug("modifying around() method");
+		arddebug("modifying advice method: " + adviceMethod.toString());
 		List aroundParameters=adviceMethod.getParameterTypes();
 		// params are added in reverse order...
 		if (bSet) {
 			aroundParameters.add(0, fieldType);	
-		}		
+		}
 		aroundParameters.add(0, IntType.v());
 		aroundParameters.add(0, accessInterface.getType());		
 		adviceMethod.setParameterTypes(aroundParameters);
@@ -252,17 +346,17 @@ public class AroundWeaver {
 		Chain statements=aroundBody.getUnits();
 		LocalGenerator localgen2 = new LocalGenerator(aroundBody);
 		Local l=localgen2.generateLocal(accessInterface.getType());
-		// insert id for first param
+		// insert id for first param (interface reference)
 		Stmt intRefIDstmt=Jimple.v().newIdentityStmt(l, 
 				Jimple.v().newParameterRef(	
 						accessInterface.getType(),0));
 		statements.insertAfter(intRefIDstmt, statements.getFirst());
-		// id for second param
+		// id for second param (id of field accessed)
 		Local l2=localgen2.generateLocal(IntType.v());
 		Stmt fieldIDStmt=Jimple.v().newIdentityStmt(l2, 
 				Jimple.v().newParameterRef(IntType.v(),1));
 		statements.insertAfter(fieldIDStmt, intRefIDstmt);
-		// id for third param
+		// id for third param (value for set operation)
 		Local l3=null;
 		if (bSet) {
 			l3=localgen2.generateLocal(fieldType);
@@ -328,14 +422,21 @@ public class AroundWeaver {
 		
 		cl.addInterface(accessInterface);
 		
+		Type returnType;
+		if (bGet) {
+			returnType=accessInterface.getType() ;
+		} else {
+			returnType=VoidType.v();
+		}
+			
 		// create new method					
 		SootMethod localGetMethod=new SootMethod(
-			methodName, accessParameters, bGet ? accessFieldReference.getType() : VoidType.v(),
+			methodName, accessParameters, returnType ,
 				Modifier.PUBLIC);
 		
 		Body getBody=Jimple.v().newBody(localGetMethod);
 		
-		localGetMethod.setActiveBody(getBody);		
+		localGetMethod.setActiveBody(getBody);
 		cl.addMethod(localGetMethod);
 		
 		Chain statements=getBody.getUnits();
@@ -355,13 +456,16 @@ public class AroundWeaver {
 		statements.insertAfter(paramIdStmt,
 			 statements.getFirst());
 		Local p3=null;
+		Stmt lastIDStmt=paramIdStmt;
 		if (bSet) {
 			p3=lg.generateLocal(accessFieldReference.getType());
 			Stmt valueIdStmt=Jimple.v().newIdentityStmt(p3, 
 				Jimple.v().newParameterRef(
 					accessFieldReference.getType(),1));
 			statements.insertAfter(valueIdStmt,
-				 paramIdStmt);			
+				 paramIdStmt);		
+			
+			lastIDStmt=valueIdStmt;	
 		}
 								
 		List lookupValues= new LinkedList();
@@ -392,7 +496,7 @@ public class AroundWeaver {
 				targets.add(setStmt);
 			}
 			fieldID++;
-		}						
+		}
 		
 		//Local l=lg.generateLocal(fieldRef.getType());
 		//ReturnStmt returnStmt=Jimple.v().newReturnStmt(l);	
@@ -415,6 +519,6 @@ public class AroundWeaver {
 		// return
 		
 		//returnStmt.setOp(IntConstant.v());
-		statements.insertAfter(lookupStmt, paramIdStmt);
+		statements.insertAfter(lookupStmt, lastIDStmt);
 	} 
 }
