@@ -77,7 +77,7 @@ public abstract class AdviceApplication {
 
     public void debugInfo(String prefix,StringBuffer sb) {
 	sb.append(prefix+"advice decl:\n");
-       	advice.debugInfo(prefix+" ",sb);
+       	if(advice!=null) advice.debugInfo(prefix+" ",sb);
 	sb.append(prefix+"residue: "+residue+"\n");
 	sb.append(prefix+"SJP info: "+sjpInfo+"\n");
 	sb.append(prefix+"enclosing SJP info: "+sjpEnclosing+"\n");
