@@ -267,6 +267,12 @@
         </compile>
         <run class="cap.OptionList"></run>
     </ajc-test>
+<ajc-test title="The compiler crashes when using aspect libraries created without using -noweave" pr="36329" num="789" dir="new/options11" comment="the line number might change, we're really interested only in the files here" abccomment="this is testing binary aspects from jars and is not                supported by abc.  LJH August 23/04">
+        <abckeywords> <skip></skip></abckeywords>
+        <compile files="Main.java,injar.jar,Aspect.java,aspectlib1.jar,aspectlib2.jar">
+            <message line="0" kind="error"></message>
+        </compile>
+   </ajc-test>
 <ajc-test title="expect class added in initial incremental tests" num="798" keywords="incremental-test" dir="incremental/initialTests/classAdded">
         <compile staging="true" sourceroots="." options="-incremental"></compile>
         <run class="main.Main"></run>
