@@ -77,7 +77,6 @@ public class AbcFactory {
 	    return soot.Scene.v().getSootClass((String)ct_to_name.get(ct));
 	} else {
 	    soot.RefType rt=(soot.RefType) soot.javaToJimple.Util.getSootType(ct);
-	    soot.Scene.v().loadClassAndSupport(rt.getClassName());
 	    SootClass sc = rt.getSootClass();
 	    name_to_ct.put(sc.getName(), ct);
 	    ct_to_name.put(ct, sc.getName());

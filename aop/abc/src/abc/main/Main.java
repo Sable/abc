@@ -521,6 +521,10 @@ public class Main {
     public void initSoot() throws IllegalArgumentException {
 	Scene.v().setSootClassPath(classpath);
 
+	Scene.v().loadClassAndSupport("java.lang.Thread");
+	Scene.v().loadClassAndSupport("java.lang.Runnable");
+	Scene.v().loadClassAndSupport("java.lang.Cloneable");
+
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
         //System.out.println(classpath);
         if (!soot.options.Options.v().parse(soot_argv)) {
