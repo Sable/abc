@@ -28,6 +28,10 @@ The following is specific to abc:
 \hrule
 }
 
+\def\ajand{\&\!\!\&}
+\def\ajor{\|}
+\def\ajnot{!}
+
 \begin{document}
 
 \chapter{Aspects}
@@ -71,6 +75,55 @@ Expressions inside an if pointcut should not make use of side effects.
 The order of evaluation of such expressions is undefined; as is the number
 of times they will be evaluated at any given join point shadow.
 
+\subsection{Logical connectives}
+
+The standard logical connectives $\ajand$, $\ajor$ and $\ajnot$
+may be used to combine pointcuts. 
+
+It is possible for a pointcut
+constructed with $\ajor$ to succeed multiple times, producing possibly 
+different bindings for the free variables contained with in each time.
+Note that it is not possible for any {\em atomic} pointcut to succeed
+multiple times. The $\ajand$ and $\ajor$ operators are evaluated with
+backtracking.
+
+\abcdistinctionbegin
+In ajc, it is an error to write a pointcut that will require backtracking
+at runtime.
+\abcdistinctionend
+
+\subsubsection{And}
+
+The pointcut $p\ajand q$ first tries the pointcut $p$. If $p$ fails, then the
+compound pointcut fails. If $p$ succeeds, $q$ is run with the bindings
+produced by $p$; if it succeeds, then the resulting bindings are the 
+result of the compound pointcut. If it fails, then $p$ is rerun in an attempt
+to produce different bindings. This process continues until either $q$
+succeeds or $p$ has no more bindings to produce.
+
+\subsubsection{Or}
+
+The pointcut $p\ajor q$ first tries the pointcut $p$.
+If the first branch of an $\ajor$ succeeds, but a later test (outside 
+the $\ajor$) fails,
+matching backtracks and tries the second branch of the $\ajor$. This may
+cause the later test to succeed because variables are now bound differently.
+
+\subsubsection{Not}
+
+The pointcut $\ajnot p$ succeeds if the pointcut $p$ fails. If $p$
+succeeds, then any variable bindings from inside $p$ are ignored 
+and $\ajnot p$ fails.
+
+\subsection{Control flow pointcuts}
+
+\abcdistinctionbegin
+In ajc, it is not valid for an \verb|if| pointcut to appear lexically
+within a \verb|cflow| or \verb|cflowbelow| pointcut (it can be used
+indirectly via a named pointcut). In abc, this restriction does not apply.
+\abcdistinctionend
+
+
 \chapter{Declaring new warnings and errors}
 
 \chapter{Advice}
@@ -105,6 +158,12 @@ references to abstract pointcuts will be resolved in the concrete aspects.
 
 If no instantiation clause is specified, then it is inherited from the parent
 aspect if there is one, or defaults to \verb|issingleton| otherwise.
+
+\abcdistinctionbegin
+In ajc, it is not valid for an \verb|if| pointcut to appear lexically
+within the pointcut of any per clause (it can be used indirectly via a 
+named pointcut). In abc, this restriction does not apply.
+\abcdistinctionend
 
 \chapter{Declare soft}
 
