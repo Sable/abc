@@ -119,7 +119,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	 */
 	
 	public Context enterScope(Context c) {
-		AJContext nc = (AJContext) super.enterScope(c).pushStatic(); // intertype method decls are static
+		AJContext nc = (AJContext) super.enterScope(c);
 		TypeSystem ts = nc.typeSystem();
 		return nc.pushHost(ts.staticTarget(host.type()).toClass());
 	}

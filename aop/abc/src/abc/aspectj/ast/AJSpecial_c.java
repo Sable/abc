@@ -33,8 +33,11 @@ public class AJSpecial_c extends Special_c implements Special {
 	public Node disambiguate(AmbiguityRemover ar) throws SemanticException {
 		AJContext c = (AJContext) ar.context();
 		if (!c.inInterType() 
-		    || (c.nested() && (qualifier() == null || c.withinInterType(qualifier().type())))) {		       
+		    || (c.nested() && qualifier() == null)
+		    || (c.inInterType() && qualifier() != null && 
+		    	c.currentClass().hasEnclosingInstance(qualifier.type().toClass()))) {		       
 			// this is an ordinary special
+			System.out.println("ordinary");
 			return this;
 		} else {
 			// this is a host special

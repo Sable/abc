@@ -22,6 +22,5 @@ public interface AJContext extends Context {
 	
 	/** inner class inside intertype decl? */
 	boolean nested(); 
-	
-	boolean withinInterType(Type t);             
+	            
 }
