@@ -149,7 +149,7 @@ public class Restructure {
 	  }
       }
 
-  private static Map/*<SootMethod,Stmt>*/ returns=new Hashtable();
+  private static Map/*<Body,Stmt>*/ returns=new Hashtable();
 
   /** Given a SootMethod, restructure its body so that the body ends
    *  with   L1:nop; return;    or   L1:nop; return(<local>);.
@@ -157,8 +157,8 @@ public class Restructure {
    *  goto L1.   Return a reference to the nop at L1.
    */
   public static Stmt restructureReturn(SootMethod method) {
-    if(returns.containsKey(method)) return ((Stmt) returns.get(method));
     Body b = method.getActiveBody();
+    if(returns.containsKey(b)) return ((Stmt) returns.get(b));
     LocalGenerator localgen = new LocalGenerator(b);
     Stmt endnop = Jimple.v().newNopStmt();
     Chain units = b.getUnits();  // want a patching chain here, to make sure
@@ -235,7 +235,7 @@ public class Restructure {
               } // each trap
 	  } // if return stmt
       } // each stmt in body
-    returns.put(method,endnop);
+    returns.put(b,endnop);
     return(endnop);
   }
 
@@ -622,8 +622,8 @@ public class Restructure {
 		// returns if the classes contain a method with the same name and signature 
 		// but different return type
 		public static boolean haveCollidingMethod(SootClass cl, SootClass cl2) {
-			for (Iterator it=cl.getMethods().iterator(); it.hasNext();) {
-				SootMethod m=(SootMethod)it.next();
+			for( Iterator mIt = cl.getMethods().iterator(); mIt.hasNext(); ) {
+			    final SootMethod m = (SootMethod) mIt.next();
 				try {
 					
 					SootMethod m2=cl2.getMethod(m.getName(), m.getParameterTypes());
