@@ -54,6 +54,10 @@ public class DeclarePrecedence_c extends DeclareDecl_c
         w.write(";");
     }
 
+    public List pats() {
+	return pats;
+    }
+
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	List cnpats = new ArrayList();
 	Iterator pi = pats.iterator();

@@ -44,5 +44,3 @@ public class CollectJimplifyVisitor extends ErrorHandlingVisitor {
     }
 
 }
-
-

@@ -95,7 +95,7 @@ public class PatternMatcher {
 	Iterator sci = Scene.v().getClasses().iterator();
 	while (sci.hasNext()) {
 	    SootClass sc = (SootClass)sci.next();
-	    hierarchy.insertSootClass(sc, false);
+	    hierarchy.insertClassAndSuperclasses(sc, false);
 	}
     }
 
@@ -127,12 +127,12 @@ public class PatternMatcher {
     }
 
     public boolean matchesObject(NamePattern pat) {
-	PCNode object = hierarchy.getClass("java.lang.Object");
+	PCNode object = hierarchy.getClass(Scene.v().getSootClass("java.lang.Object"));
 	return matchesName(pat, object);
     }
 
-    public boolean matchesClass(ClassnamePatternExpr pattern, String cl) {
-	PCNode cl_node = hierarchy.getClassOrDummy(cl);
+    public boolean matchesClass(ClassnamePatternExpr pattern, SootClass sc) {
+	PCNode cl_node = hierarchy.getClass(sc);
 	return pattern.matches(this, cl_node);
     }
 
@@ -150,7 +150,7 @@ public class PatternMatcher {
 		return pattern.matchesPrimitiveArray(this, type, dim);
 	    }
 	} else {
-	    PCNode cl_node = hierarchy.getClassOrDummy(type);
+	    PCNode cl_node = hierarchy.getClass(Scene.v().getSootClass(type));
 	    if (dim == 0) {
 		return pattern.matchesClass(this, cl_node);
 	    } else {
@@ -215,7 +215,7 @@ public class PatternMatcher {
 	    Iterator ei = excs.iterator();
 	    while (ei.hasNext() && !matches) {
 		soot.SootClass e = (soot.SootClass)ei.next();
-		if (matchesClass(cnp, e.toString())) matches = true;
+		if (matchesClass(cnp, e)) matches = true;
 	    }
 	    if (matches != tpat.positive()) return false;
 	}
@@ -234,7 +234,7 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesClass(SootClass sc) {
-	    boolean matches = PatternMatcher.this.matchesClass(pattern, sc.toString());
+	    boolean matches = PatternMatcher.this.matchesClass(pattern, sc);
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching classname pattern "+pattern+" against "+sc+": "+matches);
 	    }
@@ -287,11 +287,11 @@ public class PatternMatcher {
 	    method = method.getDeclaringClass().getMethod(method.getSubSignature());
 
 	    String name = MethodCategory.getName(method);
-	    String classname = MethodCategory.getClassName(method);
+	    SootClass realcl = Scene.v().getSootClass(MethodCategory.getClassName(method));//FIXME
 	    boolean matches =
 		matchesModifiers(pattern.getModifiers(), method) &&
 		matchesType(pattern.getType(), method.getReturnType().toString()) &&
-		matchesClass(pattern.getName().base(), classname) &&
+		matchesClass(pattern.getName().base(), realcl) &&
 		pattern.getName().name().getPattern().matcher(name).matches() &&
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
@@ -321,7 +321,7 @@ public class PatternMatcher {
 	    boolean matches =
 		matchesModifiers(pattern.getModifiers(), sf) &&
 		matchesType(pattern.getType(), sf.getType().toString()) &&
-		matchesClass(pattern.getName().base(), sf.getDeclaringClass().toString()) &&
+		matchesClass(pattern.getName().base(), sf.getDeclaringClass()) &&
 		pattern.getName().name().getPattern().matcher(sf.getName()).matches();
 	    if (abc.main.Debug.v().patternMatches) {
 		System.err.println("Matching field pattern "+pattern+" against "+sf+": "+matches);
@@ -361,7 +361,7 @@ public class PatternMatcher {
 	public boolean matchesConstructor(SootMethod method) {
 	    boolean matches =
 		matchesModifiers(pattern.getModifiers(), method) &&
-		matchesClass(pattern.getName().base(), method.getDeclaringClass().toString()) &&
+		matchesClass(pattern.getName().base(), method.getDeclaringClass()) &&
 		matchesFormals(pattern.getFormals(), method) &&
 		matchesThrows(pattern.getThrowspats(), method.getExceptions());
 	    if (abc.main.Debug.v().patternMatches) {

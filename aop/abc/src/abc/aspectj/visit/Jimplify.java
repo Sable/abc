@@ -45,6 +45,10 @@ public class Jimplify extends AbstractPass {
 	    long aftertime = System.currentTimeMillis();
 	    AbcTimer.addToSootResolve(aftertime-beforetime);
 
+	    // Update the pattern matcher hierarchy
+	    // This is outside the timer so we can distinquish the two times
+	    PCStructure.v().updateWithAllSootClasses();
+
 	    has_been_run = true;
 	}
 	return true;

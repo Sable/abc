@@ -58,5 +58,9 @@ public class DeclareParentsWeaver {
 		}
 	    }
 	}
+
+	// Recompute the hierarchy
+	Scene.v().releaseActiveHierarchy();
+	Scene.v().releaseFastHierarchy();
     }
 }

@@ -8,17 +8,17 @@ import polyglot.ast.*;
 import polyglot.visit.*;
 import polyglot.types.*;
 
+import abc.aspectj.ExtensionInfo;
+
 import java.util.*;
 
 public class ParentDeclarer extends ErrorHandlingVisitor {
-    private PCStructure hierarchy;
-    private Collection weavable_classes;
+    private ExtensionInfo ext;
 
     public ParentDeclarer(Job job, TypeSystem ts, NodeFactory nf,
-			  PCStructure hierarchy, Collection weavable_classes) {
+			  ExtensionInfo ext) {
 	super(job, ts, nf);
-	this.hierarchy = hierarchy;
-	this.weavable_classes = weavable_classes;
+	this.ext = ext;
     }
 
     public NodeVisitor enterCall(Node n) throws SemanticException {
@@ -27,43 +27,31 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	if (n instanceof DeclareParentsImpl) {
 	    ClassnamePatternExpr pat = ((DeclareParentsImpl)n).pat();
 	    List/*<TypeNde>*/ interfaces = ((DeclareParentsImpl)n).interfaces();
-	    Iterator cli = weavable_classes.iterator();
-	    while (cli.hasNext()) {
-		String cl = (String)cli.next();
-		if (PatternMatcher.v().matchesClass(pat, cl)) {
-		    // FIXME: Check that cl is a class
-		    ClassType ct = null;
-		    try {
-			ct = typeSystem().typeForName(cl);
-		    } catch (SemanticException e) {}
-		    if (ct != null) {
-			/* FIXME: Should this be here?
-			if (ct.flags().isInterface()) {
-			    throw new SemanticException("Interface "+cl+" cannot implement another interface");
-			}
-			*/
-			PCNode hi_cl = hierarchy.getClass(cl);
-			if (ct instanceof ParsedClassType) {
-			    ParsedClassType pct = (ParsedClassType)ct;
-			    Iterator ini = interfaces.iterator();
-			    while (ini.hasNext()) {
-				TypeNode in = (TypeNode)ini.next();
-				if (in.type().isClass()) {
-				    ClassType ict = (ClassType)in.type();
-				    if (!ict.flags().isInterface()) {
-					throw new SemanticException("Type "+in+" is not an interface");
-				    }
-				} else {
-				    throw new SemanticException("Type "+in+" is not a class");
+	    Iterator cti = new ArrayList(ext.hierarchy.getClassTypes()).iterator();
+	    while (cti.hasNext()) {
+		ClassType ct = (ClassType)cti.next();
+		PCNode hi_cl = ext.hierarchy.getClass(ct);
+		if (pat.matches(PatternMatcher.v(), hi_cl)) {
+		    if (ct instanceof ParsedClassType) {
+			ParsedClassType pct = (ParsedClassType)ct;
+			Iterator ini = interfaces.iterator();
+			while (ini.hasNext()) {
+			    TypeNode in = (TypeNode)ini.next();
+			    if (in.type().isClass()) {
+				ClassType ict = (ClassType)in.type();
+				if (!ict.flags().isInterface()) {
+				    throw new SemanticException("Type "+in+" is not an interface");
 				}
-				ClassType inct = (ClassType)in.type();
-				PCNode hi_in = hierarchy.insertClass(inct.fullName(), false);
-				
-				//System.err.println("Declared "+cl+" to implement "+inct.fullName());
-				
-				pct.addInterface(inct);
-				hi_cl.addParent(hi_in);
+			    } else {
+				throw new SemanticException("Type "+in+" is not a class");
 			    }
+			    ClassType inct = (ClassType)in.type();
+			    PCNode hi_in = ext.hierarchy.insertClassAndSuperclasses(inct, false);
+			    
+			    //System.err.println("Declared "+ct.fullName()+" to implement "+inct.fullName());
+			    
+			    pct.addInterface(inct);
+			    hi_cl.addParent(hi_in);
 			}
 		    }
 		}
@@ -74,33 +62,27 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 	    Type object_type = typeSystem().typeForName("java.lang.Object");
 	    ClassnamePatternExpr pat = ((DeclareParentsExt)n).pat();
 	    TypeNode type = ((DeclareParentsExt)n).type();
-	    Iterator cli = weavable_classes.iterator();
-	    while (cli.hasNext()) {
-		String cl = (String)cli.next();
-		if (PatternMatcher.v().matchesClass(pat, cl)) {
-		    ClassType ct = null;
-		    try {
-			ct = typeSystem().typeForName(cl);
-		    } catch (SemanticException e) {}
-		    if (ct != null) {
-			PCNode hi_cl = hierarchy.getClass(cl);
-			if (ct instanceof ParsedClassType) {
-			    ParsedClassType pct = (ParsedClassType)ct;
-			    if (!pct.superType().equals(object_type)) {
-				throw new SemanticException("Class "+cl+" already has a superclass");
-			    }
-			    if (!type.type().isClass()) {
-				//FIXME: Check that cl and type are either both classes or both intrfaces
-				throw new SemanticException("Type "+type+" is not an class");
-			    }
-			    ClassType typect = (ClassType)type.type();
-			    PCNode hi_type = hierarchy.insertClass(typect.fullName(), false);
-			    
-			    //System.err.println("Declared "+cl+" to extend "+typect.fullName());
-			    
-			    pct.superType(typect);
-			    hi_cl.addParent(hi_type);
+	    //FIXME: Check that type is a class
+	    Iterator cti = new ArrayList(ext.hierarchy.getClassTypes()).iterator();
+	    while (cti.hasNext()) {
+		ClassType ct = (ClassType)cti.next();
+		PCNode hi_cl = ext.hierarchy.getClass(ct);
+		if (pat.matches(PatternMatcher.v(), hi_cl)) {
+		    if (ct instanceof ParsedClassType) {
+			ParsedClassType pct = (ParsedClassType)ct;
+			if (!pct.superType().equals(object_type)) {
+			    throw new SemanticException("Class "+ct+" already has a superclass");
 			}
+			if (!type.type().isClass()) {
+			    throw new SemanticException("Type "+type+" is not an class");
+			}
+			ClassType typect = (ClassType)type.type();
+			PCNode hi_type = ext.hierarchy.insertClassAndSuperclasses(typect, false);
+			
+			//System.err.println("Declared "+ct.fullName()+" to extend "+typect.fullName());
+			
+			pct.superType(typect);
+			hi_cl.addParent(hi_type);
 		    }
 		}
 	    }

@@ -45,8 +45,7 @@ public class NamePatternEvaluator extends HaltingVisitor {
 	    ParsedClassType ct = ((ClassDecl)n).type();
 	    if (ct.kind() == ClassType.TOP_LEVEL ||
 		(ct.kind() == ClassType.MEMBER && seen_classes.contains(ct.container()))) {
-		String name = ((ClassDecl)n).type().fullName();
-		context = ext_info.hierarchy.getClass(name);
+		context = ext_info.hierarchy.getClass(ct);
 		seen_classes.add(ct);
 	    }
 	    return this;

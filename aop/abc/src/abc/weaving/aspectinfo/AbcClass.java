@@ -18,13 +18,16 @@ public class AbcClass {
     public AbcClass(Type polyglot_type, String java_name) {
 	this.polyglot_type = polyglot_type;
 	this.java_name = java_name;
+	polyglot_type.toString();
     }
 
     public AbcClass(Type polyglot_type) {
 	this.polyglot_type = polyglot_type;
+	polyglot_type.toString();
     }
 
     public AbcClass(SootClass sc) {
+	sc.toString();
 	this.sc = sc;
 	this.jvm_name = sc.getName();
     }
@@ -39,6 +42,7 @@ public class AbcClass {
 
     public String getJvmName() {
 	if (jvm_name == null) {
+	    System.err.println(((polyglot.types.ClassType)polyglot_type).fullName());
 	    jvm_name = soot.javaToJimple.Util.getSootType(polyglot_type).toString();
 	}
 	return jvm_name;

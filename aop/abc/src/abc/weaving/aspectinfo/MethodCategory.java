@@ -210,7 +210,7 @@ public class MethodCategory {
 						String real_name, String real_class,
 						int skip_first, int skip_last) {
 	GlobalAspectInfo.v().registerRealNameAndClass(sig,
-						      real_name, d2d(real_class),
+						      real_name, real_class,
 						      skip_first, skip_last);
     }
 
@@ -273,7 +273,7 @@ public class MethodCategory {
     public static String getClassName(SootMethod m) {
 	String real_class = GlobalAspectInfo.v().getRealClass(signature(m));
 	if (real_class == null) {
-	    return d2d(m.getDeclaringClass().getName());
+	    return m.getDeclaringClass().getName();
 	} else {
 	    return real_class;
 	}

@@ -3,6 +3,7 @@ package abc.weaving.aspectinfo;
 import abc.aspectj.visit.PCStructure;
 
 import polyglot.util.Position;
+import polyglot.types.ClassType;
 import polyglot.types.SemanticException;
 import polyglot.util.InternalCompilerError;
 
@@ -61,16 +62,6 @@ public class GlobalAspectInfo {
     private Map/*<String,Integer>*/ method_skip_last = new HashMap();
     
     
-   
-
-    public void insertAllSootClassesByName(Collection weavable_classes) {
-	Iterator cni = weavable_classes.iterator();
-	while (cni.hasNext()) {
-	    String cn = (String)cni.next();
-	    addClass(new AbcClass(Scene.v().getSootClass(cn)));
-	}
-    }
-
     public void resolveClassNames() {
 	// Transform the class names from Java names to JVM names
 	Iterator ci = classes.iterator();
@@ -337,68 +328,28 @@ public class GlobalAspectInfo {
 
     private Map/*<Aspect,Set<Aspect>>*/ prec_rel = new HashMap();
 
-    /** Compute the precedence relation between aspects from all
-     *  <code>declare precedence</code> declarations in the program.
-     *  @exception SemanticException if any aspect is matched by more than one pattern on the same list.
+    public void initPrecedenceRelation(Map prec_rel) {
+	this.prec_rel = prec_rel;
+    }
+
+    /** Get the precedence relationship between two aspects.
+     *  @param a the name of the first aspect.
+     *  @param b the name of the second aspect.
+     *  @return
+     *    {@link PRECEDENCE_NONE} if none of the aspects have precedence,
+     *    {@link PRECEDENCE_FIRST} if the first aspect has precedence,
+     *    {@link PRECEDENCE_SECOND} if the second aspect has precedence, or
+     *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
-    public void computePrecedenceRelation() throws SemanticException {
-	// Init the precedence set for each aspect
-	{
-	    Iterator ai = aspects.iterator();
-	    while (ai.hasNext()) {
-		Aspect a = (Aspect)ai.next();
-		prec_rel.put(a, new HashSet());
-	    }
+    public int getPrecedence(String a, String b) {
+	if (!prec_rel.containsKey(a) || !prec_rel.containsKey(b)) {
+	    return PRECEDENCE_NONE;
 	}
-
-	// Run through all declare precedence declarations
-	Iterator dpri = dprs.iterator();
-	while (dpri.hasNext()) {
-	    DeclarePrecedence dpr = (DeclarePrecedence)dpri.next();
-	    
-	    // The aspects we have passed on this list
-	    Set passed = new HashSet();
-
-	    // Iterate through the list of patterns
-	    Iterator pati = dpr.getPatterns().iterator();
-	    while (pati.hasNext()) {
-		ClassnamePattern pat = (ClassnamePattern)pati.next();
-
-		// The aspects that match the current pattern
-		Set current = new HashSet();
-
-		// Handle all aspects matched by the pattern
-		Iterator ai = aspects.iterator();
-		while (ai.hasNext()) {
-		    Aspect a = (Aspect)ai.next();
-		    SootClass asc = a.getInstanceClass().getSootClass();
-		    if (pat.matchesClass(asc)) {
-			// It is an error if an aspect is matched twice on the same list
-			if (passed.contains(a)) {
-			    throw new SemanticException("Aspect "+a.getName()+
-							" is matched by more than one pattern on the precedence list",
-							dpr.getPosition());
-			}
-			// Mark this aspect as being preceded by all passed aspects
-			Iterator pai = passed.iterator();
-			while (pai.hasNext()) {
-			    Aspect pa = (Aspect)pai.next();
-			    ((Set)prec_rel.get(pa)).add(a);
-			    if (abc.main.Debug.v().precedenceRelation) {
-				System.err.println("aspect "+pa.getName()+
-						   " has precedence over aspect "+a.getName());
-			    }
-			}
-			// Add it to the current set
-			current.add(a);
-		    }
-		}
-
-		// All aspects matched by this pattern are now passed
-		passed.addAll(current);
-	    }
-
-	}
+	boolean ab = ((Set)prec_rel.get(a)).contains(b);
+	boolean ba = ((Set)prec_rel.get(b)).contains(a);
+	return ab ?
+	    ba ? PRECEDENCE_CONFLICT : PRECEDENCE_FIRST :
+	    ba ? PRECEDENCE_SECOND : PRECEDENCE_NONE;
     }
 
     /** Get the precedence relationship between two aspects.
@@ -411,11 +362,7 @@ public class GlobalAspectInfo {
      *    {@link PRECEDENCE_CONFLICT} if there is a precedence conflict between the two aspects.
      */
     public int getPrecedence(Aspect a, Aspect b) {
-	boolean ab = ((Set)prec_rel.get(a)).contains(b);
-	boolean ba = ((Set)prec_rel.get(b)).contains(a);
-	return ab ?
-	    ba ? PRECEDENCE_CONFLICT : PRECEDENCE_FIRST :
-	    ba ? PRECEDENCE_SECOND : PRECEDENCE_NONE;
+	return getPrecedence(a.getName(), b.getName());
     }
 
     private Hashtable /*<SootMethod,MethodAdviceList>*/ adviceLists=null;

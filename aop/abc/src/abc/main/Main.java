@@ -26,7 +26,7 @@ import java.lang.reflect.*;
 
 public class Main {
     public Collection/*<String>*/ aspect_sources = new ArrayList();
-    public Collection/*<String>*/ weavable_classes = new ArrayList();
+    public Collection/*<String>*/ jar_classes = new ArrayList();
     public Collection/*<String>*/ in_jars = new ArrayList();
 
     public List/*<String>*/ soot_args = new ArrayList();
@@ -44,6 +44,7 @@ public class Main {
       //  needs static information reset for repeated calls to main
       abc.main.AbcTimer.reset();
       abc.soot.util.Restructure.reset();
+      abc.aspectj.visit.PCStructure.reset();
       abc.aspectj.visit.AspectInfoHarvester.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.matching.ShadowType.reset();
@@ -250,11 +251,11 @@ public class Main {
 	while (jari.hasNext()) {
 	    String jar = (String)jari.next();
 	    List jar_classes = soot.SourceLocator.v().resolveClassesUnder(jar);
-	    weavable_classes.addAll(jar_classes);
+	    jar_classes.addAll(jar_classes);
 	}
 
 	// Make them all application classes
-	Iterator cni = weavable_classes.iterator();
+	Iterator cni = jar_classes.iterator();
 	while (cni.hasNext()) {
 	    String cn = (String)cni.next();
 	    SootClass sc = Scene.v().getSootClass(cn);
@@ -262,11 +263,11 @@ public class Main {
 	}
     }
 
-    public void compile() throws CompilerFailedException, IllegalArgumentException {
+    public void compile() throws CompilerFailedException, IllegalArgumentException, SemanticException {
         // Invoke polyglot
         try {
             abc.aspectj.ExtensionInfo ext = 
-                new abc.aspectj.ExtensionInfo(weavable_classes, aspect_sources);
+                new abc.aspectj.ExtensionInfo(jar_classes, aspect_sources);
             Options options = ext.getOptions();
             options.assertions = true;
             options.serialize_type_info = false;
@@ -314,10 +315,6 @@ public class Main {
 		PatternMatcher.v().recomputeAllMatches();
 		AbcTimer.mark("Recompute name pattern matches");
         
-		 // Compute the precedence relation between aspects
-		 GlobalAspectInfo.v().computePrecedenceRelation();
-		 AbcTimer.mark("Compute precedence relation");
-
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
         ita.adjust();
