@@ -4,11 +4,17 @@ package abc.weaving.aspectinfo;
 import java.util.*;
 import polyglot.util.Position;
 import soot.*;
+import abc.weaving.matching.*;
+import abc.weaving.residues.*;
 
 /** An argument pattern denoting any type. */
 public class ArgAny extends ArgPattern {
     public ArgAny(Position pos) {
 	super(pos);
+    }
+
+    public Residue matchesAt(WeavingEnv we,ContextValue cv) {
+	return AlwaysMatch.v;
     }
 
     public Var substituteForPointcutFormal

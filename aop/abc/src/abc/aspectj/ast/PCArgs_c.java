@@ -84,8 +84,7 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	List args = AspectInfoHarvester.convertArgPatterns(pats);
-	return new abc.weaving.aspectinfo.OtherPointcut
-	    (new abc.weaving.aspectinfo.Args(args), position());
+	return new abc.weaving.aspectinfo.Args(args,position());
     }
 
 }

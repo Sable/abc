@@ -1,5 +1,6 @@
 package abc.weaving.matching;
 
+import java.util.*;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
@@ -63,8 +64,13 @@ public abstract class ShadowMatch {
 	return new JimpleValue(Restructure.getThisCopy(container));
     }
 
-    // no sensible default
+    // no sensible default - unless null?
     public abstract ContextValue getTargetContextValue();
+
+    public List/*<ContextValue>*/ getArgsContextValues() {
+	// replace by empty list later?
+	throw new RuntimeException("args not yet implemented for "+this);
+    }
 
     public ContextValue getReturningContextValue() {
 	return new JimpleValue(NullConstant.v());

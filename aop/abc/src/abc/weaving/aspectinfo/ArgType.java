@@ -1,9 +1,9 @@
-
 package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
-
 import soot.*;
+import abc.weaving.matching.*;
+import abc.weaving.residues.*;
 
 /** An argument pattern denoting a specific type. */
 public class ArgType extends ArgAny {
@@ -16,6 +16,10 @@ public class ArgType extends ArgAny {
 
     public AbcType getType() {
 	return type;
+    }
+
+    public Residue matchesAt(WeavingEnv we,ContextValue cv) {
+	return CheckType.construct(cv,type.getSootType());
     }
 
     // inherit substituteForPointcutFormal from ArgAny;

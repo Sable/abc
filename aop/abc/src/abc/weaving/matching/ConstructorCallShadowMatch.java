@@ -1,5 +1,7 @@
 package abc.weaving.matching;
 
+import java.util.*;
+
 import soot.*;
 import soot.jimple.*;
 
@@ -13,16 +15,16 @@ import abc.weaving.residues.JimpleValue;
  *  @date 05-May-04
  */
 public class ConstructorCallShadowMatch extends StmtShadowMatch {
-    
-    private SootMethod method;
-    
-    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,SootMethod method) {
+    private InvokeExpr invoke;
+        
+    private ConstructorCallShadowMatch(SootMethod container,Stmt stmt,InvokeExpr invoke) {
 	super(container,stmt);
-	this.method=method;
+	
+	this.invoke=invoke;
     }
 
     public SootMethod getMethod() {
-	return method;
+	return invoke.getMethod();
     }
 
     public static ConstructorCallShadowMatch matchesAt(MethodPosition pos) {
@@ -42,11 +44,11 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	    throw new Error
 		("INTERNAL ERROR: Didn't find an InvokeStmt after a new");
 	}
-	SootMethod method=((InvokeStmt) next).getInvokeExpr().getMethod();
+	InvokeExpr invoke=((InvokeStmt) next).getInvokeExpr();
 	// We assume the method we just got must be a constructor, because
 	// we've already done the moving stuff around thing.
 	// FIXME: Does this break with arrays?
-	return new ConstructorCallShadowMatch(pos.getContainer(),current,method);
+	return new ConstructorCallShadowMatch(pos.getContainer(),current,invoke);
     }
 
     public AdviceApplication.SJPInfo makeSJPInfo() {
@@ -70,5 +72,13 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 
     public ContextValue getReturningContextValue() {
 	return getTargetContextValue();
+    }
+
+    public List/*<ContextValue>*/ getArgsContextValues() {
+	Iterator argsIt=invoke.getArgs().iterator();
+	List ret=new LinkedList();
+	while(argsIt.hasNext()) 
+	    ret.add(new JimpleValue((Value) argsIt.next()));
+	return ret;
     }
 }

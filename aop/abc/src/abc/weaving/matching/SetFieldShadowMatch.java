@@ -1,5 +1,7 @@
 package abc.weaving.matching;
 
+import java.util.*;
+
 import soot.*;
 import soot.jimple.*;
 
@@ -58,6 +60,12 @@ public class SetFieldShadowMatch extends StmtShadowMatch {
 	if(!(fr instanceof InstanceFieldRef)) return null;
 	InstanceFieldRef ifr=(InstanceFieldRef) fr;
 	return new JimpleValue(ifr.getBase());
+    }
+
+    public List/*<ContextValue>*/ getArgsContextValues() {
+	ArrayList ret=new ArrayList(1);
+	ret.add(new JimpleValue(((AssignStmt) stmt).getRightOp()));
+	return ret;
     }
 
 }

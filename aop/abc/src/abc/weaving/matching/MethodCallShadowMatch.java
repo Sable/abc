@@ -1,5 +1,7 @@
 package abc.weaving.matching;
 
+import java.util.*;
+
 import soot.*;
 import soot.jimple.*;
 import soot.tagkit.SourceLnPosTag;
@@ -98,4 +100,13 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 
 	return new JimpleValue(astmt.getLeftOp());
     }
+    
+    public List/*<ContextValue>*/ getArgsContextValues() {
+	Iterator argsIt=invoke.getArgs().iterator();
+	List ret=new LinkedList();
+	while(argsIt.hasNext()) 
+	    ret.add(new JimpleValue((Value) argsIt.next()));
+	return ret;
+    }
+
 }

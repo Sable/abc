@@ -3,7 +3,8 @@ package abc.weaving.aspectinfo;
 import java.util.*;
 import polyglot.util.Position;
 import soot.*;
-
+import abc.weaving.matching.WeavingEnv;
+import abc.weaving.residues.*;
 
 /** An argument pattern denoting a pointcut variable. */
 public class ArgVar extends ArgAny {
@@ -16,6 +17,11 @@ public class ArgVar extends ArgAny {
 
     public Var getVar() {
 	return var;
+    }
+
+    public Residue matchesAt(WeavingEnv we,ContextValue cv) {
+	return Bind.construct
+	    (cv,we.getAbcType(var).getSootType(),we.getWeavingVar(var));
     }
 
     public Var substituteForPointcutFormal

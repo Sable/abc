@@ -1,11 +1,12 @@
 package abc.weaving.matching;
 
+import java.util.*;
+
 import soot.*;
 import soot.jimple.*;
 
 import abc.weaving.aspectinfo.AdviceDecl;
-import abc.weaving.residues.Residue;
-import abc.weaving.residues.ContextValue;
+import abc.weaving.residues.*;
 
 /** The results of matching at a handler shadow
  *  @author Ganesh Sittampalam
@@ -53,5 +54,11 @@ public class HandlerShadowMatch extends StmtShadowMatch {
 
     public ContextValue getTargetContextValue() {
 	return null;
+    }
+
+    public List/*<ContextValue>*/ getArgsContextValues() {
+	ArrayList ret=new ArrayList(1);
+	ret.add(new JimpleValue(((IdentityStmt) stmt).getLeftOp()));
+	return ret;
     }
 }
