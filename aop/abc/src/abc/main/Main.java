@@ -131,6 +131,9 @@ public class Main {
 	}
 	
     public void weave() throws CompilerFailedException {
+	// Perform the declare parents
+	new DeclareParentsWeaver().weave();
+
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
         ita.adjust();

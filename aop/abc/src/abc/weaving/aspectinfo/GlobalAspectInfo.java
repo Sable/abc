@@ -24,6 +24,7 @@ public class GlobalAspectInfo {
     private List/*<IntertypeConstructorDecl>*/ icds = new ArrayList();
     private List/*<AdviceDecl>*/ ads = new ArrayList();
     private List/*<PointcutDecl>*/ pcds = new ArrayList();
+    private List/*<DeclareParents>*/ dps = new ArrayList();
 	
 	// additional generated classes that need to be output in the end
 	//private Collection/*<String>*/ generated_classes = new ArrayList();
@@ -115,6 +116,13 @@ public class GlobalAspectInfo {
 	return pcds;
     }
 
+    /** Returns the list of all <code>declare parents</code> declarations.
+     *  @return a list of {@link abc.weaving.aspectinfo.DeclareParents} objects.
+     */
+    public List getDeclareParents() {
+	return dps;
+    }
+
     public AbcClass getClass(String name) {
 	return (AbcClass)classes_map.get(name);
     }
@@ -165,6 +173,10 @@ public class GlobalAspectInfo {
 	pcds.add(pcd);
     }
 
+    public void addDeclareParents(DeclareParents dp) {
+	dps.add(dp);
+    }
+
     public void print(java.io.PrintStream p) {
 	p.println();
 	printList(p, classes, "Classes:");
@@ -207,6 +219,7 @@ public class GlobalAspectInfo {
     }
 
     public void registerMethodCategory(String sig, int cat) {
+	System.out.println("Method registered: "+sig+" ("+cat+")");
 	method_categories.put(sig, new Integer(cat));
     }
 

@@ -18,7 +18,7 @@ public class MethodCategory {
 
     /** A special aspect method, i.e. <code>aspectOf</code>... */
     // Generated in abc/aspectj/ast/AspectDecl_c.java
-    public static final int ASPECT_SPECIAL = 1;
+    public static final int ASPECT_INSTANCE = 1;
 
     /** An advice body */
     // Generated in abc/aspectj/ast/AdviceDecl_c.java
@@ -163,6 +163,10 @@ public class MethodCategory {
 
     public static void register(MethodSig m, int cat) {
 	GlobalAspectInfo.v().registerMethodCategory(signature(m), cat);
+    }
+
+    public static void register(String sig, int cat) {
+	GlobalAspectInfo.v().registerMethodCategory(sig, cat);
     }
 
     private static String signature(SootMethod m) {

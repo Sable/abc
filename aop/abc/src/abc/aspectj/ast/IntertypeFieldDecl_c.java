@@ -41,6 +41,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     protected LocalInstance thisParamInstance;
     protected Supers supers;
 
+    protected MethodDecl initm;
 
     public IntertypeFieldDecl_c(Position pos,
                                 Flags flags,
@@ -161,8 +162,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		initmi = ts.methodInstance(position(),fieldInstance().container(),fs,init().type(),name,argtypes,exctypes);
 		md = md.methodInstance(initmi);
 
-		MethodCategory.register(md, MethodCategory.INTERTYPE_FIELD_INITIALIZER);
-
+		initm = md;
 		return md;
 	}
 	
@@ -237,6 +237,8 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	}
 	
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
+		MethodCategory.register(initm, MethodCategory.INTERTYPE_FIELD_INITIALIZER);
+
 		// System.out.println("IFD host: "+host.toString());
 		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
 	  			  	(AspectInfoHarvester.convertModifiers(flags()),

@@ -19,11 +19,9 @@ public class DeclareParentsAmbiguityRemover extends ContextVisitor {
 
     public Node leaveCall(Node n) throws SemanticException {
 	if (n instanceof DeclareParentsExt) {
-	    System.err.print("pip");
 	    return ((DeclareParentsExt)n).disambiguate(this);
 	}
 	if (n instanceof DeclareParentsImpl) {
-	    System.err.print("pop");
 	    return ((DeclareParentsImpl)n).disambiguate(this);
 	}
 	return n;

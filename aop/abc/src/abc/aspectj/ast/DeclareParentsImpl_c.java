@@ -9,8 +9,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+
 public class DeclareParentsImpl_c extends DeclareDecl_c 
-                                 implements DeclareParentsImpl
+    implements DeclareParentsImpl, ContainsAspectInfo
 {
 
     ClassnamePatternExpr pat;
@@ -83,6 +86,18 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
 
     public List/*<TypeNode>*/ interfaces() {
 	return interfaces;
+    }
+
+    public void update(GlobalAspectInfo gai, Aspect current_aspect) {
+	System.out.println("Declare parents impl");
+	List/*<String>*/ ints = new ArrayList();
+	Iterator ii = interfaces.iterator();
+	while (ii.hasNext()) {
+	    TypeNode i = (TypeNode)ii.next();
+	    ints.add(i.toString());
+	}
+	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsImpl
+			      (pat.makeAIClassnamePattern(), ints, current_aspect, position()));
     }
 
 }

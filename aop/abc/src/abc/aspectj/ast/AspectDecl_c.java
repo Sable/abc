@@ -43,8 +43,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
     
     protected PerClause per;
 
-    private MethodDecl aspectOf;
-    private MethodDecl hasAspect;
+    private boolean per_object;
 
     public AspectDecl_c(Position pos, boolean privileged, Flags flags, String name,
                         TypeNode superClass, List interfaces, PerClause per, AspectBody body) {
@@ -70,6 +69,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 			TypeNode obj = nf.CanonicalTypeNode(position(),ts.Object());
 			polyglot.ast.Formal f = nf.Formal(position(),Flags.NONE,obj,"thisparam");
 			args.add(f);
+			per_object = true;
 		}
 		List thrws = new LinkedList(); thrws.add(nab);
 		MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl); 
@@ -98,8 +98,8 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		if (!flags().isAbstract()) {
 		    NodeFactory nf = tb.nodeFactory();
 		    AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();      
-		    aspectOf = aspectOf(nf,ts);
-		    hasAspect = hasAspect(nf,ts);
+		    MethodDecl aspectOf = aspectOf(nf,ts);
+		    MethodDecl hasAspect = hasAspect(nf,ts);
 		    body = body().addMember(aspectOf).addMember(hasAspect); 
 		    // against the polyglot doctrine of functional rewrites... 
 		}
@@ -146,7 +146,10 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	Aspect a = new Aspect(cl, p, position());
 	gai.addAspect(a);
 		    
-	MethodCategory.register(aspectOf, this.type(), MethodCategory.ASPECT_SPECIAL);
-	MethodCategory.register(hasAspect, this.type(), MethodCategory.ASPECT_SPECIAL);
+	String this_type = this.type().toString();
+	String aspectOf = this_type+" "+this_type+".aspectOf("+(per_object?"java.lang.Object":"")+")";
+	String hasAspect = "boolean "+this_type+".hasAspect()";
+	MethodCategory.register(aspectOf, MethodCategory.ASPECT_INSTANCE);
+	MethodCategory.register(hasAspect, MethodCategory.ASPECT_INSTANCE);
     }
 }
