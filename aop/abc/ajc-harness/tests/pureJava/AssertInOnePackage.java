@@ -192,6 +192,7 @@ interface InnerStaticInitializerOnHelperI {
 	    assert false;
 	}
     }
+    Class cl = InnerStaticInitializerOnHelperI.class;
 }
 
 interface InnerStaticInitializerOffHelperI {
