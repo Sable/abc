@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +35,10 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.main.Debug;
 
+/** Manufactured advice that is responsible for setting up cflow stacks/counters
+ *  @author Ganesh Sittampalam
+ *  @author Damien Sereni
+ */
 public class CflowSetup extends AbstractAdviceDecl {
 
     public static CflowSetup construct(Aspect aspect,

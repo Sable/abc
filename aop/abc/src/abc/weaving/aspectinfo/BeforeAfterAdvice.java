@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +30,10 @@ import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
-/** Advice specification for advice that applies both before and after. */
+/** Advice specification for advice that applies both before and after
+ *  a joinpoint.
+ *  @author Ganesh Sittampalam
+ */
 public class BeforeAfterAdvice extends AbstractAdviceSpec {
     private BeforeAdvice before;
     private AfterAdvice after;

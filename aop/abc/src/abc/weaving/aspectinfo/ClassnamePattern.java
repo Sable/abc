@@ -1,4 +1,6 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
+ * Copyright (C) 2004 Damien Sereni
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +22,10 @@ package abc.weaving.aspectinfo;
 
 import soot.*;
 
-/** A classname pattern. */
+/** A classname pattern. 
+ *  @author Aske Simon Christensen
+ *  @author Damien Sereni
+ */
 public interface ClassnamePattern {
     public boolean matchesClass(SootClass cl);
 

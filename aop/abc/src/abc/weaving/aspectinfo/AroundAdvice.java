@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Aske Simon Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +34,9 @@ import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.weaver.AroundWeaver;
 import abc.soot.util.LocalGeneratorEx;
 
-/** Advice specification for around advice. */
+/** Advice specification for around advice. 
+ *  @author Aske Simon Christensen
+ */
 public class AroundAdvice extends AbstractAdviceSpec {
     private AbcType rtype;
     private MethodSig proceed;
