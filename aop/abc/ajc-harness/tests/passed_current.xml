@@ -521,6 +521,12 @@
         <compile files="pkg1/Main.java,pkg2/Foo.java"></compile>
         <run class="pkg1.Main"></run>
     </ajc-test>
+<ajc-test title="Default constructors have same access as their enclosing type" num="129" keywords="from-java" dir="pureJava/innerDefaultConstructors" abccomment="jlc doesn't report expected error.                   Reported to Nate on July 1/04.  LJH                   Still a problem with Polyglot 1.3. Entered onto                   bugzilla. 17/08/04 ODM">
+      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
+        <compile files="pkg1/Main.java,pkg2/Foo.java">
+            <message line="6" kind="error"></message>
+        </compile>
+    </ajc-test>
 <ajc-test title="Returning primitive values matching method return type (minimal)" num="130" keywords="from-java" dir="pureJava">
         <compile files="ReturnTypes.java"></compile>
         <run class="ReturnTypes"></run>
@@ -3362,6 +3368,10 @@
 <ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
         <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
         <run vm="1.4" class="AssertInAdviceBug"></run>
+    </ajc-test>
+<ajc-test title="declaring a private method on an inner interface" pr="823" num="684" keywords="tofix" dir="new">
+        <compile files="PrivateMethodOnInnerInterface.java"></compile>
+        <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
 <ajc-test title="CE expected when declaring fields on arrays" pr="829" num="685" keywords="tofix" dir="new">
         <compile files="ArrayFieldDeclarationCE.java">

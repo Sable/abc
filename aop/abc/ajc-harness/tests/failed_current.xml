@@ -5,12 +5,6 @@
         <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
         <run class="ConstructorNotFound_PR408"></run>
     </ajc-test>
-<ajc-test title="Default constructors have same access as their enclosing type" num="129" keywords="from-java" dir="pureJava/innerDefaultConstructors" abccomment="jlc doesn't report expected error.                   Reported to Nate on July 1/04.  LJH                   Still a problem with Polyglot 1.3. Entered onto                   bugzilla. 17/08/04 ODM">
-      <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
-        <compile files="pkg1/Main.java,pkg2/Foo.java">
-            <message line="6" kind="error"></message>
-        </compile>
-    </ajc-test>
 <ajc-test title="invalid numeric literals" num="149" keywords="from-java" dir="pureJava" abccomment="abc doesn't do a good job on these,  needs a parser                   that doesn't give up after the first error, and                   then each case needs to be check.  jlc probably does                   not catch all of them either.  July 1/04 LJH">
         <compile files="LiteralsCf.java">
             <message line="8" kind="error"></message>
@@ -111,10 +105,6 @@
 <ajc-test title="Referencing interfaces with import statements stars 3" pr="386" num="681" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="polyglot should be reporting an error on the import                    statements, as with number 678; once it does, skip this or                    mark them as errors">
         <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfacesStars3_PR386.java"></compile>
         <run class="ImportingInnerInterfacesStars3_PR386"></run>
-    </ajc-test>
-<ajc-test title="declaring a private method on an inner interface" pr="823" num="684" keywords="tofix" dir="new">
-        <compile files="PrivateMethodOnInnerInterface.java"></compile>
-        <run class="PrivateMethodOnInnerInterface"></run>
     </ajc-test>
 <ajc-test title="problems with finalize call" pr="30026" num="752" dir="bugs">
         <compile files="Finalizer.java">
