@@ -109,6 +109,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	public void addDerived(MethodInstance mi) {
 		derivedMis.add(mi);
 	}
+	
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 		Type ht = host.type();
 		if (ht instanceof ParsedClassType) {

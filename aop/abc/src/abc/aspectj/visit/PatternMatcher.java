@@ -168,7 +168,7 @@ public class PatternMatcher {
     }
 
     public boolean matchesType(TypePatternExpr pattern, String type) {
-	//System.out.println("Matching type pattern "+pattern+" on "+pattern.position()+" to "+type+"...");
+	// System.out.println("Matching type pattern "+pattern+" on "+pattern.position()+" to "+type+"...");
 	int dim = 0;
 	while (type.endsWith("[]")) {
 	    dim++;
@@ -181,6 +181,7 @@ public class PatternMatcher {
 		return pattern.matchesPrimitiveArray(this, type, dim);
 	    }
 	} else {
+		
 	    PCNode cl_node = hierarchy.getClass(Scene.v().getSootClass(type));
 	    if (dim == 0) {
 		return pattern.matchesClass(this, cl_node);
