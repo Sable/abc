@@ -48,7 +48,7 @@ public class AspectJTypeSystem_c
 	}
     
     // weeding out the wrong flags on aspects
-	protected final Flags ASPECT_FLAGS = AspectJFlags.privilegedaspect(AspectJFlags.aspectclass(ACCESS_FLAGS.Abstract()));
+	protected final Flags ASPECT_FLAGS = AspectJFlags.privilegedaspect(AspectJFlags.aspectclass(TOP_LEVEL_CLASS_FLAGS));
  
 	public void checkTopLevelClassFlags(Flags f) throws SemanticException {
 		    if (AspectJFlags.isAspectclass(f)) {
@@ -123,42 +123,59 @@ public class AspectJTypeSystem_c
     public boolean isAccessible(MemberInstance mi, ClassType ctc) {
         if (mi instanceof InterTypeMemberInstance) {
         	// the following code has been copied from TypeSystem_c.isAccessible
-        	// the only change is the definition of target
+        	// the only change is the definition of target, which is normally mi.container()
 			ReferenceType target = ((InterTypeMemberInstance) mi).origin(); 
 														// accessibility of intertype declarations
 		                                                // is with respect to origin, not container
 			Flags flags = mi.flags();
-			if (flags.isPublic()) return true;
-			if (equals(target, ctc)) return true;
-			if (! target.isClass()) return false;
+
+			if (! target.isClass()) {
+				// public members of non-classes are accessible;
+				// non-public members of non-classes are inaccessible
+				return flags.isPublic();
+			}
 
 			ClassType ctt = target.toClass();
 
+			if (! classAccessible(ctt, ctc)) {
+				return false;
+			}
+
+			if (equals(ctt, ctc))
+				return true;
+				
 			// If the current class and the target class are both in the
 			// same class body, then protection doesn't matter, i.e.
 			// protected and private members may be accessed. Do this by 
 			// working up through ctc's containers.
-			if (isEnclosed(ctc, ctt)) return true;                    
-			if (isEnclosed(ctt, ctc)) return true;                        
+			if (isEnclosed(ctc, ctt) || isEnclosed(ctt,ctc)) return true;                    
+			                  
 			ClassType ctcContainer = ctc;
-		while (!ctcContainer.isTopLevel()) {
-			ctcContainer = ctcContainer.outer();
-			if (isEnclosed(ctt, ctcContainer)) return true;                        
-		};
+			while (!ctcContainer.isTopLevel()) {
+				ctcContainer = ctcContainer.outer();
+				if (isEnclosed(ctt, ctcContainer)) return true;                        
+			};
 
-		// Check for package level scope.
-		// FIXME: protected too?
-		if (ctt.package_() == null && ctc.package_() == null &&
-			flags.isPackage())
-			return true;
+			// protected
+			if (flags.isProtected()) {
+				// If the current class is in a
+				// class body that extends/implements the target class, then
+				// protected members can be accessed. Do this by
+				// working up through ctc's containers.
+				if (descendsFrom(ctc, ctt)) {
+					return true;
+				}
 
-	
-		if (ctt.package_() != null && ctt.package_().equals (ctc.package_()) &&
-			(flags.isPackage() || flags.isProtected())) {
-			return true;
-		}
-		
-		return false; // ITDs cannot be protected
+				ctcContainer = ctc;
+				while (!ctcContainer.isTopLevel()) {
+					ctcContainer = ctcContainer.outer();
+					if (descendsFrom(ctcContainer, ctt)) {
+						return true;
+					}
+				}
+			}
+
+			return accessibleFromPackage(flags, ctt.package_(), ctc.package_());
         }
     	else return super.isAccessible(mi,ctc);
     }
@@ -228,20 +245,25 @@ public class AspectJTypeSystem_c
 	}
 	
 	/** All flags allowed for a member class. */
-	 protected final Flags MEMBER_CLASS_FLAGS = super.METHOD_FLAGS.set(AspectJFlags.ASPECTCLASS);
+	 protected final Flags MEMBER_CLASS_FLAGS = super.MEMBER_CLASS_FLAGS.set(AspectJFlags.ASPECTCLASS);
 	 public void checkMemberClassFlags(Flags f) throws SemanticException {
 			if (! f.clear(MEMBER_CLASS_FLAGS).equals(Flags.NONE)) {
 			throw new SemanticException(
 			"Cannot declare a member class with flag(s) " +
 			f.clear(MEMBER_CLASS_FLAGS) + ".");
 		}
+		
 
-			if (f.isFinal() && f.isInterface()) {
-				throw new SemanticException("Cannot declare a final interface.");
-			}
+		if (f.isStrictFP() && f.isInterface()) {
+			throw new SemanticException("Cannot declare a strictfp interface.");
+		}
+
+		if (f.isFinal() && f.isInterface()) {
+			throw new SemanticException("Cannot declare a final interface.");
+		}
 
 		checkAccessFlags(f);
-		}
+	}
 
 
 		/**
@@ -351,18 +373,17 @@ public class AspectJTypeSystem_c
 		 * interfaces and abstract methods that it or it's superclasses declare.
 		 */
 		public void checkClassConformance(ClassType ct) throws SemanticException {
-			if (ct.flags().isAbstract() || ct.flags().isInterface()) {
-				// ct is abstract or an interface, and so doesn't need to 
-				// implement everything.
-				return;
-			}
+			// if ct is abstract or an interface, then it doesn't need to 
+			// implement everything.
+			boolean mustImplementAll = (!ct.flags().isAbstract() && !ct.flags().isInterface());
         
 			// build up a list of superclasses and interfaces that ct 
 			// extends/implements that may contain abstract methods that 
+
 			// ct must define.
 			List superInterfaces = abstractSuperInterfaces(ct);
 
-			// check each abstract method of the classes and interfaces in 
+			// check each abstract method of the classes and interfaces in
 			// superInterfaces
 			for (Iterator i = superInterfaces.iterator(); i.hasNext(); ) {
 				ReferenceType rt = (ReferenceType)i.next();
@@ -376,31 +397,34 @@ public class AspectJTypeSystem_c
 					else
 						container = ct;
 					// END OF CHANGES
-					
 					if (!mi.flags().isAbstract()) {
-						// the method isn't abstract, so ct doesn't have to 
+						// the method isn't abstract, so ct doesn't have to
 						// implement it.
 						continue;
 					}
-                
+
 					boolean implFound = false;
 					ReferenceType curr = ct;
 					while (curr != null && !implFound) {
 						List possible = curr.methods(mi.name(), mi.formalTypes());
 						for (Iterator k = possible.iterator(); k.hasNext(); ) {
 							MethodInstance mj = (MethodInstance)k.next();
-							
 							// NEXT LINE IS CHANGED FOR ASPECTJ:
-							if (!mj.flags().isAbstract() && isAccessible(mj, container)) {
+							if (!mj.flags().isAbstract() && isAccessible(mj, container) &&
+								isAccessible(mi,mj.container().toClass())) {
 								// May have found a suitable implementation of mi.
-								// If the method instance mj is not declared
-								// in the class type ct, then we need to check
-								// that it has appropriate protections.
-								if (!equals(ct, mj.container())) {
+								// mj is not abstract, it is accessible from the 
+								// class ct, and since mi is accessible from the container
+								// of mj, it is actually overriding mi.
+                            
+								// If neither the method instance mj nor the method 
+								// instance mi is declared in the class type ct, then 
+								// we need to check that it has appropriate protections.
+								if (!equals(ct, mj.container()) && !equals(ct, mi.container())) {
 									try {
 										// check that mj can override mi, which
 										// includes access protection checks.
-										checkOverride(mj, mi);                                
+										checkOverride(mj, mi);
 									}
 									catch (SemanticException e) {
 										// change the position of the semantic
@@ -411,22 +435,22 @@ public class AspectJTypeSystem_c
 									}
 								}
 								else {
-									// the method implementation mj we found was 
+									// the method implementation mj or mi was
 									// declared in ct. So other checks will take
 									// care of access issues
 								}
 								implFound = true;
 								break;
-							}                        
+							}
 						}
 
-						curr = curr.superType() ==  null ? 
+						curr = curr.superType() ==  null ?
 							   null : curr.superType().toReference();
 					}
-                
+
 
 					// did we find a suitable implementation of the method mi?
-					if (!implFound) {
+					if (!implFound && mustImplementAll) {
 						throw new SemanticException(ct.fullName() + " should be " +
 								"declared abstract; it does not define " +
 								mi.signature() + ", which is declared in " +
@@ -435,36 +459,50 @@ public class AspectJTypeSystem_c
 				}
 			}
 		}
+
 		
 		/** All flags allowed for a method. */
 		protected final Flags AJ_METHOD_FLAGS = AspectJFlags.intertype(AspectJFlags.interfaceorigin(METHOD_FLAGS));
 
-		public void checkMethodFlags(Flags f) throws SemanticException {
-			  if (! f.clear(AJ_METHOD_FLAGS).equals(Flags.NONE)) {
-			  throw new SemanticException(
-			  "Cannot declare method with flags " +
-			  f.clear(METHOD_FLAGS) + ".");
-		  		}
+	public void checkMethodFlags(Flags f) throws SemanticException {
+		  if (! f.clear(AJ_METHOD_FLAGS).equals(Flags.NONE)) {
+		  throw new SemanticException(
+		  "Cannot declare method with flags " +
+		  f.clear(METHOD_FLAGS) + ".");
+	  		}
 
-			  if (f.isAbstract() && f.isPrivate() && ! AspectJFlags.isIntertype(f)) {
-			  throw new SemanticException(
-			  "Cannot declare method that is both abstract and private.");
-			  }
+		  if (f.isAbstract() && f.isPrivate() && ! AspectJFlags.isIntertype(f)) {
+		  throw new SemanticException(
+		  "Cannot declare method that is both abstract and private.");
+		  }
 
-			  if (f.isAbstract() && f.isStatic()) {
-			  throw new SemanticException(
-			  "Cannot declare method that is both abstract and static.");
-			  }
+		  if (f.isAbstract() && f.isStatic()) {
+		  throw new SemanticException(
+		  "Cannot declare method that is both abstract and static.");
+		  }
 
-			  if (f.isAbstract() && f.isFinal()) {
-			  throw new SemanticException(
-			  "Cannot declare method that is both abstract and final.");
-			  }
+		  if (f.isAbstract() && f.isFinal()) {
+		  throw new SemanticException(
+		  "Cannot declare method that is both abstract and final.");
+		  }
 
-			  if (f.isAbstract() && f.isNative()) {
-			  throw new SemanticException(
-			  "Cannot declare method that is both abstract and native.");
-			  }
+		  if (f.isAbstract() && f.isNative()) {
+		  throw new SemanticException(
+		  "Cannot declare method that is both abstract and native.");
+		  }
+
+		  if (f.isAbstract() && f.isSynchronized()) {
+			throw new SemanticException(
+			"Cannot declare method that is both abstract and synchronized.");
+		  }
+	
+			if (f.isAbstract() && f.isStrictFP()) {
+			throw new SemanticException(
+			"Cannot declare method that is both abstract and strictfp.");
+			}
+
+			checkAccessFlags(f); 
+			  
 		  }
 
 }

@@ -25,6 +25,8 @@ import polyglot.types.MethodInstance;
 import polyglot.types.FieldInstance;
 
 import abc.aspectj.types.InterTypeConstructorInstance_c;
+import abc.aspectj.types.InterTypeMethodInstance_c;
+import abc.aspectj.types.InterTypeFieldInstance_c;
 import abc.aspectj.types.InterTypeMemberInstance;
 import abc.aspectj.types.AspectJTypeSystem_c;
 import abc.aspectj.types.PointcutInstance_c;
@@ -124,9 +126,26 @@ public class AJClassBody_c extends ClassBody_c {
 				MethodInstance mj = (MethodInstance) l.get(j);
 
 				if (isSameMethod(ts, mi, mj) && !ITDoks(mi,mj,tc.typeSystem())) {
-					if (mi instanceof InterTypeMemberInstance)
-						throw new SemanticException("Duplicate method \"" + mi + "\" in class \"" +
-						                            mi.container() + "\".", mi.position());
+					if (mi instanceof InterTypeMemberInstance) {
+						InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) mi;
+						if (mj instanceof InterTypeMemberInstance) {
+							InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
+						    throw new SemanticException("Duplicate method \"" + mi + "\" introduced by " +
+						                "aspects \""+itmi.origin() + "\" and \"" + itmj.origin() + 
+                                        "\" into class \"" + mi.container() + "\".", mi.position());
+						}
+						throw new SemanticException("Duplicate method \"" + mi + "\" introduced by " +
+						                "aspect \""+itmi.origin() +"\" into class \""+
+						                mi.container() + "\", which already contains that method.", 
+						                mi.position());
+					}
+					if (mj instanceof InterTypeMemberInstance) {
+						InterTypeMethodInstance_c itmj = (InterTypeMethodInstance_c) mj;
+						throw new SemanticException("Duplicate method \"" + mj + "\" introduced by " +
+										"aspect \""+itmj.origin() +"\" into class \""+
+										mj.container() + "\", which already contains that method.", 
+										mj.position());
+					}
 					else if (mi instanceof PointcutInstance_c)
 					    throw new SemanticException("Duplicate "+mj+" in class "+mj.container() +".",mj.position());
 					else throw new SemanticException("Duplicate method \"" + mj + "\" in class \"" +
