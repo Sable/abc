@@ -60,7 +60,11 @@
             destdir="classes"
             debug="true"
         >
-            <src path="src"/>
+            <src path="src/abc/aspectj"/>
+            <src path="src/abc/main"/>
+            <src path="src/abc/polyglot"/>
+            <src path="src/abc/soot"/>
+            <src path="src/abc/weaving"/>
             <src path="generated"/>
             <classpath>
                 <pathelement location="classes"/>
