@@ -29,13 +29,13 @@ parser Grm extends polyglot.ext.jl.parse.Grm {:
     /**
      * Override the default Polyglot routine
      */	
-
+     
     public void report_fatal_error (String message, Object info)
     throws Exception
     {
-//       report_error (message, info);
+       report_error (message, info);
        die ();
-    }	
+    }	 
 :};
 
 /* ---------------------------------------------------------*/
