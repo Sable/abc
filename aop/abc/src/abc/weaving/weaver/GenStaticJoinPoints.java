@@ -66,7 +66,7 @@ public class GenStaticJoinPoints {
           b = clinit.retrieveActiveBody();
           units = b.getUnits();
           lg = new LocalGenerator(b);
-	  ip = (Stmt) units.getLast();  // should be the return stmt 
+	  ip = (Stmt) units.getFirst();  // should be the return stmt 
         }
       else
         throw new CodeGenException(
@@ -290,18 +290,59 @@ public class GenStaticJoinPoints {
       // put initialization for the field in clinit()
       StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(newsjpfield);
 
-      Stmt dummy = Jimple.v().newAssignStmt(newfieldref,G.v().NullConstant());
-      units.insertBefore(dummy,ip);
 
-      // create the SJP object and initialize
-      // now generate code for this SJP
-      debug("The type of constructor is " + 
-		              adviceappl.sjpInfo.signatureType);
-
+      String sigtypeclass = adviceappl.sjpInfo.signatureTypeClass;
+      String sigtype = adviceappl.sjpInfo.signatureType;
+      debug("The class of constructor is " + sigtypeclass);
+      debug("The type of constructor is " + sigtype);
       debug("The kind is " + adviceappl.sjpInfo.kind);
       debug("The signature is " + adviceappl.sjpInfo.signature);
       debug("The line is " + adviceappl.sjpInfo.row + 
   	          " and the column is " + adviceappl.sjpInfo.col);
+
+      // get the signature object
+      Local sigloc = lg.generateLocal(
+	  RefType.v("org.aspectj.lang.reflect."+sigtypeclass));
+
+      SootClass fc = Scene.v().
+	     getSootClass("org.aspectj.runtime.reflect.Factory");
+      debug("Got the factory class: " + fc);
+
+      SootMethod sigmethod = fc.getMethod(
+	     "org.aspectj.lang.reflect." + sigtypeclass + 
+	     " " + sigtype + "(java.lang.String)");
+      debug("Got the sig builder method: " + sigmethod);
+
+      Stmt makesig = Jimple.v().
+	newAssignStmt(sigloc, Jimple.v().
+	   newVirtualInvokeExpr(factory_local,sigmethod,
+	      StringConstant.v(adviceappl.sjpInfo.signature)));
+      debug("Made the sig creation call " + makesig);
+      units.insertBefore(makesig,ip);
+
+      // get the SJP object
+      Local sjploc = lg.generateLocal(
+	 RefType.v("org.aspectj.lang.JoinPoint$StaticPart")); 
+      SootMethod makeSJP = fc.getMethod(
+	  "org.aspectj.lang.JoinPoint$StaticPart " +
+	  "makeSJP(java.lang.String,org.aspectj.lang.Signature,int,int)");
+
+      ArrayList args = new ArrayList();
+      args.add(StringConstant.v(adviceappl.sjpInfo.kind));
+      args.add(sigloc);
+      args.add(IntConstant.v(adviceappl.sjpInfo.row));
+      args.add(IntConstant.v(adviceappl.sjpInfo.col));
+
+      Stmt getSJP = Jimple.v().
+	newAssignStmt(sjploc, Jimple.v().
+	  newVirtualInvokeExpr(factory_local,makeSJP,args));
+      debug("Made SJP creation call" + getSJP);
+      units.insertBefore(getSJP,ip);
+
+      // assign the SJP object to the field
+      Stmt assignField = 
+	  Jimple.v().newAssignStmt(newfieldref,sjploc);
+      units.insertBefore(assignField,ip);
 
       // return the field
       return(newsjpfield);

@@ -62,10 +62,14 @@ public class Weaver {
             final AbcClass cl = (AbcClass) clIt.next();
 	    final SootClass scl = cl.getSootClass();
 	    debug("--------- STARTING WEAVING OF CLASS >>>>> " + scl.getName());
+	    // need to put in shadows for staticinit so SJP stuff can be
+	    //   inserted BEFORE the beginning point of the shadow.  If this
+	    //   is not done,  then the staticinitialization joinpoint will 
+	    //   try to use an uninitialized SJP.
+            sg.setShadowPointsPass1(scl);
 	    // generate the Static Join Points
 	    gsjp.genStaticJoinPoints(scl);
 	    // pass one, do not handle initialization and preinitialization
-            sg.setShadowPointsPass1(scl);
             pg.weaveInAspectsPass(scl,1);
 	    // pass two, handle initializaiton and preinititalization
 	    sg.setShadowPointsPass2(scl);
