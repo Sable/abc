@@ -3,14 +3,6 @@
         <compile files="Driver.java"></compile>
         <run class="Driver"></run>
     </ajc-test>
-<ajc-test title="State is passed correctly across nested annonymous inners" keywords="from-java" dir="pureJava">
-        <compile files="NestedInners.java"></compile>
-        <run class="NestedInners"></run>
-    </ajc-test>
-<ajc-test title="Calls to methods in outer annonymous classes are being qual's incorrectly with 'this'" keywords="from-java" dir="pureJava">
-        <compile files="MisplacedThisInAnnonymousInnerClasses.java"></compile>
-        <run class="MisplacedThisInAnnonymousInnerClasses"></run>
-    </ajc-test>
 <ajc-test title="Not binding constructor when using more than one compilation" pr="408" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
         <compile files="OuterAbstract_PR408.java"></compile>
         <compile files="ExtendsOuterAbstract_PR408.java"></compile>
@@ -68,10 +60,6 @@
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
-    </ajc-test>
-<ajc-test title="private super access in inners" keywords="from-java,purejava" dir="pureJava" abccomment="runs fine when not in harness, July 5/04 LJH">
-        <compile files="PrivateSuperInnerAccess.java"></compile>
-        <run class="PrivateSuperInnerAccess"></run>
     </ajc-test>
 <ajc-test title="mismatched parens on advice (wasn't binding Tester)" pr="213" keywords="from-errors" dir="errors" abccomment="difference in line number between abc and ajc message. ODM July 5, 2004                   abc parser throws additional errors when giving up. PA/AGS">
         <compile files="MismatchedParens.java">
@@ -244,14 +232,6 @@
         <compile files="StrictFpCompile.java"></compile>
         <run class="StrictFpCompile"></run>
     </ajc-test>
-<ajc-test title="Ensuring backdoor methods are produced." keywords="from-resolved_10x" dir="new">
-        <compile files="BackdoorMethods.java"></compile>
-        <run class="BackdoorMethods"></run>
-    </ajc-test>
-<ajc-test title="Make sure that names of lifted local classes are right when referenced in call-site advice" keywords="from-resolved_10x" dir="new">
-        <compile files="CallsAndLocalClasses.java"></compile>
-        <run class="CallsAndLocalClasses"></run>
-    </ajc-test>
 <ajc-test title="holding onto proceed calls in a closure-like way" keywords="from-resolved_10x,knownLimitation" dir="new">
         <compile files="HoldProceed.java"></compile>
         <run class="HoldProceed"></run>
@@ -412,33 +392,9 @@
             <message line="26" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="variable slots and finally/catch causing verify errors" pr="595" keywords="from-resolved_10final,from-resolved_10x" dir="new">
-        <compile files="AfterFinally.java"></compile>
-        <run class="AfterFinally"></run>
-    </ajc-test>
 <ajc-test title="enclosing join point not exported properly in pre-initialization join point" keywords="from-resolved_10x,knownLimitation" dir="new">
         <compile files="PreInitialization.java"></compile>
         <run class="PreInitialization"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 1)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="Main.java,My_error.java,A.java,B.java,C.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 2)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="Main.java,My_error.java,C.java,A.java,B.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 3)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="My_error.java,A.java,B.java,C.java,Main.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 4)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="A.java,B.java,C.java,Main.java,My_error.java"></compile>
-        <run class="Main"></run>
-    </ajc-test>
-<ajc-test title="AbstractMethodError for introduced methods (order 5)" pr="600" keywords="from-resolved_10x" dir="new/PR600">
-        <compile files="A.java,B.java,Main.java,C.java,My_error.java"></compile>
-        <run class="Main"></run>
     </ajc-test>
 <ajc-test title="VerifyError after around advice falls off end of tryCatch" keywords="from-resolved_10x" dir="new">
         <compile files="TryOffEnd.java">
@@ -469,6 +425,10 @@
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
+    </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" keywords="from-resolved_10rc3" dir="new">
+        <compile files="InnerClassInPrivilegedAspect.java"></compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
     </ajc-test>
 <ajc-test title="subclass advice not run for join points selected by superclass cflow-based pointcuts" pr="559" keywords="from-resolved_10rc3" dir="new">
         <compile files="PR559.java"></compile>
@@ -526,15 +486,6 @@
             <message line="10" kind="error"></message>
             <message line="15" kind="error"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="interface using preceding subinterface in its definition" pr="728" keywords="from-resolved_105,purejava" dir="pureJava" abccomment="in abc get IncompatibleClassChangeError. Example sent                   to Jennifer.  July 6/04 LJH">
-        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
-        <compile files="ParentUsingChild.java"></compile>
-        <run class="ParentUsingChild"></run>
-    </ajc-test>
-<ajc-test title="final local variables may be accessed from inner class" pr="739" keywords="from-resolved_105,purejava" dir="pureJava">
-        <compile files="LocalsFromInnerCP.java"></compile>
-        <run class="LocalsFromInnerCP"></run>
     </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
@@ -599,6 +550,11 @@
             <message line="8" kind="error"></message>
             <message line="11" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="assert coverage tests [requires 1.4]" keywords="from-14tests,purejava" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
+        <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
+        <compile options="-source,1.4" files="AssertsCv.java"></compile>
+        <run vm="1.4" class="AssertsCv"></run>
     </ajc-test>
 <ajc-test title="assert coverage tests in one package [requires 1.4]" keywords="from-14tests,purejava,fail-unimplemented" dir="pureJava" abccomment="seems to be broken in j2j, sent to Jennifer July 7/04 LJH">
         <abckeywords> <jennifer></jennifer> <laurie></laurie> </abckeywords>
@@ -667,10 +623,6 @@
     </ajc-test>
 <ajc-test title="options negative -Xlint this()" keywords="lint" dir="options">
         <compile options="-Xlint:ignore" files="XLintTypeThisPCD.java"></compile>
-    </ajc-test>
-<ajc-test title="options -injars" dir="options/injars/simple">
-        <compile options="!eclipse" files="Simple.java,main.jar"></compile>
-        <run class="Main"></run>
     </ajc-test>
 <ajc-test title="self-reference from (aspect-declared) method-local class" pr="776" dir="new">
         <compile files="MethodSelfReference.java"></compile>
@@ -826,10 +778,6 @@
             <message line="13" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="options -injars checking declare parents interactions" pr="35865" dir="options/injars/simple">
-        <compile options="!eclipse" files="DecParents.java,main.jar"></compile>
-        <run class="DecParents"></run>
-    </ajc-test>
 <ajc-test title="testing that assert works like .class" pr="36110" dir="bugs/interSpecials">
         <compile options="-source,1.4" files="p1/C.java,p2/A2.java"></compile>
         <run vm="1.4" class="p2.A2"></run>
@@ -860,11 +808,6 @@
         <compile files="CflowConcrete.java"></compile>
         <run class="CflowConcrete"></run>
     </ajc-test>
-<ajc-test title="The compiler crashes when using aspect libraries created without using -noweave" pr="36329" dir="new/options11" comment="the line number might change, we're really interested only in the files here">
-        <compile files="Main.java,injar.jar,Aspect.java,aspectlib1.jar,aspectlib2.jar">
-            <message line="0" kind="error"></message>
-        </compile>
-   </ajc-test>
 <ajc-test title="declare warnings on main" pr="37020" dir="new/binaryWarnings/src">
         <compile files="aspects/MainWarnings.java,app/Main.java">
         	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
@@ -1032,11 +975,6 @@
         <compile files="AfterThrowingCtor.java">
         </compile>
   		<run class="AfterThrowingCtor"></run>
-    </ajc-test>
-<ajc-test title="Introduced abstract method on interface not implemented by subtype (injars)" pr="49784" dir="bugs/abstractMethods">
-       <compile files="interface/C.java,interface/jars/AandB.jar"> 
-            <message line="1" kind="error"></message>
-        </compile>
     </ajc-test>
  
 </suite>
