@@ -24,7 +24,8 @@ public class PCName_c extends Pointcut_c implements PCName
 	    super(pos);
 	    this.target = target;
         this.name = name;
-        this.args =  copyList(args); // here it is a list of TypeNode
+        this.args =  copyList(args); // here it is a list of TypeNode, containing null
+                                                        //  for occurrences of  * 
     }
 
 	private List copyList(List xs) {
@@ -106,13 +107,16 @@ public class PCName_c extends Pointcut_c implements PCName
 	   return reconstruct(target,args);
 	 }
 	 
+	 
 	 /** build the types */
 	public Node buildTypes(TypeBuilder tb) throws SemanticException {
 	   TypeSystem ts = tb.typeSystem();
 
 	   List l = new ArrayList(args.size());
+	   Iterator a = args.iterator();    // to pinpoint type errors to the right place
 	   for (int i = 0; i < args.size(); i++) {
-		 l.add(ts.unknownType(position()));
+	   	 Node tn = (Node) a.next();
+		 l.add(ts.unknownType(tn.position()));
 	   }
 
 	   MethodInstance mi = ((AspectJTypeSystem)ts).pointcutInstance(position(), ts.Object(),
@@ -138,6 +142,18 @@ public class PCName_c extends Pointcut_c implements PCName
 		   throw new SemanticException("Pointcut " + name + " not found.", position());
 	   }
 
+   public List methodsNamed(ClassType ct, String name){
+   	  List result = ct.methodsNamed(name);
+   	  if (result.size() == 0) {
+   	  	 ClassType outer = ct.superType().toClass();
+   	  	 if (outer != null)
+   	  	 	return methodsNamed(outer,name);
+   	  	 else
+   	  	 	return result;
+   	  }
+   	  return result;
+   }
+   
 	/** type check the pointcut reference */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 	   TypeSystem ts = tc.typeSystem();
@@ -155,8 +171,6 @@ public class PCName_c extends Pointcut_c implements PCName
 		 	TypeNode tn = (TypeNode) target;
 		 	Type t = tn.type();
 
-		 	staticContext = true;
-
 		 	if (t.isReference()) {
 		   		targetType = t.toReference();
 		 	} else {
@@ -172,12 +186,7 @@ public class PCName_c extends Pointcut_c implements PCName
 		 throw new SemanticException("Host of pointcut reference must be a "
 									 + "reference type.",
 									 target.position());
-	   } else { // target == null
-		 CodeInstance ci = c.currentCode();
-		 if (ci.flags().isStatic()) {
-		   staticContext = true;
-		 }
-	   }
+	   } 
 
        // get list of argument types
 	   List argTypes = new ArrayList(args.size());
@@ -189,10 +198,16 @@ public class PCName_c extends Pointcut_c implements PCName
 		    argTypes.add(((TypeNode)e).type());
 	   }
 
-       // find nearest enclosing pointcut declaration
+       // find nearest enclosing pointcut declaration of the right name, and compute its type
 	   MethodInstance mi;
-       ClassType ct = findPointcutScope((Context_c)c,name);
-       List ms = ct.methodsNamed("$pointcut$"+name);
+	   ClassType ct;
+	   if (target==null)
+       		ct = findPointcutScope((Context_c)c,name);
+       else 
+       		ct = target.type().toClass(); // will return non-null because of above checks
+       List ms = methodsNamed(ct,"$pointcut$"+name);
+       if (ms.size() == 0)
+       		throw new SemanticException("Pointcut "+name+" not found.", position());
        mi = (MethodInstance) ms.iterator().next(); // PointcutInstance_c
       
        // get the formal types
@@ -204,13 +219,15 @@ public class PCName_c extends Pointcut_c implements PCName
        		                                                         " expected " + formalTypes.size(), position());
        }
        Iterator a = argTypes.iterator();
+       Iterator an = args.iterator(); // just to report the error in the right place
        for (Iterator b = formalTypes.iterator(); b.hasNext();  ) {
        	    Type argtype = (Type)a.next();
+       	    Node arg = (Node)an.next();
        	    Type formaltype = (Type)b.next();
        	    if (! (argtype instanceof NullType)) 
        	        if (!ts.isImplicitCastValid(argtype,formaltype))
-       	        	throw new SemanticException("Wrong argument type "+argtype+
-       	        	                                                        " expected " + formaltype,argtype.position());
+       	        		throw new SemanticException("Wrong argument type "+argtype+
+       	        	                                                             " expected " + formaltype ,arg.position()); 
        }
       
 	   return this.pointcutInstance(mi);

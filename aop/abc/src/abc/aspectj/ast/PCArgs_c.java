@@ -19,7 +19,7 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }
-
+   
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("args(");
         for (Iterator i = pats.iterator(); i.hasNext(); ) {

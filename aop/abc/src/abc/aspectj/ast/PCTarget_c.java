@@ -19,6 +19,8 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }
+    
+    
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("target(");

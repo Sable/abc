@@ -19,7 +19,9 @@ import polyglot.types.TypeSystem;
 import polyglot.types.SemanticException;
 import polyglot.types.MethodInstance;
 import polyglot.types.ClassType;
+import polyglot.types.Context;
 
+import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.TypeBuilder;
@@ -35,6 +37,15 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
     String name;
     Pointcut pc;
 
+	private static List adviceFormals(List formals) {
+		  List result = new TypedList(new LinkedList(), AdviceFormal.class, false);
+		  for (Iterator i = formals.iterator(); i.hasNext(); ) {
+			  Formal f = (Formal) i.next();
+			  result.add(new AdviceFormal_c(f));
+		  }
+		  return result;
+	  }
+	  
     public PointcutDecl_c(Position pos,
                           Flags flags,
                           String name,
@@ -45,7 +56,7 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 			  flags, 
 			  voidn,
 			  "$pointcut$"+name,
-			  formals,
+			  adviceFormals(formals),
 			  new TypedList(new LinkedList(),TypeNode.class,true),
 			  null);
         this.pc = pc;
@@ -68,6 +79,27 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl
 			Pointcut pc = (Pointcut) visitChild(this.pc,v);
 			return reconstruct(formals, pc);
 		}
+		
+		
+	public Context enterScope(Node child, Context c) {
+		   Context nc = super.enterScope(child,c);
+		   if (child==pc) // pointcuts should be treated as a static context
+			   return nc.pushStatic();
+		   else
+			   return nc;
+	  }
+
+	
+	public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
+		if (ar.kind() == AmbiguityRemover.SUPER) {
+			return ar.bypassChildren(this);
+		}
+		else if (ar.kind() == AmbiguityRemover.SIGNATURES) {
+			return ar.bypass(pc);
+		}
+
+		return ar;
+	}
 		
 	/** build the type */	
 	public Node buildTypes(TypeBuilder tb) throws SemanticException {

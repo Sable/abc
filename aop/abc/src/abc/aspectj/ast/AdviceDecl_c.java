@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Collection;
 
 import polyglot.util.CodeWriter;
 import polyglot.util.UniqueID;
@@ -24,12 +25,15 @@ import polyglot.types.Type;
 import polyglot.types.TypeSystem;
 import polyglot.types.ClassType;
 
+import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
+
+import arc.aspectj.ast.AdviceFormal_c;
 
 import arc.aspectj.types.AspectJTypeSystem;
 
@@ -51,6 +55,15 @@ public class AdviceDecl_c extends MethodDecl_c
     		return locs;
     	}
     }
+    
+    private static List adviceFormals(List formals) {
+    	List result = new TypedList(new LinkedList(), AdviceFormal.class, false);
+    	for (Iterator i = formals.iterator(); i.hasNext(); ) {
+    		Formal f = (Formal) i.next();
+    		result.add(new AdviceFormal_c(f));
+    	}
+    	return result;
+    }
 
     public AdviceDecl_c(Position pos,
                         Flags flags,
@@ -62,7 +75,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	    	  flags, 
 	     	  spec.returnType(),
 	     	  UniqueID.newID("$advice$"),
-	          locs(spec.returnVal(),spec.formals()),
+	          adviceFormals(locs(spec.returnVal(),spec.formals())),
 	          throwTypes,
 	          body);
 		this.spec = spec;
@@ -97,8 +110,29 @@ public class AdviceDecl_c extends MethodDecl_c
 		return reconstruct(returnType, formals, throwTypes, body, spec, pc);
 	}
 
+   public Context enterScope(Node child, Context c) {
+   	    Context nc = super.enterScope(child,c);
+   	    if (child==pc) // pointcuts should be treated as a static context
+   	    	return nc.pushStatic();
+   	    else
+   	    	return nc;
+   }
 	
-    
+	 public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
+		 if (ar.kind() == AmbiguityRemover.SUPER) {
+			 return ar.bypassChildren(this);
+		 }
+		 else if (ar.kind() == AmbiguityRemover.SIGNATURES) {
+			 if (body != null) {
+			 	Collection bp = new LinkedList();
+			 	bp.add(body);
+			 	bp.add(pc);
+				return ar.bypass(bp);
+			 }
+		 }
+
+		 return ar;
+	 }
     
     /** Type checking of proceed: keep track of the methodInstance for the current proceed
      *  the ProceedCall will query this information via the proceedInstance() 
@@ -129,13 +163,13 @@ public class AdviceDecl_c extends MethodDecl_c
 		                                                              ts.JoinPointStaticPart(), 
                                                                       "thisJoinPointStaticPart");
 		nc.addVariable(sjp);
-						
+		
 		if (spec instanceof Around)
 			proceedInstance = methodInstance().name("proceed");
 		else
 		    proceedInstance = null;
         scope = nc;
-        
+               
 		return nc;
 	}
 	
