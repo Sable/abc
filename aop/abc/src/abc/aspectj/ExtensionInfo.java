@@ -51,13 +51,13 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID JIMPLIFY = new polyglot.frontend.Pass.ID("jimplify");
 
     public Collection weavable_classes;
-    public Collection jimplify_classes;
+    public Map class_to_ast;
     public PCStructure hierarchy;
     public PatternMatcher pattern_matcher;
 
     public ExtensionInfo(Collection weavable_classes) {
 	this.weavable_classes = weavable_classes;
-	this.jimplify_classes = new HashSet();
+	this.class_to_ast = new HashMap();
 	this.hierarchy = new PCStructure();
 	this.pattern_matcher = PatternMatcher.create(hierarchy);
 	hierarchy.insertAllSootClassesByName(weavable_classes, true);
@@ -146,9 +146,9 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf)));
 	l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf)));
 	
-	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job, new CollectJimplifyVisitor(jimplify_classes, hierarchy)));
+	l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job, new CollectJimplifyVisitor(class_to_ast, hierarchy)));
 	l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
-	l.add(new VisitorPass(JIMPLIFY, job, new JimplifyVisitor(jimplify_classes, hierarchy)));
+	l.add(new Jimplify(JIMPLIFY, class_to_ast));
 	
 	if (compiler.serializeClassInfo()) {
 	    l.add(new VisitorPass(Pass.SERIALIZE,

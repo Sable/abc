@@ -37,7 +37,6 @@ public class Main {
       abc.soot.util.Restructure.reset();
       abc.weaving.aspectinfo.GlobalAspectInfo.reset();
       abc.weaving.weaver.AroundWeaver.reset();
-      abc.aspectj.visit.JimplifyVisitor.reset();
     }
     
     public static void main(String[] args) {
@@ -221,9 +220,6 @@ public class Main {
 
             AbcTimer.mark("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
-
-            abc.aspectj.visit.JimplifyVisitor.resolve();
-            AbcTimer.mark("Soot Resolving");
 
             GlobalAspectInfo.v().transformClassNames(ext.hierarchy);
             AbcTimer.mark("Transform class names");
