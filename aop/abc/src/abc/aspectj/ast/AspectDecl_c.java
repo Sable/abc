@@ -45,10 +45,10 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 
     private boolean per_object;
 
-    public AspectDecl_c(Position pos, boolean privileged, Flags flags, String name,
+    public AspectDecl_c(Position pos, boolean is_privileged, Flags flags, String name,
                         TypeNode superClass, List interfaces, PerClause per, AspectBody body) {
 	     super(pos,
-	           AspectJFlags.aspect(privileged ? AspectJFlags.privileged(flags): flags),
+	           AspectJFlags.aspectclass(is_privileged ? AspectJFlags.privilegedaspect(flags): flags),
 	           name,superClass,interfaces,body);
          this.per = per;
 	 this.per_object = per instanceof PerThis || per instanceof PerTarget;
@@ -114,7 +114,7 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	public void prettyPrintHeader(CodeWriter w, PrettyPrinter tr) {
 		
 		    // need to overwrite, because ClassDecl_c only knows of interfaces and classes
-			w.write(AspectJFlags.clearAspect(flags).translate());
+			w.write(AspectJFlags.clearAspectclass(flags).translate());
 	        w.write("aspect ");
 
 			w.write(name);

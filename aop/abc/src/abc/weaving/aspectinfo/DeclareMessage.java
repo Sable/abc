@@ -4,29 +4,21 @@ package abc.weaving.aspectinfo;
 import polyglot.util.Position;
 
 /** A <code>declare warning</code> or <code>declare error</code> declaration. */
-public class DeclareMessage extends Syntax {
+public class DeclareMessage extends InAspect {
     public static final int WARNING = 0;
     public static final int ERROR = 1;
 
     private final String[] sev_name = { "warning", "error" };
 
-    private Aspect aspect;
     private int severity;
     private Pointcut pc;
     private String message;
 
-    public DeclareMessage(int severity, Pointcut pc, String message, Aspect aspect, Position pos) {
-	super(pos);
-	this.aspect = aspect;
+    public DeclareMessage(int severity, Pointcut pc, String message, Aspect aspct, Position pos) {
+	super(aspct, pos);
 	this.severity = severity;
 	this.pc = pc;
 	this.message = message;
-    }
-
-    /** Get the aspect containing this <code>declare warning</code> or <code>declare error</code>.
-     */
-    public Aspect getAspect() {
-	return aspect;
     }
 
     /** Get the severity of the message.

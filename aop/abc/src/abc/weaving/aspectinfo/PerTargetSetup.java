@@ -13,8 +13,8 @@ import abc.soot.util.LocalGeneratorEx;
 
 public class PerTargetSetup extends PerSetupAdvice {
 
-    protected PerTargetSetup(Aspect aspect,Pointcut pc,Position pos) {
-	super(aspect,pc,pos);
+    protected PerTargetSetup(Aspect aspct,Pointcut pc,Position pos) {
+	super(aspct,pc,pos);
     }
 
     public WeavingContext makeWeavingContext() {

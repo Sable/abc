@@ -33,10 +33,10 @@ public class AspectJTypeSystem_c
 	}
     
     // weeding out the wrong flags on aspects
-	protected final Flags ASPECT_FLAGS = AspectJFlags.privileged(AspectJFlags.aspect(ACCESS_FLAGS.Abstract()));
+	protected final Flags ASPECT_FLAGS = AspectJFlags.privilegedaspect(AspectJFlags.aspectclass(ACCESS_FLAGS.Abstract()));
  
 	public void checkTopLevelClassFlags(Flags f) throws SemanticException {
-		    if (AspectJFlags.isAspect(f)) {
+		    if (AspectJFlags.isAspectclass(f)) {
 		       if (!f.clear(ASPECT_FLAGS).equals(Flags.NONE))
 		       throw new SemanticException("Cannot declare aspect with flag(s) " +
 		                                   f.clear(ASPECT_FLAGS));

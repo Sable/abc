@@ -316,7 +316,7 @@ public class Main {
         GlobalAspectInfo.v().computeAdviceLists();
         AbcTimer.mark("Compute advice lists");
 
-        if(Debug.v.matcherTest) {
+        if(Debug.v().matcherTest) {
             System.err.println("--- BEGIN ADVICE LISTS ---");
             // print out matching information for testing purposes
             for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {

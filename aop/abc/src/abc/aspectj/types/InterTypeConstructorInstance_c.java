@@ -4,8 +4,6 @@ package abc.aspectj.types;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.sun.rsasign.f;
-
 import polyglot.util.Position;
 import polyglot.util.UniqueID;
 

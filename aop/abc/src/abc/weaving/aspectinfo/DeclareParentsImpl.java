@@ -14,8 +14,8 @@ public class DeclareParentsImpl extends DeclareParents {
      *  @param interfaces a list of {@link java.lang.String} objects giving the
      *         interfaces to be implemented.
      */
-    public DeclareParentsImpl(ClassnamePattern classes, List interfaces, Aspect aspect, Position pos) {
-	super(classes, aspect, pos);
+    public DeclareParentsImpl(ClassnamePattern classes, List interfaces, Aspect aspct, Position pos) {
+	super(classes, aspct, pos);
 	this.interfaces = interfaces;
     }
 

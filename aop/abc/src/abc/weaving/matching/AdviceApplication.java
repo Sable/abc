@@ -138,7 +138,7 @@ public abstract class AdviceApplication {
 			    residue=AndResidue.construct
 				(residue,ad.postResidue(sm));
 
-			if(abc.main.Debug.v.showResidues 
+			if(abc.main.Debug.v().showResidues 
 			   && !NeverMatch.neverMatches(residue)) 
 			    System.out.println("residue: "+residue);
 			
@@ -146,7 +146,7 @@ public abstract class AdviceApplication {
 			    sm.addAdviceApplication(mal,ad,residue);
 			
 		    } else {
-			if(abc.main.Debug.v.matcherWarnUnimplemented)
+			if(abc.main.Debug.v().matcherWarnUnimplemented)
 			    System.err.println("Got a null pointcut");
 		    }
 		}

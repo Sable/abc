@@ -3,20 +3,12 @@ package abc.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
-public abstract class DeclareParents extends Syntax {
-    private Aspect aspect;
+public abstract class DeclareParents extends InAspect {
     private ClassnamePattern classes;
 
-    public DeclareParents(ClassnamePattern classes, Aspect aspect, Position pos) {
-	super(pos);
-	this.aspect = aspect;
+    public DeclareParents(ClassnamePattern classes, Aspect aspct, Position pos) {
+	super(aspct, pos);
 	this.classes = classes;
-    }
-
-    /** Get the aspect containing this <code>declare parents</code>.
-     */
-    public Aspect getAspect() {
-	return aspect;
     }
 
     /** Get the classes whose parents are being declared.

@@ -14,14 +14,14 @@ import abc.weaving.weaver.WeavingContext;
 
 public class HasAspect extends Residue {
 
-    private SootClass aspect;
+    private SootClass aspct;
 
     // null to indicate singleton aspect; i.e. no params to hasAspect
     // (probably not actually used, but kept for symmetry with AspectOf)
     private ContextValue pervalue;
 
-    public HasAspect(SootClass aspect,ContextValue pervalue) {
-	this.aspect=aspect;
+    public HasAspect(SootClass aspct,ContextValue pervalue) {
+	this.aspct=aspct;
 	this.pervalue=pervalue;
     }
 
@@ -42,7 +42,7 @@ public class HasAspect extends Residue {
 	Local hasaspect = localgen.generateLocal(BooleanType.v(),"hasAspect");
 	AssignStmt stmtHasAspect = Jimple.v().newAssignStmt
 	    (hasaspect, Jimple.v().newStaticInvokeExpr
-	     (aspect.getMethodByName("hasAspect"),params));
+	     (aspct.getMethodByName("hasAspect"),params));
 
 	units.insertAfter(stmtHasAspect,begin);
 
@@ -53,7 +53,7 @@ public class HasAspect extends Residue {
     }
 
     public String toString() {
-	return "aspectof("+aspect+","+pervalue+")";
+	return "aspectof("+aspct+","+pervalue+")";
     }
 
 }

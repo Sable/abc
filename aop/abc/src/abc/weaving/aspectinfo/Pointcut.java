@@ -54,7 +54,7 @@ public abstract class Pointcut extends Syntax {
 	}
 
 	Pointcut ret=pc.inline(renameEnv,typeEnv,context);
-	if(abc.main.Debug.v.showNormalizedPointcuts)
+	if(abc.main.Debug.v().showNormalizedPointcuts)
 	    System.err.println("normalized pointcut: "+ret);
 
 	ret.registerSetupAdvice();

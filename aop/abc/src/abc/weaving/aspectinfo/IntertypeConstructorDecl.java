@@ -30,12 +30,11 @@ import soot.*;
   * @author Oege de Moor
   */
 
-public class IntertypeConstructorDecl extends Syntax {
+public class IntertypeConstructorDecl extends InAspect {
 	
 	static public int SUPER = 0;
 	static public int THIS = 1;
 	
-	private Aspect aspect;    								// originating aspect 
 	private AbcClass target;								// target of intertype decl
 	private int mod;												// modifier
 	private List /*<AbcType>*/ formalTypes;	// types of formal parameters
@@ -49,7 +48,7 @@ public class IntertypeConstructorDecl extends Syntax {
 	
 
     public IntertypeConstructorDecl( AbcClass target, 
-    																Aspect aspect, 
+    																Aspect aspct, 
     																int mod,
     																List formalTypes,
     																List throwTypes,
@@ -58,9 +57,8 @@ public class IntertypeConstructorDecl extends Syntax {
     																List arguments,
     																MethodSig body,
     																Position pos) {
-		super(pos);
+		super(aspct, pos);
 		this.target = target;
-		this.aspect = aspect;
 		this.mod = mod;
 		this.formalTypes = formalTypes;
 		this.throwTypes = throwTypes;
@@ -79,11 +77,6 @@ public class IntertypeConstructorDecl extends Syntax {
 	public int getModifiers() {
 	  return mod;
 	}
-
-	/** Get the originating aspect */
-	public Aspect getAspect() {
-	  	return aspect;
-	 }
 
 	/** Get the formal types of the intertype constructor.
 	   *  @return a list of {@link abc.weaving.aspectinfo.AbcType} objects.
@@ -135,7 +128,7 @@ public class IntertypeConstructorDecl extends Syntax {
 	}
 	
 	public String toString() {
-		return (target + ".new(" + formalTypes +") {...} from "+aspect);
+		return (target + ".new(" + formalTypes +") {...} from "+getAspect());
 	}
 	
 }

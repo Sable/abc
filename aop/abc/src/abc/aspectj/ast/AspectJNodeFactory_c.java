@@ -16,7 +16,7 @@ import polyglot.ext.jl.parse.Name;
  * NodeFactory for aspectj extension.
  */
 public class AspectJNodeFactory_c 
-       extends soot.javaToJimple.jj.ast.JjNodeFactory_c 
+       extends polyglot.ext.jl.ast.NodeFactory_c 
        implements AspectJNodeFactory {
 
     public ClassnamePatternExpr constructClassnamePatternFromTypePattern(TypePatternExpr tpe) throws SemanticException {
@@ -25,14 +25,14 @@ public class AspectJNodeFactory_c
 
 
     public  AspectDecl AspectDecl(Position pos,
-                                  boolean privileged,
+                                  boolean is_privileged,
                                   Flags flags,
                                   String name,
                                   TypeNode superClass,
                                   List interfaces,
                                   PerClause per,
                                   AspectBody body) {
-	AspectDecl n = new AspectDecl_c(pos,privileged, flags, name, 
+	AspectDecl n = new AspectDecl_c(pos,is_privileged, flags, name, 
                                         superClass, interfaces, per, body);
         return n;
     }

@@ -6,23 +6,15 @@ import polyglot.util.Position;
 import java.util.*;
 
 /** A declare precedence declaration */
-public class DeclarePrecedence extends Syntax {
-    private Aspect aspect;
+public class DeclarePrecedence extends InAspect {
     private List/*<ClassnamePattern>*/ patterns;
 
     /** Create a new <code>declare precedence</code>.
      *  @param patterns a list of {@link abc.weaving.aspectinfo.ClassnamePattern} objects.
      */
-    public DeclarePrecedence(List patterns, Aspect aspect, Position pos) {
-	super(pos);
-	this.aspect = aspect;
+    public DeclarePrecedence(List patterns, Aspect aspct, Position pos) {
+	super(aspct, pos);
 	this.patterns = patterns;
-    }
-
-    /** Get the aspect containing this <code>declare precedence</code>.
-     */
-    public Aspect getAspect() {
-	return aspect;
     }
 
     /** Get the patterns matching the aspects to be ordered.

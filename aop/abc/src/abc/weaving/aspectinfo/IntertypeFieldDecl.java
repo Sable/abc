@@ -6,18 +6,16 @@ import polyglot.util.Position;
 import soot.*;
 
 /** An intertype field declaration. */
-public class IntertypeFieldDecl extends Syntax {
+public class IntertypeFieldDecl extends InAspect {
     private FieldSig target;
-    private Aspect aspect;
     private MethodSig init;
     private MethodSig setter;
     private MethodSig getter;
 
-    public IntertypeFieldDecl(FieldSig target, Aspect aspect, MethodSig init, 
+    public IntertypeFieldDecl(FieldSig target, Aspect aspct, MethodSig init, 
     							MethodSig getter, MethodSig setter, Position pos) {
-	super(pos);
+	super(aspct, pos);
 	this.target = target;
-	this.aspect = aspect;
 	this.init = init;
 	this.getter = getter;
 	this.setter = setter;
@@ -30,12 +28,6 @@ public class IntertypeFieldDecl extends Syntax {
 	return target;
     }
 
-    /** Get the aspect containing this intertype field declaration.
-     */
-    public Aspect getAspect() {
-	return aspect;
-    }
-    
     /** Get the signature of the method to initialise this field
      * This is a static method of aspect, with one parameter for the
      * "this" of the target class.
@@ -53,6 +45,6 @@ public class IntertypeFieldDecl extends Syntax {
     }
 
     public String toString() {
-	return "(in aspect "+aspect.getName()+") "+target+";";
+	return "(in aspect "+getAspect().getName()+") "+target+";";
     }
 }

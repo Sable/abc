@@ -238,10 +238,10 @@ public class GlobalAspectInfo {
 	soot_class_map.put(cl.getSootClass(), cl);
     }
 
-    public void addAspect(Aspect aspect) {
-	if (!aspects_map.containsKey(aspect.getName())) {
-	    aspects.add(aspect);
-	    aspects_map.put(aspect.getName(),aspect);
+    public void addAspect(Aspect aspct) {
+	if (!aspects_map.containsKey(aspct.getName())) {
+	    aspects.add(aspct);
+	    aspects_map.put(aspct.getName(),aspct);
 	}
     }
 

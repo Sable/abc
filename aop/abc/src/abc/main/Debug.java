@@ -7,7 +7,7 @@ package abc.main;
     @author Ganesh Sittampalam
 */
 public class Debug {
-    public static Debug v;
+    private static Debug v;
     static {
 	try {
 	    v=(Debug) 

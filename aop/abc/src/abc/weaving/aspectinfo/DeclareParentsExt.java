@@ -11,8 +11,8 @@ public class DeclareParentsExt extends DeclareParents {
      *  @param the classes that should extend the class.
      *  @param parent the class to extend.
      */
-    public DeclareParentsExt(ClassnamePattern classes, String parent, Aspect aspect, Position pos) {
-	super(classes, aspect, pos);
+    public DeclareParentsExt(ClassnamePattern classes, String parent, Aspect aspct, Position pos) {
+	super(classes, aspct, pos);
 	this.parent = parent;
     }
 

@@ -6,8 +6,6 @@ import java.util.*;
 
 import polyglot.util.UniqueID;
 
-import com.sun.rsasign.s;
-
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 

@@ -16,13 +16,13 @@ public class Singleton extends Per {
 	return "issingleton";
     }
 
-    public void registerSetupAdvice(Aspect aspect) {}
+    public void registerSetupAdvice(Aspect aspct) {}
 
-    public Residue matchesAt(Aspect aspect,ShadowMatch sm) {
+    public Residue matchesAt(Aspect aspct,ShadowMatch sm) {
 	return AlwaysMatch.v;
     }
 
-    public Residue getAspectInstance(Aspect aspect,ShadowMatch sm) {
-	return new AspectOf(aspect.getInstanceClass().getSootClass(),null);
+    public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) {
+	return new AspectOf(aspct.getInstanceClass().getSootClass(),null);
     }
 }

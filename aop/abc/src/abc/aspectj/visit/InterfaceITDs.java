@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import com.sun.rsasign.m;
-
 import polyglot.ast.NodeFactory;
 import polyglot.ast.Node;
 import polyglot.ast.ClassDecl;

@@ -25,8 +25,8 @@ public class CflowBelow extends Pointcut {
 
     protected Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
-			      Aspect aspect) {
-	Pointcut pc=this.pc.inline(renameEnv,typeEnv,aspect);
+			      Aspect aspct) {
+	Pointcut pc=this.pc.inline(renameEnv,typeEnv,aspct);
 	if(pc==this.pc) return this;
 	else return new CflowBelow(pc,getPosition());
     }

@@ -16,7 +16,7 @@ import java.util.*;
  * NodeFactory for aspectj extension.
  */
 public interface AspectJNodeFactory 
-       extends soot.javaToJimple.jj.ast.JjNodeFactory {
+       extends polyglot.ast.NodeFactory {
     // TODO: Declare any factory methods for new AST nodes.
 
     // Special helper methods for the parser
@@ -26,7 +26,7 @@ public interface AspectJNodeFactory
     // Factory methods
 
     AspectDecl AspectDecl(Position pos,
-                          boolean privileged,
+                          boolean is_privileged,
                           Flags flags,
                           String name,
                           TypeNode superClass,

@@ -15,13 +15,13 @@ import abc.weaving.weaver.AdviceWeavingContext;
 
 public class AspectOf extends Residue {
 
-    private SootClass aspect;
+    private SootClass aspct;
 
     // null to indicate singleton aspect; i.e. no params to aspectOf
     private ContextValue pervalue;
 
-    public AspectOf(SootClass aspect,ContextValue pervalue) {
-	this.aspect=aspect;
+    public AspectOf(SootClass aspct,ContextValue pervalue) {
+	this.aspct=aspct;
 	this.pervalue=pervalue;
     }
 
@@ -39,10 +39,10 @@ public class AspectOf extends Residue {
 	    params.add(pervalue.getSootValue());
 	}
 	
-	Local aspectref = localgen.generateLocal(aspect.getType(),"theAspect");
+	Local aspectref = localgen.generateLocal(aspct.getType(),"theAspect");
 	AssignStmt stmtAspectOf = Jimple.v().newAssignStmt
 	    (aspectref, Jimple.v().newStaticInvokeExpr
-	     (aspect.getMethodByName("aspectOf"),params));
+	     (aspct.getMethodByName("aspectOf"),params));
 
 	units.insertAfter(stmtAspectOf,begin);
 	((AdviceWeavingContext) wc).aspectinstance=aspectref;
@@ -50,7 +50,7 @@ public class AspectOf extends Residue {
     }
 
     public String toString() {
-	return "aspectof("+aspect+","+pervalue+")";
+	return "aspectof("+aspct+","+pervalue+")";
     }
 
 }

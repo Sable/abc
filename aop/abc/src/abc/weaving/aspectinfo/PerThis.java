@@ -15,15 +15,15 @@ public class PerThis extends PerPointcut {
 	return "perthis("+getPointcut()+")";
     }
 
-    public void registerSetupAdvice(Aspect aspect) {
-	GlobalAspectInfo.v().addAdviceDecl(new PerThisSetup(aspect,getPointcut(),getPosition()));
+    public void registerSetupAdvice(Aspect aspct) {
+	GlobalAspectInfo.v().addAdviceDecl(new PerThisSetup(aspct,getPointcut(),getPosition()));
     }
 
-    public Residue matchesAt(Aspect aspect,ShadowMatch sm) {
-	return new HasAspect(aspect.getInstanceClass().getSootClass(),sm.getThisContextValue());
+    public Residue matchesAt(Aspect aspct,ShadowMatch sm) {
+	return new HasAspect(aspct.getInstanceClass().getSootClass(),sm.getThisContextValue());
     }
 
-    public Residue getAspectInstance(Aspect aspect,ShadowMatch sm) {
-	return new AspectOf(aspect.getInstanceClass().getSootClass(),sm.getThisContextValue());
+    public Residue getAspectInstance(Aspect aspct,ShadowMatch sm) {
+	return new AspectOf(aspct.getInstanceClass().getSootClass(),sm.getThisContextValue());
     }
 }

@@ -6,16 +6,14 @@ import polyglot.util.Position;
 import soot.*;
 
 /** An intertype method declaration. */
-public class IntertypeMethodDecl extends Syntax {
+public class IntertypeMethodDecl extends InAspect {
     private MethodSig target;
     private MethodSig impl;
-    private Aspect aspect;
 
-    public IntertypeMethodDecl(MethodSig target, MethodSig impl, Aspect aspect, Position pos) {
-	super(pos);
+    public IntertypeMethodDecl(MethodSig target, MethodSig impl, Aspect aspct, Position pos) {
+	super(aspct, pos);
 	this.target = target;
 	this.impl = impl;
-	this.aspect = aspect;
     }
 
     /** Get the method signature that this intertype method declaration
@@ -32,13 +30,7 @@ public class IntertypeMethodDecl extends Syntax {
 	return impl;
     }
 
-    /** Get the aspect containing this intertype method declaration.
-     */
-    public Aspect getAspect() {
-	return aspect;
-    }
-
     public String toString() {
-	return "(in aspect "+aspect.getName()+") "+target+" { ... }";
+	return "(in aspect "+getAspect().getName()+") "+target+" { ... }";
     }
 }
