@@ -94,7 +94,7 @@
         </jar>
    </target>
 
-    <target name="abc" depends="settings,flex-translator,cup-translator">
+    <target name="abc" depends="settings,flex-translator,cup-translator,options-code">
         <mkdir dir="classes"/>
         <javac
             destdir="classes"
@@ -290,5 +290,13 @@
         <exec executable="latex" dir="doc/options">
             <arg value="usage.tex"/>
         </exec>
+    </target>
+
+    <target name="options-code">
+        <xslt
+            style="src/abc/main/options/help-screen.xsl"
+            in="src/abc/main/options/options.xml"
+            out="generated/abc/main/options/Usage.java"
+        />
     </target>
 </project>

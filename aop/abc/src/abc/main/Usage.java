@@ -136,6 +136,7 @@ public class Usage {
 
   public static void abcPrintHelp() {
     G.v().out.println(headerInfo());
+      /*
     G.v().out.println(generalOptions());
     G.v().out.println(inputOptions());
     G.v().out.println(outputOptions());
@@ -145,6 +146,8 @@ public class Usage {
     G.v().out.println(advancedOptions());
     G.v().out.println(optimizationOptions());
     G.v().out.println(sootPolyglotOptions());
+    */
+      G.v().out.println(new abc.main.options.Usage().getUsage());
   }
 
 }
