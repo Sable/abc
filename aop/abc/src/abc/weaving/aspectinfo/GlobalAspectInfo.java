@@ -15,6 +15,10 @@ public class GlobalAspectInfo {
     private static GlobalAspectInfo instance = new GlobalAspectInfo();
     public static GlobalAspectInfo v() { return instance; }
 
+    public static void reset() {
+	instance = new GlobalAspectInfo();
+    }
+
     private List/*<AbcClass>*/ classes = new ArrayList();
     private List/*<Aspect>*/ aspects = new ArrayList();
     private List/*<IntertypeFieldDecl>*/ ifds = new ArrayList();

@@ -81,7 +81,7 @@ public class MethodCategory {
     // it_f_init, it_spec_del,
     // acc_get, acc_set
 
-    private static boolean[] weave_inside =
+    private static final boolean[] weave_inside =
     {
 	true, false, true, false/*AJC doesn't, but why not?*/,
 	true, false,
@@ -90,7 +90,7 @@ public class MethodCategory {
 	true/*?*/, true/*?*/
     };
 
-    private static boolean[] weave_execution =
+    private static final boolean[] weave_execution =
     {
 	true, false, true, false,
 	true, false,
