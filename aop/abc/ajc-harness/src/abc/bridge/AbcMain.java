@@ -31,8 +31,13 @@ public class AbcMain {
 				if ("-cp".equals(args[i]) || "-classpath".equals(args[i])) {
 					if (cp.length()==0)
 						currentCP = args[++i];
-					else
-						currentCP = cp + ":" + args[++i];
+					else {
+						if (cp.indexOf(';')>=0) {
+							currentCP = cp + ";" + args[++i];
+						} else 
+							currentCP = cp + ":" + args[++i];
+					}
+						
 					currentArgs.add(currentCP);
 
 				}
