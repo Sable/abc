@@ -16,7 +16,7 @@ import java.util.Random;
 public class Foo {
 	public final static int n=1000000;
 	public static void main(String[] args) {
-		Random r = new Random();
+		Random r = new Random(3150194211L);
 		Integer[] elems=new Integer[n];
 		for(int i=0;i<n;i++) 
 			elems[i] = new Integer(r.nextInt());
