@@ -11,6 +11,8 @@ import java.util.*;
 
 public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUniversal
 {
+    private List excludes = new ArrayList();
+
     public CPEUniversal_c(Position pos)  {
 	super(pos);
     }
@@ -27,7 +29,20 @@ public class CPEUniversal_c extends ClassnamePatternExpr_c implements CPEUnivers
 	return "*";
     }
 
+    public void addExclude(ClassnamePatternExpr pat) {
+	excludes.add(pat);
+    }
+
+    public void setExcludes(List excludes) {
+	this.excludes = excludes;
+    }
+
     public boolean matches(PatternMatcher matcher, PCNode cl) {
+	Iterator ei = excludes.iterator();
+	while (ei.hasNext()) {
+	    ClassnamePatternExpr e = (ClassnamePatternExpr)ei.next();
+	    if (e.matches(matcher, cl)) return false;
+	}
 	return true;
     }
 

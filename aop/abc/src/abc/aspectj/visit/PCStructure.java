@@ -10,6 +10,7 @@ import abc.weaving.aspectinfo.AbcFactory;
 import polyglot.types.SemanticException;
 import polyglot.types.ClassType;
 import polyglot.types.Resolver;
+import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
@@ -54,9 +55,9 @@ public class PCStructure {
 	} else {
 	    PCNode cn;
 	    if (isNameable(ct)) {
-		cn = root.insertFullName(ct.fullName(), true, weavable);
+		cn = root.insertFullName(ct.fullName(), true, weavable).setClassType(ct);
 	    } else {
-		cn = new PCNode(null, null, this).updateWeavable(weavable);
+		cn = new PCNode(null, null, this).updateWeavable(weavable).setClassType(ct);
 	    }
 	    classes.put(ct, cn);
 	    if (autosootify) {
@@ -67,7 +68,42 @@ public class PCStructure {
     }
 
     public Collection getClassTypes() {
-	return classes.keySet();
+	// Return all the classes in topological order
+	List/*<ClassType>*/ ctlist = new ArrayList();
+	LinkedList/*<PCNode>*/ queue = new LinkedList();
+	Map/*<PCNode,Integer>*/ nparents = new HashMap();
+	Iterator cti = classes.keySet().iterator();
+	while (cti.hasNext()) {
+	    ClassType ct = (ClassType)cti.next();
+	    PCNode cn = getClass(ct);
+	    int np = cn.getParents().size();
+	    if (np == 0) {
+		queue.addLast(cn);
+	    } else {
+		nparents.put(cn, new Integer(np));
+	    }
+	}
+	
+	while (!queue.isEmpty()) {
+	    PCNode cn = (PCNode)queue.removeFirst();
+	    ctlist.add(cn.getClassType());
+	    Iterator chi = cn.getChildren().iterator();
+	    while (chi.hasNext()) {
+		PCNode ch = (PCNode)chi.next();
+		int np = ((Integer)nparents.get(ch)).intValue();
+		if (np == 1) {
+		    nparents.remove(ch);
+		    queue.addLast(ch);
+		} else {
+		    nparents.put(ch, new Integer(np-1));
+		}
+	    }
+	}
+	if (!nparents.isEmpty()) {
+	    throw new InternalCompilerError("Error in topological sort -- cyclic hierarchy");
+	}
+
+	return ctlist;
     }
 
     public PCNode getClass(ClassType ct) {

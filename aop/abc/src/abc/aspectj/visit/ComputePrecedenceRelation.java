@@ -30,6 +30,27 @@ public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
 	    DeclarePrecedence dpr = (DeclarePrecedence)n;
 	    List pats = dpr.pats();
 
+	    // If the list of patterns contains a universal pattern,
+	    // exclude the other patterns from its matches
+	    List excludes = new ArrayList();
+	    CPEUniversal universal = null;
+	    Iterator pi = pats.iterator();
+	    while (pi.hasNext()) {
+		ClassnamePatternExpr p = (ClassnamePatternExpr)pi.next();
+		if (p instanceof CPEUniversal) {
+		    if (universal == null) {
+			universal = (CPEUniversal)p;
+		    } else {
+			throw new SemanticException("Only one universal pattern allowed in precedence declaration",n.position());
+		    }
+		} else {
+		    excludes.add(p);
+		}
+	    }
+	    if (universal != null) {
+		universal.setExcludes(excludes);
+	    }
+
 	    // The aspects we have passed on this list
 	    Set passed = new HashSet();
 
@@ -66,14 +87,12 @@ public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
 			    }
 			    */
 			    if (pat.matches(PatternMatcher.v(), cl)) {
-				/* It is, after all, not the case that...
 				// It is an error if an aspect is matched twice on the same list
 				if (passed.contains(a)) {
 				    throw new SemanticException("Aspect "+a+
 								" is matched by more than one pattern on the precedence list",
 								dpr.position());
 				}
-				*/
 				// Mark this aspect as being preceded by all passed aspects
 				Iterator pai = passed.iterator();
 				while (pai.hasNext()) {

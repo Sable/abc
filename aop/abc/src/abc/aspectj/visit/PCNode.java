@@ -1,6 +1,8 @@
 
 package abc.aspectj.visit;
 
+import polyglot.types.ClassType;
+
 import java.util.*;
 import java.util.regex.*;
 
@@ -14,6 +16,7 @@ public class PCNode {
     private boolean is_weavable;
     private boolean is_object;
     private PCStructure root;
+    private ClassType ct;
 
     public PCNode(String name, PCNode outer, PCStructure root) {
 	this.name = name;
@@ -27,6 +30,15 @@ public class PCNode {
 	is_object = toString().equals("java.lang.Object");
     }
     
+    PCNode setClassType(ClassType ct) {
+	this.ct = ct;
+	return this;
+    }
+
+    ClassType getClassType() {
+	return ct;
+    }
+
     PCNode insertFullName(String full_name, boolean cl, boolean weavable) {
 	int dotpos = full_name.indexOf('.');
 	String head;
@@ -82,6 +94,10 @@ public class PCNode {
 
     public Set/*<PCNode>*/ getParents() {
 	return parents;
+    }
+
+    public Set/*<PCNode>*/ getChildren() {
+	return children;
     }
 
     public PCStructure getRoot() {
