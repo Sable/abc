@@ -73,4 +73,10 @@ public class AspectJTypeSystem_c
 		}	
 	
 	
+	// privileged aspects can access anything: override accessibility test in super
+    protected boolean isAccessible(MemberInstance mi, ClassType ctc) {
+    	if (AspectJFlags.isAspect(ctc.flags()) && AspectJFlags.isPrivileged(ctc.flags()))
+    		return true;
+    	else return super.isAccessible(mi,ctc);
+    }
 }

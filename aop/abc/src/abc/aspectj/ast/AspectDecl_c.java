@@ -33,6 +33,7 @@ import abc.aspectj.visit.ContainsAspectInfo;
 import abc.weaving.aspectinfo.*;
 
 /**
+ * @author Oege de Moor
  * A <code>AspectDecl</code> is the definition of an aspect, abstract aspect,
  * or privileged. It may be a public or other top-level aspect, or an inner
  * named aspect.
@@ -50,16 +51,16 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
          this.per = per;
     }
     
-    // add the aspectOf method to the aspect class
-    // it potentially throws org.aspectj.lang.NoAspectBoundException, so that is loaded,
-    // if it is a per-object associated aspect, it takes one parameter of type Object, otherwise none
-	public NodeVisitor buildTypesEnter(TypeBuilder tb) throws SemanticException {
-		if (!flags().isAbstract()) {
-		NodeFactory nf = tb.nodeFactory();
+    /**
+     * construct a dummy aspectOf method that always returns null
+	* it potentially throws org.aspectj.lang.NoAspectBoundException, so that is loaded,
+	* if it is a per-object associated aspect, it takes one parameter of type Object, otherwise none
+	*/
+    private MethodDecl aspectOf(NodeFactory nf,AspectJTypeSystem ts) {
 		TypeNode tn = nf.AmbTypeNode(position(),name());
 		Expr nl = nf.NullLit(position());
 		Block bl = nf.Block(position()).append(nf.Return(position(),nl));
-		AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();
+				
 		TypeNode nab = nf.CanonicalTypeNode(position(),ts.NoAspectBound());
 		List args = new LinkedList();
 		if (per instanceof PerThis || per instanceof PerTarget) {
@@ -67,8 +68,34 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 			args.add(obj);
 		}
 		List thrws = new LinkedList(); thrws.add(nab);
-		MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl);       
-		body = body().addMember(md); // against the polyglot doctrine of functional rewrites... 
+		MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),tn,"aspectOf",args,thrws,bl); 
+		return md; 
+    }
+    
+    /**
+     * construct a dummy hasAspect method that always returns true 
+     */
+    private MethodDecl hasAspect(NodeFactory nf, AspectJTypeSystem ts) {
+    	TypeNode bool = nf.CanonicalTypeNode(position(),ts.Boolean());
+    	Expr b = nf.BooleanLit(position(),true);
+    	Block bl = nf.Block(position()).append(nf.Return(position(),b));
+    	
+    	List args = new LinkedList();
+    	List thrws = new LinkedList();
+    	MethodDecl md = nf.MethodDecl(position(),Flags.PUBLIC.Static(),bool,"hasAspect",args,thrws,bl);
+    	return md;
+    }
+    
+    /** 
+     * add the aspectOf and hasAspect methods to the aspect class, but only if it is concrete
+    */
+    
+	public NodeVisitor buildTypesEnter(TypeBuilder tb) throws SemanticException {
+		if (!flags().isAbstract()) {
+		NodeFactory nf = tb.nodeFactory();
+		AspectJTypeSystem ts = (AspectJTypeSystem) tb.typeSystem();      
+		body = body().addMember(aspectOf(nf,ts)).addMember(hasAspect(nf,ts)); 
+		       // against the polyglot doctrine of functional rewrites... 
 		}
 		return super.buildTypesEnter(tb);     
 	} 

@@ -28,11 +28,11 @@ public class AspectJFlags extends Flags {
        return f.set(PRIVILEGED);
     }
 	   
-    public Flags clearPrivileged(Flags f) {
+    public static Flags clearPrivileged(Flags f) {
        return f.clear(PRIVILEGED);
     }
 
-    public boolean isPrivileged(Flags f) {
+    public static boolean isPrivileged(Flags f) {
        return f.contains(PRIVILEGED);
    }
    

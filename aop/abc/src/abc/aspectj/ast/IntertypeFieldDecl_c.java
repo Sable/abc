@@ -33,6 +33,10 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 	super(pos,flags,type,name,init);
 	this.host = host;
     }
+    
+    public TypeNode host() { 
+    	return host;
+    }
 
     protected IntertypeFieldDecl_c reconstruct(TypeNode type, 
 					       Expr init,
@@ -46,23 +50,36 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     }
 
     public Node visitChildren(NodeVisitor v) {
-	TypeNode type = (TypeNode) visitChild(type(), v);
+		TypeNode type = (TypeNode) visitChild(type(), v);
         Expr init = (Expr) visitChild(init(), v);
-	TypeNode host=(TypeNode) visitChild(this.host,v);
-	return reconstruct(type,init,host);
+		TypeNode host=(TypeNode) visitChild(this.host,v);
+		return reconstruct(type,init,host);
+    }
+    
+    public Node typeCheck(TypeChecker tc) throws SemanticException {
+    	if (flags().isProtected())
+    		throw new SemanticException("Intertype fields cannot be protected",position());
+    	return super.typeCheck(tc);
     }
 
+	/**
+	 * @author Oege de Moor
+	 * @author Aske Christensen
+	 * add intertype field declarations to host types
+	 */
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
-	Type ht = host.type();
-	System.out.println("Intertype field decl "+ht+"."+name());
-	if (ht instanceof ParsedClassType) {
-	    ((ParsedClassType)ht).addField(fieldInstance());
-	}
+		Type ht = host.type();
+		System.out.println("Intertype field decl "+ht+"."+name());
+		if (ht instanceof ParsedClassType) {
+			// need to make a copy because the container has changed
+			FieldInstance fi = fieldInstance().container((ReferenceType)ht);
+	   	 	((ParsedClassType)ht).addField(fi);
+		}
         return am.bypassChildren(this);
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
-	w.write(flags().translate());
+		w.write(flags().translate());
         print(type(), w, tr);
         w.write(" ");
         print(host, w, tr);
@@ -79,15 +96,15 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     }
 
     public void update(abc.weaving.aspectinfo.GlobalAspectInfo gai, abc.weaving.aspectinfo.Aspect current_aspect) {
-	System.out.println("IFD host: "+host.toString());
-	abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
-	    (AspectInfoHarvester.convertModifiers(flags()),
-	     gai.getClass(host.toString()),
-	     AspectInfoHarvester.toAbcType(type().type()),
-	     name(),
-	     null);
-	abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
-	    (fs, current_aspect, position());
-	gai.addIntertypeFieldDecl(ifd);
+		System.out.println("IFD host: "+host.toString());
+		abc.weaving.aspectinfo.FieldSig fs = new abc.weaving.aspectinfo.FieldSig
+	  			  	(AspectInfoHarvester.convertModifiers(flags()),
+	   				gai.getClass(host.toString()),
+	     			AspectInfoHarvester.toAbcType(type().type()),
+	     			name(),
+	     			null);
+		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
+	    			(fs, current_aspect, position());
+		gai.addIntertypeFieldDecl(ifd);
     }
 }

@@ -16,4 +16,7 @@ public class IntertypeDecl_c extends Node_c implements IntertypeDecl
         super(pos);
     }
 
+	public TypeNode host() { 
+		return null;
+	}
 }

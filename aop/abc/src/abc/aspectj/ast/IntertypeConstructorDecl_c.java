@@ -36,6 +36,10 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	this.host = host;
     }
 
+	public TypeNode host() {
+		return host;
+	}
+	
     protected IntertypeConstructorDecl_c reconstruct(List formals, 
 						     List throwTypes, 
 						     Block body,
@@ -58,12 +62,19 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	TypeNode host=(TypeNode) visitChild(this.host,v);
 	return reconstruct(formals,throwTypes,body,host);
     }
-
+    
+    /**
+     * @author Aske Christensen
+     * @author Oege de Moor
+     * add itd of methods to host types
+     */
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
-	Type ht = host.type();
-	if (ht instanceof ParsedClassType) {
-	    ((ParsedClassType)ht).addConstructor(constructorInstance());
-	}
+		Type ht = host.type();
+		if (ht instanceof ParsedClassType) {
+		   // need to change the container
+		   ConstructorInstance ci = constructorInstance().container((ClassType)ht);
+	  	  ((ParsedClassType)ht).addConstructor(ci);
+		}
         return am.bypassChildren(this);
     }
 
@@ -76,11 +87,15 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 
         ClassType ct = c.currentClass();
 
-	if (ct.flags().isInterface()) {
-	    throw new SemanticException(
-		"Cannot declare an intertype constructor inside an interface.",
-		position());
-	}
+		if (ct.flags().isInterface()) {
+	    	throw new SemanticException(
+			"Cannot declare an intertype constructor inside an interface.",
+			position());
+		}
+		
+		if (flags().isProtected()) {
+			throw new SemanticException("Cannot declare a protected intertype constructor");
+		}
 
         if (ct.isAnonymous()) {
 	    throw new SemanticException(

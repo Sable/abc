@@ -37,6 +37,10 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	this.host = host;
     }
 
+	public TypeNode host() {
+		return host;
+	}
+	
     protected IntertypeMethodDecl_c reconstruct(TypeNode returnType, 
 						List formals, 
 						List throwTypes, 
@@ -65,11 +69,18 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     public NodeVisitor addMembersEnter(AddMemberVisitor am) {
 	Type ht = host.type();
 	if (ht instanceof ParsedClassType) {
-	    ((ParsedClassType)ht).addMethod(methodInstance());
+		MethodInstance mi = methodInstance().container((ReferenceType)ht);
+	    ((ParsedClassType)ht).addMethod(mi);
 	}
         return am.bypassChildren(this);
     }
 
+	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		if (flags().isProtected())
+			throw new SemanticException("Intertype methods cannot be protected",position());
+		return super.typeCheck(tc);
+	}
+		
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.begin(0);
 	w.write(flags.translate());
