@@ -49,7 +49,7 @@ public class CflowStackCounter {
         int counters = 0;
         for( Iterator cfsIt = setups.iterator(); cfsIt.hasNext(); ) {
             final CflowSetup cfs = (CflowSetup) cfsIt.next();
-            if(cfs.useCounter()) counters++;
+            if(cfs.getFormals().size() > 0) counters++;
             else stacks++;
         }
         System.err.println( "LaTeX: "+stacks+" & "+counters );
