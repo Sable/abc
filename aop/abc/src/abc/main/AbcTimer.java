@@ -7,6 +7,36 @@ import java.text.DecimalFormat;
 import polyglot.frontend.Stats;
 import polyglot.frontend.Pass;
 
+/** Provide timing for Abc.
+ *  @author Laurie Hendren
+ *  @date May 24, 2004
+ *
+ *  This class provides basic timing infrastructure for abc.  It has
+ *  three main parts,  one for timing phases in abc,  one for capturing
+ *  and displaying times from polyglot, and one for collecting the time
+ *  spent in Soot Resolving.
+ *
+ *  To time the abc phases,  an AbcTimer.start() call must be placed
+ *  where timing should start.   
+ *  Then AFTER each phase, use a AbcTimer.mark("Phasename"),
+ *  to say that this phase has ended.  The time allocated to that phase will
+ *  be from the end of the previously marked phase to the time of executing
+ *  this mark.    
+ *
+ *  To get the polyglot timings a call to AbcTimer.storePolyglotStats 
+ *  and AbcTimer.storePolyglotPasses must be put into the polyglot code.  
+ *  These give the AbcTimer references to a list of Polyglot passes and a
+ *  reference to the Stats object containing the timing for each pass.
+ *
+ *  To collect the time for soot resolving,  each call in the compiler to
+ *  the soot resolver must call abcTimer.addToSootResolve(long),  with the
+ *  time used for that resolve as the param.
+ *
+ *  Timings may be printed out using AbcTimer.report(), which
+ *  will print the different sorts of timings, depending on the settings of the
+ *  abcTimer, polyglotTimer and sootResolverTimer flags in main.Debug.java.
+ */
+
 public class AbcTimer {
 
   private static long laststopped;
