@@ -66,16 +66,44 @@ import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
 
+/** 
+ * @author Oege de Moor
+ * 
+ * Declarations of advice, for example
+ * 
+ *  <code> 
+ * 	before(int x)      // the "advice spec"
+ *    : 
+ * 	call(* fac(*)) && args(x)  // pointcut
+ *    { System.out.println(x);} // body
+ * </code>
+ *  */
 public class AdviceDecl_c extends MethodDecl_c
     implements AdviceDecl, ContainsAspectInfo, MakesAspectMethods
 {
+	/** advice specification 
+	 *  (e.g. <code> before(formals), around(..), after returning(..) </code>) */
     protected AdviceSpec spec;
+    
+    /** pointcut that specifies the joinpoints 
+     *  where this advice applies */
     protected Pointcut pc;
+    
+    /** the return formal, for
+     *  <code> afterreturning </code> and 
+     *  <code> afterthrowing </code> advice */
     protected AdviceFormal retval;
     
+    /** record whether <code> thisJoinPoint </code> occurs in the advice body.
+     *   set by joinPointFormals(Local) */
     protected boolean hasJoinPoint=false;
+	/** record whether <code> thisJoinPointStaticPart </code> occurs in the advice body.
+	  *   set by joinPointFormals(Local) */
     protected boolean hasJoinPointStaticPart=false;
+	/** record whether <code> thisEnclosingJoinPointStaticPart </code> occurs in the advice body.
+	  *   set by joinPointFormals(Local) */
     protected boolean hasEnclosingJoinPointStaticPart=false;
+
 
     protected LocalInstance thisJoinPointInstance=null;
     protected LocalInstance thisJoinPointStaticPartInstance=null;

@@ -20,6 +20,7 @@ import soot.javaToJimple.jj.ast.JjNodeFactory_c;
 
 /**
  * NodeFactory for aspectj extension.
+ * @author Oege de Moor
  */
 public class AJNodeFactory_c 
        extends soot.javaToJimple.jj.ast.JjNodeFactory_c 

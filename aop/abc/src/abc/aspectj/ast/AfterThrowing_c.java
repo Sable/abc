@@ -9,6 +9,10 @@ import java.util.*;
 
 import abc.weaving.aspectinfo.AbcFactory;
 
+/** specification part of afterthrowing advice.
+ * 
+ * @author Oege de Moor
+ */
 public class AfterThrowing_c extends AdviceSpec_c 
                              implements AfterThrowing
 {

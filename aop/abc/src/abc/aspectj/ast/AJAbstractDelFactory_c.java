@@ -5,6 +5,10 @@ import polyglot.ext.jl.ast.*;
 
 import abc.aspectj.extension.*;
 
+/** Delegate factory.
+ * 
+ * @author Julian Tibble
+ */
 public abstract class AJAbstractDelFactory_c extends AbstractDelFactory_c
                                                  implements AJDelFactory
 {

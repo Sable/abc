@@ -3,6 +3,10 @@ package abc.aspectj.ast;
 import polyglot.ast.JL;
 import polyglot.ast.DelFactory;
 
+/** Delegate factory.
+ * 
+ * @author Julian Tibble
+ */
 public interface AJDelFactory extends DelFactory
 {
     JL delAspectDecl();

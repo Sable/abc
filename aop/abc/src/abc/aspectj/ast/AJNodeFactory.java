@@ -14,6 +14,7 @@ import java.util.*;
 
 /**
  * NodeFactory for aspectj extension.
+ * @author Oege de Moor
  */
 public interface AJNodeFactory 
        extends polyglot.ast.NodeFactory {

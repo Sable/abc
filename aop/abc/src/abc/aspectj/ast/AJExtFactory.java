@@ -3,6 +3,10 @@ package abc.aspectj.ast;
 import polyglot.ast.Ext;
 import polyglot.ast.ExtFactory;
 
+/** Extension factory.
+ * 
+ * @author Julian Tibble
+ */
 public interface AJExtFactory extends ExtFactory
 {
     Ext extAspectDecl();

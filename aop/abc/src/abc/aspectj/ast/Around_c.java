@@ -9,6 +9,10 @@ import java.util.*;
 
 import abc.weaving.aspectinfo.AbcFactory;
 
+/** specification part of around advice.
+ * 
+ * @author Oege de Moor
+ */
 public class Around_c extends AdviceSpec_c 
                               implements Around
 {

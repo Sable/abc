@@ -10,7 +10,9 @@ import java.util.*;
 import polyglot.ext.jl.ast.NodeFactory_c;
 
 import abc.weaving.aspectinfo.AbcFactory;
-
+/** specification part of afterreturning advice.
+ * @author Oege de Moor
+ */
 public class AfterReturning_c extends AdviceSpec_c 
                               implements AfterReturning
 {

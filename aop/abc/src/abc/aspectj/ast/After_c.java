@@ -7,6 +7,10 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/** specification part of after advice.
+ * 
+ * @author Oege de Moor
+ */
 public class After_c extends AdviceSpec_c 
                              implements After
 {

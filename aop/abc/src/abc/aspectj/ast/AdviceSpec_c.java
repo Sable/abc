@@ -9,6 +9,10 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+/** An advice specification states the kind of advice and the formals.
+ * 
+ * @author Oege de Moor
+ */
 public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
 {
     protected List formals;

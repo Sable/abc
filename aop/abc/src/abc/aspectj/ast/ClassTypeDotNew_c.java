@@ -9,6 +9,10 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+/** represent (ClassNamePatternExpr.new) in pointcuts
+ * 
+ * @author Oege de Moor
+ */
 public class ClassTypeDotNew_c extends Node_c implements ClassTypeDotNew
 {
     protected ClassnamePatternExpr base;

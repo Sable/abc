@@ -3,6 +3,10 @@ package abc.aspectj.ast;
 import polyglot.ast.*;
 import polyglot.ext.jl.ast.*;
 
+/** Extension factory.
+ * 
+ * @author Julian Tibble
+ */
 public abstract class AJAbstractExtFactory_c extends AbstractExtFactory_c
                                                  implements AJExtFactory
 {

@@ -8,6 +8,10 @@ import polyglot.ext.jl.types.TypeSystem_c;
 
 import java.util.*;
 
+/** specification part of before advice
+ * 
+ * @author Oege de Moor
+ */
 public class Before_c extends AdviceSpec_c 
                               implements Before
 {
