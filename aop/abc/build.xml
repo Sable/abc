@@ -50,6 +50,8 @@
         <javac
             destdir="runtime-classes"
             debug="true"
+target="1.4"
+source="1.4"
         >
             <src path="runtime-src"/>
             <classpath>
@@ -70,6 +72,8 @@
         <javac
             destdir="testing-classes"
             debug="true"
+target="1.4"
+source="1.4"
         >
             <src path="testing-src"/>
             <classpath>
@@ -100,6 +104,8 @@
         <javac
             destdir="classes"
             debug="true"
+target="1.4"
+source="1.4"
         >
             <src path="src"/>
             <src path="generated"/>
