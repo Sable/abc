@@ -443,9 +443,9 @@ public class AdviceDecl_c extends MethodDecl_c
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
 	int lastpos = formals().size();
 	int jp = -1, jpsp = -1, ejp = -1;
+	if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
 	if (hasJoinPoint) jp = --lastpos;
 	if (hasJoinPointStaticPart) jpsp = --lastpos;
-	if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
 
 	// Since the spec is not visited, we copy the (checked)
 	// return type node from the advice declaration
