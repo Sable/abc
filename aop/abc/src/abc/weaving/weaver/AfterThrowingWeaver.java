@@ -124,12 +124,12 @@ public class AfterThrowingWeaver {
 
              Stmt ifstmt = Jimple.v().
 	          newIfStmt( Jimple.v().
-		    newEqExpr(isInitError,IntConstant.v(0)), 
-		    assignStmt );
+		    newEqExpr(isInitError,IntConstant.v(1)), 
+		    throwStmt );
 
-	     ThrowStmt throwInitError = Jimple.v().newThrowStmt(exception);
+	     //	     ThrowStmt throwInitError = Jimple.v().newThrowStmt(exception);
 
-	     units.insertAfter(throwInitError, idStmt);
+	     //	     units.insertAfter(throwInitError, idStmt);
 	     units.insertAfter(ifstmt , idStmt);
 	     units.insertAfter(assignbool,idStmt);
 	  }
