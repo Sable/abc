@@ -869,12 +869,12 @@ public class AroundWeaver {
 						Util.removeTraps(shadowMethodBody, begin, end);
 						// remove statements except original assignment
 						Util.removeStatements(shadowMethodBody, begin, end, null);
-						StmtAdviceApplication stmtAppl = null;
-						if (adviceAppl instanceof StmtAdviceApplication) {
-							stmtAppl = (StmtAdviceApplication) adviceAppl;
-							stmtAppl.stmt = null;
+						//StmtAdviceApplication stmtAppl = null;
+						//if (adviceAppl instanceof StmtAdviceApplication) {
+						//	stmtAppl = (StmtAdviceApplication) adviceAppl;
+						//	stmtAppl.stmt = null;
 							/// just for sanity, because we deleted that stmt
-						}
+						//}
 					}
 
 					//if (bHasProceed) {
@@ -979,6 +979,10 @@ public class AroundWeaver {
 					Unit insertAfter,
 					Local returnedLocal,
 					ObjectBox resultingFirstCopy) {
+					
+					if (returnedLocal!=null && !source.getLocals().contains(returnedLocal))
+						throw new InternalAroundError("returnedLocal " + returnedLocal + 
+								" not in source method " + source.getMethod());
 			
 					boolean bInstance = !source.getMethod().isStatic() && !dest.getMethod().isStatic();
 					Local lThisSource = null;
@@ -1116,9 +1120,18 @@ public class AroundWeaver {
 			
 					if (returnedLocal != null) {
 						Local newLocal = (Local) bindings.get(returnedLocal);
-						if (newLocal == null)
-							throw new InternalAroundError();
-			
+						if (newLocal == null) {
+							if (!source.getLocals().contains(returnedLocal)) {
+								debug("returnedLocal " + returnedLocal +
+								" is not in local chain of source method.");
+							}
+							debug("Source: " + Util.printMethod(source.getMethod()));
+							debug("Dest : " + Util.printMethod(dest.getMethod()));
+							throw new InternalAroundError("Could not find " + returnedLocal + 
+									" in the bindings map. " + 
+									"Source: " + source.getMethod() +
+									" Dest: " + dest.getMethod());
+						}
 						LocalGeneratorEx lg = new LocalGeneratorEx(dest);
 						Local castLocal = lg.generateLocal(dest.getMethod().getReturnType());
 						AssignStmt s = Jimple.v().newAssignStmt(castLocal, newLocal);
@@ -1634,6 +1647,8 @@ public class AroundWeaver {
 								throw new InternalAroundError(); 
 							}
 						}
+						if (Weaver.getUnitBindings().containsKey(applStmt))
+							applStmt=(Stmt)Weaver.getUnitBindings().get(applStmt);
 							
 						if (applStmt instanceof AssignStmt) {					   
 							AssignStmt assignStmt = (AssignStmt) applStmt;
