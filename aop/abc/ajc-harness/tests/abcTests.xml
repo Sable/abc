@@ -7990,4 +7990,8 @@
            <compile files="InsideIf.java"/>
            <run class="InsideIf"/>
         </ajc-test>
+        <ajc-test dir="abctests/design/cflow" title="cflow at handler joinpoints">
+           <compile files="Handler.java"/>
+           <run class="Handler"/>
+        </ajc-test>
 </suite>
