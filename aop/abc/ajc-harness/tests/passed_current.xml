@@ -1750,8 +1750,11 @@
             <message line="19" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="initial tests for new introduction style" num="320" keywords="from-design" dir="design/intro">
-        <compile files="Simple.java"></compile>
+<ajc-test title="initial tests for new introduction style" num="320" keywords="from-design" dir="design/intro" abccomment="we signal itd inits without a specific order">
+        <compile files="Simple.java">
+            <message line="67" kind="warning"></message>
+            <message line="67" kind="warning"></message>
+        </compile>
         <run class="Simple"></run>
     </ajc-test>
 <ajc-test title="overriding of introduced methods and accessibility" num="321" keywords="from-design" dir="design/intro">
@@ -2347,6 +2350,10 @@
         <compile files="ArrayCasts.java"></compile>
         <run class="ArrayCasts"></run>
     </ajc-test>
+<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" num="464" keywords="from-resolved_10x" dir="new">
+        <compile files="Fixes.java"></compile>
+        <run class="Fixes"></run>
+    </ajc-test>
 <ajc-test title="Dave Binkley's problem with eachcflowroot. [eachcflow]" num="465" keywords="from-resolved_10x" dir="new">
         <compile files="Binkley2.java"></compile>
         <run class="Binkley2"></run>
@@ -2398,6 +2405,11 @@
 <ajc-test title="inheritance, around advice and abstract pointcuts [eachobject] (still)" pr="317" num="481" keywords="from-resolved_10x" dir="new">
         <compile files="OverridingPointcuts.java"></compile>
         <run class="OverridingPointcuts"></run>
+    </ajc-test>
+<ajc-test title="Priviledged aspect methods are missing for privates. [eachobject]" num="482" keywords="from-resolved_10x" dir="new/foemmel">
+        <compile files="TheAspect.java,TheObject.java">
+        </compile>
+        <run class="TheObject"></run>
     </ajc-test>
 <ajc-test title="exceptions thrown and caught in advice, particularly try+proceed" num="483" keywords="from-resolved_10x" dir="new">
         <compile files="TryAndProceed.java"></compile>
@@ -2808,10 +2820,6 @@
         <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
         <run class="driver.PR555"></run>
     </ajc-test>
-<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new">
-        <compile files="InnerClassInPrivilegedAspect.java"></compile>
-        <run class="InnerClassInPrivilegedAspect"></run>
-    </ajc-test>
 <ajc-test title="aspects should get package access outside the file" pr="556" num="581" keywords="from-resolved_10rc3" dir="new/packageAccessPR556">
         <compile files="base1/p/C1.java,base2/p/C2.java"></compile>
         <run class="p.C1"></run>
@@ -3162,10 +3170,6 @@
         <compile files="SubclassAccessToEnclosingSuperClassPrivate.java"></compile>
         <run class="SubclassAccessToEnclosingSuperClassPrivate"></run>
     </ajc-test>
-<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
-	    <compile files="java/lang/Object.java,java/lang/String.java">
-	    </compile>
-	</ajc-test>
 <ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
         <compile files="MethodLocalAroundReturns.java"></compile>
         <run class="MethodLocalAroundReturns"></run>

@@ -82,6 +82,12 @@
         </compile>
         <run vm="1.4" class="ReturnCastProceed"></run>
     </ajc-test>
+<ajc-test title="Referencing static interfaces with import statements" pr="386" num="674" keywords="from-broken14usejavac,purejava" dir="pureJava" abccomment="tries to import inner classes invalidly">
+        <abckeywords><skip></skip></abckeywords>
+        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
+        <compile includeClassesDir="true" files="ImportingStaticInnerInterfaces_PR386.java"></compile>
+        <run class="ImportingStaticInnerInterfaces_PR386"></run>
+    </ajc-test>
 <ajc-test title="Referencing interfaces with import statements" pr="386" num="678" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="this tries to reference an inner class with an import,                   which javac doesn't allow either">
         <abckeywords><skip></skip></abckeywords>
         <compile files="ClassWithInnerInterfaces.java,ImportingInnerInterfaces_PR386.java"></compile>

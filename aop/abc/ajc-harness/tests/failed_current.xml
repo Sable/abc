@@ -99,10 +99,6 @@
         <compile files="FieldPatterns.java"></compile>
         <run class="FieldPatterns"></run>
     </ajc-test>
-<ajc-test title="PostfixExprs to various synthetic things are fixed correctly [eachobject]" num="464" keywords="from-resolved_10x" dir="new">
-        <compile files="Fixes.java"></compile>
-        <run class="Fixes"></run>
-    </ajc-test>
 <ajc-test title="advice on an inherited method" pr="105" num="466" keywords="from-resolved_10x" dir="new">
         <compile files="AdviceOnInheritedMethod.java"></compile>
         <run class="AdviceOnInheritedMethod"></run>
@@ -118,11 +114,6 @@
 <ajc-test title="Reception based on strictfp modifier" num="478" keywords="from-resolved_10x" dir="new">
         <compile files="StrictFpReceptions.java"></compile>
         <run class="StrictFpReceptions"></run>
-    </ajc-test>
-<ajc-test title="Priviledged aspect methods are missing for privates. [eachobject]" num="482" keywords="from-resolved_10x" dir="new/foemmel">
-        <compile files="TheAspect.java,TheObject.java">
-        </compile>
-        <run class="TheObject"></run>
     </ajc-test>
 <ajc-test title="private inner interfaces and bytecode visibility" pr="494" num="495" keywords="from-resolved_10x" dir="new/innerInterfaces">
         <compile files="p/Driver.java,p/InnerTest.java,other/Test.java"></compile>
@@ -152,6 +143,12 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
+<ajc-test title="inner classes of privileged aspects cannot see target class private members" pr="555" num="580" keywords="from-resolved_10rc3" dir="new" abccomment="we give a warning about unspecified init order. ODM 12/08/04">
+        <compile files="InnerClassInPrivilegedAspect.java">
+             <message line="109" kind="warning"></message>
+        </compile>
+        <run class="InnerClassInPrivilegedAspect"></run>
+    </ajc-test>
 <ajc-test title="CE for ambiguous type reference (two files in package)" pr="701" num="634" keywords="from-resolved_105,purejava" dir="new" abccomment="jlc doesn't find error when two classes in same package                   have same name.  Reported to Nate July 6/04. LJH">
      <abckeywords> <nate></nate> <laurie></laurie> </abckeywords>
         <compile files="ambiguousClass/AmbiguousReferent.java,ambiguousClass/AmbiguousClassReference.java">
@@ -170,6 +167,10 @@
             <message line="72" kind="error"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Compiling java.lang.Object with ajc yields non-verifying bytecode" pr="762" num="653" keywords="from-resolved_105" dir="new/nolang" comment="XXX weak/bad test">
+	    <compile files="java/lang/Object.java,java/lang/String.java">
+	    </compile>
+	</ajc-test>
 <ajc-test title="CE expected for assignment to arg in if pcd" num="655" keywords="from-resolved_105" dir="new">
         <compile files="IfPCDAssignmentCE.java">
             <message line="16" kind="error"></message>
@@ -181,22 +182,17 @@
         <compile options="-source,1.4" files="AssertInOnePackage.java"></compile>
         <run vm="1.4" class="AssertInOnePackage"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements" pr="386" num="674" keywords="from-broken14usejavac,purejava" dir="pureJava">
-        <compile files="ClassWithStaticInnerInterfaces.java"></compile>
-        <compile includeClassesDir="true" files="ImportingStaticInnerInterfaces_PR386.java"></compile>
-        <run class="ImportingStaticInnerInterfaces_PR386"></run>
-    </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava">
+<ajc-test title="Referencing static interfaces with import statements stars" pr="386" num="675" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars_PR386.java"></compile>
         <run class="ImportingStaticInnerInterfacesStars_PR386"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava">
+<ajc-test title="Referencing static interfaces with import statements stars 2" pr="386" num="676" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars2_PR386.java"></compile>
         <run class="ImportingStaticInnerInterfacesStars2_PR386"></run>
     </ajc-test>
-<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava">
+<ajc-test title="Referencing static interfaces with import statements stars 3" pr="386" num="677" keywords="purejava,from-broken14usejavac" dir="pureJava" abccomment="tries to import inner classes invalidly,                     but we don't flag the error at import time (cf 679)">
         <compile files="ClassWithStaticInnerInterfaces.java"></compile>
         <compile includeClassesDir="true" files="ImportingStaticInnerInterfacesStars3_PR386.java"></compile>
         <run class="ImportingStaticInnerInterfacesStars3_PR386"></run>
