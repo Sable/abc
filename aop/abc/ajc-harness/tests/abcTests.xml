@@ -5003,12 +5003,22 @@
 
 	<!-- pointcuts aren't checked for circularities unless they're used -->
     <ajc-test dir="new" pr="568" title="cyclic pointcut definitions"
+     abccomment="abc checks for cycles whether pointcuts are used or not. ODM 21/07/04"
       keywords="from-resolved_10rc3,knownLimitation">
         <compile files="CyclicPointcuts.java">
+            <ajcmessage kind="error" line="11"/>
+            <ajcmessage kind="error" line="14"/>
+            <ajcmessage kind="error" line="18"/>
+            <ajcmessage kind="error" line="32"/>
+            <ajcmessage kind="error" line="43"/>
             <message kind="error" line="11"/>
             <message kind="error" line="14"/>
-            <message kind="error" line="18"/>
+            <message kind="error" line="15"/>
+            <message kind="error" line="19"/>
+            <message kind="error" line="20"/>
+            <message kind="error" line="29"/>
             <message kind="error" line="32"/>
+            <message kind="error" line="40"/>
             <message kind="error" line="43"/>
         </compile>
     </ajc-test>
@@ -7226,8 +7236,8 @@
 		<compile files="AbstractPointcutCE.java">
 			<ajcmessage kind="error" line="5"/>
 			<ajcmessage kind="error" line="10"/>
+                        <message kind="error" line="4"/>
                         <message kind="error" line="5"/>
-			<message kind="error" line="4"/>
                         <message kind="error" line="9"/>
 		</compile>
 	</ajc-test>
@@ -7258,9 +7268,9 @@
 			<ajcmessage kind="error" line="11"/>		
 			<ajcmessage kind="error" line="15"/>
 	                <message kind="error" line="7"/>
-			<message kind="error" line="11"/>		
-			<message kind="error" line="15"/>
-                        <message kind="error" line="14"/>
+			<message kind="error" line="11"/>
+                        <message kind="error" line="14"/>		
+			<message kind="error" line="15"/>                        
 		</compile>
 	</ajc-test>
 
@@ -7603,9 +7613,9 @@
         	<ajcmessage kind="error" line="4" text="duplicate pointcut name: pc1"/>
         	<ajcmessage kind="error" line="6" text="duplicate pointcut name: pc2"/>
         	<ajcmessage kind="error" line="7" text="duplicate pointcut name: pc2"/>
+                <message kind="error" line="4"/>
                 <message kind="error" line="6"/>
         	<message kind="error" line="7"/>
-                <message kind="error" line="4"/>
         </compile>
     </ajc-test>
     
@@ -7619,9 +7629,9 @@
         	<ajcmessage kind="error" line="20" text="incompatible type"/>
                 <message kind="error" line="15"/>
         	<message kind="error" line="16"/>
+                <message kind="error" line="16"/>
         	<message kind="error" line="18"/>
         	<message kind="error" line="20"/>
-                <message kind="error" line="16"/>
         </compile>
     </ajc-test>
 
