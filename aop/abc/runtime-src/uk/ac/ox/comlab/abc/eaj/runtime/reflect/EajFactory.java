@@ -41,46 +41,4 @@ public class EajFactory extends Factory
         ret.setLookupClassLoader(lookupClassLoader);
         return ret;
     }
-
-    // shouldn't have to do this........
- 
-    public JoinPoint.StaticPart makeSJP(String kind, Signature sig, int l, int c)
-    {
-        return super.makeSJP(kind, sig, l, c);
-    }
-
-    public MethodSignature makeMethodSig(String stringRep)
-    {
-        return super.makeMethodSig(stringRep);
-    }
-
-    public ConstructorSignature makeConstructorSig(String stringRep)
-    {
-        return super.makeConstructorSig(stringRep);
-    }
-
-    public FieldSignature makeFieldSig(String stringRep)
-    {
-        return super.makeFieldSig(stringRep);
-    }
-
-    public AdviceSignature makeAdviceSig(String stringRep)
-    {
-        return super.makeAdviceSig(stringRep);
-    }
-
-    public InitializerSignature makeInitializerSig(String stringRep)
-    {
-        return super.makeInitializerSig(stringRep);
-    }
-
-    public CatchClauseSignature makeCatchClauseSig(String stringRep)
-    {
-        return super.makeCatchClauseSig(stringRep);
-    }
-
-    public SourceLocation makeSourceLoc(int line, int col)
-    {
-        return super.makeSourceLoc(line, col);
-    }
 }
