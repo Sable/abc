@@ -8,7 +8,7 @@ Running test 178: pureJava/nested finally blocks have interesting frame location
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/NestedFinally.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
-Semantic Error at pureJava/NestedFinally.java:5,18-35: Missing return statement.
+Semantic Error at NestedFinally.java:5,18-35: Missing return statement.
 FAIL: Test 178: "pureJava/nested finally blocks have interesting frame location problems" failed.
 
 
@@ -130,8 +130,8 @@ Running test 986: abctests/bugs/Matching int[].clone()
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/IntArray.java 
 Compilation produced an unexpected number of errors: 2, should be 0
 Actual errors found: 
-Syntax Error at abctests/bugs/IntArray.java:14,28-31: Syntax error.
-Syntax Error at abctests/bugs/IntArray.java:15,3-4: Syntax error.
+Syntax Error at IntArray.java:14,28-31: Syntax error.
+Syntax Error at IntArray.java:15,3-4: Syntax error.
 FAIL: Test 986: "abctests/bugs/Matching int[].clone()" failed.
 
 
@@ -184,7 +184,7 @@ Running test 1015: abctests/bugs/correct topological sorting of precedence
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/PrecedenceSort.java 
 Compilation produced an unexpected number of errors: 1, should be 0
 Actual errors found: 
-Semantic Error at abctests/bugs/PrecedenceSort.java:2,18-3:5: Pieces of advice from aspect PSC (abctests/bugs/PrecedenceSort.java, line 11) and aspect PSB (abctests/bugs/PrecedenceSort.java, line 18) are in precedence conflict, and both apply here
+Semantic Error at abctests/bugs/PrecedenceSort.java:2,18-3:5: Pieces of advice from aspect PSC (PrecedenceSort.java, line 11) and aspect PSB (PrecedenceSort.java, line 18) are in precedence conflict, and both apply here
 FAIL: Test 1015: "abctests/bugs/correct topological sorting of precedence" failed.
 
 
