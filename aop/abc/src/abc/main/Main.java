@@ -145,6 +145,7 @@ public class Main {
     }
 
     public void run() throws CompilerFailedException {
+    	//System.out.println(classpath);
         // Timer start stuff
         Date abcstart = new Date(); // wall clock time start
         G.v().out.println("Abc started on " + abcstart);
