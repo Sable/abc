@@ -5,6 +5,7 @@ import soot.jimple.*;
 import soot.util.*;
 
 import abc.weaving.aspectinfo.*;
+import abc.weaving.residues.*;
 import java.util.*;
 
 /** The data structure the pointcut matcher computes */
@@ -12,12 +13,42 @@ import java.util.*;
 /*  @date 23-Apr-04                                  */
 public abstract class AdviceApplication {
     public AdviceDecl advice;
-    public ConditionPointcutHandler cph;
+    public Residue residue;
 
-    public AdviceApplication(AdviceDecl advice,
-			     ConditionPointcutHandler cph) {
+    public AdviceApplication(AdviceDecl advice,Residue residue) {
 	this.advice=advice;
-	this.cph=cph;
+	this.residue=residue;
+    }
+
+    private static void doStatement(GlobalAspectInfo info,
+				    MethodAdviceList mal,
+				    SootClass cls,
+				    SootMethod method,
+				    MethodPosition pos) {
+	Iterator adviceIt;
+	for(adviceIt=info.getAdviceDecls().iterator();
+	    adviceIt.hasNext();) {
+	    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
+	    
+	    Pointcut pc=ad.getPointcut();
+	    
+	    // remove the null check once everything is properly implemented
+	    if(pc!=null) {
+		
+		Iterator shadowIt;
+		for(shadowIt=AbstractShadowPointcutHandler.shadowTypesIterator();
+		    shadowIt.hasNext();) {
+		    
+		    ShadowType st=(ShadowType) shadowIt.next();
+		    
+		    Residue residue=pc.matchesAt(st,cls,method,pos);
+		    
+		    if(NeverMatch.neverMatches(residue)) {
+			st.addAdviceApplication(mal,ad,residue,pos);
+		    }
+		}
+	    }
+	}
     }
 
     public static Hashtable computeAdviceLists(GlobalAspectInfo info) {
@@ -37,60 +68,51 @@ public abstract class AdviceApplication {
 
 		final SootMethod method = (SootMethod) methodIt.next();
 
+		// FIXME: Replace this call with one to the partial transformer;
+		// Iterate through body to find "new", decide if we have a pointcut 
+		// that might match it, and add the class to the list if so
+		// Either that or pre-compute the list of all classes that our
+		// pointcuts could match
+
+		// This breaks
+		//(new soot.jimple.toolkits.base.JimpleConstructorFolder())
+		//   .transform(method.getActiveBody(),null,null);
+
 		if(method.isAbstract()) continue;
 		if(method.isNative()) continue;
 		
-		List/*<AdviceApplication>*/ apps=new LinkedList();
+		MethodAdviceList mal=new MethodAdviceList();
 
-		// Do execution shadow
-		Iterator adviceIt;
-		for(adviceIt=info.getAdviceDecls().iterator();
-		    adviceIt.hasNext();) {
-		    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
+		// Do whole body shadows
+		doStatement(info,mal,sootCls,method,new WholeMethodPosition());
 
-		    Pointcut pc=ad.getPointcut();
-
-		    if(pc!=null && pc.matchesAt(sootCls,method,null))
-			apps.add(new BodyAdviceApplication(ad,null));
-		}
-
-
-		Chain stmtsChain=method.retrieveActiveBody().getUnits();
-		Stmt current=(Stmt) stmtsChain.getFirst();
+		// Do statement shadows
+		Chain stmtsChain=method.getActiveBody().getUnits();
+		Stmt current,next;
 
 		for(current=(Stmt) stmtsChain.getFirst();
 		    current!=null;
-		    current=(Stmt) stmtsChain.getSuccOf(current)) {
-		    
-		    for(adviceIt=info.getAdviceDecls().iterator();
-		        adviceIt.hasNext();) {
-
-			final AdviceDecl ad = (AdviceDecl) adviceIt.next();
-
-			Pointcut pc=ad.getPointcut();
-
-			boolean matches;
-
-			if(pc!=null) {
-			    matches=pc.matchesAt(sootCls,method,current);
-			} else {
-			    // BIG TEMPORARY HACK
-			    matches=false;
-			    if (current instanceof AssignStmt) {
-				AssignStmt as = (AssignStmt) current;
-				Value lhs = as.getLeftOp();
-				if(lhs instanceof FieldRef) matches=true;
-			    }
-			}
-
-			if(matches) {
-			    apps.add(new StmtAdviceApplication(ad,null,
-							       current));
-			}    
-		    }
+		    current=next) {
+		    next=(Stmt) stmtsChain.getSuccOf(current);
+		    doStatement(info,mal,sootCls,method,new StmtMethodPosition(current,next));
 		}
-		    
-		ret.put(method,apps);
+
+		// Do exception handler shadows
+		Chain trapsChain=method.getActiveBody().getTraps();
+		Trap currentTrap;
+		// FIXME: There's probably a better way to deal with empty traps chains...
+		try {
+		    for(currentTrap=(Trap) trapsChain.getFirst();
+			currentTrap!=null;
+			currentTrap=(Trap) trapsChain.getSuccOf(current))
+			
+			doStatement(info,mal,sootCls,method,new TrapMethodPosition(currentTrap));
+
+		} catch(NoSuchElementException e) {
+		}
+		
+
+		ret.put(method,mal);
 
 	    }
 	}

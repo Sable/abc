@@ -43,11 +43,11 @@ public class PCWithinCode_c extends Pointcut_c implements PCWithinCode
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (pat instanceof MethodPattern) {
-	    return new abc.weaving.aspectinfo.ConditionPointcut
+	    return new abc.weaving.aspectinfo.LexicalPointcut
 		(new abc.weaving.aspectinfo.WithinMethod(((MethodPattern)pat).makeAIMethodPattern()),
 		 position());
 	} else if (pat instanceof ConstructorPattern) {
-	    return new abc.weaving.aspectinfo.ConditionPointcut
+	    return new abc.weaving.aspectinfo.LexicalPointcut
 		(new abc.weaving.aspectinfo.WithinConstructor(((ConstructorPattern)pat).makeAIConstructorPattern()),
 		 position());
 	} else {

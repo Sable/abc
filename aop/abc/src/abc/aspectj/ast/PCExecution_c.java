@@ -44,11 +44,11 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	abc.weaving.aspectinfo.Pointcut withincode;
 	if (pat instanceof MethodPattern) {
-	    withincode=new abc.weaving.aspectinfo.ConditionPointcut
+	    withincode=new abc.weaving.aspectinfo.LexicalPointcut
 		(new abc.weaving.aspectinfo.WithinMethod(((MethodPattern)pat).makeAIMethodPattern()),
 		 position());
 	} else if (pat instanceof ConstructorPattern) {
-	    withincode=new abc.weaving.aspectinfo.ConditionPointcut
+	    withincode=new abc.weaving.aspectinfo.LexicalPointcut
 		(new abc.weaving.aspectinfo.WithinConstructor(((ConstructorPattern)pat).makeAIConstructorPattern()),
 		 position());
 	} else {

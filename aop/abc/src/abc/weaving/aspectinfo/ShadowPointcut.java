@@ -5,6 +5,9 @@ import polyglot.util.Position;
 import soot.*;
 import soot.jimple.*;
 
+import abc.weaving.matching.MethodPosition;
+import abc.weaving.residues.Residue;
+
 /** A pointcut designator representing a set of joinpoint shadows
  *  at which the pointcut will match.
  */
@@ -16,8 +19,8 @@ public class ShadowPointcut extends AbstractPointcut {
 	this.handler = handler;
     }
 
-    public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
-	return handler.matchesAt(stmt);
+    public Residue matchesAt(ShadowType st,SootClass cls,SootMethod method,MethodPosition position) {
+	return st==handler.getShadowType() ? handler.matchesAt(position) : null;
     }
 
     public String toString() {

@@ -23,15 +23,16 @@ public class PointcutCodeGen {
             Stmt first = null;
             Stmt last = null;
 
-	    List/*<AdviceApplication>*/ adviceList = GlobalAspectInfo.v().getAdviceList(method);
-            if( adviceList == null ) adviceList = new ArrayList();
+	    MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
+            if( adviceList == null ) adviceList = new MethodAdviceList();
             System.out.println("AdviceList for " + method );
 	    System.out.println(adviceList.toString());
 
             Body b = method.getActiveBody();
             LocalGenerator localgen = new LocalGenerator(b);
             Chain units = b.getUnits();
-	    Iterator adviceIt = adviceList.iterator();
+	    // Quick hack to make it compile
+	    Iterator adviceIt = adviceList.stmtAdvice.iterator();
 	    Stmt stmt = null;
 	    AdviceApplication aa = null;
             while( adviceIt.hasNext()) {
@@ -47,7 +48,7 @@ public class PointcutCodeGen {
                 if( aa instanceof StmtAdviceApplication ) {
                     StmtAdviceApplication saa = (StmtAdviceApplication) aa;
                     handle(aspect, method, localgen, saa.stmt, saa.stmt, adviceImpl, adviceSpec);
-                } else if( aa instanceof BodyAdviceApplication ) {
+                } else if( aa instanceof ExecutionAdviceApplication ) {
                     if( first == null ) {
 
                         // Here we move all returns to the end, and set up 

@@ -3,7 +3,7 @@ package abc.weaving.aspectinfo;
 import soot.*;
 
 /** Handler for <code>target</code> condition pointcut with a type argument. */
-public class TargetType extends AbstractConditionPointcutHandler {
+public class TargetType extends AbstractOtherPointcutHandler {
     private AbcType type;
 
     public TargetType(AbcType type) {

@@ -3,24 +3,31 @@ package abc.weaving.aspectinfo;
 import soot.*;
 import soot.jimple.*;
 
+import abc.weaving.matching.MethodPosition;
+import abc.weaving.residues.Residue;
+
+import java.util.*;
+
 /** Skeleton implementation of the {@link abc.weaving.aspectinfo.ShadowPointcutHandler} interface.
  *  Useful when implementing shadow pointcut handlers.
  */
 public abstract class AbstractShadowPointcutHandler implements ShadowPointcutHandler {
+    // Keep a record of what class is what shadow type?
+    static private List/*<ShadowType>*/ allShadowTypes=new LinkedList();
 
-    public ShadowType getShadowType() {
-	// FIXME
-	try {
-	    return (ShadowType) Class.forName(getClass().toString()+"Type").newInstance();
-	} catch (Exception e) {
-	    throw new RuntimeException(e);
-	}
+    /** All classes that implement a new shadow type should call this in their static initializer */
+    static public void registerShadowType(ShadowType st) {
+	allShadowTypes.add(st);
+    }
+
+    static public Iterator shadowTypesIterator() {
+	return allShadowTypes.iterator();
     }
 
     /* remove this once all deriving classes implement it */
-    public boolean matchesAt(Stmt stmt) {
-	System.out.println("Returning false for unimplemented shadow pointcut type "+this.getClass());
-	return false;
-    }
+    //    public Residue matchesAt(MethodPosition position) {
+    //System.out.println("Returning null for unimplemented shadow pointcut type "+this.getClass());
+    //return null;
+    //}
 
 }

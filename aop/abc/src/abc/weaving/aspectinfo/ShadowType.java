@@ -2,11 +2,17 @@ package abc.weaving.aspectinfo;
 
 import soot.*;
 
-/** One category of joinpoint shadows.
- *  Each joinpoint shadow will have one shadow type, so there will be
- *  exactly one implementation of {@link abc.weaving.aspectinfo.ShadowType}
- *  for each implementation of {@link abc.weaving.aspectinfo.ShadowPointcutHandler}.
+import abc.weaving.matching.*;
+import abc.weaving.residues.Residue;
+
+/** A category of joinpoint shadows.
+ *  @author Ganesh Sittampalam
+ *  @date 29-Apr-04
  */
 public interface ShadowType {
-
+    /** Add a new advice application to the appropriate bit of a method advice list */
+    public void addAdviceApplication(MethodAdviceList mal,
+				     AdviceDecl ad,
+				     Residue residue,
+				     MethodPosition pos);
 }

@@ -80,17 +80,17 @@ public class PCThis_c extends Pointcut_c implements PCThis
     
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	if (pat instanceof Local) {
-	    return new abc.weaving.aspectinfo.ConditionPointcut
+	    return new abc.weaving.aspectinfo.OtherPointcut
 		(new abc.weaving.aspectinfo.ThisVar
 		 (new abc.weaving.aspectinfo.Var(((Local)pat).name(),((Local)pat).position())),
 		 position());
 	} else if (pat instanceof TypeNode) {
-	    return new abc.weaving.aspectinfo.ConditionPointcut
+	    return new abc.weaving.aspectinfo.OtherPointcut
 		(new abc.weaving.aspectinfo.ThisType
 		 (AspectInfoHarvester.toAbcType(((TypeNode)pat).type())),
 		 position());
 	} else if (pat instanceof TPEUniversal) {
-	    return new abc.weaving.aspectinfo.ConditionPointcut
+	    return new abc.weaving.aspectinfo.OtherPointcut
 		(new abc.weaving.aspectinfo.ThisAny(),
 		 position());
 	} else {

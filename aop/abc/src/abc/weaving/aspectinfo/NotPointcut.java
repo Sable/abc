@@ -5,6 +5,9 @@ import polyglot.util.Position;
 import soot.*;
 import soot.jimple.*;
 
+import abc.weaving.matching.MethodPosition;
+import abc.weaving.residues.*;
+
 /** Pointcut negation. */
 public class NotPointcut extends AbstractPointcut {
     private Pointcut pc;
@@ -18,7 +21,10 @@ public class NotPointcut extends AbstractPointcut {
 	return pc;
     }
 
-    public boolean matchesAt(SootClass cls,SootMethod method,Stmt stmt) {
-	return !pc.matchesAt(cls,method,stmt);
+    public Residue matchesAt(ShadowType st,
+			     SootClass cls,
+			     SootMethod method,
+			     MethodPosition pos) {
+	return NotResidue.construct(pc.matchesAt(st,cls,method,pos));
     }
 }

@@ -3,7 +3,7 @@ package abc.weaving.aspectinfo;
 import soot.*;
 
 /** Handler for <code>target</code> condition pointcut with a variable argument. */
-public class TargetVar extends AbstractConditionPointcutHandler {
+public class TargetVar extends AbstractOtherPointcutHandler {
     private Var var;
 
     public TargetVar(Var var) {

@@ -3,6 +3,9 @@ package abc.weaving.aspectinfo;
 import soot.*;
 import soot.jimple.*;
 
+import abc.weaving.matching.*;
+import abc.weaving.residues.*;
+
 /** Handler for <code>set</code> shadow pointcut. */
 public class SetField extends AbstractShadowPointcutHandler {
     private FieldPattern pattern;
@@ -15,14 +18,27 @@ public class SetField extends AbstractShadowPointcutHandler {
 	return pattern;
     }
 
-    public boolean matchesAt(Stmt stmt) {
-	if (stmt==null) return false;
-	if (!(stmt instanceof AssignStmt)) return false;
+    static private ShadowType shadowType=new StmtShadowType();
+    
+    static {
+	AbstractShadowPointcutHandler.registerShadowType(shadowType);
+    }
+
+    public ShadowType getShadowType() {
+	return shadowType;
+    }
+
+    public Residue matchesAt(MethodPosition position) {
+	if(!(position instanceof StmtMethodPosition)) return null;
+	Stmt stmt=((StmtMethodPosition) position).getStmt();
+
+	if(!(stmt instanceof AssignStmt)) return null;
 	AssignStmt as = (AssignStmt) stmt;
 	Value lhs = as.getLeftOp();
-       	if(!(lhs instanceof FieldRef)) return false;
+       	if(!(lhs instanceof FieldRef)) return null;
 	FieldRef fr = (FieldRef) lhs;
-	return getPattern().matchesField(fr.getField());
+	if(!getPattern().matchesField(fr.getField())) return null;
+	return AlwaysMatch.v;
     }
 
     public String toString() {

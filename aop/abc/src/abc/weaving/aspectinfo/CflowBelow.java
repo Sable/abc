@@ -3,7 +3,7 @@ package abc.weaving.aspectinfo;
 import soot.*;
 
 /** Handler for <code>cflowbelow</code> condition pointcut. */
-public class CflowBelow extends AbstractConditionPointcutHandler {
+public class CflowBelow extends AbstractOtherPointcutHandler {
     private Pointcut pc;
 
     public CflowBelow(Pointcut pc) {

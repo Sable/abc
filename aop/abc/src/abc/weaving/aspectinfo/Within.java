@@ -1,9 +1,10 @@
 package abc.weaving.aspectinfo;
 
 import soot.*;
+import abc.weaving.residues.*;
 
 /** Handler for <code>within</code> condition pointcut. */
-public class Within extends AbstractConditionPointcutHandler {
+public class Within extends AbstractLexicalPointcutHandler {
     private ClassnamePattern pattern;
 
     public Within(ClassnamePattern pattern) {
@@ -15,9 +16,12 @@ public class Within extends AbstractConditionPointcutHandler {
     }
 
 
-    public boolean matchesAt(SootClass cls,SootMethod method) {
-	if(getPattern()==null) return true;
-	return getPattern().matchesClass(cls);
+    public Residue matchesAt(SootClass cls,SootMethod method) {
+	// FIXME: Remove this once pattern is built properly
+	if(getPattern()==null) return AlwaysMatch.v;
+
+	if(!getPattern().matchesClass(cls)) return null;
+	return AlwaysMatch.v;
     }
 
     public String toString() {

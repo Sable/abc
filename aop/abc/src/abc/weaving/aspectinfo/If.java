@@ -5,7 +5,7 @@ import soot.*;
 import java.util.*;
 
 /** Handler for <code>if</code> condition pointcut. */
-public class If extends AbstractConditionPointcutHandler {
+public class If extends AbstractOtherPointcutHandler {
     private List/*<Var>*/ vars;
     private MethodSig impl;
 
