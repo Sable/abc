@@ -98,9 +98,9 @@ public class IntertypeAdjuster {
 			} else if (zapsmethod(pht,minst,mi)) {	
 					skipped = true;
 					}
-				else { pht.addMethod(mi);
-					       /* throw new InternalCompilerError("introduction of "+mi.getName()+
-                                            " conflicts with an existing class member of " +pht); */ } 
+				else {
+					        throw new InternalCompilerError("introduction of "+mi.getName()+
+                                            " conflicts with an existing class member of " +pht); } 
 			}
 		else pht.addMethod(mi); 
 		return !skipped;
