@@ -1,0 +1,207 @@
+Compile this benchmark using:
+
+   ajc */*.java */*/*.java
+
+-or-
+
+   abc */*.java */*/*.java
+
+Run it using:
+
+java certrevsim.Simulator 10 30 90 5 6 1 1
+
+---------------------------------------------------------------
+
+This benchmark comes from:  
+
+http://www.ccs.neu.edu/home/lorenz/papers/aosd2003lod/
+
+The paper proposes a checker for Java programs that checks the Law
+of Demeter.  They propose a class form checker and an object form
+checker, and give the aspectJ code for each of them.
+
+In the benchmark in this directory is their code for the object form
+checker, with a small modification.   The modification just stores all
+the errors in a hash table and prints them out at the exit of main.  The
+original code printed out the same error each time it was encountered, leading
+to potentially large output files.   
+
+This is a pretty interesting benchmark because it uses relatively complex
+join points,  percflow, pertarget, and cflow.    
+
+The basic idea is that a program has correct LofD object form when an
+object can only send messages to:
+  1) itself
+  2) its arguments
+  3) its instance variables
+  4) a locally-constructed object, or
+  5) a returned object from a message sent to itself.
+
+The code basically uses percflow to create a little hash table for
+each calling context,  puts valid (or preferred in their language) objects
+into that hash table, and then checks that method calls use a preferred
+object, otherwise it is an error.
+
+This means that each field set, and each method call gets instrumented
+with some non-trival code to insert and lookup into hash tables.   Thus,
+we would expect the instrumented code to run slower than the uninstrumented
+code.  
+
+However, when we apply the LoD aspects to our simulator program we find
+the following, when running on a very small simulation, made as follows:
+
+cp lawOfDemeter/Any_cflow.java lawOfDemeter/Any.java
+ajc certrevsim/*.java jsim/*/*.java lawOfDemeter/Any.java lawOfDemeter/objectform/*.java
+time java certrevsim.Simulator 10 30 90 5 6 1 1
+
+The checker finds only three LoD object form violiations, as follows:
+    
+ !! LoD Object Violation !! call(double certrevsim.RevocationInfo.getNextUpdate()) at EndEntity.java:26
+ !! LoD Object Violation !! call(double certrevsim.RevocationInfo.getFirstDeltaUpdate()) at EndEntity.java:29
+ !! LoD Object Violation !! call(RevocationInfo certrevsim.Repository.requestRevocationInfo()) at Simulator.java:248
+
+which means that the simulator code fairly well written in terms of LoD.
+
+However, when we look at run times, we get 
+
+Instrumented code:
+  6.320u 0.030s 0:06.79 93.5%     0+0k 0+0io 1487pf+0w
+
+Uninstrumented code: (created using ajc certrevsim/*.java jsim/*/*.java)
+  0.200u 0.020s 0:00.24 91.6%     0+0k 0+0io 1464pf+0w
+
+which is about a 30 fold slowdown for the instrumentation.   So, it would
+be nice to look at the metrics and find out what is going on.
+
+I decompiled the code 
+(using soot -f dava --app certrevsim.Simulator) and found that ajc 
+is doing very bad things with the implemenation of cflow .... even 
+worse than you might imagine ...
+
+If we look at the file lawOfDemeter/Any.java
+
+package lawOfDemeter;
+public abstract class Any {
+  public pointcut scope(): !within(lawOfDemeter..*) 
+    && 
+    !cflow(withincode(* lawOfDemeter..*(..))) 
+    ;
+  public pointcut StaticInitialization(): scope()
+    && staticinitialization(*);
+  public pointcut MethodCallSite(): scope()
+    && call(* *(..));
+  public pointcut ConstructorCall(): scope()
+    && call(*.new (..));
+  public pointcut MethodExecution(): scope()
+    && execution(* *(..)); 
+  public pointcut ConstructorExecution(): scope()
+    && execution(*.new (..));
+....
+}
+
+it defines the scope() pointcut with a cflow, and then scope() is used
+all over the place in other pointcuts.    It seems that ajc expands the
+pointcuts so that many copies of the cflow() get copied,  and each copy
+leads to its own cflow stack (which is of course stacking 0-length object
+arrays).   
+
+Here is a snippet from the decompiled code of the addAll method from
+the ObjectSupplier aspect.  
+
+Note that it is building 25 parallel cflow stacks ...  and these methods
+are exactly the ones that get called at every method entry,  so the
+overhead is amazing.
+
+----------------------------------
+
+abstract class ObjectSupplier implements lawOfDemeter.objectform.Pertarget$ajcMightHaveAspect
+{
+    private java.util.IdentityHashMap targets;
+    private transient lawOfDemeter.objectform.Pertarget ajc$lawOfDemeter_objectform_Pertarget$perObjectField;
+
+    protected void addAll(java.lang.Object[] r1) throws java.lang.Throwable
+    {
+        java.lang.Object[] r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25;
+        int i0;
+        java.lang.Throwable r26, r27, r28, r29, r30, r31, r32, r33, r34, r35, r36, r37, r38, r39, r40, r41, r42, r43, r44, r45, r46, r47, r48, r49;
+        java.lang.Object $r63;
+
+        r2 = new Object[0];
+        Pertarget.ajc$cflowStack$1.push(r2);
+
+        try
+        {
+            r3 = new Object[0];
+            Pertarget.ajc$cflowStack$0.push(r3);
+
+            try
+            {
+                r4 = new Object[0];
+                Percflow.ajc$cflowStack$9.push(r4);
+
+                try
+                {
+                    r5 = new Object[0];
+                    Percflow.ajc$cflowStack$8.push(r5);
+
+                    try
+                    {
+                        r6 = new Object[0];
+                        Percflow.ajc$cflowStack$7.push(r6);
+
+                        try
+                        {
+                            r7 = new Object[0];
+                            Percflow.ajc$cflowStack$6.push(r7);
+
+                            try
+                            {
+                                r8 = new Object[0];
+                                Percflow.ajc$cflowStack$5.push(r8);
+
+                                try
+                                {
+                                    r9 = new Object[0];
+                                    Percflow.ajc$cflowStack$4.push(r9);
+...
+
+----------------------------------------------------------------------------
+
+To get an idea of the overhead involved,  I compiled another version of
+the benchmark,  without the cflow clause in scope()
+   (cp lawOfDemeter/Any_nocflow.java lawOfDemeter/Any.java, and then
+      remake)
+
+Note that for the case of the simulator, the lawOfDemeter code can't call
+any of the simulator code,  so the cflow check is not really necessary.
+
+Now the execution times are:
+
+Instrumented code (with cflow):
+  6.320u 0.030s 0:06.79 93.5%     0+0k 0+0io 1487pf+0w
+
+Instrumented code (without cflow)
+  0.390u 0.020s 0:00.48 85.4%     0+0k 0+0io 1487pf+0w
+
+Uninstrumented code:
+  0.200u 0.020s 0:00.24 91.6%     0+0k 0+0io 1464pf+0w
+
+So, a huge amount of the overhead is coming from the bad implementation of
+cflow.
+
+--------------------------------------------------------------------------
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                                                               
+~                                              

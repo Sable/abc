@@ -61,6 +61,7 @@ class B extends A {
 
 }
 
+
 aspect Aspects {
 
   static private int aspectnesting = 0;
