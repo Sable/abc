@@ -7,30 +7,32 @@ public aspect CallAndExecution {
 	System.out.println(s);
     }
 
-    after(): call(void I.x*())  { p("call I");  }
-    after(): call(void A.x*())  { p("call A");  }
-    after(): call(void B.x*())  { p("call B");  }
+    after() returning(): call(void I.x*())  { p("call I");  }
+    after() returning(): call(void A.x*())  { p("call A");  }
+    after() returning(): call(void B.x*())  { p("call B");  }
 
-    after(): execution(void I.x*())  { p("execution I");  }
-    after(): execution(void A.x*())  { p("execution A");  }
-    after(): execution(void B.x*())  { p("execution B");  }
+    after() returning(): execution(void I.x*())  { p("execution I");  }
+    after() returning(): execution(void A.x*())  { p("execution A");  }
+    after() returning(): execution(void B.x*())  { p("execution B");  }
 
-    after(): call(I.new())  { p("call new I");  }
-    after(): call(A.new())  { p("call new A");  }
-    after(): call(B.new())  { p("call new B");  }
+    after() returning(): call(I.new())  { p("call new I");  }
+    after() returning(): call(A.new())  { p("call new A");  }
+    after() returning(): call(B.new())  { p("call new B");  }
 
-    after(): execution(I.new())  { p("execution new I");  }
-    after(): execution(A.new())  { p("execution new A");  }
-    after(): execution(B.new())  { p("execution new B");  }
+    after() returning(): execution(I.new())  { p("execution new I");  }
+    after() returning(): execution(A.new())  { p("execution new A");  }
+    after() returning(): execution(B.new())  { p("execution new B");  }
 
-    after(): initialization(I.new())  { p("initialization I");  }
-    after(): initialization(A.new())  { p("initialization A");  }
-    after(): initialization(B.new())  { p("initialization B");  }
+    after() returning(): initialization(I.new())  { p("initialization I");  }
+    after() returning(): initialization(A.new())  { p("initialization A");  }
+    after() returning(): initialization(B.new())  { p("initialization B");  }
 
-    after(): preinitialization(I.new())  { p("preinitialization I");  }
-    after(): preinitialization(A.new())  { p("preinitialization A");  }
-    after(): preinitialization(B.new())  { p("preinitialization B");  }
+    after() returning(): preinitialization(I.new())  { p("preinitialization I");  }
+    after() returning(): preinitialization(A.new())  { p("preinitialization A");  }
+    after() returning(): preinitialization(B.new())  { p("preinitialization B");  }
 
-    after(String s): set(String A.f*) && args(s)  { p("A: "+s); }
-    after(String s): set(String B.f*) && args(s)  { p("B: "+s); }
+    after(String s) returning(): set(String A.f*) && args(s)  { p("A: "+s); }
+    after(String s) returning(): set(String B.f*) && args(s)  { p("B: "+s); }
+
+    before(): initialization((I||J||K).new())  { p("initialization I|J|K");  }
 }

@@ -4,7 +4,12 @@ public interface I {
     public void xiab();
 }
 
-class A implements I {
+interface J {}
+interface K {}
+
+abstract class O implements I,K {}
+
+class A extends O implements I,J,K {
     public String fa;
     public void xia()  { System.out.println("ia");  }
     public void xiab() { System.out.println("iab"); }
