@@ -885,6 +885,12 @@ public class AspectCodeGen {
 
 
     public SootMethod getPreClinit(SootClass cl) {
+	// FIXME: ShadowPointsSetter.restructureBody has special knowledge of this method,
+	// so that it can put the nop after the call if it has already been introduced.
+	// I apologise for introducing yet more weaving intricacies, but probably this whole
+	// thing should be redesigned. Please yell at me to fix it properly if it causes
+	// you any trouble -- Ganesh
+	
 	if(cl.declaresMethod("abc$preClinit",new ArrayList(),VoidType.v()))
 	    return cl.getMethod("abc$preClinit",new ArrayList(),VoidType.v());
 

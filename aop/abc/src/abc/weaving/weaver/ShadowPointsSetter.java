@@ -1,10 +1,13 @@
 package abc.weaving.weaver; 
  
+import java.util.*;
+
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
-import soot.javaToJimple.LocalGenerator;
-import java.util.*;
+
+import polyglot.util.InternalCompilerError;
+
 import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
@@ -24,7 +27,7 @@ import abc.soot.util.*;
  * @author Laurie Hendren
  * @author Ondrej Lhotak
  * @author Jennifer Lhotak
- * @date May 3, 2004
+ * @author Ganesh Sittampalam
  */
 
 public class ShadowPointsSetter {
@@ -124,17 +127,31 @@ public class ShadowPointsSetter {
     // we get code from a Java compiler, and there is only one
     // <init>.  If there is more than one <init> throw an exception.
     Stmt startnop = Jimple.v().newNopStmt();
-    if (method.getName().equals("<init>"))
-      { debug("Need to insert after call to <init>");
+    if (method.getName().equals(SootMethod.constructorName)) { 
+	debug("Need to insert after call to <init>");
 	Unit initstmt = Restructure.findInitStmt(units);
 	units.insertAfter(startnop,initstmt);
-      }
-    else
-      { debug("Need to insert at beginning of method.");  	     
+    } else if(method.getName().equals(SootMethod.staticInitializerName) 
+	      && method.getDeclaringClass().declaresMethod("abc$preClinit",new ArrayList(),VoidType.v())) {
+	debug("In a static initializer for a class that already has abc$preClinit");
+	Stmt first=(Stmt) units.getFirst();
+	while(first!=null) {
+	    if(first instanceof InvokeStmt) {
+		InvokeStmt is=(InvokeStmt) first;
+		if(is.getInvokeExpr().getMethod().getName().equals("abc$preClinit")) break;
+	    }
+	    first=(Stmt) units.getSuccOf(first);
+	}
+	if(first==null) throw new InternalCompilerError
+	    ("Class "+method.getDeclaringClass()+" had abc$preClinit method but static initializer "+
+	     "had no call to it");
+	units.insertAfter(startnop,first);
+    } else { 
+	debug("Need to insert at beginning of method.");  	     
 	// now insert a nop for the beginning of real stmts
 	Stmt firstrealstmt = Restructure.findFirstRealStmtOrNop(method,units); 
 	units.insertBefore(startnop,firstrealstmt);
-      }
+    }
 
     // Now deal with end point.  Rewire all returns to end of method body.
     // Insert a nop just before the return at end of body.
