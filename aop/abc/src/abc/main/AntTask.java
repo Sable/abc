@@ -54,8 +54,8 @@ public class AntTask extends MatchingTask {
     public Path createClasspath() {
         return classpath.createPath();
     }
-    public void setDestdir(File dir) {
-        addArg( "-d", dir.getAbsolutePath());
+    public void setDestdir(File arg) {
+        addArg( "-d", arg.getAbsolutePath());
     }
     public void setTime(boolean arg) {
         if(arg) addArg("-time");
@@ -87,7 +87,9 @@ public class AntTask extends MatchingTask {
     public Path createArgfiles() {
         return argfiles.createPath();
     }
-
+    public void setOutjar(File arg) {
+        addArg( "-outjar", arg.getAbsolutePath());
+    }
 
     private ArrayList args = new ArrayList();
     private void addArg( String s ) { args.add(s); }

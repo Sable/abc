@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Laurie Hendren
+ * Copyright (C) 2004 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +23,7 @@ package abc.main;
 /** A class for storing Usage info. 
 
     @author Laurie Hendren 
+    @author Ondrej Lhotak
 */
 
 import soot.*;
@@ -66,7 +68,8 @@ public class Usage {
     "\n" + 
     "Output Options [ajc]: \n" +
     "--------------------- \n" +
-    "  -d <dir>                     Destination directory for generated files."
+    "  -d <dir>                     Destination directory for generated files.\n" +
+    "  -outjar <filename>           Destination .jar file for generated files."
     );
   }
 

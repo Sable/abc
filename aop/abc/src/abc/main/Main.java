@@ -221,6 +221,7 @@ public class Main {
         ArgList args = new ArgList(argArray);
         String outputdir=".";
         boolean optflag=true;
+        boolean outputIsJar=false;
         if (args.size() == 0)
         { abcPrintVersion();
             throw new CompilerAbortedException("No arguments provied.");
@@ -252,7 +253,10 @@ public class Main {
                 // a class-path-delimiter separated list should follow -sourceroots
                 parsePath(args.argTo(), source_roots);
             } // sourceroots
-            // TODO: -outjar output.jar
+            else if (args.top().equals("-outjar")) {
+                outputdir = args.argTo();
+                outputIsJar = true;
+            }
             else if (args.top().equals("-classpath") || args.top().equals("-cp"))
             {
                 classpath = args.argTo();
@@ -260,6 +264,7 @@ public class Main {
             else if (args.top().equals("-d"))  // -d flag in abc options
             {
                 outputdir = args.argTo();
+                outputIsJar = false;
             } // output directory
             else if (args.top().equals("-noImportError"))
                 // don't report unresolved imports
@@ -502,6 +507,7 @@ public class Main {
         // handle output directory, -d . is default
         soot_args.add("-d");
         soot_args.add(outputdir);
+        if(outputIsJar) soot_args.add("-outjar");
         if(optflag) {
             soot_args.add("-O");
         }
