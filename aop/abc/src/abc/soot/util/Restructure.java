@@ -599,21 +599,21 @@ public class Restructure {
 		}
 		public static SootClass getBoxingClass(Type type) {
 			if (type.equals(IntType.v()))
-				return Scene.v().getSootClass("java.lang.Integer");
+				return Scene.v().loadClassAndSupport("java.lang.Integer");
 			else if (type.equals(BooleanType.v())) 
-				return Scene.v().getSootClass("java.lang.Boolean");
+				return Scene.v().loadClassAndSupport("java.lang.Boolean");
 			else if (type.equals(ByteType.v())) 
-				return Scene.v().getSootClass("java.lang.Byte");
+				return Scene.v().loadClassAndSupport("java.lang.Byte");
 			else if (type.equals(ShortType.v())) 
-				return Scene.v().getSootClass("java.lang.Short");
+				return Scene.v().loadClassAndSupport("java.lang.Short");
 			else if (type.equals(CharType.v())) 
-				return Scene.v().getSootClass("java.lang.Character");
+				return Scene.v().loadClassAndSupport("java.lang.Character");
 			else if (type.equals(LongType.v())) 
-				return Scene.v().getSootClass("java.lang.Long");
+				return Scene.v().loadClassAndSupport("java.lang.Long");
 			else if (type.equals(FloatType.v())) 
-				return Scene.v().getSootClass("java.lang.Float");
+				return Scene.v().loadClassAndSupport("java.lang.Float");
 			else if (type.equals(DoubleType.v())) 
-				return Scene.v().getSootClass("java.lang.Double");
+				return Scene.v().loadClassAndSupport("java.lang.Double");
 			else 
 				throw new RuntimeException();
 		}
@@ -673,7 +673,7 @@ public class Restructure {
 			//debug("boxing: source " + sourceType + " target " + targetType);
 			// boxing
 			if (allowBoxing && JavaTypeInfo.sootTypeToInt(sourceType)!=JavaTypeInfo.refType &&
-				targetType.equals(Scene.v().getSootClass("java.lang.Object").getType())) {
+				targetType.equals(Scene.v().loadClassAndSupport("java.lang.Object").getType())) {
 				SootClass boxClass=JavaTypeInfo.getBoxingClass(sourceType);	
 				 Local box=localgen.generateLocal(boxClass.getType(), "box");
 				 Stmt newAssignStmt = Jimple.v().newAssignStmt( box, Jimple.v().newNewExpr( boxClass.getType() ) );
@@ -687,7 +687,7 @@ public class Restructure {
 				castedExpr=box;
 			} else if /*unboxing*/
 				(allowBoxing && JavaTypeInfo.sootTypeToInt(targetType)!=JavaTypeInfo.refType &&
-					sourceType.equals(Scene.v().getSootClass("java.lang.Object").getType())	){ 
+					sourceType.equals(Scene.v().loadClassAndSupport("java.lang.Object").getType())	){ 
 				SootClass boxClass=JavaTypeInfo.getBoxingClass(targetType);	
 				Local box=localgen.generateLocal(boxClass.getType(), "box");
 				Stmt newAssignStmt=Jimple.v().newAssignStmt(box, 
