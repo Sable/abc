@@ -327,9 +327,9 @@ public class AJTypeSystem_c
 		}
 		
 
-		if (f.isStrictFP() && f.isInterface()) {
+	/*	if (f.isStrictFP() && f.isInterface()) {
 			throw new SemanticException("Cannot declare a strictfp interface.");
-		}
+		} */
 
 		if (f.isFinal() && f.isInterface()) {
 			throw new SemanticException("Cannot declare a final interface.");
@@ -474,7 +474,7 @@ public class AJTypeSystem_c
 				if (mi instanceof InterTypeMemberInstance)
 						miContainer = ((InterTypeMemberInstance) mi).origin();
 				else
-						miContainer = ct;
+						miContainer = mi.container().toClass();
 				// END OF CHANGES
 				   boolean implFound = false;
 				   ReferenceType curr = ct;
@@ -489,8 +489,10 @@ public class AJTypeSystem_c
 							else
 									mjContainer = mj.container().toClass(); // skip the test below, see new/introduceInnerInterfaceCP.java
 							// NEXT LINE CHANGED FOR ASPECTJ:
+							//System.out.println("check whether mj="+mj+" in container "+mjContainer + 
+                            //    " implements "+mi+" in container "+miContainer);
 						   if (!mj.flags().isAbstract() && 
-							   ((isAccessible(mi, miContainer) && isAccessible(mj, miContainer)) || 
+							   ((isAccessible(mi, miContainer) && isAccessible(mj, miContainer)  ) || 
 									   isAccessible(mi, mjContainer))) {
 							   // The method mj may be a suitable implementation of mi.
 							   // mj is not abstract, and either mj's container 
@@ -502,6 +504,7 @@ public class AJTypeSystem_c
 							   // If neither the method instance mj nor the method 
 							   // instance mi is declared in the class type ct, then 
 							   // we need to check that it has appropriate protections.
+							   // System.out.println("passed test - check override now");
 							   if (!equals(ct, mj.container()) && !equals(ct, mi.container())) {
 								   try {
 									   // check that mj can override mi, which
