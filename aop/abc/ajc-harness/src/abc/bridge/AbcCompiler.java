@@ -61,7 +61,7 @@ public class AbcCompiler extends AjCompiler {
 		Map referenceContexts = new HashMap(compilationResults.length); // mapping a compilation result to a reference context object
 		String[] sourceUnitNames = new String[totalUnits];
 		for (int i=0; i < totalUnits; i++) {
-			compilationResults[i] = new CompilationResult(sourceUnits[i], 1, 1, 1);
+			compilationResults[i] = new CompilationResult(sourceUnits[i], 1, 1, 100);
 			sourceUnitNames[i] = new String(sourceUnits[i].getFileName());
 			compilationResultsMap.put(sourceUnitNames[i], compilationResults[i]);
 		}
