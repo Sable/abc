@@ -174,20 +174,23 @@ public abstract class AdviceApplication {
 	MethodAdviceList mal=new MethodAdviceList();
 
 	// Do whole body shadows
-	doShadows(info,mal,cls,method,new WholeMethodPosition(method));
+	if(MethodCategory.weaveExecution(method))
+	    doShadows(info,mal,cls,method,new WholeMethodPosition(method));
 	
 	// Do statement shadows
-	Chain stmtsChain=method.getActiveBody().getUnits();
-	Stmt current,next;
-	
-	if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
-	    for(current=(Stmt) stmtsChain.getFirst();
-		current!=null;
-		current=next) {
-
-		next=(Stmt) stmtsChain.getSuccOf(current);
-		doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
-		doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
+	if(MethodCategory.weaveInside(method)) {
+	    Chain stmtsChain=method.getActiveBody().getUnits();
+	    Stmt current,next;
+	    
+	    if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
+		for(current=(Stmt) stmtsChain.getFirst();
+		    current!=null;
+		    current=next) {
+		    
+		    next=(Stmt) stmtsChain.getSuccOf(current);
+		    doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
+		    doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
+		}
 	    }
 	}
 	

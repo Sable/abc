@@ -15,8 +15,7 @@ public class WithinAdvice extends LexicalPointcut {
     }
 
     protected Residue matchesAt(SootClass cls,SootMethod method) {
-	// FIXME : check we're in advice!
-	return AlwaysMatch.v;
+	return MethodCategory.adviceBody(method) ? AlwaysMatch.v : null;
     }
 
     public String toString() {
