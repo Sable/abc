@@ -134,8 +134,8 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:724)
-	at abc.main.Main.loadSourceRoots(Main.java:741)
+	at abc.main.Main.findSourcesInDir(Main.java:725)
+	at abc.main.Main.loadSourceRoots(Main.java:742)
 	at abc.main.Main.run(Main.java:564)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
