@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +22,10 @@ package abc.soot.util;
 import soot.tagkit.Tag;
 import soot.tagkit.AttributeValueException;
 
+/** Mark a Jimple statement as being in the preinitialization
+ *  phase of a constructor
+ *  @author Ganesh Sittampalam
+ */
 public class InPreinitializationTag implements Tag {
     public final static String name="InPreinitializationTag";
     

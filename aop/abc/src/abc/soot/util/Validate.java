@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,8 +29,12 @@ import soot.toolkits.exceptions.PedanticThrowAnalysis;
 import soot.util.cfgcmd.*;
 import soot.util.dot.*;
 
-// import polyglot.util.InternalCompilerError;
-
+/** Validate a jimple class. Currently checks that:
+ *   - all local variables are declared with non-void types
+ *   - types are used correctly in assignments and method calls
+ *   - local variables are initialised before use
+ *  @author Ganesh Sittampalam
+ */
 public class Validate {
 
     public static void validate(SootClass cl) {

@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +26,10 @@ import polyglot.ast.Node;
 import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 
+/** Used on a AST node that participates in the transformation
+ *  of thisJoinPoint references to thisJoinPointStaticPart
+ *  @author Ganesh Sittampalam
+ */
 public interface TransformsAspectReflection {
 
     public void enterAspectReflectionInspect(AspectReflectionInspect v,Node parent);

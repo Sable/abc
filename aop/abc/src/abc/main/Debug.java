@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,10 +20,9 @@
 package abc.main;
 
 /** A class for storing debug flags. Default values go here;
-    if you make a MyDebug class you can override them in the constructor
-    there.
-
-    @author Ganesh Sittampalam
+ *  if you make a MyDebug class you can override them in the constructor
+ *  there, or you can use -debug and -nodebug on the commandline
+ *  @author Ganesh Sittampalam
 */
 public class Debug {
     public static Debug v;

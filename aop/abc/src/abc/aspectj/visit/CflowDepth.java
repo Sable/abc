@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +21,10 @@ package abc.aspectj.visit;
 
 import polyglot.ast.Node;
 
+/** Used on AST nodes that participate in the recording of
+ *  how many enclosing cflows a cflow pointcut has
+ *  @author Ganesh Sittampalam
+ */
 public interface CflowDepth {
     public Node recordCflowDepth(int depth);
     public int getCflowDepth(); // for debugging

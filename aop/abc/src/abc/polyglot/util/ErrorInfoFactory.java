@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +24,9 @@ import polyglot.util.ErrorInfo;
 import soot.SootMethod;
 import soot.tagkit.*;
 
+/** A helper class for constructing polyglot errors
+ *  @author Ganesh Sittampalam
+ */
 public class ErrorInfoFactory {
     public static ErrorInfo newErrorInfo(int kind,String message,SootMethod container,Host host) {
 	Position pos=null;

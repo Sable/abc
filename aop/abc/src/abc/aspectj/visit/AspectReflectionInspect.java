@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +25,10 @@ import polyglot.ast.Node;
 import polyglot.ast.JL;
 import polyglot.visit.NodeVisitor;
 
+/** Check whether all instances of thisJoinPoint in an advice
+ *  body can be transformed to thisJoinPointStaticPart
+ *  @author Ganesh Sittampalam
+ */
 public class AspectReflectionInspect extends NodeVisitor {
 
     private Stack/*<Boolean>*/ canTransform; /* Can we transform thisJoinPoint to 

@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +26,10 @@ import soot.util.*;
 import soot.toolkits.scalar.*;
 import soot.toolkits.graph.*;
 
-
+/** An analysis to check whether or not local variables have been
+ *  initialised.
+ *  @author Ganesh Sittampalam
+ */
 public class InitAnalysis extends ForwardFlowAnalysis {
     FlowSet allLocals;
 

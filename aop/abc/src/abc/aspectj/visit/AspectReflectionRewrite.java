@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Ganesh Sittampalam
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +28,10 @@ import polyglot.visit.NodeVisitor;
 import abc.aspectj.ast.AJNodeFactory;
 import abc.aspectj.types.AJTypeSystem;
 
-
+/** Rewrite all instances of thisJoinPoint to thisJoinPointStaticPart
+ *  in any aspect body where this is appropriate.
+ *  @author Ganesh Sittampalam
+ */
 public class AspectReflectionRewrite extends NodeVisitor {
 
     private Stack/*<LocalInstance>*/ jpsps; /* The thisJoinPointStaticPart LocalInstances, 
