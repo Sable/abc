@@ -46,7 +46,6 @@ public class Weaver {
       }	
     private Map unitBindings = new HashMap();
     private static boolean doCflowOptimization = true;
-    private final static boolean testUnweaver = false;
 	public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
@@ -65,13 +64,6 @@ public class Weaver {
             } else {
             	// add aspectOf(), hasAspect(), ...
                 weaveGenerateAspectMethods();
-                if(testUnweaver) {
-                    Unweaver unweaver = new Unweaver();
-                    unweaver.save();
-                    unitBindings = unweaver.restore();
-                    weaveAdvice();
-                    unitBindings = unweaver.restore();
-                }
                 weaveAdvice();
             }
         }
