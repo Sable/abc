@@ -7,6 +7,7 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.matching.*;
 
 public class Weaver {
+
     public GlobalAspectInfo gai;
 
     public Weaver() {
@@ -14,10 +15,9 @@ public class Weaver {
         for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
 
             final SootClass cl = (SootClass) clIt.next();
-            G.v().out.println( "hello "+cl.toString() );
+            G.v().out.println( "Weaver constructor "+cl.toString() );
             if( isAspect(cl) ) {
                 System.out.println( "it's an aspect");
-                fillInAspect( cl ); 
 		final Aspect aspect=new Aspect(new abc.weaving.aspectinfo.Class(cl.getName()),null,null);
 		gai.addAspect(aspect);
 		gai.addAdviceDecl(new AdviceDecl(null,new SetField(null),null,aspect,null));
@@ -29,39 +29,41 @@ public class Weaver {
     }
 
     public void weave() {
-        G.v().out.println( "The application classes are (hi):" );
+        G.v().out.println( "The application classes are:" );
 
         for( Iterator clIt = Scene.v().getApplicationClasses().iterator(); clIt.hasNext(); ) {
 
             final SootClass cl = (SootClass) clIt.next();
-            G.v().out.println( "hello "+cl.toString() );
+            G.v().out.println( "For the class "+cl.toString() );
 	    if(!isAspect(cl) ) {
-		System.out.println("it's not an aspect");
+		System.out.println("Weave: it's not an aspect: " + cl);
 		weaveInAspects( cl );
-	    }
+	       }
+             else {
+	        System.out.println("Weave: it's an aspect: " + cl);
+                fillInAspect( cl ); 
+	       }
 	}
-
         G.v().out.println( "finished application classes" );
     }
 
     public void fillInAspect( SootClass cl ) {
         System.out.println( "filling in aspect "+cl );
 
-        SootField instance = new SootField( "ajc$perSingletonInstance", cl.getType(), Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL );
+        SootField instance = new SootField( "ajc$perSingletonInstance", 
+	    cl.getType(), Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL );
         cl.addField( instance );
-
         generateAspectOfBody(cl);
         generateClinitBody(cl);
     }
 
     private void generateAspectOfBody( SootClass cl ) {
         SootMethod aspectOf = cl.getMethodByName( "aspectOf" );
-
         Body b = Jimple.v().newBody(aspectOf);
         aspectOf.setActiveBody(b);
 
-
-        SootClass nabe = Scene.v().getSootClass("org.aspectj.lang.NoAspectBoundException");
+        SootClass nabe = Scene.v().getSootClass(
+	                          "org.aspectj.lang.NoAspectBoundException");
         //Local rthis = Jimple.v().newLocal("rthis", cl.getType());
         Local r0 = Jimple.v().newLocal("r0", cl.getType());
         Local r1 = Jimple.v().newLocal("r1", nabe.getType() );
@@ -91,6 +93,7 @@ public class Weaver {
 
         Local r0 = Jimple.v().newLocal("r0", cl.getType());
         b.getLocals().add(r0);
+	System.out.println("getting clinit");
 
         Chain units = b.getUnits();
         units.addLast( Jimple.v().newAssignStmt( r0, Jimple.v().newNewExpr( cl.getType() ) ) );
@@ -102,15 +105,18 @@ public class Weaver {
         SootMethod clinit;
 
         if( !cl.declaresMethod( "void <clinit>()" ) ) {
+	    System.out.println("There is no clinit, must build one");
             clinit = new SootMethod( "<clinit>", new ArrayList(), VoidType.v(), Modifier.STATIC );
             cl.addMethod( clinit );
             b = Jimple.v().newBody(clinit);
             clinit.setActiveBody(b);
             b.getUnits().addLast( Jimple.v().newReturnVoidStmt() );
         }
+
+	System.out.println("getting clinit");
         clinit = cl.getMethod("void <clinit>()");
 
-        units = clinit.getActiveBody().getUnits();
+        units = clinit.retrieveActiveBody().getUnits();
         Iterator it = units.snapshotIterator();
         while( it.hasNext() ) {
             Stmt s = (Stmt) it.next();
@@ -129,6 +135,8 @@ public class Weaver {
             if( method.isNative() ) continue;
 
 	    List/*<AdviceApplication>*/ adviceList = gai.getAdviceList(method);
+	    System.out.println("AdviceList for " + method );
+	    System.out.println(adviceList.toString());
 
             Body b = method.getActiveBody();
             Chain units = b.getUnits();
@@ -155,6 +163,7 @@ public class Weaver {
 	    }
 	}
     }
+
     private static boolean isAspect( SootClass cl ) {
         if( cl.getName().equals( "Aspect" ) ) return true;
         return false;
