@@ -372,16 +372,13 @@ public class Restructure {
             // patch gotos
             inlineeIt = specInvokeExpr.getMethod().getActiveBody().getUnits().iterator();
             while (inlineeIt.hasNext()){
-                Stmt inlineeStmt = (Stmt)inlineeIt.next();
-                if (inlineeStmt instanceof GotoStmt){
-                    debug("inlinee goto target: "+((GotoStmt)inlineeStmt).getTarget());
-                    ((GotoStmt)oldStmtsToNew.get(inlineeStmt)).setTarget((Stmt)oldStmtsToNew.get(((GotoStmt)inlineeStmt).getTarget()));
-                }
-                else if (inlineeStmt instanceof IfStmt){
-                    ((IfStmt)oldStmtsToNew.get(inlineeStmt)).setTarget((Stmt)oldStmtsToNew.get(((IfStmt)inlineeStmt).getTarget()));
-                }
-                       
-            }
+                Stmt newStmt = (Stmt) oldStmtsToNew.get(inlineeIt.next());
+		Iterator unitBoxesIt=newStmt.getUnitBoxes().iterator();
+		while(unitBoxesIt.hasNext()) {
+		    UnitBox box=(UnitBox) unitBoxesIt.next();
+		    box.setUnit((Stmt) oldStmtsToNew.get(box.getUnit()));
+		}
+	    }
                 
             // remove original invoke
             containerUnits.remove(invokeStmt);
