@@ -1,6 +1,6 @@
 package abc.weaving.matching;
 
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 
 /** for initialization pointcuts
@@ -8,7 +8,7 @@ import abc.weaving.residues.Residue;
  *  @date 29-Apr-04
  */
 public class InitializationAdviceApplication extends ConstructorAdviceApplication {
-    public InitializationAdviceApplication(AdviceDecl advice,Residue residue) {
+    public InitializationAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	super(advice,residue);
     }
 

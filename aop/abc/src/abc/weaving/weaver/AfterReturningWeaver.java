@@ -12,7 +12,7 @@ import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.*;
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.matching.AdviceApplication;
 
@@ -50,35 +50,15 @@ public class AfterReturningWeaver {
 	Stmt endresidue=adviceappl.residue.codeGen
 	    (method,localgen,units,prevstmt,failpoint,wc);
 
-	AdviceDecl advicedecl = adviceappl.advice;
-	AdviceSpec advicespec = advicedecl.getAdviceSpec();
-	SootClass aspect = advicedecl.getAspect().
-	                          getInstanceClass().getSootClass();
-	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
+	AbstractAdviceDecl advicedecl = adviceappl.advice;
 
-
-	// <AspectType> aspectref;
-        Local aspectref = localgen.generateLocal( aspect.getType(), "theAspect" );
-	debug("Generated new local: " + aspectref);
-
-	// smt1:  aspectref = <AspectType>.aspectOf();
-        AssignStmt stmt1 =  
-	  Jimple.v().newAssignStmt( 
-	      aspectref, 
-	      Jimple.v().newStaticInvokeExpr(
-		aspect.getMethod("aspectOf", new ArrayList())));
-	debug("Generated stmt1: " + stmt1);
-
-	// stmt2:  <aspectref>.<advicemethod>();
-
-        Chain stmts2 = PointcutCodeGen.makeAdviceInvokeStmt
-                            (aspectref,adviceappl,units,localgen,wc);
-        debug("Generated stmts2: " + stmts2);
+        Chain stmts = advicedecl.makeAdviceExecutionStmts
+                            (adviceappl,localgen,wc);
+        debug("Generated stmts: " + stmts);
 
 	// weave in statements just before end of join point shadow
 
-	units.insertAfter(stmt1,endresidue);
-	for (Iterator stmtlist = stmts2.iterator(); stmtlist.hasNext(); )
+	for (Iterator stmtlist = stmts.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
 	    units.insertBefore(nextstmt,failpoint);
 	  }

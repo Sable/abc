@@ -28,6 +28,6 @@ public class AfterThrowingAdvice extends AbstractAdviceSpec {
 	return RefType.v("java.lang.Throwable");
     }
 
-    public void bindException(WeavingContext wc,AdviceDecl ad,Local Exception) {
+    public void bindException(WeavingContext wc,AbstractAdviceDecl ad,Local Exception) {
     }
 }

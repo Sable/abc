@@ -20,10 +20,9 @@ import java.util.*;
 public abstract class AdviceApplication {
 
     /** The advice to be applied. If null, indicates 'dummy' advice, currently just used for
-     *  thisEnclosingJoinPointStaticPart hook points. The hierarchy needs a bit of
-     *  restructuring to allow for cflow stack setup advice etc.
+     *  thisEnclosingJoinPointStaticPart hook points.
      */
-    public AdviceDecl advice;
+    public AbstractAdviceDecl advice;
 
     /** The dynamic residue */
     public Residue residue;
@@ -72,7 +71,7 @@ public abstract class AdviceApplication {
                                       // where to weave.  Is initialized
                                       // in first pass of weaver. 
 
-    public AdviceApplication(AdviceDecl advice,Residue residue) {
+    public AdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	this.advice=advice;
 	this.residue=residue;
     }
@@ -104,11 +103,9 @@ public abstract class AdviceApplication {
 		Iterator adviceIt;
 		for(adviceIt=info.getAdviceDecls().iterator();
 		    adviceIt.hasNext();) {
-		    final AdviceDecl ad = (AdviceDecl) adviceIt.next();
-		    // cache this in the AdviceDecl
-		    WeavingEnv we=new AdviceFormals(ad);
-	    
-		    Pointcut pc=ad.getPointcut();
+		    final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
+		    WeavingEnv we=ad.getWeavingEnv();
+	    	    Pointcut pc=ad.getPointcut();
 	    
 		    // remove the null check once everything is properly 
 		    // implemented

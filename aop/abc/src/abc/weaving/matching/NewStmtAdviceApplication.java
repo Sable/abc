@@ -8,7 +8,7 @@ import abc.weaving.residues.Residue;
 public class NewStmtAdviceApplication extends AdviceApplication {
     public Stmt stmt;
     
-    public NewStmtAdviceApplication(AdviceDecl advice,
+    public NewStmtAdviceApplication(AbstractAdviceDecl advice,
 				    Residue residue,
 				    Stmt stmt) {
 	super(advice,residue);

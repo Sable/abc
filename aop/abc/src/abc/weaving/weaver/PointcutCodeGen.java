@@ -16,7 +16,7 @@ import soot.util.Chain;
 import soot.util.HashChain;
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.AbcType;
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AfterAdvice;
 import abc.weaving.aspectinfo.AfterReturningAdvice;
@@ -33,7 +33,7 @@ import abc.weaving.residues.Residue;
 
 public class PointcutCodeGen {
 
-   private static void debug(String message)
+   public static void debug(String message)
      { if (abc.main.Debug.v().pointcutCodeGen) 
           System.err.println("PCG*** " + message);
      }
@@ -134,7 +134,7 @@ public class PointcutCodeGen {
     private void weave_one( SootClass cl, SootMethod method,
                             LocalGeneratorEx localgen, 
 			    AdviceApplication adviceappl)
-      { AdviceDecl advicedecl = adviceappl.advice;
+      { AbstractAdviceDecl advicedecl = adviceappl.advice;
 	if ( advicedecl == null) // it was a dummy advice to enforce a SJP
 	  return;
         AdviceSpec advicespec = advicedecl.getAdviceSpec();	
@@ -156,110 +156,9 @@ public class PointcutCodeGen {
 	                                 advicespec); 
       }  // method weave_one
 
-	public static WeavingContext makeWeavingContext(AdviceApplication adviceappl) {
-		int nformals = adviceappl.advice.numFormals();
-		debug("There are " + nformals + " formals to the advice method.");
-		Vector arglist = new Vector(nformals, 2);
-		arglist.setSize(nformals);
-		return new WeavingContext(arglist);
-	}
+    public static WeavingContext makeWeavingContext(AdviceApplication adviceappl) {
+	return adviceappl.advice.makeWeavingContext();
+    }
 	
-    /** create the invoke to call the advice body */
-	public static Chain makeAdviceInvokeStmt(
-		Local aspectref,
-		AdviceApplication adviceappl,
-		Chain units,
-		LocalGeneratorEx localgen,
-		WeavingContext wc) {
 
-		AdviceDecl advicedecl = adviceappl.advice;
-		SootClass sootaspect =
-			advicedecl.getAspect().getInstanceClass().getSootClass();
-		SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
-
-		Chain c = new HashChain();
-
-		// try to fill in the remaining formals
-		//   --- first the join point ones
-		if (advicedecl.hasJoinPointStaticPart()) {
-			int position = advicedecl.joinPointStaticPartPos();
-			debug("The index for hasJoinPointStaticPart is " + position);
-			// FIXME: should really be ref to static field for SJP
-			StaticFieldRef sjpfieldref =
-				Jimple.v().newStaticFieldRef(adviceappl.sjpInfo.sjpfield);
-			Local sjploc =
-				localgen.generateLocal(
-					RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
-					"sjp");
-			Stmt assignsjp = Jimple.v().newAssignStmt(sjploc, sjpfieldref);
-			c.addLast(assignsjp);
-			debug(
-				"inserting at postion "
-					+ position
-					+ " into a Vector of size "
-					+ wc.arglist.capacity());
-			wc.arglist.setElementAt(sjploc, position);
-		}
-		if (advicedecl.hasJoinPoint()) {
-			debug("The index for hasJoinPoint is " + advicedecl.joinPointPos());
-		}
-		if (advicedecl.hasEnclosingJoinPoint()) {
-			int position = advicedecl.enclosingJoinPointPos();
-			debug(
-				"The index for enclosingJoinPoint is "
-					+ advicedecl.enclosingJoinPointPos());
-			StaticFieldRef sjpencfieldref =
-				Jimple.v().newStaticFieldRef(adviceappl.sjpEnclosing.sjpfield);
-			debug("The field ref is " + sjpencfieldref);
-			Local sjpencloc =
-				localgen.generateLocal(
-					RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
-					"sjpenc");
-			Stmt assignsjpenc =
-				Jimple.v().newAssignStmt(sjpencloc, sjpencfieldref);
-			c.addLast(assignsjpenc);
-			wc.arglist.setElementAt(sjpencloc, position);
-		}
-
-		//  ------------ now the other ones ----------------
-		// if it has an after returning parameter
-		AdviceSpec advicespec = advicedecl.getAdviceSpec();
-		if (advicespec instanceof AfterReturningArgAdvice) {
-			// we have to fill in the param for the return value
-			Formal formal = ((AfterReturningArgAdvice) advicespec).getFormal();
-			String formalname = formal.getName();
-			AbcType abctype = formal.getType();
-			Type formaltype = abctype.getSootType();
-			int position = advicedecl.getFormalIndex(formalname);
-			debug(
-				"After returning formal is at position "
-					+ position
-					+ " has name "
-					+ formalname
-					+ " and type "
-					+ formaltype);
-			// TODO...
-		}
-
-		// TODO: need to fill in params for target, args and so on
-		boolean alldone = true;
-		for (int i = 0; i < wc.arglist.size(); i++)
-			alldone = alldone && wc.arglist.get(i) != null;
-
-		if (alldone) {
-			Stmt s =
-				Jimple.v().newInvokeStmt(
-					//Jimple.v().newSpecialInvokeExpr(aspectref, advicemethod, wc.arglist)
-					Jimple.v().newVirtualInvokeExpr(
-						aspectref,
-						advicemethod,
-						wc.arglist)
-						);
-			c.addLast(s);
-			return (c);
-		} else
-			throw new CodeGenException(
-				"case not handled yet in making invoke to "
-					+ advicemethod.getName());
-	}
 }

@@ -9,6 +9,7 @@ import abc.weaving.residues.*;
  */
 
 public class AdviceFormals implements WeavingEnv {
+    // FIXME: need to abstract away from AdviceDecl to handle cflow with binders etc
     private AdviceDecl ad;
 
     public AdviceFormals(AdviceDecl ad) {

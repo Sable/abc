@@ -7,7 +7,7 @@ import abc.weaving.residues.Residue;
 
 public class ExecutionAdviceApplication extends AdviceApplication {
 	
-    public ExecutionAdviceApplication(AdviceDecl advice,Residue residue) {
+    public ExecutionAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	super(advice,residue);
     }
 

@@ -38,7 +38,7 @@ public class AfterThrowingArgAdvice extends AfterThrowingAdvice {
 	return (RefType) (formal.getType().getSootType());
     }
 
-    public void bindException(WeavingContext wc,AdviceDecl ad,Local exception) {
-	wc.arglist.setElementAt(exception,ad.getFormalIndex(formal.getName()));
+    public void bindException(WeavingContext wc,AbstractAdviceDecl ad,Local exception) {
+	wc.arglist.setElementAt(exception,((AdviceDecl) ad).getFormalIndex(formal.getName()));
     }
 }

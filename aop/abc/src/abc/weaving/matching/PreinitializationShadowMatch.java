@@ -2,7 +2,7 @@ package abc.weaving.matching;
 
 import soot.*;
 
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.*;
 
 /** The results of matching at an preinitialization shadow
@@ -29,7 +29,7 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
     }
 
     protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 
 	PreinitializationAdviceApplication aa
 	    =new PreinitializationAdviceApplication(ad,residue);

@@ -5,7 +5,7 @@ import java.util.*;
 import soot.*;
 import soot.jimple.*;
 
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.*;
 
 /** The results of matching at a handler shadow
@@ -41,7 +41,7 @@ public class HandlerShadowMatch extends StmtShadowMatch {
     }
 
     public AdviceApplication  doAddAdviceApplication
-	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 
 	HandlerAdviceApplication aa=new HandlerAdviceApplication(ad,residue,stmt);
         mal.addStmtAdvice(aa);

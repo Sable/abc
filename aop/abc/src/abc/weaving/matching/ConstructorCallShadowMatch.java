@@ -5,7 +5,7 @@ import java.util.*;
 import soot.*;
 import soot.jimple.*;
 
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
 import abc.weaving.residues.JimpleValue;
@@ -59,7 +59,7 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
     }
 
     protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 
 	NewStmtAdviceApplication aa=new NewStmtAdviceApplication(ad,residue,stmt);
 	mal.addStmtAdvice(aa);

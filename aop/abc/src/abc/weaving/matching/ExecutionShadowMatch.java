@@ -76,7 +76,7 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
     }
 
     protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 	ExecutionAdviceApplication aa=new ExecutionAdviceApplication(ad,residue);
 	mal.addBodyAdvice(aa);
 	return aa;

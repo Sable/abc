@@ -4,7 +4,7 @@ import java.util.*;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
@@ -38,7 +38,7 @@ public abstract class ShadowMatch {
     /** Add a new advice application to the appropriate bit of a 
 	method advice list */
     public void addAdviceApplication(MethodAdviceList mal,
-				     AdviceDecl ad,
+				     AbstractAdviceDecl ad,
 				     Residue residue) {
 	AdviceApplication aa=doAddAdviceApplication(mal,ad,residue);
 	if(ad.hasJoinPoint() || ad.hasJoinPointStaticPart()) {
@@ -57,7 +57,7 @@ public abstract class ShadowMatch {
     }
 
     protected abstract AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AdviceDecl ad,Residue residue);
+	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue);
 
     public ContextValue getThisContextValue() {
         if(container.isStatic()) return null;

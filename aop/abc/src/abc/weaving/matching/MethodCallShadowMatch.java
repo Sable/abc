@@ -6,7 +6,7 @@ import soot.*;
 import soot.jimple.*;
 import soot.tagkit.SourceLnPosTag;
 
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.residues.Residue;
 import abc.weaving.residues.ContextValue;
@@ -73,7 +73,7 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
     }
 
     protected AdviceApplication doAddAdviceApplication
-	(MethodAdviceList mal,AdviceDecl ad,Residue residue) {
+	(MethodAdviceList mal,AbstractAdviceDecl ad,Residue residue) {
 
 	StmtAdviceApplication aa=new StmtAdviceApplication(ad,residue,stmt);
 	mal.addStmtAdvice(aa);

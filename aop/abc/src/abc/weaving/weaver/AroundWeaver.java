@@ -57,6 +57,7 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AdviceDecl;
 import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AroundAdvice;
@@ -277,7 +278,8 @@ public class AroundWeaver {
 		boolean bAllwaysStaticAccessMethod=false;
 		
 		Chain joinpointStatements = joinpointBody.getUnits().getNonPatchingChain();
-		AdviceDecl adviceDecl = adviceAppl.advice;
+		// Around weaver only supports "proper" advice, at least for now
+		AdviceDecl adviceDecl = (AdviceDecl) adviceAppl.advice;
 		AdviceSpec adviceSpec = adviceDecl.getAdviceSpec();
 		AroundAdvice aroundSpec = (AroundAdvice) adviceSpec;
 		SootClass theAspect =
@@ -342,7 +344,7 @@ public class AroundWeaver {
 		// Change advice method: add parameters and replace proceed with call to get-interface
 		{
 			boolean bFirstModification=
-				adviceMethod.getParameterCount()==adviceAppl.advice.numFormals();
+				adviceMethod.getParameterCount()==adviceDecl.numFormals();
 			if (bFirstModification) {
 				modifyAdviceMethod(adviceAppl, adviceMethod, accessInterface, abstractAccessMethod, 
 					accessMethodName, joinpointClass,
@@ -720,6 +722,8 @@ public class AroundWeaver {
 		SootMethod accessMethod,
 		SootMethod abstractAccessMethod,
 		boolean bAllwaysStaticAccessMethod) {
+
+	        AdviceDecl adviceDecl=(AdviceDecl) adviceAppl.advice;
 		
 		String interfaceName=accessInterface.getName();
 		String accessMethodName=accessMethod.getName();
@@ -731,7 +735,7 @@ public class AroundWeaver {
 	
 		Chain joinpointStatements=joinpointMethod.getActiveBody().getUnits();
 		
-		SootMethod adviceMethod=adviceAppl.advice.getImpl().getSootMethod();
+		SootMethod adviceMethod=adviceDecl.getImpl().getSootMethod();
 		if (adviceMethod==null)
 			throw new InternalError();
 		
@@ -1219,25 +1223,13 @@ public class AroundWeaver {
 		}
 		
 			
-		
-		// aspectOf() call		
-		Local aspectref = localgen.generateLocal( theAspect.getType(), "theAspect" );
-		AssignStmt stmtAspectOf =  
-			Jimple.v().newAssignStmt( 
-				aspectref, 
-					Jimple.v().newStaticInvokeExpr(
-						theAspect.getMethod("aspectOf", new ArrayList())));
-		joinpointStatements.insertBefore(stmtAspectOf,beforeFailPoint);
- 	
- 	
  		// generate basic invoke statement (to advice method) and preparatory stmts
-		Chain invokeStmts =  
-					PointcutCodeGen.makeAdviceInvokeStmt 
-										  (aspectref,adviceAppl,joinpointStatements,localgen,
-										  		wc);
+		Chain invokeStmts = adviceDecl.makeAdviceExecutionStmts(adviceAppl,localgen,wc);
 
 		// copy all the statements before the actual call into the shadow
-		InvokeExpr invokeEx= ((InvokeStmt)invokeStmts.getLast()).getInvokeExpr();
+		VirtualInvokeExpr invokeEx
+		    = (VirtualInvokeExpr) ((InvokeStmt)invokeStmts.getLast()).getInvokeExpr();
+		Local aspectRef=(Local) invokeEx.getBase();
 		invokeStmts.removeLast();
 		for (Iterator stmtlist = invokeStmts.iterator(); stmtlist.hasNext(); ){
 			Stmt nextstmt = (Stmt) stmtlist.next();
@@ -1266,8 +1258,8 @@ public class AroundWeaver {
 		
 		
 		// generate a new invoke expression to replace the old one
-		InvokeExpr invokeEx2=
-			Jimple.v().newVirtualInvokeExpr( aspectref, adviceMethod, params);
+		VirtualInvokeExpr invokeEx2=
+			Jimple.v().newVirtualInvokeExpr( aspectRef, adviceMethod, params);
 		
 		Stmt invokeStmt;
 		if (returnedLocal==null) {

@@ -20,7 +20,7 @@ import soot.jimple.ThrowStmt;
 import soot.jimple.IntConstant;
 import soot.util.Chain;
 import abc.soot.util.*;
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.aspectinfo.AfterThrowingAdvice;
 import abc.weaving.matching.AdviceApplication;
 
@@ -48,11 +48,8 @@ public class AfterThrowingWeaver {
 
 	WeavingContext wc=PointcutCodeGen.makeWeavingContext(adviceappl);
 
-	AdviceDecl advicedecl = adviceappl.advice;
+	AbstractAdviceDecl advicedecl = adviceappl.advice;
 	AfterThrowingAdvice advicespec = (AfterThrowingAdvice) (advicedecl.getAdviceSpec());
-	SootClass aspect = advicedecl.getAspect().
-	                          getInstanceClass().getSootClass();
-	SootMethod advicemethod = advicedecl.getImpl().getSootMethod();
 
 	// end of shadow
 	Stmt endshadow = adviceappl.shadowpoints.getEnd();
@@ -88,22 +85,10 @@ public class AfterThrowingWeaver {
 	//    nop2:       nop;  
 	//    endshadow:  nop;
                 
+        units.insertAfter(throwStmt, endresidue);
 
-        // no params
-        Local theAspect = lg.generateLocal(aspect.getType(), "theAspect");
-        AssignStmt assignStmt =  
-	  Jimple.v().
-	    newAssignStmt( theAspect, 
-		           Jimple.v().
-			     newStaticInvokeExpr(aspect.getMethod("aspectOf",
-				                             new ArrayList())));
-        units.insertAfter( assignStmt, endresidue);
+        Chain invokestmts = advicedecl.makeAdviceExecutionStmts(adviceappl,lg,wc);
 
-        units.insertAfter(throwStmt, assignStmt);
-
-        Chain invokestmts =  
-                PointcutCodeGen.makeAdviceInvokeStmt 
-		                      (theAspect,adviceappl,units,lg,wc);
 	for (Iterator stmtlist = invokestmts.iterator(); stmtlist.hasNext(); )
 	  { Stmt nextstmt = (Stmt) stmtlist.next();
 	    units.insertBefore(nextstmt,throwStmt);

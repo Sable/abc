@@ -1,6 +1,6 @@
 package abc.weaving.matching;
 
-import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
 import abc.weaving.residues.Residue;
 
 /** A base class for initialization and pre-initialization advice 
@@ -9,7 +9,7 @@ import abc.weaving.residues.Residue;
  */
 
 public abstract class ConstructorAdviceApplication extends AdviceApplication {
-    public ConstructorAdviceApplication(AdviceDecl advice,Residue residue) {
+    public ConstructorAdviceApplication(AbstractAdviceDecl advice,Residue residue) {
 	super(advice,residue);
     }
 }

@@ -135,7 +135,7 @@ public class GenStaticJoinPoints {
         { final AdviceApplication adviceappl = 
 	                  (AdviceApplication) alistIt.next(); 
 	  // find out if the advice method needs that static join point
-	  AdviceDecl advicedecl = adviceappl.advice;
+	  AbstractAdviceDecl advicedecl = adviceappl.advice;
 	  if ( advicedecl == null // a dummy advice just for SJP
 	       || advicedecl.hasJoinPointStaticPart() 
 	       || advicedecl.hasJoinPoint()) // need to create a SJP
@@ -173,7 +173,7 @@ public class GenStaticJoinPoints {
         { final AdviceApplication adviceappl = 
 	                  (AdviceApplication) alistIt.next(); 
 	  // find out if the advice method needs that static join point
-	  AdviceDecl advicedecl = adviceappl.advice;
+	  AbstractAdviceDecl advicedecl = adviceappl.advice;
 	  if (advicedecl == null  || // FIXME: is this really needed
 	      advicedecl.hasJoinPointStaticPart() ||
 	      advicedecl.hasJoinPoint()) // need to create a SJP
