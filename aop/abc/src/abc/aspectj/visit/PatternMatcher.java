@@ -282,6 +282,10 @@ public class PatternMatcher {
 	}
 
 	public boolean matchesMethod(SootMethod method) {
+	    // Get the real method, where it is declared
+	    // Takes care of 1.3/1.4 differences in call signatures
+	    method = method.getDeclaringClass().getMethod(method.getSubSignature());
+
 	    String name = MethodCategory.getName(method);
 	    String classname = MethodCategory.getClassName(method);
 	    boolean matches =
