@@ -5010,6 +5010,10 @@
 <ajc-test title="correct treatment of exceptions with interfaceinvoke" num="995" dir="abctests/bugs">
        <compile files="InterfaceExceptions.java"></compile>
     </ajc-test>
+<ajc-test title="anonymous class constructed inside this(...) call" num="996" dir="abctests/bugs">
+       <compile files="AnonPreinit.java"></compile>
+       <run class="AnonPreinit"></run>
+    </ajc-test>
 <ajc-test title="verify error with calls to outer methods from inner classes" num="997" dir="abctests/bugs">
        <compile files="PatternMatcher.java"></compile>
        <run class="PatternMatcher"></run>

@@ -65,10 +65,6 @@
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
        <run class="Cast"></run>
     </ajc-test>
-<ajc-test title="anonymous class constructed inside this(...) call" num="996" dir="abctests/bugs">
-       <compile files="AnonPreinit.java"></compile>
-       <run class="AnonPreinit"></run>
-    </ajc-test>
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
