@@ -5135,10 +5135,12 @@
 
     <ajc-test dir="new" pr="619"
       title="indirect use outside aspect of undefined abstract pointcut"
+      abccomment="one error from abc, ok. ODM 20/07/04"
       keywords="from-resolved_104">
         <compile files="AbstractPointcutIndirectCE.java">
-            <message kind="error" line="9"/>
-            <message kind="error" line="5"/>
+            <ajcmessage kind="error" line="9"/>
+            <ajcmessage kind="error" line="5"/>
+            <message kind="error" line="10"/>
         </compile>
     </ajc-test>
 
