@@ -13,6 +13,7 @@ import polyglot.util.ErrorInfo;
 import java.util.HashMap;
 import java.util.Stack;
 import polyglot.ext.jl.parse.*;
+import java.math.BigInteger;
 
 %%
 
@@ -279,66 +280,86 @@ import polyglot.ext.jl.parse.*;
         return new Identifier(pos(), yytext(), sym.IDENTIFIERPATTERN);
     }
 
-    /* Roll our own integer parser.  We can't use Long.parseLong because
-     * it doesn't handle numbers greater than 0x7fffffffffffffff correctly.
-     */
-    private long parseLong(String s, int radix) {
-        long x = 0L;
-
-        s = s.toLowerCase();
-
-        for (int i = 0; i < s.length(); i++) {
-            int c = s.charAt(i);
-
-            if (c < '0' || c > '9') {
-                c = c - 'a' + 10;
-            }
-            else {
-                c = c - '0';
-            }
-
-            x *= radix;
-            x += c;
-        }
-
-        return x;
-    }
-
     private Token int_lit(String s, int radix) {
         lastTokenWasDot = false;
-        int x = parseInt(s, radix);
-        return new IntegerLiteral(pos(), x, sym.INTEGER_LITERAL);
+	    BigInteger x = new BigInteger(s, radix);
+	    boolean boundary = (radix == 10 && s.equals("2147483648"));
+	    int bits = (radix == 10 ? 31 : 32);
+	    if (x.bitLength() > bits && !boundary) { 
+			eq.enqueue(ErrorInfo.LEXICAL_ERROR, "Integer literal \"" +
+			   yytext() + "\" out of range.", pos());
+	    }
+	    return new IntegerLiteral(pos(), x.intValue(), 
+	    		boundary? sym.INTEGER_LITERAL_BD : sym.INTEGER_LITERAL);
     }
 
     private Token long_lit(String s, int radix) {
         lastTokenWasDot = false;
-        long x = parseLong(s, radix);
-        return new LongLiteral(pos(), x, sym.LONG_LITERAL);
+	    BigInteger x = new BigInteger(s, radix);
+	    boolean boundary = (radix == 10 && s.equals("9223372036854775808"));
+        int bits = (radix == 10 ? 63 : 64);
+	    if (x.bitLength() > bits && !boundary) {
+			eq.enqueue(ErrorInfo.LEXICAL_ERROR, "Long literal \"" +
+			   yytext() + "\" out of range.", pos());
+			return new LongLiteral(pos(), x.longValue(), sym.LONG_LITERAL); // null;
+	    }
+	    return new LongLiteral(pos(), x.longValue(), 
+	    		boundary? sym.LONG_LITERAL_BD : sym.LONG_LITERAL);
     }
 
     private Token float_lit(String s) {
         lastTokenWasDot = false;
         try {
-            float x = Float.parseFloat(s);
-            return new FloatLiteral(pos(), x, sym.FLOAT_LITERAL);
+            Float x = Float.valueOf(s);
+		    boolean zero = true;
+		    for (int i = 0; i < s.length(); i++) {
+				if ('1' <= s.charAt(i) && s.charAt(i) <= '9') {
+				    zero = false;
+				    break;
+				}
+				else if(s.charAt(i) == 'e' || s.charAt(i) == 'E') {
+					break; // 0e19 is still 0
+				}
+		    }
+		    if (x.isInfinite() || x.isNaN() || (x.floatValue() == 0 && ! zero)) {
+				eq.enqueue(ErrorInfo.LEXICAL_ERROR,
+				   "Illegal float literal \"" + yytext() + "\"", pos());
+				return new FloatLiteral(pos(), 0, sym.FLOAT_LITERAL); // null;
+		    }
+            return new FloatLiteral(pos(), x.floatValue(), sym.FLOAT_LITERAL);
         }
         catch (NumberFormatException e) {
             eq.enqueue(ErrorInfo.LEXICAL_ERROR,
                        "Illegal float literal \"" + yytext() + "\"", pos());
-            return null;
+            return new FloatLiteral(pos(), 0, sym.FLOAT_LITERAL); // null;
         }
     }
 
     private Token double_lit(String s) {
         lastTokenWasDot = false;
         try {
-            double x = Double.parseDouble(s);
-            return new DoubleLiteral(pos(), x, sym.DOUBLE_LITERAL);
+            Double x = Double.valueOf(s);
+		    boolean zero = true;
+		    for (int i = 0; i < s.length(); i++) {
+				if ('1' <= s.charAt(i) && s.charAt(i) <= '9') {
+				    zero = false;
+				    break;
+				}
+				else if(s.charAt(i) == 'e' || s.charAt(i) == 'E') {
+					break; // 0e19 is still 0
+				}
+		    }
+		    if (x.isInfinite() || x.isNaN() || (x.doubleValue() == 0 && ! zero)) {
+				eq.enqueue(ErrorInfo.LEXICAL_ERROR,
+				   "Illegal double literal \"" + yytext() + "\"", pos());
+				return new DoubleLiteral(pos(), 0, sym.DOUBLE_LITERAL); // null;
+		    }
+            return new DoubleLiteral(pos(), x.doubleValue(), sym.DOUBLE_LITERAL);
         }
         catch (NumberFormatException e) {
             eq.enqueue(ErrorInfo.LEXICAL_ERROR,
-                       "Illegal float literal \"" + yytext() + "\"", pos());
-            return null;
+                       "Illegal double literal \"" + yytext() + "\"", pos());
+            return new DoubleLiteral(pos(), 0, sym.DOUBLE_LITERAL); // null;
         }
     }
 
@@ -351,7 +372,7 @@ import polyglot.ext.jl.parse.*;
         else {
             eq.enqueue(ErrorInfo.LEXICAL_ERROR,
                        "Illegal character literal \'" + s + "\'", pos(s.length()));
-            return null;
+            return new CharacterLiteral(pos(), '\0', sym.CHARACTER_LITERAL);
         }
     }
 
@@ -370,11 +391,6 @@ import polyglot.ext.jl.parse.*;
         return new StringLiteral(pos(sb.length()), sb.toString(),
                                  sym.STRING_LITERAL);
     }
-
-	private int parseInt(String s, int radix) {
-        int r = (int)(parseLong(s,radix));
-        return r;
-	  }
 
 	private int comment_count = 0;
 	
@@ -548,6 +564,30 @@ OctalEscape = \\ [0-7]
     "null"  { return null_lit(); }
 }
 
+/* Need something to distinguish the states YYINITIAL,ASPECTJ,POINTCUTIFEXPR, as they are
+ * treated as lexically equivalent otherwise, breaking keyword recognition.
+ */
+<YYINITIAL> {
+	"oege"	{ 
+		eq.enqueue(ErrorInfo.WARNING, "Should you really be using developer names as identifiers?",pos());
+		return id(); 
+	}
+}
+
+<ASPECTJ> {
+	"ganesh"	{ 
+		eq.enqueue(ErrorInfo.WARNING, "Should you really be using developer names as identifiers?",pos());
+		return id(); 
+	}
+}
+
+<POINTCUTIFEXPR> {
+	"pavel"	{ 
+		eq.enqueue(ErrorInfo.WARNING, "Should you really be using developer names as identifiers?",pos());
+		return id(); 
+	}
+}
+
 /* Java-ish symbols and literals */
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR> {
     /* 3.11 Separators */
@@ -664,30 +704,19 @@ OctalEscape = \\ [0-7]
     \"      { yybegin(STRING); sb.setLength(0); }
 
     /* 3.10.1 Integer Literals */
-    {OctalNumeral} [lL]          { Token t = long_lit(chop(), 8);
-                                   if (t != null) return t; }
-    {HexNumeral} [lL]            { Token t = long_lit(chop(2,1), 16);
-                                   if (t != null) return t; }
-    {DecimalNumeral} [lL]        { Token t = long_lit(chop(), 10);
-                                   if (t != null) return t; }
-    {OctalNumeral}               { Token t = int_lit(yytext(), 8);
-                                   if (t != null) return t; }
-    {HexNumeral}                 { Token t = int_lit(chop(2,0), 16);
-                                   if (t != null) return t; }
-    {DecimalNumeral}             { Token t = int_lit(yytext(), 10);
-                                   if (t != null) return t; }
+    {OctalNumeral} [lL]          { return long_lit(chop(), 8); }
+    {HexNumeral} [lL]            { return long_lit(chop(2,1), 16); }
+    {DecimalNumeral} [lL]        { return long_lit(chop(), 10); }
+    {OctalNumeral}               { return int_lit(yytext(), 8); }
+    {HexNumeral}                 { return int_lit(chop(2,0), 16); }
+    {DecimalNumeral}             { return int_lit(yytext(), 10); }
 
     /* 3.10.2 Floating-Point Literals */
-    {FloatingPointLiteral} [fF]  { Token t = float_lit(chop());
-                                   if (t != null) return t; }
-    {DecimalNumeral} [fF]        { Token t = float_lit(chop());
-                                   if (t != null) return t; }
-    {FloatingPointLiteral} [dD]  { Token t = double_lit(chop());
-                                   if (t != null) return t; }
-    {DecimalNumeral} [dD]        { Token t = double_lit(chop());
-                                   if (t != null) return t; }
-    {FloatingPointLiteral}       { Token t = double_lit(yytext());
-                                   if (t != null) return t; }
+    {FloatingPointLiteral} [fF]  { return float_lit(chop()); }
+    {DecimalNumeral} [fF]        { return float_lit(chop()); }
+    {FloatingPointLiteral} [dD]  { return double_lit(chop()); }
+    {DecimalNumeral} [dD]        { return double_lit(chop()); }
+    {FloatingPointLiteral}       { return double_lit(yytext()); }
 }
 
 <POINTCUT> {
@@ -840,8 +869,7 @@ OctalEscape = \\ [0-7]
 <CHARACTER> {
     /* End of the character literal */
     \'                           { returnFromStringChar();
-                                   Token t = char_lit(sb.toString());
-                                   if (t != null) return t; }
+                                   return char_lit(sb.toString()); }
 
     /* 3.10.6 Escape Sequences for Character and String Literals */
     "\\b"                        { sb.append('\b'); }
