@@ -45,6 +45,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     public 	  InterTypeMethodInstance_c itMethodInstance;
     protected LocalInstance thisParamInstance;
     protected Supers supers;
+    protected Flags origflags;
 
     public IntertypeMethodDecl_c(Position pos,
                                  Flags flags,
@@ -58,6 +59,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
               name,formals,throwTypes,body);
 	this.host = host;
 	this.supers = new Supers();
+	this.origflags = flags;
     }
 
 	public TypeNode host() {
@@ -148,10 +150,14 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 			MethodInstance mi = methodInstance();
 			List newtypes = new LinkedList(mi.formalTypes());
 			newtypes.add(0,thisParamInstance.type());
-			mi = mi.formalTypes(newtypes);
 			
-			return (IntertypeDecl) formals(formals).methodInstance(mi);
-		} else return this;
+			Flags newflags = mi.flags().set(Flags.STATIC);
+			
+			mi = mi.formalTypes(newtypes).flags(newflags);
+		
+			return (IntertypeDecl) formals(formals).flags(newflags).methodInstance(mi);
+		} else 
+			return this;
 	}
 	
 	/**
@@ -267,7 +273,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	     exc,
 	     position());
 	abc.weaving.aspectinfo.MethodSig target = new abc.weaving.aspectinfo.MethodSig
-	    (AspectInfoHarvester.convertModifiers(flags()),
+	    (AspectInfoHarvester.convertModifiers(origflags),
 	     gai.getClass(host.toString()),
 	     AspectInfoHarvester.toAbcType(returnType().type()),
 	     name(),
