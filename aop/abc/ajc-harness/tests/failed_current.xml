@@ -1,27 +1,5 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="invalid numeric literals" num="149" keywords="from-java" dir="pureJava" abccomment="abc doesn't do a good job on these,  needs a parser                   that doesn't give up after the first error, and                   then each case needs to be check.  jlc probably does                   not catch all of them either.  July 1/04 LJH">
-        <compile files="LiteralsCf.java">
-            <message line="8" kind="error"></message>
-            <message line="9" kind="error"></message>
-            <message line="10" kind="error"></message>
-            <message line="11" kind="error"></message>
-            <message line="12" kind="error"></message>
-            <message line="17" kind="error"></message>
-            <message line="18" kind="error"></message>
-            <message line="19" kind="error"></message>
-            <message line="20" kind="error"></message>
-            <message line="21" kind="error"></message>
-            <message line="22" kind="error"></message>
-            <message line="23" kind="error"></message>
-            <message line="25" kind="error"></message>
-            <message line="27" kind="error"></message>
-            <message line="28" kind="error"></message>
-            <message line="29" kind="error"></message>
-            <message line="30" kind="error"></message>
-            <message line="32" kind="error"></message>
-        </compile>
-    </ajc-test>
-<ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH">
+ <ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <message line="3" kind="error"></message>
         </compile>
