@@ -48,7 +48,7 @@ public class AspectMethods extends NodeVisitor {
     private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
     private Stack /* List AdviceDecl */ advices;
     private Stack /* ParsedClassType */ container; // Keep track of current container
-    private Stack /* IntertypeMethodDecl */ itmethod;
+    private Stack /* IntertypeMethodDecl */ itmethod; // Make this a stack of IntertypeDecl
     
 	public AspectJNodeFactory nf;
 	public AspectJTypeSystem ts;

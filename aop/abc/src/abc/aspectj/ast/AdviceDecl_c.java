@@ -63,10 +63,11 @@ public class AdviceDecl_c extends MethodDecl_c
     protected Pointcut pc;
     protected boolean hasJoinPoint;
     protected boolean hasJoinPointStaticPart;
-    protected boolean hasEnclosingJoinpoint;
+    protected boolean hasEnclosingJoinPointStaticPart;
 
     protected LocalInstance thisJoinPointInstance;
     protected LocalInstance thisJoinPointStaticPartInstance;
+    protected LocalInstance thisEnclosingJoinPointStaticPartInstance;
     
     // if the returnVal of "after returning" or "after throwing" is
     // specified, make it an additional parameter to the advice body
@@ -224,9 +225,14 @@ public class AdviceDecl_c extends MethodDecl_c
     	return hasJoinPoint;
     }
     
+    public boolean hasEnclosingJoinPointStaticPart() {
+    	return hasEnclosingJoinPointStaticPart;
+    }
+    
     public void joinpointFormals(Local n) {
     	hasJoinPoint = hasJoinPoint || (n.name().equals("thisJoinPoint"));
     	hasJoinPointStaticPart = hasJoinPointStaticPart || (n.name().equals("thisJoinPointStaticPart"));
+    	hasEnclosingJoinPointStaticPart = hasEnclosingJoinPointStaticPart || (n.name().equals("thisEnclosingJoinPointStaticPart"));
     }
     
     public MethodDecl methodDecl(AspectJNodeFactory nf,
@@ -250,6 +256,14 @@ public class AdviceDecl_c extends MethodDecl_c
     		newformals.add(jp);
     		newformalTypes.add(ts.JoinPoint());
     	}
+		if (hasEnclosingJoinPointStaticPart()) {
+			TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
+			Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisEnclosingJoinPointStaticPart");
+			LocalInstance li = thisEnclosingJoinPointStaticPartInstance(ts);
+			jp = jp.localInstance(li);
+			newformals.add(jp);
+			newformalTypes.add(ts.JoinPoint());
+		}
     	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc);
     	MethodInstance mi = md.methodInstance().formalTypes(newformalTypes);
 	//nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,newformals,throwTypes(),body());
@@ -282,6 +296,14 @@ public class AdviceDecl_c extends MethodDecl_c
 		 return thisJoinPointStaticPartInstance;
 	 }
 	 
+ 	private LocalInstance thisEnclosingJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+		if (thisEnclosingJoinPointStaticPartInstance==null)
+			thisEnclosingJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,
+			                                                            ts.JoinPointStaticPart(),"thisEnclosingJoinPointStaticPart");
+		return thisEnclosingJoinPointStaticPartInstance;
+	}
+	
+	 
 	public Context enterScope(Context c) {
 		Context nc = super.enterScope(c);
 		
@@ -291,6 +313,8 @@ public class AdviceDecl_c extends MethodDecl_c
 		nc.addVariable(jp);
 		LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
 		nc.addVariable(sjp);
+		LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
+		nc.addVariable(ejpsp);
 		
 		if (spec instanceof Around)
 			proceedInstance = methodInstance().name("proceed");
@@ -421,7 +445,7 @@ public class AdviceDecl_c extends MethodDecl_c
 	int jp = -1, jpsp = -1, ejp = -1;
 	if (hasJoinPoint) jp = --lastpos;
 	if (hasJoinPointStaticPart) jpsp = --lastpos;
-	if (hasEnclosingJoinpoint) ejp = --lastpos;
+	if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
 
 	// Since the spec is not visited, we copy the (checked)
 	// return type node from the advice declaration
