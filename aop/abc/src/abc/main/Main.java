@@ -137,6 +137,8 @@ public class Main {
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
+		abc.weaving.weaver.CflowIntraproceduralAnalysis.reset();
+		abc.weaving.weaver.CflowIntraAggregate.reset();
 
         v=null;
     }
@@ -937,6 +939,12 @@ public class Main {
                                             m.declaringClass().getName().equals
                                             ("uk.ac.ox.comlab.abc.runtime.reflect.Factory"))
                                         return true;
+                                    if(m.name().equals("getStack") || m.name().equals("getCounter"))
+                                        if (m.declaringClass().getName().equals
+                                            ("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack") ||
+                                            m.declaringClass().getName().equals
+                                            ("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter"))
+                                            return true;
                                 }
                                 return false;
                             }
@@ -954,10 +962,8 @@ public class Main {
             // Two phases:
             //              - Collapse all the local vars assigned to the same CflowStack/CflowCounter field
             //                to the same var, only needs to be assigned once
-            //              - Get the stack/counter for the current thread for each of these at the beginning
-            //                of the method to avoid repeated currentThread()s
-            //                NOTE This could have a negative performance impact, something better might be
-            //                in order
+            //              - Get the stack/counter for the current thread for each of these lazily
+            //                to avoid repeated currentThread()s
             PackManager.v().getPack("jop")
                 .insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()),
                         "jop.dae");
