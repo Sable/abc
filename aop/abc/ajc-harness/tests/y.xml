@@ -1,0 +1,52 @@
+<suite>
+<ajc-test title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" pr="39458" dir="bugs" abccomment="awaiting Pavel's implementation of privileged. ODM 27/09/04">
+        <compile files="NewVoid.java">
+            <message line="17" kind="error"></message>        
+            <message line="20" kind="error"></message>        
+            <message line="21" kind="error"></message>
+                  
+            <message line="28" kind="error"></message>        
+            <message line="29" kind="warning"></message>        
+            <message line="30" kind="warning"></message>            
+        </compile>
+    </ajc-test>
+<ajc-test title="Ensuring backdoor methods are produced." keywords="from-resolved_10x" dir="new">
+        <compile files="BackdoorMethods.java"></compile>
+        <run class="BackdoorMethods"></run>
+    </ajc-test>
+<ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" keywords="knownLimitation" dir="new/binaryWarnings/src">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
+        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="declare error on handler/method execution with no code on binary ajc 1.1 classes" pr="37020" keywords="knownLimitation" dir="new/binaryWarnings/src" comment="source loc of binary jp depends on first code, not block start">
+        <compile files="aspects/MainExecStartLinesErrors.java,../injars/appStartLines-ajc-1.1.jar">
+        	<message text="execution(void MainExecStartLines.main(String[]))" line="6" kind="error" file="app/MainExecStartLines.java"></message>
+        	<message text="handler(RuntimeException)" line="17" kind="error" file="app/MainExecStartLines.java"></message>        	  
+        </compile>
+    </ajc-test>
+<ajc-test title="declare warnings on main" pr="37020" dir="new/binaryWarnings/src">
+        <compile files="aspects/MainWarnings.java,app/Main.java">
+        	<message text="staticinitialization(Main)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="6" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="8" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.staticString)" line="12" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.staticString)" line="14" kind="warning" file="app/Main.java"></message>
+        	<message text="call(Main.new())" line="16" kind="warning" file="app/Main.java"></message>
+        	<message text="call(void Main.go(String))" line="19" kind="warning" file="app/Main.java"></message>
+        	<message text="initialization(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="23" kind="warning" file="app/Main.java"></message>
+        	<message text="execution(void Main.go(String))" line="26" kind="warning" file="app/Main.java"></message>
+        	<message text="get(String Main.s)" line="29" kind="warning" file="app/Main.java"></message>
+        	<message text="set(String Main.s)" line="31" kind="warning" file="app/Main.java"></message>
+        	<message text="D.go withincode(void Main.go(String))" line="32" kind="warning" file="app/Main.java"></message>
+        	<message text="handler(RuntimeException)" line="33" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.go(String))" line="35" kind="warning" file="app/Main.java"></message>
+        	<message text="withincode(void Main.stop())" line="42" kind="warning" file="app/Main.java"></message>
+        	<message text="preinitialization(app.C.new())" line="50" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+</suite>

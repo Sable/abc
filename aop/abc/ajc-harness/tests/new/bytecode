@@ -1,0 +1,348 @@
+Compiled from "BackdoorMethods.java"
+public class BackdoorMethods extends java.lang.Object{
+public BackdoorMethods();
+  Code:
+   0:	aload_0
+   1:	invokespecial	#111; //Method java/lang/Object."<init>":()V
+   4:	return
+
+  LineNumberTable: 
+   line 3: 0
+   line 3: 1
+
+static {};
+  Code:
+   0:	goto	205
+   3:	new	#81; //class StringBuffer
+   6:	astore_0
+   7:	aload_0
+   8:	invokespecial	#84; //Method java/lang/StringBuffer."<init>":()V
+   11:	aload_0
+   12:	ldc	#43; //String _
+   14:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   17:	pop
+   18:	aload_0
+   19:	bipush	65
+   21:	invokevirtual	#47; //Method java/lang/StringBuffer.append:(C)Ljava/lang/StringBuffer;
+   24:	pop
+   25:	aload_0
+   26:	ldc	#76; //String .
+   28:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   31:	pop
+   32:	aload_0
+   33:	invokevirtual	#83; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+   36:	astore_0
+   37:	new	#81; //class StringBuffer
+   40:	astore_1
+   41:	aload_1
+   42:	invokespecial	#84; //Method java/lang/StringBuffer."<init>":()V
+   45:	aload_1
+   46:	aload_0
+   47:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   50:	pop
+   51:	aload_1
+   52:	ldc	#39; //String a
+   54:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   57:	pop
+   58:	aload_1
+   59:	invokevirtual	#83; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+   62:	invokestatic	#12; //Method org/aspectj/testing/Tester.expectEvent:(Ljava/lang/String;)V
+   65:	bipush	65
+   67:	bipush	68
+   69:	if_icmpeq	100
+   72:	new	#81; //class StringBuffer
+   75:	astore_1
+   76:	aload_1
+   77:	invokespecial	#84; //Method java/lang/StringBuffer."<init>":()V
+   80:	aload_1
+   81:	aload_0
+   82:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   85:	pop
+   86:	aload_1
+   87:	ldc	#36; //String f
+   89:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   92:	pop
+   93:	aload_1
+   94:	invokevirtual	#83; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+   97:	invokestatic	#12; //Method org/aspectj/testing/Tester.expectEvent:(Ljava/lang/String;)V
+   100:	new	#81; //class StringBuffer
+   103:	astore_1
+   104:	aload_1
+   105:	invokespecial	#84; //Method java/lang/StringBuffer."<init>":()V
+   108:	aload_1
+   109:	aload_0
+   110:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   113:	pop
+   114:	aload_1
+   115:	ldc	#35; //String g
+   117:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   120:	pop
+   121:	aload_1
+   122:	invokevirtual	#83; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+   125:	invokestatic	#12; //Method org/aspectj/testing/Tester.expectEvent:(Ljava/lang/String;)V
+   128:	new	#81; //class StringBuffer
+   131:	astore_1
+   132:	aload_1
+   133:	invokespecial	#84; //Method java/lang/StringBuffer."<init>":()V
+   136:	aload_1
+   137:	ldc	#77; //String before.
+   139:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   142:	pop
+   143:	aload_1
+   144:	aload_0
+   145:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   148:	pop
+   149:	aload_1
+   150:	ldc	#39; //String a
+   152:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   155:	pop
+   156:	aload_1
+   157:	invokevirtual	#83; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+   160:	invokestatic	#12; //Method org/aspectj/testing/Tester.expectEvent:(Ljava/lang/String;)V
+   163:	bipush	65
+   165:	bipush	68
+   167:	if_icmpeq	205
+   170:	new	#81; //class StringBuffer
+   173:	astore_1
+   174:	aload_1
+   175:	invokespecial	#84; //Method java/lang/StringBuffer."<init>":()V
+   178:	aload_1
+   179:	ldc	#77; //String before.
+   181:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   184:	pop
+   185:	aload_1
+   186:	aload_0
+   187:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   190:	pop
+   191:	aload_1
+   192:	ldc	#35; //String g
+   194:	invokevirtual	#2; //Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+   197:	pop
+   198:	aload_1
+   199:	invokevirtual	#83; //Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+   202:	invokestatic	#12; //Method org/aspectj/testing/Tester.expectEvent:(Ljava/lang/String;)V
+   205:	bipush	65
+   207:	bipush	68
+   209:	if_icmple	3
+   212:	return
+
+  LineNumberTable: 
+   line 21: 3
+   line 21: 6
+   line 21: 7
+   line 21: 8
+   line 21: 11
+   line 21: 14
+   line 21: 17
+   line 21: 18
+   line 21: 19
+   line 21: 21
+   line 21: 24
+   line 21: 25
+   line 21: 28
+   line 21: 31
+   line 21: 32
+   line 21: 33
+   line 21: 36
+   line 22: 37
+   line 22: 40
+   line 22: 41
+   line 22: 42
+   line 22: 45
+   line 22: 46
+   line 22: 47
+   line 22: 50
+   line 22: 51
+   line 22: 54
+   line 22: 57
+   line 22: 58
+   line 22: 59
+   line 22: 62
+   line 23: 65
+   line 23: 67
+   line 23: 67
+   line 23: 69
+   line 23: 69
+   line 23: 72
+   line 23: 75
+   line 23: 76
+   line 23: 77
+   line 23: 80
+   line 23: 81
+   line 23: 82
+   line 23: 85
+   line 23: 86
+   line 23: 89
+   line 23: 92
+   line 23: 93
+   line 23: 94
+   line 23: 97
+   line 24: 100
+   line 24: 103
+   line 24: 104
+   line 24: 105
+   line 24: 108
+   line 24: 109
+   line 24: 110
+   line 24: 113
+   line 24: 114
+   line 24: 117
+   line 24: 120
+   line 24: 121
+   line 24: 122
+   line 24: 125
+   line 25: 128
+   line 25: 131
+   line 25: 132
+   line 25: 133
+   line 25: 136
+   line 25: 139
+   line 25: 142
+   line 25: 143
+   line 25: 144
+   line 25: 145
+   line 25: 148
+   line 25: 149
+   line 25: 152
+   line 25: 155
+   line 25: 156
+   line 25: 157
+   line 25: 160
+   line 26: 163
+   line 26: 165
+   line 26: 165
+   line 26: 167
+   line 26: 167
+   line 26: 170
+   line 26: 173
+   line 26: 174
+   line 26: 175
+   line 26: 178
+   line 26: 181
+   line 26: 184
+   line 26: 185
+   line 26: 186
+   line 26: 187
+   line 26: 190
+   line 26: 191
+   line 26: 194
+   line 26: 197
+   line 26: 198
+   line 26: 199
+   line 26: 202
+   line 20: 205
+   line 20: 207
+   line 20: 207
+   line 20: 209
+   line 20: 209
+
+public static void main(java.lang.String[]);
+  Code:
+   0:	getstatic	#29; //Field java/lang/System.out:Ljava/io/PrintStream;
+   3:	ldc	#33; //String Calling realMain
+   5:	invokevirtual	#4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V
+   8:	new	#1; //class BackdoorMethods
+   11:	dup
+   12:	invokespecial	#71; //Method "<init>":()V
+   15:	aload_0
+   16:	invokevirtual	#74; //Method realMain:([Ljava/lang/String;)V
+   19:	return
+
+  LineNumberTable: 
+   line 5: 0
+   line 5: 5
+   line 6: 8
+   line 6: 12
+   line 6: 15
+   line 6: 16
+
+public void realMain(java.lang.String[]);
+  Code:
+   0:	getstatic	#29; //Field java/lang/System.out:Ljava/io/PrintStream;
+   3:	ldc	#27; //String Calling _A.a
+   5:	invokevirtual	#4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V
+   8:	new	#108; //class _A
+   11:	astore_1
+   12:	aload_1
+   13:	invokespecial	#20; //Method _A."<init>":()V
+   16:	invokestatic	#62; //Method Aspect.aspectOf:()LAspect;
+   19:	aload_1
+   20:	invokevirtual	#80; //Method Aspect.before$3:(L_A;)V
+   23:	aload_1
+   24:	invokevirtual	#3; //Method O.a:()V
+   27:	getstatic	#29; //Field java/lang/System.out:Ljava/io/PrintStream;
+   30:	ldc	#24; //String Calling _B.a
+   32:	invokevirtual	#4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V
+   35:	new	#107; //class _B
+   38:	astore_1
+   39:	aload_1
+   40:	invokespecial	#13; //Method _B."<init>":()V
+   43:	invokestatic	#62; //Method Aspect.aspectOf:()LAspect;
+   46:	aload_1
+   47:	invokevirtual	#69; //Method Aspect.before$4:(L_B;)V
+   50:	aload_1
+   51:	invokevirtual	#3; //Method O.a:()V
+   54:	getstatic	#29; //Field java/lang/System.out:Ljava/io/PrintStream;
+   57:	ldc	#17; //String Calling _C.a
+   59:	invokevirtual	#4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V
+   62:	new	#106; //class _C
+   65:	astore_1
+   66:	aload_1
+   67:	invokespecial	#113; //Method _C."<init>":()V
+   70:	invokestatic	#62; //Method Aspect.aspectOf:()LAspect;
+   73:	aload_1
+   74:	invokevirtual	#48; //Method Aspect.before$5:(L_C;)V
+   77:	aload_1
+   78:	invokevirtual	#3; //Method O.a:()V
+   81:	getstatic	#29; //Field java/lang/System.out:Ljava/io/PrintStream;
+   84:	ldc	#14; //String Calling _D.a
+   86:	invokevirtual	#4; //Method java/io/PrintStream.println:(Ljava/lang/String;)V
+   89:	new	#104; //class _D
+   92:	astore_1
+   93:	aload_1
+   94:	invokespecial	#89; //Method _D."<init>":()V
+   97:	invokestatic	#62; //Method Aspect.aspectOf:()LAspect;
+   100:	aload_1
+   101:	invokevirtual	#28; //Method Aspect.before$6:(L_D;)V
+   104:	aload_1
+   105:	invokevirtual	#3; //Method O.a:()V
+   108:	invokestatic	#59; //Method org/aspectj/testing/Tester.checkAllEvents:()V
+   111:	return
+
+  LineNumberTable: 
+   line 9: 0
+   line 9: 5
+   line 10: 8
+   line 10: 11
+   line 10: 12
+   line 10: 13
+   line 10: 23
+   line 10: 24
+   line 11: 27
+   line 11: 32
+   line 12: 35
+   line 12: 38
+   line 12: 39
+   line 12: 40
+   line 12: 50
+   line 12: 51
+   line 13: 54
+   line 13: 59
+   line 14: 62
+   line 14: 65
+   line 14: 66
+   line 14: 67
+   line 14: 77
+   line 14: 78
+   line 15: 81
+   line 15: 86
+   line 16: 89
+   line 16: 92
+   line 16: 93
+   line 16: 94
+   line 16: 104
+   line 16: 105
+   line 17: 108
+
+}
+

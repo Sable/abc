@@ -1,0 +1,128 @@
+
+An unexpected exception has been detected in native code outside the VM.
+Unexpected Signal : 7 occurred at PC=0x406724E1
+Function=(null)+0x406724E1
+Library=/usr/lib/j2sdk1.4/jre/lib/i386/libzip.so
+
+NOTE: We are unable to locate the function name symbol for the error
+      just occurred. Please refer to release documentation for possible
+      reason and solutions.
+
+
+Current Java thread:
+	at java.util.zip.ZipFile.getNextEntry(Native Method)
+	at java.util.zip.ZipFile.access$400(ZipFile.java:26)
+	at java.util.zip.ZipFile$2.nextElement(ZipFile.java:313)
+	- locked <0x448f35e0> (a java.util.zip.ZipFile)
+	at polyglot.types.reflect.ClassFileLoader.packageExists(ClassFileLoader.java:61)
+	at polyglot.types.reflect.ClassPathLoader.packageExists(ClassPathLoader.java:42)
+	at polyglot.types.LoadedClassResolver.packageExists(LoadedClassResolver.java:57)
+	at polyglot.ext.jl.types.TypeSystem_c.packageExists(TypeSystem_c.java:119)
+	at polyglot.ext.jl.ast.Import_c.typeCheck(Import_c.java:70)
+	at polyglot.visit.TypeChecker.leaveCall(TypeChecker.java:21)
+	at polyglot.visit.ErrorHandlingVisitor.leave(ErrorHandlingVisitor.java:251)
+	at polyglot.visit.ContextVisitor.leave(ContextVisitor.java:121)
+	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:131)
+	at polyglot.ext.jl.ast.Node_c.visitChild(Node_c.java:148)
+	at polyglot.ext.jl.ast.Node_c.visitList(Node_c.java:205)
+	at polyglot.ext.jl.ast.SourceFile_c.visitChildren(SourceFile_c.java:107)
+	at polyglot.visit.NodeVisitor.visitEdge(NodeVisitor.java:124)
+	at polyglot.ext.jl.ast.Node_c.visit(Node_c.java:152)
+	at polyglot.frontend.VisitorPass.run(VisitorPass.java:48)
+	at polyglot.frontend.AbstractExtensionInfo.runPass(AbstractExtensionInfo.java:286)
+	at polyglot.frontend.AbstractExtensionInfo.runToPass(AbstractExtensionInfo.java:222)
+	at polyglot.frontend.AbstractExtensionInfo.runAllPasses(AbstractExtensionInfo.java:190)
+	at polyglot.frontend.AbstractExtensionInfo.runToCompletion(AbstractExtensionInfo.java:109)
+	at polyglot.frontend.Compiler.compile(Compiler.java:95)
+	at abc.main.Main.compile(Main.java:506)
+	at abc.main.Main.run(Main.java:397)
+	at abc.testing.TestCase.runTest(TestCase.java:238)
+	at abc.testing.Main.doCase(Main.java:249)
+	at abc.testing.Main.main(Main.java:100)
+
+Dynamic libraries:
+08048000-0804e000 r-xp 00000000 fe:02 3546       /usr/lib/j2sdk1.4/bin/java
+0804e000-0804f000 rw-p 00005000 fe:02 3546       /usr/lib/j2sdk1.4/bin/java
+40000000-40016000 r-xp 00000000 03:01 15400      /lib/ld-2.3.2.so
+40016000-40017000 rw-p 00015000 03:01 15400      /lib/ld-2.3.2.so
+40018000-40020000 r-xp 00000000 fe:02 3550       /usr/lib/j2sdk1.4/jre/lib/i386/native_threads/libhpi.so
+40020000-40021000 rw-p 00007000 fe:02 3550       /usr/lib/j2sdk1.4/jre/lib/i386/native_threads/libhpi.so
+40022000-4002f000 r-xp 00000000 03:01 16621      /lib/libpthread-0.10.so
+4002f000-40031000 rw-p 0000c000 03:01 16621      /lib/libpthread-0.10.so
+40073000-40075000 r-xp 00000000 03:01 15792      /lib/libdl-2.3.2.so
+40075000-40076000 rw-p 00002000 03:01 15792      /lib/libdl-2.3.2.so
+40077000-4019f000 r-xp 00000000 03:01 15790      /lib/libc-2.3.2.so
+4019f000-401a7000 rw-p 00127000 03:01 15790      /lib/libc-2.3.2.so
+401aa000-405a4000 r-xp 00000000 fe:02 3551       /usr/lib/j2sdk1.4/jre/lib/i386/client/libjvm.so
+405a4000-405c0000 rw-p 003f9000 fe:02 3551       /usr/lib/j2sdk1.4/jre/lib/i386/client/libjvm.so
+405d2000-405e4000 r-xp 00000000 03:01 15795      /lib/libnsl-2.3.2.so
+405e4000-405e5000 rw-p 00011000 03:01 15795      /lib/libnsl-2.3.2.so
+405e7000-40608000 r-xp 00000000 03:01 15793      /lib/libm-2.3.2.so
+40608000-40609000 rw-p 00020000 03:01 15793      /lib/libm-2.3.2.so
+40609000-4060d000 rw-s 00000000 fe:00 753666     /tmp/hsperfdata_pavel/7203
+4060d000-40610000 r--s 00000000 fe:02 85302      /usr/lib/j2sdk1.4/jre/lib/ext/dnsns.jar
+40610000-40613000 r--s 00000000 fe:03 68553      /home/pavel/abc/ajc-harness/lib/abc-tests.jar
+40613000-4061a000 r-xp 00000000 03:01 15796      /lib/libnss_compat-2.3.2.so
+4061a000-4061b000 rw-p 00006000 03:01 15796      /lib/libnss_compat-2.3.2.so
+4061b000-40623000 r-xp 00000000 03:01 16618      /lib/libnss_nis-2.3.2.so
+40623000-40624000 rw-p 00007000 03:01 16618      /lib/libnss_nis-2.3.2.so
+40624000-4062c000 r-xp 00000000 03:01 15798      /lib/libnss_files-2.3.2.so
+4062c000-4062d000 rw-p 00008000 03:01 15798      /lib/libnss_files-2.3.2.so
+4062d000-4063d000 r-xp 00000000 fe:02 3553       /usr/lib/j2sdk1.4/jre/lib/i386/libverify.so
+4063d000-4063f000 rw-p 0000f000 fe:02 3553       /usr/lib/j2sdk1.4/jre/lib/i386/libverify.so
+4063f000-4065f000 r-xp 00000000 fe:02 3554       /usr/lib/j2sdk1.4/jre/lib/i386/libjava.so
+4065f000-40661000 rw-p 0001f000 fe:02 3554       /usr/lib/j2sdk1.4/jre/lib/i386/libjava.so
+40661000-40675000 r-xp 00000000 fe:02 3555       /usr/lib/j2sdk1.4/jre/lib/i386/libzip.so
+40675000-40678000 rw-p 00013000 fe:02 3555       /usr/lib/j2sdk1.4/jre/lib/i386/libzip.so
+40678000-42010000 r--s 00000000 fe:02 3545       /usr/lib/j2sdk1.4/jre/lib/rt.jar
+4205a000-42070000 r--s 00000000 fe:02 3558       /usr/lib/j2sdk1.4/jre/lib/sunrsasign.jar
+42070000-4214b000 r--s 00000000 fe:02 3575       /usr/lib/j2sdk1.4/jre/lib/jsse.jar
+4214b000-4215c000 r--s 00000000 fe:02 3559       /usr/lib/j2sdk1.4/jre/lib/jce.jar
+4215c000-426b5000 r--s 00000000 fe:02 3576       /usr/lib/j2sdk1.4/jre/lib/charsets.jar
+6898f000-689ab000 r--s 00000000 fe:02 85301      /usr/lib/j2sdk1.4/jre/lib/ext/sunjce_provider.jar
+689ab000-689b8000 r--s 00000000 fe:02 85303      /usr/lib/j2sdk1.4/jre/lib/ext/ldapsec.jar
+689b8000-68a74000 r--s 00000000 fe:02 85304      /usr/lib/j2sdk1.4/jre/lib/ext/localedata.jar
+68a74000-68b40000 r--s 00000000 fe:02 364081     /usr/local/src/polyglot-dev/lib/polyglot.jar
+68b40000-68b7d000 r--s 00000000 fe:02 364012     /usr/local/src/polyglot-dev/lib/JFlex.jar
+68b7d000-68b92000 r--s 00000000 fe:02 364014     /usr/local/src/polyglot-dev/lib/java_cup.jar
+68b92000-68e9f000 r--s 00000000 fe:02 183864     /usr/local/src/soot-dev/lib/sootclasses-2.1.0-shortresolve.jar
+68e9f000-68ed0000 r--s 00000000 fe:02 413247     /usr/local/src/jasmin-dev/lib/jasminclasses-sable.jar
+68ed0000-69223000 r--s 00000000 fe:03 217429     /home/pavel/abc/lib/abc-testing.jar
+69223000-69276000 r-xp 00000000 fe:02 2601       /usr/lib/j2sdk1.4/jre/lib/i386/libmlib_image.so
+69276000-69277000 rw-p 00052000 fe:02 2601       /usr/lib/j2sdk1.4/jre/lib/i386/libmlib_image.so
+69281000-69287000 r-xp 00000000 fe:02 50315      /usr/X11R6/lib/libXp.so.6.2
+69287000-69288000 rw-p 00006000 fe:02 50315      /usr/X11R6/lib/libXp.so.6.2
+69288000-69294000 r-xp 00000000 fe:02 50310      /usr/X11R6/lib/libXext.so.6.4
+69294000-69295000 rw-p 0000c000 fe:02 50310      /usr/X11R6/lib/libXext.so.6.4
+69295000-69299000 r-xp 00000000 fe:02 50912      /usr/X11R6/lib/libXtst.so.6.1
+69299000-6929a000 rw-p 00003000 fe:02 50912      /usr/X11R6/lib/libXtst.so.6.1
+692c7000-692ce000 r-xp 00000000 fe:02 50307      /usr/X11R6/lib/libSM.so.6.0
+692ce000-692cf000 rw-p 00007000 fe:02 50307      /usr/X11R6/lib/libSM.so.6.0
+692cf000-692e1000 r-xp 00000000 fe:02 50306      /usr/X11R6/lib/libICE.so.6.3
+692e1000-692e2000 rw-p 00012000 fe:02 50306      /usr/X11R6/lib/libICE.so.6.3
+69400000-69b7b000 r--s 00000000 fe:03 68541      /home/pavel/abc/ajc-harness/lib/abc-testing-harness.jar
+69b7b000-69bc1000 r-xp 00000000 fe:02 50319      /usr/X11R6/lib/libXt.so.6.0
+69bc1000-69bc4000 rw-p 00046000 fe:02 50319      /usr/X11R6/lib/libXt.so.6.0
+6ac00000-6aecb000 r-xp 00000000 fe:02 2602       /usr/lib/j2sdk1.4/jre/lib/i386/libawt.so
+6aecb000-6aee1000 rw-p 002ca000 fe:02 2602       /usr/lib/j2sdk1.4/jre/lib/i386/libawt.so
+6af06000-6afbe000 r-xp 00000000 fe:02 50308      /usr/X11R6/lib/libX11.so.6.2
+6afbe000-6afc1000 rw-p 000b8000 fe:02 50308      /usr/X11R6/lib/libX11.so.6.2
+
+Heap at VM Abort:
+Heap
+ def new generation   total 1664K, used 290K [0x44760000, 0x44920000, 0x46ec0000)
+  eden space 1536K,  10% used [0x44760000, 0x44788b50, 0x448e0000)
+  from space 128K,  99% used [0x448e0000, 0x448ffff8, 0x44900000)
+  to   space 128K,   0% used [0x44900000, 0x44900000, 0x44920000)
+ tenured generation   total 20888K, used 12294K [0x46ec0000, 0x48326000, 0x64760000)
+   the space 20888K,  58% used [0x46ec0000, 0x47ac1810, 0x47ac1a00, 0x48326000)
+ compacting perm gen  total 14848K, used 9975K [0x64760000, 0x655e0000, 0x68760000)
+   the space 14848K,  67% used [0x64760000, 0x6511df40, 0x6511e000, 0x655e0000)
+
+Local Time = Wed Jul 14 18:14:12 2004
+Elapsed Time = 564
+#
+# The exception above was detected in native code outside the VM
+#
+# Java VM: Java HotSpot(TM) Client VM (1.4.2_03-b02 mixed mode)
+#
