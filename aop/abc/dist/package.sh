@@ -2,7 +2,7 @@
 
 # Version of the package-body.shtml file to target; update this if you
 # make an incompatible change in that file
-PACKAGE='2'
+PACKAGE='3'
 # The Jedd runtime version
 JEDD='0.2'
 # The Xact version
