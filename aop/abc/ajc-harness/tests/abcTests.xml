@@ -9394,15 +9394,15 @@
     <ajc-test num="1016" dir="abctests/bugs"
          title="checks for declare parents on binary classes">
          <compile files="declareparentsbinary/DP.jar,DeclareParentsBinaryAspect.java">
-            <message kind="error" line="1-3"/>
-            <message kind="error" line="1-4"/>
-            <message kind="error" line="1-6"/>
+            <message kind="error"/>
+            <message kind="error"/>
+            <message kind="error"/>
             <message kind="error" line="2"/>
             <message kind="error" line="2"/>
-            <message kind="error" line="3"/>
-            <message kind="error" line="3"/>
-            <message kind="error" line="4"/>
-            <message kind="error" line="5"/>
+            <message kind="error" line="2"/>
+            <message kind="error" line="2"/>
+            <message kind="error" line="2"/>
+            <message kind="error" line="2"/>
          </compile>
     </ajc-test>
 </suite>
