@@ -114,10 +114,9 @@ public class Main {
      v=this;
   }
 
-  boolean optflag=true;
-    
   public void parseArgs(String[] args) throws IllegalArgumentException, CompilerAbortedException {
     String outputdir=".";
+    boolean optflag=true;
     if (args.length == 0)
       { abcPrintVersion();
       	throw new CompilerAbortedException("No arguments provied.");
@@ -705,11 +704,36 @@ public class Main {
     }
 
     public void optimize(){
-	if(optflag)
-	    for(Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-		final AbcClass cl = (AbcClass) clIt.next();
-//		abc.soot.util.NullEliminator.transform(cl.getSootClass());
-	    }
+
+	// FIXME - find a better place for adding this; want to be sure it'll be in the list precisely
+	// once, even when running the test harness
+
+	// Add a null check eliminator that knows about abc specific stuff
+	soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator.AnalysisFactory f
+	    =new soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator.AnalysisFactory() {
+		    public soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis newAnalysis
+			(soot.toolkits.graph.UnitGraph g) {
+			return new soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis(g) {
+				public boolean isAlwaysNonNull(Value v) { 
+				    if(super.isAlwaysNonNull(v)) return true;
+				    if(v instanceof soot.jimple.InvokeExpr) {
+					soot.jimple.InvokeExpr ie=(soot.jimple.InvokeExpr) v;
+					soot.SootMethod m=ie.getMethod();
+					if(m.getName().equals("makeJP") && 
+					   m.getDeclaringClass().getName().equals("org.aspectj.runtime.reflect.Factory"))
+					    return true;
+				    }
+				    return false;
+				}
+			    };
+		    }
+		};
+	// want this to run before Dead assignment eliminiation
+	PackManager.v()
+	    .getPack("jop")
+	    .insertBefore(new Transform("jop.nullcheckelim", new soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator(f)),
+			  "jop.dae");
+
 	PackManager.v().runPacks();
     }
     
