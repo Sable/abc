@@ -55,13 +55,13 @@ sub dodiff {
   }
   print "\nLost:\n";
   foreach my $key (sort (keys %$new)) {
-    if($new->{$key}==-1) {
+    if($new->{$key}==1) {
       print "$key\n";
     }
   }
   print "\nGained:\n";
   foreach my $key (sort (keys %$new)) {
-    if($new->{$key}==1) {
+    if($new->{$key}==-1) {
       print "$key\n";
     }
   }
@@ -83,4 +83,4 @@ print "Fail: ";
 print "Skipped: ";
 &dodiffnum(\%newskipped,\%oldskipped);
 
-&dodiff(\%newpassed,\%oldpassed);
+&dodiff(\%newfailed,\%oldfailed);
