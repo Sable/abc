@@ -62,4 +62,6 @@ public class Debug {
     public boolean abcTimer=true;
     public boolean polyglotTimer=false;
     public boolean sootResolverTimer=false;
+    public boolean timerTrace=false; // print time of phases as they run
+    public boolean doValidate=true;  // validate jimple
 }

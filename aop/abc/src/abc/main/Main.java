@@ -189,7 +189,8 @@ public class Main {
 
 	    weave();   // Timers marked inside weave()
 
-	    validate();
+            if (Debug.v().doValidate)
+	      validate();
 	    AbcTimer.mark("Validate jimple");
 
 	    optimize();

@@ -89,6 +89,9 @@ public class AbcTimer {
     { long now = System.currentTimeMillis();
       long phasetime = now - laststopped;
       history.add(new TimerPhase(phasename,phasetime));
+      if (Debug.v().timerTrace)
+        System.err.println("Finished " + phasename + " in " +
+             phasetime + " millisec.");
       total += phasetime; 
       laststopped = now;
     }
