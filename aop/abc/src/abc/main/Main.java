@@ -21,8 +21,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this compiler, in the file LESSER-GPL; 
- * if not, write to the Free Software Foundation, Inc., 
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
@@ -657,10 +657,10 @@ public class Main {
 
         Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack",SootClass.SIGNATURES);
         Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.reflect.Factory",SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectj.lang.JoinPoint");
-        Scene.v().addBasicClass("org.aspectj.lang.JoinPoint$StaticPart");
+        Scene.v().addBasicClass("org.aspectj.lang.JoinPoint",SootClass.HIERARCHY);
+        Scene.v().addBasicClass("org.aspectj.lang.JoinPoint$StaticPart",SootClass.HIERARCHY);
         Scene.v().addBasicClass("org.aspectj.lang.SoftException",SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException");
+        Scene.v().addBasicClass("org.aspectj.lang.NoAspectBoundException",SootClass.SIGNATURES);
         Scene.v().addBasicClass("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter",SootClass.SIGNATURES);
 
         // FIXME: move this to EAJ
@@ -774,7 +774,7 @@ public class Main {
         // FIXME: put re-resolving here, from declareparents weaver
         AbcTimer.mark("Declare Parents");
         Scene.v().setDoneResolving();
-        
+
         // Adjust Soot types for intertype decls
         IntertypeAdjuster ita = new IntertypeAdjuster();
         ita.adjust();
