@@ -7,16 +7,16 @@ import java.sql.*;
 public class DatabaseHelper {
     static {
 	try {
-	    Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+	    Class.forName("com.mysql.jdbc.Driver");
 	} catch (Exception ex) {
 	    // ignore...
 	}
     }
 
     public static Connection getConnection() throws SQLException {
-	String url = "jdbc:odbc:bank";
-	String user = "user1";
-	String password = "password1";
+	String url = "jdbc:mysql:///laddad";
+	String user = "laddad";
+	String password = "laddad";
 	Connection connection
 	    = DriverManager.getConnection(url, user, password);
 	connection.setAutoCommit(true);

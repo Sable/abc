@@ -4,15 +4,15 @@ import java.sql.*;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-	Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
-	printTable("jdbc:odbc:stock", "price",
-		   "user1", "password1");
-	printTable("jdbc:odbc:stock", "price",
-		   "user2", "password2");
-	printTable("jdbc:odbc:stock", "price",
-		   "user1", "password1");
-	printTable("jdbc:odbc:stock", "price",
-		   "user2", "password2");
+	Class.forName("com.mysql.jdbc.Driver");
+	printTable("jdbc:mysql:///laddad", "price",
+		   "laddad", "laddad");
+	printTable("jdbc:mysql:///laddad", "price",
+		   "laddad", "laddad");
+	printTable("jdbc:mysql:///laddad", "price",
+		   "laddad", "laddad");
+	printTable("jdbc:mysql:///laddad", "price",
+		   "laddad", "laddad");
     }
 
     static void printTable(String url, String table,
