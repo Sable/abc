@@ -28,6 +28,11 @@ public class PCInitialization_c extends Pointcut_c implements PCInitialization
 	}
 	return this;
     }
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
 
     public Node visitChildren(NodeVisitor v) {
 	ConstructorPattern pat

@@ -24,6 +24,9 @@ public class PCThis_c extends Pointcut_c implements PCThis
 	return Precedence.LITERAL;
     }
     
+    public Set pcRefs() {
+    	return new HashSet();
+    }
     
 	/** Reconstruct the pointcut. */
 	protected PCThis_c reconstruct(Node pat) {

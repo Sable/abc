@@ -20,6 +20,10 @@ public class PCWithinCode_c extends Pointcut_c implements PCWithinCode
 	return Precedence.LITERAL;
     }
 
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     protected PCWithinCode_c reconstruct(MethodConstructorPattern pat) {
 	if (pat != this.pat) {
 	    PCWithinCode_c n = (PCWithinCode_c) copy();

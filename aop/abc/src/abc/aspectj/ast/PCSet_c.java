@@ -26,6 +26,10 @@ public class PCSet_c extends Pointcut_c implements PCSet
         w.write(")");
     }
 
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     protected PCSet_c reconstruct(FieldPattern pat) {
 	if (pat != this.pat) {
 	    PCSet_c n = (PCSet_c) copy();

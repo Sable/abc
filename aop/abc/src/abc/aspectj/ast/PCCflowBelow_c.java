@@ -21,6 +21,10 @@ public class PCCflowBelow_c extends Pointcut_c implements PCCflowBelow
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }
+    
+	public Set pcRefs() {
+		return pc.pcRefs();
+	}
 
     public void recordCflowDepth(int depth) {
 	this.depth=depth;

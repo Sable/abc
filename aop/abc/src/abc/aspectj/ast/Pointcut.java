@@ -1,6 +1,8 @@
 package abc.aspectj.ast;
 
 import java.util.List;
+import java.util.Set;
+
 import java.util.Collection;
 
 import polyglot.ast.*;
@@ -21,6 +23,8 @@ public interface Pointcut extends Node
     void checkFormals(List formals,Formal init) throws SemanticException;
 
     abc.weaving.aspectinfo.Pointcut makeAIPointcut();
+    
+    Set pcRefs();
 }
 
 

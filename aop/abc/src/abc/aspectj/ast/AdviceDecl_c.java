@@ -393,6 +393,8 @@ public class AdviceDecl_c extends MethodDecl_c
 		return this;
 	}
 	
+	
+		
 	/** build the type; the spec is included in the advice instance to give
 	 *  intelligible error messages - see adviceInstance overrides
 	 */	

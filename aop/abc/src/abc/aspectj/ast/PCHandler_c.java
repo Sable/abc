@@ -19,6 +19,11 @@ public class PCHandler_c extends Pointcut_c implements PCHandler
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
 
     protected PCHandler_c reconstruct(ClassnamePatternExpr pat) {
 	if (pat != this.pat) {

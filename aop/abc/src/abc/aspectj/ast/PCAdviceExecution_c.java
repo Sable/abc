@@ -18,7 +18,11 @@ public class PCAdviceExecution_c extends Pointcut_c
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }
-
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("adviceexecution()");
     }

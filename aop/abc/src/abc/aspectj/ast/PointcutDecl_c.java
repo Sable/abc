@@ -32,9 +32,13 @@ import polyglot.ext.jl.ast.MethodDecl_c;
 import abc.aspectj.ast.Pointcut;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AspectType;
+import abc.aspectj.types.PointcutInstance_c;
+
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.ContainsAspectInfo;
+import abc.aspectj.visit.DependsCheck;
+import abc.aspectj.visit.DependsChecker;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
@@ -42,7 +46,8 @@ import abc.weaving.aspectinfo.Aspect;
 public class PointcutDecl_c extends MethodDecl_c
                             implements PointcutDecl,
                                        ContainsAspectInfo,
-                                       MakesAspectMethods
+                                       MakesAspectMethods,
+                                       DependsCheck
 {
     String name;
     Pointcut pc; // null if abstract
@@ -184,7 +189,16 @@ public class PointcutDecl_c extends MethodDecl_c
 	  if (!flags().isAbstract())
 	  	pc.checkFormals(formals,null);
 	  	
+	  ((PointcutInstance_c)methodInstance()).setRefersTo(pc.pcRefs()) ;
+	  	
 	   return this;
+	}
+	
+	public Node checkDepends(DependsChecker dc ) throws SemanticException {
+		PointcutInstance_c pci = (PointcutInstance_c) methodInstance();
+		if (pci.transRefs().contains(pci))
+			throw new SemanticException("Pointcuts cannot be recursive.",position());
+		return this;
 	}
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {

@@ -23,6 +23,10 @@ public class PCCast_c extends Pointcut_c
         this.type_pattern = type_pattern;
     }
 
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     public Precedence precedence()
     {
         return Precedence.LITERAL;

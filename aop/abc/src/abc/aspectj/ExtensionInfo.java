@@ -53,6 +53,8 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     public static final polyglot.frontend.Pass.ID SOURCE_CLASSES = new polyglot.frontend.Pass.ID("source-classes");
     public static final polyglot.frontend.Pass.ID INTERFACE_ITDS_ALL = new polyglot.frontend.Pass.ID("interface-itds-all");
 	public static final polyglot.frontend.Pass.ID JAR_CHECK = new polyglot.frontend.Pass.ID("jar-check");
+	public static final polyglot.frontend.Pass.ID SET_DEPENDS = new polyglot.frontend.Pass.ID("set-depends");
+	public static final polyglot.frontend.Pass.ID CHECK_DEPENDS = new polyglot.frontend.Pass.ID("check-depends");
 	
     public static final polyglot.frontend.Pass.ID MANGLE_NAMES = new polyglot.frontend.Pass.ID("mangle-names");
 	public static final polyglot.frontend.Pass.ID NAMES_MANGLED = new polyglot.frontend.Pass.ID("names-mangled");
@@ -215,8 +217,12 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         l.add(new VisitorPass(Pass.FWD_REF_CHECK, job, new FwdReferenceChecker(job, ts, nf)));
 	
         l.add(new JarCheck(JAR_CHECK,job,ts));
-	
+        
+        l.add(new GlobalBarrierPass(SET_DEPENDS,job));
+		l.add(new VisitorPass(CHECK_DEPENDS,job, new DependsChecker(job,ts,nf)));
+		
         l.add(new GlobalBarrierPass(CHECKING_DONE, job));
+        
     }
 
     protected void passes_saveAST(List l, Job job)

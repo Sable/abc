@@ -1,7 +1,8 @@
 
 package abc.aspectj.ast;
 
-
+import java.util.Set;
+import java.util.HashSet;
 
 import polyglot.util.Position;
 import polyglot.util.CodeWriter;
@@ -14,6 +15,11 @@ public class PCEmpty_c extends Pointcut_c implements PCEmpty {
 	public PCEmpty_c(Position pos) {
 		super(pos);
 	}
+	
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
 
 	public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	  return new EmptyPointcut(position);

@@ -12,9 +12,14 @@ import polyglot.ext.jl.types.Context_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.PointcutInstance_c;
-import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.types.AJContext;
+import abc.aspectj.types.AspectType;
 
-public class PCName_c extends Pointcut_c implements PCName
+import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.DependsCheck;
+import abc.aspectj.visit.DependsChecker;
+
+public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 {
 	protected Receiver target;
     protected String name;
@@ -26,7 +31,6 @@ public class PCName_c extends Pointcut_c implements PCName
 	    this.target = target;
         this.name = name;
         this.args =  copyList(args); // here it is a list of TypeNode, Local, ArgStar og ArgDotDot
-
     }
 
 	private List copyList(List xs) {
@@ -37,6 +41,12 @@ public class PCName_c extends Pointcut_c implements PCName
 	    return Precedence.LITERAL;
     }
     
+	public Set pcRefs() {
+		Set a = new HashSet();
+		a.add(mi);
+		return a;
+	}
+	
 
 	/** Get the target type of the pointcut reference. */
 	public Receiver target() {
@@ -227,6 +237,18 @@ public class PCName_c extends Pointcut_c implements PCName
        	    }
        }
 	   return this.pointcutInstance(mi);
+	}
+	
+	public Node checkDepends(DependsChecker dc) throws SemanticException {
+		AJContext c = (AJContext) dc.context();
+		PointcutInstance_c pci = (PointcutInstance_c) pointcutInstance();
+		if (pci.transAbstract() && 
+            // AdviceDecl_c.withinAdvice(c) && 
+		    !(c.currentClass().flags().isAbstract()) &&
+		    (c.currentClass() instanceof AspectType))
+				   throw new SemanticException("Cannot refer to an abstract pointcut inside a concrete aspect.",
+												position());
+      	return this;
 	}
 	 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {

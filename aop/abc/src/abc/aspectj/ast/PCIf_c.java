@@ -32,6 +32,11 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     public Precedence precedence() {
 		return Precedence.LITERAL;
     }
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		w.write("if(");

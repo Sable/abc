@@ -16,6 +16,11 @@ public class PCExecution_c extends Pointcut_c implements PCExecution
 	super(pos);
         this.pat = pat;
     }
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
 
     public Precedence precedence() {
 	return Precedence.LITERAL;

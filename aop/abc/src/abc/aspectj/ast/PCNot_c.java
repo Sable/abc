@@ -25,6 +25,10 @@ public class PCNot_c extends Pointcut_c implements PCNot
         printSubExpr(pc, true, w, tr);
     }
     
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
 	/** Reconstruct the pointcut. */
 	protected PCNot_c reconstruct(Pointcut pc) {
 		 if (pc != this.pc) {

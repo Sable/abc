@@ -20,6 +20,10 @@ public class PCGet_c extends Pointcut_c implements PCGet
 	return Precedence.LITERAL;
     }
 
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 	w.write("get(");
         print(pat, w, tr);

@@ -19,7 +19,11 @@ public class PCCall_c extends Pointcut_c implements PCCall
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }
-
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     protected PCCall_c reconstruct(MethodConstructorPattern pat) {
 	if(pat != this.pat) {
 	    PCCall_c n=(PCCall_c) copy();

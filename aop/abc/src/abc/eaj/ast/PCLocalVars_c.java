@@ -17,6 +17,10 @@ public class PCLocalVars_c extends Pointcut_c
 {
     protected List formals;
     protected Pointcut pointcut;
+    
+    public Set pcRefs() {
+    	return new HashSet();
+    }
 
     public String toString()
     {

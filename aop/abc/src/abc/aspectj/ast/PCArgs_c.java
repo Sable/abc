@@ -23,6 +23,10 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 		return new LinkedList(xs);
 	}
 
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     public Precedence precedence() {
 	return Precedence.LITERAL;
     }

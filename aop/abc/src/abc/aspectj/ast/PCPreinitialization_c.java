@@ -29,7 +29,11 @@ public class PCPreinitialization_c extends Pointcut_c
 	}
 	return this;
     }
-
+    
+	public Set pcRefs() {
+		return new HashSet();
+	}
+	
     public Node visitChildren(NodeVisitor v) {
 	ConstructorPattern pat
 	    = (ConstructorPattern) visitChild(this.pat,v);

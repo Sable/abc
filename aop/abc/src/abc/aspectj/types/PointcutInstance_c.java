@@ -1,6 +1,8 @@
 
 package abc.aspectj.types;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -19,7 +21,12 @@ import polyglot.ext.jl.types.MethodInstance_c;
 
 public class PointcutInstance_c extends MethodInstance_c {
 
-String localName;
+    String localName;
+    
+    Set refersTo; /* PointcutInstance_c */
+    Set transRefs;
+    boolean transComputed;
+    boolean transAbstract;
 
 	public PointcutInstance_c(TypeSystem ts, Position pos,
 												ReferenceType container,
@@ -27,6 +34,9 @@ String localName;
 												List formalTypes, List excTypes){
 		super(ts,pos,container,flags,returnType,"$pointcut$"+name,formalTypes,excTypes);
 		localName = name;
+		refersTo = null;
+		transRefs = null;
+		transComputed = false;
 	}	
  	
 	public String toString() {
@@ -34,6 +44,39 @@ String localName;
 					  signature();
 
 	   return s;
+	}
+	
+	public void setRefersTo(Set x) {
+		refersTo = x;
+	}
+	
+	public Set getRefersTo() {
+		return refersTo;
+	}
+	
+	public Set transRefs() {
+		if (transRefs==null) {
+			if (refersTo==null)
+				System.out.println(this);
+			transRefs = new HashSet(refersTo);
+			for (Iterator refs = refersTo.iterator(); refs.hasNext(); ) {
+				PointcutInstance_c ref = (PointcutInstance_c) refs.next();
+				transRefs.addAll(ref.transRefs());
+			}
+			return transRefs;
+		} else return transRefs;
+	}
+	
+	public boolean transAbstract() {
+		if (!transComputed) {
+			transAbstract = flags().isAbstract();
+			for (Iterator refs = transRefs().iterator(); refs.hasNext(); ) {
+				PointcutInstance_c ref = (PointcutInstance_c) refs.next();
+				transAbstract |= ref.flags().isAbstract();
+			}
+			transComputed = true;
+			return transAbstract;
+		} else return transAbstract;
 	}
 	
 	public String signature() {

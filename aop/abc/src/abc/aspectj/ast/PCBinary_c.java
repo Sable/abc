@@ -28,6 +28,12 @@ public class PCBinary_c extends Pointcut_c implements PCBinary
     public Precedence precedence() {
         return precedence;
     }
+    
+	public Set pcRefs() {
+		left.pcRefs().addAll(right.pcRefs());
+		return left.pcRefs();
+	}
+	
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
 		printSubExpr(left, true, w, tr);
