@@ -9225,5 +9225,11 @@
         <run class="ConstantUse"/>
     </ajc-test>
 
+    <ajc-test num="989" dir="abctests/bugs"
+        title="lifting if out of cflow, with correct parameters">
+        <compile files="CflowIf.java"/>
+        <run class="CflowIf"/>
+    </ajc-test>
+
 </suite>
 
