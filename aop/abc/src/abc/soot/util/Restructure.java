@@ -36,25 +36,40 @@ public class Restructure {
       Iterator it = units.snapshotIterator();
       InvokeStmt initstmt = null;
 
+      // need to track all locals containing refs to "this"
+      LinkedList receivercopies = new LinkedList();
+
       // get the "this", should be first identity statement
       Stmt first = (Stmt) it.next();
       Local thisloc = null;
       if ( (first instanceof IdentityStmt) && 
 	   ((IdentityStmt) first).getRightOp() instanceof ThisRef
 	 )
-        thisloc = (Local) 
+        { thisloc = (Local) 
 	        ((IdentityStmt) first).getLeftOp();//the local for "this" 
+          // add to list of locals containing this
+          receivercopies.add(thisloc);
+	}
 	else
 	  throw new CodeGenException("Expecting an identity stmt for this");
 	
       int countinits = 0;
+      debug("--- Starting to look through statement list ..... ");
       while ( it.hasNext() )
         { Stmt u = (Stmt) it.next();
-          // debug("Looking at stmt " + u);
+          debug(" ... Looking at stmt " + u);
+
+	  // if we find a stmt lhs = rhs, where rhs is already a copy
+	  //     of "this",  add lhs to receivercopies
+	  if ((u instanceof AssignStmt) &&
+	      receivercopies.contains(((AssignStmt) u).getRightOp()))
+	    receivercopies.add(((AssignStmt) u).getLeftOp());
+
           if ((u instanceof InvokeStmt) && 
              ((InvokeStmt) u).getInvokeExpr() instanceof SpecialInvokeExpr &&
-	     ((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).
-		                                  getBase().equals(thisloc) )
+	     receivercopies.contains(
+	       ((SpecialInvokeExpr) ((InvokeStmt) u).getInvokeExpr()).
+	                                                      getBase()))
 	    { debug("Found <init> " + u);
 	      countinits++;
 	      if (countinits == 1) // great, found it
@@ -64,6 +79,7 @@ public class Restructure {
              }	 
           } // all units
 	 
+       debug("--- Finished looking through statement list ..... ");
        if (countinits == 0)     
          throw new CodeGenException("Could not find a matching <init>");
 
@@ -207,7 +223,7 @@ public class Restructure {
         SpecialInvokeExpr specInvokeExpr = 
 	    (SpecialInvokeExpr)invokeStmt.getInvokeExpr();
 
-	// if it is a this() call, need to do the inlining
+        // if it is a this() call, need to do the inlining
         if (specInvokeExpr.getMethod().getDeclaringClass().equals(
 	                         b.getMethod().getDeclaringClass())){
             
