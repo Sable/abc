@@ -46,8 +46,10 @@ public class Main {
     public void parseArgs(String[] args) throws IllegalArgumentException {
 	for (int i = 0 ; i < args.length ; i++) {
 	    if (args[i].equals("+soot")) {
+		soot_args.add("-keep-line-number");
 		while (++i < args.length && !args[i].equals("-soot")) {
-		    soot_args.add(args[i]);
+		    if(!args[i].equals("-keep-line-number"))
+		       soot_args.add(args[i]);
 		}
 	    } else if (args[i].equals("+polyglot")) {
 		while (++i < args.length && !args[i].equals("-polyglot")) {
@@ -141,6 +143,16 @@ public class Main {
 
         GlobalAspectInfo.v().computeAdviceLists();
 	
+	// print out matching information for testing purposes
+        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                final SootMethod method = (SootMethod) methodIt.next();
+		System.out.println("MATCH: "+method.getSignature());
+		
+            }
+        }
+
         //generateDummyGAI();
 
         Weaver weaver = new Weaver();
