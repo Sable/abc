@@ -28,6 +28,10 @@ public class ExecutionShadowMatch extends BodyShadowMatch {
 	return new ExecutionShadowMatch(pos.getContainer());
     }
 
+    public List/*<SootClass>*/ getExceptions() {
+	return container.getExceptions();
+    }
+
     public SJPInfo makeSJPInfo() {
 	String jpKind;
 	String sigClass;

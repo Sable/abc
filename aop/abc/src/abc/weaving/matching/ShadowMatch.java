@@ -101,6 +101,12 @@ public abstract class ShadowMatch {
 	return supportsBefore() && supportsAfter();
     }
 
+    /** The list of exceptions that this shadow is declared to throw */
+    public List/*<SootClass>*/ getExceptions() {
+	/* default to empty */
+	return new ArrayList();
+    }
+
     public abc.weaving.weaver.ShadowPoints sp=null;
     public void setShadowPoints(abc.weaving.weaver.ShadowPoints sp) {
 	this.sp=sp;

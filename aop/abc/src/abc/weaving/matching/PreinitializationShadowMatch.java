@@ -1,5 +1,7 @@
 package abc.weaving.matching;
 
+import java.util.List;
+
 import soot.*;
 import soot.tagkit.Host;
 
@@ -14,6 +16,10 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
 
     private PreinitializationShadowMatch(SootMethod container) {
 	super(container);
+    }
+
+    public List/*<SootClass>*/ getExceptions() {
+	return container.getExceptions();
     }
 
     public static PreinitializationShadowMatch matchesAt(MethodPosition pos) {

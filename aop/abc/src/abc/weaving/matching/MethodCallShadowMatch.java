@@ -51,6 +51,10 @@ public class MethodCallShadowMatch extends StmtShadowMatch {
 	return method;
     }
 
+    public List/*<SootClass>*/ getExceptions() {
+	return method.getExceptions();
+    }
+
     public static MethodCallShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof StmtMethodPosition)) return null;
 	if(abc.main.Debug.v().traceMatcher) System.err.println("MethodCall");

@@ -6,12 +6,15 @@ import soot.jimple.*;
 import soot.util.*;
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
+import polyglot.util.ErrorQueue;
+import polyglot.util.ErrorInfo;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.PointcutCodeGen;
 import abc.weaving.weaver.CodeGenException;
+import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.LocalGeneratorEx;
 
 /** An advice declaration. */
@@ -121,6 +124,40 @@ public class AdviceDecl extends AbstractAdviceDecl {
     }
 	
     public Residue postResidue(ShadowMatch sm) {
+	List/*<SootClass>*/ advicethrown
+	    =getImpl().getSootMethod().getExceptions();
+
+	List/*<SootClass>*/ shadowthrown
+	    =sm.getExceptions();
+	
+	eachadvicethrow:
+	for(Iterator advicethrownit=advicethrown.iterator();
+	    advicethrownit.hasNext();
+	    ) {
+	    SootClass advicethrow=(SootClass) (advicethrownit.next());
+
+	    for(Iterator shadowthrownit=shadowthrown.iterator();
+		shadowthrownit.hasNext();
+		) {
+
+		SootClass shadowthrow=(SootClass) (shadowthrownit.next());
+		if(Scene.v().getOrMakeFastHierarchy().isSubclass(advicethrow,shadowthrow))
+		    break eachadvicethrow;
+	    }
+
+	    // FIXME: this should be a multi-position error
+	    abc.main.Main.v().error_queue.enqueue
+		(ErrorInfoFactory.newErrorInfo
+		 (ErrorInfo.SEMANTIC_ERROR,
+		  "Advice from aspect "
+		  +getAspect().getInstanceClass().getSootClass()
+		  +" applies here, and throws exception "+advicethrow
+		  +" which is not already thrown here",
+		  sm.getContainer(),
+		  sm.getHost()));
+
+	}
+
 	Residue ret=AlwaysMatch.v;
 
 	// cache the residue in the SJPInfo to avoid multiple field gets?

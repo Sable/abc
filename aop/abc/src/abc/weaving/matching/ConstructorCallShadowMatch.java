@@ -28,6 +28,10 @@ public class ConstructorCallShadowMatch extends StmtShadowMatch {
 	return invoke.getMethod();
     }
 
+    public List/*<SootClass>*/ getExceptions() {
+	return invoke.getMethod().getExceptions();
+    }
+
     public static ConstructorCallShadowMatch matchesAt(MethodPosition pos) {
 	if(!(pos instanceof NewStmtMethodPosition)) return null;
 	if(abc.main.Debug.v().traceMatcher) System.err.println("ConstructorCall");
