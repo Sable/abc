@@ -116,8 +116,12 @@ public class Debug {
     public boolean checkCflowOpt=false;
     public boolean dontRemovePushPop=false;
     public boolean nullCheckElim=true;
+    public boolean allowDynamicTests = false;
 
     public boolean traceAntTask=false;
+
+    public boolean printWeavableClasses = false;
+    public boolean debugPhases = false;
 
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
@@ -126,4 +130,5 @@ public class Debug {
     // information about whether nested comments should be allowed
     public boolean allowNestedComments = false;
     public boolean verbose = false;
+
 }

@@ -30,6 +30,7 @@ import java.util.*;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.aspectj.types.AJContext;
+import abc.main.Debug;
 
 /**
  * 
@@ -85,7 +86,7 @@ public class PCTarget_c extends Pointcut_c implements PCTarget
 		if (! (((Typed)pat).type() instanceof ReferenceType))
 		   throw new SemanticException("Argument of \"target\" must be of reference type",pat.position());
 		   
-		if (c.inDeclare())
+		if (c.inDeclare() && !Debug.v().allowDynamicTests)
 			throw new SemanticException("target(..) requires a dynamic test and cannot be used inside a \"declare\" statement",position());
 		   
 		return this;

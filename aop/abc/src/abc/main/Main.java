@@ -449,6 +449,10 @@ public class Main {
             else if (args.top().equals("-verbose") || args.top().equals("--verbose")) {
                 abc.main.Debug.v().verbose=true;
             }
+            else if (args.top().equals("-dava") || args.top().equals("--dava")) {
+                soot_args.add("-f");
+                soot_args.add("dava");
+            }
             else if (args.top().startsWith("@") || args.top().equals("-argfile")) {
                 String fileName;
                 if(args.top().startsWith("@")) {
@@ -576,10 +580,12 @@ public class Main {
             addJarsToClasspath();
             initSoot();
             AbcTimer.mark("Init. of Soot");
+            phaseDebug("Init. of Soot");
 
             loadJars();
             loadSourceRoots();
             AbcTimer.mark("Loading Jars");
+            phaseDebug("Loading Jars");
 
 
             // if something to compile
@@ -594,6 +600,7 @@ public class Main {
                 if (!abc.main.Debug.v().dontCheckExceptions) {
                     checkExceptions();
                     AbcTimer.mark("Exceptions check");
+                    phaseDebug("Exceptions check");
                 }
 
                 abortIfErrors();
@@ -601,9 +608,11 @@ public class Main {
                 optimize();
 
                 AbcTimer.mark("Soot Packs");
+                phaseDebug("Soot Packs");
 
                 output();
                 AbcTimer.mark("Soot Writing Output");
+                phaseDebug("Soot Writing Output");
             }
 
             // Timer end stuff
@@ -787,7 +796,11 @@ public class Main {
             error_queue = compiler.errorQueue();
 
             AbcTimer.mark("Create polyglot compiler");
+            phaseDebug("Create polyglot compiler");
             try {
+                if(Debug.v().printWeavableClasses) {
+                    System.err.println( "aspect_sources are "+aspect_sources );
+                }
                 if (!aspect_sources.isEmpty()) {
                     if (!compiler.compile(aspect_sources)) {
                         throw new CompilerFailedException("Compiler failed.");
@@ -812,8 +825,12 @@ public class Main {
             abortIfErrors();
 
             AbcTimer.mark("Polyglot phases");
+            phaseDebug("Polyglot phases");
             AbcTimer.storePolyglotStats(ext.getStats());
 
+                if(Debug.v().printWeavableClasses) {
+                    System.err.println( "WeavableClasses are "+GlobalAspectInfo.v().getWeavableClasses() );
+                }
             for( Iterator clsIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clsIt.hasNext(); ) {
 
                 final AbcClass cls = (AbcClass) clsIt.next();
@@ -821,19 +838,18 @@ public class Main {
                 scls.setApplicationClass();
                 Scene.v().loadClass(scls.getName(), SootClass.BODIES);
             }
+            AbcTimer.mark("Initial Soot resolving");
+            phaseDebug("Initial Soot resolving");
 
             // Make sure that anything mentioned on the RHS of a declare parents
             // clause is resolved to HIERARCHY, so that the declare parents
             // weaver knows what to do with it
-            for(Iterator dpIt = GlobalAspectInfo.v().getDeclareParents().iterator();
-                dpIt.hasNext(); ) {
-
+            for( Iterator dpIt = GlobalAspectInfo.v().getDeclareParents().iterator(); dpIt.hasNext(); ) {
                 final DeclareParents dp = (DeclareParents) dpIt.next();
                 if(dp instanceof DeclareParentsImpl) {
                     final DeclareParentsImpl dpi = (DeclareParentsImpl) dp;
-                    for(Iterator iIt = dpi.getInterfaces().iterator();
-                        iIt.hasNext(); ) {
-                        final AbcClass i=(AbcClass) iIt.next();
+                    for( Iterator iIt = dpi.getInterfaces().iterator(); iIt.hasNext(); ) {
+                        final AbcClass i = (AbcClass) iIt.next();
                         Scene.v().loadClass(i.getSootClass().getName(),SootClass.HIERARCHY);
                     }
                 } else if(dp instanceof DeclareParentsExt) {
@@ -845,9 +861,11 @@ public class Main {
 
             Scene.v().setMainClassFromOptions();
             AbcTimer.mark("Soot resolving");
+            phaseDebug("Soot resolving");
 
             GlobalAspectInfo.v().buildAspectHierarchy();
             AbcTimer.mark("Aspect inheritance");
+            phaseDebug("Aspect inheritance");
 
         } catch (polyglot.main.UsageError e) {
             throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
@@ -868,12 +886,14 @@ public class Main {
             new DeclareParentsWeaver().weave();
             // FIXME: put re-resolving here, from declareparents weaver
             AbcTimer.mark("Declare Parents");
+            phaseDebug("Declare Parents");
             Scene.v().setDoneResolving();
 
             // Adjust Soot types for intertype decls
             IntertypeAdjuster ita = new IntertypeAdjuster();
             ita.adjust();
             AbcTimer.mark("Intertype Adjuster");
+            phaseDebug("Intertype Adjuster");
 
             // Retrieve all bodies
             for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
@@ -893,28 +913,34 @@ public class Main {
                 }
             }
             AbcTimer.mark("Jimplification");
+            phaseDebug("Jimplification");
 
             // Fix up constructors in binary classes with newly declared parents
             new DeclareParentsConstructorFixup().weave();
             AbcTimer.mark("Fix up constructor calls");
+            phaseDebug("Fix up constructor calls");
 
             PatternMatcher.v().updateWithAllSootClasses();
             // evaluate the patterns the third time (depends on re-resolving)
             PatternMatcher.v().recomputeAllMatches();
             AbcTimer.mark("Update pattern matcher");
+            phaseDebug("Update pattern matcher");
 
             // any references made by itd initialisers will appear in a delegate method,
             // and thus have already been processed by j2j; all resolving ok.
             ita.initialisers(); // weave the field initialisers into the constructors
             AbcTimer.mark("Weave Initializers");
+            phaseDebug("Weave Initializers");
 
             if (!Debug.v().testITDsOnly) {
                 // Make sure that all the standard AspectJ shadow types are loaded
                 AbcTimer.mark("Load shadow types");
+                phaseDebug("Load shadow types");
 
                 // for each shadow in each weavable class, compute list of applicable advice
                 GlobalAspectInfo.v().computeAdviceLists();
                 AbcTimer.mark("Compute advice lists");
+                phaseDebug("Compute advice lists");
 
                 if(Debug.v().matcherTest) {
                     System.err.println("--- BEGIN ADVICE LISTS ---");
@@ -933,9 +959,8 @@ public class Main {
                 }
 
                 if(abc.main.Debug.v().warnUnusedAdvice) {
-                    for(Iterator adviceIt=GlobalAspectInfo.v().getAdviceDecls().iterator();
-                        adviceIt.hasNext();) {
-                        final AbstractAdviceDecl ad = (AbstractAdviceDecl) adviceIt.next();
+                    for( Iterator adIt = GlobalAspectInfo.v().getAdviceDecls().iterator(); adIt.hasNext(); ) {
+                        final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
 
                         if(ad instanceof AdviceDecl && ad.getApplCount()==0)
                             error_queue.enqueue(ErrorInfo.WARNING,
@@ -1034,5 +1059,9 @@ public class Main {
             // Do we need a sanity check here? !jars[j].equals("") or something like that?
             paths.add(jars[j]);
         }
+    }
+
+    private void phaseDebug(String s) {
+        if( Debug.v().debugPhases ) System.err.println("Done phase: "+s);
     }
 }

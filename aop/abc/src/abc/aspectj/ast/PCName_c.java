@@ -38,6 +38,7 @@ import abc.aspectj.types.AspectType;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.DependsCheck;
 import abc.aspectj.visit.DependsChecker;
+import abc.main.Debug;
 
 /**
  *  A reference to a named pointcut.
@@ -247,7 +248,7 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 		    (c.currentClass() instanceof AspectType))
 				   throw new SemanticException("Cannot refer to an abstract pointcut inside a concrete aspect.",
 												position());
-	    if (pci.checkDynamic(c) && c.inDeclare())
+	    if (pci.checkDynamic(c) && c.inDeclare() && !Debug.v().allowDynamicTests)
 	    	throw new SemanticException("Pointcut \"" + name()+"\" requires a dynamic test and cannot be used inside a \"declare\" statement.",position());
       	return this;
 	}

@@ -120,6 +120,15 @@ screen:
   </section>
   <section>
     <name>Output Options</name>
+    <boolopt>
+      <alias>dava</alias>
+      <default>false</default>
+      <short_desc>Decompile instead of outputing classes.
+      </short_desc>
+      <long_desc>After weaving, run the Dava decompiler to produce
+      Java source files of the woven code rather than outputing class files.
+      </long_desc>
+    </boolopt>
   </section>
   <section>
     <name>Warning/Error Reporting Options</name>

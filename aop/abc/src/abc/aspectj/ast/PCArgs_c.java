@@ -29,6 +29,7 @@ import java.util.*;
 
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.types.AJContext;
+import abc.main.Debug;
 
 /**
  * 
@@ -77,7 +78,7 @@ public class PCArgs_c extends Pointcut_c implements PCArgs
 	
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		AJContext c = (AJContext) tc.context();
-		if (c.inDeclare())
+		if (c.inDeclare() && !Debug.v().allowDynamicTests)
 			throw new SemanticException("args(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
 		int count = 0;
 		for (Iterator patIt = pats.iterator(); patIt.hasNext(); ) {

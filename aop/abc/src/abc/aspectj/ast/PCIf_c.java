@@ -38,6 +38,7 @@ import abc.aspectj.visit.AspectReflectionRewrite;
 
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
+import abc.main.Debug;
 
 /**
  * 
@@ -97,7 +98,7 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		TypeSystem ts = tc.typeSystem();
         
 		AJContext c = (AJContext) tc.context();
-		if (c.inDeclare())
+		if (c.inDeclare() && !Debug.v().allowDynamicTests)
 			throw new SemanticException("if(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
 		
 		if (! ts.equals(expr.type(), ts.Boolean())) {
