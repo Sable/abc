@@ -86,24 +86,25 @@ public class Bind extends Residue {
 		Stmt fail,
 		boolean sense,
 		WeavingContext wc) {
-	
+
+	    Stmt set;
 	    Value val=value.getSootValue();
 	    if(!variable.hasType())
 		// PolyLocalVar
-		return variable.set(localgen,units,begin,wc,val);
+		set=variable.set(localgen,units,begin,wc,val);
+	    else {
 	    
-	    Type to=variable.getType();
-	    Type from=val.getType();
+		Type to=variable.getType();
+		Type from=val.getType();
 	    
-	    if(from.equals(to))
-		return variable.set(localgen,units,begin,wc,val);
+		if(from.equals(to))
+		    set=variable.set(localgen,units,begin,wc,val);
+		else 
+		    set=variable.set
+			(localgen,units,begin,wc,Jimple.v().newCastExpr(val,to));
+	    }
 
-	    return succeed(units,
-			   variable.set
-			   (localgen,units,begin,wc,Jimple.v().newCastExpr(val,to)),
-			   fail,
-			   sense);
-
+	    return succeed(units,set,fail,sense);
 	}
 
 	/**
