@@ -9339,4 +9339,11 @@
          <compile files="Foo.java"/>
          <run class="Foo"/>
     </ajc-test>
+    <ajc-test num="1006" dir="abctests/around/adviceexecution" 
+         title="around with circular adviceexecution advice">
+         <compile files="Foo.java">
+                  <message kind="warning" line="10"/>
+         </compile>
+         <run class="Foo"/>
+    </ajc-test>
 </suite>
