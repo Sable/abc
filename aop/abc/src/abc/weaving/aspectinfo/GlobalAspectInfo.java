@@ -31,6 +31,8 @@ public class GlobalAspectInfo {
     private Map/*<String,AbcClass>*/ classes_map = new HashMap();
     private Map/*<String,Aspect>*/ aspects_map = new HashMap();
 
+    private Map/*<String,Integer>*/ method_categories = new HashMap();
+
     public GlobalAspectInfo() {
 	
     }
@@ -202,6 +204,18 @@ public class GlobalAspectInfo {
 	if(adviceLists==null) computeAdviceLists(); 
 
 	return (MethodAdviceList) adviceLists.get(m);
+    }
+
+    public void registerMethodCategory(String sig, int cat) {
+	method_categories.put(sig, new Integer(cat));
+    }
+
+    public int getMethodCategory(String sig) {
+	if (method_categories.containsKey(sig)) {
+	    return ((Integer)method_categories.get(sig)).intValue();
+	} else {
+	    return MethodCategory.NORMAL;
+	}
     }
 
 }
