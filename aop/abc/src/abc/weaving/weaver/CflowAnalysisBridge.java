@@ -46,6 +46,10 @@ public class CflowAnalysisBridge {
         }
     }
 
+    interface Shadow extends soot.jimple.paddle.Shadow {
+        public AdviceApplication aa();
+    }
+
     private Map/*CflowSetup, StackInfo*/ stackInfoMap = new HashMap();
     private Map/*Local, Load*/ joinPointLocalMap = new HashMap();
 
@@ -92,32 +96,43 @@ public class CflowAnalysisBridge {
             debug("analyzing a stack");
             StackInfo si = stackInfo(stack);
             BDDCflowStack bddcfs =
-                new BDDCflowStack(cflowAnalysis, si.shadows );
-            for( Iterator stmtIt = si.stmtMap.keySet().iterator(); stmtIt.hasNext(); ) {
+                new BDDCflowStack(cflowAnalysis, si.shadows, si.stmtMap.keySet() );
+            for( Iterator stmtIt = bddcfs.neverValid(); stmtIt.hasNext(); ) {
                 final Stmt stmt = (Stmt) stmtIt.next();
-                debug("stmt:"+stmt);
-                boolean alwaysValid = bddcfs.alwaysValid(stmt);
-                debug("alwaysValid: "+alwaysValid);
-                boolean neverValid = bddcfs.neverValid(stmt);
-                debug("neverValid: "+neverValid);
-                if( alwaysValid || neverValid ) {
-                    for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
-                        final ResidueBox rb = (ResidueBox) rbIt.next();
-                        if( !(rb.getResidue() instanceof CflowResidue) )
-                            continue;
-                        CflowResidue cfr = (CflowResidue) rb.getResidue();
-                        if( cfr.setup() != stack ) continue;
-                        debug("found a residue");
-                        if( abc.main.Debug.v().checkCflowOpt ) {
-                            rb.setResidue(new OptimizationCheckResidue(rb.getResidue(), alwaysValid));
-                        } else {
-                            if( alwaysValid ) rb.setResidue(AlwaysMatch.v());
-                            if( neverValid ) rb.setResidue(NeverMatch.v());
-                        }
+                stmt.addTag(new StringTag("never: "+stack));
+                for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
+                    final ResidueBox rb = (ResidueBox) rbIt.next();
+                    if( !(rb.getResidue() instanceof CflowResidue) ) continue;
+                    CflowResidue cfr = (CflowResidue) rb.getResidue();
+                    if( cfr.setup() != stack ) continue;
+                    debug("found a residue");
+                    if( abc.main.Debug.v().checkCflowOpt ) {
+                        rb.setResidue(new OptimizationCheckResidue(
+                                    rb.getResidue(), false));
+                    } else {
+                        rb.setResidue(NeverMatch.v());
                     }
                 }
-                if(alwaysValid) stmt.addTag(new StringTag("always: "+stack));
-                if(neverValid) stmt.addTag(new StringTag("never: "+stack));
+            }
+            for( Iterator stmtIt = bddcfs.alwaysValid(); stmtIt.hasNext(); ) {
+                final Stmt stmt = (Stmt) stmtIt.next();
+                stmt.addTag(new StringTag("always: "+stack));
+                for( Iterator rbIt = si.aa(stmt).getResidueBoxes().iterator(); rbIt.hasNext(); ) {
+                    final ResidueBox rb = (ResidueBox) rbIt.next();
+                    if( !(rb.getResidue() instanceof CflowResidue) ) continue;
+                    CflowResidue cfr = (CflowResidue) rb.getResidue();
+                    if( cfr.setup() != stack ) continue;
+                    debug("found a residue");
+                    if( abc.main.Debug.v().checkCflowOpt ) {
+                        rb.setResidue(new OptimizationCheckResidue(
+                                    rb.getResidue(), true));
+                    } else {
+                        rb.setResidue(AlwaysMatch.v());
+                    }
+                }
+            }
+            for( Iterator shIt = bddcfs.unnecessaryShadows(); shIt.hasNext(); ) {
+                final Shadow sh = (Shadow) shIt.next();
             }
         }
 
@@ -163,13 +178,13 @@ public class CflowAnalysisBridge {
     private void processCflowSetup( final AdviceApplication aa ) {
         final CflowSetup cfs = (CflowSetup) aa.advice;
         StackInfo si = stackInfo(cfs);
-        final ShadowPoints sp = aa.shadowmatch.sp;
         final boolean unconditional = (aa.getResidue() instanceof AlwaysMatch);
         Shadow sh = new Shadow() {
             public SootMethod method() { return aa.shadowmatch.getContainer(); }
             public Stmt pushStmt() { return (Stmt) cfs.pushStmts.get(aa); }
             public Stmt popStmt() { return (Stmt) cfs.popStmts.get(aa); }
             public boolean unconditional() { return unconditional; } 
+            public AdviceApplication aa() { return aa; }
         };
         si.shadows.add(sh);
     }
