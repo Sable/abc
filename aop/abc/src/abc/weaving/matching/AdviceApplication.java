@@ -26,12 +26,6 @@ public abstract class AdviceApplication {
         public int row;                // row
 	public int col;                // col
 
-	// Where do we get this stuff from? 
-	// The kind comes from the shadow type.
-	// so does the signature type
-	// The shadow match presumably needs to pick up the signature.
-	// Hopefully it can get the line/column information too.
-	
         /** the SootField corresponding to a static join point */
         public SootField sjpfield;
 
@@ -58,6 +52,9 @@ public abstract class AdviceApplication {
 
     /** information for generating the SJP */
     public SJPInfo sjpInfo;
+
+    /** The enclosing SJP - will be null if we don't need it */
+    public SJPInfo sjpEnclosing=null;
 
     /** where we store the begin and end points for weaving */
     public ShadowPoints shadowpoints; // added by LJH to keep track of
@@ -112,6 +109,9 @@ public abstract class AdviceApplication {
 			if(!NeverMatch.neverMatches(residue))
 			    sm.addAdviceApplication(mal,ad,residue);
 			
+		    } else {
+			if(MyDebug.v.matcherWarnUnimplemented)
+			    System.err.println("Got a null pointcut");
 		    }
 		}
 	    }
