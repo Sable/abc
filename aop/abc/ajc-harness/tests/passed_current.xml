@@ -2487,12 +2487,6 @@
         <compile files="TwoAnonymous.java"/>
         <run class="TwoAnonymous"/>
     </ajc-test>
-<ajc-test dir="new" pr="98"
-      title="introduction of an initializer into a class"
-      keywords="from-resolved_10x">
-        <compile files="IntroductionOfInitializer.java"/>
-        <run class="IntroductionOfInitializer"/>
-    </ajc-test>
 <ajc-test dir="new"
       title="fairly monotonous (and non-covering) tests for expanded dot patterns"
       keywords="from-resolved_10x">

@@ -625,6 +625,12 @@
         <compile files="InitializerTest.java"/>
         <run class="InitializerTest"/>
     </ajc-test>
+<ajc-test dir="new" pr="98"
+      title="introduction of an initializer into a class"
+      keywords="from-resolved_10x">
+        <compile files="IntroductionOfInitializer.java"/>
+        <run class="IntroductionOfInitializer"/>
+    </ajc-test>
 <ajc-test dir="new/access"
       title="some method accessibility tests, particularly package-protected and inheritance"
       keywords="from-resolved_10x">
