@@ -88,7 +88,23 @@ public class MethodSig extends Sig {
 		Formal f = (Formal)fi.next();
 		spt.add(f.getType().getSootType());
 	    }
-	    sm = sc.getMethod(name, spt);
+	    try {
+	    	sm = sc.getMethod(name, spt);
+	    } catch (RuntimeException e) {
+	    	// output name and signature of method
+	    	String msg=name + "(";
+	    	for (Iterator it=spt.iterator();it.hasNext();) {
+	    		Type type=(Type)it.next();
+	    		msg += type.toString();
+	    		if (it.hasNext())
+	    			msg += ", ";
+	    	}
+	    	msg += ")";
+	    	throw new RuntimeException(
+	    				"Could not find method " + msg + 
+						" in class " + sc + 
+						": " + e.getMessage());
+	    }
 	}
 	return sm;
     }
