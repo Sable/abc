@@ -44,11 +44,6 @@ public class Cast extends ShadowPointcut
         return "cast(" + pattern + ")";
     }
 
-    public boolean equivalent(Pointcut otherpc) {
-	if (otherpc instanceof Cast) {
-	    return (pattern.equivalent(((Cast)otherpc).getPattern()));
-	} else return false;
-    }
 	/* (non-Javadoc)
 	 * @see abc.weaving.aspectinfo.Pointcut#equivalent(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable)
 	 */
