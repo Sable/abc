@@ -55,7 +55,8 @@ public abstract class AdviceApplication {
 	}
 
 	public String toString() {
-	    return kind+" "+signatureType+" "+signature+" "+row+" "+col;
+	    return kind+" "+signatureType+" "+signature+" "+row+" "+col+
+	           "  "+sjpfield;
 	}
     }
 
@@ -63,7 +64,7 @@ public abstract class AdviceApplication {
     public SJPInfo sjpInfo;
 
     /** The enclosing SJP - will be null if we don't need it */
-    public SJPInfo sjpEnclosing=null;
+    public SJPInfo sjpEnclosing;
 
     /** where we store the begin and end points for weaving */
     public ShadowPoints shadowpoints; // added by LJH to keep track of
