@@ -916,8 +916,8 @@ public class IntertypeAdjuster {
 		
 		// This is a stub for an intertype constructor decl
 		MethodCategory.register(sm, MethodCategory.INTERTYPE_CONSTRUCTOR_DELEGATOR);
-		MethodCategory.registerRealNameAndClass(sm, icd.getModifiers(), "<init>", AbcFactory.AbcClass(scTarget),
-							0,Modifier.isPublic(icd.getModifiers()) ? 0 : 1);//FIXME: Extra formals?
+		MethodCategory.registerRealNameAndClass(sm, icd.getOriginalModifiers(), "<init>", AbcFactory.AbcClass(scTarget),
+							0,icd.hasMangleParam() ? 1 : 0);
 	}
 	
 

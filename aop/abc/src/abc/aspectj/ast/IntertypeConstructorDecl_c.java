@@ -45,6 +45,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
     protected LocalInstance thisParamInstance;
     protected Supers supers;
     protected String identifier;
+    protected Flags originalFlags;
 	
     public IntertypeConstructorDecl_c(Position pos,
                                  Flags flags,
@@ -57,6 +58,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	this.host = host;
 	this.supers = new Supers();
 	this.identifier = UniqueID.newID("id");
+	this.originalFlags = flags;
     }
 
 	public TypeNode host() {
@@ -195,8 +197,6 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	* change private intertype constructor decl into public,
 	* mangling by giving it an extra parameter
 	* 
-	* This creates countless problems in the presence of super calls and so on,
-	* so until there is a better solution, this is turned off.
 	*/
 	public IntertypeConstructorDecl accessChange(AspectJNodeFactory nf, AspectJTypeSystem ts) {
 		if (flags().isPrivate() || flags().isPackage()){
@@ -608,6 +608,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 	// System.out.println("ICD host: "+host.toString());
 		abc.weaving.aspectinfo.AbcClass target = AbcFactory.AbcClass((ClassType)host.type());
 		int mod = AbcFactory.modifiers(flags());
+		int origmod = AbcFactory.modifiers(originalFlags);
 		List formalTypes = new ArrayList();
 		Iterator fi = aiFormalTypes.iterator();
 		int index = 0;
@@ -640,7 +641,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		}
 		abc.weaving.aspectinfo.MethodSig body = AbcFactory.MethodSig(aiBody);
 		abc.weaving.aspectinfo.IntertypeConstructorDecl icd = new abc.weaving.aspectinfo.IntertypeConstructorDecl
-    		(target, current_aspect,mod, formalTypes, exc, qualifier, kind, arguments, body, position());
+    		(target, current_aspect, mod, origmod, originalFlags.isPrivate() || originalFlags.isPackage(), formalTypes, exc, qualifier, kind, arguments, body, position());
 		gai.addIntertypeConstructorDecl(icd);
 		gai.addSuperDispatches(supers.supercalls(gai));
 		gai.addSuperFieldGetters(supers.superfieldgetters(gai));
@@ -649,7 +650,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 
 		MethodCategory.register(body, MethodCategory.INTERTYPE_CONSTRUCTOR_BODY);
 		// FIXME: First argument is this, right?
-		MethodCategory.registerRealNameAndClass(body, AbcFactory.modifiers(flags()), "<init>", current_aspect.getInstanceClass(),
+		MethodCategory.registerRealNameAndClass(body, AbcFactory.modifiers(originalFlags), "<init>", current_aspect.getInstanceClass(),
 							1,0);
 	}
     

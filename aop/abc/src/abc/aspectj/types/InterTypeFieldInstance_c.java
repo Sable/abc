@@ -8,6 +8,7 @@ package abc.aspectj.types;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import polyglot.util.Position;
 import polyglot.util.UniqueID;
@@ -104,11 +105,13 @@ public class InterTypeFieldInstance_c extends FieldInstance_c implements InterTy
 		return c.methodInstance(mi).type(type());
 	}
 	
-	public Expr setCall(AspectJNodeFactory nf, AspectJTypeSystem ts, Receiver target, ReferenceType container, Expr arg) {
+	public Expr setCall(AspectJNodeFactory nf, AspectJTypeSystem ts, Receiver target, ReferenceType container, 
+							 Expr arg) {
 		Call c = nf.Call(position,target,setInstance.name(),arg);
 		MethodInstance mi = setInstance.container(container);
 		return c.methodInstance(mi).type(type());
 	}
+	
 	
 	
 }

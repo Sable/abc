@@ -322,39 +322,13 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		abc.weaving.aspectinfo.MethodSig initSig;
 	    if (c != null) {
 			MethodInstance mi = c.methodInstance();
-		/*
-			List formals = new LinkedList(); 
-			Iterator fi = mi.formalTypes().iterator(); int i = 0;
-			while (fi.hasNext()) {
-				Type f = (Type)fi.next();
-				formals.add(new abc.weaving.aspectinfo.Formal(AbcFactory.AbcType(f),
-						   "a"+i, position()));
-				i++;
-			}
-			List exc = new LinkedList();
-			Iterator ti = mi.throwTypes().iterator();
-			while (ti.hasNext()) {
-				Type t = (Type)ti.next();
-				exc.add(t.toString());
-			}
-			initSig = new abc.weaving.aspectinfo.MethodSig
-				(AbcFactory.modifiers(mi.flags()),
-				 current_aspect.getInstanceClass(),
-				 AbcFactory.AbcType(mi.returnType()),
-				 mi.name(),
-				 formals,
-				 exc,
-				 position());
-		*/
 			initSig = AbcFactory.MethodSig(mi);
 		}
 		else initSig = null;
 		MethodInstance get = hostInstance.getGet();
 		MethodInstance set = hostInstance.getSet();
 		abc.weaving.aspectinfo.MethodSig getsig = get == null ? null : AbcFactory.MethodSig(get);
-		// MethodCategory.registerFieldGet(fs,getsig);
 		abc.weaving.aspectinfo.MethodSig setsig = set == null ? null : AbcFactory.MethodSig(set);
-		// MethodCategory.registerFieldSet(fs,setsig);
 		abc.weaving.aspectinfo.IntertypeFieldDecl ifd = new abc.weaving.aspectinfo.IntertypeFieldDecl
 		    (fs, current_aspect, initSig, getsig, setsig, position());
 		gai.addIntertypeFieldDecl(ifd);

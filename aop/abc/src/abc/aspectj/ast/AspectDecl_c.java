@@ -186,10 +186,12 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 		}
 		
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
+		if (type().isNested() && !flags().isStatic())
+			throw new SemanticException("Nested aspects must be static",position());
 		AspectDecl t = (AspectDecl) super.typeCheck(tc);
 		TypeSystem ts = tc.typeSystem();
 		if (ts.interfaces(t.type()).contains(ts.Serializable()))
-			throw new SemanticException("Aspects cannot implement Serializable",position());
+					throw new SemanticException("Aspects cannot implement Serializable",position());
 		if (ts.interfaces(t.type()).contains(ts.Cloneable()))
 			throw new SemanticException("Aspects cannot implement Cloneable",position());
 		return t;

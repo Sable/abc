@@ -45,11 +45,15 @@ public class IntertypeConstructorDecl extends InAspect {
 																				// of inner ccall
 	private MethodSig body;								// dispatch method (in aspect) to do the body of the
 																				// constructor
+	private boolean hasMangleParam;
+	private int origmod;
 	
 
     public IntertypeConstructorDecl( AbcClass target, 
     																Aspect aspct, 
     																int mod,
+    																int origmod,
+    																boolean hasMangleParam,
     																List formalTypes,
     																List throwTypes,
     																AbcClass qualifier,
@@ -60,12 +64,14 @@ public class IntertypeConstructorDecl extends InAspect {
 		super(aspct, pos);
 		this.target = target;
 		this.mod = mod;
+		this.origmod = origmod;
 		this.formalTypes = formalTypes;
 		this.throwTypes = throwTypes;
 		this.qualifier = qualifier;
 		this.kind = kind;
 		this.arguments = arguments;
 		this.body = body;
+		this.hasMangleParam = hasMangleParam;
     }
 
     /** Get the target where of the intertype decl */
@@ -76,6 +82,16 @@ public class IntertypeConstructorDecl extends InAspect {
 	/** Get the modifiers of intertype constructor */
 	public int getModifiers() {
 	  return mod;
+	}
+	
+	/** Get the modifiers of intertype constructor */
+	public int getOriginalModifiers() {
+		return origmod;
+	}
+	
+	/** Does this constructor have an additional last parameter for mangling purposes? */
+	public boolean hasMangleParam() {
+		return hasMangleParam;
 	}
 
 	/** Get the formal types of the intertype constructor.
