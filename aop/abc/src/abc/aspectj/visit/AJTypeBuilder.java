@@ -132,7 +132,8 @@ public class AJTypeBuilder extends TypeBuilder {
 										   ct.fullName() + "\".", pos);
 		   }
 			typeSystem().parsedResolver().addNamed(ct.fullName(), ct);
-
+			((CachingResolver) typeSystem().systemResolver()).addNamed(ct.fullName(), ct);
+			
 			return ct;
 		}
 		}
