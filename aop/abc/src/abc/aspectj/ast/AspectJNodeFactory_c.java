@@ -500,7 +500,18 @@ public class AspectJNodeFactory_c
 	public ClassBody ClassBody(Position pos, List members) {
 		return new AJClassBody_c(pos, members);
     }
-    
+   
+   
+	public ClassDecl ClassDecl(
+			Position pos,
+			Flags flags,
+			String name,
+			TypeNode superClass,
+			List interfaces,
+			ClassBody body) {
+		return new AJClassDecl_c(pos, flags, name, superClass, interfaces, body);
+	}
+	
     /*
 	public ConstructorDecl ConstructorDecl(Position pos, Flags flags, String name, 
 											List formals, List throwTypes, Block body) {
