@@ -22,7 +22,10 @@ public class WithinConstructor extends LexicalPointcut {
 
     protected Residue matchesAt(SootClass cls,SootMethod method) {
 	// FIXME: Remove this once pattern is built properly
-	if(getPattern()==null) return AlwaysMatch.v;
+	if(getPattern()==null) 
+	    return 
+		method.getName().equals(SootMethod.constructorName) ?
+		AlwaysMatch.v : null;
 
 	if(!getPattern().matchesConstructor(method)) return null;
 	return AlwaysMatch.v;
