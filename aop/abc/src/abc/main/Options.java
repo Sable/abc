@@ -1,4 +1,5 @@
 /* Abc - The AspectBench Compiler
+ * Copyright (C) 2004 Laurie Hendren
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +22,9 @@ package abc.main;
 import java.util.HashSet;
 
 /** A class for storing Option flags. 
-
-    @author Laurie Hendren 
-*/
+ *
+ *  @author Laurie Hendren 
+ */
 public class Options {
   // creating and resetting Options object
   public static Options v = new Options();
