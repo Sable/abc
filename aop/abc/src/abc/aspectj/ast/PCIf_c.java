@@ -67,6 +67,10 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		TypeSystem ts = tc.typeSystem();
 
+		AJContext c = (AJContext) tc.context();
+		if (c.inDeclare())
+			throw new SemanticException("if(..) requires a dynamic test and cannot be used inside a \"declare\" statement", position());
+		
 		if (! ts.equals(expr.type(), ts.Boolean())) {
 			throw new SemanticException(
 			"Condition of if pointcut must have boolean type.",
