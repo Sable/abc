@@ -1,0 +1,2 @@
+#!/bin/csh
+ajc $* certrevsim/*.java jsim/*/*.java lib/aspects/*/*.java
