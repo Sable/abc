@@ -5056,5 +5056,17 @@
          <compile files="InlinedCons.java"></compile>
          <run class="InlinedCons"></run>
     </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 1" num="1010" dir="abctests/bugs">
+         <compile files="DollarMethod.java"></compile>
+         <run class="DollarMethod"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 2" num="1011" dir="abctests/bugs">
+         <compile files="DollarMethod2.java"></compile>
+         <run class="DollarMethod2"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 3" num="1012" dir="abctests/bugs">
+         <compile files="Dollar$Method3.java"></compile>
+         <run class="Dollar$Method3"></run>
+    </ajc-test>
  
 </suite>
