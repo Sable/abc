@@ -156,6 +156,7 @@ public class TestCase {
 					String[] arrFiles = (files == "") ? new String[0] : files.split(",");
 					String[] arrJars = new String[arrFiles.length];
 					for(int j = 0; j < arrFiles.length; j++) {
+					    arrFiles[j].trim();
 					    if(arrFiles[j].endsWith(".jar") || arrFiles[j].endsWith(".zip")) {
 					        arrJars[j] = arrFiles[j];
 					        arrFiles[j] = null;
@@ -201,8 +202,8 @@ public class TestCase {
 					// overwriting it. One specific condition is that if the <compile tag has the includeClassesDir
 					// attribute - then the directory of the test should be added to the classpath.
 					CompilationArgs cArgs;
-					if(classpath != "") {
-					    if(xChildren[i].has("//@includeClasssesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
+					if(!classpath.equals("")) {
+					    if(xChildren[i].has("//@includeClassesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
 					        // We have both a specific classpath for the compilation and an extra directory to
 					        // add to it - simply append
 					        cArgs = new CompilationArgs(args, classpath + System.getProperty("path.separator") + dir);
@@ -215,7 +216,7 @@ public class TestCase {
 					    }
 					}
 					else{
-					    if(xChildren[i].has("//@includeClasssesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
+					    if(xChildren[i].has("//@includeClassesDir") && xChildren[i].select("//@includeClassesDir")[0].text().equalsIgnoreCase("true")) {
 					        // Need to add dir to classpath. Since just passing '-cp dir' would override the global
 					        // classpath, we combine it with dir here:
 					        cArgs = new CompilationArgs(args, System.getProperty("java.class.path") + 
@@ -236,10 +237,15 @@ public class TestCase {
 						main = new SilentMain(args);
 						main.run();
 						// Compilation successful. If we were expecting errors, this means the test failed.
-						if(xChildren[i].has("//abc:message")) {
+						if(xChildren[i].has("//abc:message[@kind != \"warning\"]")) {
 						    System.err.println("Compilation succeeded but was expected to fail.");
 						    failTest();
 						    return;
+						} else if(xChildren[i].has("//abc:message")) {
+						    // we can only really have warnings now, otherwise we should have entered the previous
+						    // case - and we should have received a CompilationFailedException anyway.
+						    List warnings = sortList(main.getErrors());
+						    checkErrors(warnings, xChildren[i]);
 						}
 					} catch(CompilerAbortedException e) {
 					    // Compiler aborted, i.e. there were insufficient options to perform a compilation.
@@ -247,6 +253,7 @@ public class TestCase {
 					    // The XML file usually specifies additional errors that ajc throws.
 					    // Alternative way of detecting this could be to check if badInput=true for <message />
 					    // TODO: Check if abc needs to throw the same errors.
+					    // XXX: Should we check for presence of further errors here?
 					    if(!xChildren[i].has("//abc:message[@kind=\"abort\"]")) {
 					        System.err.println("Compiler aborted when it wasn't meant to.");
 					        failTest();
@@ -264,120 +271,7 @@ public class TestCase {
 					} catch (CompilerFailedException ex) {
 						//logln("CompilerFailedException: "+ex.getMessage());
 						List errors = sortList(main.getErrors());
-						ErrorInfo ei;
-						Position pos;
-						String errFile, errKind;
-						int errLine;
-						XML[] expectedErrors = xChildren[i].select("//abc:message");
-						if(errors.size() != expectedErrors.length) {
-						    // We require a 1-1 correspondence between expected and actual errors to pass the
-						    // test, so that if the number isn't the same we can't possibly pass.
-						    System.err.println("Compilation failed with unexpected number of errors: " + errors.size() + ", should be " + expectedErrors.length);
-						    System.err.println("Actual errors found: ");
-						    printErrors(errors);
-						    failTest();
-						    return;
-						}
-						if(errors.size() == 0) {
-						    System.err.println("No errors encountered, but still CompilerFailedException... can't be good.");
-						}
-						
-						for(int j = 0; j < errors.size(); j++) {
-						    // Check the errors are what we expect them to be
-						    ei = (ErrorInfo)errors.get(j);
-						    pos = ei.getPosition();
-						    if(pos == null) {
-						        // There is not much we can do with errors whose position is null, as we need
-						        // the position to identify them as what actually occured.
-						        // Current handling (abc.bridge.AbcCompiler) is to continue...
-						        // TODO: Needs improvement
-						        System.err.println("Error position is null; assuming error matches. Error message: " + ei.getMessage());
-						        System.err.println("WARNING: This test was probably not really passed!!");
-						        continue;
-						    }
-						    try {
-						        errFile = expectedErrors[j].select("//@file")[0].toString();
-						    }
-						    catch (Exception e) {
-						        // should indicate that the file attribute is not specified - empty string, but
-						        // XXX: this will fail!! (trying to compare it to an actual error message, which
-						        // will have something as its file attribute)
-						        // TODO: This shouldn't really happen, check.
-						        errFile = "";
-						    }
-						    try {
-						        errKind = expectedErrors[j].select("//@kind")[0].toString();
-						    }
-						    catch (Exception e) {
-						        // Now this REALLY shouldn't happen - kind is a REQUIRED attribute, so the import
-						        // w.r.t. the DTD should have failed...
-						        errKind = "";
-						    }
-						    try {
-						        errLine = Integer.parseInt(expectedErrors[j].select("//@line")[0].toString());
-						    }
-						    catch (Exception e) {
-						        // Hmm... Shouldn't really happen, but is not prohibited by DTD... Could be missing
-						        // 'line' attribute or parsing error (i.e. non-numeric value).
-						        errLine = -1;
-						    }
-						    
-						    // Does the line match?
-						    if(errLine > 0 && errLine != pos.line()) {
-						        // TODO: Check this is correct handling (ignoring line if it wasn't specified)
-						        System.err.println("Found an unexpected error - should be on line " + pos.line() + 
-						                ", but is on line " + errLine + ".");
-						        System.err.println("Errors found during this compilation:");
-							    printErrors(errors);
-						        failTest();
-						        return;
-						    }
-						    
-						    // Does the file match?
-						    if (!errFile.equals("") && (pos.file() == null || errFile.endsWith(pos.file()))) {
-						        System.err.println("Found an unexpected error - should be in file " + pos.file() + 
-						                ", but is in " + errFile + ".");
-						        System.err.println("Errors found during this compilation:");
-							    printErrors(errors);
-						        failTest();
-						        return;
-						    }
-						    
-						    // Does the kind match?
-						    // TODO: Make sure this is the correct division of possible kinds.
-						    // TODO: What about XML-specified types like abort, fail, info, Xlint, ignore?
-						    // XXX: In particular ignore... How do we determine which error it wants to ignore?
-						    switch(ei.getErrorKind()) {
-						        case ErrorInfo.INTERNAL_ERROR:
-						        case ErrorInfo.IO_ERROR:
-						        case ErrorInfo.LEXICAL_ERROR:
-						        case ErrorInfo.POST_COMPILER_ERROR:
-						        case ErrorInfo.SEMANTIC_ERROR:
-						        case ErrorInfo.SYNTAX_ERROR:
-						            if(!errKind.equals("error")) {
-						                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
-						                printErrors(errors);
-						                failTest();
-						                return;
-						            }
-						            break;
-						        case ErrorInfo.WARNING:
-						            if(!errKind.equals("warning")) {
-						                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
-						                printErrors(errors);
-						                failTest();
-						                return;
-						            }
-						            break;
-						        default:
-						            // shouldn't happen, but might if kind is empty
-						            System.err.println("Unknown error kind: " + ei.getErrorKind() + " on error " + ei.getMessage() + " at " + ei.getPosition());
-						        	failTest();
-						        	return;
-						        }
-						}
-						System.out.println("Compilation failed with " + errors.size() + " errors, which were matched and verified against the expected errors.");
-	//					throw new CompilationFailedException(main.getErrors());//System.exit(5);
+						checkErrors(errors, xChildren[i]);
 					} catch (Throwable e) {
 					    // all other exceptions should indicate an error - e.g. a soot weaving error, which
 					    // threw a RuntimeException in one case
@@ -422,6 +316,8 @@ public class TestCase {
 			            }
 			            Object[] argsForMain = new Object[1];
 			            argsForMain[0] = new String[0];
+			            // Some tests refer to files in their respective directories...
+			            Tester.setBASEDIR(new File(dir));
 			            mainMethod.invoke(null, argsForMain); // the null argument is the class instance; main is static
 			        } catch (ClassNotFoundException e) { //TODO: Differentiate exceptions - add further catches.
 			            System.err.println("Failed to find class " + runClass);
@@ -468,6 +364,9 @@ public class TestCase {
 	        // of the test cases) is cleared - if it isn't, one failed test case makes all subsequent test
 	        // cases fail.
 	        Tester.clear();
+	        
+	        // Delete all class files created
+	        deleteClassFiles(dir);
 	        
 	        // sort out file streams...
 		    System.setOut(Main.stdout);
@@ -566,6 +465,124 @@ public class TestCase {
 		return result;
 	}
 	
+	protected void checkErrors(List errors, XML xTest) {
+		ErrorInfo ei;
+		Position pos;
+		String errFile, errKind;
+		int errLine;
+		XML[] expectedErrors = xTest.select("//abc:message");
+		if(errors.size() != expectedErrors.length) {
+		    // We require a 1-1 correspondence between expected and actual errors to pass the
+		    // test, so that if the number isn't the same we can't possibly pass.
+		    System.err.println("Compilation produced an unexpected number of errors: " + errors.size() + ", should be " + expectedErrors.length);
+		    System.err.println("Actual errors found: ");
+		    printErrors(errors);
+		    failTest();
+		    return;
+		}
+		if(errors.size() == 0) {
+		    System.err.println("No errors encountered, but still trying to validate errors... can't be good.");
+		}
+		
+		for(int j = 0; j < errors.size(); j++) {
+		    // Check the errors are what we expect them to be
+		    ei = (ErrorInfo)errors.get(j);
+		    pos = ei.getPosition();
+		    if(pos == null) {
+		        // There is not much we can do with errors whose position is null, as we need
+		        // the position to identify them as what actually occured.
+		        // Current handling (abc.bridge.AbcCompiler) is to continue...
+		        // TODO: Needs improvement
+		        System.err.println("Error position is null; assuming error matches. Error message: " + ei.getMessage());
+		        System.err.println("WARNING: This test was probably not really passed!!");
+		        continue;
+		    }
+		    try {
+		        errFile = expectedErrors[j].select("//@file")[0].toString();
+		    }
+		    catch (Exception e) {
+		        // should indicate that the file attribute is not specified - empty string, but
+		        // XXX: this will fail!! (trying to compare it to an actual error message, which
+		        // will have something as its file attribute)
+		        // TODO: This shouldn't really happen, check.
+		        errFile = "";
+		    }
+		    try {
+		        errKind = expectedErrors[j].select("//@kind")[0].toString();
+		    }
+		    catch (Exception e) {
+		        // Now this REALLY shouldn't happen - kind is a REQUIRED attribute, so the import
+		        // w.r.t. the DTD should have failed...
+		        errKind = "";
+		    }
+		    try {
+		        errLine = Integer.parseInt(expectedErrors[j].select("//@line")[0].toString());
+		    }
+		    catch (Exception e) {
+		        // Hmm... Shouldn't really happen, but is not prohibited by DTD... Could be missing
+		        // 'line' attribute or parsing error (i.e. non-numeric value).
+		        errLine = -1;
+		    }
+		    
+		    // Does the line match?
+		    if(errLine > 0 && errLine != pos.line()) {
+		        // TODO: Check this is correct handling (ignoring line if it wasn't specified)
+		        System.err.println("Found an unexpected error - should be on line " + pos.line() + 
+		                ", but is on line " + errLine + ".");
+		        System.err.println("Errors found during this compilation:");
+			    printErrors(errors);
+		        failTest();
+		        return;
+		    }
+		    
+		    // Does the file match?
+		    if (!errFile.equals("") && (pos.file() == null || !errFile.endsWith(pos.file()))) {
+		        System.err.println("Found an unexpected error - should be in file " + pos.file() + 
+		                ", but is in " + errFile + ".");
+		        System.err.println("Errors found during this compilation:");
+			    printErrors(errors);
+		        failTest();
+		        return;
+		    }
+		    
+		    // Does the kind match?
+		    // TODO: Make sure this is the correct division of possible kinds.
+		    // TODO: What about XML-specified types like abort, fail, info, Xlint, ignore?
+		    // XXX: In particular ignore... How do we determine which error it wants to ignore?
+		    switch(ei.getErrorKind()) {
+		        case ErrorInfo.INTERNAL_ERROR:
+		        case ErrorInfo.IO_ERROR:
+		        case ErrorInfo.LEXICAL_ERROR:
+		        case ErrorInfo.POST_COMPILER_ERROR:
+		        case ErrorInfo.SEMANTIC_ERROR:
+		        case ErrorInfo.SYNTAX_ERROR:
+		            if(!errKind.equals("error")) {
+		                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
+		                printErrors(errors);
+		                failTest();
+		                return;
+		            }
+		            break;
+		        case ErrorInfo.WARNING:
+		            if(!errKind.equals("warning")) {
+		                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
+		                printErrors(errors);
+		                failTest();
+		                return;
+		            }
+		            break;
+		        default:
+		            // shouldn't happen, but might if kind is empty
+		            System.err.println("Unknown error kind: " + ei.getErrorKind() + " on error " + ei.getMessage() + " at " + ei.getPosition());
+		        	failTest();
+		        	return;
+		        }
+		}
+		System.out.println("Compilation failed with " + errors.size() + " errors, which were matched and verified against the expected errors.");
+//					throw new CompilationFailedException(main.getErrors());//System.exit(5);
+
+	}
+	
 	protected void failTest() {
 	    Main.stdout.println("FAIL: " + dir + ": Test \"" + title + "\" failed.");
 	    System.err.println("FAIL: Test \"" + dir + "/" + title + "\" failed");
@@ -589,6 +606,21 @@ public class TestCase {
 	    for(int j = 0; j < errors.size(); j++) {
 	        ei = (ErrorInfo)errors.get(j);
 	        System.err.println(ei.getErrorString() + " at " + ei.getPosition() + ": " + ei.getMessage());
+	    }
+	}
+	
+	protected void deleteClassFiles(String dirName) {
+	    File dir = new File(dirName);
+	    File[] files;
+	    if(dir.isDirectory()) {
+	        try {
+		        files = dir.listFiles();
+		        for(int i = 0; i < files.length; i++) {
+		            if(files[i].isFile() && files[i].getName().endsWith(".class")) {
+		                files[i].delete();
+		            }
+		        }
+	        } catch (Exception e) {}
 	    }
 	}
 	

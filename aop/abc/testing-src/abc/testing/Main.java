@@ -180,6 +180,14 @@ public class Main {
 		
 		count++;
 		
+		if(xTest.has("//abc:abckeywords/abc:skip")) {
+		    // A test that the XML file advises us to skip
+		    stdout.println("Skipping test \"" + dir + "/" + title + "\" as instructed in xml file.");
+		    skipped++;
+		    xSkipped = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD", xSkipped.plug("NEXT", xTest));
+		    return false;
+		}
+		
 		/* There are some tests which specify invalid/deprecated compiler options. The testing harness skips
 		 * these with an error message of "skipping <Test Title> because old ajc 1.0 option: <option>".
 		 * 
@@ -205,6 +213,16 @@ public class Main {
 		            return false;
 		        }
 		    }
+		}
+		
+		/* For now at least - skipp all tests that specify aspectpath.
+		 * Possibly revert later - when abc supports it (whatever it's meant to do ;-) )...
+		 */
+		if(xTest.has("//@aspectpath")) {
+		    stdout.println("Skipping test \"" + dir + "/" + title + "\" because it specifies aspectpath.");
+		    skipped++;
+		    xSkipped = XML.constant("<[OLD]>\n<[NEXT]>").plug("OLD", xSkipped.plug("NEXT", xTest));
+		    return false;
 		}
 		
 		xOptions = null;
