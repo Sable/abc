@@ -24,7 +24,9 @@ import polyglot.types.ClassType;
 import java.util.*;
 import java.util.regex.*;
 
-/** 
+/** A node in the internal representation of the hierarchy and
+ *  package structure used by the pattern matcher.
+ *  Such a node represents one package, subpackage, class or interface.
  *  @author Aske Simon Christensen
  */
 public class PCNode {

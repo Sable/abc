@@ -31,7 +31,8 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 import java.util.*;
 
-/** 
+/** Loads all classes specified as classfile input and
+ *  registers them as weavable classes.
  *  @author Aske Simon Christensen
  */
 public class InitClasses extends OncePass {

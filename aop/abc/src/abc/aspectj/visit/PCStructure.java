@@ -32,8 +32,8 @@ import polyglot.util.InternalCompilerError;
 
 import soot.*;
 
-/** The internal representation of the class hierarchy and the class and
- *  package nesting used by the pattern matcher.
+/** The internal representation of the class hierarchy and
+ *  package structure used by the pattern matcher.
  *  @author Aske Simon Christensen
  */
 public class PCStructure {

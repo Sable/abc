@@ -37,7 +37,8 @@ import polyglot.types.SemanticException;
 
 import abc.aspectj.ast.DeclareParents;
 
-/** 
+/** Perform disambiguation of the parent classes of <code>declare parents</code>
+ *  declarations.
  *  @author Aske Simon Christensen
  */
 public class DeclareParentsAmbiguityRemover extends ContextVisitor {

@@ -27,7 +27,7 @@ import polyglot.util.*;
 
 import java.util.*;
 
-/** 
+/** Produces debug output telling which classes are matched by each name pattern.
  *  @author Aske Simon Christensen
  */
 public class PatternTester extends NodeVisitor {

@@ -21,7 +21,8 @@ package abc.aspectj.visit;
 
 import abc.aspectj.ast.NamePattern;
 
-/** 
+/** Implemented by an AST node to indicate that the node contains
+ *  a name pattern as a child but is itself not a name pattern.
  *  @author Aske Simon Christensen
  */
 public interface ContainsNamePattern {

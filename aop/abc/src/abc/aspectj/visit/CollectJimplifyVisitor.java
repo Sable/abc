@@ -31,7 +31,8 @@ import soot.javaToJimple.*;
 
 import java.util.*;
 
-/** 
+/** Collects the AST roots of all top-level weavable classes, to give
+ *  to the later {@link Jimplify} pass.
  *  @author Aske Simon Christensen
  */
 public class CollectJimplifyVisitor extends ErrorHandlingVisitor {

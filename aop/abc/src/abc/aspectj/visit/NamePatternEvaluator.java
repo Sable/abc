@@ -28,7 +28,7 @@ import polyglot.util.*;
 
 import java.util.*;
 
-/** 
+/** Evaluate all name patterns and store the list of classes matched.
  *  @author Aske Simon Christensen
  */
 public class NamePatternEvaluator extends HaltingVisitor {

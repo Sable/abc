@@ -23,7 +23,10 @@ import polyglot.frontend.*;
 
 import java.util.*;
 
-/** 
+/** A pass that runs only once, independent of the number of
+ *  input files. Note that since Polyglot never sets up the passes
+ *  if there are no source files, once-passes will not be run in
+ *  that case.
  *  @author Aske Simon Christensen
  */
 public abstract class OncePass extends AbstractPass {

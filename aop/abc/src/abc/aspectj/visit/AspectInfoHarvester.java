@@ -31,10 +31,10 @@ import polyglot.frontend.*;
 
 import java.util.*;
 
-/**
- * @author Aske Simon Christensen
- * @author Oege de Moor
- *
+/** Picks up all AST nodes that implement {@link ContainsAspectInfo} and
+ *  tells them to put their information into the {@link abc.weaving.aspectinfo.GlobalAspectInfo}.
+ *  @author Aske Simon Christensen
+ *  @author Oege de Moor
  */
 public class AspectInfoHarvester extends ContextVisitor {
     private static Map pc_decl_map = new HashMap();
@@ -98,6 +98,10 @@ public class AspectInfoHarvester extends ContextVisitor {
 	return aps;
     }
 
+    /** Convert a list of polyglot formals into aspect info formals.
+     *  @param pformals a list of {@link polyglot.ast.Formal} objects.
+     *  @return a list of {@link abc.weaving.aspectinfo.Formal} objects.
+     */
     public static List/*<abc.weaving.aspectinfo.Formal>*/ convertFormals(List/*<polyglot.ast.Formal>*/ pformals) {
 	List formals = new ArrayList();
 	Iterator mdfi = pformals.iterator();

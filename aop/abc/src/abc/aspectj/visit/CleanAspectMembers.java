@@ -1,7 +1,6 @@
 /* Abc - The AspectBench Compiler
  * Copyright (C) 2004 Aske Simon Christensen
  * Copyright (C) 2004 Oege de Moor
- * Copyright (C) 2004 Aske Christensen
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,13 +38,6 @@ import abc.aspectj.types.InterTypeMethodInstance_c;
 import java.util.*;
 
 /**
- * 
-<<<<<<< CleanAspectMembers.java
- * @author Aske Simon Christensen
- * @author Oege de Moor
- * 
-=======
->>>>>>> 1.14
  * This visitor cleans up the AST prior to Jimplification, turning it
  * into a Java tree. Advice declarations are rewritten to pure method
  * declarations. Intertype field delcarations, declare declarations and
@@ -54,7 +46,7 @@ import java.util.*;
  * For all intertype declarations, we remove the relevant types 
  * (which were earlier added to do type checking).
  * 
- * @author Aske Christensen
+ * @author Aske Simon Christensen
  * @author Oege de Moor
  * 
  */

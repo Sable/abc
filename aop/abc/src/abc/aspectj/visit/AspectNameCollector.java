@@ -30,7 +30,8 @@ import abc.aspectj.ast.*;
 
 import java.util.*;
 
-/** 
+/** Collects the names of all aspects to make them available
+ *  to early phases that need them.
  *  @author Aske Simon Christensen
  */
 public class AspectNameCollector extends NodeVisitor {

@@ -32,7 +32,6 @@ import java.util.*;
 
 /** Compute the precedence relation between aspects from all
  *  <code>declare precedence</code> declarations in the program.
- *  @exception SemanticException if any aspect is matched by more than one pattern on the same list.
  *  @author Aske Simon Christensen
  */
 public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
@@ -44,6 +43,9 @@ public class ComputePrecedenceRelation extends ErrorHandlingVisitor {
 	this.ext = ext;
     }
 
+    /**
+     *  @exception SemanticException if any aspect is matched by more than one pattern on the same list.
+     */
     protected NodeVisitor enterCall(Node n) throws SemanticException {
 	if (n instanceof DeclarePrecedence) {
 	    DeclarePrecedence dpr = (DeclarePrecedence)n;

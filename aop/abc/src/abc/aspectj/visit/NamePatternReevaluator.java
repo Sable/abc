@@ -21,7 +21,7 @@ package abc.aspectj.visit;
 
 import polyglot.frontend.*;
 
-/** 
+/** Reevaluate all name patterns with a possibly changed hierarchy.
  *  @author Aske Simon Christensen
  */
 public class NamePatternReevaluator extends OncePass {

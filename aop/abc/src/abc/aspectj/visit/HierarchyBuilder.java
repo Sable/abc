@@ -32,12 +32,12 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 import java.util.*;
 
-/**
- * @author Aske Simon Christensen
- * @author Oege de Moor
+/** Builds the internal representation of the class hierarchy and
+ *  package structure used by the pattern matcher.
+ *  @author Aske Simon Christensen
+ *  @author Oege de Moor
  *
  */
-
 public class HierarchyBuilder extends NodeVisitor {
     private ExtensionInfo ext;
     private Map/*<ParsedClassType,String>*/ seen_classes_name = new HashMap();

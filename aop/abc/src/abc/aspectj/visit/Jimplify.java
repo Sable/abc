@@ -31,8 +31,12 @@ import java.util.*;
 
 import abc.main.AbcTimer;
 
-/** 
+/** Provides Java2Jimple with a list of all top-level
+ *  weavable classes and tells Soot to resolve the classes.
+ *  It is the responsibility of Java2Jimple to resolve all inner
+ *  classes as well.
  *  @author Aske Simon Christensen
+ *  @author Ondrej Lhotak
  */
 public class Jimplify extends OncePass {
     private Map class_to_ast;
@@ -87,7 +91,7 @@ public class Jimplify extends OncePass {
 		Node n = (Node) class_to_ast.get(javaClassName);
 		InitialResolver.v().setAst(n);
 		InitialResolver.v().resolveAST();
-        ret = InitialResolver.v().resolveFromJavaFile(sc);
+		ret = InitialResolver.v().resolveFromJavaFile(sc);
 		sc.setApplicationClass();
 	    } catch(InternalCompilerError e) {
 		throw new InternalCompilerError(e.message()+" while resolving "+sc.getName(),

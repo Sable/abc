@@ -32,7 +32,8 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 import java.util.*;
 
-/** 
+/** Type checks <code>declare parents</code> declarations and integrates the
+ *  declared parents into the Polyglot class hierarchy.
  *  @author Aske Simon Christensen
  */
 public class ParentDeclarer extends ErrorHandlingVisitor {

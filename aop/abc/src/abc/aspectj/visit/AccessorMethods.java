@@ -1,5 +1,5 @@
 /* Abc - The AspectBench Compiler
- * Copyright (C) 2004 pavel
+ * Copyright (C) 2004 Pavel Avgustinov
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -63,7 +63,7 @@ import abc.weaving.aspectinfo.AccessorQualSpecial;
  * thing that needs to be done is to invoke <code>addAllSootMethods()</code> from the inter-type adjuster
  * in order to insert the method bodies into the corresponding classes. 
  * 
- * @author pavel
+ * @author Pavel Avgustinov
  */
 public class AccessorMethods {
     /**

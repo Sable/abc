@@ -33,7 +33,9 @@ import abc.weaving.aspectinfo.AbcFactory;
 
 import soot.*;
 
-/** 
+/** Encapsulates the pattern matching code.
+ *  Contains means for matching classname patterns, type patterns,
+ *  method patterns, field patterns and constructor patterns.
  *  @author Aske Simon Christensen
  *  @author Damien Sereni
  */
@@ -186,7 +188,7 @@ public class PatternMatcher {
 	}
     }
 
-    public boolean matchesClassWithMethodMatching(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType, boolean isStatic) {
+    private boolean matchesClassWithMethodMatching(ClassnamePatternExpr pattern, SootClass base_sc, String name, List parameterTypes, Type returnType, boolean isStatic) {
 	Set seen = new HashSet();
 	LinkedList worklist = new LinkedList();
 	worklist.add(base_sc);
@@ -210,7 +212,7 @@ public class PatternMatcher {
 	return false;
     }
 
-    public boolean matchesClassSubclassOf(ClassnamePatternExpr pattern, SootClass base_sc, SootClass super_sc) {
+    private boolean matchesClassSubclassOf(ClassnamePatternExpr pattern, SootClass base_sc, SootClass super_sc) {
 	FastHierarchy h = Scene.v().getFastHierarchy();
 	Set seen = new HashSet();
 	LinkedList worklist = new LinkedList();
@@ -235,7 +237,7 @@ public class PatternMatcher {
 	return false;
     }
     /*
-    public boolean matchesClassWithFieldResolvingTo(ClassnamePatternExpr pattern, SootClass base_sc, SootField field) {
+    private boolean matchesClassWithFieldResolvingTo(ClassnamePatternExpr pattern, SootClass base_sc, SootField field) {
 	Set seen = new HashSet();
 	LinkedList worklist = new LinkedList();
 	worklist.add(base_sc);

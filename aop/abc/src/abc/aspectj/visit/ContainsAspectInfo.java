@@ -21,9 +21,15 @@ package abc.aspectj.visit;
 
 import abc.weaving.aspectinfo.*;
 
-/** 
+/** An AST node implements this interface to indicate that it contains information
+ *  that should be put into the {@link abc.weaving.aspectinfo.GlobalAspectInfo}.
  *  @author Aske Simon Christensen
  */
 public interface ContainsAspectInfo {
+    /** Called by the {@link AspectInfoHarvester} to tell the node to
+     *  put all relevant information into the {@link abc.weaving.aspectinfo.GlobalAspectInfo}.
+     *  @param gai the target of the information.
+     *  @param current_aspect the aspect currently being traversed.
+     */
     public void update(GlobalAspectInfo gai, Aspect current_aspect);
 }
