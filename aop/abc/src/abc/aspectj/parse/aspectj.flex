@@ -57,80 +57,74 @@ import java.math.BigInteger;
     /* Counters added to get out of scanning states for AspectJ */
     private static int curlyBraceLevel = 0; // nesting of {}
     private static int parenLevel = 0; // nesting of ()
-    private static int savedParenLevel; // level when entering if in pointcut 
-    private static int savedPerParenLevel; // level when entering a per pointcut
     private static boolean inPerPointcut = false; // currently in a per pointcut 
     private static boolean reportedUnclosedComment = false; 
     private static boolean inComment = false;
 
-    /* Remember state to return to when finishing a String or Char */
-    /* Just keep own copy of state for the four main states, JAVA (aka
-       YYINITIAL), ASPECTJ, POINTCUTEXPR and POINTCUT.  Each time yybegin
-       is called to go into one of these states,  the variable
-       savedState should be updated as well. */
-    private static final int IN_JAVA = 0;
-    private static final int IN_ASPECTJ = 1;
-    private static final int IN_POINTCUTIFEXPR = 2;
-    private static final int IN_POINTCUT = 3;
-    private static int savedState = IN_JAVA;
+	/* Any change of lexer state should be done using this method rather than yybegin() - it
+		keeps track of the necessary information on the stack. */
+	public void enterLexerState(int state) {
+		nestingStack.push(new NestingState(curlyBraceLevel, parenLevel, yystate()));
+		// System.out.println("Pushing state [" + curlyBraceLevel+ ", " + parenLevel + ", " + yystate() + "] onto stack and switching to " + state + " after token '" + yytext() + "'.");
+		yybegin(state);
+	}
+	
+	/* Any change of lexer state to an enclosing state should be done using this method, as it
+		pops the necessary information from the stack. */
+	public void returnToPrevState() {
+		if(nestingStack.isEmpty()) throw new polyglot.util.InternalCompilerError("Stack underflow while lexing.");
+		NestingState ns = (NestingState)nestingStack.pop();
+		// System.out.println("Popped state " + ns + " from stack and switching away from " + yystate() + " after token '" + yytext() + "'.");
+		yybegin(ns.state);
+	}
 
-    /* similar to savedState, but to remember whether we're in
-       java or in an aspect */
+    /* Need a nestingStack to keep track of the nesting of lexer states.
 
-    private static int javaOrAspect = IN_JAVA;
-
-    public void returnFromPointcut() {
-        switch (javaOrAspect) {
-          case IN_JAVA : yybegin(YYINITIAL); break;
-          case IN_ASPECTJ : yybegin(ASPECTJ); break;
-        }
-        savedState = javaOrAspect;
-    }
-
-    /* Go back to correct state from STRING OR CHAR states.  When coming
-       out of a STRING or CHAR state, just look at the value in
-       savedState and peform the appropriate yybegin action.   Must
-       be called on exiting STRING and CHAR states. */
-    public void returnFromStringChar()
-      { 
-      switch (savedState)
-          { case IN_JAVA:     yybegin(YYINITIAL); break;
-            case IN_ASPECTJ:  yybegin(ASPECTJ); break;
-            case IN_POINTCUTIFEXPR: yybegin(POINTCUTIFEXPR); break;
-            case IN_POINTCUT: yybegin(POINTCUT); break;
-           }
-      }
-
-    /* Need a nestingStack to keep track of nesting of class, interface and
-       aspect.  
-
-       Each time a class or interface is entered, a stackState
-       of (curlyBraceLevel,savedState) is pushed and then savedState becomes
-       IN_JAVA. 
-
-       Each time an aspect is entered a stackState of 
-       (curlyBraceLevel,savedState) is pushed and then savedStated becomes
-       IN_ASPECTJ.   
+       Each time new state is entered, a stackState
+       of (curlyBraceLevel,parenLevel,yystate()) is pushed and then current
+       state becomes the state in question.
 
        Each time a LEFTBRACE is reached,  the curlyBraceLevel is incremented.
 
        Each time a RIGHTBRACE is reached, the curlyBraceLevel is decremented,
        and the new curlyBraceLevel is checked against the level stored on
-       top of the nestingStack.   If the levels are equal, then we are
+       top of the nestingStack for the lexer states that are terminated by a curly
+       brace, i.e. YYINITIAL and AspectJ.   If the levels are equal, then we are
        exiting a class, interface or aspect declaration, and so we pop
        the top state and put the scanner in that state.
+       
+       Each time a LEFTPAREN is reached, the parenLevel is incremented.
+       
+       Each time a RIGHTPAREN is reached, the parenLevel is decremented, and
+       the new parenLevel is checked against the level stored on the top of the
+       nestingStack for the lexer states that are terminated by a round parenthesis,
+       i.e. POINTCUT and POINTCUTIFEXPR. If the levels are equal, pop the top state
+       and return to it.
+       
+       A 'declare' POINTCUT state pops the preceding state from the stack when it 
+       encounters a ';'.
+       
+       The lexer states for comments, string and char literals are responsible for
+       popping the relevant lexer state off the stack themselves, when they encounter
+       the closing token.
      */
 
     private static Stack nestingStack = new Stack();
 
     class NestingState {
          int nestingLevel;  /* current nesting level of { }, should be >= 0 */
-         int state;  /* should be one of IN_JAVA or IN_ASPECTJ */
+         int parenLevel;    /* Same for the nesting of ( ), should be >= 0 */
+         int state;  /* should be one of the lexer states */
 
-         NestingState(int l, int s)
+         NestingState(int l, int p, int s)
            { nestingLevel=l;
+           	 parenLevel = p;
              state = s;
            }
+         
+         public String toString() {
+         	return "BraceLevel: " + nestingLevel + ", ParenLevel: " + parenLevel + ", state: " + state;
+         }
      }
 
       public static void reset() {
@@ -139,7 +133,9 @@ import java.math.BigInteger;
     	inPerPointcut = false;
     	reportedUnclosedComment = false;
     	inComment = false;
-    	savedState = IN_JAVA;
+    	// currentState = YYINITIAL; // PA: I'm not sure where this actually alters anything.
+    				// Really it should be yybegin(YYINITIAL), but that can't be called from
+    				// a static context...
     	nestingStack = new Stack();
     }
 
@@ -507,8 +503,7 @@ OctalEscape = \\ [0-7]
 /* within any of YYINITIAL(JAVA), POINTCUTEXPR, ASPECTJ  or POINTCUT
    we need to deal with strings and char literals.   The end of the
    STRING or CHARLITERAL takes us back to the same state in which 
-   we entered.  The state is saved in savedState.  All yybegin statements
-   going into one of these four states must assign to savedState.
+   we entered. 
 */
 
 %state STRING, CHARACTER
@@ -546,16 +541,13 @@ OctalEscape = \\ [0-7]
 	"if"						{ return key(sym.IF); }
 	"this"						{ return key(sym.THIS); }
 	/* ------------  keyword added to the Java part ------------------ */
-	"aspect"                       { yybegin(ASPECTJ); 
-    	                               nestingStack.push(
-                                       new NestingState(
-                                           curlyBraceLevel, savedState));
-           		                       savedState = IN_ASPECTJ;
-                	                   javaOrAspect = IN_ASPECTJ;  
+	"aspect"                       { enterLexerState(ASPECTJ); 
+           		                       //currentState = IN_ASPECTJ;
+                	                   //javaOrAspect = IN_ASPECTJ;  
                      	               return key(sym.ASPECT); 
                          	        }
-    "pointcut"                      { yybegin(POINTCUT);
-    	                              savedState = IN_POINTCUT;
+    "pointcut"                      { enterLexerState(POINTCUT);
+    	                              //currentState = IN_POINTCUT;
         	                          return key(sym.POINTCUT);
             	                    }
   /* ----------------------------------------------------------------*/
@@ -564,9 +556,9 @@ OctalEscape = \\ [0-7]
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
     /* 3.7 Comments */
 	"/*"                       { if(abc.main.Debug.v().allowNestedComments) 
-						yybegin(NESTABLECOMMENT);
+						enterLexerState(NESTABLECOMMENT);
 				     else 
-						yybegin(NONNESTABLECOMMENT); 
+						enterLexerState(NONNESTABLECOMMENT); 
                                      inComment = true; 
                                      comment_count = comment_count + 1; 
                                    }
@@ -596,58 +588,32 @@ OctalEscape = \\ [0-7]
   /* if we have finished an expression found in the pointcut if, must
         return to POINTCUT state. */
   ")"                            { parenLevel--; 
-                                   if ( (savedState == IN_POINTCUTIFEXPR) &&
-                                        (parenLevel == savedParenLevel))
-                                      { yybegin(POINTCUT);
-                                        savedState = IN_POINTCUT;
+                                   if ( (yystate() == POINTCUTIFEXPR) &&
+                                        (parenLevel == ((NestingState)nestingStack.peek()).parenLevel))
+                                      { returnToPrevState();
                                       } 
                                    return op(sym.RPAREN); 
                                  }
   "{"                            { curlyBraceLevel++; return op(sym.LBRACE); }
   "}"                            { curlyBraceLevel--; 
                                    
-                                   /* if level is 0, back to top level
-                                        of a compilation unit */
-                                   if ( (curlyBraceLevel == 0) &&
-                                        (savedState == IN_ASPECTJ) )
-                                     { yybegin(YYINITIAL);
-                                       savedState = IN_JAVA;
-                                       javaOrAspect = IN_JAVA;
-                                       // shouldn't the thing on the nesting stack be correct anyway?
-                                       if (!nestingStack.isEmpty())
-                                         nestingStack.pop();
-                                     }
-                                   else /* we are in some nesting */
                                      /* if curlyBraceLevel is same as
                                           top of nestingStack, then 
                                           exiting a class, interface or
                                           aspect declaration. */
+                                          
                                      if (!nestingStack.isEmpty())
                                        { if (curlyBraceLevel == 
                                            ((NestingState) nestingStack.peek()).
                                                                   nestingLevel)
-                                           { NestingState s;  
-
-                                             s= (NestingState) nestingStack.pop();
-                                             savedState = s.state;
-                                             if (savedState == IN_JAVA)
-                                               yybegin(YYINITIAL);
-                                             else if (savedState == IN_ASPECTJ)
-                                               yybegin(ASPECTJ);
-                                             else if (savedState == IN_POINTCUT) // syntax error
-                                               yybegin(POINTCUT);
-                                             else if (savedState == IN_POINTCUTIFEXPR) // syntax error
-                                               yybegin(POINTCUTIFEXPR);
-                                             else
-                                               System.err.println(
-     "Invalid state " + savedState + " popped from nestingStack in scanner");
+                                           { returnToPrevState();
                                              }
                                           }
                                         else // an extra }
                                           { // don't change the state
                                             // hand over token for parser to
                                             // find sytax error
-                                            //savedState = IN_JAVA;
+                                            //currentState = IN_JAVA;
                                             //yybegin(YYINITIAL);
                                           }
                                         return op(sym.RBRACE); 
@@ -698,10 +664,10 @@ OctalEscape = \\ [0-7]
     ">>>=" { return op(sym.URSHIFTEQ);  }
 
     /* 3.10.4 Character Literals */
-    \'      { yybegin(CHARACTER); sb.setLength(0); }
+    \'      { enterLexerState(CHARACTER); sb.setLength(0); }
 
     /* 3.10.5 String Literals */
-    \"      { yybegin(STRING); sb.setLength(0); }
+    \"      { enterLexerState(STRING); sb.setLength(0); }
 
     /* 3.10.1 Integer Literals */
     {OctalNumeral} [lL]          { return long_lit(chop(), 8); }
@@ -729,9 +695,9 @@ OctalEscape = \\ [0-7]
   "("                            { parenLevel++; return op(sym.LPAREN); }
   ")"                            { parenLevel--;
                                    if (inPerPointcut &&
-                                       parenLevel == savedPerParenLevel)
-                                     { yybegin(ASPECTJ);
-                                       savedState = IN_ASPECTJ;
+                                       parenLevel == ((NestingState)nestingStack.peek()).parenLevel)
+                                     { returnToPrevState();
+                                       //currentState = IN_ASPECTJ;
                                        inPerPointcut = false;
                                      }
                                    return op(sym.RPAREN); 
@@ -741,14 +707,14 @@ OctalEscape = \\ [0-7]
   ","                            { return op(sym.COMMA); }
   "."                            { return op(sym.DOT); }
   ":"                            { return op(sym.COLON);}
-  ";"                            { returnFromPointcut();
+  ";"                            { returnToPrevState();
                                    return op(sym.SEMICOLON); 
                                  }
   "{"                            { curlyBraceLevel++;
-                                   returnFromPointcut();
+                                   returnToPrevState();
                                    return op(sym.LBRACE); 
                                  }
-  \"                             { yybegin(STRING); sb.setLength(0); }
+  \"                             { enterLexerState(STRING); sb.setLength(0); }
 
   /* symbol specific to pointcuts */
   ".."                           {  return op(sym.PC_DOTDOT); } 
@@ -770,22 +736,22 @@ OctalEscape = \\ [0-7]
  * they Java, Pointcut and AspectJ get collapsed into the same state by optimisations.
  */
 <YYINITIAL> {
-	"oege"					{ return id(); }
+	"java_state"					{ return id(); }
 }
 
 <ASPECTJ> {
-	"ganesh"				{ return id(); }
+	"aspectj_state"				{ return id(); }
 }
 
 <POINTCUTIFEXPR> {
-	"pavel"					{ return id(); }
+	"pointcutifexpr_state"			{ return id(); }
 }
 
 <YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
-	/* Handle keywords and identifiers here. It has to be done last as with the new parser structure,
+	/* Handle keywords and identifiers here. It has to be done last because with the new parser structure,
 		whether or not an identifier is a keyword is only determined after it has been consumed, so
-		that placing splitting this code between the different lexer states would consume identifiers
-		(and hence potential keywords for later state) at the first occurrence. (yes, this comment does
+		that splitting this code between the different lexer states would consume identifiers
+		(and hence potential keywords for a later state) at the first occurrence. (yes, this comment does
 		make sense to me. :-P) */
 		
     /* 3.9 Keywords */
@@ -799,17 +765,12 @@ OctalEscape = \\ [0-7]
 			if(yytext().equals("class")) {
 				if(!lastTokenWasDot) {
 					// if in ASPECCTJ state, stay there.
-					int newSavedState = (savedState == IN_ASPECTJ ? IN_ASPECTJ : IN_JAVA);
-					int newState = (savedState == IN_ASPECTJ ? ASPECTJ : YYINITIAL);
-					yybegin(newState);
-					nestingStack.push(new NestingState(curlyBraceLevel, savedState));
-					savedState = newSavedState;
+					int newState = (yystate() == ASPECTJ ? ASPECTJ : YYINITIAL);
+					enterLexerState(newState);
 					}
 			}
 			else if(yytext().equals("interface")) {
-				yybegin(YYINITIAL);
-				nestingStack.push(new NestingState(curlyBraceLevel, savedState));
-				savedState = YYINITIAL;
+				enterLexerState(YYINITIAL);
 			}
 			// all other keywords can be handled generically
 			return key(i.intValue());
@@ -823,15 +784,12 @@ OctalEscape = \\ [0-7]
 				// a lexer state change.
 				if(yytext().equals("percflow") || yytext().equals("percflowbelow") ||
 						yytext().equals("pertarget") || yytext().equals("perthis")) {
-					yybegin(POINTCUT);
-					savedState = IN_POINTCUT;
+					enterLexerState(POINTCUT);
 					inPerPointcut = true;
-					savedPerParenLevel = parenLevel;
 				}
 				else if(yytext().equals("after") || yytext().equals("around") ||
 						yytext().equals("before") || yytext().equals("declare")) {
-					yybegin(POINTCUT);
-					savedState = IN_POINTCUT;
+					enterLexerState(POINTCUT);
 				}
 				// all other cases handled generically.
 				return key(i.intValue());
@@ -843,16 +801,14 @@ OctalEscape = \\ [0-7]
             i = (Integer) pointcutKeywords.get(yytext());
             if(i != null)  {
             	if(yytext().equals("if")) {
-            		yybegin(POINTCUTIFEXPR);
-            		savedState = IN_POINTCUTIFEXPR;
-            		savedParenLevel = parenLevel;
+            		enterLexerState(POINTCUTIFEXPR);
             	}
             	// all other keywords can be handled generically
 	            return key(i.intValue());
 	        }
         }
 		
-		// OK, it's not a keyword, so it's either an identifier.
+		// OK, it's not a keyword, so it's an identifier.
 		/* Note that if both Identifier and Name Pattern match, then    
 		   Identifier will be chosen first, since it is an earlier rule.
 		 */
@@ -876,7 +832,7 @@ OctalEscape = \\ [0-7]
 	                	       	eq.enqueue(ErrorInfo.LEXICAL_ERROR,"unmatched */",pos());
 	                        if (comment_count == 0) {
                             		inComment = false;
-    		            	       	returnFromStringChar(); 
+    		            	       	returnToPrevState(); 
                             	}
 			}
   "/*"              { 
@@ -888,14 +844,14 @@ OctalEscape = \\ [0-7]
 <NONNESTABLECOMMENT> { 
   "*/"				{ 
 					inComment = false;
-					returnFromStringChar();
+					returnToPrevState();
 				}
   .|\n                           { /* ignore */ }
 }
 
 <CHARACTER> {
     /* End of the character literal */
-    \'                           { returnFromStringChar();
+    \'                           { returnToPrevState();
                                    return char_lit(sb.toString()); }
 
     /* 3.10.6 Escape Sequences for Character and String Literals */
@@ -924,7 +880,7 @@ OctalEscape = \\ [0-7]
                                               yytext() + "\"", pos()); }
 
     /* Unclosed character literal */
-    {LineTerminator}             { yybegin(YYINITIAL);
+    {LineTerminator}             { returnToPrevState();
                                   eq.enqueue(ErrorInfo.LEXICAL_ERROR,
                                              "Unclosed character literal",
                                              pos(sb.length())); }
@@ -935,7 +891,7 @@ OctalEscape = \\ [0-7]
 
 <STRING> {
     /* End of string */
-    \"                           { returnFromStringChar();
+    \"                           { returnToPrevState();
                                    return string_lit(); }
 
     /* 3.10.6 Escape Sequences for Character and String Literals */
@@ -964,7 +920,7 @@ OctalEscape = \\ [0-7]
                                               yytext() + "\"", pos()); }
 
     /* Unclosed string literal */
-    {LineTerminator}             { yybegin(YYINITIAL);
+    {LineTerminator}             { returnToPrevState();
                                    eq.enqueue(ErrorInfo.LEXICAL_ERROR,
                                               "Unclosed string literal",
                                               pos(sb.length())); }
@@ -990,6 +946,9 @@ OctalEscape = \\ [0-7]
                  reportedUnclosedComment = true;
                }
            }
+
+//		if(!eq.hasErrors())
+//			if(!nestingStack.isEmpty()) System.out.println("XXXXXXXXX: Failed to consume entire stack while lexing: " + nestingStack);
 
          return new EOF(new Position(file(),mypos.line()-1), sym.EOF); 
 
