@@ -765,6 +765,12 @@
             <message kind="error" line="0"/>
         </compile>
    </ajc-test>
+<ajc-test dir="bugs" title="lame error message: negation doesn't allow binding"
+      pr="30663">
+        <compile files="BadBindingError.java">
+            <message kind="error" line="7"/>
+        </compile>
+    </ajc-test>
 <ajc-test dir="new/binaryWarnings/src" pr="37020"
    	keywords="knownLimitation"
    	comment="source loc of binary jp depends on first code, not block start"
