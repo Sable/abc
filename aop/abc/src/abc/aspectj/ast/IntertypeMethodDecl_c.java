@@ -47,7 +47,7 @@ import abc.weaving.aspectinfo.MethodCategory;
 
 
 public class IntertypeMethodDecl_c extends MethodDecl_c
-    implements IntertypeMethodDecl, ContainsAspectInfo
+    implements IntertypeMethodDecl, ContainsAspectInfo, MakesAspectMethods
 {
     protected TypeNode host;
     public 	  InterTypeMethodInstance_c itMethodInstance;
@@ -452,12 +452,16 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
     public Supers getSupers() {
     	return supers;
     }
-    
+
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushIntertypeDecl(this);
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                   AspectJTypeSystem ts)
+    {
+        visitor.popIntertypeDecl();
+        return ((IntertypeMethodDecl_c) this.accessChange()).thisParameter(nf,ts);
+    }
 }
-	
-
-	
-
-     
-
-

@@ -20,9 +20,15 @@ import polyglot.types.ClassType;
 import polyglot.visit.AmbiguityRemover;
 import polyglot.visit.TypeChecker;
 
+import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.MakesAspectMethods;
+
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectType;
+import abc.aspectj.types.InterTypeConstructorInstance_c;
+
+import abc.aspectj.visit.AspectMethods;
 
 import polyglot.ext.jl.ast.New_c;
 import polyglot.util.Position;
@@ -30,7 +36,7 @@ import polyglot.util.Position;
 /**
  * @author oege
  */
-public class AJNew_c extends New_c implements New {
+public class AJNew_c extends New_c implements New, MakesAspectMethods {
 
 	
 	public AJNew_c(
@@ -152,4 +158,20 @@ public class AJNew_c extends New_c implements New {
 		   throw new SemanticException("Cannot instantiate an aspect with new.");
 		return n;
 	}
+
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                // do nothing
+        }
+
+        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                if (constructorInstance() instanceof InterTypeConstructorInstance_c) {
+                        InterTypeConstructorInstance_c itcd =
+                                (InterTypeConstructorInstance_c) constructorInstance();
+                        return itcd.mangledNew(this, nf, ts);
+                }
+                return this;
+        }
 }

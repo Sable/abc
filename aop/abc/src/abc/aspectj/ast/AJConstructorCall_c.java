@@ -14,8 +14,12 @@ import polyglot.types.SemanticException;
 import polyglot.ext.jl.ast.ConstructorCall_c;
 import polyglot.util.Position;
 
+import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJContext;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.InterTypeConstructorInstance_c;
+import abc.aspectj.visit.AspectMethods;
 
 /**
  * @author Oege de Moor
@@ -24,7 +28,8 @@ import abc.aspectj.types.AspectJTypeSystem;
  */
 public class AJConstructorCall_c
 	extends ConstructorCall_c
-	implements ConstructorCall {
+	implements ConstructorCall, MakesAspectMethods
+{
 
 	
 	public AJConstructorCall_c(
@@ -50,4 +55,19 @@ public class AJConstructorCall_c
 			}
 		}
 
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                // do nothing
+        }
+
+        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                if (constructorInstance() instanceof InterTypeConstructorInstance_c) {
+                        InterTypeConstructorInstance_c itcd =
+                                (InterTypeConstructorInstance_c) constructorInstance();
+                        return itcd.mangledCall(this, nf, ts);
+                }
+                return this;
+        }
 }

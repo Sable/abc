@@ -27,6 +27,7 @@ import polyglot.types.*;
 
 import polyglot.ext.jl.ast.FieldDecl_c;
 
+import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.visit.*;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AJContext;
@@ -37,7 +38,7 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 public class IntertypeFieldDecl_c extends FieldDecl_c
-    implements IntertypeFieldDecl, ContainsAspectInfo
+    implements IntertypeFieldDecl, ContainsAspectInfo, MakesAspectMethods
 {
     protected TypeNode host;
     protected InterTypeFieldInstance_c hostInstance;
@@ -341,5 +342,24 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 		gai.addSuperFieldSetters(supers.superfieldsetters(gai));
 		gai.addQualThiss(supers.qualthiss(gai));
 		
+    }
+
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushIntertypeDecl(this);
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                   AspectJTypeSystem ts)
+    {
+        IntertypeFieldDecl_c itfd = this;
+        visitor.popIntertypeDecl();
+
+        if (itfd.init() != null) {
+            MethodDecl md = itfd.initMethod(nf,ts);
+            visitor.addMethod(md);
+            itfd = (IntertypeFieldDecl_c) itfd.liftInit(nf,ts);
+        }
+        return itfd.accessChange(); // mangle name if private
     }
 }

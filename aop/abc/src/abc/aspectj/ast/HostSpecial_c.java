@@ -25,13 +25,20 @@ import polyglot.util.Position;
 
 import polyglot.types.Type;
 
+import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.IntertypeDecl;
+import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.visit.AspectMethods;
+
+
 
 /**
  * @author oege
  * specials in intertype declarations
  */
-public class HostSpecial_c extends Special_c implements Special {
+public class HostSpecial_c extends Special_c implements Special, MakesAspectMethods {
 
 	Type host;
 	
@@ -94,4 +101,26 @@ public class HostSpecial_c extends Special_c implements Special {
 
 	  w.write("host"+kind.toString());
 	  }
+
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                // do nothing
+        }
+
+        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                IntertypeDecl id = visitor.intertypeDecl();
+                if (kind() == Special.THIS) {
+                        if (qualifier() == null ||
+                            (qualifier() != null && qualifier().type() == id.host().type()))
+                                return id.thisReference(nf, ts);
+                        else
+                                return id.getSupers().qualThis(nf, ts,
+                                                               id.host().type().toClass(),
+                                                               id.thisReference(nf, ts),
+                                                               qualifier().type().toClass());
+                }
+                return this;
+        }
 }

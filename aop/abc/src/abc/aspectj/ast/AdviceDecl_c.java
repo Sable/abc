@@ -51,6 +51,7 @@ import abc.aspectj.ast.AdviceFormal_c;
 import abc.aspectj.types.AspectJTypeSystem;
 
 import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.ContainsAspectInfo;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -59,7 +60,7 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
 
 public class AdviceDecl_c extends MethodDecl_c
-    implements AdviceDecl, ContainsAspectInfo
+    implements AdviceDecl, ContainsAspectInfo, MakesAspectMethods
 {
     protected AdviceSpec spec;
     protected Pointcut pc;
@@ -500,11 +501,25 @@ public class AdviceDecl_c extends MethodDecl_c
 	}
     }
 
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushProceedFor(this);
+        visitor.pushFormals(formals());
+        visitor.pushAdvice(this);
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                   AspectJTypeSystem ts)
+    {
+        MethodDecl md = visitor.proceed();
+
+        visitor.popAdvice();
+        visitor.popFormals();
+        visitor.popProceed();
+
+        if (md != null)
+            visitor.addMethod(md);
+
+        return this.methodDecl(nf,ts);
+    }
 }
-	
-
-	
-
-     
-
-

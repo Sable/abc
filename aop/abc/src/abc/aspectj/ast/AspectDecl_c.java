@@ -45,8 +45,9 @@ import abc.aspectj.types.AspectJFlags;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AspectType;
 
-import abc.aspectj.visit.ContainsAspectInfo;
 import abc.aspectj.visit.AJTypeBuilder;
+import abc.aspectj.visit.AspectMethods;
+import abc.aspectj.visit.ContainsAspectInfo;
 
 import abc.weaving.aspectinfo.*;
 
@@ -56,7 +57,10 @@ import abc.weaving.aspectinfo.*;
  * or privileged. It may be a public or other top-level aspect, or an inner
  * named aspect.
  */
-public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAspectInfo
+public class AspectDecl_c extends ClassDecl_c
+                          implements AspectDecl,
+                                     ContainsAspectInfo,
+                                     MakesAspectMethods
 {
     
     protected PerClause per;
@@ -308,5 +312,27 @@ public class AspectDecl_c extends ClassDecl_c implements AspectDecl, ContainsAsp
 	    MethodCategory.register(aspectOf, MethodCategory.ASPECT_INSTANCE);
 	    MethodCategory.register(hasAspect, MethodCategory.ASPECT_INSTANCE);
 	}
+    }
+
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushClass();
+        visitor.pushContainer(type());
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                   AspectJTypeSystem ts)
+    {
+        AspectDecl_c cd = this;
+        List localMethods = visitor.methods();
+        visitor.popClass();
+        visitor.popContainer();
+
+        for (Iterator i = localMethods.iterator(); i.hasNext(); ) {
+            MethodDecl md = (MethodDecl) i.next();
+            cd = (AspectDecl_c) this.body(cd.body().addMember(md));
+        }
+
+        return cd.addAspectMembers(nf, ts);
     }
 }

@@ -6,7 +6,7 @@ import polyglot.ast.Local;
 import abc.aspectj.types.AspectJTypeSystem;
 
 
-public interface AdviceDecl extends MethodDecl
+public interface AdviceDecl extends MethodDecl, MakesAspectMethods
 {
     /* new stuff to be added */
    

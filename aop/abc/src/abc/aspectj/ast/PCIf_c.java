@@ -1,19 +1,21 @@
 package abc.aspectj.ast;
 
 import polyglot.ast.*;
-
 import polyglot.types.*;
 import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+import abc.aspectj.ast.MakesAspectMethods;
+import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.AspectMethods;
 
 import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
 
-public class PCIf_c extends Pointcut_c implements PCIf
+public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 {
     protected Expr expr;
     private String methodName;
@@ -122,4 +124,17 @@ public class PCIf_c extends Pointcut_c implements PCIf
 	    (vars, AbcFactory.MethodSig(methodDecl),position);
     }
 
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        // do nothing
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                   AspectJTypeSystem ts)
+    {
+        // construct method for expression in if(..)
+        MethodDecl md = exprMethod(nf, ts, visitor.formals(), visitor.container());
+        visitor.addMethod(md);
+        return liftMethod(nf); // replace expression by method call
+    }
 }

@@ -8,7 +8,7 @@ import abc.aspectj.visit.Supers;
 
 import abc.aspectj.types.AspectJTypeSystem;
 
-public interface IntertypeDecl extends ClassMember
+public interface IntertypeDecl extends ClassMember, MakesAspectMethods
 {
     
     /** the target class of the intertype decl */

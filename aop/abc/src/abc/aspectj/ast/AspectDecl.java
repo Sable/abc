@@ -8,7 +8,7 @@ import abc.aspectj.types.AspectJTypeSystem;
  * A <code>AspectDecl</code> represents a top-level, member, or local class
  * declaration.
  */
-public interface AspectDecl extends ClassDecl
+public interface AspectDecl extends ClassDecl, MakesAspectMethods
 {
    
    

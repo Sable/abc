@@ -19,6 +19,7 @@ import polyglot.ast.ClassBody;
 import polyglot.ast.TypeNode;
 import polyglot.ast.Node;
 import polyglot.ast.ClassDecl;
+import polyglot.ast.MethodDecl;
 
 import polyglot.ext.jl.ast.ClassDecl_c;
 import polyglot.types.Flags;
@@ -33,13 +34,18 @@ import polyglot.visit.TypeChecker;
 
 import polyglot.util.Position;
 
+import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AspectType;
+import abc.aspectj.visit.AspectMethods;
 
 /**
  * @author oege
  */
 
-public class AJClassDecl_c extends ClassDecl_c {
+public class AJClassDecl_c extends ClassDecl_c
+                           implements MakesAspectMethods
+{
 
 	/**
 	 * @param pos
@@ -65,8 +71,7 @@ public class AJClassDecl_c extends ClassDecl_c {
 				// make sure that the inStaticContext flag of the class is 
 				// correct
 				Context ctxt = ar.context();
-				this.type().inStaticContext(ctxt.inStaticContext());
-
+				this.type().inStaticContext(ctxt.inStaticContext()); 
 				addSuperDependencies(this.type(),ar.job());
 				return this;
 			}
@@ -124,5 +129,27 @@ public class AJClassDecl_c extends ClassDecl_c {
 		   throw new SemanticException("A normal class cannot extend an aspect",superClass.position());
 		return n;
 	}
-			
+
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                visitor.pushClass();
+                visitor.pushContainer(type());
+        }
+
+        public Node aspectMethodsLeave(AspectMethods visitor,
+                                       AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                ClassDecl cd = this;
+                List localMethods = visitor.methods();
+                visitor.popClass();
+                visitor.popContainer();
+
+                for (Iterator i = localMethods.iterator(); i.hasNext(); ) {
+                        MethodDecl md = (MethodDecl) i.next();
+                        cd = this.body(cd.body().addMember(md));
+                }
+
+                return cd;
+        }
 }

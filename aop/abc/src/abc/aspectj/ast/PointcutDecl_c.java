@@ -33,12 +33,16 @@ import abc.aspectj.ast.Pointcut;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AspectType;
 import abc.aspectj.visit.AspectInfoHarvester;
+import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.ContainsAspectInfo;
 
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Aspect;
 
-public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, ContainsAspectInfo
+public class PointcutDecl_c extends MethodDecl_c
+                            implements PointcutDecl,
+                                       ContainsAspectInfo,
+                                       MakesAspectMethods
 {
     String name;
     Pointcut pc; // null if abstract
@@ -228,10 +232,15 @@ public class PointcutDecl_c extends MethodDecl_c implements PointcutDecl, Contai
 	AspectInfoHarvester.pointcutDeclarationMap().put(methodInstance(), pcd);
 	gai.addPointcutDecl(pcd);
     }
+
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushFormals(formals());
+    }
+
+    public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                   AspectJTypeSystem ts)
+    {
+        return this;
+    }
 }
-
-
-
-
-
-

@@ -4,7 +4,9 @@ package abc.aspectj.ast;
 import polyglot.ast.Call;
 import polyglot.ast.MethodDecl;
 
-public interface ProceedCall extends Call {
+import abc.aspectj.ast.MakesAspectMethods;
+
+public interface ProceedCall extends Call, MakesAspectMethods {
 
 	ProceedCall proceedMethod(MethodDecl md);
 	

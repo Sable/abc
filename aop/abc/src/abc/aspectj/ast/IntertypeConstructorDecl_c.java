@@ -40,7 +40,7 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 public class IntertypeConstructorDecl_c extends ConstructorDecl_c
-    implements IntertypeConstructorDecl, ContainsAspectInfo
+    implements IntertypeConstructorDecl, ContainsAspectInfo, MakesAspectMethods
 {
     protected TypeNode host;
     protected LocalInstance thisParamInstance;
@@ -657,12 +657,17 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 		MethodCategory.registerRealNameAndClass(body, AbcFactory.modifiers(originalFlags), "<init>", current_aspect.getInstanceClass(),
 							1,0);
 	}
-    
+ 
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                visitor.pushIntertypeDecl(this);
+        }
+
+        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                visitor.popIntertypeDecl();
+                IntertypeConstructorDecl_c itcd = (IntertypeConstructorDecl_c) accessChange(nf, ts);
+                return itcd.liftMethods(nf, ts, visitor.methods());
+        }
 }
-	
-
-	
-
-     
-
-

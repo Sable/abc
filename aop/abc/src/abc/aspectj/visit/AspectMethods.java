@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 import polyglot.util.InternalCompilerError;
 
+import polyglot.ast.JL;
 import polyglot.ast.Node;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.ConstructorCall;
@@ -43,6 +44,7 @@ import abc.aspectj.ast.IntertypeMethodDecl_c;
 import abc.aspectj.ast.IntertypeConstructorDecl_c;
 import abc.aspectj.ast.HostSpecial_c;
 import abc.aspectj.ast.AspectDecl_c;
+import abc.aspectj.ast.MakesAspectMethods;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeFieldInstance_c;
@@ -53,8 +55,8 @@ public class AspectMethods extends NodeVisitor {
 
     private Stack /* List MethodDecl */ methods; // method declaration lists, one for each classdecl
     private Stack /* List Formal */ formals; // pointcut formals for generating if-methods
-    private Stack /* List MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
-    private Stack /* List AdviceDecl */ advices;
+    private Stack /* MethodDecl */ proceeds; // dummy proceed methods for transforming proceed calls
+    private Stack /* AdviceDecl */ advices;
     private Stack /* ParsedClassType */ container; // Keep track of current container
     private Stack /* IntertypeDecl */ itd;     
     private Stack /* Expr */ lhss; /* left-hand sides of assignments */ 
@@ -74,185 +76,139 @@ public class AspectMethods extends NodeVisitor {
 		this.itd = new Stack();
 		this.lhss = new Stack();
 	}
-	
-	
-	public NodeVisitor enter(Node n) {
-	    if (n instanceof ClassDecl) {
-		methods.push(new LinkedList());
-		container.push(((ClassDecl)n).type());
-	    }
-		if (n instanceof PointcutDecl) {  
-			PointcutDecl pd = (PointcutDecl) n;
-			formals.push(pd.formals());
-		}
-		if (n instanceof AdviceDecl) {
-			AdviceDecl ad = (AdviceDecl) n;
-			MethodDecl md = ad.proceedDecl(nf,ts);
-			proceeds.push(md);
-			formals.push(ad.formals());
-			advices.push(ad);
-		}
-		if (n instanceof IntertypeDecl) {
-			itd.push(n);
-		}
-		if (n instanceof Assign) {
-			lhss.push(((Assign)n).left());
-		}
-		return this;
-	 }
-	 
 
-    public Node leave(Node parent, Node old, Node n, NodeVisitor v) {
- 
-/* intertype declarations: */
-		if (n instanceof IntertypeDecl)
-			itd.pop(); // fall through to special cases
-		if (n instanceof Assign) {
-			Expr oldleft = (Expr) lhss.pop();
-			if (oldleft instanceof Field) {
-				Field fieldleft = (Field) oldleft;
-				if  (fieldleft.fieldInstance() instanceof InterTypeFieldInstance_c) {
-					InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) fieldleft.fieldInstance();
-					if (itfi.container().toClass().flags().isInterface()) 
-					{	Assign a = (Assign) n;				
-						Receiver target = null;
-						if (a.left() instanceof Field) 
-							target = ((Field) a.left()).target();
-						if (a.left() instanceof Call)
-							target = ((Call) a.left()).target();
-						if (target == null)
-							throw new InternalCompilerError("reference to intertype field with receiver that is not a call or a field");
-						return itfi.setCall(nf,ts,target,itfi.container(),a.right());
-					}
-				}
-				if (fieldleft.target() instanceof HostSpecial_c) {
-						HostSpecial_c hs = (HostSpecial_c) fieldleft.target();
-						if (hs.kind() == Special.SUPER) {
-							IntertypeDecl id = (IntertypeDecl) itd.peek();
-							return id.getSupers().superFieldSetter(nf,ts,fieldleft,id.host().type().toClass(),id.thisReference(nf,ts),
-																 ((Assign) n).right());
-				}
-			}
-			}
-			return n;
-		}
-		if (n instanceof Field) {
-			Field f = (Field) n;
-			if (f.fieldInstance() instanceof InterTypeFieldInstance_c) {
-				InterTypeFieldInstance_c itfi = (InterTypeFieldInstance_c) f.fieldInstance();
-				if (itfi.container().toClass().flags().isInterface())
-					return itfi.getCall(nf,ts,f.target(),itfi.container());
-				f =  f.fieldInstance(itfi.mangled()).name(itfi.mangled().name()).targetImplicit(false);
-			}
-			if (f.target() instanceof HostSpecial_c) {
-				HostSpecial_c hs = (HostSpecial_c) f.target();
-				if (hs.kind() == Special.SUPER) {
-					IntertypeDecl id = (IntertypeDecl) itd.peek();
-					return id.getSupers().superFieldGetter(nf,ts,f,id.host().type().toClass(),id.thisReference(nf,ts));
-				}
-			}
-			return f;
-		}
-		if (n instanceof IntertypeFieldDecl_c) {
-			IntertypeFieldDecl_c itfd = (IntertypeFieldDecl_c) n;
-			if (itfd.init() != null) {
-				MethodDecl md = itfd.initMethod(nf,ts);
-				((List)methods.peek()).add(md);
-				itfd = (IntertypeFieldDecl_c) itfd.liftInit(nf,ts);
-			}
-			return itfd.accessChange(); // mangle name if private
-		}
-		if (n instanceof Call) {
-			Call c = (Call) n;
-			if (c.methodInstance() instanceof InterTypeMethodInstance_c) {
-				InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) c.methodInstance();
-				return c.methodInstance(itmi.mangled()).name(itmi.mangled().name());
-			}
-			if (c.target() instanceof HostSpecial_c) {
-				HostSpecial_c hs = (HostSpecial_c) c.target();
-				if (hs.kind() == Special.SUPER) {
-					IntertypeDecl id = (IntertypeDecl) itd.peek();
-					return id.getSupers().superCall(nf,ts,c,id.host().type().toClass(),id.thisReference(nf,ts));
-				}
-			}
-		} // fall through to ProceedCall
-		if (n instanceof IntertypeMethodDecl_c) {
-			IntertypeMethodDecl_c itmd = (IntertypeMethodDecl_c) n;
-			return ((IntertypeMethodDecl_c) itmd.accessChange()).thisParameter(nf,ts);
-		}
-		if (n instanceof ConstructorCall) {
-				ConstructorCall cc = (ConstructorCall) n;
-				if (cc.constructorInstance() instanceof InterTypeConstructorInstance_c) {
-					InterTypeConstructorInstance_c itcd = (InterTypeConstructorInstance_c) cc.constructorInstance();
-					return itcd.mangledCall(cc,nf,ts);
-				}
-			}
-		if (n instanceof New) {
-				New cc = (New) n;
-				if (cc.constructorInstance() instanceof InterTypeConstructorInstance_c) {
-					InterTypeConstructorInstance_c itcd = (InterTypeConstructorInstance_c) cc.constructorInstance();
-					return itcd.mangledNew(cc,nf,ts);
-			}
-		}
-		if (n instanceof IntertypeConstructorDecl_c) {
-			IntertypeConstructorDecl_c itcd = (IntertypeConstructorDecl_c) n;
-			return  ((IntertypeConstructorDecl_c) itcd.accessChange(nf,ts)).liftMethods(nf,ts,(List) methods.peek());
-		}
-		if (n instanceof HostSpecial_c) {
-			HostSpecial_c hs = (HostSpecial_c) n;
-			IntertypeDecl id = (IntertypeDecl) itd.peek();
-			if (hs.kind() == Special.THIS) {
-				if (
-				    hs.qualifier() == null || (hs.qualifier() != null && hs.qualifier().type() == id.host().type()))
-					return id.thisReference(nf,ts);
-			 	else {
-					return id.getSupers().qualThis(nf,ts,
-								id.host().type().toClass(),
-								id.thisReference(nf,ts),
-								hs.qualifier().type().toClass());
-				}
-			}
-			else return n;
-		}
-/* advice: */
-		if (n instanceof AdviceDecl) {
-			formals.pop();
-			advices.pop();
-			MethodDecl md = (MethodDecl) proceeds.pop(); // returns null if not around
-			if (md != null) 
-			  ((List)methods.peek()).add(md); // record the dummy proceed method
-			AdviceDecl ad = (AdviceDecl) n;
-			return ad.methodDecl(nf,ts);  // turn advice into ordinary method
-		}
-		if (n instanceof ProceedCall) {
-			ProceedCall pc = (ProceedCall) n.copy(); 
-			return pc.proceedMethod((MethodDecl) proceeds.peek()); // replace by call to dummy proceed method
-		}
-		if (! (advices.isEmpty()) && n instanceof Local) { 
-				Local m = (Local) n;
-				AdviceDecl currentAdvice = (AdviceDecl) advices.peek();
-				currentAdvice.joinpointFormals(m); // add joinpoint formals where necessary
-				return n;
-		}
-		if (n instanceof PCIf) {  // lift expression in if-pointcut to method
-			PCIf ifpcd = (PCIf) n;
-			MethodDecl md = ifpcd.exprMethod(nf,ts,(List) formals.peek(), (ParsedClassType) container.peek()); // construct method for expression in if(..)
-			((List)methods.peek()).add(md);
-			return ifpcd.liftMethod(nf); // replace expression by method call
-		}
-/* add new methods to the class */
-		if (n instanceof ClassDecl) {
-			ClassDecl cd = (ClassDecl) n.copy();
-			container.pop();
-			List localMethods = (List) methods.pop();
-			for (Iterator i = localMethods.iterator(); i.hasNext(); ) {
-				MethodDecl md = (MethodDecl) i.next();
-				cd = cd.body(cd.body().addMember(md));
-			}
-			if (cd instanceof AspectDecl_c)
-			    return ((AspectDecl_c)cd).addAspectMembers(nf, ts);
-			else return cd;
-		}
-	    return super.leave(old, n, v);
-}
+        public void pushClass()
+        {
+                methods.push(new LinkedList());   
+        }
+
+        public void popClass()
+        {
+                methods.pop();
+        }
+
+        public void addMethod(MethodDecl md)
+        {
+                ((List) methods.peek()).add(md);
+        }
+
+        public List /* MethodDecl */ methods()
+        {
+                return (List) methods.peek();
+        }
+
+        public void pushFormals(List /* Formal */ fs)
+        {
+                formals.push(fs);
+        }
+
+        public List /* Formal */ formals()
+        {
+                return (List) formals.peek();
+        }
+
+        public void popFormals()
+        {
+                formals.pop();
+        }
+
+        public void pushProceedFor(AdviceDecl ad)
+        {
+                proceeds.push(ad.proceedDecl(nf,ts));
+        }
+
+        public MethodDecl proceed()
+        {
+                return (MethodDecl) proceeds.peek();
+        }
+
+        public void popProceed()
+        {
+                proceeds.pop();
+        }
+
+        public void pushAdvice(AdviceDecl ad)
+        {
+                advices.push(ad);
+        }
+
+        public AdviceDecl advice()
+        {
+                return (AdviceDecl) advices.peek();
+        }
+
+        public boolean isAdvice()
+        {
+                return ! advices.isEmpty();
+        }
+
+        public void popAdvice()
+        {
+                advices.pop();
+        }
+
+        public void pushContainer(ParsedClassType c)
+        {
+                container.push(c);
+        }
+
+        public ParsedClassType container()
+        {
+                return (ParsedClassType) container.peek();
+        }
+
+        public void popContainer()
+        {
+                container.pop();
+        }
+
+        public void pushIntertypeDecl(IntertypeDecl i)
+        {
+                itd.push(i);
+        }
+
+        public IntertypeDecl intertypeDecl()
+        {
+                return (IntertypeDecl) itd.peek();
+        }
+
+        public void popIntertypeDecl()
+        {
+                itd.pop();
+        }
+
+        public void pushLhs(Expr lhs)
+        {
+                lhss.push(lhs);
+        }
+
+        public Expr lhs()
+        {
+                return (Expr) lhss.peek();
+        }
+
+        public void popLhs()
+        {
+                lhss.pop();
+        }
+	
+	public NodeVisitor enter(Node n)
+        {
+                JL del = n.del();
+                if (del instanceof MakesAspectMethods) {
+                        ((MakesAspectMethods) del).aspectMethodsEnter(this);
+                }
+
+                return this;
+        }
+	 
+        public Node leave(Node parent, Node old, Node n, NodeVisitor v)
+        {
+                JL del = n.del();
+                if (del instanceof MakesAspectMethods) {
+                        return ((MakesAspectMethods) del).aspectMethodsLeave(this, nf, ts);
+                }
+
+                return n;
+        }
 }

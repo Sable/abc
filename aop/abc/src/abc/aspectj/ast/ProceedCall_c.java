@@ -11,6 +11,7 @@ import polyglot.ast.Node;
 import polyglot.ast.Expr;
 import polyglot.ast.MethodDecl;
 import polyglot.ast.Receiver;
+import polyglot.ast.Special;
 import polyglot.ast.Call;
 import polyglot.ext.jl.ast.Call_c;
 
@@ -22,9 +23,17 @@ import polyglot.types.MethodInstance;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
 
+import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.HostSpecial_c;
+import abc.aspectj.ast.MakesAspectMethods;
+import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.InterTypeMethodInstance_c;
+import abc.aspectj.visit.AspectMethods;
 
-public class ProceedCall_c extends Call_c implements ProceedCall {
 
+public class ProceedCall_c extends Call_c
+                           implements ProceedCall, MakesAspectMethods
+{
 	private MethodDecl proceedDecl;
 	
 	public ProceedCall_c(Position pos, Receiver recv, List arguments) {
@@ -66,6 +75,15 @@ public class ProceedCall_c extends Call_c implements ProceedCall {
 			return this.methodInstance(mi).type(mi.returnType());
 	}
 	
-	
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                // do nothing       
+        }
 
+        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                ProceedCall pc = (ProceedCall) this.copy();
+                return pc.proceedMethod(visitor.proceed());
+        }
 }

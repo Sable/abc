@@ -23,9 +23,14 @@ import polyglot.types.ReferenceType;
 import polyglot.ext.jl.ast.Call_c;
 
 import abc.aspectj.ast.AspectJNodeFactory;
+import abc.aspectj.ast.HostSpecial_c;
+import abc.aspectj.ast.MakesAspectMethods;
 
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.AJContext;
+import abc.aspectj.types.InterTypeMethodInstance_c;
+
+import abc.aspectj.visit.AspectMethods;
 
 /**
  * Override the typechecking of method calls, to delegate to the host in certain
@@ -34,7 +39,7 @@ import abc.aspectj.types.AJContext;
  * @author oege
  *
  */
-public class AJCall_c extends Call_c implements Call {
+public class AJCall_c extends Call_c implements Call, MakesAspectMethods {
 	
 	public AJCall_c(Position pos, Receiver target, String name,
 				  List arguments) {
@@ -94,4 +99,26 @@ public class AJCall_c extends Call_c implements Call {
 	  return this.target(r).typeCheck(tc);
   }
 
+        public void aspectMethodsEnter(AspectMethods visitor)
+        {
+                // do nothing       
+        }
+
+        public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
+                                       AspectJTypeSystem ts)
+        {
+                if (this.methodInstance() instanceof InterTypeMethodInstance_c) {
+                        InterTypeMethodInstance_c itmi = (InterTypeMethodInstance_c) this.methodInstance();
+                        return this.methodInstance(itmi.mangled()).name(itmi.mangled().name());
+                }
+                if (this.target() instanceof HostSpecial_c) {
+                        HostSpecial_c hs = (HostSpecial_c) this.target();
+                        if (hs.kind() == Special.SUPER) {
+                                IntertypeDecl id = visitor.intertypeDecl();
+                                return id.getSupers().superCall(nf, ts, this, id.host().type().toClass(),
+                                                                id.thisReference(nf, ts));
+                        }
+                }
+                return this;
+        }
 }
