@@ -128,15 +128,15 @@ public abstract class AbstractAdviceDecl extends Syntax {
      */
     public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
 	
+	// FIXME : what happens when we merge cflow stacks?
+	if(!a.getAspect().getName().equals(b.getAspect().getName()))
+	    return GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
+
 	// a quick first pass to assist in separating out the major classes of advice
 	// consider delegating this
 	int aprec=getPrecNum(a),bprec=getPrecNum(b);
 	if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
 	if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
-
-	// FIXME : what happens when we merge cflow stacks?
-	if(!a.getAspect().getName().equals(b.getAspect().getName()))
-	    return GlobalAspectInfo.v().getPrecedence(a.getAspect(),b.getAspect());
 
 
 	// Must be both AdviceDecl or both CflowSetup, from the same aspect

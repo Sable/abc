@@ -11,6 +11,6 @@ import abc.weaving.residues.Residue;
 /** An advice specification. */
 public interface AdviceSpec {
     public AbstractAdviceDecl getAdvice();
-
+    public boolean isAfter();
     public Residue matchesAt(WeavingEnv we,ShadowMatch sm);
 }

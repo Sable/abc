@@ -217,18 +217,25 @@ public class AdviceDecl extends AbstractAdviceDecl {
     public static int getPrecedence(AdviceDecl a,AdviceDecl b) {
 	// We know that we are in the same aspect
 
-	int speccomp=AbstractAdviceSpec.getPrecedence(a.getAdviceSpec(),b.getAdviceSpec());
-	if(speccomp!=GlobalAspectInfo.PRECEDENCE_NONE) return speccomp;
+	int lexicalfirst,lexicalsecond;
+
+	if(a.getAdviceSpec().isAfter() || b.getAdviceSpec().isAfter()) {
+	    lexicalfirst=GlobalAspectInfo.PRECEDENCE_SECOND;
+	    lexicalsecond=GlobalAspectInfo.PRECEDENCE_FIRST;
+	} else {
+	    lexicalfirst=GlobalAspectInfo.PRECEDENCE_FIRST;
+	    lexicalsecond=GlobalAspectInfo.PRECEDENCE_SECOND;
+	}
 
 	if(a.getPosition().line() < b.getPosition().line()) 
-	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	    return lexicalfirst;
 	if(a.getPosition().line() > b.getPosition().line()) 
-	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+	    return lexicalsecond;
 
 	if(a.getPosition().column() < b.getPosition().column()) 
-	    return GlobalAspectInfo.PRECEDENCE_FIRST;
+	    return lexicalfirst;
 	if(a.getPosition().column() > b.getPosition().column()) 
-	    return GlobalAspectInfo.PRECEDENCE_SECOND;
+	    return lexicalsecond;
 
 	// Trying to compare the same advice, I guess... (modulo inlining behaviour)
 	return GlobalAspectInfo.PRECEDENCE_NONE;
