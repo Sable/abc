@@ -71,12 +71,13 @@ public class ShadowPointsSetter {
 	    insertBodySP(method,adviceList.bodyAdvice);
 
 	 // --- Then look at constructor pointcuts 
-	 if (adviceList.hasConstructorAdvice())
+	 /* if (adviceList.hasConstructorAdvice())
 	    insertConstructorSP(method,adviceList.constructorAdvice);
 
 	 // ---- Then deal with stmt pointcuts that are in the body
          if (adviceList.hasStmtAdvice())
 	    insertStmtSP(method,adviceList.stmtAdvice);
+	 */
 
 	 spsdebug("   --- END Setting ShadowPoints for method " + 
 	                    method.getName() + "\n");
