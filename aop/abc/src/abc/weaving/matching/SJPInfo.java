@@ -42,6 +42,12 @@ public class SJPInfo {
 	    "  "+sjpfield;
     }
 
+    public static String getTypeString(Type type) {
+	// copy the behaviour of ajc - makeString(TypeX) in org.aspectj.weaver.Member
+	if(type instanceof ArrayType) return JasminClass.jasminDescriptorOf(type);
+	else return type.toString();
+    }
+
     public static String makeMethodSigData(SootMethod method) {
 	StringBuffer sb=new StringBuffer();
 	sb.append(new Integer(method.getModifiers()).toString());
@@ -53,7 +59,7 @@ public class SJPInfo {
 	Iterator it=method.getParameterTypes().iterator();
 	while(it.hasNext()) {
 	    Type type=(Type) (it.next());
-	    sb.append(type.toString());
+	    sb.append(getTypeString(type));
 	    sb.append(':');
 	}
 	sb.append('-');
@@ -72,7 +78,7 @@ public class SJPInfo {
 	    sb.append(':');
 	}
 	sb.append('-');
-	sb.append(method.getReturnType().toString());
+	sb.append(getTypeString(method.getReturnType()));
 	sb.append('-');
 	return sb.toString();
     }
@@ -91,7 +97,7 @@ public class SJPInfo {
 	Iterator it=method.getParameterTypes().iterator();
 	while(it.hasNext()) {
 	    Type type=(Type) (it.next());
-	    sb.append(type.toString());
+	    sb.append(getTypeString(type));
 	    sb.append(':');
 	}
 	sb.append('-');
@@ -141,7 +147,7 @@ public class SJPInfo {
 	sb.append('-');
 	sb.append(container.getDeclaringClass().getName());
 	sb.append('-');
-	sb.append(field.getType().toString());
+	sb.append(getTypeString(field.getType()));
 	sb.append('-');
 	return sb.toString();
     }
