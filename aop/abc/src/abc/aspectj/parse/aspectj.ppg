@@ -365,7 +365,7 @@ aspect_body_declaration ::=
   ;
 
 declare_declaration ::=
-     DECLARE:d PC_PARENTS COLON classname_pattern_expr:a EXTENDS class_type_list:b SEMICOLON:e
+     DECLARE:d PC_PARENTS COLON classname_pattern_expr:a EXTENDS class_type:b SEMICOLON:e
        {: Grm.parserTrace("Declare class extension");
           DeclareParentsExt dpe = parser.nf.DeclareParentsExt(parser.pos(d,e),a,b);
           RESULT = dpe;

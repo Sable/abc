@@ -20,6 +20,10 @@ public class AspectJTypeSystem_c
     public ClassType JoinPoint()  { if (JOINPOINT_ != null) return JOINPOINT_;
 									 return JOINPOINT_ = load("org.aspectj.lang.JoinPoint"); }
 
+	public ClassType JoinPointStaticPart() { 
+		ClassType jp = JoinPoint();
+		return jp.memberClassNamed("StaticPart");
+	}
     
     // weeding out the wrong flags on aspects
 	protected final Flags ASPECT_FLAGS = AspectJFlags.privileged(AspectJFlags.aspect(ACCESS_FLAGS));

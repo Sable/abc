@@ -16,6 +16,8 @@ import soot.javaToJimple.jj.types.JjTypeSystem;
 public interface AspectJTypeSystem extends JjTypeSystem {
     
 	public ClassType JoinPoint() ;
+	public ClassType JoinPointStaticPart();
+	
 	public MethodInstance adviceInstance(Position pos,
 											ReferenceType container, Flags flags,
 							Type returnType, String name,

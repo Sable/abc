@@ -162,8 +162,10 @@ public class AdviceDecl_c extends MethodDecl_c
 		
 		// inside an advice body, thisJoinPoint is in scope, but nowhere else in an aspect
 		AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
-	    LocalInstance jp = ts.localInstance(position(), Flags.NONE, ts.JoinPoint(), "thisJoinPoint");
+	    LocalInstance jp = ts.localInstance(position(), Flags.FINAL, ts.JoinPoint(), "thisJoinPoint");
 		nc.addVariable(jp);
+		LocalInstance sjp = ts.localInstance(position(), Flags.FINAL, ts.JoinPointStaticPart(), "thisJoinPointStaticPart");
+		nc.addVariable(sjp);
 						
 		if (spec instanceof Around)
 			proceedInstance = methodInstance().name("proceed");
