@@ -6,6 +6,7 @@
    <!ATTLIST suite suiteDir CDATA #IMPLIED >
 
    <!ELEMENT ajc-test ((abckeywords)*, compile, (compile | inc-compile | run | ajcrun | abckeywords )*)>
+   <!ATTLIST ajc-test num CDATA #IMPLIED >
    <!ATTLIST ajc-test title CDATA #REQUIRED >
    <!ATTLIST ajc-test dir CDATA #REQUIRED >
    <!ATTLIST ajc-test pr CDATA #IMPLIED >
