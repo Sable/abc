@@ -88,8 +88,8 @@ public class PointcutCodeGen {
                                         LocalGeneratorEx localgen = new LocalGeneratorEx(b);
 
                                         //      do the stmt advice
-                                        for (Iterator alistIt = adviceList.stmtAdvice.iterator(); alistIt.hasNext();) {
-                                                final AdviceApplication execappl = (AdviceApplication) alistIt.next();
+                                        for( Iterator execapplIt = adviceList.stmtAdvice.iterator(); execapplIt.hasNext(); ) {
+                                            final AdviceApplication execappl = (AdviceApplication) execapplIt.next();
                                                 weave_one(cl, method, localgen, execappl);
                                         } // each stmt advice
 
@@ -97,8 +97,8 @@ public class PointcutCodeGen {
                                         final boolean isAroundMethod=method.getName().startsWith("around$"); // TODO: some proper check
 
                                         // do the body advice
-                                        for (Iterator alistIt = adviceList.bodyAdvice.iterator(); alistIt.hasNext();) {
-                                                final AdviceApplication execappl = (AdviceApplication) alistIt.next();
+                                        for( Iterator execapplIt = adviceList.bodyAdvice.iterator(); execapplIt.hasNext(); ) {
+                                            final AdviceApplication execappl = (AdviceApplication) execapplIt.next();
 
                                                 // weaving of adviceexecution for around-advice is delayed
                                                 if (!(isAroundMethod && checkForAroundAdviceExecution(method, execappl)))
@@ -122,14 +122,14 @@ public class PointcutCodeGen {
                                         LocalGeneratorEx localgen2 = new LocalGeneratorEx(b2);
 
                                         // do the init advice
-                                        for (Iterator alistIt = adviceList.initializationAdvice.iterator(); alistIt.hasNext();) {
-                                                final AdviceApplication initappl = (AdviceApplication) alistIt.next();
+                                        for( Iterator initapplIt = adviceList.initializationAdvice.iterator(); initapplIt.hasNext(); ) {
+                                            final AdviceApplication initappl = (AdviceApplication) initapplIt.next();
                                                 weave_one(cl, method, localgen2, initappl);
                                         } // each init advice
 
                                         // do the preinit advice
-                                        for (Iterator alistIt = adviceList.preinitializationAdvice.iterator(); alistIt.hasNext();) {
-                                                final AdviceApplication preinitappl = (AdviceApplication) alistIt.next();
+                                        for( Iterator preinitapplIt = adviceList.preinitializationAdvice.iterator(); preinitapplIt.hasNext(); ) {
+                                            final AdviceApplication preinitappl = (AdviceApplication) preinitapplIt.next();
                                                 weave_one(cl, method, localgen2, preinitappl);
                                         } // each preinit advice
                                         break;
@@ -194,10 +194,8 @@ public class PointcutCodeGen {
 
                 debug("AdviceExecution: old order: *******************");
                 // create a graph structure from the applications
-                for (Iterator it=aroundAdviceExecutionApplications.iterator();
-                                it.hasNext();) {
-                        AroundAdviceExecutionApplication appl=
-                                (AroundAdviceExecutionApplication)it.next();
+                for( Iterator applIt = aroundAdviceExecutionApplications.iterator(); applIt.hasNext(); ) {
+                    final AroundAdviceExecutionApplication appl = (AroundAdviceExecutionApplication) applIt.next();
 
                         debug(" " + appl);
 
@@ -213,16 +211,14 @@ public class PointcutCodeGen {
                 currentOrderID=0;
 
                 // sort the graph (store a number for each node)
-                for (Iterator it=graph.keySet().iterator(); it.hasNext();) {
-                        SootMethod adviceMethod=(SootMethod)it.next();
+                for( Iterator adviceMethodIt = graph.keySet().iterator(); adviceMethodIt.hasNext(); ) {
+                    final SootMethod adviceMethod = (SootMethod) adviceMethodIt.next();
                         topologicalSort(adviceMethod, graph, visited, explored, numbers);
                 }
 
                 // set the orderIDs of the applications
-                for (Iterator it=aroundAdviceExecutionApplications.iterator();
-                                it.hasNext();) {
-                        AroundAdviceExecutionApplication appl=
-                                (AroundAdviceExecutionApplication)it.next();
+                for( Iterator applIt = aroundAdviceExecutionApplications.iterator(); applIt.hasNext(); ) {
+                    final AroundAdviceExecutionApplication appl = (AroundAdviceExecutionApplication) applIt.next();
 
                         appl.orderID=((Integer)numbers.get(appl.targetAdviceMethod)).intValue();
                 }
@@ -233,10 +229,8 @@ public class PointcutCodeGen {
 
                 // debug-output the resulting order
                 debug("AdviceExecution: new order: *******************");
-                for (Iterator it=aroundAdviceExecutionApplications.iterator();
-                                it.hasNext();) {
-                        AroundAdviceExecutionApplication appl=
-                                (AroundAdviceExecutionApplication)it.next();
+                for( Iterator applIt = aroundAdviceExecutionApplications.iterator(); applIt.hasNext(); ) {
+                    final AroundAdviceExecutionApplication appl = (AroundAdviceExecutionApplication) applIt.next();
 
                         debug(" " + appl);
                 }
@@ -259,8 +253,8 @@ public class PointcutCodeGen {
 
                 HashSet weavesInto=(HashSet)graph.get(adviceMethod);
                 if (weavesInto!=null) {
-                        for (Iterator it=weavesInto.iterator(); it.hasNext();) {
-                                SootMethod method=(SootMethod)it.next();
+                        for( Iterator methodIt = weavesInto.iterator(); methodIt.hasNext(); ) {
+                            final SootMethod method = (SootMethod) methodIt.next();
                                 topologicalSort(method, graph, visited, explored, numbers);
                         }
                 }
@@ -282,10 +276,9 @@ public class PointcutCodeGen {
                         }
                 }
 
-                for (Iterator it=aroundAdviceExecutionApplications.iterator();
-                                it.hasNext();) {
-                        AroundAdviceExecutionApplication appl=
-                                (AroundAdviceExecutionApplication)it.next();
+                for( Iterator applIt = aroundAdviceExecutionApplications.iterator(); applIt.hasNext(); ) {
+
+                    final AroundAdviceExecutionApplication appl = (AroundAdviceExecutionApplication) applIt.next();
 
                         LocalGeneratorEx lg=new LocalGeneratorEx(appl.targetAdviceMethod.getActiveBody());
                         SootClass cl=appl.targetAdviceMethod.getDeclaringClass();
@@ -346,6 +339,10 @@ public class PointcutCodeGen {
                 if (!units.contains(sp.getEnd())) {
                         throw new InternalCompilerError("Method body of " + method + " does not contain end shadow point " + sp.getEnd());
                 }
+        }
+        if( abc.main.Debug.v().dumpAAWeave ) {
+          System.err.println("weaving " + adviceappl);
+          System.err.println("residue is " + adviceappl.getResidue());
         }
         if(!NeverMatch.neverMatches(adviceappl.getResidue()))
             adviceappl.advice.getAdviceSpec().weave(method,localgen,adviceappl);

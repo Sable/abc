@@ -129,6 +129,9 @@ public class Debug {
     public boolean weaveDeclareWarning = false;
     public boolean messageWeaver = false;
 
+    // dump each advice application just before weaving it
+    public boolean dumpAAWeave = false;
+
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before

@@ -226,6 +226,8 @@ public class AbcExtension
                                 SootClass.SIGNATURES);
         Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowCounter",
                                 SootClass.SIGNATURES);
+        Scene.v().addBasicClass("java.lang.System",
+                                SootClass.SIGNATURES);
     }
 
     /**
