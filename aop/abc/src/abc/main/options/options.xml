@@ -73,10 +73,11 @@ the usage screen. The long is used in the printed documentation.
 If that's too much work, just do one of them.
 -->
       <set_arg_label>path</set_arg_label>
-      <short_desc>Use classes in dirs in <use_arg_label/> as source.</short_desc>
+      <short_desc>Use .java files in dirs in <use_arg_label/> as source.</short_desc>
       <long_desc>
-<use_arg_label/> should be a list of directories. Tells abc to compile all
-.java files found in <use_arg_label/> and any of its subclasses.
+Compile all
+.java files found in the directories given by <use_arg_label/> and 
+any of their subdirectories.
       </long_desc>
 <!--
 For the set_arg_label/use_arg_label thing, you also don't have to do that
@@ -113,9 +114,10 @@ screen:
       <set_arg_label>classpath</set_arg_label>
       <short_desc>Specify the class path to be used when searching for 
 	libraries.</short_desc>
-      <long_desc><use_arg_label/> gives a list of zips, 
+      <long_desc>Specify a list of zips, 
 	jars and directories that will be used when searching for libraries
-	referred to in the code being compiled.
+	referred to in the code being compiled. The default value is the
+        classpath abc is invoked with.
       </long_desc>
     </pathopt>
   </section>
@@ -198,9 +200,7 @@ screen:
       <default>1</default>
       <short_desc>Set the general optimization level.</short_desc>
       <long_desc>Set the general optimization level. 0 means no optimizations,
-	1 means the standard intra-procedural options, and 3 means the
-	standard inter-procedural options. 2 currently has the same effect
-	as 1.
+	and 1 means the standard intra-procedural options.
       </long_desc>
     </intopt>
   </section>

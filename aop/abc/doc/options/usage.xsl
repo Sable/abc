@@ -48,7 +48,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:variable name="argLabel">
     <xsl:choose>
       <xsl:when test="name()='boolopt'"></xsl:when>
-      <xsl:when test="set_arg_label">{\it <xsl:value-of select="set_arg_label"/>}</xsl:when>
+      <xsl:when test="set_arg_label">$\langle${\it <xsl:value-of select="set_arg_label"/>}$\rangle$</xsl:when>
       <xsl:otherwise>{\it arg}</xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
