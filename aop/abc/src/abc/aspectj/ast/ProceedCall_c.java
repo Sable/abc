@@ -32,6 +32,8 @@ import abc.aspectj.ast.HostSpecial_c;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AspectJTypeSystem;
 import abc.aspectj.types.InterTypeMethodInstance_c;
+import abc.aspectj.types.AJContext;
+
 import abc.aspectj.visit.AspectMethods;
 
 
@@ -63,9 +65,9 @@ public class ProceedCall_c extends Call_c
 		    
 		    // check whether we are in the scope of an advice declaration,
 		    // and retrieve proceed's intended type
-		    MethodInstance mi = AdviceDecl_c.proceedInstance(c);
+		    MethodInstance mi = ((AJContext)c).proceedInstance();
 			if (mi==null)
-			     throw new SemanticException ("proceed can only be used in around advice");
+			     throw new SemanticException ("proceed can only be used in around advice",position());
 			 
 			 // collect types of the actual arguments    
 			List argTypes = new ArrayList(arguments.size());
@@ -77,7 +79,7 @@ public class ProceedCall_c extends Call_c
             // match actuals against formals
 			if (! mi.callValid(argTypes))
 			   throw new SemanticException ("proceed arguments "+argTypes+
-                                            " do not match advice formals "+mi.formalTypes());
+                                            " do not match advice formals "+mi.formalTypes(),position());
              
             TypeNode tn = tc.nodeFactory().CanonicalTypeNode(position(),mi.container());
                                                                 

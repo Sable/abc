@@ -9,11 +9,11 @@ public interface AdviceSpec extends Node
 {
     List formals();
     TypeNode returnType();
-    Formal returnVal();
+    AdviceFormal returnVal();
     String kind();
 
     public void setReturnType(TypeNode rt);
-    public void setReturnVal(Formal rv);
+    public void setReturnVal(AdviceFormal rv);
 
     abc.weaving.aspectinfo.AdviceSpec makeAIAdviceSpec();
 }

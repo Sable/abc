@@ -1,7 +1,11 @@
 package abc.aspectj.extension;
 
+import polyglot.util.CodeWriter;
 import polyglot.ast.*;
 import polyglot.types.LocalInstance;
+import polyglot.types.SemanticException;
+import polyglot.visit.TypeChecker;
+import polyglot.visit.PrettyPrinter;
 import polyglot.ext.jl.ast.*;
 
 import abc.aspectj.ast.*;
@@ -11,11 +15,15 @@ import abc.aspectj.visit.*;
 public class LocalDel_c extends JL_c implements MakesAspectMethods,
                                                 TransformsAspectReflection
 {
+   
+     
+   
     public void aspectMethodsEnter(AspectMethods visitor)
     {
         // do nothing
     }
-
+    
+    
     public Node aspectMethodsLeave(AspectMethods visitor, AspectJNodeFactory nf,
                                    AspectJTypeSystem ts)
     {

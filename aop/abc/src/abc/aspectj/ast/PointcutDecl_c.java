@@ -52,14 +52,6 @@ public class PointcutDecl_c extends MethodDecl_c
     String name;
     Pointcut pc; // null if abstract
 
-	private static List adviceFormals(List formals) {
-		  List result = new TypedList(new LinkedList(), AdviceFormal.class, false);
-		  for (Iterator i = formals.iterator(); i.hasNext(); ) {
-			  Formal f = (Formal) i.next();
-			  result.add(new AdviceFormal_c(f));
-		  }
-		  return result;
-	  }
 	  
     public PointcutDecl_c(Position pos,
                           Flags flags,
@@ -71,7 +63,7 @@ public class PointcutDecl_c extends MethodDecl_c
 			  flags, 
 			  voidn,
 			  "$pointcut$"+name,
-			  adviceFormals(formals),
+			  formals,
 			  new TypedList(new LinkedList(),TypeNode.class,true),
 			  null);
         this.pc = pc;
@@ -187,7 +179,7 @@ public class PointcutDecl_c extends MethodDecl_c
 	   overrideMethodCheck(tc);
 
 	  if (!flags().isAbstract())
-	  	pc.checkFormals(formals,null);
+	  	pc.checkFormals(formals);
 	  	
 	  ((PointcutInstance_c)methodInstance()).setRefersTo(pc.pcRefs()) ;
 	  	

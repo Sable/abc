@@ -91,14 +91,16 @@ public interface AspectJNodeFactory
 		List formals,
 		TypeNode voidn);
 
+	AdviceFormal AdviceFormal(Position pos, Flags flags, TypeNode tn, String name);
+	
     AfterReturning AfterReturning(Position pos,
 				  List formals,
-				  Formal returnResult,
+				  AdviceFormal returnResult,
 				  TypeNode voidn);
 
     AfterThrowing AfterThrowing(Position pos,
 			        List formals,
-			        Formal exc,
+			        AdviceFormal exc,
 			        TypeNode voidn);
 
     Around Around(Position pos,

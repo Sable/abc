@@ -17,7 +17,7 @@ public class AfterReturning_c extends AdviceSpec_c
     
     public AfterReturning_c(Position pos, 
                             List formals,
-                            Formal returnResult,
+                            AdviceFormal returnResult,
                             TypeNode voidn)
     {
 	super(pos, formals, voidn, returnResult);

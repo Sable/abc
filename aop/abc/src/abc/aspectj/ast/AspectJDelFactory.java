@@ -25,6 +25,7 @@ public interface AspectJDelFactory extends DelFactory
     JL delAdviceSpec();
     JL delBefore();
     JL delAfter();
+    JL delAdviceFormal();
     JL delAfterReturning();
     JL delAfterThrowing();
     JL delAround();

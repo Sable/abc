@@ -46,12 +46,14 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 import polyglot.visit.TypeChecker;
 import polyglot.visit.TypeBuilder;
+import polyglot.visit.CFGBuilder;
 
 import polyglot.ext.jl.ast.MethodDecl_c;
 
 import abc.aspectj.ast.AdviceFormal_c;
 
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJContext;
 
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
@@ -69,6 +71,8 @@ public class AdviceDecl_c extends MethodDecl_c
 {
     protected AdviceSpec spec;
     protected Pointcut pc;
+    protected AdviceFormal retval;
+    
     protected boolean hasJoinPoint=false;
     protected boolean hasJoinPointStaticPart=false;
     protected boolean hasEnclosingJoinPointStaticPart=false;
@@ -84,27 +88,7 @@ public class AdviceDecl_c extends MethodDecl_c
     
     protected int spec_retval_pos;
 
-    // if the returnVal of "after returning" or "after throwing" is
-    // specified, make it an additional parameter to the advice body
-    private static List locs(Formal rt, List formals) {
-    	if (rt==null)
-    	  return formals;
-    	else {
-    		List locs = ((TypedList)formals).copy();
-    		locs.add(rt);
-    		return locs;
-    	}
-    }
-    
-    private static List adviceFormals(List formals) {
-    	List result = new TypedList(new LinkedList(), AdviceFormal.class, false);
-    	for (Iterator i = formals.iterator(); i.hasNext(); ) {
-    		Formal f = (Formal) i.next();
-    		result.add(new AdviceFormal_c(f));
-    	}
-    	return result;
-    }
-
+ 
     public AdviceDecl_c(Position pos,
                         Flags flags,
                         AdviceSpec spec,
@@ -115,18 +99,13 @@ public class AdviceDecl_c extends MethodDecl_c
 	    	  flags, 
 	     	  spec.returnType(),
 	     	  UniqueID.newID(spec.kind()),
-	          adviceFormals(locs(spec.returnVal(),spec.formals())),
+	          spec.formals(),
 	          throwTypes,
 	          body);
 	    this.methodsInAdvice = new HashSet();
 		this.spec = spec;
     	this.pc = pc;
-
-	if (spec.returnVal() != null) {
-	    spec_retval_pos = formals().size()-1;
-	} else {
-	    spec_retval_pos = -1;
-	}
+    	this.retval = spec.returnVal();
     }
     
     
@@ -136,11 +115,13 @@ public class AdviceDecl_c extends MethodDecl_c
 								       List throwTypes,
 								       Block body,
 								       AdviceSpec spec,
+								       AdviceFormal retval,
 								       Pointcut pc) {
-		if (spec != this.spec || pc != this.pc) {
+		if (spec != this.spec || pc != this.pc || retval != this.retval) {
 			AdviceDecl_c n = (AdviceDecl_c) copy();
 			n.spec = spec;
 			n.pc = pc;
+			n.retval = retval;
 			return (AdviceDecl_c) n.reconstruct(returnType, formals, throwTypes, body);
 		}
 
@@ -153,21 +134,13 @@ public class AdviceDecl_c extends MethodDecl_c
 		List throwTypes = visitList(this.throwTypes, v);
 		//AdviceSpec spec = (AdviceSpec) visitChild(this.spec, v);
 		// FIXME: visiting spec gives duplicate errors!!
+		AdviceFormal retval = (AdviceFormal) visitChild(this.retval,v);
 		Pointcut pc = (Pointcut) visitChild(this.pc,v);
 		Block body = (Block) visitChild(this.body, v);
-		return reconstruct(returnType, formals, throwTypes, body, spec, pc);
+		return reconstruct(returnType, formals, throwTypes, body, spec, retval, pc);
 	}
 
-/* ajc treats pointcuts as static contexts 
-   public Context enterScope(Node child, Context c) {
-   	    Context nc = super.enterScope(child,c);
-   	    if (child==pc) // pointcuts should be treated as a static context
-   	    	return nc.pushStatic();
-   	    else
-   	    	return nc;
-   }
-*/
-	
+
 	 public NodeVisitor disambiguateEnter(AmbiguityRemover ar) throws SemanticException {
 		 if (ar.kind() == AmbiguityRemover.SUPER) {
 			 return ar.bypassChildren(this);
@@ -177,6 +150,7 @@ public class AdviceDecl_c extends MethodDecl_c
 			 	Collection bp = new LinkedList();
 			 	bp.add(body);
 			 	bp.add(pc);
+			 	bp.add(retval);
 				return ar.bypass(bp);
 			 }
 		 }
@@ -265,9 +239,14 @@ public class AdviceDecl_c extends MethodDecl_c
     															AspectJTypeSystem ts) {
     	List newformals = new LinkedList(formals());
     	List newformalTypes = new LinkedList(formals());
-	// Add enclosing joinpoint here
+    	if (retval != null) {
+    		newformals.add(retval);
+    		newformalTypes.add(retval.type());
+    	}
+	// Add joinpoint parameters
     	if (hasJoinPointStaticPart()) {
-    		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
+    		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart())
+    		              .type(ts.JoinPointStaticPart());
     		Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
 		    LocalInstance li = thisJoinPointStaticPartInstance(ts);
 		    jpsp = jpsp.localInstance(li);
@@ -275,7 +254,8 @@ public class AdviceDecl_c extends MethodDecl_c
     		newformalTypes.add(ts.JoinPointStaticPart());
     	}
     	if (hasJoinPoint()) {
-    		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
+    		TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint())
+    		              .type(ts.JoinPoint());
     		Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
 		    LocalInstance li = thisJoinPointInstance(ts);
 		    jp = jp.localInstance(li);
@@ -283,7 +263,8 @@ public class AdviceDecl_c extends MethodDecl_c
     		newformalTypes.add(ts.JoinPoint());
     	}
 		if (hasEnclosingJoinPointStaticPart()) {
-			TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
+			TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart())
+			              .type(ts.JoinPointStaticPart());
 			Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisEnclosingJoinPointStaticPart");
 			LocalInstance li = thisEnclosingJoinPointStaticPartInstance(ts);
 			jp = jp.localInstance(li);
@@ -291,34 +272,13 @@ public class AdviceDecl_c extends MethodDecl_c
 			newformalTypes.add(ts.JoinPoint());
 		}
 		Flags f = this.flags().set(Flags.FINAL).set(Flags.PUBLIC);
-    	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,pc).flags(f);
+    	MethodDecl md = reconstruct(returnType(),newformals,throwTypes(),body(),spec,retval,pc).flags(f);
     	MethodInstance mi = md.methodInstance().formalTypes(newformalTypes).flags(f);
 	//nf.MethodDecl(position(),Flags.PUBLIC,returnType(),name,newformals,throwTypes(),body());
     	return md.methodInstance(mi);
     }
 
-    /** Type checking of proceed: keep track of the methodInstance for the current proceed
-     *  the ProceedCall will query this information via the proceedInstance() 
-     *  method
-     * */
-	static private MethodInstance proceedInstance = null;
-	static private Context scope = null;
-	static public MethodInstance  proceedInstance(Context c) {
-		if (c==null)
-		   return null;
-		if (c==scope)
-		   return proceedInstance;
-		else return proceedInstance(c.pop());
-	}
-	
-	static public boolean withinAdvice(Context c) {
-		if (c==null) return false;
-		if (c==scope) return true;
-		return withinAdvice(c.pop());
-	}
-	
-
-
+   
     private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
     	if (thisJoinPointInstance==null)
     		thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
@@ -340,27 +300,33 @@ public class AdviceDecl_c extends MethodDecl_c
 	
 	 
 	public Context enterScope(Context c) {
-		Context nc = super.enterScope(c);
+			Context nc = super.enterScope(c);
+			AJContext nnc = ((AJContext) nc).pushAdvice(spec instanceof Around);
+		return nnc;
+	}
 		
-		// inside an advice body, thisJoinPoint is in scope, but nowhere else in an aspect
-		AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
-		LocalInstance jp = thisJoinPointInstance(ts);
-		nc.addVariable(jp);
-		LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
-		nc.addVariable(sjp);
-		LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
-		nc.addVariable(ejpsp);
-		
-		if (spec instanceof Around){
-		    LinkedList l = new LinkedList();
-		    l.add(ts.Throwable());
-		    proceedInstance = methodInstance().name("proceed").flags(flags().Public().Static()).throwTypes(l);
+	public Context enterScope(Node child, Context c) {
+		if (child==body) {
+			AJContext ajc = (AJContext) child.enterScope(c);
+			 AspectJTypeSystem ts = (AspectJTypeSystem)ajc.typeSystem();
+			 LocalInstance jp = thisJoinPointInstance(ts);
+			 ajc.addVariable(jp);
+			 LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
+			 ajc.addVariable(sjp);
+			 LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
+			 ajc.addVariable(ejpsp);
+			if (spec instanceof Around){
+		   	 LinkedList l = new LinkedList();
+		   	 l.add(ts.Throwable());
+		   	 MethodInstance proceedInstance = methodInstance().name("proceed").flags(flags().Public().Static()).throwTypes(l);
+		    	ajc.addProceed(proceedInstance);
+			}	
+			if (retval != null) {
+				ajc.addVariable(retval.localInstance());
+			}
+			return ajc;
 		}
-		else
-		    proceedInstance = null;
-		scope = nc;
-               
-		return nc;
+		return super.enterScope(child,c);
 	}
 	
 	/** Type check the advice: first the usual method checks, then whether the "throwing" result is
@@ -368,23 +334,16 @@ public class AdviceDecl_c extends MethodDecl_c
 	 *  */
 	public Node typeCheck(TypeChecker tc) throws SemanticException {
 		super.typeCheck(tc);
-		if (spec instanceof AfterThrowing && spec.returnVal() != null) {
+		if (spec instanceof AfterThrowing && retval != null) {
 			
-			// get the resolved type of the returnVal, which is the last parameter
-			// of the advice method:
-			List formalTypes = methodInstance().formalTypes();
-			Type t = (Type)(formalTypes.get(formalTypes.size()-1));
-			
+			Type t = retval.type().type();
 			if (! t.isThrowable()) {
 				TypeSystem ts = tc.typeSystem();
 				throw new SemanticException("type \"" + t + "\" is not a subclass of \" +" +					                        ts.Throwable() + "\".", spec.returnVal().type().position());
 			}
 		}
 		
-		Formal initialised = null;
-		if (spec.returnVal() != null) 
-			initialised = (Formal)  formals.get(formals.size()-1); // last parameter is always initialised
-		pc.checkFormals(formals,initialised);
+		pc.checkFormals(formals);
 		
 		Flags f = flags().clear(Flags.STRICTFP);
 		if (!f.equals(Flags.NONE))
@@ -499,8 +458,8 @@ public class AdviceDecl_c extends MethodDecl_c
 	// return type node from the advice declaration
 	spec.setReturnType(returnType());
 	// And the return formal as well
-	if (spec_retval_pos != -1) {
-	    spec.setReturnVal((Formal)formals().get(spec_retval_pos));
+	if (retval != null) {
+	    spec.setReturnVal(retval);
 	}
 	
 	List methods = new ArrayList();
@@ -568,4 +527,23 @@ public class AdviceDecl_c extends MethodDecl_c
 	v.leaveAdvice();
 	return this;
     }
+    
+	/**
+	  * Visit this term in evaluation order.
+	  */
+	public List acceptCFG(CFGBuilder v, List succs) {
+		if (retval==null)
+			return super.acceptCFG(v,succs);
+		 if (body() == null) {
+			 v.visitCFGList(formals(), retval.entry());
+			 v.visitCFG(retval, this);
+		 }
+		 else {
+			 v.visitCFGList(formals(), retval.entry());
+			 v.visitCFG(retval, body().entry());
+			 v.visitCFG(body(), this);
+		 }
+		 return succs;
+	 }
+
 }

@@ -25,6 +25,7 @@ public interface AspectJExtFactory extends ExtFactory
     Ext extAdviceSpec();
     Ext extBefore();
     Ext extAfter();
+    Ext extAdviceFormal();
     Ext extAfterReturning();
     Ext extAfterThrowing();
     Ext extAround();

@@ -9,6 +9,7 @@ import java.util.*;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.ast.AspectJNodeFactory;
 import abc.aspectj.types.AspectJTypeSystem;
+import abc.aspectj.types.AJContext;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
 import abc.aspectj.visit.TransformsAspectReflection;
@@ -111,30 +112,30 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     protected LocalInstance thisJoinPointInstance=null;
     protected LocalInstance thisJoinPointStaticPartInstance=null;
     protected LocalInstance thisEnclosingJoinPointStaticPartInstance=null;
+    
+	private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
+	   if (thisJoinPointInstance==null)
+		   thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
+	   return thisJoinPointInstance;
+   }
+
+   private LocalInstance thisJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+		if (thisJoinPointStaticPartInstance==null)
+			thisJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisJoinPointStaticPart");
+		return thisJoinPointStaticPartInstance;
+	}
+ 
+   private LocalInstance thisEnclosingJoinPointStaticPartInstance(AspectJTypeSystem ts) {
+	   if (thisEnclosingJoinPointStaticPartInstance==null)
+		   thisEnclosingJoinPointStaticPartInstance = ts.localInstance(position(),Flags.FINAL,
+																	   ts.JoinPointStaticPart(),"thisEnclosingJoinPointStaticPart");
+	   return thisEnclosingJoinPointStaticPartInstance;
+   }
+	
 
     protected boolean canRewriteThisJoinPoint=false;
 
-    private LocalInstance thisJoinPointInstance(AspectJTypeSystem ts) {
-    	if (thisJoinPointInstance==null)
-    		thisJoinPointInstance = ts.localInstance(position(),Flags.FINAL,ts.JoinPoint(),"thisJoinPoint");
-    	return thisJoinPointInstance;
-    }
-    
-    private LocalInstance thisJoinPointStaticPartInstance(AspectJTypeSystem ts) {
-	if (thisJoinPointStaticPartInstance==null)
-	    thisJoinPointStaticPartInstance = ts.localInstance
-		(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisJoinPointStaticPart");
-	return thisJoinPointStaticPartInstance;
-    }
-	 
-    private LocalInstance thisEnclosingJoinPointStaticPartInstance(AspectJTypeSystem ts) {
-	if (thisEnclosingJoinPointStaticPartInstance==null)
-	    thisEnclosingJoinPointStaticPartInstance = ts.localInstance
-		(position(),Flags.FINAL,ts.JoinPointStaticPart(),"thisEnclosingJoinPointStaticPart");
-	return thisEnclosingJoinPointStaticPartInstance;
-    }
-
-	public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, ParsedClassType container){
+    public MethodDecl exprMethod(AspectJNodeFactory nf, AspectJTypeSystem ts, List formals, ParsedClassType container){
 		Return ret = nf.Return(position(),expr);
 		Block bl = nf.Block(position()).append(ret);
 		TypeNode retType = nf.CanonicalTypeNode(position(),ts.Boolean());
@@ -211,23 +212,18 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 	    (vars, AbcFactory.MethodSig(methodDecl),jp,jpsp,ejp,position);
     }
 
-    public Context enterScope(Context c) {
-	// FIXME: the super class doesn't do anything, but for maintainability
-	// should we do super.enterScope(c).pushBlock(); ?
 
-	Context nc = c.pushBlock(); 
-		
-	// inside an if pointcut, thisJoinPoint etc is in scope
-	AspectJTypeSystem ts = (AspectJTypeSystem)nc.typeSystem();
-	LocalInstance jp = thisJoinPointInstance(ts);
-	nc.addVariable(jp);
-	LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
-	nc.addVariable(sjp);
-	LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
-	nc.addVariable(ejpsp);
-	
-	return nc;
-    }
+    public Context enterScope(Context c) {
+    	AJContext ajc = (AJContext) c.pushStatic();
+		AspectJTypeSystem ts = (AspectJTypeSystem)ajc.typeSystem();
+		LocalInstance jp = thisJoinPointInstance(ts);
+		ajc.addVariable(jp);
+		LocalInstance sjp = thisJoinPointStaticPartInstance(ts);
+		ajc.addVariable(sjp);
+		LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
+		ajc.addVariable(ejpsp);
+		return ajc;
+    }  
 
     public void aspectMethodsEnter(AspectMethods visitor)
     {

@@ -224,6 +224,16 @@ public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
         return postDelAfter(e);
     }
 
+	public final JL delAdviceFormal() {
+		JL e = delAdviceFormalImpl();
+		
+		if (nextDelFactory != null) {
+			JL e2 = nextDelFactory.delAdviceFormal();
+			e = composeDels(e,e2);
+		}
+		return postDelAdviceFormal(e);
+	}
+	
     public final JL delAfterReturning() {
         JL e = delAfterReturningImpl();
 
@@ -1051,6 +1061,10 @@ public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
         return delAdviceSpecImpl();
     }
 
+	protected JL delAdviceFormalImpl() {
+		return delFormalImpl();
+	}
+	
     protected JL delAfterReturningImpl() {
         return delAdviceSpecImpl();
     }
@@ -1445,6 +1459,10 @@ public abstract class AspectJAbstractDelFactory_c extends AbstractDelFactory_c
 
     protected JL postDelAfter(JL del) {
         return postDelAdviceSpec(del);
+    }
+    
+    protected JL postDelAdviceFormal(JL del) {
+    	return postDelFormal(del);
     }
 
     protected JL postDelAfterReturning(JL del) {

@@ -26,29 +26,39 @@ public interface AJContext extends Context {
 	boolean inInterType();      
 	
 	/** was a field of this name introduced via the host? */
-	public boolean varInHost(String name);
+	boolean varInHost(String name);
 	
 	/** was a method by this name introduced via the host? */
-	public boolean methodInHost(String name);
+	boolean methodInHost(String name);
 
 	/** if varInHost(name), find the class that introduced the field by name (this can be an outer class
 	 *  of the host. The result is in general a subtype of the field's container.
 	 */
-	public ClassType findFieldScopeInHost(String name);
+	ClassType findFieldScopeInHost(String name);
 
 	/** if methodInHost(name), find the class that introduced it (this can be an outer class
 	 *  of the host. The result is in general a subtype of the method's container.
 	 */
-	public ClassType findMethodScopeInHost(String name) throws SemanticException;
+	ClassType findMethodScopeInHost(String name) throws SemanticException;
 	
 	/** inner class inside intertype decl? */
 	boolean nested(); 
 
 	/** add all the members from the intertype host that are accessible */
-	public AJContext addITMembers(ReferenceType host);
+	AJContext addITMembers(ReferenceType host);
 	
 	/** was the ITD itself declared static? */
-	public boolean explicitlyStatic();
+	boolean explicitlyStatic();
+	
+/* advice */
+
+	AJContext pushAdvice(boolean isAround);
+	
+	void addProceed(MethodInstance proceedInstance);
+	
+	MethodInstance proceedInstance();
+	
+	boolean inAdvice();
 	
 /* declare error/warning */
  

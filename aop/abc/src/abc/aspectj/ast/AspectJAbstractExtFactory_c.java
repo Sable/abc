@@ -222,6 +222,17 @@ public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
         return postExtAfter(e);
     }
 
+	public final Ext extAdviceFormal() {
+		Ext e = extAdviceFormalImpl();
+		
+		if (nextExtFactory != null) {
+			Ext e2 = nextExtFactory.extAdviceFormal();
+			e = composeExts(e,e2);
+		}
+		
+		return postExtAdviceFormal(e);
+	}
+	
     public final Ext extAfterReturning() {
         Ext e = extAfterReturningImpl();
 
@@ -1048,6 +1059,10 @@ public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
     protected Ext extAfterImpl() {
         return extAdviceSpecImpl();
     }
+    
+    protected Ext extAdviceFormalImpl() {
+    	return extFormalImpl();
+    }
 
     protected Ext extAfterReturningImpl() {
         return extAdviceSpecImpl();
@@ -1430,6 +1445,10 @@ public abstract class AspectJAbstractExtFactory_c extends AbstractExtFactory_c
 
     protected Ext postExtAfter(Ext ext) {
         return postExtAdviceSpec(ext);
+    }
+    
+    protected Ext postExtAdviceFormal(Ext ext) {
+    	return postExtFormal(ext);
     }
 
     protected Ext postExtAfterReturning(Ext ext) {

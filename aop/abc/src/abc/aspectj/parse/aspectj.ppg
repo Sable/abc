@@ -492,9 +492,10 @@ advice_spec ::=
        {: Grm.parserTrace("after(formals) returning(p)");
           TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
                                                         parser.ts.Void());
+          AdviceFormal af = parser.nf.AdviceFormal(parser.pos(b),b.flags(),b.type(),b.name());
 	      AfterReturning afterRet = parser.nf.AfterReturning(parser.pos(x,y),
                                                              a,
-                                                             b,
+                                                             af,
                                                              voidn);
           RESULT = afterRet;
        :}
@@ -523,9 +524,10 @@ advice_spec ::=
        {: Grm.parserTrace("after(formals)throwing(p)");
           TypeNode voidn =  parser.nf.CanonicalTypeNode(parser.pos(a),
                                                         parser.ts.Void());
+          AdviceFormal af = parser.nf.AdviceFormal(parser.pos(b),b.flags(),b.type(),b.name());
           AfterThrowing afterThrow = parser.nf.AfterThrowing(parser.pos(x,y),
                                                              a,
-							                                 b,
+							                                 af,
 							                                 voidn);
           RESULT = afterThrow;
        :}

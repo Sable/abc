@@ -13,16 +13,16 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
 {
     protected List formals;
     protected TypeNode returnType;
-    protected Formal returnVal;
+    protected AdviceFormal returnVal;
 
-    public AdviceSpec_c(Position pos, List formals, TypeNode returnType, Formal returnVal) {
+    public AdviceSpec_c(Position pos, List formals, TypeNode returnType, AdviceFormal returnVal) {
         super(pos);
         this.formals = formals;
-	this.returnType = returnType;
-	this.returnVal = returnVal;
+		this.returnType = returnType;
+		this.returnVal = returnVal;
     }
 
-    protected AdviceSpec_c reconstruct(List formals, TypeNode returnType, Formal returnVal) {
+    protected AdviceSpec_c reconstruct(List formals, TypeNode returnType, AdviceFormal returnVal) {
 	if (!CollectionUtil.equals(formals, this.formals) ||
 	    returnType != this.returnType ||
 	    returnVal != this.returnVal) {
@@ -38,7 +38,7 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
     public Node visitChildren(NodeVisitor v) {
 	List formals = (List) visitList(this.formals, v);
 	TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
-	Formal returnVal = (Formal) visitChild(this.returnVal, v);
+	AdviceFormal returnVal = (AdviceFormal) visitChild(this.returnVal, v);
 	return reconstruct(formals, returnType, returnVal);
     }
 
@@ -50,7 +50,7 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
 	return returnType;
     }
     
-    public Formal returnVal() {
+    public AdviceFormal returnVal() {
     	return returnVal;
     }
 
@@ -58,7 +58,7 @@ public abstract class AdviceSpec_c extends Node_c implements AdviceSpec
 	returnType = rt;
     }
 
-    public void setReturnVal(Formal rv) {
+    public void setReturnVal(AdviceFormal rv) {
 	returnVal = rv;
     }
 

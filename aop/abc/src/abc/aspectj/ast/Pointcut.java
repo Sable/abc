@@ -20,7 +20,7 @@ public interface Pointcut extends Node
                       
     Collection mayBind() throws SemanticException;
     Collection mustBind();
-    void checkFormals(List formals,Formal init) throws SemanticException;
+    void checkFormals(List formals) throws SemanticException;
 
     abc.weaving.aspectinfo.Pointcut makeAIPointcut();
     

@@ -35,17 +35,23 @@ public class AJContext_c extends Context_c implements AJContext {
     protected AJContext_c endHostScope; // the last item on the context stack that signifies an ITD
     protected ClassType fakeType;
     protected boolean indeclare;
+    protected boolean isAdvice;
+    protected boolean isAround;
+    protected MethodInstance proceed;
     
 	public AJContext_c(TypeSystem ts) {
 		super(ts);
 		host = null;
 		nested = false;
 		indeclare = false;
+		isAdvice = false;
+		isAround = false;
+		proceed = null;
 	}
 	
 	
 	public AJContext pushDeclare() {
-		AJContext_c c = (AJContext_c) super.push();
+		AJContext_c c = (AJContext_c) push();
 		c.indeclare = true;
 		return c;
 	}
@@ -53,11 +59,31 @@ public class AJContext_c extends Context_c implements AJContext {
 	public boolean inDeclare() {
 		return indeclare;
 	}
+	
+	
+	public AJContext pushAdvice(boolean isAround) {
+		AJContext_c c = (AJContext_c) super.push();
+		c.isAdvice = true;
+		c.isAround = isAround;
+		c.proceed = null;
+		return c;
+	}
+	
+	public boolean inAdvice() {
+		return isAdvice;
+	}
+	
+	public void addProceed(MethodInstance mi) {
+		proceed = mi;
+	}
+	
+	public MethodInstance proceedInstance() {
+		return proceed;
+	}
 
 	public ClassType aspect() {
 		return startHostScope.currentClass();
-	}
-	
+	}	
 	
 	public boolean inInterType() {
 		return host != null;

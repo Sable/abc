@@ -201,9 +201,16 @@ public class AspectJNodeFactory_c
 	return n;
     }
 
+	public AdviceFormal AdviceFormal(Position pos, Flags flags, TypeNode tn, String name) {
+		AdviceFormal n = new AdviceFormal_c(pos,flags,tn,name);
+		n = (AdviceFormal)n.ext(extFactory.extAdviceFormal());
+		n = (AdviceFormal)n.del(delFactory.delAdviceFormal());
+		return n;
+	}
+	
     public AfterReturning AfterReturning(Position pos,
 					 List formals,
-					 Formal returnResult,
+					 AdviceFormal returnResult,
 					 TypeNode voidn) {
 	AfterReturning n = new AfterReturning_c(pos,formals,returnResult,voidn);
         n = (AfterReturning)n.ext(extFactory.extAfterReturning());
@@ -213,7 +220,7 @@ public class AspectJNodeFactory_c
 
      public AfterThrowing AfterThrowing(Position pos,
 					List formals,
-					Formal exc,
+					AdviceFormal exc,
 					TypeNode voidn) {
 		AfterThrowing n = new AfterThrowing_c(pos,formals,exc,voidn);
                 n = (AfterThrowing)n.ext(extFactory.extAfterThrowing());
@@ -832,4 +839,6 @@ public class AspectJNodeFactory_c
         n = (Local)n.del(delFactory.delLocal());
         return n;
     }
+    
+	
 }

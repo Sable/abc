@@ -211,10 +211,6 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
        		throw new SemanticException("Pointcut "+name+" not found.", position());
        mi = (MethodInstance) ms.iterator().next(); // PointcutInstance_c
       
-       if (mi.flags().isAbstract() && AdviceDecl_c.withinAdvice(c) && !(c.currentClass().flags().isAbstract()))
-       		throw new SemanticException("Cannot refer to an abstract pointcut inside an advice declaration in a concrete aspect.",
-       		                             position());
-      
        // get the formal types
        List formalTypes = mi.formalTypes();
        
@@ -243,7 +239,6 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 		AJContext c = (AJContext) dc.context();
 		PointcutInstance_c pci = (PointcutInstance_c) pointcutInstance();
 		if (pci.transAbstract() && 
-            // AdviceDecl_c.withinAdvice(c) && 
 		    !(c.currentClass().flags().isAbstract()) &&
 		    (c.currentClass() instanceof AspectType))
 				   throw new SemanticException("Cannot refer to an abstract pointcut inside a concrete aspect.",

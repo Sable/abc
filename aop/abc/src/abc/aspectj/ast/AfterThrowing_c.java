@@ -15,7 +15,7 @@ public class AfterThrowing_c extends AdviceSpec_c
    
     public AfterThrowing_c(Position pos, 
                            List formals,
-                           Formal exc,
+                           AdviceFormal exc,
                            TypeNode voidn)
     {
 	super(pos, formals, voidn, exc);
