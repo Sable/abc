@@ -245,7 +245,11 @@ public class TestCase {
 						    // we can only really have warnings now, otherwise we should have entered the previous
 						    // case - and we should have received a CompilationFailedException anyway.
 						    List warnings = sortList(main.getErrors());
-						    checkErrors(warnings, xChildren[i]);
+						    if(!checkErrors(warnings, xChildren[i]))
+						        {
+						        failTest();
+						        return;
+						        }
 						}
 					} catch(CompilerAbortedException e) {
 					    // Compiler aborted, i.e. there were insufficient options to perform a compilation.
@@ -271,7 +275,10 @@ public class TestCase {
 					} catch (CompilerFailedException ex) {
 						//logln("CompilerFailedException: "+ex.getMessage());
 						List errors = sortList(main.getErrors());
-						checkErrors(errors, xChildren[i]);
+						if(!checkErrors(errors, xChildren[i])) {
+						    failTest();
+						    return;
+						}
 					} catch (Throwable e) {
 					    // all other exceptions should indicate an error - e.g. a soot weaving error, which
 					    // threw a RuntimeException in one case
@@ -465,7 +472,7 @@ public class TestCase {
 		return result;
 	}
 	
-	protected void checkErrors(List errors, XML xTest) {
+	protected boolean checkErrors(List errors, XML xTest) {
 		ErrorInfo ei;
 		Position pos;
 		String errFile, errKind;
@@ -477,8 +484,7 @@ public class TestCase {
 		    System.err.println("Compilation produced an unexpected number of errors: " + errors.size() + ", should be " + expectedErrors.length);
 		    System.err.println("Actual errors found: ");
 		    printErrors(errors);
-		    failTest();
-		    return;
+		    return false;
 		}
 		if(errors.size() == 0) {
 		    System.err.println("No errors encountered, but still trying to validate errors... can't be good.");
@@ -531,8 +537,7 @@ public class TestCase {
 		                ", but is on line " + errLine + ".");
 		        System.err.println("Errors found during this compilation:");
 			    printErrors(errors);
-		        failTest();
-		        return;
+		        return false;
 		    }
 		    
 		    // Does the file match?
@@ -541,8 +546,7 @@ public class TestCase {
 		                ", but is in " + errFile + ".");
 		        System.err.println("Errors found during this compilation:");
 			    printErrors(errors);
-		        failTest();
-		        return;
+		        return false;
 		    }
 		    
 		    // Does the kind match?
@@ -559,28 +563,24 @@ public class TestCase {
 		            if(!errKind.equals("error")) {
 		                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
 		                printErrors(errors);
-		                failTest();
-		                return;
+		                return false;
 		            }
 		            break;
 		        case ErrorInfo.WARNING:
 		            if(!errKind.equals("warning")) {
 		                System.err.println("Encountered error of unexpected type - should be error, but was " + errKind + ".");
 		                printErrors(errors);
-		                failTest();
-		                return;
+		                return false;
 		            }
 		            break;
 		        default:
 		            // shouldn't happen, but might if kind is empty
 		            System.err.println("Unknown error kind: " + ei.getErrorKind() + " on error " + ei.getMessage() + " at " + ei.getPosition());
-		        	failTest();
-		        	return;
+		        	return false;
 		        }
 		}
 		System.out.println("Compilation failed with " + errors.size() + " errors, which were matched and verified against the expected errors.");
-//					throw new CompilationFailedException(main.getErrors());//System.exit(5);
-
+		return true;
 	}
 	
 	protected void failTest() {
