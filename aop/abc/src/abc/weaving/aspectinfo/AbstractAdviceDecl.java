@@ -13,14 +13,18 @@ import abc.soot.util.LocalGeneratorEx;
  */
 public abstract class AbstractAdviceDecl extends Syntax {
     protected AdviceSpec spec;
-    protected Pointcut pc;
+    protected Pointcut pc=null;
+
+    private Pointcut origpc;
+    private List formals;
 
     protected AbstractAdviceDecl(AdviceSpec spec,Pointcut pc,
 				 List/*<Formal>*/ formals,Position pos) {
 	super(pos);
 	this.spec=spec;
 
-	this.pc=Pointcut.normalize(pc,formals);
+	this.origpc=pc;
+	this.formals=formals;
 
 	if (spec instanceof AbstractAdviceSpec) {
 	    ((AbstractAdviceSpec)spec).setAdvice(this);
@@ -32,6 +36,7 @@ public abstract class AbstractAdviceDecl extends Syntax {
     }
 
     public Pointcut getPointcut() {
+	if(pc==null) pc=Pointcut.normalize(origpc,formals);
 	return pc;
     }
 
