@@ -41,7 +41,7 @@ import abc.main.Debug;
  */
 public class CflowSetup extends AbstractAdviceDecl {
 
-    public static CflowSetup construct(Aspect aspect,
+    public static CflowSetup construct(Aspect aspct,
                                        Pointcut pc,
                                        boolean isBelow,
                                        Hashtable typeMap,
@@ -64,7 +64,7 @@ public class CflowSetup extends AbstractAdviceDecl {
             actuals.add(new Var(fv,pos));
         }
 
-        return new CflowSetup(aspect,pc,isBelow,formals,actuals,pos,depth);
+        return new CflowSetup(aspct,pc,isBelow,formals,actuals,pos,depth);
     }
 
     private boolean isBelow;
@@ -74,10 +74,10 @@ public class CflowSetup extends AbstractAdviceDecl {
 
     private boolean useCounter;
 
-    private CflowSetup(Aspect aspect,Pointcut pc,boolean isBelow,
+    private CflowSetup(Aspect aspct,Pointcut pc,boolean isBelow,
                        List/*<Formal>*/ formals,List/*<Var>*/ actuals,
                        Position pos,int depth) {
-        super(aspect,new BeforeAfterAdvice(pos),pc,formals,pos);
+        super(aspct,new BeforeAfterAdvice(pos),pc,formals,pos);
         this.actuals=actuals;
         this.isBelow=isBelow;
         this.useCounter=
