@@ -21,8 +21,6 @@ public class PointcutCodeGen {
 	     methodIt.hasNext(); ) 
        { // get the next method
          final SootMethod method = (SootMethod) methodIt.next();
-         debug("   --- BEGIN weaveInAspectsPass " + pass + " for method " + 
-	                method.getName());
 
 	 // nothing to do for abstract or native methods 
          if( method.isAbstract() ) continue;
@@ -43,6 +41,8 @@ public class PointcutCodeGen {
 	   }
 
 	 // have something to do ...
+         debug("   --- BEGIN weaveInAspectsPass " + pass + " for method " + 
+	                method.getName());
          Body b = method.getActiveBody();
          LocalGenerator localgen = new LocalGenerator(b);
 
@@ -102,7 +102,7 @@ public class PointcutCodeGen {
          }
 
          debug("   --- END weaveInAspectsPass " + pass + " for method " + 
-	                method.getName());
+	                method.getName() + "\n");
 	} // each method 
    } // method weaveInAspectsPass1
 	 

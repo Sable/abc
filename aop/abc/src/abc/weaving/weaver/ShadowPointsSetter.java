@@ -49,8 +49,6 @@ public class ShadowPointsSetter {
 
 	 // get the next method
          final SootMethod method = (SootMethod) methodIt.next();
-         debug("   --- BEGIN Setting ShadowPoints Pass1 for method " + 
-	                method.getName());
 
 	 // nothing to do for abstract or native methods 
          if( method.isAbstract() ) continue;
@@ -65,6 +63,9 @@ public class ShadowPointsSetter {
            { debug("No advice list for method " + method.getName());
 	     continue;
 	   }
+
+         debug("   --- BEGIN Setting ShadowPoints Pass1 for method " + 
+	                method.getName());
 
 	 // ---- we have some advice, so set things up for this method
 	 debug("Advice for method " + method.getName() + " is : \n" +
@@ -284,7 +285,9 @@ public class ShadowPointsSetter {
 	 // nothing to do for abstract or native methods 
          if( method.isAbstract() ) continue;
          if( method.isNative() ) continue;
+         // FIXME: shouldn't have to check name
 	 if( !method.getName().equals("<init>") ) continue;
+
 
 	 // get all the advice list for this method
          MethodAdviceList adviceList = 
@@ -315,6 +318,8 @@ public class ShadowPointsSetter {
 	  final SootMethod method = (SootMethod) methodIt.next();
           MethodAdviceList adviceList = 
 	     GlobalAspectInfo.v().getAdviceList(method);
+          debug("   --- BEGIN Setting ShadowPoints Pass2 for method " + 
+	                method.getName());
 	  debug("Advice for method " + method.getName() + " is : \n" +
 	               adviceList);
 
