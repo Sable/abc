@@ -62,6 +62,7 @@ public class Weaver {
                 weaveAdvice();
 
             } else {
+            	// add aspectOf(), hasAspect(), ...
                 weaveGenerateAspectMethods();
                 weaveAdvice();
             }

@@ -182,16 +182,13 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         passes_aspectj_transforms(l, job);
         passes_jimple(l, job);
 
+	    // re-evaluate patterns for Soot classes; previously only for weavable classes
+	    // but soot classes are not loaded here: FIXME: move call to main
         l.add(new NamePatternReevaluator(EVALUATE_PATTERNS_AGAIN));
 
-        if (compiler.serializeClassInfo()) {
-            l.add(new VisitorPass(Pass.SERIALIZE,
-                                  job, new ClassSerializer(ts, nf,
-                                                           job.source().lastModified(),
-                                                           compiler.errorQueue(),
-                                                           version())));
-        }
-
+        // no class serialization, because abc does not support incremental/separate compilation
+        // of aspects and aspect-aware classes.
+        
         // l.add(new OutputPass(Pass.OUTPUT, job, new Translator(job, ts, nf, targetFactory())));
 
         // grab this list for the timing module
@@ -214,49 +211,71 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     protected void passes_patterns_and_parents(List l, Job job)
     {
+    	// Disambiguate inner/outer classes
 		l.add(new VisitorPass(CLEAN_SIGS_FIRST,job, new AmbiguityRemover(job,ts,nf,AmbiguityRemover.SIGNATURES)));
-        // Pattern and declare parents stuff
+        // Disambiguate parents in declare parents
         l.add(new VisitorPass(CLEAN_DECLARE, job,
-                              new DeclareParentsAmbiguityRemover(job, ts, nf)));
+                              new DeclareParentsAmbiguityRemover(job, ts, nf))); 
+        // Collect the full names of aspects
         l.add(new VisitorPass(COLLECT_ASPECT_NAMES, job, new AspectNameCollector(aspect_names)));
+        // Build the internal hierarchy/package structure for the pattern matcher
+        // The list of weavable classes is available after this pass
         l.add(new VisitorPass(BUILD_HIERARCHY, job, new HierarchyBuilder(this)));
         l.add(new GlobalBarrierPass(HIERARCHY_BUILT, job));
-
-	l.add(new CheckPackageNames(CHECK_PACKAGE_NAMES,job));
+		// Check that packages match directories
+	    l.add(new CheckPackageNames(CHECK_PACKAGE_NAMES,job));
+	    // Finds list of classes matched by each name pattern
         l.add(new VisitorPass(EVALUATE_PATTERNS, job, new NamePatternEvaluator(this)));
         if (abc.main.Debug.v().namePatternMatches) {
+            // Print list of matched classes for each name pattern
             l.add(new VisitorPass(TEST_PATTERNS, job, new PatternTester(this)));
         }
         l.add(new GlobalBarrierPass(PATTERNS_EVALUATED, job));
+        // Alter hierarchy according to declare parents (both internal pattern matching hierarchy
+        // and Polyglot hierarchy)
         l.add(new VisitorPass(DECLARE_PARENTS, job, new ParentDeclarer(job, ts, nf, this)));
         l.add(new GlobalBarrierPass(PARENTS_DECLARED, job));
+        // Finds list of classes matched by each name pattern, according to new hierarchy
+        // but only for weavable classes.
         l.add(new NamePatternReevaluator(EVALUATE_PATTERNS_AGAIN));
         l.add(new GlobalBarrierPass(PATTERNS_EVALUATED_AGAIN, job));
     }
 
     protected void passes_precedence_relation(List l, Job job)
     {
+    	 // compute precedence relation between aspects, based on matched name patterns
         l.add(new VisitorPass(COMPUTE_PRECEDENCE_RELATION, job, new ComputePrecedenceRelation(job, ts, nf, this)));
         l.add(new GlobalBarrierPass(PRECEDENCE_COMPUTED, job));
     }
 
     protected void passes_fold_and_checkcode(List l, Job job)
     {
+    	// constant folder. FIXME: this folds bytes to ints
         l.add(new VisitorPass(Pass.FOLD, job, new ConstantFolder(ts, nf)));
+        // typechecker
         l.add(new VisitorPass(Pass.TYPE_CHECK, job, new TypeChecker(job, ts, nf)));
+        // reachability checker
         l.add(new VisitorPass(Pass.REACH_CHECK, job, new ReachChecker(job, ts, nf)));
         // Exceptions are now checked after weaving, because of softening
         // l.add(new VisitorPass(Pass.EXC_CHECK, job, new ExceptionChecker(job,ts,nf)));
+        // insert casts for e.g. byte to int (j2j)
         l.add(new VisitorPass(CAST_INSERTION, job, new CastInsertionVisitor(job, ts, nf)));
+        // strictfp modifier is propagated to all textually enclosed members
         l.add(new VisitorPass(STRICTFP_PROP, job, new StrictFPPropagator(false)));
+        // definite return checks
         l.add(new VisitorPass(Pass.EXIT_CHECK, job, new ExitChecker(job, ts, nf)));
+        // definite initialization
         l.add(new VisitorPass(Pass.INIT_CHECK, job, new InitChecker(job, ts, nf)));
+        // ccalls are not recursive
         l.add(new VisitorPass(Pass.CONSTRUCTOR_CHECK, job, new ConstructorCallChecker(job, ts, nf)));
+        // order of field inits
         l.add(new VisitorPass(Pass.FWD_REF_CHECK, job, new FwdReferenceChecker(job, ts, nf)));
-	
+	    
+	    // check for itd conflicts in jars
         l.add(new JarCheck(JAR_CHECK,job,ts));
         
         l.add(new GlobalBarrierPass(SET_DEPENDS,job));
+        // pointcuts are not recursive; and concrete pointcuts don't depend on abstract ones
 		l.add(new VisitorPass(CHECK_DEPENDS,job, new DependsChecker(job,ts,nf)));
 		
         l.add(new GlobalBarrierPass(CHECKING_DONE, job));
@@ -266,13 +285,16 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
     protected void passes_saveAST(List l, Job job)
     {
 	l.add(new EmptyPass(Pass.PRE_OUTPUT_ALL));
+	// tell soot the connection between source and job, so it doesn't re-compile
 	l.add(new SaveASTVisitor(SAVE_AST, job, this));
     }
 
     protected void passes_mangle_names(List l, Job job)
     {
+    	// determine components that need to get the same mangled name
     l.add(new VisitorPass(MANGLE_NAME_COMPONENTS, job, new MangleNameComponents()));
     l.add(new GlobalBarrierPass(NAME_COMPONENTS, job));
+    // record what mangled names will be
 	l.add(new VisitorPass(MANGLE_NAMES, job, new MangleNames()));
 	l.add(new GlobalBarrierPass(NAMES_MANGLED, job));
     }
@@ -285,18 +307,22 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	l.add(new VisitorPass(ASPECT_REFLECTION_REWRITE,job, new AspectReflectionRewrite(nf,ts)));
 
         // add new methods for proceed and if-pointcuts, and turn advice into methods
+        // mangle names, introduce accessor methods
         l.add(new VisitorPass(ASPECT_METHODS,job, new AspectMethods(job,nf,ts)));
         l.add(new GlobalBarrierPass(ASPECT_PREPARE,job));
         
         // to test the above:
         // l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
+        // build AspectInfo structure, register real names and real classes
         l.add(new VisitorPass(HARVEST_ASPECT_INFO, job, new AspectInfoHarvester(job, ts, nf)));
+        // remove all AST nodes and members of classtypes that will be re-introduced by weaving
         l.add(new VisitorPass(CLEAN_MEMBERS, job, new CleanAspectMembers(nf,ts)));
         // l.add(new PrettyPrintPass(INSPECT_AST,job,new CodeWriter(System.out,70),new PrettyPrinter()));
     }
 
     protected void passes_jimple(List l, Job job)
     {
+    	// set up map from top-level classes to asts for j2j
         l.add(new VisitorPass(COLLECT_JIMPLIFY_CLASSES, job,
                               new CollectJimplifyVisitor(job, ts, nf, source_files, class_to_ast)));
         l.add(new GlobalBarrierPass(GOING_TO_JIMPLIFY, job));
@@ -306,26 +332,33 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 
     protected void passes_disambiguate_signatures(List l, Job job)
     {
+    	// disambiguate inner/outer classes, signatures of methods
         l.add(new VisitorPass(Pass.CLEAN_SIGS, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.SIGNATURES)));
     }
 
     protected void passes_add_members(List l, Job job)
     {
+    	// populate class types with members
         l.add(new VisitorPass(Pass.ADD_MEMBERS, job, new AddMemberVisitor(job, ts, nf)));
         l.add(new GlobalBarrierPass(Pass.ADD_MEMBERS_ALL, job));
     }
 
     protected void passes_interface_ITDs(List l, Job job)
     {
+    	// put interface itds in types
         l.add(new InterfaceITDs(INTERFACE_ITDS));
+        // collect all class types that came from source files (in preparation for typechecking classes from classfiles)
         l.add(new VisitorPass(SOURCE_CLASSES, job, new SourceClasses()));
+        // add interface itds to anonymous classes - interfaces for these are added separately in a locally
+        // spawned pass
         l.add(new VisitorPass(ANON_ITDS,job,new AnonBodyITDs(job,ts,nf)));
         l.add(new GlobalBarrierPass(INTERFACE_ITDS_ALL,job));
     }
 
     protected void passes_disambiguate_all(List l, Job job)
     {
+    	// resolve all variable, class references
         l.add(new VisitorPass(Pass.DISAM, job,
                               new AmbiguityRemover(job, ts, nf, AmbiguityRemover.ALL)));
         l.add(new BarrierPass(Pass.DISAM_ALL, job));

@@ -32,7 +32,8 @@ import polyglot.types.SemanticException;
 import polyglot.visit.ContextVisitor;
 
 /**
- * check dependencies between named pointcuts, and also abstract flags
+ * check dependencies between named pointcuts, and also abstract flags.
+ * local dependencies are set by typechecker; this phase builds the global graph.
  * @author Oege de Moor
  */
 public class DependsChecker extends ContextVisitor {

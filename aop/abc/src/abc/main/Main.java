@@ -740,7 +740,7 @@ public class Main {
             AbcTimer.mark("Soot resolving");
 
             GlobalAspectInfo.v().buildAspectHierarchy();
-            AbcTimer.mark("Resolve class names");
+            AbcTimer.mark("Aspect inheritance");
 
         } catch (polyglot.main.UsageError e) {
             throw (IllegalArgumentException) new IllegalArgumentException("Polyglot usage error: "+e.getMessage()).initCause(e);
@@ -759,6 +759,7 @@ public class Main {
     try {
         // Perform the declare parents
         new DeclareParentsWeaver().weave();
+        // FIXME: put re-resolving here, from declareparents weaver
         AbcTimer.mark("Declare Parents");
         Scene.v().setDoneResolving();
         
@@ -784,12 +785,15 @@ public class Main {
                 }
             }
         }
-        AbcTimer.mark("Retrieving bodies");
+        AbcTimer.mark("Jimplification");
 
         PatternMatcher.v().updateWithAllSootClasses();
+        // evaluate the patterns the third time (depends on re-resolving)
         PatternMatcher.v().recomputeAllMatches();
         AbcTimer.mark("Update pattern matcher");
 
+		// any references made by itd initialisers will appear in a delegate method,
+		// and thus have already been processed by j2j; all resolving ok.
         ita.initialisers(); // weave the field initialisers into the constructors
         AbcTimer.mark("Weave Initializers");
 
@@ -798,6 +802,7 @@ public class Main {
             AJShadows.load();
             AbcTimer.mark("Load shadow types");
 
+            // for each shadow in each weavable class, compute list of applicable advice
             GlobalAspectInfo.v().computeAdviceLists();
             AbcTimer.mark("Compute advice lists");
 
@@ -817,11 +822,13 @@ public class Main {
                 System.err.println("--- END ADVICE LISTS ---");
             }
 
-            //generateDummyGAI();
+ 
 
             Weaver weaver = new Weaver();
             weaver.weave(); // timer marks inside weave() */
         }
+        // the intertype adjuster has put dummy fields into interfaces,
+        // which now have to be removed
         ita.removeFakeFields();
     } catch(SemanticException e) {
         error_queue.enqueue(ErrorInfo.SEMANTIC_ERROR,e.getMessage(),e.position());
