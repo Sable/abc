@@ -9,6 +9,8 @@ import java.util.*;
 
 import polyglot.ext.jl.ast.Node_c;
 
+import abc.aspectj.visit.*;
+
 public class ConstructorPattern_c extends Node_c 
                                   implements  ConstructorPattern
 {
@@ -63,9 +65,6 @@ public class ConstructorPattern_c extends Node_c
     }
 
     public abc.weaving.aspectinfo.ConstructorPattern makeAIConstructorPattern() {
-	//TODO
-	if(abc.main.Debug.v.matcherWarnUnimplemented)
-	    System.err.println("FIXME: Producing a null constructor pattern in "+getClass());
-	return null;
+	return PatternMatcher.v().makeAIConstructorPattern(this);
     }
 }

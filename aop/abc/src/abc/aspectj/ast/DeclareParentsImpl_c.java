@@ -89,7 +89,7 @@ public class DeclareParentsImpl_c extends DeclareDecl_c
     }
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
-	System.out.println("Declare parents impl");
+	//System.out.println("Declare parents impl");
 	List/*<String>*/ ints = new ArrayList();
 	Iterator ii = interfaces.iterator();
 	while (ii.hasNext()) {

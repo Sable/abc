@@ -219,7 +219,7 @@ public class GlobalAspectInfo {
     }
 
     public void registerMethodCategory(String sig, int cat) {
-	System.out.println("Method registered: "+sig+" ("+cat+")");
+	//System.out.println("Method registered: "+sig+" ("+cat+")");
 	method_categories.put(sig, new Integer(cat));
     }
 

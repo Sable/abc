@@ -45,7 +45,7 @@ public class ParentDeclarer extends NodeVisitor {
 			    ClassType inct = (ClassType)in.type();
 			    PCNode hi_in = hierarchy.insertFullName(inct.fullName(), true, false);
 
-			    System.err.println("Declared "+cl+" to implement "+inct.fullName());
+			    //System.err.println("Declared "+cl+" to implement "+inct.fullName());
 
 			    pct.addInterface(inct);
 			    hi_cl.addParent(hi_in);
@@ -76,7 +76,7 @@ public class ParentDeclarer extends NodeVisitor {
 			ClassType typect = (ClassType)type.type();
 			PCNode hi_type = hierarchy.insertFullName(typect.fullName(), true, false);
 
-			System.err.println("Declared "+cl+" to extend "+typect.fullName());
+			//System.err.println("Declared "+cl+" to extend "+typect.fullName());
 
 			pct.superType(typect);
 			hi_cl.addParent(hi_type);

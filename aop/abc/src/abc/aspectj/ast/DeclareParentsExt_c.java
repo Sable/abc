@@ -72,7 +72,7 @@ public class DeclareParentsExt_c extends DeclareDecl_c
     }
 
     public void update(GlobalAspectInfo gai, Aspect current_aspect) {
-	System.out.println("Declare parents ext");
+	//System.out.println("Declare parents ext");
 	gai.addDeclareParents(new abc.weaving.aspectinfo.DeclareParentsExt
 			      (pat.makeAIClassnamePattern(), type.toString(), current_aspect, position()));
     }
