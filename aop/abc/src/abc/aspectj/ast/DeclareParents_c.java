@@ -92,6 +92,14 @@ public class DeclareParents_c extends DeclareDecl_c
 	parents = parents_disam;
 	return this;
     }
+    
+    public Node typeCheck(TypeChecker tc) throws SemanticException {
+    	if (targets.size() == 0)
+    		abc.main.Main.v().error_queue.enqueue(ErrorInfo.WARNING,
+					"Does not alter parents of any classes (is the pattern correct?)", 
+					position());
+    	return this;
+    }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter tr) {
         w.write("declare parents : ");
