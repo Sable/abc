@@ -188,3 +188,82 @@ Semantic Error at abctests/bugs/PrecedenceSort.java:2,18-3:5: Pieces of advice f
 FAIL: Test 1015: "abctests/bugs/correct topological sorting of precedence" failed.
 
 
+Running test 1017: abctests/bugs/around weaver incorrectly unboxing double literals in float context
+Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundUnboxing.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:568)
+	at abc.testing.TestCase.runTest(TestCase.java:288)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.RuntimeException: Warning: Bad use of primitive type at $f0 = 1.0E-5 in <AroundUnboxing: void first(float)> in <AroundUnboxing: void first(float)>
+	at soot.Body.checkCopy(Body.java:618)
+	at soot.Body.checkTypes(Body.java:583)
+	at soot.Body.validate(Body.java:208)
+	at soot.jimple.JimpleBody.validate(JimpleBody.java:67)
+	at soot.PackManager.runBodyPacks(PackManager.java:549)
+	at soot.PackManager.runBodyPacks(PackManager.java:369)
+	at soot.PackManager.runPacks(PackManager.java:313)
+	at abc.main.Main.optimize(Main.java:947)
+	at abc.main.Main.run(Main.java:508)
+	... 3 more
+FAIL: Test 1017: "abctests/bugs/around weaver incorrectly unboxing double literals in float context" failed.
+
+
+Running test 1018: abctests/bugs/internal around weaver error when trying to capture proceed() into a closure
+Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtractedProceed.java 
+ java.util.NoSuchElementException null
+soot.util.HashChain$LinkIterator.<init>(HashChain.java:466)
+soot.util.HashChain.iterator(HashChain.java:327)
+abc.weaving.weaver.AroundWeaver$Util.removeStatements(AroundWeaver.java:245)
+abc.weaving.weaver.AroundWeaver$Util.access$900(AroundWeaver.java:118)
+abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3083)
+abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod.generateProceeds(AroundWeaver.java:3031)
+abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass.generateProceeds(AroundWeaver.java:2657)
+abc.weaving.weaver.AroundWeaver$AdviceMethod.generateProceedCalls(AroundWeaver.java:2539)
+abc.weaving.weaver.AroundWeaver$AdviceMethod.modifyAdviceMethod(AroundWeaver.java:2404)
+abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod$AdviceApplicationInfo.doWeave(AroundWeaver.java:957)
+abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod.doWeave(AroundWeaver.java:790)
+abc.weaving.weaver.AroundWeaver$AdviceMethod.doWeave(AroundWeaver.java:669)
+abc.weaving.weaver.AroundWeaver.doWeave(AroundWeaver.java:440)
+abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:154)
+abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:348)
+abc.weaving.weaver.PointcutCodeGen.weaveInAspectsPass(PointcutCodeGen.java:105)
+abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:278)
+abc.weaving.weaver.Weaver.weave(Weaver.java:170)
+abc.main.Main.weave(Main.java:886)
+abc.main.Main.run(Main.java:483)
+abc.testing.TestCase.runTest(TestCase.java:288)
+abc.testing.Main.doCase(Main.java:282)
+abc.testing.Main.main(Main.java:116)
+Unexpected exception while compiling: abc.weaving.weaver.AroundWeaver$InternalAroundError: ARD around weaver internal error: 
+abc.weaving.weaver.AroundWeaver$InternalAroundError: ARD around weaver internal error: 
+	at abc.weaving.weaver.AroundWeaver.doWeave(AroundWeaver.java:451)
+	at abc.weaving.aspectinfo.AroundAdvice.weave(AroundAdvice.java:154)
+	at abc.weaving.weaver.PointcutCodeGen.weave_one(PointcutCodeGen.java:348)
+	at abc.weaving.weaver.PointcutCodeGen.weaveInAspectsPass(PointcutCodeGen.java:105)
+	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:278)
+	at abc.weaving.weaver.Weaver.weave(Weaver.java:170)
+	at abc.main.Main.weave(Main.java:886)
+	at abc.main.Main.run(Main.java:483)
+	at abc.testing.TestCase.runTest(TestCase.java:288)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.util.NoSuchElementException: HashChain.LinkIterator(obj) with obj that is not in the chain: nop
+	at soot.util.HashChain$LinkIterator.<init>(HashChain.java:466)
+	at soot.util.HashChain.iterator(HashChain.java:327)
+	at abc.weaving.weaver.AroundWeaver$Util.removeStatements(AroundWeaver.java:245)
+	at abc.weaving.weaver.AroundWeaver$Util.access$900(AroundWeaver.java:118)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod$ProceedInvocation.generateProceed(AroundWeaver.java:3083)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass$AdviceLocalMethod.generateProceeds(AroundWeaver.java:3031)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod$AdviceLocalClass.generateProceeds(AroundWeaver.java:2657)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod.generateProceedCalls(AroundWeaver.java:2539)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod.modifyAdviceMethod(AroundWeaver.java:2404)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod$AdviceApplicationInfo.doWeave(AroundWeaver.java:957)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod$ProceedMethod.doWeave(AroundWeaver.java:790)
+	at abc.weaving.weaver.AroundWeaver$AdviceMethod.doWeave(AroundWeaver.java:669)
+	at abc.weaving.weaver.AroundWeaver.doWeave(AroundWeaver.java:440)
+	... 10 more
+FAIL: Test 1018: "abctests/bugs/internal around weaver error when trying to capture proceed() into a closure" failed.
+
+
