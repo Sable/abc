@@ -818,7 +818,10 @@ public class AroundWeaver {
 								throw new InternalAroundError();
 							localMap = copyStmtSequence(joinpointBody, begin, end, accessMethodBody, lookupStmt, returnedLocal, result);
 							first = (Stmt) result.object;
+							if (first==null)
+								throw new InternalAroundError();
 							switchTarget = Jimple.v().newNopStmt();
+						
 							accessMethodStatements.insertBefore(switchTarget, first);
 						}
 						updateSavedReferencesToStatements(localMap);
@@ -969,7 +972,7 @@ public class AroundWeaver {
 						unitChain.insertAfter(copy, insertAfter);
 						insertAfter = copy;
 						if (firstCopy == null)
-							firstCopy = copy;
+							firstCopy = insertAfter;
 						// Build old <-> new map to be able to patch up references to other units 
 						// within the cloned units. (these are still refering to the original
 						// unit objects).
@@ -1080,7 +1083,7 @@ public class AroundWeaver {
 						Restructure.insertBoxingCast(dest, s, true);
 						//insertBoxingCast(dest, returnStmt, returnStmt.getOpBox(), dest.getMethod().getReturnType());
 						//JasminClass
-						insertAfter = returnStmt;
+						insertAfter = returnStmt;						
 					} else {
 						if (!dest.getMethod().getReturnType().equals(VoidType.v())) {					
 							throw new InternalAroundError(
@@ -1091,7 +1094,11 @@ public class AroundWeaver {
 						ReturnVoidStmt returnStmt = Jimple.v().newReturnVoidStmt();
 						unitChain.insertAfter(returnStmt, insertAfter);
 						insertAfter = returnStmt;
+						
 					}
+					if (firstCopy == null)
+						firstCopy = insertAfter;
+					
 					resultingFirstCopy.object = firstCopy;
 					return bindings;
 				}

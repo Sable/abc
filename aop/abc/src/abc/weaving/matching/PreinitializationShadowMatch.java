@@ -56,7 +56,8 @@ public class PreinitializationShadowMatch extends BodyShadowMatch {
     }
 
     public boolean supportsAround() {
-	return false;
+    	return true;
+	//return false;
     }
 
     public String joinpointName() {
