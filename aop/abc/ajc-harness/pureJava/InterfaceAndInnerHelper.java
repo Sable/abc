@@ -1,3 +1,0 @@
-interface InterfaceAndInnerHelper {
-    class C { }
-}

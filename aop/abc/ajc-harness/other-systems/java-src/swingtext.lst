@@ -1,4 +1,0 @@
-src/javax/swing/text/*.java
-src/javax/swing/text/html/*.java
-src/javax/swing/text/html/parser/*.java
-src/javax/swing/text/rtf/*.java

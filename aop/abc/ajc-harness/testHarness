@@ -1,5 +1,0 @@
-#!/bin/sh
-#cd /home/rane/aspectj-workspace/tests
-#java -jar /home/rane/aspectj-workspace/aj-build/jars/testing-drivers-all.jar $1
-java -cp $1:../lib/abc-testing-harness.jar org.aspectj.testing.drivers.Harness $2
-
