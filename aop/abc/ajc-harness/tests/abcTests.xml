@@ -6783,6 +6783,20 @@
     </ajc-test>
     
     <ajc-test num="772" dir="bugs" pr="34925"
+      abccomment="bug in test itself.
+                  brackets around type in declare soft. Java does not
+                  allow bracketing of types (because of confusion with
+                  casts), and abc sticks to that. Cloned to 77201.
+                  ODM 17/08/04"
+      title="declare soft and throw statements">
+      <abckeywords><skip/></abckeywords>
+        <compile files="ConvertToUnchecked.java"/>
+        <run class="ConvertToUnchecked"/>
+    </ajc-test>
+
+   <ajc-test num="77201" dir="abctests/bugs" pr="34925"
+      abccomment="Cloned from 77201, removing the offending parentheses.
+                  ODM 17/08/04"
       title="declare soft and throw statements">
         <compile files="ConvertToUnchecked.java"/>
         <run class="ConvertToUnchecked"/>
