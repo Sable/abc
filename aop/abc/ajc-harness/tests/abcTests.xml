@@ -9288,4 +9288,10 @@
        <compile files="AnonPreinit.java"/>
        <run class="AnonPreinit"/>
     </ajc-test>
+
+    <ajc-test num="997" dir="abctests/bugs"
+        title="verify error with calls to outer methods from inner classes">
+       <compile files="PatternMatcher.java"/>
+       <run class="PatternMatcher$AIMethodPattern"/>
+    </ajc-test>
 </suite>
