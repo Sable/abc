@@ -201,3 +201,16 @@ org.aspectj.bridge.AbortException: [ unexpected event "cast happened" found,  un
 FAIL: Test 992: "abctests/bugs/cast pointcut can interact badly with jimple type assignment" failed.
 
 
+Running test 996: abctests/bugs/anonymous class constructed inside this(...) call
+Commandline: abc -d abctests/bugs abctests/bugs/AnonPreinit.java 
+Unexpected exception while trying to run compiled class: java.lang.VerifyError: (class: AnonPreinit, method: <init> signature: ()V) Expecting to find object/array on stack
+java.lang.VerifyError: (class: AnonPreinit, method: <init> signature: ()V) Expecting to find object/array on stack
+	at java.lang.Class.getDeclaredMethods0(Native Method)
+	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
+	at java.lang.Class.getDeclaredMethod(Class.java:1254)
+	at abc.testing.TestCase.runTest(TestCase.java:383)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 996: "abctests/bugs/anonymous class constructed inside this(...) call" failed.
+
+

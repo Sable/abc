@@ -4986,5 +4986,8 @@
        <compile files="AndOrBind.java"></compile>
        <run class="AndOrBind"></run>
     </ajc-test>
+<ajc-test title="correct treatment of exceptions with interfaceinvoke" num="995" dir="abctests/bugs">
+       <compile files="InterfaceExceptions.java"></compile>
+    </ajc-test>
  
 </suite>
