@@ -28,6 +28,11 @@ import polyglot.types.*;
 import polyglot.visit.*;
 import polyglot.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface Pointcut extends Node
 {
     /** Get the precedence of the expression. */

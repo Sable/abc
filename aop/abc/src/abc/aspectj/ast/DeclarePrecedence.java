@@ -20,6 +20,11 @@ package abc.aspectj.ast;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface DeclarePrecedence extends DeclareDecl
 {
     /* new stuff to be added */

@@ -28,6 +28,12 @@ import polyglot.visit.*;
 
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
+
 public class DotDotNamePattern_c extends NamePattern_c 
                                  implements DotDotNamePattern
 {

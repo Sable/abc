@@ -27,6 +27,11 @@ import polyglot.util.*;
 import polyglot.visit.*;
 import java.util.*;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public class TPEType_c extends TypePatternExpr_c implements TPEType
 {
     protected TypeNode type;

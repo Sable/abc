@@ -20,6 +20,11 @@ package abc.aspectj.ast;
 
 import polyglot.ast.ConstructorDecl;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface IntertypeConstructorDecl extends IntertypeDecl, ConstructorDecl
 {
     /* new stuff to be added */

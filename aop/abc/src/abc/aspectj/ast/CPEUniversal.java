@@ -20,6 +20,11 @@ package abc.aspectj.ast;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface CPEUniversal extends ClassnamePatternExpr
 {
     public void addExclude(ClassnamePatternExpr pat);

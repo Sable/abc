@@ -78,6 +78,11 @@ import abc.weaving.aspectinfo.GlobalAspectInfo;
 
 import polyglot.visit.ContextVisitor;
 
+/**
+ * 
+ * @author Oege de Moor
+ * @author Julian Tibble
+ */
 public class AspectMethods extends ContextVisitor {
 
     private Stack /* List MethodDecl */ methods; // method declaration lists, one for each classdecl

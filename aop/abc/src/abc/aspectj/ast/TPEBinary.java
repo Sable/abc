@@ -21,6 +21,11 @@ package abc.aspectj.ast;
 import polyglot.util.Enum;
 import polyglot.ast.Precedence;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface TPEBinary extends TypePatternExpr
 {
 

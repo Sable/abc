@@ -49,7 +49,6 @@ public class Weaver {
 	public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
-                weaveIntertype();
                 weaveGenerateAspectMethods();
                 Unweaver unweaver = new Unweaver();
                 unweaver.save();
@@ -63,29 +62,11 @@ public class Weaver {
                 weaveAdvice();
 
             } else {
-                weaveIntertype();
                 weaveGenerateAspectMethods();
                 weaveAdvice();
             }
         }
-	public void weaveIntertype() {
-		// Generate intertype methods and fields
-		debug("Generating intertype methods and fields ....");
-		IntertypeGenerator ig = new IntertypeGenerator();
-		//  --- Intertype methods
-		for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
-		    final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
-			ig.addMethod(imd);
-		}
-		// --- Intertype fields
-		for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
-		    final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
-			ig.addField(ifd);
-		}
 	
-		AbcTimer.mark("Intertype weave");
-	
-        }
 	public void weaveGenerateAspectMethods() {
 		// Generate methods inside aspects needed for code gen and bodies of
 		//   methods not filled in by front-end (i.e. aspectOf())

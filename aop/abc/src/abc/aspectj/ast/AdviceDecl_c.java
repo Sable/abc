@@ -86,7 +86,6 @@ import abc.weaving.aspectinfo.MethodCategory;
 import abc.weaving.aspectinfo.AbcFactory;
 
 /** 
- * @author Oege de Moor
  * 
  * Declarations of advice, for example
  * 
@@ -96,6 +95,7 @@ import abc.weaving.aspectinfo.AbcFactory;
  * 	call(* fac(*)) && args(x)  // pointcut
  *    { System.out.println(x);} // body
  * </code>
+ *  * @author Oege de Moor
  *  */
 public class AdviceDecl_c extends MethodDecl_c
     implements AdviceDecl, ContainsAspectInfo, MakesAspectMethods

@@ -29,6 +29,11 @@ import abc.aspectj.visit.*;
 import polyglot.types.*;
 import polyglot.visit.*;
 
+/**
+ * @author Pavel Avgustinov
+ * @author Oege de Moor
+ *
+ */
 public class AssignDel_c extends JL_c
 {
 	

@@ -41,6 +41,10 @@ import java.io.*;
 
 /**
  * Extension information for aspectj extension.
+ * 
+ * @author Oege de Moor
+ * @author Aske Simon Christensen
+ * @author Julian Tibble
  */
 public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 

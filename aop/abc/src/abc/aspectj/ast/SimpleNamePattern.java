@@ -21,6 +21,11 @@ package abc.aspectj.ast;
 
 import polyglot.ast.Node;
 
+/**
+ * 
+ * @author Oege de Moor
+ *
+ */
 public interface SimpleNamePattern extends NamePattern
 {
     public String getPatternString();
