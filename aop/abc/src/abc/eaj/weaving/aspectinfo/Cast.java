@@ -1,7 +1,6 @@
 package abc.eaj.weaving.aspectinfo;
 
 import soot.*;
-import soot.jimple.*;
 
 import polyglot.util.Position;
 

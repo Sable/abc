@@ -8,7 +8,6 @@ import polyglot.util.*;
 import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
-import abc.aspectj.visit.*;
 
 import abc.eaj.ast.EAJNodeFactory;
 import abc.eaj.util.ToReceiver;

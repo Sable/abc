@@ -1,7 +1,5 @@
 package abc.eaj.weaving.matching;
 
-import polyglot.util.InternalCompilerError;
-
 import java.util.*;
 
 import soot.*;

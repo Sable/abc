@@ -1,7 +1,6 @@
 package abc.eaj.weaving.matching;
 
 import soot.*;
-import soot.tagkit.Host;
 import abc.weaving.matching.SJPInfo;
 
 public class ExtendedSJPInfo

@@ -1,13 +1,10 @@
 package abc.eaj.ast;
 
 import polyglot.ast.*;
-import polyglot.types.*;
 import polyglot.visit.*;
 import polyglot.util.*;
 
 import abc.aspectj.ast.*;
-import abc.aspectj.types.*;
-import abc.aspectj.visit.AspectMethods;
 
 import java.util.*;
 

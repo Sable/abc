@@ -1,8 +1,5 @@
 package abc.eaj.extension;
 
-import polyglot.ast.Node;
-import polyglot.types.Context;
-
 import abc.aspectj.ast.AdviceDecl;
 import abc.aspectj.ast.Pointcut;
 
