@@ -199,7 +199,29 @@ public abstract class Pointcut extends Syntax {
     // Get a list of free variables bound by this pointcut
     public abstract void getFreeVars(Set/*<String>*/ result);
 
-        public abstract boolean unify(Pointcut otherpc,
-                                                                  Unification unification);
+    // Default implementation; all subclasses should override this,
+    // otherwise cflow CSE will not work for those pointcuts.
+    // (include this comment in proper javadoc for this method?)
+    public boolean unify(Pointcut otherpc,Unification unification) {
+
+        if (otherpc != this) return false;
+
+        // pc.unify(pc, unification) succeeds, setting the result of the
+        // unification to pc with the identity map on the free vars of pc
+
+        Set fvs = new HashSet();
+        getFreeVars(fvs);
+        Iterator it = fvs.iterator();
+
+        while (it.hasNext()) {
+            String s = (String) it.next();
+            Var v = new Var(s, getPosition());
+            unification.putVar1(v, v);
+            unification.putVar2(v, v);
+        }
+        unification.setPointcut(this);
+        return true;
+
+    }
 
 }

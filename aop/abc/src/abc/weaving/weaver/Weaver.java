@@ -30,7 +30,7 @@ import abc.weaving.matching.*;
 import abc.weaving.weaver.*;
 import abc.main.AbcTimer;
 
-/** The driver for the weaving process.  
+/** The driver for the weaving process.
  * @author Jennifer Lhotak
  * @author Ondrej Lhotak
  * @author Laurie Hendren
@@ -39,20 +39,13 @@ import abc.main.AbcTimer;
 
 public class Weaver {
 
-    private String runtimeFactoryClass;
-
-    public Weaver(String runtimeFactoryClass)
-    {
-        this.runtimeFactoryClass = runtimeFactoryClass;
-    }
-
     private static void debug(String message)
-      { if (abc.main.Debug.v().weaverDriver) 
-	  System.err.println("WEAVER DRIVER ***** " + message);
-      }	
+      { if (abc.main.Debug.v().weaverDriver)
+          System.err.println("WEAVER DRIVER ***** " + message);
+      }
     private Map unitBindings = new HashMap();
     private static boolean doCflowOptimization = true;
-	public void weave() {
+        public void weave() {
             if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             if( doCflowOptimization ) {
                 weaveGenerateAspectMethods();
@@ -69,7 +62,7 @@ public class Weaver {
                 weaveAdvice();
 
             } else {
-            	// add aspectOf(), hasAspect(), ...
+                // add aspectOf(), hasAspect(), ...
                 weaveGenerateAspectMethods();
                 if(abc.main.Debug.v().debugUnweaver) {
                     Unweaver unweaver = new Unweaver();
@@ -83,60 +76,60 @@ public class Weaver {
                 weaveAdvice();
             }
         }
-	
-	public void weaveGenerateAspectMethods() {
-		// Generate methods inside aspects needed for code gen and bodies of
-		//   methods not filled in by front-end (i.e. aspectOf())
-		debug("Generating extra code in aspects");
-		AspectCodeGen ag = new AspectCodeGen();
-		for( Iterator asIt = GlobalAspectInfo.v().getAspects().iterator(); asIt.hasNext(); ) {
-		    final Aspect as = (Aspect) asIt.next();
-			ag.fillInAspect(as);
-		}
-	
-		AbcTimer.mark("Add aspect code");
+
+        public void weaveGenerateAspectMethods() {
+                // Generate methods inside aspects needed for code gen and bodies of
+                //   methods not filled in by front-end (i.e. aspectOf())
+                debug("Generating extra code in aspects");
+                AspectCodeGen ag = new AspectCodeGen();
+                for( Iterator asIt = GlobalAspectInfo.v().getAspects().iterator(); asIt.hasNext(); ) {
+                    final Aspect as = (Aspect) asIt.next();
+                        ag.fillInAspect(as);
+                }
+
+                AbcTimer.mark("Add aspect code");
 
         }
-	public void weaveAdvice() {
-		ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
-		PointcutCodeGen pg = new PointcutCodeGen();
-		GenStaticJoinPoints gsjp =
-                        new GenStaticJoinPoints(runtimeFactoryClass);
-	
-		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-	
-		    final AbcClass cl = (AbcClass) clIt.next();
-			final SootClass scl = cl.getSootClass();
-	
-			debug("--------- STARTING WEAVING OF CLASS >>>>> " + scl.getName());
-	
-			//  PASS 1 --------- (no init or preinit)--------------------
-	
-			// need to put in shadows for staticinit so SJP stuff can be
-			//   inserted BEFORE the beginning point of the shadow.  If this
-			//   is not done,  then the staticinitialization joinpoint will 
-			//   try to use an uninitialized SJP.
-			sg.setShadowPointsPass1(scl);
-			// generate the Static Join Points
-			gsjp.genStaticJoinPoints(scl);
-			// print out advice info for debugging
-			if (abc.main.Debug.v().printAdviceInfo)
-				PrintAdviceInfo.printAdviceInfo(scl);
-			// pass one of weaver, 
-			pg.weaveInAspectsPass(scl, 1);
-	
-			// PASS 2  ----------- (handle init and preinit) -------------
-			// first set the shadows,this may trigger inlining
-			sg.setShadowPointsPass2(scl);
-			// then do the weaving
-			pg.weaveInAspectsPass(scl, 2);
+        public void weaveAdvice() {
+                ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
+                PointcutCodeGen pg = new PointcutCodeGen();
+                GenStaticJoinPoints gsjp =
+                    new GenStaticJoinPoints(abc.main.Main.v().getAbcExtension().runtimeSJPFactoryClass());
 
-			debug("--------- FINISHED WEAVING OF CLASS >>>>> " + scl.getName() + "\n");
-		} // each class
-		
-		// around advice applying to around advice (adviceexecution) is woven in last
-		pg.weaveInAroundAdviceExecutionsPass();
-		
-		AbcTimer.mark("Weaving advice");
-	} // method weave
+                for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+
+                    final AbcClass cl = (AbcClass) clIt.next();
+                        final SootClass scl = cl.getSootClass();
+
+                        debug("--------- STARTING WEAVING OF CLASS >>>>> " + scl.getName());
+
+                        //  PASS 1 --------- (no init or preinit)--------------------
+
+                        // need to put in shadows for staticinit so SJP stuff can be
+                        //   inserted BEFORE the beginning point of the shadow.  If this
+                        //   is not done,  then the staticinitialization joinpoint will
+                        //   try to use an uninitialized SJP.
+                        sg.setShadowPointsPass1(scl);
+                        // generate the Static Join Points
+                        gsjp.genStaticJoinPoints(scl);
+                        // print out advice info for debugging
+                        if (abc.main.Debug.v().printAdviceInfo)
+                                PrintAdviceInfo.printAdviceInfo(scl);
+                        // pass one of weaver,
+                        pg.weaveInAspectsPass(scl, 1);
+
+                        // PASS 2  ----------- (handle init and preinit) -------------
+                        // first set the shadows,this may trigger inlining
+                        sg.setShadowPointsPass2(scl);
+                        // then do the weaving
+                        pg.weaveInAspectsPass(scl, 2);
+
+                        debug("--------- FINISHED WEAVING OF CLASS >>>>> " + scl.getName() + "\n");
+                } // each class
+
+                // around advice applying to around advice (adviceexecution) is woven in last
+                pg.weaveInAroundAdviceExecutionsPass();
+
+                AbcTimer.mark("Weaving advice");
+        } // method weave
 } // class Weaver

@@ -79,7 +79,7 @@ public abstract class AdviceApplication {
         sb.append(prefix+"---"+"\n");
     }
 
-    private static void doShadows(GlobalAspectInfo info,
+    public static void doShadows(GlobalAspectInfo info,
                                   MethodAdviceList mal,
                                   SootClass cls,
                                   SootMethod method,
@@ -171,6 +171,10 @@ public abstract class AdviceApplication {
         throws SemanticException
     {
 
+        if(abc.main.Debug.v().traceMatcher)
+            System.out.println("Doing method: "+method);
+
+
         // Restructure everything that corresponds to a 'new' in
         // source so that object initialisation and constructor call
         // are adjacent
@@ -182,9 +186,6 @@ public abstract class AdviceApplication {
         // that might match it, and add the class to the list if so
         // Either that or pre-compute the list of all classes that our
         // pointcuts could match
-
-        if(abc.main.Debug.v().traceMatcher)
-            System.out.println("Doing method: "+method);
 
         HashMap m=new HashMap();
         m.put("enabled","true");
@@ -220,47 +221,7 @@ public abstract class AdviceApplication {
 
         MethodAdviceList mal=new MethodAdviceList();
 
-        // Do whole body shadows
-        if(MethodCategory.weaveExecution(method))
-            doShadows(info,mal,cls,method,new WholeMethodPosition(method));
-
-        // Do statement shadows
-        if(abc.main.Debug.v().traceMatcher)
-            System.err.println("Doing statement shadows");
-        if(MethodCategory.weaveInside(method)) {
-            Chain stmtsChain=method.getActiveBody().getUnits();
-            Stmt current,next;
-
-            if(!stmtsChain.isEmpty()) { // I guess this is actually never going to be false
-                for(current=(Stmt) stmtsChain.getFirst();
-                    current!=null;
-                    current=next) {
-                    if(abc.main.Debug.v().traceMatcher)
-                        System.err.println("Stmt = "+current);
-                    next=(Stmt) stmtsChain.getSuccOf(current);
-                    doShadows(info,mal,cls,method,new StmtMethodPosition(method,current));
-                    doShadows(info,mal,cls,method,new NewStmtMethodPosition(method,current,next));
-                }
-            }
-        }
-
-        // Do exception handler shadows
-
-        if(abc.main.Debug.v().traceMatcher)
-            System.err.println("Doing exception shadows");
-
-        Chain trapsChain=method.getActiveBody().getTraps();
-        Trap currentTrap;
-
-        if(!trapsChain.isEmpty()) {
-            for(currentTrap=(Trap) trapsChain.getFirst();
-                currentTrap!=null;
-                currentTrap=(Trap) trapsChain.getSuccOf(currentTrap))
-
-                doShadows(info,mal,cls,method,new TrapMethodPosition(method,currentTrap));
-        }
-
-
+        abc.main.Main.v().getAbcExtension().findMethodShadows(info,mal,cls,method);
 
         ret.put(method,mal);
     }

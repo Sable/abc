@@ -67,21 +67,20 @@ public class AbcExtension extends abc.main.AbcExtension
                                 SootClass.SIGNATURES);
     }
 
-    public abc.weaving.weaver.Weaver makeWeaver()
-    {
-        return new abc.weaving.weaver.Weaver(
-                        "uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory");
+    public String runtimeSJPFactoryClass() {
+        return "uk.ac.ox.comlab.abc.eaj.runtime.reflect.EajFactory";
     }
+
     /* (non-Javadoc)
      * @see abc.main.AbcExtension#initLexerKeywords(abc.aspectj.parse.AbcLexer)
      */
     public void initLexerKeywords(AbcLexer lexer) {
-		// Add the base keywords
-		super.initLexerKeywords(lexer);
-		
+                // Add the base keywords
+                super.initLexerKeywords(lexer);
+
         // keyword for the "cast" pointcut extension
         lexer.addPointcutKeyword("cast", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CAST)));
-        
+
         // keyword for the "throw" pointcut extension
         lexer.addPointcutKeyword("throw", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_THROW)));
 

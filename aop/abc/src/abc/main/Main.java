@@ -69,7 +69,6 @@ import soot.javaToJimple.JimpleBodyBuilder;
 import soot.jimple.toolkits.base.ExceptionChecker;
 import soot.jimple.toolkits.base.ExceptionCheckerError;
 import soot.jimple.toolkits.base.ExceptionCheckerErrorReporter;
-import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import abc.aspectj.visit.NoSourceJob;
 import abc.aspectj.visit.OncePass;
 import abc.aspectj.visit.PatternMatcher;
@@ -77,8 +76,6 @@ import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AspectJExceptionChecker;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
-import abc.weaving.weaver.CflowIntraAggregate;
-import abc.weaving.weaver.CflowIntraproceduralAnalysis;
 import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.Weaver;
@@ -695,14 +692,13 @@ public class Main {
                 public void write(int b) { }
             });
 
+        getAbcExtension().addJimplePacks();
+
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
         //System.out.println(classpath);
         if (!soot.options.Options.v().parse(soot_argv)) {
             throw new IllegalArgumentException("Soot usage error");
         }
-
-        PackManager.v().getPack("jtp").add(new Transform("jtp.uce", UnreachableCodeEliminator.v()));
-
 
         InitialResolver.v().setJBBFactory(new AbstractJBBFactory(){
             protected AbstractJimpleBodyBuilder createJimpleBodyBuilder(){
@@ -894,7 +890,7 @@ public class Main {
                     System.err.println("--- END ADVICE LISTS ---");
                 }
 
-                Weaver weaver = getAbcExtension().makeWeaver();
+                Weaver weaver = new Weaver();
                 weaver.weave(); // timer marks inside weave() */
             }
             // the intertype adjuster has put dummy fields into interfaces,
@@ -956,59 +952,6 @@ public class Main {
     }
 
     public void optimize(){
-
-        // FIXME - find a better place for adding this; want to be sure it'll be in the list precisely
-        // once, even when running the test harness
-
-        // Add a null check eliminator that knows about abc specific stuff
-        soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator.AnalysisFactory f
-            =new soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator.AnalysisFactory() {
-                public soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis newAnalysis
-                    (soot.toolkits.graph.UnitGraph g) {
-                        return new soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis(g) {
-                            public boolean isAlwaysNonNull(Value v) {
-                                if(super.isAlwaysNonNull(v)) return true;
-                                if(v instanceof soot.jimple.InvokeExpr) {
-                                    soot.jimple.InvokeExpr ie=(soot.jimple.InvokeExpr) v;
-                                    soot.SootMethodRef m=ie.getMethodRef();
-                                    if(m.name().equals("makeJP") &&
-                                            m.declaringClass().getName().equals
-                                            ("uk.ac.ox.comlab.abc.runtime.reflect.Factory"))
-                                        return true;
-                                    if(m.name().equals("getStack") || m.name().equals("getCounter"))
-                                        if (m.declaringClass().getName().equals
-                                            ("uk.ac.ox.comlab.abc.runtime.internal.CFlowStack") ||
-                                            m.declaringClass().getName().equals
-                                            ("uk.ac.ox.comlab.abc.runtime.internal.CFlowCounter"))
-                                            return true;
-                                }
-                                return false;
-                            }
-                        };
-                    }
-            };
-        // want this to run before Dead assignment eliminiation
-        PackManager.v()
-            .getPack("jop")
-            .insertBefore(new Transform("jop.nullcheckelim", new soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator(f)),
-                    "jop.dae");
-
-        if (Debug.v().cflowIntraAnalysis) {
-            // Cflow Intraprocedural Analysis
-            // Two phases:
-            //              - Collapse all the local vars assigned to the same CflowStack/CflowCounter field
-            //                to the same var, only needs to be assigned once
-            //              - Get the stack/counter for the current thread for each of these lazily
-            //                to avoid repeated currentThread()s
-            PackManager.v().getPack("jop")
-                .insertBefore(new Transform("jop.cflowintra", CflowIntraproceduralAnalysis.v()),
-                        "jop.dae");
-            // Before running the cflow intraprocedural, need to aggregate cflow vars
-            PackManager.v().getPack("jop")
-                .insertBefore(new Transform("jop.cflowaggregate", CflowIntraAggregate.v()),
-                        "jop.cflowintra");
-        }
-
         PackManager.v().runPacks();
     }
 
