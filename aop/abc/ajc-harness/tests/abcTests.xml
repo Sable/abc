@@ -9292,7 +9292,7 @@
     <ajc-test num="997" dir="abctests/bugs"
         title="verify error with calls to outer methods from inner classes">
        <compile files="PatternMatcher.java"/>
-       <run class="PatternMatcher$AIMethodPattern"/>
+       <run class="PatternMatcher"/>
     </ajc-test>
 
     <ajc-test num="998" dir="abctests/bugs"

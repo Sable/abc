@@ -20,7 +20,15 @@ public class PatternMatcher {
 
     }
 
-    public static void main(String[] args) {}
+    public static void main(String[] args) {
+        PatternMatcher p = new PatternMatcher();
+        p.go();
+    }
+
+    public void go (){
+        AIMethodPattern a = new AIMethodPattern();
+        a.matchesExecution();
+    }
 
 
 }
