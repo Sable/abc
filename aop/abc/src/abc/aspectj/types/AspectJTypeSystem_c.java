@@ -228,8 +228,7 @@ public class AspectJTypeSystem_c
 	}
 	
 	/** All flags allowed for a member class. */
-	 protected final Flags MEMBER_CLASS_FLAGS = TOP_LEVEL_CLASS_FLAGS.Static().set(AspectJFlags.ASPECTCLASS);
-
+	 protected final Flags MEMBER_CLASS_FLAGS = super.METHOD_FLAGS.set(AspectJFlags.ASPECTCLASS);
 	 public void checkMemberClassFlags(Flags f) throws SemanticException {
 			if (! f.clear(MEMBER_CLASS_FLAGS).equals(Flags.NONE)) {
 			throw new SemanticException(
@@ -267,6 +266,7 @@ public class AspectJTypeSystem_c
 			  	}
 
 			  	List /*FieldInstance*/ fis = findFields(container, name);
+			  	// System.out.println("findField "+fis);
 			 	List acceptable = new ArrayList();
 			 
 			  	for (Iterator fisit = fis.iterator(); fisit.hasNext() ; ) {
