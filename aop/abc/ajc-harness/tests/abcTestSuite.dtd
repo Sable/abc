@@ -57,7 +57,7 @@
    <!ATTLIST message details CDATA #IMPLIED >
 
    <!ELEMENT ajcmessage (source*)>
-   <!ATTLIST ajcmessage kind (abort | fail | error | warning | info | Xlint) #REQUIRED >
+   <!ATTLIST ajcmessage kind (abort | fail | error | warning | info | Xlint | ignore ) #REQUIRED >
    <!ATTLIST ajcmessage line CDATA #IMPLIED >
    <!ATTLIST ajcmessage text CDATA #IMPLIED >
    <!ATTLIST ajcmessage file CDATA #IMPLIED >

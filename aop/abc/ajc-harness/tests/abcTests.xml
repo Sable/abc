@@ -784,6 +784,7 @@
       keywords="from-java,purejava">
         <compile files="KeywordAspect.java">
           <message kind="error" line="7"/> 
+          <ajcmessage kind="ignore" />
         </compile>
         <ajcrun class="KeywordAspect" />
     </ajc-test>
@@ -794,6 +795,7 @@
       keywords="from-java,purejava">
         <compile files="KeywordPointcut.java">
            <message kind="error" line="7" />
+           <ajcmessage kind="ignore" />
         </compile>
         <ajcrun class="KeywordPointcut"/>
     </ajc-test>
@@ -806,6 +808,10 @@
 
     <ajc-test dir="new" pr="408"
       title="Not binding constructor when using more than one compilation"
+      abccomment="Need to compile second file, loading the CLASS file 
+                  produced by the first compile.  Requires modifying 
+                  behaviour of polyglot loader.  Aske looking into this
+                  as of July 1/04.  LJH"
       keywords="from-java,purejava">
         <compile files="OuterAbstract_PR408.java"/>
         <compile files="ExtendsOuterAbstract_PR408.java"/>
@@ -835,6 +841,8 @@
 
     <ajc-test dir="pureJava"
       title="finally at the end of a method that needs to return"
+      abccomment="incorrect code generation by j2j for m().  Problem
+                  reported to Jennifer July 1/04.  LJH "
       keywords="from-java">
         <compile files="FinallyAndReturns.java"/>
         <run class="FinallyAndReturns"/>
@@ -910,6 +918,8 @@
 
     <ajc-test dir="pureJava/innerDefaultConstructors"
       title="Default constructors have same access as their enclosing type"
+      abccomment="jlc doesn't report expected error.
+                  Reported to Nate on July 1/04.  LJH"
       keywords="from-java">
         <compile files="pkg1/Main.java,pkg2/Foo.java">
             <message kind="error" line="6"/>
