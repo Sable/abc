@@ -77,6 +77,7 @@ public class TestCase {
 	public TestCase(XML xml) {
 		xTest = xml;
 		dir = xTest.select("/abc:ajc-test/@dir")[0].text();
+		dir= dir.replace('/', File.separatorChar);
 		title = xTest.select("/abc:ajc-test/@title")[0].text();
 		try {
 		    // leading space so we can concat it easier with other strings while maintaining readability
@@ -194,7 +195,7 @@ public class TestCase {
 					for(int j = 0; j < arrFiles.length; j++) {
 					    arrFiles[j] = arrFiles[j].trim();
 					    if(arrFiles[j].endsWith(".jar") || arrFiles[j].endsWith(".zip")) {
-					        arrJars[j] = arrFiles[j];
+					        arrJars[j] = arrFiles[j].replace('/',File.separatorChar);
 					        arrFiles[j] = null;
 					    }
 					}
@@ -210,7 +211,7 @@ public class TestCase {
 					 */
 					
 					for(int j = 0; j < arrFiles.length; j++) {
-					    arrFiles[j] = dir + "/" + arrFiles[j].trim();
+					    arrFiles[j] = dir + File.separatorChar + arrFiles[j].trim().replace('/',File.separatorChar);
 					}
 					// Combine flag and file arguments into a single array
 					// XXX: At the moment, there's no consolidation between arguments passed to abc 
@@ -760,13 +761,32 @@ public class TestCase {
             
             if(c != null) return c;
             
-            File file = new File(directory.getAbsoluteFile() + System.getProperty("file.separator") + className.replaceAll("\\.", "/") + ".class");
+            File file = new File(directory.getAbsoluteFile() + System.getProperty("file.separator") + className.replace('.', File.separatorChar) + ".class");
+            //System.out.print("Class file: " + file);
             if (!file.exists()) {
             	System.err.println("File " + file.toString() + " not found, skipping...");
                 return super.findClass(className);
             }
-				
+			
+            if (!file.canRead()){
+            	System.err.println("File " + file.toString() + " not readable, skipping...");
+                return super.findClass(className);
+            }
+			//try { Thread.sleep(10000); } catch(Throwable t) {}
+            //System.runFinalization();
+            System.gc();
+            System.runFinalization();
+            
             long length = file.length();
+            //System.out.println("Class file length: " + length);
+
+            if(length == 0L) {
+            	// 0L indicates that the file does not exist, according to the javadoc.
+            	// Should not occur because of the file.exists() check, but does nevertheless.
+                System.err.println("File " + file.toString() + " is zero length, skipping...");
+                return super.findClass(className);
+            }
+            
             if(length > Integer.MAX_VALUE) {
                 // We're stuffed now - array declarations expect an int as the array size
                 // TODO: What to do? Or assume we'll never come across a file so large?
