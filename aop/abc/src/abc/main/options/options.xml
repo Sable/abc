@@ -1,0 +1,84 @@
+<?xml version = '1.0' encoding = 'ISO-8859-1' ?>
+<!-- <?xml-stylesheet type="text/xsl" href="abc_options.xsl"  ?>-->
+<options>
+  <intro>
+    <p>
+You can write some introduction to the options document here
+if you want. Use <tt>HTML</tt>-style tags if you need to.
+Just be sure to close them and nest them properly.
+    </p>
+    <p>
+The HTML-like stuff will be converted to the equivalent latex for you.
+Hopefully, you won't have anything complicated.
+    </p>
+  </intro>
+  <section>
+<!--
+I think it's useful to organize the options into sections (for
+readability. If that's too hard, just put them all into one section. You
+can make up tags for things that you think are useful information. For
+example, it might be useful to tag options which are the same as ajc
+options with something like <ajc/>
+-->
+    <name>General Options</name>
+    <!-- Give each section a name. The options in the section follow. -->
+    <pathopt>
+      <alias>sourceroots</alias>
+<!--
+In Soot, we found it useful to have both short documentation and long
+documentation for each option. The short is a one-line thing used in
+the usage screen. The long is used in the printed documentation.
+If that's too much work, just do one of them.
+-->
+      <set_arg_label>path</set_arg_label>
+      <short_desc>Use classes in dirs in <use_arg_label/> as source.</short_desc>
+      <long_desc>
+<use_arg_label/> should be a list of directories. Tells abc to compile all
+.java files found in <use_arg_label/> and any of its subclasses.
+      </long_desc>
+<!--
+For the set_arg_label/use_arg_label thing, you also don't have to do that
+if you don't want to. We found it quite useful, because we set it in 
+all caps in the usage screen, and in \em in latex. (for abc, in the usage
+screen, we probably want to set it in angle brackets for consistency
+with ajc)
+The idea is that it will come up something like the following in the usage
+screen:
+  -sourceroots  <path>              Use classes in dirs in <path> as source.
+-->
+    </pathopt>
+    <boolopt>
+      <alias>h</alias>
+      <alias>help</alias>
+      <short_desc>foo</short_desc>
+      <long_desc>
+Prints the usage screen. Notice that there are two aliases, -h and -help, so
+the XML file has two alias tags.
+      </long_desc>
+    </boolopt>
+    <debugopt>
+      <undocumented/>
+<!--
+The fact that this option is undocumented will probably just be
+implied by the fact that it's a debugopt, but it may be nice to
+specify it explicitly, so that we can later make other options
+(non-debug) options undocumented if we wish.
+-->
+      <alias>ajcCompliance</alias>
+      <default>false</default>
+      <short_desc>foo</short_desc>
+      <long_desc>
+Makes abc bug-for-bug compatible with ajc.
+      </long_desc>
+    </debugopt>
+<!--
+If you think of things other than pathopt/debugopt/boolopt, just start
+using them (as long as you use them consistently)
+-->
+  </section>
+<!--
+you can put more sections here
+actually, it probably makes sense to put all the debug options in their
+own section
+-->
+</options>
