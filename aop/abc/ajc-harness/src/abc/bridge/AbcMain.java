@@ -3,6 +3,7 @@ package abc.bridge;
 import java.util.ArrayList;
 import java.util.List;
 
+import abc.main.CompilerAbortedException;
 import abc.main.CompilerFailedException;
 
 public class AbcMain {
@@ -17,7 +18,10 @@ public class AbcMain {
 			throw new CompilationFailedException(null);//System.exit(1);
 		} catch (CompilerFailedException e) {
 			throw new CompilationFailedException(main.getErrors());//System.exit(5);
-		} finally {
+		} catch (CompilerAbortedException e) {
+			System.exit(0);
+		}
+		finally {
 			SilentMain.reset();
 		}
 	}
