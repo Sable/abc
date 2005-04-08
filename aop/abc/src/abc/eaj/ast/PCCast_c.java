@@ -76,7 +76,7 @@ public class PCCast_c extends Pointcut_c
 
 
     public boolean isDynamic() {
-	return true;
+	return false;
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut()
