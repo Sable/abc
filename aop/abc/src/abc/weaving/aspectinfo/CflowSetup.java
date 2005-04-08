@@ -409,13 +409,24 @@ public class CflowSetup extends AbstractAdviceDecl {
         // The thread-local only needs to be initialised (lazily) for PUSH, never POP
         // (as a POP always occurs after a PUSH, and so the local must be initialised)
         Local cflowInstance = getMethodCflowLocal(localgen, m);
-        Local cflowLocal = getMethodCflowThreadLocal(localgen, m);
+
+        // If once-per-method retrieval is disabled, make a new local for cflowLocal,
+        // and use genInitLocal instead of genInitLocalLazily
+        Local cflowLocal = 
+        	(abc.main.options.OptionsParser.v().cflow_share_thread_locals() ?
+        		getMethodCflowThreadLocal(localgen, m)
+        			:
+        		localgen.generateLocal(codeGen().getCflowInstanceType(), "cflowThreadLocal"));
         
         if (cswc.doBefore) {
         	// PUSH
 
         	// Initialise the cflow thread-local
-        	Chain getInstance = codeGen().genInitLocalLazily(localgen, cflowLocal, cflowInstance);
+        	Chain getInstance = 
+        		(abc.main.options.OptionsParser.v().cflow_share_thread_locals() ? 
+        				codeGen().genInitLocalLazily(localgen, cflowLocal, cflowInstance)
+        						:
+        				codeGen().genInitLocal(localgen, cflowLocal, cflowInstance));
         	c.addAll(getInstance);
 
         	List/*<Value>*/ values = new LinkedList();
@@ -431,6 +442,14 @@ public class CflowSetup extends AbstractAdviceDecl {
         	
         } else {
         	// POP
+        	
+        	// We do have to initialise cflowLocal if cflow_share_thread_locals:false
+        	if (!abc.main.options.OptionsParser.v().cflow_share_thread_locals()) {
+        		Chain getInstance = 
+        			codeGen().genInitLocal(localgen, cflowLocal, cflowInstance);
+        		c.addAll(getInstance);
+        	}
+        	
         	ChainStmtBox popChain = codeGen().genPop(localgen, cflowLocal);
         	c.addAll(popChain.getChain());
         	popStmts.put(adviceappl, popChain.getStmt());

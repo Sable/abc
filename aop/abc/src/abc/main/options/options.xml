@@ -247,6 +247,12 @@ any of their subdirectories.
       <short_desc>Share state between cflow pointcuts whenever possible</short_desc>
       <long_desc>Use only one stack or counter for several occurrences of the same cflow pointcut.</long_desc>
     </boolopt>
+    <boolopt>
+      <alias>cflow-share-thread-locals</alias>
+      <default>true</default>
+      <short_desc>Share thread-local instances of cflow stacks within method bodies</short_desc>
+      <long_desc>Retrieve the thread-local instance of each cflow stack only once per method.</long_desc>
+    </boolopt>
   </section>
   <section undoc="">
     <name>Debug options</name>

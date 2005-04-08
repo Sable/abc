@@ -101,9 +101,19 @@ public class CflowResidue extends Residue {
         Local cflowStack = setup.getMethodCflowLocal(localgen, method);
         last = begin;
 
-        Local cflowLocal = setup.getMethodCflowThreadLocal(localgen, method);
+        // If once-per-method retrieval is disabled, make a new local for cflowLocal,
+        // and use genInitLocal instead of genInitLocalLazily
+        Local cflowLocal = 
+        	(abc.main.options.OptionsParser.v().cflow_share_thread_locals() ?
+        		setup.getMethodCflowThreadLocal(localgen, method)
+        			:
+        		localgen.generateLocal(setup.codeGen().getCflowInstanceType(), "cflowThreadLocal"));
 
-        Chain getlocalstack = codegen.genInitLocalLazily(localgen, cflowLocal, cflowStack);
+        Chain getlocalstack = 
+    		(abc.main.options.OptionsParser.v().cflow_share_thread_locals() ? 
+    				setup.codeGen().genInitLocalLazily(localgen, cflowLocal, cflowStack)
+    						:
+    				setup.codeGen().genInitLocal(localgen, cflowLocal, cflowStack));
         last = (Stmt)insertChainAfter(units, getlocalstack, last);
         
         debug("checking validity");
