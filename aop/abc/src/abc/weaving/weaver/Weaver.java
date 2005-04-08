@@ -62,11 +62,11 @@ public class Weaver {
           System.err.println("WEAVER DRIVER ***** " + message);
       }
     static private Map unitBindings = new HashMap();
-    private static boolean doCflowOptimization = true;
+    public static boolean doCflowOptimization = false;
 
     static public void reset() {
         unitBindings=new HashMap();
-        doCflowOptimization=true;
+        doCflowOptimization=false;
     }
 
     static public Map getUnitBindings() {
@@ -125,7 +125,6 @@ public class Weaver {
     }
 
         static public void weave() {
-            if( !soot.options.Options.v().whole_program() ) doCflowOptimization = false;
             // add aspectOf(), hasAspect(), ...
             weaveGenerateAspectMethods();
             inlineConstructors();

@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Ondrej Lhotak
+ * Copyright (C) 2004, 2005 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -82,22 +82,26 @@ public class CflowAnalysisImpl implements CflowAnalysis {
         entryPoints.addAll(EntryPoints.v().mainsOfApplicationClasses());
         Scene.v().setEntryPoints(entryPoints);
         */
+        /*
         PhaseOptions.v().setPhaseOption("cg", "enabled:false");
         PhaseOptions.v().setPhaseOption("cg.paddle", "enabled:false");
         PaddleOptions paddleOpts = new soot.options.PaddleOptions(PhaseOptions.v().getPhaseOptions("cg.paddle"));
         PaddleTransformer.v().setup(paddleOpts);
+        */
 
 
+        /*
         debug("making join point analysis");
         JoinPointAnalysis jpa = new JoinPointAnalysis( 
             RefType.v("org.aspectj.lang.JoinPoint"),
             Scene.v().getSootClass("org.aspectbench.runtime.reflect.JoinPointImpl") );
         jpa.setup(new HashSet(joinPointLocalMap.keySet()));
+        */
 
 
         debug("running paddle");
-        PaddleTransformer.v().solve(paddleOpts);
-
+        //PaddleTransformer.v().solve(paddleOpts);
+        PackManager.v().getPack("cg").apply();
 
         debug("starting cflow analysis");
         BDDCflow cflowAnalysis = new BDDCflow();

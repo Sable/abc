@@ -218,6 +218,18 @@ public class Main {
         boolean noArguments = args.isEmpty();
         OptionsParser.v().set_classpath(System.getProperty("java.class.path"));
 
+        // The following Soot args need to go at the beginning, so that they
+        // may be overridden by explicit command-line options.
+        soot_args.add("-p");
+        soot_args.add("cg");
+        soot_args.add("enabled:true");
+        soot_args.add("-p");
+        soot_args.add("cg.paddle");
+        soot_args.add("enabled:true");
+        soot_args.add("-p");
+        soot_args.add("cg.paddle");
+        soot_args.add("backend:javabdd");
+
         while(!args.isEmpty())
         { 
 
@@ -415,6 +427,14 @@ public class Main {
 
         if(OptionsParser.v().O()>0) {
             soot_args.add("-O");
+        }
+        if(OptionsParser.v().O()>=3) {
+            soot_args.add("-w");
+            Weaver.doCflowOptimization = true;
+        }
+        if(OptionsParser.v().main_class() != null) {
+            soot_args.add("-main-class");
+            soot_args.add(OptionsParser.v().main_class());
         }
         if(OptionsParser.v().dava()) {
             soot_args.add("-f");
@@ -944,7 +964,7 @@ public class Main {
     }
 
     public void optimize(){
-        PackManager.v().runPacks();
+        PackManager.v().runBodyPacks();
     }
 
     public void output() {

@@ -104,6 +104,15 @@ any of their subdirectories.
         classpath abc is invoked with.
       </long_desc>
     </stringopt>
+    <stringopt>
+      <alias>main-class</alias>
+      <set_arg_label>class</set_arg_label>
+      <short_desc>Sets the main class for interprocedural analysis.</short_desc>
+      <long_desc>When performing interprocedural optimizations (with -O3),
+        abc needs to know the main class (entry point) of the program.
+        This option sets the main class.
+      </long_desc>
+    </stringopt>
   </section>
   <section>
     <name>Output Options</name>
