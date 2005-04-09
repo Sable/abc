@@ -1,5 +1,11 @@
 <suite xmlns="http://www.comlab.ox.ac.uk/abc" xmlns:ns="http://www.comlab.ox.ac.uk/abc"> 
- <ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
+ <ajc-test title="Not binding constructor when using more than one compilation" pr="408" num="115" keywords="from-java,purejava" dir="new" abccomment="Need to compile second file, loading the CLASS file                    produced by the first compile.  Requires modifying                    behaviour of polyglot loader.  Aske looking into this                   as of July 1/04.  LJH                   Aske has made it so it can load a class file, but now                   abc cannot resolve InnerAspect when compiling the                    second file.  j2j seems to be able to do it, but                   not abc. July 6/04. LJH">
+        <compile files="OuterAbstract_PR408.java"></compile>
+        <compile includeClassesDir="true" files="ExtendsOuterAbstract_PR408.java"></compile>
+        <compile includeClassesDir="true" files="ConstructorNotFound_PR408.java"></compile>
+        <run class="ConstructorNotFound_PR408"></run>
+    </ajc-test>
+<ajc-test title="type and package name conflicts caught as errors (1)" num="165" keywords="from-java,purejava" dir="pureJava/nameConflicts" abccomment="this is missing in jlc, but it seems less important                   than other problems, so won't report it to Nate                     just yet.  July 2/04 LJH.                   Has been fixed in polyglot, but gives a different line                   number,  should be ok.  August 26/04 LJH">
         <compile files="p1/p2.java,p1/Main1.java,p1/Foo.java,p1/p2/Foo.java">
             <ajcmessage line="3" kind="error"></ajcmessage>
             <message line="8" kind="error"></message>
@@ -9,6 +15,11 @@
       <abckeywords> <laurie></laurie> <nate></nate> </abckeywords>
         <compile files="NestedFinally.java"></compile>
         <run class="NestedFinally"></run>
+    </ajc-test>
+<ajc-test title="interfaces with non-explicitly static inner classes" pr="680" num="190" keywords="from-java" dir="pureJava" abccomment="Probably a j2j error, reported to Jennifer July 3/04 LJH">
+        <compile files="InterfaceAndInnerHelper.java"></compile>
+        <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
+        <run class="InterfaceAndInner"></run>
     </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
