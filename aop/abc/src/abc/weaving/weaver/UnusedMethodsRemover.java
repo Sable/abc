@@ -48,7 +48,8 @@ public class UnusedMethodsRemover {
 		return 
 		Util.isProceedMethodName(methodName) ||
 		methodName.startsWith("proceed$") ||
-		methodName.startsWith("if$");
+		methodName.startsWith("if$") ||
+		methodName.startsWith("shadow$");
 	}
 	static boolean considerMethod(String methodName) {
 		return considerInstanceMethod(methodName) ||

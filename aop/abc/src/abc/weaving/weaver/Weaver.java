@@ -295,6 +295,7 @@ public class Weaver {
                 // around advice applying to around advice (adviceexecution) is woven in last
                 pg.weaveInAroundAdviceExecutionsPass();
 
+                //if (false)
                 for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
                     final AbcClass cl = (AbcClass) clIt.next();

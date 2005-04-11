@@ -72,6 +72,9 @@ public class AroundInliner extends AdviceInliner {
 		
 		inlineMethods(body, options, new IfMethodInlineOptions());
 			
+		// for the failed-case of the dynamic residue
+		inlineMethods(body, options, new ProceedMethodInlineOptions(body));
+		
 		// do this in a loop:
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case

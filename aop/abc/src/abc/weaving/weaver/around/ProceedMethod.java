@@ -202,6 +202,7 @@ public class ProceedMethod {
 	public void doWeave(AdviceApplication adviceAppl, SootMethod shadowMethod) {
 
 		AdviceApplicationInfo adviceApplication = new AdviceApplicationInfo(
+				aroundWeaver,
 				this, adviceAppl, shadowMethod);
 		this.adviceApplications.add(adviceApplication);
 		adviceApplication.doWeave();

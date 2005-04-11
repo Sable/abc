@@ -20,6 +20,7 @@
 
 package abc.weaving.weaver.around;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -320,7 +321,14 @@ public class Util {
 		}
 		return result;
 	}
-	
+	public static List getTypeListFromLocals(List locals) {
+		List result=new ArrayList(locals.size());
+		for (Iterator it=locals.iterator();it.hasNext();) {
+			Local l=(Local)it.next();
+			result.add(l.getType());
+		}
+		return result;
+	}
 	public static void insertCast(Body body, Stmt stmt, ValueBox source, Type targetType) {
 		Chain units = body.getUnits().getNonPatchingChain();
 		if (!source.getValue().getType().equals(targetType)) {

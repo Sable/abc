@@ -40,6 +40,7 @@ import soot.Value;
 import soot.ValueBox;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
+import soot.jimple.IdentityStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
 import soot.jimple.InvokeStmt;
@@ -78,42 +79,23 @@ public class AdviceApplicationInfo {
 	public int shadowInternalLocalCount;
 
 	public int getShadowSize() {
-
-		Chain statements = shadowMethodStatements;
-
-		if (!statements.contains(begin))
-			throw new InternalAroundError();
-
-		if (!statements.contains(end))
-			throw new InternalAroundError();
-
-		boolean insideRange = false;
-		int size = 0;
-		Iterator it = statements.iterator();
-		while (it.hasNext()) {
-			Stmt s = (Stmt) it.next();
-			if (s == end) {
-				if (!insideRange)
-					throw new InternalAroundError();
-
-				insideRange = false;
-			}
-
-			if (s == begin) {
-				if (insideRange)
-					throw new InternalAroundError();
-
-				insideRange = true;
-			} else if (insideRange) {
-				size++;
-			}
+		int stmtCount=0;
+		Iterator it=shadowMethodStatements.iterator(begin);
+		while(it.hasNext()) {
+			Stmt stmt=(Stmt)it.next();
+			if (stmt==begin)
+				continue;
+			if (stmt==end)
+				break;
+			stmtCount++;
 		}
-		return size;
+		return stmtCount;
 	}
-
+	public final AroundWeaver aroundWeaver;
 	//				final boolean bHasProceed;
-	AdviceApplicationInfo(ProceedMethod proceedMethod,
+	AdviceApplicationInfo(AroundWeaver aroundWeaver, ProceedMethod proceedMethod,
 			AdviceApplication adviceAppl, SootMethod shadowMethod) {
+		this.aroundWeaver=aroundWeaver;
 		//this.proceedMethodName=ProceedMethod.this.proceedMethodSoot.getName();
 		//this.bUseStaticProceedMethod=bS
 		this.adviceAppl = adviceAppl;
@@ -191,7 +173,102 @@ public class AdviceApplicationInfo {
 		}
 
 	}
+	private boolean isShadowBig() {
+		return getShadowSize()>2;
+	}
+	private void extractShadowIntoStaticMethod(Local returnedLocal, List context) {
 
+		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@");
+		AroundWeaver.debug(Util.printMethod(shadowMethod));
+		
+		SootMethod method = new SootMethod("shadow$" + aroundWeaver.getUniqueID(),
+				Util.getTypeListFromLocals(context), returnedLocal==null ? VoidType.v() : returnedLocal.getType(),
+				Modifier.PUBLIC | Modifier.STATIC);
+		
+		
+		
+		Body shadowBody = Jimple.v().newBody(method);
+		method.setActiveBody(shadowBody);
+		
+		shadowClass.addMethod(method);
+		
+		Chain statements=shadowBody.getUnits().getNonPatchingChain();
+		
+		Stmt nopStmt=Jimple.v().newNopStmt();
+		statements.add(nopStmt);
+		
+		Stmt first;
+		HashMap localMap;
+		Stmt switchTarget;
+		{ // copy shadow into proceed method
+			ObjectBox result = new ObjectBox();			
+			
+			localMap = Util.copyStmtSequence(shadowMethodBody, begin, end,
+					shadowBody,
+					nopStmt, returnedLocal, result);
+			first = (Stmt) result.object;
+			if (first == null)
+				throw new InternalAroundError();
+		}
+
+		AroundWeaver.updateSavedReferencesToStatements(localMap);
+
+		//}
+		{ // remove old shadow
+			// remove any traps from the shadow before removing the shadow
+			Util.removeTraps(shadowMethodBody, begin, end);
+			// remove statements except original assignment
+			Util.removeStatements(shadowMethodBody, begin, end, null);
+			//StmtAdviceApplication stmtAppl = null;
+			//if (adviceAppl instanceof StmtAdviceApplication) {
+			//	stmtAppl = (StmtAdviceApplication) adviceAppl;
+			//	stmtAppl.stmt = null;
+			/// just for sanity, because we deleted that stmt
+			//}
+		}
+
+		// add parameters to static$nnn
+		int index=0;
+		for (Iterator it=context.iterator(); it.hasNext();index++) {
+			Local l=(Local)it.next();
+			Local l2=(Local)localMap.get(l);			
+			IdentityStmt newIDStmt=Jimple.v().newIdentityStmt(l2, 
+					Jimple.v().newParameterRef(l2.getType(), index));
+			statements.insertBefore(newIDStmt, nopStmt);
+			//shadowBody.getLocals().add(l2);
+		}
+		
+		Tag redirectExceptions;
+		{
+			List newstmts = new LinkedList();		
+			for(Iterator it=statements.iterator();it.hasNext();) {
+				newstmts.add(it.next());				
+			}
+			redirectExceptions = new RedirectedExceptionSpecTag(
+				shadowBody, newstmts);
+		}
+		
+		InvokeExpr expr=Jimple.v().newStaticInvokeExpr(method.makeRef(), context);
+		Stmt invStmt;
+		// insert method call to static$nnn
+		if (returnedLocal==null) {
+			invStmt=Jimple.v().newInvokeStmt(expr);
+		} else {
+			invStmt=Jimple.v().newAssignStmt(returnedLocal, expr);
+		}
+		invStmt.addTag(redirectExceptions);
+		method.addTag(new DisableExceptionCheckTag());
+		//shadowMethod.addException(shadow)
+		
+		shadowMethodStatements.insertAfter(invStmt, begin);
+		
+		shadowBody.validate();
+		 
+		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@2");
+		AroundWeaver.debug(Util.printMethod(shadowMethod));
+		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@3");
+		AroundWeaver.debug(Util.printMethod(method));
+	}
 	public void doWeave() {
 		Local lClosure = null;
 		SootClass closureClass = null;
@@ -223,6 +300,12 @@ public class AdviceApplicationInfo {
 
 		validateShadow(shadowMethodBody, begin, end);
 
+		if (false && isShadowBig()){ // if the shadow is big, extract it into a static method.
+			extractShadowIntoStaticMethod(returnedLocal, context);
+			
+		}
+		
+		
 		List contextActuals;
 
 		if (this.proceedMethod.bUseClosureObject) {
@@ -231,7 +314,6 @@ public class AdviceApplicationInfo {
 						true, // bClosure
 						null); // proceedMethod
 			}
-			//	throw new InternalAroundError();
 			argIndex = new int[context.size()];
 			List types = new LinkedList();
 			int i = 0;
