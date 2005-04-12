@@ -189,22 +189,38 @@ public class Restructure {
 		//	return ((Stmt) returns.get(b));
 		//}
 		LocalGenerator localgen = new LocalGenerator(b);
-		Stmt endnop = Jimple.v().newNopStmt();
+		
 		Chain units = b.getUnits(); // want a patching chain here, to make sure
 		// gotos are rewired to go to the inserted nop
 		Stmt last = (Stmt) units.getLast();
+		
+		Stmt endnop;// = Jimple.v().newNopStmt();
+		try { // preserve existing endnop
+			endnop=(NopStmt)units.getPredOf(last);			
+		} catch(Throwable e) {
+			endnop=Jimple.v().newNopStmt();
+//			 insert the nop just before the return stmt
+			if (last instanceof ReturnStmt || last instanceof ReturnVoidStmt) {
+				units.insertBefore(endnop, units.getLast());
+			} else {
+				units.insertAfter(endnop, units.getLast());
+			}
+		}
 
 		Local ret = null;
 		if (last instanceof ReturnStmt) {
 			ReturnStmt lastRet = (ReturnStmt) last;
 			Value op = lastRet.getOp();
-			if (op instanceof Local) // return(<local>)
-				ret = (Local) op; // remember this local
-			else if (op instanceof Constant) // return(<constant>)
+			if (op instanceof Local) {// return(<local>)
+				Type returnType = method.getReturnType();
+				ret = localgen.generateLocal(returnType);
+				units.insertBefore(Jimple.v().newAssignStmt(ret, op), endnop);
+				lastRet.setOp(ret);
+			} else if (op instanceof Constant) // return(<constant>)
 			{ // change to ret := <constant>; return(ret);
 				Type returnType = method.getReturnType();
 				ret = localgen.generateLocal(returnType);
-				units.insertBefore(Jimple.v().newAssignStmt(ret, op), lastRet);
+				units.insertBefore(Jimple.v().newAssignStmt(ret, op), endnop);
 				lastRet.setOp(ret);
 			} else
 				throw new InternalCompilerError(
@@ -213,10 +229,10 @@ public class Restructure {
 		} else {
 			Type returnType = method.getReturnType();
 			if (returnType instanceof VoidType) {
-				units.insertAfter(Jimple.v().newReturnVoidStmt(), last);
+				units.insertAfter(Jimple.v().newReturnVoidStmt(), endnop);
 			} else {
 				ret = localgen.generateLocal(returnType);
-				units.insertAfter(Jimple.v().newReturnStmt(ret), last);
+				units.insertAfter(Jimple.v().newReturnStmt(ret), endnop);
 			}
 		}
 
@@ -231,8 +247,8 @@ public class Restructure {
 					"Last stmt should be ReturnStmt or ReturnVoidStmt");
 		}
 
-		// insert the nop just before the return stmt
-		units.insertBefore(endnop, units.getLast());
+		
+		
 
 		resetTrapsEnd(b, (Stmt) units.getLast(), endnop);
 

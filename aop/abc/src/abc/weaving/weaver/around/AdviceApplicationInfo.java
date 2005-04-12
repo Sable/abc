@@ -74,7 +74,7 @@ import abc.weaving.weaver.around.AroundWeaver.ShadowInlineInfo;
 public class AdviceApplicationInfo {
 	private final ProceedMethod proceedMethod;
 
-	public final int shadowSize;
+	public int shadowSize;
 
 	public int shadowInternalLocalCount;
 
@@ -174,7 +174,7 @@ public class AdviceApplicationInfo {
 
 	}
 	private boolean isShadowBig() {
-		return getShadowSize()>2;
+		return this.shadowSize>2;
 	}
 	private void extractShadowIntoStaticMethod(Local returnedLocal, List context) {
 
@@ -262,12 +262,14 @@ public class AdviceApplicationInfo {
 		
 		shadowMethodStatements.insertAfter(invStmt, begin);
 		
-		shadowBody.validate();
+		
 		 
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@2");
 		AroundWeaver.debug(Util.printMethod(shadowMethod));
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@3");
 		AroundWeaver.debug(Util.printMethod(method));
+		
+		shadowBody.validate();
 	}
 	public void doWeave() {
 		Local lClosure = null;
@@ -302,7 +304,7 @@ public class AdviceApplicationInfo {
 
 		if (false && isShadowBig()){ // if the shadow is big, extract it into a static method.
 			extractShadowIntoStaticMethod(returnedLocal, context);
-			
+			this.shadowSize = getShadowSize();
 		}
 		
 		
@@ -409,7 +411,7 @@ public class AdviceApplicationInfo {
 		}
 
 		this.proceedMethod.shadowInformation.put(new Integer(shadowID),
-				new ShadowInlineInfo(shadowSize, shadowInternalLocalCount));
+				new ShadowInlineInfo(this.shadowSize, shadowInternalLocalCount));
 
 		if (this.proceedMethod.bUseClosureObject) {
 			lClosure = generateClosureCreation(closureClass, context);
