@@ -51,6 +51,7 @@ import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.tagkit.Tag;
 import soot.util.Chain;
+import abc.main.options.OptionsParser;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.DisableExceptionCheckTag;
@@ -302,7 +303,16 @@ public class AdviceApplicationInfo {
 
 		validateShadow(shadowMethodBody, begin, end);
 
-		if (false && isShadowBig()){ // if the shadow is big, extract it into a static method.
+		/*
+		 * When inlining, it can be useful to have the shadow in a static method.
+		 * Otherwise, the shadow may be inlined twice, once for the failed-case
+		 * of the dynamic residue and once for the matched-case.
+		 * If inlining is forced, however, everything is supposed to be inlined
+		 * regardless of this issue.  
+		 */
+		if (OptionsParser.v().around_inlining() && // If inlining is *enabled*
+			!OptionsParser.v().around_force_inlining() && // but not forced 
+				isShadowBig()){ // and the shadow is big, extract it into a static method.
 			extractShadowIntoStaticMethod(returnedLocal, context);
 			this.shadowSize = getShadowSize();
 		}

@@ -28,6 +28,8 @@ import soot.Body;
 import soot.SootMethod;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
+import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
+import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 
 /**
  * @author Sascha Kuzins
@@ -110,6 +112,8 @@ public class AfterBeforeInliner extends AdviceInliner {
 	protected void internalTransform(Body body, String phaseName, Map options) {
 		
 		inlineMethods(body, options, new IfMethodInlineOptions());
+		ConstantPropagatorAndFolder.v().transform(body);
+		UnreachableCodeEliminator.v().transform(body);
 		
 		// do this in a loop:
 		// after inlining, additional advice method calls may be present
@@ -120,8 +124,13 @@ public class AfterBeforeInliner extends AdviceInliner {
 			
 			// TODO: maybe should run whole jop pack here
 			// to reduce method size between inlining passes
+			ConstantPropagatorAndFolder.v().transform(body);
+			UnreachableCodeEliminator.v().transform(body);
 			
 			inlineMethods(body, options, new IfMethodInlineOptions());
+			
+			ConstantPropagatorAndFolder.v().transform(body);
+			UnreachableCodeEliminator.v().transform(body);
 			
 			depth++;
 			if (depth>=MAX_DEPTH)

@@ -37,10 +37,8 @@ import soot.jimple.toolkits.invoke.SiteInliner;
 import soot.util.Chain;
 
 /**
- * @author kuzins
+ * @author Sascha Kuzins
  *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class AdviceInliner extends BodyTransformer {
 	public int getAccessViolationCount(SootMethod container, SootMethod adviceMethod) 
@@ -59,7 +57,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 		if (abc.main.Debug.v().adviceInliner)
 			System.err.println("AIL*** " + message);
 	}
-	final public static int MAX_DEPTH=4;
+	final public static int MAX_DEPTH=6;
 	
 	// with  50, all cases pass with forced inlining.
 	// 100 works as well

@@ -19,6 +19,8 @@
 
 package abc.weaving.weaver;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import soot.Body;
@@ -54,6 +56,8 @@ public class AroundInliner extends AdviceInliner {
 	
 	public static AroundInliner v() { return instance; }
 	
+	private List adviceMethodsNotInlined=new LinkedList();
+	
 	/* (non-Javadoc)
 	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
 	 */
@@ -63,34 +67,45 @@ public class AroundInliner extends AdviceInliner {
 		UnreachableCodeEliminator.v().transform(body);
 	}
 
+	// Called for all methods that contained shadows.
+	// Whenever a proceed method or an advice method is inlined, 
+	// the method calls itself recursively.
 	protected void internalTransform(Body body, String phaseName, Map options) {
+		internalTransform(body, phaseName, options, 0);
+	}
+	protected void internalTransform(Body body, String phaseName, Map options, int depth) {
+		depth++;
+		if(depth>MAX_DEPTH)
+			return;
 		
 		// remove dead code from the dynamic residues.
 		// this is important because the dead code may contain a call
 		// to the proceed method.
+		ConstantPropagatorAndFolder.v().transform(body);
 		UnreachableCodeEliminator.v().transform(body);
 		
+		// inline if methods from the dynamic residue
 		inlineMethods(body, options, new IfMethodInlineOptions());
-			
+		// process the inlined if 
+		ConstantPropagatorAndFolder.v().transform(body);
+		UnreachableCodeEliminator.v().transform(body);
+		
 		// for the failed-case of the dynamic residue
-		inlineMethods(body, options, new ProceedMethodInlineOptions(body));
+		if (inlineMethods(body, options, new ProceedMethodInlineOptions(body))) {
+			foldSwitches(body);
+			internalTransform(body, phaseName, options, depth);
+			return;
+		}
 		
 		// do this in a loop:
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case
-		// of nested joinpoints)
-		int depth=0;
-		while (inlineMethods(body, options, new AdviceMethodInlineOptions())) {
+		// of nested joinpoints)		
+		if (inlineMethods(body, options, new AdviceMethodInlineOptions())) {
 			foldSwitches(body);
-			inlineMethods(body, options, new ProceedMethodInlineOptions(body));
-			foldSwitches(body);
-			
-			inlineMethods(body, options, new IfMethodInlineOptions());
-			
-			depth++;
-			if (depth>=MAX_DEPTH)
-				break;
-		}
+			internalTransform(body, phaseName, options, depth);
+			return;
+		}			
 	}
 
 	
@@ -100,6 +115,15 @@ public class AroundInliner extends AdviceInliner {
 			SootMethod method=expr.getMethod();
 			if (!Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
 				return false;
+			
+			boolean bDidInline=internalInline(container, stmt, expr);
+			if (!bDidInline) {
+				adviceMethodsNotInlined.add(method);
+			}
+			return bDidInline;
+		}
+		private boolean internalInline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+			SootMethod method=expr.getMethod();
 			
 			debug("Trying to inline advice method " + method);
 			
