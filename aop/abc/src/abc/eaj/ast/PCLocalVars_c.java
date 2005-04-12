@@ -148,7 +148,7 @@ public class PCLocalVars_c extends Pointcut_c
     public Context enterScope(Context c)
     {
         Context nc = super.enterScope(c);
-        return nc.pushStatic();
+        return nc.pushBlock();
     }
 
     public Node visitChildren(NodeVisitor v)

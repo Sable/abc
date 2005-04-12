@@ -41,9 +41,9 @@ public class PCCast_c extends Pointcut_c
         this.type_pattern = type_pattern;
     }
 
-	public Set pcRefs() {
-		return new HashSet();
-	}
+    public Set pcRefs() {
+        return new HashSet();
+    }
 	
     public Precedence precedence()
     {
@@ -76,7 +76,7 @@ public class PCCast_c extends Pointcut_c
 
 
     public boolean isDynamic() {
-	return false;
+        return false;
     }
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut()
