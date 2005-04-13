@@ -209,14 +209,17 @@ public class AroundWeaver {
 	}
 
 	public static class ShadowInlineInfo {
-		public ShadowInlineInfo(int size, int internalLocals) {
+		public ShadowInlineInfo(int size, int internalLocals, boolean weavingRequiredUnBoxing) {
 			this.size = size;
 			this.internalLocals = internalLocals;
+			this.weavingRequiredUnBoxing=weavingRequiredUnBoxing;
 		}
 
 		public final int size;
 
 		public final int internalLocals;
+		
+		public final boolean weavingRequiredUnBoxing;
 	}
 
 	public static class ProceedMethodInlineInfo {

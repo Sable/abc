@@ -65,10 +65,10 @@ public abstract class AdviceInliner extends BodyTransformer {
 	final public static int MAX_CONTAINER_SIZE=100; //5000;
 	
 	public static interface InlineOptions {
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr);
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth);
 	}
 	
-	protected boolean inlineMethods(Body body, Map options, InlineOptions inlineOptions) {
+	protected boolean inlineMethods(Body body, Map options, InlineOptions inlineOptions, int depth) {
 		StmtBody stmtBody = (StmtBody)body;
 		
 		
@@ -94,7 +94,7 @@ public abstract class AdviceInliner extends BodyTransformer {
         	
         	
         	
-            if (inlineOptions.inline(body.getMethod(),stmt, expr)) {
+            if (inlineOptions.inline(body.getMethod(),stmt, expr, depth)) {
             	//debug(" Trying to inline " + expr.getMethodRef());
             	if (InlinerSafetyManager.ensureInlinability(
             			expr.getMethod(), stmt, body.getMethod(), "accessors")) { // "unsafe"
@@ -122,7 +122,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 	public abstract boolean forceInline();
 	
 	protected class IfMethodInlineOptions implements InlineOptions {
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
 			if (!expr.getMethodRef().name().startsWith("if$"))

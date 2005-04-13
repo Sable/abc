@@ -420,8 +420,15 @@ public class AdviceApplicationInfo {
 			}
 		}
 
+		boolean bNeedsUnBoxing=
+			returnedLocal!=null &&
+			this.proceedMethod.adviceMethod.getAdviceReturnType().equals(Scene.v().getSootClass("java.lang.Object").getType()) &&
+			Restructure.JavaTypeInfo.isSimpleType(returnedLocal.getType());
+		
 		this.proceedMethod.shadowInformation.put(new Integer(shadowID),
-				new ShadowInlineInfo(this.shadowSize, shadowInternalLocalCount));
+				new ShadowInlineInfo(this.shadowSize, shadowInternalLocalCount,
+				bNeedsUnBoxing	
+					));
 
 		if (this.proceedMethod.bUseClosureObject) {
 			lClosure = generateClosureCreation(closureClass, context);
@@ -482,6 +489,8 @@ public class AdviceApplicationInfo {
 
 		if (abc.main.Debug.v().aroundWeaver)
 			this.proceedMethod.sootProceedMethod.getActiveBody().validate();
+		
+		
 	}
 
 	/**
@@ -670,11 +679,12 @@ public class AdviceApplicationInfo {
 			}
 			{
 				Stmt skipAdvice;
+				boolean bDidUnbox=false;
 				if (returnedLocal != null) {
 					AssignStmt assign = Jimple.v().newAssignStmt(returnedLocal,
 							directInvoke);
 					shadowMethodStatements.insertAfter(assign, failPoint);
-					Restructure
+					bDidUnbox=Restructure
 							.insertBoxingCast(shadowMethodBody, assign, true);
 					skipAdvice = assign;
 				} else {
@@ -683,7 +693,7 @@ public class AdviceApplicationInfo {
 				}
 				skipAdvice.addTag(attachToInvoke);
 				skipAdvice.addTag(new AroundShadowInfoTag(new ShadowInlineInfo(
-						shadowSize, shadowInternalLocalCount)));
+						shadowSize, shadowInternalLocalCount, bDidUnbox)));
 				this.proceedMethod.adviceMethod.directInvocationStmts
 						.add(skipAdvice);
 			}
@@ -916,6 +926,7 @@ public class AdviceApplicationInfo {
 				params);
 
 		Stmt invokeStmt;
+		boolean bDidUnbox=false;
 		if (returnedLocal == null) {
 			invokeStmt = Jimple.v().newInvokeStmt(invokeEx2);
 			shadowMethodStatements.insertBefore(invokeStmt, insertionPoint);
@@ -923,13 +934,15 @@ public class AdviceApplicationInfo {
 			AssignStmt assign = Jimple.v().newAssignStmt(returnedLocal,
 					invokeEx2);
 			shadowMethodStatements.insertBefore(assign, insertionPoint);
-			Restructure.insertBoxingCast(shadowMethod.getActiveBody(), assign,
+			bDidUnbox=Restructure.insertBoxingCast(shadowMethod.getActiveBody(), assign,
 					true);
+			
 			invokeStmt = assign;
 		}
 		invokeStmt.addTag(attachToInvoke);
 		invokeStmt.addTag(new AroundShadowInfoTag(new ShadowInlineInfo(
-				shadowSize, shadowInternalLocalCount)));
+				shadowSize, shadowInternalLocalCount, bDidUnbox)));
+		
 		Stmt beforeEnd = Jimple.v().newNopStmt();
 		shadowMethodStatements.insertBefore(beforeEnd, end);
 		shadowMethodStatements.insertBefore(Jimple.v().newGotoStmt(beforeEnd),

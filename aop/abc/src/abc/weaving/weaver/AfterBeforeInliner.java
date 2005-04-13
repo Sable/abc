@@ -72,7 +72,7 @@ public class AfterBeforeInliner extends AdviceInliner {
 	
 	private class AdviceMethodInlineOptions implements InlineOptions {
 		
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			if (!isAdviceMethodName(expr.getMethodRef().name()))
 				return false;
@@ -110,8 +110,10 @@ public class AfterBeforeInliner extends AdviceInliner {
 	}
 	
 	protected void internalTransform(Body body, String phaseName, Map options) {
+	
+		int depth=0;
 		
-		inlineMethods(body, options, new IfMethodInlineOptions());
+		inlineMethods(body, options, new IfMethodInlineOptions(), depth);
 		ConstantPropagatorAndFolder.v().transform(body);
 		UnreachableCodeEliminator.v().transform(body);
 		
@@ -119,15 +121,15 @@ public class AfterBeforeInliner extends AdviceInliner {
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case
 		// of nested joinpoints)
-		int depth=0;
-		while (inlineMethods(body, options, new AdviceMethodInlineOptions())) {
+
+		while (inlineMethods(body, options, new AdviceMethodInlineOptions(), depth)) {
 			
 			// TODO: maybe should run whole jop pack here
 			// to reduce method size between inlining passes
 			ConstantPropagatorAndFolder.v().transform(body);
 			UnreachableCodeEliminator.v().transform(body);
 			
-			inlineMethods(body, options, new IfMethodInlineOptions());
+			inlineMethods(body, options, new IfMethodInlineOptions(), depth);
 			
 			ConstantPropagatorAndFolder.v().transform(body);
 			UnreachableCodeEliminator.v().transform(body);

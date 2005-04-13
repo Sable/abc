@@ -73,15 +73,15 @@ public class AroundInliner extends AdviceInliner {
 	protected void internalTransform(Body body, String phaseName, Map options) {
 		internalTransform(body, phaseName, options, 0);
 	}
-	private int getMaxDepth() {
+	/*private int getMaxDepth() {
 		if (forceInline())
 			return MAX_DEPTH;
 		else
 			return 1;
-	}
+	}*/
 	protected void internalTransform(Body body, String phaseName, Map options, int depth) {
 		depth++;
-		if(depth>getMaxDepth())
+		if(depth>MAX_DEPTH)
 			return;
 		
 		// remove dead code from the dynamic residues.
@@ -91,14 +91,14 @@ public class AroundInliner extends AdviceInliner {
 		UnreachableCodeEliminator.v().transform(body);
 		
 		// inline if methods from the dynamic residue
-		inlineMethods(body, options, new IfMethodInlineOptions());
+		inlineMethods(body, options, new IfMethodInlineOptions(), depth);
 		// process the inlined if 
 		ConstantPropagatorAndFolder.v().transform(body);
 		UnreachableCodeEliminator.v().transform(body);
 		
 		boolean bDidInline=false;
 		// for the failed-case of the dynamic residue
-		if (inlineMethods(body, options, new ProceedMethodInlineOptions(body))) {
+		if (inlineMethods(body, options, new ProceedMethodInlineOptions(body), depth)) {
 			foldSwitches(body);
 			bDidInline=true;
 		}
@@ -107,7 +107,7 @@ public class AroundInliner extends AdviceInliner {
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case
 		// of nested joinpoints)		
-		if (inlineMethods(body, options, new AdviceMethodInlineOptions())) {
+		if (inlineMethods(body, options, new AdviceMethodInlineOptions(), depth)) {
 			foldSwitches(body);
 			bDidInline=true;
 		}			
@@ -120,18 +120,18 @@ public class AroundInliner extends AdviceInliner {
 	
 	private class AdviceMethodInlineOptions implements InlineOptions {
 		
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			if (!Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
 				return false;
 			
-			boolean bDidInline=internalInline(container, stmt, expr);
+			boolean bDidInline=internalInline(container, stmt, expr, depth);
 			if (!bDidInline) {
 				adviceMethodsNotInlined.add(method);
 			}
 			return bDidInline;
 		}
-		private boolean internalInline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+		private boolean internalInline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
 			debug("Trying to inline advice method " + method);
@@ -144,6 +144,23 @@ public class AroundInliner extends AdviceInliner {
 			
 			AroundWeaver.AdviceMethodInlineInfo info=
 					AroundWeaver.v().getAdviceMethodInlineInfo(method);
+			
+			AroundWeaver.ShadowInlineInfo shadowInfo=null;
+			debug("Proceed method: " + method);
+			
+			if (stmt.hasTag("AroundShadowInfoTag"))	{
+				AroundShadowInfoTag tag=
+					(AroundShadowInfoTag)stmt.getTag("AroundShadowInfoTag");
+			
+				debug(" Found tag.");
+				shadowInfo=tag.shadowInfo;
+			}
+			if (shadowInfo!=null) {
+				if (shadowInfo.weavingRequiredUnBoxing) {
+					debug(" (Un-)Boxing detected. Inlining.");
+					return true;
+				}
+			}
 			
 			int accessViolations=getAccessViolationCount(container, method);
 			if (accessViolations!=0) {
@@ -166,8 +183,8 @@ public class AroundInliner extends AdviceInliner {
 			debug(" Number of added locals (approximately): " + info.internalLocalCount);
 			debug(" Proceed invocations: " + info.proceedInvocations);
 			
-						
-			if (info.originalSize<20)
+			
+			if (info.originalSize< (20 >> (depth-1)))
 				return true;
 			
 			//if (info.internalLocalCount==0)
@@ -182,7 +199,7 @@ public class AroundInliner extends AdviceInliner {
 		public ProceedMethodInlineOptions(Body body) {
 			
 		}
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
+		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
 			if (!Util.isProceedMethodName(expr.getMethodRef().name()))
@@ -234,7 +251,12 @@ public class AroundInliner extends AdviceInliner {
 				debug(" Could not find shadow information.");				
 			}
 			if (shadowInfo!=null) {
-				if (shadowInfo.size<6)
+				if (shadowInfo.weavingRequiredUnBoxing) {
+					debug(" (Un-)Boxing detected. Inlining.");
+					return true;
+				}
+				
+				if (shadowInfo.size<10)
 					return true;
 				
 				//if (shadowInfo.internalLocals==0)

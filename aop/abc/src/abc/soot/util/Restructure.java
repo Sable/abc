@@ -212,10 +212,14 @@ public class Restructure {
 			ReturnStmt lastRet = (ReturnStmt) last;
 			Value op = lastRet.getOp();
 			if (op instanceof Local) {// return(<local>)
+				ret = (Local)op;
 				Type returnType = method.getReturnType();
-				ret = localgen.generateLocal(returnType);
-				units.insertBefore(Jimple.v().newAssignStmt(ret, op), endnop);
-				lastRet.setOp(ret);
+				Local tmp = localgen.generateLocal(returnType);
+				// Make sure returned local is used in the shadow once
+				// by assigning it to a temporary and back.
+				// This makes the around weaver analysis simpler.			
+				units.insertBefore(Jimple.v().newAssignStmt(tmp, op), endnop);
+				units.insertBefore(Jimple.v().newAssignStmt(op, tmp), endnop);
 			} else if (op instanceof Constant) // return(<constant>)
 			{ // change to ret := <constant>; return(ret);
 				Type returnType = method.getReturnType();
@@ -933,7 +937,8 @@ public class Restructure {
 	 * @param body
 	 * @param stmt
 	 */
-	public static void insertBoxingCast(Body body, AssignStmt stmt, boolean allowBoxing) {
+	public static boolean insertBoxingCast(Body body, AssignStmt stmt, boolean allowBoxing) {
+		boolean bDidUnBox=false;
 		ValueBox source=stmt.getRightOpBox();
 		Value targetVal=stmt.getLeftOp();
 		Type targetType=stmt.getLeftOp().getType();
@@ -972,6 +977,7 @@ public class Restructure {
 				units.insertBefore(newAssignStmt, tmpStmt);
 				units.insertBefore(initBox, tmpStmt);
 				castedExpr=box;
+				bDidUnBox=true;
 			} else if /*unboxing*/
 				(allowBoxing && JavaTypeInfo.sootTypeToInt(targetType)!=JavaTypeInfo.refType &&
 					sourceType.equals(Scene.v().getSootClass("java.lang.Object").getType())	){ 
@@ -987,7 +993,8 @@ public class Restructure {
 				     false);
 				castedExpr=Jimple.v().newVirtualInvokeExpr(box, 
 						 method);		
-				units.insertBefore(newAssignStmt, tmpStmt);						
+				units.insertBefore(newAssignStmt, tmpStmt);	
+				bDidUnBox=true;
 			} else { // normal cast
 				CastExpr castExpr=Jimple.v().newCastExpr(castLocal,targetType);
 				castedExpr=castExpr;	
@@ -1004,7 +1011,8 @@ public class Restructure {
 				units.insertBefore(tmpStmt2, stmt);
 				source.setValue(tmpLocal);
 			}*/
-		} 			
+		} 		
+		return bDidUnBox;
 	}
 	/**
 	 * Retrieves the identity statement of the argument at position arg
