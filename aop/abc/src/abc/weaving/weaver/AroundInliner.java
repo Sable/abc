@@ -73,9 +73,15 @@ public class AroundInliner extends AdviceInliner {
 	protected void internalTransform(Body body, String phaseName, Map options) {
 		internalTransform(body, phaseName, options, 0);
 	}
+	private int getMaxDepth() {
+		if (forceInline())
+			return MAX_DEPTH;
+		else
+			return 1;
+	}
 	protected void internalTransform(Body body, String phaseName, Map options, int depth) {
 		depth++;
-		if(depth>MAX_DEPTH)
+		if(depth>getMaxDepth())
 			return;
 		
 		// remove dead code from the dynamic residues.
@@ -90,22 +96,25 @@ public class AroundInliner extends AdviceInliner {
 		ConstantPropagatorAndFolder.v().transform(body);
 		UnreachableCodeEliminator.v().transform(body);
 		
+		boolean bDidInline=false;
 		// for the failed-case of the dynamic residue
 		if (inlineMethods(body, options, new ProceedMethodInlineOptions(body))) {
 			foldSwitches(body);
-			internalTransform(body, phaseName, options, depth);
-			return;
+			bDidInline=true;
 		}
 		
-		// do this in a loop:
+		// do this recursively:
 		// after inlining, additional advice method calls may be present
 		// (if the same joinpoint was advised multiple times, or in the case
 		// of nested joinpoints)		
 		if (inlineMethods(body, options, new AdviceMethodInlineOptions())) {
 			foldSwitches(body);
+			bDidInline=true;
+		}			
+		if (bDidInline) { // recurse
 			internalTransform(body, phaseName, options, depth);
 			return;
-		}			
+		}
 	}
 
 	
@@ -158,7 +167,7 @@ public class AroundInliner extends AdviceInliner {
 			debug(" Proceed invocations: " + info.proceedInvocations);
 			
 						
-			if (info.originalSize<6)
+			if (info.originalSize<20)
 				return true;
 			
 			//if (info.internalLocalCount==0)

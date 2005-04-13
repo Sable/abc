@@ -57,7 +57,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 		if (abc.main.Debug.v().adviceInliner)
 			System.err.println("AIL*** " + message);
 	}
-	final public static int MAX_DEPTH=6;
+	final public static int MAX_DEPTH=4;
 	
 	// with  50, all cases pass with forced inlining.
 	// 100 works as well
