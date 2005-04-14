@@ -3403,10 +3403,6 @@
         </compile>
         <ajcrun class="ImportFromUnnamed"></ajcrun>
     </ajc-test>
-<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
-        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
-        <run vm="1.4" class="AssertInAdviceBug"></run>
-    </ajc-test>
 <ajc-test title="declaring a private method on an inner interface" pr="823" num="684" keywords="tofix" dir="new">
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
         <run class="PrivateMethodOnInnerInterface"></run>
@@ -5018,6 +5014,10 @@
     </ajc-test>
 <ajc-test title="double declare parents" num="1002" dir="abctests/bugs/doubledeclareparents">
          <compile files="A.java"></compile>
+    </ajc-test>
+<ajc-test title="interaction of around and after returning at execution shadow" num="1003" dir="abctests/bugs">
+         <compile files="AroundAR.java"></compile>
+         <run class="AroundAR"></run>
     </ajc-test>
 <ajc-test title="around with initialization" num="1004" dir="abctests/around/initialization">
          <compile files="Foo.java"></compile>

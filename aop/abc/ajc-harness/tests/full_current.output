@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@8b5622
+creating: A@15e8b58
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@3daf6b
+InterfaceAndObject$1@1b32c57
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@13b0e13, [Ljava.lang.Object;@1927fb, TwoAnonymous$3@13b0e13
+calling run: TwoAnonymous$3@197113c, [Ljava.lang.Object;@ecb04c, TwoAnonymous$3@197113c
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@10aef1a.foo calls Outer$Inner@d7b96c.mi
+Outer@126372e.foo calls Outer$Inner@1f0afa6.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@d7b96c.mi calls java.io.PrintStream@ce9947.println
+Outer$Inner@1f0afa6.mi calls java.io.PrintStream@9bc377.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@10aef1a.foo calls Outer$InnerRandom@1e2b703.nextHook
+Outer@126372e.foo calls Outer$InnerRandom@bdcf14.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1e2b703.nextHook calls Outer$InnerRandom@1e2b703.next
+Outer$InnerRandom@bdcf14.nextHook calls Outer$InnerRandom@bdcf14.next
 Outer.foo() calls Random.nextInt(..)
-Outer@10aef1a.foo calls X.nextInt
+Outer@126372e.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1deec05.foo calls Outer$Inner@597bcb.mi
+Outer@1f0a3dd.foo calls Outer$Inner@19618b4.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@597bcb.mi calls java.io.PrintStream@ce81f2.println
+Outer$Inner@19618b4.mi calls java.io.PrintStream@12ff416.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1deec05.foo calls Outer$InnerRandom@1fc2cc3.nextHook
+Outer@1f0a3dd.foo calls Outer$InnerRandom@916ef6.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@1fc2cc3.nextHook calls Outer$InnerRandom@1fc2cc3.next
+Outer$InnerRandom@916ef6.nextHook calls Outer$InnerRandom@916ef6.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1deec05.foo calls X.nextInt
+Outer@1f0a3dd.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -3765,7 +3765,22 @@ FAIL: Test 682: "new/assert statement in advice coverage [requires 1.4]" failed.
 
 Running test 683: new/assert statement in advice  [requires 1.4]
 Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdviceBug.java 
-PASS: Test 683: "new/assert statement in advice  [requires 1.4]" passed.
+Test failed, compiled class behaved incorrectly
+Message: fail bad line for assert: 43 > 10
+org.aspectj.bridge.AbortException: bad line for assert: 43 > 10
+	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
+	at org.aspectj.testing.Tester.handle(Tester.java:963)
+	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
+	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
+	at AssertInAdviceBug.main(AssertInAdviceBug.java:52)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:395)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed.
 
 
 Running test 684: new/declaring a private method on an inner interface
@@ -4071,7 +4086,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1a32419.x:=-3
+test.Test3@1782bf5.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4154,8 +4169,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@2f2771
-o: Bar@2f2771, i: 10
+o: Bar@f31e2b
+o: Bar@f31e2b, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4753,7 +4768,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@339e88
+LibraryAspect-defined run() for C@1c5c3b3
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5079,7 +5094,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@f422e2
+? Util.read() obj=Test@3f170e
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5099,7 +5114,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1a8ad4
+? Util.read() obj=ClinitTest@1c9dec8
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5109,7 +5124,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1dfff4
+? Util.read() obj=SuidTest@c9b045
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5312,12 +5327,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@c44172
-Invoking command bean:  Command@a4e463
-hello(Command@a4e463)
-Created a PerThis aspect : Testcase2@18e22fd
-Invoking command bean:  Command@9b2a7c
-hello again(Command@9b2a7c)
+Created a PerThis aspect : Testcase2@405071
+Invoking command bean:  Command@612bde
+hello(Command@612bde)
+Created a PerThis aspect : Testcase2@18722fe
+Invoking command bean:  Command@10a931b
+hello again(Command@10a931b)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5515,23 +5530,7 @@ PASS: Test 1002: "abctests/bugs/doubledeclareparents/double declare parents" pas
 
 Running test 1003: abctests/bugs/interaction of around and after returning at execution shadow
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundAR.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:588)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Variable $i2 used without definition!
-	at soot.jimple.toolkits.scalar.CopyPropagator.internalTransform(CopyPropagator.java:147)
-	at soot.BodyTransformer.transform(BodyTransformer.java:51)
-	at soot.BodyTransformer.transform(BodyTransformer.java:58)
-	at soot.BodyTransformer.transform(BodyTransformer.java:63)
-	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:310)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:178)
-	at abc.main.Main.weave(Main.java:906)
-	at abc.main.Main.run(Main.java:503)
-	... 3 more
-FAIL: Test 1003: "abctests/bugs/interaction of around and after returning at execution shadow" failed.
+PASS: Test 1003: "abctests/bugs/interaction of around and after returning at execution shadow" passed.
 
 
 Running test 1004: abctests/around/initialization/around with initialization

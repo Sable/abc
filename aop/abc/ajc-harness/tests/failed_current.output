@@ -121,6 +121,26 @@ Caused by: java.util.NoSuchElementException
 FAIL: Test 682: "new/assert statement in advice coverage [requires 1.4]" failed.
 
 
+Running test 683: new/assert statement in advice  [requires 1.4]
+Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdviceBug.java 
+Test failed, compiled class behaved incorrectly
+Message: fail bad line for assert: 43 > 10
+org.aspectj.bridge.AbortException: bad line for assert: 43 > 10
+	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
+	at org.aspectj.testing.Tester.handle(Tester.java:963)
+	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
+	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
+	at AssertInAdviceBug.main(AssertInAdviceBug.java:52)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:395)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed.
+
+
 Running test 740: new/PR862/import any inner from interface implementor
 Commandline: abc -d new/PR862 -warn-unused-advice:off new/PR862/pack/ImportInnerFromInterfaceImplementor.java 
 File /usr/local/src/abc-dev/ajc-harness/tests/new/PR862/pack/ImportInnerFromInterfaceImplementor.class not found, skipping...
@@ -222,27 +242,6 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.Main.run(Main.java:499)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
-
-
-Running test 1003: abctests/bugs/interaction of around and after returning at execution shadow
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/AroundAR.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:588)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Variable $i2 used without definition!
-	at soot.jimple.toolkits.scalar.CopyPropagator.internalTransform(CopyPropagator.java:147)
-	at soot.BodyTransformer.transform(BodyTransformer.java:51)
-	at soot.BodyTransformer.transform(BodyTransformer.java:58)
-	at soot.BodyTransformer.transform(BodyTransformer.java:63)
-	at abc.weaving.weaver.Weaver.weaveAdvice(Weaver.java:310)
-	at abc.weaving.weaver.Weaver.weave(Weaver.java:178)
-	at abc.main.Main.weave(Main.java:906)
-	at abc.main.Main.run(Main.java:503)
-	... 3 more
-FAIL: Test 1003: "abctests/bugs/interaction of around and after returning at execution shadow" failed.
 
 
 Running test 1015: abctests/bugs/correct topological sorting of precedence
