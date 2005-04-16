@@ -202,6 +202,7 @@ public class AroundInliner extends AdviceInliner {
 		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
+			//debug("PROCEED: " + method);
 			if (!Util.isProceedMethodName(expr.getMethodRef().name()))
 				return false;
 			

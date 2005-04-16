@@ -62,7 +62,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 	// with  50, all cases pass with forced inlining.
 	// 100 works as well
 	// with 300, some run out of memory (@512M).
-	final public static int MAX_CONTAINER_SIZE=100; //5000;
+	final public static int MAX_CONTAINER_SIZE=1000; //5000;
 	
 	public static interface InlineOptions {
 		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth);
@@ -92,7 +92,7 @@ public abstract class AdviceInliner extends BodyTransformer {
         	
         	InvokeExpr expr=stmt.getInvokeExpr();
         	
-        	
+        	//debug(" EXPR: " + expr);
         	
             if (inlineOptions.inline(body.getMethod(),stmt, expr, depth)) {
             	//debug(" Trying to inline " + expr.getMethodRef());
