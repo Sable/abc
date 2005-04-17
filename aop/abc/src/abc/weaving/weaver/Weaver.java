@@ -23,6 +23,8 @@ package abc.weaving.weaver;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import polyglot.util.InternalCompilerError;
@@ -196,7 +198,8 @@ public class Weaver {
         		AroundInliner.v().transform(m.getActiveBody());
         	}
         	InterprocConstantPropagator.inlineConstantArguments();
-        	for( Iterator mIt = AroundInliner.v().adviceMethodsNotInlined.iterator(); mIt.hasNext(); ) {
+        	List l=new LinkedList(AroundInliner.v().adviceMethodsNotInlined);
+        	for( Iterator mIt = l.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
         	}
