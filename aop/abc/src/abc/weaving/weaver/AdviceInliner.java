@@ -31,13 +31,13 @@ import soot.Body;
 import soot.BodyTransformer;
 import soot.Local;
 import soot.Modifier;
-import soot.RefType;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
 import soot.Value;
 import soot.VoidType;
+import soot.jimple.AssignStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
@@ -51,6 +51,7 @@ import soot.jimple.toolkits.invoke.InlinerSafetyManager;
 import soot.jimple.toolkits.invoke.SiteInliner;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.weaver.around.Util;
 
 /**
  * @author Sascha Kuzins
@@ -110,14 +111,22 @@ public abstract class AdviceInliner extends BodyTransformer {
         Iterator stmtIt = unitList.iterator();
         while (stmtIt.hasNext()) {
         	Stmt stmt = (Stmt)stmtIt.next();
+        	if (!body.getUnits().contains(stmt))
+    			throw new InternalCompilerError("");
+        	
         	
         	if (!stmt.containsInvokeExpr())
                 continue;
         	
         	InvokeExpr expr=stmt.getInvokeExpr();
         	
+        	
         	//debug(" EXPR: " + expr);
         	int inliningMode=inlineOptions.inline(body.getMethod(),stmt, expr, depth);
+        	
+        	if (!body.getUnits().contains(stmt))
+    			throw new InternalCompilerError("");
+        	
             if (inliningMode==InlineOptions.INLINE_DIRECTLY) {
             	//debug(" Trying to inline " + expr.getMethodRef());
             	if (InlinerSafetyManager.ensureInlinability(
@@ -127,13 +136,18 @@ public abstract class AdviceInliner extends BodyTransformer {
             		try { before=(Stmt)units.getPredOf(stmt);} catch(NoSuchElementException e){};
             		Stmt after=null;
             		try { after=(Stmt)units.getSuccOf(stmt);} catch(NoSuchElementException e){};
+            		
+            		debug(" method: " + Util.printMethod(expr.getMethod()));
+            		debug(" stmt: " + stmt);
+            		if (!body.getUnits().contains(stmt))
+            			throw new InternalCompilerError("");
+            		
             		SiteInliner.inlineSite(expr.getMethod(), stmt, body.getMethod(), options);
             		
             		
             		AccessManager.createAccessorMethods(body, before, after);           		
             		
-            		BoxingRemover.runJopPack(body);
-            		BoxingRemover.removeUnnecessaryCasts(body);            		
+            		   		
             		
             		bDidInline=true;
             		debug("  Succeeded.");
@@ -152,7 +166,14 @@ public abstract class AdviceInliner extends BodyTransformer {
             		expr.getMethodRef().declaringClass();
             	if (!m.isStatic())
             		inlineMethodArgTypes.add(0, targetClass.getType());
-            	Type retType=expr.getMethodRef().returnType();
+            	
+            	Type retType;
+            	if (stmt instanceof AssignStmt) {
+            		AssignStmt as=(AssignStmt)stmt;
+            		retType=as.getLeftOp().getType();
+            	} else {
+            		retType=m.getReturnType();
+            	}
             	
             	SootMethod method = new SootMethod("inline$" + 
             			getUniqueID() + "$" +
@@ -208,9 +229,12 @@ public abstract class AdviceInliner extends BodyTransformer {
         			statements.add(invStmt);
         			statements.add(Jimple.v().newReturnVoidStmt());
         		} else {
-        			Local retl=lg.generateLocal(method.getReturnType());
-        			invStmt=Jimple.v().newAssignStmt(retl, inv);
+        			Local tmp=lg.generateLocal(m.getReturnType());
+        			invStmt=Jimple.v().newAssignStmt(tmp, inv);
         			statements.add(invStmt);
+        			Local retl=lg.generateLocal(retType);
+        			statements.add(Jimple.v().newAssignStmt(retl,
+        					Jimple.v().newCastExpr(tmp, retType)));
         			statements.add(Jimple.v().newReturnStmt(retl));
         		}
         		
@@ -230,7 +254,9 @@ public abstract class AdviceInliner extends BodyTransformer {
             } else {
             	// debug(" No inlining.");
             }
-        }		
+        }	
+        BoxingRemover.runJopPack(body);
+		BoxingRemover.removeUnnecessaryCasts(body);         
         return bDidInline;
 	}
 	
