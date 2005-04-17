@@ -305,8 +305,14 @@ public class AroundInliner extends AdviceInliner {
 			if (!method.isStatic())
 				throw new InternalCompilerError("");
 			
-			if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
-				return InlineOptions.DONT_INLINE;
+			
+			if (!method.getDeclaringClass().equals(container.getDeclaringClass())) {
+				int accessViolations=getAccessViolationCount(container, method);
+				if (accessViolations>0)
+					return DONT_INLINE;
+			}  
+				
+				
 			
 			debug("Trying to inline shadow method " + method);
 			
