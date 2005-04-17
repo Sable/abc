@@ -129,8 +129,12 @@ public abstract class AdviceInliner extends BodyTransformer {
             		try { after=(Stmt)units.getSuccOf(stmt);} catch(NoSuchElementException e){};
             		SiteInliner.inlineSite(expr.getMethod(), stmt, body.getMethod(), options);
             		
+            		
             		AccessManager.createAccessorMethods(body, before, after);           		
-            		            		
+            		
+            		BoxingRemover.runJopPack(body);
+            		BoxingRemover.removeUnnecessaryCasts(body);            		
+            		
             		bDidInline=true;
             		debug("  Succeeded.");
             	} else {
@@ -220,6 +224,9 @@ public abstract class AdviceInliner extends BodyTransformer {
         				));
 				
         		SiteInliner.inlineSite(inv.getMethod(), invStmt, method, options);
+        		
+        		BoxingRemover.runJopPack(method.getActiveBody());
+        		BoxingRemover.removeUnnecessaryCasts(method.getActiveBody());
             } else {
             	// debug(" No inlining.");
             }
