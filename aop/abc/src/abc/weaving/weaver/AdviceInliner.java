@@ -138,17 +138,22 @@ public abstract class AdviceInliner extends BodyTransformer {
             	}
             } else if (inliningMode==InlineOptions.INLINE_STATIC_METHOD) {
             	SootMethod m=expr.getMethod();
-            	List args=new LinkedList(expr.getMethodRef().parameterTypes());
+            	List inlineMethodArgTypes=new LinkedList();//(expr.getMethodRef().parameterTypes());
+            	for (Iterator it=expr.getArgs().iterator(); it.hasNext(); ) {
+            		Value v=(Value)it.next();
+            		Type t=v.getType();
+            		inlineMethodArgTypes.add(t);
+            	}
             	SootClass targetClass=
             		expr.getMethodRef().declaringClass();
             	if (!m.isStatic())
-            		args.add(0, targetClass.getType());
+            		inlineMethodArgTypes.add(0, targetClass.getType());
             	Type retType=expr.getMethodRef().returnType();
             	
             	SootMethod method = new SootMethod("inline$" + 
             			getUniqueID() + "$" +
             			expr.getMethodRef().name(),            			
-        				args, retType, 
+        				inlineMethodArgTypes, retType, 
         				Modifier.PUBLIC | Modifier.STATIC,
 						m.getExceptions()
 						);
@@ -166,7 +171,7 @@ public abstract class AdviceInliner extends BodyTransformer {
         		List locals=new LinkedList();
         		//int i=m.isStatic() ? 0 : -1;
         		int i=0;
-        		for (Iterator it=args.iterator(); it.hasNext();i++) {
+        		for (Iterator it=inlineMethodArgTypes.iterator(); it.hasNext();i++) {
         			Type type=(Type)it.next();
         			Local l=lg.generateLocal(type); 
         			statements.add(Jimple.v().newIdentityStmt(
