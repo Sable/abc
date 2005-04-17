@@ -239,9 +239,9 @@ public class BoxingRemover extends BodyTransformer {
         	if (pl.newStmt==null)
         		continue;
         	
-        	debug("Removing boxing case.");
-        	debug("	Method: " + method);
-        	debug("	Local: " + pl.local);
+        	//debug("Removing boxing case.");
+        	//debug("	Method: " + method.getN);
+        	//debug("	Local: " + pl.local);
         	
         	locals.remove(pl.local);
         	

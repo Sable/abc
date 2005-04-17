@@ -74,12 +74,12 @@ public abstract class AdviceInliner extends BodyTransformer {
 		if (abc.main.Debug.v().adviceInliner)
 			System.err.println("AIL*** " + message);
 	}
-	final public static int MAX_DEPTH=4;
+	//final public static int MAX_DEPTH=4;
 	
 	// with  50, all cases pass with forced inlining.
 	// 100 works as well
 	// with 300, some run out of memory (@512M).
-	final public static int MAX_CONTAINER_SIZE=1000; //5000;
+	final public static int MAX_CONTAINER_SIZE=250; //5000;
 	
 	public static interface InlineOptions {
 		public final static int DONT_INLINE=0;
@@ -166,14 +166,14 @@ public abstract class AdviceInliner extends BodyTransformer {
             		expr.getMethodRef().declaringClass();
             	if (!m.isStatic())
             		inlineMethodArgTypes.add(0, targetClass.getType());
-            	
-            	Type retType;
+            	Type retType=expr.getMethodRef().returnType();
+            	/*Type retType;
             	if (stmt instanceof AssignStmt) {
             		AssignStmt as=(AssignStmt)stmt;
             		retType=as.getLeftOp().getType();
             	} else {
             		retType=m.getReturnType();
-            	}
+            	}*/
             	
             	SootMethod method = new SootMethod("inline$" + 
             			getUniqueID() + "$" +
@@ -229,12 +229,9 @@ public abstract class AdviceInliner extends BodyTransformer {
         			statements.add(invStmt);
         			statements.add(Jimple.v().newReturnVoidStmt());
         		} else {
-        			Local tmp=lg.generateLocal(m.getReturnType());
-        			invStmt=Jimple.v().newAssignStmt(tmp, inv);
+        			Local retl=lg.generateLocal(method.getReturnType());
+        			invStmt=Jimple.v().newAssignStmt(retl, inv);
         			statements.add(invStmt);
-        			Local retl=lg.generateLocal(retType);
-        			statements.add(Jimple.v().newAssignStmt(retl,
-        					Jimple.v().newCastExpr(tmp, retType)));
         			statements.add(Jimple.v().newReturnStmt(retl));
         		}
         		

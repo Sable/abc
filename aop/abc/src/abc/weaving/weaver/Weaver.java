@@ -195,13 +195,13 @@ public class Weaver {
         public static void runAroundInliner() {
         	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
-        		AroundInliner.v().transform(m.getActiveBody());
+        		AroundInliner.v().transform(m.getActiveBody(), 2);
         	}
         	InterprocConstantPropagator.inlineConstantArguments();
         	List l=new LinkedList(AroundInliner.v().adviceMethodsNotInlined);
         	for( Iterator mIt = l.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
-        		AroundInliner.v().transform(m.getActiveBody());
+        		AroundInliner.v().transform(m.getActiveBody(), 1);
         	}
         	
         }
@@ -212,9 +212,9 @@ public class Weaver {
         	}
         	for( Iterator mIt = AroundInliner.v().adviceMethodsNotInlined.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
-        	    debug(" method: " + m.getName());        	    
+        	    //debug(" method: " + m.getName());        	    
         	    BoxingRemover.v().transform(m.getActiveBody());
-        	    debug(" " + Util.printMethod(m));
+        	    //debug(" " + Util.printMethod(m));
         	}
         }
         

@@ -108,7 +108,7 @@ public class AfterBeforeInliner extends AdviceInliner {
 			return InlineOptions.DONT_INLINE;
 		}
 	}
-	
+	final private static int MAX_DEPTH=4;
 	protected void internalTransform(Body body, String phaseName, Map options) {
 	
 		int depth=0;

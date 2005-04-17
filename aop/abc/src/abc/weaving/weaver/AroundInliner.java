@@ -19,12 +19,12 @@
 
 package abc.weaving.weaver;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import polyglot.util.InternalCompilerError;
-
 import soot.Body;
 import soot.SootMethod;
 import soot.jimple.IntConstant;
@@ -59,7 +59,7 @@ public class AroundInliner extends AdviceInliner {
 	
 	public static AroundInliner v() { return instance; }
 	
-	public List adviceMethodsNotInlined=new LinkedList();
+	public Set adviceMethodsNotInlined=new HashSet();
 	
 	/* (non-Javadoc)
 	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
@@ -74,7 +74,7 @@ public class AroundInliner extends AdviceInliner {
 	// Whenever a proceed method or an advice method is inlined, 
 	// the method calls itself recursively.
 	protected void internalTransform(Body body, String phaseName, Map options) {
-		internalTransform(body, phaseName, options, 0);
+		internalTransform(body, phaseName, options, 0, 4);
 	}
 	/*private int getMaxDepth() {
 		if (forceInline())
@@ -82,7 +82,12 @@ public class AroundInliner extends AdviceInliner {
 		else
 			return 1;
 	}*/
-	protected void internalTransform(Body body, String phaseName, Map options, int depth) {
+	public void transform(Body b, int MAX_DEPTH) {
+		HashMap dummyOptions = new HashMap();
+        dummyOptions.put( "enabled", "true" );
+		internalTransform(b, "",dummyOptions, 0, MAX_DEPTH);
+	}
+	protected void internalTransform(Body body, String phaseName, Map options, int depth, int MAX_DEPTH) {
 		depth++;
 		if(depth>MAX_DEPTH)
 			return;
@@ -122,7 +127,7 @@ public class AroundInliner extends AdviceInliner {
 		//BoxingRemover.removeUnnecessaryCasts(body);
 		
 		if (bDidInline) { // recurse
-			internalTransform(body, phaseName, options, depth);
+			internalTransform(body, phaseName, options, depth, MAX_DEPTH);
 			return;
 		}
 	}
@@ -137,7 +142,7 @@ public class AroundInliner extends AdviceInliner {
 			
 			int bDidInline=internalInline(container, stmt, expr, depth);
 			if (bDidInline!=InlineOptions.INLINE_DIRECTLY) {
-				adviceMethodsNotInlined.add(method);
+				//adviceMethodsNotInlined.add(method);
 			}
 			return bDidInline;
 		}
@@ -149,8 +154,17 @@ public class AroundInliner extends AdviceInliner {
 			if (forceInline()) {
 				debug("force inline on.");
 				return InlineOptions.INLINE_DIRECTLY;	
-			} else if (true) {
-				return InlineOptions.INLINE_STATIC_METHOD;
+			} else if (true) {				
+				if (container.getName().startsWith("inline$")) {
+					//if (true)throw new InternalCompilerError("");
+					return DONT_INLINE;
+				} else if (Util.isAroundAdviceMethodName(container.getName())) {
+						return DONT_INLINE;
+				} else {
+					//if (true)throw new InternalCompilerError("");
+					debug("container: " + container.getName());
+					return InlineOptions.INLINE_STATIC_METHOD;
+				}
 			}
 			// unreachable code below.
 			
