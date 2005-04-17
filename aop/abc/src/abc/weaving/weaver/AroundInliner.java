@@ -23,6 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.Body;
 import soot.SootMethod;
 import soot.jimple.IntConstant;
@@ -31,6 +33,7 @@ import soot.jimple.Stmt;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
+import abc.main.options.OptionsParser;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.weaver.around.AroundWeaver;
@@ -56,7 +59,7 @@ public class AroundInliner extends AdviceInliner {
 	
 	public static AroundInliner v() { return instance; }
 	
-	private List adviceMethodsNotInlined=new LinkedList();
+	public List adviceMethodsNotInlined=new LinkedList();
 	
 	/* (non-Javadoc)
 	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
@@ -110,7 +113,12 @@ public class AroundInliner extends AdviceInliner {
 		if (inlineMethods(body, options, new AdviceMethodInlineOptions(), depth)) {
 			foldSwitches(body);
 			bDidInline=true;
-		}			
+		}
+		
+		if (inlineMethods(body, options, new ExtractedShadowMethodInlineOptions(body), depth)) {
+			bDidInline=true;
+		}	
+		
 		if (bDidInline) { // recurse
 			internalTransform(body, phaseName, options, depth);
 			return;
@@ -120,27 +128,29 @@ public class AroundInliner extends AdviceInliner {
 	
 	private class AdviceMethodInlineOptions implements InlineOptions {
 		
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
+		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			if (!Util.isAroundAdviceMethodName(expr.getMethodRef().name()))
-				return false;
+				return InlineOptions.DONT_INLINE;
 			
-			boolean bDidInline=internalInline(container, stmt, expr, depth);
-			if (!bDidInline) {
+			int bDidInline=internalInline(container, stmt, expr, depth);
+			if (bDidInline!=InlineOptions.INLINE_DIRECTLY) {
 				adviceMethodsNotInlined.add(method);
 			}
 			return bDidInline;
 		}
-		private boolean internalInline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
+		private int internalInline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
 			debug("Trying to inline advice method " + method);
 			
 			if (forceInline()) {
 				debug("force inline on.");
-				return true;	
+				return InlineOptions.INLINE_DIRECTLY;	
+			} else if (true) {
+				return InlineOptions.INLINE_STATIC_METHOD;
 			}
-			
+			// unreachable code below.
 			
 			AroundWeaver.AdviceMethodInlineInfo info=
 					AroundWeaver.v().getAdviceMethodInlineInfo(method);
@@ -158,7 +168,7 @@ public class AroundInliner extends AdviceInliner {
 			if (shadowInfo!=null) {
 				if (shadowInfo.weavingRequiredUnBoxing) {
 					debug(" (Un-)Boxing detected. Inlining.");
-					return true;
+					return InlineOptions.INLINE_STATIC_METHOD;
 				}
 			}
 			
@@ -169,12 +179,12 @@ public class AroundInliner extends AdviceInliner {
 				debug(" Advice method: " + method); 
 				debug(" Violations: " + accessViolations);
 				if (accessViolations>1)
-					return false;					
+					return InlineOptions.DONT_INLINE;					
 			}
 			
 			if (info.nestedClasses) {
 				debug(" Skipped (nested classes)");
-				return false;
+				return InlineOptions.DONT_INLINE;
 			}
 			
 			//if (info.proceedInvocations>1)
@@ -185,40 +195,49 @@ public class AroundInliner extends AdviceInliner {
 			
 			
 			if (info.originalSize< (20 >> (depth-1)))
-				return true;
+				return InlineOptions.INLINE_STATIC_METHOD;
 			
 			//if (info.internalLocalCount==0)
 			//	return true;
 			//if (info.applications==1)
 			//	return true;
 			
-			return false;
+			return InlineOptions.DONT_INLINE;
 		}
 	}
 	private class ProceedMethodInlineOptions implements InlineOptions {
 		public ProceedMethodInlineOptions(Body body) {
 			
 		}
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
+		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
 			//debug("PROCEED: " + method);
 			if (!Util.isProceedMethodName(expr.getMethodRef().name()))
-				return false;
+				return InlineOptions.DONT_INLINE;
 			
 			if (!method.isStatic())
-				return false;
+				return InlineOptions.DONT_INLINE;
 			
-			if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
-				return false;
+			if (!method.getDeclaringClass().equals(container.getDeclaringClass()) &&
+				OptionsParser.v().around_inlining() &&
+				OptionsParser.v().around_force_inlining())
+				return InlineOptions.DONT_INLINE;
 			
 			debug("Trying to inline proceed method " + method);
 			
+//			 we now *always* inline proceed 
+			// because the shadow is always tiny due to the extraction.
+		
+			if (true)
+				return InlineOptions.INLINE_DIRECTLY;
+			// unreachable code below
+			
 			if (forceInline()) {
 				debug("force inline on.");
-				return true;
+				return InlineOptions.INLINE_DIRECTLY;
 			}
-			
+	
 						
 			AroundWeaver.ProceedMethodInlineInfo info=					
 				AroundWeaver.v().getProceedMethodInlineInfo(method);
@@ -254,11 +273,11 @@ public class AroundInliner extends AdviceInliner {
 			if (shadowInfo!=null) {
 				if (shadowInfo.weavingRequiredUnBoxing) {
 					debug(" (Un-)Boxing detected. Inlining.");
-					return true;
+					return INLINE_DIRECTLY;
 				}
 				
 				if (shadowInfo.size<10)
-					return true;
+					return INLINE_DIRECTLY;
 				
 				//if (shadowInfo.internalLocals==0)
 				//	return true;
@@ -267,9 +286,44 @@ public class AroundInliner extends AdviceInliner {
 			
 			
 
-			return false;
+			return DONT_INLINE;
 		}
 	}
+	private class ExtractedShadowMethodInlineOptions implements InlineOptions {
+		public ExtractedShadowMethodInlineOptions(Body body) {
+			
+		}
+		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
+			SootMethod method=expr.getMethod();
+			
+			//debug("PROCEED: " + method);
+			if (!expr.getMethodRef().name().startsWith("shadow$"))
+				return InlineOptions.DONT_INLINE;
+			
+			if (!method.isStatic())
+				throw new InternalCompilerError("");
+			
+			if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
+				return InlineOptions.DONT_INLINE;
+			
+			debug("Trying to inline shadow method " + method);
+			
+//			 we now *always* inline proceed 
+			// because the shadow is always tiny due to the extraction.
+		
+			if (forceInline()) {
+				debug("force inline on.");
+				return InlineOptions.INLINE_DIRECTLY;
+			}
 	
+			int size=method.getActiveBody().getUnits().size()
+				- method.getParameterCount();
+			debug("  size: " + size);
+			if (size<3)
+				return INLINE_DIRECTLY;
+			
+			return DONT_INLINE;
+		}
+	}
 	
 }

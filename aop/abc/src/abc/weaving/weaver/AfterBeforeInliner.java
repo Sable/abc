@@ -72,18 +72,18 @@ public class AfterBeforeInliner extends AdviceInliner {
 	
 	private class AdviceMethodInlineOptions implements InlineOptions {
 		
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
+		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			if (!isAdviceMethodName(expr.getMethodRef().name()))
-				return false;
+				return InlineOptions.DONT_INLINE;
 			
 			debug("Trying to inline advice method " + method);
 			
 			if (forceInline()) {
 				debug("force inline on.");
-				return true;	
-			}
-			
+				return InlineOptions.INLINE_DIRECTLY;	
+			} 
+		
 			int accessViolations=getAccessViolationCount(container, method);
 			if (accessViolations!=0) {
 				debug("Access violations");
@@ -91,7 +91,7 @@ public class AfterBeforeInliner extends AdviceInliner {
 				debug(" Advice method: " + method); 
 				debug(" Violations: " + accessViolations);
 				if (accessViolations>1)
-					return false;					
+					return InlineOptions.DONT_INLINE;					
 			}
 			Body body=method.getActiveBody();
 			
@@ -102,10 +102,10 @@ public class AfterBeforeInliner extends AdviceInliner {
 			debug(" Number of added locals (approximately): " + addedLocals);			
 						
 			if (size<6)
-				return true;
+				return InlineOptions.INLINE_STATIC_METHOD;
 			
 			
-			return false;
+			return InlineOptions.DONT_INLINE;
 		}
 	}
 	

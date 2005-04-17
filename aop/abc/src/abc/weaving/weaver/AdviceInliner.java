@@ -21,20 +21,36 @@ package abc.weaving.weaver;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-
+import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.BodyTransformer;
+import soot.Local;
+import soot.Modifier;
+import soot.RefType;
+import soot.SootClass;
 import soot.SootMethod;
+import soot.SootMethodRef;
+import soot.Type;
+import soot.Value;
+import soot.VoidType;
+import soot.jimple.InstanceInvokeExpr;
+import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
+import soot.jimple.Jimple;
+import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.StmtBody;
+import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.invoke.AccessManager;
 import soot.jimple.toolkits.invoke.InlinerSafetyManager;
 import soot.jimple.toolkits.invoke.SiteInliner;
 import soot.util.Chain;
+import abc.soot.util.LocalGeneratorEx;
 
 /**
  * @author Sascha Kuzins
@@ -65,9 +81,17 @@ public abstract class AdviceInliner extends BodyTransformer {
 	final public static int MAX_CONTAINER_SIZE=1000; //5000;
 	
 	public static interface InlineOptions {
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth);
+		public final static int DONT_INLINE=0;
+		public final static int INLINE_STATIC_METHOD=1;
+		public final static int INLINE_DIRECTLY=2;
+		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth);
 	}
 	
+	private static int uniqueID=0;
+	public static int getUniqueID() { return uniqueID++; }
+	public static void reset() {
+		uniqueID=0;
+	}
 	protected boolean inlineMethods(Body body, Map options, InlineOptions inlineOptions, int depth) {
 		StmtBody stmtBody = (StmtBody)body;
 		
@@ -93,8 +117,8 @@ public abstract class AdviceInliner extends BodyTransformer {
         	InvokeExpr expr=stmt.getInvokeExpr();
         	
         	//debug(" EXPR: " + expr);
-        	
-            if (inlineOptions.inline(body.getMethod(),stmt, expr, depth)) {
+        	int inliningMode=inlineOptions.inline(body.getMethod(),stmt, expr, depth);
+            if (inliningMode==InlineOptions.INLINE_DIRECTLY) {
             	//debug(" Trying to inline " + expr.getMethodRef());
             	if (InlinerSafetyManager.ensureInlinability(
             			expr.getMethod(), stmt, body.getMethod(), "accessors")) { // "unsafe"
@@ -112,6 +136,85 @@ public abstract class AdviceInliner extends BodyTransformer {
             	} else {
             		debug("  Failed.");
             	}
+            } else if (inliningMode==InlineOptions.INLINE_STATIC_METHOD) {
+            	SootMethod m=expr.getMethod();
+            	List args=new LinkedList(expr.getMethodRef().parameterTypes());
+            	SootClass targetClass=
+            		expr.getMethodRef().declaringClass();
+            	if (!m.isStatic())
+            		args.add(0, targetClass.getType());
+            	Type retType=expr.getMethodRef().returnType();
+            	
+            	SootMethod method = new SootMethod("inline$" + 
+            			getUniqueID() + "$" +
+            			expr.getMethodRef().name(),            			
+        				args, retType, 
+        				Modifier.PUBLIC | Modifier.STATIC,
+						m.getExceptions()
+						);
+            	
+            	Body inlineBody = Jimple.v().newBody(method);
+        		method.setActiveBody(inlineBody);
+        		
+        		targetClass.addMethod(method); 
+        		
+        		AroundInliner.v().adviceMethodsNotInlined.add(method); /// bad hack!!! put this some place else!
+        		
+        		Chain statements=inlineBody.getUnits().getNonPatchingChain();
+        		LocalGeneratorEx lg=new LocalGeneratorEx(inlineBody);
+        		
+        		List locals=new LinkedList();
+        		//int i=m.isStatic() ? 0 : -1;
+        		int i=0;
+        		for (Iterator it=args.iterator(); it.hasNext();i++) {
+        			Type type=(Type)it.next();
+        			Local l=lg.generateLocal(type); 
+        			statements.add(Jimple.v().newIdentityStmt(
+        				l,
+					//	i==-1 ?
+					//				(Value)Jimple.v().newThisRef((RefType)type) :
+									(Value)Jimple.v().newParameterRef(type, i)	
+        				));
+					locals.add(l);
+        		}
+        		InvokeExpr inv;
+        		SootMethodRef ref=expr.getMethodRef();
+        		if (expr instanceof InstanceInvokeExpr) {
+        			Local base = (Local)locals.get(0);
+        			locals.remove(0);
+        			if (expr instanceof InterfaceInvokeExpr)
+        				inv= Jimple.v().newInterfaceInvokeExpr(base, ref, locals);
+        			else if (expr instanceof SpecialInvokeExpr) {
+        				inv=Jimple.v().newSpecialInvokeExpr(base, ref, locals);
+        			} else if (expr instanceof VirtualInvokeExpr)
+        				inv= Jimple.v().newVirtualInvokeExpr(base, ref, locals);
+        			else
+        				throw new InternalCompilerError("");
+        		} else {
+        			inv= Jimple.v().newStaticInvokeExpr(ref, locals);
+        		}
+        		Stmt invStmt;
+        		if (method.getReturnType().equals(VoidType.v())) {
+        			invStmt=Jimple.v().newInvokeStmt(inv);
+        			statements.add(invStmt);
+        			statements.add(Jimple.v().newReturnVoidStmt());
+        		} else {
+        			Local retl=lg.generateLocal(method.getReturnType());
+        			invStmt=Jimple.v().newAssignStmt(retl, inv);
+        			statements.add(invStmt);
+        			statements.add(Jimple.v().newReturnStmt(retl));
+        		}
+        		
+        		List newArgs=new LinkedList(expr.getArgs());
+        		if (expr instanceof InstanceInvokeExpr)
+        			newArgs.add(0, ((InstanceInvokeExpr)expr).getBase());
+        		
+        		stmt.getInvokeExprBox().setValue(
+        				Jimple.v().newStaticInvokeExpr(method.makeRef(),
+        					newArgs
+        				));
+				
+        		SiteInliner.inlineSite(inv.getMethod(), invStmt, method, options);
             } else {
             	// debug(" No inlining.");
             }
@@ -122,14 +225,14 @@ public abstract class AdviceInliner extends BodyTransformer {
 	public abstract boolean forceInline();
 	
 	protected class IfMethodInlineOptions implements InlineOptions {
-		public boolean inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
+		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
 			if (!expr.getMethodRef().name().startsWith("if$"))
-				return false;
+				return DONT_INLINE;
 			
 			if (!method.isStatic())
-				return false;
+				return DONT_INLINE;
 			
 			//if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
 			//	return false;
@@ -138,7 +241,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 			
 			if (forceInline()) {
 				debug("force inline on.");
-				return true;
+				return INLINE_DIRECTLY;
 			}
 
 			int accessViolations=getAccessViolationCount(container, method);
@@ -148,7 +251,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 				debug(" Advice method: " + method); 
 				debug(" Violations: " + accessViolations);
 				if (accessViolations>0)
-					return false;					
+					return DONT_INLINE;					
 			}
 			
 			Body body=method.getActiveBody();
@@ -160,10 +263,10 @@ public abstract class AdviceInliner extends BodyTransformer {
 			debug(" Number of added locals (approximately): " + addedLocals);			
 						
 			if (size<6)
-				return true;
+				return INLINE_DIRECTLY;
 			
 
-			return false;
+			return DONT_INLINE;
 		}
 	}
 

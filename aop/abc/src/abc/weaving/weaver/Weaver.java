@@ -194,10 +194,11 @@ public class Weaver {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
         	}
-        	/*for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
+        	InterprocConstantPropagator.inlineConstantArguments();
+        	for( Iterator mIt = AroundInliner.v().adviceMethodsNotInlined.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
-        	}*/
+        	}
         }
         public static void runBoxingRemover() {
         	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {

@@ -57,7 +57,10 @@ public class InterprocConstantPropagator {
 	static boolean considerStaticMethod(String methodName) {
 		return 
 		Util.isProceedMethodName(methodName) ||
-		methodName.startsWith("proceed$");
+		methodName.startsWith("proceed$") ||
+		methodName.startsWith("if$") ||
+		methodName.startsWith("shadow$") ||
+		methodName.startsWith("inline$");		
 	}
 	static boolean considerMethod(String methodName) {
 		return considerInstanceMethod(methodName) ||

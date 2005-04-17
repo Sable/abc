@@ -311,8 +311,9 @@ public class AdviceApplicationInfo {
 		 * regardless of this issue.  
 		 */
 		if (OptionsParser.v().around_inlining() && // If inlining is *enabled*
-			!OptionsParser.v().around_force_inlining() && // but not forced 
+			!OptionsParser.v().around_force_inlining()) { /* && // but not forced 
 				isShadowBig()){ // and the shadow is big, extract it into a static method.
+				*/
 			extractShadowIntoStaticMethod(returnedLocal, context);
 			this.shadowSize = getShadowSize();
 		}

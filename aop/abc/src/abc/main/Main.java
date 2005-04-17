@@ -77,6 +77,7 @@ import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.BoxingRemover;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
@@ -147,6 +148,7 @@ public class Main {
         abc.soot.util.SwitchFolder.reset();
         abc.weaving.weaver.AroundInliner.reset();
         abc.weaving.weaver.AfterBeforeInliner.reset();
+        abc.weaving.weaver.AdviceInliner.reset();
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();
         abc.weaving.weaver.WeavingState.reset();
