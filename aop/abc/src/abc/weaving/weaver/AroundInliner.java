@@ -119,6 +119,8 @@ public class AroundInliner extends AdviceInliner {
 			bDidInline=true;
 		}	
 		
+		//BoxingRemover.removeUnnecessaryCasts(body);
+		
 		if (bDidInline) { // recurse
 			internalTransform(body, phaseName, options, depth);
 			return;

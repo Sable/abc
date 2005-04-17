@@ -184,7 +184,7 @@ public class AdviceApplicationInfo {
 		
 		SootMethod method = new SootMethod("shadow$" + aroundWeaver.getUniqueID(),
 				Util.getTypeListFromLocals(context), returnedLocal==null ? VoidType.v() : returnedLocal.getType(),
-				Modifier.PUBLIC | Modifier.STATIC);
+				Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL);
 		
 		
 		

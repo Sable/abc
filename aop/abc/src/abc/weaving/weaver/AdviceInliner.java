@@ -158,7 +158,7 @@ public abstract class AdviceInliner extends BodyTransformer {
             			getUniqueID() + "$" +
             			expr.getMethodRef().name(),            			
         				inlineMethodArgTypes, retType, 
-        				Modifier.PUBLIC | Modifier.STATIC,
+        				Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL,
 						m.getExceptions()
 						);
             	

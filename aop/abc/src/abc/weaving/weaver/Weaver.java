@@ -47,6 +47,7 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.around.AroundWeaver;
+import abc.weaving.weaver.around.Util;
 
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
@@ -199,11 +200,18 @@ public class Weaver {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody());
         	}
+        	
         }
         public static void runBoxingRemover() {
         	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		BoxingRemover.v().transform(m.getActiveBody());
+        	}
+        	for( Iterator mIt = AroundInliner.v().adviceMethodsNotInlined.iterator(); mIt.hasNext(); ) {
+        	    final SootMethod m = (SootMethod) mIt.next();
+        	    debug(" method: " + m.getName());        	    
+        	    BoxingRemover.v().transform(m.getActiveBody());
+        	    debug(" " + Util.printMethod(m));
         	}
         }
         

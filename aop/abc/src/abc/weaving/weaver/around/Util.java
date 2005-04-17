@@ -87,7 +87,7 @@ public class Util {
 			Restructure.validateMethod(method);
 	}
 	public static String printMethod(SootMethod m) {
-		String result=m + "\n";
+		String result="";//=m + "\n";
 		for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
 			result += it.next().toString() + "\n";
 		}

@@ -80,7 +80,7 @@ public class BoxingRemover extends BodyTransformer {
 		public List  valueStmts=new LinkedList();
 	}
 	
-	private static void removeUnnecessaryCasts(Body body) {
+	public static void removeUnnecessaryCasts(Body body) {
 		Chain statements=body.getUnits();                
         for (Iterator stmtIt=statements.iterator(); stmtIt.hasNext(); ) {
         	Stmt stmt=(Stmt)stmtIt.next();
@@ -100,7 +100,7 @@ public class BoxingRemover extends BodyTransformer {
 	}
 	
 
-	private static void runJopPack(Body body) {
+	public static void runJopPack(Body body) {
 		for (Iterator it=PackManager.v().getPack("jop").iterator(); it.hasNext();) {
 			Transform t=(Transform)it.next();
 			t.apply(body);
@@ -132,8 +132,10 @@ public class BoxingRemover extends BodyTransformer {
         		debug("Found boxing local: " + l);
         	}
         }
-        if (boxingTypeLocals.isEmpty())
+        if (boxingTypeLocals.isEmpty()) {
+        	
         	return;             
+        }
         
         runPreOptimizations(body);
         
