@@ -21,6 +21,7 @@ package abc.weaving.weaver;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,10 +30,13 @@ import soot.Body;
 import soot.SootMethod;
 import soot.jimple.IntConstant;
 import soot.jimple.InvokeExpr;
+import soot.jimple.LookupSwitchStmt;
 import soot.jimple.Stmt;
+import soot.jimple.TableSwitchStmt;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
+import soot.util.Chain;
 import abc.main.options.OptionsParser;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.SwitchFolder;
@@ -61,10 +65,22 @@ public class AroundInliner extends AdviceInliner {
 	
 	public Set adviceMethodsNotInlined=new HashSet();
 	
+	
+	private static boolean methodContainsSwitch(Body body) {
+		Chain statements=body.getUnits();
+		for (Iterator it=statements.iterator();it.hasNext();) {
+			Stmt s=(Stmt)it.next();
+			if (s instanceof TableSwitchStmt || s instanceof LookupSwitchStmt)
+				return true;
+		}
+		return false;
+	}
 	/* (non-Javadoc)
 	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
 	 */
 	private void foldSwitches(Body body) {
+		if (!methodContainsSwitch(body))
+			return;
 		ConstantPropagatorAndFolder.v().transform(body);
 		SwitchFolder.v().transform(body); // TODO: phaseName etc.?
 		UnreachableCodeEliminator.v().transform(body);
@@ -99,10 +115,11 @@ public class AroundInliner extends AdviceInliner {
 		UnreachableCodeEliminator.v().transform(body);
 		
 		// inline if methods from the dynamic residue
-		inlineMethods(body, options, new IfMethodInlineOptions(), depth);
-		// process the inlined if 
-		ConstantPropagatorAndFolder.v().transform(body);
-		UnreachableCodeEliminator.v().transform(body);
+		if (inlineMethods(body, options, new IfMethodInlineOptions(), depth)) {
+			// 	process the inlined if 
+			ConstantPropagatorAndFolder.v().transform(body);
+			UnreachableCodeEliminator.v().transform(body);
+		}
 		
 		boolean bDidInline=false;
 		// for the failed-case of the dynamic residue

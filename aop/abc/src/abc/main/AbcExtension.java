@@ -43,6 +43,7 @@ import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.aspectj.parse.sym;
+import abc.soot.util.CastRemover;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
@@ -188,6 +189,9 @@ public class AbcExtension
 			// must be inserted somewhere before the unreachable code eliminator
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
 		}
+		
+		PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");
+		
 		//if (Debug.v().aroundInliner) {
 		//	PackManager.v().getPack("jop").add(new Transform("jop.aroundinliner", AroundInliner.v()));
 		//}

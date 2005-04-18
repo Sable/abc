@@ -100,10 +100,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 		
 		Chain units = stmtBody.getUnits();
 		
-		if (units.size()>MAX_CONTAINER_SIZE) {
-			debug("Method body exceeds maximum size. No inlining. " + body.getMethod());
-			return false;
-		}
+		
 		
         ArrayList unitList = new ArrayList(); unitList.addAll(units);
 
@@ -128,6 +125,10 @@ public abstract class AdviceInliner extends BodyTransformer {
     			throw new InternalCompilerError("");
         	
             if (inliningMode==InlineOptions.INLINE_DIRECTLY) {
+            	if (units.size()>MAX_CONTAINER_SIZE) {
+        			debug("Method body exceeds maximum size. No inlining. " + body.getMethod());
+        			return false;
+        		}
             	//debug(" Trying to inline " + expr.getMethodRef());
             	if (InlinerSafetyManager.ensureInlinability(
             			expr.getMethod(), stmt, body.getMethod(), "accessors")) { // "unsafe"
@@ -246,14 +247,14 @@ public abstract class AdviceInliner extends BodyTransformer {
 				
         		SiteInliner.inlineSite(inv.getMethod(), invStmt, method, options);
         		
-        		BoxingRemover.runJopPack(method.getActiveBody());
-        		BoxingRemover.removeUnnecessaryCasts(method.getActiveBody());
+        		//BoxingRemover.runJopPack(method.getActiveBody());
+        		//BoxingRemover.removeUnnecessaryCasts(method.getActiveBody());
             } else {
             	// debug(" No inlining.");
             }
         }	
-        BoxingRemover.runJopPack(body);
-		BoxingRemover.removeUnnecessaryCasts(body);         
+        //BoxingRemover.runJopPack(body);
+		//BoxingRemover.removeUnnecessaryCasts(body);         
         return bDidInline;
 	}
 	

@@ -46,6 +46,7 @@ import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
+import abc.soot.util.CastRemover;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 
@@ -80,24 +81,7 @@ public class BoxingRemover extends BodyTransformer {
 		public List  valueStmts=new LinkedList();
 	}
 	
-	public static void removeUnnecessaryCasts(Body body) {
-		Chain statements=body.getUnits();                
-        for (Iterator stmtIt=statements.iterator(); stmtIt.hasNext(); ) {
-        	Stmt stmt=(Stmt)stmtIt.next();
-        	
-        	if (stmt instanceof AssignStmt) {
-        		AssignStmt as=(AssignStmt)stmt;
-        		Type leftType=as.getLeftOp().getType();
-        		if (as.getRightOp() instanceof CastExpr) {
-        			CastExpr ce=(CastExpr)as.getRightOp();
-        			if (ce.getOp().getType().equals(leftType)) {
-        				debug("Removing unnecessary cast: " + stmt);
-        				as.setRightOp(ce.getOp());
-        			}
-        		}
-        	}
-        }
-	}
+	
 	
 
 	public static void runJopPack(Body body) {
@@ -108,7 +92,7 @@ public class BoxingRemover extends BodyTransformer {
 	}
 	private static void runPreOptimizations(Body body) {
 		runJopPack(body);
-		removeUnnecessaryCasts(body);
+		CastRemover.removeUnnecessaryCasts(body);
 		runJopPack(body);	
 	}
 //	 returns number of removed cases of boxing

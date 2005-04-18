@@ -217,7 +217,7 @@ public class Restructure {
 				Local tmp = localgen.generateLocal(returnType);
 				// Make sure returned local is used in the shadow once
 				// by assigning it to a temporary and back.
-				// This makes the around weaver analysis simpler.			
+				// This makes the around weaver's analyses simpler.			
 				units.insertBefore(Jimple.v().newAssignStmt(tmp, op), endnop);
 				units.insertBefore(Jimple.v().newAssignStmt(op, tmp), endnop);
 			} else if (op instanceof Constant) // return(<constant>)

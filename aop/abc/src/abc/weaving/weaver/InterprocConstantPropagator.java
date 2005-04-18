@@ -247,12 +247,13 @@ public class InterprocConstantPropagator {
 	}
 	
 	public static void inlineConstantArguments() {
-		while (inlineConstantArgumentsPass()>0)
+		Set propagatedBodies=new HashSet();
+		while (inlineConstantArgumentsPass(propagatedBodies)>0)
 			;
 	}
 
 	// returns number of removed arguments
-	public static int inlineConstantArgumentsPass() {
+	public static int inlineConstantArgumentsPass(Set propagatedBodies) {
 		int removedArgs=0;
 //		 Retrieve all bodies
 		Map /*String, MethodCallArgs*/ methods=new HashMap();
@@ -275,8 +276,11 @@ public class InterprocConstantPropagator {
                 
                 Body body=method.getActiveBody();
                 
-                ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name, options?
-				
+                if (!propagatedBodies.contains(body)) {
+                	ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name, options?
+                	propagatedBodies.add(body);
+                }
+                
                 Chain statements=body.getUnits();
                 
                 for (Iterator stmtIt=statements.iterator(); stmtIt.hasNext(); ) {
@@ -320,8 +324,11 @@ public class InterprocConstantPropagator {
         				(ConstantMethodCallArguments)methods.get(methodSig);
         			if (args==null) {
         				debug("Found unused method, should have been removed: " + method.toString());
-        			} else {                		
-        				removedArgs+=args.propagate(method);
+        			} else { 
+        				int removed=args.propagate(method);
+        				if (removed>0)
+        					propagatedBodies.remove(method.getActiveBody());
+        				removedArgs+=removed;
                 	}                	
                 }                
             }
