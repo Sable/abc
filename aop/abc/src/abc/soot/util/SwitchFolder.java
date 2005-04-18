@@ -34,10 +34,7 @@ import soot.jimple.LookupSwitchStmt;
 import soot.jimple.Stmt;
 import soot.jimple.StmtBody;
 import soot.jimple.TableSwitchStmt;
-import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.Evaluator;
-import soot.jimple.toolkits.scalar.UnconditionalBranchFolder;
-import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.options.Options;
 import soot.util.Chain;
 

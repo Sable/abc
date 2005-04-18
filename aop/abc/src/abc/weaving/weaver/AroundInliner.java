@@ -103,10 +103,29 @@ public class AroundInliner extends AdviceInliner {
         dummyOptions.put( "enabled", "true" );
 		internalTransform(b, "",dummyOptions, 0, MAX_DEPTH);
 	}
+	private static boolean bodyHasRelevantCalls(Body body) {
+		Chain statements=body.getUnits();
+        
+        for (Iterator stmtIt=statements.iterator(); stmtIt.hasNext(); ) {
+        	Stmt stmt=(Stmt)stmtIt.next();
+        	if (stmt.containsInvokeExpr()) {
+        		InvokeExpr expr=stmt.getInvokeExpr();
+        		String name=expr.getMethodRef().name();
+        		if (IfconsiderName(name) || Util.isProceedMethodName(name) ||
+        				Util.isAroundAdviceMethodName(name) ||
+						IsExtractedShadowMethodName(name))
+        			return true;
+        	}
+        }
+        return false;
+	}
 	protected void internalTransform(Body body, String phaseName, Map options, int depth, int MAX_DEPTH) {
 		depth++;
 		if(depth>MAX_DEPTH)
 			return;
+		
+		if (!bodyHasRelevantCalls(body))
+			return; // to prevent the constant prop if it's no necessary
 		
 		// remove dead code from the dynamic residues.
 		// this is important because the dead code may contain a call
@@ -322,6 +341,9 @@ public class AroundInliner extends AdviceInliner {
 			return DONT_INLINE;
 		}
 	}
+	private static boolean IsExtractedShadowMethodName(String name) {
+		return name.startsWith("shadow$");
+	}
 	private class ExtractedShadowMethodInlineOptions implements InlineOptions {
 		public ExtractedShadowMethodInlineOptions(Body body) {
 			
@@ -330,7 +352,7 @@ public class AroundInliner extends AdviceInliner {
 			SootMethod method=expr.getMethod();
 			
 			//debug("PROCEED: " + method);
-			if (!expr.getMethodRef().name().startsWith("shadow$"))
+			if (!IsExtractedShadowMethodName(expr.getMethodRef().name()))
 				return InlineOptions.DONT_INLINE;
 			
 			if (!method.isStatic())

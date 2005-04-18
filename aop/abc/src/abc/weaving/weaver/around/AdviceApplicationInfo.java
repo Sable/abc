@@ -180,7 +180,7 @@ public class AdviceApplicationInfo {
 	private void extractShadowIntoStaticMethod(Local returnedLocal, List context) {
 
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@");
-		AroundWeaver.debug(Util.printMethod(shadowMethod));
+		//AroundWeaver.debug(Util.printMethod(shadowMethod));
 		
 		SootMethod method = new SootMethod("shadow$" + aroundWeaver.getUniqueID(),
 				Util.getTypeListFromLocals(context), returnedLocal==null ? VoidType.v() : returnedLocal.getType(),
@@ -266,9 +266,9 @@ public class AdviceApplicationInfo {
 		
 		 
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@2");
-		AroundWeaver.debug(Util.printMethod(shadowMethod));
+		//AroundWeaver.debug(Util.printMethod(shadowMethod));
 		AroundWeaver.debug("@@@@@@@@@@@@@@@@@@@@3");
-		AroundWeaver.debug(Util.printMethod(method));
+		//AroundWeaver.debug(Util.printMethod(method));
 		
 		shadowBody.validate();
 	}

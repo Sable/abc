@@ -516,7 +516,7 @@ public class Util {
 				if (!source.getLocals().contains(returnedLocal)) {
 					AroundWeaver.debug("returnedLocal " + returnedLocal +
 					" is not in local chain of source method.");
-				}
+				}				
 				AroundWeaver.debug("Source: " + Util.printMethod(source.getMethod()));
 				AroundWeaver.debug("Dest : " + Util.printMethod(dest.getMethod()));
 				throw new InternalAroundError("Could not find " + returnedLocal + 

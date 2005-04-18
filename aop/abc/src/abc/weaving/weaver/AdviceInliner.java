@@ -58,7 +58,7 @@ import abc.weaving.weaver.around.Util;
  *
  */
 public abstract class AdviceInliner extends BodyTransformer {
-	public int getAccessViolationCount(SootMethod container, SootMethod adviceMethod) 
+	public static int getAccessViolationCount(SootMethod container, SootMethod adviceMethod) 
 	{
 		int violations=0;
 		Body body=adviceMethod.getActiveBody();
@@ -70,7 +70,7 @@ public abstract class AdviceInliner extends BodyTransformer {
 		}
 		return violations;
 	}
-	private void debug(String message) {
+	private static void debug(String message) {
 		if (abc.main.Debug.v().adviceInliner)
 			System.err.println("AIL*** " + message);
 	}
@@ -138,8 +138,8 @@ public abstract class AdviceInliner extends BodyTransformer {
             		Stmt after=null;
             		try { after=(Stmt)units.getSuccOf(stmt);} catch(NoSuchElementException e){};
             		
-            		debug(" method: " + Util.printMethod(expr.getMethod()));
-            		debug(" stmt: " + stmt);
+            		//debug(" method: " + Util.printMethod(expr.getMethod()));
+            		//debug(" stmt: " + stmt);
             		if (!body.getUnits().contains(stmt))
             			throw new InternalCompilerError("");
             		
@@ -260,11 +260,16 @@ public abstract class AdviceInliner extends BodyTransformer {
 	
 	public abstract boolean forceInline();
 	
+	public static boolean IfconsiderName(String name) {
+		return name.startsWith("if$");
+	}
+	
 	protected class IfMethodInlineOptions implements InlineOptions {
+		
 		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
 			SootMethod method=expr.getMethod();
 			
-			if (!expr.getMethodRef().name().startsWith("if$"))
+			if (!IfconsiderName(expr.getMethodRef().name()))
 				return DONT_INLINE;
 			
 			if (!method.isStatic())

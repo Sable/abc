@@ -245,15 +245,39 @@ public class InterprocConstantPropagator {
 		public Set invocations=new HashSet();
 		public final soot.jimple.Constant[] arguments;
 	}
-	
+	public static interface CallSiteFilter {
+		public boolean considerCallSite(Body body);
+	}
+	private static class DefaultCallSiteFilter implements CallSiteFilter {
+		public boolean considerCallSite(Body body) {
+			return true;
+		}
+	}
 	public static void inlineConstantArguments() {
+		inlineConstantArguments(new DefaultCallSiteFilter());
+	}
+	public static void inlineConstantArguments(CallSiteFilter filter) {
 		Set propagatedBodies=new HashSet();
-		while (inlineConstantArgumentsPass(propagatedBodies)>0)
+		while (inlineConstantArgumentsPass(propagatedBodies, filter)>0)
 			;
 	}
 
+	private static boolean bodyContainsRelevantMethods(Body body) {
+		Chain statements=body.getUnits();
+        
+        for (Iterator stmtIt=statements.iterator(); stmtIt.hasNext(); ) {
+        	Stmt stmt=(Stmt)stmtIt.next();
+        	if (stmt.containsInvokeExpr()) {
+        		InvokeExpr expr=stmt.getInvokeExpr();
+        		String name=expr.getMethodRef().name();
+        		if (considerMethod(name))
+        			return true;
+        	}
+        }
+        return false;
+	}
 	// returns number of removed arguments
-	public static int inlineConstantArgumentsPass(Set propagatedBodies) {
+	public static int inlineConstantArgumentsPass(Set propagatedBodies, CallSiteFilter filter) {
 		int removedArgs=0;
 //		 Retrieve all bodies
 		Map /*String, MethodCallArgs*/ methods=new HashMap();
@@ -274,7 +298,15 @@ public class InterprocConstantPropagator {
                 }
                 
                 
+                
                 Body body=method.getActiveBody();
+                
+                if (!bodyContainsRelevantMethods(body))
+                	continue;
+                
+                if (!filter.considerCallSite(body)) {
+                	continue;
+                }
                 
                 if (!propagatedBodies.contains(body)) {
                 	ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name, options?
