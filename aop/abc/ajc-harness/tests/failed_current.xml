@@ -25,9 +25,17 @@
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
     </ajc-test>
+<ajc-test title="type name hygiene when code comes from aspects in different packages" num="497" keywords="from-resolved_10x" dir="new">
+        <compile files="typeNameConflicts/Driver.java,typeNameConflicts/p1/C.java,typeNameConflicts/aspects/A.java"></compile>
+        <run class="typeNameConflicts.Driver"></run>
+    </ajc-test>
 <ajc-test title="accessing protected superclass members in and outside CCC from body of method introduction" num="555" keywords="from-resolved_10x" dir="new">
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
+    </ajc-test>
+<ajc-test title="after returning advice param" pr="694" num="573" keywords="from-resolved_10x" dir="new">
+        <compile files="AfterReturningParam.java"></compile>
+        <run class="AfterReturningParam"></run>
     </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>

@@ -2554,10 +2554,6 @@
         <compile files="p/Driver.java,p/InnerTest.java,other/Test.java"></compile>
         <run class="p.Driver"></run>
     </ajc-test>
-<ajc-test title="type name hygiene when code comes from aspects in different packages" num="497" keywords="from-resolved_10x" dir="new">
-        <compile files="typeNameConflicts/Driver.java,typeNameConflicts/p1/C.java,typeNameConflicts/aspects/A.java"></compile>
-        <run class="typeNameConflicts.Driver"></run>
-    </ajc-test>
 <ajc-test title="cflowbelow dependencies (from Chris Dutchyn)" num="498" keywords="from-resolved_10x" dir="new">
         <compile files="CflowBelowTest.java"></compile>
         <run class="CflowBelowTest"></run>
@@ -2906,10 +2902,6 @@
 <ajc-test title="after returning advice order" pr="694" num="572" keywords="from-resolved_10x" dir="new">
         <compile files="Cricket.java"></compile>
         <run class="Cricket"></run>
-    </ajc-test>
-<ajc-test title="after returning advice param" pr="694" num="573" keywords="from-resolved_10x" dir="new">
-        <compile files="AfterReturningParam.java"></compile>
-        <run class="AfterReturningParam"></run>
     </ajc-test>
 <ajc-test title="! and declaring types with callee-side call join points" pr="695" num="574" keywords="from-resolved_10x" dir="new">
         <compile options="-Xlint:ignore" files="NotAndDeclaringTypes.java"></compile>
