@@ -287,7 +287,7 @@ public class Util {
 		}*/
 		
 		soot.SootMethodRef oldRef=old.getMethodRef();
-		//debug("createNewInvokeExpr: old ref: " + ref + " "  + ref.getSignature());
+
 		soot.SootMethodRef ref=Scene.v().makeMethodRef(
 				oldRef.declaringClass(),
 				oldRef.name(),
@@ -295,10 +295,7 @@ public class Util {
 				oldRef.returnType(),
 				oldRef.isStatic()					
 				);
-		//ref.parameterTypes().clear();
-		//ref.parameterTypes().addAll(newTypes);
-		//soot.SootMethodRef ref=newTarget.makeRef();
-		AroundWeaver.debug("createNewInvokeExpr: new ref: " + ref +  " " + ref.getSignature());
+
 		if (old instanceof InstanceInvokeExpr) {
 			Local base = (Local) ((InstanceInvokeExpr) old).getBase();
 			if (old instanceof InterfaceInvokeExpr)
