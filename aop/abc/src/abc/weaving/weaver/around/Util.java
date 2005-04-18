@@ -253,6 +253,10 @@ public class Util {
 		}
 	}
 
+	public static void reset() {
+		id=0;
+	}
+	private static int id=0;
 	/**
 	 *  Assigns a suggested name to a local, dealing with possible collisions
 	 */
@@ -260,11 +264,11 @@ public class Util {
 		//if (!locals.contains(local))
 		//	throw new InternalCompilerError();
 
-		String name = suggestedName;
-		int i = 0;
-		while (Util.chainContainsLocal(locals, name)) {
-			name = suggestedName + (++i);
-		}
+		String name = suggestedName + "$$" + (++id);
+		//int i = 0;
+		//while (Util.chainContainsLocal(locals, name)) {
+		//	name = suggestedName + (++id);
+		//}
 		local.setName(name);
 	}
 
@@ -525,7 +529,7 @@ public class Util {
 						" Dest: " + dest.getMethod());
 			}
 			LocalGeneratorEx lg = new LocalGeneratorEx(dest);
-			Local castLocal = lg.generateLocal(dest.getMethod().getReturnType());
+			Local castLocal = lg.generateLocal(dest.getMethod().getReturnType(), "castLocal");
 			AssignStmt s = Jimple.v().newAssignStmt(castLocal, newLocal);
 			unitChain.insertAfter(s, insertAfter);
 			insertAfter = s;

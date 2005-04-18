@@ -67,6 +67,7 @@ public class LocalGeneratorEx extends LocalGenerator {
 		}
 		private int id=0;
 	}
+		
 	private int getNextID() {
 		ID id=(ID)idMap.get(body);
 		if (id==null) {
