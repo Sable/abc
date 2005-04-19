@@ -55,27 +55,28 @@ public class LocalGeneratorEx extends LocalGenerator {
 		return body.getMethod();
 	}
 
-	//private int nextLocal=0;
+	private static int id=0;
 	
-	private static Map /*Body => ID*/ idMap=new HashMap();
+	//private static Map /*Body => ID*/ idMap=new HashMap();
 	public static void reset() {
-		idMap.clear();
+		//idMap.clear();
+		id=0;
 	}
-	private static class ID {
+	/*private static class ID {
 		public int getNextID() {
 			return id++;
 		}
 		private int id=0;
-	}
+	}*/
 		
-	private int getNextID() {
+	/*private int getNextID() {
 		ID id=(ID)idMap.get(body);
 		if (id==null) {
 			id=new ID();
 			idMap.put(body,id);
 		}		
 		return id.getNextID();
-	}
+	}*/
 	
         /**
          *  Generate a local with a given type, using a suggested name.
@@ -90,7 +91,7 @@ public class LocalGeneratorEx extends LocalGenerator {
 		while (localNames.contains(name)) {
 			name=suggestedName + (++nextLocal);
 		}*/
-		String name=suggestedName + "$" + getNextID();
+		String name=suggestedName + "$" + (id++);
 		//if (bodyContainsLocal(name))
 		//	throw new RuntimeException("Name already exists: " + name);
 		

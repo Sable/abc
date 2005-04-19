@@ -246,6 +246,7 @@ public class AdviceInliner { //extends BodyTransformer {
         else
         	stmtIt=unitList.listIterator(unitList.indexOf(range.begin));
         
+        boolean bDidInlineSwitch=false;
         //Set visitedStatements=new HashSet();
         while (stmtIt.hasNext()) {
         	Stmt stmt = (Stmt)stmtIt.next();
@@ -277,8 +278,9 @@ public class AdviceInliner { //extends BodyTransformer {
         			inliningMode==InlineOptions.INLINE_DIRECTLY) 
         		runOnRange=true;
         	
+        	InlineRange r=null;
         	if (runOnRange) {
-        		InlineRange r=new InlineRange();
+        		r=new InlineRange();
         		r.begin=Jimple.v().newNopStmt();
         		r.end=Jimple.v().newNopStmt();
         		units.insertBefore(r.begin, stmt);
@@ -331,12 +333,17 @@ public class AdviceInliner { //extends BodyTransformer {
 	            		if (!body.getUnits().contains(stmt))
 	            			throw new InternalCompilerError("");
 	            		
+	            		
 	            		inlineSite(expr.getMethod(), stmt, body.getMethod());
 	            		
 	            		
 	            		
 	            		AccessManager.createAccessorMethods(body, before, after);           		
 	            		
+	            		
+	            		bDidInlineSwitch=bDidInlineSwitch && 
+							rangeContainsSwitch(units, before, after);
+	            								
 	            		/*if (units.size()>MAX_CONTAINER_SIZE/2
 	            				&& Util.isAroundAdviceMethodName(expr.getMethod().getName())) {
 	            			foldSwitches(body);
@@ -450,7 +457,7 @@ public class AdviceInliner { //extends BodyTransformer {
         }
         if (bDidInline) {
         	debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW(0)", depth);
-        	if (range==null)
+        	if (bDidInlineSwitch)
         		foldSwitches(body);
         	for (Iterator it=rangesToInline.iterator(); it.hasNext();) {
         		InlineRange r=(InlineRange)it.next();
@@ -460,8 +467,8 @@ public class AdviceInliner { //extends BodyTransformer {
         		debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW", depth);
         		inlineMethods(body, r, new ProceedMethodInlineOptions(), visitedBodies, depth);
         	}
-        	if (rangesToInline.size()>0)
-        		foldSwitches(body);
+        	//if (rangesToInline.size()>0)
+        		//foldSwitches(body);
         }
         
         //BoxingRemover.runJopPack(body);
@@ -566,6 +573,22 @@ public class AdviceInliner { //extends BodyTransformer {
 		Chain statements=body.getUnits();
 		for (Iterator it=statements.iterator();it.hasNext();) {
 			Stmt s=(Stmt)it.next();
+			if (s instanceof TableSwitchStmt || s instanceof LookupSwitchStmt)
+				return true;
+		}
+		return false;
+	}
+	private static boolean rangeContainsSwitch(Chain units, Stmt before, Stmt after) {
+		Iterator it;
+		if (before==null)
+			it=units.iterator();
+		else 
+			it=units.iterator(before);
+		
+		while(it.hasNext()) {
+			Stmt s=(Stmt)it.next();
+			if (s==after)
+				return false;
 			if (s instanceof TableSwitchStmt || s instanceof LookupSwitchStmt)
 				return true;
 		}
