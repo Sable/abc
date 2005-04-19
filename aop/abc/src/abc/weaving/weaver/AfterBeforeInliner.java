@@ -35,9 +35,9 @@ import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
  * @author Sascha Kuzins
  *
  */
-public class AfterBeforeInliner extends AdviceInliner {
+public class AfterBeforeInliner { //extends AdviceInliner {
 	
-	private static AfterBeforeInliner instance = 
+	/*private static AfterBeforeInliner instance = 
 		new AfterBeforeInliner();
 	public static void reset() { instance = new AfterBeforeInliner(); }
 	public static AfterBeforeInliner v() { return instance; }
@@ -64,56 +64,14 @@ public class AfterBeforeInliner extends AdviceInliner {
 		shadowMethods.add(m);
 	}
 	
-	public static boolean isAdviceMethodName(String name) {
-		return name.startsWith("before$") || name.startsWith("after$") ||
-		name.startsWith("afterReturning$") ||
-		name.startsWith("afterThrowing$");
-	}
 	
-	private class AdviceMethodInlineOptions implements InlineOptions {
-		
-		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr, int depth) {
-			SootMethod method=expr.getMethod();
-			if (!isAdviceMethodName(expr.getMethodRef().name()))
-				return InlineOptions.DONT_INLINE;
-			
-			debug("Trying to inline advice method " + method);
-			
-			if (forceInline()) {
-				debug("force inline on.");
-				return InlineOptions.INLINE_DIRECTLY;	
-			} 
-		
-			int accessViolations=getAccessViolationCount(container, method);
-			if (accessViolations!=0) {
-				debug("Access violations");
-				debug(" Method: " + container);
-				debug(" Advice method: " + method); 
-				debug(" Violations: " + accessViolations);
-				if (accessViolations>1)
-					return InlineOptions.DONT_INLINE;					
-			}
-			Body body=method.getActiveBody();
-			
-			//if (info.proceedInvocations>1)
-			int size=body.getUnits().size();
-			debug(" Size of advice method: " + size);
-			int addedLocals=body.getLocalCount()-method.getParameterCount();
-			debug(" Number of added locals (approximately): " + addedLocals);			
-						
-			if (size<6)
-				return InlineOptions.INLINE_STATIC_METHOD;
-			
-			
-			return InlineOptions.DONT_INLINE;
-		}
-	}
+	
 	final private static int MAX_DEPTH=4;
-	protected void internalTransform(Body body, String phaseName, Map options) {
+	protected void transform(Body body) {
 	
 		int depth=0;
 		
-		inlineMethods(body, options, new IfMethodInlineOptions(), depth);
+		inlineMethods(body, new IfMethodInlineOptions(), depth);
 		ConstantPropagatorAndFolder.v().transform(body);
 		UnreachableCodeEliminator.v().transform(body);
 		
@@ -122,14 +80,14 @@ public class AfterBeforeInliner extends AdviceInliner {
 		// (if the same joinpoint was advised multiple times, or in the case
 		// of nested joinpoints)
 
-		while (inlineMethods(body, options, new AdviceMethodInlineOptions(), depth)) {
+		while (inlineMethods(body, new AfterBeforeMethodInlineOptions(), depth)) {
 			
 			// TODO: maybe should run whole jop pack here
 			// to reduce method size between inlining passes
 			ConstantPropagatorAndFolder.v().transform(body);
 			UnreachableCodeEliminator.v().transform(body);
 			
-			inlineMethods(body, options, new IfMethodInlineOptions(), depth);
+			inlineMethods(body, new IfMethodInlineOptions(), depth);
 			
 			ConstantPropagatorAndFolder.v().transform(body);
 			UnreachableCodeEliminator.v().transform(body);
@@ -139,5 +97,5 @@ public class AfterBeforeInliner extends AdviceInliner {
 				break;
 		}
 	}
-	
+	*/
 }

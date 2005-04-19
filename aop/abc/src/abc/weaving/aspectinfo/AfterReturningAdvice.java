@@ -20,21 +20,20 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Iterator;
 
 import polyglot.util.Position;
-
-import soot.*;
-import soot.jimple.*;
+import soot.Body;
+import soot.SootMethod;
+import soot.jimple.Jimple;
+import soot.jimple.Stmt;
 import soot.util.Chain;
-
-import abc.weaving.matching.*;
+import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.Residue;
-import abc.weaving.residues.AlwaysMatch;
-import abc.weaving.weaver.AfterBeforeInliner;
+import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
-import abc.soot.util.LocalGeneratorEx;
 
 /** Advice specification for after returning advice without return variable binding. 
  *  @author Aske Simon Christensen
@@ -65,7 +64,7 @@ public class AfterReturningAdvice extends AbstractAfterAdvice {
     void doWeave(SootMethod method, LocalGeneratorEx localgen,
 		 AdviceApplication adviceappl,Residue residue,
 		 WeavingContext wc) {
-    AfterBeforeInliner.v().addShadowMethod(method);
+    AdviceInliner.v().addShadowMethod(method);
 	ShadowPoints shadowpoints=adviceappl.shadowmatch.sp;
 	AbstractAdviceDecl advicedecl=adviceappl.advice;
 

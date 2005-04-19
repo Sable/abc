@@ -146,8 +146,8 @@ public class Main {
         abc.weaving.matching.ExecutionShadowMatch.reset();
         abc.weaving.aspectinfo.GlobalCflowSetupFactory.reset();
         abc.soot.util.SwitchFolder.reset();
-        abc.weaving.weaver.AroundInliner.reset();
-        abc.weaving.weaver.AfterBeforeInliner.reset();
+        //abc.weaving.weaver.AroundInliner.reset();
+        //abc.weaving.weaver.AfterBeforeInliner.reset();
         abc.weaving.weaver.AdviceInliner.reset();
         abc.soot.util.LocalGeneratorEx.reset();
         abc.main.options.OptionsParser.reset();

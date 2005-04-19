@@ -72,7 +72,7 @@ public class BeforeAdvice extends AbstractAdviceSpec {
 
         debug("Before weaver running at "+shadowpoints.getShadowMatch());
 
-        AfterBeforeInliner.v().addShadowMethod(method);
+        AdviceInliner.v().addShadowMethod(method);
         
         Body b = method.getActiveBody();
         // this non patching chain is needed so that Soot doesn't "Fix"

@@ -22,10 +22,12 @@
 package abc.weaving.weaver;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import polyglot.util.InternalCompilerError;
 import soot.Body;
@@ -49,7 +51,6 @@ import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.residues.NeverMatch;
 import abc.weaving.weaver.around.AroundWeaver;
-import abc.weaving.weaver.around.Util;
 
 /** The driver for the weaving process.
  * @author Jennifer Lhotak
@@ -102,7 +103,7 @@ public class Weaver {
     static public void resetForReweaving() {
         WeavingState.reset();
     	AroundWeaver.reset();
-    	AfterBeforeInliner.reset();
+    	AdviceInliner.reset();
         // reset all residues
         for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
@@ -186,42 +187,28 @@ public class Weaver {
         public static void doInlining() {
         	Scene.v().releaseActiveHierarchy();
         	
-        	if (OptionsParser.v().around_inlining())          
-            	Weaver.runAroundInliner(); // needs to be called after exception checking
+        	if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining())          
+            	Weaver.runInliner(); // needs to be called after exception checking
 
-            if (OptionsParser.v().before_after_inlining())
-            	Weaver.runAfterBeforeInliner();
+            
         }
-        public static void runAroundInliner() {
-        	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
-        	    final SootMethod m = (SootMethod) mIt.next();
-        		AroundInliner.v().transform(m.getActiveBody(), 2);
-        	}
-        	InterprocConstantPropagator.inlineConstantArguments();
+        public static void runInliner() {
+        	AdviceInliner.v().run();
+        	/*InterprocConstantPropagator.inlineConstantArguments();
         	List l=new LinkedList(AroundInliner.v().adviceMethodsNotInlined);
         	for( Iterator mIt = l.iterator(); mIt.hasNext(); ) {
         	    final SootMethod m = (SootMethod) mIt.next();
         		AroundInliner.v().transform(m.getActiveBody(), 1);
-        	}
+        	}*/
         	
         }
+        
+
         public static void runBoxingRemover() {
-        	for( Iterator mIt = AroundWeaver.v().shadowMethods.iterator(); mIt.hasNext(); ) {
-        	    final SootMethod m = (SootMethod) mIt.next();
-        		BoxingRemover.v().transform(m.getActiveBody());
-        	}
-        	for( Iterator mIt = AroundInliner.v().adviceMethodsNotInlined.iterator(); mIt.hasNext(); ) {
-        	    final SootMethod m = (SootMethod) mIt.next();
-        	    //debug(" method: " + m.getName());        	    
-        	    BoxingRemover.v().transform(m.getActiveBody());
-        	    //debug(" " + Util.printMethod(m));
-        	}
+        	AdviceInliner.v().runBoxingRemover();
         }
         
-        public static void runAfterBeforeInliner() {
-        	AfterBeforeInliner.v().doInlining();
-        }
-
+       
         static public void inlineConstructors() {
             ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
             for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {

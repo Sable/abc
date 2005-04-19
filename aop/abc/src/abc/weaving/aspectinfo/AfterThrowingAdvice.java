@@ -20,22 +20,30 @@
 
 package abc.weaving.aspectinfo;
 
-import java.util.*;
+import java.util.Iterator;
 
 import polyglot.util.Position;
-
-import soot.*;
-import soot.jimple.*;
+import soot.Body;
+import soot.Local;
+import soot.RefType;
+import soot.SootMethod;
+import soot.Trap;
+import soot.jimple.CaughtExceptionRef;
+import soot.jimple.GotoStmt;
+import soot.jimple.IdentityStmt;
+import soot.jimple.IntConstant;
+import soot.jimple.Jimple;
+import soot.jimple.NopStmt;
+import soot.jimple.Stmt;
+import soot.jimple.ThrowStmt;
 import soot.tagkit.ThrowCreatedByCompilerTag;
 import soot.util.Chain;
-
-import abc.weaving.matching.*;
-import abc.weaving.residues.Residue;
-import abc.weaving.residues.AlwaysMatch;
-import abc.weaving.weaver.AfterBeforeInliner;
-import abc.weaving.weaver.WeavingContext;
-import abc.weaving.weaver.ShadowPoints;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.matching.AdviceApplication;
+import abc.weaving.residues.Residue;
+import abc.weaving.weaver.AdviceInliner;
+import abc.weaving.weaver.ShadowPoints;
+import abc.weaving.weaver.WeavingContext;
 
 /** Advice specification for after throwing advice without exception variable binding. 
  *  @author Aske Simon Christensen
@@ -74,7 +82,7 @@ public class AfterThrowingAdvice extends AbstractAfterAdvice {
     void doWeave(SootMethod method, LocalGeneratorEx lg,
 		 AdviceApplication adviceappl,Residue residue,
 		 WeavingContext wc) {
-    AfterBeforeInliner.v().addShadowMethod(method);
+    AdviceInliner.v().addShadowMethod(method);
 	ShadowPoints shadowpoints=adviceappl.shadowmatch.sp;
 	AbstractAdviceDecl advicedecl=adviceappl.advice;
 

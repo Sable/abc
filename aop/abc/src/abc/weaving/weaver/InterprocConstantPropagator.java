@@ -52,7 +52,7 @@ public class InterprocConstantPropagator {
 	static boolean considerInstanceMethod(String methodName) {
 		return 
 			Util.isAroundAdviceMethodName(methodName) ||
-			abc.weaving.weaver.AfterBeforeInliner.isAdviceMethodName(methodName);
+			abc.weaving.weaver.AdviceInliner.isAfterBeforeAdviceMethod(methodName);
 	}
 	static boolean considerStaticMethod(String methodName) {
 		return 

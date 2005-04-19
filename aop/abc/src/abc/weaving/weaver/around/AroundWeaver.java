@@ -40,6 +40,7 @@ import abc.weaving.aspectinfo.AdviceSpec;
 import abc.weaving.aspectinfo.AroundAdvice;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.AdviceApplication;
+import abc.weaving.weaver.AdviceInliner;
 
 /** Handle around weaving.
  * @author Sascha Kuzins 
@@ -86,7 +87,7 @@ public class AroundWeaver {
 	public void doWeave(SootClass shadowClass, SootMethod shadowMethod,
 			LocalGeneratorEx localgen, AdviceApplication adviceAppl) {
 
-		v().shadowMethods.add(shadowMethod);
+		AdviceInliner.v().addShadowMethod(shadowMethod);
 
 		debug("Weaving advice application: " + adviceAppl);
 		if (abc.main.Debug.v().aroundWeaver) {
@@ -371,7 +372,7 @@ public class AroundWeaver {
 		return result;
 	}
 
-	public Set shadowMethods = new HashSet();
+	//public Set shadowMethods = new HashSet();
 
 	private void validateState() {
 		Iterator it = adviceMethods.values().iterator();

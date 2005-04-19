@@ -60,6 +60,21 @@ import abc.weaving.weaver.around.AroundWeaver.ObjectBox;
 
 public class Util {
 	
+	public static String getMethodFingerprint(SootMethod m) {
+		String result;
+		Body b=m.getActiveBody();
+		
+		result  = m.getReturnType().toString();
+		result += m.getParameterTypes();
+		result += m.getModifiers();
+		result += m.getExceptions();
+		
+		for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
+			Stmt s=(Stmt)it.next();
+			result += s.toString() + "\n";
+		}
+		return result;
+	}
 	public static Stmt newSwitchStmt(Value key, List lookupValues, List targets, Unit defaultTarget) {
 		int min=Integer.MAX_VALUE;
 		int max=Integer.MIN_VALUE;
