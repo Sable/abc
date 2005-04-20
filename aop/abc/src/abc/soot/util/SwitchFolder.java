@@ -20,14 +20,22 @@
 package abc.soot.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+
 
 import soot.Body;
 import soot.BodyTransformer;
 import soot.G;
+import soot.Immediate;
+import soot.Local;
 import soot.Unit;
 import soot.Value;
+import soot.ValueBox;
+import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.LookupSwitchStmt;
@@ -40,7 +48,7 @@ import soot.util.Chain;
 
 /**
  * @author Sascha Kuzins
- *
+ *  
  */
 public class SwitchFolder extends BodyTransformer {
 
@@ -90,9 +98,21 @@ public class SwitchFolder extends BodyTransformer {
 	protected void internalTransform(Body body, String phaseName, Map options) {
 
 
+		fold(body, null);
+
+	}
+
+	public void foldWithCheapPropagation(Body b, boolean evaluate) {
+		LocalDefs defs=getLocalDefs(b, evaluate);
+		fold(b,defs);
+	}
+	/**
+	 * @param body
+	 */
+	private void fold(Body body, LocalDefs defs) {
 		StmtBody stmtBody = (StmtBody)body;
 		
-		// ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name? 
+		// ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name?
 		
 		if (Options.v().verbose())
             G.v().out.println("[" + stmtBody.getMethod().getName() +
@@ -112,29 +132,131 @@ public class SwitchFolder extends BodyTransformer {
                 // check for constant-valued conditions
             	//LookupSwitchStmt ls=(LookupSwitchStmt) stmt;
                 Value cond = getKey(stmt);
-                if (Evaluator.isValueConstantValued(cond)) {
+                //Evaluator.getConstantValueOf()
+                if (cond instanceof Local && defs!=null) {
+                	cond=defs.getLocalConstantValue((Local)cond);
+                	if (cond!=null) {
+                		
+                	} else {
+                		continue;
+                	}
+                } else if (Evaluator.isValueConstantValued(cond) ) {
                     cond = Evaluator.getConstantValueOf(cond);
-
-                    int val=((IntConstant) cond).value;
-                    
-                    Unit target=getTargetOfKey(stmt, val);
-                    
-                    Stmt newStmt =
-                            Jimple.v().newGotoStmt(target);
-                        
-                    units.insertAfter(newStmt, stmt);
-                               
-                    // remove switch
-                    units.remove(stmt);
-                    
-                    hasFolded=true;
+                } else {
+                	continue;
                 }
+                //if (cond instanceof IntConstant) {
+	                int val=((IntConstant) cond).value;
+	                
+	                Unit target=getTargetOfKey(stmt, val);
+	                
+	                Stmt newStmt =
+	                        Jimple.v().newGotoStmt(target);
+	                    
+	                units.insertAfter(newStmt, stmt);
+	                
+	                stmt.redirectJumpsToThisTo(newStmt);
+	                
+	                // remove switch
+	                units.remove(stmt);
+	                
+	                hasFolded=true;
+                //}
             }
         }
-		//if (hasFolded) {
-		//	UnreachableCodeEliminator.v().transform(body);
-		//	UnconditionalBranchFolder.v().transform(body); // TODO: Phase name?			
-		//}
 	}
 
+	
+	public static void cheapUnusedCodeRemover(Body b) {
+		Chain units=b.getUnits();
+		
+		int removed;
+		do {
+			removed=0;
+			
+			Unit prev=null;
+			for (Iterator it=units.iterator();it.hasNext();) {
+				Unit s=(Stmt)it.next();
+				//System.out.println(" prev:" + prev);
+				if (prev!=null) {
+					if (!prev.fallsThrough()) {
+						if (s.getBoxesPointingToThis().size()==0) {
+							//System.out.println("Removing " + s + "Prev:" + prev);
+							//prev=(Stmt)units.getPredOf(s);
+							units.remove(s);
+							removed++;
+							it=units.iterator(prev);
+							it.next();
+							continue;
+						}
+					}
+				}
+				prev=s;
+			}
+		} while (removed>0);
+	}
+	
+	public static class LocalDefs {
+		LocalDefs(Map locals) {
+			this.locals=locals;
+		}
+		Map locals;
+		public Immediate getLocalValue(Local l) {
+			return (Immediate)locals.get(l);
+		}
+		public Constant getLocalConstantValue(Local l) {
+			Immediate im=(Immediate)locals.get(l);
+			while(im!=null && im instanceof Local) {
+				im=(Immediate)locals.get(im);
+			}
+			return (Constant)im;
+		}
+	}
+	public static void cheapConstantPropagator(Body b, boolean evaluate) {
+		LocalDefs defs=getLocalDefs(b, evaluate);
+		//Chain statements=b.getUnits();
+		for (Iterator it=b.getUseBoxes().iterator(); it.hasNext();) {
+			ValueBox box=(ValueBox)it.next();
+			Value v=box.getValue();
+			if (v instanceof Local) {
+				Constant c=defs.getLocalConstantValue((Local)v);
+				if (c!=null) {
+					box.setValue(c);
+				}
+			}
+		}
+	}
+	public static LocalDefs getLocalDefs(Body b, boolean evaluate) {
+		Map locals=new HashMap();
+		Chain statements=b.getUnits();
+		for (Iterator it=statements.iterator(); it.hasNext();) {
+			Stmt s=(Stmt)it.next();
+			for (Iterator itB=s.getDefBoxes().iterator(); itB.hasNext();){
+				ValueBox box=(ValueBox)itB.next();
+				Value val=box.getValue();
+				if (val instanceof Local) {
+					if(locals.containsKey(val)) {
+						locals.put(val, null); // def'd twice..
+					} else {
+						if (s instanceof DefinitionStmt) {
+							DefinitionStmt ds=(DefinitionStmt)s;
+							Value v=ds.getRightOp();							
+							if (v instanceof Immediate) {
+								locals.put(val, ds.getRightOp());
+							} else if (evaluate) {
+								Value e=Evaluator.getConstantValueOf(v);
+								if (e instanceof Constant)
+									locals.put(val,e); // (could be null)
+								else 
+									locals.put(val, null);
+							} else {
+								locals.put(val, null);
+							}
+						}
+					}
+				}
+			}
+		}
+		return new LocalDefs(locals);
+	}
 }

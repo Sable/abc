@@ -105,7 +105,7 @@ public class AdviceInliner { //extends BodyTransformer {
     	InterprocConstantPropagator.inlineConstantArguments();
     	for( Iterator mIt = additionalShadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
-    	    foldSwitches(m.getActiveBody());
+    	    foldSwitches(m.getActiveBody(), true);
     		inlineMethods(m.getActiveBody(), null, getInlineOptions(), visitedBodies, 0);
     	}
 	}
@@ -212,8 +212,8 @@ public class AdviceInliner { //extends BodyTransformer {
 //		 remove dead code from the dynamic residues.
 		// this is important because the dead code may contain a call
 		// to the proceed method.
-		ConstantPropagatorAndFolder.v().transform(body);
-		UnreachableCodeEliminator.v().transform(body);
+		SwitchFolder.cheapConstantPropagator(body, true);
+		eliminateUnreachableCode(body);
 		
 		
 		
@@ -299,16 +299,19 @@ public class AdviceInliner { //extends BodyTransformer {
     			throw new InternalCompilerError("");
         	
             if (inliningMode==InlineOptions.INLINE_DIRECTLY) {
-            	if (units.size()>MAX_CONTAINER_SIZE) {
+            	/*if (units.size()>MAX_CONTAINER_SIZE) {
             		if (!bodiesExceedingMaximumSize.contains(body)) {
 	            		debug("Method body exceeds maximum size. Trying to compress. " + body.getMethod() + ":" + units.size(), depth);
 	            		
 	            		//BoxingRemover.runJopPack(body);
-	            		foldSwitches(body);
+	            		foldSwitches(body, true);
 	            		debug("New size: " + units.size());
 	            		if (units.size()>MAX_CONTAINER_SIZE) {
 	            			bodiesExceedingMaximumSize.add(body);
-	            		//	debug("" + Util.printMethod(body.getMethod()));
+	            			//debug("" + Util.printMethod(body.getMethod()));
+	            			//UnreachableCodeEliminator.v().transform(body);
+	            			//debug("yyyyyyyyyyyyyyyyyyyyyyyyyyy\n" + Util.printMethod(body.getMethod()));
+	            			//System.exit(0);
 	            		}
 	            		if (!body.getUnits().contains(stmt)) {
 	            			debug("XXXXXXXXXXXXXXXXXX Statement has been eliminated(2)", depth);
@@ -316,11 +319,12 @@ public class AdviceInliner { //extends BodyTransformer {
 	                		//throw new InternalCompilerError("");
 	                	}
             		}
-            	}
-            	if (units.size()>MAX_CONTAINER_SIZE) {
-        			debug("Method body exceeds maximum size. No inlining. " + body.getMethod(), depth);
-            	} else {           	//debug(" Trying to inline " + expr.getMethodRef());
-	            	if (InlinerSafetyManager.ensureInlinability(
+            	}*/
+            	//if (units.size()>MAX_CONTAINER_SIZE) {
+        		//	debug("Method body exceeds maximum size. No inlining. " + body.getMethod(), depth);
+            	//} else {           	//debug(" Trying to inline " + expr.getMethodRef());
+            	{
+            		if (InlinerSafetyManager.ensureInlinability(
 	            			expr.getMethod(), stmt, body.getMethod(), "accessors")) { // "unsafe"
 	            		
 	            		Stmt before=null;
@@ -341,7 +345,7 @@ public class AdviceInliner { //extends BodyTransformer {
 	            		AccessManager.createAccessorMethods(body, before, after);           		
 	            		
 	            		
-	            		bDidInlineSwitch=bDidInlineSwitch && 
+	            		bDidInlineSwitch=bDidInlineSwitch || 
 							rangeContainsSwitch(units, before, after);
 	            								
 	            		/*if (units.size()>MAX_CONTAINER_SIZE/2
@@ -458,7 +462,7 @@ public class AdviceInliner { //extends BodyTransformer {
         if (bDidInline) {
         	debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW(0)", depth);
         	if (bDidInlineSwitch)
-        		foldSwitches(body);
+        		foldSwitches(body, false);
         	for (Iterator it=rangesToInline.iterator(); it.hasNext();) {
         		InlineRange r=(InlineRange)it.next();
 //        		 This is the big step:
@@ -562,13 +566,23 @@ public class AdviceInliner { //extends BodyTransformer {
 	/* (non-Javadoc)
 	 * @see soot.BodyTransformer#internalTransform(soot.Body, java.lang.String, java.util.Map)
 	 */
-	private void foldSwitches(Body body) {
+	private void foldSwitches(Body body, boolean evaluate) {
 		if (!methodContainsSwitch(body))
 			return;
-		ConstantPropagatorAndFolder.v().transform(body);
-		SwitchFolder.v().transform(body); // TODO: phaseName etc.?
+		//ConstantPropagatorAndFolder.v().transform(body);
+		SwitchFolder.v().foldWithCheapPropagation(body, evaluate);// .transform(body); // TODO: phaseName etc.?
+		eliminateUnreachableCode(body);
+	}
+	
+	/**
+	 * @param body
+	 */
+	private void eliminateUnreachableCode(Body body) {
+		//SwitchFolder.cheapUnusedCodeRemover(body);
 		UnreachableCodeEliminator.v().transform(body);
 	}
+	
+	
 	private static boolean methodContainsSwitch(Body body) {
 		Chain statements=body.getUnits();
 		for (Iterator it=statements.iterator();it.hasNext();) {

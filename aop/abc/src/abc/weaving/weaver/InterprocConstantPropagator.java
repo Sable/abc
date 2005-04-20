@@ -43,6 +43,7 @@ import soot.jimple.ParameterRef;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.util.Chain;
+import abc.soot.util.SwitchFolder;
 import abc.weaving.weaver.around.Util;
 
 /**
@@ -309,7 +310,8 @@ public class InterprocConstantPropagator {
                 }
                 
                 if (!propagatedBodies.contains(body)) {
-                	ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name, options?
+                	SwitchFolder.cheapConstantPropagator(body, true);
+                	//ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name, options?
                 	propagatedBodies.add(body);
                 }
                 

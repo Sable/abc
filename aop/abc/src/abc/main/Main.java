@@ -513,8 +513,9 @@ public class Main {
                     phaseDebug("Exceptions check");
                 }
                 
-                if (OptionsParser.v().O()!=0) {
-                        Weaver.doInlining();
+               if (OptionsParser.v().O()!=0) {
+                        
+                	Weaver.doInlining();
                 
                 
                 	UnusedMethodsRemover.removeUnusedMethods();
@@ -524,7 +525,7 @@ public class Main {
                 
               
                 	Weaver.runBoxingRemover();   
-                }
+               }
                 
                 abortIfErrors();
 
