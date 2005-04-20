@@ -3101,14 +3101,6 @@
         <compile files="TargetObjectReplacement.java"></compile>
         <run class="TargetObjectReplacement"></run>
     </ajc-test>
-<ajc-test title="after returning from initialization and after executing constructor" num="61401" keywords="from-resolved_104" dir="abctests/new">
-        <compile files="ConstructorExecInit.java"></compile>
-        <run class="ConstructorExecInit"></run>
-    </ajc-test>
-<ajc-test title="after returning from initialization causes ExceptionInInitializer in aspect" num="61501" dir="abctests/new">
-        <compile files="ConstructorExecInitFails.java"></compile>
-        <run class="ConstructorExecInitFails"></run>
-    </ajc-test>
 <ajc-test title="name binding in before cflow containing cflowbelow" pr="659" num="616" keywords="from-resolved_104" dir="new">
         <compile options="!eclipse" files="ArgsInCflow.java">
             <ajcmessage line="29" kind="error"></ajcmessage>
@@ -3713,10 +3705,6 @@
             <message text="handler(RuntimeException) &amp;&amp; withincode(DeclareWarning.new())" line="39" kind="warning"></message>
             <message text="adviceExecution() &amp;&amp; within(A)" line="72" kind="warning"></message>
         </compile>
-    </ajc-test>
-<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
-        <compile files="CflowCycles.java"></compile>
-        <run class="CflowCycles"></run>
     </ajc-test>
 <ajc-test title="incompatible advice throws clause are a compile-time error" num="763" keywords="from-resolved_10x" dir="new" abccomment="we don't report the advice positions too">
         <compile files="AdviceThrowsCf.java">
@@ -5017,12 +5005,6 @@
     </ajc-test>
 <ajc-test title="around with alternative binding, changed proceed" num="1005" dir="abctests/around/alternative">
          <compile files="Foo.java"></compile>
-         <run class="Foo"></run>
-    </ajc-test>
-<ajc-test title="around with circular adviceexecution advice" num="1006" dir="abctests/around/adviceexecution">
-         <compile files="Foo.java">
-                  <message line="10" kind="warning"></message>
-         </compile>
          <run class="Foo"></run>
     </ajc-test>
 <ajc-test title="make sure we get valid jimple for perthis/pertarget bind methods" num="1007" dir="abctests/bugs">

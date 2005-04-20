@@ -37,6 +37,14 @@
         <compile files="AfterReturningParam.java"></compile>
         <run class="AfterReturningParam"></run>
     </ajc-test>
+<ajc-test title="after returning from initialization and after executing constructor" num="61401" keywords="from-resolved_104" dir="abctests/new">
+        <compile files="ConstructorExecInit.java"></compile>
+        <run class="ConstructorExecInit"></run>
+    </ajc-test>
+<ajc-test title="after returning from initialization causes ExceptionInInitializer in aspect" num="61501" dir="abctests/new">
+        <compile files="ConstructorExecInitFails.java"></compile>
+        <run class="ConstructorExecInitFails"></run>
+    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
@@ -59,6 +67,10 @@
         <compile files="Finalizer.java">
             <message line="22" kind="error"></message>
         </compile>
+    </ajc-test>
+<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowCycles.java"></compile>
+        <run class="CflowCycles"></run>
     </ajc-test>
 <ajc-test title="illegal name binding in around cflow" pr="660" num="769" keywords="from-resolved_104,knownLimitation" dir="new" abccomment="ajc doesn't report errors either and then breaks at runtime,                   just like we do">
         <compile files="ArgsInCflowCf.java">
@@ -94,6 +106,12 @@
     </ajc-test>
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
+    </ajc-test>
+<ajc-test title="around with circular adviceexecution advice" num="1006" dir="abctests/around/adviceexecution">
+         <compile files="Foo.java">
+                  <message line="10" kind="warning"></message>
+         </compile>
+         <run class="Foo"></run>
     </ajc-test>
 <ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
          <compile files="PrecedenceSort.java"></compile>
