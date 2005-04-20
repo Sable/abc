@@ -80,12 +80,18 @@ public class CastShadowMatch extends StmtShadowMatch
         return new CastShadowMatch(pos.getContainer(), stmt, cast_to);
     }
 
+    public ContextValue getReturningContextValue()
+    {
+        AssignStmt assign = (AssignStmt) stmt;
+        return new JimpleValue((Immediate) assign.getLeftOp());
+    }
+
     public List /*<ContextValue>*/ getArgsContextValues()
     {
         ArrayList ret = new ArrayList(1);
 
         CastExpr cast = (CastExpr) ((AssignStmt) stmt).getRightOp();
-        ret.add(new JimpleValue((Immediate)cast.getOp()));
+        ret.add(new JimpleValue((Immediate) cast.getOp()));
 
         return ret;
     }
