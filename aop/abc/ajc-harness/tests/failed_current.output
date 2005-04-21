@@ -31,6 +31,50 @@ Semantic Error at InterfaceAndInner.java:8,34-59: Class "C" not found in scope o
 FAIL: Test 190: "pureJava/interfaces with non-explicitly static inner classes" failed.
 
 
+Running test 362: new/advice on calls to static methods using several syntax
+Commandline: abc -d new -warn-unused-advice:off new/StaticCalls.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:592)
+	at abc.testing.TestCase.runTest(TestCase.java:288)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.RuntimeException: Box VB(r5) cannot contain value: "TimeService0"(class soot.jimple.StringConstant)
+	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
+	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
+	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArgumentsPass(InterprocConstantPropagator.java:313)
+	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:262)
+	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:258)
+	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:105)
+	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
+	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
+	at abc.main.Main.run(Main.java:518)
+	... 3 more
+FAIL: Test 362: "new/advice on calls to static methods using several syntax" failed.
+
+
+Running test 439: new/within and withincode (doesn't all work due to local class name issues)
+Commandline: abc -d new -warn-unused-advice:off new/WithinInners.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:592)
+	at abc.testing.TestCase.runTest(TestCase.java:288)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.RuntimeException: Box VB(r5) cannot contain value: "TEXT"(class soot.jimple.StringConstant)
+	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
+	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
+	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArgumentsPass(InterprocConstantPropagator.java:313)
+	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:262)
+	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:258)
+	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:105)
+	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
+	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
+	at abc.main.Main.run(Main.java:518)
+	... 3 more
+FAIL: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" failed.
+
+
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new -warn-unused-advice:off new/AroundAll.java 
 Test failed, compiled class behaved incorrectly
@@ -42,7 +86,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$6(AroundAll.java:9)
-	at A.inline$26$around$1601(AroundAll.java)
+	at A.inline$25$around$1601(AroundAll.java)
 	at AroundAll.main(AroundAll.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -52,36 +96,6 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 FAIL: Test 496: "new/elaborated into testing of around on all join points" failed.
-
-
-Running test 497: new/type name hygiene when code comes from aspects in different packages
-Commandline: abc -d new -warn-unused-advice:off new/typeNameConflicts/Driver.java new/typeNameConflicts/p1/C.java new/typeNameConflicts/aspects/A.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:63)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:187)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1433)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:72)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:301)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:233)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:513)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:419)
-	at soot.baf.JasminClass.<init>(JasminClass.java:45)
-	at soot.PackManager.writeClass(PackManager.java:635)
-	at soot.PackManager.writeOutput(PackManager.java:387)
-	at soot.PackManager.writeOutput(PackManager.java:340)
-	at abc.main.Main.output(Main.java:975)
-	at abc.main.Main.run(Main.java:538)
-	... 3 more
-FAIL: Test 497: "new/type name hygiene when code comes from aspects in different packages" failed.
 
 
 Running test 555: new/accessing protected superclass members in and outside CCC from body of method introduction
@@ -102,94 +116,24 @@ Caused by: java.lang.VerifyError: (class: A, method: getClone signature: (LObjec
 FAIL: Test 555: "new/accessing protected superclass members in and outside CCC from body of method introduction" failed.
 
 
-Running test 573: new/after returning advice param
-Commandline: abc -d new -warn-unused-advice:off new/AfterReturningParam.java 
+Running test 578: new/second arg in formal on shared joinpoint with pcd if() causes verify error ??
+Commandline: abc -d new -warn-unused-advice:off new/PR554.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
+	at abc.main.Main.run(Main.java:592)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:63)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:187)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1433)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:72)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:301)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:233)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:513)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:419)
-	at soot.baf.JasminClass.<init>(JasminClass.java:45)
-	at soot.PackManager.writeClass(PackManager.java:635)
-	at soot.PackManager.writeOutput(PackManager.java:387)
-	at soot.PackManager.writeOutput(PackManager.java:340)
-	at abc.main.Main.output(Main.java:975)
-	at abc.main.Main.run(Main.java:538)
+Caused by: java.lang.RuntimeException: Box VB($r2) cannot contain value: "A"(class soot.jimple.StringConstant)
+	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
+	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:215)
+	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
+	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
+	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
+	at abc.main.Main.run(Main.java:518)
 	... 3 more
-FAIL: Test 573: "new/after returning advice param" failed.
-
-
-Running test 61401: abctests/new/after returning from initialization and after executing constructor
-Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/ConstructorExecInit.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:63)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:187)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1433)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:72)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:301)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:233)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:513)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:419)
-	at soot.baf.JasminClass.<init>(JasminClass.java:45)
-	at soot.PackManager.writeClass(PackManager.java:635)
-	at soot.PackManager.writeOutput(PackManager.java:387)
-	at soot.PackManager.writeOutput(PackManager.java:340)
-	at abc.main.Main.output(Main.java:975)
-	at abc.main.Main.run(Main.java:538)
-	... 3 more
-FAIL: Test 61401: "abctests/new/after returning from initialization and after executing constructor" failed.
-
-
-Running test 61501: abctests/new/after returning from initialization causes ExceptionInInitializer in aspect
-Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/ConstructorExecInitFails.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Invalid type: null_type
-	at soot.AbstractJasminClass$1.defaultCase(AbstractJasminClass.java:145)
-	at soot.TypeSwitch.caseNullType(TypeSwitch.java:106)
-	at soot.NullType.apply(NullType.java:63)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:101)
-	at soot.AbstractJasminClass.jasminDescriptorOf(AbstractJasminClass.java:187)
-	at soot.baf.JasminClass$1.caseStaticInvokeInst(JasminClass.java:1433)
-	at soot.baf.internal.BStaticInvokeInst.apply(BStaticInvokeInst.java:72)
-	at soot.baf.JasminClass.emitInst(JasminClass.java:301)
-	at soot.baf.JasminClass.emitMethodBody(JasminClass.java:233)
-	at soot.AbstractJasminClass.emitMethod(AbstractJasminClass.java:513)
-	at soot.AbstractJasminClass.<init>(AbstractJasminClass.java:419)
-	at soot.baf.JasminClass.<init>(JasminClass.java:45)
-	at soot.PackManager.writeClass(PackManager.java:635)
-	at soot.PackManager.writeOutput(PackManager.java:387)
-	at soot.PackManager.writeOutput(PackManager.java:340)
-	at abc.main.Main.output(Main.java:975)
-	at abc.main.Main.run(Main.java:538)
-	... 3 more
-FAIL: Test 61501: "abctests/new/after returning from initialization causes ExceptionInInitializer in aspect" failed.
+FAIL: Test 578: "new/second arg in formal on shared joinpoint with pcd if() causes verify error ??" failed.
 
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
@@ -216,6 +160,26 @@ org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not fou
 FAIL: Test 64301: "abctests/new/type pattern matching for inner classes (from Ken Horn)" failed.
 
 
+Running test 654: new/method-local class defined in around return statement
+Commandline: abc -d new -warn-unused-advice:off new/MethodLocalAroundReturns.java 
+Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
+polyglot.util.InternalCompilerError: unhandled exception during compilation
+	at abc.main.Main.run(Main.java:592)
+	at abc.testing.TestCase.runTest(TestCase.java:288)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.RuntimeException: Box VB($r0) cannot contain value: "ok"(class soot.jimple.StringConstant)
+	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
+	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:215)
+	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
+	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
+	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
+	at abc.main.Main.run(Main.java:518)
+	... 3 more
+FAIL: Test 654: "new/method-local class defined in around return statement" failed.
+
+
 Running test 682: new/assert statement in advice coverage [requires 1.4]
 Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdvice.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during matching
@@ -225,7 +189,7 @@ polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during m
 	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:237)
 	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:274)
 	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:451)
-	at abc.main.Main.weave(Main.java:877)
+	at abc.main.Main.weave(Main.java:878)
 	at abc.main.Main.run(Main.java:506)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
@@ -277,7 +241,7 @@ Running test 762: new/can't apply around advice to the execution of around advic
 Commandline: abc -d new -warn-unused-advice:off new/CflowCycles.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
+	at abc.main.Main.run(Main.java:592)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -290,7 +254,7 @@ Caused by: java.lang.RuntimeException: no active body present for method <Abc$pr
 	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:517)
+	at abc.main.Main.run(Main.java:518)
 	... 3 more
 FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed.
 
@@ -313,13 +277,13 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
+	at abc.main.Main.run(Main.java:592)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:678)
-	at abc.main.Main.loadSourceRoots(Main.java:695)
+	at abc.main.Main.findSourcesInDir(Main.java:679)
+	at abc.main.Main.loadSourceRoots(Main.java:696)
 	at abc.main.Main.run(Main.java:496)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -369,7 +333,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
+	at abc.main.Main.run(Main.java:592)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -379,7 +343,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:775)
+	at abc.main.Main.compile(Main.java:776)
 	at abc.main.Main.run(Main.java:502)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
@@ -389,7 +353,7 @@ Running test 1006: abctests/around/adviceexecution/around with circular adviceex
 Commandline: abc -d abctests/around/adviceexecution -warn-unused-advice:off abctests/around/adviceexecution/Foo.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:591)
+	at abc.main.Main.run(Main.java:592)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -401,7 +365,7 @@ Caused by: java.lang.RuntimeException: no active body present for method <Abc$pr
 	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:517)
+	at abc.main.Main.run(Main.java:518)
 	... 3 more
 FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed.
 
