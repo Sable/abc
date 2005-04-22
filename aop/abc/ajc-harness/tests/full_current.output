@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@113efb6
+InterfaceAndObject$1@93ef28
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -4145,7 +4145,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1bd2e5b.x:=-3
+test.Test3@12e8871.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4228,6 +4228,7 @@ Caused by: java.lang.RuntimeException: no active body present for method <Abc$pr
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
@@ -4245,8 +4246,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@f9a306
-o: Bar@f9a306, i: 10
+o: Bar@e04f19
+o: Bar@e04f19, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4397,13 +4398,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$12$around$2689(Trace.aj)
+	at aspects.Trace.inline$14$around$2689(Trace.aj)
 	at cap.OptionList.shadow$39(OptionList.java:92)
 	at aspects.Trace.inline$72$around$2689(Trace.aj)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$4$around$2689(Trace.aj)
+	at aspects.Trace.inline$6$around$2689(Trace.aj)
 	at cap.OptionList.shadow$43(OptionList.java:135)
-	at aspects.Trace.inline$68$around$2689(Trace.aj)
+	at aspects.Trace.inline$74$around$2689(Trace.aj)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4437,13 +4438,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$37$around$2689(Trace.aj)
+	at aspects.Trace.inline$39$around$2689(Trace.aj)
 	at cap.OptionList.shadow$39(OptionList.java:119)
 	at aspects.Trace.inline$72$around$2689(Trace.aj)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$4$around$2689(Trace.aj)
+	at aspects.Trace.inline$6$around$2689(Trace.aj)
 	at cap.OptionList.shadow$43(OptionList.java:135)
-	at aspects.Trace.inline$68$around$2689(Trace.aj)
+	at aspects.Trace.inline$74$around$2689(Trace.aj)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4836,7 +4837,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1c0d1bc
+LibraryAspect-defined run() for C@5dbceb
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5162,7 +5163,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@9a74c5
+? Util.read() obj=Test@14f0b23
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5182,7 +5183,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1e56df5
+? Util.read() obj=ClinitTest@127e878
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5192,7 +5193,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@18e2138
+? Util.read() obj=SuidTest@310240
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5395,12 +5396,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1cbf4e9
-Invoking command bean:  Command@13c0896
-hello(Command@13c0896)
-Created a PerThis aspect : Testcase2@57e1b9
-Invoking command bean:  Command@1a44f6d
-hello again(Command@1a44f6d)
+Created a PerThis aspect : Testcase2@11dec3c
+Invoking command bean:  Command@180715b
+hello(Command@180715b)
+Created a PerThis aspect : Testcase2@1924794
+Invoking command bean:  Command@9959d7
+hello again(Command@9959d7)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5626,6 +5627,7 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$Aspect$around$3024: void abc$proceed$Aspect$around$3024(int,int)>
 	at soot.SootMethod.getActiveBody(SootMethod.java:279)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)

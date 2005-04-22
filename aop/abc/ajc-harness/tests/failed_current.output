@@ -251,6 +251,7 @@ Caused by: java.lang.RuntimeException: no active body present for method <Abc$pr
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
@@ -359,6 +360,7 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$Aspect$around$3024: void abc$proceed$Aspect$around$3024(int,int)>
 	at soot.SootMethod.getActiveBody(SootMethod.java:279)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
 	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
