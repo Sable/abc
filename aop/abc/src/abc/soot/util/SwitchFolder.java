@@ -195,17 +195,54 @@ public class SwitchFolder extends BodyTransformer {
 	                		throw new InternalCompilerError("");
 	                	Set targets=getTargets(stmt);
 	                	targets.add(getDefaultTarget(stmt));
+	                	
 	                	for (Iterator it=targets.iterator(); it.hasNext();) {
-	                		Stmt s=(Stmt)it.next();
+	                		Stmt s=(Stmt)it.next();	                		
 	                		if (s==target)
 	                			continue;
-	                		while(!targets.contains(s) && !(s.hasTag(LookupStmtTag.name) && 
-	                				((LookupStmtTag)s.getTag(LookupStmtTag.name)).ID==tag.ID)) {
-	                			Stmt r=(Stmt)units.getSuccOf(s);
+	                		if (s==getDefaultTarget(stmt))
+	                			continue;
+	                		
+	                		//debug(" looking at target " + s);
+	                		
+	                		Stmt r=(Stmt)units.getSuccOf(s);
+	                		//debug("   removing " + s);
+                			units.remove(s);
+                			s=r;
+                			if (s==null)
+                				throw new InternalCompilerError("");
+                			
+	                		while(!targets.contains(s)) {
+	                			if (s.hasTag(LookupStmtTag.name)) {
+	                			//	debug("   found TAG " + s);
+	                				LookupStmtTag t=(LookupStmtTag)s.getTag(LookupStmtTag.name);
+	                				if (t.ID==tag.ID) {
+	                			//		debug("   found matching ID " + t.ID);
+	                					break;
+	                				}
+	                			}
+	                			r=(Stmt)units.getSuccOf(s);
+	                			//debug("   removing " + s);
 	                			units.remove(s);
 	                			s=r;
+	                			if (s==null)
+	                				throw new InternalCompilerError("");
 	                		}
-	                	}	           
+	                	}	 
+	                	
+	                	Stmt s=(Stmt)getDefaultTarget(stmt);
+	                	//debug(" looking at default target " + s);
+	                	while(true) {
+	                		Stmt r=(Stmt)units.getSuccOf(s);
+                			//debug("   removing " + s);
+                			boolean done=s instanceof ThrowStmt;
+                			units.remove(s);
+                			s=r;
+                			if (s==null)
+                				throw new InternalCompilerError("");
+                			if (done)
+                				break;
+	                	}
 	                	
 	                } 
 	                Stmt newStmt =

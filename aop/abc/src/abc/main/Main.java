@@ -30,6 +30,7 @@ package abc.main;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -78,13 +79,13 @@ import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.AdviceInliner;
-import abc.weaving.weaver.BoxingRemover;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
 import abc.weaving.weaver.InterprocConstantPropagator;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.UnusedMethodsRemover;
 import abc.weaving.weaver.Weaver;
+import abc.weaving.weaver.around.AroundWeaver;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -468,7 +469,7 @@ public class Main {
         }
     }
 
-
+    
     public void run() throws CompilerFailedException {
         try {
             // Timer start stuff
@@ -513,18 +514,33 @@ public class Main {
                     phaseDebug("Exceptions check");
                 }
                 
+               AroundWeaver.reset();
+               //AbcTimer.mark("Freeing around memory");
+               phaseDebug("Freeing around memory");
+                
                if (OptionsParser.v().O()!=0) {
                         
                 	Weaver.doInlining();
                 
+                	AbcTimer.mark("Advice inlining");
+                    phaseDebug("Advice inlining");
                 
                 	UnusedMethodsRemover.removeUnusedMethods();
                 
+                	AbcTimer.mark("Removing unused methods");
+                    phaseDebug("Removing unused methods");
                 
                 	InterprocConstantPropagator.inlineConstantArguments();
                 
+                	AbcTimer.mark("Interprocedural constant propagator");
+                    phaseDebug("Interprocedural constant propagator");
               
-                	Weaver.runBoxingRemover();   
+                	Weaver.runBoxingRemover();
+                	
+                	AbcTimer.mark("Boxing remover");
+                    phaseDebug("Boxing remover");
+                    
+                    AdviceInliner.v().clear();
                }
                 
                 abortIfErrors();
@@ -999,6 +1015,22 @@ public class Main {
     }
 
     public static void phaseDebug(String s) {
-        if( Debug.v().debugPhases ) System.err.println("Done phase: "+s);
+        if( Debug.v().debugPhases ) { 
+        	String m="Done phase: "+s;        	
+        	if (Debug.v().debugMemUsage) {
+        		System.gc();        		
+        		long bytes=(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+        		
+        		NumberFormat numberFormatter=NumberFormat.getNumberInstance();       		
+        	
+        		String mem= numberFormatter.format(bytes) + " bytes.";
+        		int padding=79-m.length()-mem.length();
+        		String p="";
+        		while(padding-->0)
+        			p+=" ";
+        		m=m+ p + mem;
+        	}
+        	System.err.println(m);
+        }
     }
 }

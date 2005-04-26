@@ -120,7 +120,7 @@ public class Debug {
     public boolean dontRemovePushPop=false;
     public boolean nullCheckElim=true;
     public boolean allowDynamicTests = false;
-    public boolean switchFolder = true;
+    public boolean switchFolder = false;
     
     public boolean forceSingleThreadedCflow = false;
     public boolean forceStaticFieldCflow = false;
@@ -129,6 +129,7 @@ public class Debug {
 
     public boolean printWeavableClasses = false;
     public boolean debugPhases = false;
+    public boolean debugMemUsage = false;
 
     public boolean weaveDeclareWarning = false;
     public boolean messageWeaver = false;

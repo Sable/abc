@@ -51,7 +51,6 @@ import soot.jimple.TableSwitchStmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.invoke.AccessManager;
 import soot.jimple.toolkits.invoke.InlinerSafetyManager;
-import soot.jimple.toolkits.invoke.SiteInliner;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.util.Chain;
@@ -61,7 +60,7 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.weaver.around.AroundWeaver;
 import abc.weaving.weaver.around.Util;
-import abc.weaving.weaver.around.AroundWeaver.LookupStmtTag;
+import abc.weaving.weaver.around.soot.SiteInliner;
 
 /**
  * @author Sascha Kuzins
@@ -97,34 +96,45 @@ public class AdviceInliner { //extends BodyTransformer {
 	}
 	
 	public void run() {		
+		debug("Starting around inliner.");
 		Set visitedBodies=new HashSet();
     	for( Iterator mIt = shadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
     		inlineMethods(m.getActiveBody(), null, getInlineOptions(), visitedBodies, 0);
     	}
-    	InterprocConstantPropagator.inlineConstantArguments();
+    	if (additionalShadowMethods.size()>0) {
+    		debug("Running ICP.");
+    		InterprocConstantPropagator.inlineConstantArguments();
+    	}
     	for( Iterator mIt = additionalShadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
     	    Body body=m.getActiveBody();
+    	   // debug(" SSSSSSSSSSSSSSSSSSSSSSSS\n" + Util.printMethod(m));
     	    foldSwitches(body, true);
-    		inlineMethods(body, null, getInlineOptions(), visitedBodies, 0);
+    	    //eliminateUnreachableCode(body);
+    	    //debug(" TTTTTTTTTTTTTTTTTTTTTTTT\n" + Util.printMethod(m));
+    	    inlineMethods(body, null, getInlineOptions(), visitedBodies, 0);
     		
     		//eliminateUnreachableCode(body);
-    		//debug(" TTTTTTTTTTTTTTTTTTTTTTTT\n" + Util.printMethod(m));
-    	}
-    	InterprocConstantPropagator.inlineConstantArguments();
+    		
+    	}    	    	
+    	debug("Around inliner done.");
+	}
+	public void clear() {
+		shadowMethods.clear();
+		additionalShadowMethods.clear();
 	}
 	public void runBoxingRemover() {
 		for( Iterator mIt = shadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
     		BoxingRemover.v().transform(m.getActiveBody());
     	}
-    	/*for( Iterator mIt = AroundInliner.v().adviceMethodsNotInlined.iterator(); mIt.hasNext(); ) {
+    	for( Iterator mIt = additionalShadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
     	    //debug(" method: " + m.getName());        	    
     	    BoxingRemover.v().transform(m.getActiveBody());
     	    //debug(" " + Util.printMethod(m));
-    	}*/
+    	}
 	}
 	public static int getAccessViolationCount(SootMethod container, SootMethod adviceMethod) 
 	{
@@ -197,7 +207,7 @@ public class AdviceInliner { //extends BodyTransformer {
 		NopStmt begin;
 		NopStmt end;
 	}
-	Set bodiesExceedingMaximumSize=new HashSet();
+	//Set bodiesExceedingMaximumSize=new HashSet();
 	
 	protected void inlineMethods(Body body, InlineRange range, InlineOptions inlineOptions, Set visitedBodies, int depth) {
 		depth++;
@@ -251,7 +261,7 @@ public class AdviceInliner { //extends BodyTransformer {
         else
         	stmtIt=unitList.listIterator(unitList.indexOf(range.begin));
         
-        boolean bDidInlineSwitch=false;
+        //boolean bDidInlineSwitch=false;
         //Set visitedStatements=new HashSet();
         while (stmtIt.hasNext()) {
         	Stmt stmt = (Stmt)stmtIt.next();
@@ -289,9 +299,7 @@ public class AdviceInliner { //extends BodyTransformer {
         		r.begin=Jimple.v().newNopStmt();
         		r.end=Jimple.v().newNopStmt();
         		units.insertBefore(r.begin, stmt);
-        		units.insertAfter(r.end, stmt);
-        		rangesToInline.add(r);
-        		debug("QQQ adding range", depth);
+        		units.insertAfter(r.end, stmt);        		
         	}
         	
         	// This is the big step:
@@ -350,8 +358,8 @@ public class AdviceInliner { //extends BodyTransformer {
 	            		AccessManager.createAccessorMethods(body, before, after);           		
 	            		
 	            		
-	            		bDidInlineSwitch=bDidInlineSwitch || 
-							rangeContainsSwitch(units, before, after);
+	            		//bDidInlineSwitch=bDidInlineSwitch || 
+						//	rangeContainsSwitch(units, before, after);
 	            								
 	            		/*if (units.size()>MAX_CONTAINER_SIZE/2
 	            				&& Util.isAroundAdviceMethodName(expr.getMethod().getName())) {
@@ -360,6 +368,8 @@ public class AdviceInliner { //extends BodyTransformer {
 	            		
 	            		bDidInline=true;
 	            		debug("Succeeded.", depth);
+	            		rangesToInline.add(r);
+	            		debug("QQQ adding range", depth);
 	            	} else {
 	            		debug("Failed.", depth);
 	            	}
@@ -466,13 +476,12 @@ public class AdviceInliner { //extends BodyTransformer {
         }
         if (bDidInline) {
         	debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW(0)", depth);
-        	if (bDidInlineSwitch)
-        		foldSwitches(body, false);
+        	//if (bDidInlineSwitch)
+        	foldSwitches(body, false);
+        	
         	for (Iterator it=rangesToInline.iterator(); it.hasNext();) {
         		InlineRange r=(InlineRange)it.next();
-//        		 This is the big step:
-            	// Before inlining, recursively visit the method that's about to be inlined
-            	// and inline any possible calls            	
+   	
         		debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW", depth);
         		inlineMethods(body, r, new ProceedMethodInlineOptions(), visitedBodies, depth);
         	}
