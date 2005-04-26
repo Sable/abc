@@ -41,18 +41,19 @@ import abc.soot.util.LocalGeneratorEx;
 public class ProceedInvocation {
 	private final AdviceLocalMethod enclosingMethod;
 
-
+	private final int ID;
 
 	public ProceedInvocation(
 				AdviceLocalMethod method, List originalActuals, Stmt originalStmt) {					
 		
 		this.originalActuals.addAll(originalActuals);
 		this.enclosingMethod = method;
-
+		this.ID=method.adviceMethod.aroundWeaver.getUniqueID();
 		
 		
 		this.begin = Jimple.v().newNopStmt();
 		this.end = Jimple.v().newNopStmt();
+		this.end.addTag(new AroundWeaver.LookupStmtTag(ID, false));
 		if (originalStmt instanceof AssignStmt) {
 			lhs = (Local) (((AssignStmt) originalStmt).getLeftOp());
 		}
@@ -175,7 +176,8 @@ public class ProceedInvocation {
 			Local key = this.enclosingMethod.staticDispatchLocal; ///
 			Stmt lookupStmt = Util.newSwitchStmt(//Jimple.v().newLookupSwitchStmt(									
 					key, lookupValues, targets, (Unit) this.defaultTargetStmts.get(0));
-		
+			lookupStmt.addTag(new AroundWeaver.LookupStmtTag(ID, true));
+			
 			statements.insertBefore(lookupStmt, this.end);
 			if (this.dynamicInvoke != null) {
 				statements.insertBefore(this.dynamicInvoke, this.end);

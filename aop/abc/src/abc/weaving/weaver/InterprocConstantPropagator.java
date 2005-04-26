@@ -29,6 +29,7 @@ import java.util.Set;
 
 import polyglot.util.InternalCompilerError;
 import soot.Body;
+import soot.Immediate;
 import soot.Local;
 import soot.Scene;
 import soot.SootClass;
@@ -37,11 +38,14 @@ import soot.SootMethodRef;
 import soot.Value;
 import soot.ValueBox;
 import soot.jimple.Constant;
+import soot.jimple.DefinitionStmt;
 import soot.jimple.IdentityStmt;
 import soot.jimple.InvokeExpr;
+import soot.jimple.InvokeStmt;
+import soot.jimple.Jimple;
+import soot.jimple.NopStmt;
 import soot.jimple.ParameterRef;
 import soot.jimple.Stmt;
-import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.util.Chain;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.weaver.around.Util;
@@ -71,7 +75,63 @@ public class InterprocConstantPropagator {
 		if (abc.main.Debug.v().interprocConstantPropagator)
 			System.err.println("ICP*** " + message);
 	}
-
+	public static void removeUnusedLocals(SootMethod method) {
+		Body body=method.getActiveBody();
+		Chain statements=body.getUnits().getNonPatchingChain();
+		
+		Set usedLocals=new HashSet();
+		for (Iterator it=body.getUseBoxes().iterator(); it.hasNext(); ) {
+			ValueBox b=(ValueBox)it.next();
+			if (b.getValue() instanceof Local)
+				usedLocals.add(b.getValue());
+		}
+		
+		Chain locals=body.getLocals();
+		
+		if (locals.size()==usedLocals.size())
+			return;
+		
+		int removed=0;
+		
+		List copy=new ArrayList(locals);
+		for (Iterator it=copy.iterator(); it.hasNext();) {
+			Local l=(Local)it.next();
+			if (usedLocals.contains(l))
+				continue;
+			
+			int leftDefs=0;
+			// l is unused.
+			List scopy=new ArrayList(statements);
+			for (Iterator itS=scopy.iterator(); itS.hasNext();){
+				Stmt s=(Stmt)itS.next();
+				if (s instanceof DefinitionStmt) {
+					DefinitionStmt def=(DefinitionStmt)s;
+					if (def.getLeftOp()==l) {
+						Value r=def.getRightOp();
+						if (r instanceof Immediate) {
+							NopStmt nop=Jimple.v().newNopStmt();
+							statements.insertAfter(nop, s);
+							s.redirectJumpsToThisTo(nop);
+							statements.remove(s);	
+							removed++;							
+						} else if (r instanceof InvokeExpr){
+							InvokeStmt inv=Jimple.v().newInvokeStmt(r);
+							statements.insertAfter(inv, s);
+							s.redirectJumpsToThisTo(inv);
+							statements.remove(s);	
+							removed++;
+						} else {
+							leftDefs++;
+						}
+					}
+				}
+			}
+			if (leftDefs==0)
+				locals.remove(l);
+		}
+		if (removed>0)
+			removeUnusedLocals(method);
+	}
 	private static class ConstantMethodCallArguments {
 		private final String methodSig;
 		public ConstantMethodCallArguments(Stmt stmt) {
@@ -109,6 +169,7 @@ public class InterprocConstantPropagator {
 				}
 			}
 		}
+		
 		private boolean[] findUsedArguments(SootMethod method) {
 			if (!method.makeRef().toString().equals(methodSig))
 				throw new InternalCompilerError("");
@@ -121,7 +182,8 @@ public class InterprocConstantPropagator {
 			Set usedLocals=new HashSet();
 			for (Iterator it=body.getUseBoxes().iterator(); it.hasNext(); ) {
 				ValueBox b=(ValueBox)it.next();
-				usedLocals.add(b.getValue());
+				if (b.getValue() instanceof Local)
+					usedLocals.add(b.getValue());
 			}
 			
 			int index=0;
@@ -311,6 +373,7 @@ public class InterprocConstantPropagator {
                 
                 if (!propagatedBodies.contains(body)) {
                 	SwitchFolder.cheapConstantPropagator(body, true);
+            		InterprocConstantPropagator.removeUnusedLocals(body.getMethod());
                 	//ConstantPropagatorAndFolder.v().transform(body); // TODO: phase name, options?
                 	propagatedBodies.add(body);
                 }

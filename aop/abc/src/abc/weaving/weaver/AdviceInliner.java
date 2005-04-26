@@ -52,7 +52,6 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.invoke.AccessManager;
 import soot.jimple.toolkits.invoke.InlinerSafetyManager;
 import soot.jimple.toolkits.invoke.SiteInliner;
-import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.util.Chain;
@@ -62,6 +61,7 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.weaver.around.AroundWeaver;
 import abc.weaving.weaver.around.Util;
+import abc.weaving.weaver.around.AroundWeaver.LookupStmtTag;
 
 /**
  * @author Sascha Kuzins
@@ -105,9 +105,14 @@ public class AdviceInliner { //extends BodyTransformer {
     	InterprocConstantPropagator.inlineConstantArguments();
     	for( Iterator mIt = additionalShadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
-    	    foldSwitches(m.getActiveBody(), true);
-    		inlineMethods(m.getActiveBody(), null, getInlineOptions(), visitedBodies, 0);
+    	    Body body=m.getActiveBody();
+    	    foldSwitches(body, true);
+    		inlineMethods(body, null, getInlineOptions(), visitedBodies, 0);
+    		
+    		//eliminateUnreachableCode(body);
+    		//debug(" TTTTTTTTTTTTTTTTTTTTTTTT\n" + Util.printMethod(m));
     	}
+    	InterprocConstantPropagator.inlineConstantArguments();
 	}
 	public void runBoxingRemover() {
 		for( Iterator mIt = shadowMethods.iterator(); mIt.hasNext(); ) {
@@ -570,15 +575,18 @@ public class AdviceInliner { //extends BodyTransformer {
 		if (!methodContainsSwitch(body))
 			return;
 		//ConstantPropagatorAndFolder.v().transform(body);
+    	//SwitchFolder.cheapConstantPropagator(body, true);
+		//InterprocConstantPropagator.removeUnusedLocals(body.getMethod());
 		SwitchFolder.v().foldWithCheapPropagation(body, evaluate);// .transform(body); // TODO: phaseName etc.?
-		eliminateUnreachableCode(body);
+		//eliminateUnreachableCode(body);
 	}
 	
 	/**
 	 * @param body
 	 */
 	private void eliminateUnreachableCode(Body body) {
-		//SwitchFolder.cheapUnusedCodeRemover(body);
+		//SwitchFolder.simpleUnusedCodeRemover(body);
+		
 		UnreachableCodeEliminator.v().transform(body);
 	}
 	

@@ -657,13 +657,14 @@ public class AdviceMethod {
 				//addEmptyDynamicParameters(method, addedDynArgs, proceedMethodName);
 				InvokeExpr invoke = (InvokeExpr) stmt.getInvokeExprBox()
 						.getValue();
-				List newParams = new LinkedList(invoke.getArgs());
-				List newTypes = new LinkedList(invoke.getMethodRef()
-						.parameterTypes());
-				newTypes.addAll(addedDynArgTypes);
-				newParams.addAll(addedDynArgs); /// should we do deep copy?	
-				InvokeExpr newInvoke = Util.createNewInvokeExpr(invoke,
-						newParams, newTypes);
+				//List newParams = new LinkedList(invoke.getArgs());
+				//List newTypes = new LinkedList(invoke.getMethodRef()
+				//		.parameterTypes());
+				//newTypes.addAll(addedDynArgTypes);
+				//newParams.addAll(addedDynArgs); /// should we do deep copy?	
+				InvokeExpr newInvoke = Util.createModifiedInvokeExpr(invoke, addedDynArgs, addedDynArgTypes);
+				//Util.createNewInvokeExpr(invoke,
+				//		newParams, newTypes);
 				stmt.getInvokeExprBox().setValue(newInvoke);
 			}
 		}
@@ -680,13 +681,14 @@ public class AdviceMethod {
 				//addEmptyDynamicParameters(method, addedDynArgs, proceedMethodName);
 				InvokeExpr invoke = (InvokeExpr) stmt.getInvokeExprBox()
 						.getValue();
-				List newParams = new LinkedList(invoke.getArgs());
-				List newTypes = new LinkedList(invoke.getMethodRef()
-						.parameterTypes());
-				newTypes.addAll(addedDynArgTypes);
-				newParams.addAll(addedDynArgs); /// should we do deep copy?	
-				InvokeExpr newInvoke = Util.createNewInvokeExpr(invoke,
-						newParams, newTypes);
+				//List newParams = new LinkedList(invoke.getArgs());
+				//List newTypes = new LinkedList(invoke.getMethodRef()
+				//		.parameterTypes());
+				//newTypes.addAll(addedDynArgTypes);
+				//newParams.addAll(addedDynArgs); /// should we do deep copy?	
+				InvokeExpr newInvoke = Util.createModifiedInvokeExpr(invoke, addedDynArgs, addedDynArgTypes);
+				//createNewInvokeExpr(invoke,
+					//	newParams, newTypes);
 				//invoke.getMethodRef().parameterTypes().add()
 				stmt.getInvokeExprBox().setValue(newInvoke);
 			}

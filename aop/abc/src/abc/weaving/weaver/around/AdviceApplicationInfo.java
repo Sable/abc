@@ -363,17 +363,17 @@ public class AdviceApplicationInfo {
 		Stmt switchTarget;
 		{ // copy shadow into proceed method
 			ObjectBox result = new ObjectBox();
-			if (this.proceedMethod.lookupStmt == null)
+			if (this.proceedMethod.getLookupStmt() == null)
 				throw new InternalAroundError();
 			localMap = Util.copyStmtSequence(shadowMethodBody, begin, end,
 					this.proceedMethod.proceedMethodBody,
-					this.proceedMethod.lookupStmt, returnedLocal, result);
+					this.proceedMethod.getLookupStmt(), returnedLocal, result);
 			first = (Stmt) result.object;
 			if (first == null)
 				throw new InternalAroundError();
 			switchTarget = Jimple.v().newNopStmt();
 
-			if (first == this.proceedMethod.lookupStmt)
+			if (first == this.proceedMethod.getLookupStmt())
 				throw new InternalAroundError();
 
 			this.proceedMethod.proceedMethodStatements.insertBefore(

@@ -21,30 +21,41 @@ package abc.soot.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-
-
+import polyglot.util.InternalCompilerError;
 import soot.Body;
 import soot.BodyTransformer;
 import soot.G;
 import soot.Immediate;
 import soot.Local;
+import soot.Trap;
 import soot.Unit;
 import soot.Value;
 import soot.ValueBox;
 import soot.jimple.Constant;
 import soot.jimple.DefinitionStmt;
+import soot.jimple.GotoStmt;
+import soot.jimple.IfStmt;
 import soot.jimple.IntConstant;
 import soot.jimple.Jimple;
 import soot.jimple.LookupSwitchStmt;
+import soot.jimple.ReturnStmt;
+import soot.jimple.ReturnVoidStmt;
 import soot.jimple.Stmt;
 import soot.jimple.StmtBody;
 import soot.jimple.TableSwitchStmt;
+import soot.jimple.ThrowStmt;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.options.Options;
 import soot.util.Chain;
+import abc.weaving.weaver.around.Util;
+import abc.weaving.weaver.around.AroundWeaver.LookupStmtTag;
 
 /**
  * @author Sascha Kuzins
@@ -52,6 +63,10 @@ import soot.util.Chain;
  */
 public class SwitchFolder extends BodyTransformer {
 
+	private static void debug(String message)
+    { if (abc.main.Debug.v().switchFolder)
+        System.err.println("SWF*** " + message);
+    }
 	
 	private static SwitchFolder instance = 
 		new SwitchFolder();
@@ -94,7 +109,27 @@ public class SwitchFolder extends BodyTransformer {
 		} else 
 			throw new RuntimeException("");
 	}
-
+	private Set getTargets(Stmt stmt) {
+		if (stmt instanceof LookupSwitchStmt) {
+			LookupSwitchStmt s=(LookupSwitchStmt)stmt;
+			return new HashSet(s.getTargets());	
+		} else if (stmt instanceof TableSwitchStmt) {
+			TableSwitchStmt s=(TableSwitchStmt)stmt;
+			return new HashSet(s.getTargets());
+		} else 
+			throw new RuntimeException("");
+	}
+	private Unit getDefaultTarget(Stmt stmt) {
+		if (stmt instanceof LookupSwitchStmt) {
+			LookupSwitchStmt s=(LookupSwitchStmt)stmt;
+			return s.getDefaultTarget();
+		} else if (stmt instanceof TableSwitchStmt) {
+			TableSwitchStmt s=(TableSwitchStmt)stmt;
+			return s.getDefaultTarget();
+		} else 
+			throw new RuntimeException("");
+	}
+	
 	protected void internalTransform(Body body, String phaseName, Map options) {
 
 
@@ -121,12 +156,14 @@ public class SwitchFolder extends BodyTransformer {
 		
 		
 		Chain units = stmtBody.getUnits();
-        ArrayList unitList = new ArrayList(); unitList.addAll(units);
+        List unitList = new ArrayList(units);
 
         boolean hasFolded=false;
         Iterator stmtIt = unitList.iterator();
         while (stmtIt.hasNext()) {
         	Stmt stmt = (Stmt)stmtIt.next();
+        	if (!units.contains(stmt))
+        		continue;
             if (stmt instanceof LookupSwitchStmt ||
             	stmt instanceof TableSwitchStmt) {
                 // check for constant-valued conditions
@@ -150,6 +187,27 @@ public class SwitchFolder extends BodyTransformer {
 	                
 	                Unit target=getTargetOfKey(stmt, val);
 	                
+	                debug(" Looking at switch statement.");
+	                if (stmt.hasTag(LookupStmtTag.name)) {	                	
+	                	LookupStmtTag tag=(LookupStmtTag) stmt.getTag(LookupStmtTag.name);
+	                	debug(" Found tagged switch statement.");
+	                	if (!tag.start)
+	                		throw new InternalCompilerError("");
+	                	Set targets=getTargets(stmt);
+	                	targets.add(getDefaultTarget(stmt));
+	                	for (Iterator it=targets.iterator(); it.hasNext();) {
+	                		Stmt s=(Stmt)it.next();
+	                		if (s==target)
+	                			continue;
+	                		while(!targets.contains(s) && !(s.hasTag(LookupStmtTag.name) && 
+	                				((LookupStmtTag)s.getTag(LookupStmtTag.name)).ID==tag.ID)) {
+	                			Stmt r=(Stmt)units.getSuccOf(s);
+	                			units.remove(s);
+	                			s=r;
+	                		}
+	                	}	           
+	                	
+	                } 
 	                Stmt newStmt =
 	                        Jimple.v().newGotoStmt(target);
 	                    
@@ -164,37 +222,27 @@ public class SwitchFolder extends BodyTransformer {
                 //}
             }
         }
+        if (hasFolded) {
+        	Chain traps=body.getTraps();
+        	for (Iterator it=new ArrayList(traps).iterator();it.hasNext();) {
+        		Trap trap=(Trap)it.next();
+        		if (!units.contains(trap.getBeginUnit()) ||
+        			!units.contains(trap.getEndUnit()) ||
+        			!units.contains(trap.getHandlerUnit())) {
+        			if (units.contains(trap.getBeginUnit()) || 
+        				units.contains(trap.getBeginUnit()) || 
+						units.contains(trap.getBeginUnit())) {
+        				throw new InternalCompilerError("");
+        			}       			
+        			traps.remove(trap);
+        		}							
+        		
+        	}
+        }
 	}
 
 	
-	public static void cheapUnusedCodeRemover(Body b) {
-		Chain units=b.getUnits();
-		
-		int removed;
-		do {
-			removed=0;
-			
-			Unit prev=null;
-			for (Iterator it=units.iterator();it.hasNext();) {
-				Unit s=(Stmt)it.next();
-				//System.out.println(" prev:" + prev);
-				if (prev!=null) {
-					if (!prev.fallsThrough()) {
-						if (s.getBoxesPointingToThis().size()==0) {
-							//System.out.println("Removing " + s + "Prev:" + prev);
-							//prev=(Stmt)units.getPredOf(s);
-							units.remove(s);
-							removed++;
-							it=units.iterator(prev);
-							it.next();
-							continue;
-						}
-					}
-				}
-				prev=s;
-			}
-		} while (removed>0);
-	}
+	
 	
 	public static class LocalDefs {
 		LocalDefs(Map locals) {
@@ -220,7 +268,7 @@ public class SwitchFolder extends BodyTransformer {
 			Value v=box.getValue();
 			if (v instanceof Local) {
 				Constant c=defs.getLocalConstantValue((Local)v);
-				if (c!=null) {
+				if (c!=null && box.canContainValue(c)) {
 					box.setValue(c);
 				}
 			}
@@ -259,4 +307,143 @@ public class SwitchFolder extends BodyTransformer {
 		}
 		return new LocalDefs(locals);
 	}
+	
+	/*public static void cheapUnusedCodeRemover(Body b) {
+		Chain units=b.getUnits();
+		
+		int removed;
+		do {
+			removed=0;
+			
+			Unit prev=null;
+			for (Iterator it=units.iterator();it.hasNext();) {
+				Unit s=(Stmt)it.next();
+				//System.out.println(" prev:" + prev);
+				if (prev!=null) {
+					if (!prev.fallsThrough()) {
+						if (s.getBoxesPointingToThis().size()==0) {
+							//System.out.println("Removing " + s + "Prev:" + prev);
+							//prev=(Stmt)units.getPredOf(s);
+							units.remove(s);
+							removed++;
+							it=units.iterator(prev);
+							it.next();
+							continue;
+						}
+					}
+				}
+				prev=s;
+			}
+		} while (removed>0);
+	}*/
+	public static void simpleUnusedCodeRemover(Body body) {
+		Set reachable=new HashSet();
+		findReachableStatements(body, reachable);
+		
+		Set trapStmts=new HashSet();
+		Chain traps=body.getTraps();
+		for (Iterator it=traps.iterator();it.hasNext();) {
+			Trap trap=(Trap)it.next();
+			trapStmts.add(trap.getBeginUnit());
+			trapStmts.add(trap.getEndUnit());
+			trapStmts.add(trap.getHandlerUnit());
+		}	
+		Chain statements=body.getUnits();
+		List copy=new ArrayList(statements);
+		for (Iterator it=copy.iterator();it.hasNext();) {
+			Stmt s=(Stmt)it.next();
+			if (!reachable.contains(s)) {
+				if (!trapStmts.contains(s)) {
+					statements.remove(s);
+				}
+			}
+		}
+	}
+	public static void findReachableStatements(Body body, Set reachable) {
+		Chain statements=body.getUnits();
+		if (statements.size()==0)
+			return;
+		
+		
+		Map trappedStmts=new HashMap();
+		Chain traps=body.getTraps();
+		for (Iterator it=traps.iterator();it.hasNext();) {
+			Trap trap=(Trap)it.next();
+			Stmt handler=(Stmt)trap.getHandlerUnit();
+			Stmt begin=(Stmt)trap.getBeginUnit();
+			Stmt end=(Stmt)trap.getEndUnit();
+			for (Iterator itS=statements.iterator(begin);itS.hasNext();) {
+				Stmt trapped=(Stmt)itS.next();
+				if (trapped==end)
+					break;
+				if (!trappedStmts.containsKey(trapped))	{				
+					trappedStmts.put(trapped, handler);
+				} else if (trappedStmts.get(trapped) instanceof Stmt) {
+					List handlers=new LinkedList();
+					handlers.add(trappedStmts.get(trapped));
+					handlers.add(handler);
+					trappedStmts.put(trapped, handlers);
+				} else {
+					List handlers=(List)trappedStmts.get(trapped);
+					handlers.add(handler);
+				}
+			}
+		}
+		
+		Stmt first=(Stmt)statements.getFirst();
+		findReachableStatements(body, statements, first, reachable, trappedStmts);
+		
+			
+	}
+	public static void findReachableStatements(Body body, Chain statements, Stmt stmt, Set reachable, Map trappedStmts) {
+		if (reachable.contains(stmt))
+			return;
+		reachable.add(stmt);
+		
+		if (trappedStmts.containsKey(stmt)) {
+			Object h=trappedStmts.get(stmt);
+			if (h instanceof Stmt) {
+				findReachableStatements(body, statements, (Stmt)h, reachable, trappedStmts);
+			} else {
+				List handlers=(List)h;
+				for (Iterator it=handlers.iterator();it.hasNext();) {
+					Stmt handler=(Stmt)it.next();
+					findReachableStatements(body, statements, handler, reachable, trappedStmts);
+				}
+			}
+		}
+		
+		if (stmt.fallsThrough()) {
+			if (statements.getLast()!=stmt) {
+				Stmt s=(Stmt)statements.getSuccOf(stmt);
+				findReachableStatements(body, statements, s, reachable, trappedStmts);
+			}
+		}
+		if (stmt instanceof GotoStmt) {
+			GotoStmt s=(GotoStmt)stmt;
+			findReachableStatements(body, statements, (Stmt)s.getTarget(), reachable, trappedStmts);
+		} else if (stmt instanceof IfStmt) {
+			IfStmt s=(IfStmt)stmt;
+			findReachableStatements(body, statements, (Stmt)s.getTarget(), reachable, trappedStmts);
+		} else if (stmt instanceof LookupSwitchStmt) {
+			LookupSwitchStmt s=(LookupSwitchStmt)stmt;
+			for (Iterator it=s.getTargets().iterator();it.hasNext();){
+				Stmt t=(Stmt)it.next();
+				findReachableStatements(body, statements, t, reachable, trappedStmts);
+			}
+		} else if (stmt instanceof TableSwitchStmt) {
+			TableSwitchStmt s=(TableSwitchStmt)stmt;
+			for (Iterator it=s.getTargets().iterator();it.hasNext();){
+				Stmt t=(Stmt)it.next();
+				findReachableStatements(body, statements, t, reachable, trappedStmts);
+			}
+		} else if (stmt instanceof ReturnStmt) {
+			
+		} else if (stmt instanceof ReturnVoidStmt) {
+			
+		} else if (stmt instanceof ThrowStmt) {
+			
+		}
+	}
+	
 }

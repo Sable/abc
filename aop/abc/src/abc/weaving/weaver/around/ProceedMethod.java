@@ -70,7 +70,8 @@ public class ProceedMethod {
 		//				this.adviceMethod = parent;
 		this.shadowClass = shadowClass;
 		this.bUseClosureObject = bClosureMethod;
-
+		this.lookupStmtID=aroundWeaver.getUniqueID();
+		
 		String interfaceName = adviceMethod.interfaceInfo.closureInterface
 				.getName();
 
@@ -166,11 +167,14 @@ public class ProceedMethod {
 			proceedStatements.add(throwStmt);
 			defaultEnd = Jimple.v().newNopStmt();
 			proceedStatements.add(defaultEnd);
-
+			NopStmt endTag=Jimple.v().newNopStmt();
+			endTag.addTag(new AroundWeaver.LookupStmtTag(lookupStmtID, false));
+			proceedStatements.add(endTag);
+			
 			// just generate a nop for now.
-			lookupStmt = Jimple.v().newNopStmt();
+			setLookupStmt(Jimple.v().newNopStmt());
 
-			proceedStatements.insertAfter(lookupStmt, lastIDStmt);
+			proceedStatements.insertAfter(getLookupStmt(), lastIDStmt);
 
 			//AdviceMethod adviceMethodInfo = state.getInterfaceInfo(interfaceName);
 			Iterator it = this.adviceMethod.contextArguments.iterator();
@@ -186,8 +190,8 @@ public class ProceedMethod {
 			defaultEnd = Jimple.v().newNopStmt();
 			proceedStatements.add(defaultEnd);
 			// just generate a nop for now.
-			lookupStmt = Jimple.v().newNopStmt();
-			proceedStatements.insertAfter(lookupStmt, lastIDStmt);
+			setLookupStmt(Jimple.v().newNopStmt());
+			proceedStatements.insertAfter(getLookupStmt(), lastIDStmt);
 		}
 
 		Util.validateMethod(sootProceedMethod);
@@ -221,9 +225,9 @@ public class ProceedMethod {
 			newLookupStmt = Util.newSwitchStmt(// Jimple.v().newLookupSwitchStmt(
 					shadowIdParamLocal, lookupValues, proceedMethodTargets,
 					defaultTarget);
-		proceedMethodStatements.insertAfter(newLookupStmt, lookupStmt);
-		proceedMethodStatements.remove(lookupStmt);
-		lookupStmt = newLookupStmt;
+		proceedMethodStatements.insertAfter(newLookupStmt, getLookupStmt());
+		proceedMethodStatements.remove(getLookupStmt());
+		setLookupStmt(newLookupStmt);
 
 		if (!bStaticProceedMethod) {
 			this.adviceMethod.fixProceedMethodSuperCalls(shadowClass);
@@ -483,8 +487,16 @@ public class ProceedMethod {
 
 	final NopStmt defaultEnd;
 
-	Stmt lookupStmt;
-
+	private Stmt _lookupStmt;
+	private final int lookupStmtID;
+	void setLookupStmt(Stmt lookupStmt) {
+		_lookupStmt=lookupStmt;
+		_lookupStmt.addTag(new AroundWeaver.LookupStmtTag(lookupStmtID, true));
+	}
+	Stmt getLookupStmt() {
+		return _lookupStmt;
+	}
+	
 	int nextShadowID;
 
 	public final int shadowIDParamIndex;

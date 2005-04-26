@@ -21,7 +21,6 @@ package abc.weaving.weaver.around;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +31,8 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.Value;
 import soot.jimple.Stmt;
+import soot.tagkit.AttributeValueException;
+import soot.tagkit.Tag;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -402,5 +403,22 @@ public class AroundWeaver {
 		}
 		return (AdviceMethod) adviceMethods.get(adviceMethod);
 	}
+	public static class LookupStmtTag implements Tag {
+		public final static String name="LookupStmtTag";
+	    
+	    public String getName() {
+		return name;
+	    }
 
+	    public byte[] getValue() {
+		throw new AttributeValueException();
+	    }
+	    public LookupStmtTag(int ID, boolean start) {
+	    	this.ID=ID;
+	    	this.start=start;
+	    }
+	    public final int ID;
+	    public boolean start;
+	}
+	
 }

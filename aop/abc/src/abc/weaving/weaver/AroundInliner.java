@@ -19,29 +19,6 @@
 
 package abc.weaving.weaver;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import polyglot.util.InternalCompilerError;
-import soot.Body;
-import soot.SootMethod;
-import soot.jimple.IntConstant;
-import soot.jimple.InvokeExpr;
-import soot.jimple.LookupSwitchStmt;
-import soot.jimple.Stmt;
-import soot.jimple.TableSwitchStmt;
-import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
-import soot.jimple.toolkits.scalar.Evaluator;
-import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
-import soot.util.Chain;
-import abc.main.options.OptionsParser;
-import abc.soot.util.AroundShadowInfoTag;
-import abc.soot.util.SwitchFolder;
-import abc.weaving.weaver.around.AroundWeaver;
-import abc.weaving.weaver.around.Util;
 /**
  * @author Sascha Kuzins
  *

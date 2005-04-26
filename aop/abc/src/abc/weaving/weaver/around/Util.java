@@ -26,11 +26,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import soot.Body;
-import soot.Immediate;
 import soot.Local;
 import soot.Scene;
 import soot.SootMethod;
@@ -43,8 +41,6 @@ import soot.ValueBox;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
-import soot.jimple.Constant;
-import soot.jimple.DefinitionStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
@@ -60,6 +56,11 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.weaver.CodeGenException;
 import abc.weaving.weaver.around.AroundWeaver.ObjectBox;
+import abc.weaving.weaver.around.soot.JInterfaceInvokeExpr;
+import abc.weaving.weaver.around.soot.JSpecialInvokeExpr;
+import abc.weaving.weaver.around.soot.JStaticInvokeExpr;
+import abc.weaving.weaver.around.soot.JVirtualInvokeExpr;
+import abc.weaving.weaver.around.soot.ModifiableInvokeExpr;
 
 
 public class Util {
@@ -318,6 +319,83 @@ public class Util {
 		if (old instanceof InstanceInvokeExpr) {
 			Local base = (Local) ((InstanceInvokeExpr) old).getBase();
 			if (old instanceof InterfaceInvokeExpr)
+				return new JInterfaceInvokeExpr(base, ref, newArgs);
+			else if (old instanceof SpecialInvokeExpr) {
+				return new JSpecialInvokeExpr(base, ref, newArgs);
+			} else if (old instanceof VirtualInvokeExpr)
+				return new JVirtualInvokeExpr(base, ref, newArgs);
+			else
+				throw new InternalAroundError();
+		} else {
+			return new JStaticInvokeExpr(ref, newArgs);
+		}
+	}
+	public static InvokeExpr createModifiedInvokeExpr(InvokeExpr old, List addedArgs, List addedTypes) {
+		if (addedArgs.size()!=addedTypes.size())
+			throw new InternalAroundError();
+	
+		if (old instanceof ModifiableInvokeExpr) {
+			ModifiableInvokeExpr m=(ModifiableInvokeExpr)old;
+			m.addArguments(addedArgs, addedTypes);
+			return old;
+		} else {
+			soot.SootMethodRef oldRef=old.getMethodRef();
+			
+			List newArgs=old.getArgs(); // returns copy of list, so no need to copy
+			List newTypes=new ArrayList(oldRef.parameterTypes()); // need to make copy
+			
+			newArgs.addAll(addedArgs);
+			newTypes.addAll(addedTypes);
+			
+			soot.SootMethodRef ref=Scene.v().makeMethodRef(
+					oldRef.declaringClass(),
+					oldRef.name(),
+					newTypes,
+					oldRef.returnType(),
+					oldRef.isStatic()					
+					);
+			
+			if (old instanceof InstanceInvokeExpr) {		
+				Local base = (Local) ((InstanceInvokeExpr) old).getBase();
+				if (old instanceof InterfaceInvokeExpr)
+					return new JInterfaceInvokeExpr(base, ref, newArgs);
+				else if (old instanceof SpecialInvokeExpr) {
+					return new JSpecialInvokeExpr(base, ref, newArgs);
+				} else if (old instanceof VirtualInvokeExpr)
+					return new JVirtualInvokeExpr(base, ref, newArgs);
+				else
+					throw new InternalAroundError();
+			} else {
+				return new JStaticInvokeExpr(ref, newArgs);
+			}
+		}
+	}
+
+
+	/*public static InvokeExpr createModifiedInvokeExpr(InvokeExpr old, List addedArgs, List addedTypes) {
+		if (addedArgs.size()!=addedTypes.size())
+			throw new InternalAroundError();
+	
+		soot.SootMethodRef oldRef=old.getMethodRef();
+		
+		
+		List newArgs=old.getArgs(); // returns copy of list, so no need to copy
+		List newTypes=new ArrayList(oldRef.parameterTypes()); // need to make copy
+		
+		newArgs.addAll(addedArgs);
+		newTypes.addAll(addedTypes);
+		
+		soot.SootMethodRef ref=Scene.v().makeMethodRef(
+				oldRef.declaringClass(),
+				oldRef.name(),
+				newTypes,
+				oldRef.returnType(),
+				oldRef.isStatic()					
+				);
+
+		if (old instanceof InstanceInvokeExpr) {
+			Local base = (Local) ((InstanceInvokeExpr) old).getBase();
+			if (old instanceof InterfaceInvokeExpr)
 				return Jimple.v().newInterfaceInvokeExpr(base, ref, newArgs);
 			else if (old instanceof SpecialInvokeExpr) {
 				return Jimple.v().newSpecialInvokeExpr(base, ref, newArgs);
@@ -328,8 +406,7 @@ public class Util {
 		} else {
 			return Jimple.v().newStaticInvokeExpr(ref, newArgs);
 		}
-	}
-	
+	}*/
 	public static List getDefaultValues(List types) {
 		List result = new LinkedList();
 		{
