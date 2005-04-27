@@ -540,7 +540,11 @@ public class Main {
                 	AbcTimer.mark("Boxing remover");
                     phaseDebug("Boxing remover");
                     
-                    AdviceInliner.v().clear();
+                    //AdviceInliner.v().removeDuplicateInlineMethods();
+                    
+                    AbcTimer.mark("Duplicates remover");
+                    phaseDebug("Duplicates remover");
+                    
                }
                 
                 abortIfErrors();

@@ -19,13 +19,13 @@
 
 package abc.weaving.weaver;
 
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -47,6 +47,7 @@ import soot.jimple.Jimple;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.NopStmt;
 import soot.jimple.SpecialInvokeExpr;
+import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.TableSwitchStmt;
 import soot.jimple.VirtualInvokeExpr;
@@ -81,7 +82,9 @@ public class AdviceInliner { //extends BodyTransformer {
 	private Set additionalShadowMethods=new HashSet();
 	public void addShadowMethod(SootMethod m) {
 		shadowMethods.add(m);
+		allShadowMethods.add(m);
 	}
+	private Set allShadowMethods=new HashSet();
 	
 	InlineOptions getInlineOptions() {
 		CombinedInlineOptions opts=new CombinedInlineOptions();
@@ -129,10 +132,10 @@ public class AdviceInliner { //extends BodyTransformer {
     	
     	debug("Around inliner done.");
 	}
-	public void clear() {
-		shadowMethods.clear();
-		additionalShadowMethods.clear();
-	}
+	//public void clear() {
+	//	shadowMethods.clear();
+	//	additionalShadowMethods.clear();
+	//}
 	public void runBoxingRemover() {
 		for( Iterator mIt = shadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
@@ -432,6 +435,7 @@ public class AdviceInliner { //extends BodyTransformer {
         		targetClass.addMethod(method); 
         		
         		additionalShadowMethods.add(method); 
+        		allShadowMethods.add(method);
         		
         		Chain statements=inlineBody.getUnits().getNonPatchingChain();
         		LocalGeneratorEx lg=new LocalGeneratorEx(inlineBody);
@@ -933,5 +937,73 @@ public class AdviceInliner { //extends BodyTransformer {
 			
 			return DONT_INLINE;
 		}
+	}
+	
+	public void removeDuplicateInlineMethods() {
+		Map fingerPrints=new HashMap();
+		Map methods=new HashMap();
+		Set duplicates=new HashSet();
+		
+		for (Iterator it=allShadowMethods.iterator();it.hasNext();) {
+			SootMethod m=(SootMethod)it.next();
+			if (m.getName().startsWith("inline$")) {
+				Body b=m.getActiveBody();
+				soot.jimple.toolkits.scalar.CopyPropagator.v().transform(b);
+	            ConstantPropagatorAndFolder.v().transform(b);
+	            DeadAssignmentEliminator.v().transform(b);
+	            UnusedLocalEliminator.v().transform(b);
+				
+				String fingerPrint=Util.getMethodFingerprint(m);
+				fingerPrints.put(m, fingerPrint);
+				//System.out.println("FINGERPRINT : " + m.getName());
+				//System.out.println(fingerPrint);
+				if (methods.containsKey(fingerPrint))
+					duplicates.add(m);			
+				else 
+					methods.put(fingerPrint, m);					
+			}
+		}
+		if (duplicates.size()==0)
+			return;
+		debug("Found duplicate(s): " + duplicates);
+		
+	
+		
+		for (Iterator it=allShadowMethods.iterator();it.hasNext();) {
+			SootMethod m=(SootMethod)it.next();
+			Body b=m.getActiveBody();
+			Chain statements=b.getUnits();
+			for (Iterator itStmt=statements.iterator();itStmt.hasNext();) {
+				Stmt s=(Stmt)itStmt.next();
+				if (!s.containsInvokeExpr())
+					continue;
+				
+				InvokeExpr e=s.getInvokeExpr();
+				if (!(e instanceof StaticInvokeExpr)) 
+					continue;
+				
+				if (!e.getMethodRef().name().startsWith("inline$")) 
+					continue;
+				
+				SootMethod mi=e.getMethod();
+				
+				String fp=(String)fingerPrints.get(mi);
+				SootMethod mm=(SootMethod)methods.get(fp);
+				
+				if (mi==mm)
+					continue;
+				
+				debug(" replacing call to " + mi.getName() + " with call to " + mm.getName());
+				e.setMethodRef(mm.makeRef());
+							
+			}
+		}
+		
+		for (Iterator it=duplicates.iterator();it.hasNext();) {
+			SootMethod m=(SootMethod)it.next();
+			debug(" removing method " + m);
+			m.getDeclaringClass().removeMethod(m);
+		}
+				
 	}
 }

@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import soot.Body;
@@ -41,11 +42,13 @@ import soot.ValueBox;
 import soot.VoidType;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
+import soot.jimple.GotoStmt;
 import soot.jimple.InstanceInvokeExpr;
 import soot.jimple.IntConstant;
 import soot.jimple.InterfaceInvokeExpr;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
+import soot.jimple.NopStmt;
 import soot.jimple.ReturnStmt;
 import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
@@ -65,8 +68,76 @@ import abc.weaving.weaver.around.soot.ModifiableInvokeExpr;
 
 public class Util {
 	
+	public static int FAR_JUMP=2000;
+	/*public static void eliminateFarJumps(SootMethod m) {
+		Body b=m.getActiveBody();
+		
+		Chain units=m.getActiveBody().getUnits().getNonPatchingChain();
+		
+		if (units.size()<FAR_JUMP)
+			return;
+		
+		Map unitPositions=new HashMap();
+		{
+			int i=0;
+			for (Iterator it=units.iterator();it.hasNext();i++) {
+				Stmt s=(Stmt)it.next();
+				unitPositions.put(s, new Integer(i));
+			}
+		}
+		
+		Object[] unitArray=units.toArray();
+		
+		int uncorrectedJumps;
+		do {
+			uncorrectedJumps=0;
+			int i=0;
+			for(Iterator it=units.iterator(); it.hasNext();i++) {
+				Stmt s=(Stmt)it.next();
+				List boxes=s.
+				for (Iterator itB=boxes.iterator(); itB.hasNext();) {
+					UnitBox box=(UnitBox)itB.next();					
+					if (box.` getUnit() instanceof Stmt) {
+						Stmt org=(Stmt)box.getU
+						//Stmt oldTarget=(Stmt)gs.getTarget();
+						int targetPos=((Integer)unitPositions.get(oldTarget)).intValue();
+						int distance=Math.abs(i-targetPos);
+						if (distance>FAR_JUMP) {
+							int newTarget=(i+targetPos)/2;
+							/*
+							 * gs: goto gs2
+							 * 
+							 * gs3: goto ns // in case the above stmt falls through
+							 * gs2: goto oldTarget
+							 * ns: some stmt..
+							 *
+							Stmt ns=(Stmt)unitArray[newTarget];
+							
+							GotoStmt gs2=Jimple.v().newGotoStmt(oldTarget);
+							units.insertBefore(gs2, ns);						
+							gs.setTarget(gs2);
+								
+							GotoStmt gs3=Jimple.v().newGotoStmt(ns);
+							units.insertBefore(gs3, gs2);			
+							
+							
+						}
+						if (distance>FAR_JUMP*2)
+							uncorrectedJumps++;
+					}
+				}
+			}
+		} while (uncorrectedJumps>0);
+		
+			
+	}*/
+	
+	// Returns a representation of the method
+	// where the method name and the names of locals are normalized.
+	// Hence, if the normalized representations of two methods are equal,
+	// the methods should be functionally equal.
 	public static String getMethodFingerprint(SootMethod m) {
-		String result;
+		String result="FP:\n";
 		Body b=m.getActiveBody();
 		
 		Chain locals=b.getLocals();
@@ -80,31 +151,51 @@ public class Util {
 		// set normalized local names
 		{
 			int i=0;		
-			for (Iterator it=b.getUseAndDefBoxes().iterator();it.hasNext();) {
+			for (Iterator it=b.getUseAndDefBoxes().iterator();it.hasNext();i++) {
 				ValueBox box=(ValueBox)it.next();
 				if (box.getValue() instanceof Local) {
 					Local l=(Local)box.getValue();
 					l.setName("norm$" + i);
+					result += l.getType() + "\n";					
 				}
 			}
 		}
-		
-		result  = m.getReturnType().toString() + "\n";
+		result += m.getDeclaringClass().toString() + "\n";
+		result += m.getReturnType().toString() + "\n";		
 		result += m.getParameterTypes()+ "\n";
 		result += m.getModifiers()+ "\n";
 		result += m.getExceptions()+ "\n";
 		
-		for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
+		Chain units=m.getActiveBody().getUnits();
+		for(Iterator it=units.iterator(); it.hasNext();) {
 			Stmt s=(Stmt)it.next();
 			result += s.toString() + "\n";
 		}
 		
+		Map unitPositions=new HashMap();
+		{
+			int i=0;
+			for (Iterator it=units.iterator();it.hasNext();i++) {
+				Stmt s=(Stmt)it.next();
+				unitPositions.put(s, new Integer(i));
+			}
+		}
+		result += "TRAPS\n"; 
+		for(Iterator it=m.getActiveBody().getTraps().iterator(); it.hasNext();) {
+			Trap t=(Trap)it.next();			
+			result += t.getException() + "\n";
+			result += unitPositions.get(t.getBeginUnit()) + "\n";
+			result += unitPositions.get(t.getEndUnit()) + "\n";
+			result += unitPositions.get(t.getHandlerUnit()) + "\n";
+		}
+		
+		
 		// restore local names
 		{
-			int i=0;		
+			Iterator itL=localNames.iterator();
 			for (Iterator it=locals.iterator(); it.hasNext();) {
 				Local l=(Local)it.next();
-				l.setName((String)localNames.get(i));
+				l.setName((String)itL.next());
 			}
 		}
 		return result;
