@@ -69,14 +69,43 @@ public class Util {
 		String result;
 		Body b=m.getActiveBody();
 		
-		result  = m.getReturnType().toString();
-		result += m.getParameterTypes();
-		result += m.getModifiers();
-		result += m.getExceptions();
+		Chain locals=b.getLocals();
+		List localNames=new ArrayList(locals.size());
+		// save local names
+		for (Iterator it=locals.iterator(); it.hasNext();) {
+			Local l=(Local)it.next();
+			localNames.add(l.getName());
+		}
+		
+		// set normalized local names
+		{
+			int i=0;		
+			for (Iterator it=b.getUseAndDefBoxes().iterator();it.hasNext();) {
+				ValueBox box=(ValueBox)it.next();
+				if (box.getValue() instanceof Local) {
+					Local l=(Local)box.getValue();
+					l.setName("norm$" + i);
+				}
+			}
+		}
+		
+		result  = m.getReturnType().toString() + "\n";
+		result += m.getParameterTypes()+ "\n";
+		result += m.getModifiers()+ "\n";
+		result += m.getExceptions()+ "\n";
 		
 		for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
 			Stmt s=(Stmt)it.next();
 			result += s.toString() + "\n";
+		}
+		
+		// restore local names
+		{
+			int i=0;		
+			for (Iterator it=locals.iterator(); it.hasNext();) {
+				Local l=(Local)it.next();
+				l.setName((String)localNames.get(i));
+			}
 		}
 		return result;
 	}

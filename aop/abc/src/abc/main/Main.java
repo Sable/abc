@@ -532,8 +532,8 @@ public class Main {
                 
                 	InterprocConstantPropagator.inlineConstantArguments();
                 
-                	AbcTimer.mark("Interprocedural constant propagator");
-                    phaseDebug("Interprocedural constant propagator");
+                	AbcTimer.mark("Interproc. constant propagator");
+                    phaseDebug("Interproc. constant propagator");
               
                 	Weaver.runBoxingRemover();
                 	
@@ -586,6 +586,10 @@ public class Main {
             System.err.println("512MB was specified). If this doesn't resolve your problem, please");
             System.err.println("contact the abc team at http://abc.comlab.ox.ac.uk with the relevant ");
             System.err.println("details.");
+           // System.err.println("Stack trace:");
+            //e.printStackTrace();
+            System.err.println("Allocated heap size:" + 
+            		NumberFormat.getNumberInstance().format(Runtime.getRuntime().totalMemory()));
             throw e;
         }
         catch (InternalCompilerError e) {
@@ -1021,9 +1025,11 @@ public class Main {
         		System.gc();        		
         		long bytes=(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
         		
+        		
         		NumberFormat numberFormatter=NumberFormat.getNumberInstance();       		
         	
-        		String mem= numberFormatter.format(bytes) + " bytes.";
+        		String mem= numberFormatter.format(bytes) + " used. " + 
+					numberFormatter.format(Runtime.getRuntime().totalMemory()) + " heap.";
         		int padding=79-m.length()-mem.length();
         		String p="";
         		while(padding-->0)

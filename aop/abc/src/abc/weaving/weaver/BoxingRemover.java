@@ -19,6 +19,7 @@
 
 package abc.weaving.weaver;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -85,14 +86,20 @@ public class BoxingRemover extends BodyTransformer {
 	
 
 	public static void runJopPack(Body body) {
-		for (Iterator it=PackManager.v().getPack("jop").iterator(); it.hasNext();) {
+		for (Iterator it=PackManager.v().getPack("jop").iterator(); it.hasNext();) {			
 			Transform t=(Transform)it.next();
+			//System.out.println("Running pack: " + t.getPhaseName());			
 			t.apply(body);
+			//System.out.println("Allocated heap size:" + 
+            //		NumberFormat.getNumberInstance().format(Runtime.getRuntime().totalMemory()));
 		}
 	}
 	private static void runPreOptimizations(Body body) {
 		runJopPack(body);
+		//System.out.println("Running cast remover");
 		CastRemover.removeUnnecessaryCasts(body);
+		//System.out.println("Allocated heap size:" + 
+       // 		NumberFormat.getNumberInstance().format(Runtime.getRuntime().totalMemory()));
 		runJopPack(body);	
 	}
 //	 returns number of removed cases of boxing

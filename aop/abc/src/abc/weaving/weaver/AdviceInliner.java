@@ -19,6 +19,7 @@
 
 package abc.weaving.weaver;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,8 +52,11 @@ import soot.jimple.TableSwitchStmt;
 import soot.jimple.VirtualInvokeExpr;
 import soot.jimple.toolkits.invoke.AccessManager;
 import soot.jimple.toolkits.invoke.InlinerSafetyManager;
+import soot.jimple.toolkits.scalar.ConstantPropagatorAndFolder;
+import soot.jimple.toolkits.scalar.DeadAssignmentEliminator;
 import soot.jimple.toolkits.scalar.Evaluator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
+import soot.toolkits.scalar.UnusedLocalEliminator;
 import soot.util.Chain;
 import abc.main.options.OptionsParser;
 import abc.soot.util.AroundShadowInfoTag;
@@ -102,22 +106,27 @@ public class AdviceInliner { //extends BodyTransformer {
     	    final SootMethod m = (SootMethod) mIt.next();
     		inlineMethods(m.getActiveBody(), null, getInlineOptions(), visitedBodies, 0);
     	}
-    	if (additionalShadowMethods.size()>0) {
-    		debug("Running ICP.");
-    		InterprocConstantPropagator.inlineConstantArguments();
-    	}
-    	for( Iterator mIt = additionalShadowMethods.iterator(); mIt.hasNext(); ) {
-    	    final SootMethod m = (SootMethod) mIt.next();
-    	    Body body=m.getActiveBody();
-    	   // debug(" SSSSSSSSSSSSSSSSSSSSSSSS\n" + Util.printMethod(m));
-    	    foldSwitches(body, true);
-    	    //eliminateUnreachableCode(body);
-    	    //debug(" TTTTTTTTTTTTTTTTTTTTTTTT\n" + Util.printMethod(m));
-    	    inlineMethods(body, null, getInlineOptions(), visitedBodies, 0);
-    		
-    		//eliminateUnreachableCode(body);
-    		
-    	}    	    	
+    	do {
+	    	if (additionalShadowMethods.size()>0) {
+	    		debug("Running ICP.");
+	    		InterprocConstantPropagator.inlineConstantArguments();
+	    	}
+	    	List copy=new ArrayList(additionalShadowMethods);
+	    	additionalShadowMethods.clear();
+	    	for( Iterator mIt = copy.iterator(); mIt.hasNext(); ) {
+	    	    final SootMethod m = (SootMethod) mIt.next();
+	    	    Body body=m.getActiveBody();
+	    	   // debug(" SSSSSSSSSSSSSSSSSSSSSSSS\n" + Util.printMethod(m));
+	    	    foldSwitches(body, true);
+	    	    //eliminateUnreachableCode(body);
+	    	    //debug(" TTTTTTTTTTTTTTTTTTTTTTTT\n" + Util.printMethod(m));
+	    	    inlineMethods(body, null, getInlineOptions(), visitedBodies, 0);
+	    		
+	    		//eliminateUnreachableCode(body);
+	    		
+	    	}    	
+    	} while (additionalShadowMethods.size()>0);
+    	
     	debug("Around inliner done.");
 	}
 	public void clear() {
@@ -127,12 +136,26 @@ public class AdviceInliner { //extends BodyTransformer {
 	public void runBoxingRemover() {
 		for( Iterator mIt = shadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
+    	//    System.out.println("Boxing: " + m);
+    	    //System.out.println(Util.printMethod(m));
+    	//    System.out.println(m);
+    	//    System.out.println("Old size: " + m.getActiveBody().getUnits().size());
     		BoxingRemover.v().transform(m.getActiveBody());
+    	//	System.out.println("New size after boxing remover: " + m.getActiveBody().getUnits().size());
+    	//	System.out.println("Allocated heap size:" + 
+      //      		NumberFormat.getNumberInstance().format(Runtime.getRuntime().totalMemory()));
     	}
     	for( Iterator mIt = additionalShadowMethods.iterator(); mIt.hasNext(); ) {
     	    final SootMethod m = (SootMethod) mIt.next();
-    	    //debug(" method: " + m.getName());        	    
+    	    //debug(" method: " + m.getName());
+    	//    System.out.println("Boxing: " + m);
+    	//    System.out.println(Util.printMethod(m));
+    	    //System.out.println(m);
+    	//    System.out.println("Old size: " + m.getActiveBody().getUnits().size());
     	    BoxingRemover.v().transform(m.getActiveBody());
+    	//    System.out.println("New size after boxing remover: " + m.getActiveBody().getUnits().size());
+    	//    System.out.println("Allocated heap size:" + 
+       //     		NumberFormat.getNumberInstance().format(Runtime.getRuntime().totalMemory()));
     	    //debug(" " + Util.printMethod(m));
     	}
 	}
@@ -488,7 +511,15 @@ public class AdviceInliner { //extends BodyTransformer {
         	//if (rangesToInline.size()>0)
         		//foldSwitches(body);
         }
-        
+        if (range==null && units.size()>1000) {
+        	// Perform some more serious opts to reduce size, to prevent the nullcheck analysis
+        	// from blowing up later.
+        	debug("Inlinee is big, trying to reduce size: " + units.size(), depth);
+        	soot.jimple.toolkits.scalar.CopyPropagator.v().transform(body);
+            ConstantPropagatorAndFolder.v().transform(body);
+            DeadAssignmentEliminator.v().transform(body);
+            UnusedLocalEliminator.v().transform(body);
+        }        
         //BoxingRemover.runJopPack(body);
 		//BoxingRemover.removeUnnecessaryCasts(body);
 	}
