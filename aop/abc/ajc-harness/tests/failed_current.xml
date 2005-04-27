@@ -21,14 +21,6 @@
         <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
         <run class="InterfaceAndInner"></run>
     </ajc-test>
-<ajc-test title="advice on calls to static methods using several syntax" pr="246" num="362" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
-        <compile files="StaticCalls.java"></compile>
-        <run class="StaticCalls"></run>
-    </ajc-test>
-<ajc-test title="within and withincode (doesn't all work due to local class name issues)" num="439" keywords="from-resolved_10x" dir="new">
-        <compile files="WithinInners.java"></compile>
-        <run class="WithinInners"></run>
-    </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
@@ -37,25 +29,13 @@
         <compile files="SuperInIntroduction.java"></compile>
         <run class="SuperInIntroduction"></run>
     </ajc-test>
-<ajc-test title="second arg in formal on shared joinpoint with pcd if() causes verify error ??" pr="554" num="578" keywords="from-resolved_10rc3" dir="new">
-        <compile files="PR554.java"></compile>
-        <run class="PR554"></run>
-    </ajc-test>
 <ajc-test title="type pattern matching for inner classes (from Ken Horn)" num="64301" keywords="from-resolved_105" dir="abctests/new">
         <compile files="test/TypePat.java"></compile>
         <run class="test.TypePat"></run>
     </ajc-test>
-<ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
-        <compile files="MethodLocalAroundReturns.java"></compile>
-        <run class="MethodLocalAroundReturns"></run>
-    </ajc-test>
 <ajc-test title="assert statement in advice coverage [requires 1.4]" pr="657" num="682" keywords="from-14tests,fail-in-eclipse" dir="new">
         <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
         <run vm="1.4" class="AssertInAdvice"></run>
-    </ajc-test>
-<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
-        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
-        <run vm="1.4" class="AssertInAdviceBug"></run>
     </ajc-test>
 <ajc-test title="import any inner from interface implementor" pr="862" num="740" keywords="purejava" dir="new/PR862" abccomment="it is not legal to import inner classes">
         <compile files="pack/ImportInnerFromInterfaceImplementor.java">

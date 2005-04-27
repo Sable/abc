@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@16a3a9c
+creating: A@7b48e0
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@113efb6
+InterfaceAndObject$1@12ea803
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -1993,24 +1993,8 @@ PASS: Test 361: "new/generating the right throws clause for call-site advice (an
 
 Running test 362: new/advice on calls to static methods using several syntax
 Commandline: abc -d new -warn-unused-advice:off new/StaticCalls.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Box VB(r5) cannot contain value: "TimeService0"(class soot.jimple.StringConstant)
-	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
-	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
-	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArgumentsPass(InterprocConstantPropagator.java:313)
-	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:262)
-	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:258)
-	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:105)
-	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
-	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:518)
-	... 3 more
-FAIL: Test 362: "new/advice on calls to static methods using several syntax" failed.
+File /usr/local/src/abc-dev/ajc-harness/tests/new/java/lang/Foo.class not found, skipping...
+PASS: Test 362: "new/advice on calls to static methods using several syntax" passed.
 
 
 Running test 363: new/, PR#249, PR#250 advice on constructor sites
@@ -2308,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@18444f6, [Ljava.lang.Object;@cb9c49, TwoAnonymous$3@18444f6
+calling run: TwoAnonymous$3@18645f7, [Ljava.lang.Object;@5b86fe, TwoAnonymous$3@18645f7
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2416,55 +2400,41 @@ PASS: Test 438: "new/try to make sure that dynamic JoinPoint objects aren't gene
 
 Running test 439: new/within and withincode (doesn't all work due to local class name issues)
 Commandline: abc -d new -warn-unused-advice:off new/WithinInners.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Box VB(r5) cannot contain value: "TEXT"(class soot.jimple.StringConstant)
-	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
-	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
-	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArgumentsPass(InterprocConstantPropagator.java:313)
-	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:262)
-	at abc.weaving.weaver.InterprocConstantPropagator.inlineConstantArguments(InterprocConstantPropagator.java:258)
-	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:105)
-	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
-	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:518)
-	... 3 more
-FAIL: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" failed.
+TEXT
+write( String )
+text
+PASS: Test 439: "new/within and withincode (doesn't all work due to local class name issues)" passed.
 
 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@ce82ce.foo calls Outer$Inner@1edc298.mi
+Outer@113a65e.foo calls Outer$Inner@10f90f4.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1edc298.mi calls java.io.PrintStream@82be76.println
+Outer$Inner@10f90f4.mi calls java.io.PrintStream@f5c351.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@ce82ce.foo calls Outer$InnerRandom@77870e.nextHook
+Outer@113a65e.foo calls Outer$InnerRandom@80f0ad.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@77870e.nextHook calls Outer$InnerRandom@77870e.next
+Outer$InnerRandom@80f0ad.nextHook calls Outer$InnerRandom@80f0ad.next
 Outer.foo() calls Random.nextInt(..)
-Outer@ce82ce.foo calls X.nextInt
+Outer@113a65e.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@13148b2.foo calls Outer$Inner@9bb33e.mi
+Outer@8f5fbb.foo calls Outer$Inner@d607eb.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@9bb33e.mi calls java.io.PrintStream@14de05.println
+Outer$Inner@d607eb.mi calls java.io.PrintStream@1a207fe.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@13148b2.foo calls Outer$InnerRandom@3cddbf.nextHook
+Outer@8f5fbb.foo calls Outer$InnerRandom@69f39a.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@3cddbf.nextHook calls Outer$InnerRandom@3cddbf.next
+Outer$InnerRandom@69f39a.nextHook calls Outer$InnerRandom@69f39a.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@13148b2.foo calls X.nextInt
+Outer@8f5fbb.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2752,9 +2722,9 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
-	at AroundAll.shadow$6(AroundAll.java:9)
-	at A.inline$25$around$1601(AroundAll.java)
-	at AroundAll.main(AroundAll.java)
+	at AroundAll.shadow$8(AroundAll.java:9)
+	at A.inline$28$around$1601(AroundAll.java:199)
+	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
@@ -3240,22 +3210,7 @@ PASS: Test 577: "new/. Binding variables with numbers in their name with pertarg
 
 Running test 578: new/second arg in formal on shared joinpoint with pcd if() causes verify error ??
 Commandline: abc -d new -warn-unused-advice:off new/PR554.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Box VB($r2) cannot contain value: "A"(class soot.jimple.StringConstant)
-	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
-	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:215)
-	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
-	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
-	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:518)
-	... 3 more
-FAIL: Test 578: "new/second arg in formal on shared joinpoint with pcd if() causes verify error ??" failed.
+PASS: Test 578: "new/second arg in formal on shared joinpoint with pcd if() causes verify error ??" passed.
 
 
 Running test 579: new/privilegedAspects/access to private members from privileged aspect
@@ -3698,22 +3653,7 @@ PASS: Test 653: "new/nolang/Compiling java.lang.Object with ajc yields non-verif
 
 Running test 654: new/method-local class defined in around return statement
 Commandline: abc -d new -warn-unused-advice:off new/MethodLocalAroundReturns.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
-polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Box VB($r0) cannot contain value: "ok"(class soot.jimple.StringConstant)
-	at soot.AbstractValueBox.setValue(AbstractValueBox.java:42)
-	at abc.soot.util.SwitchFolder.cheapConstantPropagator(SwitchFolder.java:224)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:215)
-	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
-	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
-	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:518)
-	... 3 more
-FAIL: Test 654: "new/method-local class defined in around return statement" failed.
+PASS: Test 654: "new/method-local class defined in around return statement" passed.
 
 
 Running test 655: new/CE expected for assignment to arg in if pcd
@@ -3807,8 +3747,8 @@ polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during m
 	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:237)
 	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:274)
 	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:451)
-	at abc.main.Main.weave(Main.java:878)
-	at abc.main.Main.run(Main.java:506)
+	at abc.main.Main.weave(Main.java:894)
+	at abc.main.Main.run(Main.java:507)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -3824,22 +3764,7 @@ FAIL: Test 682: "new/assert statement in advice coverage [requires 1.4]" failed.
 
 Running test 683: new/assert statement in advice  [requires 1.4]
 Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdviceBug.java 
-Test failed, compiled class behaved incorrectly
-Message: fail bad line for assert: -1 < 10
-org.aspectj.bridge.AbortException: bad line for assert: -1 < 10
-	at org.aspectj.bridge.MessageWriter.handleMessage(MessageWriter.java:47)
-	at org.aspectj.testing.Tester.handle(Tester.java:963)
-	at org.aspectj.testing.Tester.checkFailed(Tester.java:177)
-	at org.aspectj.testing.Tester.checkEqual(Tester.java:462)
-	at AssertInAdviceBug.main(AssertInAdviceBug.java:52)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
-	at java.lang.reflect.Method.invoke(Method.java:324)
-	at abc.testing.TestCase.runTest(TestCase.java:395)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 683: "new/assert statement in advice  [requires 1.4]" failed.
+PASS: Test 683: "new/assert statement in advice  [requires 1.4]" passed.
 
 
 Running test 684: new/declaring a private method on an inner interface
@@ -4145,7 +4070,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1ffcaea.x:=-3
+test.Test3@177f0b1.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4218,21 +4143,20 @@ Running test 762: new/can't apply around advice to the execution of around advic
 Commandline: abc -d new -warn-unused-advice:off new/CflowCycles.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
+	at abc.main.Main.run(Main.java:608)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$A2$around$2617: java.lang.Object abc$proceed$A2$around$2617(int,int)>
 	at soot.SootMethod.getActiveBody(SootMethod.java:279)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
 	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:518)
+	at abc.main.Main.run(Main.java:523)
 	... 3 more
 FAIL: Test 762: "new/can't apply around advice to the execution of around advice" failed.
 
@@ -4246,8 +4170,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@68fbfd
-o: Bar@68fbfd, i: 10
+o: Bar@1d72dfd
+o: Bar@1d72dfd, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4398,13 +4322,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$14$around$2689(Trace.aj)
-	at cap.OptionList.shadow$39(OptionList.java:92)
-	at aspects.Trace.inline$72$around$2689(Trace.aj)
+	at aspects.Trace.inline$14$around$2689(Trace.aj:92)
+	at cap.OptionList.shadow$43(OptionList.java:92)
+	at aspects.Trace.inline$72$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$6$around$2689(Trace.aj)
-	at cap.OptionList.shadow$43(OptionList.java:135)
-	at aspects.Trace.inline$74$around$2689(Trace.aj)
+	at aspects.Trace.inline$6$around$2689(Trace.aj:135)
+	at cap.OptionList.shadow$47(OptionList.java:135)
+	at aspects.Trace.inline$70$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4438,13 +4362,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$39$around$2689(Trace.aj)
-	at cap.OptionList.shadow$39(OptionList.java:119)
-	at aspects.Trace.inline$72$around$2689(Trace.aj)
+	at aspects.Trace.inline$39$around$2689(Trace.aj:119)
+	at cap.OptionList.shadow$43(OptionList.java:119)
+	at aspects.Trace.inline$72$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$6$around$2689(Trace.aj)
-	at cap.OptionList.shadow$43(OptionList.java:135)
-	at aspects.Trace.inline$74$around$2689(Trace.aj)
+	at aspects.Trace.inline$6$around$2689(Trace.aj:135)
+	at cap.OptionList.shadow$47(OptionList.java:135)
+	at aspects.Trace.inline$70$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4662,14 +4586,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
+	at abc.main.Main.run(Main.java:608)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:679)
-	at abc.main.Main.loadSourceRoots(Main.java:696)
-	at abc.main.Main.run(Main.java:496)
+	at abc.main.Main.findSourcesInDir(Main.java:695)
+	at abc.main.Main.loadSourceRoots(Main.java:712)
+	at abc.main.Main.run(Main.java:497)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -4837,7 +4761,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1e52e08
+LibraryAspect-defined run() for C@1676f14
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5163,7 +5087,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@14b717f
+? Util.read() obj=Test@1abd72c
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5174,7 +5098,7 @@ Test.run()
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:ignore bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AroundClosureExecutionAdvice.aj 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
-? Util.fail() ex=java.io.InvalidClassException: Test; local class incompatible: stream classdesc serialVersionUID = 6093543801813805496, local class serialVersionUID = -1578770972888707779
+? Util.fail() ex=java.io.InvalidClassException: Test; local class incompatible: stream classdesc serialVersionUID = 6093543801813805496, local class serialVersionUID = -3243753134776029924
 PASS: Test 930: "bugs/serialVersionUID/SUID: Around closure execution advice (-Xlint:ignore)" passed.
 
 
@@ -5183,7 +5107,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@c984ca
+? Util.read() obj=ClinitTest@1b200e4
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5193,7 +5117,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@94981b
+? Util.read() obj=SuidTest@1934927
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5396,12 +5320,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@ef2a73
-Invoking command bean:  Command@1cbf4e9
-hello(Command@1cbf4e9)
-Created a PerThis aspect : Testcase2@13c0896
-Invoking command bean:  Command@57e1b9
-hello again(Command@57e1b9)
+Created a PerThis aspect : Testcase2@1491531
+Invoking command bean:  Command@10e698d
+hello(Command@10e698d)
+Created a PerThis aspect : Testcase2@133d7b5
+Invoking command bean:  Command@96dbe0
+hello again(Command@96dbe0)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5576,7 +5500,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
+	at abc.main.Main.run(Main.java:608)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -5586,8 +5510,8 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:776)
-	at abc.main.Main.run(Main.java:502)
+	at abc.main.Main.compile(Main.java:792)
+	at abc.main.Main.run(Main.java:503)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
@@ -5621,19 +5545,19 @@ Running test 1006: abctests/around/adviceexecution/around with circular adviceex
 Commandline: abc -d abctests/around/adviceexecution -warn-unused-advice:off abctests/around/adviceexecution/Foo.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:592)
+	at abc.main.Main.run(Main.java:608)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$Aspect$around$3024: void abc$proceed$Aspect$around$3024(int,int)>
 	at soot.SootMethod.getActiveBody(SootMethod.java:279)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:295)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:308)
 	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:103)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
-	at abc.main.Main.run(Main.java:518)
+	at abc.main.Main.run(Main.java:523)
 	... 3 more
 FAIL: Test 1006: "abctests/around/adviceexecution/around with circular adviceexecution advice" failed.
 

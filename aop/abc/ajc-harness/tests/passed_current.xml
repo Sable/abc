@@ -2022,6 +2022,10 @@
         <compile files="ComputedThrows.java"></compile>
         <run class="ComputedThrows"></run>
     </ajc-test>
+<ajc-test title="advice on calls to static methods using several syntax" pr="246" num="362" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
+        <compile files="StaticCalls.java"></compile>
+        <run class="StaticCalls"></run>
+    </ajc-test>
 <ajc-test title=", PR#249, PR#250 advice on constructor sites" pr="248" num="363" keywords="from-resolved_10x" dir="new" abccomment="reachability checker needs to be hacked so that proceed may throw                   any exception. On Ganesh's list. ODM 09/07/04">
         <compile files="NewSiteAdvice.java"></compile>
         <run class="NewSiteAdvice"></run>
@@ -2325,6 +2329,10 @@
 <ajc-test title="try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }" num="438" keywords="from-resolved_10x" dir="new">
         <compile files="IfdefsAndAdvice.java"></compile>
         <run class="IfdefsAndAdvice"></run>
+    </ajc-test>
+<ajc-test title="within and withincode (doesn't all work due to local class name issues)" num="439" keywords="from-resolved_10x" dir="new">
+        <compile files="WithinInners.java"></compile>
+        <run class="WithinInners"></run>
     </ajc-test>
 <ajc-test title="around advice on calls within inner classes (including protected method calls) 1" num="440" keywords="from-resolved_10x" dir="new">
         <compile options="-1.3" files="AroundInnerCalls13.java"></compile>
@@ -2919,6 +2927,10 @@
         <compile files="PerTargetAndVariablesWithNumbersInTheirNames.java"></compile>
         <run class="PerTargetAndVariablesWithNumbersInTheirNames"></run>
     </ajc-test>
+<ajc-test title="second arg in formal on shared joinpoint with pcd if() causes verify error ??" pr="554" num="578" keywords="from-resolved_10rc3" dir="new">
+        <compile files="PR554.java"></compile>
+        <run class="PR554"></run>
+    </ajc-test>
 <ajc-test title="access to private members from privileged aspect" pr="555" num="579" keywords="from-resolved_10rc3" dir="new/privilegedAspects">
         <compile files="driver/PR555.java,util/Util.java,pack/DefaultTarget.java"></compile>
         <run class="driver.PR555"></run>
@@ -3312,6 +3324,10 @@
 	    <compile files="java/lang/Object.java,java/lang/String.java">
 	    </compile>
 	</ajc-test>
+<ajc-test title="method-local class defined in around return statement" num="654" keywords="from-resolved_105" dir="new">
+        <compile files="MethodLocalAroundReturns.java"></compile>
+        <run class="MethodLocalAroundReturns"></run>
+    </ajc-test>
 <ajc-test title="CE expected for assignment to arg in if pcd" num="655" keywords="from-resolved_105" dir="new">
         <compile files="IfPCDAssignmentCE.java">
             <message line="16" kind="error"></message>
@@ -3386,6 +3402,10 @@
           <message line="12" kind="error"></message>
         </compile>
         <ajcrun class="ImportFromUnnamed"></ajcrun>
+    </ajc-test>
+<ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
+        <run vm="1.4" class="AssertInAdviceBug"></run>
     </ajc-test>
 <ajc-test title="declaring a private method on an inner interface" pr="823" num="684" keywords="tofix" dir="new">
         <compile files="PrivateMethodOnInnerInterface.java"></compile>
