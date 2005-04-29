@@ -29,8 +29,9 @@ import soot.util.Chain;
  */
 public class FarJumpEliminator extends BodyTransformer {
 	private static void debug(String message)
-    { //if (abc.main.Debug.v().farJumpEliminator)
-        System.err.println("FJE*** " + message);
+    { 
+		if (abc.main.Debug.v().farJumpEliminator)
+			System.err.println("FJE*** " + message);
     }
 	
 	private static FarJumpEliminator instance = 

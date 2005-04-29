@@ -177,7 +177,9 @@ public class AbcExtension
 										return true;
 								if (m.name().equals("aspectOf") && 
 										m.isStatic() && 
-										m.parameterTypes().size()==0) {
+										m.parameterTypes().size()==0 
+										//&&	m.returnType().equals(m.declaringClass().getType())
+										) {
 									return true;
 								}
 							}
@@ -198,7 +200,7 @@ public class AbcExtension
 		PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");
 		
 		// make this the very last pass after all optimizations
-		//PackManager.v().getPack("jop").insertAfter(new Transform("jop.fje", FarJumpEliminator.v()), "jop.ule");
+		PackManager.v().getPack("jop").insertAfter(new Transform("jop.fje", FarJumpEliminator.v()), "jop.ule");
 		
 		
 		//if (Debug.v().aroundInliner) {

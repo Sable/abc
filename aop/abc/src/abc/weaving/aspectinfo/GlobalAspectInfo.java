@@ -55,6 +55,8 @@ public class GlobalAspectInfo {
     public static final int PRECEDENCE_SECOND = 2;
     public static final int PRECEDENCE_CONFLICT = 3;
 
+    private Map/*<SootClass,Aspect>*/ classes_aspects_map=null;
+    
     private Set/*<AbcClass>*/ classes = new LinkedHashSet();
     private List/*<Aspect>*/ aspects = new ArrayList();
     private Set/*<AbcClass>*/ wovenclasses = new HashSet(); // classes that ITDs have been woven into
@@ -144,6 +146,24 @@ public class GlobalAspectInfo {
         return aspects;
     }
 
+    public Map getClassAspectMap() {
+    	if (classes_aspects_map==null) {
+    		classes_aspects_map=new HashMap();
+    		for (Iterator it=this.aspects.iterator();it.hasNext();){
+    			Aspect a=(Aspect)it.next();
+    			SootClass cl=a.getInstanceClass().getSootClass();
+    			if (cl==null)
+    				throw new InternalCompilerError("");
+    			
+    			classes_aspects_map.put(cl, a); 
+    		}
+    	}
+    	return classes_aspects_map;
+    }
+    public Aspect getAspectFromSootClass(SootClass cl) {
+    	return (Aspect)getClassAspectMap().get(cl);
+    }
+    
     /** Returns the list of all intertype field declarations.
      *  @return a list of {@link abc.weaving.aspectinfo.IntertypeFieldDecl} objects.
      */
@@ -247,6 +267,7 @@ public class GlobalAspectInfo {
         if (!aspects_map.containsKey(aspct.getInstanceClass())) {
             aspects.add(aspct);
             aspects_map.put(aspct.getInstanceClass(),aspct);
+           
         }
     }
 
