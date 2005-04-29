@@ -168,6 +168,11 @@ public class Util {
 	}
 	public static String printMethod(SootMethod m) {
 		String result="";//=m + "\n";
+		for(Iterator it=m.getActiveBody().getLocals().iterator(); it.hasNext();) {
+			Local l=(Local)it.next();
+			result += l.getType() + " " + l.getName() + ";\n";			
+		}
+		result += "\n";
 		for(Iterator it=m.getActiveBody().getUnits().iterator(); it.hasNext();) {
 			result += it.next().toString() + "\n";
 		}

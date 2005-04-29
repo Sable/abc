@@ -545,9 +545,10 @@ public class Main {
                     AbcTimer.mark("Removing unused methods");
                     phaseDebug("Removing unused methods");
                     
-                    //Util.eliminateFarJumps();
-                    //AbcTimer.mark("Removing far jumps");
-                    //phaseDebug("Removing far jumps");
+                    AdviceInliner.v().specializeReturnTypesOfInlineMethods();
+                    
+                    AbcTimer.mark("Specializing return types");
+                    phaseDebug("Specializing return types");
                }
                 
                 abortIfErrors();

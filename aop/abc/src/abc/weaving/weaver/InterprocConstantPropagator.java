@@ -35,6 +35,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
+import soot.Type;
 import soot.Value;
 import soot.ValueBox;
 import soot.jimple.Constant;
@@ -74,6 +75,39 @@ public class InterprocConstantPropagator {
 	static private void debug(String message) {
 		if (abc.main.Debug.v().interprocConstantPropagator)
 			System.err.println("ICP*** " + message);
+	}
+	/*
+	 * For all locals that are only defined once, set
+	 * the type of the local to the type of the defining value.
+	 */
+	public static void tightenTypesOfLocals(SootMethod method) {
+		Body body=method.getActiveBody();
+		Chain statements=body.getUnits().getNonPatchingChain();
+		Chain locals=body.getLocals();
+		
+		Map definedLocalsAndTypes=new HashMap(locals.size()*2);
+		Set localsWithMultipleDefs=new HashSet(locals.size());		
+		for (Iterator it=statements.iterator(); it.hasNext(); ) {
+			Stmt s=(Stmt)it.next();
+			if (s instanceof DefinitionStmt) {
+				DefinitionStmt def=(DefinitionStmt)s;
+				if (def.getLeftOp() instanceof Local) {
+					Local l=(Local)def.getLeftOp();	
+					Type t=(Type)def.getRightOp().getType();
+					if (definedLocalsAndTypes.containsKey(l)) {
+						localsWithMultipleDefs.add(l);
+					} else {
+						definedLocalsAndTypes.put(l,t);
+					}	
+				}
+			}
+		}
+		definedLocalsAndTypes.keySet().removeAll(localsWithMultipleDefs);
+		for (Iterator it=definedLocalsAndTypes.keySet().iterator();it.hasNext();){
+			Local l=(Local)it.next();
+			Type t=(Type)definedLocalsAndTypes.get(l);
+			l.setType(t);
+		}
 	}
 	public static void removeUnusedLocals(SootMethod method) {
 		Body body=method.getActiveBody();

@@ -48,6 +48,7 @@ import abc.soot.util.FarJumpEliminator;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.Singleton;
 import abc.weaving.matching.AbcSJPInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ClassInitializationShadowMatch;
@@ -177,8 +178,10 @@ public class AbcExtension
 										return true;
 								if (m.name().equals("aspectOf") && 
 										m.isStatic() && 
-										m.parameterTypes().size()==0 
-										//&&	m.returnType().equals(m.declaringClass().getType())
+										m.parameterTypes().size()==0 &&
+										GlobalAspectInfo.v().getAspectFromSootClass(m.declaringClass())!=null && // it's an aspect
+										GlobalAspectInfo.v().getAspectFromSootClass(m.declaringClass()).getPer() instanceof Singleton &&
+										m.returnType().equals(m.declaringClass().getType()) // correct return type
 										) {
 									return true;
 								}

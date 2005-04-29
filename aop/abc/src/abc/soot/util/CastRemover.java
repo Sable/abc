@@ -8,6 +8,7 @@ import java.util.Map;
 
 import soot.Body;
 import soot.BodyTransformer;
+import soot.Scene;
 import soot.Type;
 import soot.jimple.AssignStmt;
 import soot.jimple.CastExpr;
@@ -47,7 +48,7 @@ public class CastRemover extends BodyTransformer {
         		AssignStmt as=(AssignStmt)stmt;
         		Type leftType=as.getLeftOp().getType();
         		if (as.getRightOp() instanceof CastExpr) {
-        			CastExpr ce=(CastExpr)as.getRightOp();
+        			CastExpr ce=(CastExpr)as.getRightOp();        			
         			if (ce.getOp().getType().equals(leftType)) {
         				//debug("Removing unnecessary cast: " + stmt);
         				as.setRightOp(ce.getOp());

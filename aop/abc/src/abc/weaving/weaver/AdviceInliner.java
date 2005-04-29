@@ -46,6 +46,7 @@ import soot.jimple.InvokeExpr;
 import soot.jimple.Jimple;
 import soot.jimple.LookupSwitchStmt;
 import soot.jimple.NopStmt;
+import soot.jimple.ReturnStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.StaticInvokeExpr;
 import soot.jimple.Stmt;
@@ -964,6 +965,97 @@ public class AdviceInliner { //extends BodyTransformer {
 		}
 	}
 	
+	public void specializeReturnTypesOfInlineMethods() {
+		
+		Map /*String,SootMethod*/ changedMethodsSigs=new HashMap();
+		
+		for (Iterator it=allStaticInlineMethods.iterator();it.hasNext();) {
+			SootMethod m=(SootMethod)it.next();
+			if (!m.getName().startsWith("inline$")) 
+				throw new InternalCompilerError("");
+			
+			if (m.getReturnType().equals(VoidType.v()))
+				continue;
+			
+			//debug(" " + Util.printMethod(m));
+			
+			Body b=m.getActiveBody();
+			
+			Type returnType=null;
+			boolean consistentTypes=true;
+			Chain statements=b.getUnits();
+			for (Iterator itS=statements.iterator();itS.hasNext();) {
+				Stmt s=(Stmt)itS.next();
+				if (s instanceof ReturnStmt) {
+					ReturnStmt r=(ReturnStmt)s;
+					debug(" found return stmt: " + r);
+					if (returnType==null) {
+						returnType=r.getOp().getType();
+						debug("    type: " + returnType);
+					} else {
+						if (!returnType.equals(r.getOp().getType())) {
+							consistentTypes=false;
+							debug("    inconsistent type: " + r.getOp().getType());
+							break;
+						}
+					}
+					
+				}
+			}
+			if (returnType==null)
+				throw new InternalCompilerError("");
+			
+			if (!consistentTypes)
+				continue;
+			
+			changedMethodsSigs.put(m.getSignature(), m);
+			m.setReturnType(returnType);	
+			debug(" Changed return type to " + returnType);
+		}
+		
+		if (changedMethodsSigs.size()==0)
+			return;
+		
+		// update method calls
+		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
+                final SootMethod m = (SootMethod) mIt.next();
+                if( !m.hasActiveBody() ) 
+                	continue;		
+			
+				Body b=m.getActiveBody();
+				Chain statements=b.getUnits();
+				boolean changedCall=false;
+				for (Iterator itStmt=statements.iterator();itStmt.hasNext();) {
+					Stmt s=(Stmt)itStmt.next();
+					if (!s.containsInvokeExpr())
+						continue;
+					
+					InvokeExpr e=s.getInvokeExpr();
+					if (!(e instanceof StaticInvokeExpr)) 
+						continue;
+					
+					if (!e.getMethodRef().name().startsWith("inline$")) 
+						continue;
+					
+					String ref=e.getMethodRef().getSignature();
+					if (changedMethodsSigs.containsKey(ref)) {
+						SootMethod callee=(SootMethod)changedMethodsSigs.get(ref);
+						e.setMethodRef(callee.makeRef());
+						//debug(" Changing call to " + ref);
+						//debug("               to " + callee.makeRef());
+						debug(" " + s);
+						changedCall=true;
+					}					
+				}
+				if (changedCall)
+					InterprocConstantPropagator.tightenTypesOfLocals(m);
+            }
+		}
+	}
+	
 	public void removeDuplicateInlineMethods() {
 		Map fingerPrints=new HashMap();
 		Map methods=new HashMap();
@@ -1036,6 +1128,8 @@ public class AdviceInliner { //extends BodyTransformer {
 			SootMethod m=(SootMethod)it.next();
 			debug(" removing method " + m);
 			m.getDeclaringClass().removeMethod(m);
+			if (!allStaticInlineMethods.remove(m))
+				throw new InternalCompilerError("");
 		}
 				
 	}
