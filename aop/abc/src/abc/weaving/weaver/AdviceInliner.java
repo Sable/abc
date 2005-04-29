@@ -63,6 +63,8 @@ import abc.main.options.OptionsParser;
 import abc.soot.util.AroundShadowInfoTag;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.SwitchFolder;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.around.AroundWeaver;
 import abc.weaving.weaver.around.Util;
 import abc.weaving.weaver.around.soot.SiteInliner;
@@ -82,9 +84,8 @@ public class AdviceInliner { //extends BodyTransformer {
 	private Set additionalShadowMethods=new HashSet();
 	public void addShadowMethod(SootMethod m) {
 		shadowMethods.add(m);
-		allShadowMethods.add(m);
 	}
-	private Set allShadowMethods=new HashSet();
+	private Set allStaticInlineMethods=new HashSet();
 	
 	InlineOptions getInlineOptions() {
 		CombinedInlineOptions opts=new CombinedInlineOptions();
@@ -236,10 +237,12 @@ public class AdviceInliner { //extends BodyTransformer {
 	//Set bodiesExceedingMaximumSize=new HashSet();
 	
 	protected void inlineMethods(Body body, InlineRange range, InlineOptions inlineOptions, Set visitedBodies, int depth) {
+		//Set result=new HashSet();
+		//result.add(body);
 		depth++;
 		
 		if (range==null && visitedBodies.contains(body))
-			return;
+			return;// result;
 		
 		visitedBodies.add(body);
 		
@@ -247,7 +250,7 @@ public class AdviceInliner { //extends BodyTransformer {
 		
 		if (!bodyHasRelevantCalls(inlineOptions, body, range)) {
 			debug("no relevant calls.", depth);
-			return;
+			return;// result;
 		}
 		
 //		 remove dead code from the dynamic residues.
@@ -309,6 +312,17 @@ public class AdviceInliner { //extends BodyTransformer {
         	
         	InvokeExpr expr=stmt.getInvokeExpr();
         	
+//        	 This is the big step:
+        	// Before inlining, recursively visit methods that could be inlined
+        	Set inlineeInlinees=null;
+        	if (inlineOptions.considerForInlining(expr.getMethod().getName())) {
+        		//inlineeInlinees=
+        			inlineMethods(expr.getMethod().getActiveBody(), null, inlineOptions, visitedBodies, depth);
+        	}    
+        	
+        	if (inlineeInlinees!=null && inlineeInlinees.contains(body))
+        		continue; // don't inline recursively
+        	
         	boolean runOnRange=false;
         	
         	//debug(" EXPR: " + expr);
@@ -326,13 +340,8 @@ public class AdviceInliner { //extends BodyTransformer {
         		r.end=Jimple.v().newNopStmt();
         		units.insertBefore(r.begin, stmt);
         		units.insertAfter(r.end, stmt);        		
-        	}
-        	
-        	// This is the big step:
-        	// Before inlining, recursively visit methods that could be inlined
-        	if (inlineOptions.considerForInlining(expr.getMethod().getName())) {
-        		inlineMethods(expr.getMethod().getActiveBody(), null, inlineOptions, visitedBodies, depth);
-        	}        	
+        	}   	
+        	    	
         	
         	if (!body.getUnits().contains(stmt))
     			throw new InternalCompilerError("");
@@ -394,8 +403,10 @@ public class AdviceInliner { //extends BodyTransformer {
 	            		
 	            		bDidInline=true;
 	            		debug("Succeeded.", depth);
-	            		rangesToInline.add(r);
+	            		if (r!=null)
+	            			rangesToInline.add(r);
 	            		debug("QQQ adding range", depth);
+	            		//result.addAll(inlineeInlinees);
 	            	} else {
 	            		debug("Failed.", depth);
 	            	}
@@ -435,7 +446,7 @@ public class AdviceInliner { //extends BodyTransformer {
         		targetClass.addMethod(method); 
         		
         		additionalShadowMethods.add(method); 
-        		allShadowMethods.add(method);
+        		allStaticInlineMethods.add(method);
         		
         		Chain statements=inlineBody.getUnits().getNonPatchingChain();
         		LocalGeneratorEx lg=new LocalGeneratorEx(inlineBody);
@@ -495,6 +506,9 @@ public class AdviceInliner { //extends BodyTransformer {
         		bDidInline=true;
         		
         		debug("Succeeded(2).", depth);
+        		//result.addAll(inlineeInlinees);
+        		//result.add(inlineBody);
+        		
         		//BoxingRemover.runJopPack(method.getActiveBody());
         		//BoxingRemover.removeUnnecessaryCasts(method.getActiveBody());
             } else {
@@ -510,7 +524,9 @@ public class AdviceInliner { //extends BodyTransformer {
         		InlineRange r=(InlineRange)it.next();
    	
         		debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW", depth);
+        		//Set inlinees=
         		inlineMethods(body, r, new ProceedMethodInlineOptions(), visitedBodies, depth);
+        		//result.addAll(inlinees);
         	}
         	//if (rangesToInline.size()>0)
         		//foldSwitches(body);
@@ -524,6 +540,7 @@ public class AdviceInliner { //extends BodyTransformer {
             DeadAssignmentEliminator.v().transform(body);
             UnusedLocalEliminator.v().transform(body);
         }        
+        //return result;
         //BoxingRemover.runJopPack(body);
 		//BoxingRemover.removeUnnecessaryCasts(body);
 	}
@@ -739,8 +756,16 @@ public class AdviceInliner { //extends BodyTransformer {
 						return DONT_INLINE;
 				} else {
 					//if (true)throw new InternalCompilerError("");
-				*/	debug("    container: " + container.getName());
-					return InlineOptions.INLINE_STATIC_METHOD;
+					 
+				*/	
+				if (method==container)
+					return InlineOptions.DONT_INLINE;
+				/// dirty hack!
+				if (container.getName().startsWith("inline$") && container.getName().endsWith(method.getName()))
+					return InlineOptions.DONT_INLINE;
+				
+				debug("    container: " + container.getName());
+				return InlineOptions.INLINE_STATIC_METHOD;
 				//}
 			}
 			// unreachable code below.
@@ -944,59 +969,67 @@ public class AdviceInliner { //extends BodyTransformer {
 		Map methods=new HashMap();
 		Set duplicates=new HashSet();
 		
-		for (Iterator it=allShadowMethods.iterator();it.hasNext();) {
+		for (Iterator it=allStaticInlineMethods.iterator();it.hasNext();) {
 			SootMethod m=(SootMethod)it.next();
-			if (m.getName().startsWith("inline$")) {
-				Body b=m.getActiveBody();
-				soot.jimple.toolkits.scalar.CopyPropagator.v().transform(b);
-	            ConstantPropagatorAndFolder.v().transform(b);
-	            DeadAssignmentEliminator.v().transform(b);
-	            UnusedLocalEliminator.v().transform(b);
-				
-				String fingerPrint=Util.getMethodFingerprint(m);
-				fingerPrints.put(m, fingerPrint);
-				//System.out.println("FINGERPRINT : " + m.getName());
-				//System.out.println(fingerPrint);
-				if (methods.containsKey(fingerPrint))
-					duplicates.add(m);			
-				else 
-					methods.put(fingerPrint, m);					
-			}
+			if (!m.getName().startsWith("inline$")) 
+				throw new InternalCompilerError("");
+			
+			Body b=m.getActiveBody();
+			soot.jimple.toolkits.scalar.CopyPropagator.v().transform(b);
+            ConstantPropagatorAndFolder.v().transform(b);
+            DeadAssignmentEliminator.v().transform(b);
+            UnusedLocalEliminator.v().transform(b);
+			
+			String fingerPrint=Util.getMethodFingerprint(m);
+			fingerPrints.put(m, fingerPrint);
+			//System.out.println("FINGERPRINT : " + m.getName());
+			//System.out.println(fingerPrint);
+			if (methods.containsKey(fingerPrint))
+				duplicates.add(m);			
+			else 
+				methods.put(fingerPrint, m);					
+			
 		}
 		if (duplicates.size()==0)
 			return;
 		debug("Found duplicate(s): " + duplicates);
 		
 	
-		
-		for (Iterator it=allShadowMethods.iterator();it.hasNext();) {
-			SootMethod m=(SootMethod)it.next();
-			Body b=m.getActiveBody();
-			Chain statements=b.getUnits();
-			for (Iterator itStmt=statements.iterator();itStmt.hasNext();) {
-				Stmt s=(Stmt)itStmt.next();
-				if (!s.containsInvokeExpr())
-					continue;
-				
-				InvokeExpr e=s.getInvokeExpr();
-				if (!(e instanceof StaticInvokeExpr)) 
-					continue;
-				
-				if (!e.getMethodRef().name().startsWith("inline$")) 
-					continue;
-				
-				SootMethod mi=e.getMethod();
-				
-				String fp=(String)fingerPrints.get(mi);
-				SootMethod mm=(SootMethod)methods.get(fp);
-				
-				if (mi==mm)
-					continue;
-				
-				debug(" replacing call to " + mi.getName() + " with call to " + mm.getName());
-				e.setMethodRef(mm.makeRef());
-							
-			}
+		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+
+            final AbcClass cl = (AbcClass) clIt.next();
+            for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
+                final SootMethod m = (SootMethod) mIt.next();
+                if( !m.hasActiveBody() ) 
+                	continue;		
+			
+				Body b=m.getActiveBody();
+				Chain statements=b.getUnits();
+				for (Iterator itStmt=statements.iterator();itStmt.hasNext();) {
+					Stmt s=(Stmt)itStmt.next();
+					if (!s.containsInvokeExpr())
+						continue;
+					
+					InvokeExpr e=s.getInvokeExpr();
+					if (!(e instanceof StaticInvokeExpr)) 
+						continue;
+					
+					if (!e.getMethodRef().name().startsWith("inline$")) 
+						continue;
+					
+					SootMethod mi=e.getMethod();
+					
+					String fp=(String)fingerPrints.get(mi);
+					SootMethod mm=(SootMethod)methods.get(fp);
+					
+					if (mi==mm)
+						continue;
+					
+					debug(" replacing call to " + mi.getName() + " with call to " + mm.getName());
+					e.setMethodRef(mm.makeRef());
+								
+				}
+            }
 		}
 		
 		for (Iterator it=duplicates.iterator();it.hasNext();) {

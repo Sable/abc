@@ -153,7 +153,17 @@ public class Restructure {
           }
         throw new InternalCompilerError("Expecting to find a real stmt");
       }
-
+    public static Stmt findFirstRealStmtOrNull(SootMethod m,Chain units)
+    { 
+    	Iterator it = units.iterator();
+      while ( it.hasNext() ) { 
+	     Stmt u = (Stmt) it.next();
+	     if(u instanceof IdentityStmt) 
+	     	continue;
+	     return u;
+       }
+       return null;
+     }
    /** update all traps that used to end at oldend to now end at newend
     */
    public static void resetTrapsEnd(Body b, Stmt oldend, Stmt newend)

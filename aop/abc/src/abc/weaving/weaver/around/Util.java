@@ -57,6 +57,8 @@ import soot.jimple.VirtualInvokeExpr;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
+import abc.weaving.aspectinfo.AbcClass;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.CodeGenException;
 import abc.weaving.weaver.around.AroundWeaver.ObjectBox;
 import abc.weaving.weaver.around.soot.JInterfaceInvokeExpr;
@@ -68,69 +70,7 @@ import abc.weaving.weaver.around.soot.ModifiableInvokeExpr;
 
 public class Util {
 	
-	public static int FAR_JUMP=2000;
-	/*public static void eliminateFarJumps(SootMethod m) {
-		Body b=m.getActiveBody();
-		
-		Chain units=m.getActiveBody().getUnits().getNonPatchingChain();
-		
-		if (units.size()<FAR_JUMP)
-			return;
-		
-		Map unitPositions=new HashMap();
-		{
-			int i=0;
-			for (Iterator it=units.iterator();it.hasNext();i++) {
-				Stmt s=(Stmt)it.next();
-				unitPositions.put(s, new Integer(i));
-			}
-		}
-		
-		Object[] unitArray=units.toArray();
-		
-		int uncorrectedJumps;
-		do {
-			uncorrectedJumps=0;
-			int i=0;
-			for(Iterator it=units.iterator(); it.hasNext();i++) {
-				Stmt s=(Stmt)it.next();
-				List boxes=s.
-				for (Iterator itB=boxes.iterator(); itB.hasNext();) {
-					UnitBox box=(UnitBox)itB.next();					
-					if (box.` getUnit() instanceof Stmt) {
-						Stmt org=(Stmt)box.getU
-						//Stmt oldTarget=(Stmt)gs.getTarget();
-						int targetPos=((Integer)unitPositions.get(oldTarget)).intValue();
-						int distance=Math.abs(i-targetPos);
-						if (distance>FAR_JUMP) {
-							int newTarget=(i+targetPos)/2;
-							/*
-							 * gs: goto gs2
-							 * 
-							 * gs3: goto ns // in case the above stmt falls through
-							 * gs2: goto oldTarget
-							 * ns: some stmt..
-							 *
-							Stmt ns=(Stmt)unitArray[newTarget];
-							
-							GotoStmt gs2=Jimple.v().newGotoStmt(oldTarget);
-							units.insertBefore(gs2, ns);						
-							gs.setTarget(gs2);
-								
-							GotoStmt gs3=Jimple.v().newGotoStmt(ns);
-							units.insertBefore(gs3, gs2);			
-							
-							
-						}
-						if (distance>FAR_JUMP*2)
-							uncorrectedJumps++;
-					}
-				}
-			}
-		} while (uncorrectedJumps>0);
-		
-			
-	}*/
+	
 	
 	// Returns a representation of the method
 	// where the method name and the names of locals are normalized.

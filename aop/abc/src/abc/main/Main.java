@@ -85,7 +85,7 @@ import abc.weaving.weaver.InterprocConstantPropagator;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.UnusedMethodsRemover;
 import abc.weaving.weaver.Weaver;
-import abc.weaving.weaver.around.AroundWeaver;
+import abc.weaving.weaver.around.Util;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -514,9 +514,9 @@ public class Main {
                     phaseDebug("Exceptions check");
                 }
                 
-               AroundWeaver.reset();
+               //AroundWeaver.reset();
                //AbcTimer.mark("Freeing around memory");
-               phaseDebug("Freeing around memory");
+               //phaseDebug("Freeing around memory");
                 
                if (OptionsParser.v().O()!=0) {
                         
@@ -525,12 +525,7 @@ public class Main {
                 	AbcTimer.mark("Advice inlining");
                     phaseDebug("Advice inlining");
                 
-                	UnusedMethodsRemover.removeUnusedMethods();
-                
-                	AbcTimer.mark("Removing unused methods");
-                    phaseDebug("Removing unused methods");
-                
-                	InterprocConstantPropagator.inlineConstantArguments();
+                    InterprocConstantPropagator.inlineConstantArguments();
                 
                 	AbcTimer.mark("Interproc. constant propagator");
                     phaseDebug("Interproc. constant propagator");
@@ -540,11 +535,19 @@ public class Main {
                 	AbcTimer.mark("Boxing remover");
                     phaseDebug("Boxing remover");
                     
-                    //AdviceInliner.v().removeDuplicateInlineMethods();
+                    AdviceInliner.v().removeDuplicateInlineMethods();
                     
                     AbcTimer.mark("Duplicates remover");
                     phaseDebug("Duplicates remover");
                     
+                	UnusedMethodsRemover.removeUnusedMethods();
+                    
+                    AbcTimer.mark("Removing unused methods");
+                    phaseDebug("Removing unused methods");
+                    
+                    //Util.eliminateFarJumps();
+                    //AbcTimer.mark("Removing far jumps");
+                    //phaseDebug("Removing far jumps");
                }
                 
                 abortIfErrors();

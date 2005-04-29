@@ -32,22 +32,22 @@ import soot.SootMethodRef;
 import soot.Transform;
 import soot.Trap;
 import soot.Value;
-import soot.tagkit.Host;
 import soot.jimple.InvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.toolkits.annotation.nullcheck.BranchedRefVarsAnalysis;
 import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
+import soot.tagkit.Host;
 import soot.util.Chain;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.aspectj.parse.sym;
 import abc.soot.util.CastRemover;
+import abc.soot.util.FarJumpEliminator;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
-import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.AbcSJPInfo;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.matching.ClassInitializationShadowMatch;
@@ -60,11 +60,11 @@ import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.matching.MethodCallShadowType;
 import abc.weaving.matching.NewStmtMethodPosition;
 import abc.weaving.matching.PreinitializationShadowType;
+import abc.weaving.matching.SJPInfo;
 import abc.weaving.matching.SetFieldShadowType;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
-import abc.weaving.weaver.AroundInliner;
 import abc.weaving.weaver.CflowCodeGenUtils;
 
 /**
@@ -175,6 +175,11 @@ public class AbcExtension
 									if (m.declaringClass().getName().equals("org.aspectbench.runtime.internal.CFlowStack")
 											|| m.declaringClass().getName().equals("org.aspectbench.runtime.internal.CFlowCounter"))
 										return true;
+								if (m.name().equals("aspectOf") && 
+										m.isStatic() && 
+										m.parameterTypes().size()==0) {
+									return true;
+								}
 							}
 							return false;
 						}
@@ -191,6 +196,10 @@ public class AbcExtension
 		}
 		
 		PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");
+		
+		// make this the very last pass after all optimizations
+		//PackManager.v().getPack("jop").insertAfter(new Transform("jop.fje", FarJumpEliminator.v()), "jop.ule");
+		
 		
 		//if (Debug.v().aroundInliner) {
 		//	PackManager.v().getPack("jop").add(new Transform("jop.aroundinliner", AroundInliner.v()));

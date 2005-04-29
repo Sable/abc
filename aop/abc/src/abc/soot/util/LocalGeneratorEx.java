@@ -98,19 +98,32 @@ public class LocalGeneratorEx extends LocalGenerator {
 		return createLocal(name, type);
 	}
 
+	public Local generateLocalWithExactName(soot.Type type, String name) {
+		return createLocal(name, type);
+	}
 	// The following functions are copied from the base class
 	 private soot.Local createLocal(String name, soot.Type sootType) {
 		 soot.Local sootLocal = soot.jimple.Jimple.v().newLocal(name, sootType);
 		 body.getLocals().add(sootLocal);
 		 return sootLocal;
 	 }
-	private boolean bodyContainsLocal(String name){
+	public boolean bodyContainsLocal(String name){
 		Iterator it = body.getLocals().iterator();
 		while (it.hasNext()){
 			if (((soot.Local)it.next()).getName().equals(name)) return true;
 		}
 		return false;
 	}
+	public Local getLocalByName(String name){
+		Iterator it = body.getLocals().iterator();
+		while (it.hasNext()){
+			Local l=(soot.Local)it.next();
+			if ((l).getName().equals(name)) 
+				return l;
+		}
+		return null;
+	}
+	
 	/*private Set localNames=new HashSet();
 	private Set getLocalNames() {
 		localNames.clear();

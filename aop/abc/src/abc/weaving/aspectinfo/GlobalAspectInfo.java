@@ -74,9 +74,7 @@ public class GlobalAspectInfo {
     // Just stored in the ads list instead
     //    private List/*<DeclareSoft>*/ dss = new ArrayList();
 
-        // additional generated classes that need to be output in the end
-        //private Collection/*<String>*/ generated_classes = new ArrayList();
-
+    
     private Map/*<AbcClass,Aspect>*/ aspects_map = new HashMap();
     private Map/*<String,Set<PointcutDecl>>*/ pc_map = new HashMap();
     private Map/*<Aspect,Set<Aspect>>*/ aspect_visibility = new HashMap();

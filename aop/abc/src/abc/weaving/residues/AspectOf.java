@@ -26,6 +26,7 @@ import soot.util.Chain;
 import soot.jimple.*;
 import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
+import abc.soot.util.Restructure;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.*;
@@ -65,16 +66,40 @@ public class AspectOf extends Residue {
 
        	List paramTypes;
 	List params;
+	Local aspectref;
 	if(pervalue==null) {
+		// For singleton aspects, create one shared local,
+		// initialize it to null at the beginning of the method
+		// and perform the aspectOf call lazily.
+		// The nullcheck-eliminator will reduce the number of checks later on.
 	    params=new ArrayList(); paramTypes=new ArrayList();
+	    
+	    //aspectref = localgen.generateLocal(aspct.getType(),"theAspect");
+	    String mangledLocalName="theAspect$" + aspct.getType().toString();
+	    aspectref = localgen.getLocalByName(mangledLocalName);
+	    if (aspectref==null) {
+	    	aspectref = localgen.generateLocalWithExactName(aspct.getType(),mangledLocalName);
+	    	AssignStmt init=Jimple.v().newAssignStmt(aspectref, NullConstant.v());
+	    	Stmt s=Restructure.findFirstRealStmtOrNull(method, units);
+	    	if (s==null)
+	    		units.addFirst(init);
+	    	else
+	    		units.insertBefore(init, s);	    	
+	    } 
+	    NopStmt skip=Jimple.v().newNopStmt();
+	    units.insertAfter(skip, begin);
+	    IfStmt check=Jimple.v().newIfStmt(Jimple.v().newNeExpr(aspectref, NullConstant.v()), skip);
+	    units.insertAfter(check, begin);
+	    begin=skip; // attention: changing begin here*/
+	    
 	} else {
 	    params=new ArrayList(1); paramTypes=new ArrayList(1);
 	    paramTypes.add(Scene.v().getSootClass("java.lang.Object").getType());
 	    params.add(pervalue.getSootValue());
+	    
+	    aspectref = localgen.generateLocal(aspct.getType(),"theAspect");
 	}
 	
-	Local aspectref = localgen.generateLocal(aspct.getType(),"theAspect");
-
 	AssignStmt stmtAspectOf = Jimple.v().newAssignStmt
 	    (aspectref, Jimple.v().newStaticInvokeExpr
 	     (Scene.v().makeMethodRef(aspct,"aspectOf",paramTypes,aspct.getType(),true),params));
