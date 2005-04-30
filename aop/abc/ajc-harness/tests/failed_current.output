@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$25$around$1601(AroundAll.java:199)
+	at A.inline$33$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -101,11 +101,11 @@ Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdvice.j
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during matching
 polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during matching
 	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:170)
-	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:411)
+	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:425)
 	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:237)
 	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:274)
-	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:451)
-	at abc.main.Main.weave(Main.java:902)
+	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:470)
+	at abc.main.Main.weave(Main.java:906)
 	at abc.main.Main.run(Main.java:507)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
@@ -137,17 +137,17 @@ Running test 762: new/can't apply around advice to the execution of around advic
 Commandline: abc -d new -warn-unused-advice:off new/CflowCycles.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:616)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$A2$around$2617: java.lang.Object abc$proceed$A2$around$2617(int,int)>
+Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$A2$around$2617: java.lang.Object abc$proceed$A2$around$2617(int,int,java.lang.Object)>
 	at soot.SootMethod.getActiveBody(SootMethod.java:279)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:110)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:112)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
 	at abc.main.Main.run(Main.java:523)
@@ -173,13 +173,13 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:616)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:703)
-	at abc.main.Main.loadSourceRoots(Main.java:720)
+	at abc.main.Main.findSourcesInDir(Main.java:707)
+	at abc.main.Main.loadSourceRoots(Main.java:724)
 	at abc.main.Main.run(Main.java:497)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -229,7 +229,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:616)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -239,7 +239,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:800)
+	at abc.main.Main.compile(Main.java:804)
 	at abc.main.Main.run(Main.java:503)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
@@ -249,17 +249,17 @@ Running test 1006: abctests/around/adviceexecution/around with circular adviceex
 Commandline: abc -d abctests/around/adviceexecution -warn-unused-advice:off abctests/around/adviceexecution/Foo.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:616)
+	at abc.main.Main.run(Main.java:620)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.RuntimeException: no active body present for method <Abc$proceed$Aspect$around$3024: void abc$proceed$Aspect$around$3024(int,int)>
 	at soot.SootMethod.getActiveBody(SootMethod.java:279)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:334)
-	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:110)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.inlineMethods(AdviceInliner.java:321)
+	at abc.weaving.weaver.AdviceInliner.run(AdviceInliner.java:112)
 	at abc.weaving.weaver.Weaver.runInliner(Weaver.java:196)
 	at abc.weaving.weaver.Weaver.doInlining(Weaver.java:191)
 	at abc.main.Main.run(Main.java:523)
