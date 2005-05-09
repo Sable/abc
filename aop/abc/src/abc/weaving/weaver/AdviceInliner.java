@@ -316,8 +316,9 @@ public class AdviceInliner { //extends BodyTransformer {
 //        	 This is the big step:
         	// Before inlining, recursively visit methods that could be inlined
         	Set inlineeInlinees=null;
-        	if (inlineOptions.considerForInlining(expr.getMethod().getName())) {
+        	if (inlineOptions.considerForInlining(expr.getMethodRef().name())) {
         		//inlineeInlinees=
+        		if (expr.getMethod().hasActiveBody())
         			inlineMethods(expr.getMethod().getActiveBody(), null, inlineOptions, visitedBodies, depth);
         	}    
         	
