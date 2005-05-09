@@ -76,6 +76,7 @@ public class CflowAnalysisImpl implements CflowAnalysis {
 
 
         debug("setting up paddle");
+        PaddleScene.v().setupJedd();
         /*
         List entryPoints = new ArrayList();
         entryPoints.addAll(EntryPoints.v().implicit());
@@ -104,6 +105,7 @@ public class CflowAnalysisImpl implements CflowAnalysis {
         PackManager.v().getPack("cg").apply();
 
         debug("starting cflow analysis");
+        Date startAnalysis = new Date();
         BDDCflow cflowAnalysis = new BDDCflow();
         for( Iterator stackIt = stackInfoMap.keySet().iterator(); stackIt.hasNext(); ) {
             final CflowSetup stack = (CflowSetup) stackIt.next();
@@ -173,6 +175,8 @@ public class CflowAnalysisImpl implements CflowAnalysis {
             }
             stats(bddcfs.queryStats());
         }
+        Date finishAnalysis = new Date();
+        stats("Cflow analysis took "+(finishAnalysis.getTime()-startAnalysis.getTime())+" ms");
 
 
         /*
