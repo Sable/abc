@@ -3726,6 +3726,10 @@
             <message text="adviceExecution() &amp;&amp; within(A)" line="72" kind="warning"></message>
         </compile>
     </ajc-test>
+<ajc-test title="can't apply around advice to the execution of around advice" pr="29934" num="762" keywords="from-resolved_10x" dir="new">
+        <compile files="CflowCycles.java"></compile>
+        <run class="CflowCycles"></run>
+    </ajc-test>
 <ajc-test title="incompatible advice throws clause are a compile-time error" num="763" keywords="from-resolved_10x" dir="new" abccomment="we don't report the advice positions too">
         <compile files="AdviceThrowsCf.java">
             <ajcmessage line="13" kind="error"></ajcmessage>
@@ -5025,6 +5029,12 @@
     </ajc-test>
 <ajc-test title="around with alternative binding, changed proceed" num="1005" dir="abctests/around/alternative">
          <compile files="Foo.java"></compile>
+         <run class="Foo"></run>
+    </ajc-test>
+<ajc-test title="around with circular adviceexecution advice" num="1006" dir="abctests/around/adviceexecution">
+         <compile files="Foo.java">
+                  <message line="10" kind="warning"></message>
+         </compile>
          <run class="Foo"></run>
     </ajc-test>
 <ajc-test title="make sure we get valid jimple for perthis/pertarget bind methods" num="1007" dir="abctests/bugs">
