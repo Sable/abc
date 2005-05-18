@@ -21,6 +21,18 @@
         <compile includeClassesDir="true" files="InterfaceAndInner.java"></compile>
         <run class="InterfaceAndInner"></run>
     </ajc-test>
+<ajc-test title="holding onto proceed calls in a closure-like way" num="41001" keywords="from-resolved_10x,knownLimitation" dir="abctests/new" abccomment="duplicated from 410 to fix bug in test case">
+        <compile files="HoldProceed.java"></compile>
+        <run class="HoldProceed"></run>
+    </ajc-test>
+<ajc-test title="Does the matrix coverage thing for the new method signatures" num="473" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4,-Xlint:ignore" files="MethodSignatures.java"></compile>
+        <run vm="1.4" class="MethodSignatures"></run>
+    </ajc-test>
+<ajc-test title="correct types of parameters at call-sites" num="476" keywords="from-resolved_10x" dir="new">
+        <compile options="-1.4,-Xlint:ignore" files="CallTypes.java"></compile>
+        <run vm="1.4" class="CallTypes"></run>
+    </ajc-test>
 <ajc-test title="elaborated into testing of around on all join points" pr="490" num="496" keywords="from-resolved_10x" dir="new" abccomment="around weaver internal error - Sascha emailed - AGS 1/7/04">
         <compile files="AroundAll.java"></compile>
         <run class="AroundAll"></run>
