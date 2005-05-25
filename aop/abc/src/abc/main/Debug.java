@@ -63,6 +63,7 @@ public class Debug {
     public boolean debugPointcutNormalization=false;
     public boolean abstractPointcutLookup=false;
 
+    public boolean printAdviceApplicationCount=false;
     public boolean matcherTest=false; // Print out the results of the matcher for regression testing etc
     public boolean matcherWarnUnimplemented=false; // Warn about unimplemented stuff in the matcher
                                                    // or things it sees (like patterns)
@@ -144,6 +145,7 @@ public class Debug {
 
     public boolean countCflowStacks = false;
 
+    
     // Config stuff - to be moved, possibly (FIXME)
     public boolean ajcCompliance=true; // strict ajc compliance
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before

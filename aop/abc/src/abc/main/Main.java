@@ -905,10 +905,12 @@ public class Main {
                 // for each shadow in each weavable class, compute list of applicable advice
                 GlobalAspectInfo.v().computeAdviceLists();
                 AbcTimer.mark("Compute advice lists");
-                phaseDebug("Compute advice lists");
+                phaseDebug("Compute advice lists");                
 
-                if(Debug.v().matcherTest) {
-                    System.err.println("--- BEGIN ADVICE LISTS ---");
+                if(Debug.v().matcherTest || Debug.v().printAdviceApplicationCount) {
+                	int adviceApplCount=0;
+                	if (Debug.v().matcherTest)
+                		System.err.println("--- BEGIN ADVICE LISTS ---");
                     // print out matching information for testing purposes
                     for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                         final AbcClass cl = (AbcClass) clIt.next();
@@ -917,10 +919,16 @@ public class Main {
                             final StringBuffer sb=new StringBuffer(1000);
                             sb.append("method: "+method.getSignature()+"\n");
                             GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
-                            System.err.println(sb.toString());
+                            adviceApplCount += 
+                            	GlobalAspectInfo.v().getAdviceList(method).allAdvice().size();
+                            if (Debug.v().matcherTest)
+                            	System.err.println(sb.toString());
                         }
                     }
-                    System.err.println("--- END ADVICE LISTS ---");
+                    if (Debug.v().matcherTest)
+                    	System.err.println("--- END ADVICE LISTS ---");
+                    if (Debug.v().printAdviceApplicationCount)
+                    	System.out.println("Number of advice applications: " + adviceApplCount);
                 }
 
                 if(abc.main.options.OptionsParser.v().warn_unused_advice()) {

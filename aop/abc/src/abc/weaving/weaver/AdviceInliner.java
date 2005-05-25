@@ -517,15 +517,13 @@ public class AdviceInliner { //extends BodyTransformer {
             	//debug(" No inlining.");
             }            
         }
-        if (bDidInline) {
-        	debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW(0)", depth);
+        if (bDidInline) {        	
         	//if (bDidInlineSwitch)
         	foldSwitches(body, false);
         	
         	for (Iterator it=rangesToInline.iterator(); it.hasNext();) {
         		InlineRange r=(InlineRange)it.next();
    	
-        		debug("QQQ WWWWWWWWWWWWWWWWWWWWWWWWWW", depth);
         		//Set inlinees=
         		inlineMethods(body, r, new ProceedMethodInlineOptions(), visitedBodies, depth);
         		//result.addAll(inlinees);
@@ -560,12 +558,12 @@ public class AdviceInliner { //extends BodyTransformer {
 		return OptionsParser.v().before_after_force_inlining();
 	}
 	
-	
 	public static boolean isAfterBeforeAdviceMethod(String name) {
 		return name.startsWith("before$") || name.startsWith("after$") ||
 		name.startsWith("afterReturning$") ||
 		name.startsWith("afterThrowing$");
 	}
+	
 	private class AfterBeforeMethodInlineOptions implements InlineOptions {
 		public boolean considerForInlining(String name) {
 			return isAfterBeforeAdviceMethod(name);
@@ -584,24 +582,22 @@ public class AdviceInliner { //extends BodyTransformer {
 			} 
 		
 			int accessViolations=getAccessViolationCount(container, method);
-			if (accessViolations!=0) {
+			if (accessViolations>0) {
 				debug("Access violations");
 				debug(" Method: " + container);
 				debug(" Advice method: " + method); 
-				debug(" Violations: " + accessViolations);
-				if (accessViolations>1)
-					return InlineOptions.DONT_INLINE;					
+				return InlineOptions.DONT_INLINE;
 			}
 			Body body=method.getActiveBody();
 			
 			//if (info.proceedInvocations>1)
-			int size=body.getUnits().size();
+			int size=body.getUnits().size()-method.getParameterCount();
 			debug("     Size of advice method: " + size);
 			int addedLocals=body.getLocalCount()-method.getParameterCount();
 			debug("     Number of added locals (approximately): " + addedLocals);			
 						
 			if (size<6)
-				return InlineOptions.INLINE_STATIC_METHOD;
+				return InlineOptions.INLINE_DIRECTLY;
 			
 			
 			return InlineOptions.DONT_INLINE;
