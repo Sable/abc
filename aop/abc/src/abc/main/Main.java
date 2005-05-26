@@ -78,6 +78,7 @@ import abc.weaving.aspectinfo.DeclareParents;
 import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.matching.MethodAdviceList;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
@@ -85,7 +86,6 @@ import abc.weaving.weaver.InterprocConstantPropagator;
 import abc.weaving.weaver.IntertypeAdjuster;
 import abc.weaving.weaver.UnusedMethodsRemover;
 import abc.weaving.weaver.Weaver;
-import abc.weaving.weaver.around.Util;
 
 /** The main class of abc. Responsible for parsing command-line arguments,
  *  initialising Polyglot and Soot, and driving the compilation process.
@@ -519,36 +519,38 @@ public class Main {
                //phaseDebug("Freeing around memory");
                 
                if (OptionsParser.v().O()!=0) {
-                        
-                	Weaver.doInlining();
                 
-                	AbcTimer.mark("Advice inlining");
-                    phaseDebug("Advice inlining");
-                
-                    InterprocConstantPropagator.inlineConstantArguments();
-                
-                	AbcTimer.mark("Interproc. constant propagator");
-                    phaseDebug("Interproc. constant propagator");
-              
-                	Weaver.runBoxingRemover();
-                	
-                	AbcTimer.mark("Boxing remover");
-                    phaseDebug("Boxing remover");
-                    
-                    AdviceInliner.v().removeDuplicateInlineMethods();
-                    
-                    AbcTimer.mark("Duplicates remover");
-                    phaseDebug("Duplicates remover");
-                    
-                	UnusedMethodsRemover.removeUnusedMethods();
-                    
-                    AbcTimer.mark("Removing unused methods");
-                    phaseDebug("Removing unused methods");
-                    
-                    AdviceInliner.v().specializeReturnTypesOfInlineMethods();
-                    
-                    AbcTimer.mark("Specializing return types");
-                    phaseDebug("Specializing return types");
+               		if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining()) {
+	                	Weaver.doInlining();
+	                
+	                	AbcTimer.mark("Advice inlining");
+	                    phaseDebug("Advice inlining");
+	                
+	                    InterprocConstantPropagator.inlineConstantArguments();
+	                
+	                	AbcTimer.mark("Interproc. constant propagator");
+	                    phaseDebug("Interproc. constant propagator");
+	              
+	                	Weaver.runBoxingRemover();
+	                	
+	                	AbcTimer.mark("Boxing remover");
+	                    phaseDebug("Boxing remover");
+	                    
+	                    AdviceInliner.v().removeDuplicateInlineMethods();
+	                    
+	                    AbcTimer.mark("Duplicates remover");
+	                    phaseDebug("Duplicates remover");
+	                    
+	                	UnusedMethodsRemover.removeUnusedMethods();
+	                    
+	                    AbcTimer.mark("Removing unused methods");
+	                    phaseDebug("Removing unused methods");
+	                    
+	                    AdviceInliner.v().specializeReturnTypesOfInlineMethods();
+	                    
+	                    AbcTimer.mark("Specializing return types");
+	                    phaseDebug("Specializing return types");
+               		}
                }
                 
                 abortIfErrors();
@@ -907,10 +909,24 @@ public class Main {
                 AbcTimer.mark("Compute advice lists");
                 phaseDebug("Compute advice lists");                
 
-                if(Debug.v().matcherTest || Debug.v().printAdviceApplicationCount) {
+                if(Debug.v().printAdviceApplicationCount) {
                 	int adviceApplCount=0;
-                	if (Debug.v().matcherTest)
-                		System.err.println("--- BEGIN ADVICE LISTS ---");
+                	
+                    for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                        final AbcClass cl = (AbcClass) clIt.next();
+                        for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
+                            final SootMethod method = (SootMethod) methodIt.next(); 
+                            MethodAdviceList list=GlobalAspectInfo.v().getAdviceList(method);
+                            if (list==null)
+                            	continue;
+                            List allAdvice=list.allAdvice();
+                            adviceApplCount += allAdvice.size();                           	
+                        }
+                    }                   
+                    System.out.println("Number of advice applications: " + adviceApplCount);
+                }
+                if(Debug.v().matcherTest) {
+                	System.err.println("--- BEGIN ADVICE LISTS ---");
                     // print out matching information for testing purposes
                     for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                         final AbcClass cl = (AbcClass) clIt.next();
@@ -919,16 +935,10 @@ public class Main {
                             final StringBuffer sb=new StringBuffer(1000);
                             sb.append("method: "+method.getSignature()+"\n");
                             GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
-                            adviceApplCount += 
-                            	GlobalAspectInfo.v().getAdviceList(method).allAdvice().size();
-                            if (Debug.v().matcherTest)
-                            	System.err.println(sb.toString());
+                            System.err.println(sb.toString());
                         }
-                    }
-                    if (Debug.v().matcherTest)
-                    	System.err.println("--- END ADVICE LISTS ---");
-                    if (Debug.v().printAdviceApplicationCount)
-                    	System.out.println("Number of advice applications: " + adviceApplCount);
+                    }         
+                    System.err.println("--- END ADVICE LISTS ---");
                 }
 
                 if(abc.main.options.OptionsParser.v().warn_unused_advice()) {

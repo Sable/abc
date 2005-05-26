@@ -43,6 +43,7 @@ import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
 import abc.aspectj.parse.sym;
+import abc.main.options.OptionsParser;
 import abc.soot.util.CastRemover;
 import abc.soot.util.FarJumpEliminator;
 import abc.soot.util.SwitchFolder;
@@ -200,10 +201,12 @@ public class AbcExtension
 			PackManager.v().getPack("jop").insertBefore(new Transform("jop.sf", SwitchFolder.v()), "jop.uce1");
 		}
 		
-		PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");
+		if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining()) {
+			PackManager.v().getPack("jop").insertAfter(new Transform("jop.cr", CastRemover.v()), "jop.dae");
 		
-		// make this the very last pass after all optimizations
-		PackManager.v().getPack("jop").insertAfter(new Transform("jop.fje", FarJumpEliminator.v()), "jop.ule");
+			// make this the very last pass after all optimizations
+			PackManager.v().getPack("jop").insertAfter(new Transform("jop.fje", FarJumpEliminator.v()), "jop.ule");
+		}
 		
 		
 		//if (Debug.v().aroundInliner) {

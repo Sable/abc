@@ -206,7 +206,9 @@ public class Restructure {
 		
 		Stmt endnop;// = Jimple.v().newNopStmt();
 		try { // preserve existing endnop
-			endnop=(NopStmt)units.getPredOf(last);			
+			endnop=(NopStmt)units.getPredOf(last);
+			if (endnop==null)
+				throw new RuntimeException();
 		} catch(Throwable e) {
 			endnop=Jimple.v().newNopStmt();
 //			 insert the nop just before the return stmt
@@ -215,8 +217,12 @@ public class Restructure {
 			} else {
 				units.insertAfter(endnop, units.getLast());
 			}
+			if (!units.contains(endnop))
+				throw new InternalCompilerError("");
 		}
-
+		if (!units.contains(endnop))
+			throw new InternalCompilerError("");
+		
 		Local ret = null;
 		if (last instanceof ReturnStmt) {
 			ReturnStmt lastRet = (ReturnStmt) last;
@@ -234,6 +240,8 @@ public class Restructure {
 			{ // change to ret := <constant>; return(ret);
 				Type returnType = method.getReturnType();
 				ret = localgen.generateLocal(returnType);
+				if (!units.contains(endnop))
+					throw new InternalCompilerError("");
 				units.insertBefore(Jimple.v().newAssignStmt(ret, op), endnop);
 				lastRet.setOp(ret);
 			} else
