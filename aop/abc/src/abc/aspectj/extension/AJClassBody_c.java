@@ -118,9 +118,10 @@ public class AJClassBody_c extends ClassBody_c implements MakesAspectMethods {
 		            ((ci instanceof InterTypeMemberInstance && ci.flags().isPrivate()) &&
 		              !(cj instanceof InterTypeMemberInstance) ) ||
 				// ok to zap private members with a non-private ITD
-		            ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
-		            !(cj instanceof InterTypeMemberInstance) && 
-		            cj.flags().isPrivate())) ||
+				// this has changed in ajc
+		          //  ((ci instanceof InterTypeMemberInstance && !ci.flags().isPrivate() &&
+		          //  !(cj instanceof InterTypeMemberInstance) && 
+		          //  cj.flags().isPrivate())) ||
 		        // ok to have two ITDs that cannot see each other 
 		          ((ci instanceof InterTypeMemberInstance && 
 		            cj instanceof InterTypeMemberInstance && 
