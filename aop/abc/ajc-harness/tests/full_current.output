@@ -135,8 +135,6 @@ PASS: Test 32: "base/test125/Alpha conversion of argument names in designators" 
 
 Running test 33: base/test126/For Statement
 Commandline: abc -d base/test126 -warn-unused-advice:off base/test126/Driver.java 
-for iters: [eval(i++);, eval(j++);]
-for iters: [eval(m++);, eval(n++);]
 PASS: Test 33: "base/test126/For Statement" passed.
 
 
@@ -352,7 +350,6 @@ PASS: Test 73: "pureJava/various anonymous inner classes plus super types tests"
 
 Running test 74: new/Doesn't parse an array-returning method that throws an exception
 Commandline: abc -d new -warn-unused-advice:off new/ArrayMethod.java 
-for iters: [eval(i++);]
 PASS: Test 74: "new/Doesn't parse an array-returning method that throws an exception" passed.
 
 
@@ -445,7 +442,6 @@ PASS: Test 91: "pureJava/conflictingPackageNamesWithPackages/Looking in class Ja
 
 Running test 92: pureJava/Testing ternary operations.
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/MultiTernaryOps.java 
-for iters: [eval(i++);]
 PASS: Test 92: "pureJava/Testing ternary operations." passed.
 
 
@@ -461,276 +457,16 @@ PASS: Test 94: "pureJava/Getting confused when looking up method signatures" pas
 
 Running test 95: pureJava/Not recognizing the chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7'
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/Chars.java 
-for iters: [eval(i++);]
 PASS: Test 95: "pureJava/Not recognizing the chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7'" passed.
 
 
 Running test 96: pureJava/Test chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7' with a case statement
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/CaseClauses.java 
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
 PASS: Test 96: "pureJava/Test chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7' with a case statement" passed.
 
 
 Running test 97: pureJava/Checking character values with all the unicode chars.
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/CharsUnicode.java 
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
 PASS: Test 97: "pureJava/Checking character values with all the unicode chars." passed.
 
 
@@ -746,8 +482,6 @@ PASS: Test 99: "pureJava/Binding non-public static inner classes of interfaces i
 
 Running test 100: pureJava/Not recognizing the octal chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7'
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/OctalChars.java 
-for iters: [eval(j++);]
-for iters: [eval(i++);]
 PASS: Test 100: "pureJava/Not recognizing the octal chars '\0', '\1', '\2', '\3', '\4', '\5', '\6', '\7'" passed.
 
 
@@ -790,20 +524,6 @@ PASS: Test 107: "pureJava/innersFromSourceAndBytecode/Reading inner classes from
 
 Running test 108: pureJava/Not lifting types correctly with bytes and shorts with ternary ops
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/TernaryPrimitiveOps.java 
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(_i++);]
-for iters: [eval(_i++);]
-for iters: [eval(_i++);]
-for iters: [eval(_i++);]
-for iters: [eval(_i++);]
-for iters: [eval(_i++);]
-for iters: [eval(_i++);]
 PASS: Test 108: "pureJava/Not lifting types correctly with bytes and shorts with ternary ops" passed.
 
 
@@ -993,7 +713,6 @@ PASS: Test 143: "pureJava/Constant values should be stored with the correct type
 
 Running test 144: pureJava/Local variables in initializers should not be treated as blank final fields
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/LocalInitializerVariableNotBlank.java 
-for iters: [eval(i++);]
 PASS: Test 144: "pureJava/Local variables in initializers should not be treated as blank final fields" passed.
 
 
@@ -1291,7 +1010,6 @@ PASS: Test 195: "new/CE for ambiguous type reference (two inner types)" passed.
 
 Running test 196: new/final assignment in loop
 Commandline: abc -d new -warn-unused-advice:off new/FinalInLoop.java 
-for iters: [eval(i++);]
 PASS: Test 196: "new/final assignment in loop" passed.
 
 
@@ -2133,7 +1851,6 @@ PASS: Test 334: "design/eachobject/eachobject: eachobject(receptions(...)) [each
 
 Running test 335: design/reflect/Checking new joinpoints
 Commandline: abc -d design/reflect -warn-unused-advice:off design/reflect/Coverage.java 
-for iters: [eval(i++);]
 PASS: Test 335: "design/reflect/Checking new joinpoints" passed.
 
 
@@ -2164,7 +1881,6 @@ PASS: Test 340: "new/make sure advice affects introduced methods and constructor
 
 Running test 341: new/new around construct
 Commandline: abc -d new -warn-unused-advice:off new/AroundAdvice.java 
-for iters: [eval(i++);]
 PASS: Test 341: "new/new around construct" passed.
 
 
@@ -2414,7 +2130,6 @@ PASS: Test 389: "new/around advice on calls and receptions with lots of context"
 
 Running test 390: new/! modifier and char in pointcut (no longer an error)
 Commandline: abc -d new -warn-unused-advice:off new/NotCharInPointcut.java 
-for iters: [eval(i++);]
 PASS: Test 390: "new/! modifier and char in pointcut (no longer an error)" passed.
 
 
@@ -2435,20 +2150,16 @@ PASS: Test 393: "new/Ensures introduction methods can have advice placed on them
 
 Running test 394: new/No boolean appearing in the 'if' clause for around advice with eachJVM()
 Commandline: abc -d new -warn-unused-advice:off new/PR355.java 
-for iters: [eval(j++);]
-for iters: [eval(i++);]
 PASS: Test 394: "new/No boolean appearing in the 'if' clause for around advice with eachJVM()" passed.
 
 
 Running test 395: new/Order of super introductions.
 Commandline: abc -d new -warn-unused-advice:off new/OrderOfExtendsPlusAndImplementsPlus.java 
-for iters: [eval(i++);]
 PASS: Test 395: "new/Order of super introductions." passed.
 
 
 Running test 396: new/Ensuring backdoor methods are produced.
 Commandline: abc -d new -warn-unused-advice:off new/BackdoorMethods.java 
-for iters: [eval(c++);]
 PASS: Test 396: "new/Ensuring backdoor methods are produced." passed.
 
 
@@ -2459,8 +2170,6 @@ PASS: Test 397: "new/no duplicate advice methods in abstract aspects" passed.
 
 Running test 398: new/no duplicate advice methods in abstract aspects extended
 Commandline: abc -d new -warn-unused-advice:off new/GeneratingDuplicateNamedAdviceMethodsInAbstractAspectsWithExtendedAspect.java 
-for iters: [eval(j++);]
-for iters: [eval(i++);]
 PASS: Test 398: "new/no duplicate advice methods in abstract aspects extended" passed.
 
 
@@ -2524,7 +2233,6 @@ PASS: Test 409: "new/matching for throws clause" passed.
 
 Running test 41001: abctests/new/holding onto proceed calls in a closure-like way
 Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/HoldProceed.java 
-for iters: []
 PASS: Test 41001: "abctests/new/holding onto proceed calls in a closure-like way" passed.
 
 
@@ -2630,7 +2338,6 @@ PASS: Test 426: "new/field patterns and subtyping" passed.
 
 Running test 427: new/Checking formal matching as in Roeder's bug in 0.7b10
 Commandline: abc -d new -warn-unused-advice:off new/FormalMatching.java 
-for iters: [eval(i++);]
 PASS: Test 427: "new/Checking formal matching as in Roeder's bug in 0.7b10" passed.
 
 
@@ -2688,7 +2395,6 @@ PASS: Test 437: "new/Null pointer on gets advice showing the case causing the er
 
 Running test 438: new/try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }
 Commandline: abc -d new -warn-unused-advice:off new/IfdefsAndAdvice.java 
-for iters: [eval(i++);]
 PASS: Test 438: "new/try to make sure that dynamic JoinPoint objects aren't generated when used inside of if (false) { ... }" passed.
 
 
@@ -2749,7 +2455,6 @@ PASS: Test 444: "new/Putting an introduced method on each interface" passed.
 
 Running test 445: new/Extending interfaces
 Commandline: abc -d new -warn-unused-advice:off new/BindingInterfaces.java 
-for iters: [eval(i++);]
 PASS: Test 445: "new/Extending interfaces" passed.
 
 
@@ -2837,7 +2542,6 @@ PASS: Test 461: "new/Null pointer on gets advice with coverage [painful]" passed
 
 Running test 462: new/Basic test for cflow pointcuts [eachcflow]
 Commandline: abc -d new -warn-unused-advice:off new/CFlowPoints.java 
-for iters: [eval(i++);]
 PASS: Test 462: "new/Basic test for cflow pointcuts [eachcflow]" passed.
 
 
@@ -2895,7 +2599,6 @@ PASS: Test 472: "new/primitive parameters coercable to Object just like return v
 Running test 473: new/Does the matrix coverage thing for the new method signatures
 Commandline: abc -d new -warn-unused-advice:off -1.4 -Xlint:ignore new/MethodSignatures.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-for iters: []
 PASS: Test 473: "new/Does the matrix coverage thing for the new method signatures" passed.
 
 
@@ -2912,7 +2615,6 @@ PASS: Test 475: "new/Gets and sets on a number of variables (field access ???)" 
 Running test 476: new/correct types of parameters at call-sites
 Commandline: abc -d new -warn-unused-advice:off -1.4 -Xlint:ignore new/CallTypes.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-for iters: []
 PASS: Test 476: "new/correct types of parameters at call-sites" passed.
 
 
@@ -2992,10 +2694,6 @@ PASS: Test 490: "new/pcd if() dup methods produced when pointcut after advice et
 
 Running test 491: new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]
 Commandline: abc -d new -warn-unused-advice:off new/IfPCDAdviceMethods.java 
-for iters: [eval(k++);]
-for iters: [eval(j++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
 PASS: Test 491: "new/pcd if() variants: [anonymous, named] x [execution, call, callTyped, get, set, initializations] x [before, after, around]" passed.
 
 
@@ -3016,7 +2714,6 @@ PASS: Test 495: "new/innerInterfaces/private inner interfaces and bytecode visib
 
 Running test 496: new/elaborated into testing of around on all join points
 Commandline: abc -d new -warn-unused-advice:off new/AroundAll.java 
-for iters: []
 Test failed, compiled class behaved incorrectly
 Message: fail steps expected array of length 114 got 132
 org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
@@ -3053,7 +2750,6 @@ PASS: Test 498: "new/cflowbelow dependencies (from Chris Dutchyn)" passed.
 Running test 499: new/target type matching with messy interface hierarchies
 Commandline: abc -d new -warn-unused-advice:off -1.4 -Xlint:ignore new/CallTypesI.java 
 *** Option -Xlint:ignore ignored: abc does not support Xlint
-for iters: []
 PASS: Test 499: "new/target type matching with messy interface hierarchies" passed.
 
 
@@ -3125,8 +2821,6 @@ PASS: Test 513: "new/missing method name to synthetic invocation" passed.
 
 Running test 514: new/protected subclass impl of superclass method with default access and variants
 Commandline: abc -d new -warn-unused-advice:off new/RestrictingVisibilityCP.java 
-for iters: [eval(i++);]
-for iters: [eval(i++);]
 PASS: Test 514: "new/protected subclass impl of superclass method with default access and variants" passed.
 
 
@@ -3138,7 +2832,6 @@ PASS: Test 515: "new/Exception planning advice" passed.
 
 Running test 516: new/unreproduced bug with advice - probably UTR
 Commandline: abc -d new -warn-unused-advice:off new/PR520.java 
-for iters: [eval(i++);]
 context=word_0
 call(void Logger.log(Logger.ChromePriority, Unknown, String))
 context=word_1
@@ -3329,8 +3022,6 @@ PASS: Test 544: "new/declare error and abstract pointcuts" passed.
 
 Running test 545: new/runtime/Exercise runtime classes (optionally in 1.1 VM)
 Commandline: abc -d new/runtime -warn-unused-advice:off new/runtime/AllRuntime.java new/runtime/TesterDriver.java 
-for iters: [eval(i++);]
-for iters: [eval(i++);]
 PASS: Test 545: "new/runtime/Exercise runtime classes (optionally in 1.1 VM)" passed.
 
 
@@ -3413,31 +3104,26 @@ PASS: Test 557: "new/simple test for around and casting" passed.
 
 Running test 558: new/aroundinner/aroundInner 1 - around advice inner Thread subclass running proceed but not writing field
 Commandline: abc -d new/aroundinner -warn-unused-advice:off new/aroundinner/ThreadNoField.java new/aroundinner/Common.java 
-for iters: [eval(i++);]
 PASS: Test 558: "new/aroundinner/aroundInner 1 - around advice inner Thread subclass running proceed but not writing field" passed.
 
 
 Running test 559: new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy
 Commandline: abc -d new/aroundinner -warn-unused-advice:off new/aroundinner/Proxy.java new/aroundinner/Common.java 
-for iters: [eval(i++);]
 PASS: Test 559: "new/aroundinner/aroundInner 2 - around advice inner Runnable running proceed and writing method-final proxy" passed.
 
 
 Running test 560: new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field
 Commandline: abc -d new/aroundinner -warn-unused-advice:off new/aroundinner/Minimal.java new/aroundinner/Common.java 
-for iters: [eval(i++);]
 PASS: Test 560: "new/aroundinner/aroundInner 3 - around advice inner class running proceed and writing field" passed.
 
 
 Running test 561: new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field
 Commandline: abc -d new/aroundinner -warn-unused-advice:off new/aroundinner/ThreadSub.java new/aroundinner/Common.java 
-for iters: [eval(i++);]
 PASS: Test 561: "new/aroundinner/aroundInner 4 - around advice inner Thread subclass running proceed and writing field" passed.
 
 
 Running test 562: new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface
 Commandline: abc -d new/aroundinner -warn-unused-advice:off new/aroundinner/RunnableSub.java new/aroundinner/Common.java 
-for iters: [eval(i++);]
 PASS: Test 562: "new/aroundinner/aroundInner 5 - around advice inner Runnable (subinterface) running proceed and writing field introduced on subinterface" passed.
 
 
@@ -3891,7 +3577,6 @@ PASS: Test 642: "new/bad interaction with after returning, around and void metho
 
 Running test 64301: abctests/new/type pattern matching for inner classes (from Ken Horn)
 Commandline: abc -d abctests/new -warn-unused-advice:off abctests/new/test/TypePat.java 
-for iters: []
 Test failed, compiled class behaved incorrectly
 Message: fail [ expected event "A.before2: C.foo()" not found]
 org.aspectj.bridge.AbortException: [ expected event "A.before2: C.foo()" not found]
@@ -3938,13 +3623,11 @@ PASS: Test 647: "new/flag errors when binding args with indeterminate prefix and
 
 Running test 648: new/check arg types with indeterminate prefix and suffix
 Commandline: abc -d new -warn-unused-advice:off new/IndeterminateArgType.java 
-for iters: [eval(i++);]
 PASS: Test 648: "new/check arg types with indeterminate prefix and suffix" passed.
 
 
 Running test 649: new/testing and binding args with single indeterminate prefix and suffix
 Commandline: abc -d new -warn-unused-advice:off new/IndeterminateArg.java 
-for iters: [eval(i++);]
 PASS: Test 649: "new/testing and binding args with single indeterminate prefix and suffix" passed.
 
 
@@ -3982,8 +3665,8 @@ jas.jasError: Unknown directive or badly formed number.
 	at soot.PackManager.writeClass(PackManager.java:668)
 	at soot.PackManager.writeOutput(PackManager.java:389)
 	at soot.PackManager.writeOutput(PackManager.java:342)
-	at abc.main.Main.output(Main.java:1012)
-	at abc.main.Main.run(Main.java:563)
+	at abc.main.Main.output(Main.java:1022)
+	at abc.main.Main.run(Main.java:565)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -4080,26 +3763,7 @@ PASS: Test 673: "new/import of a class in the default package" passed.
 
 Running test 682: new/assert statement in advice coverage [requires 1.4]
 Commandline: abc -d new -warn-unused-advice:off -source 1.4 new/AssertInAdvice.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during matching
-polyglot.util.InternalCompilerError: AssertInAdvice.java:87,4-82: Error during matching
-	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:170)
-	at abc.main.AbcExtension.findMethodShadows(AbcExtension.java:425)
-	at abc.weaving.matching.AdviceApplication.doMethod(AdviceApplication.java:237)
-	at abc.weaving.matching.AdviceApplication.computeAdviceLists(AdviceApplication.java:274)
-	at abc.weaving.aspectinfo.GlobalAspectInfo.computeAdviceLists(GlobalAspectInfo.java:470)
-	at abc.main.Main.weave(Main.java:906)
-	at abc.main.Main.run(Main.java:507)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.util.NoSuchElementException
-	at soot.util.HashChain.getSuccOf(HashChain.java:276)
-	at soot.PatchingChain.getSuccOf(PatchingChain.java:183)
-	at abc.weaving.matching.ExecutionShadowMatch.getReturningContextValue(ExecutionShadowMatch.java:145)
-	at abc.weaving.aspectinfo.AroundAdvice.matchesAt(AroundAdvice.java:87)
-	at abc.weaving.matching.AdviceApplication.doShadows(AdviceApplication.java:149)
-	... 9 more
-FAIL: Test 682: "new/assert statement in advice coverage [requires 1.4]" failed.
+PASS: Test 682: "new/assert statement in advice coverage [requires 1.4]" passed.
 
 
 Running test 683: new/assert statement in advice  [requires 1.4]
@@ -4120,7 +3784,6 @@ PASS: Test 685: "new/CE expected when declaring fields on arrays" passed.
 
 Running test 686: pureJava/non-constant static final fields marked as final in .class
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/FinalStaticField.java 
-for iters: [eval(i++);]
 PASS: Test 686: "pureJava/non-constant static final fields marked as final in .class" passed.
 
 
@@ -4183,8 +3846,6 @@ PASS: Test 695: "bugs/simple cflow of method execution" passed.
 
 Running test 696: bugs/using instance as class reference to constant field
 Commandline: abc -d bugs -warn-unused-advice:off bugs/InstanceAsClassRefToConstant.java 
-for iters: [eval(l += (long) 100000);]
-for iters: [eval(k += (long) 100000);]
 PASS: Test 696: "bugs/using instance as class reference to constant field" passed.
 
 
@@ -4413,7 +4074,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@fc4402.x:=-3
+test.Test3@116e5ee.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4496,8 +4157,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@662abc
-o: Bar@662abc, i: 10
+o: Bar@97c7d8
+o: Bar@97c7d8, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4606,13 +4267,6 @@ PASS: Test 783: "bugs/Inconsistant stack height with around" passed.
 
 Running test 78401: abctests/bugs/messyAround/Ajc 1.1 rc1 java.lang.VerifyError with messy arounds - fixed
 Commandline: abc -d abctests/bugs/messyAround -warn-unused-advice:off abctests/bugs/messyAround/aspects/Trace.aj abctests/bugs/messyAround/cap/OptionList.java abctests/bugs/messyAround/DebugTrace.aj 
-for iters: [eval(x++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(i++);]
-for iters: [eval(apiIndex++);]
 Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
 data:     Entering cap.OptionList.main([Ljava.lang.String; args)
           args: 0 length array
@@ -4796,7 +4450,6 @@ PASS: Test 792: "new/arrays via Class.forName()" passed.
 
 Running test 793: new/binaryWarnings/src/declare warnings on main
 Commandline: abc -d new/binaryWarnings/src -warn-unused-advice:off new/binaryWarnings/src/aspects/MainWarnings.java new/binaryWarnings/src/app/Main.java 
-for iters: [eval(i++);]
 Compilation succeeded with 18 warnings, which were matched and verified against the expected warnings.
 PASS: Test 793: "new/binaryWarnings/src/declare warnings on main" passed.
 
@@ -4920,13 +4573,13 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:620)
+	at abc.main.Main.run(Main.java:622)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:707)
-	at abc.main.Main.loadSourceRoots(Main.java:724)
+	at abc.main.Main.findSourcesInDir(Main.java:709)
+	at abc.main.Main.loadSourceRoots(Main.java:726)
 	at abc.main.Main.run(Main.java:497)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
@@ -4965,7 +4618,6 @@ PASS: Test 820: "harness/XLint:ignore suppresses XLint warnings" passed.
 
 Running test 822: new/binaryWarnings/src/declare warnings on main - constructor execution
 Commandline: abc -d new/binaryWarnings/src -warn-unused-advice:off new/binaryWarnings/src/aspects/ConstructorExecutionWarning.java new/binaryWarnings/src/app/Main.java 
-for iters: [eval(i++);]
 Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
 PASS: Test 822: "new/binaryWarnings/src/declare warnings on main - constructor execution" passed.
 
@@ -5096,7 +4748,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1e704c4
+LibraryAspect-defined run() for C@1c265a1
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5422,7 +5074,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@2a7ae6
+? Util.read() obj=Test@e57c54
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5442,7 +5094,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@17ae465
+? Util.read() obj=ClinitTest@16c5df6
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5452,7 +5104,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@16bad4b
+? Util.read() obj=SuidTest@1f98707
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5628,7 +5280,6 @@ PASS: Test 967: "bugs/compileOrdering/InterTypeMethodDeclaration.java:104" passe
 
 Running test 968: bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts
 Commandline: abc -d bugs -warn-unused-advice:off bugs/ConstructorMain.java 
-for iters: [eval(i++);]
 PASS: Test 968: "bugs/nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" passed.
 
 
@@ -5656,12 +5307,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@672813
-Invoking command bean:  Command@7827d0
-hello(Command@7827d0)
-Created a PerThis aspect : Testcase2@7decd4
-Invoking command bean:  Command@147911f
-hello again(Command@147911f)
+Created a PerThis aspect : Testcase2@12d9c1
+Invoking command bean:  Command@196237b
+hello(Command@196237b)
+Created a PerThis aspect : Testcase2@1f37ecc
+Invoking command bean:  Command@109c3ad
+hello again(Command@109c3ad)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5836,7 +5487,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:620)
+	at abc.main.Main.run(Main.java:622)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -5846,7 +5497,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:804)
+	at abc.main.Main.compile(Main.java:806)
 	at abc.main.Main.run(Main.java:503)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.

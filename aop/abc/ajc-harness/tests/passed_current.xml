@@ -3403,6 +3403,10 @@
         </compile>
         <ajcrun class="ImportFromUnnamed"></ajcrun>
     </ajc-test>
+<ajc-test title="assert statement in advice coverage [requires 1.4]" pr="657" num="682" keywords="from-14tests,fail-in-eclipse" dir="new">
+        <compile options="-source,1.4" files="AssertInAdvice.java"></compile>
+        <run vm="1.4" class="AssertInAdvice"></run>
+    </ajc-test>
 <ajc-test title="assert statement in advice  [requires 1.4]" pr="657" num="683" keywords="from-14tests,fail-in-eclipse" dir="new">
         <compile options="-source,1.4" files="AssertInAdviceBug.java"></compile>
         <run vm="1.4" class="AssertInAdviceBug"></run>
