@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@1669a4f
+InterfaceAndObject$1@c6a4b1
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
