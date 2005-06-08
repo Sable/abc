@@ -370,6 +370,7 @@ public class Util {
 				Type type=(Type)it0.next();
 			}
 		}*/
+		SootMethod m;
 		
 		soot.SootMethodRef oldRef=old.getMethodRef();
 

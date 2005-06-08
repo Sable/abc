@@ -35,6 +35,7 @@ import soot.jimple.NopStmt;
 import soot.jimple.NullConstant;
 import soot.jimple.Stmt;
 import soot.util.Chain;
+import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.Aspect;
@@ -91,7 +92,7 @@ public class AspectOf extends Residue {
 		Local aspectref;
 		Stmt aspectOfInsertionPoint;
 		Stmt lastStmt=null;
-		if (isSingletonAspect()) {
+		if (isSingletonAspect() && !Debug.v().disableAspectOfOpt) {
 //			 For singleton aspects, create one shared local,
 			// initialize it to null at the beginning of the method
 			// and perform the aspectOf call lazily.

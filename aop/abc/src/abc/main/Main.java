@@ -536,10 +536,12 @@ public class Main {
 	                	AbcTimer.mark("Boxing remover");
 	                    phaseDebug("Boxing remover");
 	                    
-	                    AdviceInliner.v().removeDuplicateInlineMethods();
+	                    if (!Debug.v().disableDuplicatesRemover) {
+	                    	AdviceInliner.v().removeDuplicateInlineMethods();
 	                    
-	                    AbcTimer.mark("Duplicates remover");
-	                    phaseDebug("Duplicates remover");
+	                    	AbcTimer.mark("Duplicates remover");
+	                    	phaseDebug("Duplicates remover");
+	                    }
 	                    
 	                	UnusedMethodsRemover.removeUnusedMethods();
 	                    

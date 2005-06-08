@@ -102,6 +102,9 @@ public class Debug {
     public boolean aroundInliner = false;
     public boolean afterBeforeInliner=false;
 
+    public boolean disableAspectOfOpt=false;
+    public boolean disableDuplicatesRemover=false;
+    
     public boolean unusedMethodsRemover=false;
     public boolean interprocConstantPropagator=false;
     public boolean boxingRemover=false;

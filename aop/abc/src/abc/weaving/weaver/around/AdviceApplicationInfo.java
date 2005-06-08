@@ -392,6 +392,7 @@ public class AdviceApplicationInfo {
 			newstmts.add(localMap.get(s));
 			s = (Stmt) units.getSuccOf(s);
 		}
+		//IntConstant.v()
 		Tag redirectExceptions = new RedirectedExceptionSpecTag(
 				this.proceedMethod.proceedMethodBody, newstmts);
 
