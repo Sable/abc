@@ -140,6 +140,8 @@ public class Debug {
     public boolean weaveDeclareWarning = false;
     public boolean messageWeaver = false;
 
+    public boolean warnPrecAmbiguity = false;
+    
     // dump each advice application just before weaving it
     public boolean dumpAAWeave = false;
 

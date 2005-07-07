@@ -197,54 +197,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
         return applcount;
     }
 
-    /** Get the precedence relationship between two aspects.
-     *  @param a the first advice decl.
-     *  @param b the second advice decl.
-     *  @return
-     *    {@link GlobalAspectInfo.PRECEDENCE_NONE} if none of the advice decls have precedence,
-     *    {@link GlobalAspectInfo.PRECEDENCE_FIRST} if the first advice decl has precedence,
-     *    {@link GlobalAspectInfo.PRECEDENCE_SECOND} if the second advice decl has precedence, or
-     *    {@link GlobalAspectInfo.PRECEDENCE_CONFLICT} if there is a precedence
-     *     conflict between the two advice decls.
-     */
-    public static int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
-        // a quick first pass to assist in separating out the major classes of advice
-        // consider delegating this
-        int aprec=getPrecNum(a),bprec=getPrecNum(b);
-        if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
-        if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
-
-        // CflowSetup needs to be compared by depth first
-        if(a instanceof CflowSetup && b instanceof CflowSetup)
-            return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
-
-        if(!a.defined_aspct.getName().equals(b.defined_aspct.getName()))
-            return GlobalAspectInfo.v().getPrecedence(a.defined_aspct,b.defined_aspct);
-
-        if(a instanceof AdviceDecl && b instanceof AdviceDecl)
-            return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
-
-        if(a instanceof DeclareSoft && b instanceof DeclareSoft)
-            return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
-
-        // We don't care about precedence since these won't ever get woven
-        if(a instanceof DeclareMessage && b instanceof DeclareMessage)
-            return GlobalAspectInfo.PRECEDENCE_NONE;
-
-        throw new InternalCompilerError
-            ("case not handled when comparing "+a+" and "+b);
-    }
-    private static int getPrecNum(AbstractAdviceDecl d) {
-        if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 0 : 4;
-        else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 1 : 3;
-        else if(d instanceof PerThisSetup) return 4;
-        else if(d instanceof PerTargetSetup) return 4;
-        else if(d instanceof AdviceDecl) return 2;
-        else if(d instanceof DeclareSoft) return 5; //FIXME: no idea where this should go
-        else if(d instanceof DeclareMessage) return 6;
-        else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
-                                             d.getPosition());
-    }
+    
 
     /** Return a string describing the current piece of advice, for use in
      *  error messages

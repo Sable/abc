@@ -30,6 +30,8 @@ import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
 
+import abc.main.Debug;
+import abc.main.Main;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.AbstractAdviceDecl;
@@ -40,55 +42,92 @@ import abc.weaving.aspectinfo.AbstractAdviceDecl;
  */
 public class MethodAdviceList {
 
-    private static void addWithPrecedence(List/*<AdviceApplication>*/ aalist,
-					  AdviceApplication aa) {
-
-	// we want to sort the list in reverse order of precedence, so that
-	// highest precedence advice gets applied *last*, i.e. outermost.
-	// So we first look through the existing list until we get to a point
-	// where the next piece of advice has higher precedence than the 
-	// one we are adding. Before that advice we insert the new one,
-	// and then go through the rest of the list checking there is no
-	// circularity.
-
-	ListIterator it=aalist.listIterator();
-	while(it.hasNext()) {
-	    AdviceApplication curaa=(AdviceApplication) (it.next());
-	    int prec;
-	    prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
-	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT) {
-		reportPrecedenceConflict(curaa,aa);
-	    }
-	    if(prec==GlobalAspectInfo.PRECEDENCE_FIRST) {
-		it.previous(); // for correct insertion
-		break;
-	    }
+	// find all members of an AdviceApplication list that have no successors
+	// in the precedence ordering
+	private static AdviceApplication noPreds(List/*<AdviceApplication>*/ aalist) {
+		List results = new ArrayList();
+		AdviceApplication res = null;
+		for (Iterator it = aalist.iterator(); it.hasNext(); ) {
+			res = (AdviceApplication) it.next();
+			boolean resHasPred = false;
+			for (Iterator it2 = aalist.iterator(); it2.hasNext() && !resHasPred; ) {
+				AdviceApplication aa = (AdviceApplication) it2.next();
+				if (aa == res) continue;
+				int prec = Main.v().getAbcExtension().getPrecedence(res.advice,aa.advice);
+				resHasPred =    (prec == GlobalAspectInfo.PRECEDENCE_FIRST)
+				             || (prec == GlobalAspectInfo.PRECEDENCE_CONFLICT);
+			}
+			if (!resHasPred)
+				results.add(res);
+		}
+		if (!results.isEmpty()) {
+			if (Debug.v().warnPrecAmbiguity && results.size() > 1)
+		    		reportAmbiguousPrecedence(results);
+			res = (AdviceApplication)results.get(0);
+			aalist.remove(res);
+			return res;
+		}
+		if (!aalist.isEmpty())
+			reportPrecedenceConflict(aalist);
+		return null;
 	}
-	it.add(aa);
-	while(it.hasNext()) {
-	    AdviceApplication curaa=(AdviceApplication) (it.next());
-	    int prec=AbstractAdviceDecl.getPrecedence(curaa.advice,aa.advice);
-	    if(prec==GlobalAspectInfo.PRECEDENCE_CONFLICT 
-	       || prec==GlobalAspectInfo.PRECEDENCE_SECOND) {
-		reportPrecedenceConflict(curaa,aa);
-		return;
-	    }
+	
+	// topological sort in order of reverse precedence
+	private static List sortWithPrecedence(List/*<AdviceApplication>*/ aalist) {
+		List result = new ArrayList();
+		AdviceApplication start = noPreds(aalist);
+		while (start != null) {
+			result.add(start);
+			start = noPreds(aalist);
+		}
+		return result;
 	}
+	
+	
+
+    private static void reportPrecedenceConflict(List aaList) {
+    	// FIXME: Should be a multiple position warning
+    	String msg="";
+
+    	msg+="Pieces of advice from ";
+		
+    	Iterator it = aaList.iterator();
+    	AdviceApplication aa = (AdviceApplication) it.next();
+    	msg += aa.advice.errorInfo();
+		while (it.hasNext()) {
+			aa = (AdviceApplication) it.next();
+			msg += " and " + aa.advice.errorInfo();
+		}
+		msg += " are in precedence conflict, and all apply here";
+		
+    	abc.main.Main.v().error_queue.enqueue
+    	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.SEMANTIC_ERROR,
+    					   msg,
+    					   aa.shadowmatch.getContainer(),
+    					   aa.shadowmatch.getHost()));
     }
+    
+    private static void reportAmbiguousPrecedence(List aaList) {
+    	// FIXME: Should be a multiple position warning
+    	String msg="";
 
-    private static void reportPrecedenceConflict(AdviceApplication aa1,AdviceApplication aa2) {
-	// FIXME: Should be a multiple position error
-	String msg="";
-
-	msg+="Pieces of advice from "+aa1.advice.errorInfo()
-	    +" and "+aa2.advice.errorInfo()
-	    +" are in precedence conflict, and both apply here";
-
-	abc.main.Main.v().error_queue.enqueue
-	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.SEMANTIC_ERROR,
-					   msg,
-					   aa1.shadowmatch.getContainer(),
-					   aa1.shadowmatch.getHost()));
+    	msg+="Pieces of advice from ";
+		
+    	Iterator it = aaList.iterator();
+    	AdviceApplication aa = (AdviceApplication) it.next();
+    	msg += aa.advice.errorInfo();
+		while (it.hasNext()) {
+			aa = (AdviceApplication) it.next();
+			msg += " and " + aa.advice.errorInfo();
+		}
+		msg += " can be ordered arbitrarily, and all apply here";
+		msg += " abc has chosen first as having lowest precedence";
+		
+    	abc.main.Main.v().error_queue.enqueue
+    	    (ErrorInfoFactory.newErrorInfo(ErrorInfo.WARNING,
+    					   msg,
+    					   aa.shadowmatch.getContainer(),
+    					   aa.shadowmatch.getHost()));
     }
 
     /** {@link AdviceApplication} structures are added to the list
@@ -98,10 +137,10 @@ public class MethodAdviceList {
      *  list for that shadow to the main list for the method.
      */
     public void flush() {
-	bodyAdvice.addAll(bodyAdviceP);
-	stmtAdvice.addAll(stmtAdviceP);
-	preinitializationAdvice.addAll(preinitializationAdviceP);
-	initializationAdvice.addAll(initializationAdviceP);
+	bodyAdvice.addAll(sortWithPrecedence(bodyAdviceP));
+    stmtAdvice.addAll(sortWithPrecedence(stmtAdviceP));
+	preinitializationAdvice.addAll(sortWithPrecedence(preinitializationAdviceP));
+	initializationAdvice.addAll(sortWithPrecedence(initializationAdviceP));
 	bodyAdviceP=new LinkedList();
 	stmtAdviceP=new LinkedList();
 	preinitializationAdviceP=new LinkedList();
@@ -117,26 +156,26 @@ public class MethodAdviceList {
 	execution joinpoints */
     public List/*<AdviceApplication>*/ bodyAdvice=new LinkedList();
     public void addBodyAdvice(AdviceApplication aa) {
-	addWithPrecedence(bodyAdviceP,aa);
+	   bodyAdviceP.add(aa);
     }
 
     /** Advice that would apply inside the body, i.e. most other joinpoints */
     public List/*<AdviceApplication>*/ stmtAdvice=new LinkedList();
     public void addStmtAdvice(AdviceApplication aa) {
-	addWithPrecedence(stmtAdviceP,aa);
+	   stmtAdviceP.add(aa);
     }
 
     /** pre-initialization joinpoints */
     public List/*<AdviceApplication>*/ preinitializationAdvice
 	=new LinkedList();
     public void addPreinitializationAdvice(AdviceApplication aa) {
-	addWithPrecedence(preinitializationAdviceP,aa);
+	   preinitializationAdviceP.add(aa);
     }
 
     /** initialization joinpoints, trigger inlining of this() calls */
     public List/*<AdviceApplication>*/ initializationAdvice=new LinkedList();
     public void addInitializationAdvice(AdviceApplication aa) {
-	addWithPrecedence(initializationAdviceP,aa);
+	  initializationAdviceP.add(aa);
     }
 
     /** returns true if there is no advice */

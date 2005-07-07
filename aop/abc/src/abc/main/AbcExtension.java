@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import polyglot.util.InternalCompilerError;
+
 import soot.PackManager;
 import soot.Scene;
 import soot.SootClass;
@@ -47,8 +49,16 @@ import abc.main.options.OptionsParser;
 import abc.soot.util.CastRemover;
 import abc.soot.util.FarJumpEliminator;
 import abc.soot.util.SwitchFolder;
+import abc.weaving.aspectinfo.AbstractAdviceDecl;
+import abc.weaving.aspectinfo.AdviceDecl;
+import abc.weaving.aspectinfo.CflowSetup;
+import abc.weaving.aspectinfo.DeclareMessage;
+import abc.weaving.aspectinfo.DeclareSoft;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.PerCflowSetup;
+import abc.weaving.aspectinfo.PerTargetSetup;
+import abc.weaving.aspectinfo.PerThisSetup;
 import abc.weaving.aspectinfo.Singleton;
 import abc.weaving.matching.AbcSJPInfo;
 import abc.weaving.matching.AdviceApplication;
@@ -467,6 +477,55 @@ public class AbcExtension
         }
 
 
+    }
+    
+    /** Get the precedence relationship between two aspects.
+     *  @param a the first advice decl.
+     *  @param b the second advice decl.
+     *  @return
+     *    {@link GlobalAspectInfo.PRECEDENCE_NONE} if none of the advice decls have precedence,
+     *    {@link GlobalAspectInfo.PRECEDENCE_FIRST} if the first advice decl has precedence,
+     *    {@link GlobalAspectInfo.PRECEDENCE_SECOND} if the second advice decl has precedence, or
+     *    {@link GlobalAspectInfo.PRECEDENCE_CONFLICT} if there is a precedence
+     *     conflict between the two advice decls.
+     */
+    public int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
+        // a quick first pass to assist in separating out the major classes of advice
+        // consider delegating this
+        int aprec=getPrecNum(a),bprec=getPrecNum(b);
+        if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
+        if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+        // CflowSetup needs to be compared by depth first
+        if(a instanceof CflowSetup && b instanceof CflowSetup)
+            return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
+
+        if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
+            return GlobalAspectInfo.v().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
+
+        if(a instanceof AdviceDecl && b instanceof AdviceDecl)
+            return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
+
+        if(a instanceof DeclareSoft && b instanceof DeclareSoft)
+            return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
+
+        // We don't care about precedence since these won't ever get woven
+        if(a instanceof DeclareMessage && b instanceof DeclareMessage)
+            return GlobalAspectInfo.PRECEDENCE_NONE;
+
+        throw new InternalCompilerError
+            ("case not handled when comparing "+a+" and "+b);
+    }
+    private int getPrecNum(AbstractAdviceDecl d) {
+        if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 0 : 4;
+        else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 1 : 3;
+        else if(d instanceof PerThisSetup) return 4;
+        else if(d instanceof PerTargetSetup) return 4;
+        else if(d instanceof AdviceDecl) return 2;
+        else if(d instanceof DeclareSoft) return 5; //FIXME: no idea where this should go
+        else if(d instanceof DeclareMessage) return 6;
+        else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
+                                             d.getPosition());
     }
 
 }

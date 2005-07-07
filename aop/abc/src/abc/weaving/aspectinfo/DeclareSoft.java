@@ -115,7 +115,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
     }
 
-    public static int getPrecedence(AdviceDecl a,AdviceDecl b) {
+    public static int getPrecedence(DeclareSoft a,DeclareSoft b) {
 	// We know that we are in the same aspect
 
 	if(a.getPosition().line() < b.getPosition().line()) 
