@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$33$around$1601(AroundAll.java:199)
+	at A.inline$31$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -197,13 +197,5 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.Main.run(Main.java:503)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
-
-
-Running test 1015: abctests/bugs/correct topological sorting of precedence
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/PrecedenceSort.java 
-Compilation produced an unexpected number of errors: 1, should be 0
-Actual errors found: 
-Semantic Error at abctests/bugs/PrecedenceSort.java:2,18-3:5: Pieces of advice from aspect PSC (PrecedenceSort.java, line 11) and aspect PSB (PrecedenceSort.java, line 18) are in precedence conflict, and both apply here
-FAIL: Test 1015: "abctests/bugs/correct topological sorting of precedence" failed.
 
 

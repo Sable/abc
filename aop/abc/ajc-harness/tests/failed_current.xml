@@ -79,8 +79,5 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
-<ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
-         <compile files="PrecedenceSort.java"></compile>
-    </ajc-test>
  
 </suite>

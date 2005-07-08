@@ -5074,6 +5074,9 @@
          <compile files="CflowInliningDepth.java"></compile>
          <run class="CflowInliningDepth"></run>
     </ajc-test>
+<ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
+         <compile files="PrecedenceSort.java"></compile>
+    </ajc-test>
 <ajc-test title="checks for declare parents on binary classes" num="1016" dir="abctests/bugs">
          <compile files="declareparentsbinary/DP.jar,DeclareParentsBinaryAspect.java">
             <message kind="error"></message>
