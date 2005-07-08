@@ -28,10 +28,13 @@ import polyglot.types.Flags;
  */
 public class AJFlags extends Flags {
 
-    public static final Flags PRIVILEGEDASPECT  =  createFlag("privilegedaspect", null);
-    public static final Flags ASPECTCLASS =  createFlag("aspectclass",null);
-    public static final Flags INTERTYPE = createFlag("intertype",null);
-    public static final Flags INTERFACEORIGIN = createFlag("interfaceorigin",null);
+    // all these flags are pretty-printed as comments
+    // to maintain source-to-source compatibility when pretty-printing intermediate
+    // ASTs from Polyglot
+    public static final Flags PRIVILEGEDASPECT  =  createFlag("/* privilegedaspect */", null);
+    public static final Flags ASPECTCLASS =  createFlag("/* aspectclass */",null);
+    public static final Flags INTERTYPE = createFlag("/* intertype */",null);
+    public static final Flags INTERFACEORIGIN = createFlag("/* interfaceorigin */",null);
 
     public AJFlags() {
 	super(0);
