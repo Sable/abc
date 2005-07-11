@@ -155,7 +155,7 @@ public class TMDecl_c extends AJMethodDecl_c
         // generate advice declarations
         List advice = new LinkedList();
         Iterator j = symbols.iterator();
-
+	   	    	
         while(j.hasNext()) {
             SymbolDecl sd = (SymbolDecl) j.next();
             List formals = new LinkedList(this.formals);

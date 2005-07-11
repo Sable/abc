@@ -74,7 +74,7 @@ extend aspect_body_declaration ::=
 
 
 tracematch ::=
-    tracematch_modifiers_and_type:m TRACEMATCH
+    tracematch_modifiers_and_type:m TRACEMATCH:t
     LPAREN formal_parameter_list_opt:p RPAREN throws_opt:e
     LBRACE
         symbol_declaration_list:s
@@ -85,7 +85,7 @@ tracematch ::=
         Grm.parserTrace("tracematch definition");
         String name = UniqueID.newID("tracematch");
         TMDecl tcd =
-            parser.nf.TMDecl(parser.pos(m,y), m, name, p, e, s, r, b);
+            parser.nf.TMDecl(parser.pos(t,y), m, name, p, e, s, r, b);
 
         List ds = new TypedList(new LinkedList(),ClassMember.class,false);
         ds.add(tcd);

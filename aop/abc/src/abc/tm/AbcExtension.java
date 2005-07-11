@@ -20,9 +20,14 @@
 package abc.tm;
 
 import abc.aspectj.parse.*;
+import abc.tm.weaving.aspectinfo.TMAdviceDecl;
+import abc.weaving.aspectinfo.*;
 
 import soot.Scene;
 import soot.SootClass;
+
+import polyglot.util.Position;
+import polyglot.util.InternalCompilerError;
 
 import java.util.*;
 
@@ -60,4 +65,127 @@ public class AbcExtension extends abc.main.AbcExtension
         lexer.addAspectJKeyword("perthread", new LexerAction_c(
                             new Integer(abc.tm.parse.sym.PERTHREAD)));
     }
+    
+    
+    
+    /** within a single tracematch, normal precedence rules apply for recognition of symbols.
+         the "some" advice has higher precedence than all symbols in the same tracematch
+         if it is after advice; it has lower precedence than all symbols if it is before advice */
+	public int tmGetPrec(TMAdviceDecl tma,TMAdviceDecl tmb) {
+	    	if (tma.getTraceMatchID().equals(tmb.getTraceMatchID())) {
+		    	if (tma.isSome() && !tmb.isSome())
+					if (tma.getAdviceSpec().isAfter())
+						return GlobalAspectInfo.PRECEDENCE_FIRST;
+					else
+						return GlobalAspectInfo.PRECEDENCE_SECOND;   	        	
+		    	 if (!tma.isSome() && tmb.isSome())
+					if (tma.getAdviceSpec().isAfter())
+						return GlobalAspectInfo.PRECEDENCE_SECOND;
+					else
+						return GlobalAspectInfo.PRECEDENCE_FIRST;
+		    	 if (tma.isSome() && tmb.isSome())
+		    	        // we have tma==tmb, as there is at most one piece
+		    	        // of "some" advice
+	    	    	return GlobalAspectInfo.PRECEDENCE_NONE;
+	    	    	
+				int lexicalfirst,lexicalsecond;
+				if  (tma.getAdviceSpec().isAfter() || tmb.getAdviceSpec().isAfter() ) {
+					lexicalfirst=GlobalAspectInfo.PRECEDENCE_SECOND;
+					lexicalsecond=GlobalAspectInfo.PRECEDENCE_FIRST;
+				} else {
+					lexicalfirst=GlobalAspectInfo.PRECEDENCE_FIRST;
+					lexicalsecond=GlobalAspectInfo.PRECEDENCE_SECOND;
+				}
+	    	    // neither is "some" advice, so just compare positions
+				if(tma.getPosition().line() < tmb.getPosition().line())
+					return lexicalfirst;
+				if(tma.getPosition().line() > tmb.getPosition().line())
+					return lexicalsecond;
+				// both pieces of advice are on the same line, compare columns
+				if(tma.getPosition().column() < tmb.getPosition().column())
+					return lexicalfirst;
+				if(tma.getPosition().column() > tmb.getPosition().column())
+					return lexicalsecond;
+				// we have a==b
+				return GlobalAspectInfo.PRECEDENCE_NONE;
+	       }
+	       // do the comparison via the containing tracematches
+	       return getPrec(tma,tmb);
+	}
+	
+	
+	protected int getPrec(AdviceDecl a,AdviceDecl b) {
+			// We know that we are in the same aspect
+			// and *not* within the same tracematch
+
+			int lexicalfirst,lexicalsecond;
+
+			// not sure about this: do we want to ignore advice type when it's
+			// in a trace match?
+			if( (a.getAdviceSpec().isAfter()  && !(a instanceof TMAdviceDecl)) || 
+			     (b.getAdviceSpec().isAfter()  && !(b instanceof TMAdviceDecl))) {
+				lexicalfirst=GlobalAspectInfo.PRECEDENCE_SECOND;
+				lexicalsecond=GlobalAspectInfo.PRECEDENCE_FIRST;
+			} else {
+				lexicalfirst=GlobalAspectInfo.PRECEDENCE_FIRST;
+				lexicalsecond=GlobalAspectInfo.PRECEDENCE_SECOND;
+			}
+			
+			// as a and b are *not* within the same tracematch, we use the positions
+			// of the containing tracematches for precedence comparison
+			Position ap = ((a instanceof TMAdviceDecl) ? 
+			                       ((TMAdviceDecl)a).getTraceMatchPosition() : 
+			                       a.getPosition());
+			Position bp = ((b instanceof TMAdviceDecl) ? 
+			                       ((TMAdviceDecl)b).getTraceMatchPosition() : 
+			                       b.getPosition());
+        
+        
+			if(ap.line() < bp.line())
+				return lexicalfirst;
+			if(ap.line() > bp.line())
+				return lexicalsecond;
+
+			if(ap.column() < bp.column())
+				return lexicalfirst;
+			if(ap.column() > bp.column())
+				return lexicalsecond;
+
+			// Trying to compare the same advice, I guess... (modulo inlining behaviour)
+			return GlobalAspectInfo.PRECEDENCE_NONE;
+    }
+	   
+	/** amended for tracematches */
+	public int getPrecedence(AbstractAdviceDecl a,AbstractAdviceDecl b) {
+		   // a quick first pass to assist in separating out the major classes of advice
+		   // consider delegating this
+		   int aprec=getPrecNum(a),bprec=getPrecNum(b);
+		   if(aprec>bprec) return GlobalAspectInfo.PRECEDENCE_FIRST;
+		   if(aprec<bprec) return GlobalAspectInfo.PRECEDENCE_SECOND;
+
+		   // CflowSetup needs to be compared by depth first
+		   if(a instanceof CflowSetup && b instanceof CflowSetup)
+			   return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
+
+		   if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
+			   return GlobalAspectInfo.v().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
+
+	       // change for tracematches starts here
+			   if (a instanceof TMAdviceDecl && b instanceof TMAdviceDecl)
+			   	   return tmGetPrec((TMAdviceDecl)a,(TMAdviceDecl)b);
+			   	   
+			   if(a instanceof AdviceDecl && b instanceof AdviceDecl)
+				   return getPrec((AdviceDecl) a,(AdviceDecl) b);
+		   // and ends here
+
+		   if(a instanceof DeclareSoft && b instanceof DeclareSoft)
+			   return DeclareSoft.getPrecedence((DeclareSoft) a,(DeclareSoft) b);
+
+		   // We don't care about precedence since these won't ever get woven
+		   if(a instanceof DeclareMessage && b instanceof DeclareMessage)
+			   return GlobalAspectInfo.PRECEDENCE_NONE;
+
+		   throw new InternalCompilerError
+			   ("case not handled when comparing "+a+" and "+b);
+	   }
 }

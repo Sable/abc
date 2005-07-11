@@ -101,6 +101,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         // Generate an empty `throws' list
         List tlist = new LinkedList();
 
+			
         // Generate the TMAdviceDecl
         return nf.TMAdviceDecl(position(), Flags.NONE, spec, tlist,
                                 pc, body(nf), tm_id, tm_pos, false);

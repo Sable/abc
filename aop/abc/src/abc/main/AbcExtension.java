@@ -516,7 +516,7 @@ public class AbcExtension
         throw new InternalCompilerError
             ("case not handled when comparing "+a+" and "+b);
     }
-    private int getPrecNum(AbstractAdviceDecl d) {
+    protected int getPrecNum(AbstractAdviceDecl d) {
         if(d instanceof PerCflowSetup) return ((PerCflowSetup) d).isBelow()? 0 : 4;
         else if(d instanceof CflowSetup) return ((CflowSetup) d).isBelow() ? 1 : 3;
         else if(d instanceof PerThisSetup) return 4;

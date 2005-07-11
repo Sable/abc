@@ -54,6 +54,10 @@ public class TMAdviceDecl_c extends AdviceDecl_c
     {
         super(pos, flags, spec, throwTypes, pc, body);
         this.is_some = is_some;
+        this.tm_id = tm_id;
+        this.tm_pos = tm_pos;
+        if (tm_pos == null)
+        	System.err.println("gen advice decl with null tm pos");
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException

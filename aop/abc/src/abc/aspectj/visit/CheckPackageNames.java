@@ -38,7 +38,7 @@ import abc.weaving.aspectinfo.AbcClass;
  *  @author Ganesh Sittampalam
  */
 public class CheckPackageNames extends OncePass {
-    Job job;
+    protected Job job;
 
     public CheckPackageNames(Pass.ID id, Job job) {
         super(id);
