@@ -36,11 +36,9 @@ public class RegexSymbol_c extends Node_c
         this.name = name;
     }
 
-    public Collection mustContain()
+    public Collection mustContain(Map sym_to_vars)
     {
-        Collection a = new HashSet();
-        a.add(name);
-        return a;
+        return new HashSet((Collection) sym_to_vars.get(name));
     }
 
     public Collection finalSymbols()

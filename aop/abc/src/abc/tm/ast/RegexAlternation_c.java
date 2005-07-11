@@ -38,10 +38,10 @@ public class RegexAlternation_c extends Node_c
         this.b = b;
     }
 
-    public Collection mustContain()
+    public Collection mustContain(Map sym_to_vars)
     {
-        Collection c = a.mustContain();
-        c.retainAll(b.mustContain());
+        Collection c = a.mustContain(sym_to_vars);
+        c.retainAll(b.mustContain(sym_to_vars));
         return c;
     }
 

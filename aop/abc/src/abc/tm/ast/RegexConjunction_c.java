@@ -38,10 +38,10 @@ public class RegexConjunction_c extends Node_c
         this.b = b;
     }
 
-    public Collection mustContain()
+    public Collection mustContain(Map sym_to_vars)
     {
-        Collection c = a.mustContain();
-        c.addAll(b.mustContain());
+        Collection c = a.mustContain(sym_to_vars);
+        c.addAll(b.mustContain(sym_to_vars));
         return c;
     }
 

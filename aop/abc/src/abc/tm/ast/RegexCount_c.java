@@ -40,12 +40,12 @@ public class RegexCount_c extends Node_c
         this.max = max;
     }
 
-    public Collection mustContain()
+    public Collection mustContain(Map sym_to_vars)
     {
         if (min == 0)
             return new HashSet();
         else
-            return a.mustContain();
+            return a.mustContain(sym_to_vars);
     }
 
     public Collection finalSymbols()

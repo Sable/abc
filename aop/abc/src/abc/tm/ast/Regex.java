@@ -28,10 +28,11 @@ import java.util.*;
 public interface Regex extends Node
 {
     /**
-     * Return the set of symbols which must appear in any
-     * string which matches this regular expression.
+     * Return the set of pointcut variables which must be
+     * bound by any string which matches this regular
+     * expression.
      */
-    Collection mustContain();
+    Collection mustContain(Map sym_to_vars);
 
     /**
      * Return the set containing each symbol which is the

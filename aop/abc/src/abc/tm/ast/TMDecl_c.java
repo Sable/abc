@@ -99,19 +99,18 @@ public class TMDecl_c extends AJMethodDecl_c
 
     protected Collection mustBind()
     {
-        // Get the symbols which must be matched, and therefore
-        // the pointcut variables which must be bound.
-        Collection matched = regex.mustContain();
-        Collection pc_vars = new HashSet();
+        // create a map from symbol names to the names of pointcut
+        // variables that the corresponding pointcut binds
+        Map sym_to_vars = new HashMap();
         Iterator i = symbols.iterator();
 
-        while (i.hasNext()) {
+        while(i.hasNext()) {
             SymbolDecl sd = (SymbolDecl) i.next();
-            if (matched.contains(sd.name()))
-                pc_vars.addAll(sd.binds());
+            sym_to_vars.put(sd.name(), sd.binds());
         }
 
-        return pc_vars;
+        // return the set of pointcut variables which must be bound.
+        return regex.mustContain(sym_to_vars);
     }
 
 
