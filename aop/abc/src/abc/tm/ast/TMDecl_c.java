@@ -91,7 +91,7 @@ public class TMDecl_c extends AJMethodDecl_c
             Formal f = (Formal) i.next();
             if (!must_bind.contains(f.name()))
                 throw new SemanticException("Formal \"" + f.name() +
-                    "\" is not necessarily bound by tracecut.", f.position());
+                    "\" is not necessarily bound by tracematch.", f.position());
         }
 
         return super.typeCheck(tc);
