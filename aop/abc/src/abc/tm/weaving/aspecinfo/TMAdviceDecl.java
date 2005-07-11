@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Julian Tibble
+ * Copyright (C) 2005 Julian Tibble
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,37 +17,26 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package abc.tm.ast;
+package abc.tm.weaving.aspectinfo;
 
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
+import polyglot.util.Position;
 
-import polyglot.ext.jl.ast.*;
-
-import abc.aspectj.ast.*;
+import abc.weaving.aspectinfo.*;
 
 import java.util.*;
 
-/**
- * @author Julian Tibble
+/** 
+ * This is used for advice generated to implement tracematches,
+ * which have different precedence rules to regular advice.
+ *
+ *  @author Julian Tibble
  */
-public class AfterSymbol_c extends Node_c
-                           implements SymbolKind
+public class TMAdviceDecl extends AdviceDecl
 {
-    public AfterSymbol_c(Position pos)
+    public TMAdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl,
+                        Aspect aspct, int jp, int jpsp, int ejp,
+                        List methods, Position pos)
     {
-        super(pos);
-    }
-
-    public String kind()
-    {
-        return AFTER;
-    }
-
-    public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
-                                            TypeNode voidn)
-    {
-        return nf.After(position(), formals, voidn);
+        super(spec, pc, impl, aspct, jp, jpsp, ejp, methods, pos);
     }
 }

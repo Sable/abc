@@ -40,6 +40,11 @@ public class BeforeSymbol_c extends Node_c
         super(pos);
     }
 
+    public String kind()
+    {
+        return BEFORE;
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {

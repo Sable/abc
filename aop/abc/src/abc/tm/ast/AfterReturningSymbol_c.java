@@ -50,6 +50,11 @@ public class AfterReturningSymbol_c extends Node_c
         this.return_var = return_var;
     }
 
+    public String kind()
+    {
+        return AFTER;
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {

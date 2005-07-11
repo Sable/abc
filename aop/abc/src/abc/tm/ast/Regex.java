@@ -32,7 +32,7 @@ public interface Regex extends Node
      * bound by any string which matches this regular
      * expression.
      */
-    Collection mustContain(Map sym_to_vars);
+    Collection mustBind(Map sym_to_vars);
 
     /**
      * Return the set containing each symbol which is the

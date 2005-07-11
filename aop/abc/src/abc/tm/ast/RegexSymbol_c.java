@@ -36,7 +36,7 @@ public class RegexSymbol_c extends Node_c
         this.name = name;
     }
 
-    public Collection mustContain(Map sym_to_vars)
+    public Collection mustBind(Map sym_to_vars)
     {
         return new HashSet((Collection) sym_to_vars.get(name));
     }

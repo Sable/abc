@@ -32,6 +32,12 @@ import java.util.*;
  */
 public interface SymbolKind extends Node
 {
+    final public String BEFORE = "before";
+    final public String AFTER = "after";
+    final public String AROUND = "around";
+
+    String kind();
+
     AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                     TypeNode voidn);
 }

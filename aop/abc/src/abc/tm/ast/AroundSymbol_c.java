@@ -43,6 +43,11 @@ public class AroundSymbol_c extends Node_c
         this.proceed_vars = proceed_vars;
     }
 
+    public String kind()
+    {
+        return AROUND;
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {

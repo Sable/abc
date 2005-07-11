@@ -110,7 +110,7 @@ public class TMDecl_c extends AJMethodDecl_c
         }
 
         // return the set of pointcut variables which must be bound.
-        return regex.mustContain(sym_to_vars);
+        return regex.mustBind(sym_to_vars);
     }
 
 

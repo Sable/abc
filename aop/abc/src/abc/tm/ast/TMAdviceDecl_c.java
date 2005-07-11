@@ -25,6 +25,12 @@ import polyglot.util.*;
 import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
+import abc.aspectj.visit.*;
+
+import abc.weaving.aspectinfo.AbcFactory;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.MethodCategory;
 
 import java.util.*;
 
@@ -63,10 +69,53 @@ public class TMAdviceDecl_c extends AdviceDecl_c
         return super.typeCheck(tc);
     }
 
-    // for debugging;
-    public NodeVisitor disambiguateEnter(AmbiguityRemover ar)
-                                            throws SemanticException
+
+    // FIXME: this method is huge, and the only difference from
+    // super.update(...) is we instantiate the aspectinfo class
+    // TMAdviceDecl instead of AdviceDecl.
+    //
+    // Some re-factoring is in order.
+    //
+    public void update(GlobalAspectInfo gai, Aspect current_aspect)
     {
-        return super.disambiguateEnter(ar);
+        int lastpos = formals().size();
+        int jp = -1, jpsp = -1, ejp = -1;
+        if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
+        if (hasJoinPoint) jp = --lastpos;
+        if (hasJoinPointStaticPart) jpsp = --lastpos;
+
+        // Since the spec is not visited, we copy the (checked)
+        // return type node from the advice declaration
+        spec.setReturnType(returnType());
+        // And the return formal as well
+        if (retval != null) {
+            spec.setReturnVal(retval);
+        }
+	
+        List methods = new ArrayList();
+        for (Iterator procs = methodsInAdvice.iterator(); procs.hasNext(); ) {
+            CodeInstance ci = (CodeInstance) procs.next();
+            if (ci instanceof MethodInstance)
+			methods.add(AbcFactory.MethodSig((MethodInstance)ci));
+            if (ci instanceof ConstructorInstance)
+            methods.add(AbcFactory.MethodSig((ConstructorInstance)ci));
+        }
+
+        abc.tm.weaving.aspectinfo.TMAdviceDecl ad =
+	        new abc.tm.weaving.aspectinfo.TMAdviceDecl
+	            (spec.makeAIAdviceSpec(),
+	            pc.makeAIPointcut(),
+	            AbcFactory.MethodSig(this),
+	            current_aspect,
+	            jp, jpsp, ejp, methods,
+	            position());
+
+        gai.addAdviceDecl(ad);
+	
+        MethodCategory.register(this, MethodCategory.ADVICE_BODY);
+        if (spec instanceof Around) {
+            MethodCategory.register(((Around)spec).proceed(),
+                                    MethodCategory.PROCEED);
+	    }
     }
 }

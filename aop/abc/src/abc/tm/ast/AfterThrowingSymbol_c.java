@@ -43,6 +43,11 @@ public class AfterThrowingSymbol_c extends Node_c
         this.exception_var = exception_var;
     }
 
+    public String kind()
+    {
+        return AFTER;
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {

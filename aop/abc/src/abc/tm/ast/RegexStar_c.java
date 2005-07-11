@@ -36,7 +36,7 @@ public class RegexStar_c extends Node_c
         this.a = a;
     }
 
-    public Collection mustContain(Map sym_to_vars)
+    public Collection mustBind(Map sym_to_vars)
     {
         return new HashSet();
     }
