@@ -84,6 +84,42 @@ public class TMDecl_c extends AJMethodDecl_c
 
     public Node typeCheck(TypeChecker tc) throws SemanticException
     {
+        checkAroundSymbols();
+        checkBinding();
+        return super.typeCheck(tc);
+    }
+
+    protected void checkAroundSymbols() throws SemanticException
+    {
+        Iterator i = symbols.iterator();
+        Collection non_final_syms = regex.nonFinalSymbols();
+        Collection final_syms = regex.finalSymbols();
+
+        while (i.hasNext()) {
+            SymbolDecl sd = (SymbolDecl) i.next();
+
+            if (!isAround && sd.kind() == SymbolKind.AROUND)
+                throw new SemanticException(
+                    "Around symbols may only appear in around tracematches.",
+                    sd.position());
+
+            if (sd.kind() == SymbolKind.AROUND
+                    && non_final_syms.contains(sd.name()))
+                throw new SemanticException(
+                    "Around symbol \"" + sd.name() +
+                    "\" may match in the middle of a trace.",
+                    regex.position());
+
+            if (isAround && sd.kind() != SymbolKind.AROUND
+                    && final_syms.contains(sd.name()))
+               throw new SemanticException(
+                    "Around tracematches must have around final symbols.",
+                    sd.position());
+        }
+    }
+
+    protected void checkBinding() throws SemanticException
+    {
         Iterator i = formals.iterator();
         Collection must_bind = mustBind();
 
@@ -94,7 +130,6 @@ public class TMDecl_c extends AJMethodDecl_c
                     "\" is not necessarily bound by tracematch.", f.position());
         }
 
-        return super.typeCheck(tc);
     }
 
     protected Collection mustBind()
@@ -124,7 +159,9 @@ public class TMDecl_c extends AJMethodDecl_c
         while(j.hasNext()) {
             SymbolDecl sd = (SymbolDecl) j.next();
             List formals = new LinkedList(this.formals);
-            advice.add( sd.generateAdviceDecl(nf, formals, voidn));
+            advice.add(
+                sd.generateAdviceDecl(nf, formals, voidn,
+                                        tracematch_name, position()));
         }
 
         return advice;

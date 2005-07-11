@@ -48,6 +48,11 @@ public class RegexSymbol_c extends Node_c
         return a;
     }
 
+    public Collection nonFinalSymbols()
+    {
+        return new HashSet();
+    }
+
     public boolean matchesEmptyString()
     {
         return false;

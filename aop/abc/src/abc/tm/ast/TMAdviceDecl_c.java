@@ -44,10 +44,16 @@ import java.util.*;
 public class TMAdviceDecl_c extends AdviceDecl_c
                             implements TMAdviceDecl
 {
+    private String tm_id;
+    private Position tm_pos;
+    private boolean is_some;
+
     public TMAdviceDecl_c(Position pos, Flags flags, AdviceSpec spec,
-                            List throwTypes, Pointcut pc, Block body)
+                            List throwTypes, Pointcut pc, Block body,
+                            String tm_id, Position tm_pos, boolean is_some)
     {
         super(pos, flags, spec, throwTypes, pc, body);
+        this.is_some = is_some;
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException
@@ -108,7 +114,7 @@ public class TMAdviceDecl_c extends AdviceDecl_c
 	            AbcFactory.MethodSig(this),
 	            current_aspect,
 	            jp, jpsp, ejp, methods,
-	            position());
+	            position(), tm_id, tm_pos, is_some);
 
         gai.addAdviceDecl(ad);
 	
@@ -116,6 +122,6 @@ public class TMAdviceDecl_c extends AdviceDecl_c
         if (spec instanceof Around) {
             MethodCategory.register(((Around)spec).proceed(),
                                     MethodCategory.PROCEED);
-	    }
+        }
     }
 }

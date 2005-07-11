@@ -53,6 +53,16 @@ public class RegexCount_c extends Node_c
         return a.finalSymbols();
     }
 
+    public Collection nonFinalSymbols()
+    {
+        Collection c = a.nonFinalSymbols();
+
+        if (max > 1)
+            c.addAll(a.finalSymbols());
+
+        return c;
+    }
+
     public boolean matchesEmptyString()
     {
         return min == 0 || a.matchesEmptyString();

@@ -58,6 +58,11 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         return pc;
     }
 
+    public String kind()
+    {
+        return kind.kind();
+    }
+
     // 
     // visitor handling code
     //
@@ -86,8 +91,9 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
 
 
 
-    public AdviceDecl generateAdviceDecl(TMNodeFactory nf,
-                                            List formals, TypeNode voidn)
+    public AdviceDecl generateAdviceDecl(TMNodeFactory nf, List formals,
+                                            TypeNode voidn, String tm_id,
+                                            Position tm_pos)
     {
         // Generate AdviceSpec
         AdviceSpec spec = kind.generateAdviceSpec(nf, formals, voidn);
@@ -96,8 +102,8 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         List tlist = new LinkedList();
 
         // Generate the TMAdviceDecl
-        return
-            nf.TMAdviceDecl(position(), Flags.NONE, spec, tlist, pc, body(nf));
+        return nf.TMAdviceDecl(position(), Flags.NONE, spec, tlist,
+                                pc, body(nf), tm_id, tm_pos, false);
     }
 
     /**

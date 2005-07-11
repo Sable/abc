@@ -35,11 +35,21 @@ public interface Regex extends Node
     Collection mustBind(Map sym_to_vars);
 
     /**
-     * Return the set containing each symbol which is the
-     * final symbol of a string which matches this regular
-     * expresion.
+     * Return the set containing each symbol which occurs
+     * as the final symbol of a string which matches this
+     * regular expresion.
      */
     Collection finalSymbols();
+
+    /**
+     * Return the set containing each symbol which occurs
+     * as a non-final symbol in a string which matches this
+     * regular expression.
+     *
+     * n.b. this set will not, in general, be disjoint from
+     *      the set returned by finalSymbols()
+     */
+    Collection nonFinalSymbols();
 
     /**
      * Returns true or false if the regular expression

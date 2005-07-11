@@ -53,7 +53,8 @@ public interface TMNodeFactory extends AJNodeFactory
     SymbolKind AroundSymbol(Position pos, List proceed_vars);
 
     TMAdviceDecl TMAdviceDecl(Position pos, Flags flags, AdviceSpec spec,
-                                List throwTypes, Pointcut pc, Block body);
+                                List throwTypes, Pointcut pc, Block body,
+                                String tm_id, Position tm_pos, boolean is_some);
 
     Regex RegexAlternation(Position pos, Regex a, Regex b);
     Regex RegexConjunction(Position pos, Regex a, Regex b);

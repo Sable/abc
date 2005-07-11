@@ -46,6 +46,13 @@ public class RegexPlus_c extends Node_c
         return a.finalSymbols();
     }
 
+    public Collection nonFinalSymbols()
+    {
+        Collection c = a.nonFinalSymbols();
+        c.addAll(a.finalSymbols());
+        return c;
+    }
+
     public boolean matchesEmptyString()
     {
         return a.matchesEmptyString();

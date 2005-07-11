@@ -52,6 +52,13 @@ public class RegexAlternation_c extends Node_c
         return c;
     }
 
+    public Collection nonFinalSymbols()
+    {
+        Collection c = a.nonFinalSymbols();
+        c.addAll(b.nonFinalSymbols());
+        return c;
+    }
+
     public boolean matchesEmptyString()
     {
         return a.matchesEmptyString() || b.matchesEmptyString();
