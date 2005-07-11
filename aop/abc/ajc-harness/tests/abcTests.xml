@@ -8105,7 +8105,7 @@
       title="Bad parser error recovery in advice">
         <compile files="ParserRecoveryTest.java">
 		  <ajcmessage kind="error" line="7"/>
-                  <message kind="error" line="4"/>
+                  <message kind="error" line="5"/>
                   <message kind="error" line="7"/>
         </compile>
     </ajc-test>   

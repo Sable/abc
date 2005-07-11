@@ -1,0 +1,277 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Chris Allan
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+include "../../aspectj/parse/aspectj.ppg"
+
+package abc.tm.parse;
+
+import polyglot.util.*;
+import abc.tm.ast.*;
+
+import java.util.LinkedList;
+
+parser Grm extends abc.aspectj.parse.Grm
+{:
+    public final TMNodeFactory nf;
+
+    public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
+        super(l, t, n, q);
+        nf = (TMNodeFactory) n;
+    }
+:};
+
+
+// ------- new tokens ------------------------------
+
+terminal Token PERTHREAD;
+terminal Token TRACEMATCH;
+terminal Token SYM;
+
+// ------- new non-terminals -----------------------
+
+// tracematch non-terminals
+non terminal List tracematch;
+non terminal TMModsAndType tracematch_modifiers_and_type;
+non terminal List name_list;
+
+// symbol non-terminals
+non terminal List symbol_declaration_list;
+non terminal SymbolDecl symbol_declaration;
+non terminal SymbolKind symbol_kind;
+
+// regular expression non-terminals
+non terminal Regex regex_or;
+non terminal Regex regex_and;
+non terminal Regex regex_count;
+non terminal Regex regex_simple;
+
+
+start with goal;
+
+
+extend aspect_body_declaration ::=
+    tracematch:a
+    {:
+        RESULT = a;
+    :}
+;
+
+
+tracematch ::=
+    tracematch_modifiers_and_type:m TRACEMATCH
+    LPAREN formal_parameter_list_opt:p RPAREN throws_opt:e
+    LBRACE
+        symbol_declaration_list:s
+        regex_or:r
+        method_body:b
+    RBRACE:y
+    {:
+        Grm.parserTrace("tracematch definition");
+        String name = UniqueID.newID("tracematch");
+        TMDecl tcd =
+            parser.nf.TMDecl(parser.pos(m,y), m, name, p, e, s, r, b);
+
+        List ds = new TypedList(new LinkedList(),ClassMember.class,false);
+        ds.add(tcd);
+        RESULT = ds;
+    :}
+;
+
+
+tracematch_modifiers_and_type ::=
+    modifiers_opt:m
+    {:
+        TypeNode voidn =
+            parser.nf.CanonicalTypeNode(Position.COMPILER_GENERATED,
+                                            parser.ts.Void());
+        RESULT = parser.nf.TMModsAndType(m, false, false, voidn);
+    :}
+|
+    modifiers_opt:m type:t
+    {:
+        RESULT = parser.nf.TMModsAndType(m, false, true, t);
+    :}
+|
+    modifiers_opt:m1 PERTHREAD:x modifiers_opt:m2
+    {:
+        TypeNode voidn =
+            parser.nf.CanonicalTypeNode(parser.pos(x), parser.ts.Void());
+        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, false, voidn);
+    :}
+|
+    modifiers_opt:m1 PERTHREAD modifiers_opt:m2 type:t
+    {:
+        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, true, t);
+    :}
+;
+
+
+symbol_declaration_list ::=
+    symbol_declaration:a
+    {:
+        Grm.parserTrace("symbol declaration list");
+
+        RESULT = new TypedList(new LinkedList(), SymbolDecl.class, false);
+        RESULT.add(a);
+    :}
+|
+    symbol_declaration_list:a symbol_declaration:b
+    {:
+        Grm.parserTrace("symbol declaration list");
+
+        RESULT = a;
+        RESULT.add(b);
+    :}
+;
+ 
+
+symbol_declaration ::=
+    SYM:x IDENTIFIER:b symbol_kind:c COLON pointcut_expr:d SEMICOLON:y
+    {:
+        RESULT = parser.nf.SymbolDecl(parser.pos(x,y),
+                                        b.getIdentifier(), c, d);
+    :}
+;
+
+
+symbol_kind ::=
+    BEFORE:x
+    {:
+        RESULT = parser.nf.BeforeSymbol(parser.pos(x));
+    :}
+|
+    AFTER:x
+    {:
+        RESULT = parser.nf.AfterSymbol(parser.pos(x));
+    :}
+|
+    AFTER:x PC_RETURNING:y
+    {:
+        RESULT = parser.nf.AfterReturningSymbol(parser.pos(x,y));
+    :}
+|
+    AFTER:x PC_RETURNING LPAREN IDENTIFIER:a RPAREN:y
+    {:
+        Local var = parser.nf.Local(parser.pos(a), a.getIdentifier());
+        RESULT = parser.nf.AfterReturningSymbol(parser.pos(x,y), var);
+    :}
+|
+    AFTER:x PC_THROWING LPAREN IDENTIFIER:a RPAREN:y
+    {:
+        Local var = parser.nf.Local(parser.pos(a), a.getIdentifier());
+        RESULT = parser.nf.AfterThrowingSymbol(parser.pos(x,y), var);
+    :}
+|
+    AROUND:x
+    {:
+        RESULT = parser.nf.AroundSymbol(parser.pos(x), new LinkedList());
+    :}
+|
+    AROUND:x LPAREN name_list:a RPAREN:y
+    {:
+        RESULT = parser.nf.AroundSymbol(parser.pos(x,y), a);
+    :}
+;
+
+
+regex_or ::=
+    regex_and:a
+    {:
+        RESULT = a;
+    :}
+|
+    regex_and:a OR regex_or:b
+    {:
+        RESULT = parser.nf.RegexAlternation(parser.pos(a,b), a, b);
+    :}
+;
+
+
+regex_and ::= 
+    regex_count:a
+    {:
+        RESULT = a;
+    :}
+|   
+    regex_count:a regex_and:b
+    {:
+        RESULT = parser.nf.RegexConjunction(parser.pos(a,b), a, b);
+    :}
+;
+ 
+
+regex_count ::=
+    regex_simple:a
+    {:
+        RESULT = a;
+    :}
+|
+    regex_simple:a MULT:y
+    {:
+        RESULT = parser.nf.RegexStar(parser.pos(a,y), a);
+    :}
+|
+    regex_simple:a PLUS:y
+    {:
+        RESULT = parser.nf.RegexPlus(parser.pos(a,y), a);
+    :}
+|
+    regex_simple:a LBRACK INTEGER_LITERAL:n RBRACK:y
+    {:
+        int repeats = n.getValue().intValue();
+        RESULT = parser.nf.RegexCount(parser.pos(a,y), a, repeats, repeats);
+    :}
+|
+    regex_simple:a LBRACK INTEGER_LITERAL:m COMMA INTEGER_LITERAL:n RBRACK:y
+    {:
+        int min = m.getValue().intValue();
+        int max = n.getValue().intValue();
+        RESULT = parser.nf.RegexCount(parser.pos(a,y), a, min, max);
+    :}
+;
+
+
+regex_simple ::=
+    IDENTIFIER:a
+    {:
+        RESULT = parser.nf.RegexSymbol(parser.pos(a), a.getIdentifier());
+    :}
+|
+    LPAREN regex_or:a RPAREN
+    {:
+        RESULT = a;
+    :}
+;
+
+
+name_list ::=
+    IDENTIFIER:a
+    {:
+        Local id = parser.nf.Local(parser.pos(a), a.getIdentifier());
+        RESULT = new LinkedList();
+        RESULT.add(id);
+    :}
+|
+    name_list:a IDENTIFIER:b
+    {:
+        Local id = parser.nf.Local(parser.pos(b), b.getIdentifier());
+        a.add(b);
+        RESULT = a;
+    :}
+;

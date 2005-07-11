@@ -147,6 +147,7 @@
     <target name="flex-translator" depends="settings,jflex-dep" unless="jflex-up-to-date">
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
+        <mkdir dir="generated/abc/tm/parse"/>
         <java classname="JFlex.Main"
             fork="true"
             dir="."
@@ -175,6 +176,7 @@
     <target name="cup-translator" depends="settings,flex-translator,cup-dep,ppg-translator" unless="cup-up-to-date">
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
+        <mkdir dir="generated/abc/tm/parse"/>
         <java classname="java_cup.Main"
             fork="true"
             dir="generated/abc/aspectj/parse"
@@ -197,6 +199,17 @@
             </classpath>
             <arg line="eaj_ppg.cup"/>
         </java>
+        <java classname="java_cup.Main"
+            fork="true"
+            dir="generated/abc/tm/parse"
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="tm_ppg.cup"/>
+        </java>
     </target>
 
     <target name="cup-dep" depends="ppg-translator,settings">
@@ -210,12 +223,19 @@
             <targetfileset dir="generated/abc/eaj/parse"
                 includes="Grm.java,sym.java"/>
         </dependset>
+        <dependset>
+            <srcfileset dir="generated/abc/tm/parse" includes="tm_ppg.cup"/>
+            <targetfileset dir="generated/abc/tm/parse"
+                includes="Grm.java,sym.java"/>
+        </dependset>
         <condition property="cup-up-to-date">
             <and>
                 <available file="generated/abc/aspectj/parse/Grm.java"/>
                 <available file="generated/abc/aspectj/parse/sym.java"/>
                 <available file="generated/abc/eaj/parse/Grm.java"/>
                 <available file="generated/abc/eaj/parse/sym.java"/>
+                <available file="generated/abc/tm/parse/Grm.java"/>
+                <available file="generated/abc/tm/parse/sym.java"/>
             </and>
         </condition>
     </target>
@@ -223,6 +243,7 @@
     <target name="ppg-translator" depends="settings,ppg-dep,flex-translator" unless="ppg-up-to-date">
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
+        <mkdir dir="generated/abc/tm/parse"/>
         <java classname="ppg.PPG"
             fork="true"
             dir="src/abc/aspectj/parse"
@@ -247,6 +268,18 @@
             </classpath>
             <arg line="eaj.ppg"/>
         </java>
+        <java classname="ppg.PPG"
+            fork="true"
+            dir="src/abc/tm/parse"
+            failonerror="true"
+            output="generated/abc/tm/parse/tm_ppg.cup"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="tm.ppg"/>
+        </java>
     </target>
     <target name="ppg-dep" depends="settings">
         <dependset>
@@ -259,10 +292,16 @@
             <targetfileset dir="generated/abc/eaj/parse"
                 includes="eaj_ppg.cup"/>
         </dependset>
+        <dependset>
+            <srcfileset dir="src/abc/tm/parse" includes="aspectj.ppg"/>
+            <targetfileset dir="generated/abc/tm/parse"
+                includes="tm_ppg.cup"/>
+        </dependset>
         <condition property="ppg-up-to-date">
             <and> 
                 <available file="generated/abc/aspectj/parse/aspectj_ppg.cup"/>
                 <available file="generated/abc/eaj/parse/eaj_ppg.cup"/>
+                <available file="generated/abc/tm/parse/tm_ppg.cup"/>
             </and>
         </condition>
     </target>

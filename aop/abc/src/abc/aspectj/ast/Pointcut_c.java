@@ -78,7 +78,7 @@ public abstract class Pointcut_c extends Node_c implements Pointcut
 			   Formal l = (Formal) nb.next();
 			   if (!(mustbind.contains(l.name())))
 			   	   throw new SemanticException("Formal \""+ l.name() + "\" may be unbound in pointcut.",
-																		l.position());
+																		position());
 		}
    }
 
