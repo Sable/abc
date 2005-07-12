@@ -947,9 +947,9 @@ public class Main {
                     for( Iterator adIt = GlobalAspectInfo.v().getAdviceDecls().iterator(); adIt.hasNext(); ) {
                         final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
 
-                        if(ad instanceof AdviceDecl && ad.getApplCount()==0)
+                        if(ad instanceof AdviceDecl && ad.getApplWarning() != null)
                             error_queue.enqueue(ErrorInfo.WARNING,
-                                                "Advice declaration doesn't apply anywhere",
+                                                ad.getApplWarning(),
                                                 ad.getPosition());
                     }
                 }

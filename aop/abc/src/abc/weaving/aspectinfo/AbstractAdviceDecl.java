@@ -185,16 +185,18 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
 
     private int applcount=0; // the number of times this AdviceDecl matches
                              //   (i.e. the number of static join points)
-    /** Increment the number of times this advice is applied, and return
-     *  incremented value.
+    /** Increment the number of times this advice is applied.
      */
-    public int incrApplCount() {
+    public void incrApplCount() {
         applcount++;
-        return(applcount);
     }
 
-    public int getApplCount() {
-        return applcount;
+    /** Returns a warning if this AdviceDecl does not match any static
+     *  joinpoints, otherwise returns null.
+     */
+    public String getApplWarning() {
+        return applcount == 0 ? "Advice declaration doesn't apply anywhere"
+                              : null;
     }
 
     

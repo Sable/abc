@@ -62,4 +62,17 @@ public class TMAdviceDecl extends AdviceDecl
     {
         return is_some;
     }
+
+    /**
+     * override warning message (when advice does not apply
+     * to any static join points) to say "symbol" instead of
+     * "advice declaration"
+     */
+    public String getApplWarning()
+    {
+        if (!isSome() && super.getApplWarning() != null)
+            return "Symbol doesn't match anywhere";
+        else
+            return null;
+    }
 }
