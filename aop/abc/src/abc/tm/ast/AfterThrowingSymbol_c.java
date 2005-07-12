@@ -22,6 +22,7 @@ package abc.tm.ast;
 import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.util.*;
+import polyglot.visit.*;
 
 import polyglot.ext.jl.ast.*;
 
@@ -48,28 +49,68 @@ public class AfterThrowingSymbol_c extends Node_c
         return AFTER;
     }
 
+    public Collection binds()
+    {
+        Collection binds = new HashSet();
+        binds.add(exception_var.name());
+        return binds;
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {
-        // Find the type of the pointcut variable for the thrown exception
-        AdviceFormal new_formal = null;
+        AdviceFormal exception_formal = null;
+        TypeNode exception_type = getExceptionType(formals);
 
-        Iterator i = formals.iterator();
-
-        while (i.hasNext() && new_formal == null) {
-            Formal f = (Formal) i.next();
-            if (f.name().equals(exception_var.name()))
-            new_formal = nf.AdviceFormal(exception_var.position(),
-                                Flags.NONE, f.type(), f.name());
+        if (exception_var != null && exception_type != null) {
+            exception_formal = nf.AdviceFormal(exception_var.position(),
+                                               Flags.NONE,
+                                               exception_type,
+                                               exception_var.name());
         }
 
         // Generate the advice spec
-        return nf.AfterThrowing(position(), formals, new_formal, voidn);
+        return nf.AfterThrowing(position(), formals, exception_formal, voidn);
+    }
+
+    private TypeNode getExceptionType(List formals)
+    {
+        if (exception_var == null)
+            return null;
+
+        // Find the type of the pointcut variable for the exception thrown
+        Iterator i = formals.iterator();
+        TypeNode exception_type = null;
+
+        while (i.hasNext() && exception_type == null) {
+            Formal f = (Formal) i.next();
+            if (f.name().equals(exception_var.name()))
+                exception_type = f.type();
+        }
+
+        return exception_type;
     }
 
     public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
                                                 TypeNode ret_type)
     {
         return nf.After(position(), new LinkedList(), voidn);
+    }
+
+    // node visiting code
+    protected Node reconstruct(Local exception_var)
+    {
+        if (this.exception_var != exception_var) {
+            AfterThrowingSymbol_c n = (AfterThrowingSymbol_c) this.copy();
+            n.exception_var = exception_var;
+            return n;
+        }
+        return this;
+    }
+
+    public Node visitChildren(NodeVisitor v)
+    {
+        Local exception_var = (Local) visitChild(this.exception_var, v);
+        return reconstruct(exception_var);
     }
 }

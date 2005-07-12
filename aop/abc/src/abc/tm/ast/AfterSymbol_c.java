@@ -45,6 +45,11 @@ public class AfterSymbol_c extends Node_c
         return AFTER;
     }
 
+    public Collection binds()
+    {
+        return new HashSet();
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {

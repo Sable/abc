@@ -65,7 +65,9 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
 
     public Collection binds()
     {
-        return pc.mustBind();
+        Collection binds = pc.mustBind();
+        binds.addAll(kind.binds());
+        return binds;
     }
 
     // 

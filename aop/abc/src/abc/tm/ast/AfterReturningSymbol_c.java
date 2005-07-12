@@ -22,6 +22,7 @@ package abc.tm.ast;
 import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.util.*;
+import polyglot.visit.*;
 
 import polyglot.ext.jl.ast.*;
 
@@ -35,7 +36,6 @@ import java.util.*;
 public class AfterReturningSymbol_c extends Node_c
                                     implements SymbolKind
 {
-    boolean bindsReturnVal = false;
     private Local return_var = null;
 
     public AfterReturningSymbol_c(Position pos)
@@ -46,7 +46,6 @@ public class AfterReturningSymbol_c extends Node_c
     public AfterReturningSymbol_c(Position pos, Local return_var)
     {
         super(pos);
-        this.bindsReturnVal = true;
         this.return_var = return_var;
     }
 
@@ -55,27 +54,68 @@ public class AfterReturningSymbol_c extends Node_c
         return AFTER;
     }
 
+    public Collection binds()
+    {
+        Collection binds = new HashSet();
+        binds.add(return_var.name());
+        return binds;
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {
-        // Find the type of the pointcut variable for the return value
-        AdviceFormal new_formal = null;
-        Iterator i = formals.iterator();
+        AdviceFormal return_val_formal = null;
+        TypeNode return_type = getReturnType(formals);
 
-        while (i.hasNext() && new_formal == null) {
-            Formal f = (Formal) i.next();
-            if (f.name().equals(return_var.name()))
-                new_formal = nf.AdviceFormal(return_var.position(),
-                                    Flags.NONE, f.type(), f.name());
+        if (return_var != null && return_type != null) {
+            return_val_formal = nf.AdviceFormal(return_var.position(),
+                                                Flags.NONE,
+                                                return_type,
+                                                return_var.name());
         }
 
         // Generate the advice spec
-        return nf.AfterReturning(position(), formals, new_formal, voidn);
+        return nf.AfterReturning(position(), formals, return_val_formal, voidn);
+    }
+
+    private TypeNode getReturnType(List formals)
+    {
+        if (return_var == null)
+            return null;
+
+        // Find the type of the pointcut variable for the return value
+        Iterator i = formals.iterator();
+        TypeNode return_type = null;
+
+        while (i.hasNext() && return_type == null) {
+            Formal f = (Formal) i.next();
+            if (f.name().equals(return_var.name()))
+                return_type = f.type();
+        }
+
+        return return_type;
     }
 
     public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
                                                 TypeNode ret_type)
     {
         return nf.After(position(), new LinkedList(), voidn);
+    }
+
+    // node visiting code
+    protected Node reconstruct(Local return_var)
+    {
+        if (this.return_var != return_var) {
+            AfterReturningSymbol_c n = (AfterReturningSymbol_c) this.copy();
+            n.return_var = return_var;
+            return n;
+        }
+        return this;
+    }
+
+    public Node visitChildren(NodeVisitor v)
+    {
+        Local return_var = (Local) visitChild(this.return_var, v);
+        return reconstruct(return_var);
     }
 }

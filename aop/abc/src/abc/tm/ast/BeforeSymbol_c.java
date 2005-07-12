@@ -45,6 +45,11 @@ public class BeforeSymbol_c extends Node_c
         return BEFORE;
     }
 
+    public Collection binds()
+    {
+        return new HashSet();
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {

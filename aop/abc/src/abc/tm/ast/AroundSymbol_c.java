@@ -48,6 +48,11 @@ public class AroundSymbol_c extends Node_c
         return AROUND;
     }
 
+    public Collection binds()
+    {
+        return new HashSet();
+    }
+
     public AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                             TypeNode voidn)
     {
