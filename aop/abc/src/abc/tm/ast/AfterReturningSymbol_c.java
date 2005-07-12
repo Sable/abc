@@ -57,7 +57,8 @@ public class AfterReturningSymbol_c extends Node_c
     public Collection binds()
     {
         Collection binds = new HashSet();
-        binds.add(return_var.name());
+        if (return_var != null)
+            binds.add(return_var.name());
         return binds;
     }
 

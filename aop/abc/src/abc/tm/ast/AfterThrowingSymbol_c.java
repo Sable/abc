@@ -52,7 +52,8 @@ public class AfterThrowingSymbol_c extends Node_c
     public Collection binds()
     {
         Collection binds = new HashSet();
-        binds.add(exception_var.name());
+        if (exception_var != null)
+            binds.add(exception_var.name());
         return binds;
     }
 
