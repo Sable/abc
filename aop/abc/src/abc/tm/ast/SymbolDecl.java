@@ -36,8 +36,14 @@ public interface SymbolDecl extends Node
     Pointcut getPointcut();
     String kind();
 
+    Collection binds();
+
     AdviceDecl generateAdviceDecl(TMNodeFactory nf, List formals,
                             TypeNode voidn, String tm_id, Position tm_pos);
 
-    Collection binds();
+    Pointcut generateClosedPointcut(TMNodeFactory nf, List formals);
+
+    AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
+                            TypeNode voidn, TypeNode ret_type, String tm_id,
+                            Position tm_pos);
 }

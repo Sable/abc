@@ -72,4 +72,10 @@ public class AfterReturningSymbol_c extends Node_c
         // Generate the advice spec
         return nf.AfterReturning(position(), formals, new_formal, voidn);
     }
+
+    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
+                                                TypeNode ret_type)
+    {
+        return nf.After(position(), new LinkedList(), voidn);
+    }
 }

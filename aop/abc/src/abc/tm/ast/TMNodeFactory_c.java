@@ -124,4 +124,10 @@ public class TMNodeFactory_c extends AJNodeFactory_c
     {
         return new RegexSymbol_c(pos, name);
     }
+
+    public ClosedPointcut ClosedPointcut(Position pos, List formals,
+                                            Pointcut pc)
+    {
+        return new ClosedPointcut_c(pos, formals, pc);
+    }
 }

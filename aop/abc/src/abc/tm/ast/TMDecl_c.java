@@ -148,22 +148,55 @@ public class TMDecl_c extends AJMethodDecl_c
         return regex.mustBind(sym_to_vars);
     }
 
-
-
     public List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn)
     {
-        // generate advice declarations
         List advice = new LinkedList();
+        List closed_pointcuts = new LinkedList();
         Iterator j = symbols.iterator();
 	   	    	
         while(j.hasNext()) {
             SymbolDecl sd = (SymbolDecl) j.next();
-            List formals = new LinkedList(this.formals);
-            advice.add(
-                sd.generateAdviceDecl(nf, formals, voidn,
-                                        tracematch_name, position()));
+
+            advice.add(sd.generateAdviceDecl(nf, formals, voidn,
+                                    tracematch_name, position()));
+            closed_pointcuts.add(sd.generateClosedPointcut(nf, formals));
         }
 
+        makeSomeAdvice(nf, advice, closed_pointcuts, voidn);
+
         return advice;
+    }
+
+    protected void makeSomeAdvice(TMNodeFactory nf, List advice,
+                                    List pointcuts, TypeNode voidn)
+    {
+        Map kind_to_pointcut = new HashMap();
+        Map kind_to_a_symbol = new HashMap();
+
+        Iterator syms = symbols.iterator();
+        Iterator pcs = pointcuts.iterator();
+
+        while (syms.hasNext()) {
+            SymbolDecl sd = (SymbolDecl) syms.next();
+            Pointcut pc = (Pointcut) pcs.next();
+
+            if (kind_to_pointcut.containsKey(sd.kind()))
+                pc = nf.PCBinary(position(),
+                                 (Pointcut) kind_to_pointcut.get(sd.kind()),
+                                 PCBinary.COND_OR,
+                                 pc);
+
+            kind_to_pointcut.put(sd.kind(), pc);
+            kind_to_a_symbol.put(sd.kind(), sd);
+        }
+
+        Iterator kinds = kind_to_pointcut.keySet().iterator();
+        while (kinds.hasNext()) {
+            SymbolDecl sd = (SymbolDecl) kind_to_a_symbol.get(kinds.next());
+            Pointcut pc = (Pointcut) kind_to_pointcut.get(sd.kind());
+
+            advice.add(sd.generateSomeAdvice(nf, pc, voidn, returnType(),
+                                    tracematch_name, position()));
+        }
     }
 }

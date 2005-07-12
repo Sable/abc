@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Julian Tibble
+ * Copyright (C) 2005 Julian Tibble
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,28 +19,13 @@
 
 package abc.tm.ast;
 
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
-
-import abc.aspectj.ast.*;
-
-import java.util.*;
+import abc.eaj.ast.PCLocalVars;
 
 /**
  * @author Julian Tibble
+ *
+ * Encapsulate all the free variables in a pointcut.
  */
-public interface SymbolKind extends Node
+public interface ClosedPointcut extends PCLocalVars
 {
-    final public String BEFORE = "before";
-    final public String AFTER = "after";
-    final public String AROUND = "around";
-
-    String kind();
-
-    AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
-                                    TypeNode voidn);
-
-    AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                        TypeNode ret_type);
 }

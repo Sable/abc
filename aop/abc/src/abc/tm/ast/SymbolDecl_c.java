@@ -63,6 +63,11 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         return kind.kind();
     }
 
+    public Collection binds()
+    {
+        return pc.mustBind();
+    }
+
     // 
     // visitor handling code
     //
@@ -92,8 +97,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
 
 
     public AdviceDecl generateAdviceDecl(TMNodeFactory nf, List formals,
-                                            TypeNode voidn, String tm_id,
-                                            Position tm_pos)
+                                TypeNode voidn, String tm_id, Position tm_pos)
     {
         // Generate AdviceSpec
         AdviceSpec spec = kind.generateAdviceSpec(nf, formals, voidn);
@@ -104,7 +108,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
 			
         // Generate the TMAdviceDecl
         return nf.TMAdviceDecl(position(), Flags.NONE, spec, tlist,
-                                pc, body(nf), tm_id, tm_pos, false);
+                                pc, body(nf, name), tm_id, tm_pos, false);
     }
 
     /**
@@ -113,7 +117,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
      * FIXME: Just for debugging, the advice prints a message
      *        instead of being empty.
      */
-    private Block body(TMNodeFactory nf)
+    private Block body(TMNodeFactory nf, String debug_msg)
     {
         Position cg = Position.COMPILER_GENERATED;
 
@@ -121,7 +125,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
                 nf.AmbReceiver(cg, nf.AmbPrefix(cg, null, "System"), "out");
 
         List args = new LinkedList();
-        args.add(nf.StringLit(cg, name));
+        args.add(nf.StringLit(cg, debug_msg));
 
         Call println_call = nf.Call(cg, sysout, "println", args);
 
@@ -133,8 +137,23 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         return nf.Block(cg, statements);
     }
 
-    public Collection binds()
+    public Pointcut generateClosedPointcut(TMNodeFactory nf, List formals)
     {
-        return pc.mustBind();
+        return nf.ClosedPointcut(pc.position(), formals, pc);
+    }
+
+    public AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
+                                        TypeNode voidn, TypeNode ret_type,
+                                        String tm_id, Position tm_pos)
+    {
+        // Generate AdviceSpec
+        AdviceSpec spec = kind.generateSomeAdviceSpec(nf, voidn, ret_type);
+
+        // Generate an empty `throws' list
+        List tlist = new LinkedList();
+
+        // Generate the TMAdviceDecl
+        return nf.TMAdviceDecl(Position.COMPILER_GENERATED, Flags.NONE, spec,
+                        tlist, pc, body(nf, "some()"), tm_id, tm_pos, true);
     }
 }

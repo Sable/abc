@@ -62,4 +62,6 @@ public interface TMNodeFactory extends AJNodeFactory
     Regex RegexPlus(Position pos, Regex a);
     Regex RegexStar(Position pos, Regex a);
     Regex RegexSymbol(Position pos, String name);
+
+    ClosedPointcut ClosedPointcut(Position pos, List formals, Pointcut pc);
 }

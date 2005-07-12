@@ -55,4 +55,10 @@ public class AroundSymbol_c extends Node_c
         // because it is just to update bindings/dfa etc.
         return nf.Before(position(), formals, voidn);
     }
+
+    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
+                                                TypeNode ret_type)
+    {
+        return nf.Around(position(), ret_type, new LinkedList());
+    }
 }
