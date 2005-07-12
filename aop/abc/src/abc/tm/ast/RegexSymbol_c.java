@@ -18,6 +18,7 @@
 package abc.tm.ast;
 
 import polyglot.ext.jl.ast.Node_c;
+import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
 import java.util.*;
@@ -36,8 +37,11 @@ public class RegexSymbol_c extends Node_c
         this.name = name;
     }
 
-    public Collection mustBind(Map sym_to_vars)
+    public Collection mustBind(Map sym_to_vars) throws SemanticException
     {
+        if (!sym_to_vars.containsKey(name))
+            throw new SemanticException("Symbol \"" + name + "\" not found.", position());
+
         return new HashSet((Collection) sym_to_vars.get(name));
     }
 

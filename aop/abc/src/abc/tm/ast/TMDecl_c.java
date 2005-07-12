@@ -132,7 +132,7 @@ public class TMDecl_c extends AJMethodDecl_c
 
     }
 
-    protected Collection mustBind()
+    protected Collection mustBind() throws SemanticException
     {
         // create a map from symbol names to the names of pointcut
         // variables that the corresponding pointcut binds

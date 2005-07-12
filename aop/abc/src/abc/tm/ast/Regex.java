@@ -18,6 +18,7 @@
 package abc.tm.ast;
 
 import polyglot.ast.Node;
+import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
 import java.util.*;
@@ -32,7 +33,7 @@ public interface Regex extends Node
      * bound by any string which matches this regular
      * expression.
      */
-    Collection mustBind(Map sym_to_vars);
+    Collection mustBind(Map sym_to_vars) throws SemanticException;
 
     /**
      * Return the set containing each symbol which occurs

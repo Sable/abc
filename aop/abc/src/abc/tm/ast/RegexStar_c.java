@@ -18,6 +18,7 @@
 package abc.tm.ast;
 
 import polyglot.ext.jl.ast.Node_c;
+import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
 import java.util.*;
@@ -36,7 +37,7 @@ public class RegexStar_c extends Node_c
         this.a = a;
     }
 
-    public Collection mustBind(Map sym_to_vars)
+    public Collection mustBind(Map sym_to_vars) throws SemanticException
     {
         return new HashSet();
     }
