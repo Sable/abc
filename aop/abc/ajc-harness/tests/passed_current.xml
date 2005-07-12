@@ -4318,7 +4318,7 @@
 <ajc-test title="Bad parser error recovery in advice" pr="45663" num="895" dir="bugs" abccomment="Polyglot continues beyond parse, and thus has another error. ODM 07/07/04">
         <compile files="ParserRecoveryTest.java">
 		  <ajcmessage line="7" kind="error"></ajcmessage>
-                  <message line="4" kind="error"></message>
+                  <message line="5" kind="error"></message>
                   <message line="7" kind="error"></message>
         </compile>
     </ajc-test>
