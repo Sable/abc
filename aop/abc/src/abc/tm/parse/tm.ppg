@@ -234,14 +234,23 @@ regex_count ::=
 |
     regex_simple:a LBRACK INTEGER_LITERAL:n RBRACK:y
     {:
-        int repeats = n.getValue().intValue();
+        int repeats = n.getValue().intValue(); // non-negative
+        if (repeats == 0)
+            parser.report_error("Number of repeats must be positive.",
+                                    parser.pos(n));
         RESULT = parser.nf.RegexCount(parser.pos(a,y), a, repeats, repeats);
     :}
 |
     regex_simple:a LBRACK INTEGER_LITERAL:m COMMA INTEGER_LITERAL:n RBRACK:y
     {:
-        int min = m.getValue().intValue();
-        int max = n.getValue().intValue();
+        int min = m.getValue().intValue(); // non-negative
+        int max = n.getValue().intValue(); // non-negative
+        if (max == 0)
+            parser.report_error("Maximum must be positive.",
+                                    parser.pos(n));
+        if (min > max)
+            parser.report_error("Minimum cannot be greater than maximum.",
+                                    parser.pos(m,n));
         RESULT = parser.nf.RegexCount(parser.pos(a,y), a, min, max);
     :}
 ;
