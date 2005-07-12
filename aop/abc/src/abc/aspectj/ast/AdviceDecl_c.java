@@ -389,7 +389,8 @@ public class AdviceDecl_c extends AJMethodDecl_c
 			Type t = retval.type().type();
 			if (! t.isThrowable()) {
 				TypeSystem ts = tc.typeSystem();
-				throw new SemanticException("type \"" + t + "\" is not a subclass of \" +" +					                        ts.Throwable() + "\".", spec.returnVal().type().position());
+				throw new SemanticException("type \"" + t + "\" is not a subclass of \"" +
+                                ts.Throwable() + "\".", spec.returnVal().type().position());
 			}
 	   
 		}
