@@ -79,7 +79,7 @@ public class AbcExtension extends abc.main.AbcExtension
 					else
 						return GlobalAspectInfo.PRECEDENCE_SECOND;   	        	
 		    	 if (!tma.isSome() && tmb.isSome())
-					if (tma.getAdviceSpec().isAfter())
+					if (tmb.getAdviceSpec().isAfter())
 						return GlobalAspectInfo.PRECEDENCE_SECOND;
 					else
 						return GlobalAspectInfo.PRECEDENCE_FIRST;
