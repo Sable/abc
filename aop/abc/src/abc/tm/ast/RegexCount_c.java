@@ -21,6 +21,9 @@ import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
+import abc.tm.weaving.matching.State;
+import abc.tm.weaving.matching.StateMachine;
+
 import java.util.*;
 
 /**
@@ -67,5 +70,24 @@ public class RegexCount_c extends Node_c
     public boolean matchesEmptyString()
     {
         return min == 0 || a.matchesEmptyString();
+    }
+
+    public void makeSM(StateMachine sm, State start, State finish)
+    {
+        if (min == 0)
+            sm.newTransition(start, finish, null);
+
+        State middle = start;
+
+        // max is always >= 1
+        for (int i = 1; i < max; i++) {
+            State s = sm.newState();
+            a.makeSM(sm, middle, s);
+            if (i >= min)
+                sm.newTransition(s, finish, null);
+            middle = s;
+        }
+
+        a.makeSM(sm, middle, finish);
     }
 }

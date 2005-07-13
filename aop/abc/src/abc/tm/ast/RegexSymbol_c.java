@@ -21,6 +21,9 @@ import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
+import abc.tm.weaving.matching.State;
+import abc.tm.weaving.matching.StateMachine;
+
 import java.util.*;
 
 /**
@@ -60,5 +63,10 @@ public class RegexSymbol_c extends Node_c
     public boolean matchesEmptyString()
     {
         return false;
+    }
+
+    public void makeSM(StateMachine sm, State start, State finish)
+    {
+        sm.newTransition(start, finish, name);
     }
 }

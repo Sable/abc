@@ -21,6 +21,9 @@ import polyglot.ast.Node;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
+import abc.tm.weaving.matching.State;
+import abc.tm.weaving.matching.StateMachine;
+
 import java.util.*;
 
 /**
@@ -57,4 +60,10 @@ public interface Regex extends Node
      * matches the empty string, or not, respectively.
      */
     boolean matchesEmptyString();
+
+    /**
+     * Creates a finite state machine, equivalent to the
+     * regular expression, which is used by the weaver.
+     */
+    void makeSM(StateMachine sm, State start, State finish);
 }

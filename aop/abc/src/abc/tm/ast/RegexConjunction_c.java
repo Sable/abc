@@ -21,6 +21,9 @@ import polyglot.ext.jl.ast.Node_c;
 import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
+import abc.tm.weaving.matching.State;
+import abc.tm.weaving.matching.StateMachine;
+
 import java.util.*;
 
 /**
@@ -65,5 +68,12 @@ public class RegexConjunction_c extends Node_c
     public boolean matchesEmptyString()
     {
         return a.matchesEmptyString() && b.matchesEmptyString();
+    }
+
+    public void makeSM(StateMachine sm, State start, State finish)
+    {
+        State middle = sm.newState();
+        a.makeSM(sm, start, middle);
+        b.makeSM(sm, middle, finish);
     }
 }
