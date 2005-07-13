@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Chris Allan
+ * Copyright (C) 2005 Julian Tibble
  * File based on abc.eaj.ExtensionInfo
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,6 +39,7 @@ import java.io.Reader;
 /**
  * Extension information for TraceMatching extension.
  * @author Chris Allan
+ * @author Julian Tibble
  */
 public class ExtensionInfo extends abc.aspectj.ExtensionInfo
 {

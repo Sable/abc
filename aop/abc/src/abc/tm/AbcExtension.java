@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Julian Tibble
+ * Copyright (C) 2005 Julian Tibble
+ * Copyright (C) 2005 Oege de Moor
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,8 +33,8 @@ import polyglot.util.InternalCompilerError;
 import java.util.*;
 
 /*
- * @author Chris Allan
- *
+ * @author Julian Tibble
+ * @author Oege de Moor
  */
 public class AbcExtension extends abc.main.AbcExtension
 {
