@@ -18,4 +18,5 @@ public interface State {
      * @param b The new value of the 'final' flag.
      */
     public void setFinal(boolean b);
+
 }
