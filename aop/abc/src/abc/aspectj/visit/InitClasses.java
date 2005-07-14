@@ -61,10 +61,10 @@ public class InitClasses extends OncePass {
                 }
                 ext.hierarchy.insertClassAndSuperclasses(ct, true);
                 AbcFactory.registerName(ct, wcn);
-                GlobalAspectInfo.v().addWeavableClass(AbcFactory.AbcClass(ct));
+                abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addWeavableClass(AbcFactory.AbcClass(ct));
             }
 
-            GlobalAspectInfo.v().initPrecedenceRelation(ext.prec_rel);
+            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().initPrecedenceRelation(ext.prec_rel);
 
             ext.pattern_matcher = PatternMatcher.create(ext.hierarchy);
         } catch (SemanticException e) {

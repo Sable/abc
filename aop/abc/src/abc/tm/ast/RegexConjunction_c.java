@@ -29,8 +29,7 @@ import java.util.*;
 /**
  * @author Julian Tibble
  */
-public class RegexConjunction_c extends Node_c
-                                implements Regex
+public class RegexConjunction_c extends Regex_c
 {
     protected Regex a;
     protected Regex b;

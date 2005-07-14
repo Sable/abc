@@ -61,35 +61,30 @@ import abc.weaving.weaver.around.AroundWeaver;
 
 public class Weaver {
 
-    private static void debug(String message)
+    private void debug(String message)
       { if (abc.main.Debug.v().weaverDriver)
           System.err.println("WEAVER DRIVER ***** " + message);
       }
-    static private Map unitBindings = new HashMap();
-    public static boolean doCflowOptimization = false;
+    Map unitBindings = new HashMap();
+    public boolean doCflowOptimization = false;
 
-    static public void reset() {
-        unitBindings=new HashMap();
-        doCflowOptimization=false;
-    }
-
-    static public Map getUnitBindings() {
+    public Map getUnitBindings() {
         return unitBindings;
     }
-    static public Unit rebind(Unit ut) {
+    public Unit rebind(Unit ut) {
         Unit result=(Unit)unitBindings.get(ut);
         if (result!=null)
                 return result;
         else
                 return ut;
     }
-    static public void optimizeResidues() {
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+    public void optimizeResidues() {
+        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
 
-                MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
+                MethodAdviceList adviceList=abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
                 if (adviceList!=null) {
                     Iterator appIt=adviceList.allAdvice().iterator();
                     while (appIt.hasNext()) {
@@ -100,17 +95,17 @@ public class Weaver {
             }
         }
     }
-    static public void resetForReweaving() {
+    public void resetForReweaving() {
         WeavingState.reset();
     	AroundWeaver.reset();
     	AdviceInliner.reset();
         // reset all residues
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                 final SootMethod method = (SootMethod) methodIt.next();
 
-                MethodAdviceList adviceList=GlobalAspectInfo.v().getAdviceList(method);
+                MethodAdviceList adviceList=abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
                 if (adviceList!=null) {
                     Iterator appIt=adviceList.allAdvice().iterator();
                     while (appIt.hasNext()) {
@@ -122,13 +117,13 @@ public class Weaver {
             }
         }
         // reset all advice
-        for( Iterator adIt = GlobalAspectInfo.v().getAdviceDecls().iterator(); adIt.hasNext(); ) {
+        for( Iterator adIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceDecls().iterator(); adIt.hasNext(); ) {
             final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
             ad.resetForReweaving();
         }
     }
 
-        static public void weave() {
+        public void weave() {
             // add aspectOf(), hasAspect(), ...
             weaveGenerateAspectMethods();
             inlineConstructors();
@@ -184,15 +179,15 @@ public class Weaver {
             }
         }
         
-        public static void doInlining() {
+        public void doInlining() {
         	Scene.v().releaseActiveHierarchy();
         	
         	if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining())          
-            	Weaver.runInliner(); // needs to be called after exception checking
+            	runInliner(); // needs to be called after exception checking
 
             
         }
-        public static void runInliner() {
+        public void runInliner() {
         	AdviceInliner.v().run();
         	/*InterprocConstantPropagator.inlineConstantArguments();
         	List l=new LinkedList(AroundInliner.v().adviceMethodsNotInlined);
@@ -204,14 +199,14 @@ public class Weaver {
         }
         
 
-        public static void runBoxingRemover() {
+        public void runBoxingRemover() {
         	AdviceInliner.v().runBoxingRemover();
         }
         
        
-        static public void inlineConstructors() {
+        public void inlineConstructors() {
             ShadowPointsSetter sg = new ShadowPointsSetter(unitBindings);
-            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                 final AbcClass cl = (AbcClass) clIt.next();
                 SootClass scl = cl.getSootClass();
                 sg.setShadowPointsPass1(scl);
@@ -219,12 +214,12 @@ public class Weaver {
                 sg.setShadowPointsPass2(scl);
             }
         }
-        static public void weaveGenerateAspectMethods() {
+        public void weaveGenerateAspectMethods() {
                 // Generate methods inside aspects needed for code gen and bodies of
                 //   methods not filled in by front-end (i.e. aspectOf())
                 debug("Generating extra code in aspects");
                 AspectCodeGen ag = new AspectCodeGen();
-                for( Iterator asIt = GlobalAspectInfo.v().getAspects().iterator(); asIt.hasNext(); ) {
+                for( Iterator asIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspects().iterator(); asIt.hasNext(); ) {
                     final Aspect as = (Aspect) asIt.next();
                         ag.fillInAspect(as);
                 }
@@ -233,13 +228,13 @@ public class Weaver {
                 abc.main.Main.phaseDebug("Add aspect code");
 
         }
-        static public void reportMessages() {
-            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        public void reportMessages() {
+            for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                 final AbcClass cl = (AbcClass) clIt.next();
                 for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                     final SootMethod method = (SootMethod) methodIt.next();
                     if( !method.isConcrete() ) continue;
-                    MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
+                    MethodAdviceList adviceList = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
                     if(adviceList == null) continue;
                     for( Iterator aaIt = adviceList.allAdvice().iterator(); aaIt.hasNext(); ) {
                         final AdviceApplication aa = (AdviceApplication) aaIt.next();
@@ -248,14 +243,14 @@ public class Weaver {
                 }
             }
         }
-        static public void removeDeclareWarnings() {
+        public void removeDeclareWarnings() {
             if(Debug.v().weaveDeclareWarning) return;
-            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                 final AbcClass cl = (AbcClass) clIt.next();
                 for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                     final SootMethod method = (SootMethod) methodIt.next();
                     if( !method.isConcrete() ) continue;
-                    MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
+                    MethodAdviceList adviceList = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
                     if(adviceList == null) continue;
                     for( Iterator aaIt = adviceList.allAdvice().iterator(); aaIt.hasNext(); ) {
                         final AdviceApplication aa = (AdviceApplication) aaIt.next();
@@ -267,11 +262,11 @@ public class Weaver {
                 }
             }
         }
-        static public void weaveAdvice() {
+        public void weaveAdvice() {
                 PointcutCodeGen pg = new PointcutCodeGen();
                 GenStaticJoinPoints gsjp = new GenStaticJoinPoints();
 
-                for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
                     final AbcClass cl = (AbcClass) clIt.next();
                         final SootClass scl = cl.getSootClass();
@@ -299,7 +294,7 @@ public class Weaver {
                 pg.weaveInAroundAdviceExecutionsPass();
 
                 //if (false)
-                for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
                     final AbcClass cl = (AbcClass) clIt.next();
                     for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
@@ -315,7 +310,7 @@ public class Weaver {
                 AbcTimer.mark("Weaving advice");
                 abc.main.Main.phaseDebug("Weaving advice");
         } // method weave
-    private static void runCflowAnalysis() {
+    private void runCflowAnalysis() {
         CflowAnalysis cfab = null;
         try {
             cfab = (CflowAnalysis) Class.forName("abc.weaving.weaver.CflowAnalysisImpl").newInstance();

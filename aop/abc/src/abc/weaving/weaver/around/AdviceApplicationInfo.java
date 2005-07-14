@@ -981,7 +981,7 @@ public class AdviceApplicationInfo {
 	}
 
 	private AdviceDecl getAdviceDecl(SootMethod method) {
-		List l = GlobalAspectInfo.v().getAdviceDecls();
+		List l = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceDecls();
 		for (Iterator it = l.iterator(); it.hasNext();) {
 			AdviceDecl decl = (AdviceDecl) it.next();
 			if (decl.getImpl().getSootMethod().equals(method)) {

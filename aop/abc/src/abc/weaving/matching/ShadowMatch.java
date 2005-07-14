@@ -71,7 +71,7 @@ public abstract class ShadowMatch {
     public final void recordSJPInfo() {
         if(sjpInfo!=null) return;
         sjpInfo=makeSJPInfo();
-        GlobalAspectInfo.v().addSJPInfo(container,sjpInfo);
+        abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addSJPInfo(container,sjpInfo);
     }
 
     /** Retrieve the sjpInfo structure, creating it if necessary */
@@ -94,7 +94,7 @@ public abstract class ShadowMatch {
     }
     public void addIfNecessary() {
         if(!recorded) {
-            GlobalAspectInfo.v().addShadowMatch(container,this);
+            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addShadowMatch(container,this);
             recorded=true;
         }
     }

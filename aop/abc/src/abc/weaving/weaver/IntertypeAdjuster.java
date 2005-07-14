@@ -41,17 +41,17 @@ public class IntertypeAdjuster {
     // Generate Soot signatures for intertype methods and fields
  
     // 	weave in intertype methods
-        for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
+        for( Iterator imdIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getIntertypeMethodDecls().iterator(); imdIt.hasNext(); ) {
             final IntertypeMethodDecl imd = (IntertypeMethodDecl) imdIt.next();
             addMethod( imd );
         }
    // 	weave in intertype constructors
-		for( Iterator imdIt = GlobalAspectInfo.v().getIntertypeConstructorDecls().iterator(); imdIt.hasNext(); ) {
+		for( Iterator imdIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getIntertypeConstructorDecls().iterator(); imdIt.hasNext(); ) {
 		 	final IntertypeConstructorDecl icd = (IntertypeConstructorDecl) imdIt.next();
 		 	addConstructor( icd );
 	 	} 
    	//	weave in intertype fields
-        for( Iterator ifdIt = GlobalAspectInfo.v().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
+        for( Iterator ifdIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getIntertypeFieldDecls().iterator(); ifdIt.hasNext(); ) {
             final IntertypeFieldDecl ifd = (IntertypeFieldDecl) ifdIt.next();
             addField( ifd );
         }
@@ -59,7 +59,7 @@ public class IntertypeAdjuster {
         // accessors for super members are now stored in AspectType
         // TODO: In the original implementation, qualified special accesses were the first thing
         // to be processed. Check if this is essential.
-        for(Iterator asIt = GlobalAspectInfo.v().getAspects().iterator(); asIt.hasNext(); ) {
+        for(Iterator asIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspects().iterator(); asIt.hasNext(); ) {
             Aspect a = (Aspect) asIt.next();
             AspectType at =(AspectType) a.getInstanceClass().getPolyglotType();
             at.getAccessorMethods().addAllSootMethods();
@@ -156,7 +156,7 @@ public class IntertypeAdjuster {
 		if (fromInterface(mi1) && fromInterface(mi2) &&
 			 isSubInterface(interfaceTarget(mi1),interfaceTarget(mi2)))
 			return true;
-		return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
+		return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
 	}
 	
 	private void addMethod( IntertypeMethodDecl imd ) {
@@ -359,7 +359,7 @@ public class IntertypeAdjuster {
 	boolean zapsfield(SootField mi1,SootField mi2) {
 			if (!(isIntertype(mi1) && isIntertype(mi2)))
 				return false;
-			return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
+			return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
 	}    
 	
 	
@@ -543,7 +543,7 @@ public class IntertypeAdjuster {
 		if ((Modifier.isPrivate(mi2.getModifiers()) && !isIntertype(mi2)) && 
 		     (!Modifier.isPrivate(mi1.getModifiers()) && isIntertype(mi1))) return true; // can always zap a private constructor
 		if (!(isIntertype(mi1) && (isIntertype(mi2)))) return false;
-		return GlobalAspectInfo.v().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
+		return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(origin(mi1),origin(mi2)) == GlobalAspectInfo.PRECEDENCE_FIRST;    
 	}
 	
     
@@ -752,7 +752,7 @@ public class IntertypeAdjuster {
     	if (ifd1.getInit() == null || ifd2.getInit()== null) return false;
     	if (ifd1.getAspect() == ifd2.getAspect())
     		return ifd1.getPosition().line() < ifd2.getPosition().line();
-    	else { int cmp = GlobalAspectInfo.v().getPrecedence(ifd1.getAspect(),ifd2.getAspect()) ;
+    	else { int cmp = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(ifd1.getAspect(),ifd2.getAspect()) ;
     		/*// this appears to generate nondeterministic behaviour, due
     		   // to iteration over a set or map. commented out for now...
     			if (cmp == GlobalAspectInfo.PRECEDENCE_NONE)
@@ -870,7 +870,7 @@ public class IntertypeAdjuster {
 	
 	public void initialisers() {
 		Map classToITDfields = invertFieldITTargetsMap();
-		for (Iterator wit = GlobalAspectInfo.v().getWeavableClasses().iterator(); wit.hasNext(); ) {
+		for (Iterator wit = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); wit.hasNext(); ) {
 			SootClass cl = ((AbcClass) wit.next()).getSootClass();
 			ITDInits itdins = new ITDInits();
 			List initItfs = getInterfaceInits(cl);

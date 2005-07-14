@@ -100,12 +100,12 @@ public class ShadowPointsSetter {
 			if (method.isNative())
 				continue;
 
-			ExecutionShadowMatch esm = GlobalAspectInfo.v().getExecutionShadowMatch(method);
+			ExecutionShadowMatch esm = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getExecutionShadowMatch(method);
 
 			if (esm != null)
 				insertExecutionSP(method, esm);
 
-			insertStmtSP(method, GlobalAspectInfo.v().getStmtShadowMatchList(method));
+			insertStmtSP(method, abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getStmtShadowMatchList(method));
 
 			// The interface initialization shadow points have already been set
 
@@ -279,13 +279,13 @@ public class ShadowPointsSetter {
 			debug("   --- BEGIN Setting ShadowPoints Pass2 for method " + method.getName());
 
 			// --- First look at preinitialization pointcuts 
-			PreinitializationShadowMatch psm = GlobalAspectInfo.v().getPreinitializationShadowMatch(method);
+			PreinitializationShadowMatch psm = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPreinitializationShadowMatch(method);
 
 			if (psm != null)
 				insertPreinitializationSP(method, psm);
 
 			// --- Then look at initialization pointcuts 
-			ClassInitializationShadowMatch ism = GlobalAspectInfo.v().getClassInitializationShadowMatch(method);
+			ClassInitializationShadowMatch ism = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getClassInitializationShadowMatch(method);
 
 			if (ism != null)
 				insertClassInitializationSP(method, ism);

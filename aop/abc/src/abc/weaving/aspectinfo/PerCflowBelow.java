@@ -39,7 +39,7 @@ public class PerCflowBelow extends PerPointcut {
     }
 
     public void registerSetupAdvice(Aspect aspct) {
-	GlobalAspectInfo.v().addAdviceDecl
+	abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addAdviceDecl
 	    (new PerCflowSetup(aspct,getPointcut(),true,getPosition()));
     }
 

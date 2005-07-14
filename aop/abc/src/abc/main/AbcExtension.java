@@ -41,6 +41,7 @@ import soot.jimple.toolkits.annotation.nullcheck.NullCheckEliminator;
 import soot.jimple.toolkits.scalar.UnreachableCodeEliminator;
 import soot.tagkit.Host;
 import soot.util.Chain;
+import abc.aspectj.ExtensionInfo;
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
 import abc.aspectj.parse.PerClauseLexerAction_c;
@@ -78,6 +79,7 @@ import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
 import abc.weaving.weaver.CflowCodeGenUtils;
+import abc.weaving.weaver.Weaver;
 
 /**
  * This class should be sub-classed to extend the behaviour of abc
@@ -89,6 +91,10 @@ import abc.weaving.weaver.CflowCodeGenUtils;
  */
 public class AbcExtension
 {
+    private ExtensionInfo extInfo = null;
+    private GlobalAspectInfo globalAspectInfo = null;
+    private Weaver weaver = null;
+
     /**
      * Constructs a version string for all loaded extensions
      */
@@ -99,7 +105,7 @@ public class AbcExtension
         return versions.toString();
     }
 
-    /*
+    /**
      * Override this method to add the version information
      * for this extension, calling the same method in the
      * super-class to ensure that all extensions are
@@ -112,15 +118,39 @@ public class AbcExtension
                         "\n");
     }
 
-    /*
+    /**
      * Creates an instance of the <code>ExtensionInfo</code> structure
      * used for extending the Polyglot-based frontend.
      */
-    public abc.aspectj.ExtensionInfo
-            makeExtensionInfo(Collection jar_classes,
-                              Collection aspect_sources)
+    public ExtensionInfo makeExtensionInfo(Collection jar_classes,
+                                            Collection aspect_sources)
     {
         return new abc.aspectj.ExtensionInfo(jar_classes, aspect_sources);
+    }
+
+    /**
+     * Returns the GlobalAspectInfo structure, which stores all the
+     * AspectJ-specific information from the frontend for use in the
+     * backend.
+     */
+    public GlobalAspectInfo getGlobalAspectInfo()
+    {
+        if (globalAspectInfo == null)
+            globalAspectInfo = new GlobalAspectInfo();
+
+        return globalAspectInfo;
+    }
+
+    /**
+     * Returns the Weaver object, which co-ordinates everything that
+     * happens in the backend.
+     */
+    public Weaver getWeaver()
+    {
+        if (weaver == null)
+            weaver = new Weaver();
+
+        return weaver;
     }
 
     /**
@@ -190,8 +220,8 @@ public class AbcExtension
 								if (m.name().equals("aspectOf") && 
 										m.isStatic() && 
 										m.parameterTypes().size()==0 &&
-										GlobalAspectInfo.v().getAspectFromSootClass(m.declaringClass())!=null && // it's an aspect
-										GlobalAspectInfo.v().getAspectFromSootClass(m.declaringClass()).getPer() instanceof Singleton &&
+										abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspectFromSootClass(m.declaringClass())!=null && // it's an aspect
+										abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspectFromSootClass(m.declaringClass()).getPer() instanceof Singleton &&
 										m.returnType().equals(m.declaringClass().getType()) // correct return type
 										) {
 									return true;
@@ -501,7 +531,7 @@ public class AbcExtension
             return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
 
         if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
-            return GlobalAspectInfo.v().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
+            return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
 
         if(a instanceof AdviceDecl && b instanceof AdviceDecl)
             return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);

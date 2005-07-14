@@ -228,7 +228,7 @@ public class GlobalCflowSetupFactory {
 			// Create the cfs
 			CflowSetup newcfs = CflowSetup.construct
 			  (a, unification.getPointcut(), isBelow, newTypeMap, pos, depth);
-			GlobalAspectInfo.v().addAdviceDecl(newcfs);
+			abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addAdviceDecl(newcfs);
 			
 			// Return the new cfs
 			return newcfs;
@@ -298,7 +298,7 @@ public class GlobalCflowSetupFactory {
 		}
 		
 		// Need to register the new CFS as an abstract advice decl
-		GlobalAspectInfo.v().addAdviceDecl(cfs);
+		abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addAdviceDecl(cfs);
 		
 		// Need to remember that we've created cfs
 		// IF THE DEBUG FLAG IS NOT SET (o/w no point)

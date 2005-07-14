@@ -18,54 +18,34 @@
 package abc.tm.ast;
 
 import polyglot.ext.jl.ast.Node_c;
-import polyglot.types.SemanticException;
 import polyglot.util.Position;
 
-import abc.tm.weaving.matching.State;
-import abc.tm.weaving.matching.StateMachine;
+import abc.tm.weaving.matching.*;
 
 import java.util.*;
 
 /**
  * @author Julian Tibble
  */
-public class RegexPlus_c extends Regex_c
+public abstract class Regex_c extends Node_c
+                              implements Regex
 {
-    protected Regex a;
-
-    public RegexPlus_c(Position pos, Regex a)
+    public Regex_c(Position pos)
     {
         super(pos);
-        this.a = a;
     }
 
-    public Collection mustBind(Map sym_to_vars) throws SemanticException
+    public StateMachine makeSM()
     {
-        return a.mustBind(sym_to_vars);
-    }
+        StateMachine sm = new TMStateMachine();
 
-    public Collection finalSymbols()
-    {
-        return a.finalSymbols();
-    }
+        State start = sm.newState();
+        start.setInitial(true);
 
-    public Collection nonFinalSymbols()
-    {
-        Collection c = a.nonFinalSymbols();
-        c.addAll(a.finalSymbols());
-        return c;
-    }
+        State finish = sm.newState();
+        finish.setFinal(true);
 
-    public boolean matchesEmptyString()
-    {
-        return a.matchesEmptyString();
-    }
-
-    public void makeSM(StateMachine sm, State start, State finish)
-    {
-        State middle = sm.newState();
-        sm.newTransition(start, middle, null);
-        a.makeSM(sm, middle, middle);
-        a.makeSM(sm, middle, finish);
+        makeSM(sm, start, finish);
+        return sm;
     }
 }

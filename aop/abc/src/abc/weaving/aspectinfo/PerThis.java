@@ -39,7 +39,7 @@ public class PerThis extends PerPointcut {
     }
 
     public void registerSetupAdvice(Aspect aspct) {
-        GlobalAspectInfo.v().addAdviceDecl(new PerThisSetup(aspct,getPointcut(),getPosition()));
+        abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addAdviceDecl(new PerThisSetup(aspct,getPointcut(),getPosition()));
     }
 
     public Residue matchesAt(Aspect aspct,ShadowMatch sm) {

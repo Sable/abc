@@ -61,7 +61,7 @@ public class JimpleValue extends ContextValue {
     }
 
     public Value getSootValue() {
-    	Value v=(Value)Weaver.getUnitBindings().get(value);
+    	Value v=(Value) abc.main.Main.v().getAbcExtension().getWeaver().getUnitBindings().get(value);
     	if (v != null)
     		return v;
     	else

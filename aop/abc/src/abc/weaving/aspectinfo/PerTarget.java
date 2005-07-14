@@ -39,7 +39,7 @@ public class PerTarget extends PerPointcut {
     }
 
     public void registerSetupAdvice(Aspect aspct) {
-        GlobalAspectInfo.v().addAdviceDecl(new PerTargetSetup(aspct,getPointcut(),getPosition()));
+        abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addAdviceDecl(new PerTargetSetup(aspct,getPointcut(),getPosition()));
     }
 
 

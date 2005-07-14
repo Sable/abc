@@ -201,7 +201,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		} else {pht.methods().add(toinsert); added=true; // System.out.println("added2");
 					} 
 		if (added)
-			GlobalAspectInfo.v().registerWeave(AbcFactory.AbcClass(pht));
+			abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerWeave(AbcFactory.AbcClass(pht));
 		// System.out.println("exit overrideITDmethod");
 	}
 
@@ -281,7 +281,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 	// replace this by a call to the appropriate structure!
 	static boolean precedes(ClassType ct1, ClassType ct2) {
 		return (ct1.descendsFrom(ct2)  || 
-					  (GlobalAspectInfo.v().getPrecedence(ct1.fullName(),
+					  (abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(ct1.fullName(),
 					                                      ct2.fullName()) 
 					    == GlobalAspectInfo.PRECEDENCE_FIRST) );
 					
@@ -372,7 +372,7 @@ public class IntertypeMethodDecl_c extends MethodDecl_c
 		if (flags().isStatic() && host.type().toClass().flags().isInterface())
 			throw new SemanticException("Cannot declare static intertype method on interface",position());
 		if (host.type() instanceof ParsedClassType &&
-		    !GlobalAspectInfo.v().getWeavableClasses()
+		    !abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses()
 		    .contains(abc.weaving.aspectinfo.AbcFactory.AbcClass((ParsedClassType) host.type())))
 		    throw new SemanticException("Host of an intertype declaration must be a weavable class");
 

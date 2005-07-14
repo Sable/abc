@@ -207,21 +207,21 @@ public class MethodCategory {
     // CATEGORY QUERY
 
     public static int getCategory(SootMethod m) {
-	return GlobalAspectInfo.v().getMethodCategory(AbcFactory.MethodSig(m));
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getMethodCategory(AbcFactory.MethodSig(m));
     }
 
     public static int getCategory(MethodSig m) {
-	return GlobalAspectInfo.v().getMethodCategory(m);
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getMethodCategory(m);
     }
 
     public static int getCategory(SootMethodRef mr) {
-	return GlobalAspectInfo.v().getMethodCategory(AbcFactory.MethodSig(mr));
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getMethodCategory(AbcFactory.MethodSig(mr));
     }
 
     // REGISTRATION METHODS
 
     public static void register(MethodSig sig, int cat) {
-	GlobalAspectInfo.v().registerMethodCategory(sig, cat);
+	abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerMethodCategory(sig, cat);
     }
 
     public static void register(SootMethod m, int cat) {
@@ -242,7 +242,7 @@ public class MethodCategory {
 						int mods,
 						String real_name, AbcClass real_class,
 						int skip_first, int skip_last) {
-	GlobalAspectInfo.v().registerRealNameAndClass(sig,
+	abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerRealNameAndClass(sig,
 						      mods,
 						      real_name, real_class,
 						      skip_first, skip_last);
@@ -281,7 +281,7 @@ public class MethodCategory {
     public static void registerRealNameAndClass(FieldSig sig,
 						int mods,
 						String real_name, AbcClass real_class) {
-	GlobalAspectInfo.v().registerRealNameAndClass(sig,
+	abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerRealNameAndClass(sig,
 						      mods,
 						      real_name, real_class);
     }
@@ -297,11 +297,11 @@ public class MethodCategory {
     // REAL NAME QUERY
 
     public static int getModifiers(SootMethod m) {
-	return GlobalAspectInfo.v().getRealModifiers(AbcFactory.MethodSig(m), m.getModifiers());
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealModifiers(AbcFactory.MethodSig(m), m.getModifiers());
     }
 
     public static int getModifiers(MethodSig m) {
-	return GlobalAspectInfo.v().getRealModifiers(m, m.getModifiers());
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealModifiers(m, m.getModifiers());
     }
 
     // FIXME: temporary stub
@@ -310,7 +310,7 @@ public class MethodCategory {
     }
 
     public static String getName(SootMethod m) {
-	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.MethodSig(m));
+	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.MethodSig(m));
 	if (real_name == null) {
 	    return m.getName();
 	} else {
@@ -319,7 +319,7 @@ public class MethodCategory {
     }
 
     public static String getName(MethodSig m) {
-	String real_name = GlobalAspectInfo.v().getRealName(m);
+	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(m);
 	if (real_name == null) {
 	    return m.getName();
 	} else {
@@ -328,7 +328,7 @@ public class MethodCategory {
     }
 
     public static String getName(SootMethodRef mr) {
-	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.MethodSig(mr));
+	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.MethodSig(mr));
 	if (real_name == null) {
 	    return mr.name();
 	} else {
@@ -337,7 +337,7 @@ public class MethodCategory {
     }
 
     public static SootClass getClass(SootMethod m) {
-	AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.MethodSig(m));
+	AbcClass real_class = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealClass(AbcFactory.MethodSig(m));
 	if (real_class == null) {
 	    return m.getDeclaringClass();
 	} else {
@@ -346,7 +346,7 @@ public class MethodCategory {
     }
 
     public static SootClass getClass(MethodSig m) {
-	AbcClass real_class = GlobalAspectInfo.v().getRealClass(m);
+	AbcClass real_class = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealClass(m);
 	if (real_class == null) {
 	    return m.getDeclaringClass().getSootClass();
 	} else {
@@ -355,7 +355,7 @@ public class MethodCategory {
     }
 
     public static SootClass getClass(SootMethodRef mr) {
-	AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.MethodSig(mr));
+	AbcClass real_class = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealClass(AbcFactory.MethodSig(mr));
 	if (real_class == null) {
 	    return mr.declaringClass();
 	} else {
@@ -364,7 +364,7 @@ public class MethodCategory {
     }
 
     public static int getSkipFirst(SootMethod m) {
-	return GlobalAspectInfo.v().getSkipFirst(AbcFactory.MethodSig(m));
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getSkipFirst(AbcFactory.MethodSig(m));
     }
 
     // FIXME: temporary stub
@@ -373,7 +373,7 @@ public class MethodCategory {
     }
 
     public static int getSkipLast(SootMethod m) {
-	return GlobalAspectInfo.v().getSkipLast(AbcFactory.MethodSig(m));
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getSkipLast(AbcFactory.MethodSig(m));
     }
 
     // FIXME: temporary stub
@@ -382,11 +382,11 @@ public class MethodCategory {
     }
 
     public static int getModifiers(SootField m) {
-	return GlobalAspectInfo.v().getRealModifiers(AbcFactory.FieldSig(m), m.getModifiers());
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealModifiers(AbcFactory.FieldSig(m), m.getModifiers());
     }
 
     public static int getModifiers(FieldSig m) {
-	return GlobalAspectInfo.v().getRealModifiers(m, m.getModifiers());
+	return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealModifiers(m, m.getModifiers());
     }
 
     //FIXME: temporary stub
@@ -397,7 +397,7 @@ public class MethodCategory {
 
     public static String getName(SootField f) {
 	FieldSig fs = AbcFactory.FieldSig(f);
-	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(f));
+	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.FieldSig(f));
 	if (real_name == null) {
 	    return f.getName();
 	} else {
@@ -406,7 +406,7 @@ public class MethodCategory {
     }
 
     public static String getName(FieldSig f) {
-	String real_name = GlobalAspectInfo.v().getRealName(f);
+	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(f);
 	if (real_name == null) {
 	    return f.getName();
 	} else {
@@ -416,7 +416,7 @@ public class MethodCategory {
 
     public static String getName(SootFieldRef fr) {
 	FieldSig fs = AbcFactory.FieldSig(fr);
-	String real_name = GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(fr));
+	String real_name = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.FieldSig(fr));
 	if (real_name == null) {
 	    return fr.name();
 	} else {
@@ -425,7 +425,7 @@ public class MethodCategory {
     }
 
     public static SootClass getClass(SootField f) {
-	AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.FieldSig(f));
+	AbcClass real_class = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealClass(AbcFactory.FieldSig(f));
 	if (real_class == null) {
 	    return f.getDeclaringClass();
 	} else {
@@ -434,7 +434,7 @@ public class MethodCategory {
     }
 
     public static SootClass getClass(FieldSig f) {
-	AbcClass real_class = GlobalAspectInfo.v().getRealClass(f);
+	AbcClass real_class = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealClass(f);
 	if (real_class == null) {
 	    return f.getDeclaringClass().getSootClass();
 	} else {
@@ -443,7 +443,7 @@ public class MethodCategory {
     }
 
     public static SootClass getClass(SootFieldRef fr) {
-	AbcClass real_class = GlobalAspectInfo.v().getRealClass(AbcFactory.FieldSig(fr));
+	AbcClass real_class = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealClass(AbcFactory.FieldSig(fr));
 	if (real_class == null) {
 	    return fr.declaringClass();
 	} else {
@@ -452,7 +452,7 @@ public class MethodCategory {
     }
 
     public static SootField getField(SootMethod sm) {
-	FieldSig fs = GlobalAspectInfo.v().getField(AbcFactory.MethodSig(sm));
+	FieldSig fs = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getField(AbcFactory.MethodSig(sm));
 	if (fs == null) {
 	    throw new InternalCompilerError("get field on a method that is not an accessor");
 	} else {
@@ -466,13 +466,13 @@ public class MethodCategory {
     }
 	
 	public static void registerFieldGet(FieldSig fs, MethodSig sig) {
-	   GlobalAspectInfo.v().registerMethodCategory(sig, MethodCategory.ACCESSOR_GET);
-	   GlobalAspectInfo.v().registerFieldAccessor(fs,sig);
+	   abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerMethodCategory(sig, MethodCategory.ACCESSOR_GET);
+	   abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerFieldAccessor(fs,sig);
 	}
 
 	public static void registerFieldSet(FieldSig fs, MethodSig sig) {
-		GlobalAspectInfo.v().registerMethodCategory(sig, MethodCategory.ACCESSOR_SET);
-		GlobalAspectInfo.v().registerFieldAccessor(fs,sig);
+		abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerMethodCategory(sig, MethodCategory.ACCESSOR_SET);
+		abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerFieldAccessor(fs,sig);
 	}
 
     // FIXME: Temporary stub
@@ -500,7 +500,7 @@ public class MethodCategory {
 	/* don't weave if this is a synthetic field introduced by normal Java compilation.
 	 */
 	public static boolean weaveSetGet(SootField sfs) {
-	    return !((GlobalAspectInfo.v().getRealName(AbcFactory.FieldSig(sfs)) == null) &&
+	    return !((abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getRealName(AbcFactory.FieldSig(sfs)) == null) &&
 	    //		         (sfs.getName().indexOf('$') != -1));
 		     sfs.hasTag("SyntheticTag"));
 	}

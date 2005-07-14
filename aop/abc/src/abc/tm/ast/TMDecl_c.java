@@ -26,6 +26,13 @@ import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
 import abc.aspectj.extension.*;
+import abc.aspectj.visit.*;
+
+import abc.weaving.aspectinfo.AbcFactory;
+import abc.weaving.aspectinfo.Aspect;
+import abc.weaving.aspectinfo.GlobalAspectInfo;
+
+import abc.tm.weaving.aspectinfo.*;
 
 import java.util.*;
 
@@ -33,13 +40,22 @@ import java.util.*;
  * @author Julian Tibble
  */
 public class TMDecl_c extends AJMethodDecl_c
-                              implements TMDecl
+                              implements TMDecl, ContainsAspectInfo
 {
     protected boolean isPerThread;
     protected boolean isAround;
     protected String tracematch_name;
     protected List symbols;
     protected Regex regex;
+
+    // the set of variable names bound for each symbol
+    protected Map sym_to_vars;
+
+    // the name of the per-symbol advice method for each symbol
+    protected Map sym_to_advice_name;
+
+    // the name of the some() advice method for each kind of some() advice
+    protected Map kind_to_advice_name;
 
     public TMDecl_c(Position pos,
                     TMModsAndType mods_and_type,
@@ -58,6 +74,9 @@ public class TMDecl_c extends AJMethodDecl_c
         this.tracematch_name = tracematch_name;
         this.symbols = symbols;
         this.regex = regex;
+        sym_to_vars = new HashMap();
+        sym_to_advice_name = new HashMap();
+        kind_to_advice_name = new HashMap();
     }
 
     //
@@ -86,6 +105,7 @@ public class TMDecl_c extends AJMethodDecl_c
     {
         checkAroundSymbols();
         checkBinding();
+
         return super.typeCheck(tc);
     }
 
@@ -136,7 +156,6 @@ public class TMDecl_c extends AJMethodDecl_c
     {
         // create a map from symbol names to the names of pointcut
         // variables that the corresponding pointcut binds
-        Map sym_to_vars = new HashMap();
         Iterator i = symbols.iterator();
 
         while(i.hasNext()) {
@@ -157,8 +176,10 @@ public class TMDecl_c extends AJMethodDecl_c
         while(j.hasNext()) {
             SymbolDecl sd = (SymbolDecl) j.next();
 
-            advice.add(sd.generateAdviceDecl(nf, formals, voidn,
-                                    tracematch_name, position()));
+            AdviceDecl ad = sd.generateAdviceDecl(nf, formals, voidn,
+                                            tracematch_name, position());
+            advice.add(ad);
+            sym_to_advice_name.put(sd.name(), ad.name());
             closed_pointcuts.add(sd.generateClosedPointcut(nf, formals));
         }
 
@@ -195,8 +216,36 @@ public class TMDecl_c extends AJMethodDecl_c
             SymbolDecl sd = (SymbolDecl) kind_to_a_symbol.get(kinds.next());
             Pointcut pc = (Pointcut) kind_to_pointcut.get(sd.kind());
 
-            advice.add(sd.generateSomeAdvice(nf, pc, voidn, returnType(),
-                                    tracematch_name, position()));
+            AdviceDecl ad = sd.generateSomeAdvice(nf, pc, voidn, returnType(),
+                                                tracematch_name, position());
+            advice.add(ad);
+            kind_to_advice_name.put(sd.kind(), ad.name());
         }
+    }
+
+    /**
+     * create a TraceMatch object in the GlobalAspectInfo structure
+     */
+    public void update(GlobalAspectInfo gai, Aspect current_aspect)
+    {
+        // Convert from polyglot formals to weaving Formals
+        List wfs = new ArrayList(formals.size());
+        Iterator i = formals.iterator();
+
+        while (i.hasNext()) {
+            Formal f  = (Formal) i.next();
+            wfs.add(new abc.weaving.aspectinfo.Formal(
+                            AbcFactory.AbcType(f.type().type()),
+                            f.name(),
+                            position()));
+        }
+
+        // create TraceMatch
+        TraceMatch tm =
+            new TraceMatch(wfs, regex.makeSM(), sym_to_vars,
+                            sym_to_advice_name, kind_to_advice_name,
+                            current_aspect);
+
+        ((TMGlobalAspectInfo) gai).addTraceMatch(tm);
     }
 }

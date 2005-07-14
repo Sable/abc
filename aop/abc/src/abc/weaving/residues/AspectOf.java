@@ -71,7 +71,7 @@ public class AspectOf extends Residue {
     }
 
     private boolean isSingletonAspect() {
-    	Aspect a=GlobalAspectInfo.v().getAspectFromSootClass(aspct);
+    	Aspect a=abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAspectFromSootClass(aspct);
     	return a.getPer() instanceof Singleton;
     }
     

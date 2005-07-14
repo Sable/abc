@@ -140,8 +140,6 @@ public class Main {
         abc.aspectj.visit.AspectInfoHarvester.reset();
         abc.aspectj.parse.Lexer_c.reset();
         abc.weaving.aspectinfo.AbcFactory.reset();
-        abc.weaving.aspectinfo.GlobalAspectInfo.reset();
-        abc.weaving.weaver.Weaver.reset();
         abc.weaving.weaver.around.AroundWeaver.reset();
         abc.weaving.matching.StmtShadowMatch.reset();
         abc.weaving.matching.ExecutionShadowMatch.reset();
@@ -434,7 +432,7 @@ public class Main {
         }
         if(OptionsParser.v().O()>=3) {
             soot_args.add("-w");
-            Weaver.doCflowOptimization = true;
+            getAbcExtension().getWeaver().doCflowOptimization = true;
         }
         if(OptionsParser.v().main_class() != null) {
             soot_args.add("-main-class");
@@ -503,7 +501,7 @@ public class Main {
             compile(); // Timers marked inside compile()
             // The compile method itself aborts if there is an error
 
-            if (!GlobalAspectInfo.v().getWeavableClasses().isEmpty()) {
+            if (!abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
                 weave(); // Timers marked inside weave()
 
                 abortIfErrors();
@@ -521,7 +519,7 @@ public class Main {
                if (OptionsParser.v().O()!=0) {
                 
                		if (OptionsParser.v().around_inlining() || OptionsParser.v().before_after_inlining()) {
-	                	Weaver.doInlining();
+	                	getAbcExtension().getWeaver().doInlining();
 	                
 	                	AbcTimer.mark("Advice inlining");
 	                    phaseDebug("Advice inlining");
@@ -531,7 +529,7 @@ public class Main {
 	                	AbcTimer.mark("Interproc. constant propagator");
 	                    phaseDebug("Interproc. constant propagator");
 	              
-	                	Weaver.runBoxingRemover();
+	                	getAbcExtension().getWeaver().runBoxingRemover();
 	                	
 	                	AbcTimer.mark("Boxing remover");
 	                    phaseDebug("Boxing remover");
@@ -799,9 +797,9 @@ public class Main {
             AbcTimer.storePolyglotStats(ext.getStats());
 
                 if(Debug.v().printWeavableClasses) {
-                    System.err.println( "WeavableClasses are "+GlobalAspectInfo.v().getWeavableClasses() );
+                    System.err.println( "WeavableClasses are "+abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses() );
                 }
-            for( Iterator clsIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clsIt.hasNext(); ) {
+            for( Iterator clsIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clsIt.hasNext(); ) {
                 final AbcClass cls = (AbcClass) clsIt.next();
                 SootClass scls = cls.getSootClass();
                 scls.setApplicationClass();
@@ -813,7 +811,7 @@ public class Main {
             // Make sure that anything mentioned on the RHS of a declare parents
             // clause is resolved to HIERARCHY, so that the declare parents
             // weaver knows what to do with it
-            for( Iterator dpIt = GlobalAspectInfo.v().getDeclareParents().iterator(); dpIt.hasNext(); ) {
+            for( Iterator dpIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getDeclareParents().iterator(); dpIt.hasNext(); ) {
                 final DeclareParents dp = (DeclareParents) dpIt.next();
                 if(dp instanceof DeclareParentsImpl) {
                     final DeclareParentsImpl dpi = (DeclareParentsImpl) dp;
@@ -832,7 +830,7 @@ public class Main {
             AbcTimer.mark("Soot resolving");
             phaseDebug("Soot resolving");
 
-            GlobalAspectInfo.v().buildAspectHierarchy();
+            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().buildAspectHierarchy();
             AbcTimer.mark("Aspect inheritance");
             phaseDebug("Aspect inheritance");
 
@@ -842,7 +840,7 @@ public class Main {
 
         // Output the aspect info
         if (abc.main.Debug.v().aspectInfo)
-            GlobalAspectInfo.v().print(System.err);
+            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().print(System.err);
     }
 
     protected Compiler createCompiler(ExtensionInfo ext) {
@@ -865,7 +863,7 @@ public class Main {
             phaseDebug("Intertype Adjuster");
 
             // Retrieve all bodies
-            for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+            for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                 final AbcClass cl = (AbcClass) clIt.next();
                 if(Debug.v().showWeavableClasses) System.err.println("Weavable class: "+cl);
                 for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
@@ -907,18 +905,18 @@ public class Main {
                 phaseDebug("Load shadow types");
 
                 // for each shadow in each weavable class, compute list of applicable advice
-                GlobalAspectInfo.v().computeAdviceLists();
+                abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().computeAdviceLists();
                 AbcTimer.mark("Compute advice lists");
                 phaseDebug("Compute advice lists");                
 
                 if(Debug.v().printAdviceApplicationCount) {
                 	int adviceApplCount=0;
                 	
-                    for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                    for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                         final AbcClass cl = (AbcClass) clIt.next();
                         for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                             final SootMethod method = (SootMethod) methodIt.next(); 
-                            MethodAdviceList list=GlobalAspectInfo.v().getAdviceList(method);
+                            MethodAdviceList list=abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
                             if (list==null)
                             	continue;
                             List allAdvice=list.allAdvice();
@@ -930,13 +928,13 @@ public class Main {
                 if(Debug.v().matcherTest) {
                 	System.err.println("--- BEGIN ADVICE LISTS ---");
                     // print out matching information for testing purposes
-                    for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                    for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                         final AbcClass cl = (AbcClass) clIt.next();
                         for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                             final SootMethod method = (SootMethod) methodIt.next();
                             final StringBuffer sb=new StringBuffer(1000);
                             sb.append("method: "+method.getSignature()+"\n");
-                            GlobalAspectInfo.v().getAdviceList(method).debugInfo(" ",sb);
+                            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method).debugInfo(" ",sb);
                             System.err.println(sb.toString());
                         }
                     }         
@@ -944,7 +942,7 @@ public class Main {
                 }
 
                 if(abc.main.options.OptionsParser.v().warn_unused_advice()) {
-                    for( Iterator adIt = GlobalAspectInfo.v().getAdviceDecls().iterator(); adIt.hasNext(); ) {
+                    for( Iterator adIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceDecls().iterator(); adIt.hasNext(); ) {
                         final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
 
                         if(ad instanceof AdviceDecl && ad.getApplWarning() != null)
@@ -955,7 +953,7 @@ public class Main {
                 }
 
                 //Weaver weaver = new Weaver();
-                Weaver.weave(); // timer marks inside weave() */
+                getAbcExtension().getWeaver().weave(); // timer marks inside weave() */
             }
             // the intertype adjuster has put dummy fields into interfaces,
             // which now have to be removed
@@ -985,7 +983,7 @@ public class Main {
         HashMap options=new HashMap();
         options.put("enabled","true");
 
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
             final AbcClass cl = (AbcClass) clIt.next();
 
@@ -1009,7 +1007,7 @@ public class Main {
     }
 
     public void validate() {
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             abc.soot.util.Validate.validate(cl.getSootClass());
         }

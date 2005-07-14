@@ -65,5 +65,11 @@ public interface Regex extends Node
      * Creates a finite state machine, equivalent to the
      * regular expression, which is used by the weaver.
      */
+    public StateMachine makeSM();
+
+    /**
+     * Create a finite state machine, given a start and
+     * finish node.
+     */
     void makeSM(StateMachine sm, State start, State finish);
 }

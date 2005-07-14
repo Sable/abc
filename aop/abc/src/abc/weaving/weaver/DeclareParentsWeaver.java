@@ -36,7 +36,7 @@ public class DeclareParentsWeaver {
         List classesToReResolve = new ArrayList();
         Set extendedClasses = new HashSet();
 
-	Iterator dpi = GlobalAspectInfo.v().getDeclareParents().iterator();
+	Iterator dpi = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getDeclareParents().iterator();
 	while (dpi.hasNext()) {
 	    DeclareParents dp = (DeclareParents)dpi.next();
 	    List/*<SootClass>*/ classes = new ArrayList();
@@ -90,7 +90,7 @@ public class DeclareParentsWeaver {
 	}
 
         // Record the extended classes
-        GlobalAspectInfo.v().setExtendedClasses(extendedClasses);
+        abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().setExtendedClasses(extendedClasses);
 
 	// Recompute the hierarchy
 	Scene.v().releaseActiveHierarchy();

@@ -29,8 +29,7 @@ import java.util.*;
 /**
  * @author Julian Tibble
  */
-public class RegexAlternation_c extends Node_c
-                                implements Regex
+public class RegexAlternation_c extends Regex_c
 {
     protected Regex a;
     protected Regex b;

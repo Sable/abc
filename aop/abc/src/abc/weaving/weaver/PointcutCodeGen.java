@@ -75,7 +75,7 @@ public class PointcutCodeGen {
                                 continue;
 
                         // get all the advice list for this method
-                        MethodAdviceList adviceList = GlobalAspectInfo.v().getAdviceList(method);
+                        MethodAdviceList adviceList = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
 
 
 

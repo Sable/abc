@@ -198,7 +198,7 @@ public class IntertypeConstructorDecl_c extends ConstructorDecl_c
 				} 
 			// System.out.println("exit overrideITDconstructor");
 			if (added) 
-				GlobalAspectInfo.v().registerWeave(AbcFactory.AbcClass(pht));
+				abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerWeave(AbcFactory.AbcClass(pht));
 		}
 	
 		static boolean fromInterface(ConstructorInstance mi) {

@@ -45,7 +45,7 @@ public class SourceClasses extends NodeVisitor {
 	public NodeVisitor enter(Node n) {
 		if (n instanceof ClassDecl) {
 			ClassDecl cd = (ClassDecl) n;
-			GlobalAspectInfo.v().registerSourceClass(AbcFactory.AbcClass(cd.type()));
+			abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerSourceClass(AbcFactory.AbcClass(cd.type()));
 		}
 		return this;
 	}

@@ -68,7 +68,7 @@ public class PolyLocalVar extends WeavingVar {
 	if(loc==null) 
 		loc = localgen.generateLocal(type,"pointcutlocal");
 	else {
-		//Local l=(Local)abc.weaving.weaver.Weaver.getUnitBindings().get(loc);
+		//Local l=(Local)abc.main.Main.v().getAbcExtension.getWWeaver().getUnitBindings().get(loc);
 		//if (l!=null)
 		//	loc=l;
 	}
@@ -83,7 +83,7 @@ public class PolyLocalVar extends WeavingVar {
 		("Internal error: someone tried to read from a variable bound "
 		 +"to a polymorphic local before it was written");
 
-	Local l=(Local)abc.weaving.weaver.Weaver.getUnitBindings().get(loc);
+	Local l=(Local)abc.main.Main.v().getAbcExtension().getWeaver().getUnitBindings().get(loc);
 	//if (l!=null)
 	//	return l;
 	// else

@@ -134,7 +134,7 @@ public class FarJumpEliminator extends BodyTransformer {
 			
 	}
 	public static void eliminateFarJumps() {
-		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+		for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {

@@ -118,7 +118,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
     	if (flags().isStatic() && host.type().toClass().flags().isInterface())
     		throw new SemanticException("Intertype fields on interfaces cannot be static");
 	if (host.type() instanceof ParsedClassType &&
-	    !GlobalAspectInfo.v().getWeavableClasses()
+	    !abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses()
 	    .contains(abc.weaving.aspectinfo.AbcFactory.AbcClass((ParsedClassType) host.type())))
 	    throw new SemanticException("Host of an intertype declaration must be a weavable class");
 	    
@@ -188,7 +188,7 @@ public class IntertypeFieldDecl_c extends FieldDecl_c
 			}
 		} else  {pht.fields().add(toInsert); added=true;}
 		if (added)
-			GlobalAspectInfo.v().registerWeave(AbcFactory.AbcClass(pht));
+			abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerWeave(AbcFactory.AbcClass(pht));
 	}
 	
 	// replace this by a call to the appropriate structure!

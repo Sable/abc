@@ -29,8 +29,7 @@ import java.util.*;
 /**
  * @author Julian Tibble
  */
-public class RegexCount_c extends Node_c
-                          implements Regex
+public class RegexCount_c extends Regex_c
 {
     protected Regex a;
     protected int min;

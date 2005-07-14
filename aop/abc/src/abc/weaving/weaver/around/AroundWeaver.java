@@ -190,7 +190,7 @@ public class AroundWeaver {
 	}
 
 	public static void validate() {
-		for (Iterator clIt = GlobalAspectInfo.v().getWeavableClasses()
+		for (Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses()
 				.iterator(); clIt.hasNext();) {
 			final AbcClass cl = (AbcClass) clIt.next();
 			abc.soot.util.Validate.validate(cl.getSootClass());
@@ -282,7 +282,7 @@ public class AroundWeaver {
 
 	Map buildAroundAdviceLocalMethodMap() {
 		Map result = new HashMap();
-		List adviceDecls = GlobalAspectInfo.v().getAdviceDecls();
+		List adviceDecls = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceDecls();
 		for (Iterator it = adviceDecls.iterator(); it.hasNext();) {
 			AbstractAdviceDecl absdecl = (AbstractAdviceDecl) it.next();
 			if (!(absdecl instanceof AdviceDecl))

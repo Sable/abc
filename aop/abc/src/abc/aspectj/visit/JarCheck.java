@@ -67,7 +67,7 @@ public class JarCheck extends OncePass {
 
 	public void once() {
 		ErrorQueue eq = job.compiler().errorQueue();
-		for (Iterator wovenJarClasses = GlobalAspectInfo.v().getWovenClasses().iterator();
+		for (Iterator wovenJarClasses = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWovenClasses().iterator();
 		     wovenJarClasses.hasNext(); ) {
 		     	job.compiler().errorQueue();
 		     	ClassType jarclass = ((AbcClass) wovenJarClasses.next()).getPolyglotType();

@@ -17,21 +17,17 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package abc.tm.ast;
+package abc.tm.weaving.aspectinfo;
 
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
-
-import abc.aspectj.ast.*;
-import abc.aspectj.visit.*;
+import abc.weaving.weaver.Weaver;
 
 import java.util.*;
 
-/**
- * @author Julian Tibble
+/** 
+ * Modified weaver to implement TraceMatching
+ *
+ *  @author Julian Tibble
  */
-public interface TMDecl extends MethodDecl, ContainsAspectInfo
+public class TMWeaver extends Weaver
 {
-    List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn);
 }

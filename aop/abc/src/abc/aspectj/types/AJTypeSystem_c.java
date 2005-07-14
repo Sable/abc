@@ -189,7 +189,7 @@ public class AJTypeSystem_c
 	                // FIXME TODO XXX - temporary workaround (although matching ajc behaviour)
 	                // for what should really be done with accessor classes.
 //	                ((ParsedClassType_c)targetClass).flags(targetClass.flags().Public().clearProtected());
-	                GlobalAspectInfo.v().addClassToMakePublic(targetClass);
+	                abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().addClassToMakePublic(targetClass);
 	            }
 	            return true;
 	        }

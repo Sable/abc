@@ -471,7 +471,7 @@ public class CflowSetup extends AbstractAdviceDecl {
         }
 
         if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
-            return GlobalAspectInfo.v().getPrecedence
+            return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence
                 (a.getDefiningAspect(),b.getDefiningAspect());
 
         // FIXME: Best guess is to compare by positions, but is this correct w.r.t inlining?

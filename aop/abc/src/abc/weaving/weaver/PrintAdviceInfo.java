@@ -61,7 +61,7 @@ public class PrintAdviceInfo {
 
 	 // get all the advice list for this method
          MethodAdviceList adviceList = 
-	     GlobalAspectInfo.v().getAdviceList(method);
+	     abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
 
 	 // if no advice list for this method, nothing to do
 	 if ((adviceList == null) || adviceList.isEmpty())

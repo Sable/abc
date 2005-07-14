@@ -120,7 +120,7 @@ public class GenStaticJoinPoints {
 
 	 // get all the advice list for this method
          List/*<SJPInfo>*/ sjpInfoList = 
-	     GlobalAspectInfo.v().getSJPInfoList(method);
+	     abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getSJPInfoList(method);
 
          debug("   --- BEGIN generating static join points for method " + 
 	                method.getName());

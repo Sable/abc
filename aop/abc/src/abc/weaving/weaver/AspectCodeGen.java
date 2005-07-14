@@ -441,7 +441,7 @@ public class AspectCodeGen {
       { // TODO: right now doing ALL weavable classes as ajc does, should
         // be able to improve upon that with some analysis.  LJH
         for( Iterator clIt =
-                 GlobalAspectInfo.v().getWeavableClasses().iterator();
+                 abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator();
                  clIt.hasNext(); )
           { final AbcClass cl = (AbcClass) clIt.next();
             final SootClass scl = cl.getSootClass();

@@ -261,7 +261,7 @@ public class AspectMethods extends ContextVisitor {
 				}
 		if(del instanceof ClassDecl) {
 		    // Emulate ajc's behaviour of turning classes that privileged aspects access public.
-		    if(GlobalAspectInfo.v().getClassesToMakePublic().contains(((ClassDecl)del).type())) {
+		    if(abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getClassesToMakePublic().contains(((ClassDecl)del).type())) {
 		        n = ((ClassDecl)n).flags(((ClassDecl)n).flags().Public().clearProtected());
 		    }
 		}

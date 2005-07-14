@@ -1014,7 +1014,7 @@ public class AdviceInliner { //extends BodyTransformer {
 			return;
 		
 		// update method calls
-		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+		for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
@@ -1084,7 +1084,7 @@ public class AdviceInliner { //extends BodyTransformer {
 		debug("Found duplicate(s): " + duplicates);
 		
 	
-		for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+		for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {

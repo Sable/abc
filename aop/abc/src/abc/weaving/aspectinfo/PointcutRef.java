@@ -62,7 +62,7 @@ public class PointcutRef extends Pointcut {
 	if (decl == null) {
 	    decl = getDirectDecl();
 	    if (decl.isAbstract()) {
-		decl = GlobalAspectInfo.v().getPointcutDecl(decl.getName(), context);
+		decl = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPointcutDecl(decl.getName(), context);
 		if(decl.isAbstract()) 
 		    throw new InternalCompilerError("decl for "+this+" in context "+context+" was abstract");
 	    }

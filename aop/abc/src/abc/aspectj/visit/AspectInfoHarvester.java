@@ -49,7 +49,7 @@ public class AspectInfoHarvester extends ContextVisitor {
 
     public AspectInfoHarvester(Job job, TypeSystem ts, NodeFactory nf) {
 	super(job, ts, nf);
-	gai = GlobalAspectInfo.v();
+	gai = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo();
     }
 
     public NodeVisitor enter(Node parent, Node n) {

@@ -77,7 +77,7 @@ public class DeclarePrecedence_c extends DeclareDecl_c
     		ClassnamePatternExpr p = (ClassnamePatternExpr) patIt.next();
     		if (p instanceof CPEName) {
 	    		boolean matchedAspect = false;
-	    		for (Iterator wcs = GlobalAspectInfo.v().getWeavableClasses().iterator(); wcs.hasNext() && !matchedAspect; ) {
+	    		for (Iterator wcs = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); wcs.hasNext() && !matchedAspect; ) {
 	    			AbcClass abcc = (AbcClass) wcs.next();
 	    			ClassType ct = abcc.getPolyglotType();
 	    			if (ct instanceof AspectType)

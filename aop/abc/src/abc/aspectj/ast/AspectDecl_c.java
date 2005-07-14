@@ -383,10 +383,10 @@ public class AspectDecl_c extends AJClassDecl_c
         cd.type().flags(cd.flags().Public());
 
         // add errors generaced by accessor methods to error queue
-		for(Iterator it = GlobalAspectInfo.v().getNonWeavableClassErrors().iterator(); it.hasNext(); ) {
+		for(Iterator it = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getNonWeavableClassErrors().iterator(); it.hasNext(); ) {
 		    visitor.job().compiler().errorQueue().enqueue((ErrorInfo)it.next());
 		}
-		GlobalAspectInfo.v().getNonWeavableClassErrors().clear();
+		abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getNonWeavableClassErrors().clear();
         
         return cd.addAspectMembers(nf, ts).flags(cd.flags().Public());
     }

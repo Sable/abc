@@ -68,7 +68,7 @@ public class ConstructorInliner {
                 continue;
 
             // if it has init or preinit advice list, inline body 
-            if (GlobalAspectInfo.v().getClassInitializationShadowMatch(method) != null || GlobalAspectInfo.v().getPreinitializationShadowMatch(method) != null)
+            if (abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getClassInitializationShadowMatch(method) != null || abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPreinitializationShadowMatch(method) != null)
 
             {
                 debug("Must inline into " + method.getSignature());
@@ -94,11 +94,11 @@ public class ConstructorInliner {
     }
     private static void inlineAdviceApplications(ConstructorInliningMap cim) {
         debug("   --- BEGIN Inlining advice applications " + cim.inlinee().getSignature());
-        MethodAdviceList mal = GlobalAspectInfo.v().getAdviceList(cim.inlinee());
+        MethodAdviceList mal = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(cim.inlinee());
         for( Iterator aaIt = mal.bodyAdvice.iterator(); aaIt.hasNext(); ) {
             final AdviceApplication aa = (AdviceApplication) aaIt.next();
             MethodAdviceList targetMal =
-                GlobalAspectInfo.v().getAdviceList(cim.target());
+                abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(cim.target());
             AdviceApplication newAA = aa.inline(cim);
             targetMal.addBodyAdvice(newAA);
             targetMal.flush();
@@ -107,7 +107,7 @@ public class ConstructorInliner {
         for( Iterator aaIt = mal.stmtAdvice.iterator(); aaIt.hasNext(); ) {
             final AdviceApplication aa = (AdviceApplication) aaIt.next();
             MethodAdviceList targetMal =
-                GlobalAspectInfo.v().getAdviceList(cim.target());
+                abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(cim.target());
             AdviceApplication newAA = aa.inline(cim);
             targetMal.addStmtAdvice(newAA);
             targetMal.flush();

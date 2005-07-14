@@ -21,11 +21,10 @@
 package abc.tm;
 
 import abc.aspectj.parse.*;
-import abc.tm.weaving.aspectinfo.TMAdviceDecl;
 import abc.weaving.aspectinfo.*;
+import abc.weaving.weaver.*;
 
-import soot.Scene;
-import soot.SootClass;
+import abc.tm.weaving.aspectinfo.*;
 
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
@@ -38,6 +37,9 @@ import java.util.*;
  */
 public class AbcExtension extends abc.main.AbcExtension
 {
+    private GlobalAspectInfo globalAspectInfo = null;
+    private Weaver weaver = null;
+
     protected void collectVersions(StringBuffer versions)
     {
         super.collectVersions(versions);
@@ -52,7 +54,23 @@ public class AbcExtension extends abc.main.AbcExtension
     {
         return new abc.tm.ExtensionInfo(jar_classes, aspect_sources);
     }
-    
+ 
+    public GlobalAspectInfo getGlobalAspectInfo()
+    {
+        if (globalAspectInfo == null)
+            globalAspectInfo = new TMGlobalAspectInfo();
+
+        return globalAspectInfo;
+    }
+
+    public Weaver getWeaver()
+    {
+        if (weaver == null)
+            weaver = new Weaver();
+
+        return weaver;
+    }
+
     public void initLexerKeywords(AbcLexer lexer)
     {
         // Add the base keywords
@@ -169,7 +187,7 @@ public class AbcExtension extends abc.main.AbcExtension
 			   return CflowSetup.getPrecedence((CflowSetup) a,(CflowSetup) b);
 
 		   if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
-			   return GlobalAspectInfo.v().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
+			   return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
 
 	       // change for tracematches starts here
 			   if (a instanceof TMAdviceDecl && b instanceof TMAdviceDecl)

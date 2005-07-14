@@ -85,7 +85,7 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 
                             AbcClass cl = AbcFactory.AbcClass(ct);
 			    dp.addTarget(cl);
-                            GlobalAspectInfo.v().registerWeave(cl);
+                            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerWeave(cl);
 
 			    PCNode hi_parent = ext.hierarchy.insertClassAndSuperclasses(parentct, false);
 			    hi_cl.addParent(hi_parent);
@@ -127,7 +127,7 @@ public class ParentDeclarer extends ErrorHandlingVisitor {
 
                         AbcClass cl = AbcFactory.AbcClass(ct);
                         dp.addTarget(cl);
-                        GlobalAspectInfo.v().registerWeave(cl);
+                        abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().registerWeave(cl);
 
 			if (ct instanceof ParsedClassType) {
 			    ParsedClassType pct = (ParsedClassType)ct;

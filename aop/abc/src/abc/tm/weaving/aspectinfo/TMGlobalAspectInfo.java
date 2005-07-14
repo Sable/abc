@@ -17,21 +17,28 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package abc.tm.ast;
+package abc.tm.weaving.aspectinfo;
 
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
-
-import abc.aspectj.ast.*;
-import abc.aspectj.visit.*;
+import abc.weaving.aspectinfo.*;
 
 import java.util.*;
 
-/**
- * @author Julian Tibble
+/** 
+ * Extension of GlobalAspectInfo to store TraceMatch objects. 
+ *
+ *  @author Julian Tibble
  */
-public interface TMDecl extends MethodDecl, ContainsAspectInfo
+public class TMGlobalAspectInfo extends GlobalAspectInfo
 {
-    List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn);
+    private List tracematches = new LinkedList();
+
+    public void addTraceMatch(TraceMatch tm)
+    {
+        tracematches.add(tm);
+    }
+
+    public List getTraceMatches()
+    {
+        return tracematches;
+    }
 }

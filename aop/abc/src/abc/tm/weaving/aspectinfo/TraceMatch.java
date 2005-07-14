@@ -17,21 +17,39 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package abc.tm.ast;
+package abc.tm.weaving.aspectinfo;
 
-import polyglot.ast.*;
-import polyglot.types.*;
-import polyglot.util.*;
+import abc.weaving.aspectinfo.*;
 
-import abc.aspectj.ast.*;
-import abc.aspectj.visit.*;
+import abc.tm.weaving.matching.*;
 
 import java.util.*;
 
-/**
- * @author Julian Tibble
+/** 
+ * Represents a TraceMatch.
+ *
+ *  @author Julian Tibble
  */
-public interface TMDecl extends MethodDecl, ContainsAspectInfo
+public class TraceMatch
 {
-    List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn);
+    protected List formals;
+    protected StateMachine state_machine;
+
+    protected Map sym_to_vars;
+    protected Map sym_to_advice_name;
+    protected Map kind_to_advice_name;
+
+    protected Aspect container;
+ 
+    public TraceMatch(List formals, StateMachine state_machine,
+                        Map sym_to_vars, Map sym_to_advice_name,
+                        Map kind_to_advice_name, Aspect container)
+    {
+        this.formals = formals;
+        this.state_machine = state_machine;
+        this.sym_to_vars = sym_to_vars;
+        this.sym_to_advice_name = sym_to_advice_name;
+        this.kind_to_advice_name = kind_to_advice_name;
+        this.container = container;
+    }
 }

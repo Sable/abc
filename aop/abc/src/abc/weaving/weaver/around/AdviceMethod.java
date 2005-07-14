@@ -610,7 +610,7 @@ public class AdviceMethod {
 			Scene.v().addClass(closureInterface);
 			closureInterface.setApplicationClass();
 
-			//GlobalAspectInfo.v().getGeneratedClasses().add(interfaceName);						 
+			//abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getGeneratedClasses().add(interfaceName);						 
 		}
 		return closureInterface;
 	}

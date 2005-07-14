@@ -42,14 +42,6 @@ import abc.weaving.matching.*;
  *  @author Damien Sereni
  */
 public class GlobalAspectInfo {
-    private GlobalAspectInfo() {}
-    private static GlobalAspectInfo instance = new GlobalAspectInfo();
-    public static GlobalAspectInfo v() { return instance; }
-
-    public static void reset() {
-        instance = new GlobalAspectInfo();
-    }
-
     public static final int PRECEDENCE_NONE = 0;
     public static final int PRECEDENCE_FIRST = 1;
     public static final int PRECEDENCE_SECOND = 2;

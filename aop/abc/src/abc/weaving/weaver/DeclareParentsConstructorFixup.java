@@ -38,7 +38,7 @@ import java.util.*;
 public class DeclareParentsConstructorFixup {
 
     public void weave() throws SemanticException {
-        Iterator eci = GlobalAspectInfo.v().getExtendedClasses().iterator();
+        Iterator eci = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getExtendedClasses().iterator();
         while (eci.hasNext()) {
             SootClass ec = (SootClass)eci.next();
             SootClass ecsuper = ec.getSuperclass();

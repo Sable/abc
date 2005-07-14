@@ -68,7 +68,7 @@ public class Unweaver {
         applicationClasses=
         	new HashSet(Scene.v().getApplicationClasses());
         
-        for( Iterator abcClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
+        for( Iterator abcClassIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
             final AbcClass abcClass = (AbcClass) abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
             classToMethods.put( cl, new HashSet() );
@@ -105,7 +105,7 @@ public class Unweaver {
             m.setParameterTypes((List)savedParameters.get(m));
             ret.putAll( newBindings );
         }
-        for( Iterator abcClassIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
+        for( Iterator abcClassIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); abcClassIt.hasNext(); ) {
             final AbcClass abcClass = (AbcClass) abcClassIt.next();
             SootClass cl = abcClass.getSootClass();
             Collection methods = (Collection) classToMethods.get(cl);

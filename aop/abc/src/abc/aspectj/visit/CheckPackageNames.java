@@ -46,7 +46,7 @@ public class CheckPackageNames extends OncePass {
     }
 
     public void once() {
-        for (Iterator weavableClasses = GlobalAspectInfo.v().getWeavableClasses().iterator();
+        for (Iterator weavableClasses = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator();
              weavableClasses.hasNext(); ) {
             ClassType ctype = ((AbcClass) weavableClasses.next()).getPolyglotType();
 

@@ -44,11 +44,11 @@ public class RebindingShadowPoints extends ShadowPoints {
     }
 
     public Stmt getBegin(){
-        return (Stmt)Weaver.rebind(super.getBegin());
+        return (Stmt)abc.main.Main.v().getAbcExtension().getWeaver().rebind(super.getBegin());
     }
 
     public Stmt getEnd(){
-        return (Stmt)Weaver.rebind(super.getEnd());
+        return (Stmt)abc.main.Main.v().getAbcExtension().getWeaver().rebind(super.getEnd());
     }
 
     public String toString(){
