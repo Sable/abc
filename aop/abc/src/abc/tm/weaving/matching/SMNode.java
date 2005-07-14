@@ -15,7 +15,8 @@ public class SMNode implements State {
 
     protected boolean initialNode = false;
     protected boolean finalNode = false;
-    protected LinkedHashSet/*<SMEdge>*/ incoming, outgoing;
+    protected LinkedHashSet/*<SMEdge>*/ incoming = new LinkedHashSet();
+    protected LinkedHashSet/*<SMEdge>*/ outgoing = new LinkedHashSet();
     
     private TMStateMachine hostFSA;
     
