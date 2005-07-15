@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class SMNode implements State {
 
+    protected int number = -1;
     protected boolean initialNode = false;
     protected boolean finalNode = false;
     protected LinkedHashSet/*<SMEdge>*/ incoming = new LinkedHashSet();
@@ -158,5 +159,13 @@ public class SMNode implements State {
     
     public Iterator getInEdgeIterator() {
         return incoming.iterator();
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 }

@@ -222,11 +222,25 @@ public class TMStateMachine implements StateMachine {
     }
     
     /**
-     * Accumulates, for each hstate, information about which tracematch vars must be
+     * Accumulates, for each state, information about which tracematch vars must be
      * bound in it. Will allow certain optimisations in the generated code.
      */
     protected void collectBindingInfo() {
         
+    }
+    
+    /**
+     * Renumbers the states, starting from 0 and going in the iteration order of the
+     * nodes set. Can break state-constraint class associations, so only call this once
+     * after the FSA is fully transformed. Node numbers are -1 prior to this method
+     * being called.
+     */
+    public void renumberStates() {
+        int cnt = 0;
+        Iterator it = nodes.iterator();
+        while(it.hasNext()) {
+            ((SMNode)it.next()).setNumber(cnt++);
+        }
     }
     
     /**
@@ -241,6 +255,7 @@ public class TMStateMachine implements StateMachine {
         addSelfLoops(declaredSymbols);
         removeSkipToFinal();
         collectBindingInfo();
+        renumberStates();
     }
     
     public String toString() {
