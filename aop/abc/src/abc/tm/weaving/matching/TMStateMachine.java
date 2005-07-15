@@ -20,6 +20,13 @@ public class TMStateMachine implements StateMachine {
         nodes.add(n);
         return n;
     }
+    
+    // for creating new nodes without adding them to the nodes collection, e.g. while
+    // iterating over it
+    protected State newStateDontAdd() {
+        SMNode n = new SMNode(this, false, false);
+        return n;
+    }
 
     /**
      * Assumes the from and to variables are actually the relevant implementations from
@@ -201,8 +208,9 @@ public class TMStateMachine implements StateMachine {
             cur = (SMNode)it.next();
             if(cur.isFinalNode()) {
                 cur.setFinal(false);
-                newNode = newState();
+                newNode = newStateDontAdd();
                 newNode.setFinal(true);
+                nodesToAdd.add(newNode);
                 Iterator edgeIt = cur.getInEdgeIterator();
                 while(edgeIt.hasNext()) {
                     edge = (SMEdge)edgeIt.next();
@@ -210,6 +218,7 @@ public class TMStateMachine implements StateMachine {
                 }
             }
         }
+        nodes.addAll(nodesToAdd);
     }
     
     /**
