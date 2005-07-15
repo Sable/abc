@@ -258,6 +258,10 @@ public class TMStateMachine implements StateMachine {
         renumberStates();
     }
     
+    public Iterator getStateIterator() {
+        return nodes.iterator();
+    }
+    
     public String toString() {
         String result = "State machine:\n--------------\n";
         java.util.Map stateNumbers = new java.util.HashMap();
