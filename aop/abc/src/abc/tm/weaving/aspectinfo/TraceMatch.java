@@ -32,6 +32,7 @@ import java.util.*;
  */
 public class TraceMatch
 {
+    protected String name;
     protected List formals;
     protected StateMachine state_machine;
 
@@ -41,10 +42,11 @@ public class TraceMatch
 
     protected Aspect container;
  
-    public TraceMatch(List formals, StateMachine state_machine,
+    public TraceMatch(String name, List formals, StateMachine state_machine,
                         Map sym_to_vars, Map sym_to_advice_name,
                         Map kind_to_advice_name, Aspect container)
     {
+        this.name = name;
         this.formals = formals;
         this.state_machine = state_machine;
         this.sym_to_vars = sym_to_vars;

@@ -242,7 +242,7 @@ public class TMDecl_c extends AJMethodDecl_c
 
         // create TraceMatch
         TraceMatch tm =
-            new TraceMatch(wfs, regex.makeSM(), sym_to_vars,
+            new TraceMatch(tracematch_name, wfs, regex.makeSM(), sym_to_vars,
                             sym_to_advice_name, kind_to_advice_name,
                             current_aspect);
 
