@@ -25,6 +25,7 @@ import abc.weaving.aspectinfo.*;
 import abc.weaving.weaver.*;
 
 import abc.tm.weaving.aspectinfo.*;
+import abc.tm.weaving.weaver.*;
 
 import polyglot.util.Position;
 import polyglot.util.InternalCompilerError;
@@ -66,7 +67,7 @@ public class AbcExtension extends abc.main.AbcExtension
     public Weaver getWeaver()
     {
         if (weaver == null)
-            weaver = new Weaver();
+            weaver = new TMWeaver();
 
         return weaver;
     }
