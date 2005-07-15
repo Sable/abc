@@ -19,9 +19,13 @@
 
 package abc.tm.weaving.aspectinfo;
 
-import abc.weaving.aspectinfo.*;
+import polyglot.util.InternalCompilerError;
 
+import abc.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.*;
+
+import soot.SootClass;
+import soot.SootMethod;
 
 import java.util.*;
 
@@ -64,16 +68,12 @@ public class TraceMatch
         return formals;
     }
 
-    public Map getKind_to_advice_name() {
-        return kind_to_advice_name;
-    }
-
     public StateMachine getState_machine() {
         return state_machine;
     }
 
-    public Map getSym_to_advice_name() {
-        return sym_to_advice_name;
+    public Set getSymbols() {
+        return sym_to_vars.keySet();
     }
 
     public Map getSym_to_vars() {
@@ -82,5 +82,25 @@ public class TraceMatch
 
     public String getName() {
         return name;
+    }
+
+    public SootMethod getSymbolAdviceMethod(String symbol)
+    {
+        String advice_name = (String) sym_to_advice_name.get(symbol);
+
+        SootClass sc = container.getInstanceClass().getSootClass();
+        SootMethod sm = sc.getMethodByName(advice_name);
+
+        return sm;
+    }
+
+    public SootMethod getKindAdviceMethod(String kind)
+    {
+        String advice_name = (String) kind_to_advice_name.get(kind);
+
+        SootClass sc = container.getInstanceClass().getSootClass();
+        SootMethod sm = sc.getMethodByName(advice_name);
+
+        return sm;
     }
 }

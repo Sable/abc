@@ -4,7 +4,7 @@ import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.TMStateMachine;
 
 /**
- * Fills in method stubs for tracecmatch classes.
+ * Fills in method stubs for tracematch classes.
  * @author Pavel Avgustinov
  */
 public class TraceMatchCodeGen {
@@ -40,7 +40,7 @@ public class TraceMatchCodeGen {
         TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
         // need to pass in the collection of names of declared symbols for some of the FSA
         // transformations.
-        tmsm.prepareForMatching(tm.getSym_to_advice_name().keySet());
+        tmsm.prepareForMatching(tm.getSymbols());
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 
