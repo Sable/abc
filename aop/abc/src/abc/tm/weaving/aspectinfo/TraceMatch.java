@@ -29,6 +29,7 @@ import java.util.*;
  * Represents a TraceMatch.
  *
  *  @author Julian Tibble
+ *  @author Pavel Avgustinov
  */
 public class TraceMatch
 {
@@ -53,5 +54,33 @@ public class TraceMatch
         this.sym_to_advice_name = sym_to_advice_name;
         this.kind_to_advice_name = kind_to_advice_name;
         this.container = container;
+    }
+
+    public Aspect getContainer() {
+        return container;
+    }
+
+    public List getFormals() {
+        return formals;
+    }
+
+    public Map getKind_to_advice_name() {
+        return kind_to_advice_name;
+    }
+
+    public StateMachine getState_machine() {
+        return state_machine;
+    }
+
+    public Map getSym_to_advice_name() {
+        return sym_to_advice_name;
+    }
+
+    public Map getSym_to_vars() {
+        return sym_to_vars;
+    }
+
+    public String getName() {
+        return name;
     }
 }

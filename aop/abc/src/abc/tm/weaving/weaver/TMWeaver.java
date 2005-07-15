@@ -20,6 +20,7 @@
 package abc.tm.weaving.weaver;
 
 import abc.weaving.weaver.Weaver;
+import abc.tm.weaving.aspectinfo.*;
 
 import java.util.*;
 
@@ -27,7 +28,30 @@ import java.util.*;
  * Modified weaver to implement TraceMatching
  *
  *  @author Julian Tibble
+ *  @author Pavel Avgustinov
  */
 public class TMWeaver extends Weaver
 {
+    // TODO: Add a dedicated flag for tracematch codegen debugging
+    private void debug(String message)
+    { if (abc.main.Debug.v().weaverDriver)
+        System.err.println("WEAVER DRIVER (TM) ***** " + message);
+    }
+
+    
+    public void weaveGenerateAspectMethods() {
+        // Generate methods inside aspects needed for code gen and bodies of
+        //   methods not filled in by front-end (i.e. aspectOf())
+        super.weaveGenerateAspectMethods();
+        // also generate the code needed for tracematches, i.e. fill in the
+        // advice bodies corresponding to each symbol being matched, and the bodies
+        // for the different kinds of 'some' advice.
+        debug("Generating code for tracematches");
+        TraceMatchCodeGen tmcg = new TraceMatchCodeGen();
+        Iterator it = ((TMGlobalAspectInfo)abc.main.Main.v().getAbcExtension().getGlobalAspectInfo()).getTraceMatches().iterator();
+        while(it.hasNext()) {
+            TraceMatch tm = (TraceMatch)it.next();
+            tmcg.fillInTraceMatch(tm);
+        }
+    }
 }

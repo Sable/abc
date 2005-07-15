@@ -3,6 +3,8 @@ package abc.tm.weaving.matching;
 import java.util.LinkedHashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Collection;
+import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 
 /**
  * Implementation of the StateMachine interface for tracematch matching
@@ -48,7 +50,7 @@ public class TMStateMachine implements StateMachine {
      * one cannot reach a final node -- those should be deleted in a clean-up pass which
      * should be done anyway.
      */
-    public void eliminateEpsilonTransitions() {
+    protected void eliminateEpsilonTransitions() {
         LinkedHashSet closure = new LinkedHashSet();
         SMNode cur, next;
         SMEdge edge;
@@ -96,7 +98,7 @@ public class TMStateMachine implements StateMachine {
      * an initial state to a finnal state. Assumes there are no epsilon transitions (not
      * sure if this is necessary, though).
      */
-    public void compressStates() {
+    protected void compressStates() {
         // TODO: This might be better done with flags on the nodes...
         LinkedHashSet initReachable = new LinkedHashSet(), finalReachable = new LinkedHashSet();
         SMNode cur;
@@ -145,12 +147,9 @@ public class TMStateMachine implements StateMachine {
      * This assumes that no state already has a skip loop. Skips are empty labels (as opposed
      * to null labels, which represent epsilon transitions -- those should have been eliminated).
      */
-    public void addSelfLoops() {
+    protected void addSelfLoops(Collection/*<String>*/ declaredSymbols) {
         SMNode cur;
         String l;
-/*
- * COMMENTED OUT to enable compilation..
-        Set declaredSymbols = AspectInfo.GetAppropriateMap.keySet();
         Iterator it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
@@ -166,7 +165,6 @@ public class TMStateMachine implements StateMachine {
                 }
             }
         }
- */
     }
     
     /**
@@ -191,7 +189,7 @@ public class TMStateMachine implements StateMachine {
      * state). For each incoming edge of S that is not a skip, create an incoming edge on N from 
      * the same node and with the same label. Mark N as final. 
      */
-    public void removeSkipToFinal() {
+    protected void removeSkipToFinal() {
         SMNode cur;
         State newNode;
         SMEdge edge;
@@ -212,6 +210,28 @@ public class TMStateMachine implements StateMachine {
                 }
             }
         }
+    }
+    
+    /**
+     * Accumulates, for each hstate, information about which tracematch vars must be
+     * bound in it. Will allow certain optimisations in the generated code.
+     */
+    protected void collectBindingInfo() {
+        
+    }
+    
+    /**
+     * Transforms the FSA that was generated from the regular expression into an NFA for
+     * matching suffixes interleaved with skips and ending in a declared symbol against
+     * the regular expression. Should be called once.
+     * @param declaredSymbols list of the names of all declared symbols.
+     */
+    public void prepareForMatching(Collection declaredSymbols) {
+        eliminateEpsilonTransitions();
+        compressStates();
+        addSelfLoops(declaredSymbols);
+        removeSkipToFinal();
+        collectBindingInfo();
     }
     
     public String toString() {
