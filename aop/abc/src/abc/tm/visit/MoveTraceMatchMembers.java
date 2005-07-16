@@ -93,15 +93,23 @@ public class MoveTraceMatchMembers extends ContextVisitor
 
     protected TMAdviceDecl compileAdvice(TMAdviceDecl tm_ad)
     {
-        Job compile_tm_ad =
-            job().spawn(context(), tm_ad, Pass.BUILD_TYPES, Pass.DISAM_ALL);
-
-        if (!compile_tm_ad.status()) {
+    	// need to run in phases, as the pattern evaluator doesn't like
+    	// processing generated tree fragments
+        Job compile_tm_ad1 =
+            job().spawn(context(), tm_ad, Pass.BUILD_TYPES,Pass.BUILD_TYPES);
+        if (!compile_tm_ad1.status()) {
+            // oops, this shouldn't have produced any errors
+            throw new InternalCompilerError(
+                        "Compiling generated advice failed in type building");
+        }
+        Job compile_tm_ad2 =
+        	job().spawn(context(), compile_tm_ad1.ast(),Pass.CLEAN_SIGS,Pass.DISAM_ALL);
+        if (!compile_tm_ad2.status()) {
             // oops, this shouldn't have produced any errors
             throw new InternalCompilerError(
                         "Compiling generated advice failed");
         }
 
-        return (TMAdviceDecl) compile_tm_ad.ast();
+        return (TMAdviceDecl) compile_tm_ad2.ast();
     }
 }
