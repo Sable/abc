@@ -88,7 +88,7 @@ public class TraceMatch
 
     public List getVariableOrder(String symbol)
     {
-        return null
+        return null;
     }
 
     public String getName() {
