@@ -95,8 +95,8 @@ public class TraceMatch
         return ordered_vars;
     }
 
-    public Aspect getContainer() {
-        return container;
+    public SootClass getContainerClass() {
+        return container.getInstanceClass().getSootClass();
     }
 
     public List getFormals() {
@@ -126,6 +126,16 @@ public class TraceMatch
 
     public String getName() {
         return name;
+    }
+
+    public SootMethod getBodyMethod()
+    {
+        String body_name = getName() + "$body";
+
+        SootClass sc = container.getInstanceClass().getSootClass();
+        SootMethod sm = sc.getMethodByName(body_name);
+
+        return sm;
     }
 
     public SootMethod getSymbolAdviceMethod(String symbol)
