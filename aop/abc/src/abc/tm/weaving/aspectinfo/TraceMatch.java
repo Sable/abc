@@ -86,6 +86,11 @@ public class TraceMatch
         return sym_to_vars;
     }
 
+    public List getVariableOrder(String symbol)
+    {
+        return null
+    }
+
     public String getName() {
         return name;
     }
