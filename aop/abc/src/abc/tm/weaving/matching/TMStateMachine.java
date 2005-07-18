@@ -2,6 +2,8 @@ package abc.tm.weaving.matching;
 
 import java.util.LinkedHashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.Map;
 import java.util.Collection;
@@ -227,14 +229,39 @@ public class TMStateMachine implements StateMachine {
      * state S if and only if every path from the S to a final state F binds X.
      * 
      * Conversely, we must keep a strong reference if and only if there is some path
-     * from S to a final state that does not bind X. Thinking of the 'reverse graph'
-     * obtained by changing the direction of every edge and swapping initial and 
-     * final flags, S needs to reference X strongly if and only if every path from 
-     * an initial state (of the reverse graph -- so a final state of the normal 
-     * graph) to S binds X.
+     * from S to a final state that does not bind X. 
      */
-    protected void collectBindingInfo() {
-        
+    protected void collectBindingInfo(Collection declaredSymbols,Map symtovar) {
+        List ws = new LinkedList(edges);
+        for (Iterator it = getStateIterator(); it.hasNext(); ) {
+        	SMNode smn = (SMNode) it.next();
+        	smn.needWeakRefs = new LinkedHashSet(declaredSymbols); 
+        }
+        while (!ws.isEmpty()) {
+        	SMEdge e = (SMEdge) ws.remove(0);
+        	SMNode v = e.getSource();
+        	SMNode w = e.getTarget();
+        	Set belw = new LinkedHashSet(w.needWeakRefs);
+        	belw.addAll((Collection)symtovar.get(e.getLabel()));
+        	Set lv = (Set) symtovar.get(e.getLabel());
+        	if (!belw.equals(lv)) {
+        	   v.needWeakRefs.retainAll(belw);
+        	   for (Iterator ite=edges.iterator(); ite.hasNext(); ) {
+        	   	   SMEdge e2 = (SMEdge) ite.next();
+        	   	   if (e2.getTarget() == v && !ws.contains(e2))
+        	   	   	ws.add(0,e2);	
+        	   }
+        	}
+        }
+		for (Iterator it = getStateIterator(); it.hasNext(); ) {
+			SMNode smn = (SMNode) it.next();
+			smn.needStrongRefs = new LinkedHashSet(declaredSymbols);
+			for (Iterator it2 = smn.needStrongRefs.iterator(); it2.hasNext(); ) {
+				String s = (String) it2.next();
+				if (smn.needWeakRefs.contains(s))
+					it2.remove(); 
+			}
+		}
     }
     
     /**
@@ -262,7 +289,7 @@ public class TMStateMachine implements StateMachine {
         compressStates();
         addSelfLoops(declaredSymbols);
         removeSkipToFinal();
-        collectBindingInfo();
+        collectBindingInfo(declaredSymbols,symToVar);
         renumberStates();
     }
     

@@ -21,6 +21,7 @@ public class SMNode implements State {
     
     // set of symbols for which this state needs to keep strong refs
     public LinkedHashSet/*<String>*/ needStrongRefs = new LinkedHashSet();
+    public LinkedHashSet/*<String>*/ needWeakRefs = new LinkedHashSet();
     
     private TMStateMachine hostFSA;
     

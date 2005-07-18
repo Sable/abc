@@ -68,7 +68,7 @@ public class TraceMatchCodeGen {
         TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
         // need to pass in the collection of names of declared symbols for some of the FSA
         // transformations.
-        tmsm.prepareForMatching(tm.getSymbols());
+        tmsm.prepareForMatching(tm.getSymbols(),tm.getSym_to_vars());
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 
