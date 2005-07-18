@@ -1,5 +1,13 @@
 package abc.tm.weaving.weaver;
 
+import java.util.LinkedList;
+
+import com.sun.rsasign.i;
+
+import soot.*;
+import soot.util.*;
+import soot.jimple.*;
+import abc.soot.util.LocalGeneratorEx;
 import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.TMStateMachine;
 
@@ -14,6 +22,14 @@ public class TraceMatchCodeGen {
         System.err.println("ACG*** " + message);
     }
 
+    protected String getConstraintClassName(TraceMatch tm) {
+        return "Constraint$" + tm.getName();
+    }
+    
+    protected String getDisjunctClassName(TraceMatch tm) {
+        return "Disjunct$" + tm.getName();
+    }
+    
     /**
      * Create the classes needed to keep constraints for a given tracematch. Classes are
      * the Constraint set of disjuncts and the disjunct class, plus any helper classes.
@@ -21,7 +37,19 @@ public class TraceMatchCodeGen {
      * @param tm The relevant tracematch
      */
     protected void createConstraintClasses(TraceMatch tm) {
+        // the SootClasses for the constraint and the main disjunct class for the tracematch 
+        SootClass constraint = new SootClass(getConstraintClassName(tm));
+        SootClass disjunct = new SootClass(getDisjunctClassName(tm));
+        createMainConstraintClass(constraint, disjunct);
         
+    }
+    
+    /**
+     * Fills in the constraint class for a given tracematch.
+     * @param constraint the SootClass to add methods and fields to
+     * @param disjunct the SootClass for the disjuncts -- to call methods on
+     */
+    protected void createMainConstraintClass(SootClass constraint, SootClass disjunct) {
     }
     
     /**
