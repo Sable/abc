@@ -19,6 +19,9 @@ public class SMNode implements State {
     protected LinkedHashSet/*<SMEdge>*/ incoming = new LinkedHashSet();
     protected LinkedHashSet/*<SMEdge>*/ outgoing = new LinkedHashSet();
     
+    // set of symbols for which this state needs to keep strong refs
+    public LinkedHashSet/*<String>*/ needStrongRefs = new LinkedHashSet();
+    
     private TMStateMachine hostFSA;
     
     public SMNode(TMStateMachine fsa, boolean isInitial, boolean isFinal) {

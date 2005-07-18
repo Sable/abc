@@ -3,6 +3,7 @@ package abc.tm.weaving.matching;
 import java.util.LinkedHashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Map;
 import java.util.Collection;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 
@@ -117,10 +118,9 @@ public class TMStateMachine implements StateMachine {
             if(cur.isFinalNode()) cur.fillInClosure(finalReachable, false, false);
         }
         // The set of nodes we need to keep is (initReachable intersect finalReachable), 
-        // so we remove everything that's in initReachable *or* finalReachable.
         LinkedHashSet nodesToRemove = new LinkedHashSet(nodes);
-        nodesToRemove.removeAll(initReachable);
-        nodesToRemove.removeAll(finalReachable);
+        initReachable.retainAll(finalReachable); // nodes that are both init- and final-reachable
+        nodesToRemove.removeAll(initReachable);  // -- we want to keep them
         
         // iterate over all nodes we want to remove and remove them, i.e. destroy their edges
         it = nodesToRemove.iterator();
@@ -223,7 +223,15 @@ public class TMStateMachine implements StateMachine {
     
     /**
      * Accumulates, for each state, information about which tracematch vars must be
-     * bound in it. Will allow certain optimisations in the generated code.
+     * stored using a strong reference. We want to use reference for a variable X in
+     * state S if and only if every path from the S to a final state F binds X.
+     * 
+     * Conversely, we must keep a strong reference if and only if there is some path
+     * from S to a final state that does not bind X. Thinking of the 'reverse graph'
+     * obtained by changing the direction of every edge and swapping initial and 
+     * final flags, S needs to reference X strongly if and only if every path from 
+     * an initial state (of the reverse graph -- so a final state of the normal 
+     * graph) to S binds X.
      */
     protected void collectBindingInfo() {
         
@@ -249,7 +257,7 @@ public class TMStateMachine implements StateMachine {
      * the regular expression. Should be called once.
      * @param declaredSymbols list of the names of all declared symbols.
      */
-    public void prepareForMatching(Collection declaredSymbols) {
+    public void prepareForMatching(Collection declaredSymbols, Map symToVar) {
         eliminateEpsilonTransitions();
         compressStates();
         addSelfLoops(declaredSymbols);
