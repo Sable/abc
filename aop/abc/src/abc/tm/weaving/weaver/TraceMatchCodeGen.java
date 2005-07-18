@@ -1,6 +1,6 @@
 package abc.tm.weaving.weaver;
 
-import java.util.LinkedList;
+import java.util.*;
 
 import com.sun.rsasign.i;
 
@@ -10,6 +10,7 @@ import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.TMStateMachine;
+import abc.weaving.aspectinfo.Formal;
 
 /**
  * Fills in method stubs for tracematch classes.
@@ -66,9 +67,14 @@ public class TraceMatchCodeGen {
      */
     public void fillInTraceMatch(TraceMatch tm) {
         TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
-        // need to pass in the collection of names of declared symbols for some of the FSA
-        // transformations.
-        tmsm.prepareForMatching(tm.getSymbols(),tm.getSym_to_vars());
+        
+        List formals = new LinkedList();
+        for (Iterator formalIter = tm.getFormals().iterator(); formalIter.hasNext(); ) {
+        	Formal f = (Formal) formalIter.next();
+        	formals.add(f.getName());
+        }
+        // FIXME: need to compute the set of formals that are not used in the body
+        tmsm.prepareForMatching(tm.getSymbols(),formals, tm.getSym_to_vars(),new LinkedList());
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 

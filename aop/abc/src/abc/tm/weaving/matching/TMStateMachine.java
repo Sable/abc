@@ -225,46 +225,102 @@ public class TMStateMachine implements StateMachine {
     
     /**
      * Accumulates, for each state, information about which tracematch vars must be
-     * stored using a strong reference. We want to use reference for a variable X in
+     * stored using a strong reference. We want to use a weak reference for a variable X in
      * state S if and only if every path from the S to a final state F binds X.
-     * 
      * Conversely, we must keep a strong reference if and only if there is some path
      * from S to a final state that does not bind X. 
+     * 
+     * @param formals variables declared in tracematch
+     * @param symtovar mapping from symbols to sets of bound variables
+     * @param notused variables not used in tracematch body
      */
-    protected void collectBindingInfo(Collection declaredSymbols,Map symtovar) {
-        List ws = new LinkedList(edges);
-        for (Iterator it = getStateIterator(); it.hasNext(); ) {
-        	SMNode smn = (SMNode) it.next();
-        	smn.needWeakRefs = new LinkedHashSet(declaredSymbols); 
+    protected void collectBindingInfo(List formals,Map symtovar,Collection notused) {
+        // do a backwards analysis from the final nodes
+    	//  
+    	// for an edge e, the flow function is
+    	//  flowAlongEdge(e)(X) = X union e.boundVars
+    	//
+    	// we want to compute the meet-over-all-paths solution at each state
+    	initNeedWeakRefs(formals, notused);
+    	fixNeedWeakRefs(symtovar);
+        needWeakRefsToNeedStrongRefs(formals);
+    }
+    
+   	
+	/**
+     * initialise the needWeakRefs fields for the meet-over-all-paths computation
+     * 
+	 * @param formals all variables declared in the tracematch
+	 * @param notused variables that are not used in the tracematch advice body
+	 */
+	private void initNeedWeakRefs(Collection formals, Collection notused) {
+    	// we want a maximal fixpoint so for all final nodes the
+    	// starting value is the set of unused variables
+		// and for all other nodes it is the set of all formals
+    	for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
+        	SMNode node = (SMNode) edgeIter.next();
+        	if (node.isFinalNode())
+        		node.needWeakRefs = new LinkedHashSet(notused);
+        	else
+        		node.needWeakRefs = new LinkedHashSet(formals); 
         }
-        while (!ws.isEmpty()) {
-        	SMEdge e = (SMEdge) ws.remove(0);
-        	SMNode v = e.getSource();
-        	SMNode w = e.getTarget();
-        	Set belw = new LinkedHashSet(w.needWeakRefs);
-        	belw.addAll((Collection)symtovar.get(e.getLabel()));
-        	Set lv = (Set) symtovar.get(e.getLabel());
-        	if (!belw.equals(lv)) {
-        	   v.needWeakRefs.retainAll(belw);
-        	   for (Iterator ite=edges.iterator(); ite.hasNext(); ) {
-        	   	   SMEdge e2 = (SMEdge) ite.next();
-        	   	   if (e2.getTarget() == v && !ws.contains(e2))
-        	   	   	ws.add(0,e2);	
+	}
+
+	/**
+	 * do fixpoint iteration using a worklist of edges
+	 * 
+	 * @param symtovar mapping from symbols to sets of bound variables
+	 */
+	private void fixNeedWeakRefs(Map symtovar) {
+		// the worklist contains edges whose target has changed value
+        List worklist = new LinkedList(edges);
+        while (!worklist.isEmpty()) {
+        	SMEdge edge = (SMEdge) worklist.remove(0);
+        	SMNode src = edge.getSource();
+        	SMNode tgt = edge.getTarget();
+        	// now compute the flow function along this edge
+        	Set flowAlongEdge = new LinkedHashSet(tgt.needWeakRefs);
+        	flowAlongEdge.addAll((Collection)symtovar.get(edge.getLabel()));
+        	// if src.needWeakRefs is already smaller, skip
+        	if (!flowAlongEdge.containsAll(src.needWeakRefs)) {
+               // otherwise compute intersection of 
+        	   // src.needWeakRefs and flowAlongEdge
+        	   src.needWeakRefs.retainAll(flowAlongEdge);
+               // add any edges whose target has been affected to
+        	   // the worklist
+        	   for (Iterator edgeIter=edges.iterator(); edgeIter.hasNext(); ) {
+        	   	   SMEdge anotherEdge = (SMEdge) edgeIter.next();
+        	   	   if (anotherEdge.getTarget() == src && 
+        	   	   		!worklist.contains(anotherEdge))
+        	   	   	worklist.add(0,anotherEdge);	
         	   }
         	}
         }
-		for (Iterator it = getStateIterator(); it.hasNext(); ) {
-			SMNode smn = (SMNode) it.next();
-			smn.needStrongRefs = new LinkedHashSet(declaredSymbols);
-			for (Iterator it2 = smn.needStrongRefs.iterator(); it2.hasNext(); ) {
-				String s = (String) it2.next();
-				if (smn.needWeakRefs.contains(s))
-					it2.remove(); 
+	}
+
+	
+	
+	 /**
+	  * compute for each node n, n.needStrongRefs := complement(n.needWeakRefs);
+	 * @param formals variables declared in the tracematch
+	 */
+	private void needWeakRefsToNeedStrongRefs(Collection formals) {
+		// for codegen we really need the complement of src.needWeakRefs
+        // so compute that in 
+		for (Iterator stateIter = getStateIterator(); stateIter.hasNext(); ) {
+			SMNode node = (SMNode) stateIter.next();
+			// start with the set of all declared symbols
+			node.needStrongRefs = new LinkedHashSet(formals);
+			// and remove those that are in node.weakRefs
+			for (Iterator varIter = node.needStrongRefs.iterator(); varIter.hasNext(); ) {
+				String s = (String) varIter.next();
+				if (node.needWeakRefs.contains(s))
+					varIter.remove(); 
 			}
 		}
-    }
-    
-    /**
+	}
+
+	/**
      * Renumbers the states, starting from 0 and going in the iteration order of the
      * nodes set. Can break state-constraint class associations, so only call this once
      * after the FSA is fully transformed. Node numbers are -1 prior to this method
@@ -283,13 +339,16 @@ public class TMStateMachine implements StateMachine {
      * matching suffixes interleaved with skips and ending in a declared symbol against
      * the regular expression. Should be called once.
      * @param declaredSymbols list of the names of all declared symbols.
+     * @param formals list of the names of variables used (no types)
+     * @param symtovar mapping from symbol names to set of variables that symbol binds
+     * @param notused names of formals that are not used in the tracematch body
      */
-    public void prepareForMatching(Collection declaredSymbols, Map symToVar) {
+    public void prepareForMatching(Collection declaredSymbols, List formals, Map symToVar,Collection notused) {
         eliminateEpsilonTransitions();
         compressStates();
         addSelfLoops(declaredSymbols);
         removeSkipToFinal();
-        collectBindingInfo(declaredSymbols,symToVar);
+        collectBindingInfo(formals,symToVar,notused);
         renumberStates();
     }
     
