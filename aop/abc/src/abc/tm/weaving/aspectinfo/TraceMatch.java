@@ -47,6 +47,8 @@ public class TraceMatch
 
     protected Aspect container;
  
+    protected SootClass constraint;
+
     public TraceMatch(String name, List formals, StateMachine state_machine,
                         Map sym_to_vars, Map sym_to_advice_name,
                         Map kind_to_advice_name, Aspect container)
@@ -76,6 +78,10 @@ public class TraceMatch
         return sym_to_vars.keySet();
     }
 
+    public Set getKinds() {
+        return kind_to_advice_name.keySet();
+    }
+
     public Map getSym_to_vars() {
         return sym_to_vars;
     }
@@ -94,7 +100,7 @@ public class TraceMatch
         return sm;
     }
 
-    public SootMethod getKindAdviceMethod(String kind)
+    public SootMethod getSomeAdviceMethod(String kind)
     {
         String advice_name = (String) kind_to_advice_name.get(kind);
 
@@ -102,5 +108,15 @@ public class TraceMatch
         SootMethod sm = sc.getMethodByName(advice_name);
 
         return sm;
+    }
+
+    public void setConstraintClass(SootClass constraint)
+    {
+        this.constraint = constraint;
+    }
+
+    public SootClass getConstraintClass()
+    {
+        return constraint;
     }
 }
