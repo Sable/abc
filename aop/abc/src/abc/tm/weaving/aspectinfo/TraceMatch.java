@@ -42,6 +42,7 @@ public class TraceMatch
     protected StateMachine state_machine;
 
     protected Map sym_to_vars;
+    protected Map sym_to_ordered_vars;
     protected Map sym_to_advice_name;
     protected Map kind_to_advice_name;
 
@@ -60,6 +61,38 @@ public class TraceMatch
         this.sym_to_advice_name = sym_to_advice_name;
         this.kind_to_advice_name = kind_to_advice_name;
         this.container = container;
+
+        this.sym_to_ordered_vars = genOrderedVars();
+    }
+
+    protected Map genOrderedVars()
+    {
+        Map ordered_vars = new HashMap();
+        Iterator symbols = sym_to_vars.keySet().iterator();
+
+        // initialise the mapping with an empty list for each symbol
+        while (symbols.hasNext()) {
+            String symbol = (String) symbols.next();
+
+            if (!ordered_vars.containsKey(symbol))
+                ordered_vars.put(symbol, new LinkedList());
+        }
+
+        Iterator formals = this.formals.iterator();
+
+        while (formals.hasNext()) {
+            Formal f = (Formal) formals.next();
+            symbols = sym_to_vars.keySet().iterator();
+
+            while (symbols.hasNext()) {
+                String symbol = (String) symbols.next();
+
+                if (((Set) sym_to_vars.get(symbol)).contains(f.getName()))
+                    ((List) ordered_vars.get(symbol)).add(f.getName());
+            }
+        }
+
+        return ordered_vars;
     }
 
     public Aspect getContainer() {
@@ -88,7 +121,7 @@ public class TraceMatch
 
     public List getVariableOrder(String symbol)
     {
-        return null;
+        return (List) sym_to_ordered_vars.get(symbol);
     }
 
     public String getName() {
