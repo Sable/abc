@@ -19,9 +19,18 @@ public class SMNode implements State {
     protected LinkedHashSet/*<SMEdge>*/ incoming = new LinkedHashSet();
     protected LinkedHashSet/*<SMEdge>*/ outgoing = new LinkedHashSet();
     
-    // set of symbols for which this state needs to keep strong refs
+    /** set of variables for which this state needs to keep strong refs */
     public LinkedHashSet/*<String>*/ needStrongRefs = new LinkedHashSet();
-    public LinkedHashSet/*<String>*/ needWeakRefs = new LinkedHashSet();
+    
+    /** set of variables for which we may use weak references, 
+         and any disjunct containing these variables may be garbage-collected
+         when the weak reference is garbage-collected */
+    public LinkedHashSet/*<String>*/ collectableWeakRefs = new LinkedHashSet();
+    
+    /** set of variables for which we may use weak references,
+         but disjuncts containing these cannot necessarily be garbage-collected
+         when the weak reference is garbage-collected */
+	public LinkedHashSet/*<String>*/ weakRefs = new LinkedHashSet();
     
     private TMStateMachine hostFSA;
     

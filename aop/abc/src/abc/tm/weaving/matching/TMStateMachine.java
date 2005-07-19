@@ -265,29 +265,29 @@ public class TMStateMachine implements StateMachine {
     	//  flowAlongEdge(e)(X) = X union e.boundVars
     	//
     	// we want to compute the meet-over-all-paths solution at each state
-    	initNeedWeakRefs(formals, notused);
-    	fixNeedWeakRefs(symtovar);
-        needWeakRefsToNeedStrongRefs(formals);
+    	initCollectableWeakRefs(formals);
+    	fixCollectableWeakRefs(symtovar);
+        collectableWeakRefsToOtherRefs(formals,notused);
         generateLeakWarnings(pos);
     }
     
    	
 	/**
-     * initialise the needWeakRefs fields for the meet-over-all-paths computation
+     * initialise the collectableWeakRefs fields for the meet-over-all-paths computation
      * 
 	 * @param formals all variables declared in the tracematch
 	 * @param notused variables that are not used in the tracematch advice body
 	 */
-	private void initNeedWeakRefs(Collection formals, Collection notused) {
+	private void initCollectableWeakRefs(Collection formals) {
     	// we want a maximal fixpoint so for all final nodes the
     	// starting value is the set of unused variables
 		// and for all other nodes it is the set of all formals
     	for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
         	SMNode node = (SMNode) edgeIter.next();
         	if (node.isFinalNode())
-        		node.needWeakRefs = new LinkedHashSet(notused);
+        		node.collectableWeakRefs = new LinkedHashSet();
         	else
-        		node.needWeakRefs = new LinkedHashSet(formals); 
+        		node.collectableWeakRefs = new LinkedHashSet(formals); 
         }
 	}
 
@@ -296,7 +296,7 @@ public class TMStateMachine implements StateMachine {
 	 * 
 	 * @param symtovar mapping from symbols to sets of bound variables
 	 */
-	private void fixNeedWeakRefs(Map symtovar) {
+	private void fixCollectableWeakRefs(Map symtovar) {
 		// the worklist contains edges whose target has changed value
         List worklist = new LinkedList(edges);
         while (!worklist.isEmpty()) {
@@ -304,15 +304,15 @@ public class TMStateMachine implements StateMachine {
         	SMNode src = edge.getSource();
         	SMNode tgt = edge.getTarget();
         	// now compute the flow function along this edge
-        	Set flowAlongEdge = new LinkedHashSet(tgt.needWeakRefs);
+        	Set flowAlongEdge = new LinkedHashSet(tgt.collectableWeakRefs);
         	Collection c = (Collection) symtovar.get(edge.getLabel());
         	if (c != null)
         	   flowAlongEdge.addAll(c);
-        	// if src.needWeakRefs is already smaller, skip
-        	if (!flowAlongEdge.containsAll(src.needWeakRefs)) {
+        	// if src.collectableWeakRefs is already smaller, skip
+        	if (!flowAlongEdge.containsAll(src.collectableWeakRefs)) {
                // otherwise compute intersection of 
-        	   // src.needWeakRefs and flowAlongEdge
-        	   src.needWeakRefs.retainAll(flowAlongEdge);
+        	   // src.collectableWeakRefs and flowAlongEdge
+        	   src.collectableWeakRefs.retainAll(flowAlongEdge);
                // add any edges whose target has been affected to
         	   // the worklist
         	   for (Iterator edgeIter=edges.iterator(); edgeIter.hasNext(); ) {
@@ -328,20 +328,27 @@ public class TMStateMachine implements StateMachine {
 	
 	
 	 /**
-	  * compute for each node n, n.needStrongRefs := complement(n.needWeakRefs);
+	  * compute for each node n, n.needStrongRefs := complement(n.collectableWeakRefs);
 	 * @param formals variables declared in the tracematch
 	 */
-	private void needWeakRefsToNeedStrongRefs(Collection formals) {
-		// for codegen we really need the complement of src.needWeakRefs
+	private void collectableWeakRefsToOtherRefs(Collection formals, Collection notUsed) {
+		// for codegen we really need the complement of src.collectableWeakRefs
         // so compute that in 
 		for (Iterator stateIter = getStateIterator(); stateIter.hasNext(); ) {
 			SMNode node = (SMNode) stateIter.next();
 			// start with the set of all declared symbols
 			node.needStrongRefs = new LinkedHashSet(formals);
-			// and remove those that are in node.weakRefs
+			// and remove those that are in node.weakRefs and those that are not used
 			for (Iterator varIter = node.needStrongRefs.iterator(); varIter.hasNext(); ) {
 				String s = (String) varIter.next();
-				if (node.needWeakRefs.contains(s))
+				if (node.collectableWeakRefs.contains(s) || notUsed.contains(s))
+					varIter.remove(); 
+			}
+			// everything else is a non-collectable weakRef
+			node.weakRefs = new LinkedHashSet(formals);
+			for (Iterator varIter = node.weakRefs.iterator(); varIter.hasNext(); ) {
+				String s = (String) varIter.next();
+				if (node.collectableWeakRefs.contains(s) || node.needStrongRefs.contains(s))
 					varIter.remove(); 
 			}
 		}
@@ -356,7 +363,7 @@ public class TMStateMachine implements StateMachine {
 	private void generateLeakWarnings(Position pos) {
 		for (Iterator it = getStateIterator(); it.hasNext(); ) {
 			SMNode node = (SMNode) it.next();
-			if (node.needWeakRefs.isEmpty() && !node.isFinalNode()) {
+			if (node.collectableWeakRefs.isEmpty() && !node.isFinalNode()) {
 				String msg="Variable bindings may cause space leak";
 		        abc.main.Main.v().error_queue.enqueue
 						(new ErrorInfo(ErrorInfo.WARNING,
@@ -423,7 +430,8 @@ public class TMStateMachine implements StateMachine {
             if(cur.isFinalNode()) result += "Final ";
             result += "State " + stateNumbers.get(cur) + "\n";
             result += "needStrongRefs" + cur.needStrongRefs + "\n";
-            result += "needWeakRefs" + cur.needWeakRefs + "\n";
+            result += "collectableWeakRefs" + cur.collectableWeakRefs + "\n";
+			result += "weakRefs" + cur.weakRefs + "\n";
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();
