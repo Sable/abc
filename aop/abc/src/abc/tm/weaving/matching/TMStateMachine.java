@@ -103,6 +103,10 @@ public class TMStateMachine implements StateMachine {
         }
     }
     
+    /**
+     * compute all states that are forwards-reachable from an initial state
+     * @return reachable states
+     */
     private Set initReachable() {
     	Stack toDo = new Stack();
         for(Iterator it=getStateIterator(); it.hasNext(); ) {
@@ -124,6 +128,10 @@ public class TMStateMachine implements StateMachine {
         return result;
     }
     
+    /**
+     * compute all the states that are backwards reachable from a final state
+     * @return set of reachable states
+     */
 	private Set finalReachable() {
 			Stack toDo = new Stack();
 			for(Iterator it=getStateIterator(); it.hasNext(); ) {
@@ -154,15 +162,7 @@ public class TMStateMachine implements StateMachine {
         // TODO: This might be better done with flags on the nodes...
         Set initReachable = initReachable();
         Set finalReachable = finalReachable();
-        /* new LinkedHashSet(), finalReachable = new LinkedHashSet();
-        SMNode cur;
-        SMEdge edge;
-        Iterator edgeIt, it = nodes.iterator();
-        while(it.hasNext()) {
-            cur = (SMNode)it.next();
-            if(cur.isInitialNode()) cur.fillInClosure(initReachable, false, true);
-            if(cur.isFinalNode()) cur.fillInClosure(finalReachable, false, false);
-        } */
+       
         // The set of nodes we need to keep is (initReachable intersect finalReachable), 
         LinkedHashSet nodesToRemove = new LinkedHashSet(nodes);
         initReachable.retainAll(finalReachable); // nodes that are both init- and final-reachable
