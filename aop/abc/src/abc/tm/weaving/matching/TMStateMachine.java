@@ -268,7 +268,8 @@ public class TMStateMachine implements StateMachine {
     	initCollectableWeakRefs(formals);
     	fixCollectableWeakRefs(symtovar);
         collectableWeakRefsToOtherRefs(formals,notused);
-        generateLeakWarnings(pos);
+        if (!formals.isEmpty())
+        	generateLeakWarnings(pos);
     }
     
    	
@@ -361,9 +362,11 @@ public class TMStateMachine implements StateMachine {
 	 *
 	 */
 	private void generateLeakWarnings(Position pos) {
-		for (Iterator it = getStateIterator(); it.hasNext(); ) {
+		boolean hasWarned = false;
+		for (Iterator it = getStateIterator(); it.hasNext() && !hasWarned; ) {
 			SMNode node = (SMNode) it.next();
 			if (node.collectableWeakRefs.isEmpty() && !node.isFinalNode()) {
+				hasWarned = true;
 				String msg="Variable bindings may cause space leak";
 		        abc.main.Main.v().error_queue.enqueue
 						(new ErrorInfo(ErrorInfo.WARNING,
