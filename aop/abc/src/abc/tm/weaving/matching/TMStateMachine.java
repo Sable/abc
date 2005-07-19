@@ -280,7 +280,9 @@ public class TMStateMachine implements StateMachine {
         	SMNode tgt = edge.getTarget();
         	// now compute the flow function along this edge
         	Set flowAlongEdge = new LinkedHashSet(tgt.needWeakRefs);
-        	flowAlongEdge.addAll((Collection)symtovar.get(edge.getLabel()));
+        	Collection c = (Collection) symtovar.get(edge.getLabel());
+        	if (c != null)
+        	   flowAlongEdge.addAll(c);
         	// if src.needWeakRefs is already smaller, skip
         	if (!flowAlongEdge.containsAll(src.needWeakRefs)) {
                // otherwise compute intersection of 
@@ -371,6 +373,8 @@ public class TMStateMachine implements StateMachine {
             if(cur.isInitialNode()) result += "Initial ";
             if(cur.isFinalNode()) result += "Final ";
             result += "State " + stateNumbers.get(cur) + "\n";
+            result += "needStrongRefs" + cur.needStrongRefs + "\n";
+            result += "needWeakRefs" + cur.needWeakRefs + "\n";
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();

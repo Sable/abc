@@ -246,6 +246,7 @@ public class TMDecl_c extends AJMethodDecl_c
                             sym_to_advice_name, kind_to_advice_name,
                             current_aspect);
 
+		System.out.println(gai.getClass());
         ((TMGlobalAspectInfo) gai).addTraceMatch(tm);
     }
 }

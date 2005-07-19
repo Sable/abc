@@ -104,12 +104,12 @@ public class TraceMatch
     }
     
     public List getFormalNames() {
-        List formals = new LinkedList();
+        List formalNames = new LinkedList();
         for (Iterator formalIter = formals.iterator(); formalIter.hasNext(); ) {
             Formal f = (Formal) formalIter.next();
-            formals.add(f.getName());
+            formalNames.add(f.getName());
         }
-        return formals;
+        return formalNames;
     }
 
     public StateMachine getState_machine() {
