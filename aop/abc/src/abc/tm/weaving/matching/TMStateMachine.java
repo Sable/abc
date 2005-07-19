@@ -1,13 +1,13 @@
 package abc.tm.weaving.matching;
 
-import java.util.LinkedHashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.Map;
-import java.util.Collection;
+import java.util.*;
+
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
+import polyglot.types.SemanticException;
+import polyglot.util.ErrorInfo;
+import polyglot.util.Position;
+import polyglot.util.ErrorQueue;
+import abc.polyglot.util.ErrorInfoFactory;
 
 /**
  * Implementation of the StateMachine interface for tracematch matching
@@ -103,6 +103,48 @@ public class TMStateMachine implements StateMachine {
         }
     }
     
+    private Set initReachable() {
+    	Stack toDo = new Stack();
+        for(Iterator it=getStateIterator(); it.hasNext(); ) {
+        	SMNode node = (SMNode) it.next();
+        	if (node.isInitialNode())
+        		toDo.push(node);
+        }
+        Set result = new LinkedHashSet();
+        while (!toDo.isEmpty()) {
+        	SMNode node = (SMNode) toDo.pop();
+        	result.add(node);
+        	for (Iterator edgeIter = node.getOutEdgeIterator(); edgeIter.hasNext(); ) {
+        		SMEdge edge = (SMEdge) edgeIter.next();
+        		SMNode tgt = edge.getTarget();
+        		if (!toDo.contains(tgt) && !result.contains(tgt))
+        			toDo.push(tgt);
+        	}
+        }
+        return result;
+    }
+    
+	private Set finalReachable() {
+			Stack toDo = new Stack();
+			for(Iterator it=getStateIterator(); it.hasNext(); ) {
+				SMNode node = (SMNode) it.next();
+				if (node.isFinalNode())
+					toDo.push(node);
+			}
+			Set result = new LinkedHashSet();
+			while (!toDo.isEmpty()) {
+				SMNode node = (SMNode) toDo.pop();
+				result.add(node);
+				for (Iterator edgeIter = node.getInEdgeIterator(); edgeIter.hasNext(); ) {
+					SMEdge edge = (SMEdge) edgeIter.next();
+					SMNode src = edge.getSource();
+					if (!toDo.contains(src) && !result.contains(src))
+						toDo.push(src);
+				}
+			}
+			return result;
+		}
+    
     /**
      * Removes 'unneeded' states -- i.e. states that cannot possibly lie on a path from
      * an initial state to a finnal state. Assumes there are no epsilon transitions (not
@@ -110,7 +152,9 @@ public class TMStateMachine implements StateMachine {
      */
     protected void compressStates() {
         // TODO: This might be better done with flags on the nodes...
-        LinkedHashSet initReachable = new LinkedHashSet(), finalReachable = new LinkedHashSet();
+        Set initReachable = initReachable();
+        Set finalReachable = finalReachable();
+        /* new LinkedHashSet(), finalReachable = new LinkedHashSet();
         SMNode cur;
         SMEdge edge;
         Iterator edgeIt, it = nodes.iterator();
@@ -118,19 +162,19 @@ public class TMStateMachine implements StateMachine {
             cur = (SMNode)it.next();
             if(cur.isInitialNode()) cur.fillInClosure(initReachable, false, true);
             if(cur.isFinalNode()) cur.fillInClosure(finalReachable, false, false);
-        }
+        } */
         // The set of nodes we need to keep is (initReachable intersect finalReachable), 
         LinkedHashSet nodesToRemove = new LinkedHashSet(nodes);
         initReachable.retainAll(finalReachable); // nodes that are both init- and final-reachable
         nodesToRemove.removeAll(initReachable);  // -- we want to keep them
         
         // iterate over all nodes we want to remove and remove them, i.e. destroy their edges
-        it = nodesToRemove.iterator();
+        Iterator it = nodesToRemove.iterator();
         while(it.hasNext()) {
-            cur = (SMNode)it.next();
-            edgeIt = cur.getOutEdgeIterator();
+            SMNode cur = (SMNode)it.next();
+            Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
-                edge = (SMEdge)edgeIt.next();
+                SMEdge edge = (SMEdge)edgeIt.next();
                 edge.getTarget().removeInEdge(edge);
                 edges.remove(edge);
                 edgeIt.remove(); // call this rather than removeOutEdge, as we mustn't
@@ -138,7 +182,7 @@ public class TMStateMachine implements StateMachine {
             }
             edgeIt = cur.getInEdgeIterator();
             while(edgeIt.hasNext()) {
-                edge = (SMEdge)edgeIt.next();
+                SMEdge edge = (SMEdge)edgeIt.next();
                 edge.getSource().removeOutEdge(edge);
                 edges.remove(edge);
                 edgeIt.remove(); // call this rather than removeInEdge, as we mustn't
@@ -216,7 +260,9 @@ public class TMStateMachine implements StateMachine {
                 Iterator edgeIt = cur.getInEdgeIterator();
                 while(edgeIt.hasNext()) {
                     edge = (SMEdge)edgeIt.next();
-                    newTransition(edge.getSource(), newNode, edge.getLabel());
+                    if (!edge.getLabel().equals(""))
+                       // non-skip label
+                       newTransition(edge.getSource(), newNode, edge.getLabel());
                 }
             }
         }
@@ -234,7 +280,7 @@ public class TMStateMachine implements StateMachine {
      * @param symtovar mapping from symbols to sets of bound variables
      * @param notused variables not used in tracematch body
      */
-    protected void collectBindingInfo(List formals,Map symtovar,Collection notused) {
+    protected void collectBindingInfo(List formals,Map symtovar,Collection notused,Position pos) {
         // do a backwards analysis from the final nodes
     	//  
     	// for an edge e, the flow function is
@@ -244,6 +290,7 @@ public class TMStateMachine implements StateMachine {
     	initNeedWeakRefs(formals, notused);
     	fixNeedWeakRefs(symtovar);
         needWeakRefsToNeedStrongRefs(formals);
+        generateLeakWarnings(pos);
     }
     
    	
@@ -321,6 +368,25 @@ public class TMStateMachine implements StateMachine {
 			}
 		}
 	}
+	
+	/**
+	 * generate warnings for potential space leaks; ignoring possible null bindings for now.
+	 * there ought to be a check that the weak references are not bound to null, or we
+	 * should completely rule out null bindings in tracematches.
+	 *
+	 */
+	private void generateLeakWarnings(Position pos) {
+		for (Iterator it = getStateIterator(); it.hasNext(); ) {
+			SMNode node = (SMNode) it.next();
+			if (node.needWeakRefs.isEmpty() && !node.isFinalNode()) {
+				String msg="Variable bindings may cause space leak";
+		        abc.main.Main.v().error_queue.enqueue
+						(new ErrorInfo(ErrorInfo.WARNING,
+									   msg,
+									   pos));
+			}
+		}
+	}
 
 	/**
      * Renumbers the states, starting from 0 and going in the iteration order of the
@@ -344,13 +410,18 @@ public class TMStateMachine implements StateMachine {
      * @param formals list of the names of variables used (no types)
      * @param symtovar mapping from symbol names to set of variables that symbol binds
      * @param notused names of formals that are not used in the tracematch body
+     * @param pos position of tracematch
      */
-    public void prepareForMatching(Collection declaredSymbols, List formals, Map symToVar,Collection notused) {
+    public void prepareForMatching(Collection declaredSymbols, 
+                                                     List formals, 
+                                                     Map symToVar,
+                                                     Collection notused,
+                                                     Position pos) {
         eliminateEpsilonTransitions();
-        compressStates();
         addSelfLoops(declaredSymbols);
         removeSkipToFinal();
-        collectBindingInfo(formals,symToVar,notused);
+        compressStates();
+        collectBindingInfo(formals,symToVar,notused,pos);
         renumberStates();
     }
     

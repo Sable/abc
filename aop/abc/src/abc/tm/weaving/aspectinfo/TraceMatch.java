@@ -20,6 +20,7 @@
 package abc.tm.weaving.aspectinfo;
 
 import polyglot.util.InternalCompilerError;
+import polyglot.util.Position;
 
 import abc.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.*;
@@ -49,10 +50,12 @@ public class TraceMatch
     protected Aspect container;
  
     protected SootClass constraint;
+    
+    protected Position position;
 
     public TraceMatch(String name, List formals, StateMachine state_machine,
                         Map sym_to_vars, Map sym_to_advice_name,
-                        Map kind_to_advice_name, Aspect container)
+                        Map kind_to_advice_name, Aspect container,Position pos)
     {
         this.name = name;
         this.formals = formals;
@@ -61,10 +64,14 @@ public class TraceMatch
         this.sym_to_advice_name = sym_to_advice_name;
         this.kind_to_advice_name = kind_to_advice_name;
         this.container = container;
-
+        this.position = pos;
         this.sym_to_ordered_vars = genOrderedVars();
     }
 
+	public Position getPosition() {
+		return position;
+	}
+	
     protected Map genOrderedVars()
     {
         Map ordered_vars = new HashMap();

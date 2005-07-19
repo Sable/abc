@@ -64,7 +64,8 @@ public class TraceMatchCodeGen {
         TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
 
         tmsm.prepareForMatching(tm.getSymbols(), tm.getFormalNames(), tm.getSym_to_vars(), 
-                                                UnUsedParams.unusedFormals(tm.getBodyMethod(),tm.getFormalNames()));
+                                                UnUsedParams.unusedFormals(tm.getBodyMethod(),tm.getFormalNames()),
+                                                tm.getPosition());
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 

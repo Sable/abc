@@ -244,9 +244,8 @@ public class TMDecl_c extends AJMethodDecl_c
         TraceMatch tm =
             new TraceMatch(tracematch_name, wfs, regex.makeSM(), sym_to_vars,
                             sym_to_advice_name, kind_to_advice_name,
-                            current_aspect);
+                            current_aspect,position());
 
-		System.out.println(gai.getClass());
         ((TMGlobalAspectInfo) gai).addTraceMatch(tm);
     }
 }
