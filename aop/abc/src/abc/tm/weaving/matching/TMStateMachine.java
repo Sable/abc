@@ -108,23 +108,12 @@ public class TMStateMachine implements StateMachine {
      * @return reachable states
      */
     private Set initReachable() {
-    	Stack toDo = new Stack();
-        for(Iterator it=getStateIterator(); it.hasNext(); ) {
-        	SMNode node = (SMNode) it.next();
-        	if (node.isInitialNode())
-        		toDo.push(node);
-        }
-        Set result = new LinkedHashSet();
-        while (!toDo.isEmpty()) {
-        	SMNode node = (SMNode) toDo.pop();
-        	result.add(node);
-        	for (Iterator edgeIter = node.getOutEdgeIterator(); edgeIter.hasNext(); ) {
-        		SMEdge edge = (SMEdge) edgeIter.next();
-        		SMNode tgt = edge.getTarget();
-        		if (!toDo.contains(tgt) && !result.contains(tgt))
-        			toDo.push(tgt);
-        	}
-        }
+    	Set result = new LinkedHashSet();
+		for(Iterator it=getStateIterator(); it.hasNext(); ) {
+				   SMNode node = (SMNode) it.next();
+				   if (node.isInitialNode())
+					   node.fillInClosure(result,false,true);
+	   }
         return result;
     }
     
@@ -133,25 +122,14 @@ public class TMStateMachine implements StateMachine {
      * @return set of reachable states
      */
 	private Set finalReachable() {
-			Stack toDo = new Stack();
-			for(Iterator it=getStateIterator(); it.hasNext(); ) {
+		Set result = new LinkedHashSet();
+		for(Iterator it=getStateIterator(); it.hasNext(); ) {
 				SMNode node = (SMNode) it.next();
 				if (node.isFinalNode())
-					toDo.push(node);
-			}
-			Set result = new LinkedHashSet();
-			while (!toDo.isEmpty()) {
-				SMNode node = (SMNode) toDo.pop();
-				result.add(node);
-				for (Iterator edgeIter = node.getInEdgeIterator(); edgeIter.hasNext(); ) {
-					SMEdge edge = (SMEdge) edgeIter.next();
-					SMNode src = edge.getSource();
-					if (!toDo.contains(src) && !result.contains(src))
-						toDo.push(src);
-				}
-			}
-			return result;
+					node.fillInClosure(result,false,false);
 		}
+		return result;
+	}
     
     /**
      * Removes 'unneeded' states -- i.e. states that cannot possibly lie on a path from

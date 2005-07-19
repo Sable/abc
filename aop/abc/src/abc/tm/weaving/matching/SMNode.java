@@ -107,7 +107,7 @@ public class SMNode implements State {
             if(!epsilonOnly || cur.getLabel() == null) { // Epsilon transition
                 if(forward) next = cur.getTarget(); else next = cur.getSource(); // handle direction
                 if(!result.contains(next)) { // we haven't visited that node
-                    next.fillInClosure(result, epsilonOnly);
+                    next.fillInClosure(result, epsilonOnly,forward);
                 }
             }
         }
