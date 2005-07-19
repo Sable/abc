@@ -37,10 +37,8 @@ import abc.tm.ast.*;
  *
  * A TraceMatch uses pieces of advice to determine when the
  * current execution trace matches the TraceMatch's regular
- * expression. Each symbol of the TraceMatch also has a
- * corresponding named pointcut. These pieces of advice and
- * named pointcuts need to be added to the aspect which contains
- * the tracematch.
+ * expression. These pieces of advice need to be added to the
+ * aspect which contains the tracematch.
  *
  * That is what this visitor does.
  */
