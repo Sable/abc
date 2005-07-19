@@ -41,16 +41,8 @@ public class TraceMatchCodeGen {
         // the SootClasses for the constraint and the main disjunct class for the tracematch 
         SootClass constraint = new SootClass(getConstraintClassName(tm));
         SootClass disjunct = new SootClass(getDisjunctClassName(tm));
-        createMainConstraintClass(constraint, disjunct);
+        tm.setConstraintClass(constraint);
         
-    }
-    
-    /**
-     * Fills in the constraint class for a given tracematch.
-     * @param constraint the SootClass to add methods and fields to
-     * @param disjunct the SootClass for the disjuncts -- to call methods on
-     */
-    protected void createMainConstraintClass(SootClass constraint, SootClass disjunct) {
     }
     
     /**
@@ -67,14 +59,9 @@ public class TraceMatchCodeGen {
      */
     public void fillInTraceMatch(TraceMatch tm) {
         TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
-        
-        List formals = new LinkedList();
-        for (Iterator formalIter = tm.getFormals().iterator(); formalIter.hasNext(); ) {
-        	Formal f = (Formal) formalIter.next();
-        	formals.add(f.getName());
-        }
+
         // FIXME: need to compute the set of formals that are not used in the body
-        tmsm.prepareForMatching(tm.getSymbols(),formals, tm.getSym_to_vars(),new LinkedList());
+        tmsm.prepareForMatching(tm.getSymbols(), tm.getFormalNames(), tm.getSym_to_vars(), new LinkedList());
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 
