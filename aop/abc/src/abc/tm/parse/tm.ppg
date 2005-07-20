@@ -86,7 +86,8 @@ tracematch ::=
         Grm.parserTrace("tracematch definition");
         String name = UniqueID.newID("tracematch");
         TMDecl tcd =
-            parser.nf.TMDecl(parser.pos(t,y), m, name, p, e, s, r, b);
+            parser.nf.TMDecl(parser.pos(t,y), parser.pos(b),
+                                m, name, p, e, s, r, b);
 
         List ds = new TypedList(new LinkedList(),ClassMember.class,false);
         ds.add(tcd);
