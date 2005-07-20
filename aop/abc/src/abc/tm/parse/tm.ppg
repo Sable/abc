@@ -109,6 +109,14 @@ tracematch_modifiers_and_type ::=
         RESULT = parser.nf.TMModsAndType(m, false, true, t);
     :}
 |
+    modifiers_opt:m VOID:t
+    {:
+        TypeNode voidn =
+            parser.nf.CanonicalTypeNode(parser.pos(t), parser.ts.Void());
+
+        RESULT = parser.nf.TMModsAndType(m, false, true, voidn);
+    :}
+|
     modifiers_opt:m1 PERTHREAD:x modifiers_opt:m2
     {:
         TypeNode voidn =
@@ -119,6 +127,14 @@ tracematch_modifiers_and_type ::=
     modifiers_opt:m1 PERTHREAD modifiers_opt:m2 type:t
     {:
         RESULT = parser.nf.TMModsAndType(m1.set(m2), true, true, t);
+    :}
+|
+    modifiers_opt:m1 PERTHREAD modifiers_opt:m2 VOID:t
+    {:
+        TypeNode voidn =
+            parser.nf.CanonicalTypeNode(parser.pos(t), parser.ts.Void());
+
+        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, true, voidn);
     :}
 ;
 
