@@ -91,8 +91,9 @@ public class AbcExtension extends abc.main.AbcExtension
 	public void addBasicClassesToSoot()
 	   {
 		   super.addBasicClassesToSoot();
-		   Scene.v().addBasicClass("java.util.Iterator",
-								   SootClass.SIGNATURES);
+		   Scene.v().addBasicClass("java.util.HashSet", SootClass.SIGNATURES);
+		   Scene.v().addBasicClass("java.util.LinkedHashList",
+                                    SootClass.SIGNATURES);
 	   }
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
