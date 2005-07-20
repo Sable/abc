@@ -404,7 +404,7 @@ public class TMStateMachine implements StateMachine {
                                                      Map symToVar,
                                                      Collection notused,
                                                      Position pos) {
-        eliminateEpsilonTransitions();
+    	eliminateEpsilonTransitions();
         addSelfLoops(declaredSymbols);
         removeSkipToFinal();
         compressStates();

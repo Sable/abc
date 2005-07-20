@@ -131,7 +131,7 @@ public class SMNode implements State {
         SMEdge edge;
         SMNode to;
         String label;
-        Iterator it = outgoing.iterator();
+        Iterator it = from.outgoing.iterator();
         while(it.hasNext()) {
             edge = (SMEdge)it.next();
             label = edge.getLabel();
