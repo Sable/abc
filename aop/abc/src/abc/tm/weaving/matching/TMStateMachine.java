@@ -219,32 +219,31 @@ public class TMStateMachine implements StateMachine {
      * it as non-final, and create a new node N (which will represent S paired with Q's second 
      * state). For each incoming edge of S that is not a skip, create an incoming edge on N from 
      * the same node and with the same label. Mark N as final. 
+     * 
+     * Finally, observe that no final node has outgoing edges, so we can obtain an automaton 
+     * that's equivalent by collapsing all the resulting final states into a single state whose
+     * set of incoming edges is the union of the incoming edges for the nodes we're collapsing
+     * into it.
      */
     protected void removeSkipToFinal() {
         SMNode cur;
-        State newNode;
+        State newFinalNode = newState();
         SMEdge edge;
-        // need this as we can't modify the collection while iterating over it
-        LinkedHashSet nodesToAdd = new LinkedHashSet();
-        // TODO: Could keep a separate record of all final states
         Iterator it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
             if(cur.isFinalNode()) {
                 cur.setFinal(false);
-                newNode = newStateDontAdd();
-                newNode.setFinal(true);
-                nodesToAdd.add(newNode);
                 Iterator edgeIt = cur.getInEdgeIterator();
                 while(edgeIt.hasNext()) {
                     edge = (SMEdge)edgeIt.next();
-                    if (!edge.getLabel().equals(""))
-                       // non-skip label
-                       newTransition(edge.getSource(), newNode, edge.getLabel());
+                    if(!edge.getLabel().equals("")) { // i.e. if not a skip-edge
+                        newTransition(edge.getSource(), newFinalNode, edge.getLabel());
+                    }
                 }
             }
         }
-        nodes.addAll(nodesToAdd);
+        newFinalNode.setFinal(true);
     }
     
     /**
