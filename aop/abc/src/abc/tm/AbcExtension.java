@@ -32,6 +32,8 @@ import polyglot.util.InternalCompilerError;
 
 import java.util.*;
 
+import soot.*;
+
 /*
  * @author Julian Tibble
  * @author Oege de Moor
@@ -86,7 +88,12 @@ public class AbcExtension extends abc.main.AbcExtension
                             new Integer(abc.tm.parse.sym.PERTHREAD)));
     }
     
-    
+	public void addBasicClassesToSoot()
+	   {
+		   super.addBasicClassesToSoot();
+		   Scene.v().addBasicClass("java.util.Iterator",
+								   SootClass.SIGNATURES);
+	   }
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
          the "some" advice has higher precedence than all symbols in the same tracematch
