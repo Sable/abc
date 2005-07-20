@@ -68,9 +68,8 @@ public class TraceMatchCodeGen {
     			paramNames.add(name);
     		}
     	}
-    	SootClass scIter = Scene.v().getSootClass("java.util.Iterator");
-    	paramTypes.add(scIter.getType());
-    	sm.setParameterTypes(paramTypes);
+    	
+
     	
     	Body body = sm.getActiveBody();
     	Unit u = null;
@@ -87,7 +86,11 @@ public class TraceMatchCodeGen {
     	}
     
     	if (u == null) return;
-    	
+		
+		SootClass scIter = Scene.v().getSootClass("java.util.Iterator");
+		paramTypes.add(scIter.getType());
+		sm.setParameterTypes(paramTypes);
+		
     	Local iterLocal = body.getParameterLocal(paramTypes.size()-1);
     	LocalGeneratorEx lgen = new LocalGeneratorEx(body);
     	
