@@ -98,7 +98,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
 
 
 
-    public AdviceDecl generateAdviceDecl(TMNodeFactory nf, List formals,
+    public AdviceDecl generateSymbolAdvice(TMNodeFactory nf, List formals,
                                 TypeNode voidn, String tm_id, Position tm_pos)
     {
         // Generate AdviceSpec
@@ -107,10 +107,26 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         // Generate an empty `throws' list
         List tlist = new LinkedList();
 
-			
         // Generate the TMAdviceDecl
-        return nf.TMAdviceDecl(position(), Flags.NONE, spec, tlist,
-                                pc, body(nf, name), tm_id, tm_pos, false);
+        return nf.TMAdviceDecl(position(), Flags.NONE, spec,
+                                tlist, pc, body(nf, name, voidn),
+                                tm_id, tm_pos, false);
+    }
+
+    public AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
+                                        TypeNode voidn, TypeNode ret_type,
+                                        String tm_id, Position tm_pos)
+    {
+        // Generate AdviceSpec
+        AdviceSpec spec = kind.generateSomeAdviceSpec(nf, voidn, ret_type);
+
+        // Generate an empty `throws' list
+        List tlist = new LinkedList();
+
+        // Generate the TMAdviceDecl
+        return nf.TMAdviceDecl(Position.COMPILER_GENERATED, Flags.NONE,
+                                spec, tlist, pc, body(nf, "some()", ret_type),
+                                tm_id, tm_pos, true);
     }
 
     /**
@@ -119,7 +135,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
      * FIXME: Just for debugging, the advice prints a message
      *        instead of being empty.
      */
-    private Block body(TMNodeFactory nf, String debug_msg)
+    private Block body(TMNodeFactory nf, String debug_msg, TypeNode ret_type)
     {
         Position cg = Position.COMPILER_GENERATED;
 
@@ -136,26 +152,47 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         List statements = new LinkedList();
         statements.add(println_statement);
 
+        if (!ret_type.type().isVoid() && kind() == SymbolKind.AROUND)
+        {
+            Expr dummy_val = dummyVal(nf, ret_type.type());
+            Return ret = nf.Return(Position.COMPILER_GENERATED, dummy_val);
+            statements.add(ret);
+        }
+
         return nf.Block(cg, statements);
+    }
+
+    protected Expr dummyVal(TMNodeFactory nf, Type t)
+    {
+        if (t instanceof ReferenceType)
+            return nf.NullLit(position());
+        if (t instanceof PrimitiveType) {
+            PrimitiveType pt = (PrimitiveType) t;
+            if (pt.isChar())
+                return nf.CharLit(position(),'x');
+            if (pt.isBoolean())
+                return nf.BooleanLit(position(),true);
+            if (pt.isByte())
+                return nf.IntLit(position(),IntLit.INT,0);
+            if (pt.isShort())
+                return nf.IntLit(position(),IntLit.INT,0);
+            if (pt.isInt())
+                return nf.IntLit(position(),IntLit.INT,0);
+            if (pt.isLong())
+                return nf.IntLit(position(),IntLit.LONG,0);
+            if (pt.isFloat())
+                return nf.FloatLit(position(),FloatLit.FLOAT,0.0);
+            if (pt.isDouble())
+                return nf.FloatLit(position(),FloatLit.DOUBLE,0.0);
+            if (pt.isVoid())
+                throw new InternalCompilerError(
+                                "cannot create expression of void type");
+        }
+        return null;
     }
 
     public Pointcut generateClosedPointcut(TMNodeFactory nf, List formals)
     {
         return nf.ClosedPointcut(pc.position(), formals, pc);
-    }
-
-    public AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
-                                        TypeNode voidn, TypeNode ret_type,
-                                        String tm_id, Position tm_pos)
-    {
-        // Generate AdviceSpec
-        AdviceSpec spec = kind.generateSomeAdviceSpec(nf, voidn, ret_type);
-
-        // Generate an empty `throws' list
-        List tlist = new LinkedList();
-
-        // Generate the TMAdviceDecl
-        return nf.TMAdviceDecl(Position.COMPILER_GENERATED, Flags.NONE, spec,
-                        tlist, pc, body(nf, "some()"), tm_id, tm_pos, true);
     }
 }

@@ -58,6 +58,7 @@ public class TMDecl_c extends AJMethodDecl_c
     protected Map kind_to_advice_name;
 
     public TMDecl_c(Position pos,
+                    Position body_pos,
                     TMModsAndType mods_and_type,
                     String tracematch_name,
                     List formals,
@@ -66,8 +67,10 @@ public class TMDecl_c extends AJMethodDecl_c
                     Regex regex,
                     Block body)
     {
-        super(pos, mods_and_type.getFlags(), mods_and_type.getReturnType(),
-                tracematch_name + "$body", formals, throwTypes, body);
+        super(body_pos, mods_and_type.getFlags(),
+                mods_and_type.getReturnType(),
+                tracematch_name + "$body",
+                formals, throwTypes, body);
 
         isPerThread = mods_and_type.isPerThread();
         isAround = mods_and_type.isAround();
@@ -176,7 +179,7 @@ public class TMDecl_c extends AJMethodDecl_c
         while(j.hasNext()) {
             SymbolDecl sd = (SymbolDecl) j.next();
 
-            AdviceDecl ad = sd.generateAdviceDecl(nf, formals, voidn,
+            AdviceDecl ad = sd.generateSymbolAdvice(nf, formals, voidn,
                                             tracematch_name, position());
             advice.add(ad);
             sym_to_advice_name.put(sd.name(), ad.name());

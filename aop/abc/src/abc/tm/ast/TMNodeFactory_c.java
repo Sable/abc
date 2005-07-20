@@ -35,11 +35,11 @@ public class TMNodeFactory_c extends AJNodeFactory_c
                              implements TMNodeFactory
 {
     public TMDecl
-        TMDecl(Position pos, TMModsAndType mods_and_type,
+        TMDecl(Position pos, Position body_pos, TMModsAndType mods_and_type,
                         String tracematch_name, List formals, List throwTypes,
                         List symbols, Regex regex, Block body)
     {
-        return new TMDecl_c(pos, mods_and_type, tracematch_name,
+        return new TMDecl_c(pos, body_pos, mods_and_type, tracematch_name,
                         formals, throwTypes, symbols, regex, body);
     }
 

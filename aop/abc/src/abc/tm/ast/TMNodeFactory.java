@@ -34,7 +34,7 @@ import java.util.*;
 public interface TMNodeFactory extends AJNodeFactory
 {
     TMDecl
-        TMDecl(Position pos, TMModsAndType mods_and_type,
+        TMDecl(Position pos, Position body_pos, TMModsAndType mods_and_type,
                         String tracematch_name, List formals, List throwTypes,
                         List symbols, Regex regex, Block body);
 
