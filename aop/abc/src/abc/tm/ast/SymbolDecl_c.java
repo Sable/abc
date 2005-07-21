@@ -152,43 +152,15 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         List statements = new LinkedList();
         statements.add(println_statement);
 
-        if (!ret_type.type().isVoid() && kind() == SymbolKind.AROUND)
+        if (kind() == SymbolKind.AROUND && !ret_type.type().isVoid())
         {
-            Expr dummy_val = dummyVal(nf, ret_type.type());
-            Return ret = nf.Return(Position.COMPILER_GENERATED, dummy_val);
+            Call proceed_call = nf.ProceedCall(cg, nf.This(cg),
+                                                new LinkedList());
+            Return ret = nf.Return(cg, proceed_call);
             statements.add(ret);
         }
 
         return nf.Block(cg, statements);
-    }
-
-    protected Expr dummyVal(TMNodeFactory nf, Type t)
-    {
-        if (t instanceof ReferenceType)
-            return nf.NullLit(position());
-        if (t instanceof PrimitiveType) {
-            PrimitiveType pt = (PrimitiveType) t;
-            if (pt.isChar())
-                return nf.CharLit(position(),'x');
-            if (pt.isBoolean())
-                return nf.BooleanLit(position(),true);
-            if (pt.isByte())
-                return nf.IntLit(position(),IntLit.INT,0);
-            if (pt.isShort())
-                return nf.IntLit(position(),IntLit.INT,0);
-            if (pt.isInt())
-                return nf.IntLit(position(),IntLit.INT,0);
-            if (pt.isLong())
-                return nf.IntLit(position(),IntLit.LONG,0);
-            if (pt.isFloat())
-                return nf.FloatLit(position(),FloatLit.FLOAT,0.0);
-            if (pt.isDouble())
-                return nf.FloatLit(position(),FloatLit.DOUBLE,0.0);
-            if (pt.isVoid())
-                throw new InternalCompilerError(
-                                "cannot create expression of void type");
-        }
-        return null;
     }
 
     public Pointcut generateClosedPointcut(TMNodeFactory nf, List formals)
