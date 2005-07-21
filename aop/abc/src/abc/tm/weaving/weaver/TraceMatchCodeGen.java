@@ -146,9 +146,9 @@ public class TraceMatchCodeGen {
         // add symbol-dependent parameters and identity statements
         List parameterLocals = new LinkedList();
         Local parameterLocal;
+        int parameterIndex = 0;
         parameterLocal = lgen.generateLocal(IntType.v(), "symbolNumber");
         parameterLocals.add(parameterLocal);
-        int parameterIndex = 0;
         units.addLast(Jimple.v().newIdentityStmt(parameterLocal, 
                 Jimple.v().newParameterRef(IntType.v(), parameterIndex++)));
         
@@ -176,11 +176,11 @@ public class TraceMatchCodeGen {
                 localSet, Scene.v().makeMethodRef(hashSet, "iterator", new LinkedList(), 
                         iteratorType, false))));
         
-        // Have to emulate loops with jumps. Outer loop: while(disjunctIt.hasNext()) { ... }
+        // Have to emulate loops with jumps: while(disjunctIt.hasNext()) { ... }
         Stmt labelLoopBegin = Jimple.v().newNopStmt();
         Stmt labelLoopEnd = Jimple.v().newNopStmt();
         units.addLast(labelLoopBegin);
-        // if(!it1.hasNext()) goto labelOuterLoopEnd; <code for outer loop>; <label>:
+        // if(!it1.hasNext()) goto labelLoopEnd; <code for loop>; <label>:
         Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
         units.addLast(Jimple.v().newAssignStmt(booleanLocal,
                 Jimple.v().newVirtualInvokeExpr(disjunctIt, 
@@ -1051,6 +1051,10 @@ public class TraceMatchCodeGen {
         while(symbolIt.hasNext()) {
             String symbolName = (String)symbolIt.next();
             List parameters = new LinkedList();
+            
+            // take state number for legacy reasons..
+            parameters.add(IntType.v());
+            
             Set variableSet = (Set)tm.getSym_to_vars().get(symbolName);
             for(int i = 0; i < variableSet.size(); i++) parameters.add(objectType);
             SootMethod symbolMethod = new SootMethod("addNegativeBindingsForSymbol" + symbolName,
@@ -1070,6 +1074,11 @@ public class TraceMatchCodeGen {
             
             List variableLocalsList = new LinkedList();
             int parameterIndex = 0;
+            
+            // XXX since we take the state number as a first parameter and don't need it
+            parameterIndex = 1;
+            ////////////////////////////////////////////////////////////////////////////
+            
             Iterator varIt = variableSet.iterator();
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
