@@ -252,6 +252,7 @@ public class TraceMatchCodeGen {
     }
     
     protected void addConstraintOrMethod(SootClass constraint, SootClass disjunct) {
+        SootClass setClass = Scene.v().getSootClass("java.util.Set");
         RefType setType = RefType.v("java.util.Set");
         SootClass hashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
         
@@ -339,10 +340,10 @@ public class TraceMatchCodeGen {
         RefType collection = RefType.v("java.util.Collection");
         parameters.add(collection);
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet,
-            Scene.v().makeMethodRef(hashSet, "addAll", parameters, BooleanType.v(), false),
+            Scene.v().makeMethodRef(setClass, "addAll", parameters, BooleanType.v(), false),
             localSet)));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet,
-            Scene.v().makeMethodRef(hashSet, "addAll", parameters, BooleanType.v(), false),
+            Scene.v().makeMethodRef(setClass, "addAll", parameters, BooleanType.v(), false),
             remoteSet)));
         // return result;
         units.addLast(Jimple.v().newReturnStmt(result));
@@ -532,6 +533,7 @@ public class TraceMatchCodeGen {
     }
     
     protected void addConstraintCopyMethod(SootClass constraint, SootClass disjunct) {
+        SootClass setClass = Scene.v().getSootClass("java.util.Set");
         RefType setType = RefType.v("java.util.Set");
         SootClass hashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
         
@@ -582,7 +584,7 @@ public class TraceMatchCodeGen {
         List parameters = new LinkedList();
         parameters.add(RefType.v("java.util.Collection"));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet,
-                Scene.v().makeMethodRef(hashSet, "addAll", parameters, BooleanType.v(), false),
+                Scene.v().makeMethodRef(setClass, "addAll", parameters, BooleanType.v(), false),
                 localSet)));
         // return result;
         units.addLast(Jimple.v().newReturnStmt(result));
