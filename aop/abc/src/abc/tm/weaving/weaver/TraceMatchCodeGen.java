@@ -1033,7 +1033,7 @@ public class TraceMatchCodeGen {
             // throwable = new RuntimeException("AddDisjunctAddBindings got invalid state number N");
             parameters.clear();
             parameters.add(RefType.v("java.lang.String"));
-            Local throwable = lgen.generateLocal(RefType.v("java.lang.Throwable"), "exception");
+            Local throwable = lgen.generateLocal(RefType.v("java.lang.RuntimeException"), "exception");
             units.addLast(Jimple.v().newAssignStmt(throwable, Jimple.v().newNewExpr(
                     RefType.v("java.lang.RuntimeException"))));
             units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(throwable, 
@@ -1192,6 +1192,7 @@ public class TraceMatchCodeGen {
     protected void addDisjunctCopyMethod(TraceMatch tm, SootClass disjunct) {
         RefType objectType = RefType.v("java.lang.Object");
         RefType setType = RefType.v("java.util.Set");
+        Type boolType = BooleanType.v();
         
         SootMethod copyMethod = new SootMethod("copy",
                 new LinkedList(), disjunct.getType(), Modifier.PUBLIC);
@@ -1227,16 +1228,16 @@ public class TraceMatchCodeGen {
             // result.X$isBound = this.X$isBound;
             Local tmpBound = lgen.generateLocal(BooleanType.v(), "tmpBound");
             units.addLast(Jimple.v().newAssignStmt(tmpBound, Jimple.v().newInstanceFieldRef(thisLocal,
-                    Scene.v().makeFieldRef(disjunct, varName + "$isBound", objectType, false))));
+                    Scene.v().makeFieldRef(disjunct, varName + "$isBound", boolType, false))));
             units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(result, 
-                    Scene.v().makeFieldRef(disjunct, varName + "$isBound", objectType, false)),
+                    Scene.v().makeFieldRef(disjunct, varName + "$isBound", boolType, false)),
                 tmpBound));
             // resuult.X$isWeak = this.X$isWeak;
             Local tmpWeak = lgen.generateLocal(BooleanType.v(), "tmpWeak");
             units.addLast(Jimple.v().newAssignStmt(tmpWeak, Jimple.v().newInstanceFieldRef(thisLocal,
-                    Scene.v().makeFieldRef(disjunct, varName + "$isWeak", objectType, false))));
+                    Scene.v().makeFieldRef(disjunct, varName + "$isWeak", boolType, false))));
             units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(result, 
-                    Scene.v().makeFieldRef(disjunct, varName + "$isWeak", objectType, false)),
+                    Scene.v().makeFieldRef(disjunct, varName + "$isWeak", boolType, false)),
                 tmpWeak));
             // If variable isn't bound, we need to keep track of negative bindings
             Stmt labelNextVar = Jimple.v().newNopStmt();
@@ -1244,8 +1245,8 @@ public class TraceMatchCodeGen {
                     labelNextVar));
             // not_X has been set to a new LinkedHashSet in the constructor -- potentially we
             // could consider keeping it null by only initialising it here.. TODO
-            Jimple.v().newAssignStmt(curNegBindings, Jimple.v().newInstanceFieldRef(result,
-                    Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false)));
+            units.addLast(Jimple.v().newAssignStmt(curNegBindings, Jimple.v().newInstanceFieldRef(result,
+                    Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
             Local tmpSet = lgen.generateLocal(setType, "tmpSet");
             units.addLast(Jimple.v().newAssignStmt(tmpSet, Jimple.v().newInstanceFieldRef(thisLocal, 
                     Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
