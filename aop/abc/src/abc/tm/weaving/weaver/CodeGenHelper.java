@@ -201,11 +201,15 @@ public class CodeGenHelper
         List arg_types = new ArrayList(params);
         List args = new ArrayList(params);
 
+        // FIXME: stop passing the state to addNegativeBindingsForSymbol
+        //        (when the constraint-gen is fixed)
         if (state != null) {
             arg_types.add(IntType.v());
             args.add(state);
             name = "addBindingsForSymbol" + symbol;
         } else {
+            arg_types.add(IntType.v());  // FIXME
+            args.add(IntConstant.v(0));  // DUMMY VALUE
             name = "addNegativeBindingsForSymbol" + symbol;
         }
 
