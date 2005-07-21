@@ -592,7 +592,7 @@ public class TraceMatchCodeGen {
     
     protected void addConstraintInitialiser(SootClass constraint) {
         SootMethod init = new SootMethod(SootMethod.constructorName, new LinkedList(), 
-                VoidType.v(), Modifier.STATIC);
+                VoidType.v(), Modifier.PUBLIC);
         Body b = Jimple.v().newBody(init);
         init.setActiveBody(b);
         constraint.addMethod(init);
@@ -1335,7 +1335,7 @@ public class TraceMatchCodeGen {
 
     protected void addDisjunctInitialiser(TraceMatch tm, SootClass disjunct) {
         SootMethod init = new SootMethod(SootMethod.constructorName, new LinkedList(), 
-                VoidType.v(), Modifier.STATIC);
+                VoidType.v(), Modifier.PUBLIC);
         Body b = Jimple.v().newBody(init);
         init.setActiveBody(b);
         disjunct.addMethod(init);
