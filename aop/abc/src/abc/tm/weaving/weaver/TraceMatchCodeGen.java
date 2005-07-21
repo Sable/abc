@@ -10,7 +10,7 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.*;
-import abc.weaving.aspectinfo.Formal;
+import abc.weaving.aspectinfo.*;
 
 
 /**
@@ -79,10 +79,10 @@ public class TraceMatchCodeGen {
         // Declare classes
         Type setType = RefType.v("java.util.Set");
         SootField trueConstraint = new SootField("trueC", constraint.getType(), Modifier.PUBLIC | 
-                            Modifier.FINAL); // possibly static too?
+                            Modifier.FINAL | Modifier.STATIC);
         constraint.addField(trueConstraint);
         SootField falseConstraint = new SootField("falseC", constraint.getType(), Modifier.PUBLIC |
-                            Modifier.FINAL); // possibly static too?
+                            Modifier.FINAL | Modifier.STATIC);
         constraint.addField(falseConstraint);
         SootField disjuncts = new SootField("disjuncts", setType,
                             Modifier.PUBLIC);
@@ -678,10 +678,10 @@ public class TraceMatchCodeGen {
      */
     protected void fillInDisjunctClass(TraceMatch tm, SootClass disjunct) {
         // add the fields to the class
-        SootField curField = new SootField("trueD", disjunct.getType(),
+        SootField curField = new SootField("trueD", disjunct.getType(), Modifier.PUBLIC |
                 Modifier.FINAL | Modifier.STATIC);
         disjunct.addField(curField);
-        curField = new SootField("falseD", disjunct.getType(),
+        curField = new SootField("falseD", disjunct.getType(), Modifier.PUBLIC |
                 Modifier.FINAL | Modifier.STATIC);
         disjunct.addField(curField);
         // the remaining fields depend on the tracematch declared variables -- for each
