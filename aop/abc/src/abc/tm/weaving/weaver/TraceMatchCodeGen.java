@@ -1327,9 +1327,10 @@ public class TraceMatchCodeGen {
             // To return the referent of a weak reference, store it in a local and call its get() method
             units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newInstanceFieldRef(thisLocal,
                     Scene.v().makeFieldRef(disjunct, "var$" + varName, objectType, false))));
-// NO WEAK  units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(weakRef,
-// REFS YET         Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.ref.WeakReference"),
-//                            "get", new LinkedList(), objectType, false))));
+            units.addLast(Jimple.v().newAssignStmt(weakRef,
+                                        Jimple.v().newCastExpr(result, myWeakRef.getType())));
+            units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(weakRef,
+                    Scene.v().makeMethodRef(myWeakRef, "get", new LinkedList(), objectType, false))));
             units.addLast(Jimple.v().newReturnStmt(result));
             
             // finally, the exception throwing code:
