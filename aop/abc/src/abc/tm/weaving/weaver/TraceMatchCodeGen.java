@@ -1260,7 +1260,7 @@ public class TraceMatchCodeGen {
             units.addLast(labelNextVar);
         }
         // return result;
-        Jimple.v().newReturnStmt(result);
+        units.add(Jimple.v().newReturnStmt(result));
     }
     
     /**
@@ -1289,7 +1289,7 @@ public class TraceMatchCodeGen {
             Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
             Local result = lgen.generateLocal(objectType, "result");
             Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
-            Local throwable = lgen.generateLocal(RefType.v("java.lang.Throwable"), "exception");
+            Local exception = lgen.generateLocal(RefType.v("java.lang.RuntimeException"), "exception");
             
             Chain units = b.getUnits();
             units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
@@ -1316,24 +1316,24 @@ public class TraceMatchCodeGen {
             
             units.addLast(labelReturnWeak);
             // To return the referent of a weak reference, store it in a local and call its get() method
-            units.addLast(Jimple.v().newAssignStmt(weakRef, Jimple.v().newInstanceFieldRef(thisLocal,
+            units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newInstanceFieldRef(thisLocal,
                     Scene.v().makeFieldRef(disjunct, "var$" + varName, objectType, false))));
-            units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(weakRef,
-                    Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.ref.WeakReference"),
-                            "get", new LinkedList(), objectType, false))));
+// NO WEAK  units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(weakRef,
+// REFS YET         Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.ref.WeakReference"),
+//                            "get", new LinkedList(), objectType, false))));
             units.addLast(Jimple.v().newReturnStmt(result));
             
             // finally, the exception throwing code:
             units.addLast(labelThrowException);
-            // throwable = new RuntimeException("Attempt to get an unbound variable");
+            // exception = new RuntimeException("Attempt to get an unbound variable");
             List parameters = new LinkedList();
             parameters.add(RefType.v("java.lang.String"));
-            units.addLast(Jimple.v().newAssignStmt(throwable, Jimple.v().newNewExpr(
+            units.addLast(Jimple.v().newAssignStmt(exception, Jimple.v().newNewExpr(
                     RefType.v("java.lang.RuntimeException"))));
-            units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(throwable, 
+            units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(exception, 
                     Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.RuntimeException"),
                     parameters), StringConstant.v("Attempt to get an unbound variable: " + varName))));
-            units.addLast(Jimple.v().newThrowStmt(throwable));
+            units.addLast(Jimple.v().newThrowStmt(exception));
         }
     }
 
