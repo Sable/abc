@@ -187,15 +187,13 @@ public class TraceMatchCodeGen {
         // if(!it1.hasNext()) goto labelLoopEnd; <code for loop>; <label>:
         Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
         units.addLast(Jimple.v().newAssignStmt(booleanLocal,
-                Jimple.v().newVirtualInvokeExpr(disjunctIt, 
+                Jimple.v().newInterfaceInvokeExpr(disjunctIt, 
                         Scene.v().makeMethodRef(iteratorClass, "hasNext", new LinkedList(), BooleanType.v(), false))));
-        units.addLast(Jimple.v().newAssignStmt(booleanLocal,
-                Jimple.v().newNegExpr(booleanLocal)));
-        units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(1)),
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(0)),
                         labelLoopEnd));
         // disjunctThis = (Disjunct)disjunctIt.next();
         Local tmpObject = lgen.generateLocal(RefType.v("java.lang.Object"), "tmpObject");
-        units.addLast(Jimple.v().newAssignStmt(tmpObject, Jimple.v().newVirtualInvokeExpr(disjunctIt, 
+        units.addLast(Jimple.v().newAssignStmt(tmpObject, Jimple.v().newInterfaceInvokeExpr(disjunctIt, 
                                 Scene.v().makeMethodRef(iteratorClass, "next", new LinkedList(), 
                                         RefType.v("java.lang.Object"), false))));
         units.addLast(Jimple.v().newAssignStmt(disjunctThis, 
