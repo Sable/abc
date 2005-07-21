@@ -39,7 +39,8 @@ public class TraceMatchCodeGen {
      * @param tm The relevant tracematch
      */
     protected void createConstraintClasses(TraceMatch tm) {
-        // the SootClasses for the constraint and the main disjunct class for the tracematch 
+        // the SootClasses for the constraint and the main disjunct class for the tracematch
+        SootClass object = Scene.v().getSootClass("java.lang.Object");
         SootClass constraint = new SootClass(getConstraintClassName(tm));
         SootClass disjunct = new SootClass(getDisjunctClassName(tm));
         tm.setConstraintClass(constraint);
@@ -51,6 +52,8 @@ public class TraceMatchCodeGen {
         Scene.v().addClass(disjunct);
         constraint.setApplicationClass();
         disjunct.setApplicationClass();
+        constraint.setSuperclass(object);
+        disjunct.setSuperclass(object);
     }
     
     /**
@@ -604,7 +607,14 @@ public class TraceMatchCodeGen {
         Local tempSet = lgen.generateLocal(hashSet.getType(), "tempSet");
         Local thisLocal = lgen.generateLocal(constraint.getType(), "thisLocal");
         Chain units = b.getUnits();
+
         units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(constraint.getType())));
+
+        // call super()
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(thisLocal,
+                Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.Object"),
+                        new LinkedList()))));
+
         units.addLast( Jimple.v().newAssignStmt(tempSet, 
                 Jimple.v().newNewExpr(hashSet.getType())));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempSet, 
@@ -612,7 +622,7 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal,
                 Scene.v().makeFieldRef(constraint, "disjuncts", RefType.v("java.util.Set"), false)),
                 tempSet));
-       
+        units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
     protected void addConstraintStaticInitialiser(SootClass constraint, SootClass disjunct) {
@@ -640,6 +650,7 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempConstraint, 
                 Scene.v().makeConstructorRef(constraint, new LinkedList()))));
         units.addLast(Jimple.v().newAssignStmt(falseConstraintField, tempConstraint));
+        units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
     protected void addConstraintGetDisjunctIteratorMethod(SootClass constraint, SootClass disjunct) {
@@ -1344,19 +1355,25 @@ public class TraceMatchCodeGen {
         init.setActiveBody(b);
         disjunct.addMethod(init);
 
+        RefType hashSet = RefType.v("java.util.LinkedHashSet");
+
         LocalGeneratorEx lgen = new LocalGeneratorEx(b);
-        Local tempSet = lgen.generateLocal(RefType.v("java.util.Set"), "tempSet");
+        Local tempSet = lgen.generateLocal(hashSet, "tempSet");
         Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
         Chain units = b.getUnits();
         units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
-        
+ 
+        // call super()
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(thisLocal,
+                Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.Object"),
+                        new LinkedList()))));
+
         // For now -- initialise each not$X set with a new set on construction.
         List varNames = tm.getFormalNames();
         Iterator varIt = varNames.iterator();
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
-            units.addLast(Jimple.v().newAssignStmt(tempSet, 
-                    Jimple.v().newNewExpr(RefType.v("java.util.LinkedHashSet"))));
+            units.addLast(Jimple.v().newAssignStmt(tempSet, Jimple.v().newNewExpr(hashSet)));
             units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempSet,
                     Scene.v().makeConstructorRef(Scene.v().getSootClass("java.util.LinkedHashSet"),
                             new LinkedList()))));
@@ -1364,6 +1381,7 @@ public class TraceMatchCodeGen {
                     Scene.v().makeFieldRef(disjunct, "not$" + varName, 
                             RefType.v("java.util.Set"), false)), tempSet));
         }
+        units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
     protected void addDisjunctStaticInitialiser(SootClass disjunct) {
@@ -1391,6 +1409,7 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempConstraint, 
                 Scene.v().makeConstructorRef(disjunct, new LinkedList()))));
         units.addLast(Jimple.v().newAssignStmt(falseConstraintField, tempConstraint));
+        units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
 
