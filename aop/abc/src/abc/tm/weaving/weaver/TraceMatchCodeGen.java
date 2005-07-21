@@ -5,6 +5,7 @@ import java.util.*;
 import soot.*;
 import soot.util.*;
 import soot.jimple.*;
+
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.aspectinfo.*;
@@ -42,6 +43,8 @@ public class TraceMatchCodeGen {
         SootClass constraint = new SootClass(getConstraintClassName(tm));
         SootClass disjunct = new SootClass(getDisjunctClassName(tm));
         tm.setConstraintClass(constraint);
+        tm.setDisjunctClass(disjunct);
+
         fillInConstraintClass(tm, constraint, disjunct);
         fillInDisjunctClass(tm, disjunct);
         Scene.v().addClass(constraint);
@@ -1384,10 +1387,114 @@ public class TraceMatchCodeGen {
      * Fills in the method stubs that have been generated for this tracematch.
      * @param tm the tracematch in question
      */
-    protected void fillInAdviceBodies(TraceMatch tm) {
-        
+    protected void fillInAdviceBodies(TraceMatch tm, Collection unused)
+    {
+        List body_formals = traceMatchBodyParameters(unused, tm);
+
+        CodeGenHelper helper = new CodeGenHelper(tm);
+        helper.makeAndInitLabelFields();
+
+        Iterator syms = tm.getSymbols().iterator();
+
+        while (syms.hasNext()) {
+            String symbol = (String) syms.next();
+            SootMethod advice_method = tm.getSymbolAdviceMethod(symbol);
+
+            fillInSymbolAdviceBody(symbol, advice_method, tm, helper);
+        }
+
+        Iterator kinds = tm.getKinds().iterator();
+        while (kinds.hasNext()) {
+            String kind = (String) kinds.next();
+            SootMethod advice_method = tm.getSomeAdviceMethod(kind);
+
+            fillInSomeAdviceBody(kind, advice_method, tm, helper, body_formals);
+        }
     }
-    
+
+    protected void fillInSymbolAdviceBody(String symbol, SootMethod method,
+                                            TraceMatch tm, CodeGenHelper helper)
+    {
+        TMStateMachine sm = (TMStateMachine) tm.getState_machine();
+        Iterator to_states = sm.getStateIterator();
+
+        while (to_states.hasNext()) {
+            SMNode to = (SMNode) to_states.next();
+            Iterator edges = to.getInEdgeIterator();
+
+            // we don't accumulate useless constraints for
+            // initial states
+            if (to.isInitialNode())
+                continue;
+
+            while (edges.hasNext()) {
+                SMEdge edge = (SMEdge) edges.next();
+
+                if (edge.getLabel().equals(symbol)) {
+                    SMNode from = (SMNode) edge.getSource();
+
+                    helper.genLabelUpdate(from.getNumber(), to.getNumber(),
+                                            edge.getLabel(), method);
+                }
+            }
+
+            if (to.hasEdgeTo(to, "")) // (skip-loop)
+                helper.genSkipLabelUpdate(to.getNumber(), symbol, method);
+        }
+    }
+
+    protected void fillInSomeAdviceBody(String kind, SootMethod method,
+                                        TraceMatch tm, CodeGenHelper helper,
+                                        List body_formals)
+    {
+        TMStateMachine sm = (TMStateMachine) tm.getState_machine();
+        Iterator states = sm.getStateIterator();
+        SMNode final_state = null;
+
+        helper.genTestAndResetUpdated(method);
+
+        while (states.hasNext()) {
+            SMNode state = (SMNode) states.next();
+            boolean skip_loop;
+
+            // there is only one final state, and we remember it
+            // in order to generate solution code later
+            if (state.isFinalNode())
+                final_state = state;
+
+            // we don't want to accumulate useless constraints
+            // for initial states
+            if (state.isInitialNode())
+                continue;
+
+            if (state.hasEdgeTo(state, "")) // (skip-loop)
+                skip_loop = true;
+            else
+                skip_loop = false;
+
+            helper.genLabelMasterUpdate(skip_loop, state.getNumber(), method);
+        }
+
+        if (!tm.isAround() || kind.equals("around"))
+            helper.genRunSolutions(final_state.getNumber(),
+                                    method, body_formals);
+    }
+ 
+    protected List traceMatchBodyParameters(Collection unused, TraceMatch tm)
+    {
+        List formals = new ArrayList(tm.getFormals().size());
+        Iterator i = tm.getFormals().iterator();
+
+        while (i.hasNext()) {
+            Formal f = (Formal) i.next();
+
+            if (!unused.contains(f.getName()))
+                formals.add(f);
+        }
+
+        return formals;
+    }
+
     protected void prepareAdviceBody(SootMethod sm, List names, Collection unused) {
     	List paramTypes = new LinkedList();
     	List paramNames = new LinkedList();
@@ -1478,6 +1585,6 @@ public class TraceMatchCodeGen {
         // can be obtained from the TraceMatch object; code to keep track of changing 
         // constraints and to run the tracematch advice when appropriate, with the necessary
         // bindings, should be added.
-        fillInAdviceBodies(tm);
+        fillInAdviceBodies(tm, unused);
     }
 }

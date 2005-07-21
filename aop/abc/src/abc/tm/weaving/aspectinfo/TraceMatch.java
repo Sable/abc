@@ -49,7 +49,8 @@ public class TraceMatch
 
     protected Aspect container;
  
-    protected SootClass constraint;
+    protected SootClass constraint = null;
+    protected SootClass disjunct = null;
     
     protected Position position;
 
@@ -123,6 +124,11 @@ public class TraceMatch
         return state_machine;
     }
 
+    public boolean isAround()
+    {
+        return getKinds().contains("around");
+    }
+
     public Set getSymbols() {
         return sym_to_vars.keySet();
     }
@@ -182,5 +188,15 @@ public class TraceMatch
     public SootClass getConstraintClass()
     {
         return constraint;
+    }
+
+    public void setDisjunctClass(SootClass disjunct)
+    {
+        this.disjunct = disjunct;
+    }
+
+    public SootClass getDisjunctClass()
+    {
+        return disjunct;
     }
 }
