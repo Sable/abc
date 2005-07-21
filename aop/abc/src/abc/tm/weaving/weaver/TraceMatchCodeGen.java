@@ -127,11 +127,12 @@ public class TraceMatchCodeGen {
         
         LocalGeneratorEx lgen = new LocalGeneratorEx(b);
         // generate 'standard' locals
+        SootClass setClass = Scene.v().getSootClass("java.util.Set");
         RefType setType = RefType.v("java.util.Set");
         RefType iteratorType = RefType.v("java.util.Iterator");
         SootClass hashSet = Scene.v().getSootClass("java.util.HashSet");
         SootClass iteratorClass = Scene.v().getSootClass("java.util.Iterator");
-        Local resultSet = lgen.generateLocal(setType, "resultSet");
+        Local resultSet = lgen.generateLocal(hashSet.getType(), "resultSet");
         Local localSet = lgen.generateLocal(setType, "localSet");
         Local result = lgen.generateLocal(constraint.getType(), "result");
         Local thisLocal = lgen.generateLocal(constraint.getType(), "this");
@@ -173,7 +174,7 @@ public class TraceMatchCodeGen {
 
         // Get an iterator for this constraint's disjuncts
         units.addLast(Jimple.v().newAssignStmt(disjunctIt, Jimple.v().newInterfaceInvokeExpr(
-                localSet, Scene.v().makeMethodRef(hashSet, "iterator", new LinkedList(), 
+                localSet, Scene.v().makeMethodRef(setClass, "iterator", new LinkedList(), 
                         iteratorType, false))));
         
         // Have to emulate loops with jumps: while(disjunctIt.hasNext()) { ... }
@@ -204,7 +205,7 @@ public class TraceMatchCodeGen {
         // resultSet.add(disjunctResult);
         List parameters = new LinkedList();
         parameters.add(RefType.v("java.lang.Object"));
-        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet,
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
                 Scene.v().makeMethodRef(hashSet, "add", parameters, BooleanType.v(), false), disjunctResult)));
         // goto beginning of inner loop
         units.addLast(Jimple.v().newGotoStmt(labelLoopBegin));
@@ -220,11 +221,11 @@ public class TraceMatchCodeGen {
                 Scene.v().makeFieldRef(disjunct, "falseD", disjunct.getType(), true));
         Local falseDisjunct = lgen.generateLocal(disjunct.getType(), "falseDisjunct");
         units.addLast(Jimple.v().newAssignStmt(falseDisjunct, falseD));
-        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet,
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
                 Scene.v().makeMethodRef(hashSet, "remove", parameters, BooleanType.v(), false), falseDisjunct)));
         Stmt labelReturnFalseC = Jimple.v().newNopStmt();
         // if(resultSet.isEmpty) goto label;
-        units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInterfaceInvokeExpr(resultSet,
+        units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newVirtualInvokeExpr(resultSet,
                 Scene.v().makeMethodRef(hashSet, "isEmpty", new LinkedList(), BooleanType.v(), false))));
         units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(1)),
                 labelReturnFalseC));
@@ -245,7 +246,7 @@ public class TraceMatchCodeGen {
         StaticFieldRef falseC = Jimple.v().newStaticFieldRef(
                 Scene.v().makeFieldRef(constraint, "falseC", constraint.getType(), true));
         Local falseConstraint = lgen.generateLocal(constraint.getType(), "falseConstraint");
-        Jimple.v().newAssignStmt(falseConstraint, falseC);
+        units.addLast(Jimple.v().newAssignStmt(falseConstraint, falseC));
         units.addLast(Jimple.v().newReturnStmt(falseConstraint));
         
         return symbolMethod;
@@ -597,15 +598,17 @@ public class TraceMatchCodeGen {
         init.setActiveBody(b);
         constraint.addMethod(init);
 
+        SootClass hashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
+
         LocalGeneratorEx lgen = new LocalGeneratorEx(b);
-        Local tempSet = lgen.generateLocal(RefType.v("java.util.Set"), "tempSet");
+        Local tempSet = lgen.generateLocal(hashSet.getType(), "tempSet");
         Local thisLocal = lgen.generateLocal(constraint.getType(), "thisLocal");
         Chain units = b.getUnits();
         units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(constraint.getType())));
         units.addLast( Jimple.v().newAssignStmt(tempSet, 
-                Jimple.v().newNewExpr(RefType.v("java.util.LinkedHashSet"))));
+                Jimple.v().newNewExpr(hashSet.getType())));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempSet, 
-                Scene.v().makeConstructorRef(Scene.v().getSootClass("java.util.LinkedHashSet"), new LinkedList()))));
+                Scene.v().makeConstructorRef(hashSet, new LinkedList()))));
         units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(thisLocal,
                 Scene.v().makeFieldRef(constraint, "disjuncts", RefType.v("java.util.Set"), false)),
                 tempSet));
