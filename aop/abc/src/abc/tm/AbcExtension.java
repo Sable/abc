@@ -91,6 +91,7 @@ public class AbcExtension extends abc.main.AbcExtension
 	public void addBasicClassesToSoot()
 	   {
 		   super.addBasicClassesToSoot();
+           Scene.v().addBasicClass("java.util.Iterator", SootClass.SIGNATURES);
 		   Scene.v().addBasicClass("java.util.HashSet", SootClass.SIGNATURES);
 		   Scene.v().addBasicClass("java.util.LinkedHashSet",
                                     SootClass.SIGNATURES);
