@@ -280,6 +280,7 @@ public class TraceMatchCodeGen {
             Jimple.v().newParameterRef(constraint.getType(), 0)));
         // If one of the constraints is trueC, the result is trueC
         // Define labels
+        Stmt labelThisNotTrue = Jimple.v().newNopStmt();
         Stmt labelBothNotTrue = Jimple.v().newNopStmt();
         Stmt labelCheckParameter = Jimple.v().newNopStmt();
         Stmt labelComputeResult = Jimple.v().newNopStmt();
@@ -288,19 +289,14 @@ public class TraceMatchCodeGen {
             Scene.v().makeFieldRef(constraint, "trueC", constraint.getType(), true));
         StaticFieldRef falseC = Jimple.v().newStaticFieldRef(
             Scene.v().makeFieldRef(constraint, "falseC", constraint.getType(), true));
-        Local booleanLocal1 = lgen.generateLocal(BooleanType.v(), "booleanLocal");
-        Local booleanLocal2 = lgen.generateLocal(BooleanType.v(), "booleanLocal");
         Local trueLocal = lgen.generateLocal(constraint.getType(), "trueLocal");
         Local falseLocal = lgen.generateLocal(constraint.getType(), "falseLocal");
         units.addLast(Jimple.v().newAssignStmt(trueLocal, trueC));
         units.addLast(Jimple.v().newAssignStmt(falseLocal, falseC));
-        units.addLast(Jimple.v().newAssignStmt(booleanLocal1, Jimple.v().newNeExpr(thisLocal, trueLocal)));
-        units.addLast(Jimple.v().newAssignStmt(booleanLocal2, Jimple.v().newNeExpr(paramLocal, trueLocal)));
-        units.addLast(Jimple.v().newAssignStmt(booleanLocal1, Jimple.v().newAndExpr(
-                booleanLocal1, booleanLocal2)));
-        units.addLast(Jimple.v().
-                newIfStmt(Jimple.v().newEqExpr(booleanLocal1, IntConstant.v(1)),
-                labelBothNotTrue));
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisLocal, trueLocal), labelThisNotTrue));
+        units.addLast(Jimple.v().newReturnStmt(trueLocal));
+        units.addLast(labelThisNotTrue);
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(paramLocal, trueLocal), labelBothNotTrue));
         units.addLast(Jimple.v().newReturnStmt(trueLocal));
         units.addLast(labelBothNotTrue);
         // If one of the constraints is false, the result is (a copy of) the other one.
