@@ -640,6 +640,18 @@ public class TraceMatchCodeGen {
                 Scene.v().makeFieldRef(constraint, "falseC", constraint.getType(), true));
         units.addLast( Jimple.v().newAssignStmt(tempConstraint, 
                 Jimple.v().newNewExpr(constraint.getType())));
+        
+        // trueC should contain an empty disjunct
+        Local disjuncts = lgen.generateLocal(RefType.v("java.util.Set"), "trueCDisjuncts");
+        Local emptyDisjunct = lgen.generateLocal(disjunct.getType(), "emptyDisjunct");
+        units.addLast(Jimple.v().newAssignStmt(emptyDisjunct, Jimple.v().newNewExpr(disjunct.getType())));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(emptyDisjunct,
+                Scene.v().makeConstructorRef(disjunct, new LinkedList()))));
+        List parameters = new LinkedList();
+        parameters.add(RefType.v("java.lang.Object"));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(disjuncts,
+                Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "add", parameters,
+                        BooleanType.v(), false))));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempConstraint, 
                 Scene.v().makeConstructorRef(constraint, new LinkedList()))));
         units.addLast(Jimple.v().newAssignStmt(trueConstraintField, tempConstraint));
@@ -932,7 +944,7 @@ public class TraceMatchCodeGen {
                 units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInterfaceInvokeExpr(curVarNegBindings,
                         Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "contains",
                                 singleObjectParameter, BooleanType.v(), false), curVar)));
-                units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)), 
+                units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(1)), 
                         labelReturnFalse));
                 units.addLast(labelCheckNextVar);
             }
@@ -1006,7 +1018,7 @@ public class TraceMatchCodeGen {
                         units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(result,
                                 Scene.v().makeFieldRef(disjunct, varName + "$isWeak", BooleanType.v(),
                                         false)),
-                                IntConstant.v(0)));
+                                IntConstant.v(1)));
                         // result.var$var = new MyWeakRef(var);
                         units.addLast(Jimple.v().newAssignStmt(weakRef, 
                                 Jimple.v().newNewExpr(myWeakRef.getType())));
