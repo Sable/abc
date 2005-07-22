@@ -32,6 +32,39 @@ public class TraceMatchCodeGen {
         return tm.getPackage() + "Disjunct$" + tm.getName();
     }
     
+    // codegen helper methods
+    protected void addReturnThisMethod(SootClass addToClass, String methodName, List parameters) {
+        SootMethod method = new SootMethod(methodName, parameters, addToClass.getType(),
+                Modifier.PUBLIC);
+        Body b = Jimple.v().newBody(method);
+        method.setActiveBody(b);
+        addToClass.addMethod(method);
+        
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        Local thisLocal = lgen.generateLocal(addToClass.getType(), "thisLocal");
+        
+        Chain units = b.getUnits();
+        units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(addToClass.getType())));
+        units.addLast(Jimple.v().newReturnStmt(thisLocal));
+    }
+    
+    // returns a static field member of the same type as addToClass
+    protected void addReturnFieldMethod(SootClass addToClass, String methodName,
+            FieldRef fieldToReturn, List parameters) {
+        SootMethod method = new SootMethod(methodName, parameters, addToClass.getType(),
+                Modifier.PUBLIC);
+        Body b = Jimple.v().newBody(method);
+        method.setActiveBody(b);
+        addToClass.addMethod(method);
+        
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        Local result = lgen.generateLocal(addToClass.getType(), "result");
+        
+        Chain units = b.getUnits();
+        units.addLast(Jimple.v().newAssignStmt(result, fieldToReturn));
+        units.addLast(Jimple.v().newReturnStmt(result));
+    }
+    
     /**
      * Create the classes needed to keep constraints for a given tracematch. Classes are
      * the Constraint set of disjuncts and the disjunct class, plus any helper classes.
@@ -874,9 +907,18 @@ public class TraceMatchCodeGen {
         Iterator symbolIt = tm.getSym_to_vars().keySet().iterator();
         while(symbolIt.hasNext()) {
             String symbolName = (String)symbolIt.next();
+
+            List variableList = tm.getVariableOrder(symbolName);
             List parameters = new LinkedList();
             parameters.add(IntType.v());
-            List variableList = tm.getVariableOrder(symbolName);
+            
+            /////////// handling for variable-less symbols/tracematches
+            // if this symbol has no vars -- return this
+            if(variableList.isEmpty()) { 
+                addReturnThisMethod(disjunct, "addBindingsForSymbol" + symbolName, parameters);
+                continue;
+            }
+
             for(int i = 0; i < variableList.size(); i++) parameters.add(objectType);
             SootMethod symbolMethod = new SootMethod("addBindingsForSymbol" + symbolName,
                     parameters, disjunct.getType(), Modifier.PUBLIC);
@@ -1073,14 +1115,24 @@ public class TraceMatchCodeGen {
         List singleObjectParameter = new LinkedList();
         singleObjectParameter.add(objectType);
         Iterator symbolIt = tm.getSym_to_vars().keySet().iterator();
+        FieldRef falseD = Jimple.v().newStaticFieldRef(Scene.v().makeFieldRef(disjunct, 
+                "falseD", disjunct.getType(), true));
         while(symbolIt.hasNext()) {
             String symbolName = (String)symbolIt.next();
             List parameters = new LinkedList();
-            
             // take state number for legacy reasons..
             parameters.add(IntType.v());
             
             List variableList = tm.getVariableOrder(symbolName);
+
+            //////////// handling of variable-less symbols/tracematches -- return falseD
+            if(variableList.isEmpty()) {
+                addReturnFieldMethod(disjunct, "addNegativeBindingsForSymbol" + symbolName,
+                        falseD, parameters);
+                continue;
+            }
+            
+            
             for(int i = 0; i < variableList.size(); i++) parameters.add(objectType);
             SootMethod symbolMethod = new SootMethod("addNegativeBindingsForSymbol" + symbolName,
                     parameters, disjunct.getType(), Modifier.PUBLIC);
