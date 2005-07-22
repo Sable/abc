@@ -640,6 +640,8 @@ public class TraceMatchCodeGen {
                 Scene.v().makeFieldRef(constraint, "falseC", constraint.getType(), true));
         units.addLast( Jimple.v().newAssignStmt(tempConstraint, 
                 Jimple.v().newNewExpr(constraint.getType())));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempConstraint, 
+                Scene.v().makeConstructorRef(constraint, new LinkedList()))));
         
         // trueC should contain an empty disjunct
         Local disjuncts = lgen.generateLocal(RefType.v("java.util.Set"), "trueCDisjuncts");
@@ -647,14 +649,15 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newAssignStmt(emptyDisjunct, Jimple.v().newNewExpr(disjunct.getType())));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(emptyDisjunct,
                 Scene.v().makeConstructorRef(disjunct, new LinkedList()))));
+        units.addLast(Jimple.v().newAssignStmt(disjuncts, Jimple.v().newInstanceFieldRef(tempConstraint,
+                Scene.v().makeFieldRef(constraint, "disjuncts", RefType.v("java.util.Set"), false))));
         List parameters = new LinkedList();
         parameters.add(RefType.v("java.lang.Object"));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(disjuncts,
                 Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "add", parameters,
-                        BooleanType.v(), false))));
-        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempConstraint, 
-                Scene.v().makeConstructorRef(constraint, new LinkedList()))));
+                        BooleanType.v(), false), emptyDisjunct)));
         units.addLast(Jimple.v().newAssignStmt(trueConstraintField, tempConstraint));
+
         units.addLast(Jimple.v().newAssignStmt(tempConstraint, 
                 Jimple.v().newNewExpr(constraint.getType())));
         units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(tempConstraint, 
