@@ -25,11 +25,11 @@ public class TraceMatchCodeGen {
     }
 
     protected String getConstraintClassName(TraceMatch tm) {
-        return "Constraint$" + tm.getName();
+        return tm.getPackage() + "Constraint$" + tm.getName();
     }
     
     protected String getDisjunctClassName(TraceMatch tm) {
-        return "Disjunct$" + tm.getName();
+        return tm.getPackage() + "Disjunct$" + tm.getName();
     }
     
     /**

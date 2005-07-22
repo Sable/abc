@@ -150,6 +150,21 @@ public class TraceMatch
         return name;
     }
 
+    /**
+     * Get the name of the package that contains the aspect which
+     * contains this tracematch.
+     *
+     * (includes the trailing full-stop)
+     */
+    public String getPackage()
+    {
+        String jvm_name = container.getInstanceClass().getJvmName();
+
+        int package_length = jvm_name.lastIndexOf('.') + 1;
+
+        return jvm_name.substring(0, package_length);
+    }
+
     public SootMethod getBodyMethod()
     {
         String body_name = getName() + "$body";
