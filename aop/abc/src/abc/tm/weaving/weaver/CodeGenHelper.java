@@ -453,7 +453,7 @@ public class CodeGenHelper
      * Assign a Jimple local to a label field on a constraint class.
      */
     protected void assignToLabel(Chain units, Local base,
-                                    int state, int kind, Local val)
+                                    int state, int kind, Immediate val)
     {
         Ref ref = makeLabelRef(base, state, kind);
         units.addLast(Jimple.v().newAssignStmt(ref, val));
@@ -650,6 +650,8 @@ public class CodeGenHelper
 
         Chain units = newChain();
 
+        setUpdated(units, this_local, IntConstant.v(1));
+
         Local lab = getLabel(body, units, this_local, to, SKIP_LABEL);
         Local result =
             callBindingsMethod(body, units, symbol, lab, method, null);
@@ -732,9 +734,11 @@ public class CodeGenHelper
         // then put the return statement back.
         Chain units = newChain();
 
-        // Get the disjunct iterator
+        // Get the disjunct iterator from the constraint label for the
+        // final state, then set the label field to null.
         Local lab_final = getLabel(body, units, this_local, state, LABEL);
         Local disjuncts = callDisjunctsMethod(body, units, lab_final);
+        assignToLabel(units, this_local, state, LABEL, NullConstant.v());
 
         Stmt loop = newPlaceHolder();
         Stmt end  = getReturn(body.getUnits());
