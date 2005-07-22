@@ -35,6 +35,8 @@ import java.util.*;
  */
 public class SymbolDecl_c extends Node_c implements SymbolDecl
 {
+    final static boolean debug_tm_advice = false;
+
     private String name;
     private SymbolKind kind;
     private Pointcut pc;
@@ -139,18 +141,21 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
     {
         Position cg = Position.COMPILER_GENERATED;
 
-        AmbReceiver sysout =
+        List statements = new LinkedList();
+
+        if (debug_tm_advice) {
+            AmbReceiver sysout =
                 nf.AmbReceiver(cg, nf.AmbPrefix(cg, null, "System"), "out");
 
-        List args = new LinkedList();
-        args.add(nf.StringLit(cg, debug_msg));
+            List args = new LinkedList();
+            args.add(nf.StringLit(cg, debug_msg));
 
-        Call println_call = nf.Call(cg, sysout, "println", args);
+            Call println_call = nf.Call(cg, sysout, "println", args);
 
-        Stmt println_statement = nf.Eval(cg, println_call);
+            Stmt println_statement = nf.Eval(cg, println_call);
 
-        List statements = new LinkedList();
-        statements.add(println_statement);
+            statements.add(println_statement);
+        }
 
         if (kind() == SymbolKind.AROUND && !ret_type.type().isVoid())
         {
