@@ -876,8 +876,8 @@ public class TraceMatchCodeGen {
             String symbolName = (String)symbolIt.next();
             List parameters = new LinkedList();
             parameters.add(IntType.v());
-            Set variableSet = (Set)tm.getSym_to_vars().get(symbolName);
-            for(int i = 0; i < variableSet.size(); i++) parameters.add(objectType);
+            List variableList = tm.getVariableOrder(symbolName);
+            for(int i = 0; i < variableList.size(); i++) parameters.add(objectType);
             SootMethod symbolMethod = new SootMethod("addBindingsForSymbol" + symbolName,
                     parameters, disjunct.getType(), Modifier.PUBLIC);
             Body b = Jimple.v().newBody(symbolMethod);
@@ -898,7 +898,7 @@ public class TraceMatchCodeGen {
             
             List variableLocalsList = new LinkedList();
             int parameterIndex = 1;
-            Iterator varIt = variableSet.iterator();
+            Iterator varIt = variableList.iterator();
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
                 // add local for this variable and identity statement to store the parameter
@@ -913,7 +913,7 @@ public class TraceMatchCodeGen {
             Stmt labelReturnFalse = Jimple.v().newNopStmt();
             
             // now we have all the locals. Generate the code for this method.
-            varIt = variableSet.iterator();
+            varIt = variableList.iterator();
             Iterator localIt = variableLocalsList.iterator();
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
@@ -991,9 +991,9 @@ public class TraceMatchCodeGen {
                                 Scene.v().makeMethodRef(disjunct, "copy", new LinkedList(), 
                                         disjunct.getType(), false))));
                 // for each variable..
-                varIt = variableSet.iterator();
+                varIt = variableList.iterator();
                 // IMPORTANT ASSUMPTION -- variableLocalsList is iterated in the order in which
-                // elements are added and variableSet is iterated in the same order as last time,
+                // elements are added and variableList is iterated in the same order as last time,
                 // so that the correspondence between variable name and local variable storing 
                 // the relevant parameter is preserved.
                 localIt = variableLocalsList.iterator();
@@ -1080,8 +1080,8 @@ public class TraceMatchCodeGen {
             // take state number for legacy reasons..
             parameters.add(IntType.v());
             
-            Set variableSet = (Set)tm.getSym_to_vars().get(symbolName);
-            for(int i = 0; i < variableSet.size(); i++) parameters.add(objectType);
+            List variableList = tm.getVariableOrder(symbolName);
+            for(int i = 0; i < variableList.size(); i++) parameters.add(objectType);
             SootMethod symbolMethod = new SootMethod("addNegativeBindingsForSymbol" + symbolName,
                     parameters, disjunct.getType(), Modifier.PUBLIC);
             Body b = Jimple.v().newBody(symbolMethod);
@@ -1104,7 +1104,7 @@ public class TraceMatchCodeGen {
             parameterIndex = 1;
             ////////////////////////////////////////////////////////////////////////////
             
-            Iterator varIt = variableSet.iterator();
+            Iterator varIt = variableList.iterator();
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
                 // add local for this variable and identity statement to store the parameter
@@ -1121,7 +1121,7 @@ public class TraceMatchCodeGen {
             // now we have all the locals. Generate the code for this method.
             // The disjunct is only incompatible if a variable is bound to a value that is
             // passed as a parameter to add as a negative binding.
-            varIt = variableSet.iterator();
+            varIt = variableList.iterator();
             Iterator localIt = variableLocalsList.iterator();
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
@@ -1160,9 +1160,9 @@ public class TraceMatchCodeGen {
                             Scene.v().makeMethodRef(disjunct, "copy", new LinkedList(), 
                                     disjunct.getType(), false))));
             // for each variable..
-            varIt = variableSet.iterator();
+            varIt = variableList.iterator();
             // IMPORTANT ASSUMPTION -- variableLocalsList is iterated in the order in which
-            // elements are added and variableSet is iterated in the same order as last time,
+            // elements are added and variableList is iterated in the same order as last time,
             // so that the correspondence between variable name and local variable storing 
             // the relevant parameter is preserved.
             localIt = variableLocalsList.iterator();
