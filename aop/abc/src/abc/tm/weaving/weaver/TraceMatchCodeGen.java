@@ -143,11 +143,11 @@ public class TraceMatchCodeGen {
             /////////// handling for variable-less symbols/tracematches
             if(tm.getVariableOrder(symbol).isEmpty()) { 
                 // if this symbol has no vars -- return this from addBindingsForSymbol...
-                addReturnThisMethod(disjunct, "addBindingsForSymbol" + symbol, parameters);
+                addReturnThisMethod(constraint, "addBindingsForSymbol" + symbol, parameters);
                 // ... and falseC from addNegBindingsForSymbol
                 FieldRef falseC = Jimple.v().newStaticFieldRef(Scene.v().makeFieldRef(constraint, 
                         "falseC", constraint.getType(), true));
-                addReturnFieldMethod(disjunct, "addNegativeBindingsForSymbol" + symbol,
+                addReturnFieldMethod(constraint, "addNegativeBindingsForSymbol" + symbol,
                         falseC, parameters);
                 continue;
             }
