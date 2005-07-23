@@ -130,10 +130,28 @@ public class TraceMatchCodeGen {
         
         addConstraintCopyMethod(constraint, disjunct);
         
+        // list needed for symbols that bind no variables -- then the add(Neg)Bindings methods
+        // take a single int
+        List parameters = new LinkedList();
+        parameters.add(IntType.v());
+        
         Iterator symbolIt = tm.getSym_to_vars().keySet().iterator();
         String symbol;
         while(symbolIt.hasNext()) {
             symbol = (String)symbolIt.next();
+            
+            /////////// handling for variable-less symbols/tracematches
+            if(tm.getVariableOrder(symbol).isEmpty()) { 
+                // if this symbol has no vars -- return this from addBindingsForSymbol...
+                addReturnThisMethod(disjunct, "addBindingsForSymbol" + symbol, parameters);
+                // ... and falseC from addNegBindingsForSymbol
+                FieldRef falseC = Jimple.v().newStaticFieldRef(Scene.v().makeFieldRef(constraint, 
+                        "falseC", constraint.getType(), true));
+                addReturnFieldMethod(disjunct, "addNegativeBindingsForSymbol" + symbol,
+                        falseC, parameters);
+                continue;
+            }
+
             addAddBindingsDispatchMethod(constraint, disjunct, 
                     "addBindingsForSymbol" + symbol, tm.getVariableOrder(symbol));
             addAddBindingsDispatchMethod(constraint, disjunct, 
