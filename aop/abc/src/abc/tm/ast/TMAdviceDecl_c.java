@@ -52,7 +52,8 @@ public class TMAdviceDecl_c extends AdviceDecl_c
                             List throwTypes, Pointcut pc, Block body,
                             String tm_id, Position tm_pos, boolean is_some)
     {
-        super(pos, flags, spec, throwTypes, pc, body);
+    	// all tracematch advice should be synchronized
+        super(pos, flags.set(Flags.SYNCHRONIZED), spec, throwTypes, pc, body);
         this.is_some = is_some;
         this.tm_id = tm_id;
         this.tm_pos = tm_pos;

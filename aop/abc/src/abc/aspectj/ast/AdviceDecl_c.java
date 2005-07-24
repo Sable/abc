@@ -397,7 +397,7 @@ public class AdviceDecl_c extends AJMethodDecl_c
 		
 		pc.checkFormals(formals);
 		
-		Flags f = flags().clear(Flags.STRICTFP);
+		Flags f = flags().clear(Flags.STRICTFP).clear(Flags.SYNCHRONIZED);
 		if (!f.equals(Flags.NONE))
 			throw new SemanticException("advice cannot have flags "+f,position());
 	  
