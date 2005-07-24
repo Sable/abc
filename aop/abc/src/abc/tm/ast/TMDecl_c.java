@@ -187,6 +187,7 @@ public class TMDecl_c extends AJMethodDecl_c
         }
 
         makeSomeAdvice(nf, advice, closed_pointcuts, voidn);
+        makeSynchAdvice(nf,advice,closed_pointcuts,voidn);
 
         return advice;
     }
@@ -225,7 +226,40 @@ public class TMDecl_c extends AJMethodDecl_c
             kind_to_advice_name.put(sd.kind(), ad.name());
         }
     }
+    
+    protected void makeSynchAdvice(TMNodeFactory nf, List advice,
+    		List pointcuts, TypeNode voidn)
+    {
+        
+        Iterator pcs = pointcuts.iterator();
+        Pointcut some = (Pointcut) pcs.next();
 
+        while (pcs.hasNext()) {
+            Pointcut pc = (Pointcut) pcs.next();
+
+            some = nf.PCBinary(position(),
+                                 some,
+                                 PCBinary.COND_OR,
+                                 pc);
+        }
+        
+        TypeNode objt = nf.CanonicalTypeNode(position,methodInstance().typeSystem().Object());
+        Around aroundspec = nf.Around(position,objt,new LinkedList());
+        ProceedCall proceed = nf.ProceedCall(position,nf.This(position),new LinkedList());
+        Return ret = nf.Return(position,proceed);
+        Block block = nf.Block(position,ret);
+        TMAdviceDecl aroundsync = nf.TMAdviceDecl(position,
+        		                                  Flags.SYNCHRONIZED,
+												  aroundspec,
+												  new LinkedList(),
+												  some,
+												  block,
+												  tracematch_name + "$synch",
+												  position,
+												  TMAdviceDecl_c.SYNCH);
+        advice.add(aroundsync);
+    }
+    
     /**
      * create a TraceMatch object in the GlobalAspectInfo structure
      */

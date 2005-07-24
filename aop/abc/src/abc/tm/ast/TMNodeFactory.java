@@ -54,7 +54,7 @@ public interface TMNodeFactory extends AJNodeFactory
 
     TMAdviceDecl TMAdviceDecl(Position pos, Flags flags, AdviceSpec spec,
                                 List throwTypes, Pointcut pc, Block body,
-                                String tm_id, Position tm_pos, boolean is_some);
+                                String tm_id, Position tm_pos, int kind);
 
     Regex RegexAlternation(Position pos, Regex a, Regex b);
     Regex RegexConjunction(Position pos, Regex a, Regex b);

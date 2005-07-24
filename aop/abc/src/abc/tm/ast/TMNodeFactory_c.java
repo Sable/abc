@@ -89,10 +89,10 @@ public class TMNodeFactory_c extends AJNodeFactory_c
     public TMAdviceDecl TMAdviceDecl(Position pos, Flags flags,
                             AdviceSpec spec, List throwTypes, Pointcut pc,
                             Block body, String tm_id, Position tm_pos,
-                            boolean is_some)
+                            int kind)
     {
         return new TMAdviceDecl_c(pos, flags, spec, throwTypes,
-                                    pc, body, tm_id, tm_pos, is_some);
+                                    pc, body, tm_id, tm_pos, kind);
     }
 
     public Regex RegexAlternation(Position pos, Regex a, Regex b)

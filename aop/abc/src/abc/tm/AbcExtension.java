@@ -101,9 +101,20 @@ public class AbcExtension extends abc.main.AbcExtension
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
          the "some" advice has higher precedence than all symbols in the same tracematch
-         if it is after advice; it has lower precedence than all symbols if it is before advice */
+         if it is after advice; it has lower precedence than all symbols if it is before advice
+         
+         the "synch" advice always has higher precedence than anything else in the same tracematch */
 	public int tmGetPrec(TMAdviceDecl tma,TMAdviceDecl tmb) {
 	    	if (tma.getTraceMatchID().equals(tmb.getTraceMatchID())) {
+	    		if (tma.isSynch() && !tmb.isSynch())
+					return GlobalAspectInfo.PRECEDENCE_FIRST;   	        	
+		    	if (!tma.isSynch() && tmb.isSynch())
+					return GlobalAspectInfo.PRECEDENCE_SECOND;
+		    	if (tma.isSynch() && tmb.isSynch())
+		    	        // we have tma==tmb, as there is at most one piece
+		    	        // of "some" advice
+	    	    	return GlobalAspectInfo.PRECEDENCE_NONE;
+		    	 
 		    	if (tma.isSome() && !tmb.isSome())
 					if (tma.getAdviceSpec().isAfter())
 						return GlobalAspectInfo.PRECEDENCE_FIRST;
@@ -118,7 +129,9 @@ public class AbcExtension extends abc.main.AbcExtension
 		    	        // we have tma==tmb, as there is at most one piece
 		    	        // of "some" advice
 	    	    	return GlobalAspectInfo.PRECEDENCE_NONE;
-	    	    	
+		    	 
+		    	 
+		    	 
 				int lexicalfirst,lexicalsecond;
 				if  (tma.getAdviceSpec().isAfter() || tmb.getAdviceSpec().isAfter() ) {
 					lexicalfirst=GlobalAspectInfo.PRECEDENCE_SECOND;

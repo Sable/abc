@@ -46,15 +46,17 @@ public class TMAdviceDecl_c extends AdviceDecl_c
 {
     private String tm_id;
     private Position tm_pos;
-    private boolean is_some;
+    private int kind;
+    public static final int SOME = 0;
+    public static final int SYNCH = 1;
+    public static final int OTHER = 2;
 
     public TMAdviceDecl_c(Position pos, Flags flags, AdviceSpec spec,
                             List throwTypes, Pointcut pc, Block body,
-                            String tm_id, Position tm_pos, boolean is_some)
+                            String tm_id, Position tm_pos, int kind)
     {
-    	// all tracematch advice should be synchronized
-        super(pos, flags.set(Flags.SYNCHRONIZED), spec, throwTypes, pc, body);
-        this.is_some = is_some;
+        super(pos, flags, spec, throwTypes, pc, body);
+        this.kind = kind;
         this.tm_id = tm_id;
         this.tm_pos = tm_pos;
         if (tm_pos == null)
@@ -119,7 +121,7 @@ public class TMAdviceDecl_c extends AdviceDecl_c
 	            AbcFactory.MethodSig(this),
 	            current_aspect,
 	            jp, jpsp, ejp, methods,
-	            position(), tm_id, tm_pos, is_some);
+	            position(), tm_id, tm_pos, kind);
 
         gai.addAdviceDecl(ad);
 	

@@ -21,6 +21,7 @@ package abc.tm.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
+import abc.tm.ast.TMAdviceDecl_c;
 import abc.weaving.aspectinfo.*;
 
 import java.util.*;
@@ -35,17 +36,21 @@ public class TMAdviceDecl extends AdviceDecl
 {
     private String tm_id;
     private Position tm_pos;
-    private boolean is_some;
+    private int kind;
+    public final static int SOME = abc.tm.ast.TMAdviceDecl_c.SOME;
+    public final static int SYNCH = abc.tm.ast.TMAdviceDecl_c.SYNCH;
+    public final static int OTHER = abc.tm.ast.TMAdviceDecl_c.OTHER;
+    
 
     public TMAdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl,
                         Aspect aspct, int jp, int jpsp, int ejp,
                         List methods, Position pos, String tm_id,
-                        Position tm_pos, boolean is_some)
+                        Position tm_pos, int kind)
     {
         super(spec, pc, impl, aspct, jp, jpsp, ejp, methods, pos);
         this.tm_id = tm_id;
         this.tm_pos = tm_pos;
-        this.is_some = is_some;
+        this.kind = kind;
     }
 
     public String getTraceMatchID()
@@ -60,9 +65,14 @@ public class TMAdviceDecl extends AdviceDecl
 
     public boolean isSome()
     {
-        return is_some;
+        return (kind == SOME);
     }
 
+    public boolean isSynch()
+    {
+    	return (kind == SYNCH);
+    }
+    
     /**
      * override warning message (when advice does not apply
      * to any static join points) to say "symbol" instead of

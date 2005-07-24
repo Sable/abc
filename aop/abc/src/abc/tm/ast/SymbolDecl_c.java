@@ -112,7 +112,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         // Generate the TMAdviceDecl
         return nf.TMAdviceDecl(position(), Flags.NONE, spec,
                                 tlist, pc, body(nf, name, voidn),
-                                tm_id, tm_pos, false);
+                                tm_id, tm_pos, TMAdviceDecl_c.OTHER);
     }
 
     public AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
@@ -128,7 +128,7 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         // Generate the TMAdviceDecl
         return nf.TMAdviceDecl(Position.COMPILER_GENERATED, Flags.NONE,
                                 spec, tlist, pc, body(nf, "some()", ret_type),
-                                tm_id, tm_pos, true);
+                                tm_id, tm_pos, TMAdviceDecl_c.SOME);
     }
 
     /**
