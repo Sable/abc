@@ -64,10 +64,15 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
     {
         return kind.kind();
     }
+    
+    public SymbolKind getSymbolKind()
+    {
+    	return kind;
+    }
 
     public Collection binds()
     {
-        Collection binds = pc.mustBind();
+        Collection binds = new HashSet(pc.mustBind());
         binds.addAll(kind.binds());
         return binds;
     }

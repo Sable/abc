@@ -169,6 +169,35 @@ public class TMDecl_c extends AJMethodDecl_c
         // return the set of pointcut variables which must be bound.
         return regex.mustBind(sym_to_vars);
     }
+    
+    protected Map orderedSymToVars() {
+    	Map m = new LinkedHashMap();
+    	List formalNames = new LinkedList();
+    	for(Iterator fns = formals.iterator(); fns.hasNext(); ) {
+    		Formal f = (Formal) fns.next();
+    		formalNames.add(f.name());
+    	}
+    	for (Iterator i = symbols.iterator(); i.hasNext(); ) {
+    		SymbolDecl sd = (SymbolDecl) i.next();
+    		Collection varbinds = (Collection) sym_to_vars.get(sd.name());
+    		List forms = new LinkedList(formalNames);
+    		if (!sd.getSymbolKind().binds().isEmpty()) {
+    			// after returning formal must come last
+    			String n = (String) sd.getSymbolKind().binds().iterator().next();
+    			forms.remove(n);
+    			forms.add(n);
+    		}
+    		List vs = new LinkedList();
+    		for (Iterator fns = forms.iterator(); fns.hasNext(); ) {
+    			String name = (String) fns.next();
+    			if (varbinds.contains(name))
+    				vs.add(name);
+    		}
+    		// System.out.println("symbol "+sd.name() + " has formals "+ vs);
+    		m.put(sd.name(),vs);
+    	}
+    	return m;
+    }
 
     public List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn)
     {
@@ -276,10 +305,10 @@ public class TMDecl_c extends AJMethodDecl_c
                             f.name(),
                             position()));
         }
-
+        
         // create TraceMatch
         TraceMatch tm =
-            new TraceMatch(tracematch_name, wfs, regex.makeSM(), sym_to_vars,
+            new TraceMatch(tracematch_name, wfs, regex.makeSM(), orderedSymToVars(),
                             sym_to_advice_name, kind_to_advice_name,
                             current_aspect,position());
 

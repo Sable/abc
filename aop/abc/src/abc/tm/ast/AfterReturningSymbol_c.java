@@ -74,7 +74,8 @@ public class AfterReturningSymbol_c extends Node_c
                                                 return_type,
                                                 return_var.name());
         }
-
+      
+        
         // Generate the advice spec
         return nf.AfterReturning(position(), formals, return_val_formal, voidn);
     }

@@ -35,6 +35,8 @@ public interface SymbolDecl extends Node
     String name();
     Pointcut getPointcut();
     String kind();
+    
+    public SymbolKind getSymbolKind();
 
     Collection binds();
 

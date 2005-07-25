@@ -43,7 +43,7 @@ public class TraceMatch
     protected StateMachine state_machine;
 
     protected Map sym_to_vars;
-    protected Map sym_to_ordered_vars;
+    // protected Map sym_to_ordered_vars;
     protected Map sym_to_advice_name;
     protected Map kind_to_advice_name;
 
@@ -66,7 +66,7 @@ public class TraceMatch
         this.kind_to_advice_name = kind_to_advice_name;
         this.container = container;
         this.position = pos;
-        this.sym_to_ordered_vars = genOrderedVars();
+        // this.sym_to_ordered_vars = genOrderedVars();
     }
 
 	public Position getPosition() {
@@ -143,7 +143,7 @@ public class TraceMatch
 
     public List getVariableOrder(String symbol)
     {
-        return (List) sym_to_ordered_vars.get(symbol);
+        return (List) sym_to_vars.get(symbol); // sym_to_ordered_vars.get(symbol);
     }
 
     public String getName() {
