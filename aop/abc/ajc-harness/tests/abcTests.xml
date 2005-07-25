@@ -9419,4 +9419,26 @@
           <message kind="warning"/>
         </compile>
     </ajc-test>
+
+    <!-- Tracematch tests -->
+    <ajc-test num="1019" dir="abctests/tracematches"
+        title="Tracematches: Basic tracematch">
+        <compile files="Basic.java" options="-ext,abc.tm"/>
+	<run class="Basic"/>
+    </ajc-test>
+    <ajc-test num="1020" dir="abctests/tracematches"
+        title="Tracematches: Plus and Star">
+        <compile files="PlusStar.java" options="-ext,abc.tm"/>
+	<run class="PlusStar"/>
+    </ajc-test>
+    <ajc-test num="1021" dir="abctests/tracematches"
+        title="Tracematches: Alternation">
+        <compile files="Alternation.java" options="-ext,abc.tm"/>
+	<run class="Alternation"/>
+    </ajc-test>
+    <ajc-test num="1022" dir="abctests/tracematches"
+        title="Tracematches: Basic variable bindings">
+        <compile files="Variables.java" options="-ext,abc.tm"/>
+	<run class="Variables"/>
+    </ajc-test>
 </suite>
