@@ -17,6 +17,7 @@ import abc.polyglot.util.ErrorInfoFactory;
 public class TMStateMachine implements StateMachine {
 
     protected LinkedHashSet edges = new LinkedHashSet(), nodes = new LinkedHashSet();
+    private static boolean noWeakRefs = false;
     
     public State newState() {
         SMNode n = new SMNode(this, false, false);
@@ -338,6 +339,11 @@ public class TMStateMachine implements StateMachine {
 			SMNode node = (SMNode) stateIter.next();
 			// start with the set of all declared symbols
 			node.needStrongRefs = new LinkedHashSet(formals);
+			if (noWeakRefs) {
+				node.collectableWeakRefs.clear();
+				node.weakRefs = new LinkedHashSet();
+				
+			} else {
 			// and remove those that are in node.weakRefs and those that are not used
 			for (Iterator varIter = node.needStrongRefs.iterator(); varIter.hasNext(); ) {
 				String s = (String) varIter.next();
@@ -350,6 +356,7 @@ public class TMStateMachine implements StateMachine {
 				String s = (String) varIter.next();
 				if (node.collectableWeakRefs.contains(s) || node.needStrongRefs.contains(s))
 					varIter.remove(); 
+			}
 			}
 		}
 	}
