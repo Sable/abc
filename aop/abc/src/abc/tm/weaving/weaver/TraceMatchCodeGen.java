@@ -184,7 +184,7 @@ public class TraceMatchCodeGen {
         SootClass setClass = Scene.v().getSootClass("java.util.Set");
         RefType setType = RefType.v("java.util.Set");
         RefType iteratorType = RefType.v("java.util.Iterator");
-        SootClass hashSet = Scene.v().getSootClass("java.util.HashSet");
+        SootClass hashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
         SootClass iteratorClass = Scene.v().getSootClass("java.util.Iterator");
         Local resultSet = lgen.generateLocal(hashSet.getType(), "resultSet");
         Local localSet = lgen.generateLocal(setType, "localSet");
@@ -323,7 +323,7 @@ public class TraceMatchCodeGen {
         SootClass setClass = Scene.v().getSootClass("java.util.Set");
         RefType setType = RefType.v("java.util.Set");
         RefType iteratorType = RefType.v("java.util.Iterator");
-        SootClass hashSet = Scene.v().getSootClass("java.util.HashSet");
+        SootClass hashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
         SootClass iteratorClass = Scene.v().getSootClass("java.util.Iterator");
         Local resultSet = lgen.generateLocal(hashSet.getType(), "resultSet");
         Local localSet = lgen.generateLocal(setType, "localSet");
@@ -411,7 +411,7 @@ public class TraceMatchCodeGen {
         					Scene.v().makeMethodRef(disjunct, methodName,
         							parameterTypes, setType, false), parameterLocals)));
         	// resultSet.addAll(tmpSet);
-        	parameters.add(setType);
+        	parameters.add(RefType.v("java.util.Collection"));
         	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
         			Scene.v().makeMethodRef(hashSet, "addAll", parameters, BooleanType.v(), false), tmpSet)));
         }
@@ -1530,7 +1530,7 @@ public class TraceMatchCodeGen {
                 		Scene.v().makeMethodRef(disjunct, "addNegativeBindingForVariable" + varName, singleObjectParameter,
                 				disjunct.getType(), false), curVar)));
                 units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet, 
-                		Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.LinkedHashSet"), "add", singleObjectParameter,
+                		Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "add", singleObjectParameter,
                 				BooleanType.v(), false), result)));
             }
             
