@@ -409,7 +409,7 @@ public class TraceMatchCodeGen {
         	units.addLast(Jimple.v().newAssignStmt(tmpSet,
         			Jimple.v().newVirtualInvokeExpr(disjunctThis, 
         					Scene.v().makeMethodRef(disjunct, methodName,
-        							parameterTypes, disjunct.getType(), false), parameterLocals)));
+        							parameterTypes, setType, false), parameterLocals)));
         	// resultSet.addAll(tmpSet);
         	parameters.add(setType);
         	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
