@@ -154,7 +154,7 @@ public class TraceMatchCodeGen {
 
             addAddBindingsDispatchMethod(constraint, disjunct, 
                     "addBindingsForSymbol" + symbol, tm.getVariableOrder(symbol));
-            addAddBindingsDispatchMethod(constraint, disjunct, 
+            addAddNegativeBindingsDispatchMethod(constraint, disjunct, 
                     "addNegativeBindingsForSymbol" + symbol, tm.getVariableOrder(symbol));
         }
         
@@ -304,6 +304,163 @@ public class TraceMatchCodeGen {
         return symbolMethod;
     }
     
+    protected SootMethod addAddNegativeBindingsDispatchMethod(SootClass constraint, SootClass disjunct,
+            String methodName, List/*<String>*/ variables) {
+        int varCount = variables.size();
+        List parameterTypes = new LinkedList();
+        parameterTypes.add(IntType.v());
+        for(int i = 0; i < varCount; i++) {
+            parameterTypes.add(RefType.v("java.lang.Object"));
+        }
+        SootMethod symbolMethod = new SootMethod(methodName, 
+                parameterTypes, constraint.getType(), Modifier.PUBLIC);
+        Body b = Jimple.v().newBody(symbolMethod);
+        symbolMethod.setActiveBody(b);
+        constraint.addMethod(symbolMethod);
+        
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        // generate 'standard' locals
+        SootClass setClass = Scene.v().getSootClass("java.util.Set");
+        RefType setType = RefType.v("java.util.Set");
+        RefType iteratorType = RefType.v("java.util.Iterator");
+        SootClass hashSet = Scene.v().getSootClass("java.util.HashSet");
+        SootClass iteratorClass = Scene.v().getSootClass("java.util.Iterator");
+        Local resultSet = lgen.generateLocal(hashSet.getType(), "resultSet");
+        Local localSet = lgen.generateLocal(setType, "localSet");
+        Local tmpSet = lgen.generateLocal(setType, "tmpSet");
+        Local result = lgen.generateLocal(constraint.getType(), "result");
+        Local thisLocal = lgen.generateLocal(constraint.getType(), "this");
+        Local disjunctThis = lgen.generateLocal(disjunct.getType(), "disjunctThis");
+        Local disjunctIt = lgen.generateLocal(iteratorType, "disjunctIt");
+        Local disjunctResult = lgen.generateLocal(disjunct.getType(), "disjunctResult");
+
+        Chain units = b.getUnits();
+        // Add identity statements for this local
+        units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(constraint.getType())));
+        
+        // add symbol-dependent parameters and identity statements
+        List parameterLocals = new LinkedList();
+        Local parameterLocal;
+        int parameterIndex = 0;
+        parameterLocal = lgen.generateLocal(IntType.v(), "symbolNumber");
+        parameterLocals.add(parameterLocal);
+        units.addLast(Jimple.v().newIdentityStmt(parameterLocal, 
+                Jimple.v().newParameterRef(IntType.v(), parameterIndex++)));
+        
+        for(Iterator it = variables.iterator(); it.hasNext(); ) {
+            parameterLocal = lgen.generateLocal(RefType.v("java.lang.Object"), (String)it.next());
+            parameterLocals.add(parameterLocal);
+            units.addLast(Jimple.v().newIdentityStmt(parameterLocal,
+                    Jimple.v().newParameterRef(RefType.v("java.lang.Object"), parameterIndex++)));
+        }
+        
+        // Store this.disjuncts in a local
+        units.addLast(Jimple.v().newAssignStmt(localSet, 
+                Jimple.v().newInstanceFieldRef(
+                        thisLocal, 
+                        Scene.v().makeFieldRef(constraint, "disjuncts", setType, false))));
+        // Create a new HashSet for the result, as we're not changing things in-place
+        units.addLast(Jimple.v().newAssignStmt(resultSet,
+                Jimple.v().newNewExpr(hashSet.getType())));
+        // do specialinvoke of constructor
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(resultSet, 
+                Scene.v().makeConstructorRef(hashSet, new LinkedList()))));
+
+        // Get an iterator for this constraint's disjuncts
+        units.addLast(Jimple.v().newAssignStmt(disjunctIt, Jimple.v().newInterfaceInvokeExpr(
+                localSet, Scene.v().makeMethodRef(setClass, "iterator", new LinkedList(), 
+                        iteratorType, false))));
+        
+        // Have to emulate loops with jumps: while(disjunctIt.hasNext()) { ... }
+        Stmt labelLoopBegin = Jimple.v().newNopStmt();
+        Stmt labelLoopEnd = Jimple.v().newNopStmt();
+        units.addLast(labelLoopBegin);
+        // if(!it1.hasNext()) goto labelLoopEnd; <code for loop>; <label>:
+        Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
+        units.addLast(Jimple.v().newAssignStmt(booleanLocal,
+                Jimple.v().newInterfaceInvokeExpr(disjunctIt, 
+                        Scene.v().makeMethodRef(iteratorClass, "hasNext", new LinkedList(), BooleanType.v(), false))));
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(0)),
+                        labelLoopEnd));
+        // disjunctThis = (Disjunct)disjunctIt.next();
+        Local tmpObject = lgen.generateLocal(RefType.v("java.lang.Object"), "tmpObject");
+        units.addLast(Jimple.v().newAssignStmt(tmpObject, Jimple.v().newInterfaceInvokeExpr(disjunctIt, 
+                                Scene.v().makeMethodRef(iteratorClass, "next", new LinkedList(), 
+                                        RefType.v("java.lang.Object"), false))));
+        units.addLast(Jimple.v().newAssignStmt(disjunctThis, 
+                Jimple.v().newCastExpr(tmpObject, disjunct.getType())));
+
+        List parameters = new LinkedList();
+        
+        // disjunct.addBindingsForSymbolX() returns a ***Set*** for symbols that bind more than one variable, and
+        // a single disjunct for all others. Thus...
+        if(varCount < 2) {
+        	// disjunctResult = disjunct.addBindingsForSymbolX(...);
+        	units.addLast(Jimple.v().newAssignStmt(disjunctResult,
+        			Jimple.v().newVirtualInvokeExpr(disjunctThis, 
+        					Scene.v().makeMethodRef(disjunct, methodName,
+        							parameterTypes, disjunct.getType(), false), parameterLocals)));
+        	// resultSet.add(disjunctResult);
+        	parameters.add(RefType.v("java.lang.Object"));
+        	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
+        			Scene.v().makeMethodRef(hashSet, "add", parameters, BooleanType.v(), false), disjunctResult)));
+        } else {
+        	// if this symbol binds >= 2 variables, the result is a set... handle accordingly
+        	units.addLast(Jimple.v().newAssignStmt(tmpSet,
+        			Jimple.v().newVirtualInvokeExpr(disjunctThis, 
+        					Scene.v().makeMethodRef(disjunct, methodName,
+        							parameterTypes, disjunct.getType(), false), parameterLocals)));
+        	// resultSet.addAll(tmpSet);
+        	parameters.add(setType);
+        	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
+        			Scene.v().makeMethodRef(hashSet, "addAll", parameters, BooleanType.v(), false), tmpSet)));
+        }
+        // goto beginning of inner loop
+        units.addLast(Jimple.v().newGotoStmt(labelLoopBegin));
+        units.addLast(labelLoopEnd);
+
+        // We remove the false disjunct, then, if the disjunct set is empty, we return the
+        // false constraint falseC, otherwise we return a new constraint with the 
+        // appropriate disjunct set.
+        parameters.clear();
+        parameters.add(RefType.v("java.lang.Object"));
+        // resultSet.remove(falseD);
+        StaticFieldRef falseD = Jimple.v().newStaticFieldRef(
+                Scene.v().makeFieldRef(disjunct, "falseD", disjunct.getType(), true));
+        Local falseDisjunct = lgen.generateLocal(disjunct.getType(), "falseDisjunct");
+        units.addLast(Jimple.v().newAssignStmt(falseDisjunct, falseD));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(resultSet,
+                Scene.v().makeMethodRef(hashSet, "remove", parameters, BooleanType.v(), false), falseDisjunct)));
+        Stmt labelReturnFalseC = Jimple.v().newNopStmt();
+        // if(resultSet.isEmpty) goto label;
+        units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newVirtualInvokeExpr(resultSet,
+                Scene.v().makeMethodRef(hashSet, "isEmpty", new LinkedList(), BooleanType.v(), false))));
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(1)),
+                labelReturnFalseC));
+        // Set is nonempty -- construct a new constraint to return
+        units.addLast(Jimple.v().newAssignStmt(result, 
+                Jimple.v().newNewExpr(constraint.getType())));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(result,
+                Scene.v().makeConstructorRef(constraint, new LinkedList()))));
+        // result.disjuncts = resultSet;
+        units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(result,
+                    Scene.v().makeFieldRef(constraint, "disjuncts", setType, false)), 
+                resultSet));
+        // return result;
+        units.addLast(Jimple.v().newReturnStmt(result));
+        // Label
+        units.addLast(labelReturnFalseC);
+        // return falseC;
+        StaticFieldRef falseC = Jimple.v().newStaticFieldRef(
+                Scene.v().makeFieldRef(constraint, "falseC", constraint.getType(), true));
+        Local falseConstraint = lgen.generateLocal(constraint.getType(), "falseConstraint");
+        units.addLast(Jimple.v().newAssignStmt(falseConstraint, falseC));
+        units.addLast(Jimple.v().newReturnStmt(falseConstraint));
+        System.out.println(b.toString() + "\n" + units.toString());
+        return symbolMethod;
+    }
+    
+    
     protected void addConstraintOrMethod(SootClass constraint, SootClass disjunct) {
         SootClass setClass = Scene.v().getSootClass("java.util.Set");
         RefType setType = RefType.v("java.util.Set");
@@ -398,7 +555,7 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newReturnStmt(result));
     }
     
-    protected void addConstraintAndMethod(SootClass constraint, SootClass disjunct) {
+/*    protected void addConstraintAndMethod(SootClass constraint, SootClass disjunct) {
         RefType setType = RefType.v("java.util.Set");
         SootClass hashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
         
@@ -579,7 +736,7 @@ public class TraceMatchCodeGen {
         // return falseC;
         units.addLast(Jimple.v().newReturnStmt(falseC));
         
-    }
+    }*/
     
     protected void addConstraintCopyMethod(SootClass constraint, SootClass disjunct) {
         SootClass setClass = Scene.v().getSootClass("java.util.Set");
@@ -782,9 +939,13 @@ public class TraceMatchCodeGen {
             curField = new SootField(varName + "$isWeak", BooleanType.v(),
                     Modifier.PUBLIC);
             disjunct.addField(curField);
+            
+            // the following method(s) are needed by addNegativeBindingsForSymbol()
+            addDisjunctAddNegBindingForVariable(varName, disjunct, Scene.v().getSootClass("java.lang.ref.WeakReference") /* FIXME */);
         }
         addDisjunctEqualsMethod(disjunct, varNames);
         addDisjunctHashCodeMethod(disjunct, varNames);
+        
         
         // now -- where the bulk of the work happens, addBindingsForSymbolX and the state-
         // specific versions, addBindingsForSymbolXInState<Number>, also negative bindings-
@@ -1043,9 +1204,6 @@ public class TraceMatchCodeGen {
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
                 Local curVar = (Local)localIt.next();
-                units.addLast(Jimple.v().newAssignStmt(curVarNegBindings,
-                        Jimple.v().newInstanceFieldRef(thisLocal, 
-                                Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
                 Stmt labelCurVarNotBound = Jimple.v().newNopStmt();
                 Stmt labelCheckNextVar = Jimple.v().newNopStmt();
                 
@@ -1066,8 +1224,11 @@ public class TraceMatchCodeGen {
                 units.addLast(Jimple.v().newGotoStmt(labelCheckNextVar));
                 units.addLast(labelCurVarNotBound);
                 // if(this.not_var.contains(var1)) return false;
-                // Note that this relies on MyWeakRef.equals() returning true if it has a weak
+                // XXX Note that this relies on MyWeakRef.equals() returning true if it has a weak
                 // reference to var1.
+                units.addLast(Jimple.v().newAssignStmt(curVarNegBindings,
+                        Jimple.v().newInstanceFieldRef(thisLocal, 
+                                Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
                 Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
                 units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInterfaceInvokeExpr(curVarNegBindings,
                         Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "contains",
@@ -1192,6 +1353,76 @@ public class TraceMatchCodeGen {
         }
     }
     
+    protected void addDisjunctAddNegBindingForVariable(String varName, SootClass disjunct, SootClass myWeakRef) {
+        RefType objectType = RefType.v("java.lang.Object");
+        RefType setType = RefType.v("java.util.Set");
+    	List singleObjectParameter = new LinkedList();
+    	singleObjectParameter.add(objectType);
+    	SootMethod varMethod = new SootMethod("addNegativeBindingForVariable" + varName,
+    			singleObjectParameter, disjunct.getType(), Modifier.PUBLIC);
+    	Body b = Jimple.v().newBody(varMethod);
+    	varMethod.setActiveBody(b);
+    	disjunct.addMethod(varMethod);
+    	
+    	LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+    	Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
+    	Local paramLocal = lgen.generateLocal(objectType, "paramLocal");
+    	Local curVar = lgen.generateLocal(objectType, "curVar");
+    	Local curVarNegBindings = lgen.generateLocal(setType, "curNegBindings");
+    	Local result = lgen.generateLocal(disjunct.getType());
+    	Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
+    	Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
+    	
+    	Chain units = b.getUnits();
+    	units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
+    	units.addLast(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(objectType, 0)));
+    	
+    	// We're trying to add a negative binding for a single variable to the current disjunct. There are
+    	// three cases:
+    	// 1. The variable is bound to the same value as the negative binding -- return falseD.
+    	// 2. The variable is bound to a different value -- return this.copy().
+    	// 3. The variable is not bound -- return this.copy().not$var.add(new WeakRef(paramLocal)).
+    	Stmt labelReturnFalse = Jimple.v().newNopStmt();
+    	Stmt labelVarNotBound = Jimple.v().newNopStmt();
+    	
+    	units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInstanceFieldRef(thisLocal,
+    			Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
+    	units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)), labelVarNotBound));
+    	
+    	// variable is bound
+    	units.addLast(Jimple.v().newAssignStmt(curVar, Jimple.v().newVirtualInvokeExpr(thisLocal,
+    			Scene.v().makeMethodRef(disjunct, "get$" + varName, new LinkedList(), objectType, false))));
+    	units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(curVar, paramLocal), labelReturnFalse));
+    	
+    	// variable bound to a different value -- return this.copy();
+    	units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(thisLocal, 
+    			Scene.v().makeMethodRef(disjunct, "copy", new LinkedList(), disjunct.getType(), false))));
+    	units.addLast(Jimple.v().newReturnStmt(result));
+    	
+    	// Handle the case of the variable not being bound
+    	units.addLast(labelVarNotBound);
+    	units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(thisLocal, 
+    			Scene.v().makeMethodRef(disjunct, "copy", new LinkedList(), disjunct.getType(), false))));
+    	units.addLast(Jimple.v().newAssignStmt(curVarNegBindings, Jimple.v().newInstanceFieldRef(result,
+    			Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
+    	units.addLast(Jimple.v().newAssignStmt(weakRef, Jimple.v().newNewExpr(myWeakRef.getType())));
+    	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(weakRef, 
+    			Scene.v().makeConstructorRef(myWeakRef, singleObjectParameter), paramLocal)));
+    	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(curVarNegBindings,
+    			Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "add", singleObjectParameter, 
+    					BooleanType.v(), false),
+    			weakRef)));
+    	units.addLast(Jimple.v().newReturnStmt(result));
+    	
+    	// Final case -- return false
+    	units.addLast(labelReturnFalse);
+        Local falseDisjunct = lgen.generateLocal(disjunct.getType(), "falseDisjunct");
+        units.addLast(Jimple.v().newAssignStmt(falseDisjunct, Jimple.v().newStaticFieldRef(
+                Scene.v().makeFieldRef(disjunct, "falseD", disjunct.getType(), true))));
+        units.addLast(Jimple.v().newReturnStmt(falseDisjunct));
+    	
+    }
+    
     protected void addDisjunctAddNegBindingsForSymbolMethods(TraceMatch tm, SootClass disjunct, SootClass myWeakRef) {
         RefType objectType = RefType.v("java.lang.Object");
         RefType setType = RefType.v("java.util.Set");
@@ -1215,19 +1446,52 @@ public class TraceMatchCodeGen {
                 continue;
             }
             
+            //////////// handling of symbols that only bind one variable -- return a single Disjunct
+            if(variableList.size() == 1) {
+            	String varName = (String)variableList.iterator().next();
+            	parameters.add(objectType); // parameters now contains [IntType.v(), objectType]
+            	SootMethod symbolMethod = new SootMethod("addNegativeBindingsForSymbol" + symbolName,
+            			parameters, disjunct.getType(), Modifier.PUBLIC);
+
+            	Body b = Jimple.v().newBody(symbolMethod);
+            	symbolMethod.setActiveBody(b);
+            	disjunct.addMethod(symbolMethod);
+            	
+            	LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+            	Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
+            	Local paramLocal = lgen.generateLocal(objectType, "paramLocal");
+            	Local result = lgen.generateLocal(disjunct.getType());
+                
+            	Chain units = b.getUnits();
+            	units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
+            	units.addLast(Jimple.v().newIdentityStmt(paramLocal, Jimple.v().newParameterRef(objectType, 1)));
+            	
+            	units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(thisLocal,
+            			Scene.v().makeMethodRef(disjunct, "addNegativeBindingForVariable" + varName, singleObjectParameter,
+            					disjunct.getType(), false), paramLocal)));
+            	units.addLast(Jimple.v().newReturnStmt(result));
+                // deal with the next symbol
+                continue;
+            }
             
+            ////////// final case -- this symbol binds two or more variables.
+            // addNegBindings on a disjunct D is meant to return
+            //           D && !(x1 == v1 && x2 == v2 && ...)
+            //     <=>   D && (x1 != v1 || x2 != v2 || ..)
+            //     <=>   (D && (x1 != v1)) || (D && (x2 != v2)) || ...
+            //
+            // Thus we return a set of disjuncts which should be added to the constraint's disjunct set.
             for(int i = 0; i < variableList.size(); i++) parameters.add(objectType);
             SootMethod symbolMethod = new SootMethod("addNegativeBindingsForSymbol" + symbolName,
-                    parameters, disjunct.getType(), Modifier.PUBLIC);
+                    parameters, setType, Modifier.PUBLIC);
             Body b = Jimple.v().newBody(symbolMethod);
             symbolMethod.setActiveBody(b);
             disjunct.addMethod(symbolMethod);
             
             LocalGeneratorEx lgen = new LocalGeneratorEx(b);
             Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
-            Local curVarNegBindings = lgen.generateLocal(setType, "curNegBindings");
             Local result = lgen.generateLocal(disjunct.getType(), "result");
-            Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
+            Local resultSet = lgen.generateLocal(setType, "resultSet");
             
             Chain units = b.getUnits();
             units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
@@ -1250,95 +1514,29 @@ public class TraceMatchCodeGen {
                 parameterIndex++;
             }
             
-            // label to jump to if new bindings are incompatible
-            Stmt labelReturnFalse = Jimple.v().newNopStmt();
-            
-            // now we have all the locals. Generate the code for this method.
-            // The disjunct is only incompatible if a variable is bound to a value that is
-            // passed as a parameter to add as a negative binding.
+            // now we have all the locals. 
+            // For each variableX that's being bound by this symbol, we add this.addNegativeBindingForVariableX(V)
+            // to the result set, where V is the appropriate binding value.
+            units.addLast(Jimple.v().newAssignStmt(resultSet, Jimple.v().newNewExpr(RefType.v("java.util.LinkedHashSet"))));
+            units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(resultSet,
+            		Scene.v().makeConstructorRef(Scene.v().getSootClass("java.util.LinkedHashSet"), new LinkedList()))));
             varIt = variableList.iterator();
             Iterator localIt = variableLocalsList.iterator();
             while(varIt.hasNext()) {
                 String varName = (String)varIt.next();
                 Local curVar = (Local)localIt.next();
-                Stmt labelCheckNextVar = Jimple.v().newNopStmt();
-                Local thisBound = lgen.generateLocal(BooleanType.v(), "thisBound");
-                units.addLast(Jimple.v().newAssignStmt(thisBound,
-                        Jimple.v().newInstanceFieldRef(thisLocal, 
-                                Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
-                units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisBound, IntConstant.v(1)),
-                        labelCheckNextVar));
-                // TODO -- implicit assumption that the name and variable lists are ordered identically.
-                // make sure it's valid.
-                // TODO -- all calls to get$ could be avoided if we specialised this method to know
-                // whether each var is bound weakly or strongly
-                Local tmpObject = lgen.generateLocal(objectType, "tmpObject");
-                units.addLast(Jimple.v().newAssignStmt(tmpObject, Jimple.v().newVirtualInvokeExpr(thisLocal, 
-                        Scene.v().makeMethodRef(disjunct, "get$" + varName, new LinkedList(),
-                                objectType, false))));
-                units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(tmpObject, curVar), 
-                        labelReturnFalse));
-                units.addLast(labelCheckNextVar);
+                
+                // result = this.addNegativeBindingForVariableX(V);
+                units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(thisLocal,
+                		Scene.v().makeMethodRef(disjunct, "addNegativeBindingForVariable" + varName, singleObjectParameter,
+                				disjunct.getType(), false), curVar)));
+                units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(resultSet, 
+                		Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.LinkedHashSet"), "add", singleObjectParameter,
+                				BooleanType.v(), false), result)));
             }
             
-            // OK, if we fall through here then this disjunct is compatible with the new bindings,
-            // otherwise we would have jumped to labelReturnFalse.
-            
-            // Adding negative bindings is easier than positive bindings, as it doesn't depend on
-            // the state we're in. If the new negative bindings are consistent (i.e. if they aren't
-            // equal to positive bindings already on the state), then adding them can be done by
-            // simply adding each binding to the negative bindings set of the respective variable.
-            
-            // result = copy();
-            units.addLast(Jimple.v().newAssignStmt(result, 
-                    Jimple.v().newVirtualInvokeExpr(thisLocal, 
-                            Scene.v().makeMethodRef(disjunct, "copy", new LinkedList(), 
-                                    disjunct.getType(), false))));
-            // for each variable..
-            varIt = variableList.iterator();
-            // IMPORTANT ASSUMPTION -- variableLocalsList is iterated in the order in which
-            // elements are added and variableList is iterated in the same order as last time,
-            // so that the correspondence between variable name and local variable storing 
-            // the relevant parameter is preserved.
-            localIt = variableLocalsList.iterator();
-            while(varIt.hasNext()) {
-                String varName = (String)varIt.next();
-                Local curVar = (Local)localIt.next();
-                // if the current variable is bound, then we do not want to accumulate
-                // negative bindings
-                Stmt labelHandleNextVar = Jimple.v().newNopStmt();
-                Local thisBound = lgen.generateLocal(BooleanType.v(), "thisBound");
-                units.addLast(Jimple.v().newAssignStmt(thisBound, Jimple.v().newInstanceFieldRef(thisLocal, 
-                        Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
-                units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(thisBound, IntConstant.v(1)),
-                        labelHandleNextVar));
-                // otherwise, add the new binding to the set:
-                // 1. Store not_var in a local
-                units.addLast(Jimple.v().newAssignStmt(curVarNegBindings, 
-                        Jimple.v().newInstanceFieldRef(result,
-                        Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
-                // 2. create a new MyWeakRef(curVar)
-                units.addLast(Jimple.v().newAssignStmt(weakRef, Jimple.v().newNewExpr(myWeakRef.getType())));
-                units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(weakRef, 
-                        Scene.v().makeConstructorRef(myWeakRef, singleObjectParameter),
-                        curVar)));
-                // 3. not_var.add(weakRef).
-                units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(curVarNegBindings,
-                        Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), 
-                                "add", singleObjectParameter, BooleanType.v(), false),
-                        weakRef)));
-                units.addLast(labelHandleNextVar);
-            }
-            // now all the new bindings are recorded -- return the result
-            units.addLast(Jimple.v().newReturnStmt(result));
-
-            // unfinished business
-            units.addLast(labelReturnFalse);
-            
-            Local falseDisjunct = lgen.generateLocal(disjunct.getType(), "falseDisjunct");
-            units.addLast(Jimple.v().newAssignStmt(falseDisjunct, Jimple.v().newStaticFieldRef(
-                    Scene.v().makeFieldRef(disjunct, "falseD", disjunct.getType(), true))));
-            units.addLast(Jimple.v().newReturnStmt(falseDisjunct));
+            // OK, we have constructed the result set -- now return it
+            units.addLast(Jimple.v().newReturnStmt(resultSet));
         }
     }
     
