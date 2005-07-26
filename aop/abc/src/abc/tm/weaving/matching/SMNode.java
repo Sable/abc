@@ -31,6 +31,12 @@ public class SMNode implements State {
          but disjuncts containing these cannot necessarily be garbage-collected
          when the weak reference is garbage-collected */
 	public LinkedHashSet/*<String>*/ weakRefs = new LinkedHashSet();
+	
+	/** set of variables that is guaranteed to be bound at this state.
+	 *   when adding a set of >1 negative bindings, we can decide based on this
+	 *   information whether it is necessary to create a set of disjuncts as the return value
+	 */
+	public LinkedHashSet/*<String>*/ boundVars = new LinkedHashSet();
     
     private TMStateMachine hostFSA;
     
