@@ -784,6 +784,7 @@ public class TraceMatchCodeGen {
             disjunct.addField(curField);
         }
         addDisjunctEqualsMethod(disjunct, varNames);
+        addDisjunctHashCodeMethod(disjunct, varNames);
         
         // now -- where the bulk of the work happens, addBindingsForSymbolX and the state-
         // specific versions, addBindingsForSymbolXInState<Number>, also negative bindings-
@@ -915,6 +916,73 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newReturnStmt(IntConstant.v(1)));  
         /////////////////// end Disjunct.equals() method ////////////////////////////
 
+    }
+    
+    protected void addDisjunctHashCodeMethod(SootClass disjunct, List varNames) {
+        ///////////// Disjunct.hashCode() method ///////////////////////////////////////
+        /* This method is very important, as the default hashCode() method doesn't fulfill its contract
+         * with the modified Disjunct.equals() method, and inconsistent hashCodes may bugger up the
+         * behaviour of HashSets and other things relying on them.
+         * 
+         * A hash code for the disjunct is obtained by adding up the hash codes of all bound variables and
+         * all negative bindings sets for unbound variables, then taking the hashCode of that.
+         */
+        RefType objectType = RefType.v("java.lang.Object");
+        RefType setType = RefType.v("java.util.Set");
+        SootMethod hashCodeMethod = new SootMethod("hashCode", new LinkedList(), IntType.v(), Modifier.PUBLIC);
+        Body b = Jimple.v().newBody(hashCodeMethod);
+        hashCodeMethod.setActiveBody(b);
+        disjunct.addMethod(hashCodeMethod);
+        
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
+        Local curVar = lgen.generateLocal(objectType, "curVar");
+        Local curSet = lgen.generateLocal(setType, "curSet");
+        Local longResult = lgen.generateLocal(LongType.v(), "longResult");
+        Local result = lgen.generateLocal(IntType.v(), "result");
+        Local tmpHash = lgen.generateLocal(IntType.v(), "tmpHash");
+        Local tmpBool = lgen.generateLocal(BooleanType.v(), "tmpBool");
+        
+        // first things first -- identity statements
+        Chain units = b.getUnits();
+        units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
+        
+        // longResult = 0;
+        units.addLast(Jimple.v().newAssignStmt(longResult, LongConstant.v(0)));
+        
+        // for now, just check the two disjuncts agree on all variables
+        Iterator varIt = varNames.iterator();
+        while(varIt.hasNext()) {
+            String varName = (String)varIt.next();
+            // if this variable is bound, add its hash code to the result
+            Stmt labelVarNotBound = Jimple.v().newNopStmt();
+            Stmt labelAddToResult = Jimple.v().newNopStmt();
+            units.addLast(Jimple.v().newAssignStmt(tmpBool, Jimple.v().newInstanceFieldRef(thisLocal, 
+            		Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(tmpBool, IntConstant.v(1)), labelVarNotBound));
+            units.addLast(Jimple.v().newAssignStmt(curVar, Jimple.v().newInstanceFieldRef(thisLocal, 
+            		Scene.v().makeFieldRef(disjunct, "var$" + varName, objectType, false))));
+            units.addLast(Jimple.v().newAssignStmt(tmpHash, Jimple.v().newVirtualInvokeExpr(curVar, 
+            		Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.Object"), "hashCode", new LinkedList(),
+            				IntType.v(), false))));
+            units.addLast(Jimple.v().newGotoStmt(labelAddToResult));
+            
+            // else add the hash code of the negative binding set to the result
+            units.addLast(labelVarNotBound);
+            units.addLast(Jimple.v().newAssignStmt(curSet, Jimple.v().newInstanceFieldRef(thisLocal,
+            		Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
+            units.addLast(Jimple.v().newAssignStmt(tmpHash, Jimple.v().newVirtualInvokeExpr(curSet, 
+            		Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.Object"), "hashCode", new LinkedList(),
+            				IntType.v(), false))));
+            
+            // do the addition
+            units.addLast(labelAddToResult);
+            units.addLast(Jimple.v().newAssignStmt(longResult, Jimple.v().newAddExpr(longResult, tmpHash)));
+        }
+
+        // now return longResult % MAX_INT
+        units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newRemExpr(longResult, IntConstant.v(Integer.MAX_VALUE))));
+        units.addLast(Jimple.v().newReturnStmt(result));
     }
     
     protected void addDisjunctAddBindingsForSymbolMethods(TraceMatch tm, SootClass disjunct, SootClass myWeakRef) {
