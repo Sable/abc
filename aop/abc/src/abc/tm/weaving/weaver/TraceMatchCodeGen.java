@@ -938,7 +938,6 @@ public class TraceMatchCodeGen {
         Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
         Local curVar = lgen.generateLocal(objectType, "curVar");
         Local curSet = lgen.generateLocal(setType, "curSet");
-        Local longResult = lgen.generateLocal(LongType.v(), "longResult");
         Local result = lgen.generateLocal(IntType.v(), "result");
         Local tmpHash = lgen.generateLocal(IntType.v(), "tmpHash");
         Local tmpBool = lgen.generateLocal(BooleanType.v(), "tmpBool");
@@ -947,8 +946,8 @@ public class TraceMatchCodeGen {
         Chain units = b.getUnits();
         units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
         
-        // longResult = 0;
-        units.addLast(Jimple.v().newAssignStmt(longResult, LongConstant.v(0)));
+        // result = 0;
+        units.addLast(Jimple.v().newAssignStmt(result, IntConstant.v(0)));
         
         // for now, just check the two disjuncts agree on all variables
         Iterator varIt = varNames.iterator();
@@ -977,11 +976,9 @@ public class TraceMatchCodeGen {
             
             // do the addition
             units.addLast(labelAddToResult);
-            units.addLast(Jimple.v().newAssignStmt(longResult, Jimple.v().newAddExpr(longResult, tmpHash)));
+            units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newAddExpr(result, tmpHash)));
         }
 
-        // now return longResult % MAX_INT
-        units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newRemExpr(longResult, IntConstant.v(Integer.MAX_VALUE))));
         units.addLast(Jimple.v().newReturnStmt(result));
     }
     
