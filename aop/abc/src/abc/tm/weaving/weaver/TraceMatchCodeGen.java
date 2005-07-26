@@ -456,7 +456,6 @@ public class TraceMatchCodeGen {
         Local falseConstraint = lgen.generateLocal(constraint.getType(), "falseConstraint");
         units.addLast(Jimple.v().newAssignStmt(falseConstraint, falseC));
         units.addLast(Jimple.v().newReturnStmt(falseConstraint));
-        System.out.println(b.toString() + "\n" + units.toString());
         return symbolMethod;
     }
     
