@@ -9441,13 +9441,18 @@
         <compile files="Variables.java" options="-ext,abc.tm"/>
 	<run class="Variables"/>
     </ajc-test>
-     <ajc-test num="1023" dir="abctests/tracematches/failsafe"
-        title="Failsafe enumerations: pure aspect version">
-        <compile files="leaktest/LeakTest.java,naiveaspects/FailSafeEnum.java" options="-ext,abc.tm"/>
+    <ajc-test num="1023" dir="abctests/tracematches/failsafe"
+        title="Failsafe enumerations: tracematch version 1">
+        <compile files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java" options="-ext,abc.tm"/>
 	<run class="leaktest.LeakTest"/>
     </ajc-test>
-    <ajc-test num="1024" dir="abctests/tracematches/failsafe"
-        title="Failsafe enumerations: tracematch version">
+    <ajc-test num="1024" dir="abctests/tracematches/failsafe3"
+        title="Failsafe enumerations: tracematch version 2">
+        <compile files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java" options="-ext,abc.tm"/>
+	<run class="leaktest.LeakTest"/>
+    </ajc-test>
+    <ajc-test num="1025" dir="abctests/tracematches/failsafe4"
+        title="Failsafe enumerations: tracematch version 3">
         <compile files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java" options="-ext,abc.tm"/>
 	<run class="leaktest.LeakTest"/>
     </ajc-test>
