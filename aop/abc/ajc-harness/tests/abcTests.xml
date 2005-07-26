@@ -9456,4 +9456,9 @@
         <compile files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java" options="-ext,abc.tm"/>
 	<run class="leaktest.LeakTest"/>
     </ajc-test>
+    <ajc-test num="1026" dir="abctests/tracematches"
+        title="Tracematches: NoSuchMethodError (shouldn't occur..)">
+        <compile files="Test.java" options="-ext,abc.tm"/>
+	<run class="Test"/>
+    </ajc-test>
 </suite>
