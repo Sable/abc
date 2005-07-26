@@ -79,5 +79,9 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
+<ajc-test title="Failsafe enumerations: pure aspect version" num="1023" dir="abctests/tracematches/failsafe">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,naiveaspects/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
  
 </suite>

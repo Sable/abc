@@ -5099,5 +5099,25 @@
           <message kind="warning"></message>
         </compile>
     </ajc-test>
+<ajc-test title="Tracematches: Basic tracematch" num="1019" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Basic.java"></compile>
+	<run class="Basic"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Plus and Star" num="1020" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PlusStar.java"></compile>
+	<run class="PlusStar"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Alternation" num="1021" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Alternation.java"></compile>
+	<run class="Alternation"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic variable bindings" num="1022" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Variables.java"></compile>
+	<run class="Variables"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version" num="1024" dir="abctests/tracematches/failsafe">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
  
 </suite>
