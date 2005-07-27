@@ -79,9 +79,21 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
-<ajc-test title="Failsafe enumerations: pure aspect version" num="1023" dir="abctests/tracematches/failsafe">
-        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,naiveaspects/FailSafeEnum.java"></compile>
+<ajc-test title="Failsafe enumerations: tracematch version 1" num="1023" dir="abctests/tracematches/failsafe">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
 	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 2" num="1024" dir="abctests/tracematches/failsafe3">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 3" num="1025" dir="abctests/tracematches/failsafe4">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: NoSuchMethodError (shouldn't occur..)" num="1026" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Test.java"></compile>
+	<run class="Test"></run>
     </ajc-test>
  
 </suite>
