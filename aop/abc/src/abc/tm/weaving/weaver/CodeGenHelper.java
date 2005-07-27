@@ -188,11 +188,12 @@ public class CodeGenHelper
      * Return an invoke expression to a method which adds bindings
      * to a constraint.
      *
-     * If state is non-null, it generates an addBindingForSymbolx
+     * If addPositiveBindings is true, it generates an addBindingForSymbolx
      * call, otherwise an addNegativeBindingForSymbolx call.
      */
     protected Value bindingsMethod(String symbol, Local base,
-                                    SootMethod caller, Value state)
+                                    SootMethod caller, Value state,
+                                    boolean addPositiveBindings)
     {
         Body body = caller.getActiveBody();
         int params = caller.getParameterCount();
@@ -203,13 +204,15 @@ public class CodeGenHelper
 
         // FIXME: stop passing the state to addNegativeBindingsForSymbol
         //        (when the constraint-gen is fixed)
-        if (state != null) {
+        // pavel: No, I need it now.. :-) Cleaning up invalidated disjuncts depends on
+        // the state they're in.
+        if (addPositiveBindings) {
             arg_types.add(IntType.v());
             args.add(state);
             name = "addBindingsForSymbol" + symbol;
         } else {
-            arg_types.add(IntType.v());  // FIXME
-            args.add(IntConstant.v(0));  // DUMMY VALUE
+            arg_types.add(IntType.v());
+            args.add(state);
             name = "addNegativeBindingsForSymbol" + symbol;
         }
 
@@ -474,15 +477,16 @@ public class CodeGenHelper
     }
 
     /**
-     * Call a bindings method (addBindingsForSymbolx, or
-     * addNegativeBindigsForSymbolx if state is null).
+     * Call a bindings method (addBindingsForSymbolx or
+     * addNegativeBindigsForSymbolx, dependig on addPositiveBindings).
      * Return the result as a Jimple local.
      */
     protected Local callBindingsMethod(Body body, Chain units,
                                         String symbol, Local base,
-                                        SootMethod caller, Value state)
+                                        SootMethod caller, Value state, 
+                                        boolean addPositiveBindings)
     {
-        Value call = bindingsMethod(symbol, base, caller, state);
+        Value call = bindingsMethod(symbol, base, caller, state, addPositiveBindings);
         Local result = addLocal(body, "bind_result", constraint.getType());
         units.addLast(Jimple.v().newAssignStmt(result, call));
 
@@ -628,7 +632,7 @@ public class CodeGenHelper
         Value state = getInt(to);
         Local lab_from = getLabel(body, units, this_local, from, LABEL);
         Local bind_result =
-            callBindingsMethod(body, units, symbol, lab_from, method, state);
+            callBindingsMethod(body, units, symbol, lab_from, method, state, true);
 
         Local lab_to = getLabel(body, units, this_local, to, TMP_LABEL);
         Local or_result =
@@ -652,9 +656,10 @@ public class CodeGenHelper
 
         setUpdated(units, this_local, IntConstant.v(1));
 
+        Value state = getInt(to);
         Local lab = getLabel(body, units, this_local, to, SKIP_LABEL);
         Local result =
-            callBindingsMethod(body, units, symbol, lab, method, null);
+            callBindingsMethod(body, units, symbol, lab, method, state, false);
 
         assignToLabel(units, this_local, to, SKIP_LABEL, result);
 

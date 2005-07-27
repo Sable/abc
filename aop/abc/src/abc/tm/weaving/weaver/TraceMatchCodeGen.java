@@ -18,6 +18,16 @@ import abc.weaving.aspectinfo.*;
  * @author Pavel Avgustinov
  */
 public class TraceMatchCodeGen {
+    
+    // Set this to true to enable debug traces -- print "+" for every time a disjunct
+    // is constructed, "-" for every time it's finalized and "*" every time one is
+    // discarded for being invalid (those are the default traces).
+    // If you pipe the output into a file (by appending '> output_file' to the command
+    // line), you can then count the frequency of the respective events with the
+    // following command: cat output_file | tr "+" "\n" | wc -l
+    // (replacing "+" by "-" or "*" as appropriate).
+    private boolean enableDebugTraces = false;
+    
     // TODO: Perhaps have a dedicated flag for tracematch codegen
     private static void debug(String message)
     { if (abc.main.Debug.v().aspectCodeGen)
@@ -30,6 +40,37 @@ public class TraceMatchCodeGen {
     
     protected String getDisjunctClassName(TraceMatch tm) {
         return tm.getPackage() + "Disjunct$" + tm.getName();
+    }
+    
+    protected void printString(Body b, String s) {
+        if(!enableDebugTraces) return;
+        
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        Chain units = b.getUnits();
+        Local out = lgen.generateLocal(RefType.v("java.io.PrintStream"), "out");
+        units.addLast(Jimple.v().newAssignStmt(out, Jimple.v().newStaticFieldRef(
+                Scene.v().makeFieldRef(Scene.v().getSootClass("java.lang.System"), "out", 
+                        RefType.v("java.io.PrintStream"), true))));
+        List parameters = new LinkedList();
+        parameters.add(RefType.v("java.lang.String"));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newVirtualInvokeExpr(out,
+                Scene.v().makeMethodRef(Scene.v().getSootClass("java.io.PrintStream"), "print",
+                        parameters, VoidType.v(), false), StringConstant.v(s))));
+    }
+    
+    protected void throwException(Body b, String s) {
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        List parameters = new LinkedList();
+        parameters.add(RefType.v("java.lang.String"));
+        Local throwable = lgen.generateLocal(RefType.v("java.lang.RuntimeException"), "exception");
+        
+        Chain units = b.getUnits();
+        units.addLast(Jimple.v().newAssignStmt(throwable, Jimple.v().newNewExpr(
+                RefType.v("java.lang.RuntimeException"))));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(throwable, 
+                Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.RuntimeException"),
+                parameters), StringConstant.v(s))));
+        units.addLast(Jimple.v().newThrowStmt(throwable));
     }
     
     // codegen helper methods
@@ -249,6 +290,24 @@ public class TraceMatchCodeGen {
                                         RefType.v("java.lang.Object"), false))));
         units.addLast(Jimple.v().newAssignStmt(disjunctThis, 
                 Jimple.v().newCastExpr(tmpObject, disjunct.getType())));
+        
+        ////////// Cleanup of invalid disjuncts -- if the current disjunct isn't valid,
+        // just remove it from the disjunct set and continue with the next.
+        // if(!disjunctThis.validateDisjunct(state) { it.remove(); goto labelLoopBegin; }
+        List singleIntParameter = new LinkedList();
+        singleIntParameter.add(IntType.v());
+        Local isValidDisjunct = lgen.generateLocal(BooleanType.v(), "isValidDisjunct");
+        Stmt labelDisjunctValid = Jimple.v().newNopStmt();
+        units.addLast(Jimple.v().newAssignStmt(isValidDisjunct, Jimple.v().newVirtualInvokeExpr(disjunctThis,
+                Scene.v().makeMethodRef(disjunct, "validateDisjunct", singleIntParameter, BooleanType.v(),
+                        false), (Local)parameterLocals.get(0))));
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(isValidDisjunct, IntConstant.v(1)), labelDisjunctValid));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(disjunctIt, 
+                Scene.v().makeMethodRef(iteratorClass, "remove", new LinkedList(), VoidType.v(), false))));
+        units.addLast(Jimple.v().newGotoStmt(labelLoopBegin));
+        
+        units.addLast(labelDisjunctValid);
+        
         // disjunctResult = disjunct.addBindingsForSymbolX(...);
         units.addLast(Jimple.v().newAssignStmt(disjunctResult,
                 Jimple.v().newVirtualInvokeExpr(disjunctThis, 
@@ -389,6 +448,24 @@ public class TraceMatchCodeGen {
                                         RefType.v("java.lang.Object"), false))));
         units.addLast(Jimple.v().newAssignStmt(disjunctThis, 
                 Jimple.v().newCastExpr(tmpObject, disjunct.getType())));
+        
+        ////////// Cleanup of invalid disjuncts -- if the current disjunct isn't valid,
+        // just remove it from the disjunct set and continue with the next.
+        // if(!disjunctThis.validateDisjunct(state) { it.remove(); goto labelLoopBegin; }
+        List singleIntParameter = new LinkedList();
+        singleIntParameter.add(IntType.v());
+        Local isValidDisjunct = lgen.generateLocal(BooleanType.v(), "isValidDisjunct");
+        Stmt labelDisjunctValid = Jimple.v().newNopStmt();
+        units.addLast(Jimple.v().newAssignStmt(isValidDisjunct, Jimple.v().newVirtualInvokeExpr(disjunctThis,
+                Scene.v().makeMethodRef(disjunct, "validateDisjunct", singleIntParameter, BooleanType.v(),
+                        false), (Local)parameterLocals.get(0))));
+        units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(isValidDisjunct, IntConstant.v(1)), labelDisjunctValid));
+        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(disjunctIt, 
+                Scene.v().makeMethodRef(iteratorClass, "remove", new LinkedList(), VoidType.v(), false))));
+        units.addLast(Jimple.v().newGotoStmt(labelLoopBegin));
+        
+        units.addLast(labelDisjunctValid);
+        
 
         List parameters = new LinkedList();
         
@@ -961,6 +1038,8 @@ public class TraceMatchCodeGen {
         addDisjunctInitialiser(tm, disjunct);
         
         addDisjunctStaticInitialiser(disjunct);
+        
+        addDisjunctValidateDisjunctMethod(tm, disjunct);
     }
     
     protected void addDisjunctEqualsMethod(SootClass disjunct, List varNames) {
@@ -1175,6 +1254,7 @@ public class TraceMatchCodeGen {
             Local curVarNegBindings = lgen.generateLocal(setType, "curNegBindings");
             Local result = lgen.generateLocal(disjunct.getType(), "result");
             Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
+            Local varLocal = lgen.generateLocal(objectType, "varLocal");
             
             Chain units = b.getUnits();
             units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
@@ -1196,6 +1276,7 @@ public class TraceMatchCodeGen {
             
             // label to jump to if new bindings are incompatible
             Stmt labelReturnFalse = Jimple.v().newNopStmt();
+            Stmt labelPrintStarReturnFalse = Jimple.v().newNopStmt();
             
             // now we have all the locals. Generate the code for this method.
             varIt = variableList.iterator();
@@ -1270,6 +1351,32 @@ public class TraceMatchCodeGen {
                 SMNode curState = (SMNode)stateIt.next();
                 Stmt curLabel = (Stmt)labelIt.next();
                 units.addLast(curLabel);
+                
+/* Now done in validateDisjunct
+                //////// Cleaning up invalidated collectableWeakRefs
+                // Each state is labelled with a set collectableWeakRefs. If one of these
+                // becomes invalid, the disjunct can never lead to a successful match and,
+                // accordingly, can/must be discarded.
+                //
+                // Since we don't allow null bindings and WeakRefs become null when they are
+                // invalidated, we check each bound variable in the collectableWeakRefs set
+                // for the current state for null-ness, and if it's null return falseD.
+                Iterator collectableWeakRefIt = curState.collectableWeakRefs.iterator();
+                while(collectableWeakRefIt.hasNext()) {
+                    String varName = (String)collectableWeakRefIt.next();
+                    Stmt labelCurVarNotBound = Jimple.v().newNopStmt();
+                    Local booleanLocal = lgen.generateLocal(BooleanType.v(), "isVarBound");
+                    units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInstanceFieldRef(thisLocal,
+                            Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
+                    units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)), labelCurVarNotBound));
+                    // variable is bound -- check if it's invalid
+                    units.addLast(Jimple.v().newAssignStmt(varLocal, Jimple.v().newVirtualInvokeExpr(thisLocal,
+                            Scene.v().makeMethodRef(disjunct, "get$" + varName, new LinkedList(), objectType, false))));
+                    units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(varLocal, NullConstant.v()), labelPrintStarReturnFalse));
+                    
+                    units.addLast(labelCurVarNotBound);
+                }*/
+                
                 // result = copy();
                 units.addLast(Jimple.v().newAssignStmt(result, 
                         Jimple.v().newVirtualInvokeExpr(thisLocal, 
@@ -1328,6 +1435,9 @@ public class TraceMatchCodeGen {
                 units.addLast(Jimple.v().newReturnStmt(result));
             }
             // unfinished business -- still have two labels we haven't inserted:
+            units.addLast(labelPrintStarReturnFalse);
+            printString(b, "*");
+            
             units.addLast(labelReturnFalse);
             
             Local falseDisjunct = lgen.generateLocal(disjunct.getType(), "falseDisjunct");
@@ -1339,16 +1449,8 @@ public class TraceMatchCodeGen {
             // For now, it just returns false.
             units.addLast(labelThrowException);
             
-            // throwable = new RuntimeException("AddDisjunctAddBindings got invalid state number N");
-            parameters.clear();
-            parameters.add(RefType.v("java.lang.String"));
-            Local throwable = lgen.generateLocal(RefType.v("java.lang.RuntimeException"), "exception");
-            units.addLast(Jimple.v().newAssignStmt(throwable, Jimple.v().newNewExpr(
-                    RefType.v("java.lang.RuntimeException"))));
-            units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(throwable, 
-                    Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.RuntimeException"),
-                    parameters), StringConstant.v("AddDisjunctAddBindingsForSymbol got invalid state number " + stateNumber))));
-            units.addLast(Jimple.v().newThrowStmt(throwable));
+            // throw new RuntimeException("AddDisjunctAddBindings got invalid state number N");
+            throwException(b, "AddDisjunctAddBindings got invalid state number " + stateNumber);
         }
     }
     
@@ -1727,6 +1829,17 @@ public class TraceMatchCodeGen {
                     Scene.v().makeFieldRef(disjunct, "not$" + varName, 
                             RefType.v("java.util.Set"), false)), tempSet));
         }
+        // For debugging purposes -- print out a + any time a disjunct is created
+        printString(b, "+");
+        units.addLast(Jimple.v().newReturnVoidStmt());
+        
+        // For debugging purposes -- print out a - any time a disjunct is finalised
+        SootMethod finalize = new SootMethod("finalize", new LinkedList(), VoidType.v(), Modifier.PROTECTED);
+        b = Jimple.v().newBody(finalize);
+        finalize.setActiveBody(b);
+        disjunct.addMethod(finalize);
+        units = b.getUnits();
+        printString(b, "-");
         units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
@@ -1758,6 +1871,93 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
+    /**
+     * Adds a method with the signature "public boolean validateDisjunct(int state);".
+     * The idea is that the return value is false if one of the collectableWeakRefs of
+     * the disjuct has expired, and true otherwise. Validating a disjunct before calling 
+     * add[Neg]Bindings on it will enable clean-up of unneeded disjuncts 
+     * @param tm the tracematch from which to take the states
+     * @param disjuct the class to add the method to.
+     */
+    protected void addDisjunctValidateDisjunctMethod(TraceMatch tm, SootClass disjunct) {
+        List parameters = new LinkedList();
+        parameters.add(IntType.v());
+        SootMethod validate = new SootMethod("validateDisjunct", parameters, BooleanType.v(),
+                Modifier.PUBLIC);
+        Body b = Jimple.v().newBody(validate);
+        validate.setActiveBody(b);
+        disjunct.addMethod(validate);
+
+        LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+        Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
+        Local stateNumber = lgen.generateLocal(IntType.v(), "stateNumber");
+        Local varLocal = lgen.generateLocal(RefType.v("java.lang.Object"), "varLocal");
+        
+        Chain units = b.getUnits();
+        units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
+        units.addLast(Jimple.v().newIdentityStmt(stateNumber, Jimple.v().newParameterRef(IntType.v(), 0)));
+        
+        // to construct the LookupSwitch, we need two lists of equal length -- a list of values
+        // to compare to (those will be state numbers, 0 .. (#states - 1)) and a list of labels
+        // to jump to.
+        Iterator stateIt = ((TMStateMachine)tm.getState_machine()).getStateIterator();
+        List switchValues = new LinkedList();
+        List labels = new LinkedList();
+        while(stateIt.hasNext()) {
+            switchValues.add(IntConstant.v(((SMNode)stateIt.next()).getNumber()));
+            labels.add(Jimple.v().newNopStmt());
+        }
+        
+        Stmt labelThrowException = Jimple.v().newNopStmt();
+        Stmt labelReturnFalse = Jimple.v().newNopStmt();
+        Stmt labelReturnTrue = Jimple.v().newNopStmt();
+        // the switch:
+        units.addLast(Jimple.v().newLookupSwitchStmt(stateNumber, switchValues, labels, labelThrowException));
+
+        Iterator labelIt = labels.iterator();
+        stateIt = ((TMStateMachine)tm.getState_machine()).getStateIterator();
+        while(stateIt.hasNext()) {
+            SMNode curState = (SMNode)stateIt.next();
+            Stmt curLabel = (Stmt)labelIt.next();
+            units.addLast(curLabel);
+            
+            //////// Cleaning up invalidated collectableWeakRefs
+            // Each state is labelled with a set collectableWeakRefs. If one of these
+            // becomes invalid, the disjunct can never lead to a successful match and,
+            // accordingly, can/must be discarded.
+            //
+            // Since we don't allow null bindings and WeakRefs become null when they are
+            // invalidated, we check each bound variable in the collectableWeakRefs set
+            // for the current state for null-ness, and if it's null return falseD.
+            Iterator collectableWeakRefIt = curState.collectableWeakRefs.iterator();
+            while(collectableWeakRefIt.hasNext()) {
+                String varName = (String)collectableWeakRefIt.next();
+                Stmt labelCurVarNotBound = Jimple.v().newNopStmt();
+                Local booleanLocal = lgen.generateLocal(BooleanType.v(), "isVarBound");
+                units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInstanceFieldRef(thisLocal,
+                        Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
+                units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)), labelCurVarNotBound));
+                // variable is bound -- check if it's invalid
+                units.addLast(Jimple.v().newAssignStmt(varLocal, Jimple.v().newVirtualInvokeExpr(thisLocal,
+                        Scene.v().makeMethodRef(disjunct, "get$" + varName, new LinkedList(), RefType.v("java.lang.Object"), false))));
+                units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(varLocal, NullConstant.v()), labelReturnFalse));
+                
+                units.addLast(labelCurVarNotBound);
+            }
+            
+            units.addLast(Jimple.v().newGotoStmt(labelReturnTrue));
+        }
+
+        units.addLast(labelReturnTrue);
+        units.addLast(Jimple.v().newReturnStmt(IntConstant.v(1)));
+        
+        units.addLast(labelReturnFalse);
+        printString(b, "*");
+        units.addLast(Jimple.v().newReturnStmt(IntConstant.v(0)));
+        
+        units.addLast(labelThrowException);
+        throwException(b, "Disjunct.validateDisjunct() called with an invalid state number");
+    }
 
     /**
      * Fills in the method stubs that have been generated for this tracematch.
