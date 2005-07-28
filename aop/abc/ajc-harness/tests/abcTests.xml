@@ -9466,4 +9466,9 @@
         <compile files="NegBindings.java" options="-ext,abc.tm"/>
 	<run class="NegBindings"/>
     </ajc-test>
+    <ajc-test num="1028" dir="abctests/tracematches"
+        title="Tracematches: states where x may be bound or unbound">
+        <compile files="MoreBindings.java" options="-ext,abc.tm"/>
+	<run class="MoreBindings"/>
+    </ajc-test>
 </suite>
