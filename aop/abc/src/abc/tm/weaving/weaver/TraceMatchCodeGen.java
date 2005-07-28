@@ -28,6 +28,14 @@ public class TraceMatchCodeGen {
     // (replacing "+" by "-" or "*" as appropriate).
     private boolean enableDebugTraces = false;
     
+    // Class which should be used for weak references. We can't use the default 
+    // java.lang.ref.WeakReference, since its equals() method doesn't do what we want.
+    // Thus we override it, changing equals method (so that wr.equals(o) is true if
+    // o is a weakRef and their referents are the same object, or if wr's referent is o.
+    // We also override the hashCode() method to return o.hashCode(), where o is the
+    // referent.
+    private SootClass myWeakRef = null;
+    
     // TODO: Perhaps have a dedicated flag for tracematch codegen
     private static void debug(String message)
     { if (abc.main.Debug.v().aspectCodeGen)
@@ -73,6 +81,21 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newThrowStmt(throwable));
     }
     
+    protected Local getWeakRefLocal(Body b, Local target, SootClass myWeakRef) {
+    	LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+    	Local result = lgen.generateLocal(myWeakRef.getType(), "weakRefLocal");
+    	
+    	List singleObjectTypeParameter = new LinkedList();
+    	singleObjectTypeParameter.add(RefType.v("java.lang.Object"));
+    	
+    	Chain units = b.getUnits();
+    	units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(myWeakRef.getType())));
+    	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(result, 
+    			Scene.v().makeConstructorRef(myWeakRef, singleObjectTypeParameter), target)));
+    	
+    	return result;
+    }
+    
     // codegen helper methods
     protected void addReturnThisMethod(SootClass addToClass, String methodName, List parameters) {
         SootMethod method = new SootMethod(methodName, parameters, addToClass.getType(),
@@ -113,7 +136,20 @@ public class TraceMatchCodeGen {
      * @param tm The relevant tracematch
      */
     protected void createConstraintClasses(TraceMatch tm) {
-        // the SootClasses for the constraint and the main disjunct class for the tracematch
+        // Create the MyWeakReference class. Since it doesn't depend on the tracematch, we
+        // only create it once.
+        if(myWeakRef == null) {
+        	//myWeakRef = Scene.v().getSootClass("java.lang.ref.WeakReference");/*
+        	myWeakRef = new SootClass("MyWeakReference");
+        	addMWRInitialiserMethod();
+        	addMWREqualsMethod();
+        	addMWRHashCodeMethod();
+        	Scene.v().addClass(myWeakRef);
+        	myWeakRef.setApplicationClass();
+        	myWeakRef.setSuperclass(Scene.v().getSootClass("java.lang.ref.WeakReference"));/**/
+        }
+        
+    	// the SootClasses for the constraint and the main disjunct class for the tracematch
         SootClass object = Scene.v().getSootClass("java.lang.Object");
         SootClass constraint = new SootClass(getConstraintClassName(tm));
         SootClass disjunct = new SootClass(getDisjunctClassName(tm));
@@ -1017,7 +1053,7 @@ public class TraceMatchCodeGen {
             disjunct.addField(curField);
             
             // the following method(s) are needed by addNegativeBindingsForSymbol()
-            addDisjunctAddNegBindingForVariable(varName, disjunct, Scene.v().getSootClass("java.lang.ref.WeakReference") /* FIXME */);
+            addDisjunctAddNegBindingForVariable(varName, disjunct, myWeakRef);
         }
         addDisjunctEqualsMethod(disjunct, varNames);
         addDisjunctHashCodeMethod(disjunct, varNames);
@@ -1026,14 +1062,14 @@ public class TraceMatchCodeGen {
         // now -- where the bulk of the work happens, addBindingsForSymbolX and the state-
         // specific versions, addBindingsForSymbolXInState<Number>, also negative bindings-
         // versions of these.
-        addDisjunctAddBindingsForSymbolMethods(tm, disjunct, Scene.v().getSootClass("java.lang.ref.WeakReference") /* FIXME */);
-        addDisjunctAddNegBindingsForSymbolMethods(tm, disjunct, Scene.v().getSootClass("java.lang.ref.WeakReference") /* FIXME */);
+        addDisjunctAddBindingsForSymbolMethods(tm, disjunct, myWeakRef);
+        addDisjunctAddNegBindingsForSymbolMethods(tm, disjunct, myWeakRef);
         
         // We need a copy() method..
         addDisjunctCopyMethod(tm, disjunct);
         
         // The variable getters
-        addDisjunctGetVarMethods(tm, disjunct, Scene.v().getSootClass("java.lang.ref.WeakReference") /* FIXME */);
+        addDisjunctGetVarMethods(tm, disjunct, myWeakRef);
         
         addDisjunctInitialiser(tm, disjunct);
         
@@ -1068,6 +1104,7 @@ public class TraceMatchCodeGen {
         Local compareToDisjunct = lgen.generateLocal(disjunct.getType(), "compareToDisjunct");
         Local localSet = lgen.generateLocal(setType, "localSet");
         Local remoteSet = lgen.generateLocal(setType, "remoteSet");
+        Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
         
         // first things first -- identity statements
         Chain units = b.getUnits();
@@ -1080,7 +1117,6 @@ public class TraceMatchCodeGen {
         Stmt labelReturnTrue = Jimple.v().newNopStmt();
         
         // if the type is wrong, return false
-        Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
         units.addLast(Jimple.v().newAssignStmt(booleanLocal, 
                 Jimple.v().newInstanceOfExpr(compareTo, disjunct.getType())));
         units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, 
@@ -1102,11 +1138,13 @@ public class TraceMatchCodeGen {
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
             // if both bind the variable but differ in the value they assign to it, return false.
-            Stmt labelNotBothBound = Jimple.v().newNopStmt();
+            Stmt labelCheckNegSets = Jimple.v().newNopStmt();
             Local thisBound = lgen.generateLocal(BooleanType.v(), "thisBound");
             Local paramBound = lgen.generateLocal(BooleanType.v(), "paramBound");
             Local varThis = lgen.generateLocal(objectType, "varThis");
             Local varParam = lgen.generateLocal(objectType, "varParam");
+            Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
+          
             units.addLast(Jimple.v().newAssignStmt(varThis, Jimple.v().newInstanceFieldRef(thisLocal,
                     Scene.v().makeFieldRef(disjunct, "var$" + varName, objectType, false))));
             units.addLast(Jimple.v().newAssignStmt(varParam, Jimple.v().newInstanceFieldRef(compareToDisjunct,
@@ -1116,18 +1154,55 @@ public class TraceMatchCodeGen {
                     Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
             units.addLast(Jimple.v().newAssignStmt(paramBound, Jimple.v().newInstanceFieldRef(compareToDisjunct,
                     Scene.v().makeFieldRef(disjunct, varName + "$isBound", BooleanType.v(), false))));
-            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisBound, IntConstant.v(1)),
-                    labelNotBothBound));
-            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(paramBound, IntConstant.v(1)),
-                    labelNotBothBound));
             
-            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(varThis, varParam),
+            // If this and the parameter differ in the binding state of the current variable, they aren't equal.
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisBound, paramBound),
                     labelReturnFalse));
             
-            // if exactly one is bound, then return false
-            units.addLast(labelNotBothBound);
-            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisBound, paramBound),
-                labelReturnFalse));
+            // Otherwise, if thisBound == false (and so paramBound == false too), compare the neg binding sets
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisBound, IntConstant.v(1)),
+                    labelCheckNegSets));
+
+            // If we fall through here, both disjuncts bind the current variable.
+            // If either varThis or varParam is a weak reference, we need to use that weak reference's .equals() 
+            // method to check for equality... otherwise we're interested in reference equality (this relies
+            // on the fact that MyWeakReference.equals() *is* reference equality for the underlying referents).
+            Stmt labelCheckParamIsWeak = Jimple.v().newNopStmt();
+            Stmt labelCheckStrongEquality = Jimple.v().newNopStmt();
+            Stmt labelCheckNextVar = Jimple.v().newNopStmt();
+            
+            // if the varThis reference is weak, store it in weakRef and check for weak equality
+            Local thisWeak = lgen.generateLocal(BooleanType.v(), "thisWeak");
+            units.addLast(Jimple.v().newAssignStmt(thisWeak, Jimple.v().newInstanceFieldRef(thisLocal,
+                    Scene.v().makeFieldRef(disjunct, varName + "$isWeak", BooleanType.v(), false))));
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(thisWeak, IntConstant.v(1)), labelCheckParamIsWeak));
+            units.addLast(Jimple.v().newAssignStmt(weakRef, Jimple.v().newCastExpr(varThis, myWeakRef.getType())));
+            units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newVirtualInvokeExpr(weakRef, 
+            		Scene.v().makeMethodRef(myWeakRef, "equals", singleObjectParameter, BooleanType.v(), false),
+            		varParam)));
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)), labelReturnFalse));
+            units.addLast(Jimple.v().newGotoStmt(labelCheckNextVar));
+            
+            // if the varParam reference is weak, store it in weakRef and check for weak equality
+            units.addLast(labelCheckParamIsWeak);
+            Local paramWeak = lgen.generateLocal(BooleanType.v(), "paramWeak");
+            units.addLast(Jimple.v().newAssignStmt(paramWeak, Jimple.v().newInstanceFieldRef(compareToDisjunct,
+                    Scene.v().makeFieldRef(disjunct, varName + "$isWeak", BooleanType.v(), false))));
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(paramWeak, IntConstant.v(1)), labelCheckStrongEquality));
+            units.addLast(Jimple.v().newAssignStmt(weakRef, Jimple.v().newCastExpr(varParam, myWeakRef.getType())));
+            units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newVirtualInvokeExpr(weakRef, 
+            		Scene.v().makeMethodRef(myWeakRef, "equals", singleObjectParameter, BooleanType.v(), false),
+            		varThis)));
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)), labelReturnFalse));
+            units.addLast(Jimple.v().newGotoStmt(labelCheckNextVar));
+            
+            // if neither binding is weak, we just check reference equality
+            units.addLast(labelCheckStrongEquality);
+            units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(varThis, varParam),
+                    labelReturnFalse));
+            units.addLast(Jimple.v().newGotoStmt(labelCheckNextVar)); // don't check sets -- they're null
+
+            units.addLast(labelCheckNegSets);
             // if (!this.not_X.equals(parameter.not_X)) return false;
             // need to store both sets in locals before making the method call
             units.addLast(Jimple.v().newAssignStmt(localSet, 
@@ -1143,18 +1218,16 @@ public class TraceMatchCodeGen {
                     remoteSet)));
             units.addLast(Jimple.v().newIfStmt(Jimple.v().newNeExpr(booleanLocal, IntConstant.v(1)),
                     labelReturnFalse));
+            
+            units.addLast(labelCheckNextVar);
         }
         // We have now checked all variables -- if we haven't jumped to labelReturnFalse, return true
+        units.addLast(labelReturnTrue);
         units.addLast(Jimple.v().newReturnStmt(IntConstant.v(1)));
         
         // now for the unfinished business
         units.addLast(labelReturnFalse);
         units.addLast(Jimple.v().newReturnStmt(IntConstant.v(0)));  
-
-        units.addLast(labelReturnTrue);
-        units.addLast(Jimple.v().newReturnStmt(IntConstant.v(1)));  
-        /////////////////// end Disjunct.equals() method ////////////////////////////
-
     }
     
     protected void addDisjunctHashCodeMethod(SootClass disjunct, List varNames) {
@@ -1253,7 +1326,6 @@ public class TraceMatchCodeGen {
             Local stateNumber = lgen.generateLocal(IntType.v(), "stateNumber");
             Local curVarNegBindings = lgen.generateLocal(setType, "curNegBindings");
             Local result = lgen.generateLocal(disjunct.getType(), "result");
-            Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
             Local varLocal = lgen.generateLocal(objectType, "varLocal");
             
             Chain units = b.getUnits();
@@ -1303,16 +1375,17 @@ public class TraceMatchCodeGen {
                 // If the variable is bound, we don't keep negative bindings for it, so skip the check
                 units.addLast(Jimple.v().newGotoStmt(labelCheckNextVar));
                 units.addLast(labelCurVarNotBound);
-                // if(this.not_var.contains(var1)) return false;
+                // if(this.not_var.contains(new MyWeakRef(var1))) return false;
                 // XXX Note that this relies on MyWeakRef.equals() returning true if it has a weak
                 // reference to var1.
                 units.addLast(Jimple.v().newAssignStmt(curVarNegBindings,
                         Jimple.v().newInstanceFieldRef(thisLocal, 
                                 Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
                 Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
+                Local weakRef = getWeakRefLocal(b, curVar, myWeakRef);
                 units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInterfaceInvokeExpr(curVarNegBindings,
                         Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "contains",
-                                singleObjectParameter, BooleanType.v(), false), curVar)));
+                                singleObjectParameter, BooleanType.v(), false), weakRef)));
                 units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(1)), 
                         labelReturnFalse));
                 units.addLast(labelCheckNextVar);
@@ -1415,11 +1488,7 @@ public class TraceMatchCodeGen {
                                         false)),
                                 IntConstant.v(1)));
                         // result.var$var = new MyWeakRef(var);
-                        units.addLast(Jimple.v().newAssignStmt(weakRef, 
-                                Jimple.v().newNewExpr(myWeakRef.getType())));
-                        units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(weakRef,
-                                Scene.v().makeConstructorRef(myWeakRef, singleObjectParameter),
-                                curVar)));
+                        Local weakRef = getWeakRefLocal(b, curVar, myWeakRef);
                         units.addLast(Jimple.v().newAssignStmt(Jimple.v().newInstanceFieldRef(result,
                                 Scene.v().makeFieldRef(disjunct, "var$" + varName, objectType,
                                         false)),
@@ -1471,7 +1540,6 @@ public class TraceMatchCodeGen {
     	Local curVar = lgen.generateLocal(objectType, "curVar");
     	Local curVarNegBindings = lgen.generateLocal(setType, "curNegBindings");
     	Local result = lgen.generateLocal(disjunct.getType());
-    	Local weakRef = lgen.generateLocal(myWeakRef.getType(), "weakRef");
     	Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
     	
     	Chain units = b.getUnits();
@@ -1506,9 +1574,7 @@ public class TraceMatchCodeGen {
     			Scene.v().makeMethodRef(disjunct, "copy", new LinkedList(), disjunct.getType(), false))));
     	units.addLast(Jimple.v().newAssignStmt(curVarNegBindings, Jimple.v().newInstanceFieldRef(result,
     			Scene.v().makeFieldRef(disjunct, "not$" + varName, setType, false))));
-    	units.addLast(Jimple.v().newAssignStmt(weakRef, Jimple.v().newNewExpr(myWeakRef.getType())));
-    	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(weakRef, 
-    			Scene.v().makeConstructorRef(myWeakRef, singleObjectParameter), paramLocal)));
+    	Local weakRef = getWeakRefLocal(b, paramLocal, myWeakRef);
     	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newInterfaceInvokeExpr(curVarNegBindings,
     			Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "add", singleObjectParameter, 
     					BooleanType.v(), false),
@@ -1986,6 +2052,119 @@ public class TraceMatchCodeGen {
 
             fillInSomeAdviceBody(kind, advice_method, tm, helper, body_formals);
         }
+    }
+    
+    protected void addMWRInitialiserMethod() {
+    	List singleObjectTypeParameter = new LinkedList();
+    	singleObjectTypeParameter.add(RefType.v("java.lang.Object"));
+    	SootMethod init = new SootMethod(SootMethod.constructorName, singleObjectTypeParameter, VoidType.v(), Modifier.PUBLIC);
+    	Body b = Jimple.v().newBody(init);
+    	init.setActiveBody(b);
+    	myWeakRef.addMethod(init);
+    	
+    	LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+    	Local thisLocal = lgen.generateLocal(myWeakRef.getType(), "thisLocal");
+    	Local param = lgen.generateLocal(RefType.v("java.lang.Object"), "paramLocal");
+    	
+    	Chain units = b.getUnits();
+    	units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(myWeakRef.getType())));
+    	units.addLast(Jimple.v().newIdentityStmt(param, Jimple.v().newParameterRef(RefType.v("java.lang.Object"), 0)));
+    	
+    	units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(thisLocal, 
+    			Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.ref.WeakReference"), singleObjectTypeParameter),
+    			param)));
+    	
+    	units.addLast(Jimple.v().newReturnVoidStmt());
+    	
+    	SootMethod clinit = new SootMethod(SootMethod.staticInitializerName, new LinkedList(), VoidType.v(), Modifier.STATIC);
+    	b = Jimple.v().newBody(clinit);
+    	clinit.setActiveBody(b);
+    	myWeakRef.addMethod(clinit);
+    	
+    	units = b.getUnits();
+    	units.addLast(Jimple.v().newReturnVoidStmt());
+    }
+    
+    protected void addMWREqualsMethod() {
+    	SootClass weakRef = Scene.v().getSootClass("java.lang.ref.WeakReference");
+    	RefType objectType = RefType.v("java.lang.Object");
+    	List singleObjectTypeParameter = new LinkedList();
+    	singleObjectTypeParameter.add(objectType);
+    	SootMethod equals = new SootMethod("equals", singleObjectTypeParameter, BooleanType.v(), Modifier.PUBLIC);
+    	Body b = Jimple.v().newBody(equals);
+    	equals.setActiveBody(b);
+    	myWeakRef.addMethod(equals);
+    	
+    	LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+    	Local thisLocal = lgen.generateLocal(myWeakRef.getType(), "thisLocal");
+    	Local param = lgen.generateLocal(objectType, "paramLocal");
+    	Local paramWR = lgen.generateLocal(myWeakRef.getType(), "paramWeakRef");
+    	Local thisObject = lgen.generateLocal(objectType, "thisObject");
+    	Local paramObject = lgen.generateLocal(objectType, "paramObject");
+    	
+    	Chain units = b.getUnits();
+    	units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(myWeakRef.getType())));
+    	units.addLast(Jimple.v().newIdentityStmt(param, Jimple.v().newParameterRef(RefType.v("java.lang.Object"), 0)));
+    	
+    	Stmt labelParamIsWeakRef = Jimple.v().newNopStmt();
+    	Stmt labelReturnTrue = Jimple.v().newNopStmt();
+
+    	units.addLast(Jimple.v().newAssignStmt(thisObject, Jimple.v().newVirtualInvokeExpr(thisLocal, 
+    			Scene.v().makeMethodRef(weakRef, "get", new LinkedList(), objectType, false))));
+    	// if param is a weakRef, we need to do param.get();
+        Local booleanLocal = lgen.generateLocal(BooleanType.v(), "booleanLocal");
+        units.addLast(Jimple.v().newAssignStmt(booleanLocal, Jimple.v().newInstanceOfExpr(param, myWeakRef.getType())));
+    	units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(booleanLocal, IntConstant.v(1)), labelParamIsWeakRef));
+    	// otherwise we can just compare:
+    	units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(thisObject, param), labelReturnTrue));
+    	// return false;
+    	units.addLast(Jimple.v().newReturnStmt(IntConstant.v(0)));
+    	
+    	units.addLast(labelParamIsWeakRef);
+    	// if param is a weakRef, cast to myWeakRef:
+    	units.addLast(Jimple.v().newAssignStmt(paramWR, Jimple.v().newCastExpr(param, myWeakRef.getType())));
+    	// then store its referent in a local:
+    	units.addLast(Jimple.v().newAssignStmt(paramObject, Jimple.v().newVirtualInvokeExpr(paramWR, 
+    			Scene.v().makeMethodRef(myWeakRef, "get", new LinkedList(), objectType, false))));
+    	// and compare the two:
+    	units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(thisObject, paramObject), labelReturnTrue));
+    	// return false;
+    	units.addLast(Jimple.v().newReturnStmt(IntConstant.v(0)));
+
+    	units.addLast(labelReturnTrue);
+    	units.addLast(Jimple.v().newReturnStmt(IntConstant.v(1)));
+    }
+    
+    protected void addMWRHashCodeMethod() {
+    	SootClass weakRef = Scene.v().getSootClass("java.lang.ref.WeakReference");
+    	RefType objectType = RefType.v("java.lang.Object");
+    	SootMethod hashCode = new SootMethod("hashCode", new LinkedList(), IntType.v(), Modifier.PUBLIC);
+    	Body b = Jimple.v().newBody(hashCode);
+    	hashCode.setActiveBody(b);
+    	myWeakRef.addMethod(hashCode);
+    	
+    	LocalGeneratorEx lgen = new LocalGeneratorEx(b);
+    	Local thisLocal = lgen.generateLocal(myWeakRef.getType(), "thisLocal");
+    	Local thisObject = lgen.generateLocal(objectType, "thisObject");
+    	Local result = lgen.generateLocal(IntType.v(), "result");
+    	
+    	Chain units = b.getUnits();
+    	units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(myWeakRef.getType())));
+    	
+    	units.addLast(Jimple.v().newAssignStmt(thisObject, Jimple.v().newVirtualInvokeExpr(thisLocal, 
+    			Scene.v().makeMethodRef(weakRef, "get", new LinkedList(), objectType, false))));
+
+    	// if thisObject == null return 0;
+    	Stmt labelReturnZero = Jimple.v().newNopStmt();
+    	units.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(thisObject, NullConstant.v()), labelReturnZero));
+    	units.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(thisObject, 
+    			Scene.v().makeMethodRef(Scene.v().getSootClass("java.lang.Object"), "hashCode", 
+    					new LinkedList(), IntType.v(), false))));
+    	
+    	units.addLast(Jimple.v().newReturnStmt(result));
+    	
+    	units.addLast(labelReturnZero);
+    	units.addLast(Jimple.v().newReturnStmt(IntConstant.v(0)));
     }
 
     protected void fillInSymbolAdviceBody(String symbol, SootMethod method,

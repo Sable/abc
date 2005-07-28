@@ -477,7 +477,7 @@ public class TMStateMachine implements StateMachine {
     }
     
     public String toString() {
-        String result = "State machine:\n--------------\n";
+        String result = "State machine:\n==============\n";
         java.util.Map stateNumbers = new java.util.HashMap();
         SMNode cur; SMEdge edge;
         int cnt = 0;
@@ -490,11 +490,11 @@ public class TMStateMachine implements StateMachine {
             cur = (SMNode)it.next();
             if(cur.isInitialNode()) result += "Initial ";
             if(cur.isFinalNode()) result += "Final ";
-            result += "State " + stateNumbers.get(cur) + "\n";
-            result += "needStrongRefs" + cur.needStrongRefs + "\n";
-            result += "collectableWeakRefs" + cur.collectableWeakRefs + "\n";
-			result += "weakRefs" + cur.weakRefs + "\n";
-			result += "boundVars" + cur.boundVars + "\n";
+            result += "State " + stateNumbers.get(cur) + " (";
+            result += "needStrongRefs" + cur.needStrongRefs + ", ";
+            result += "collectableWeakRefs" + cur.collectableWeakRefs + ", ";
+			result += "weakRefs" + cur.weakRefs + ", ";
+			result += "boundVars" + cur.boundVars + ")\n";
             Iterator edgeIt = cur.getOutEdgeIterator();
             while(edgeIt.hasNext()) {
                 edge = (SMEdge)edgeIt.next();
