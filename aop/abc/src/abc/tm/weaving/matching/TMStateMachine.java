@@ -469,7 +469,6 @@ public class TMStateMachine implements StateMachine {
         compressStates();
         collectBindingInfo(formals,symToVar,notused,pos);
         renumberStates();
-        System.out.println(toString());
     }
     
     public Iterator getStateIterator() {

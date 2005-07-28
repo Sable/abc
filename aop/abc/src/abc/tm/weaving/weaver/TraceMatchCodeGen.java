@@ -50,6 +50,7 @@ public class TraceMatchCodeGen {
         return tm.getPackage() + "Disjunct$" + tm.getName();
     }
     
+       
     protected void printString(Body b, String s) {
         if(!enableDebugTraces) return;
         
@@ -139,11 +140,11 @@ public class TraceMatchCodeGen {
         // Create the MyWeakReference class. Since it doesn't depend on the tracematch, we
         // only create it once.
         if(myWeakRef == null) {
-        	//myWeakRef = Scene.v().getSootClass("java.lang.ref.WeakReference");/*
-        	myWeakRef = new SootClass("MyWeakReference");
+        	// myWeakRef = Scene.v().getSootClass("java.lang.ref.WeakReference");/*
+        	myWeakRef = new SootClass(tm.getPackage()+"MyWeakReference");
         	addMWRInitialiserMethod();
-        	addMWREqualsMethod();
-        	addMWRHashCodeMethod();
+        	// addMWREqualsMethod();
+        	// addMWRHashCodeMethod();
         	Scene.v().addClass(myWeakRef);
         	myWeakRef.setApplicationClass();
         	myWeakRef.setSuperclass(Scene.v().getSootClass("java.lang.ref.WeakReference"));/**/
