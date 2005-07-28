@@ -5819,7 +5819,7 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$187.<java.util.LinkedHashSet: void <init>()>() in <tracematches.Disjunct$tracematch$3068: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)> in <tracematches.Disjunct$tracematch$3068: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)>
+Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$196.<java.util.LinkedHashSet: void <init>()>() in <tracematches.Disjunct$tracematch$3068: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)> in <tracematches.Disjunct$tracematch$3068: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)>
 	at soot.Body.checkCopy(Body.java:645)
 	at soot.Body.checkTypes(Body.java:596)
 	at soot.Body.validate(Body.java:208)
@@ -5892,7 +5892,7 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$186.<java.util.LinkedHashSet: void <init>()>() in <tracematches.Disjunct$tracematch$3077: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)> in <tracematches.Disjunct$tracematch$3077: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)>
+Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$195.<java.util.LinkedHashSet: void <init>()>() in <tracematches.Disjunct$tracematch$3077: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)> in <tracematches.Disjunct$tracematch$3077: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)>
 	at soot.Body.checkCopy(Body.java:645)
 	at soot.Body.checkTypes(Body.java:596)
 	at soot.Body.validate(Body.java:208)
@@ -5965,7 +5965,7 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$186.<java.util.LinkedHashSet: void <init>()>() in <tracematches.Disjunct$tracematch$3086: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)> in <tracematches.Disjunct$tracematch$3086: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)>
+Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$195.<java.util.LinkedHashSet: void <init>()>() in <tracematches.Disjunct$tracematch$3086: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)> in <tracematches.Disjunct$tracematch$3086: java.util.Set addNegativeBindingsForSymbolcreate_enum(int,java.lang.Object,java.lang.Object)>
 	at soot.Body.checkCopy(Body.java:645)
 	at soot.Body.checkTypes(Body.java:596)
 	at soot.Body.validate(Body.java:208)
@@ -6011,7 +6011,7 @@ polyglot.util.InternalCompilerError: unhandled exception during compilation
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$144.<java.util.LinkedHashSet: void <init>()>() in <Disjunct$tracematch$3095: java.util.Set addNegativeBindingsForSymbolf(int,java.lang.Object,java.lang.Object)> in <Disjunct$tracematch$3095: java.util.Set addNegativeBindingsForSymbolf(int,java.lang.Object,java.lang.Object)>
+Caused by: java.lang.RuntimeException: Warning: trying to use interface type where non-Object class expected in receiver of call at specialinvoke resultSet$150.<java.util.LinkedHashSet: void <init>()>() in <Disjunct$tracematch$3095: java.util.Set addNegativeBindingsForSymbolf(int,java.lang.Object,java.lang.Object)> in <Disjunct$tracematch$3095: java.util.Set addNegativeBindingsForSymbolf(int,java.lang.Object,java.lang.Object)>
 	at soot.Body.checkCopy(Body.java:645)
 	at soot.Body.checkTypes(Body.java:596)
 	at soot.Body.validate(Body.java:208)
