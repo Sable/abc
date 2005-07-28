@@ -143,8 +143,8 @@ public class TraceMatchCodeGen {
         	// myWeakRef = Scene.v().getSootClass("java.lang.ref.WeakReference");/*
         	myWeakRef = new SootClass(tm.getPackage()+"MyWeakReference");
         	addMWRInitialiserMethod();
-        	// addMWREqualsMethod();
-        	// addMWRHashCodeMethod();
+        	addMWREqualsMethod();
+        	addMWRHashCodeMethod();
         	Scene.v().addClass(myWeakRef);
         	myWeakRef.setApplicationClass();
         	myWeakRef.setSuperclass(Scene.v().getSootClass("java.lang.ref.WeakReference"));/**/
