@@ -9461,4 +9461,9 @@
         <compile files="Test.java" options="-ext,abc.tm"/>
 	<run class="Test"/>
     </ajc-test>
+    <ajc-test num="1027" dir="abctests/tracematches"
+        title="Tracematches: Negative bindings should be checked correctly...">
+        <compile files="NegBindings.java" options="-ext,abc.tm"/>
+	<run class="NegBindings"/>
+    </ajc-test>
 </suite>
