@@ -64,11 +64,11 @@ public class CflowAnalysisImpl implements CflowAnalysis {
     public void run() {
 
         debug("processing advices");
-        for( Iterator clIt = GlobalAspectInfo.v().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
                 final SootMethod m = (SootMethod) mIt.next();
-                MethodAdviceList mal = GlobalAspectInfo.v().getAdviceList(m);
+                MethodAdviceList mal = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(m);
                 if( mal == null ) continue;
                 processAdvices(mal.allAdvice());
             }
