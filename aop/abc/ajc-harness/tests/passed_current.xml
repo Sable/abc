@@ -5115,5 +5115,9 @@
         <compile options="-ext,abc.tm" files="Variables.java"></compile>
 	<run class="Variables"></run>
     </ajc-test>
+<ajc-test title="Tracematches: states where x may be bound or unbound" num="1028" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MoreBindings.java"></compile>
+	<run class="MoreBindings"></run>
+    </ajc-test>
  
 </suite>
