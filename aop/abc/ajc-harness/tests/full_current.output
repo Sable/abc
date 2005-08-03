@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@1ad5dd8
+creating: A@1e8a8f8
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@1437023, [Ljava.lang.Object;@773ab1, TwoAnonymous$3@1437023
+calling run: TwoAnonymous$3@81d8d4, [Ljava.lang.Object;@c256f8, TwoAnonymous$3@81d8d4
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@69cdef.foo calls Outer$Inner@4f061f.mi
+Outer@4f061f.foo calls Outer$Inner@1aeed1.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@4f061f.mi calls java.io.PrintStream@1aeed1.println
+Outer$Inner@1aeed1.mi calls java.io.PrintStream@3515dd.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@69cdef.foo calls Outer$InnerRandom@12e842d.nextHook
+Outer@4f061f.foo calls Outer$InnerRandom@e7cadd.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@12e842d.nextHook calls Outer$InnerRandom@12e842d.next
+Outer$InnerRandom@e7cadd.nextHook calls Outer$InnerRandom@e7cadd.next
 Outer.foo() calls Random.nextInt(..)
-Outer@69cdef.foo calls X.nextInt
+Outer@4f061f.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1caa9be.foo calls Outer$Inner@4e2c21.mi
+Outer@4e2c21.foo calls Outer$Inner@3331dd.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@4e2c21.mi calls java.io.PrintStream@3331dd.println
+Outer$Inner@3331dd.mi calls java.io.PrintStream@10ebbdd.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1caa9be.foo calls Outer$InnerRandom@4fbc26.nextHook
+Outer@4e2c21.foo calls Outer$InnerRandom@c9714f.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@4fbc26.nextHook calls Outer$InnerRandom@4fbc26.next
+Outer$InnerRandom@c9714f.nextHook calls Outer$InnerRandom@c9714f.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1caa9be.foo calls X.nextInt
+Outer@4e2c21.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$33$around$1601(AroundAll.java:199)
+	at A.inline$32$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
