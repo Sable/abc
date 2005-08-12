@@ -79,6 +79,10 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
+<ajc-test title="Tracematches: Basic variable bindings" num="1022" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Variables.java"></compile>
+	<run class="Variables"></run>
+    </ajc-test>
 <ajc-test title="Failsafe enumerations: tracematch version 1" num="1023" dir="abctests/tracematches/failsafe">
         <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
 	<run class="leaktest.LeakTest"></run>
@@ -98,6 +102,10 @@
 <ajc-test title="Tracematches: Negative bindings should be checked correctly..." num="1027" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="NegBindings.java"></compile>
 	<run class="NegBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: states where x may be bound or unbound" num="1028" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MoreBindings.java"></compile>
+	<run class="MoreBindings"></run>
     </ajc-test>
  
 </suite>
