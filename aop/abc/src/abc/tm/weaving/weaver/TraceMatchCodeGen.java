@@ -1644,6 +1644,8 @@ public class TraceMatchCodeGen {
     	boolean returnSet = false; // do we need to return a set, or can we return just a single disjunct?
         RefType objectType = RefType.v("java.lang.Object");
         RefType setType = RefType.v("java.util.Set");
+        RefType linkedHashSetType = RefType.v("java.util.LinkedHashSet");
+        SootClass linkedHashSet = Scene.v().getSootClass("java.util.LinkedHashSet");
         List singleObjectParameter = new LinkedList();
         singleObjectParameter.add(objectType);
         Iterator symbolIt = tm.getSym_to_vars().keySet().iterator();
@@ -1687,7 +1689,7 @@ public class TraceMatchCodeGen {
             Local thisLocal = lgen.generateLocal(disjunct.getType(), "thisLocal");
             Local stateNumber = lgen.generateLocal(IntType.v(), "stateNumber");
             Local result = lgen.generateLocal(disjunct.getType(), "result");
-            Local resultSet = (returnSet ? lgen.generateLocal(setType, "resultSet") : null);
+            Local resultSet = (returnSet ? lgen.generateLocal(linkedHashSetType, "resultSet") : null);
             
             Chain units = b.getUnits();
             units.addLast(Jimple.v().newIdentityStmt(thisLocal, Jimple.v().newThisRef(disjunct.getType())));
@@ -1696,7 +1698,7 @@ public class TraceMatchCodeGen {
             int parameterIndex = 0;
             // First parameter is the state number
             units.addLast(Jimple.v().newIdentityStmt(stateNumber, 
-                    Jimple.v().newParameterRef(objectType, parameterIndex)));
+                    Jimple.v().newParameterRef(IntType.v(), parameterIndex)));
 
             // Remaining parameters are negative bindings to be added/checked
             parameterIndex = 1;
@@ -1714,9 +1716,9 @@ public class TraceMatchCodeGen {
             if(returnSet) {
 	            // For each variableX that's being bound by this symbol, we add this.addNegativeBindingForVariableX(V)
 	            // to the result set, where V is the appropriate binding value.
-	            units.addLast(Jimple.v().newAssignStmt(resultSet, Jimple.v().newNewExpr(RefType.v("java.util.LinkedHashSet"))));
+	            units.addLast(Jimple.v().newAssignStmt(resultSet, Jimple.v().newNewExpr(linkedHashSetType)));
 	            units.addLast(Jimple.v().newInvokeStmt(Jimple.v().newSpecialInvokeExpr(resultSet,
-	            		Scene.v().makeConstructorRef(Scene.v().getSootClass("java.util.LinkedHashSet"), new LinkedList()))));
+	            		Scene.v().makeConstructorRef(linkedHashSet, new LinkedList()))));
             }
             
             // now we have all the locals. 
