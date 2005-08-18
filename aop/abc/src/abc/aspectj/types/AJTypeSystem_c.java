@@ -106,16 +106,16 @@ public class AJTypeSystem_c
     	
 	
 	public MethodInstance adviceInstance(Position pos,
-										ReferenceType container, Flags flags,
-										Type returnType, String name,
-										List argTypes, List excTypes, AdviceSpec spec) {
-
-		   assert_(container);
-		   assert_(returnType);
-		   assert_(argTypes);
-		   assert_(excTypes);
-	   return new AdviceInstance_c(this, pos, container, flags,
-					   returnType, name, argTypes, excTypes,spec);
+                                ReferenceType container, Flags flags,
+                                Type returnType, String name, List argTypes,
+                                List excTypes, String signature)
+    {
+        assert_(container);
+        assert_(returnType);
+        assert_(argTypes);
+        assert_(excTypes);
+        return new AdviceInstance_c(this, pos, container, flags,
+					   returnType, name, argTypes, excTypes, signature);
 	}	
    
 	public MethodInstance pointcutInstance(Position pos,

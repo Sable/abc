@@ -40,47 +40,49 @@ import abc.aspectj.ast.AdviceSpec;
  * @author Oege de Moor
  *
  */
-public class AdviceInstance_c extends MethodInstance_c {
+public class AdviceInstance_c extends MethodInstance_c
+{
+    protected String signature;
 	
-	AdviceSpec spec;
-	
-	/** Used for deserializing types. */
-	protected AdviceInstance_c() { }
+    /** Used for deserializing types. */
+    protected AdviceInstance_c() { }
 
-	public AdviceInstance_c(TypeSystem ts, Position pos,
-				 								ReferenceType container,
-						 						Flags flags, Type returnType, String name,
-				 								List formalTypes, List excTypes, AdviceSpec spec) {
- 	    super(ts,pos,container,flags,returnType,name,formalTypes,excTypes);
- 		this.spec = spec;
+    public AdviceInstance_c(TypeSystem ts, Position pos,
+                            ReferenceType container, Flags flags,
+                            Type returnType, String name, List formalTypes,
+                            List excTypes, String signature)
+    {
+ 	    super(ts, pos, container, flags, returnType,
+                name, formalTypes, excTypes);
+
+ 		this.signature = signature;
  	}	
  	
-	public String toString() {
-	   String s = designator() + " " + flags.translate() +
-					  signature();
+    public String toString()
+    {
+        String s = designator() + " " + flags.translate() +
+                    signature();
 
-	   if (! excTypes.isEmpty()) {
-		   s += " throws ";
+        if (! excTypes.isEmpty()) {
+            s += " throws ";
 
-		   for (Iterator i = excTypes.iterator(); i.hasNext(); ) {
-		   Type t = (Type) i.next();
-		   s += t.toString();
+            for (Iterator i = excTypes.iterator(); i.hasNext(); ) {
+                Type t = (Type) i.next();
+                s += t.toString();
 
-		   if (i.hasNext()) {
-			   s += ", ";
-		   }
-		   }
-	   }
+                if (i.hasNext())
+                    s += ", ";
+            }
+        }
 
-	   return s;
-	}
-	   
-	public String signature() {
-		return spec.toString();
-	}
+        return s;
+    }
+   
+    public String signature() {
+        return signature;
+    }
 
-	public String designator() {
-		   return "advice";
-	}
-
+    public String designator() {
+        return "advice";
+    }
 }

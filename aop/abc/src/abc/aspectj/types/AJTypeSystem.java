@@ -54,10 +54,10 @@ public interface AJTypeSystem extends JjTypeSystem {
 	public ClassType JoinPointStaticPart();
 	public ClassType NoAspectBound();
 
-	public MethodInstance adviceInstance(Position pos,
-											ReferenceType container, Flags flags,
-							Type returnType, String name,
-							List argTypes, List excTypes, AdviceSpec spec);
+    public MethodInstance adviceInstance(Position pos,
+                            ReferenceType container, Flags flags,
+                            Type returnType, String name, List argTypes,
+                            List excTypes, String signature);
 
 	public MethodInstance pointcutInstance(Position pos,
 											ReferenceType container, Flags flags, 
