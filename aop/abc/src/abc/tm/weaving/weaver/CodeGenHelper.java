@@ -188,12 +188,12 @@ public class CodeGenHelper
      * Return an invoke expression to a method which adds bindings
      * to a constraint.
      *
-     * If addPositiveBindings is true, it generates an addBindingForSymbolx
+     * If positive_bindings is true, it generates an addBindingForSymbolx
      * call, otherwise an addNegativeBindingForSymbolx call.
      */
     protected Value bindingsMethod(String symbol, Local base,
-                                    SootMethod caller, Value stateFrom, Value stateTo,
-                                    boolean addPositiveBindings)
+                                    SootMethod caller, Value from_state,
+                                    Value to_state, boolean positive_bindings)
     {
         Body body = caller.getActiveBody();
         int params = caller.getParameterCount();
@@ -202,19 +202,16 @@ public class CodeGenHelper
         List arg_types = new ArrayList(params);
         List args = new ArrayList(params);
 
-        // FIXME: stop passing the state to addNegativeBindingsForSymbol
-        //        (when the constraint-gen is fixed)
-        // pavel: No, I need it now.. :-) Cleaning up invalidated disjuncts depends on
-        // the state they're in.
-        if (addPositiveBindings) {
-            arg_types.add(IntType.v()); // starting state
-            arg_types.add(IntType.v()); // ending state
-            args.add(stateFrom);
-            args.add(stateTo);
+        if (positive_bindings) {
+            arg_types.add(IntType.v());
+            args.add(from_state);
+
+            arg_types.add(IntType.v());
+            args.add(to_state);
             name = "addBindingsForSymbol" + symbol;
         } else {
             arg_types.add(IntType.v());
-            args.add(stateTo);
+            args.add(to_state);
             name = "addNegativeBindingsForSymbol" + symbol;
         }
 
@@ -480,15 +477,17 @@ public class CodeGenHelper
 
     /**
      * Call a bindings method (addBindingsForSymbolx or
-     * addNegativeBindigsForSymbolx, dependig on addPositiveBindings).
+     * addNegativeBindingsForSymbolx, depending on positive_bindings).
+     *
      * Return the result as a Jimple local.
      */
-    protected Local callBindingsMethod(Body body, Chain units,
-                                        String symbol, Local base,
-                                        SootMethod caller, Value stateFrom, Value stateTo, 
-                                        boolean addPositiveBindings)
+    protected Local callBindingsMethod(Body body, Chain units, String symbol,
+                                        Local base, SootMethod caller,
+                                        Value from_state, Value to_state,
+                                        boolean positive_bindings)
     {
-        Value call = bindingsMethod(symbol, base, caller, stateFrom, stateTo, addPositiveBindings);
+        Value call = bindingsMethod(symbol, base, caller, from_state,
+                                    to_state, positive_bindings);
         Local result = addLocal(body, "bind_result", constraint.getType());
         units.addLast(Jimple.v().newAssignStmt(result, call));
 
@@ -631,11 +630,12 @@ public class CodeGenHelper
 
         setUpdated(units, this_local, IntConstant.v(1));
 
-        Value stateFrom = getInt(from);
-        Value stateTo = getInt(to);
+        Value from_state = getInt(from);
+        Value to_state = getInt(to);
         Local lab_from = getLabel(body, units, this_local, from, LABEL);
         Local bind_result =
-            callBindingsMethod(body, units, symbol, lab_from, method, stateFrom, stateTo, true);
+            callBindingsMethod(body, units, symbol, lab_from,
+                                method, from_state, to_state, true);
 
         Local lab_to = getLabel(body, units, this_local, to, TMP_LABEL);
         Local or_result =
@@ -659,10 +659,11 @@ public class CodeGenHelper
 
         setUpdated(units, this_local, IntConstant.v(1));
 
-        Value stateTo = getInt(to);
+        Value to_state = getInt(to);
         Local lab = getLabel(body, units, this_local, to, SKIP_LABEL);
         Local result =
-            callBindingsMethod(body, units, symbol, lab, method, stateTo, stateTo, false); // stateFrom == stateTo for a skip-loop
+            callBindingsMethod(body, units, symbol, lab, method,
+                                to_state, to_state, false);
 
         assignToLabel(units, this_local, to, SKIP_LABEL, result);
 
