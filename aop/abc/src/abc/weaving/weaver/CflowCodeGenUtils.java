@@ -28,6 +28,7 @@ import java.util.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.main.Debug;
+import abc.main.options.OptionsParser;
 
 /**
  * A class for generating code for the cflow operations. The cflow operations are:
@@ -44,46 +45,116 @@ import abc.main.Debug;
  */
 public class CflowCodeGenUtils {
 
+	// Cflow Classes
+	// Old-style runtime library
+	private static final String CLASS_OLD_STACK = 
+		"org.aspectbench.runtime.internal.CFlowStack";
+	private static final String CLASS_OLD_COUNTER = 
+		"org.aspectbench.runtime.internal.CFlowCounter";
+	// New runtime library
+	private static final String CLASS_NEW_STACK_GLOBAL = 
+		"org.aspectbench.runtime.internal.CflowStackGlobal";
+	private static final String CLASS_NEW_COUNTER_GLOBAL =
+		"org.aspectbench.runtime.internal.CflowCounterGlobal";
+	private static final String CLASS_NEW_STACK_FACTORY = 
+		"org.aspectbench.runtime.internal.CflowStackFactory";
+	private static final String CLASS_NEW_COUNTER_FACTORY = 
+		"org.aspectbench.runtime.internal.CflowCounterFactory";
+	private static final String CLASS_NEW_COUNTER_INTERFACE = 
+		"org.aspectbench.runtime.internal.CflowCounterInterface";
+	private static final String CLASS_NEW_COUNTER_THREADLOCAL = 
+		"org.aspectbench.runtime.internal.cflowinternal.Counter";
+	// Typed Cflow Stacks
+	private static final String[] types = {"Ref", "Int", "Long", "Float", "Double"};
+	private static final String[] CLASS_NEW_STACK_INTERFACE_TYPED = new String[types.length];
+	private static final String[] CLASS_NEW_STACK_GLOBAL_TYPED = new String[types.length];
+	private static final String[] CLASS_NEW_STACK_TYPED = new String[types.length];
+	private static final String[] CLASS_NEW_STACK_CELL_TYPED = new String[types.length];
+	static {
+		// Initialise the typed cflow stack class names
+		for (int i = 0; i < types.length; i++) {
+			CLASS_NEW_STACK_INTERFACE_TYPED[i] = 
+				"org.aspectbench.runtime.internal.CflowStackInterface$" + types[i];
+			CLASS_NEW_STACK_GLOBAL_TYPED[i] = 
+				"org.aspectbench.runtime.internal.CflowStackGlobal$CflowStack" + types[i];
+			CLASS_NEW_STACK_TYPED[i] = 
+				"org.aspectbench.runtime.internal.cflowinternal.Stack" + types[i];
+			CLASS_NEW_STACK_CELL_TYPED[i] = 
+				"org.aspectbench.runtime.internal.cflowinternal.Stack" + types[i] + "$Cell";
+		}
+	}
+
 	/** Register all the classes that Cflow codegen might use with Soot
 	 */
 	public static void addBasicClassesToSoot() {
-	   	// Old-style runtime library
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowStack",
-                SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CFlowCounter",
-				SootClass.SIGNATURES);
-        
-        // New runtime library 
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowStackGlobal",
-				SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowCounterGlobal",
-				SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowCounterFactory",
-        		SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowCounterInterface",
-        		SootClass.SIGNATURES);
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.cflowinternal.Counter",
-				SootClass.SIGNATURES);       
-        
-        Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowStackFactory",
-        		SootClass.SIGNATURES);
-    	
-        // Add the typed cflow stacks
-    	final String[] types = {"Ref", "Int", "Long", "Float", "Double"};
-    	for (int i = 0; i < types.length; i++) {
-    		Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowStackInterface$" + 
-    				types[i],
-					SootClass.SIGNATURES);
-    		Scene.v().addBasicClass("org.aspectbench.runtime.internal.CflowStackGlobal$CflowStack"
-    				+ types[i],
-					SootClass.SIGNATURES);
-    		Scene.v().addBasicClass("org.aspectbench.runtime.internal.cflowinternal.Stack"
-    				+ types[i],
-					SootClass.SIGNATURES);
-    		Scene.v().addBasicClass("org.aspectbench.runtime.internal.cflowinternal.Stack"
-    				+ types[i] + "$Cell",
-					SootClass.SIGNATURES);
-    	}
+		// Add all classes except typed stack classes
+		String[] classes = {
+			CLASS_OLD_STACK, CLASS_OLD_COUNTER, 
+			CLASS_NEW_STACK_GLOBAL, CLASS_NEW_COUNTER_GLOBAL,
+			CLASS_NEW_STACK_FACTORY, CLASS_NEW_COUNTER_FACTORY,
+			CLASS_NEW_COUNTER_INTERFACE, CLASS_NEW_COUNTER_THREADLOCAL};
+		for (int i = 0; i < classes.length; i++) {
+			Scene.v().addBasicClass(classes[i], SootClass.SIGNATURES);
+		}	
+		
+		// Add typed stack classes
+		for (int i = 0; i < types.length; i++) {
+			Scene.v().addBasicClass(CLASS_NEW_STACK_INTERFACE_TYPED[i], 
+							SootClass.SIGNATURES);
+			Scene.v().addBasicClass(CLASS_NEW_STACK_GLOBAL_TYPED[i], 
+							SootClass.SIGNATURES);
+			Scene.v().addBasicClass(CLASS_NEW_STACK_TYPED[i], 
+							SootClass.SIGNATURES);
+			Scene.v().addBasicClass(CLASS_NEW_STACK_CELL_TYPED[i], 
+							SootClass.SIGNATURES);	
+		}
+		
+	}
+	
+	/** Test whether a method is a Cflow Counter or Stack Factory method
+	 */
+	public static boolean isFactoryMethod(SootMethodRef m) {
+		String className = m.declaringClass().getName();
+		String methodName = m.name();
+		if (className.equals(CLASS_OLD_STACK) &&
+			methodName.equals("getStack"))
+			return true;
+		if (className.equals(CLASS_OLD_COUNTER) &&
+			methodName.equals("getCounter"))
+			return true;
+		if (className.equals(CLASS_NEW_STACK_FACTORY) &&
+			methodName.startsWith("makeStack"))
+			return true;
+		if (className.equals(CLASS_NEW_COUNTER_FACTORY) &&
+			methodName.equals("makeCflowCounter"))
+			return true;
+			 
+		// Not a cflow factory method
+		return false;
+			
+	}
+	
+	/** Test whether a type is a cflow thread-local type
+	 */
+	public static boolean isThreadLocalType(Type t) {
+		if (!(t instanceof RefType))
+			return false;
+		RefType rt = (RefType)t;
+		String name = rt.getClassName();
+		
+		if (name.equals(CLASS_NEW_COUNTER_THREADLOCAL))
+			return true;
+		for (int i = 0; i < types.length; i++) 
+			if (name.equals(CLASS_NEW_STACK_TYPED[i]))
+				return true;
+				
+		// FIXME: what about thread locals in the old runtime?
+		// The problem is that these are given the type Object,
+		// so a simple test based on the type cannot suffice
+		// The current workaround is to disable thread-local sharing
+		// in the old runtime (in CflowCodeGenFactory.v())
+				
+		return false;
 	}
 	
 	/** A few code generation utility functions */
@@ -1899,6 +1970,10 @@ public class CflowCodeGenUtils {
 						g = CflowStackGlobalCodeGen.v();
 				}
 			} else {
+				// FIXME: this is a quick hack to fix the thread-local problem
+				// Cflow thread-local sharing is broken in the abc101 runtime (only)
+				// so disable it in this case
+				OptionsParser.v().set_cflow_share_thread_locals(false);
 				if (useCounter && formalsEmpty)
 					g = CflowOldCounterCodeGen.v();
 				else

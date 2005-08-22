@@ -67,6 +67,7 @@ import abc.weaving.matching.ExecutionAdviceApplication;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.residues.Residue;
+import abc.weaving.weaver.CflowCodeGenUtils;
 import abc.weaving.weaver.PointcutCodeGen;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.around.AroundWeaver.ObjectBox;
@@ -632,6 +633,19 @@ public class AdviceApplicationInfo {
 
 		List result = new LinkedList(usedInside);
 		result.retainAll(definedOutside);
+		
+		// Remove cflow thread-locals. We musn't pass them as this is incorrect if 
+		// the around creates a new thread. The thread-locals are regenerated inside
+		// as needed
+		// DS, based on a patch by Bruno Harbulot
+		
+		for (Iterator localIt = usedInside.iterator() ; localIt.hasNext() ;) {
+			Local l = (Local)localIt.next() ;
+			if (CflowCodeGenUtils.isThreadLocalType(l.getType())) {
+				// Remove the cflow thread-local
+				result.remove(l) ;
+			}
+		}
 
 		shadowInternalLocalCount = usedInsideCount - result.size();
 		return result;

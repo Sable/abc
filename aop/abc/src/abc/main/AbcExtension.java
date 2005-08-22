@@ -213,10 +213,8 @@ public class AbcExtension
 								SootMethodRef m = ie.getMethodRef();
 								if (m.name().equals("makeJP") && m.declaringClass().getName().equals("org.aspectbench.runtime.reflect.Factory"))
 									return true;
-								if (m.name().equals("getStack") || m.name().equals("getCounter"))
-									if (m.declaringClass().getName().equals("org.aspectbench.runtime.internal.CFlowStack")
-											|| m.declaringClass().getName().equals("org.aspectbench.runtime.internal.CFlowCounter"))
-										return true;
+								if (CflowCodeGenUtils.isFactoryMethod(m))
+									return true;
 								if (m.name().equals("aspectOf") && 
 										m.isStatic() && 
 										m.parameterTypes().size()==0 &&

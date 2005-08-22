@@ -54,12 +54,14 @@ import soot.jimple.ReturnVoidStmt;
 import soot.jimple.SpecialInvokeExpr;
 import soot.jimple.Stmt;
 import soot.jimple.VirtualInvokeExpr;
+import soot.jimple.NullConstant;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.weaver.CodeGenException;
+import abc.weaving.weaver.CflowCodeGenUtils;
 import abc.weaving.weaver.around.AroundWeaver.ObjectBox;
 import abc.weaving.weaver.around.soot.JInterfaceInvokeExpr;
 import abc.weaving.weaver.around.soot.JSpecialInvokeExpr;
@@ -624,6 +626,15 @@ public class Util {
 
 				// Build old <-> new mapping.
 				bindings.put(original, copy);
+				
+				// Cflow thread-local variables are not passed, so we have to
+				// initialise them to null
+				// DS (from patch by Bruno Harbulot)
+				if (CflowCodeGenUtils.isThreadLocalType(copy.getType())) {
+					Unit nullInitStmt = Jimple.v().newAssignStmt(copy, NullConstant.v());
+					unitChain.insertBefore(nullInitStmt, firstCopy);
+				}
+				
 			}
 		}
 
