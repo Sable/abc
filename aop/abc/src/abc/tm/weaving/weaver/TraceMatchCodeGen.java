@@ -2302,7 +2302,7 @@ public class TraceMatchCodeGen {
             if (to.isInitialNode())
                 continue;
 
-            helper.genNullChecks();
+            helper.genNullChecks(method);
 
             while (edges.hasNext()) {
                 SMEdge edge = (SMEdge) edges.next();
@@ -2315,7 +2315,7 @@ public class TraceMatchCodeGen {
                 }
             }
 
-            helper.genNullChecksJumpTarget();
+            helper.genNullChecksJumpTarget(method);
 
             if (to.hasEdgeTo(to, "")) // (skip-loop)
                 helper.genSkipLabelUpdate(to.getNumber(), symbol, method);
