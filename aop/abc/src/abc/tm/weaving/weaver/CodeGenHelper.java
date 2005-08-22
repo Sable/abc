@@ -32,6 +32,8 @@ public class CodeGenHelper
 
     protected int local_count; // used to ensure local names are unique
 
+    protected Stmt null_checks_jump_target = null;
+
     public CodeGenHelper(TraceMatch tm)
     {
         this.tm = tm;
@@ -629,6 +631,35 @@ public class CodeGenHelper
     }
 
     /**
+     * Generate code to jump over some updates if any of the bindings
+     * are null.
+     */
+    public void genNullChecks(SootMethod method)
+    {
+        Body body = method.getActiveBody();
+        Chain units = newChain();
+
+        null_checks_jump_target = newPlaceHolder();
+        insertNullChecks(method, units, null_checks_jump_target);
+        
+        insertBeforeReturn(units, body.getUnits());
+    }
+
+    /**
+     * Generate the target for the null-check jump
+     */
+    public void genNullChecksJumpTarget(SootMethod method)
+    {
+        Body body = method.getActiveBody();
+        Chain units = newChain();
+        
+        insertPlaceHolder(units, null_checks_jump_target);
+        null_checks_jump_target = null;
+
+        insertBeforeReturn(units, body.getUnits());
+    }
+
+    /**
      * Generate code to update a label with the constraint
      * for performing a "from --->[symbol] to" transition.
      */
@@ -641,9 +672,6 @@ public class CodeGenHelper
 
         Chain units = newChain();
 
-        Stmt do_not_update = newPlaceHolder();
-        insertNullChecks(method, units, do_not_update);
-        
         setUpdated(units, this_local, IntConstant.v(1));
 
         Value from_state = getInt(from);
@@ -658,7 +686,6 @@ public class CodeGenHelper
             callOrMethod(body, units, lab_to, bind_result);
         assignToLabel(units, this_local, to, TMP_LABEL, or_result);
 
-        insertPlaceHolder(units, do_not_update);
         insertBeforeReturn(units, body.getUnits());
     }
 
