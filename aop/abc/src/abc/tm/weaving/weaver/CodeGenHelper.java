@@ -365,11 +365,24 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newGotoStmt(placeholder));
     }
 
-    protected void insertIf(Chain units, Value bool, Stmt placeholder)
+    protected void insertIf(Chain units, Value bool, Stmt jump_to)
     {
         EqExpr test = Jimple.v().newEqExpr(bool, IntConstant.v(0));
 
-        units.addLast(Jimple.v().newIfStmt(test, placeholder));
+        units.addLast(Jimple.v().newIfStmt(test, jump_to));
+    }
+
+    protected void insertNullChecks(SootMethod m, Chain units, Stmt jump_to)
+    {
+        Body body = m.getActiveBody();
+        int params = m.getParameterCount();
+
+        for (int i = 0; i < params; i++) {
+            Local param = body.getParameterLocal(i);
+            EqExpr test = Jimple.v().newEqExpr(param, NullConstant.v());
+
+            units.addLast(Jimple.v().newIfStmt(test, jump_to));
+        }
     }
 
     /**
@@ -628,6 +641,9 @@ public class CodeGenHelper
 
         Chain units = newChain();
 
+        Stmt do_not_update = newPlaceHolder();
+        insertNullChecks(method, units, do_not_update);
+        
         setUpdated(units, this_local, IntConstant.v(1));
 
         Value from_state = getInt(from);
@@ -642,6 +658,7 @@ public class CodeGenHelper
             callOrMethod(body, units, lab_to, bind_result);
         assignToLabel(units, this_local, to, TMP_LABEL, or_result);
 
+        insertPlaceHolder(units, do_not_update);
         insertBeforeReturn(units, body.getUnits());
     }
 
