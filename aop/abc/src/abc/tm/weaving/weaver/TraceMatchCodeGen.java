@@ -284,7 +284,7 @@ public class TraceMatchCodeGen {
                     "addNegativeBindingsForSymbol" + symbol, tm.getVariableOrder(symbol));
         }
         
-        addConstraintGetDisjunctIteratorMethod(constraint, disjunct);
+        addConstraintGetDisjunctArrayMethod(constraint, disjunct);
         
         addConstraintInitialiser(constraint);
         
@@ -1044,12 +1044,12 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newReturnVoidStmt());
     }
     
-    protected void addConstraintGetDisjunctIteratorMethod(SootClass constraint, SootClass disjunct) {
-        RefType iteratorType = RefType.v("java.util.Iterator");
+    protected void addConstraintGetDisjunctArrayMethod(SootClass constraint, SootClass disjunct) {
+        Type arrayType =  ArrayType.v(disjunct.getType(), 1);
         RefType setType = RefType.v("java.util.Set");
         
-        SootMethod getIterator = new SootMethod("getDisjunctIterator", new LinkedList(), 
-                iteratorType, Modifier.PUBLIC);
+        SootMethod getIterator = new SootMethod("getDisjunctArray", new LinkedList(), 
+                arrayType, Modifier.PUBLIC);
         Body b = Jimple.v().newBody(getIterator);
         getIterator.setActiveBody(b);
         constraint.addMethod(getIterator);
@@ -1066,12 +1066,12 @@ public class TraceMatchCodeGen {
         units.addLast(Jimple.v().newAssignStmt(set, Jimple.v().newInstanceFieldRef(thisLocal, 
                 Scene.v().makeFieldRef(constraint, "disjuncts", setType, false))));
         
-        // return set.iterator();
-        Local iteratorLocal = lgen.generateLocal(RefType.v("java.util.Iterator"), "iterator");
-        units.addLast(Jimple.v().newAssignStmt(iteratorLocal, Jimple.v().newInterfaceInvokeExpr(set, 
-                Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "iterator",
-                        new LinkedList(), iteratorType, false))));
-        units.addLast(Jimple.v().newReturnStmt(iteratorLocal));
+        // return set.toArray();
+        Local arrayLocal = lgen.generateLocal(ArrayType.v(disjunct.getType(), 1), "array");
+        units.addLast(Jimple.v().newAssignStmt(arrayLocal, Jimple.v().newInterfaceInvokeExpr(set, 
+                Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "toArray",
+                        new LinkedList(), arrayType, false))));
+        units.addLast(Jimple.v().newReturnStmt(arrayLocal));
     }
     
     /**
@@ -2467,6 +2467,8 @@ public class TraceMatchCodeGen {
         // the disjunct class to each state, as negative bindings needn't be kept for all
         // states in general -- this may/will be done in time.
         createConstraintClasses(tm);
+        //ClassGenHelper cgh = new ClassGenHelper(tm);
+        //cgh.generateClasses();
         
         // Fill in the advice bodies. The method stubs have been created by the frontend and
         // can be obtained from the TraceMatch object; code to keep track of changing 
