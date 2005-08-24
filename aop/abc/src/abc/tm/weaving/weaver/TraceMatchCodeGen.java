@@ -1045,7 +1045,8 @@ public class TraceMatchCodeGen {
     }
     
     protected void addConstraintGetDisjunctArrayMethod(SootClass constraint, SootClass disjunct) {
-        Type arrayType =  ArrayType.v(disjunct.getType(), 1);
+        Type arrayType =
+            ArrayType.v(Scene.v().getRefType("java.lang.Object"), 1);
         RefType setType = RefType.v("java.util.Set");
         
         SootMethod getIterator = new SootMethod("getDisjunctArray", new LinkedList(), 
@@ -1067,7 +1068,8 @@ public class TraceMatchCodeGen {
                 Scene.v().makeFieldRef(constraint, "disjuncts", setType, false))));
         
         // return set.toArray();
-        Local arrayLocal = lgen.generateLocal(ArrayType.v(disjunct.getType(), 1), "array");
+        Local arrayLocal = lgen.generateLocal(
+            ArrayType.v(Scene.v().getRefType("java.lang.Object"), 1), "array");
         units.addLast(Jimple.v().newAssignStmt(arrayLocal, Jimple.v().newInterfaceInvokeExpr(set, 
                 Scene.v().makeMethodRef(Scene.v().getSootClass("java.util.Set"), "toArray",
                         new LinkedList(), arrayType, false))));

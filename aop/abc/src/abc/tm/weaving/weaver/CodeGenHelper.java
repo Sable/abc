@@ -27,8 +27,8 @@ public class CodeGenHelper
     protected TraceMatch tm;
     protected SootClass constraint;
     protected SootClass disjunct;
-    protected SootClass iterator;
     protected Type object;
+    protected Type object_array;
 
     protected int local_count; // used to ensure local names are unique
 
@@ -40,8 +40,8 @@ public class CodeGenHelper
         this.constraint = tm.getConstraintClass();
         this.disjunct = tm.getDisjunctClass();
 
-        this.iterator = Scene.v().getSootClass("java.util.Iterator");
         this.object = Scene.v().getRefType("java.lang.Object");
+        this.object_array = ArrayType.v(object, 1);
 
         this.local_count = 0;
     }
@@ -250,7 +250,7 @@ public class CodeGenHelper
 
     /**
      * Return an invoke expression for the constraint
-     * "getDisjunctIterator" method.
+     * "getDisjunctArray" method.
      */
     protected InvokeExpr disjunctsMethod(Local base)
     {
@@ -258,29 +258,10 @@ public class CodeGenHelper
         List args = arg_types;
 
         SootMethodRef ref =
-            Scene.v().makeMethodRef(constraint, "getDisjunctIterator",
-                                    arg_types, iterator.getType(), false);
+            Scene.v().makeMethodRef(constraint, "getDisjunctArray",
+                                    arg_types, object_array, false);
         
         return Jimple.v().newVirtualInvokeExpr(base, ref, args);
-    }
-
-    /**
-     * Return an invoke expression for the Iterator
-     * "hasNext()" or "next()" method (depending on
-     * whether query is true or false).
-     */
-    protected InvokeExpr iteratorMethod(Local base, boolean query)
-    {
-        String name   = query ? "hasNext"       : "next";
-        Type ret_type = query ? BooleanType.v() : object;
-
-        List arg_types = new ArrayList(0);
-        List args = arg_types;
-
-        SootMethodRef ref = Scene.v().makeMethodRef(iterator, name, arg_types,
-                                                    ret_type, false);
-
-        return Jimple.v().newInterfaceInvokeExpr(base, ref, args);
     }
 
     /**
@@ -301,6 +282,17 @@ public class CodeGenHelper
 
 
     ////////////// ACTUAL CODE GENERATION METHODS ////////////////////////
+
+    /**
+     * Create a Jimple local to use as a counter.
+     */
+    protected Local newCounter(Body body, Chain units)
+    {
+        Local counter = addLocal(body, "i", IntType.v());
+        units.addLast(Jimple.v().newAssignStmt(counter, getInt(0)));
+
+        return counter;
+    }
 
     /**
      * Creates a Jimple no-op statement, which can be used
@@ -367,11 +359,16 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newGotoStmt(placeholder));
     }
 
-    protected void insertIf(Chain units, Value bool, Stmt jump_to)
+    protected void insertIf(Chain units, Local bool, Stmt jump_to)
     {
         EqExpr test = Jimple.v().newEqExpr(bool, IntConstant.v(0));
 
         units.addLast(Jimple.v().newIfStmt(test, jump_to));
+    }
+
+    protected void insertIf(Chain units, Expr expr, Stmt jump_to)
+    {
+        units.addLast(Jimple.v().newIfStmt(expr, jump_to));
     }
 
     protected void insertNullChecks(SootMethod m, Chain units, Stmt jump_to)
@@ -480,7 +477,7 @@ public class CodeGenHelper
      * Create a Jimple local containing the result of casting
      * the argument to the disjunct type.
      */
-    protected Local castDisjunct(Body body, Chain units, Local arg)
+    protected Local castDisjunct(Body body, Chain units, Value arg)
     {
         CastExpr cast_val = Jimple.v().newCastExpr(arg, disjunct.getType());
 
@@ -529,26 +526,42 @@ public class CodeGenHelper
     protected Local callDisjunctsMethod(Body body, Chain units, Local base)
     {
         Value call = disjunctsMethod(base);
-        Local result = addLocal(body, "disjuncts", iterator.getType());
+        Local result = addLocal(body, "disjuncts", object_array);
         units.addLast(Jimple.v().newAssignStmt(result, call));
 
         return result;
     }
 
     /**
-     * Call the hasNext() or next() method on an Iterator,
-     * depending on whether query is true or false.
-     * Return the result as a Jimple local.
+     * return true if the offset is not passed the
+     * end of the array, otherwise false
      */
-    protected Local callIteratorMethod(Body body, Chain units, Local base,
-                                        boolean query)
+    protected Expr arrayHasNext(Body body, Chain units,
+                                Local base, Local offset)
     {
-        String result_name = query ? "has_next"      : "next";
-        Type ret_type      = query ? BooleanType.v() : object;
+        Local length = addLocal(body, "length", IntType.v());
 
-        Value call = iteratorMethod(base, query);
-        Local result = addLocal(body, result_name, ret_type);
-        units.addLast(Jimple.v().newAssignStmt(result, call));
+        Expr array_length = Jimple.v().newLengthExpr(base);
+
+        units.addLast(Jimple.v().newAssignStmt(length, array_length));
+
+        return Jimple.v().newGeExpr(offset, length);
+    }
+
+    /**
+     * return base[offset++] as a new Jimple local
+     * (that is, the increment is done afterwards)
+     */
+    protected Local arrayNext(Body body, Chain units,
+                              Local base, Local offset)
+    {
+        Local result = addLocal(body, "next", object);
+
+        Ref result_ref = Jimple.v().newArrayRef(base, offset);
+        Expr sum = Jimple.v().newAddExpr(offset, IntConstant.v(1));
+
+        units.addLast(Jimple.v().newAssignStmt(result, result_ref));
+        units.addLast(Jimple.v().newAssignStmt(offset, sum));
 
         return result;
     }
@@ -796,14 +809,17 @@ public class CodeGenHelper
         Stmt loop = newPlaceHolder();
         Stmt end  = getReturn(body.getUnits());
 
+        // initialise loop counter
+        Local offset = newCounter(body, units);
+
         // Marker for beginning of loop
         insertPlaceHolder(units, loop);
 
         // loop test
-        Local has_next = callIteratorMethod(body, units, disjuncts, true);
+        Expr has_next = arrayHasNext(body, units, disjuncts, offset);
         insertIf(units, has_next, end);
 
-        Local next = callIteratorMethod(body, units, disjuncts, false);
+        Value next = arrayNext(body, units, disjuncts, offset);
         Local disjunct = castDisjunct(body, units, next);
 
         // returns null if the body method is not an around method
