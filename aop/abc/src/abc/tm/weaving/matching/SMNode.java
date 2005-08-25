@@ -149,9 +149,26 @@ public class SMNode implements State {
     }
     
     /**
+     * Determines whether this node has an incoming edge with a given label.
+     * @param label the label to consider
+     * @return
+     */
+    public boolean hasInEdgeWithLabel(String label) {
+    	SMEdge edge;
+    	Iterator it = incoming.iterator();
+    	while(it.hasNext()) {
+    		edge = (SMEdge) it.next();
+    		if(edge.getLabel() == label || (label != null && label.equals(edge.getLabel()))) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
      * Determines whether there exists an edge to a node with a given label
      * @param to The target node
-     * @param out true if outgoing edges are to be considered
+     * @param label the label to check for
      * @return
      */
     public boolean hasEdgeTo(SMNode to, String label) {
@@ -159,7 +176,10 @@ public class SMNode implements State {
         Iterator it = outgoing.iterator();
         while(it.hasNext()) {
             edge = (SMEdge)it.next();
-            if(edge.getTarget() == to && edge.getLabel() == label) return true;
+            if(edge.getTarget() == to && 
+            		(edge.getLabel() == label || (label != null && label.equals(edge.getLabel())))) {
+            	return true;
+            }
         }
         return false;
     }

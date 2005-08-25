@@ -97,6 +97,7 @@ public class AbcExtension extends abc.main.AbcExtension
                                     SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.lang.ref.WeakReference", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
+           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
 	   }
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
