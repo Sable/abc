@@ -1528,7 +1528,7 @@ public class CodeGenHelper
         Local result = callRealBodyMethod(body, units, disjuncts, offset);
         incCounter(units, offset);
 
-        if (result == null) {
+        if (! tm.isAround()) {
             insertGoto(units, loop);
         }
 
