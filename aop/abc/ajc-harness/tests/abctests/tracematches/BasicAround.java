@@ -19,7 +19,7 @@ public class BasicAround
     }
 }
 
-aspect AroundTM
+aspect BasicAroundTM
 {
     Integer tracematch(Integer i)
     {

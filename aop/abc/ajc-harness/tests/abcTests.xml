@@ -9476,4 +9476,9 @@
         <compile files="BasicAround.java" options="-ext,abc.tm"/>
         <run class="BasicAround"/>
     </ajc-test>
+    <ajc-test num="1030" dir="abctests/tracematches"
+        title="Tracematches: Around match with multiple bindings.">
+        <compile files="MultipleBindingsForAround.java" options="-ext,abc.tm"/>
+        <run class="MultipleBindingsForAround"/>
+    </ajc-test>
 </suite>
