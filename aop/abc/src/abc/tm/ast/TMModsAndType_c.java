@@ -40,14 +40,19 @@ public class TMModsAndType_c implements TMModsAndType
     private boolean isPerThread;
     private boolean isAround;
     private TypeNode type;
+    private AdviceSpec before_or_around;
+    private AdviceSpec after;
 
     TMModsAndType_c(Flags flags, boolean isPerThread,
-                                boolean isAround, TypeNode type)
+                    AdviceSpec before_or_around, AdviceSpec after,
+                    boolean isAround, TypeNode type)
     {
         this.flags = flags;
         this.isPerThread = isPerThread;
         this.isAround = isAround;
         this.type = type;
+        this.before_or_around = before_or_around;
+        this.after = after;
     }
 
     public Flags getFlags()
@@ -68,5 +73,15 @@ public class TMModsAndType_c implements TMModsAndType
     public TypeNode getReturnType()
     {
         return type;
+    }
+
+    public AdviceSpec beforeOrAroundSpec()
+    {
+        return before_or_around;
+    }
+
+    public AdviceSpec afterSpec()
+    {
+        return after;
     }
 }

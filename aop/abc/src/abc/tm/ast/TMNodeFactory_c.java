@@ -45,9 +45,11 @@ public class TMNodeFactory_c extends AJNodeFactory_c
 
     public TMModsAndType
         TMModsAndType(Flags flags, boolean isPerThread,
-                                boolean isAround, TypeNode type)
+                      AdviceSpec before_or_around, AdviceSpec after,
+                      boolean isAround, TypeNode type)
     {
-        return new TMModsAndType_c(flags, isPerThread, isAround, type);
+        return new TMModsAndType_c(flags, isPerThread, before_or_around,
+                                    after, isAround, type);
     }
 
     public SymbolDecl SymbolDecl(Position pos, String name,
@@ -86,13 +88,23 @@ public class TMNodeFactory_c extends AJNodeFactory_c
         return new AroundSymbol_c(pos, proceed_vars);
     }
 
-    public TMAdviceDecl TMAdviceDecl(Position pos, Flags flags,
+    public TMAdviceDecl PerSymbolAdviceDecl(Position pos, Flags flags,
                             AdviceSpec spec, List throwTypes, Pointcut pc,
+                            Block body, String tm_id, Position tm_pos)
+    {
+        return new PerSymbolAdviceDecl_c(pos, flags, spec, throwTypes,
+                                            pc, body, tm_id, tm_pos);
+    }
+
+    public TMAdviceDecl PerEventAdviceDecl(Position pos, Flags flags,
+                            AdviceSpec before_spec, Pointcut before_pc,
+                            AdviceSpec after_spec, Pointcut after_pc,
                             Block body, String tm_id, Position tm_pos,
                             int kind)
     {
-        return new TMAdviceDecl_c(pos, flags, spec, throwTypes,
-                                    pc, body, tm_id, tm_pos, kind);
+        return new PerEventAdviceDecl_c(pos, flags, before_spec, before_pc,
+                                        after_spec, after_pc, body, tm_id,
+                                        tm_pos, kind);
     }
 
     public Regex RegexAlternation(Position pos, Regex a, Regex b)

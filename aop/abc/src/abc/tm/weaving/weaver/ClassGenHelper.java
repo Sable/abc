@@ -822,7 +822,7 @@ public class ClassGenHelper {
 		List singleSet = new LinkedList();
 		singleSet.add(setType);
 		
-		Iterator symbolIt = curTraceMatch.getSym_to_vars().keySet().iterator();
+		Iterator symbolIt = curTraceMatch.getSymbols().iterator();
 		String symbol;
 		while(symbolIt.hasNext()) {
 			symbol = (String) symbolIt.next();
@@ -935,7 +935,7 @@ public class ClassGenHelper {
 		List singleCollection = new LinkedList();
 		singleCollection.add(RefType.v("java.util.Collection"));
 		
-		Iterator symbolIt = curTraceMatch.getSym_to_vars().keySet().iterator();
+		Iterator symbolIt = curTraceMatch.getSymbols().iterator();
 		String symbol;
 		while(symbolIt.hasNext()) {
 			symbol = (String) symbolIt.next();
@@ -1273,7 +1273,7 @@ public class ClassGenHelper {
         List singleDisjunct = new LinkedList();
         singleDisjunct.add(disjunct.getType());
         
-        Iterator symbolIt = curTraceMatch.getSym_to_vars().keySet().iterator();
+        Iterator symbolIt = curTraceMatch.getSymbols().iterator();
         String symbol;
         while(symbolIt.hasNext()) {
             symbol = (String) symbolIt.next();
@@ -1467,7 +1467,7 @@ public class ClassGenHelper {
         List singleDisjunct = new LinkedList();
         singleDisjunct.add(disjunct.getType());
         
-        Iterator symbolIt = curTraceMatch.getSym_to_vars().keySet().iterator();
+        Iterator symbolIt = curTraceMatch.getSymbols().iterator();
         String symbol;
         while(symbolIt.hasNext()) {
             symbol = (String) symbolIt.next();

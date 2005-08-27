@@ -42,6 +42,5 @@ public interface SymbolKind extends Node
     AdviceSpec generateAdviceSpec(TMNodeFactory nf, List formals,
                                     TypeNode voidn);
 
-    AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                        TypeNode ret_type);
+    public List aroundVars();
 }

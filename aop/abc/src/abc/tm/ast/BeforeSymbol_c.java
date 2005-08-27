@@ -56,9 +56,8 @@ public class BeforeSymbol_c extends Node_c
         return nf.Before(position(), formals, voidn);
     }
 
-    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                                TypeNode ret_type)
+    public List aroundVars()
     {
-        return nf.Before(position(), new LinkedList(), voidn);
+        return null;
     }
 }

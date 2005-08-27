@@ -26,12 +26,15 @@ import polyglot.util.*;
 import abc.aspectj.ast.*;
 import abc.aspectj.visit.*;
 
+import abc.tm.visit.*;
+
 import java.util.*;
 
 /**
  * @author Julian Tibble
  */
-public interface TMDecl extends MethodDecl, ContainsAspectInfo
+public interface TMDecl extends AdviceDecl
 {
-    List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn);
+    List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn,
+                                      MoveTraceMatchMembers visitor);
 }

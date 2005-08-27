@@ -19,7 +19,10 @@
 
 package abc.tm.weaving.aspectinfo;
 
+import polyglot.types.SemanticException;
+
 import abc.weaving.aspectinfo.*;
+import abc.tm.weaving.weaver.*;
 
 import java.util.*;
 
@@ -35,6 +38,22 @@ public class TMGlobalAspectInfo extends GlobalAspectInfo
     public void addTraceMatch(TraceMatch tm)
     {
         tracematches.add(tm);
+    }
+
+    public void computeAdviceLists() throws SemanticException
+    {
+        // transform the tracematch body advice methods
+        Iterator i = tracematches.iterator();
+
+        while (i.hasNext()) {
+            TraceMatch tm = (TraceMatch) i.next();
+            CodeGenHelper helper = tm.getCodeGenHelper();
+
+            tm.findUnusedFormals();
+            helper.transformBodyMethod();
+        }
+
+        super.computeAdviceLists();
     }
 
     public List getTraceMatches()

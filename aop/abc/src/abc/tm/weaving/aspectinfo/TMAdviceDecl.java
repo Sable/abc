@@ -21,7 +21,6 @@ package abc.tm.weaving.aspectinfo;
 
 import polyglot.util.Position;
 
-import abc.tm.ast.TMAdviceDecl_c;
 import abc.weaving.aspectinfo.*;
 
 import java.util.*;
@@ -37,10 +36,6 @@ public class TMAdviceDecl extends AdviceDecl
     private String tm_id;
     private Position tm_pos;
     private int kind;
-    public final static int SOME = abc.tm.ast.TMAdviceDecl_c.SOME;
-    public final static int SYNCH = abc.tm.ast.TMAdviceDecl_c.SYNCH;
-    public final static int OTHER = abc.tm.ast.TMAdviceDecl_c.OTHER;
-    
 
     public TMAdviceDecl(AdviceSpec spec, Pointcut pc, MethodSig impl,
                         Aspect aspct, int jp, int jpsp, int ejp,
@@ -63,16 +58,31 @@ public class TMAdviceDecl extends AdviceDecl
         return tm_pos;
     }
 
+    public int getPrecWithinTM()
+    {
+        return kind;
+    }
+
     public boolean isSome()
     {
-        return (kind == SOME);
+        return (kind == abc.tm.ast.TMAdviceDecl.SOME);
     }
 
     public boolean isSynch()
     {
-    	return (kind == SYNCH);
+    	return (kind == abc.tm.ast.TMAdviceDecl.SYNCH);
     }
-    
+ 
+    public boolean isBody()
+    {
+        return (kind == abc.tm.ast.TMAdviceDecl.BODY);
+    }
+
+    public boolean isOther()
+    {
+        return (kind == abc.tm.ast.TMAdviceDecl.OTHER);
+    }
+
     /**
      * override warning message (when advice does not apply
      * to any static join points) to say "symbol" instead of
@@ -80,7 +90,7 @@ public class TMAdviceDecl extends AdviceDecl
      */
     public String getApplWarning()
     {
-        if (!isSome() && super.getApplWarning() != null)
+        if (isOther() && super.getApplWarning() != null)
             return "Symbol doesn't match anywhere";
         else
             return null;

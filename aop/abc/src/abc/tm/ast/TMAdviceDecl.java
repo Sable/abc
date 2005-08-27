@@ -31,10 +31,14 @@ import java.util.*;
 /**
  * @author Julian Tibble
  *
- * This interface is for compiler-generated advice for implementing
- * TraceMatches. This advice requires different type-checking and
- * precedence rules to normal advice.
+ * This interface is for compiler-generated advice used in the
+ * implementation of tracematches. This advice requires different
+ * type-checking and precedence rules to normal advice.
  */
 public interface TMAdviceDecl extends AdviceDecl
 {
+    static final int SYNCH = 1;
+    static final int OTHER = 2;
+    static final int SOME = 3;
+    static final int BODY = 4;
 }

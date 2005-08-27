@@ -56,9 +56,8 @@ public class AfterSymbol_c extends Node_c
         return nf.After(position(), formals, voidn);
     }
 
-    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                                TypeNode ret_type)
+    public List aroundVars()
     {
-        return nf.After(position(), new LinkedList(), voidn);
+        return null;
     }
 }

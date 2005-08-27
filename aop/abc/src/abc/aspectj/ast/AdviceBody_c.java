@@ -118,7 +118,6 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
     protected Set/*<CodeInstance>*/ methodsInAdvice;
  
     protected boolean isAroundAdvice;
-    protected MethodDecl proceed;
 
  
     public AdviceBody_c(Position pos, Flags flags, TypeNode return_type,
@@ -140,7 +139,7 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
         return ar;
     }
          
-    private Expr dummyVal(AJNodeFactory nf, Type t) {
+    protected Expr dummyVal(AJNodeFactory nf, Type t) {
         if (t instanceof ReferenceType) 
             return nf.NullLit(position());
         if (t instanceof PrimitiveType) {
@@ -196,7 +195,6 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
                                   new ArrayList());
             ((ParsedClassType) methodInstance().container()).addMethod(mi);
             md = md.methodInstance(mi);
-            proceed = md;
             return md;
         } else
             return null;
@@ -334,16 +332,6 @@ public abstract class AdviceBody_c extends AJMethodDecl_c
             LocalInstance ejpsp = thisEnclosingJoinPointStaticPartInstance(ts);
             ajc.addVariable(ejpsp);
             
-            if (isAroundAdvice) {
-                LinkedList l = new LinkedList();
-                l.add(ts.Throwable());
-                MethodInstance proceedInstance =
-                        methodInstance().name("proceed")
-                                        .flags(flags().Public().Static())
-                                        .throwTypes(l);
-                ajc.addProceed(proceedInstance);
-            }
-
             return ajc;
         }
 

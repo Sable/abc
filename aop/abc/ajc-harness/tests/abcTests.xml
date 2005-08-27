@@ -9424,12 +9424,12 @@
     <ajc-test num="1019" dir="abctests/tracematches"
         title="Tracematches: Basic tracematch">
         <compile files="Basic.java" options="-ext,abc.tm"/>
-	<run class="Basic"/>
+        <run class="Basic"/>
     </ajc-test>
     <ajc-test num="1020" dir="abctests/tracematches"
         title="Tracematches: Plus and Star">
         <compile files="PlusStar.java" options="-ext,abc.tm"/>
-	<run class="PlusStar"/>
+        <run class="PlusStar"/>
     </ajc-test>
     <ajc-test num="1021" dir="abctests/tracematches"
         title="Tracematches: Alternation">
@@ -9469,6 +9469,11 @@
     <ajc-test num="1028" dir="abctests/tracematches"
         title="Tracematches: states where x may be bound or unbound">
         <compile files="MoreBindings.java" options="-ext,abc.tm"/>
-	<run class="MoreBindings"/>
+        <run class="MoreBindings"/>
+    </ajc-test>
+    <ajc-test num="1029" dir="abctests/tracematches"
+        title="Tracematches: Basic around tracematch">
+        <compile files="BasicAround.java" options="-ext,abc.tm"/>
+        <run class="BasicAround"/>
     </ajc-test>
 </suite>

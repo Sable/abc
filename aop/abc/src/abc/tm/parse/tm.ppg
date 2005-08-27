@@ -102,40 +102,66 @@ tracematch_modifiers_and_type ::=
         TypeNode voidn =
             parser.nf.CanonicalTypeNode(Position.COMPILER_GENERATED,
                                             parser.ts.Void());
-        RESULT = parser.nf.TMModsAndType(m, false, false, voidn);
+        AdviceSpec before = parser.nf.Before(Position.COMPILER_GENERATED,
+                                             new LinkedList(), voidn);
+        AdviceSpec after = parser.nf.After(Position.COMPILER_GENERATED,
+                                           new LinkedList(), voidn);
+
+        RESULT = parser.nf.TMModsAndType(m, false, before, after,
+                                         false, voidn);
     :}
 |
     modifiers_opt:m type:t
     {:
-        RESULT = parser.nf.TMModsAndType(m, false, true, t);
+        AdviceSpec around = parser.nf.Around(Position.COMPILER_GENERATED,
+                                             t, new LinkedList());
+
+        RESULT = parser.nf.TMModsAndType(m, false, around, null, true, t);
     :}
 |
     modifiers_opt:m VOID:t
     {:
         TypeNode voidn =
             parser.nf.CanonicalTypeNode(parser.pos(t), parser.ts.Void());
+        AdviceSpec around = parser.nf.Around(Position.COMPILER_GENERATED,
+                                             voidn, new LinkedList());
 
-        RESULT = parser.nf.TMModsAndType(m, false, true, voidn);
+        RESULT = parser.nf.TMModsAndType(m, false, around, null, true, voidn);
     :}
 |
     modifiers_opt:m1 PERTHREAD:x modifiers_opt:m2
     {:
         TypeNode voidn =
             parser.nf.CanonicalTypeNode(parser.pos(x), parser.ts.Void());
-        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, false, voidn);
+        AdviceSpec before = parser.nf.Before(Position.COMPILER_GENERATED,
+                                             new LinkedList(),
+                                             voidn);
+        AdviceSpec after = parser.nf.After(Position.COMPILER_GENERATED,
+                                           new LinkedList(),
+                                           voidn);
+        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, before,
+                                         after, false, voidn);
     :}
 |
     modifiers_opt:m1 PERTHREAD modifiers_opt:m2 type:t
     {:
-        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, true, t);
+        AdviceSpec around = parser.nf.Around(Position.COMPILER_GENERATED,
+                                             t, new LinkedList());
+
+        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, around,
+                                         null, true, t);
     :}
 |
     modifiers_opt:m1 PERTHREAD modifiers_opt:m2 VOID:t
     {:
         TypeNode voidn =
             parser.nf.CanonicalTypeNode(parser.pos(t), parser.ts.Void());
+        AdviceSpec around = parser.nf.Around(Position.COMPILER_GENERATED,
+                                             voidn, new LinkedList());
 
-        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, true, voidn);
+
+        RESULT = parser.nf.TMModsAndType(m1.set(m2), true, around,
+                                         null, true, voidn);
     :}
 ;
 
@@ -295,10 +321,10 @@ name_list ::=
         RESULT.add(id);
     :}
 |
-    name_list:a IDENTIFIER:b
+    name_list:a COMMA IDENTIFIER:b
     {:
         Local id = parser.nf.Local(parser.pos(b), b.getIdentifier());
-        a.add(b);
+        a.add(id);
         RESULT = a;
     :}
 ;

@@ -77,6 +77,45 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         return binds;
     }
 
+    public Node typeCheck(TypeChecker tc) throws SemanticException
+    {
+        Node n = super.typeCheck(tc);
+
+        if (kind.kind() == kind.AROUND)
+        {
+            Iterator vars = kind.aroundVars().iterator();
+            Collection pc_binds = getPointcut().mustBind();
+            Collection around_vars = new HashSet();
+
+            while (vars.hasNext()) {
+                String name = ((Local) vars.next()).name();
+
+                around_vars.add(name);
+
+                if (!pc_binds.contains(name))
+                    throw new SemanticException("Advice formal \"" +
+                                name + "\" appears in the list of " +
+                                "proceed arguments for an around symbol " +
+                                "but is not bound by it.", position());
+            }
+
+            vars = pc_binds.iterator();
+
+            while (vars.hasNext()) {
+                String name = (String) vars.next();
+
+                if (!around_vars.contains(name))
+                    throw new SemanticException("Advice formal \"" + name +
+                                "\" is bound by an around symbol but is " +
+                                "not in the list of proceed arguments.",
+                                position());
+            }
+
+        }
+
+        return n;
+    }
+
     // 
     // visitor handling code
     //
@@ -115,34 +154,16 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         List tlist = new LinkedList();
 
         // Generate the TMAdviceDecl
-        return nf.TMAdviceDecl(position(), Flags.NONE, spec,
+        return nf.PerSymbolAdviceDecl(position(), Flags.NONE, spec,
                                 tlist, pc, body(nf, name, voidn),
-                                tm_id, tm_pos, TMAdviceDecl_c.OTHER);
-    }
-
-    public AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
-                                        TypeNode voidn, TypeNode ret_type,
-                                        String tm_id, Position tm_pos)
-    {
-        // Generate AdviceSpec
-        AdviceSpec spec = kind.generateSomeAdviceSpec(nf, voidn, ret_type);
-
-        // Generate an empty `throws' list
-        List tlist = new LinkedList();
-
-        // Generate the TMAdviceDecl
-        return nf.TMAdviceDecl(Position.COMPILER_GENERATED, Flags.NONE,
-                                spec, tlist, pc, body(nf, "some()", ret_type),
-                                tm_id, tm_pos, TMAdviceDecl_c.SOME);
+                                tm_id, tm_pos);
     }
 
     /**
-     * Create an empty advice body.
-     *
-     * FIXME: Just for debugging, the advice prints a message
-     *        instead of being empty.
+     * Create an empty advice body (contains debug print statement
+     * if debug_tm_advice is set).
      */
-    private Block body(TMNodeFactory nf, String debug_msg, TypeNode ret_type)
+    public Block body(TMNodeFactory nf, String debug_msg, TypeNode ret_type)
     {
         Position cg = Position.COMPILER_GENERATED;
 
@@ -176,5 +197,10 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
     public Pointcut generateClosedPointcut(TMNodeFactory nf, List formals)
     {
         return nf.ClosedPointcut(pc.position(), formals, pc);
+    }
+
+    public List aroundVars()
+    {
+        return kind.aroundVars();
     }
 }

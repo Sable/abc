@@ -98,12 +98,6 @@ public class AfterReturningSymbol_c extends Node_c
         return return_type;
     }
 
-    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                                TypeNode ret_type)
-    {
-        return nf.After(position(), new LinkedList(), voidn);
-    }
-
     // node visiting code
     protected Node reconstruct(Local return_var)
     {
@@ -119,5 +113,10 @@ public class AfterReturningSymbol_c extends Node_c
     {
         Local return_var = (Local) visitChild(this.return_var, v);
         return reconstruct(return_var);
+    }
+
+    public List aroundVars()
+    {
+        return null;
     }
 }

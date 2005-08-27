@@ -26,12 +26,15 @@ import polyglot.visit.*;
 
 import abc.aspectj.ast.*;
 import abc.aspectj.extension.*;
+import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
 
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.aspectinfo.MethodCategory;
 
+import abc.tm.visit.*;
 import abc.tm.weaving.aspectinfo.*;
 
 import java.util.*;
@@ -39,8 +42,7 @@ import java.util.*;
 /**
  * @author Julian Tibble
  */
-public class TMDecl_c extends AJMethodDecl_c
-                              implements TMDecl, ContainsAspectInfo
+public class TMDecl_c extends AdviceBody_c implements TMDecl
 {
     protected boolean isPerThread;
     protected boolean isAround;
@@ -54,8 +56,16 @@ public class TMDecl_c extends AJMethodDecl_c
     // the name of the per-symbol advice method for each symbol
     protected Map sym_to_advice_name;
 
-    // the name of the some() advice method for each kind of some() advice
-    protected Map kind_to_advice_name;
+    // the names of the sync() and some() advice methods
+    protected String synch_advice;
+    protected String some_advice;
+
+    // advice specs and pointcuts for the tracematch body
+    // (need two, may have before/after or around)
+    protected AdviceSpec before_around_spec;
+    protected Pointcut before_around_pc;
+    protected AdviceSpec after_spec;
+    protected Pointcut after_pc;
 
     public TMDecl_c(Position pos,
                     Position body_pos,
@@ -67,29 +77,39 @@ public class TMDecl_c extends AJMethodDecl_c
                     Regex regex,
                     Block body)
     {
-        super(body_pos, mods_and_type.getFlags(),
+        super(pos, mods_and_type.getFlags(),
                 mods_and_type.getReturnType(),
                 tracematch_name + "$body",
-                formals, throwTypes, body);
+                formals, throwTypes, body,
+                mods_and_type.isAround());
 
         isPerThread = mods_and_type.isPerThread();
         isAround = mods_and_type.isAround();
+        before_around_spec = mods_and_type.beforeOrAroundSpec();
+        after_spec = mods_and_type.afterSpec();
+
         this.tracematch_name = tracematch_name;
         this.symbols = symbols;
         this.regex = regex;
+
         sym_to_vars = new HashMap();
         sym_to_advice_name = new HashMap();
-        kind_to_advice_name = new HashMap();
     }
 
     //
     // visitor handling code
     //
-    protected Node reconstruct(Node n, List symbols)
+    protected Node reconstruct(Node n, List symbols,
+                                Pointcut before_around_pc, Pointcut after_pc)
     {
-        if (symbols != this.symbols) {
+        if (   symbols != this.symbols
+            || before_around_pc != this.before_around_pc
+            || after_pc != this.after_pc)
+        {
             TMDecl_c new_n = (TMDecl_c) n.copy();
             new_n.symbols = symbols;
+            new_n.before_around_pc = before_around_pc;
+            new_n.after_pc = after_pc;
 
             return new_n;
         }
@@ -98,18 +118,176 @@ public class TMDecl_c extends AJMethodDecl_c
 
     public Node visitChildren(NodeVisitor v)
     {
-        Node n = super.visitChildren(v);
+        TypeNode returnType = (TypeNode) visitChild(this.returnType, v);
+        List formals = visitList(this.formals, v);
+        List throwTypes = visitList(this.throwTypes, v);
+    
+        Pointcut before_around_pc = null;
+        if (this.before_around_pc != null)
+            before_around_pc = (Pointcut) visitChild(this.before_around_pc, v);
+
+        Pointcut after_pc = null;
+        if (this.after_pc != null)
+            after_pc = (Pointcut) visitChild(this.after_pc, v);
+
         List symbols = visitList(this.symbols, v);
-        return reconstruct(n, symbols);
+        Block body = (Block) visitChild(this.body, v);
+
+        Node n = super.reconstruct(returnType, formals, throwTypes, body);
+        return reconstruct(n, symbols, before_around_pc, after_pc);
     }
  
+    public Context enterScope(Node child, Context c)
+    {
+        AJContext ajc = (AJContext) super.enterScope(child, c);
+        AJTypeSystem ts = (AJTypeSystem) ajc.typeSystem();
+
+        List formal_types = aroundTypes(c);
+
+        if (child == body && isAroundAdvice && formal_types != null) {
+            List throw_types = new LinkedList();
+            throw_types.add(ts.Throwable());
+
+            MethodInstance proceedInstance =
+                methodInstance().name("proceed")
+                                .flags(flags().Public().Static())
+                                .formalTypes(formal_types)
+                                .throwTypes(throw_types);
+
+            ajc.addProceed(proceedInstance);
+        }
+
+        return ajc;
+    }
+
+    public MethodDecl proceedDecl(AJNodeFactory nf, AJTypeSystem ts)
+    {
+        if (isAround) {
+            TypeNode tn = (TypeNode) returnType().copy();
+
+            List formals = new LinkedList();
+            List types = new LinkedList();
+            Iterator locals = aroundVars().iterator();
+
+            while (locals.hasNext()) {
+                Local local = (Local) locals.next();
+                Formal f = formalFor(local.name());
+
+                formals.add(f); types.add(f.type().type());
+            }
+
+            Return ret;
+
+            if (tn.type() == ts.Void())
+                ret = nf.Return(position());
+            else {
+                Expr dummy = dummyVal(nf, tn.type());
+                ret = nf.Return(position(), dummy);
+            }
+
+            Block bl = nf.Block(position()).append(ret);
+            List thrws = new LinkedList();
+            String name = UniqueID.newID("proceed");
+            MethodDecl md = nf.MethodDecl(position(),
+                                Flags.PUBLIC.set(Flags.FINAL).Static(),
+                                tn, name, formals, thrws, bl);
+
+            MethodInstance mi =
+                ts.methodInstance(position(),
+                                  methodInstance().container(),
+                                  Flags.PUBLIC.set(Flags.FINAL).Static(),
+                                  tn.type(), name,
+                                  new ArrayList(types),
+                                  new ArrayList());
+
+            ((ParsedClassType) methodInstance().container()).addMethod(mi);
+            md = md.methodInstance(mi);
+            ((Around) before_around_spec).setProceed(md);
+            return md;
+        }
+
+        return null;
+    }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException
     {
         checkAroundSymbols();
+        if (isAround)
+            checkAroundVars(tc.context());
         checkBinding();
 
         return super.typeCheck(tc);
+    }
+
+    protected List aroundVars()
+    {
+        Iterator syms = symbols.iterator();
+        SymbolDecl sd = (SymbolDecl) syms.next();
+
+        while (sd.kind() != SymbolKind.AROUND && syms.hasNext())
+            sd = (SymbolDecl) syms.next();
+
+        if (sd.kind() != SymbolKind.AROUND)
+            return null;
+
+        return sd.aroundVars();
+    }
+
+    protected void checkAroundVars(Context c) throws SemanticException
+    {
+        List around_vars = aroundVars();
+
+        if (around_vars == null)
+            throw new SemanticException(
+                    "Around tracematches must contain an around symbol.",
+                    position());
+                                 
+
+        Iterator vars = around_vars.iterator();
+        Collection names = new HashSet();
+
+        while (vars.hasNext()) {
+            Local var = (Local) vars.next();
+
+            try {
+                c.findLocal(var.name()).type();
+            } catch (SemanticException e) {
+                throw new SemanticException(
+                                "Could not find advice formal \"" +
+                                var.name() + "\".", var.position());
+            }
+
+            if (names.contains(var.name()))
+                throw new SemanticException(
+                                "Duplicate advice formal in list of " +
+                                "proceed arguments.", var.position());
+
+            names.add(var.name());
+        }
+    }
+
+    protected List aroundTypes(Context c)
+    {
+        List around_vars = aroundVars();
+
+        if (around_vars == null)
+            return null;
+
+        List types = new ArrayList();
+        Iterator vars = around_vars.iterator();
+
+        while (vars.hasNext()) {
+            Local var = (Local) vars.next();
+
+            try {
+                types.add(c.findLocal(var.name()).type());
+            }
+            catch (SemanticException e) {
+                // check for this error above
+            }
+        }
+
+        return types;
     }
 
     protected void checkAroundSymbols() throws SemanticException
@@ -117,9 +295,19 @@ public class TMDecl_c extends AJMethodDecl_c
         Iterator i = symbols.iterator();
         Collection non_final_syms = regex.nonFinalSymbols();
         Collection final_syms = regex.finalSymbols();
+        boolean seen_around = false;
 
         while (i.hasNext()) {
             SymbolDecl sd = (SymbolDecl) i.next();
+
+            if (sd.kind() == SymbolKind.AROUND) {
+                if (seen_around)
+                    throw new SemanticException(
+                        "Only one around symbol is allowed in a tracematch.",
+                        sd.position());
+ 
+                seen_around = true;
+            }
 
             if (!isAround && sd.kind() == SymbolKind.AROUND)
                 throw new SemanticException(
@@ -193,125 +381,283 @@ public class TMDecl_c extends AJMethodDecl_c
     			if (varbinds.contains(name))
     				vs.add(name);
     		}
-    		// System.out.println("symbol "+sd.name() + " has formals "+ vs);
     		m.put(sd.name(),vs);
     	}
     	return m;
     }
 
-    public List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn)
+    public List generateImplementationAdvice(TMNodeFactory nf, TypeNode voidn,
+                                             MoveTraceMatchMembers visitor)
     {
         List advice = new LinkedList();
-        List closed_pointcuts = new LinkedList();
+        Collection final_syms = regex.finalSymbols();
+        Pointcut before = null;
+        Pointcut after = null;
+
         Iterator j = symbols.iterator();
-	   	    	
+
         while(j.hasNext()) {
             SymbolDecl sd = (SymbolDecl) j.next();
 
-            AdviceDecl ad = sd.generateSymbolAdvice(nf, formals, voidn,
-                                            tracematch_name, position());
-            advice.add(ad);
-            sym_to_advice_name.put(sd.name(), ad.name());
-            closed_pointcuts.add(sd.generateClosedPointcut(nf, formals));
+            makeSymbolAdvice(nf, advice, sd, voidn);
+            Pointcut pc = sd.generateClosedPointcut(nf, formals);
+
+            if (sd.kind() == SymbolKind.AFTER) {
+                after = orPC(nf, after, pc);
+
+                if (final_syms.contains(sd.name()))
+                    after_pc = orPC(nf, after_pc, pc);
+            } else {
+                before = orPC(nf, before, pc);
+
+                if (final_syms.contains(sd.name())) {
+                    if (isAround)
+                        before_around_pc = sd.getPointcut();
+                    else
+                        before_around_pc = orPC(nf, before_around_pc, pc);
+                }
+            }
         }
 
-        makeSomeAdvice(nf, advice, closed_pointcuts, voidn);
-        makeSynchAdvice(nf,advice,closed_pointcuts,voidn);
+        makeEventAdvice(nf, advice, before, after, voidn,
+                        "synch()", TMAdviceDecl.SYNCH);
+        makeEventAdvice(nf, advice, before, after, voidn,
+                        "some()", TMAdviceDecl.SOME);
 
         return advice;
     }
 
-    protected void makeSomeAdvice(TMNodeFactory nf, List advice,
-                                    List pointcuts, TypeNode voidn)
+    protected void makeSymbolAdvice(TMNodeFactory nf, List advice,
+                                    SymbolDecl sd, TypeNode voidn)
     {
-        Map kind_to_pointcut = new HashMap();
-        Map kind_to_a_symbol = new HashMap();
+        AdviceDecl ad = sd.generateSymbolAdvice(nf, formals, voidn,
+                                            tracematch_name, position());
+        advice.add(ad);
+        sym_to_advice_name.put(sd.name(), ad.name());
+    }
 
-        Iterator syms = symbols.iterator();
-        Iterator pcs = pointcuts.iterator();
+    protected Pointcut orPC(TMNodeFactory nf, Pointcut orig, Pointcut other)
+    {
+        if (orig == null)
+            return other;
 
-        while (syms.hasNext()) {
-            SymbolDecl sd = (SymbolDecl) syms.next();
-            Pointcut pc = (Pointcut) pcs.next();
-
-            if (kind_to_pointcut.containsKey(sd.kind()))
-                pc = nf.PCBinary(position(),
-                                 (Pointcut) kind_to_pointcut.get(sd.kind()),
-                                 PCBinary.COND_OR,
-                                 pc);
-
-            kind_to_pointcut.put(sd.kind(), pc);
-            kind_to_a_symbol.put(sd.kind(), sd);
-        }
-
-        Iterator kinds = kind_to_pointcut.keySet().iterator();
-        while (kinds.hasNext()) {
-            SymbolDecl sd = (SymbolDecl) kind_to_a_symbol.get(kinds.next());
-            Pointcut pc = (Pointcut) kind_to_pointcut.get(sd.kind());
-
-            AdviceDecl ad = sd.generateSomeAdvice(nf, pc, voidn, returnType(),
-                                                tracematch_name, position());
-            advice.add(ad);
-            kind_to_advice_name.put(sd.kind(), ad.name());
-        }
+        return nf.PCBinary(Position.COMPILER_GENERATED, orig,
+                            PCBinary.COND_OR, other);
     }
     
-    protected void makeSynchAdvice(TMNodeFactory nf, List advice,
-    		List pointcuts, TypeNode voidn)
+    protected void makeEventAdvice(TMNodeFactory nf, List advice,
+                                   Pointcut before, Pointcut after,
+                                   TypeNode voidn, String debug_msg, int kind)
     {
-        
-        Iterator pcs = pointcuts.iterator();
-        Pointcut some = (Pointcut) pcs.next();
+        SymbolDecl sd = (SymbolDecl) symbols.get(0);
 
-        while (pcs.hasNext()) {
-            Pointcut pc = (Pointcut) pcs.next();
+        AdviceSpec before_spec = nf.Before(Position.COMPILER_GENERATED, 
+                                            new LinkedList(), voidn);
+        AdviceSpec after_spec = nf.After(Position.COMPILER_GENERATED,
+                                            new LinkedList(), voidn);
 
-            some = nf.PCBinary(position(),
-                                 some,
-                                 PCBinary.COND_OR,
-                                 pc);
-        }
-        
-        TypeNode objt = nf.CanonicalTypeNode(position,methodInstance().typeSystem().Object());
-        Around aroundspec = nf.Around(position,objt,new LinkedList());
-        ProceedCall proceed = nf.ProceedCall(position,nf.This(position),new LinkedList());
-        Return ret = nf.Return(position,proceed);
-        Block block = nf.Block(position,ret);
-        TMAdviceDecl aroundsync = nf.TMAdviceDecl(position,
-        		                                  Flags.SYNCHRONIZED,
-												  aroundspec,
-												  new LinkedList(),
-												  some,
-												  block,
-												  tracematch_name + "$synch",
-												  position,
-												  TMAdviceDecl_c.SYNCH);
-        advice.add(aroundsync);
+        AdviceDecl ad = nf.PerEventAdviceDecl(Position.COMPILER_GENERATED,
+                                Flags.NONE, before_spec, before,
+                                after_spec, after,
+                                sd.body(nf, debug_msg, voidn),
+                                tracematch_name, position(), kind);
+        advice.add(ad);
+
+        if (kind == TMAdviceDecl.SYNCH)
+            synch_advice = ad.name();
+        else
+            some_advice = ad.name();
     }
-    
-    /**
-     * create a TraceMatch object in the GlobalAspectInfo structure
-     */
-    public void update(GlobalAspectInfo gai, Aspect current_aspect)
+ 
+    protected Formal formalFor(String name)
     {
-        // Convert from polyglot formals to weaving Formals
-        List wfs = new ArrayList(formals.size());
-        Iterator i = formals.iterator();
+        Iterator i = formals().iterator();
 
         while (i.hasNext()) {
-            Formal f  = (Formal) i.next();
+            Formal f = (Formal) i.next();
+            if (f.name().equals(name))
+                return f;
+        }
+
+        throw new InternalCompilerError("Can't find " + name);
+    }
+
+    protected List bodyAdviceFormals()
+    {
+        if (!isAround)
+            return new ArrayList();
+
+        List body_advice_formals = new ArrayList();
+        Iterator around_vars = aroundVars().iterator();
+
+        while (around_vars.hasNext()) {
+            Local var = (Local) around_vars.next();
+
+            body_advice_formals.add(formalFor(var.name()));
+        }
+
+        return body_advice_formals;
+    }
+
+    protected int thisJoinPointVariables()
+    {
+        int count = 0;
+
+        if (hasEnclosingJoinPointStaticPart) count++;
+        if (hasJoinPoint) count++;
+        if (hasJoinPointStaticPart) count++;
+
+        return count;
+    }
+
+    /**
+     * convert from polyglot formals to weaving formals
+     */
+    protected List weavingFormals(List formals, boolean remove_jp_vars)
+    {
+        int remove = remove_jp_vars ? thisJoinPointVariables() : 0;
+
+        List wfs = new ArrayList(formals.size());
+
+        for (int i = 0; i < formals.size() - remove; i++) {
+            Formal f  = (Formal) formals.get(i);
+
             wfs.add(new abc.weaving.aspectinfo.Formal(
                             AbcFactory.AbcType(f.type().type()),
                             f.name(),
                             position()));
         }
+
+        return wfs;
+    }
+
+    /**
+     * create a TraceMatch object in the GlobalAspectInfo structure
+     */
+    public void update(GlobalAspectInfo gai, Aspect current_aspect)
+    {
+        //
+        // create aspectinfo advice declarations
+        //
+
+        int jp_vars = thisJoinPointVariables();
+
+        // list of what the formals will be for the body-advice
+        // after the tracematch formals are removed.
+        List transformed_formals = bodyAdviceFormals();
+        for (int i = formals.size() - jp_vars; i < formals.size(); i++)
+            transformed_formals.add(formals.get(i));
+
+
+        int lastpos = transformed_formals.size();
+        int jp = -1, jpsp = -1, ejp = -1;
+
+        if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
+        if (hasJoinPoint) jp = --lastpos;
+        if (hasJoinPointStaticPart) jpsp = --lastpos;
+
+
+        before_around_spec.setReturnType(returnType());
+        if (after_spec != null)
+            after_spec.setReturnType(returnType());
+
+        List methods = new ArrayList();
+        for (Iterator procs = methodsInAdvice.iterator(); procs.hasNext(); )
+        {
+            CodeInstance ci = (CodeInstance) procs.next();
+
+            if (ci instanceof MethodInstance)
+                methods.add(AbcFactory.MethodSig((MethodInstance) ci));
+            if (ci instanceof ConstructorInstance)
+                methods.add(AbcFactory.MethodSig((ConstructorInstance) ci));
+        }
+
+        if (before_around_pc != null) {
+            abc.weaving.aspectinfo.AdviceDecl before_ad =
+                new abc.tm.weaving.aspectinfo.TMAdviceDecl
+                    (before_around_spec.makeAIAdviceSpec(),
+                     before_around_pc.makeAIPointcut(),
+                     AbcFactory.MethodSig(this.formals(transformed_formals)),
+                     current_aspect,
+                     jp, jpsp, ejp, methods,
+                     position(), name(), position(), TMAdviceDecl.BODY);
+
+            gai.addAdviceDecl(before_ad);
+        }
+
+        if (after_pc != null) {
+            abc.weaving.aspectinfo.AdviceDecl after_ad =
+                new abc.tm.weaving.aspectinfo.TMAdviceDecl
+                    (after_spec.makeAIAdviceSpec(),
+                     after_pc.makeAIPointcut(),
+                     AbcFactory.MethodSig(this.formals(transformed_formals)),
+                     current_aspect,
+                     jp, jpsp, ejp, methods, position(),
+                     tracematch_name, position(), TMAdviceDecl.BODY);
+
+            gai.addAdviceDecl(after_ad);
+        }
+
+        MethodCategory.register(this, MethodCategory.ADVICE_BODY);
+
+        String proceed_name = null;
+
+        if (isAround) {
+            MethodDecl proceed = ((Around) before_around_spec).proceed();
+            proceed_name = proceed.name();
+            MethodCategory.register(proceed, MethodCategory.PROCEED);
+        }
+
+        //
+        // Create aspectinfo tracematch
+        //
+        List tm_formals = weavingFormals(formals, true);
+        List body_formals = weavingFormals(transformed_formals, false);
         
         // create TraceMatch
         TraceMatch tm =
-            new TraceMatch(tracematch_name, wfs, regex.makeSM(), orderedSymToVars(),
-                            sym_to_advice_name, kind_to_advice_name,
-                            current_aspect,position());
+            new TraceMatch(tracematch_name, tm_formals, body_formals,
+                           regex.makeSM(), orderedSymToVars(),
+                           sym_to_advice_name, synch_advice, some_advice,
+                           proceed_name, current_aspect, position());
 
         ((TMGlobalAspectInfo) gai).addTraceMatch(tm);
+    }
+
+    public String adviceSignature()
+    {
+        String s = "tracematch(";
+
+        for (Iterator i = formals.iterator(); i.hasNext(); ) {
+            Formal t = (Formal) i.next();
+            s += t.toString();
+
+            if (i.hasNext()) {
+                s += ", ";
+            }
+        }
+        s = s + ")";
+
+        return s;
+    }
+
+    public void prettyPrint(CodeWriter c, PrettyPrinter p)
+    {
+        // FIXME
+    }
+
+    /**
+     * Visit this term in evaluation order.
+     */
+    public List acceptCFG(CFGBuilder v, List succs)
+    {
+        if (body() == null)
+            v.visitCFGList(formals(), this);
+        else {
+            v.visitCFGList(formals(), body().entry());
+            v.visitCFG(body(), this);
+        }
+
+        return succs;
     }
 }

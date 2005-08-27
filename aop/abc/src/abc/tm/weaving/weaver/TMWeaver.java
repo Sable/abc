@@ -54,4 +54,23 @@ public class TMWeaver extends Weaver
             tmcg.fillInTraceMatch(tm);
         }
     }
+
+    public void weaveAdvice()
+    {
+        super.weaveAdvice();
+
+        Iterator i = ((TMGlobalAspectInfo)
+                        abc.main.Main.v().getAbcExtension()
+                                         .getGlobalAspectInfo())
+                                            .getTraceMatches().iterator();
+
+        while (i.hasNext()) {
+            TraceMatch tm = (TraceMatch) i.next();
+            CodeGenHelper helper = tm.getCodeGenHelper();
+
+            helper.extractBodyMethod();
+            helper.transformRealBodyMethod();
+            helper.genRunSolutions();
+        }
+    }
 }

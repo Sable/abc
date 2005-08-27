@@ -64,7 +64,8 @@ public class MoveTraceMatchMembers extends ContextVisitor
             TypeNode voidn =
                 nf.CanonicalTypeNode(Position.COMPILER_GENERATED, ts.Void());
             TMDecl tmd = (TMDecl) n;
-            compileAndStoreAdvice(tmd.generateImplementationAdvice(nf, voidn));
+            compileAndStoreAdvice(
+                tmd.generateImplementationAdvice(nf, voidn, this));
         }
         else if (n instanceof AspectBody) {
             Iterator i = advice.iterator();
@@ -85,29 +86,33 @@ public class MoveTraceMatchMembers extends ContextVisitor
         Iterator i = tm_advice.iterator();
         while (i.hasNext()) {
             TMAdviceDecl tm_ad = (TMAdviceDecl) i.next();
-            advice.add(compileAdvice(tm_ad));
+            advice.add(compileAST(tm_ad));
         }
     }
 
-    protected TMAdviceDecl compileAdvice(TMAdviceDecl tm_ad)
+    public Node compileAST(Node n)
     {
     	// need to run in phases, as the pattern evaluator doesn't like
     	// processing generated tree fragments
-        Job compile_tm_ad1 =
-            job().spawn(context(), tm_ad, Pass.BUILD_TYPES,Pass.BUILD_TYPES);
-        if (!compile_tm_ad1.status()) {
+        Job compile_n1 =
+            job().spawn(context(), n, Pass.BUILD_TYPES, Pass.BUILD_TYPES);
+
+        if (!compile_n1.status()) {
             // oops, this shouldn't have produced any errors
             throw new InternalCompilerError(
                         "Compiling generated advice failed in type building");
         }
-        Job compile_tm_ad2 =
-        	job().spawn(context(), compile_tm_ad1.ast(),Pass.CLEAN_SIGS,Pass.DISAM_ALL);
-        if (!compile_tm_ad2.status()) {
+
+        Job compile_n2 =
+        	job().spawn(context(), compile_n1.ast(), Pass.CLEAN_SIGS, 
+                                                     Pass.DISAM_ALL);
+
+        if (!compile_n2.status()) {
             // oops, this shouldn't have produced any errors
             throw new InternalCompilerError(
                         "Compiling generated advice failed");
         }
 
-        return (TMAdviceDecl) compile_tm_ad2.ast();
+        return compile_n2.ast();
     }
 }

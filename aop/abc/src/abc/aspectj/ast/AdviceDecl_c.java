@@ -172,34 +172,6 @@ public class AdviceDecl_c extends AdviceBody_c
         return ar;
     }
          
-    
-    private Expr dummyVal(AJNodeFactory nf, Type t) {
-        if (t instanceof ReferenceType) 
-            return nf.NullLit(position());
-        if (t instanceof PrimitiveType) {
-            PrimitiveType pt = (PrimitiveType) t;
-            if (pt.isChar())
-                return nf.CharLit(position(),'x');
-            if (pt.isBoolean())
-                return nf.BooleanLit(position(),true);
-            if (pt.isByte())
-                return nf.IntLit(position(),IntLit.INT,0);
-            if (pt.isShort())
-                return nf.IntLit(position(),IntLit.INT,0);
-            if (pt.isInt())
-                return nf.IntLit(position(),IntLit.INT,0);
-            if (pt.isLong())
-                return nf.IntLit(position(),IntLit.LONG,0);
-            if (pt.isFloat())
-                return nf.FloatLit(position(),FloatLit.FLOAT,0.0);
-            if (pt.isDouble())
-                return nf.FloatLit(position(),FloatLit.DOUBLE,0.0);     
-            if (pt.isVoid())
-                throw new InternalCompilerError("cannot create expression of void type");
-            else return null;
-        } else return null;
-    }
-    
     public MethodDecl proceedDecl(AJNodeFactory nf, AJTypeSystem ts)
     {
         MethodDecl md = super.proceedDecl(nf, ts);
@@ -229,9 +201,20 @@ public class AdviceDecl_c extends AdviceBody_c
     public Context enterScope(Node child, Context c)
     {
         AJContext ajc = (AJContext) super.enterScope(child, c);
+        AJTypeSystem ts = (AJTypeSystem) ajc.typeSystem();
 
         if (child == body && retval != null)
             ajc.addVariable(retval.localInstance());
+
+        if (child == body && isAroundAdvice) {
+            LinkedList l = new LinkedList();
+            l.add(ts.Throwable());
+            MethodInstance proceedInstance =
+                methodInstance().name("proceed")
+                                .flags(flags().Public().Static())
+                                .throwTypes(l);
+            ajc.addProceed(proceedInstance);
+        }
 
         return ajc;
     }
@@ -298,7 +281,7 @@ public class AdviceDecl_c extends AdviceBody_c
             w.write(";");
 
         w.end();
-}
+    }
                 
     public void update(GlobalAspectInfo gai, Aspect current_aspect)
     {

@@ -92,12 +92,6 @@ public class AfterThrowingSymbol_c extends Node_c
         return exception_type;
     }
 
-    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                                TypeNode ret_type)
-    {
-        return nf.After(position(), new LinkedList(), voidn);
-    }
-
     // node visiting code
     protected Node reconstruct(Local exception_var)
     {
@@ -113,5 +107,10 @@ public class AfterThrowingSymbol_c extends Node_c
     {
         Local exception_var = (Local) visitChild(this.exception_var, v);
         return reconstruct(exception_var);
+    }
+
+    public List aroundVars()
+    {
+        return null;
     }
 }

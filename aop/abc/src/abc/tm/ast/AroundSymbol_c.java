@@ -22,6 +22,7 @@ package abc.tm.ast;
 import polyglot.ast.*;
 import polyglot.types.*;
 import polyglot.util.*;
+import polyglot.visit.*;
 
 import polyglot.ext.jl.ast.*;
 
@@ -35,6 +36,8 @@ import java.util.*;
 public class AroundSymbol_c extends Node_c
                             implements SymbolKind
 {
+    // n.b. this list is not visited because it is retrieved
+    //      by TMDecl_c
     private List proceed_vars;
 
     public AroundSymbol_c(Position pos, List proceed_vars)
@@ -61,9 +64,8 @@ public class AroundSymbol_c extends Node_c
         return nf.Before(position(), formals, voidn);
     }
 
-    public AdviceSpec generateSomeAdviceSpec(TMNodeFactory nf, TypeNode voidn,
-                                                TypeNode ret_type)
+    public List aroundVars()
     {
-        return nf.Around(position(), ret_type, new LinkedList());
+        return proceed_vars;
     }
 }

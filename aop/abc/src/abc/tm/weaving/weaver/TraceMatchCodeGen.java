@@ -7,7 +7,6 @@ import soot.util.*;
 import soot.jimple.*;
 
 import abc.soot.util.LocalGeneratorEx;
-import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.aspectinfo.*;
 import abc.tm.weaving.matching.*;
 import abc.weaving.aspectinfo.*;
@@ -16,6 +15,7 @@ import abc.weaving.aspectinfo.*;
 /**
  * Fills in method stubs for tracematch classes.
  * @author Pavel Avgustinov
+ * @author Julian Tibble
  */
 public class TraceMatchCodeGen {
     
@@ -33,8 +33,9 @@ public class TraceMatchCodeGen {
     {
         List body_formals = traceMatchBodyParameters(unused, tm);
 
-        CodeGenHelper helper = new CodeGenHelper(tm);
+        CodeGenHelper helper = tm.getCodeGenHelper();
         helper.makeAndInitLabelFields();
+        helper.genAcquireLock();
 
         Iterator syms = tm.getSymbols().iterator();
 
@@ -45,13 +46,10 @@ public class TraceMatchCodeGen {
             fillInSymbolAdviceBody(symbol, advice_method, tm, helper);
         }
 
-        Iterator kinds = tm.getKinds().iterator();
-        while (kinds.hasNext()) {
-            String kind = (String) kinds.next();
-            SootMethod advice_method = tm.getSomeAdviceMethod(kind);
+        SootMethod some_advice_method = tm.getSomeAdviceMethod();
+        fillInSomeAdviceBody(some_advice_method, tm, helper, body_formals);
 
-            fillInSomeAdviceBody(kind, advice_method, tm, helper, body_formals);
-        }
+        helper.transformParametersAndProceeds();
     }
     
     protected void fillInSymbolAdviceBody(String symbol, SootMethod method,
@@ -89,13 +87,11 @@ public class TraceMatchCodeGen {
         }
     }
 
-    protected void fillInSomeAdviceBody(String kind, SootMethod method,
-                                        TraceMatch tm, CodeGenHelper helper,
-                                        List body_formals)
+    protected void fillInSomeAdviceBody(SootMethod method, TraceMatch tm,
+                                    CodeGenHelper helper, List body_formals)
     {
         TMStateMachine sm = (TMStateMachine) tm.getState_machine();
         Iterator states = sm.getStateIterator();
-        SMNode final_state = null;
 
         helper.genTestAndResetUpdated(method);
 
@@ -106,7 +102,7 @@ public class TraceMatchCodeGen {
             // there is only one final state, and we remember it
             // in order to generate solution code later
             if (state.isFinalNode())
-                final_state = state;
+                helper.setFinalState(state.getNumber());
 
             // we don't want to accumulate useless constraints
             // for initial states
@@ -118,12 +114,11 @@ public class TraceMatchCodeGen {
             else
                 skip_loop = false;
 
-            helper.genLabelMasterUpdate(skip_loop, state.getNumber(), method);
+            helper.genLabelMasterUpdate(skip_loop, state.getNumber(),
+                                            method, state.isFinalNode());
         }
 
-        if (!tm.isAround() || kind.equals("around"))
-            helper.genRunSolutions(final_state.getNumber(),
-                                    method, body_formals);
+        // helper.genReleaseLockIfNoSolutions(method);
     }
  
     protected List traceMatchBodyParameters(Collection unused, TraceMatch tm)
@@ -141,76 +136,6 @@ public class TraceMatchCodeGen {
         return formals;
     }
 
-    protected void prepareAdviceBody(SootMethod sm, List names, Collection unused) {
-    	List paramTypes = new LinkedList();
-    	List paramNames = new LinkedList();
-    	Iterator ptIter = sm.getParameterTypes().iterator();
-    	Iterator nameIter = names.iterator();
-    	while (ptIter.hasNext()) {
-    		Type pt = (Type) ptIter.next();
-    		String name = (String) nameIter.next();
-    		if (!unused.contains(name)){
-    			paramTypes.add(pt); 
-    			paramNames.add(name);
-    		}
-    	}
-    	
-    	// renumber the identity statements
-    	Body body = sm.getActiveBody();
-    	Unit u = null;
-    	Chain units = body.getUnits();
-    	for (Iterator unitIter = units.iterator(); unitIter.hasNext(); ) {
-    		u = (Unit) unitIter.next();
-    		if (u instanceof IdentityStmt) {
-    			IdentityStmt is = (IdentityStmt) u;
-    			Value rhs = is.getRightOp();
-    			if (rhs instanceof ParameterRef) {
-    				ParameterRef pr = (ParameterRef) rhs;
-    				String oldName = (String) names.get(pr.getIndex());
-    				if (paramNames.contains(oldName)) {
-    				   int newIndex = paramNames.indexOf(oldName);
-    				   pr.setIndex(newIndex);
-    			    } else 
-    			    	unitIter.remove();
-    			}
-    		}
-    	}
-    	
-    	sm.setParameterTypes(paramTypes);
- /*   
-    	if (u == null) return;
-		
-		SootClass scIter = Scene.v().getSootClass("java.util.Iterator");
-		paramTypes.add(scIter.getType());
-		
-		
-    	Local iterLocal = body.getParameterLocal(paramTypes.size()-1);
-    	LocalGeneratorEx lgen = new LocalGeneratorEx(body);
-    	
-    	// is there still a binding remaining?
-    	Local hasNext = lgen.generateLocal(BooleanType.v(),"hasNext");
-    	SootMethodRef smrHasNext = scIter.getMethod("hasNext",new LinkedList()).makeRef();
-    	InvokeExpr e = Jimple.v().newVirtualInvokeExpr(iterLocal,smrHasNext,new LinkedList());
-		AssignStmt ass = Jimple.v().newAssignStmt(hasNext,e);
-		units.insertBefore(u,ass);
-		u.redirectJumpsToThisTo(ass);
-		
-		// if not, proceed
-		EqExpr ce = Jimple.v().newEqExpr(hasNext,IntConstant.v(0));
-    	Stmt stmtIfHasNext = Jimple.v().newIfStmt(ce,u);
-    	units.insertBefore(u,stmtIfHasNext);
-    
-    	// otherwise recursively call the body with another binding
-        // FIXME: this is missing!
-
-        // jump over the normal proceed
-		Unit elsetarget = (Unit) units.getSuccOf(u);
-		Stmt stmtJump = Jimple.v().newGotoStmt(elsetarget);
-    	units.insertBefore(u,elsetarget);
-  
-		System.out.println(body.toString());		
-		*/
-    }
     /**
      * Fills in the method stubs generated by the frontend for a given tracematch.
      * @param tm the tracecmatch to deal with.
@@ -218,14 +143,10 @@ public class TraceMatchCodeGen {
     public void fillInTraceMatch(TraceMatch tm) {
         TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
 
-		Collection unused = UnUsedParams.unusedFormals(tm.getBodyMethod(),tm.getFormalNames());
+		Collection unused = tm.getUnusedFormals();
         
-        tmsm.prepareForMatching(tm.getSymbols(), tm.getFormalNames(), tm.getSym_to_vars(), 
-                                                UnUsedParams.unusedFormals(tm.getBodyMethod(),tm.getFormalNames()),
-                                                tm.getPosition());
+        tmsm.prepareForMatching(tm, tm.getFormalNames(), unused, tm.getPosition());
         
-        
-        prepareAdviceBody(tm.getBodyMethod(),tm.getFormalNames(),unused);
         
         // Create the constraint class(es). A constraint is represented in DNF as a set of
         // disjuncts, which are conjuncts of positive or negative bindings. For now, we 

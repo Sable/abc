@@ -36,4 +36,6 @@ public interface TMModsAndType
     boolean isPerThread();
     boolean isAround();
     TypeNode getReturnType();
+    AdviceSpec beforeOrAroundSpec();
+    AdviceSpec afterSpec();
 }

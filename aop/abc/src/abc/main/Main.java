@@ -501,7 +501,7 @@ public class Main {
             compile(); // Timers marked inside compile()
             // The compile method itself aborts if there is an error
 
-            if (!abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
+            if (!getAbcExtension().getGlobalAspectInfo().getWeavableClasses().isEmpty()) {
                 weave(); // Timers marked inside weave()
 
                 abortIfErrors();
@@ -912,11 +912,11 @@ public class Main {
                 if(Debug.v().printAdviceApplicationCount) {
                 	int adviceApplCount=0;
                 	
-                    for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                    for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                         final AbcClass cl = (AbcClass) clIt.next();
                         for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                             final SootMethod method = (SootMethod) methodIt.next(); 
-                            MethodAdviceList list=abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
+                            MethodAdviceList list=getAbcExtension().getGlobalAspectInfo().getAdviceList(method);
                             if (list==null)
                             	continue;
                             List allAdvice=list.allAdvice();
@@ -928,13 +928,13 @@ public class Main {
                 if(Debug.v().matcherTest) {
                 	System.err.println("--- BEGIN ADVICE LISTS ---");
                     // print out matching information for testing purposes
-                    for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                    for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                         final AbcClass cl = (AbcClass) clIt.next();
                         for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                             final SootMethod method = (SootMethod) methodIt.next();
                             final StringBuffer sb=new StringBuffer(1000);
                             sb.append("method: "+method.getSignature()+"\n");
-                            abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceList(method).debugInfo(" ",sb);
+                            getAbcExtension().getGlobalAspectInfo().getAdviceList(method).debugInfo(" ",sb);
                             System.err.println(sb.toString());
                         }
                     }         
@@ -942,7 +942,7 @@ public class Main {
                 }
 
                 if(abc.main.options.OptionsParser.v().warn_unused_advice()) {
-                    for( Iterator adIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getAdviceDecls().iterator(); adIt.hasNext(); ) {
+                    for( Iterator adIt = getAbcExtension().getGlobalAspectInfo().getAdviceDecls().iterator(); adIt.hasNext(); ) {
                         final AbstractAdviceDecl ad = (AbstractAdviceDecl) adIt.next();
 
                         if(ad instanceof AdviceDecl && ad.getApplWarning() != null)
@@ -983,7 +983,7 @@ public class Main {
         HashMap options=new HashMap();
         options.put("enabled","true");
 
-        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
 
             final AbcClass cl = (AbcClass) clIt.next();
 
@@ -1007,7 +1007,7 @@ public class Main {
     }
 
     public void validate() {
-        for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+        for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
             final AbcClass cl = (AbcClass) clIt.next();
             abc.soot.util.Validate.validate(cl.getSootClass());
         }

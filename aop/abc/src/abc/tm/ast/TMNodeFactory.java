@@ -40,7 +40,8 @@ public interface TMNodeFactory extends AJNodeFactory
 
     TMModsAndType
         TMModsAndType(Flags flags, boolean isPerThread,
-                                boolean isAround, TypeNode type);
+                      AdviceSpec before_or_around, AdviceSpec after,
+                      boolean isAround, TypeNode type);
 
     SymbolDecl SymbolDecl(Position pos, String name,
                             SymbolKind kind, Pointcut pc);
@@ -52,9 +53,16 @@ public interface TMNodeFactory extends AJNodeFactory
     SymbolKind AfterThrowingSymbol(Position pos, Local exception_var);
     SymbolKind AroundSymbol(Position pos, List proceed_vars);
 
-    TMAdviceDecl TMAdviceDecl(Position pos, Flags flags, AdviceSpec spec,
-                                List throwTypes, Pointcut pc, Block body,
-                                String tm_id, Position tm_pos, int kind);
+    TMAdviceDecl PerSymbolAdviceDecl(Position pos, Flags flags,
+                                    AdviceSpec spec, List throwTypes,
+                                    Pointcut pc, Block body,
+                                    String tm_id, Position tm_pos);
+
+    TMAdviceDecl PerEventAdviceDecl(Position pos, Flags flags,
+                                    AdviceSpec before_spec, Pointcut before_pc,
+                                    AdviceSpec after_spec, Pointcut after_pc,
+                                    Block body, String tm_id, Position tm_pos,
+                                    int kind);
 
     Regex RegexAlternation(Position pos, Regex a, Regex b);
     Regex RegexConjunction(Position pos, Regex a, Regex b);

@@ -21,6 +21,9 @@
 package abc.tm;
 
 import polyglot.lex.Lexer;
+import polyglot.visit.PrettyPrinter;
+import polyglot.util.CodeWriter;
+
 import abc.aspectj.parse.Lexer_c;
 import abc.tm.parse.Grm;
 
@@ -79,6 +82,9 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
         List newPasses = new LinkedList();
         newPasses.add(new VisitorPass(CREATE_TRACEMATCH_ADVICE,
                         job, new MoveTraceMatchMembers(job, ts, nf)));
+//        newPasses.add(new PrettyPrintPass(INSPECT_AST, job,
+//                                          new CodeWriter(System.out, 70),
+//                                          new PrettyPrinter()));
 
         afterPass(passes, Pass.DISAM_ALL, newPasses);
 

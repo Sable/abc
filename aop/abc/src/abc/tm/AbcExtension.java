@@ -98,6 +98,7 @@ public class AbcExtension extends abc.main.AbcExtension
            Scene.v().addBasicClass("java.lang.ref.WeakReference", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
+           Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);
 	   }
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
@@ -106,30 +107,57 @@ public class AbcExtension extends abc.main.AbcExtension
          
          the "synch" advice always has higher precedence than anything else in the same tracematch */
 	public int tmGetPrec(TMAdviceDecl tma,TMAdviceDecl tmb) {
-	    	if (tma.getTraceMatchID().equals(tmb.getTraceMatchID())) {
-	    		if (tma.isSynch() && !tmb.isSynch())
-					return GlobalAspectInfo.PRECEDENCE_FIRST;   	        	
-		    	if (!tma.isSynch() && tmb.isSynch())
-					return GlobalAspectInfo.PRECEDENCE_SECOND;
-		    	if (tma.isSynch() && tmb.isSynch())
-		    	        // we have tma==tmb, as there is at most one piece
-		    	        // of "some" advice
-	    	    	return GlobalAspectInfo.PRECEDENCE_NONE;
-		    	 
-		    	if (tma.isSome() && !tmb.isSome())
-					if (tma.getAdviceSpec().isAfter())
-						return GlobalAspectInfo.PRECEDENCE_FIRST;
-					else
-						return GlobalAspectInfo.PRECEDENCE_SECOND;   	        	
-		    	 if (!tma.isSome() && tmb.isSome())
-					if (tmb.getAdviceSpec().isAfter())
-						return GlobalAspectInfo.PRECEDENCE_SECOND;
-					else
-						return GlobalAspectInfo.PRECEDENCE_FIRST;
-		    	 if (tma.isSome() && tmb.isSome())
-		    	        // we have tma==tmb, as there is at most one piece
-		    	        // of "some" advice
-	    	    	return GlobalAspectInfo.PRECEDENCE_NONE;
+        if (tma.getTraceMatchID().equals(tmb.getTraceMatchID())) {
+
+            int tma_first;
+            int tma_second;
+            int tmb_first;
+            int tmb_second;
+
+            if (tma.getAdviceSpec().isAfter())
+            {
+                tma_first = GlobalAspectInfo.PRECEDENCE_SECOND;
+                tma_second = GlobalAspectInfo.PRECEDENCE_FIRST;
+            } else {
+                tma_first = GlobalAspectInfo.PRECEDENCE_FIRST;
+                tma_second = GlobalAspectInfo.PRECEDENCE_SECOND;
+            }
+
+            if (tmb.getAdviceSpec().isAfter())
+            {
+                tmb_first = GlobalAspectInfo.PRECEDENCE_SECOND;
+                tmb_second = GlobalAspectInfo.PRECEDENCE_FIRST;
+            } else {
+                tmb_first = GlobalAspectInfo.PRECEDENCE_FIRST;
+                tmb_second = GlobalAspectInfo.PRECEDENCE_SECOND;
+            }
+
+            if (tma.isBody() && !tmb.isBody())
+                return tma_second;
+            if (!tma.isBody() && tmb.isBody())
+                return tmb_first;
+            if (tma.isBody() && tmb.isBody())
+                // we have tma==tmb, as there is at most one piece
+                // of "body" advice
+                return GlobalAspectInfo.PRECEDENCE_NONE;
+
+            if (tma.isSynch() && !tmb.isSynch())
+                return tma_first;
+            if (!tma.isSynch() && tmb.isSynch())
+                return tmb_second;
+            if (tma.isSynch() && tmb.isSynch())
+                // we have tma==tmb, as there is at most one piece
+                // of "synch" advice
+                return GlobalAspectInfo.PRECEDENCE_NONE;
+
+            if (tma.isSome() && !tmb.isSome())
+                return tma_second;
+            if (!tma.isSome() && tmb.isSome())
+                return tmb_first;
+            if (tma.isSome() && tmb.isSome())
+                // we have tma==tmb, as there is at most one piece
+                // of "some" advice
+                return GlobalAspectInfo.PRECEDENCE_NONE;
 		    	 
 		    	 
 		    	 

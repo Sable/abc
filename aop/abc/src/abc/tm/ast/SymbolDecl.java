@@ -40,12 +40,12 @@ public interface SymbolDecl extends Node
 
     Collection binds();
 
+    public Block body(TMNodeFactory nf, String debug_msg, TypeNode ret_type);
+
     AdviceDecl generateSymbolAdvice(TMNodeFactory nf, List formals,
                             TypeNode voidn, String tm_id, Position tm_pos);
 
     Pointcut generateClosedPointcut(TMNodeFactory nf, List formals);
 
-    AdviceDecl generateSomeAdvice(TMNodeFactory nf, Pointcut pc,
-                            TypeNode voidn, TypeNode ret_type, String tm_id,
-                            Position tm_pos);
+    List aroundVars();
 }

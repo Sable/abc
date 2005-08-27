@@ -2,6 +2,7 @@ package abc.tm.weaving.matching;
 
 import java.util.*;
 
+import abc.tm.weaving.aspectinfo.TraceMatch;
 import abc.tm.weaving.aspectinfo.TMGlobalAspectInfo;
 import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
@@ -258,7 +259,7 @@ public class TMStateMachine implements StateMachine {
      * @param symtovar mapping from symbols to sets of bound variables
      * @param notused variables not used in tracematch body
      */
-    protected void collectBindingInfo(List formals,Map symtovar,Collection notused,Position pos) {
+    protected void collectBindingInfo(List formals,TraceMatch tm,Collection notused,Position pos) {
         // do a backwards analysis from the final nodes
     	//  
     	// for an edge e, the flow function is
@@ -266,12 +267,12 @@ public class TMStateMachine implements StateMachine {
     	//
     	// we want to compute the meet-over-all-paths solution at each state
     	initCollectableWeakRefs(formals);
-    	fixCollectableWeakRefs(symtovar);
+    	fixCollectableWeakRefs(tm);
         collectableWeakRefsToOtherRefs(formals,notused);
         if (!formals.isEmpty())
         	generateLeakWarnings(pos);
         initBoundVars(formals);
-        fixBoundVars(symtovar);
+        fixBoundVars(tm);
     }
     
    	
@@ -314,9 +315,10 @@ public class TMStateMachine implements StateMachine {
 	/**
 	 * do fixpoint iteration using a worklist of edges
 	 * 
-	 * @param symtovar mapping from symbols to sets of bound variables
+	 * @param tm tracematch, which provides a mapping from symbols
+     *           to sets of bound variables
 	 */
-	private void fixCollectableWeakRefs(Map symtovar) {
+	private void fixCollectableWeakRefs(TraceMatch tm) {
 		// the worklist contains edges whose target has changed value
         List worklist = new LinkedList(edges);
         while (!worklist.isEmpty()) {
@@ -325,7 +327,7 @@ public class TMStateMachine implements StateMachine {
         	SMNode tgt = edge.getTarget();
         	// now compute the flow function along this edge
         	Set flowAlongEdge = new LinkedHashSet(tgt.collectableWeakRefs);
-        	Collection c = (Collection) symtovar.get(edge.getLabel());
+        	Collection c = tm.getVariableOrder(edge.getLabel());
         	if (c != null)
         	   flowAlongEdge.addAll(c);
         	// if src.collectableWeakRefs is already smaller, skip
@@ -348,9 +350,10 @@ public class TMStateMachine implements StateMachine {
 	/**
 		 * do fixpoint iteration using a worklist of edges
 		 * 
-		 * @param symtovar mapping from symbols to sets of bound variables
+		 * @param tm tracematch, which provides a mapping from symbols
+         *           to sets of bound variables
 		 */
-		private void fixBoundVars(Map symtovar) {
+		private void fixBoundVars(TraceMatch tm) {
 			// the worklist contains edges whose target has changed value
 			List worklist = new LinkedList(edges);
 			while (!worklist.isEmpty()) {
@@ -359,7 +362,7 @@ public class TMStateMachine implements StateMachine {
 				SMNode tgt = edge.getTarget();
 				// now compute the flow function along this edge
 				Set flowAlongEdge = new LinkedHashSet(src.boundVars);
-				Collection c = (Collection) symtovar.get(edge.getLabel());
+				Collection c = tm.getVariableOrder(edge.getLabel());
 				if (c != null)
 				   flowAlongEdge.addAll(c);
 				// if tgt.boundVars is already smaller, skip
@@ -452,22 +455,21 @@ public class TMStateMachine implements StateMachine {
      * Transforms the FSA that was generated from the regular expression into an NFA for
      * matching suffixes interleaved with skips and ending in a declared symbol against
      * the regular expression. Should be called once.
-     * @param declaredSymbols list of the names of all declared symbols.
+     * @param tm tracematch contains the set of symbols, and the variables that
+     *           those symbols bind
      * @param formals list of the names of variables used (no types)
-     * @param symtovar mapping from symbol names to set of variables that symbol binds
      * @param notused names of formals that are not used in the tracematch body
      * @param pos position of tracematch
      */
-    public void prepareForMatching(Collection declaredSymbols, 
-                                                     List formals, 
-                                                     Map symToVar,
-                                                     Collection notused,
-                                                     Position pos) {
+    public void prepareForMatching(TraceMatch tm, 
+                                   List formals, 
+                                   Collection notused,
+                                   Position pos) {
     	eliminateEpsilonTransitions();
-        addSelfLoops(declaredSymbols);
+        addSelfLoops(tm.getSymbols());
         removeSkipToFinal();
         compressStates();
-        collectBindingInfo(formals,symToVar,notused,pos);
+        collectBindingInfo(formals, tm, notused, pos);
         renumberStates();
     }
     
