@@ -55,9 +55,9 @@ public class TMWeaver extends Weaver
         }
     }
 
-    public void weaveAdvice()
+    public void weave()
     {
-        super.weaveAdvice();
+        super.weave();
 
         Iterator i = ((TMGlobalAspectInfo)
                         abc.main.Main.v().getAbcExtension()

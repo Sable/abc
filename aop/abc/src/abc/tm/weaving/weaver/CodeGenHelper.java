@@ -865,7 +865,7 @@ public class CodeGenHelper
 
             AssignStmt assign = (AssignStmt) current;
 
-            if (assign.getLeftOp() != local) {
+            if (! assign.getLeftOp().equals(local)) {
                 current = units.getSuccOf(current);
                 continue;
             }
