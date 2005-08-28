@@ -5101,11 +5101,11 @@
     </ajc-test>
 <ajc-test title="Tracematches: Basic tracematch" num="1019" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="Basic.java"></compile>
-	<run class="Basic"></run>
+        <run class="Basic"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Plus and Star" num="1020" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="PlusStar.java"></compile>
-	<run class="PlusStar"></run>
+        <run class="PlusStar"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Alternation" num="1021" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="Alternation.java"></compile>
@@ -5137,7 +5137,15 @@
     </ajc-test>
 <ajc-test title="Tracematches: states where x may be bound or unbound" num="1028" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="MoreBindings.java"></compile>
-	<run class="MoreBindings"></run>
+        <run class="MoreBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic around tracematch" num="1029" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="BasicAround.java"></compile>
+        <run class="BasicAround"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Around match with multiple bindings." num="1030" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MultipleBindingsForAround.java"></compile>
+        <run class="MultipleBindingsForAround"></run>
     </ajc-test>
  
 </suite>
