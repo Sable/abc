@@ -81,6 +81,47 @@ public abstract class AdviceApplication {
         sb.append(prefix+"residue: "+residueBox+"\n");
         sb.append(prefix+"---"+"\n");
     }
+    
+    public interface ResidueConjunct {
+    	Residue run() throws SemanticException;
+    }
+    
+    /** return the list of residue conjuncts */
+    public static List residueConjuncts(final AbstractAdviceDecl ad,
+                                             final Pointcut pc,
+                                             final ShadowMatch sm,
+                                             final SootMethod method,
+                                             final SootClass cls,
+                                             final WeavingEnv we) {
+        List result = new ArrayList();
+        result.add(new ResidueConjunct() {
+        	             public Residue run() throws SemanticException {
+        	             	return ad.preResidue(sm);
+        	             }});
+        result.add(new ResidueConjunct() {
+        	             public Residue run() throws SemanticException {
+							return pc.matchesAt(we,cls,method,sm);
+        	             }
+                        });
+
+		// Mostly this is just to eliminate advice at shadow points
+		// where it can't apply - e.g. after advice at handlers
+		// In the case of AfterReturningArg it does generate a real
+		// residue, but this may go away if we put the return value
+		// in the shadowpoints.
+		
+       result.add(new ResidueConjunct() {
+                        public Residue run() throws SemanticException {
+                        	return ad.getAdviceSpec().matchesAt(we,sm,ad);
+                        }
+                       });
+        result.add(new ResidueConjunct() {
+        		        public Residue run() throws SemanticException {
+        		        	return ad.postResidue(sm);
+        		        }
+                       });
+        return result;
+    }
 
     public static void doShadows(GlobalAspectInfo info,
                                   MethodAdviceList mal,
@@ -131,28 +172,14 @@ public abstract class AdviceApplication {
                     // manual short-circuit logic
                     Residue residue=AlwaysMatch.v();
 
-                    if(!NeverMatch.neverMatches(residue))
-                        residue=AndResidue.construct
-                            (residue,ad.preResidue(sm));
-
-                    if(!NeverMatch.neverMatches(residue))
-                        residue=AndResidue.construct
-                            (residue,pc.matchesAt(we,cls,method,sm));
-
-                    // Mostly this is just to eliminate advice at shadow points
-                    // where it can't apply - e.g. after advice at handlers
-                    // In the case of AfterReturningArg it does generate a real
-                    // residue, but this may go away if we put the return value
-                    // in the shadowpoints.
-
-                    if(!NeverMatch.neverMatches(residue))
-                        residue=AndResidue.construct
-                            (residue,ad.getAdviceSpec().matchesAt(we,sm,ad));
-
-                    if(!NeverMatch.neverMatches(residue))
-                        residue=AndResidue.construct
-                            (residue,ad.postResidue(sm));
-
+                    List conjuncts = abc.main.Main.v().getAbcExtension().residueConjuncts(ad,pc,sm,method,cls,we);
+                    
+                    for (Iterator cit=conjuncts.iterator(); cit.hasNext(); ) {
+                    	ResidueConjunct rc = (ResidueConjunct) cit.next();
+						if(!NeverMatch.neverMatches(residue))
+				            residue=AndResidue.construct(residue,rc.run());
+                    }
+                   
                     if(abc.main.Debug.v().showPointcutMatching
                        && !NeverMatch.neverMatches(residue))
                         System.out.println("residue: "+residue);

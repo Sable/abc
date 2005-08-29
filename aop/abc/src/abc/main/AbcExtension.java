@@ -555,5 +555,18 @@ public class AbcExtension
         else throw new InternalCompilerError("Advice type not handled: "+d.getClass(),
                                              d.getPosition());
     }
+    
+    
+	/** return the list of residue conjuncts. This should return a list all of whose elements
+	 *   are of type abc.weaving.matching.AdviceApplication.ResidueConjunct.
+	 */
+	public List residueConjuncts(final AbstractAdviceDecl ad,
+												 final abc.weaving.aspectinfo.Pointcut pc,
+												 final abc.weaving.matching.ShadowMatch sm,
+												 final SootMethod method,
+												 final SootClass cls,
+												 final abc.weaving.matching.WeavingEnv we) {
+            return abc.weaving.matching.AdviceApplication.residueConjuncts(ad,pc,sm,method,cls,we);	
+		}
 
 }
