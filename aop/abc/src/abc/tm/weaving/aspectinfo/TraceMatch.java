@@ -42,6 +42,7 @@ import java.util.*;
 public class TraceMatch
 {
     protected String name;
+    protected boolean per_thread;
 
     protected List formals;
     protected List new_advice_body_formals;
@@ -62,6 +63,8 @@ public class TraceMatch
  
     protected SootClass constraint = null;
     protected SootClass disjunct = null;
+    protected SootClass labels = null;
+    protected SootClass labels_thread_local = null;
  
     protected CodeGenHelper helper;
     protected Position position;
@@ -69,12 +72,14 @@ public class TraceMatch
     protected Collection unused_formals = null;
 
     public TraceMatch(String name, List formals, List new_advice_body_formals,
-                        StateMachine state_machine, Map sym_to_vars,
-                        Map sym_to_advice_name, String synch_advice_name,
-                        String some_advice_name, String dummy_proceed_name,
-                        Aspect container, Position pos)
+                        StateMachine state_machine, boolean per_thread,
+                        Map sym_to_vars, Map sym_to_advice_name,
+                        String synch_advice_name, String some_advice_name,
+                        String dummy_proceed_name, Aspect container,
+                        Position pos)
     {
         this.name = name;
+        this.per_thread = per_thread;
 
         this.formals = formals;
         this.new_advice_body_formals = new_advice_body_formals;
@@ -93,6 +98,11 @@ public class TraceMatch
         makeFormalMaps();
 
         this.helper = new CodeGenHelper(this);
+    }
+
+    public boolean isPerThread()
+    {
+        return per_thread;
     }
 
     public boolean isAround()
@@ -280,6 +290,29 @@ public class TraceMatch
     public SootClass getDisjunctClass()
     {
         return disjunct;
+    }
+
+    public void setLabelsClass(SootClass labels)
+    {
+        this.labels = labels;
+    }
+
+    public SootClass getLabelsClass()
+    {
+        if (isPerThread())
+            return labels;
+        else
+            return getContainerClass();
+    }
+
+    public void setLabelsThreadLocalClass(SootClass labels_thread_local)
+    {
+        this.labels_thread_local = labels_thread_local;
+    }
+
+    public SootClass getLabelsThreadLocalClass()
+    {
+        return labels_thread_local;
     }
 
     public CodeGenHelper getCodeGenHelper()

@@ -9481,4 +9481,9 @@
         <compile files="MultipleBindingsForAround.java" options="-ext,abc.tm"/>
         <run class="MultipleBindingsForAround"/>
     </ajc-test>
+    <ajc-test num="1031" dir="abctests/tracematches"
+        title="Tracematches: Testing the `perthread' modifier">
+        <compile files="PerThread.java" options="-ext,abc.tm"/>
+        <run class="PerThread"/>
+    </ajc-test>
 </suite>

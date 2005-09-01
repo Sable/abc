@@ -96,6 +96,7 @@ public class AbcExtension extends abc.main.AbcExtension
 		   Scene.v().addBasicClass("java.util.LinkedHashSet",
                                     SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.lang.ref.WeakReference", SootClass.SIGNATURES);
+           Scene.v().addBasicClass("java.lang.ThreadLocal", SootClass.SIGNATURES);
            Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);

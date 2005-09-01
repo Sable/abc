@@ -617,7 +617,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         // create TraceMatch
         TraceMatch tm =
             new TraceMatch(tracematch_name, tm_formals, body_formals,
-                           regex.makeSM(), orderedSymToVars(),
+                           regex.makeSM(), isPerThread, orderedSymToVars(),
                            sym_to_advice_name, synch_advice, some_advice,
                            proceed_name, current_aspect, position());
 

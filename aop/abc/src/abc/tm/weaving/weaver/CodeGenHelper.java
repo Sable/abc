@@ -25,6 +25,7 @@ public class CodeGenHelper
     public static final int SKIP_LABEL = 2;
 
     protected TraceMatch tm;
+    protected SootClass thread_local;
     protected SootClass constraint;
     protected SootClass disjunct;
     protected SootClass lock;
@@ -44,7 +45,8 @@ public class CodeGenHelper
     public CodeGenHelper(TraceMatch tm)
     {
         this.tm = tm;
-
+        
+        this.thread_local = Scene.v().getSootClass("java.lang.ThreadLocal");
         this.lock = Scene.v().getSootClass(
                         "org.aspectbench.tm.runtime.internal.Lock");
         this.set = Scene.v().getSootClass("java.util.LinkedHashSet");
@@ -146,6 +148,33 @@ public class CodeGenHelper
         return Jimple.v().newInstanceFieldRef(base, ref);
     }
 
+    protected InstanceFieldRef makeLabelsThreadLocalRef(Value base)
+    {
+        Type labels_thread_local_type =
+            tm.getLabelsThreadLocalClass().getType();
+
+        SootFieldRef ref =
+            Scene.v().makeFieldRef( tm.getContainerClass(),
+                                    tm.getName() + "labels",
+                                    labels_thread_local_type,
+                                    false);
+                                    
+        return Jimple.v().newInstanceFieldRef(base, ref);
+    }
+
+    protected void makeLabelsThreadLocalField()
+    {
+        Type labels_thread_local_type =
+            tm.getLabelsThreadLocalClass().getType();
+
+        SootField field = new SootField(
+                                tm.getName() + "labels",
+                                labels_thread_local_type,
+                                Modifier.PRIVATE);
+
+        tm.getContainerClass().addField(field);
+    }
+
     /**
      * Create a Jimple reference to the "lock" field
      * on the tracematch container class.
@@ -170,7 +199,7 @@ public class CodeGenHelper
         SootField field = new SootField(
                                 tm.getName() + "lock",
                                 lock.getType(),
-                                Modifier.PRIVATE);
+                                Modifier.PUBLIC);
 
         tm.getContainerClass().addField(field);
     }
@@ -182,7 +211,7 @@ public class CodeGenHelper
     protected InstanceFieldRef makeUpdatedRef(Value base)
     {
         SootFieldRef ref =
-            Scene.v().makeFieldRef( tm.getContainerClass(),
+            Scene.v().makeFieldRef( tm.getLabelsClass(),
                                     tm.getName() + "updated",
                                     BooleanType.v(),
                                     false);
@@ -199,9 +228,9 @@ public class CodeGenHelper
         SootField field = new SootField(
                                 tm.getName() + "updated",
                                 BooleanType.v(),
-                                Modifier.PRIVATE);
+                                Modifier.PUBLIC);
 
-        tm.getContainerClass().addField(field);
+        tm.getLabelsClass().addField(field);
     }
 
     /**
@@ -214,7 +243,7 @@ public class CodeGenHelper
     protected InstanceFieldRef makeLabelRef(Value base, int state, int kind)
     {
         SootFieldRef ref =
-            Scene.v().makeFieldRef( tm.getContainerClass(),
+            Scene.v().makeFieldRef( tm.getLabelsClass(),
                                     getLabelName(state, kind),
                                     constraint.getType(),
                                     false);
@@ -231,9 +260,108 @@ public class CodeGenHelper
         SootField field = new SootField(
                                 getLabelName(state, kind),
                                 constraint.getType(),
-                                Modifier.PRIVATE);
+                                Modifier.PUBLIC);
 
-        tm.getContainerClass().addField(field);
+        tm.getLabelsClass().addField(field);
+    }
+
+    protected void makeConstructorMethod(SootClass child, SootClass parent)
+    {
+        SootMethod init = new SootMethod(SootMethod.constructorName,
+                                         new ArrayList(),
+                                         VoidType.v(),
+                                         Modifier.PUBLIC,
+                                         new ArrayList());
+        child.addMethod(init);
+
+        Body body = Jimple.v().newBody(init);
+        init.setActiveBody(body);
+
+        Chain units = body.getUnits();
+
+        genIdentityStmts(init, body, units);
+        Local this_local = body.getThisLocal();
+
+        SootMethodRef super_ref =
+            Scene.v().makeConstructorRef(parent, new ArrayList());
+        InvokeExpr super_call =
+            Jimple.v().newSpecialInvokeExpr(this_local, super_ref);
+
+        units.addLast(Jimple.v().newInvokeStmt(super_call));
+        units.addLast(Jimple.v().newReturnVoidStmt());
+    }
+
+    protected void makeLabelsClass()
+    {
+        SootClass object_class = Scene.v().getSootClass("java.lang.Object");
+
+        String name = tm.getPackage() + "Labels$" + tm.getName();
+
+        SootClass labels = new SootClass(name, Modifier.PUBLIC);
+
+        tm.setLabelsClass(labels);
+        Scene.v().addClass(labels);
+        labels.setApplicationClass();
+        labels.setSuperclass(object_class);
+
+        makeConstructorMethod(labels, object_class);
+    }
+
+    protected void makeLabelsThreadLocalClass()
+    {
+        String name = tm.getPackage() + "LabelsThreadLocal$" + tm.getName();
+
+        SootClass labels_thread_local = new SootClass(name, Modifier.PUBLIC);
+
+        tm.setLabelsThreadLocalClass(labels_thread_local);
+        Scene.v().addClass(labels_thread_local);
+        labels_thread_local.setApplicationClass();
+        labels_thread_local.setSuperclass(thread_local);
+
+        makeConstructorMethod(labels_thread_local, thread_local);
+        makeInitialValueMethod(labels_thread_local);
+    }
+
+    protected void makeAndInitThreadLocalField()
+    {
+        SootClass container = tm.getContainerClass();
+
+        SootMethod init =
+            container.getMethodByName(SootMethod.constructorName);
+        Body body = init.getActiveBody();
+
+        Chain units = newChain();
+        makeLabelsThreadLocalField();
+        makeLabelsThreadLocal(body);
+    }
+
+    protected void makeInitialValueMethod(SootClass labels_thread_local)
+    {
+        SootClass labels_class = tm.getLabelsClass();
+        RefType labels_type = labels_class.getType();
+
+        int modifiers = Modifier.PUBLIC | Modifier.SYNCHRONIZED;
+        SootMethod init_val = new SootMethod("initialValue",
+                                             new ArrayList(),
+                                             object,
+                                             modifiers);
+        labels_thread_local.addMethod(init_val);
+
+        Body body = Jimple.v().newBody(init_val);
+        init_val.setActiveBody(body);
+        Chain units = body.getUnits();
+
+        Local labels = addLocal(body, "labels", labels_type);
+
+        Expr new_expr = Jimple.v().newNewExpr(labels_type);
+        SootMethodRef init =
+            Scene.v().makeConstructorRef(labels_class, new ArrayList());
+        Expr super_expr =
+            Jimple.v().newSpecialInvokeExpr(labels, init, new ArrayList());
+
+        units.addLast(Jimple.v().newAssignStmt(labels, new_expr));
+        units.addLast(Jimple.v().newInvokeStmt(super_expr));
+        units.addLast(Jimple.v().newReturnStmt(labels));
     }
 
     /**
@@ -645,6 +773,32 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newAssignStmt(local, cast));
     }
 
+    protected void makeLabelsThreadLocal(Body body)
+    {
+        SootClass labels_thread_local = tm.getLabelsThreadLocalClass();
+        Chain units = newChain();
+
+        Local this_local = body.getThisLocal();
+        Local new_obj =
+            addLocal(body, "labels_per_thread", labels_thread_local.getType());
+
+        SootMethodRef construct_ref =
+            Scene.v().makeConstructorRef(labels_thread_local, new ArrayList());
+
+        Expr new_expr =
+            Jimple.v().newNewExpr(labels_thread_local.getType());
+        Expr construct_expr =
+            Jimple.v().newSpecialInvokeExpr(new_obj, construct_ref);
+
+        Ref field_ref = makeLabelsThreadLocalRef(this_local);
+
+        units.addLast(Jimple.v().newAssignStmt(new_obj, new_expr));
+        units.addLast(Jimple.v().newInvokeStmt(construct_expr));
+        units.addLast(Jimple.v().newAssignStmt(field_ref, new_obj));
+
+        insertBeforeReturn(units, body.getUnits());
+    }
+
     /**
      * Create a new org.aspectbench.tm.runtime.internal.Lock object
      * assign it to the lock field on the tracematch container.
@@ -719,9 +873,37 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newAssignStmt(ref, val));
     }
  
+    protected Local getLabelBase(Body body, Chain units, Local base)
+    {
+        if (! tm.isPerThread())
+            return base;
+
+        SootClass labels_tl_class = tm.getLabelsThreadLocalClass();
+        SootClass labels_class = tm.getLabelsClass();
+
+        Local labels_tl = addLocal(body, "labels_tl",
+                                    labels_tl_class.getType());
+        Local labels_obj = addLocal(body, "labels_obj", object);
+        Local labels = addLocal(body, "labels", labels_class.getType());
+
+        SootMethodRef get = thread_local.getMethodByName("get").makeRef();
+
+        Ref labels_tl_ref = makeLabelsThreadLocalRef(base);
+        InvokeExpr get_call =
+            Jimple.v().newVirtualInvokeExpr(labels_tl, get, new ArrayList());
+        CastExpr cast =
+            Jimple.v().newCastExpr(labels_obj, labels.getType());
+
+        units.addLast(Jimple.v().newAssignStmt(labels_tl, labels_tl_ref));
+        units.addLast(Jimple.v().newAssignStmt(labels_obj, get_call));
+        units.addLast(Jimple.v().newAssignStmt(labels, cast));
+        
+        return labels;
+    }
+
     /**
      * Create a Jimple local and assign it the value of a label
-     * field on an instance of the constraint class.
+     * field.
      */
     protected Local getLabel(Body body, Chain units, Local base,
                                 int state, int kind)
@@ -735,9 +917,9 @@ public class CodeGenHelper
     }
 
     /**
-     * Assign a Jimple local to a label field on a constraint class.
+     * Assign a Jimple value to a label field.
      */
-    protected void assignToLabel(Chain units, Local base,
+    protected void assignToLabel(Body body, Chain units, Local base,
                                     int state, int kind, Immediate val)
     {
         Ref ref = makeLabelRef(base, state, kind);
@@ -989,12 +1171,22 @@ public class CodeGenHelper
     }
 
     /**
-     * Generates all the label fields on the tracematch container
-     * class and modifies the <init> method to initialise them.
+     * Generates all the label fields modifies the <init> method
+     * to initialise them. If the tracematch is not per-thread,
+     * these are generated on the tracematch container class,
+     * otherwise they are generated on a separate labels-class
+     * which is accessed from the container class by a
+     * ThreadLocal.
      */
     public void makeAndInitLabelFields()
     {
-        SootClass container = tm.getContainerClass();
+        if (tm.isPerThread()) {
+            makeLabelsClass();
+            makeLabelsThreadLocalClass();
+            makeAndInitThreadLocalField();
+        }
+
+        SootClass container = tm.getLabelsClass();
         TMStateMachine sm = (TMStateMachine) tm.getState_machine();
         Iterator states = sm.getStateIterator();
 
@@ -1002,16 +1194,16 @@ public class CodeGenHelper
             container.getMethodByName(SootMethod.constructorName);
         Body body = init.getActiveBody();
 
-        // local for `this'
         Local this_local = body.getThisLocal();
-
         Chain units = newChain();
+
+        if (! tm.isPerThread()) {
+            makeLockField();
+            makeLock(body, units);
+        }
 
         Local trueC = getConstant(body, units, "trueC");
         Local falseC = getConstant(body, units, "falseC");
-
-        makeLockField();
-        makeLock(body, units);
 
         makeUpdatedField();
         setUpdated(units, this_local, IntConstant.v(0));
@@ -1022,14 +1214,17 @@ public class CodeGenHelper
 
             if (state.isInitialNode()) {
                 makeLabelField(s_num, LABEL);
-                assignToLabel(units, this_local, s_num, LABEL, trueC);
+                assignToLabel(body, units, this_local, s_num, LABEL, trueC);
             } else {
                 makeLabelField(s_num, LABEL);
                 makeLabelField(s_num, TMP_LABEL);
                 makeLabelField(s_num, SKIP_LABEL);
-                assignToLabel(units, this_local, s_num, LABEL, falseC);
-                assignToLabel(units, this_local, s_num, TMP_LABEL, falseC);
-                assignToLabel(units, this_local, s_num, SKIP_LABEL, falseC);
+                assignToLabel(body, units, this_local,
+                                s_num, LABEL, falseC);
+                assignToLabel(body, units, this_local,
+                                s_num, TMP_LABEL, falseC);
+                assignToLabel(body, units, this_local,
+                                s_num, SKIP_LABEL, falseC);
             }
         }
 
@@ -1071,6 +1266,9 @@ public class CodeGenHelper
      */
     public void genAcquireLock()
     {
+        if (tm.isPerThread())
+            return;
+
         SootMethod method = tm.getSynchAdviceMethod();
         Body body = method.getActiveBody();
 
@@ -1094,20 +1292,21 @@ public class CodeGenHelper
         Local this_local = body.getThisLocal();
 
         Chain units = newChain();
+        Local label_base = getLabelBase(body, units, this_local);
 
-        setUpdated(units, this_local, IntConstant.v(1));
+        setUpdated(units, label_base, IntConstant.v(1));
 
         Value from_state = getInt(from);
         Value to_state = getInt(to);
-        Local lab_from = getLabel(body, units, this_local, from, LABEL);
+        Local lab_from = getLabel(body, units, label_base, from, LABEL);
         Local bind_result =
             callBindingsMethod(body, units, symbol, lab_from,
                                 method, from_state, to_state, true);
 
-        Local lab_to = getLabel(body, units, this_local, to, TMP_LABEL);
+        Local lab_to = getLabel(body, units, label_base, to, TMP_LABEL);
         Local or_result =
             callOrMethod(body, units, lab_to, bind_result);
-        assignToLabel(units, this_local, to, TMP_LABEL, or_result);
+        assignToLabel(body, units, label_base, to, TMP_LABEL, or_result);
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -1123,36 +1322,38 @@ public class CodeGenHelper
         Local this_local = body.getThisLocal();
 
         Chain units = newChain();
+        Local label_base = getLabelBase(body, units, this_local);
 
-        setUpdated(units, this_local, IntConstant.v(1));
+        setUpdated(units, label_base, IntConstant.v(1));
 
         Value to_state = getInt(to);
-        Local lab = getLabel(body, units, this_local, to, SKIP_LABEL);
+        Local lab = getLabel(body, units, label_base, to, SKIP_LABEL);
         Local result =
             callBindingsMethod(body, units, symbol, lab, method,
                                 to_state, to_state, false);
 
-        assignToLabel(units, this_local, to, SKIP_LABEL, result);
+        assignToLabel(body, units, label_base, to, SKIP_LABEL, result);
 
         insertBeforeReturn(units, body.getUnits());
     }
 
     /**
      * Generate code that tests the "updated" flag on the
-     * tracematch container class, and jumps to the return
-     * statement if it is false.
+     * labels class, and jumps to the return statement if
+     * it is false.
      */
     protected void genTestAndResetUpdated(SootMethod method)
     {
         Body body = method.getActiveBody();
         Local this_local = body.getThisLocal();
         Chain units = newChain();
+        Local updated_base = getLabelBase(body, units, this_local);
 
         Stmt end = getReturn(body.getUnits());
 
-        Local updated = getUpdated(body, units, this_local);
+        Local updated = getUpdated(body, units, updated_base);
         insertIf(units, updated, end);
-        setUpdated(units, this_local, IntConstant.v(0));
+        setUpdated(units, updated_base, IntConstant.v(0));
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -1170,30 +1371,31 @@ public class CodeGenHelper
         Local this_local = body.getThisLocal();
 
         Chain units = newChain();
+        Local label_base = getLabelBase(body, units, this_local);
 
         // Assign TMP_LABEL to LABEL
         // (combining with SKIP_LABEL if appropriate)
         Local new_label;
-        new_label = getLabel(body, units, this_local, state, TMP_LABEL);
+        new_label = getLabel(body, units, label_base, state, TMP_LABEL);
 
         if (skip_loop) {
             Local skip_label =
-                getLabel(body, units, this_local, state, SKIP_LABEL);
+                getLabel(body, units, label_base, state, SKIP_LABEL);
             new_label = callOrMethod(body, units, new_label, skip_label);
         }
 
         // update LABEL
-        assignToLabel(units, this_local, state, LABEL, new_label);
-
-        if (is_final)
-            genLockRelease(body, units, new_label, true);
+        assignToLabel(body, units, label_base, state, LABEL, new_label);
 
         // reset TMP_LABEL
         Local falseC = getConstant(body, units, "falseC");
-        assignToLabel(units, this_local, state, TMP_LABEL, falseC);
+        assignToLabel(body, units, label_base, state, TMP_LABEL, falseC);
 
         // reset SKIP_LABEL
-        assignToLabel(units, this_local, state, SKIP_LABEL, new_label);
+        assignToLabel(body, units, label_base, state, SKIP_LABEL, new_label);
+
+        if (is_final && !tm.isPerThread())
+            genLockRelease(body, units, new_label, true);
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -1487,6 +1689,7 @@ public class CodeGenHelper
         genIdentityStmts(method, body, units);
 
         Local this_local = body.getThisLocal();
+        Local label_base = getLabelBase(body, units, this_local);
 
         Stmt init = newPlaceHolder();
         Stmt init_end = newPlaceHolder();
@@ -1494,23 +1697,28 @@ public class CodeGenHelper
         Stmt end  = newPlaceHolder();
 
         Local disjuncts = addLocal(body, "disjuncts", object_array);
-        Expr own_lock = ownLock(body, units);
 
-        insertIf(units, own_lock, init);
+        if (! tm.isPerThread()) {
+            Expr own_lock = ownLock(body, units);
 
-        // fake initialisation of disjunct array
-        makeEmptyArray(units, disjuncts);
-        insertGoto(units, init_end);
+            insertIf(units, own_lock, init);
+
+            // fake initialisation of disjunct array
+            makeEmptyArray(units, disjuncts);
+            insertGoto(units, init_end);
+        }
 
         insertPlaceHolder(units, init);
 
         // real initialisation of disjunct array
         Local lab_final =
-            getLabel(body, units, this_local, final_state, LABEL);
+            getLabel(body, units, label_base, final_state, LABEL);
         callDisjunctsMethod(body, units, lab_final, disjuncts);
-        assignToLabel(units, this_local, final_state, LABEL, NullConstant.v());
+        assignToLabel(body, units, label_base, final_state,
+                        LABEL, NullConstant.v());
 
-        genLockRelease(body, units, lab_final, false);
+        if (! tm.isPerThread())
+            genLockRelease(body, units, lab_final, false);
         insertPlaceHolder(units, init_end);
 
         // initialise loop counter
