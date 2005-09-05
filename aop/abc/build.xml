@@ -148,6 +148,8 @@
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
         <mkdir dir="generated/abc/tm/parse"/>
+        <!--NEIL: added for om-->
+    	<mkdir dir="generated/abc/om/parse"/>
         <java classname="JFlex.Main"
             fork="true"
             dir="."
@@ -177,6 +179,8 @@
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
         <mkdir dir="generated/abc/tm/parse"/>
+    	<!--NEIL: added for om?-->
+    	<mkdir dir="generated/abc/om/parse"/>
         <java classname="java_cup.Main"
             fork="true"
             dir="generated/abc/aspectj/parse"
@@ -199,6 +203,19 @@
             </classpath>
             <arg line="eaj_ppg.cup"/>
         </java>
+    	<!--NEIL: Added for abc om?-->
+        <java classname="java_cup.Main"
+            fork="true"
+            dir="generated/abc/om/parse"
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="om_ppg.cup"/>
+        </java>
+        
         <java classname="java_cup.Main"
             fork="true"
             dir="generated/abc/tm/parse"
@@ -223,6 +240,13 @@
             <targetfileset dir="generated/abc/eaj/parse"
                 includes="Grm.java,sym.java"/>
         </dependset>
+    	<!--NEIL: Added for om?-->
+        <dependset>
+            <srcfileset dir="generated/abc/om/parse" includes="om_ppg.cup"/>
+            <targetfileset dir="generated/abc/om/parse"
+                includes="Grm.java,sym.java"/>
+        </dependset>
+        
         <dependset>
             <srcfileset dir="generated/abc/tm/parse" includes="tm_ppg.cup"/>
             <targetfileset dir="generated/abc/tm/parse"
@@ -236,6 +260,10 @@
                 <available file="generated/abc/eaj/parse/sym.java"/>
                 <available file="generated/abc/tm/parse/Grm.java"/>
                 <available file="generated/abc/tm/parse/sym.java"/>
+            	<!--NEIL: Added for om?-->
+                <available file="generated/abc/om/parse/Grm.java"/>
+                <available file="generated/abc/om/parse/sym.java"/>
+ 
             </and>
         </condition>
     </target>
@@ -244,6 +272,8 @@
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
         <mkdir dir="generated/abc/tm/parse"/>
+    	<!--NEIL: Added for om?-->
+    	<mkdir dir="generated/abc/om/parse"/>
         <java classname="ppg.PPG"
             fork="true"
             dir="src/abc/aspectj/parse"
@@ -268,6 +298,20 @@
             </classpath>
             <arg line="eaj.ppg"/>
         </java>
+    	<!--NEIL: Added for om?-->
+        <java classname="ppg.PPG"
+            fork="true"
+            dir="src/abc/om/parse"
+            failonerror="true"
+            output="generated/abc/om/parse/om_ppg.cup"
+        >
+            <classpath>
+                <pathelement location="${polyglot.loc}"/>
+                <pathelement location="${polyglot.cupclasses.loc}"/>
+            </classpath>
+            <arg line="om.ppg"/>
+        </java>
+        
         <java classname="ppg.PPG"
             fork="true"
             dir="src/abc/tm/parse"
@@ -292,6 +336,14 @@
             <targetfileset dir="generated/abc/eaj/parse"
                 includes="eaj_ppg.cup"/>
         </dependset>
+
+    	<!--NEIL: added for om. Note: Shouldn't the include be omX.ppg? -->
+        <dependset>
+            <srcfileset dir="src/abc/om/parse" includes="aspectj.ppg"/>
+            <targetfileset dir="generated/abc/om/parse"
+                includes="om_ppg.cup"/>
+        </dependset>
+        
         <dependset>
             <srcfileset dir="src/abc/tm/parse" includes="aspectj.ppg"/>
             <targetfileset dir="generated/abc/tm/parse"
@@ -302,6 +354,8 @@
                 <available file="generated/abc/aspectj/parse/aspectj_ppg.cup"/>
                 <available file="generated/abc/eaj/parse/eaj_ppg.cup"/>
                 <available file="generated/abc/tm/parse/tm_ppg.cup"/>
+            	<!--NEIL: Added for om-->
+                <available file="generated/abc/om/parse/om_ppg.cup"/>
             </and>
         </condition>
     </target>
