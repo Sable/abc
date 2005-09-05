@@ -38,7 +38,7 @@ public class NamePatternEvaluator extends HaltingVisitor {
 
     protected abc.aspectj.ExtensionInfo ext_info;
 
-    private Set/*<ParsedClassType>*/ seen_classes = new HashSet();
+    protected Set/*<ParsedClassType>*/ seen_classes = new HashSet();
 
     public NamePatternEvaluator(abc.aspectj.ExtensionInfo ext_info) {
 	this.ext_info = ext_info;

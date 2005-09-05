@@ -144,7 +144,12 @@ import java.math.BigInteger;
     StringBuffer sb = new StringBuffer();
     String file;
     ErrorQueue eq;
-    HashMap javaKeywords, pointcutKeywords, aspectJKeywords, pointcutIfExprKeywords;
+    //NEIL: added module map
+    HashMap javaKeywords, 
+    		pointcutKeywords, 
+    		aspectJKeywords, 
+    		pointcutIfExprKeywords,
+    		moduleKeywords;
     boolean lastTokenWasDot;
 
 	public void addJavaKeyword(String keyword, LexerAction la) {
@@ -168,11 +173,18 @@ import java.math.BigInteger;
 		addAspectJKeyword(keyword, la);
 		addPointcutKeyword(keyword, la);
 		addPointcutIfExprKeyword(keyword, la);
+		//NEIL: For module keywords
+		addModuleKeyword(keyword, la);
 	}
 	
 	public void addAspectJContextKeyword(String keyword, LexerAction la) {
 		addAspectJKeyword(keyword, la);
 		addPointcutIfExprKeyword(keyword, la);
+	}
+
+	//NEIL: Added module state
+	public void addModuleKeyword(String keyword, LexerAction la) {
+		moduleKeywords.put(keyword, la);
 	}
 
     public Lexer_c(java.io.InputStream in, String file, ErrorQueue eq) {
@@ -188,6 +200,8 @@ import java.math.BigInteger;
         this.pointcutKeywords = new HashMap();
         this.aspectJKeywords = new HashMap();
         this.pointcutIfExprKeywords = new HashMap();
+        //NEIL: For module keywords
+        this.moduleKeywords = new HashMap();
         abc.main.Main.v().getAbcExtension().initLexerKeywords(this);
     }
 
@@ -197,6 +211,8 @@ import java.math.BigInteger;
 	public int aspectj_state() { return ASPECTJ; }
 	public int pointcut_state() { return POINTCUT; }
 	public int pointcutifexpr_state() { return POINTCUTIFEXPR; }
+	//NEIL: Added module state
+	public int module_state() {return MODULE; }
 
 	public void setInPerPointcut(boolean b) {
 		inPerPointcut = b;
@@ -481,8 +497,12 @@ OctalEscape = \\ [0-7]
 */
 %state POINTCUT
 
+//NEIL: added module state
+%state MODULE
+
 %%
-<YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
+//NEIL: Added module state
+<YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT,MODULE> {
     /* 3.7 Comments */
 	"/*"                       { if(abc.main.options.OptionsParser.v().nested_comments()) 
 						enterLexerState(NESTABLECOMMENT);
@@ -510,7 +530,7 @@ OctalEscape = \\ [0-7]
 }
 
 /* Java-ish symbols and literals */
-<YYINITIAL,ASPECTJ,POINTCUTIFEXPR> {
+<YYINITIAL,ASPECTJ,POINTCUTIFEXPR,MODULE> {
     /* 3.11 Separators */
   "("                            { parenLevel++; return op(sym.LPAREN); }
 
@@ -673,8 +693,13 @@ OctalEscape = \\ [0-7]
 <POINTCUTIFEXPR> {
 	"pointcutifexpr_state"			{ return id(); }
 }
+//NEIL: For module state
+<MODULE> {
+	"module_state"			{ return id(); }
+}
 
-<YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT> {
+//NEIL: added Module state
+<YYINITIAL,ASPECTJ,POINTCUTIFEXPR,POINTCUT,MODULE> {
 	/* Handle keywords and identifiers here. It has to be done last because with the new parser structure,
 		whether or not an identifier is a keyword is only determined after it has been consumed, so
 		that splitting this code between the different lexer states would consume identifiers
@@ -701,6 +726,11 @@ OctalEscape = \\ [0-7]
 				
     		case POINTCUTIFEXPR:
     			la = (LexerAction) pointcutIfExprKeywords.get(yytext());
+				break;
+				
+			//NEIL: Added module keywords
+			case MODULE:
+				la = (LexerAction) moduleKeywords.get(yytext());
 				break;
 			
 			default:

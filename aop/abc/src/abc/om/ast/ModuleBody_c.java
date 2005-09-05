@@ -1,0 +1,197 @@
+/*
+ * Created on May 13, 2005
+ *
+ */
+package abc.om.ast;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import abc.om.ExtensionInfo;
+import abc.om.visit.*;
+
+import polyglot.ast.Node;
+import polyglot.ext.jl.ast.Node_c;
+import polyglot.types.SemanticException;
+import polyglot.util.CodeWriter;
+import polyglot.util.CollectionUtil;
+import polyglot.util.Position;
+import polyglot.visit.NodeVisitor;
+import polyglot.visit.PrettyPrinter;
+
+/**
+ * @author Neil Ongkingco
+ *  
+ */
+public class ModuleBody_c extends Node_c implements ModuleBody {
+
+    private List /* ModMember */members;
+
+    private List /* SigMember */sigMembers;
+
+    public ModuleBody_c(Position pos, List members, List sigMembers) {
+        super(pos);
+        this.members = members;
+        this.sigMembers = sigMembers;
+    }
+
+    public List members() {
+        return members;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see abc.openmod.ast.ModuleBody#sigMembers()
+     */
+    public List sigMembers() {
+        return sigMembers;
+    }
+
+    public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
+        w.begin(4);
+        w.write("/*members*/");
+        w.newline();
+        for (Iterator iter = members.iterator(); iter.hasNext();) {
+            ModMember member = (ModMember) iter.next();
+            member.prettyPrint(w, pp);
+        }
+        w.write("/*signature*/");
+        w.newline();
+        for (Iterator iter = sigMembers.iterator(); iter.hasNext();) {
+            SigMember sigMember = (SigMember) iter.next();
+            sigMember.prettyPrint(w, pp);
+        }
+        w.end();
+        w.newline();
+        //super.prettyPrint(w, pp);
+    }
+
+    public void checkMembers(ModuleDecl module, ExtensionInfo ext)
+            throws SemanticException {
+        // Checks the members of the module
+        for (Iterator iter = members.iterator(); iter.hasNext();) {
+            ModMember m = (ModMember) iter.next();
+            if (m instanceof ModMemberAspect) {
+                checkMemberAspect(module, (ModMemberAspect) m, ext);
+            } else if (m instanceof ModMemberClass) {
+                checkMemberClass(module, (ModMemberClass) m, ext);
+            } else if (m instanceof ModMemberModule) {
+                checkMemberModule(module, (ModMemberModule) m, ext);
+            }
+        }
+    }
+    
+    public void checkSigMembers(ModuleDecl module, ExtensionInfo ext) {
+        //checks the signature members of this module
+        for (Iterator iter = sigMembers.iterator(); iter.hasNext();) {
+            SigMember sigMember = (SigMember) iter.next();
+            checkSigMember(module, sigMember, ext);
+        }
+    }
+
+    /**
+     * Checks if the included module exists, and if it is not already a member
+     * of another module
+     */
+    public void checkMemberModule(ModuleDecl module, ModMemberModule member,
+            ExtensionInfo ext) throws SemanticException {
+        // Check if the module exists
+        ModuleNodeModule parentn = 
+            	(ModuleNodeModule)ext.moduleStruct.getNode(module.name(),
+            	        	ModuleNode.TYPE_MODULE);
+        assert(parentn != null);
+        ModuleNodeModule n = 
+            	(ModuleNodeModule)ext.moduleStruct.getNode(member.name(),
+            	        ModuleNode.TYPE_MODULE);
+        if (n == null) {
+            throw new SemanticException("Module does not exist", member
+                    .position());
+        }
+        // Check if module already belongs to another module
+        if (n.getParent() != null) {
+            throw new SemanticException("Module already a member of "
+                    + n.getParent().name(), member.position());
+        }
+
+        //set the members parent to this module and add the node the parent
+        ext.moduleStruct.addMember(parentn.name(), n);
+        
+        //set the constrained flag
+        n.setIsConstrained(member.isConstrained());
+    }
+
+    public void checkMemberClass(ModuleDecl module, ModMemberClass member,
+            ExtensionInfo ext) throws SemanticException {
+        // add the ModuleNodes that represent the expression
+        ModuleNode n = ext.moduleStruct.addClassNode(module.name(), member.getCPE());
+        assert(n != null);
+        ext.moduleStruct.addMember(module.name(), n);
+    }
+
+    public void checkMemberAspect(ModuleDecl module, ModMemberAspect member,
+            ExtensionInfo ext) throws SemanticException {
+        // Check if the aspect exists
+        if (!ext.aspect_names.contains(member.name())) {
+            throw new SemanticException("Aspect does not exist", member
+                    .position());
+        }
+        //check if the aspect already belongs to another module
+        ModuleNode owner = ext.moduleStruct.getOwner(member.name(),
+                ModuleNode.TYPE_ASPECT);
+        if (owner != null) {
+            throw new SemanticException("Aspect already included in module "
+                    + owner.name(), member.position());
+        }
+        //add a ModuleNode that represents the aspect
+        ModuleNode aspectNode = ext.moduleStruct.addAspectNode(
+                member.name(), member.getNamePattern());
+        assert(aspectNode != null);
+        aspectNode = ext.moduleStruct.addMember(module.name(), aspectNode);
+        //should always add properly, since we already checked if there is an
+        // existing aspect
+        assert(aspectNode != null);
+    }
+
+    public void checkSigMember(ModuleDecl module, SigMember sigMember,
+            ExtensionInfo ext) {
+        //TODO: Check signature member (typecheck?)
+        //add signature member
+        ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(module.name(),
+                ModuleNode.TYPE_MODULE);
+        assert(n != null);
+        n.addSigMember(sigMember);
+    }
+
+    public ModuleBody_c reconstruct(List members, List sigMembers) {
+        if (!CollectionUtil.equals(members, this.members)
+                || !CollectionUtil.equals(sigMembers, this.sigMembers)) {
+            ModuleBody_c n = (ModuleBody_c) copy();
+            n.members = members;
+            n.sigMembers = sigMembers;
+            return n;
+        }
+        return this;
+    }
+
+    public Node visitChildren(NodeVisitor v) {
+        List newMembers = new LinkedList();
+        List newSigMembers = new LinkedList();
+
+        //visit members
+        for (Iterator iter = members.iterator(); iter.hasNext();) {
+            ModMember member = (ModMember) iter.next();
+            newMembers.add(visitChild(member, v));
+        }
+
+        //visit signature
+        for (Iterator iter = sigMembers.iterator(); iter.hasNext();) {
+            SigMember sigMember = (SigMember) iter.next();
+            newSigMembers.add(visitChild(sigMember, v));
+        }
+
+        return reconstruct(newMembers, newSigMembers);
+    }
+
+}

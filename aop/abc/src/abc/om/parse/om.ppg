@@ -1,0 +1,224 @@
+/* abc - The AspectBench Compiler
+ * Copyright (C) 2004 Julian Tibble
+ *
+ * This compiler is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this compiler, in the file LESSER-GPL;
+ * if not, write to the Free Software Foundation, Inc.,
+ * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+include "../../../../src/abc/aspectj/parse/aspectj.ppg"
+
+package abc.om.parse;
+
+import abc.om.ast.*;
+
+import polyglot.ext.jl.parse.Name;
+
+parser Grm extends abc.aspectj.parse.Grm {:
+    public final OpenModNodeFactory nf;
+
+    public Grm(Lexer l, TypeSystem t, NodeFactory n, ErrorQueue q) {
+        super(l, t, n, q);
+        nf = (OpenModNodeFactory) n;
+    }
+:};
+
+
+// ------- new tokens ------------------------------
+
+terminal Token MODULE;
+terminal Token SIGNATURE;
+terminal Token METHOD;
+terminal Token CONSTRAIN;
+
+// ------- new non-terminals -----------------------
+non terminal List/*ModuleDecl*/ module_declaration_list;
+non terminal ModuleDecl module_declaration;
+non terminal ModuleBody module_body;
+non terminal List/*<OMModMember>*/ module_member_list;
+non terminal ModMember module_member;
+non terminal List/*<OMSigMember>*/ signature;
+non terminal List/*<OMSigMember>*/ signature_member_list;
+non terminal SigMember signature_member;
+
+start with goal;
+
+/* ---------------------------------------------------------------- */
+/*             EXTENSIONS TO BASE JAVA RULES                        */
+/* ---------------------------------------------------------------- */
+/* add the possiblility of declaring a module to type_declaration */
+extend compilation_unit ::=   // add new toplevel node
+     module_declaration_list:ml
+       {: 
+       		//set package name to null, emptylist for imports
+       		RESULT = parser.nf.SourceFile(parser.pos(ml), 
+       									null,
+       									new TypedList(new LinkedList(), 
+       											Import.class, 
+       											false),
+       									ml);
+       :}
+  ;
+  
+module_declaration_list ::= module_declaration:m
+       {: 
+       		TypedList __modulelist__ = new TypedList(new LinkedList(), 
+       												TopLevelDecl.class, 
+       												false);
+       		//insert a dummy aspect between the module declaration and
+       		//the source file
+       		DummyAspectDecl_c __dummyAspect = 
+       			(DummyAspectDecl_c) 
+       				parser.nf.DummyAspectDecl(parser.pos(m), m.name());
+       		__dummyAspect.addModule(m);
+       		__modulelist__.add(__dummyAspect); 
+       		RESULT = __modulelist__;
+       :}
+       |
+       module_declaration_list:ml module_declaration:m
+       {:
+       Grm.parserTrace("OM module_declaration_list");
+       		//Should also insert dummy aspect here, as module_decl returns a
+       		//ModuleDecl, and not a dummy aspect
+       		DummyAspectDecl_c __dummyAspect = 
+       			(DummyAspectDecl_c) 
+       				parser.nf.DummyAspectDecl(parser.pos(m), m.name());
+       		__dummyAspect.addModule(m);
+			RESULT = ml;
+			RESULT.add(__dummyAspect);
+       :}
+;
+/* ---------------------------------------------------------------- */
+/*                      OPENMOD RULES                               */
+/* ---------------------------------------------------------------- */
+module_declaration ::= 
+	MODULE:m IDENTIFIER:n module_body:mb
+	{:
+		Grm.parserTrace("OM Module declaration");
+		RESULT = parser.nf.ModuleDecl(parser.pos(m,mb), n.getIdentifier(), mb, parser.pos(n));
+	:}
+;
+
+module_body ::=
+	//no module members
+	LBRACE:lb
+		signature:s
+	RBRACE:rb
+	{:
+		Grm.parserTrace("OM Module body");
+		List mm = new TypedList(new LinkedList(), ModMember.class, false);
+		RESULT = parser.nf.ModuleBody(parser.pos(lb, rb), mm, s);
+	:}
+	|
+	LBRACE:lb
+		module_member_list:mm
+		signature:s
+	RBRACE:rb
+	{:
+		Grm.parserTrace("OM Module body");
+		RESULT = parser.nf.ModuleBody(parser.pos(lb, rb), mm, s);
+	:}
+;
+
+module_member_list ::=
+	module_member:m
+	{:
+		Grm.parserTrace("OM first member of module_member_list");
+		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
+		RESULT.add(m);
+	:}
+	| 
+	module_member_list:ml module_member:m
+	{:
+		Grm.parserTrace("OM module_member_list");
+		RESULT = ml;
+		RESULT.add(m);
+	:}
+;
+
+module_member ::=
+	CLASS:c classname_pattern_expr:cn SEMICOLON:sc
+	{:
+		Grm.parserTrace("OM module_member: class");
+		RESULT = parser.nf.ModMemberClass(parser.pos(c,sc), cn);
+	:}
+	|
+	ASPECT:a IDENTIFIER:an SEMICOLON:sc
+	{:
+		Grm.parserTrace("OM module_member: aspect");
+		RESULT = parser.nf.ModMemberAspect(parser.pos(a,sc), an.getIdentifier());
+	:}
+	|
+	MODULE:m IDENTIFIER:mn SEMICOLON:sc
+	{:
+		Grm.parserTrace("OM module_member: module");
+		RESULT = parser.nf.ModMemberModule(parser.pos(m,mn), mn.getIdentifier(), false);
+	:}
+	|
+	CONSTRAIN:c MODULE:m IDENTIFIER:mn SEMICOLON:sc
+	{:
+		Grm.parserTrace("OM module_member: module");
+		RESULT = parser.nf.ModMemberModule(parser.pos(c,mn), mn.getIdentifier(), true);
+	:}
+;
+
+signature ::= 
+	SIGNATURE:sg LBRACE RBRACE //empty signature
+	{:
+		RESULT = new TypedList(new LinkedList(), SigMember.class, false);
+	:}
+	|
+	SIGNATURE:sg LBRACE
+		signature_member_list:sm
+	RBRACE:rb
+	{:
+		Grm.parserTrace("OM Signature");
+		RESULT = sm;
+	:}
+;
+
+signature_member_list ::= 
+	signature_member:sm 
+	{:
+		Grm.parserTrace("OM first member of signature_member_list");
+		RESULT = new TypedList(new LinkedList(), SigMember.class, false);
+		RESULT.add(sm);
+	:}
+	| 
+	signature_member_list:sl signature_member:sm
+	{:
+		Grm.parserTrace("OM signature_member_list");
+		RESULT = sl;
+		RESULT.add(sm);
+	:}
+;
+
+signature_member ::= 
+	POINTCUT pointcut_expr:pc SEMICOLON
+	{:
+		RESULT = parser.nf.SigMemberPCDecl(((Node)pc).position(), pc, false);
+	:}
+	| PRIVATE POINTCUT pointcut_expr:pc SEMICOLON
+	{:
+		RESULT = parser.nf.SigMemberPCDecl(((Node)pc).position(), pc, true);
+	:}
+	| METHOD:m method_constructor_pattern:mp SEMICOLON
+	{:
+		RESULT = parser.nf.SigMemberMethodDecl(parser.pos(m,mp), mp, false);
+	:}
+	| PRIVATE METHOD:m method_constructor_pattern:mp SEMICOLON
+	{:
+		RESULT = parser.nf.SigMemberMethodDecl(parser.pos(m,mp), mp, true);
+	:}
+;
