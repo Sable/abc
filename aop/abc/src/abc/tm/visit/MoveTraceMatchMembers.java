@@ -47,13 +47,27 @@ public class MoveTraceMatchMembers extends ContextVisitor
     private TMNodeFactory nf;
     private AJTypeSystem ts;
 
-    private List advice = new LinkedList();
+    private List advice = null;
 
     public MoveTraceMatchMembers(Job job, AJTypeSystem ts, TMNodeFactory nf)
     {
         super(job, ts, nf);
         this.nf = nf;
         this.ts = ts;
+    }
+
+    public NodeVisitor enter(Node parent, Node n)
+    {
+        MoveTraceMatchMembers visitor =
+            (MoveTraceMatchMembers) super.enter(parent, n);
+
+        if (n instanceof AspectDecl)
+        {
+            visitor = (MoveTraceMatchMembers) visitor.copy();
+            visitor.advice = new LinkedList();
+        }
+
+        return visitor;
     }
 
     public Node leave(Node parent, Node old, Node n, NodeVisitor v)
@@ -73,9 +87,6 @@ public class MoveTraceMatchMembers extends ContextVisitor
                 TMAdviceDecl tm_ad = (TMAdviceDecl) i.next();
                 n = ((AspectBody) n).addMember(tm_ad);
             }
-
-            // reset the list of advice
-            advice = new LinkedList();
         }
 
         return n;

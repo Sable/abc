@@ -232,6 +232,7 @@ public class PerEventAdviceDecl_c extends AdviceBody_c
             gai.addAdviceDecl(after_ad);
         }
 
-        MethodCategory.register(this, MethodCategory.ADVICE_BODY);
+        // don't advise this method or calls to it
+        MethodCategory.register(this, MethodCategory.IF_EXPR);
     }
 }

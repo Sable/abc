@@ -33,6 +33,7 @@ import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.aspectinfo.MethodSig;
 
 import abc.tm.visit.*;
 import abc.tm.weaving.aspectinfo.*;
@@ -572,12 +573,17 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
                 methods.add(AbcFactory.MethodSig((ConstructorInstance) ci));
         }
 
+        // create a signature for this method after transformation
+        // in the backend (i.e. with only around tracematch formals)
+        MethodSig sig = AbcFactory.MethodSig(
+                            this.formals(transformed_formals));
+
         if (before_around_pc != null) {
             abc.weaving.aspectinfo.AdviceDecl before_ad =
                 new abc.tm.weaving.aspectinfo.TMAdviceDecl
                     (before_around_spec.makeAIAdviceSpec(),
                      before_around_pc.makeAIPointcut(),
-                     AbcFactory.MethodSig(this.formals(transformed_formals)),
+                     sig,
                      current_aspect,
                      jp, jpsp, ejp, methods,
                      position(), name(), position(), TMAdviceDecl.BODY);
@@ -590,7 +596,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
                 new abc.tm.weaving.aspectinfo.TMAdviceDecl
                     (after_spec.makeAIAdviceSpec(),
                      after_pc.makeAIPointcut(),
-                     AbcFactory.MethodSig(this.formals(transformed_formals)),
+                     sig,
                      current_aspect,
                      jp, jpsp, ejp, methods, position(),
                      tracematch_name, position(), TMAdviceDecl.BODY);
@@ -598,7 +604,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
             gai.addAdviceDecl(after_ad);
         }
 
-        MethodCategory.register(this, MethodCategory.ADVICE_BODY);
+        MethodCategory.register(sig, MethodCategory.ADVICE_BODY);
 
         String proceed_name = null;
 
