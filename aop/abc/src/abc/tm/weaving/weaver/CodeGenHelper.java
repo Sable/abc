@@ -33,8 +33,8 @@ public class CodeGenHelper
     protected Type object;
     protected Type object_array;
 
-    protected Local disjuncts_local = null;
-    protected Local disjuncts_index_local = null;
+    protected String disjuncts_name = null;
+    protected String disjuncts_index_name = null;
 
     protected int local_count; // used to ensure local names are unique
 
@@ -1034,7 +1034,8 @@ public class CodeGenHelper
         return result;
     }
 
-    protected void swapAssignForIdentity(Chain units, Local local, int param)
+    protected void swapAssignForIdentity(Chain units, String local_name,
+                                            int param)
     {
         Object current = units.getFirst();
         boolean found = false;
@@ -1047,15 +1048,22 @@ public class CodeGenHelper
 
             AssignStmt assign = (AssignStmt) current;
 
-            if (! assign.getLeftOp().equals(local)) {
+            if (! (assign.getLeftOp() instanceof Local)) {
+                current = units.getSuccOf(current);
+                continue;
+            }
+
+            Local assigned = (Local) assign.getLeftOp();
+
+            if (! assigned.getName().equals(local_name)) {
                 current = units.getSuccOf(current);
                 continue;
             }
 
             ParameterRef param_ref =
-                Jimple.v().newParameterRef(local.getType(), param);
+                Jimple.v().newParameterRef(assigned.getType(), param);
             IdentityStmt id_stmt =
-                Jimple.v().newIdentityStmt(local, param_ref);
+                Jimple.v().newIdentityStmt(assigned, param_ref);
 
             units.swapWith(assign, id_stmt);
             found = true;
@@ -1540,8 +1548,8 @@ public class CodeGenHelper
         Local disjunct = castDisjunct(body, assignments, disjunct_obj);
 
         // we'll need these later...
-        this.disjuncts_local = disjuncts;
-        this.disjuncts_index_local = index;
+        this.disjuncts_name = disjuncts.getName();
+        this.disjuncts_index_name = index.getName();
 
         // find the end of the identity statements in the current method
         Chain units = body.getUnits();
@@ -1579,8 +1587,6 @@ public class CodeGenHelper
         Chain units = body.getUnits();
 
         String proceed = tm.getDummyProceedName();
-        Local disjuncts = this.disjuncts_local;
-        Local index = this.disjuncts_index_local;
 
         Stmt proceed_call =
                 findMethodCall(units, search_start, proceed);
@@ -1652,8 +1658,8 @@ public class CodeGenHelper
         int disjunct_param = types.size() - 2;
         int index_param = types.size() - 1;
 
-        swapAssignForIdentity(units, disjuncts_local, disjunct_param);
-        swapAssignForIdentity(units, disjuncts_index_local, index_param);
+        swapAssignForIdentity(units, disjuncts_name, disjunct_param);
+        swapAssignForIdentity(units, disjuncts_index_name, index_param);
     }
 
     protected void transformRealBodyMethodSelfCalls()
