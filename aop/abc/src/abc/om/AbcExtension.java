@@ -13,6 +13,7 @@ import polyglot.util.Position;
 
 import abc.aspectj.parse.AbcLexer;
 import abc.aspectj.parse.LexerAction_c;
+import abc.om.parse.OMAbcLexer;
 import abc.om.parse.sym;
 import abc.om.visit.ModuleStructure;
 import abc.om.weaving.aspectinfo.OMGlobalAspectInfo;
@@ -64,38 +65,40 @@ public class AbcExtension extends abc.main.AbcExtension {
     public void initLexerKeywords(AbcLexer lexer) {
         // Add the base keywords
         super.initLexerKeywords(lexer);
+        OMAbcLexer omLexer = (OMAbcLexer) lexer;
 
-        lexer.addJavaKeyword("module", new LexerAction_c(
-                new Integer(sym.MODULE), new Integer(lexer.module_state())));
-        lexer.addModuleKeyword("module", new LexerAction_c(new Integer(
-                sym.MODULE), new Integer(lexer.module_state())));
-        lexer.addModuleKeyword("__sig", new LexerAction_c(new Integer(
-                sym.SIGNATURE), new Integer(lexer.module_state())));
-        lexer.addModuleKeyword("pointcut", new LexerAction_c(new Integer(
-                sym.POINTCUT), new Integer(lexer.pointcut_state())));
-        lexer.addModuleKeyword("aspect", new LexerAction_c(new Integer(
-                sym.ASPECT), new Integer(lexer.module_state())));
-        lexer.addModuleKeyword("method", new LexerAction_c(new Integer(
-                sym.METHOD), new Integer(lexer.pointcut_state())));
-        lexer.addModuleKeyword("constrain", 
+        omLexer.addJavaKeyword("module", new LexerAction_c(
+                new Integer(sym.MODULE), new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("module", new LexerAction_c(new Integer(
+                sym.MODULE), new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("__sig", new LexerAction_c(new Integer(
+                sym.SIGNATURE), new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("pointcut", new LexerAction_c(new Integer(
+                sym.POINTCUT), new Integer(omLexer.pointcut_state())));
+        omLexer.addModuleKeyword("aspect", new LexerAction_c(new Integer(
+                sym.ASPECT), new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("method", new LexerAction_c(new Integer(
+                sym.METHOD), new Integer(omLexer.pointcut_state())));
+        omLexer.addModuleKeyword("constrain", 
                 new LexerAction_c(new Integer(sym.CONSTRAIN), 
-                new Integer(lexer.module_state())));
+                new Integer(omLexer.module_state())));
 
         //overrride the class keyword
-        lexer.addGlobalKeyword("class", 
+        omLexer.addGlobalKeyword("class", 
                 new LexerAction_c(new Integer(sym.CLASS)) {
             
 	            public int getToken(AbcLexer lexer) {
-	                if (!lexer.getLastTokenWasDot()) {
+	                OMAbcLexer omLexer = (OMAbcLexer) lexer;
+	                if (!omLexer.getLastTokenWasDot()) {
 	                    int nextState;
-	                    if (lexer.currentState() == lexer.aspectj_state()) {
-	                        nextState = lexer.aspectj_state();
-	                    } else if (lexer.currentState() == lexer.module_state()) {
-	                    	nextState = lexer.pointcut_state();
+	                    if (omLexer.currentState() == omLexer.aspectj_state()) {
+	                        nextState = omLexer.aspectj_state();
+	                    } else if (omLexer.currentState() == omLexer.module_state()) {
+	                    	nextState = omLexer.pointcut_state();
 	                    } else {
-	                    	nextState = lexer.java_state();
+	                    	nextState = omLexer.java_state();
 	                    }
-	                    lexer.enterLexerState(nextState);
+	                    omLexer.enterLexerState(nextState);
 	                }
 	                return token.intValue();
 	            }

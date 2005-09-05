@@ -49,10 +49,6 @@ public interface AbcLexer extends polyglot.lex.Lexer {
      */
     public int pointcutifexpr_state();
     
-    //NEIL: Module state
-    
-    public int module_state();
-    
     /**
      * Makes the lexer change into the specified state, pushing the current state and
      * some state-specific information onto its internal stack.
@@ -104,10 +100,6 @@ public interface AbcLexer extends polyglot.lex.Lexer {
      * @param ka the action to be performed.
      */
     public void addGlobalKeyword(String keyword, LexerAction ka);
-    
-    //NEIL: For module state
-    
-    public void addModuleKeyword(String keyword, LexerAction ka);
     
     /**
      * Adds a keyword with the specified action to the ASPECTJ and POINTCUTIFEXPR lexer states.

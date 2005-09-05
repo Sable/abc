@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import abc.aspectj.parse.Lexer_c;
+import abc.om.parse.Lexer_c;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectInfoHarvester;
 import abc.aspectj.visit.AspectMethods;
