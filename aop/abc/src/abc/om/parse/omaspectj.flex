@@ -2,6 +2,7 @@
  * Copyright (C) 2004 Polyglot project group
  * Copyright (C) 2004 Laurie Hendren
  * Copyright (C) 2004 Pavel Avgustinov
+ * Copyright (C) 2005 Neil Ongkingco
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
