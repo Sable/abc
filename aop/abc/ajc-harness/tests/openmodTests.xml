@@ -1,0 +1,497 @@
+
+<!-- <!DOCTYPE suite SYSTEM "../tests/abcTestSuite.dtd"> -->
+
+<!--
+
+***** ABC Boys and Girls .... Rules for editing this file. ******
+
+1)  you may add an abccomment to an ajc-test entry,  here is an
+    example I have added to the first entry of abcTests.xml.
+
+    Note that this is INSIDE that <ajc-test num="1" ajc-test ....> tag.
+
+<ajc-test num="2" dir="base/test100"
+      abccomment="I have put this comment in as a test, and this is a very
+         long one over multiple lines too. LJH"
+      title="static and non-static before methods -  one file"
+      keywords="from-base">
+        <compile files="Driver.java"/>
+        <run class="Driver"/>
+    </ajc-test>
+
+2)  if you want to change any of the <message ... /> items because they don't
+    correspond to the errors/warnings that we expect from abc,  you
+    should.
+
+      (a) RENAME ALL existing <message ... /> items to
+                              <ajcmessage ... />.
+
+      (b) INSERT new <message .../> items corresponding to what you
+               expect from abc.  (note that the testHarness seems to
+               only handle one message per line number)
+
+      (c) INSERT an abccomment into the <ajc-test num="3" ... /> tag to describe
+             what you changed and why
+
+3) if you want to change an entry from one that was supposed to run, to
+     one that should exit with compile-time errors ...
+
+      (a) REPLACE the <compile files="foo.java"/>  
+          with an entry as follows.  Note that the <compile .../> entry
+          is replaced with <compile>  .... </compile>, where the first
+          entry is an ajcmessage with kind="ignore" and then your
+          real messages.
+ 
+                      <compile files="foo.java">
+                         <ajcmessage kind="ignore"/>
+                         <message kind="error" line="xx"/>
+                         <message kind="warning" line="yy"/>
+                       </compile>
+
+       (b) CHANGE  the <run .... > to <ajcrun ....>
+
+       (c) INSERT an abccomment to say what you changed and why
+           
+     Here is an example:
+
+     original entry:
+
+     <ajc-test num="4" dir="pureJava" title="Using 'aspect' as identifier is legal"
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java"/>
+        <crun class="KeywordAspect" />
+     </ajc-test>
+
+
+     new entry:
+
+     <ajc-test num="5" dir="pureJava" title="Using 'aspect' as identifier is legal"
+      abccomment="abc doesn't allow keywords 
+                      need to allow for syntax error. LJH "
+      keywords="from-java,purejava">
+        <compile files="KeywordAspect.java">
+          <ajcmessage kind="ignore" />
+          <message kind="error" line="7"/> 
+        </compile>
+        <ajcrun class="KeywordAspect" />
+    </ajc-test>
+
+4) A new set/style of keywords is available for <ajctest/> tags. The
+     attribute "keywords" is still valid, in addition each <ajctest>
+     can contain a <abckeywords> element, which in turn contains 
+     keywords *in the form of further elements*. This allows keywords
+     to be taken from a pre-defined list and easily verified.
+
+     An example to make it clear - 
+     
+         <ajc-test num="6" dir="base/test100"
+	        abccomment="I have put this comment in as a test, and this is a very
+	       long one over multiple lines too. LJH"
+	         title="static and non-static before methods - one file"
+		 keywords="from-base">
+		<compile files="Driver.java"/>
+		<run class="Driver"/>
+		<abckeywords>
+		     <laurie/>
+		     <pavel/>
+		</abckeywords>
+         </ajc-test>
+	 
+
+     For now, the keywords available as elements in the DTD are:
+     ganesh, aske, oege, laurie, sascha, pavel, julian, jennifer,
+     abclimitations, introductions, polyglot, soot.
+
+     To extend the DTD with additional keywords as the need arises,
+     (a) EDIT the line starting with <!ELEMENT abckeywords ...> so that
+         the enumeration of possible child elements includes the new
+	 keyword
+     (b) INSERT a line declaring the new element below. It should have
+         the form <!ELEMENT new_keyword EMPTY>.
+
+-->
+
+<!--
+  known keywords:
+ 
+  knownLimitation     Accepted limitation of current implementation (fails)
+  purejava            Sources compile under javac as well
+  broken-test         ??
+  messages-vary       one of many (usually two) test specs that differ only in 
+                      messages expected by the different compilers.
+                      Currently ajc 1.0 tests are in ajcTests10.xml,
+                      so there may only be one copy marked "messages-vary" here.
+  new-messages-vary   like messages-vary, except need to make ajcTest10 variant
+
+  fail-{...}          test fails in some configuration
+  fail-unimplmented   eajc throwing "unimplemented" exception
+  fail-commandLine    fails in ajc on command line (move to ajcTestsBroken.xml)
+  fail-in-eclipse     fail when harness in run from inside eclipse
+  fail-publicType     now fixed - no longer presenting error for public type in wrong file
+
+  from-{file}         from original {file}.txt for file in
+                      java, bigjava, resolved_1*, 14tests, errors, design, base... 
+
+  incremental-test    uses inc-compile step
+  command-error       command-line error test
+
+  knownLimitation-ajctaskCompiler
+                      Accepted limitation of the AjcTaskCompilerCommand wrapper
+  knownLimitation-ajdeCompiler
+                      Accepted limitation of the AJDE CompileCommand wrapper
+                      
+  poorErrorMessages   test case passes but errors produced by compiler could do with
+                      improvement                      
+                      
+  Test titles:
+  
+  Titles should be unique and not change, and related tests should have the 
+  same title prefix.  This permits us to automatically compare the test results 
+  from different versions (and suites), and to see related differences together.
+  
+  -->
+
+<suite>
+    <ajc-test num="1" dir="om/simple"
+      title="Simple module compile"
+      keywords="from-base">
+        <compile files="ModuleTest.java,
+        	ModuleTest2.java,
+        	ModuleTest3.java,
+        	A.java,
+        	Another.java,
+        	AnotherChild.java,
+        	AspectA.aj,
+        	AspectB.aj"/>
+    </ajc-test>
+
+    <ajc-test num="2" dir="om/duplicatemodule"
+      title="Duplicate module name"
+      keywords="from-java,purejava">
+        <compile files="DuplicateModule1.java,
+        				DuplicateModule2.java,
+        				A.java,
+        				Another.java,
+        				AnotherChild.java,
+        				AspectA.aj,
+        				AspectB.aj">
+          <message kind="error" line="1" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="3" dir="om/nonexistentaspect"
+      title="Non-existent aspect"
+      keywords="from-java,purejava">
+        <compile files="NonExistentAspect.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="4" dir="om/nonexistentmodule"
+      title="Non-existent module"
+      keywords="from-java,purejava">
+        <compile files="NonExistentModule.java,
+        				A.java,
+        				Another.java,
+        				AnotherChild.java,
+        				AspectA.aj,
+        				AspectB.aj">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="5" dir="om/duplicatemoduleinclude"
+      title="Duplicate module include"
+      keywords="from-java,purejava">
+        <compile files="DuplicateModuleInclude.java,
+        		DuplicateModuleInclude1.java,
+        		DuplicateModuleInclude2.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="6" dir="om/duplicateaspectinclude"
+      title="Duplicate aspect include"
+      keywords="from-java,purejava">
+        <compile files="DuplicateAspectInclude1.java,
+        		DuplicateAspectInclude2.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj">
+          <message kind="error" line="2" />
+        </compile>
+    </ajc-test>
+    
+    <ajc-test num="7" dir="om/circularmoduleinclude"
+      title="Circular module include"
+      abccomment="Errors point to the module name, and not the offending include"
+      keywords="from-java,purejava">
+        <compile files="Circular1.java,
+        		Circular2.java,
+        		Circular3.java,
+        		A.java,
+        		Another.java,
+        		AnotherChild.java,
+        		AspectA.aj,
+        		AspectB.aj">
+          <message kind="error" line="1" />
+          <message kind="error" line="1" />
+          <message kind="error" line="1" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="8" dir="om/duplicateclassinclude"
+      title="Class included in multiple modules"
+      keywords="from-java,purejava">
+        <compile files="DuplicateClassInclude1.java,
+        				DuplicateClassInclude2.java,
+        				A.java,
+        				Another.java,
+        				AnotherChild.java,
+        				AspectA.aj,
+        				AspectB.aj">
+          <message kind="error" line="9-20" />
+        </compile>
+    </ajc-test>
+
+    <ajc-test num="9" dir="om/matchtest"
+      title="Basic matching test"
+      keywords="from-java,purejava">
+        <compile files="Module1.java,
+        				Module2.java,
+        				MatchTestA.java,
+        				MatchTestB.java,
+        				MatchTestMain.java,
+        				AspectA.aj,
+        				AspectB.aj,
+        				AspectC.aj">
+		<!--TODO: Should also check for an unused advice warning -->
+		<message kind="warning" line="15" />
+		<message kind="warning" line="15" />
+		<message kind="warning" line="18" />
+        </compile>
+        <run class="MatchTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="10" dir="om/extcalltest"
+      title="External call only test"
+      keywords="from-java,purejava">
+        <compile files="FibMod.java,
+        				A.java,
+        				ExtCallTestMain.java,
+        				FibAspect.aj,
+        				FibExtAspect.aj">
+		<message kind="warning" line="12" />
+		<message kind="warning" line="12" />
+        </compile>
+        <run class="ExtCallTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="11" dir="om/prectest"
+      title="Fib (Aldrich) precedence test"
+      keywords="from-java,purejava">
+        <compile files="Module1.java,
+        				A.java,
+        				PrecTestMain.java,
+        				Fib.aj,
+        				ACache.aj,
+        				PrecFibExtAspect.aj">
+		<message kind="warning" line="9" />
+		<message kind="warning" line="9" />
+        </compile>
+        <run class="PrecTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="12" dir="om/prectest"
+      title="Fib (Aldrich) reverse precedence test"
+      keywords="from-java,purejava">
+        <compile files="Module2.java,
+        				A.java,
+        				PrecTestMain2.java,
+        				Fib.aj,
+        				ACache.aj,
+        				PrecFibExtAspect.aj">
+		<message kind="warning" line="9" />
+		<message kind="warning" line="9" />
+        </compile>
+        <run class="PrecTestMain2"/>
+    </ajc-test>
+
+    <ajc-test num="13" dir="om/emptysigtest"
+      title="Empty signature test"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				A.java,
+        				EmptySigTestMain.java,
+        				AspectA.aj">
+        <message kind="warning" line="15" />
+        </compile>
+        <run class="EmptySigTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="14" dir="om/inheritsigtest"
+      title="Signature inheritance test"
+      keywords="from-java,purejava">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				InheritSigTest.java,
+        				ExtAspectA.aj">
+		<message kind="warning" line="17" />
+		<message kind="warning" line="18" />
+		<message kind="warning" line="22" />
+		<message kind="warning" line="25" />
+        </compile>
+        <run class="InheritSigTest"/>
+    </ajc-test>
+
+    <ajc-test num="15" dir="om/cflowsigtest"
+      title="CFlow signature test"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				A.java,
+        				CflowSigTestMain.java,
+        				CFlowAspect.aj">
+        </compile>
+        <run class="CflowSigTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="16" dir="om/argstest"
+      title="Args matching test"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				A.java,
+        				ArgsTestMain.java,
+        				ArgsAspect.aj">
+		<message kind="warning" line="16" />
+        </compile>
+        <run class="ArgsTestMain"/>
+    </ajc-test>
+    
+    <ajc-test num="17" dir="om/emptymoduletest"
+      title="Empty module test"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				A.java,
+        				EmptyModuleTestMain.java,
+        				AspectA.aj">
+        </compile>
+        <run class="EmptyModuleTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="18" dir="om/privatesigtest"
+      title="Private signature test"
+      keywords="from-java,purejava">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				PrivateSigTest.java,
+        				ExtAspectA.aj">
+		<message kind="warning" line="17" />
+		<message kind="warning" line="18" />
+		<message kind="warning" line="20" />
+		<message kind="warning" line="22" />
+		<message kind="warning" line="24" />
+        </compile>
+        <run class="PrivateSigTest"/>
+    </ajc-test>
+
+    <ajc-test num="19" dir="om/constraintest"
+      title="Constrained module inclusion test"
+      keywords="from-java,purejava">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				ConstrainTestMain.java,
+        				ExtAspectA.aj">
+		<message kind="warning" line="17" />
+		<message kind="warning" line="18" />
+		<message kind="warning" line="22" />
+		<message kind="warning" line="26" />
+        </compile>
+        <run class="ConstrainTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="20" dir="om/inheritprectest"
+      title="Precedence inheritance test"
+      keywords="from-java,purejava">
+        <compile files="ModuleA.java,
+        				ModuleB.java,
+        				ModuleC.java,
+        				A.java,
+        				AspectA.aj,
+        				AspectB.aj,
+        				AspectC.aj,
+        				InheritPrecTestMain.java">
+        </compile>
+        <run class="InheritPrecTestMain"/>
+    </ajc-test>
+
+    <ajc-test num="21" dir="om/multimodtest"
+      title="Multiple modules in a single file"
+      keywords="from-java,purejava">
+        <compile files="Modules.java,
+        				A.java,
+        				B.java,
+        				C.java,
+        				MultiModTest.java,
+        				ExtAspectA.aj">
+		<message kind="warning" line="17" />
+		<message kind="warning" line="18" />
+		<message kind="warning" line="22" />
+		<message kind="warning" line="25" />
+        </compile>
+        <run class="MultiModTest"/>
+    </ajc-test>
+
+    <ajc-test num="22" dir="om/iftest"
+      title="If pointcut signatures"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				AspectA.java,
+        				AspectB.java,
+        				IfTest.java">
+        </compile>
+        <run class="IfTest"/>
+    </ajc-test>
+
+    <ajc-test num="23" dir="om/emptysiginctest"
+      title="Inclusion with empty signatures"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				AspectA.aj,
+        				A.java,
+        				B.java,
+        				C.java,
+        				EmptySigIncTestMain.java">
+		<message kind="warning" line="15" />
+		<message kind="warning" line="16" />
+		<message kind="warning" line="18" />
+		<message kind="warning" line="19" />
+		<message kind="warning" line="21" />
+		<message kind="warning" line="22" />
+        </compile>
+        <run class="EmptySigIncTestMain"/>
+    </ajc-test>
+</suite>
