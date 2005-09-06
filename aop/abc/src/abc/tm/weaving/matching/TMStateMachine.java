@@ -229,7 +229,7 @@ public class TMStateMachine implements StateMachine {
      */
     protected void removeSkipToFinal() {
         SMNode cur;
-        State newFinalNode = newState();
+        SMNode newFinalNode = (SMNode)newState();
         SMEdge edge;
         Iterator it = nodes.iterator();
         while(it.hasNext()) {
@@ -239,7 +239,8 @@ public class TMStateMachine implements StateMachine {
                 Iterator edgeIt = cur.getInEdgeIterator();
                 while(edgeIt.hasNext()) {
                     edge = (SMEdge)edgeIt.next();
-                    if(!edge.getLabel().equals("")) { // i.e. if not a skip-edge
+                    if(!edge.getLabel().equals("") && !edge.getSource().hasEdgeTo(newFinalNode, edge.getLabel())) { 
+                    	// i.e. if not a skip-edge and not a duplicate
                         newTransition(edge.getSource(), newFinalNode, edge.getLabel());
                     }
                 }
