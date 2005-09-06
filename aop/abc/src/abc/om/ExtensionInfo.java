@@ -221,8 +221,6 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
     
     protected void passes_parse_and_clean(List l, Job job) {
         super.passes_parse_and_clean(l, job);
-        //perform the dummy aspect initialization after the types have been built
-        //l.add(new InitDummyAspect(INIT_DUMMY_ASPECT, job, this));
     }
     
     //store the type system created, for use in creating the AspectType to be

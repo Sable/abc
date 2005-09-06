@@ -148,8 +148,8 @@
         <mkdir dir="generated/abc/aspectj/parse"/>
         <mkdir dir="generated/abc/eaj/parse"/>
         <mkdir dir="generated/abc/tm/parse"/>
-        <!--NEIL: added for om-->
     	<mkdir dir="generated/abc/om/parse"/>
+	
         <java classname="JFlex.Main"
             fork="true"
             dir="."
@@ -159,6 +159,17 @@
                 <pathelement location="${jflex.loc}"/>
             </classpath>
             <arg line="-d generated/abc/aspectj/parse src/abc/aspectj/parse/aspectj.flex"/>
+        </java>
+    	
+        <java classname="JFlex.Main"
+            fork="true"
+            dir="."
+            failonerror="true"
+        >
+            <classpath>
+                <pathelement location="${jflex.loc}"/>
+            </classpath>
+            <arg line="-d generated/abc/om/parse src/abc/om/parse/omaspectj.flex"/>
         </java>
     </target>
 

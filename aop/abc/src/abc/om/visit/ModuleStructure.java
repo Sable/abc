@@ -337,7 +337,7 @@ public class ModuleStructure {
      * topmost modules will not necessarily be considered as internal to those
      * below. Choosing 2 will lead to a more restrictive system in that all
      * classes are considered internal as long as they are in the same subtree.
-     * This does have the advantage of enforcing the signature guarrantee of the
+     * This does have the advantage of enforcing the signature guarantee of the
      * top modules (i.e. that only external matches to the joinpoints in the
      * signature are advised).
      * 
