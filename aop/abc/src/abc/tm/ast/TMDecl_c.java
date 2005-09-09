@@ -232,12 +232,21 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
 
     public Node typeCheck(TypeChecker tc) throws SemanticException
     {
+        checkForEmptyTrace();
         checkAroundSymbols();
         if (isAround)
             checkAroundVars(tc.context());
         checkBinding();
 
         return super.typeCheck(tc);
+    }
+
+    protected void checkForEmptyTrace() throws SemanticException
+    {
+        if (regex.matchesEmptyString())
+            throw new SemanticException(
+                "Regular expression matches the empty trace.",
+                regex.position());
     }
 
     protected List aroundVars()
