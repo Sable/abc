@@ -138,6 +138,26 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         return reconstruct(n, symbols, before_around_pc, after_pc);
     }
  
+    public NodeVisitor disambiguateEnter(AmbiguityRemover ar)
+                                                    throws SemanticException
+    {
+        // Check for duplicate symbol definitions
+        Iterator syms = symbols.iterator();
+        Set names = new HashSet();
+
+        while (syms.hasNext()) {
+            SymbolDecl sd = (SymbolDecl) syms.next();
+
+            if (names.contains(sd.name()))
+                throw new SemanticException("Symbol \"" + sd.name() +
+                            "\"is already defined.", sd.position());
+
+            names.add(sd.name());
+        }
+
+        return super.disambiguateEnter(ar);
+    }
+
     public Context enterScope(Node child, Context c)
     {
         AJContext ajc = (AJContext) super.enterScope(child, c);
