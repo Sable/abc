@@ -1132,8 +1132,6 @@ public class CodeGenHelper
 
     protected Stmt updateBodyCall(SootMethod method, Chain units, Stmt call)
     {
-        System.out.println(call);
-
         Body body = method.getActiveBody();
         Local this_local = body.getThisLocal();
         InvokeExpr call_expr;
