@@ -823,7 +823,7 @@ public class CodeGenHelper
     }
 
     /**
-     * Acquire a lock on "this".
+     * Acquire the tracematch's lock.
      */
     protected void getLock(Body body, Chain units)
     {
@@ -831,7 +831,7 @@ public class CodeGenHelper
     }
 
     /**
-     * Release a local on "this".
+     * Release the tracematch's lock.
      */
     protected void releaseLock(Body body, Chain units)
     {
@@ -840,7 +840,7 @@ public class CodeGenHelper
 
     /**
      * Return a boolean expression corresponding to whether
-     * or not the current thread owns a lock on "this".
+     * or not the current thread owns the tracematch's lock.
      */
     protected Expr ownLock(Body body, Chain units)
     {
@@ -1132,6 +1132,8 @@ public class CodeGenHelper
 
     protected Stmt updateBodyCall(SootMethod method, Chain units, Stmt call)
     {
+        System.out.println(call);
+
         Body body = method.getActiveBody();
         Local this_local = body.getThisLocal();
         InvokeExpr call_expr;
@@ -1147,6 +1149,18 @@ public class CodeGenHelper
         }
 
         List args = call_expr.getArgs();
+
+        // We are planning to re-write body(...) -> real_body(...)
+        //
+        // BUT, if this call to body(...) has the correct number
+        // of arguments then it is not one of the proceed() calls
+        // we re-wrote - it is a woven advice-call and should
+        // be left alone!
+ 
+        if (args.size() == tm.getBodyMethod().getParameterCount())
+            return (Stmt) units.getSuccOf(call);
+
+
         Value new_call_expr = bodyMethod(method, body, this_local, args);
         Stmt new_call;
 
@@ -1608,8 +1622,7 @@ public class CodeGenHelper
             callBodyMethod(body, new_stmt, call_expr.getArgs(), result);
             Stmt new_call = (Stmt) new_stmt.getFirst();
 
-            units.insertAfter(new_call, units.getPredOf(proceed_call));
-            units.remove(proceed_call);
+            units.swapWith(proceed_call, new_call);
 
             proceed_call = findMethodCall(units, new_call, proceed);
         }
