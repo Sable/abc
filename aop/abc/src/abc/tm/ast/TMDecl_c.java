@@ -28,7 +28,6 @@ import abc.aspectj.ast.*;
 import abc.aspectj.extension.*;
 import abc.aspectj.types.*;
 import abc.aspectj.visit.*;
-
 import abc.weaving.aspectinfo.AbcFactory;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
@@ -181,6 +180,17 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         return ajc;
     }
 
+    public void aspectMethodsEnter(AspectMethods visitor)
+    {
+        visitor.pushProceedFor(this);
+
+        // if-pointcuts in final symbols should not
+        // see all tracematch formals
+        visitor.pushFormals(bodyAdviceFormals());
+
+        visitor.pushAdvice(this);
+    }
+
     public MethodDecl proceedDecl(AJNodeFactory nf, AJTypeSystem ts)
     {
         if (isAround) {
@@ -237,6 +247,11 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         if (isAround)
             checkAroundVars(tc.context());
         checkBinding();
+
+        if (before_around_pc != null)
+            before_around_pc.checkFormals(new LinkedList());
+        if (after_pc != null)
+            after_pc.checkFormals(new LinkedList());
 
         return super.typeCheck(tc);
     }

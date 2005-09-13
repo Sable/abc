@@ -27,6 +27,7 @@ import polyglot.visit.*;
 import polyglot.ext.jl.ast.*;
 
 import abc.aspectj.ast.*;
+import abc.aspectj.visit.*;
 
 import java.util.*;
 
@@ -135,6 +136,9 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
     public Node visitChildren(NodeVisitor v)
     {
         Node n = super.visitChildren(v);
+
+        if (v instanceof AspectMethods)
+            return reconstruct(n, kind, pc);
 
         SymbolKind kind = (SymbolKind) visitChild(this.kind, v);
         Pointcut pc = (Pointcut) visitChild(this.pc, v);

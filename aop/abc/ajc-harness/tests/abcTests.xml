@@ -9486,4 +9486,14 @@
         <compile files="PerThread.java" options="-ext,abc.tm"/>
         <run class="PerThread"/>
     </ajc-test>
+    <ajc-test num="1032" dir="abctests/tracematches"
+        title="Tracematches: Testing self-applying around TM-advice">
+        <compile files="AdviseSelf.java" options="-ext,abc.tm"/>
+        <run class="AdviseSelf"/>
+    </ajc-test>
+    <ajc-test num="1033" dir="abctests/tracematches"
+        title="Tracematches: Testing if pointcuts in symbols">
+        <compile files="IfTest.java" options="-ext,abc.tm"/>
+        <run class="IfTest"/>
+    </ajc-test>
 </suite>
