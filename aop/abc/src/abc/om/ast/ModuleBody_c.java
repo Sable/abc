@@ -48,10 +48,20 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
 
     private List /* SigMember */sigMembers;
 
-    public ModuleBody_c(Position pos, List members, List sigMembers) {
+    public ModuleBody_c(Position pos, List members) {
         super(pos);
-        this.members = members;
-        this.sigMembers = sigMembers;
+        this.members = new LinkedList();
+        this.sigMembers = new LinkedList();
+        for (Iterator iter = members.iterator(); iter.hasNext(); ) {
+            Object m = iter.next();
+            if (m instanceof ModMember) {
+                this.members.add(m);
+            } else if (m instanceof SigMember){
+                this.sigMembers.add(m);
+            } else {
+                assert(false); //should never happen
+            }
+        }
     }
 
     public List members() {

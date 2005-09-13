@@ -33,7 +33,7 @@ import java.util.*;
 public interface OpenModNodeFactory extends AJNodeFactory {
     public ModuleDecl ModuleDecl(Position pos, String name, ModuleBody body, Position namePos);
 
-    public ModuleBody ModuleBody(Position pos, List members, List sigMembers);
+    public ModuleBody ModuleBody(Position pos, List members);
     
     public ModMember ModMemberAspect(Position pos, String name);
 
@@ -42,10 +42,10 @@ public interface OpenModNodeFactory extends AJNodeFactory {
 
     public ModMember ModMemberModule(Position pos, String name, boolean isConstrained);
 
-    public SigMember SigMemberPCDecl(Position pos, Pointcut pc, boolean isPrivate);
+    public SigMember SigMemberExposeDecl(Position pos, Pointcut pc, boolean isPrivate);
     
-    public SigMember SigMemberMethodDecl(Position pos, 
-            MethodConstructorPattern methodPattern,
+    public SigMember SigMemberAdvertiseDecl(Position pos, 
+            Pointcut pc,
             boolean isPrivate);
     
     public AspectDecl DummyAspectDecl(Position pos, String moduleName);

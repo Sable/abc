@@ -1,4 +1,2 @@
 module Module {
-    __sig {
-    }
 }

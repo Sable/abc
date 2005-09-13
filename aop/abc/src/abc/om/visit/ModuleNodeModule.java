@@ -37,7 +37,7 @@ import abc.aspectj.visit.PatternMatcher;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
 import abc.om.ast.SigMember;
-import abc.om.ast.SigMemberMethodDecl;
+import abc.om.ast.SigMemberAdvertiseDecl;
 import abc.om.weaving.aspectinfo.BoolPointcut;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.Aspect;
@@ -159,7 +159,7 @@ public class ModuleNodeModule extends ModuleNode {
         //update the AIPointcuts
         abc.weaving.aspectinfo.Pointcut newPointcut = sigMember.getAIPointcut();
         //if a method sig member, add the ext pointcut
-        if (sigMember instanceof SigMemberMethodDecl) {
+        if (sigMember instanceof SigMemberAdvertiseDecl) {
             //get the topmost ancestor of this modulenode, then use its extPointcut
             ModuleNodeModule root = this;
             while (root.getParent() != null) {

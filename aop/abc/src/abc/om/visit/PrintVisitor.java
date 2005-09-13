@@ -75,12 +75,14 @@ public class PrintVisitor extends ContextVisitor {
             w.write("From AST: ");
             w.newline();
             p.printAst(n, w);
+            
             w.write("From ModuleStructure: ");
             w.newline();
             printFromModuleStructure((ModuleDecl) n, w);
             printOtherModules(((ModuleDecl) n).name(), w);
         }
         //test for getApplicableSignatures
+        /*
         if (n instanceof ClassDecl) {
             CodeWriter w = new CodeWriter(System.out, 80);
             ClassDecl decl = (ClassDecl) n;
@@ -102,7 +104,7 @@ public class PrintVisitor extends ContextVisitor {
             } catch (IOException e) {
             }
 
-        }
+        }*/
         return super.enter(parent, n);
     }
 

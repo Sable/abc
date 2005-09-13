@@ -1,7 +1,5 @@
 module ModuleA {
     class A;
-    module ModuleB;
-    __sig {
-        pointcut call(* f1(..));
-    }
+    open ModuleB;
+    expose() call(* f1(..));
 }

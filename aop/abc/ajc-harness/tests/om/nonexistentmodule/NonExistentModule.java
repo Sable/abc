@@ -1,5 +1,3 @@
 module NonExistentModule {
-    module NoSuchModule;
-    __sig {
-    }
+    open NoSuchModule;
 }

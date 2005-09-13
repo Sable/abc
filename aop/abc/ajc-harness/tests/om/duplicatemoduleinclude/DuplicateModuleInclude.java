@@ -1,4 +1,2 @@
 module DuplicateModuleInclude {
-    __sig {
-    }
 }

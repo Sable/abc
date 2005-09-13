@@ -39,19 +39,21 @@ parser Grm extends abc.aspectj.parse.Grm {:
 // ------- new tokens ------------------------------
 
 terminal Token MODULE;
-terminal Token SIGNATURE;
-terminal Token METHOD;
 terminal Token CONSTRAIN;
+terminal Token FRIEND;
+terminal Token OPEN;
+terminal Token EXPOSE;
+terminal Token ADVERTISE;
 
 // ------- new non-terminals -----------------------
 non terminal List/*ModuleDecl*/ module_declaration_list;
 non terminal ModuleDecl module_declaration;
 non terminal ModuleBody module_body;
-non terminal List/*<OMModMember>*/ module_member_list;
-non terminal ModMember module_member;
-non terminal List/*<OMSigMember>*/ signature;
-non terminal List/*<OMSigMember>*/ signature_member_list;
+non terminal List/*<OMModMember and OMSigMember>*/ module_member_list;
+non terminal List /*<ModMember>*/ module_member;
 non terminal SigMember signature_member;
+non terminal List /*<ModMemberAspect>*/ aspect_list;
+non terminal ModMember aspect_name;
 
 start with goal;
 
@@ -114,21 +116,19 @@ module_declaration ::=
 module_body ::=
 	//no module members
 	LBRACE:lb
-		signature:s
 	RBRACE:rb
 	{:
 		Grm.parserTrace("OM Module body");
-		List mm = new TypedList(new LinkedList(), ModMember.class, false);
-		RESULT = parser.nf.ModuleBody(parser.pos(lb, rb), mm, s);
+		List mm = new LinkedList(); //may contain both signature and members
+		RESULT = parser.nf.ModuleBody(parser.pos(lb, rb), mm);
 	:}
 	|
 	LBRACE:lb
 		module_member_list:mm
-		signature:s
 	RBRACE:rb
 	{:
 		Grm.parserTrace("OM Module body");
-		RESULT = parser.nf.ModuleBody(parser.pos(lb, rb), mm, s);
+		RESULT = parser.nf.ModuleBody(parser.pos(lb, rb), mm);
 	:}
 ;
 
@@ -136,90 +136,101 @@ module_member_list ::=
 	module_member:m
 	{:
 		Grm.parserTrace("OM first member of module_member_list");
-		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
-		RESULT.add(m);
+		RESULT = new LinkedList();
+		RESULT.addAll(m);
 	:}
 	| 
 	module_member_list:ml module_member:m
 	{:
 		Grm.parserTrace("OM module_member_list");
 		RESULT = ml;
-		RESULT.add(m);
+		RESULT.addAll(m);
 	:}
+	|
+	signature_member:sm 
+	{:
+		Grm.parserTrace("OM first member of signature_member_list");
+		RESULT = new LinkedList();
+		RESULT.add(sm);
+	:}
+	| 
+	module_member_list:sl signature_member:sm
+	{:
+		Grm.parserTrace("OM signature_member_list");
+		RESULT = sl;
+		RESULT.add(sm);
+	:}	
 ;
 
 module_member ::=
 	CLASS:c classname_pattern_expr:cn SEMICOLON:sc
 	{:
 		Grm.parserTrace("OM module_member: class");
-		RESULT = parser.nf.ModMemberClass(parser.pos(c,sc), cn);
+		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
+		RESULT.add(parser.nf.ModMemberClass(parser.pos(c,sc), cn));
 	:}
 	|
-	ASPECT:a IDENTIFIER:an SEMICOLON:sc
+	FRIEND:a aspect_list:al SEMICOLON:sc
 	{:
 		Grm.parserTrace("OM module_member: aspect");
-		RESULT = parser.nf.ModMemberAspect(parser.pos(a,sc), an.getIdentifier());
+		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
+		RESULT.addAll(al); //could have just used al, but it was a ModMemberAspect typedlist
 	:}
 	|
-	MODULE:m IDENTIFIER:mn SEMICOLON:sc
+	OPEN:m IDENTIFIER:mn SEMICOLON:sc
 	{:
 		Grm.parserTrace("OM module_member: module");
-		RESULT = parser.nf.ModMemberModule(parser.pos(m,mn), mn.getIdentifier(), false);
+		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
+		RESULT.add(parser.nf.ModMemberModule(parser.pos(m,mn), mn.getIdentifier(), false));
 	:}
 	|
-	CONSTRAIN:c MODULE:m IDENTIFIER:mn SEMICOLON:sc
+	CONSTRAIN:c IDENTIFIER:mn SEMICOLON:sc
 	{:
 		Grm.parserTrace("OM module_member: module");
-		RESULT = parser.nf.ModMemberModule(parser.pos(c,mn), mn.getIdentifier(), true);
-	:}
-;
-
-signature ::= 
-	SIGNATURE:sg LBRACE RBRACE //empty signature
-	{:
-		RESULT = new TypedList(new LinkedList(), SigMember.class, false);
-	:}
-	|
-	SIGNATURE:sg LBRACE
-		signature_member_list:sm
-	RBRACE:rb
-	{:
-		Grm.parserTrace("OM Signature");
-		RESULT = sm;
-	:}
-;
-
-signature_member_list ::= 
-	signature_member:sm 
-	{:
-		Grm.parserTrace("OM first member of signature_member_list");
-		RESULT = new TypedList(new LinkedList(), SigMember.class, false);
-		RESULT.add(sm);
-	:}
-	| 
-	signature_member_list:sl signature_member:sm
-	{:
-		Grm.parserTrace("OM signature_member_list");
-		RESULT = sl;
-		RESULT.add(sm);
+		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
+		RESULT.add(parser.nf.ModMemberModule(parser.pos(c,mn), mn.getIdentifier(), true));
 	:}
 ;
 
 signature_member ::= 
-	POINTCUT pointcut_expr:pc SEMICOLON
+	EXPOSE LPAREN RPAREN  pointcut_expr:pc SEMICOLON
 	{:
-		RESULT = parser.nf.SigMemberPCDecl(((Node)pc).position(), pc, false);
+		RESULT = parser.nf.SigMemberExposeDecl(((Node)pc).position(), pc, false);
 	:}
-	| PRIVATE POINTCUT pointcut_expr:pc SEMICOLON
+	| PRIVATE EXPOSE LPAREN RPAREN pointcut_expr:pc SEMICOLON
 	{:
-		RESULT = parser.nf.SigMemberPCDecl(((Node)pc).position(), pc, true);
+		RESULT = parser.nf.SigMemberExposeDecl(((Node)pc).position(), pc, true);
 	:}
-	| METHOD:m method_constructor_pattern:mp SEMICOLON
+	| ADVERTISE:m LPAREN RPAREN pointcut_expr:pc SEMICOLON
 	{:
-		RESULT = parser.nf.SigMemberMethodDecl(parser.pos(m,mp), mp, false);
+		RESULT = parser.nf.SigMemberAdvertiseDecl(parser.pos(m,pc), pc, false);
 	:}
-	| PRIVATE METHOD:m method_constructor_pattern:mp SEMICOLON
+	| PRIVATE ADVERTISE:m LPAREN RPAREN pointcut_expr:pc SEMICOLON
 	{:
-		RESULT = parser.nf.SigMemberMethodDecl(parser.pos(m,mp), mp, true);
+		RESULT = parser.nf.SigMemberAdvertiseDecl(parser.pos(m,pc), pc, true);
+	:}
+;
+
+aspect_list ::=
+	aspect_name: an
+	{:
+		Grm.parserTrace("OM aspect_list: single");
+		RESULT = new TypedList(new LinkedList(), ModMemberAspect.class, false);
+		RESULT.add(an); 
+	:}
+	|
+	aspect_list:al COMMA aspect_name:an2
+	{:
+		Grm.parserTrace("OM aspect_list");
+		RESULT = al;
+		RESULT.add(an2); 
+	:}	
+;
+
+aspect_name ::= 
+	IDENTIFIER:an
+	{:
+		Grm.parserTrace("OM module_member: aspect");
+		RESULT = parser.nf.ModMemberAspect(parser.pos(an), an.getIdentifier());
 	:}
 ;

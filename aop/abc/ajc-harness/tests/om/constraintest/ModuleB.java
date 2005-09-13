@@ -1,7 +1,5 @@
 module ModuleB {
     class B;
-    constrain module ModuleC;
-    __sig {
-        method * f2(..);
-    }
+    constrain ModuleC;
+    advertise() call(* f2(..));
 }

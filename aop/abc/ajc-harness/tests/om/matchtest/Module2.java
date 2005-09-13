@@ -1,7 +1,6 @@
 module Module2 {
 	class MatchTestB;
-	aspect AspectB;
-	__sig {
-		method * MatchTestB.a(..);
-	}
+	friend AspectB;
+	
+	advertise() call(* MatchTestB.a(..));
 }

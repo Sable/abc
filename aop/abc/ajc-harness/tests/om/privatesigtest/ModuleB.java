@@ -1,8 +1,6 @@
 
 module ModuleB {
     class B;
-    module ModuleC;
-    __sig {
-        method * f2(..);
-    }
+    open ModuleC;
+    advertise() call(* f2(..));
 }

@@ -1,7 +1,5 @@
 module DuplicateModule {
     class A;
-    aspect AspectA;
-    __sig {
-        pointcut call(* *(..));
-    }
+    friend AspectA;
+    expose() call(* *(..));
 }

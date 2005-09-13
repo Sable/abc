@@ -1,7 +1,5 @@
 module ModuleC {
     class C;
-    __sig {
-        method * f2(..);
-        method * f3(..);
-    }
+    advertise() call(* f2(..));
+    advertise() call(* f3(..));
 }

@@ -169,7 +169,6 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
                 new CheckDuplicateClassInclude(job, ts,
                         (OpenModNodeFactory) nf, this)));
         l.add(new GlobalBarrierPass(AFTER_CHECK_DUPLICATE_CLASS_INCLUDE, job));
-
     }
 
     protected void passes_precedence_relation(List l, Job job) {
@@ -181,8 +180,6 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
     }
     
     protected void passes_aspectj_transforms(List l, Job job) {
-        //super.passes_aspectj_transforms(l, job);
-        
         //NEIL: copy the implementation of the aspectj transforms
         //as checkmodulesigmembers needed to be added after harvestaspectinfo
         //but before cleanaspectmembers.

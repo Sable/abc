@@ -1,8 +1,7 @@
 module FibMod {
     class A;
-    aspect AspectA;
-    __sig {
-        pointcut AspectA.internalFib();
-        method * A.fib(..);
-    }
+    friend AspectA;
+    
+    expose() AspectA.internalFib();
+    advertise() call(* A.fib(..));
 }

@@ -1,7 +1,4 @@
-
 module ModuleC {
-    aspect AspectC;
+    friend AspectC;
     class A;
-    __sig {
-    }
 }

@@ -42,7 +42,7 @@ import abc.aspectj.visit.PCStructure;
 import abc.aspectj.visit.PatternMatcher;
 import abc.om.AbcExtension;
 import abc.om.ast.SigMember;
-import abc.om.ast.SigMemberMethodDecl;
+import abc.om.ast.SigMemberAdvertiseDecl;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.ClassnamePattern;

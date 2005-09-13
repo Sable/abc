@@ -1,8 +1,4 @@
-
-
 module ModuleB {
-    module ModuleC;
-    aspect AspectB;
-    __sig {
-    }
+    open ModuleC;
+    friend AspectB;
 }

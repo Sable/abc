@@ -1,7 +1,5 @@
 module ModuleTest2 {
-	aspect AspectB;
-	module ModuleTest3;
-	__sig {
-		pointcut call(* *(..));
-	}
+	friend AspectB;
+	open ModuleTest3;
+	expose() call(* *(..));
 }

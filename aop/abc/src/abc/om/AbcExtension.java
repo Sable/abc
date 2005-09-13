@@ -53,7 +53,7 @@ import abc.weaving.matching.*;
  */
 public class AbcExtension extends abc.main.AbcExtension {
     //debug
-    public static final boolean debug = false;
+    public static final boolean debug = true;
     private static boolean isLoaded = false;
     private GlobalAspectInfo globalAspectInfo = null;
 
@@ -87,19 +87,19 @@ public class AbcExtension extends abc.main.AbcExtension {
 
         omLexer.addJavaKeyword("module", new LexerAction_c(
                 new Integer(sym.MODULE), new Integer(omLexer.module_state())));
-        omLexer.addModuleKeyword("module", new LexerAction_c(new Integer(
-                sym.MODULE), new Integer(omLexer.module_state())));
-        omLexer.addModuleKeyword("__sig", new LexerAction_c(new Integer(
-                sym.SIGNATURE), new Integer(omLexer.module_state())));
-        omLexer.addModuleKeyword("pointcut", new LexerAction_c(new Integer(
-                sym.POINTCUT), new Integer(omLexer.pointcut_state())));
-        omLexer.addModuleKeyword("aspect", new LexerAction_c(new Integer(
-                sym.ASPECT), new Integer(omLexer.module_state())));
-        omLexer.addModuleKeyword("method", new LexerAction_c(new Integer(
-                sym.METHOD), new Integer(omLexer.pointcut_state())));
+        omLexer.addModuleKeyword("module", new LexerAction_c(
+                new Integer(sym.MODULE), new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("open", new LexerAction_c(new Integer(
+                sym.OPEN), new Integer(omLexer.module_state())));
         omLexer.addModuleKeyword("constrain", 
                 new LexerAction_c(new Integer(sym.CONSTRAIN), 
                 new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("expose", new LexerAction_c(new Integer(
+                sym.EXPOSE), new Integer(omLexer.pointcut_state())));
+        omLexer.addModuleKeyword("friend", new LexerAction_c(new Integer(
+                sym.FRIEND), new Integer(omLexer.module_state())));
+        omLexer.addModuleKeyword("advertise", new LexerAction_c(new Integer(
+                sym.ADVERTISE), new Integer(omLexer.pointcut_state())));
 
         //overrride the class keyword
         omLexer.addGlobalKeyword("class", 

@@ -1,21 +1,15 @@
 module Module {
     class A;
-    module ModuleB;
-    __sig {
-        method * f1(..);
-    }
+    open ModuleB;
+    advertise() call(* f1(..));
 }
 
 module ModuleB {
     class B;
-    constrain module ModuleC;
-    __sig {
-    }
+    constrain ModuleC;
 }
 
 module ModuleC {
     class C;
-    __sig {
-        method * f3(..);
-    }
+    advertise() call(* f3(..));
 }
