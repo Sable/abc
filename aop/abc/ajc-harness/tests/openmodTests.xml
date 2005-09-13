@@ -162,7 +162,8 @@
         	Another.java,
         	AnotherChild.java,
         	AspectA.aj,
-        	AspectB.aj"/>
+        	AspectB.aj"
+        options="-ext,abc.om"/>
     </ajc-test>
 
     <ajc-test num="2" dir="om/duplicatemodule"
@@ -174,7 +175,8 @@
         				Another.java,
         				AnotherChild.java,
         				AspectA.aj,
-        				AspectB.aj">
+        				AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="1" />
         </compile>
     </ajc-test>
@@ -187,7 +189,8 @@
         		Another.java,
         		AnotherChild.java,
         		AspectA.aj,
-        		AspectB.aj">
+        		AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="2" />
         </compile>
     </ajc-test>
@@ -200,7 +203,8 @@
         				Another.java,
         				AnotherChild.java,
         				AspectA.aj,
-        				AspectB.aj">
+        				AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="2" />
         </compile>
     </ajc-test>
@@ -215,7 +219,8 @@
         		Another.java,
         		AnotherChild.java,
         		AspectA.aj,
-        		AspectB.aj">
+        		AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="2" />
         </compile>
     </ajc-test>
@@ -229,7 +234,8 @@
         		Another.java,
         		AnotherChild.java,
         		AspectA.aj,
-        		AspectB.aj">
+        		AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="2" />
         </compile>
     </ajc-test>
@@ -245,7 +251,8 @@
         		Another.java,
         		AnotherChild.java,
         		AspectA.aj,
-        		AspectB.aj">
+        		AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="1" />
           <message kind="error" line="1" />
           <message kind="error" line="1" />
@@ -261,7 +268,8 @@
         				Another.java,
         				AnotherChild.java,
         				AspectA.aj,
-        				AspectB.aj">
+        				AspectB.aj"
+        options="-ext,abc.om">
           <message kind="error" line="9-20" />
         </compile>
     </ajc-test>
@@ -276,7 +284,8 @@
         				MatchTestMain.java,
         				AspectA.aj,
         				AspectB.aj,
-        				AspectC.aj">
+        				AspectC.aj"
+        options="-ext,abc.om">
 		<!--TODO: Should also check for an unused advice warning -->
 		<message kind="warning" line="15" />
 		<message kind="warning" line="15" />
@@ -292,9 +301,10 @@
         				A.java,
         				ExtCallTestMain.java,
         				FibAspect.aj,
-        				FibExtAspect.aj">
-		<message kind="warning" line="12" />
-		<message kind="warning" line="12" />
+        				FibExtAspect.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="12" />
+			<message kind="warning" line="12" />
         </compile>
         <run class="ExtCallTestMain"/>
     </ajc-test>
@@ -307,9 +317,10 @@
         				PrecTestMain.java,
         				Fib.aj,
         				ACache.aj,
-        				PrecFibExtAspect.aj">
-		<message kind="warning" line="9" />
-		<message kind="warning" line="9" />
+        				PrecFibExtAspect.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="9" />
+			<message kind="warning" line="9" />
         </compile>
         <run class="PrecTestMain"/>
     </ajc-test>
@@ -322,9 +333,10 @@
         				PrecTestMain2.java,
         				Fib.aj,
         				ACache.aj,
-        				PrecFibExtAspect.aj">
-		<message kind="warning" line="9" />
-		<message kind="warning" line="9" />
+        				PrecFibExtAspect.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="9" />
+			<message kind="warning" line="9" />
         </compile>
         <run class="PrecTestMain2"/>
     </ajc-test>
@@ -335,8 +347,9 @@
         <compile files="Module.java,
         				A.java,
         				EmptySigTestMain.java,
-        				AspectA.aj">
-        <message kind="warning" line="15" />
+        				AspectA.aj"
+        options="-ext,abc.om">
+	        <message kind="warning" line="15" />
         </compile>
         <run class="EmptySigTestMain"/>
     </ajc-test>
@@ -351,11 +364,12 @@
         				B.java,
         				C.java,
         				InheritSigTest.java,
-        				ExtAspectA.aj">
-		<message kind="warning" line="17" />
-		<message kind="warning" line="18" />
-		<message kind="warning" line="22" />
-		<message kind="warning" line="25" />
+        				ExtAspectA.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="25" />
         </compile>
         <run class="InheritSigTest"/>
     </ajc-test>
@@ -366,7 +380,8 @@
         <compile files="Module.java,
         				A.java,
         				CflowSigTestMain.java,
-        				CFlowAspect.aj">
+        				CFlowAspect.aj"
+        options="-ext,abc.om">
         </compile>
         <run class="CflowSigTestMain"/>
     </ajc-test>
@@ -377,8 +392,9 @@
         <compile files="Module.java,
         				A.java,
         				ArgsTestMain.java,
-        				ArgsAspect.aj">
-		<message kind="warning" line="16" />
+        				ArgsAspect.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="16" />
         </compile>
         <run class="ArgsTestMain"/>
     </ajc-test>
@@ -389,7 +405,8 @@
         <compile files="Module.java,
         				A.java,
         				EmptyModuleTestMain.java,
-        				AspectA.aj">
+        				AspectA.aj"
+        options="-ext,abc.om">
         </compile>
         <run class="EmptyModuleTestMain"/>
     </ajc-test>
@@ -404,12 +421,13 @@
         				B.java,
         				C.java,
         				PrivateSigTest.java,
-        				ExtAspectA.aj">
-		<message kind="warning" line="17" />
-		<message kind="warning" line="18" />
-		<message kind="warning" line="20" />
-		<message kind="warning" line="22" />
-		<message kind="warning" line="24" />
+        				ExtAspectA.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="20" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="24" />
         </compile>
         <run class="PrivateSigTest"/>
     </ajc-test>
@@ -424,11 +442,12 @@
         				B.java,
         				C.java,
         				ConstrainTestMain.java,
-        				ExtAspectA.aj">
-		<message kind="warning" line="17" />
-		<message kind="warning" line="18" />
-		<message kind="warning" line="22" />
-		<message kind="warning" line="26" />
+        				ExtAspectA.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="26" />
         </compile>
         <run class="ConstrainTestMain"/>
     </ajc-test>
@@ -443,7 +462,8 @@
         				AspectA.aj,
         				AspectB.aj,
         				AspectC.aj,
-        				InheritPrecTestMain.java">
+        				InheritPrecTestMain.java"
+        options="-ext,abc.om">
         </compile>
         <run class="InheritPrecTestMain"/>
     </ajc-test>
@@ -456,11 +476,12 @@
         				B.java,
         				C.java,
         				MultiModTest.java,
-        				ExtAspectA.aj">
-		<message kind="warning" line="17" />
-		<message kind="warning" line="18" />
-		<message kind="warning" line="22" />
-		<message kind="warning" line="25" />
+        				ExtAspectA.aj"
+        options="-ext,abc.om">
+			<message kind="warning" line="17" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="22" />
+			<message kind="warning" line="25" />
         </compile>
         <run class="MultiModTest"/>
     </ajc-test>
@@ -471,7 +492,8 @@
         <compile files="Module.java,
         				AspectA.java,
         				AspectB.java,
-        				IfTest.java">
+        				IfTest.java"
+        options="-ext,abc.om">
         </compile>
         <run class="IfTest"/>
     </ajc-test>
@@ -484,13 +506,14 @@
         				A.java,
         				B.java,
         				C.java,
-        				EmptySigIncTestMain.java">
-		<message kind="warning" line="15" />
-		<message kind="warning" line="16" />
-		<message kind="warning" line="18" />
-		<message kind="warning" line="19" />
-		<message kind="warning" line="21" />
-		<message kind="warning" line="22" />
+        				EmptySigIncTestMain.java"
+        options="-ext,abc.om">
+			<message kind="warning" line="15" />
+			<message kind="warning" line="16" />
+			<message kind="warning" line="18" />
+			<message kind="warning" line="19" />
+			<message kind="warning" line="21" />
+			<message kind="warning" line="22" />
         </compile>
         <run class="EmptySigIncTestMain"/>
     </ajc-test>
