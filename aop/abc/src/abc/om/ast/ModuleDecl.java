@@ -31,4 +31,5 @@ import polyglot.util.Position;
  */
 public interface ModuleDecl extends TopLevelDecl {
     public Position namePos();
+    public boolean isRoot();
 }

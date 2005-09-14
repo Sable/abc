@@ -47,8 +47,12 @@ public class OpenModNodeFactory_c extends AJNodeFactory_c implements
     public ModuleBody ModuleBody(Position pos, List members) {
         return new ModuleBody_c(pos, members);
     }
-    public ModuleDecl ModuleDecl(Position pos, String name, ModuleBody body, Position namePos) {
-        return new ModuleDecl_c(pos, name, body, namePos);
+    public ModuleDecl ModuleDecl(Position pos, 
+            String name, 
+            ModuleBody body, 
+            Position namePos, 
+            boolean isProtected) {
+        return new ModuleDecl_c(pos, name, body, namePos, isProtected);
     }
     public SigMember SigMemberExposeDecl(Position pos, Pointcut pc, boolean isPrivate) {
         return new SigMemberExposeDecl_c(pos, pc, isPrivate);

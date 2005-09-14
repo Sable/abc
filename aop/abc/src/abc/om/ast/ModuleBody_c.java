@@ -137,6 +137,13 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
             throw new SemanticException("Module does not exist", member
                     .position());
         }
+        
+        //check if the module is a root module
+        if (n.isRoot()) {
+            throw new SemanticException("Root modules cannot be included in other modules", member
+                    .position());
+        }
+        
         // Check if module already belongs to another module
         if (n.getParent() != null) {
             throw new SemanticException("Module already a member of "

@@ -56,7 +56,7 @@ public class CollectModules extends ContextVisitor {
         if (n instanceof ModuleDecl) {
             ModuleDecl decl = (ModuleDecl) n;
             ModuleNode node = 
-                ext.moduleStruct.addModuleNode(decl.name());
+                ext.moduleStruct.addModuleNode(decl.name(), decl.isRoot());
             if (node == null) {
                 throw new SemanticException("Duplicate module name", decl.namePos());
             }

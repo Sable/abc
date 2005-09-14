@@ -32,7 +32,11 @@ import java.util.*;
  *  
  */
 public interface OpenModNodeFactory extends AJNodeFactory {
-    public ModuleDecl ModuleDecl(Position pos, String name, ModuleBody body, Position namePos);
+    public ModuleDecl ModuleDecl(Position pos, 
+            String name, 
+            ModuleBody body, 
+            Position namePos, 
+            boolean isProtected);
 
     public ModuleBody ModuleBody(Position pos, List members);
     

@@ -53,7 +53,7 @@ import abc.weaving.matching.*;
  */
 public class AbcExtension extends abc.main.AbcExtension {
     //debug
-    public static final boolean debug = true;
+    public static final boolean debug = false;
     private static boolean isLoaded = false;
     private GlobalAspectInfo globalAspectInfo = null;
 
@@ -85,6 +85,8 @@ public class AbcExtension extends abc.main.AbcExtension {
         super.initLexerKeywords(lexer);
         OMAbcLexer omLexer = (OMAbcLexer) lexer;
 
+        omLexer.addJavaKeyword("root", new LexerAction_c(
+                new Integer(sym.ROOT), new Integer(omLexer.java_state())));        
         omLexer.addJavaKeyword("module", new LexerAction_c(
                 new Integer(sym.MODULE), new Integer(omLexer.module_state())));
         omLexer.addModuleKeyword("module", new LexerAction_c(

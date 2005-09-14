@@ -43,13 +43,16 @@ public class ModuleDecl_c extends Node_c implements ModuleDecl {
     private String name;
 
     private Position namePos;
+    
+    private boolean isRoot = false;
 
     public ModuleDecl_c(Position pos, String name, ModuleBody body,
-            Position namePos) {
+            Position namePos, boolean isRoot) {
         super(pos);
         this.name = name;
         this.body = body;
         this.namePos = namePos;
+        this.isRoot = isRoot;
     }
 
     public Flags flags() {
@@ -62,6 +65,10 @@ public class ModuleDecl_c extends Node_c implements ModuleDecl {
 
     public Position namePos() {
         return this.namePos;
+    }
+    
+    public boolean isRoot() {
+        return isRoot;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {

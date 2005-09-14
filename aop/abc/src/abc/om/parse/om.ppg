@@ -44,6 +44,7 @@ terminal Token FRIEND;
 terminal Token OPEN;
 terminal Token EXPOSE;
 terminal Token ADVERTISE;
+terminal Token ROOT;
 
 // ------- new non-terminals -----------------------
 non terminal List/*ModuleDecl*/ module_declaration_list;
@@ -111,7 +112,21 @@ module_declaration ::=
 	MODULE:m IDENTIFIER:n module_body:mb
 	{:
 		Grm.parserTrace("OM Module declaration");
-		RESULT = parser.nf.ModuleDecl(parser.pos(m,mb), n.getIdentifier(), mb, parser.pos(n));
+		RESULT = parser.nf.ModuleDecl(parser.pos(m,mb), 
+			n.getIdentifier(), 
+			mb, 
+			parser.pos(n),
+			false);
+	:}
+	|
+	ROOT:r MODULE:m IDENTIFIER:n module_body:mb
+	{:
+		Grm.parserTrace("OM protected Module declaration");
+		RESULT = parser.nf.ModuleDecl(parser.pos(r,mb), 
+			n.getIdentifier(), 
+			mb, 
+			parser.pos(n),
+			true);
 	:}
 ;
 

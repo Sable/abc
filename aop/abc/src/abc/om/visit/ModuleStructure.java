@@ -119,13 +119,13 @@ public class ModuleStructure {
     }
 
     //only for modules
-    public ModuleNode addModuleNode(String name) {
+    public ModuleNode addModuleNode(String name, boolean isRoot) {
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         ModuleNode n = (ModuleNode) nodeMap.get(name);
         if (n != null) {
             return null;
         }
-        n = new ModuleNodeModule(name);
+        n = new ModuleNodeModule(name, isRoot);
         nodeMap.put(n.name(), n);
         return n;
     }

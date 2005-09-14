@@ -76,12 +76,19 @@ public class ModuleNodeModule extends ModuleNode {
     
     private Aspect dummyAspect = null;
     
-    public ModuleNodeModule(String name) {
+    private boolean isRoot = false;
+    
+    public ModuleNodeModule(String name, boolean isRoot) {
         this.name = name;
         members = new LinkedList();
         //initializer values for AIPointcuts
         sigAIPointcut = new BoolPointcut(false, AbcExtension.generated);
         privateSigAIPointcut = new BoolPointcut(false, AbcExtension.generated);
+        this.isRoot = isRoot;
+    }
+    
+    public boolean isRoot() {
+        return this.isRoot;
     }
     
     public void setIsConstrained(boolean isConstrained) {
