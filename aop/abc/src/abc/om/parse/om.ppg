@@ -54,6 +54,8 @@ non terminal List /*<ModMember>*/ module_member;
 non terminal SigMember signature_member;
 non terminal List /*<ModMemberAspect>*/ aspect_list;
 non terminal ModMember aspect_name;
+non terminal NamePattern aspect_name_pattern;
+non terminal SimpleNamePattern aspect_simple_name_pattern;
 
 start with goal;
 
@@ -228,9 +230,30 @@ aspect_list ::=
 ;
 
 aspect_name ::= 
-	IDENTIFIER:an
+	aspect_name_pattern:an
 	{:
 		Grm.parserTrace("OM module_member: aspect");
-		RESULT = parser.nf.ModMemberAspect(parser.pos(an), an.getIdentifier());
+		RESULT = parser.nf.ModMemberAspect(((NamePattern)an).position(), an);
 	:}
 ;
+
+//Name patterns for aspects (does not allow stars). Adapeted from aspectj ppg
+aspect_name_pattern ::=
+      aspect_simple_name_pattern:a
+        {: RESULT = a;
+        :}
+   |  name_pattern:a DOT aspect_simple_name_pattern:b
+        {: RESULT = parser.nf.DotNamePattern(parser.pos(a,b),a,b);
+        :}
+   |  name_pattern:a PC_DOTDOT:d aspect_simple_name_pattern:b
+        {: DotDotNamePattern ddnp = parser.nf.DotDotNamePattern(parser.pos(a,d),a);
+           RESULT = parser.nf.DotNamePattern(parser.pos(a,b),ddnp,b);
+        :}
+   ;
+
+aspect_simple_name_pattern ::= 
+   IDENTIFIER:a
+        {: Grm.parserTrace("name_pattern is identifer: " + a);
+           RESULT = parser.nf.SimpleNamePattern(parser.pos(a),a.getIdentifier());
+        :}
+   ;

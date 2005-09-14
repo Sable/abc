@@ -48,10 +48,10 @@ public class ModMemberAspect_c extends Node_c implements ModMemberAspect,
     private String name;
     private NamePattern namePattern;
 
-    public ModMemberAspect_c(Position pos, String name) {
+    public ModMemberAspect_c(Position pos, NamePattern namePattern) {
         super(pos);
-        this.name = name;
-        this.namePattern = new SimpleNamePattern_c(pos, name);
+        this.name = namePattern.toString();
+        this.namePattern = namePattern;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {

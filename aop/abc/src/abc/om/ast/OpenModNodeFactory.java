@@ -24,6 +24,7 @@ package abc.om.ast;
 
 import polyglot.util.*;
 import abc.aspectj.ast.*;
+
 import java.util.*;
 
 /**
@@ -35,7 +36,7 @@ public interface OpenModNodeFactory extends AJNodeFactory {
 
     public ModuleBody ModuleBody(Position pos, List members);
     
-    public ModMember ModMemberAspect(Position pos, String name);
+    public ModMember ModMemberAspect(Position pos, NamePattern namePattern);
 
     public ModMember ModMemberClass(Position pos,
             ClassnamePatternExpr classPattern);
