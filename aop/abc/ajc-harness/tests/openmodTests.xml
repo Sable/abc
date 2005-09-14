@@ -533,4 +533,16 @@
         <run class="PackageTestMain"/>
     </ajc-test>
     
+    <ajc-test num="om25" dir="om/roottest"
+      title="Root module test"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				RootTestMain.java,
+        				A.java,
+        				AspectA.java"
+        options="-ext,abc.om">
+			<message kind="error" line="16" />
+        </compile>
+    </ajc-test>   
+    
 </suite>
