@@ -517,4 +517,20 @@
         </compile>
         <run class="EmptySigIncTestMain"/>
     </ajc-test>
+    
+    <ajc-test num="24" dir="om/packagetest"
+      title="Aspects in packages"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				PackageTestMain.java,
+        				pack1/A.java,
+        				pack1/AspectA.java,
+        				pack2/A.java,
+        				pack2/AspectA.java"
+        options="-ext,abc.om">
+			<message kind="warning" line="6" />
+        </compile>
+        <run class="PackageTestMain"/>
+    </ajc-test>
+    
 </suite>
