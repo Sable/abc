@@ -5151,5 +5151,13 @@
         <compile options="-ext,abc.tm" files="PerThread.java"></compile>
         <run class="PerThread"></run>
     </ajc-test>
+<ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
+        <run class="AdviseSelf"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Testing if pointcuts in symbols" num="1033" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="IfTest.java"></compile>
+        <run class="IfTest"></run>
+    </ajc-test>
  
 </suite>
