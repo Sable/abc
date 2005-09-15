@@ -1,5 +1,6 @@
 module ModuleA {
     class A;
+    friend AspectA;
     open ModuleB;
-    expose() call(* f1(..));
+    advertise() call(* f1(..));
 }

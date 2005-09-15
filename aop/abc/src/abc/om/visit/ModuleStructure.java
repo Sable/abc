@@ -315,10 +315,14 @@ public class ModuleStructure {
         }
         //if both are in a module, see if the aspect belongs to a module that
         //is the same as the owner of the class or an ancestor thereof
+        //also checks if the inclusion was not constrained
+        ModuleNode prev = null;
         while (classOwner != null) {
-            if (classOwner == aspectOwner) {
+            if (classOwner == aspectOwner && 
+                    (prev == null || !((ModuleNodeModule)prev).isConstrained())) {
                 return true;
             }
+            prev = classOwner;
             classOwner = classOwner.getParent();
         }
 
