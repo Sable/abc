@@ -57,6 +57,7 @@ non terminal List /*<ModMemberAspect>*/ aspect_list;
 non terminal ModMember aspect_name;
 non terminal NamePattern aspect_name_pattern;
 non terminal SimpleNamePattern aspect_simple_name_pattern;
+non terminal List /*ModMemberModule*/ module_list;
 
 start with goal;
 
@@ -194,18 +195,26 @@ module_member ::=
 		RESULT.addAll(al); //could have just used al, but it was a ModMemberAspect typedlist
 	:}
 	|
-	OPEN:m IDENTIFIER:mn SEMICOLON:sc
+	OPEN:m module_list:ml SEMICOLON:sc
 	{:
 		Grm.parserTrace("OM module_member: module");
 		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
-		RESULT.add(parser.nf.ModMemberModule(parser.pos(m,mn), mn.getIdentifier(), false));
+		for (Iterator iter = ml.iterator(); iter.hasNext(); ) {
+			ModMemberModule module = (ModMemberModule)iter.next();
+			module.setIsConstrained(false);
+		}
+		RESULT.addAll(ml);
 	:}
 	|
-	CONSTRAIN:c IDENTIFIER:mn SEMICOLON:sc
+	CONSTRAIN:c module_list:ml SEMICOLON:sc
 	{:
 		Grm.parserTrace("OM module_member: module");
 		RESULT = new TypedList(new LinkedList(), ModMember.class, false);
-		RESULT.add(parser.nf.ModMemberModule(parser.pos(c,mn), mn.getIdentifier(), true));
+		for (Iterator iter = ml.iterator(); iter.hasNext(); ) {
+			ModMemberModule module = (ModMemberModule)iter.next();
+			module.setIsConstrained(true);
+		}
+		RESULT.addAll(ml);
 	:}
 ;
 
@@ -225,6 +234,20 @@ signature_member ::=
 	| PRIVATE ADVERTISE:m LPAREN RPAREN pointcut_expr:pc SEMICOLON
 	{:
 		RESULT = parser.nf.SigMemberAdvertiseDecl(parser.pos(m,pc), pc, true);
+	:}
+;
+
+module_list ::=
+	IDENTIFIER: mn 
+	{:
+		RESULT = new LinkedList();
+		RESULT.add(parser.nf.ModMemberModule(mn.getPosition(), mn.getIdentifier()));
+	:}
+	|
+	module_list:ml COMMA IDENTIFIER:mn
+	{:
+		RESULT = ml;
+		RESULT.add(parser.nf.ModMemberModule(mn.getPosition(), mn.getIdentifier()));
 	:}
 ;
 

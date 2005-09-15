@@ -41,8 +41,8 @@ public class OpenModNodeFactory_c extends AJNodeFactory_c implements
             ClassnamePatternExpr classPattern) {
         return new ModMemberClass_c(pos,classPattern);
     }
-    public ModMember ModMemberModule(Position pos, String name, boolean isConstrained) {
-        return new ModMemberModule_c(pos, name, isConstrained);
+    public ModMember ModMemberModule(Position pos, String name) {
+        return new ModMemberModule_c(pos, name);
     }
     public ModuleBody ModuleBody(Position pos, List members) {
         return new ModuleBody_c(pos, members);

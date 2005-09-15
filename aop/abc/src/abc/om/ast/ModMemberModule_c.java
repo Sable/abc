@@ -42,14 +42,17 @@ public class ModMemberModule_c extends Node_c implements ModMemberModule {
     private String name;
     private boolean isConstrained = false;
     
-    public ModMemberModule_c(Position pos, String name, boolean isConstrained) {
+    public ModMemberModule_c(Position pos, String name) {
         super(pos);
         this.name = name;
-        this.isConstrained = isConstrained;
     }
     
     public boolean isConstrained() {
         return isConstrained;
+    }
+    
+    public void setIsConstrained(boolean isConstrained) {
+        this.isConstrained = isConstrained;
     }
     
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {

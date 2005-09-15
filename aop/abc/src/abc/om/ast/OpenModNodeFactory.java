@@ -45,7 +45,7 @@ public interface OpenModNodeFactory extends AJNodeFactory {
     public ModMember ModMemberClass(Position pos,
             ClassnamePatternExpr classPattern);
 
-    public ModMember ModMemberModule(Position pos, String name, boolean isConstrained);
+    public ModMember ModMemberModule(Position pos, String name);
 
     public SigMember SigMemberExposeDecl(Position pos, Pointcut pc, boolean isPrivate);
     

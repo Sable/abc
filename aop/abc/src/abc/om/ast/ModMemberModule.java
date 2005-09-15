@@ -29,4 +29,5 @@ package abc.om.ast;
 public interface ModMemberModule extends ModMember {
     public String name();
     public boolean isConstrained();
+    public void setIsConstrained(boolean isConstrained);
 }
