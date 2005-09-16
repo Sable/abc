@@ -26,10 +26,10 @@ import soot.SootMethod;
  * Contains the parameters to Pointcut.matchesAt. 
  */
 public class MatchingContext {
-    private WeavingEnv env;
-    private SootClass cls;
-    private SootMethod method;
-    private ShadowMatch sm;
+    protected WeavingEnv env;
+    protected SootClass cls;
+    protected SootMethod method;
+    protected ShadowMatch sm;
     
     public MatchingContext(WeavingEnv env, SootClass cls, SootMethod method, ShadowMatch sm) {
         this.env = env;
