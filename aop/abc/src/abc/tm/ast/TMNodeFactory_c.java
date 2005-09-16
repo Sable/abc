@@ -34,6 +34,15 @@ import java.util.*;
 public class TMNodeFactory_c extends AJNodeFactory_c
                              implements TMNodeFactory
 {
+    private final AJExtFactory extFactory;
+    private final AJDelFactory delFactory;
+
+    public TMNodeFactory_c()
+    {
+        extFactory = new AJAbstractExtFactory_c() {};
+        delFactory = new TMAbstractDelFactory_c() {};
+    }
+
     public TMDecl
         TMDecl(Position pos, Position body_pos, TMModsAndType mods_and_type,
                         String tracematch_name, List formals, List throwTypes,
@@ -141,5 +150,14 @@ public class TMNodeFactory_c extends AJNodeFactory_c
                                             Pointcut pc)
     {
         return new ClosedPointcut_c(pos, formals, pc);
+    }
+
+    // override Local
+    public Local Local(Position pos, String name)
+    {
+        Local n = super.Local(pos, name);
+        n = (Local)n.ext(extFactory.extLocal());
+        n = (Local)n.del(delFactory.delLocal());
+        return n;
     }
 }

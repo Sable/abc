@@ -20,21 +20,22 @@
 
 package abc.tm;
 
+import polyglot.ast.NodeFactory;
+import polyglot.frontend.*;
+import polyglot.util.ErrorQueue;
 import polyglot.lex.Lexer;
-import polyglot.visit.PrettyPrinter;
 import polyglot.util.CodeWriter;
+import polyglot.types.TypeSystem;
+import polyglot.visit.PrettyPrinter;
 
 import abc.aspectj.parse.Lexer_c;
 import abc.tm.parse.Grm;
 
 import abc.tm.ast.*;
+import abc.tm.types.*;
 import abc.tm.visit.*;
 
 import abc.aspectj.types.*;
-
-import polyglot.ast.NodeFactory;
-import polyglot.frontend.*;
-import polyglot.util.ErrorQueue;
 
 import java.util.*;
 import java.io.Reader;
@@ -68,6 +69,10 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
 
     protected NodeFactory createNodeFactory() {
         return new TMNodeFactory_c();
+    }
+
+    protected TypeSystem createTypeSystem() {
+        return new TMTypeSystem_c();
     }
 
     public static final Pass.ID CREATE_TRACEMATCH_ADVICE =

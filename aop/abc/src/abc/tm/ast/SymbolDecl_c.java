@@ -29,6 +29,8 @@ import polyglot.ext.jl.ast.*;
 import abc.aspectj.ast.*;
 import abc.aspectj.visit.*;
 
+import abc.tm.types.*;
+
 import java.util.*;
 
 /**
@@ -76,6 +78,13 @@ public class SymbolDecl_c extends Node_c implements SymbolDecl
         Collection binds = new HashSet(pc.mustBind());
         binds.addAll(kind.binds());
         return binds;
+    }
+
+    public Context enterScope(Context c)
+    {
+        TMContext tmc = (TMContext) c;
+
+        return tmc.pushSymbol(pc.mustBind());
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException
