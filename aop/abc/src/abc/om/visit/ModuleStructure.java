@@ -65,6 +65,7 @@ import abc.weaving.aspectinfo.Pointcut;
 import abc.weaving.aspectinfo.Singleton;
 import abc.weaving.matching.ConstructorCallShadowMatch;
 import abc.weaving.matching.GetFieldShadowMatch;
+import abc.weaving.matching.MatchingContext;
 import abc.weaving.matching.MethodCallShadowMatch;
 import abc.weaving.matching.SetFieldShadowMatch;
 import abc.weaving.matching.ShadowMatch;
@@ -426,7 +427,7 @@ public class ModuleStructure {
             Aspect currAspect, WeavingEnv weaveEnv, SootClass cls,
             SootMethod method, AbstractAdviceDecl ad) throws SemanticException {
 
-        Residue ret = pc.matchesAt(weaveEnv, cls, method, sm);
+        Residue ret = pc.matchesAt(new MatchingContext(weaveEnv, cls, method, sm));
 
         //if openmod is not loaded, just return ret
         if (!AbcExtension.isLoaded()) {
@@ -485,8 +486,12 @@ public class ModuleStructure {
             }
             
             try {
-                sigMatch = sigPointcut.matchesAt(weaveEnv, sm.getContainer()
-                        .getDeclaringClass(), sm.getContainer(), sm);
+                sigMatch = sigPointcut.matchesAt(
+                        new MatchingContext(weaveEnv, 
+                                sm.getContainer().getDeclaringClass(), 
+                                sm.getContainer(), 
+                                sm)
+                        );
             } catch (SemanticException e) {
                 throw new InternalCompilerError("Error matching signature pc",
                         e);

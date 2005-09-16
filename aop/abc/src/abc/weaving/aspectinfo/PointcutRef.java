@@ -82,10 +82,7 @@ public class PointcutRef extends Pointcut {
 	return getDirectDecl().getName()+"(...)";
     }
 
-    public Residue matchesAt(WeavingEnv env,
-			     SootClass cls,
-			     SootMethod method,
-			     ShadowMatch sm) {
+    public Residue matchesAt(MatchingContext mc) {
 	throw new InternalCompilerError
 	    ("PointcutRef should have been inlined by now",getPosition());
     }

@@ -83,9 +83,11 @@ public class Cflow extends CflowPointcut {
     	getCfs().addUse(this);
     }
 
-    public Residue matchesAt
-	(WeavingEnv env,SootClass cls,
-	 SootMethod method,ShadowMatch sm) {
+    public Residue matchesAt(MatchingContext mc) {
+    WeavingEnv env = mc.getWeavingEnv();
+	SootClass cls = mc.getSootClass();
+	SootMethod method = mc.getSootMethod();
+	ShadowMatch sm = mc.getShadowMatch();
 
 	List/*<Var>*/ actuals=getCfs().getActuals();
 	// List of actuals for the Cflow setup advice

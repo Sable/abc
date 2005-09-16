@@ -38,11 +38,8 @@ public abstract class LexicalPointcut extends Pointcut {
         super(pos);
     }
 
-    public final Residue matchesAt(WeavingEnv env,
-                                   SootClass cls,
-                                   SootMethod method,
-                                   ShadowMatch sm) {
-        return matchesAt(cls,method);
+    public final Residue matchesAt(MatchingContext mc) {
+        return matchesAt(mc.getSootClass(),mc.getSootMethod());
     }
 
     /** Do we match at a particular class and method? */

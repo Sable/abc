@@ -55,13 +55,10 @@ public class NotPointcut extends Pointcut {
 	return pc;
     }
 
-    public Residue matchesAt(WeavingEnv we,
-			     SootClass cls,
-			     SootMethod method,
-			     ShadowMatch sm)
+    public Residue matchesAt(MatchingContext mc)
 	throws SemanticException
     {
-	return NotResidue.construct(pc.matchesAt(we,cls,method,sm));
+	return NotResidue.construct(pc.matchesAt(mc));
     }
 
     protected Pointcut inline(Hashtable renameEnv,

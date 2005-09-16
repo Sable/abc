@@ -55,14 +55,16 @@ public class LocalPointcutVars extends Pointcut {
     }
 
 
-    public Residue matchesAt(WeavingEnv we,
-			     SootClass cls,
-			     SootMethod method,
-			     ShadowMatch sm) 
+    public Residue matchesAt(MatchingContext mc) 
 	throws SemanticException
     {
+    WeavingEnv we = mc.getWeavingEnv();
+    SootClass cls = mc.getSootClass();
+    SootMethod method = mc.getSootMethod();
+    ShadowMatch sm = mc.getShadowMatch();
+        
 	WeavingEnv lwe=new LocalsDecl(formals,we);
-	return pc.matchesAt(lwe,cls,method,sm);
+	return pc.matchesAt(new MatchingContext(lwe,cls,method,sm));
     }
 
     protected Pointcut inline(Hashtable renameEnv,

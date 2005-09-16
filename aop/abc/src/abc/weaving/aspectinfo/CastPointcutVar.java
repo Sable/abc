@@ -54,10 +54,12 @@ public class CastPointcutVar extends Pointcut {
 	return "cast("+from+","+to+")";
     }
 
-    public Residue matchesAt(WeavingEnv we,
-			     SootClass cls,
-			     SootMethod method,
-			     ShadowMatch sm) {
+    public Residue matchesAt(MatchingContext mc) {
+    WeavingEnv we = mc.getWeavingEnv();
+	SootClass cls = mc.getSootClass();
+	SootMethod method = mc.getSootMethod();
+	ShadowMatch sm = mc.getShadowMatch();
+	
 	Type fromType=we.getAbcType(from).getSootType();
 	Type toType=we.getAbcType(to).getSootType();
 	if(fromType instanceof PrimType && 

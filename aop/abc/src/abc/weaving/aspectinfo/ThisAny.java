@@ -40,10 +40,12 @@ public class ThisAny extends DynamicValuePointcut {
         super(pos);
     }
 
-    public final Residue matchesAt(WeavingEnv we,
-                                   SootClass cls,
-                                   SootMethod method,
-                                   ShadowMatch sm) {
+    public final Residue matchesAt(MatchingContext mc) {
+        WeavingEnv we = mc.getWeavingEnv();
+        SootClass cls = mc.getSootClass();
+        SootMethod method = mc.getSootMethod();
+        ShadowMatch sm = mc.getShadowMatch();
+        
         ContextValue cv=sm.getThisContextValue();
         if(cv==null) return NeverMatch.v();
         return matchesAt(we,cv);

@@ -38,11 +38,8 @@ import abc.weaving.residues.Residue;
  *  @author Ganesh Sittampalam
  */
 public abstract class ShadowPointcut extends Pointcut {
-    public final Residue matchesAt(WeavingEnv env,
-                                   SootClass cls,
-                                   SootMethod method,
-                                   ShadowMatch sm) {
-        return matchesAt(sm);
+    public final Residue matchesAt(MatchingContext mc) {
+        return matchesAt(mc.getShadowMatch());
     }
 
     public ShadowPointcut(Position pos) {

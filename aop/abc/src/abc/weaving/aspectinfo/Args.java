@@ -85,9 +85,14 @@ public class Args extends DynamicValuePointcut {
 
     }
 
-    public Residue matchesAt(WeavingEnv we,SootClass cls,SootMethod method,ShadowMatch sm)
+    public Residue matchesAt(MatchingContext mc)
         throws SemanticException
     {
+        WeavingEnv we = mc.getWeavingEnv();
+        SootClass cls = mc.getSootClass();
+        SootMethod method = mc.getSootMethod();
+        ShadowMatch sm = mc.getShadowMatch();
+        
         if(abc.main.Debug.v().showArgsMatching)
                 System.out.println("args="+args+"sm="+sm+" of type "+sm.getClass());
         Residue ret=AlwaysMatch.v();

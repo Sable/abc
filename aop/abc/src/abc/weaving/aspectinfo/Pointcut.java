@@ -51,8 +51,7 @@ public abstract class Pointcut extends Syntax {
      *  produce a residue
      */
     public abstract Residue matchesAt
-        (WeavingEnv env,SootClass cls,
-         SootMethod method,ShadowMatch sm)
+        (MatchingContext mc)
         throws SemanticException;
 
     /** Return a "normalized" version of this pointcut.

@@ -100,7 +100,7 @@ public abstract class AdviceApplication {
         	             }});
         result.add(new ResidueConjunct() {
         	             public Residue run() throws SemanticException {
-							return pc.matchesAt(we,cls,method,sm);
+							return pc.matchesAt(new MatchingContext(we,cls,method,sm));
         	             }
                         });
 
