@@ -1,8 +1,7 @@
 
 module ModuleA {
     class A;
-    open ModuleB;
-    open ModuleC;
+    open ModuleB, ModuleC;
     advertise() call(* f1(..));
 }
 

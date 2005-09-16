@@ -553,5 +553,4 @@
 			<message kind="error" line="16" />
         </compile>
     </ajc-test>   
-    
 </suite>
