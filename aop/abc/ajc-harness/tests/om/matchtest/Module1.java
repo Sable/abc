@@ -3,5 +3,5 @@ module Module1 {
 	friend AspectA;
 	open Module2;
 	
-	advertise() call(* MatchTestA.a(..));
+	advertise() : call(* MatchTestA.a(..));
 }

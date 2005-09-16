@@ -1,4 +1,4 @@
 module ModuleC {
     class C;
-    advertise()  call(* f3(..));
+    advertise() : call(* f3(..));
 }

@@ -2,5 +2,5 @@
 module ModuleA {
     class A;
     open ModuleB;
-    private expose() call(* f1(..));
+    private expose() : call(* f1(..));
 }

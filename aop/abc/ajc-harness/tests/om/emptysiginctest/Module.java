@@ -1,7 +1,7 @@
 module Module {
     class A;
     open ModuleB;
-    advertise() call(* f1(..));
+    advertise() : call(* f1(..));
 }
 
 module ModuleB {
@@ -11,5 +11,5 @@ module ModuleB {
 
 module ModuleC {
     class C;
-    advertise() call(* f3(..));
+    advertise() : call(* f3(..));
 }

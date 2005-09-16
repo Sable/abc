@@ -3,7 +3,7 @@ module ModuleTest {
 	class A;
 	friend AspectA;
 	open ModuleTest2;
-	expose() call(* *(..));
-	expose() AspectA.allfuncs();
-	advertise() call(int A.fib(x));
+	expose() : call(* *(..));
+	expose() : AspectA.allfuncs();
+	advertise() : call(int A.fib(x));
 }

@@ -1,4 +1,4 @@
 module Module {
 	class IfTest;
-	expose() if(IfTest.aspectsEnabled);
+	expose() : if(IfTest.aspectsEnabled);
 }
