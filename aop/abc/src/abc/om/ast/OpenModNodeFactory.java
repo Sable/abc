@@ -47,11 +47,15 @@ public interface OpenModNodeFactory extends AJNodeFactory {
 
     public ModMember ModMemberModule(Position pos, String name);
 
-    public SigMember SigMemberExposeDecl(Position pos, Pointcut pc, boolean isPrivate);
+    public SigMember SigMemberExposeDecl(Position pos, 
+            Pointcut pc, 
+            boolean isPrivate, 
+            ClassnamePatternExpr toClause);
     
     public SigMember SigMemberAdvertiseDecl(Position pos, 
             Pointcut pc,
-            boolean isPrivate);
+            boolean isPrivate, 
+            ClassnamePatternExpr toClause);
     
     public AspectDecl DummyAspectDecl(Position pos, String moduleName);
 }

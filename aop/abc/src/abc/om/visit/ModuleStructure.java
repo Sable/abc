@@ -50,6 +50,7 @@ import abc.aspectj.visit.PCStructure;
 import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
 import abc.om.ast.SigMember;
+import abc.om.weaving.matching.OMMatchingContext;
 import abc.polyglot.util.ErrorInfoFactory;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.AbcFactory;
@@ -487,10 +488,11 @@ public class ModuleStructure {
             
             try {
                 sigMatch = sigPointcut.matchesAt(
-                        new MatchingContext(weaveEnv, 
+                        new OMMatchingContext(weaveEnv, 
                                 sm.getContainer().getDeclaringClass(), 
                                 sm.getContainer(), 
-                                sm)
+                                sm,
+                                currAspect)
                         );
             } catch (SemanticException e) {
                 throw new InternalCompilerError("Error matching signature pc",

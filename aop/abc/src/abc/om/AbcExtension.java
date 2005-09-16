@@ -90,18 +90,21 @@ public class AbcExtension extends abc.main.AbcExtension {
         omLexer.addJavaKeyword("module", new LexerAction_c(
                 new Integer(sym.MODULE), new Integer(omLexer.module_state())));
         omLexer.addModuleKeyword("module", new LexerAction_c(
-                new Integer(sym.MODULE), new Integer(omLexer.module_state())));
+                new Integer(sym.MODULE), null));
         omLexer.addModuleKeyword("open", new LexerAction_c(new Integer(
-                sym.OPEN), new Integer(omLexer.module_state())));
+                sym.OPEN), null));
         omLexer.addModuleKeyword("constrain", 
                 new LexerAction_c(new Integer(sym.CONSTRAIN), 
-                new Integer(omLexer.module_state())));
+                null));
         omLexer.addModuleKeyword("expose", new LexerAction_c(new Integer(
                 sym.EXPOSE), new Integer(omLexer.pointcut_state())));
         omLexer.addModuleKeyword("friend", new LexerAction_c(new Integer(
-                sym.FRIEND), new Integer(omLexer.module_state())));
+                sym.FRIEND), null));
         omLexer.addModuleKeyword("advertise", new LexerAction_c(new Integer(
                 sym.ADVERTISE), new Integer(omLexer.pointcut_state())));
+        //TODO: try to fix this so that the transition to pointcut happens on to
+        omLexer.addPointcutKeyword("to", new LexerAction_c(new Integer(
+                sym.TO), null));
 
         //overrride the class keyword
         omLexer.addGlobalKeyword("class", 

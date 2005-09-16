@@ -54,14 +54,18 @@ public class OpenModNodeFactory_c extends AJNodeFactory_c implements
             boolean isProtected) {
         return new ModuleDecl_c(pos, name, body, namePos, isProtected);
     }
-    public SigMember SigMemberExposeDecl(Position pos, Pointcut pc, boolean isPrivate) {
-        return new SigMemberExposeDecl_c(pos, pc, isPrivate);
+    public SigMember SigMemberExposeDecl(Position pos, 
+            Pointcut pc, 
+            boolean isPrivate, 
+            ClassnamePatternExpr toClause) {
+        return new SigMemberExposeDecl_c(pos, pc, isPrivate, toClause);
     }
     
     public SigMember SigMemberAdvertiseDecl(Position pos,
             Pointcut pc,
-            boolean isPrivate) {
-        return new SigMemberAdvertiseDecl_c(pos, pc, isPrivate);
+            boolean isPrivate,
+            ClassnamePatternExpr toClause) {
+        return new SigMemberAdvertiseDecl_c(pos, pc, isPrivate, toClause);
     }
     
     public AspectDecl DummyAspectDecl(Position pos, String moduleName) {

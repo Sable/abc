@@ -25,9 +25,11 @@ package abc.om.ast;
 import java.util.*;
 
 import abc.aspectj.ast.AJNodeFactory;
+import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.MakesAspectMethods;
 import abc.aspectj.types.AJTypeSystem;
 import abc.aspectj.visit.AspectMethods;
+import abc.om.weaving.aspectinfo.OMClassnamePattern;
 import abc.weaving.aspectinfo.Pointcut;
 import polyglot.ast.Node;
 import polyglot.ast.Term;
@@ -43,51 +45,12 @@ import polyglot.visit.PrettyPrinter;
  * @author Neil Ongkingco 
  *
  */
-public class SigMemberExposeDecl_c extends Node_c implements SigMemberExposeDecl, MakesAspectMethods {
+public class SigMemberExposeDecl_c extends SigMember_c implements SigMemberExposeDecl, MakesAspectMethods {
 
-    private abc.aspectj.ast.Pointcut pc;
-    private boolean isPrivate = false;
-    
-    public SigMemberExposeDecl_c(polyglot.util.Position pos, abc.aspectj.ast.Pointcut pc, boolean isPrivate) {
-        super(pos);
-        this.pc = pc;
-        this.isPrivate = isPrivate;
-    }
-    
-    public boolean isPrivate() {
-        return isPrivate;
-    }
-    
-    public Pointcut getAIPointcut() {
-        return this.pc.makeAIPointcut();
-    }
-    public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
-        pc.prettyPrint(w, pp);
-        w.newline();
-        //super.prettyPrint(w, pp);
-    }    
-    
-    public SigMemberExposeDecl_c reconstruct(abc.aspectj.ast.Pointcut pc) {
-        if (pc != this.pc) {
-            SigMemberExposeDecl_c n = (SigMemberExposeDecl_c)copy();
-            n.pc = pc;
-            return n;
-        }
-        return this;
-    }
-    
-    public Node visitChildren(NodeVisitor v) {
-        abc.aspectj.ast.Pointcut pc = 
-            (abc.aspectj.ast.Pointcut)visitChild(this.pc, v);
-        return reconstruct(pc);
-    }
-
-    public void aspectMethodsEnter(AspectMethods visitor) {
-        //push an empty list of formals. needed for If pointcuts
-        visitor.pushFormals(Collections.unmodifiableList(new LinkedList()));
-    }
-    public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
-            AJTypeSystem ts) {
-        return this;
+    public SigMemberExposeDecl_c(polyglot.util.Position pos, 
+            abc.aspectj.ast.Pointcut pc, 
+            boolean isPrivate, 
+            ClassnamePatternExpr toClauseCPE) {
+        super(pos, pc, isPrivate, toClauseCPE);
     }
 }

@@ -39,6 +39,7 @@ import abc.om.ExtensionInfo;
 import abc.om.ast.SigMember;
 import abc.om.ast.SigMemberAdvertiseDecl;
 import abc.om.weaving.aspectinfo.BoolPointcut;
+import abc.om.weaving.aspectinfo.OMClassnamePattern;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.ClassnamePattern;
@@ -295,31 +296,5 @@ public class ModuleNodeModule extends ModuleNode {
     }
     public int type() {
         return ModuleNode.TYPE_MODULE;
-    }
-    //just to get my own class that implements ClassnamePattern
-    private class OMClassnamePattern implements ClassnamePattern {
-        ClassnamePatternExpr pattern;
-
-        public OMClassnamePattern(ClassnamePatternExpr pattern) {
-            this.pattern = pattern;
-        }
-
-        public ClassnamePatternExpr getPattern() {
-            return pattern;
-        }
-
-        public boolean matchesClass(SootClass sc) {
-            boolean matches = PatternMatcher.v().matchesClass(pattern, sc);
-            return matches;
-        }
-
-        public String toString() {
-            return pattern.toString();
-        }
-
-        public boolean equivalent(
-                abc.weaving.aspectinfo.ClassnamePattern otherpat) {
-            return pattern.equivalent(otherpat.getPattern());
-        }
     }
 }
