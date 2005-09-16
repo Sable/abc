@@ -553,4 +553,19 @@
 			<message kind="error" line="16" />
         </compile>
     </ajc-test>   
+    
+    <ajc-test num="om26" dir="om/totest"
+      title="To test"
+      keywords="from-java,purejava">
+        <compile files="Module.java,
+        				ToTestMain.java,
+        				A.java,
+        				ExtAspectA.java,
+        				ExtAspectB.java"
+        options="-ext,abc.om">
+			<message kind="warning" line="5" />
+			<message kind="warning" line="7" />
+        </compile>
+        <run class="ToTestMain"/>
+    </ajc-test>       
 </suite>
