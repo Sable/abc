@@ -42,13 +42,17 @@ public class ThisAspectPointcut extends Pointcut {
 
     ClassnamePattern cp;
     
-    public ThisAspectPointcut(ClassnamePattern cp, Position pos) {
+    public static ThisAspectPointcut construct(ClassnamePattern cp, Position pos) {
+        return new ThisAspectPointcut(cp, pos);
+    }
+    
+    private ThisAspectPointcut(ClassnamePattern cp, Position pos) {
         super(pos);
         this.cp = cp;
     }
     
     public String toString() {
-        return "thisAspect";
+        return "thisAspect(" + cp.toString() + ")";
     }
 
     public Residue matchesAt(MatchingContext mc) throws SemanticException {

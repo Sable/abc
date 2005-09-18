@@ -40,6 +40,7 @@ import abc.om.ast.SigMember;
 import abc.om.ast.SigMemberAdvertiseDecl;
 import abc.om.weaving.aspectinfo.BoolPointcut;
 import abc.om.weaving.aspectinfo.OMClassnamePattern;
+import abc.om.weaving.aspectinfo.ThisAspectPointcut;
 import abc.weaving.aspectinfo.AndPointcut;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.ClassnamePattern;
@@ -83,8 +84,8 @@ public class ModuleNodeModule extends ModuleNode {
         this.name = name;
         members = new LinkedList();
         //initializer values for AIPointcuts
-        sigAIPointcut = new BoolPointcut(false, AbcExtension.generated);
-        privateSigAIPointcut = new BoolPointcut(false, AbcExtension.generated);
+        sigAIPointcut = BoolPointcut.construct(false, AbcExtension.generated);
+        privateSigAIPointcut = BoolPointcut.construct(false, AbcExtension.generated);
         this.isRoot = isRoot;
     }
     
@@ -123,8 +124,7 @@ public class ModuleNodeModule extends ModuleNode {
         if (node.isClass()) {
             cpe = ((ModuleNodeClass)node).getCPE();
         } else if (node.isAspect()) {
-            cpe = new CPEName_c(AbcExtension.generated, 
-                    		((ModuleNodeAspect)node).getAspectNamePattern());
+            cpe = ((ModuleNodeAspect)node).getCPE();
         }
         assert(cpe != null);
 
@@ -283,6 +283,23 @@ public class ModuleNodeModule extends ModuleNode {
     
     public void setDummyAspect(Aspect dummyAspect) {
         this.dummyAspect = dummyAspect;
+    }
+    
+    //returns thisAspect(A), thisAspect(B), ...where A,B... are friends of the module
+    public Pointcut getThisAspectPointcut() {
+        Pointcut ret = BoolPointcut.construct(false, AbcExtension.generated);
+        for (Iterator iter = members.iterator(); iter.hasNext(); ) {
+            ModuleNode currMember = (ModuleNode) iter.next();
+            
+            //if not an aspect member, proceed to next
+            if (!(currMember instanceof ModuleNodeAspect)) {continue;}
+            
+            ModuleNodeAspect aspectMember = (ModuleNodeAspect) currMember;
+            Pointcut newTerm = ThisAspectPointcut.construct(
+                    new OMClassnamePattern(aspectMember.getCPE()),AbcExtension.generated); 
+            ret = OrPointcut.construct(ret, newTerm, AbcExtension.generated);
+        }
+        return ret;
     }
     
     public boolean isAspect() {

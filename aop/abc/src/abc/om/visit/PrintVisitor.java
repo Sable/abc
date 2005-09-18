@@ -105,6 +105,7 @@ public class PrintVisitor extends ContextVisitor {
             }
 
         }*/
+        
         return super.enter(parent, n);
     }
 
@@ -159,6 +160,10 @@ public class PrintVisitor extends ContextVisitor {
 	        w.write(ext_pc.toString());
 	        w.newline();
         }
+        w.write("/*thisAspect pointcut*/");
+        Pointcut thisAspectPc = n.getThisAspectPointcut();
+        w.write(thisAspectPc.toString());
+        w.newline();
         try {
             w.flush();
         } catch (IOException e) {

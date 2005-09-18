@@ -34,8 +34,8 @@ import abc.aspectj.ast.*;
 public class OpenModNodeFactory_c extends AJNodeFactory_c implements
         OpenModNodeFactory {
 
-    public ModMember ModMemberAspect(Position pos, NamePattern namePattern) {
-        return new ModMemberAspect_c(pos,namePattern);
+    public ModMember ModMemberAspect(Position pos, CPEName cpe) {
+        return new ModMemberAspect_c(pos, cpe);
     }
     public ModMember ModMemberClass(Position pos,
             ClassnamePatternExpr classPattern) {

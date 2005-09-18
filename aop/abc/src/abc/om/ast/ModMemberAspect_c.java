@@ -24,6 +24,7 @@ package abc.om.ast;
 
 import java.util.List;
 
+import abc.aspectj.ast.CPEName;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.NamePattern;
 import abc.aspectj.ast.SimpleNamePattern_c;
@@ -47,11 +48,12 @@ public class ModMemberAspect_c extends Node_c implements ModMemberAspect,
 
     private String name;
     private NamePattern namePattern;
+    private CPEName cpe;
 
-    public ModMemberAspect_c(Position pos, NamePattern namePattern) {
+    public ModMemberAspect_c(Position pos, CPEName cpe) {
         super(pos);
-        this.name = namePattern.toString();
-        this.namePattern = namePattern;
+        this.name = cpe.getNamePattern().toString();
+        this.cpe = cpe;
     }
 
     public void prettyPrint(CodeWriter w, PrettyPrinter pp) {
@@ -64,9 +66,13 @@ public class ModMemberAspect_c extends Node_c implements ModMemberAspect,
     }
     
     public NamePattern getNamePattern() {
-        return namePattern;
+        return cpe.getNamePattern();
     }
-
+    
+    public ClassnamePatternExpr getCPE() {
+        return cpe;
+    }
+    
     private ModMemberAspect_c reconstruct(NamePattern namePattern) {
         if (namePattern != this.namePattern) {
             ModMemberAspect_c n = (ModMemberAspect_c) copy();

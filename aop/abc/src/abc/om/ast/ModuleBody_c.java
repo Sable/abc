@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import abc.aspectj.ast.CPEName;
 import abc.om.ExtensionInfo;
 import abc.om.visit.*;
 
@@ -181,7 +182,7 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
         }
         //add a ModuleNode that represents the aspect
         ModuleNode aspectNode = ext.moduleStruct.addAspectNode(
-                member.name(), member.getNamePattern());
+                member.name(), (CPEName)member.getCPE());
         assert(aspectNode != null);
         aspectNode = ext.moduleStruct.addMember(module.name(), aspectNode);
         //should always add properly, since we already checked if there is an

@@ -40,7 +40,7 @@ public interface OpenModNodeFactory extends AJNodeFactory {
 
     public ModuleBody ModuleBody(Position pos, List members);
     
-    public ModMember ModMemberAspect(Position pos, NamePattern namePattern);
+    public ModMember ModMemberAspect(Position pos, CPEName cpe);
 
     public ModMember ModMemberClass(Position pos,
             ClassnamePatternExpr classPattern);

@@ -37,7 +37,11 @@ public class BoolPointcut extends ShadowPointcut {
 
     boolean b = false;
     
-    public BoolPointcut(boolean b, Position pos) {
+    public static BoolPointcut construct(boolean b, Position pos) {
+        return new BoolPointcut(b, pos);
+    }
+    
+    private BoolPointcut(boolean b, Position pos) {
         super(pos);
         this.b = b;
     }

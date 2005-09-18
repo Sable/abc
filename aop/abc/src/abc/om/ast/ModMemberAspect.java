@@ -22,6 +22,7 @@
  */
 package abc.om.ast;
 
+import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.NamePattern;
 
 /**
@@ -31,4 +32,5 @@ import abc.aspectj.ast.NamePattern;
 public interface ModMemberAspect extends ModMember {
     public String name();
     public NamePattern getNamePattern();
+    public ClassnamePatternExpr getCPE();
 }

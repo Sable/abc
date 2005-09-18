@@ -41,6 +41,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 
+import abc.aspectj.ast.CPEName;
 import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.NamePattern;
 import abc.aspectj.ast.PointcutDecl;
@@ -133,13 +134,13 @@ public class ModuleStructure {
     }
     
     //for aspect members
-    public ModuleNode addAspectNode(String name, NamePattern aspectNamePattern) {
+    public ModuleNode addAspectNode(String name, CPEName cpe) {
         Map nodeMap = getMap(ModuleNode.TYPE_ASPECT);
         ModuleNode n = (ModuleNode) nodeMap.get(name);
         if (n!= null) {
             return null;
         }
-        n = new ModuleNodeAspect(name, aspectNamePattern);
+        n = new ModuleNodeAspect(name, cpe);
         nodeMap.put(n.name(), n);
         return n;
     }
@@ -388,7 +389,7 @@ public class ModuleStructure {
     /**
      * Returns the pointcut that represents the signatures that apply to the
      * class
-     *  
+     *  TODO: Get rid of the iteration, by normalizing the modules...
      */
     public Pointcut getApplicableSignature(PCNode classNode) {
         Pointcut ret = null;
@@ -406,8 +407,14 @@ public class ModuleStructure {
         for (Iterator iter = moduleList.iterator(); iter.hasNext();) {
             ModuleNodeModule module = (ModuleNodeModule) iter.next();
             if (prevIsConstrained) {
-                ret = AndPointcut.construct(ret, module.getSigAIPointcut(),
-                        AbcExtension.generated);
+                //  (currPC && (childPC)) || (childPC && thisAspect(currModule.aspects))  
+                ret = OrPointcut.construct(
+                        	AndPointcut.construct(ret, module.getSigAIPointcut(),
+                        	        				AbcExtension.generated),
+                        	AndPointcut.construct(ret, module.getThisAspectPointcut(),
+                        	        AbcExtension.generated),
+                        	AbcExtension.generated
+                		); 
             } else {
                 ret = OrPointcut.construct(ret, module.getSigAIPointcut(),
                         AbcExtension.generated);

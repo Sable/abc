@@ -284,7 +284,8 @@ aspect_name ::=
 	aspect_name_pattern:an
 	{:
 		Grm.parserTrace("OM module_member: aspect");
-		RESULT = parser.nf.ModMemberAspect(((NamePattern)an).position(), an);
+		Position currPos = ((NamePattern)an).position();
+		RESULT = parser.nf.ModMemberAspect(currPos, parser.nf.CPEName(currPos, an));
 	:}
 ;
 

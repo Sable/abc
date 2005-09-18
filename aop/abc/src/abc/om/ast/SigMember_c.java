@@ -67,7 +67,7 @@ public class SigMember_c extends Node_c implements MakesAspectMethods{
         ClassnamePattern cp = new OMClassnamePattern(toClause);
         return AndPointcut.construct(
                 this.pc.makeAIPointcut(), 
-                new ThisAspectPointcut(cp, 
+                ThisAspectPointcut.construct(cp, 
                         AbcExtension.generated), 
                 AbcExtension.generated);
     }

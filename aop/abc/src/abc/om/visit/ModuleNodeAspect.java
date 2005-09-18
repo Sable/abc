@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import abc.aspectj.ast.CPEName;
+import abc.aspectj.ast.ClassnamePatternExpr;
 import abc.aspectj.ast.NamePattern;
 import abc.aspectj.visit.PCNode;
 import abc.aspectj.visit.PCStructure;
@@ -37,14 +39,16 @@ import abc.aspectj.visit.PCStructure;
 public class ModuleNodeAspect extends ModuleNode {
     private PCNode aspectNode; //PCNode for TYPE_ASPECT nodes
     private NamePattern aspectNamePattern; //Name pattern for the aspect
+    CPEName cpe;
     
-    public ModuleNodeAspect(String name, NamePattern namePattern) {
+    public ModuleNodeAspect(String name, CPEName cpe) {
         this.name = name;
-        this.aspectNamePattern = namePattern;
+        this.cpe = cpe;
         
         //get the PCNode representing the aspect by using PCStructure.matchName
         //TODO: Assumes that aspects are always top-level. Needs to be changed
         // if it is no longer the case
+        NamePattern namePattern = cpe.getNamePattern();
         PCStructure pcStruct = PCStructure.v();
         Set matches = pcStruct.matchName(namePattern, new PCNode(null, null,
                 pcStruct), new HashSet(), new HashSet());
@@ -53,8 +57,8 @@ public class ModuleNodeAspect extends ModuleNode {
         aspectNode = (PCNode) iter.next();
     }
     
-    public NamePattern getAspectNamePattern() {
-        return aspectNamePattern;
+    public ClassnamePatternExpr getCPE() {
+        return cpe;
     }
     
     public PCNode getAspectNode() {
