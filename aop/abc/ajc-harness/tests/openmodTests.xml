@@ -456,7 +456,6 @@
 			<message kind="warning" line="22" />
 			<message kind="warning" line="22" />
 			<message kind="warning" line="26" />
-			<message kind="warning" line="26" />
         </compile>
         <run class="ConstrainTestMain"/>
     </ajc-test>

@@ -166,21 +166,12 @@ public class ModuleNodeModule extends ModuleNode {
         
         //update the AIPointcuts
         abc.weaving.aspectinfo.Pointcut newPointcut = sigMember.getAIPointcut();
-        //if a method sig member, add the ext pointcut
+        //if an advertise member, add the ext pointcut
         if (sigMember instanceof SigMemberAdvertiseDecl) {
-            //get the topmost ancestor of this modulenode, then use its extPointcut
-            ModuleNodeModule root = this;
-            while (root.getParent() != null) {
-                root = (ModuleNodeModule)root.getParent();
-            }
-            abc.weaving.aspectinfo.Pointcut extPointcut = root.getExtPointcut();
-            //ext pointcut can be null (i.e. if the module has no members
-            if (extPointcut != null) {
-                newPointcut = AndPointcut.construct(
-                        newPointcut, 
-                        root.getExtPointcut(), 
-                        AbcExtension.generated);
-            }
+            newPointcut = AndPointcut.construct(
+                    newPointcut, 
+                    this.getExtPointcut(), 
+                    AbcExtension.generated);
         }
         if (sigMember.isPrivate()) {
             privateSigAIPointcut = OrPointcut.construct(privateSigAIPointcut, 
