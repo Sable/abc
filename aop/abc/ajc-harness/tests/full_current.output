@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@f7fe56, [Ljava.lang.Object;@15ad51d, TwoAnonymous$3@f7fe56
+calling run: TwoAnonymous$3@176b73c, [Ljava.lang.Object;@f7fe56, TwoAnonymous$3@176b73c
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@17b1cbc.foo calls Outer$Inner@19bb1c4.mi
+Outer@183f9a6.foo calls Outer$Inner@17b1cbc.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@19bb1c4.mi calls java.io.PrintStream@b3ebe5.println
+Outer$Inner@17b1cbc.mi calls java.io.PrintStream@19bb1c4.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@17b1cbc.foo calls Outer$InnerRandom@1c3562b.nextHook
+Outer@183f9a6.foo calls Outer$InnerRandom@443c10.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@1c3562b.nextHook calls Outer$InnerRandom@1c3562b.next
+Outer$InnerRandom@443c10.nextHook calls Outer$InnerRandom@443c10.next
 Outer.foo() calls Random.nextInt(..)
-Outer@17b1cbc.foo calls X.nextInt
+Outer@183f9a6.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@162d3ed.foo calls Outer$Inner@1479c81.mi
+Outer@13d15cf.foo calls Outer$Inner@162d3ed.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@1479c81.mi calls java.io.PrintStream@73dad5.println
+Outer$Inner@162d3ed.mi calls java.io.PrintStream@1479c81.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@162d3ed.foo calls Outer$InnerRandom@18bbf89.nextHook
+Outer@13d15cf.foo calls Outer$InnerRandom@24003d.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@18bbf89.nextHook calls Outer$InnerRandom@18bbf89.next
+Outer$InnerRandom@24003d.nextHook calls Outer$InnerRandom@24003d.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@162d3ed.foo calls X.nextInt
+Outer@13d15cf.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$28$around$1601(AroundAll.java:199)
+	at A.inline$26$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4309,13 +4309,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$7$around$2689(Trace.aj:92)
+	at aspects.Trace.inline$6$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4349,13 +4349,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$19$around$2689(Trace.aj:119)
+	at aspects.Trace.inline$18$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4748,7 +4748,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@d42710
+LibraryAspect-defined run() for C@368807
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5074,7 +5074,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@a95d93
+? Util.read() obj=Test@157cc0e
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5307,12 +5307,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@15f6cfa
-Invoking command bean:  Command@1ebd164
-hello(Command@1ebd164)
-Created a PerThis aspect : Testcase2@fffe3e
-Invoking command bean:  Command@8cd160
-hello again(Command@8cd160)
+Created a PerThis aspect : Testcase2@a99dea
+Invoking command bean:  Command@1be89af
+hello(Command@1be89af)
+Created a PerThis aspect : Testcase2@415dc7
+Invoking command bean:  Command@173ba1a
+hello again(Command@173ba1a)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
