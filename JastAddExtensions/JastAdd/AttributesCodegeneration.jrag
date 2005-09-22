@@ -1,0 +1,1079 @@
+aspect GenerateSynCode {
+  public void SynDecl.generateIntertypeDecls() {
+    if(hasEqBody()) {
+      // public type name(p0, ..., PN-1) { ... }
+      List modifierList = (List)getModifiers().getModifierList().fullCopy();
+      modifierList.add(new Modifier("static"));
+      MethodDecl aspectMethod =
+          new IntroducedMethodDecl(
+            new Modifiers(modifierList),
+            type().createQualifiedAccess(),
+            new IdDecl(name()),
+            createParameterList(),
+            new List(),
+            new List(),
+            new Opt(
+              getBlock().fullCopy()
+            ),
+            introducedType()
+          );
+      hostAspect().addBodyDecl(aspectMethod);
+      int lineNum = getParameterList().sourceLineNumber();
+      generateAttributeDecl(introducedType(), aspectMethod, lineNum);
+    }
+    else if(introducedType() instanceof ASTDecl && !((ASTDecl)introducedType()).hasEquation(this)) {
+      // public abstract type name(p0, ..., PN-1);
+      introducedType().addBodyDecl(
+        new MethodDecl(
+          new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))),
+          type().createQualifiedAccess(),
+          new IdDecl(name()),
+          (List)getParameterList().fullCopy(),
+          new List(),
+          new List(),
+          new Opt()
+        )
+      );
+    }
+  }
+
+  public void InhDecl.generateIntertypeDecls() {
+    addDefiningInterface();
+    addInterfaceTagging();
+    int lineNum = getParameterList().sourceLineNumber();
+    generateAttributeDecl(introducedType(), lineNum);
+  }
+
+  public void SynEq.generateIntertypeDecls() {
+    SynDecl synDecl = decl();
+    List modifierList = (List)synDecl.getModifiers().getModifierList().fullCopy();
+    modifierList.add(new Modifier("static"));
+    MethodDecl aspectMethod =
+      new IntroducedMethodDecl(
+        new Modifiers(modifierList),
+        type().createQualifiedAccess(),
+        new IdDecl(name()),
+        createParameterList(),
+        new List(),
+        new List(),
+        new Opt(
+          getBlock().fullCopy()
+        ),
+        introducedType()
+      );
+    hostType().addBodyDecl(aspectMethod);
+    int lineNum = getParameterList().sourceLineNumber();
+    synDecl.generateAttributeDecl(introducedType(), aspectMethod, lineNum);
+  }
+
+  syn lazy TypeDecl SynEq.type() = decl().type();
+
+  public List AttributeEq.createParameterList() {
+    List list = new List();
+    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).fullCopy());
+    return list;
+  }
+  
+  public List AttributeDecl.createParameterList() {
+    List list = new List();
+    list.add(new ParameterDeclaration(introducedType().createQualifiedAccess(), "that"));
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).fullCopy());
+    return list;
+  }
+
+  // TODO: do better detection if NTA here
+  syn boolean AttributeDecl.isNTA() = name().startsWith("get") && getNumParameter() == 0;
+  
+  // Add a possibly cached delegate in typeDecl that calls aspectMethod
+  public void SynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
+    if(isLazy()) {
+      // Add re-init of attribute cache in node clone method
+      nodeCopyClearCache(typeDecl);
+    }
+    
+    // check cached value, compute new value, store in cache, return value
+    List statements = new List();
+    if(isLazy() || !Program.hasOption("-no_visit_check"))
+      addParameterStructure(statements);
+    if(isLazy())
+      addComputedCheck(statements, typeDecl);
+    
+    addCheckVisited(statements, typeDecl);
+    addSetVisited(statements, typeDecl);
+    
+    if(isLazy())
+      addCacheComputeCall(statements, typeDecl, aspectMethod);
+    else
+      addComputeCall(statements, aspectMethod);
+
+    if(isNTA()) {
+      addStoreNTAValue(statements, typeDecl);
+    }
+    
+    addClearVisited(statements, typeDecl);
+    
+    addReturnStmt(statements, typeDecl);
+
+    //statements.getChildNoTransform(0).setSourceLineNumber(lineNum);
+    statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
+    // public type name(p0, ... , pN-1) { ... }
+    typeDecl.addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        type().createQualifiedAccess(),
+        new IdDecl(name()),
+        (List)getParameterList().fullCopy(),
+        new List(),
+        new List(),
+        new Opt(new Block(statements))
+      )
+    );
+  }
+
+
+  // Add a possibly cached delegate in typeDecl that calls aspectMethod
+  public void InhDecl.generateAttributeDecl(TypeDecl typeDecl, int lineNum) {
+    if(isLazy()) {
+      // Add re-init of attribute cache in node clone method
+      nodeCopyClearCache(typeDecl);
+    }
+    
+    // check cached value, compute new value, store in cache, return value
+    List statements = new List();
+    if(isLazy() || !Program.hasOption("-no_visit_check"))
+      addParameterStructure(statements);
+    if(isLazy())
+      addComputedCheck(statements, typeDecl);
+    
+    if(!Program.hasOption("-no_visit_check")) {
+      // if(visited) throw new RuntimeException("Circular definition...");
+      addCheckVisited(statements, typeDecl);
+      // visited = true;
+      addSetVisited(statements, typeDecl);
+    }
+    
+    if(isLazy())
+      addCacheComputeCall(statements, typeDecl);
+    else
+      addComputeCall(statements);
+
+    if(isNTA()) {
+      addStoreNTAValue(statements, typeDecl);
+    }
+    
+    if(!Program.hasOption("-no_visit_check"))
+      // visited = false;
+      addClearVisited(statements, typeDecl);
+    
+    addReturnStmt(statements, typeDecl);
+
+    //statements.getChildNoTransform(0).setSourceLineNumber(lineNum);
+    statements.getChildNoTransform(statements.getNumChild()-1).setSourceLineNumber(lineNum);
+
+    // public type name(p0, ... , pN-1) { ... }
+    typeDecl.addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        type().createQualifiedAccess(),
+        new IdDecl(name()),
+        (List)getParameterList().fullCopy(),
+        new List(),
+        new List(),
+        new Opt(new Block(statements))
+      )
+    );
+  }
+  
+
+  protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
+    // setNNN(computedValueName());
+    list.add(
+      new ExprStmt(
+        new MethodAccess(
+          "set" + name().substring(3), // replace initial get with set
+          new List().add(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess()
+          )
+        )
+      )
+    );
+  }
+    
+  protected void AttributeDecl.nodeCopyClearCache(TypeDecl type) {
+    if(!(type instanceof ASTDecl))
+      return;
+    ASTDecl typeDecl = (ASTDecl)type;
+    Access fieldAccess = null;
+    Expr expr = null;
+    if(getNumParameter() == 0) {
+      // node.computed = false;
+      fieldAccess = new BoundFieldAccess(fieldComputedFlag(type));
+      expr = new BooleanLiteral(false);
+    }
+    else {
+      // node.computed_value = new java.util.HashMap(4);
+      fieldAccess = new BoundFieldAccess(fieldComputedValue(type));
+      expr = new ClassInstanceExpr(
+        lookupType("java.util", "HashMap").createQualifiedAccess(),
+        new List().add(new IntegerLiteral(4))
+      );
+    }     
+    typeDecl.addCloneNodeInit(fieldAccess, expr); 
+  }
+
+  inh lazy TypeDecl AttributeDecl.typeObject();
+
+  private HashMap AttributeDecl.fieldVisitedFlagAdded = new HashMap();
+  protected FieldDeclaration AttributeDecl.fieldVisitedFlag(TypeDecl typeDecl) {
+    if(fieldVisitedFlagAdded.containsKey(typeDecl))
+      return (FieldDeclaration)fieldVisitedFlagAdded.get(typeDecl);
+    TypeDecl fieldType = getNumParameter() == 0 ?
+      lookupType("primitive", "boolean") : lookupType("java.util", "HashSet");
+    Expr fieldInit;
+    if(getNumParameter() == 0)
+      fieldInit = new BooleanLiteral(false);
+    else
+      fieldInit = new ClassInstanceExpr(
+        lookupType("java.util", "HashSet").createQualifiedAccess(),
+        new List().add(new IntegerLiteral(4))
+      );
+    FieldDeclaration f = new FieldDeclaration(
+      new Modifiers(new List().add(new Modifier("private"))),
+      fieldType.createQualifiedAccess(),
+      visitedFlagName(),
+      fieldInit
+    );
+    typeDecl.addBodyDecl(f);
+    fieldVisitedFlagAdded.put(typeDecl, f);
+    return f;
+  }
+
+  private HashMap AttributeDecl.fieldComputedFlagAdded = new HashMap();
+  protected FieldDeclaration AttributeDecl.fieldComputedFlag(TypeDecl typeDecl) {
+    if(fieldComputedFlagAdded.containsKey(typeDecl))
+      return (FieldDeclaration)fieldComputedFlagAdded.get(typeDecl);
+    FieldDeclaration f;
+    if(getNumParameter() == 0)
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        lookupType("primitive", "boolean").createQualifiedAccess(),
+        computedFlagName(),
+        new BooleanLiteral(false)
+      );
+    else
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        lookupType("java.util", "HashSet").createQualifiedAccess(),
+        computedFlagName(),
+        new ClassInstanceExpr(
+          lookupType("java.util", "HashSet").createQualifiedAccess(),
+          new List().add(new IntegerLiteral(4))
+        )
+      );
+    typeDecl.addBodyDecl(f);
+    fieldComputedFlagAdded.put(typeDecl, f);
+    return f;
+  }
+  
+  private HashMap AttributeDecl.fieldComputedValueAdded = new HashMap();
+  protected FieldDeclaration AttributeDecl.fieldComputedValue(TypeDecl typeDecl) {
+    if(fieldComputedValueAdded.containsKey(typeDecl))
+      return (FieldDeclaration)fieldComputedValueAdded.get(typeDecl);
+    FieldDeclaration f;
+    if(getNumParameter() == 0)
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        computedValueType().createQualifiedAccess(),
+        computedValueName()
+      );
+    else
+      f = new FieldDeclaration(
+        new Modifiers(new List().add(new Modifier("private"))),
+        computedValueType().createQualifiedAccess(),
+        computedValueName(),
+        new ClassInstanceExpr(
+          lookupType("java.util", "HashMap").createQualifiedAccess(),
+          new List().add(new IntegerLiteral(4))
+        )
+      );
+    typeDecl.addBodyDecl(f);
+    fieldComputedValueAdded.put(typeDecl, f);
+    return f;
+  }
+
+  protected void AttributeDecl.addCheckVisited(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // if(visited_flag) throw new RuntimeException("Circular definition of attr: signature in class: classname.");
+      list.add(
+        new IfStmt(
+          fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+          new ThrowStmt(
+            new ClassInstanceExpr(
+              lookupType("java.lang", "RuntimeException").createQualifiedAccess(),
+              new List().add(
+                new StringLiteral("Circular definition of attr: " + signature() + " in class: " + hostType().fullName())
+              )
+            )
+          )
+        )
+      );
+    }
+    else {
+      // if(visited_flag.contains("parameters$")) throw new RuntimeException("Circular definition of attr: signature in class: classname.");
+      list.add(
+        new IfStmt(
+          new MethodDot(
+            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "contains",
+              new List().add(new VarAccess("parameters$"))
+            )
+          ),
+          new ThrowStmt(
+            new ClassInstanceExpr(
+              lookupType("java.lang", "RuntimeException").createQualifiedAccess(),
+              new List().add(
+                new StringLiteral("Circular definition of attr: " + signature() + " in class: " + hostType().fullName())
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+
+  protected void AttributeDecl.addSetVisited(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // visited_flag = true; 
+      list.add(
+        AssignExpr.asStmt(
+          fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+          new BooleanLiteral(true)
+        )
+      );
+    }
+    else {
+      // visited_flag.set(parameters$)
+      list.add(
+        new ExprStmt(
+          new MethodDot(
+            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "add",
+              new List().add(new VarAccess("parameters$"))
+            )
+          )
+        )
+      );
+    }
+  }
+  
+  protected void AttributeDecl.addClearVisited(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // visited_flag = true; 
+      list.add(
+        AssignExpr.asStmt(
+          fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+          new BooleanLiteral(false)
+        )
+      );
+    }
+    else {
+      // visited_flag.set(parameters$)
+      list.add(
+        new ExprStmt(
+          new MethodDot(
+            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "remove",
+              new List().add(new VarAccess("parameters$"))
+            )
+          )
+        )
+      );
+    }
+  }
+
+  protected void AttributeDecl.addParameterStructure(List list) {
+    if(getNumParameter() == 1) {
+      // type parameters$ = parameter0;
+      list.add(
+        new VariableDeclaration(
+          typeObject().createQualifiedAccess(),
+          "parameters$",
+          getParameter(0).type().box(getParameter(0).createAccess())
+        )
+      );
+    }
+    else if(getNumParameter() > 1) {
+      // object[] parameters$ = {parameter0, .. , paramterN-1};
+      List init = new List();
+      for(int i = 0; i < getNumParameter(); i++)
+        init.add(new VarInit(getParameter(i).type().box(getParameter(i).createAccess())));
+      list.add(
+        new VariableDeclaration(
+          lookupType("java.util", "List").createQualifiedAccess(),
+          "parameters$",
+          new ClassInstanceExpr(
+            lookupType("java.util", "ArrayList").createQualifiedAccess(),
+            new List().add(new IntegerLiteral(getNumParameter()))
+          )
+        )
+      );
+      for(int i = 0; i < getNumParameter(); i++) {
+        list.add(
+          new ExprStmt(
+            new AbstractDot(
+              new VarAccess("parameters$"),
+              new MethodAccess(
+                "add",
+                new List().add(
+                  getParameter(i).type().box(getParameter(i).createAccess())
+                )
+              )
+            )
+          )
+        );
+      }
+    }
+  }
+  
+  protected void AttributeDecl.addComputedCheck(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // if(computed_flag) return computed_value;
+      list.add(
+        new IfStmt(
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          //new VarAccess(computedFlagName()),
+          new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()/*new VarAccess(computedValueName())*/)
+        )
+      );
+    }
+    else {
+      // if(computed_value.containsKey(parameters$) return (type)computed_value.get(parameters$);
+      list.add(
+        new IfStmt(
+          new MethodDot(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+            //new VarAccess(computedValueName()),
+            new MethodAccess(
+              "containsKey",
+              new List().add(new VarAccess("parameters$"))
+            )
+          ),
+          new ReturnStmt(
+            type().unbox(
+              new MethodDot(
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                //new VarAccess(computedValueName()),
+                new MethodAccess(
+                  "get",
+                  new List().add(new VarAccess("parameters$"))
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+
+  inh TypeDecl AttributeDecl.lookupArray(TypeDecl elementType, int dimension);
+
+  public Access Parameter.createAccess() {
+    return new VarAccess(getIdDecl().getID());
+  }
+
+  public Expr TypeDecl.box(Expr expr) {
+    return expr;
+  }
+
+  protected Expr TypeDecl.createBox(TypeDecl typeDecl, Expr expr) {
+    return new ClassInstanceExpr(
+      typeDecl.createQualifiedAccess(),
+      new List().add(expr)
+    );
+  }
+  
+  public Expr BooleanType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Boolean"), expr);
+  }
+  public Expr ByteType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Byte"), expr);
+  }
+  public Expr ShortType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Short"), expr);
+  }
+  public Expr IntType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Integer"), expr);
+  }
+  public Expr LongType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Long"), expr);
+  }
+  public Expr CharType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Char"), expr);
+  }
+  public Expr FloatType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Float"), expr);
+  }
+  public Expr DoubleType.box(Expr expr) {
+    return createBox(lookupType("java.lang", "Double"), expr);
+  }
+  
+  public Expr TypeDecl.unbox(Expr expr) {
+    return new CastExpr(createQualifiedAccess(), expr);
+  }
+
+  protected Expr TypeDecl.createUnbox(TypeDecl typeDecl, String methodName, Expr expr) {
+    return new MethodDot(
+      new ParExpr(
+        new CastExpr(
+          typeDecl.createQualifiedAccess(),
+          expr
+        )
+      ),
+      new MethodAccess(methodName, new List())
+    );
+  }
+    
+  public Expr BooleanType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Boolean"), "booleanValue", expr);
+  }
+  public Expr ByteType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Byte"), "byteValue", expr);
+  }
+  public Expr ShortType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Short"), "shortValue", expr);
+  }
+  public Expr IntType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Integer"), "intValue", expr);
+  }
+  public Expr LongType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Long"), "longValue", expr);
+  }
+  public Expr CharType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Char"), "charValue", expr);
+  }
+  public Expr FloatType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Float"), "floatValue", expr);
+  }
+  public Expr DoubleType.unbox(Expr expr) {
+    return createUnbox(lookupType("java.lang", "Double"), "doubleValue", expr);
+  }
+
+  protected void AttributeDecl.addComputeCall(List list, MethodDecl targetMethod) {
+    List args = new List();
+    args.add(new ThisAccess(new List(), new IdUse("this")));
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(getParameter(i).createAccess());
+    }
+    // type computed_value = name(arg0, ... , argN-1);
+    list.add(
+      new VariableDeclaration(
+        type().createQualifiedAccess(),
+        computedValueName(),
+        //new ComputeMethodAccess(name(), args, hostAspect(), type())
+        new BoundMethodAccess(name(), args, targetMethod)
+      )
+    );
+  }
+  
+  protected void AttributeDecl.addCacheComputeCall(List list, TypeDecl typeDecl, MethodDecl targetMethod) {
+    // int num$ = boundariesCrossed;
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("int"),
+        "num$",
+        new VarAccess("boundariesCrossed")
+      )
+    );
+    // boolean localFinal$ = this.isFinal
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("boolean"),
+        "localFinal$",
+        new VarAccess("isFinal")
+      )
+    );
+    // localFinal$ && num$ == boundariesCrossed
+    Expr cond = new AndLogicalExpr(
+      new VarAccess("localFinal$"),
+      new EQExpr(
+        new VarAccess("num$"),
+        new VarAccess("boundariesCrossed")
+      )
+    );
+    List args = new List();
+    args.add(new ThisAccess(new List(), new IdUse("this")));
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(getParameter(i).createAccess());
+    }
+    if(getNumParameter() == 0) {
+      // computed_value = name(arg0, .. , argN-1);
+      list.add(
+        AssignExpr.asStmt(
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+          //new VarAccess(computedValueName()),
+          //new ComputeMethodAccess(name(), args, hostAspect(), type())
+          new BoundMethodAccess(name(), args, targetMethod)
+        )
+      );
+      // if(cond) computed_flag = true;
+      list.add(
+        new IfStmt(
+          cond,
+          AssignExpr.asStmt(
+            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+            //new VarAccess(computedFlagName()),
+            new BooleanLiteral(true)
+          )
+        )
+      );
+    }
+    else {
+      // type computed_value = name(arg0, ... , argN-1);
+      list.add(
+          new VariableDeclaration(
+            type().createQualifiedAccess(),
+            computedValueName(),
+            //new ComputeMethodAccess(name(), args, hostAspect(), type()))
+            new BoundMethodAccess(name(), args, targetMethod))
+          );
+      // if(cond) this.computed_value.put(parameters$, computed_value);
+      list.add(
+        new IfStmt(
+          cond,
+          new ExprStmt(
+            new AbstractDot(
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              /*
+              new AbstractDot(
+                new ThisAccess(new List(), new IdUse("this")),
+                new VarAccess(computedValueName())
+              ),
+              */
+              new MethodAccess(
+                "put",
+                new List().add(
+                  new VarAccess("parameters$")
+                ).add(
+                  type().box(new VarAccess(computedValueName()))
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+
+  syn lazy String InhDecl.definingInterfaceName() {
+    StringBuffer s = new StringBuffer();
+    s.append("Defines$" + name());
+    for(int i = 0; i < getNumParameter(); i++)
+      s.append("$" + getParameter(i).type().constantPoolName().replace('/', '$'));
+    return s.toString();
+  }
+
+  public void InhDecl.addInterfaceTagging() {
+    Map map = new HashMap();
+    for(Iterator iter = decls().iterator(); iter.hasNext(); ) {
+      InhEq inhEq = (InhEq)iter.next();
+      if(!map.containsKey(inhEq.introducedType()))
+        map.put(inhEq.introducedType(), new ArrayList(1));
+      Collection c = (Collection)map.get(inhEq.introducedType());
+      c.add(inhEq);
+    }
+    // Foreach class that has an introduced equation for this inh declaration
+    for(Iterator iter = map.keySet().iterator(); iter.hasNext(); ) {
+      TypeDecl typeDecl = (TypeDecl)iter.next();
+      if(typeDecl instanceof ClassDecl) {
+        ClassDecl classDecl = (ClassDecl)typeDecl;
+
+        // Add implements tag
+        classDecl.addImplements(
+          new TypeDot(
+            hostAspect().createQualifiedAccess(),
+            new TypeAccess(definingInterfaceName())
+          )
+        );
+
+        // statements in delegation method
+        List statements = new List(); 
+
+        // Foreach inh equation in this type
+        for(Iterator i2 = ((Collection)map.get(typeDecl)).iterator(); i2.hasNext(); ) {
+          InhEq inhEq = (InhEq)i2.next();
+          // add inh equation to aspect 
+          List modifierList = (List)getModifiers().getModifierList().fullCopy();
+          modifierList.add(new Modifier("static"));
+          List parameterList = inhEq.createParameterList();
+          if(inhEq.getNumChildParameter() == 1) {
+            parameterList.add(
+              new ParameterDeclaration(
+                inhEq.getChildParameter(0).type().createQualifiedAccess(),
+                inhEq.getChildParameter(0).getIdDecl().getID()
+              )
+            );
+          }
+          MethodDecl methodDecl =
+            new IntroducedMethodDecl(
+              new Modifiers(modifierList),
+              type().createQualifiedAccess(),
+              new IdDecl(name() + "$" + inhEq.childName()),
+              parameterList,
+              new List(),
+              new List(),
+              new Opt(
+                inhEq.getBlock().fullCopy()
+              ),
+              inhEq.introducedType()
+            );
+          
+          inhEq.hostType().addBodyDecl(methodDecl);
+
+          // Add conditional delegation 
+          List args = new List();
+          args.add(new ThisAccess(new List(), new IdUse("this")));
+          for(int i = 0; i < getNumParameter(); i++)
+            args.add(getParameter(i).createAccess());
+          if(inhEq.getNumChildParameter() == 1) {
+            args.add(
+              new MethodDot(
+                new VarAccess("caller"),
+                new MethodAccess(
+                  "getIndexOfChild",
+                  new List().add(
+                    new VarAccess("child")
+                  )
+                )
+              )
+            );
+          }
+          statements.add(
+            new IfStmt(
+              inhEq.child().createFromCorrectChildCheck(),
+              new ReturnStmt(
+                new BoundMethodAccess(
+                  name() + "$" + inhEq.childName(),
+                  args,
+                  methodDecl
+                )
+              )
+            )
+          );
+          
+        }
+
+        boolean eqInSuperClass = false;
+        TypeDecl searchType = typeDecl;
+        while(!eqInSuperClass && searchType != null && searchType instanceof ASTDecl) {
+          ASTDecl astDecl = (ASTDecl)searchType;
+          if(astDecl.hasSuperClass())
+            searchType = astDecl.getSuperClass();
+          if(map.containsKey(searchType) && !((Collection)map.get(searchType)).isEmpty())
+            eqInSuperClass = true;
+        }
+        
+        if(eqInSuperClass) {
+          List args = new List();
+          args.add(new VarAccess("caller"));
+          args.add(new VarAccess("child"));
+          for(int i = 0; i < getNumParameter(); i++)
+            args.add(getParameter(i).createAccess());
+
+          statements.add(
+            new ReturnStmt(
+              new MethodDot(
+                new SuperAccess(
+                  new List(),
+                  new IdUse("super")
+                ),
+                new MethodAccess(
+                  definingInterfaceName(),
+                  args
+                )
+              )
+            )
+          );
+        }
+        else {
+          addDelegateToAncestorDefinition(statements);
+        }
+        
+        classDecl.addBodyDecl(
+          new MethodDecl(
+            new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+            type().createQualifiedAccess(),
+            new IdDecl(definingInterfaceName()),
+            createDefiningInterfaceParameterList(),
+            new List(),
+            new List(),
+            new Opt(
+              new Block(
+                statements
+              )
+            )
+          )
+        );
+      }
+    }
+  }
+
+  Expr ASTChild.createFromCorrectChildCheck() {
+    return new EQExpr(
+      new VarAccess("caller"),
+      new MethodAccess("get" + name() + "NoTransform", new List())
+    );
+  }
+  Expr ASTOptionalChild.createFromCorrectChildCheck() {
+    return new EQExpr(
+      new VarAccess("caller"),
+      new MethodAccess("get" + name() + "OptNoTransform", new List())
+    );
+  }
+  Expr ASTListChild.createFromCorrectChildCheck() {
+    return new EQExpr(
+      new VarAccess("caller"),
+      new MethodAccess("get" + name() + "ListNoTransform", new List())
+    );
+  }
+  
+  inh TypeCollection InhDecl.lookupType(String name);
+  syn lazy TypeDecl InhDecl.typeASTNode() = extractSingleType(lookupType("ASTNode"));
+  public List InhDecl.createDefiningInterfaceParameterList() {
+    List list = new List();
+    list.add(new ParameterDeclaration(typeASTNode().createQualifiedAccess(), "caller"));
+    list.add(new ParameterDeclaration(typeASTNode().createQualifiedAccess(), "child"));
+    for(int i = 0; i < getNumParameter(); i++)
+      list.add(getParameter(i).fullCopy());
+    return list;
+  }
+  
+  // TODO: currently needs to update remote attributes after this operation
+  protected void InhDecl.addDefiningInterface() {
+    hostAspect().addBodyDecl(
+      new MemberInterface(
+        new InterfaceDecl(
+          new Modifiers(new List().add(new Modifier("public"))),
+          new IdDecl(definingInterfaceName()),
+          new List(),
+          new List().add(
+            new MethodDecl(
+              new Modifiers(new List().add(new Modifier("public"))),
+              type().createQualifiedAccess(),
+              new IdDecl(definingInterfaceName()),
+              createDefiningInterfaceParameterList(),
+              new List(),
+              new List(),
+              new Opt()
+            )
+          )
+        )
+      )
+    );
+  }
+
+  protected void InhDecl.addSearchAncestorForEquation(List list) {
+    // ASTNode n = getParent();
+    // ASTNode caller = this;
+    // ASTNode child = null;
+    list.add(
+      new VariableDeclaration(
+        typeASTNode().createQualifiedAccess(),
+        "n",
+        new MethodAccess("getParent", new List())
+      )
+    ).add(
+      new VariableDeclaration(
+        typeASTNode().createQualifiedAccess(),
+        "caller",
+        new ThisAccess(
+          new List(),
+          new IdUse("this")
+        )
+      )
+    ).add(
+      new VariableDeclaration(
+        typeASTNode().createQualifiedAccess(),
+        "child",
+        new NullLiteral("null")
+      )
+    );
+    
+    // while(!(n instanceof definingInterfaceName)) {
+    //   child = caller;
+    //   caller = n;
+    //   n = n.getParent();
+    list.add(
+      new WhileStmt(
+        new LogNotExpr(
+          new ParExpr(
+            new InstanceOfExpr(
+              new VarAccess("n"),
+              new TypeDot(
+                hostAspect().createQualifiedAccess(),
+                new TypeAccess(definingInterfaceName())
+              )
+            )
+          )
+        ),
+        new Block(
+          new List().add(
+            AssignExpr.asStmt(new VarAccess("child"), new VarAccess("caller"))
+          ).add(
+            AssignExpr.asStmt(new VarAccess("caller"), new VarAccess("n"))
+          ).add(
+            AssignExpr.asStmt(
+              new VarAccess("n"),
+              new MethodDot(
+                new VarAccess("n"),
+                new MethodAccess("getParent", new List())
+              )
+            )
+          )
+        )
+      )
+    );
+  }
+
+
+  protected Expr AttributeDecl.createComputeCall(MethodDecl targetMethod) {
+    throw new Error("createComputeCall(MethodDecl targetMethod) not implemented for " + getClass().getName());
+  }
+    
+  protected Expr SynDecl.createComputeCall(MethodDecl targetMethod) {
+    List args = new List();
+    args.add(new ThisAccess(new List(), new IdUse("this")));
+    for(int i = 0; i < getNumParameter(); i++) {
+      args.add(getParameter(i).createAccess());
+    }
+    // compute(this, p0, ... , pn-1)
+    return new BoundMethodAccess(name(), args, targetMethod);
+  }
+
+  protected Expr AttributeDecl.createComputeCall() {
+    throw new Error("createComputeCall() not implemented for " + getClass().getName());
+  }
+  
+  protected Expr InhDecl.createComputeCall() {
+    // ((hostType.definingInterfaceName)n).definingInterfaceName(caller, child, arg0, ... argN-1)
+    List args = new List();
+    args.add(new VarAccess("caller"));
+    args.add(new VarAccess("child"));
+    for(int i = 0; i < getNumParameter(); i++)
+     args.add(getParameter(i).createAccess());
+    return 
+      new MethodDot(
+        new ParExpr(
+          new CastExpr(
+            new TypeDot(
+              hostAspect().createQualifiedAccess(),
+              new TypeAccess(definingInterfaceName())
+            ),
+            new VarAccess("n")
+          )
+        ),
+        new MethodAccess(definingInterfaceName(), args)
+      );
+  }
+
+  protected void InhDecl.addDelegateToAncestorDefinition(List list) {
+    addSearchAncestorForEquation(list);
+    list.add(new ReturnStmt(createComputeCall()));
+  }
+  
+  protected void InhDecl.addComputeCall(List list) {
+    addSearchAncestorForEquation(list);
+    list.add(
+      new VariableDeclaration(
+        type().createQualifiedAccess(),
+        computedValueName(),
+        createComputeCall()
+      )
+    );
+  }
+
+  protected void InhDecl.addCacheComputeCall(List list, TypeDecl typeDecl) {
+    addSearchAncestorForEquation(list);
+    Expr computeCall = createComputeCall();
+      
+    if(getNumParameter() == 0) {
+      // computed_value = name(arg0, .. , argN-1);
+      list.add(
+        AssignExpr.asStmt(
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+          //new VarAccess(computedValueName()),
+          computeCall
+        )
+      );
+      // computed_flag = true;
+      list.add(
+        AssignExpr.asStmt(
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          //new VarAccess(computedFlagName()),
+          new BooleanLiteral(true)
+        )
+      );
+    }
+    else {
+      // type computed_value = name(arg0, ... , argN-1);
+      list.add(
+        new VariableDeclaration(
+          type().createQualifiedAccess(),
+          computedValueName(),
+          computeCall
+        )
+      );
+      // this.computed_value.put(parameters$, computed_value);
+      list.add(
+        new ExprStmt(
+          new AbstractDot(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+            /*
+            new AbstractDot(
+              new ThisAccess(new List(), new IdUse("this")),
+              new VarAccess(computedValueName())
+            ),
+            */
+            new MethodAccess(
+              "put",
+              new List().add(
+                new VarAccess("parameters$")
+              ).add(
+                type().box(new VarAccess(computedValueName()))
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+
+  protected void AttributeDecl.addReturnStmt(List list, TypeDecl typeDecl) {
+    // return computed_value;
+    if(isLazy() && getNumParameter() == 0)
+      list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));
+    else
+      list.add(new ReturnStmt(new VarAccess(computedValueName())));
+  }
+
+  syn lazy String AttributeDecl.uniqueSignatureName() {
+    StringBuffer s = new StringBuffer();
+    s.append(name());
+    if(getNumParameter() > 0)
+      s.append("_");
+    for(int i = 0; i < getNumParameter(); i++) {
+      Parameter p = getParameter(i);
+      s.append(p.type().fullName().replace('.', '$'));
+    }
+    return s.toString();
+  }
+  syn String AttributeDecl.visitedFlagName() = uniqueSignatureName() + "$visited";
+  syn String AttributeDecl.computedFlagName() = uniqueSignatureName() + "$computed";
+  syn String AttributeDecl.computedValueName() = uniqueSignatureName() + "$value";
+  syn TypeDecl AttributeDecl.computedValueType() = getNumParameter() == 0 ? type() : lookupType("java.util", "Map");
+}

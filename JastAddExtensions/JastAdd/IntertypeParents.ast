@@ -1,0 +1,1 @@
+IntertypeImplements : BodyDecl ::= TargetType:Access InterfaceType:Access;

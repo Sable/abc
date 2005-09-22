@@ -1,0 +1,7 @@
+RewriteDecl : BodyDecl ::= Access Rewrite*;  
+RewriteListDecl : RewriteDecl ::= Access Rewrite* ParentType:Access ChildName:Access <IN:String>;  
+
+abstract Rewrite ::= Access Block;
+ConditionalRewrite : Rewrite ::= Expr Access Block;
+UnconditionalRewrite : Rewrite ::= Access Block;
+

@@ -1,0 +1,11 @@
+ASTDecl : ClassDecl ::= Modifiers IdDecl [SuperClassAccess:Access] Implements:Access* BodyDecl* ASTChild*;
+
+abstract ASTChild ::= <Name:String> [Type:Access];
+ASTListChild : ASTChild;
+NTAListChild : ASTListChild;
+ASTOptionalChild : ASTChild;
+NTAOptionalChild : ASTOptionalChild;
+ASTElementChild : ASTChild;
+NTAElementChild : ASTElementChild;
+ASTTokenChild : ASTChild;
+NTATokenChild : ASTTokenChild;

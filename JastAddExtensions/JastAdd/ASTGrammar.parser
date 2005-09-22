@@ -1,0 +1,67 @@
+TypeDecl type_declaration =
+  tree_node_declaration                                {: return tree_node_declaration; :}
+  ;
+
+BodyDecl aspect_body_declaration =
+  tree_node_declaration                                {: return new MemberClass(tree_node_declaration); :}
+  ;
+
+ASTDecl tree_node_declaration =
+    modifiers_opt AST IDENTIFIER SEMICOLON 
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(), new List(), new List(), new List()); :}
+  | modifiers_opt AST IDENTIFIER COLON name SEMICOLON 
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(name), new List(), new List(), new List()); :}
+  | modifiers_opt AST IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(), new List(), new List(), ast_child_list_opt); :}
+  | modifiers_opt AST IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(name), new List(), new List(), ast_child_list_opt); :}
+  ;
+
+List ast_child_list_opt =
+                       {: return new List(); :}
+  | ast_child_list     {: return ast_child_list; :}
+  ;
+
+List ast_child_list =
+    ast_child                 {: return new List().add(ast_child); :}
+  | ast_child_list ast_child  {: return ast_child_list.add(ast_child); :}
+  ;
+
+ASTChild ast_child =
+    IDENTIFIER
+    {: return new ASTElementChild(IDENTIFIER, new Opt()); :}
+  | DIV IDENTIFIER DIV
+    {: return new NTAElementChild(IDENTIFIER, new Opt()); :}
+  | IDENTIFIER COLON type
+    {: return new ASTElementChild(IDENTIFIER, new Opt(type)); :}
+  | DIV IDENTIFIER COLON type DIV
+    {: return new NTAElementChild(IDENTIFIER, new Opt(type)); :}
+    
+  | LBRACK IDENTIFIER RBRACK
+    {: return new ASTOptionalChild(IDENTIFIER, new Opt()); :}
+  | DIV LBRACK IDENTIFIER RBRACK DIV
+    {: return new NTAOptionalChild(IDENTIFIER, new Opt()); :}
+  | LBRACK IDENTIFIER COLON type RBRACK
+    {: return new ASTOptionalChild(IDENTIFIER, new Opt(type)); :}
+  | DIV LBRACK IDENTIFIER COLON type RBRACK DIV
+    {: return new NTAOptionalChild(IDENTIFIER, new Opt(type)); :}
+    
+  | IDENTIFIER MULT
+    {: return new ASTListChild(IDENTIFIER, new Opt()); :}
+  | DIV IDENTIFIER MULT DIV
+    {: return new NTAListChild(IDENTIFIER, new Opt()); :}
+  | IDENTIFIER COLON type MULT
+    {: return new ASTListChild(IDENTIFIER, new Opt(type)); :}
+  | DIV IDENTIFIER COLON type MULT DIV
+    {: return new NTAListChild(IDENTIFIER, new Opt(type)); :}
+    
+  | LT IDENTIFIER GT
+    {: return new ASTTokenChild(IDENTIFIER, new Opt()); :}
+  | DIV LT IDENTIFIER GT DIV
+    {: return new NTATokenChild(IDENTIFIER, new Opt()); :}
+  | LT IDENTIFIER COLON type GT 
+    {: return new ASTTokenChild(IDENTIFIER, new Opt(type)); :}
+  | DIV LT IDENTIFIER COLON type GT DIV
+    {: return new NTATokenChild(IDENTIFIER, new Opt(type)); :}
+
+  ;

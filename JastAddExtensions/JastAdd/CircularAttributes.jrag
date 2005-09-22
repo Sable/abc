@@ -1,0 +1,627 @@
+aspect CircularAttributes {
+  eq CircularSynDecl.isLazy() = true;
+  eq CircularInhDecl.isLazy() = true;
+
+  // Add a possibly cached delegate in typeDecl that calls aspectMethod
+  public void CircularSynDecl.generateAttributeDecl(TypeDecl typeDecl, MethodDecl aspectMethod, int lineNum) {
+    if(isLazy()) {
+      // Add re-init of attribute cache in node clone method
+      nodeCopyClearCache(typeDecl);
+    }
+    
+    List statements = new List();
+    if(isLazy()) {
+      // build structure that hashes parameters to same value
+      addParameterStructure(statements);
+      // return computed value if stored in cache
+      addComputedCheck(statements, typeDecl);
+    }
+    // lazily add bottom value initialization (may depend on other lazy attributes)
+    addBottomInit(statements, typeDecl);
+    // if not in cycle then start new cyclic evaluation phase
+    addInCircleComputation(statements, typeDecl, aspectMethod);
+    // if not visited then compute next iteration of this value
+    addNotVisitedComputation(statements, typeDecl, aspectMethod);
+    // else return value from last iteration
+    addReturnStmt(statements, typeDecl);
+
+    // public type name(p0, ... , pN-1) { ... }
+    typeDecl.addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        type().createQualifiedAccess(),
+        new IdDecl(name()),
+        (List)getParameterList().fullCopy(),
+        new List(),
+        new List(),
+        new Opt(new Block(statements))
+      )
+    );
+  }
+
+  // Add a possibly cached delegate in typeDecl that calls aspectMethod
+  public void CircularInhDecl.generateAttributeDecl(TypeDecl typeDecl, int lineNum) {
+    MethodDecl aspectMethod = null;
+    if(isLazy()) {
+      // Add re-init of attribute cache in node clone method
+      nodeCopyClearCache(typeDecl);
+    }
+    
+    List statements = new List();
+    if(isLazy()) {
+      // build structure that hashes parameters to same value
+      addParameterStructure(statements);
+      // return computed value if stored in cache
+      addComputedCheck(statements, typeDecl);
+    }
+    // lazily add bottom value initialization (may depend on other lazy attributes)
+    addBottomInit(statements, typeDecl);
+    // if not in cycle then start new cyclic evaluation phase
+    addInCircleComputation(statements, typeDecl, aspectMethod);
+    // if not visited then compute next iteration of this value
+    addNotVisitedComputation(statements, typeDecl, aspectMethod);
+    // else return value from last iteration
+    addReturnStmt(statements, typeDecl);
+
+    // public type name(p0, ... , pN-1) { ... }
+    typeDecl.addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        type().createQualifiedAccess(),
+        new IdDecl(name()),
+        (List)getParameterList().fullCopy(),
+        new List(),
+        new List(),
+        new Opt(new Block(statements))
+      )
+    );
+  }
+
+  protected void AttributeDecl.addInCircleComputation(List inCircleStmt, TypeDecl typeDecl, MethodDecl targetMethod) {
+    List doList = new List();
+    List list = new List();
+    
+    inCircleStmt.add(
+      // if(!IN_CIRCLE) { BLOCK }
+      new IfStmt(
+        new LogNotExpr(
+          new VarAccess("IN_CIRCLE")
+        ),
+        new Block(
+          list
+        )
+      )
+    );
+    
+    // BLOCK - enter a new cyclic evaluation phase
+    
+    // IN_CIRCLE = true;
+    addSetIN_CIRCLE(list);
+    // visited = true;
+    addSetVisited(list, typeDecl);
+    // do { DO_BLOCK } while(CHANGE);
+    list.add(
+      new DoStmt(
+        new Block(
+          doList
+        ),
+        new VarAccess("CHANGE")
+      )
+    );
+    // visited = false;
+    addClearVisited(list, typeDecl);
+    // computed = true;
+    addSetComputed(list, typeDecl);
+    if(!Program.hasOption("-no_cache_cycle"))
+      // LAST_CYCLE = true; compute(...); LAST_CYCLE = false; 
+      addInitCacheCycle(list, targetMethod);
+    // IN_CIRCLE = false;
+    addClearIN_CIRCLE(list);
+    // return value;
+    addReturnStmt(list, typeDecl);
+
+    // DO_BLOCK - compute next iteration of value
+
+    // CHANGE = false;
+    addClearCHANGE(doList);
+    // new_value = compute(this, p0, ... , pN-1);
+    addComputeNewValue(doList, targetMethod);
+    // if(value != new_value) CHANGE = true;
+    addCheckUpdateChange(doList, typeDecl);
+    // value = new_value;
+    addUpdateValue(doList, typeDecl);
+  }
+  
+  protected void AttributeDecl.addNotVisitedComputation(List notVisitedStmt, TypeDecl typeDecl, MethodDecl targetMethod) {
+    List list = new List();
+
+    if(getNumParameter() == 0) {
+      // if(!visited) { BLOCK }
+      notVisitedStmt.add(
+        new IfStmt(
+          new LogNotExpr(
+            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess()
+          ),
+          new Block(
+            list
+          )
+        )
+      );
+    }
+    else {
+      // if(!visited) { BLOCK }
+      notVisitedStmt.add(
+        new IfStmt(
+          new LogNotExpr(
+            new MethodDot(
+              fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+              new MethodAccess(
+                "contains",
+                new List().add(new VarAccess("parameters$"))
+              )
+            )
+          ),
+          new Block(
+            list
+          )
+        )
+      );
+    }
+
+    // BLOCK - compute next iteration of value
+    
+    if(!Program.hasOption("-no_cache_cycle"))
+      // if(LAST_CYCLE) { computed = true; return compute( ... ); }
+      addCheckCacheCycle(list, typeDecl, targetMethod);
+    // visited = true;
+    addSetVisited(list, typeDecl);
+    // new_value = compute(this, p0, ... , pN-1);
+    addComputeNewValue(list, targetMethod);
+    // if(value != new_value) CHANGE = true;
+    addCheckUpdateChange(list, typeDecl);
+    // value = new_value;
+    addUpdateValue(list, typeDecl);
+    // visited = false;
+    addClearVisited(list, typeDecl);
+    // return value;
+    addReturnStmt(list, typeDecl);
+
+  }
+
+  public Expr AttributeDecl.getBottomValue() { throw new Error("getBottomValue() not valid for " + getClass().getName()); }
+
+  protected void AttributeDecl.addBottomInit(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // if(!initialized_flag) { initialized_flag = true; computed_value = expr; }
+      list.add(
+        new IfStmt(
+          new LogNotExpr(
+            fieldInitializedFlag(typeDecl).createQualifiedBoundAccess()
+          ),
+          new Block(
+            new List().add(
+              AssignExpr.asStmt(
+                fieldInitializedFlag(typeDecl).createQualifiedBoundAccess(),
+                new BooleanLiteral(true)
+              )
+            ).add(
+              AssignExpr.asStmt(
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                (Expr)getBottomValue().fullCopy()
+              )
+            )
+          )
+        )
+      );
+    }
+    else {
+      // if(!initialized_flag.contains(parameters$)) { initialized_flag.add(parameters$); computed_value.put(parameters$, expr); }
+      list.add(
+        new IfStmt(
+          new LogNotExpr(
+            new MethodDot(
+              fieldInitializedFlag(typeDecl).createQualifiedBoundAccess(),
+              new MethodAccess(
+                "contains",
+                new List().add(new VarAccess("parameters$"))
+              )
+            )
+          ),
+          new Block(
+            new List().add(
+              new ExprStmt(
+                new MethodDot(
+                  fieldInitializedFlag(typeDecl).createQualifiedBoundAccess(),
+                  new MethodAccess(
+                    "add",
+                    new List().add(new VarAccess("parameters$"))
+                  )
+                )
+              )
+            ).add(
+              new ExprStmt(
+                new MethodDot(
+                  fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                  new MethodAccess(
+                    "put",
+                    new List().add(
+                      new VarAccess("parameters$")
+                    ).add(
+                      getBottomValue().type().box((Expr)getBottomValue().fullCopy())
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+    
+  }
+
+
+  protected void CircularSynDecl.addComputedCheck(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0)
+      super.addComputedCheck(list, typeDecl);
+    else {
+      // if(computed.containsKey(parameters$) return (type)computed_value.get(parameters$);
+      list.add(
+        new IfStmt(
+          new MethodDot(
+            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "contains",
+              new List().add(new VarAccess("parameters$"))
+            )
+          ),
+          new ReturnStmt(
+            type().unbox(
+              new MethodDot(
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                new MethodAccess(
+                  "get",
+                  new List().add(new VarAccess("parameters$"))
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+  protected void CircularInhDecl.addComputedCheck(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0)
+      super.addComputedCheck(list, typeDecl);
+    else {
+      // if(computed.containsKey(parameters$) return (type)computed_value.get(parameters$);
+      list.add(
+        new IfStmt(
+          new MethodDot(
+            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "contains",
+              new List().add(new VarAccess("parameters$"))
+            )
+          ),
+          new ReturnStmt(
+            type().unbox(
+              new MethodDot(
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                new MethodAccess(
+                  "get",
+                  new List().add(new VarAccess("parameters$"))
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+
+
+  protected void AttributeDecl.addComputeNewValue(List list, MethodDecl targetMethod) {
+    throw new Error("addComputeNewValue not implemented for " + getClass().getName());
+  }
+
+  protected void CircularSynDecl.addComputeNewValue(List list, MethodDecl targetMethod) {
+    // computed_value_new = compute(this, p0, ..., Pn-1)
+    list.add(
+      new VariableDeclaration(
+        type().createQualifiedAccess(),
+        computedValueName() + "$new",
+        createComputeCall(targetMethod)
+      )
+    );
+  }
+  
+  protected void CircularInhDecl.addComputeNewValue(List list, MethodDecl targetMethod) {
+    addSearchAncestorForEquation(list);
+    // computed_value_new = compute(this, p0, ..., Pn-1)
+    list.add(
+      new VariableDeclaration(
+        type().createQualifiedAccess(),
+        computedValueName() + "$new",
+        createComputeCall()
+      )
+    );
+  }
+
+  protected void AttributeDecl.addCheckUpdateChange(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // if(computed_value_new != computed_value) CHANGE = true;
+      list.add(
+        new IfStmt(
+          computeNotEquals(new VarAccess(computedValueName() + "$new"), fieldComputedValue(typeDecl).createQualifiedBoundAccess()),
+          AssignExpr.asStmt(
+            new VarAccess("CHANGE"),
+            new BooleanLiteral(true)
+          )
+        )
+      );
+    }
+    else {
+      // if(computed_value_new != (unbox)computed_value.get(parameters$)) CHANGE = true;
+      list.add(
+        new IfStmt(
+          computeNotEquals(
+            new VarAccess(computedValueName() + "$new"),
+            type().unbox(
+              new MethodDot(
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                new MethodAccess(
+                  "get",
+                  new List().add(new VarAccess("parameters$"))
+                )
+              )
+            )
+          ),
+          AssignExpr.asStmt(
+            new VarAccess("CHANGE"),
+            new BooleanLiteral(true)
+          )
+        )
+      );
+    }
+  }
+  
+  protected Expr AttributeDecl.computeNotEquals(Expr left, Expr right) {
+    if(type().isPrimitiveType()) {
+      return new NEExpr(left, right);
+    }
+    else {
+      return new LogNotExpr(
+        new MethodDot(
+          left,
+          new MethodAccess(
+            "equals",
+            new List().add(right)
+          )
+        )
+      );
+    }
+  }
+
+  protected void AttributeDecl.addUpdateValue(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      // computed_value = computed_value_new
+      list.add(
+        AssignExpr.asStmt(
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+          new VarAccess(computedValueName() + "$new")
+        )
+      );
+    }
+    else {
+      // computed_value.put("parameters$", (box)computed_value_new)
+      list.add(
+        new ExprStmt(
+          new MethodDot(
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "put",
+              new List().add(
+                new VarAccess("parameters$")
+              ).add(
+                type().box(
+                  new VarAccess(computedValueName() + "$new")
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }
+  protected void AttributeDecl.addInitCacheCycle(List list, MethodDecl targetMethod) {
+    // LAST_CYCLE = true; compute(this, p0, ..., pN-1); LAST_CYCLE = false;
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("LAST_CYCLE"),
+        new BooleanLiteral(true)
+      )
+    );
+    list.add(
+      new ExprStmt(
+        createComputeCall(targetMethod)
+      )
+    );
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("LAST_CYCLE"),
+        new BooleanLiteral(false)
+      )
+    );
+  }
+  protected void CircularInhDecl.addInitCacheCycle(List list, MethodDecl targetMethod) {
+    // LAST_CYCLE = true; compute(this, p0, ..., pN-1); LAST_CYCLE = false;
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("LAST_CYCLE"),
+        new BooleanLiteral(true)
+      )
+    );
+    addSearchAncestorForEquation(list);
+    list.add(
+      new ExprStmt(
+        createComputeCall()
+      )
+    );
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("LAST_CYCLE"),
+        new BooleanLiteral(false)
+      )
+    );
+  }
+
+  protected void AttributeDecl.addCheckCacheCycle(List list, TypeDecl typeDecl, MethodDecl targetMethod) {
+    // if(LAST_CYCLE) { computed = true; return compute(this, p0, ... , pN-1); }
+    List statements = new List();
+    list.add(
+      new IfStmt(
+        new VarAccess("LAST_CYCLE"),
+        new Block(
+          statements
+        )
+      )
+    );
+    
+    addSetComputed(statements, typeDecl);
+    statements.add(
+      new ReturnStmt(createComputeCall(targetMethod))
+    );
+  }
+  protected void CircularInhDecl.addCheckCacheCycle(List list, TypeDecl typeDecl, MethodDecl targetMethod) {
+    // if(LAST_CYCLE) { computed = true; return compute(this, p0, ... , pN-1); }
+    List statements = new List();
+    list.add(
+      new IfStmt(
+        new VarAccess("LAST_CYCLE"),
+        new Block(
+          statements
+        )
+      )
+    );
+    
+    addSetComputed(statements, typeDecl);
+    addSearchAncestorForEquation(statements);
+    statements.add(
+      new ReturnStmt(createComputeCall())
+    );
+  }
+
+  protected void AttributeDecl.addSetIN_CIRCLE(List list) {
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("IN_CIRCLE"),
+        new BooleanLiteral(true)
+      )
+    );
+  }
+  protected void AttributeDecl.addClearIN_CIRCLE(List list) {
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("IN_CIRCLE"),
+        new BooleanLiteral(false)
+      )
+    );
+  }
+  protected void AttributeDecl.addClearCHANGE(List list) {
+    list.add(
+      AssignExpr.asStmt(
+        new VarAccess("CHANGE"),
+        new BooleanLiteral(false)
+      )
+    );
+  }
+  protected void AttributeDecl.addSetComputed(List list, TypeDecl typeDecl) {
+    if(getNumParameter() == 0) {
+      list.add(
+        AssignExpr.asStmt(
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          new BooleanLiteral(true)
+        )
+      );
+    }
+    else {
+      list.add(
+        new ExprStmt(
+          new MethodDot(
+            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+            new MethodAccess(
+              "add",
+              new List().add(new VarAccess("parameters$"))
+            )
+          )
+        )
+      );
+    }
+  }
+
+  protected void CircularSynDecl.addReturnStmt(List list, TypeDecl typeDecl) {
+    // return computed_value;
+    if(getNumParameter() == 0)
+      list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));
+    else
+      list.add(
+        new ReturnStmt(
+          type().unbox(
+            new MethodDot(
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              new MethodAccess(
+                "get",
+                new List().add(new VarAccess("parameters$"))
+              )
+            )
+          )
+        )
+      );
+  }
+  protected void CircularInhDecl.addReturnStmt(List list, TypeDecl typeDecl) {
+    // return computed_value;
+    if(getNumParameter() == 0)
+      list.add(new ReturnStmt(fieldComputedValue(typeDecl).createQualifiedBoundAccess()));
+    else
+      list.add(
+        new ReturnStmt(
+          type().unbox(
+            new MethodDot(
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              new MethodAccess(
+                "get",
+                new List().add(new VarAccess("parameters$"))
+              )
+            )
+          )
+        )
+      );
+  }
+
+  private HashMap AttributeDecl.fieldInitializedFlagAdded = new HashMap();
+  protected FieldDeclaration AttributeDecl.fieldInitializedFlag(TypeDecl typeDecl) {
+    if(fieldInitializedFlagAdded.containsKey(typeDecl))
+      return (FieldDeclaration)fieldInitializedFlagAdded.get(typeDecl);
+    TypeDecl fieldType = getNumParameter() == 0 ?
+      lookupType("primitive", "boolean") : lookupType("java.util", "HashSet");
+    Expr fieldInit;
+    if(getNumParameter() == 0)
+      fieldInit = new BooleanLiteral(false);
+    else
+      fieldInit = new ClassInstanceExpr(
+        lookupType("java.util", "HashSet").createQualifiedAccess(),
+        new List().add(new IntegerLiteral(4))
+      );
+    FieldDeclaration f = new FieldDeclaration(
+      new Modifiers(new List().add(new Modifier("private"))),
+      fieldType.createQualifiedAccess(),
+      initializedFlagName(),
+      fieldInit
+    );
+    typeDecl.addBodyDecl(f);
+    fieldInitializedFlagAdded.put(typeDecl, f);
+    return f;
+  }
+  syn String AttributeDecl.initializedFlagName() = uniqueSignatureName() + "$initialized";
+}

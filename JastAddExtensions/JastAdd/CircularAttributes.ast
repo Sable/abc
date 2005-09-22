@@ -1,0 +1,3 @@
+CircularSynDecl : SynDecl ::= BottomValue:Expr;
+CircularInhDecl : InhDecl ::= BottomValue:Expr;
+

@@ -1,0 +1,11 @@
+BodyDecl intertype_member_declaration =
+  intertype_method_declaration
+  ;
+
+BodyDecl intertype_method_declaration =
+    modifiers_opt.m type name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
+    {: return new IntertypeMethodDecl(m, type, new IdDecl(id), p, new List(), t, b, targetType); :}
+  | modifiers_opt.m VOID name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
+    {: return new IntertypeMethodDecl(m, new TypeAccess("void"), new IdDecl(id), p, new List(), t, b, targetType); :}
+  ;
+

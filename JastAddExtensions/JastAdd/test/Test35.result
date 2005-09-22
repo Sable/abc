@@ -1,0 +1,7 @@
+LAZY: check that lazy is used for syn and inh decl
+Non lazy syn computed
+Non lazy syn computed
+Lazy syn computed
+Non lazy inh computed
+Non lazy inh computed
+Lazy inh computed

@@ -1,0 +1,43 @@
+aspect IntertypeParentsNameAnalysis {
+
+  syn TypeDecl IntertypeImplements.introducedType() = getTargetType().type();
+  
+  syn lazy Map AspectDecl.intertypeImplementsMap() {
+    Map map = new HashMap();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof IntertypeImplements) {
+        IntertypeImplements decl = (IntertypeImplements)getBodyDecl(i);
+        if(!map.containsKey(decl.introducedType()))
+          map.put(decl.introducedType(), new ArrayList(1));
+        Collection c = (Collection)map.get(decl.introducedType());
+      	c.add(getBodyDecl(i));
+      }
+    }
+    return map;
+  }
+
+  inh lazy Collection ClassDecl.introducedImplements(TypeDecl typeDecl);
+  inh lazy Collection MemberClass.introducedImplements(TypeDecl typeDecl);
+  
+  eq Program.getCompilationUnit(int i).introducedImplements(TypeDecl typeDecl) = new ArrayList(0);
+  eq AspectDecl.getBodyDecl(int index).introducedImplements(TypeDecl typeDecl) {
+    Collection c = (Collection)intertypeImplementsMap().get(typeDecl);
+    if(c != null)
+      return c;
+    return new ArrayList(0);
+  }
+
+
+  private boolean ASTDecl.introducedInterfaces = false;
+  rewrite ASTDecl {
+    when(!introducedInterfaces)
+    to ASTDecl {
+      introducedInterfaces = true;
+      for(Iterator iter = introducedImplements(this).iterator(); iter.hasNext(); ) {
+        IntertypeImplements decl = (IntertypeImplements)iter.next();
+        addImplements(decl.getInterfaceType().type().createQualifiedAccess());
+      }
+      return this;
+    }
+  }
+}

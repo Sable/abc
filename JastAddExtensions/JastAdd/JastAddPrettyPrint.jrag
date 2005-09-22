@@ -1,0 +1,155 @@
+aspect JastAddPrettyPrint {
+    public void SynDecl.toString(StringBuffer s) {
+    s.append(indent());
+    getModifiers().toString(s);
+    s.append("syn ");
+    if(isLazy())
+      s.append("lazy ");
+    getTypeAccess().toString(s);
+    s.append(" ");
+    getTargetType().toString(s);
+    s.append(".");
+    getIdDecl().toString(s);
+    s.append("(");
+    if(getNumParameter() > 0) {
+      getParameter(0).toString(s);
+      for(int i = 1; i < getNumParameter(); i++) {
+        s.append(", ");
+        getParameter(i).toString(s);
+      }
+    }
+    s.append(")");
+    if(hasBlock()) {
+      s.append(" ");
+      getBlock().toString(s);
+    }
+    else {
+      s.append(";\n");
+    }
+  }
+  public void SynEq.toString(StringBuffer s) {
+    s.append(indent() + "eq ");
+    getHostType().toString(s);
+    s.append("." + getAttributeName()); 
+    s.append("(");
+    if(getNumParameter() > 0) {
+      getParameter(0).toString(s);
+      for(int i = 1; i < getNumParameter(); i++) {
+        s.append(", ");
+        getParameter(i).toString(s);
+      }
+    }
+    s.append(") ");
+    getBlock().toString(s);
+  }
+
+  public void InhEq.toString(StringBuffer s) {
+    s.append(indent() + "eq ");
+    getHostType().toString(s);
+    s.append("." + getChildName());
+    s.append("(");
+    if(getNumChildParameter() > 0) {
+      getChildParameter(0).toString(s);
+      for(int i = 1; i < getNumChildParameter(); i++) {
+        s.append(", ");
+        getChildParameter(i).toString(s);
+      }
+    }
+    s.append(")");
+    s.append("." + getAttributeName()); 
+    s.append("(");
+    if(getNumParameter() > 0) {
+      getParameter(0).toString(s);
+      for(int i = 1; i < getNumParameter(); i++) {
+        s.append(", ");
+        getParameter(i).toString(s);
+      }
+    }
+    s.append(") ");
+    getBlock().toString(s);
+  }
+  
+  public void InhDecl.toString(StringBuffer s) {
+    s.append(indent());
+    getModifiers().toString(s);
+    s.append("inh ");
+    if(isLazy())
+      s.append("lazy ");
+    getTypeAccess().toString(s);
+    s.append(" ");
+    getTargetType().toString(s);
+    s.append(".");
+    getIdDecl().toString(s);
+    s.append("(");
+    if(getNumParameter() > 0) {
+      getParameter(0).toString(s);
+      for(int i = 1; i < getNumParameter(); i++) {
+        s.append(", ");
+        getParameter(i).toString(s);
+      }
+    }
+    s.append(")");
+    s.append(";\n");
+  }
+
+  public void AspectDecl.toString(StringBuffer s) {
+    getModifiers().toString(s);
+    s.append("aspect ");
+    getIdDecl().toString(s);
+    s.append(" {\n");
+    indent++;
+    for(int i=0; i < getNumBodyDecl(); i++) {
+      getBodyDecl(i).toString(s);
+    }
+    indent--;
+    s.append(indent() + "}\n");
+  }
+
+
+  public void ASTDecl.toString(StringBuffer s) {
+    getModifiers().toString(s);
+    s.append("ast ");
+    getIdDecl().toString(s);
+    if(hasSuperClassAccess()) {
+      s.append(" : ");
+      getSuperClassAccess().toString(s);
+    }
+    s.append(" ::=");
+    for(int i = 0; i < getNumASTChild(); i++) {
+      s.append(" ");
+      getASTChild(i).toString(s);
+    }
+    s.append(" ;\n");
+    indent++;
+    for(int i=0; i < getNumBodyDecl(); i++) {
+      getBodyDecl(i).toString(s);
+    }
+    indent--;
+  }
+
+  public void ASTChild.toString(StringBuffer s) {
+    s.append(getName());
+    if(hasType()) {
+      s.append(":");
+      getType().toString(s);
+    }
+  }
+
+  public void ASTListChild.toString(StringBuffer s) {
+    super.toString(s);
+    s.append("*");
+  }
+  
+  public void ASTOptionalChild.toString(StringBuffer s) {
+    s.append("[");
+    super.toString(s);
+    s.append("]");
+  }
+  
+  public void ASTTokenChild.toString(StringBuffer s) {
+    s.append("<");
+    super.toString(s);
+    s.append(">");
+  }
+
+}

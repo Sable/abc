@@ -1,0 +1,5 @@
+Larger example using the following features:
+  syn paramterized attributes with/without initializer + overriding + declarative/imparative equations
+  inh paramterized attributes using list child index
+int
+string

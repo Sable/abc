@@ -1,0 +1,71 @@
+aspect IntertypeMethodNameAnalysis {
+  syn TypeDecl IntertypeConstructorDecl.introducedType() = getTargetType().type();
+
+  syn TypeDecl IntertypeConstructorDecl.hostType() = introducedType();
+  eq IntertypeConstructorDecl.getBlock().hostType() = hostType();
+  eq IntertypeConstructorDecl.getConstructorInvocation().hostType() = hostType();
+  eq IntertypeConstructorDecl.getParameter(int index).hostType() = hostType();
+
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupConstructor(ConstructorAccess a) = hostType().lookupConstructor(a);
+  eq IntertypeConstructorDecl.getBlock().lookupConstructor(ConstructorAccess a) = hostType().lookupConstructor(a);
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupSuperConstructor(ConstructorAccess a) = hostType().lookupSuperConstructor(a);
+  eq IntertypeConstructorDecl.getBlock().lookupSuperConstructor(ConstructorAccess a) = hostType().lookupSuperConstructor(a);
+
+
+
+  // Hack to avoid multiple declared intertype constructors
+  public ConstructorDecl AspectDecl.lookupConstructor(ConstructorDecl signature) {
+    return signature;
+  }
+  public ConstructorDecl ASTDecl.lookupConstructor(ConstructorDecl signature) {
+    return signature;
+  }
+
+  syn lazy Map AspectDecl.intertypeConstructorsMap() {
+    Map map = new HashMap();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof IntertypeConstructorDecl) {
+        IntertypeConstructorDecl decl = (IntertypeConstructorDecl)getBodyDecl(i);
+        if(!map.containsKey(decl.introducedType()))
+          map.put(decl.introducedType(), new ArrayList(1));
+        Collection c = (Collection)map.get(decl.introducedType());
+      	c.add(getBodyDecl(i));
+      }
+    }
+    return map;
+  }
+
+  inh lazy Collection ClassDecl.introducedConstructors(TypeDecl typeDecl);
+  inh lazy Collection MemberClass.introducedConstructors(TypeDecl typeDecl);
+  
+  eq Program.getCompilationUnit(int i).introducedConstructors(TypeDecl typeDecl) = new ArrayList(0);
+  eq AspectDecl.getBodyDecl(int index).introducedConstructors(TypeDecl typeDecl) {
+    Collection c = (Collection)intertypeConstructorsMap().get(typeDecl);
+    if(c != null)
+      return c;
+    return new ArrayList(0);
+  }
+
+  public ArrayList ASTDecl.findConstructor(List argList, TypeDecl typeDecl) {
+    ArrayList maxSpecific = super.findConstructor(argList, typeDecl);
+    for(Iterator iter = introducedConstructors(this).iterator(); iter.hasNext(); ) {
+      ConstructorDecl decl = (ConstructorDecl)iter.next();
+      if(decl.compatible(argList) && decl.accessableFrom(typeDecl)) {
+        if(maxSpecific.isEmpty()) {
+          maxSpecific.add(decl);
+        }
+        else {
+          if(decl.moreSpecificThan((ConstructorDecl)maxSpecific.get(0))) {
+            maxSpecific.clear();
+            maxSpecific.add(decl);
+          }
+          else if(!((ConstructorDecl)maxSpecific.get(0)).moreSpecificThan(decl)) {
+            maxSpecific.add(decl);
+          }
+        }
+      }
+    }
+    return maxSpecific;
+  }
+
+}

@@ -1,0 +1,38 @@
+BodyDecl intertype_member_declaration =
+  syn_decl
+  | inh_decl
+  | syn_eq
+  | inh_eq
+  ;
+
+BodyDecl syn_decl =
+    modifiers_opt.mod SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
+    {: return new SynDecl(mod, false, type, hostType, new IdDecl(id), p, b); :}
+  | modifiers_opt.mod SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN method_body.b 
+    {: return new SynDecl(mod, true, type, hostType, new IdDecl(id), p, b); :}
+  | modifiers_opt.mod SYN type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
+    {: return new SynDecl(mod, false, type, hostType, new IdDecl(id), p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+  | modifiers_opt.mod SYN LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
+    {: return new SynDecl(mod, true, type, hostType, new IdDecl(id), p, new Opt(new Block(new List().add(new ReturnStmt(new Opt(expression)))))); :}
+  ;
+
+BodyDecl inh_decl =
+    modifiers_opt.mod INH type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
+                                                         {: return new InhDecl(mod, false, type, hostType, new IdDecl(id), p); :}
+  | modifiers_opt.mod INH LAZY type name.hostType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN SEMICOLON 
+                                                         {: return new InhDecl(mod, true, type, hostType, new IdDecl(id), p); :}
+  ;
+
+BodyDecl syn_eq =
+    EQUATION name DOT IDENTIFIER LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
+    {: return new SynEq(name, IDENTIFIER, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
+  | EQUATION name DOT IDENTIFIER LPAREN formal_parameter_list_opt.p RPAREN block
+    {: return new SynEq(name, IDENTIFIER, p, block); :}
+  ;
+  
+BodyDecl inh_eq =
+    EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list_opt.p1 RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list_opt.p RPAREN EQ expression SEMICOLON
+    {: return new InhEq(type, child, p1, attribute, p, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
+  | EQUATION name.type DOT IDENTIFIER.child LPAREN formal_parameter_list_opt.p1 RPAREN DOT IDENTIFIER.attribute LPAREN formal_parameter_list_opt.p RPAREN block
+    {: return new InhEq(type, child, p1, attribute, p, block); :}
+  ;

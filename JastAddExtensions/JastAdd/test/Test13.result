@@ -1,0 +1,21 @@
+AST: inserting nodes in a list of children
+Insert A in empty list
+size: 1
+A
+Insert B first in list
+size: 2
+B
+A
+Insert C last in list
+size: 3
+B
+A
+C
+Insert D at position 2
+size: 4
+B
+A
+D
+C
+Insert E at erroneous position (after node getNumNode())
+Error caught: insertChild error: can not insert child at position outside list of elements

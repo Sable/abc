@@ -1,0 +1,1 @@
+IntertypeConstructorDecl : ConstructorDecl ::= TargetType:Access;

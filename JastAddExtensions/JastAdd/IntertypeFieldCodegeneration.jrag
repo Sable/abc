@@ -1,0 +1,30 @@
+aspect IntertypeFieldCodegeneration {
+  public void IntertypeFieldDeclaration.generateIntertypeDecls() {
+    introducedType().addBodyDecl(
+      new IntroducedFieldDeclaration(
+        (Modifiers)getModifiers().fullCopy(),
+        type().createQualifiedAccess(),
+        new IdDecl(name()),
+        (Opt)getAbstractVarInitOpt().fullCopy(),
+        hostType()
+      )
+    );
+  }
+
+  
+  // change name binding to search for methods in introducedType in IntroducedMethodDecl body
+  public IntroducedFieldDeclaration.IntroducedFieldDeclaration(Modifiers m, Access t, IdDecl d, Opt init, TypeDecl aspectType) {
+    this(m, t, d, init);
+    this.aspectType = aspectType;
+  }
+  private TypeDecl IntroducedFieldDeclaration.aspectType;
+  syn TypeDecl IntroducedFieldDeclaration.aspectType() = aspectType;
+  eq IntroducedFieldDeclaration.getAbstractVarInit().lookupVariable(String name) {
+    Collection c = lookupVariable(name);
+    if(!c.isEmpty())
+      return c;
+    return aspectType().findVariable(name); // TODO: Does this work for fields in nested aspects/classes?
+  }
+
+  eq IntertypeFieldDeclaration.isBytecodeField() = false;
+}

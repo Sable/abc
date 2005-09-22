@@ -1,0 +1,5 @@
+AST: optional child
+HasNode: false
+Adding node
+HasNode: true
+Correct node: true

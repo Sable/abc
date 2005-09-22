@@ -1,0 +1,107 @@
+aspect IntertypeMethodNameAnalysis {
+  // hostAspect is the aspect the declares the intertype method decl
+  syn TypeDecl IntertypeMethodDecl.hostAspect() = (TypeDecl)getParent().getParent();
+  // introducedType is the type into which the intertype method decl is statically introduced
+  syn TypeDecl IntertypeMethodDecl.introducedType() = getTargetType().type();
+
+  // override ag-inherited attribute, this will cause calls bound to an
+  // IntertypeMethodDecl to invoke a method in the introducedType instead of the hostAspect
+  syn TypeDecl IntertypeMethodDecl.hostType() = introducedType();
+  eq IntertypeMethodDecl.getBlock().hostType() = hostType();
+  eq IntertypeMethodDecl.getParameter(int index).hostType() = hostType();
+  eq IntertypeMethodDecl.getBlock().lookupMethod(String name) {
+    MethodCollection c = introducedType().remoteLookupMethod(name);
+    if(!c.isEmpty())
+      return c;
+    return lookupMethod(name);
+  }
+
+
+
+  syn MethodCollection AspectDecl.localLookupMethod(MethodDecl signature) {
+    String name = signature.name();
+    MethodCollection maxSpecific = MethodCollection.emptyCollection();
+    maxSpecific = maxSpecific.add(signature);
+    return maxSpecific;
+    /*
+    for(Iterator iter = methods(name).iterator(); iter.hasNext(); ) {
+      MethodDecl decl = (MethodDecl)iter.next();
+      if(decl.compatible(signature)) {
+        if(maxSpecific.isEmpty()) {
+          maxSpecific = maxSpecific.add(decl);
+        }
+        else {
+          if(decl.moreSpecificThan(maxSpecific.first())) {
+            maxSpecific = MethodCollection.emptyCollection();
+            maxSpecific = maxSpecific.add(decl);
+          }
+          else if(!maxSpecific.first().moreSpecificThan(decl)) {
+            maxSpecific = maxSpecific.add(decl);
+          }
+        }
+      }
+    }
+    return maxSpecific;
+    */
+  }
+  
+  eq ASTDecl.localMethods(String name) {
+    Collection methods = super.localMethods(name);
+    for(Iterator iter = introducedMethods(this).iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m.name().equals(name))
+        methods.add(m);
+    }
+    return methods;
+  }
+
+  syn lazy Collection AspectDecl.localIntroductionMethods() {
+    Collection c = new ArrayList(1);
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      //if(getBodyDecl(i) instanceof AttributeDecl) {
+      //  AttributeDecl decl = (AttributeDecl)getBodyDecl(i);
+      //  c.add(decl);
+      //}
+      //else 
+      if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
+      	c.add(getBodyDecl(i));
+      }
+    }
+    return c;
+  }
+
+  syn lazy Map AspectDecl.intertypeMethodsMap() {
+    Map map = new HashMap();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      /*
+      if(getBodyDecl(i) instanceof AttributeDecl) {
+        AttributeDecl decl = (AttributeDecl)getBodyDecl(i);
+        if(!map.containsKey(decl.introducedType()))
+          map.put(decl.introducedType(), new ArrayList(1));
+        Collection c = (Collection)map.get(decl.introducedType());
+        c.add(decl);
+      }
+      else
+      */
+      if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
+        IntertypeMethodDecl decl = (IntertypeMethodDecl)getBodyDecl(i);
+        if(!map.containsKey(decl.introducedType()))
+          map.put(decl.introducedType(), new ArrayList(1));
+        Collection c = (Collection)map.get(decl.introducedType());
+      	c.add(getBodyDecl(i));
+      }
+    }
+    return map;
+  }
+
+  inh lazy Collection ClassDecl.introducedMethods(TypeDecl typeDecl);
+  inh lazy Collection MemberClass.introducedMethods(TypeDecl typeDecl);
+  
+  eq Program.getCompilationUnit(int i).introducedMethods(TypeDecl typeDecl) = new ArrayList(0);
+  eq AspectDecl.getBodyDecl(int index).introducedMethods(TypeDecl typeDecl) {
+    Collection c = (Collection)intertypeMethodsMap().get(typeDecl);
+    if(c != null)
+      return c;
+    return new ArrayList(0);
+  }
+}

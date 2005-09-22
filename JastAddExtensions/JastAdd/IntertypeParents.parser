@@ -1,0 +1,8 @@
+BodyDecl intertype_member_declaration =
+  intertype_parent_declaration
+  ;
+
+BodyDecl intertype_parent_declaration =
+    name.target IMPLEMENTS name.interfacetype SEMICOLON
+    {: return new IntertypeImplements(target, interfacetype); :}
+  ;

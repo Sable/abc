@@ -1,0 +1,56 @@
+aspect IntertypeFieldNameAnalysis {
+  // hostAspect is the aspect the declares the intertype field decl
+  syn TypeDecl IntertypeFieldDeclaration.hostAspect() = (TypeDecl)getParent().getParent();
+  // introducedType is the type into which the intertype field decl is statically introduced
+  syn TypeDecl IntertypeFieldDeclaration.introducedType() = getTargetType().type();
+
+  // override ag-inherited attribute, this will cause an access bound to an
+  // IntertypeFieldDeclaration to access a field in the introducedType instead of the hostAspect
+  syn TypeDecl IntertypeFieldDeclaration.hostType() = introducedType();
+
+
+  // TODO: Some problems when computing declare before use if the init thinks it is in a different host type
+  // comment out works reasonably
+  //eq IntertypeFieldDeclaration.getAbstractVarInit().hostType() = hostType();
+  
+  eq IntertypeFieldDeclaration.getAbstractVarInit().lookupVariable(String name) {
+    Collection c = introducedType().findVariable(name);
+    if(!c.isEmpty())
+      return c;
+    return lookupVariable(name);
+  }
+
+  eq ASTDecl.localFields() {
+    Collection fields = super.localFields();
+    for(Iterator iter = introducedFields(this).iterator(); iter.hasNext(); ) {
+      FieldDeclaration f = (FieldDeclaration)iter.next();
+      fields.add(f);
+    }
+    return fields;
+  }
+
+  syn lazy Map AspectDecl.intertypeFieldsMap() {
+    Map map = new HashMap();
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof IntertypeFieldDeclaration) {
+        IntertypeFieldDeclaration decl = (IntertypeFieldDeclaration)getBodyDecl(i);
+        if(!map.containsKey(decl.introducedType()))
+          map.put(decl.introducedType(), new ArrayList(1));
+        Collection c = (Collection)map.get(decl.introducedType());
+      	c.add(decl);
+      }
+    }
+    return map;
+  }
+
+  inh lazy Collection ClassDecl.introducedFields(TypeDecl typeDecl);
+  inh lazy Collection MemberClass.introducedFields(TypeDecl typeDecl);
+  
+  eq Program.getCompilationUnit(int i).introducedFields(TypeDecl typeDecl) = new ArrayList(0);
+  eq AspectDecl.getBodyDecl(int index).introducedFields(TypeDecl typeDecl) {
+    Collection c = (Collection)intertypeFieldsMap().get(typeDecl);
+    if(c != null)
+      return c;
+    return new ArrayList(0);
+  }
+}

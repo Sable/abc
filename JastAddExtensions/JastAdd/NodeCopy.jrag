@@ -1,0 +1,81 @@
+aspect ASTNodeCopy {
+  syn lazy List ASTDecl.cloneStatementList() {
+    List statements = new List();
+    //ClassName node = (ClassName)super.clone();
+    statements.add(
+      new VariableDeclaration(
+        createQualifiedAccess(),
+        "node",
+        new CastExpr(
+          createQualifiedAccess(),
+          new MethodDot(
+            new SuperAccess(
+              new List(),
+			  new IdUse("super")
+            ),
+            new MethodAccess(
+              "clone",
+              new List()
+            )
+          )
+        )
+      )
+    );
+    // return node;
+    statements.add(
+      new ReturnStmt(
+        new VarAccess("node")
+      )
+    );
+    // public Object clone() throws CloneNotSupportedException { ... }
+    addBodyDecl(
+      new MethodDecl(
+        new Modifiers(new List().add(new Modifier("public"))),
+        new TypeAccess("Object"),
+        new IdDecl("clone"),
+        new List(), // ParameterList
+        new List(), 
+        new List().add(
+          new TypeAccess("CloneNotSupportedException")
+        ), // Exceptions
+        new Opt(
+          new Block(
+            statements
+          )
+        )
+      )
+    );
+    return statements;
+  }
+
+  public void ASTDecl.addCloneNodeInit(String fieldName, Expr expr) {
+    // insert initialization statement of field in node right before return statement
+    List list = cloneStatementList();
+    list.insertChild(
+      AssignExpr.asStmt(
+        new Dot(
+          new VarAccess("node"),
+          new VarAccess(fieldName)
+        ),
+        expr
+      ),
+      list.getNumChild() - 1
+    );
+  }
+  
+  public void ASTDecl.addCloneNodeInit(Access fieldAccess, Expr expr) {
+    // insert initialization statement of field in node right before return statement
+    List list = cloneStatementList();
+    list.insertChild(
+      AssignExpr.asStmt(
+        new Dot(
+          new VarAccess("node"),
+          fieldAccess
+        ),
+        expr
+      ),
+      list.getNumChild() - 1
+    );
+  }
+  
+}

@@ -1,0 +1,36 @@
+BodyDecl aspect_body_declaration =
+  node_rewrite_decl                               {: return node_rewrite_decl; :}
+  ;
+
+RewriteDecl node_rewrite_decl =
+    REWRITE type LBRACE node_rewrite_list RBRACE
+    {: return new RewriteDecl(type, node_rewrite_list); :}
+  | REWRITE type IDENTIFIER qualified_name.n LPAREN RPAREN LBRACE node_rewrite_list RBRACE
+    {:  
+      Access left = (Access)((Dot)n).getLeftNoTransform();
+      ParseName right = (ParseName)((Dot)n).getRightNoTransform();
+      return new RewriteListDecl(type, node_rewrite_list, left, new ParseMethodName(right.getIdUseNoTransform(), new List().add(new IntegerLiteral(0))), IDENTIFIER);
+    :}
+  ;
+
+List node_rewrite_list =
+    node_rewrite                                  {: return new List().add(node_rewrite); :}
+  | node_rewrite_list node_rewrite                {: return node_rewrite_list.add(node_rewrite); :}
+  ;
+
+Rewrite node_rewrite = 
+  conditional_rewrite                             {: return conditional_rewrite; :}
+  | unconditional_rewrite                         {: return unconditional_rewrite; :}
+  ;
+
+Rewrite conditional_rewrite =
+    WHEN LPAREN expression RPAREN TO type block      {: return new ConditionalRewrite(expression, type, block); :}
+  | WHEN LPAREN expression.cond RPAREN TO type expression SEMICOLON
+    {: return new ConditionalRewrite(cond, type, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
+  ;
+
+Rewrite unconditional_rewrite =
+    TO type block                                   {: return new UnconditionalRewrite(type, block); :}
+  | TO type expression SEMICOLON
+    {: return new UnconditionalRewrite(type, new Block(new List().add(new ReturnStmt(new Opt(expression))))); :}
+  ;

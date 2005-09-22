@@ -1,0 +1,14 @@
+aspect GenerateSynCode {
+  public void Program.generateIntertypeDecls(int size) {
+    for(int i = 0; i < size; i++)
+      getCompilationUnit(i).generateIntertypeDecls();
+  }
+
+  protected void ASTNode.generateIntertypeDecls() {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).generateIntertypeDecls();
+  }
+
+
+
+}

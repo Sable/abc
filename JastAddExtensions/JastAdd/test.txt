@@ -1,0 +1,57 @@
+1, Testing the aspect keyword
+2, AST: explicit ASTNode inheritance
+3, AST: implicit ASTNode inheritance
+4, AST: single token, explicit type
+5, AST: single token, implicit type
+6, AST: single token, explicit primitive type
+7, AST: single child
+8, AST: single named child
+9, AST: multiple nodes of the same type
+10, AST: multiple named children
+11, AST: list of children
+12, AST: adding nodes to a list of children
+13, AST: inserting nodes in a list of children
+14, AST: optional child
+15, AST: optional named child
+16, Syn: synthesized attribute with initializing equation
+17, Syn: synthesized attribute with initializing equation, overriden in subclass
+18, Syn: synthesized attribute with initializing equation, overriden in subclass
+19, Syn: synthesized attribute in abstract class with overriding equation in subclass
+20, Syn: parameterized synthesized attribute with overriding equation in subclass
+21, Inh: inherited attribute with single equation
+22, Inh: inherited attribute with multiple equations
+23, Inh: inherited attribute with multiple equations in different types (oo-inheritance)
+24, Inh: inherited attribute with equations being overridden in one path only
+25, Inh: inherited attribute with equation for optionals
+26, Inh: inherited attribute with equation for lists
+27, Inh: inherited attribute with equation for lists using index in equations
+28, Larger example using the following features:
+     syn paramterized attributes with/without initializer + overriding + declarative/imparative equations
+     inh paramterized attributes using list child index
+29, Rewrite: always rewrite node B into new C with common supertype
+30, Rewrite: rewrite node B into new C using multiple matching rewrites choosing using lexical order
+31, Rewrite: rewrite node B into new C using multiple matching rewrite clauses choosing using lexical order
+32, Rewrite: rewrite node B into new C using conditional rewrite short form
+33, Nodecopy: check that node is copied including isFinal attribute
+34, Nodecopy: check that getNumChild() works 'as expected'
+35, LAZY: check that lazy is used for syn and inh decl
+36, NTA: non terminal attribute implemented using syn eq
+37, NTA: check that NTA is included in generic traversal
+38, Intertype declarations: introduce method
+39, Intertype declarations: introduce method
+40, Intertype declarations: introduce field
+41, Intertype declarations: introduce constructor
+42, Intertype declarations: implement interface
+43, Boxing/Unboxing used when caching attribute values
+44, Attributes: check that revisited attributes throws an exception
+45, Rewrites: rewrite A list element into multiple elements
+
+
+50, Circular: test syntax for syn/inh circular declarations
+51, Circular: self circular synthesized attribute
+52, Circular: two mutually circular attributes that terminate immediately
+53, Circular: two mutually circular attributes that may require an iteration before termination
+54, Circular: a self-circular inherited attribute
+55, Circular: two mutually circular attributes that may require an iteration before termination
+56, Circular: two mutually circular paramterized attributes
+57, Circular: avoid recomputation of potentially circular attributes

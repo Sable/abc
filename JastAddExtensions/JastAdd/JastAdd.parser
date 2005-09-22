@@ -1,0 +1,25 @@
+TypeDecl type_declaration =
+  aspect_declaration                                     {: return aspect_declaration; :}
+  ;
+
+AspectDecl aspect_declaration =
+  modifiers_opt.m ASPECT IDENTIFIER aspect_body          {: return new AspectDecl(m, new IdDecl(IDENTIFIER), aspect_body); :}
+  ;
+
+List aspect_body =
+  LBRACE aspect_body_declarations_opt RBRACE             {: return aspect_body_declarations_opt; :};
+
+List aspect_body_declarations_opt =
+                                                         {: return new List(); :}
+  | aspect_body_declarations                             {: return aspect_body_declarations; :}
+  ;
+  
+List aspect_body_declarations =
+    aspect_body_declaration.d                            {: return d != null ? new List().add(d) : new List(); :}
+  | aspect_body_declarations.l aspect_body_declaration.d {: return d != null ? l.add(d) : l; :}
+  ;
+  
+BodyDecl aspect_body_declaration =
+    class_body_declaration                               {: return class_body_declaration; :}
+  ;
+

@@ -1,0 +1,34 @@
+aspect ASTGrammarAnalysis {
+  private HashMap Program.astParentMap = null;
+  private HashMap Program.astParentMap() {
+    if(astParentMap == null) {
+      astParentMap = new HashMap();
+      collectAstParentMap(astParentMap);
+    }
+    return astParentMap;
+  }
+  protected void ASTNode.collectAstParentMap(HashMap map) {
+    for(int i = 0; i < getNumChild(); i++)
+      getChild(i).collectAstParentMap(map);
+  }
+  protected void ASTDecl.collectAstParentMap(HashMap map) {
+    for(Iterator iter = components().iterator(); iter.hasNext(); ) {
+      ASTChild child = (ASTChild)iter.next();
+      if(!(child instanceof ASTTokenChild)) {
+        TypeDecl typeDecl = child.type();
+        if(!map.containsKey(typeDecl))
+          map.put(typeDecl, new ArrayList(1));
+        Collection c = (Collection)map.get(typeDecl);
+        c.add(this);
+      }
+    }
+  }
+
+  eq Program.getCompilationUnit(int i).parents(TypeDecl typeDecl) = 
+    astParentMap().containsKey(typeDecl) ? (Collection)astParentMap().get(typeDecl) : new ArrayList(0);
+  inh Collection ASTDecl.parents(TypeDecl typeDecl); 
+  syn lazy Collection ASTDecl.parents() = parents(this);
+
+  syn boolean ASTDecl.isRootNode() = parents().isEmpty();
+
+}

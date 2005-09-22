@@ -1,0 +1,2 @@
+AST: multiple nodes of the same type
+should result in compilation error
