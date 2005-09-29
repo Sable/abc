@@ -72,6 +72,8 @@ public class ModuleNodeModule extends ModuleNode {
     // and aspect), and does not include the extPointcuts of its children.
     // Once a call to getExtPointcut occurs, the whole extPointcut is built
     // by traversing the subtree rooted at the module.
+    // Note: This is initialized to BoolPointcut(false) in the constructor. This
+    // assumes that the extpointcut is a conjunction of !within() terms
     private abc.weaving.aspectinfo.Pointcut extPointcut = null;
 
     private boolean extPointcutBuilt = false;
@@ -86,6 +88,8 @@ public class ModuleNodeModule extends ModuleNode {
         //initializer values for AIPointcuts
         sigAIPointcut = BoolPointcut.construct(false, AbcExtension.generated);
         privateSigAIPointcut = BoolPointcut.construct(false, AbcExtension.generated);
+        //note: This assumes that extPointcut is a conjunction of !within() terms
+        extPointcut = BoolPointcut.construct(true, AbcExtension.generated);
         this.isRoot = isRoot;
     }
     
@@ -105,7 +109,7 @@ public class ModuleNodeModule extends ModuleNode {
         members.add(node);
 
         //add
-        if (node.isAspect() || node.isClass()) {
+        if (node.isClass()) {
             Pointcut pc = makeExtPointcut(node);
             if (extPointcut == null) {
                 extPointcut = pc;
@@ -117,15 +121,13 @@ public class ModuleNodeModule extends ModuleNode {
     }
 
     private Pointcut makeExtPointcut(ModuleNode node) {
-        assert(node.isAspect() || node.isClass());
+        assert(node.isClass());
 
         //create !within(node.name) pointcut
         ClassnamePatternExpr cpe = null;
         if (node.isClass()) {
             cpe = ((ModuleNodeClass)node).getCPE();
-        } else if (node.isAspect()) {
-            cpe = ((ModuleNodeAspect)node).getCPE();
-        }
+        } 
         assert(cpe != null);
 
         ClassnamePattern namePattern = new OMClassnamePattern(cpe);
@@ -227,11 +229,6 @@ public class ModuleNodeModule extends ModuleNode {
             if (member.isClass()) {
                 ModuleNodeClass memberClass = (ModuleNodeClass) member;
                 if (memberClass.getCPE().matches(node)) {
-                    return true;
-                }
-            } else if (member.isAspect()) {
-                ModuleNodeAspect memberAspect = (ModuleNodeAspect) member;
-                if (memberAspect.getAspectNode() == node) {
                     return true;
                 }
             }

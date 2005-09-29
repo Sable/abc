@@ -3,6 +3,8 @@
 //note: This is also a test for aspect_list, as the friend statement has 2 aspects
 module Module1 {
     class A;
+    class Fib || ACache;
+
     friend Fib, ACache;
     
     advertise : call(int A.fib(int));
