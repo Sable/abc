@@ -2,5 +2,5 @@
 module ModuleB {
     class B;
     open ModuleC;
-    advertise() : call(* f2(..));
+    advertise : call(* f2(..));
 }

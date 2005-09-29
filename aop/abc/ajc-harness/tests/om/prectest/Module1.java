@@ -5,7 +5,5 @@ module Module1 {
     class A;
     friend Fib, ACache;
     
-    //Signatures. Temporarily using __sig keyword (instead of just sig) since some
-    //of the ajc test cases have variables named sig
-    advertise() : call(int A.fib(int));
+    advertise : call(int A.fib(int));
 }

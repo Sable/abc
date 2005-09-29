@@ -4,5 +4,5 @@ module ModuleA {
     open ModuleB;
     open ModuleC;
     
-    advertise() : call(* f1(..));
+    advertise : call(* f1(..));
 }

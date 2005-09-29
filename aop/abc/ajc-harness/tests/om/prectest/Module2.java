@@ -4,5 +4,5 @@ module Module2 {
     class A;
     friend ACache, Fib;
     
-    advertise() : call(int A.fib(int));
+    advertise : call(int A.fib(int));
 }

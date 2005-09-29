@@ -222,19 +222,19 @@ module_member ::=
 ;
 
 signature_member ::= 
-	EXPOSE LPAREN RPAREN to_clause:toc COLON pointcut_expr:pc SEMICOLON
+	EXPOSE to_clause:toc COLON pointcut_expr:pc SEMICOLON
 	{:
 		RESULT = parser.nf.SigMemberExposeDecl(((Node)pc).position(), pc, false, toc);
 	:}
-	| PRIVATE EXPOSE LPAREN RPAREN to_clause:toc COLON pointcut_expr:pc SEMICOLON
+	| PRIVATE EXPOSE to_clause:toc COLON pointcut_expr:pc SEMICOLON
 	{:
 		RESULT = parser.nf.SigMemberExposeDecl(((Node)pc).position(), pc, true, toc);
 	:}
-	| ADVERTISE:m LPAREN RPAREN to_clause:toc COLON pointcut_expr:pc SEMICOLON
+	| ADVERTISE:m to_clause:toc COLON pointcut_expr:pc SEMICOLON
 	{:
 		RESULT = parser.nf.SigMemberAdvertiseDecl(parser.pos(m,pc), pc, false, toc);
 	:}
-	| PRIVATE ADVERTISE:m LPAREN RPAREN to_clause:toc COLON pointcut_expr:pc SEMICOLON
+	| PRIVATE ADVERTISE:m to_clause:toc COLON pointcut_expr:pc SEMICOLON
 	{:
 		RESULT = parser.nf.SigMemberAdvertiseDecl(parser.pos(m,pc), pc, true, toc);
 	:}

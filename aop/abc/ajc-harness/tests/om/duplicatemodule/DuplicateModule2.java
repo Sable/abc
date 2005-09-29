@@ -1,4 +1,4 @@
 module DuplicateModule {
     friend AspectB;
-    expose() : call(* *(..));
+    expose : call(* *(..));
 }
