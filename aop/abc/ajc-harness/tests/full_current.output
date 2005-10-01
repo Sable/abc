@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@f7fe56, [Ljava.lang.Object;@15ad51d, TwoAnonymous$3@f7fe56
+calling run: TwoAnonymous$3@176b73c, [Ljava.lang.Object;@f7fe56, TwoAnonymous$3@176b73c
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
