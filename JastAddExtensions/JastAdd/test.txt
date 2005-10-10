@@ -55,3 +55,4 @@
 55, Circular: two mutually circular attributes that may require an iteration before termination
 56, Circular: two mutually circular paramterized attributes
 57, Circular: avoid recomputation of potentially circular attributes
+58, Circular: stack strongly connected components

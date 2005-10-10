@@ -58,7 +58,7 @@
   <!-- generate the scanner -->
 	<jflex file="../Java1.4Frontend/parser/unicode.flex" outdir="parser" nobak="yes"/>
   <!-- generate the parser phase 1, create a full .lalr specification from fragments-->
-  <concat destfile="parser/JavaParser.all" binary="true" force="no">
+  <concat destfile="parser/JavaParser.all" force="no">
     <fileset dir="../Java1.4Frontend">
       <include name="parser/java14.parser"/>
     </fileset>
