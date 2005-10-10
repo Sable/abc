@@ -82,6 +82,15 @@ aspect IntertypeMethodCodegeneration {
       return c;
     return lookupMethod(name);
   }
+  eq IntroducedMethodDecl.getBlock().lookupVariable(String name) {
+    Collection c = introducedType().findVariable(name);
+    if(!c.isEmpty())
+      return c;
+    c = localLookupVariable(name);
+    if(!c.isEmpty())
+      return c;
+    return lookupVariable(name);
+  }
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();
   eq IntroducedMethodDecl.getParameter(int index).hostType() = introducedType();
 }

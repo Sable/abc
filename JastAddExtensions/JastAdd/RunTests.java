@@ -35,7 +35,8 @@ public class RunTests {
 	  PrintStream out = System.out;
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(os);
-		System.setOut(ps);
+    if(!verbose)
+		  System.setOut(ps);
     
     // run JastAdd to build .class files for test case
 		JastAdd.main(buildArgs(testName));
@@ -47,7 +48,8 @@ public class RunTests {
     // restore output stream
 		if(verbose)
 			System.out.println(os.toString());
-		System.setOut(out);
+    else
+		  System.setOut(out);
     
     // compare output stream result and expected output
 		String result = simplifyComparison(os.toString());
@@ -92,6 +94,10 @@ public class RunTests {
     list.add("test/ASTNode.java");
     list.add("test/Opt.java");
     list.add("test/List.java");
+    
+    if(verbose)
+      list.add("-verbose");
+    
 
     // create String[] from ArrayList
     String[] args = new String[list.size()];

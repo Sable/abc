@@ -16,8 +16,6 @@ aspect IntertypeMethodNameAnalysis {
     return lookupMethod(name);
   }
 
-
-
   syn MethodCollection AspectDecl.localLookupMethod(MethodDecl signature) {
     String name = signature.name();
     MethodCollection maxSpecific = MethodCollection.emptyCollection();

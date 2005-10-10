@@ -45,6 +45,8 @@ public class JastAdd {
       }
     }
     program.updateRemoteAttributeCollections(files.size());
+      if(Program.verbose())
+        program.prettyPrint(files.size());
     if(program.errorCheck(files.size())) {
       if(Program.verbose())
         program.prettyPrint(files.size());

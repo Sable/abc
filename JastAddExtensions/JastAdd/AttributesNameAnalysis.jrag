@@ -225,5 +225,4 @@ aspect JastAdd {
       return c;
     return lookupMethod(name);
   }
-
 }
