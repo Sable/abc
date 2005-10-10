@@ -216,6 +216,11 @@ symbol_kind ::=
         RESULT = parser.nf.AfterReturningSymbol(parser.pos(x,y), var);
     :}
 |
+    AFTER:x PC_THROWING:y
+    {:
+        RESULT = parser.nf.AfterThrowingSymbol(parser.pos(x,y));
+    :}
+|
     AFTER:x PC_THROWING LPAREN IDENTIFIER:a RPAREN:y
     {:
         Local var = parser.nf.Local(parser.pos(a), a.getIdentifier());

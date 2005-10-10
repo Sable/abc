@@ -9496,4 +9496,9 @@
         <compile files="IfTest.java" options="-ext,abc.tm"/>
         <run class="IfTest"/>
     </ajc-test>
+    <ajc-test num="1034" dir="abctests/tracematches"
+        title="Tracematches: When there is some() advice but not per-symbol">
+        <compile files="NoUpdates.java" options="-ext,abc.tm"/>
+        <run class="NoUpdates"/>
+    </ajc-test>
 </suite>

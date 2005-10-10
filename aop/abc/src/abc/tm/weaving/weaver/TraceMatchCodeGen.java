@@ -91,7 +91,7 @@ public class TraceMatchCodeGen {
         TMStateMachine sm = (TMStateMachine) tm.getState_machine();
         Iterator states = sm.getStateIterator();
 
-        helper.genTestAndResetUpdated(method);
+        helper.genReturnIfNotUpdated(method);
 
         while (states.hasNext()) {
             SMNode state = (SMNode) states.next();

@@ -87,6 +87,11 @@ public class TMNodeFactory_c extends AJNodeFactory_c
         return new AfterReturningSymbol_c(pos, return_var);
     }
 
+    public SymbolKind AfterThrowingSymbol(Position pos)
+    {
+        return new AfterThrowingSymbol_c(pos);
+    }
+
     public SymbolKind AfterThrowingSymbol(Position pos, Local exception_var)
     {
         return new AfterThrowingSymbol_c(pos, exception_var);

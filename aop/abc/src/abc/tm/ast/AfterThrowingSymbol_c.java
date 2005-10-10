@@ -36,7 +36,12 @@ import java.util.*;
 public class AfterThrowingSymbol_c extends Node_c
                                    implements SymbolKind
 {
-    private Local exception_var;
+    private Local exception_var = null;
+
+    public AfterThrowingSymbol_c(Position pos)
+    {
+        super(pos);
+    }
 
     public AfterThrowingSymbol_c(Position pos, Local exception_var)
     {

@@ -697,6 +697,13 @@ public class CodeGenHelper
         units.addLast(Jimple.v().newIfStmt(test, jump_to));
     }
 
+    protected void insertIfNot(Chain units, Local bool, Stmt jump_to)
+    {
+        EqExpr test = Jimple.v().newEqExpr(bool, IntConstant.v(1));
+
+        units.addLast(Jimple.v().newIfStmt(test, jump_to));
+    }
+
     protected void insertIf(Chain units, Expr expr, Stmt jump_to)
     {
         units.addLast(Jimple.v().newIfStmt(expr, jump_to));
@@ -839,14 +846,14 @@ public class CodeGenHelper
     }
 
     /**
-     * Return a boolean expression corresponding to whether
-     * or not the current thread owns the tracematch's lock.
+     * Return a boolean expression which is true if the
+     * current thread does not own the tracematch's lock.
      */
-    protected Expr ownLock(Body body, Chain units)
+    protected Expr doNotOwnLock(Body body, Chain units)
     {
         Local result = callLockMethod(body, units, "own");
 
-        return Jimple.v().newEqExpr(result, getInt(1));
+        return Jimple.v().newEqExpr(result, getInt(0));
     }
 
     /**
@@ -1286,16 +1293,20 @@ public class CodeGenHelper
      */
     public void genAcquireLock()
     {
-        if (tm.isPerThread())
-            return;
-
         SootMethod method = tm.getSynchAdviceMethod();
         Body body = method.getActiveBody();
-
         Local this_local = body.getThisLocal();
+
         Chain units = newChain();
 
-        getLock(body, units);
+        // acquire lock if the tracematch is not per-thread
+        if (! tm.isPerThread())
+            getLock(body, units);
+
+        // reset updated flag
+        Local updated_base = getLabelBase(body, units, this_local);
+        Local updated = getUpdated(body, units, updated_base);
+        setUpdated(units, updated_base, IntConstant.v(0));
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -1359,21 +1370,25 @@ public class CodeGenHelper
 
     /**
      * Generate code that tests the "updated" flag on the
-     * labels class, and jumps to the return statement if
-     * it is false.
+     * labels class. If it is not set, code is generated to
+     * release the tracematch lock and return.
      */
-    protected void genTestAndResetUpdated(SootMethod method)
+    protected void genReturnIfNotUpdated(SootMethod method)
     {
         Body body = method.getActiveBody();
         Local this_local = body.getThisLocal();
         Chain units = newChain();
         Local updated_base = getLabelBase(body, units, this_local);
 
-        Stmt end = getReturn(body.getUnits());
+        Stmt rest = newPlaceHolder();
 
         Local updated = getUpdated(body, units, updated_base);
-        insertIf(units, updated, end);
-        setUpdated(units, updated_base, IntConstant.v(0));
+        insertIfNot(units, updated, rest);
+
+        if (! tm.isPerThread())
+            releaseLock(body, units);
+        insertReturn(units, null);
+        insertPlaceHolder(units, rest);
 
         insertBeforeReturn(units, body.getUnits());
     }
@@ -1708,6 +1723,7 @@ public class CodeGenHelper
         Local this_local = body.getThisLocal();
         Local label_base = getLabelBase(body, units, this_local);
 
+        Stmt fake_init = newPlaceHolder();
         Stmt init = newPlaceHolder();
         Stmt init_end = newPlaceHolder();
         Stmt loop = newPlaceHolder();
@@ -1715,19 +1731,28 @@ public class CodeGenHelper
 
         Local disjuncts = addLocal(body, "disjuncts", object_array);
 
+        // we initialise the disjunct array with dummy values in
+        // two situations:
+        //   (1) this is not a per-thread tracematch, but we
+        //       don't own the lock (i.e. there were no solutions)
+        //   (2) the updated flag is false
+
         if (! tm.isPerThread()) {
-            Expr own_lock = ownLock(body, units);
+            Expr do_not_own_lock = doNotOwnLock(body, units);
 
-            insertIf(units, own_lock, init);
-
-            // fake initialisation of disjunct array
-            makeEmptyArray(units, disjuncts);
-            insertGoto(units, init_end);
+            insertIf(units, do_not_own_lock, fake_init);
         }
 
-        insertPlaceHolder(units, init);
+        Local updated = getUpdated(body, units, label_base);
+        insertIfNot(units, updated, init);
+
+        // fake initialisation of disjunct array
+        insertPlaceHolder(units, fake_init);
+        makeEmptyArray(units, disjuncts);
+        insertGoto(units, init_end);
 
         // real initialisation of disjunct array
+        insertPlaceHolder(units, init);
         Local lab_final =
             getLabel(body, units, label_base, final_state, LABEL);
         callDisjunctsMethod(body, units, lab_final, disjuncts);

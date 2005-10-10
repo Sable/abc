@@ -50,6 +50,7 @@ public interface TMNodeFactory extends AJNodeFactory
     SymbolKind AfterSymbol(Position pos);
     SymbolKind AfterReturningSymbol(Position pos);
     SymbolKind AfterReturningSymbol(Position pos, Local return_var);
+    SymbolKind AfterThrowingSymbol(Position pos);
     SymbolKind AfterThrowingSymbol(Position pos, Local exception_var);
     SymbolKind AroundSymbol(Position pos, List proceed_vars);
 
