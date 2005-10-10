@@ -86,9 +86,9 @@
     <!-- delete all .class files recursively -->
     <delete>
       <fileset dir="." includes="bytecode/**/*.class"/>
+      <fileset dir="." includes="beaver/**/*.class"/>
       <fileset dir="." includes="parser/**/*.class"/>
       <fileset dir="." includes="*.class"/>
-      <fileset dir="." includes="test/*.class"/>
     </delete>
 </target>
 
@@ -96,9 +96,12 @@
 <target name="cleanGen">
 	 <delete dir="${package}"/>
     <delete>
+      <fileset dir="bytecode" includes="**/*.java"/>
+      <fileset dir="beaver" includes="**/*.java"/>
       <fileset dir="parser" includes="*.java"/>
       <fileset dir="parser" includes="JavaParser.beaver"/>
       <fileset dir="parser" includes="JavaParser.all"/>
+      <fileset dir="." includes="test/*.class"/>
     </delete>
 </target>
 
