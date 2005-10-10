@@ -1,0 +1,204 @@
+CIRKULÄRA ATTRIBUT - TODO - LOGG
+
+*** Småsaker så småningom: *** 
+-  Global option  --circular. Sätt False by default.
+-  Felmeddelande om man använder cirkulära attr fast flaggan ej är på.
+
+*** Långsiktig planering ***
+-  Optimeringar av CRAGs
+   -  Inför eventuellt möjligheten att styra vilka optimeringar som utförs så att man kan mäta effekterna av dem.
+-  Refaktorisera genSynEquations när optimeringar är införda.
+-  Hantera CRAGs i kombination med rewrites och parametriserade typer
+
+*** Fortsätt närmast med följande ***
+-  Implementera stackning för att upptäcka komponenter och evaluera i topologisk ordning.
+   -  Undersök om det blir skillnad i tid/antal evalueringar för nullable/first/follow om man
+       evaluerar komponentvis eller tillsammans. Detta borde kunna testas genom att lägga in
+       extra icke-cirkulärt attribut mellan nullable och first och follow.
+       Då kommer evalueringen att ske komponentvis.
+   -  Om det inte blir skillnad för nullable etc., vad beror det på?
+       Kan man konstruera annat exempel där det blir skillnad?
+       Exempelvis med många icke-cirkulära mellan komponenterna?
+   -  Undersök hur tid/antal evalueringar påverkas av cacheCycle om stackning är påslaget.
+   -  Konstruera exempel där man har icke-monotonicitet mellan två komponenter.
+       Då borde man kunna provocera fram att evaluering utan stackning ger fel resultat.
+       Titta på Boylands exempel för detta. Kanske behövs ett villkor i ekvationen?
+-  Implementera robusthet, dvs upptäcka att ett attribut som är definierat som icke-cirkulärt faktiskt är cirkulärt.
+
+*** Mer todo ***
+-  Förpacka bootstrappade JastAdd så att man enkelt kan provköra befintliga
+   cirkulära grammatiker som TestCircularGrammar och ContextFreeGrammar.
+-  Hur genererar man källkod i bootstrappade JastAdd (om man skulle behöva
+   detta för debugging).
+
+10 okt 2005 (Eva, Tobbe, Görel)
+RESULTAT: Påbörjat vidareutveckling av CRAGs i bootstrappade JastAdd.
+Vi tittade översiktligt på bootstrappade JastAdd och hur vi skall gå
+vidare med CRAGs-utvecklingen där.
+OK Checka ut, bygg, kör testfall:
+   OK Checka ut Java1.4Frontend, BytecodeBackend, JastAddII/JastAdd (kalla
+      JastAdd-bootstrapped) i syskonkataloger.
+   OK Bygg i JastAdd-bootstrapped med ant gen.
+   OK Kör testfall genom att köra Runtests som Java applikation (JUnit 
+      används ej). Kompilerar alla testfall (med JastAdd) i test-katalogen,
+      genererar klass-filer direkt för dem, och kör igenom testfallen i
+      samma virtuella maskin (för att snabba upp).
+   OK Ett testfall har en javafil (JastAdd-syntax), resultfil, och 
+      eventuell options fil.
+   OK Bootstrappade JastAdd genererar
+OK Tittat på uppbyggnad av bootstrappade JastAdd:
+   OK ASTGrammar.jrag - språket för ast-klasser.
+   OK CircularAttribute.jrag - hanteringen av cirkulära attribut.
+      Specialiseringar av ärvda och syntetiserade attribut.
+   OK ASTNode.java - ligger tills vidare i test-katalogen. Gör det enkelt 
+      att lägga till statiska (globala variabler).
+   OK För närvarande används gamla JastAdd för att bygga den nya 
+      bootstrappade JastAdd.
+   OK Intertype declarations kompileras med ett imperativt 
+      transformeringspass (i stället för med rewrites).
+      Namnbindningar läggs in explicit i redan rewritade noder.
+      $ i namn används för genererade namn.
+OK Lagt till nytt testfall Test58. Falerar för närvarande.
+OK Fixa bug i JastAdd som gör att kompilering av Test58 går sönder (Tobbe).
+
+nov/dec 2004: *** Testfall för components ***
+(Eva, Tobbe)
+RESULTAT: Testfall i default package i TestCircularGrammar-repository
+
+
+16 nov 2004: *** Benchmarking av cacheCycle för nullable, first, follow *** (Eva, Tobbe, Görel)
+RESULTAT: cacheCycle lönar sig *mycket* för detta exempel. Man kan förvänta sig en mindre total vinst om stackning införs och mellanliggande icke-cirkulära attribut införs.
+OK Lagt till kommandoradsoption "noCacheCycle" för JastAdd.
+OK Instrumenterat Nullable, First, och Follow i ContextFreeGrammar
+   OK Lagt till statiska variabler "count..." i ASTNode för att beräkna antalet evalueringar av ekvationer för nullable, first och follow.
+   OK Skapat ny katalog "bench" för de testfall som används som benchmarks. Lagt in benchmarks där för att mäta counts.
+OK Kört benchmarktestfallen med och utan --noCacheCycle.
+   OK Lagrat resultaten från körningarna i resultatfiler i bench-katalogen.
+   OK Ändrat Makefile för att köra med/utan cacheCycle.
+-  TODO: mät även exekveringstid med/utan cacheCycle.
+
+11 nov 2004: *** Gjort färdigt cacheCycle optimeringen *** (Eva, Görel)
+OK Lagt till testfall för kodgenerering med cacheCycle påslagen.
+OK Testat att Java-grammatiken (och övriga testfall i ContextFreeGrammar) fortfarande går igenom (cacheCycle är påslagen by default).
+
+9 nov 2004: *** Lagt till cacheCycle-optimering *** (Eva, Tobbe, Görel)
+Optimeringen går ut på att gå ett extra varv när attributen har konvergerat, och cachea alla värdena.
+OK Lagt till statiskt fält cacheCycle i JastAdd för att hålla reda på om cacheCycle-optimeringen skall användas vid kodgenereringen.
+OK Lagt till kodgenerering av statiskt fält lastCycleCached (eller nåt sånt) så att man vid exekvering kan kolla om denna typ av kod har genererats.
+OK Lagt till testfall i TestCircularGrammar: testCacheCycle. Testen utförs genom att ekvationerna instrumenterats med lokala räknare för att se hur många gånger ett attribut evalueras. Testen kollar att rätt antal evalueringar sker med och utan cacheCycle-optimeringen.
+OK Handkodat den slags kod som skall genereras för att testa att exekveringen blir rätt.
+OK Genererar kod för optimeringen (om cacheCycle är påslagen).
+OK Uppdaterat gamla testfall för kodgenerering så att cacheCycle slås av, så att dessa testfall går igenom som tidigare.
+OK TODO: Lägg till nya testfall för kodgenerering med cacheCycle på. Fixat 11 nov.
+OK TODO: Prova cacheCycle-kodgenereringen på nullable/first/follow för Java. Fixat 11 nov.
+
+4 nov 2004: *** Testat nullable, first, och follow på Java grammatik *** (Eva, Tobbe)
+OK Testa nullable, first, follow på Java-grammatiken.
+   OK Jämför resultatet med gamla implementationen.
+   OK Sortera icketerminalerna och first och followmängderna innan utskrift så att evalueringsordningen inte påverkar resultatet.
+   -  TODO: Gör eventuellt slumpmässiga omskyfflingar av icketerminaler och produktioner och kolla att resultatet inte påverkas.
+
+2 nov 2004: *** Implementerat Follow *** (Eva, Tobbe, Görel)
+OK Lagt till Follow.jrag i ContextFreeGrammar-projektet.
+OK Testat Follow på Appels lilla grammatik med X, Y, Z
+OK Implementerat diverse hjälpattribut och metoder för att implementera follow: findUses, collectUses, nullableSuffix, firstSuffix. Lagt till enkla testfall för dessa.
+OK Diskuterat möjlig refaktorisering av koden i follow.jrag. Eventuellt skulle hjälpattribut och metoder kunna läggas ut i jrags för namnanalysen, nullable, eller first. Men de används bara av follow... så för tillfället ligger de kvar där.
+
+28 okt 2004: *** Implementerat Nullable och First *** (Eva, Tobbe)
+OK Lagt till Nullable.jrag och First.jrag i CiontextFreeGrammar.
+OK Implementerat testfall för dessa och konstaterat att de går bra.
+OK Delat upp test i olika filer beroende på testtyp: test av namnanalys,
+test av parsing, test av nullable och test av first.
+
+26 okt 2004: *** Parsing av CFG grammatikfiler *** (Eva, Tobbe)
+OK Förenklat den abstrakta grammatiken CFG.ast. Nu används listor istället för som binära träd.
+OK Hämtat CFGrammar .jjt  från tor och anpassat den till den nya CFG.ast
+OK Lagt in JavaCC.jar i projektet ContextFreeGrammar
+OK Modifierat Makefile för ContextFreeGrammar
+OK Anpassat existerande testfall till den nya grammatiken. Kört testfallen
+med lyckat resultat.
+OK Lagt till några enkla testgrammatiker samt PrettyPrint.jrag för att testa parsing.
+OK Implementerat testfall för dessa och kört dem. Refaktoriserat testfallen så att likartade test använder gemensam hjälpmetod.
+
+19 okt 2004: *** Primitiva typer samt ärvda cirkulära attribut *** (Eva, Tobbe, Görel)
+OK Hanterar boolean, integer etc primitiva typer för cirkulära attr
+   OK Värdena lagras i noden i den primitiva formen, t.ex. boolean
+   OK Jämförelse görs med == i stället för equals()
+   OBS! För vanliga attribut som cachas i rewrites så lagras ref-formen i stället (t.ex. Boolean). Kan möjligtvis behöva ensas senare.
+   OK Genererar rätt kod. Infört operation AttrDecl.differs() som kapslar in om det skall genereras == eller equals.
+   OK Exekvering fungerar.
+-  TODO Tobbe: Se till att man inte skall behöva ha --rewrite option när man kör JastAdd. I Makefile för TestCircular fick vi lägga till --rewrite option. Kan tas bort när Tobbe fixat detta.
+OK Refaktoriserat genSynEquation för att underlätta impl av ärvda attribut.
+   OK Kod som ej är gemensam för ärvda attribut extraherat och görs istället vid anropet.
+   OK Bytt namn till genEquation.
+   OK Skrivit om kodgenerering för ärvda attribut så att getEquation används även här. Nu borde ärvda cirkulära attribut funka.
+OK Fixat bug för non-lazy circular attribut. Kodgenereringen var lite icke-optimal. Hade missat att generera check i början. Fixat genom att lägga till koll på isCircular i cacheCheck.
+OK Fixat ärvda cirkulära attribut.
+   OK Fixat så att bottomValue förs från parsern till AST:et även för ärvda attribut. (Enligt TODO från 21 sept)
+   OK Testfall för exekvering av ärvda attribut: SelfCircularInherited samt MutualCircularInheritedAndSynthesized (eller nåt sånt).
+-  TODO: Testfall för kodgenerering för ärvda attribut.
+
+12 okt 2004: *** Genererar basic kod för cirkulära attribut *** (Eva, Tobbe, Görel)
+OK Global flagga för CircularEnabled. Default True.
+OK Genererar kod för dekl av IN_CIRCLE och CHANGE i ASTNode
+-  TODO: Det finns en annan flagg inCircle för rewrites. Annat namn på flaggorna??
+OK Genererar kod för basic evaluering av cirkulära attribut.
+   Ändrat i JragCodeGen: Brutit ut metod genSynEquation och har två fall för icke-cirkulära resp cirkulära attribut.
+-  TODO: Behöver refaktorisera i genSynEquation
+-  TODO: Behöver ta hand om rewrites och parametriserade attribut också.
+OK Test av SelfCircular kodgenerering går igenom
+OK Test av SelfCircular exekvering går igenom
+OK Circular attribut behöver inte deklareras lazy längre. Testgrammatiken uppdaterad.
+OK Tagit bort onödig CircularSynAttr nodtyp i ast.ast.
+OK Lagt till testfall för exekvering av mutually circular attributes. Funkar!
+
+7  okt 2004: *** Testfall för cirkulära attribut *** (Eva, Tobbe, Görel)
+OK Gjort nytt testfallsprojekt TestCircularGrammar för EXEKVERING av cirkulära attribut - dvs kolla att rätt värden räknas ut.
+   OK Gjort testgrammatik med absolutely-non-circular, self-circular, mutual-circular ekvationer.
+   OK Gjort testfall för self-circular
+   OK TODO: Testfall för absolutely-non-circular och mutual-circular. Fixat 12 okt.
+   OK Deklarerat alla circular attribute lazy så att kodgenereringen blir mer lik den gamla.
+   OK TODO: Testfall för icke-lazy circular attributes. Samma ge samma resultat. Fixat 12 okt.
+   OK Deklarerat alla attribut-typer Boolean i stället för boolean, för att slippa hantera primitiva typer.
+   OK TODO: Testfall för primitiva typer. Fixat 19 okt.
+   OK Skapat ManualAST-paket för att manuellt ändra genererad kod så att cirkulär evaluering fungerar.
+   OK Manuellt lagt till flaggor i ASTNode.java i ManualAST-paket
+   OK Manuellt editerad genererad A.java fil i ManualAST-paket. För att klara cirkulär evaluering av selfcircular t=t.
+   OK Testfall för self-circular ger grönt!
+OK Nya testfall läggs i klassen TestCircularAttr i JastAddTest för att testa GENERERING av kod för cirkulära attribut - dvs kolla att rätt kod genereras.
+   OK Lagt till testfall för lazy self-circular Boolean t=t.
+   OK Lagt till väntad resultatfil.
+   OK Testfallet ger rött som väntat (ingen kodgenerering ännu).
+   OK TODO: Få igenom testfallet. (Ändra kodgenereringen). Fixat 12 okt.
+
+1 okt 2004: *** Refaktoriserat JastAdds kodgenerering *** (Tobbe)
+OK refaktoriserat så att kodgenerering förenklas
+OK Fixat falerande testfall för syn attr med lazy utan rewrites
+
+30 sept 2004: *** Lagt till fler testfall för JastAdds kodgenerering *** (Eva, Tobbe)
+OK inh attributes: fundera ut nya testfall
+-  TODO: 2 testfall för inh attribut behövs ytterligare.
+
+27 sept 2004: *** Lagt till fler testfall för JastAdds kodgenerering *** (Tobbe, Görel)
+OK syn attribut, overriding, metodkropp, lazy med/utan rewrite
+OK TODO: syn attribut med lazy utan rewrite smäller (kodgenereringen görs alltid med rewrites). Fixat 1 okt.
+
+23 sept 2004: *** Initiala testfall för JastAdds kodgenerering *** (Eva, Tobbe, Görel)
+Målet är att göra testfall så att vi kan se att JastAdd genererar rätt kod för olika attribut och kombinationer av attribut. Med sådana testfall kan vi sedan refaktorisera kodgenereringen så att det går lättare att lägga till hanteringen av cirkulära attribut.
+OK Gjort ett enkelt testfall med Run-SaveResult teknik: Vi kör JastAdd och skriver ut den kod som genereras. Resultatet sparas i en fil. Sedan skrivs testfallet om så att vi jämför resultatet med det som är sparat på fil.
+OK Identifierat ett antal ytterligare testfall som behöver skrivas.
+
+
+21 sept 2004: *** Abstrakt grammatik för Circular *** (Eva, Tobbe, Görel)
+OK Fört över info om circular och bottomvalue från parsinggrammatik
+   till abstrakt grammatik. (I klisterfilen Attributes.jrag) Fixat detta 
+   för syntetiserade attribut. 
+OK TODO: Fixa samma sak för ärvda attribut. Done 19 okt.
+
+16 sept 2004: *** Parsingsyntax för Circular *** (Eva, Tobbe, Görel)
+OK nyckelord circular och bottomvalue
+   Obs! Funkar bara i nya versionen av jrag-filer (inte den gamla som användes i JastAdd 1)
+
+14 Sept 2004: *** Syntax och Namnanalys för CFG *** (Eva, Tobbe, Görel)
+OK Syntaxen följer den i CRAGs-pappret
+OK Namnanalys för icketerminaler i CFG
