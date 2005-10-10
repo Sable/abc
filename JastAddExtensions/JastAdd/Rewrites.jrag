@@ -38,8 +38,11 @@ aspect Rewrite {
   inh Collection ASTDecl.lookupRewrites(TypeDecl typeDecl);
   eq Program.getCompilationUnit(int i).lookupRewrites(TypeDecl typeDecl) = rewritesMap().containsKey(typeDecl) ? (Collection)rewritesMap().get(typeDecl) : new ArrayList(0);
 
+  
+  private FieldDeclaration AspectDecl.duringCounter = null; 
   syn lazy FieldDeclaration AspectDecl.duringCounter() {
     // protected static int duringAspectName = 0;
+    if(duringCounter != null) return duringCounter;
     FieldDeclaration field =
       new FieldDeclaration(
         new Modifiers(new List().add(new Modifier("protected")).add(new Modifier("static"))),
@@ -47,6 +50,7 @@ aspect Rewrite {
         "during" + name(),
         new IntegerLiteral(0)
       );
+    duringCounter = field;
     TypeDecl typeDecl = extractSingleType(lookupType("ASTNode"));
     typeDecl.addBodyDecl(field);
     typeDecl.addBodyDecl(
@@ -74,33 +78,27 @@ aspect Rewrite {
             new List().add(
               new IfStmt(
                 new EQExpr(
-                  new BoundFieldAccess(
-                    new IdUse("during" + name()),
-                    field
-                  ),
+                  field.createBoundFieldAccess(),
                   new IntegerLiteral(0)
                 ),
                 new ReturnStmt(new BooleanLiteral(false)),
                 new Block(
                   new List().add(
                     new ExprStmt(
-                      new MethodDot(
-                        new VarAccess("state"),
+                      new VarAccess("state").qualifiesAccess(
                         new MethodAccess(
                           "pop",
-						  new List()
+                          new List()
                         )
                       )
                     )
                   ).add(
                     new ExprStmt(
-                      new MethodDot(
-                        new VarAccess("state"),
+                      new VarAccess("state").qualifiesAccess(
                         new MethodAccess(
                           "push",
-						  new List().add(
-                            new FieldDot(
-                              typeDecl.createQualifiedAccess(),
+                          new List().add(
+                            typeDecl.createQualifiedAccess().qualifiesAccess(
                               new VarAccess("REWRITE_INTERRUPT")
                             )
                           )
@@ -261,10 +259,7 @@ aspect Rewrite {
           new List().add(
             new ExprStmt(
               new PostIncExpr(
-                new BoundFieldAccess(
-                  new IdUse(field.name()),
-                  field
-                )
+                field.createBoundFieldAccess()
               )
             )
           ).add(
@@ -276,10 +271,7 @@ aspect Rewrite {
                   new List().add(
                     new ExprStmt(
                       new PostDecExpr(
-                        new BoundFieldAccess(
-                          new IdUse(field.name()),
-                          field
-                        )
+                        field.createBoundFieldAccess()
                       )
                     )
                   )
@@ -295,11 +287,10 @@ aspect Rewrite {
   // getParent().getParent() instanceof ParentType
   protected Expr Rewrite.createCheckParentType() {
     return new InstanceOfExpr(
-      new MethodDot(
-        new MethodAccess(
-          "getParent",
-          new List()
-        ),
+      new MethodAccess(
+        "getParent",
+        new List()
+      ).qualifiesAccess(
         new MethodAccess(
           "getParent",
           new List()
@@ -312,22 +303,20 @@ aspect Rewrite {
   // ((ParentType)getParent().getParent()).getChildNameListNoTransform() == getParent()
   protected Expr Rewrite.createCheckCorrectChild() {
     return new EQExpr(
-      new MethodDot(
-        new ParExpr(
-          new CastExpr(
-            parentNodeType().createQualifiedAccess(),
-            new MethodDot(
-              new MethodAccess(
-                "getParent",
-                new List()
-              ),
-              new MethodAccess(
-                "getParent",
-                new List()
-              )
+      new ParExpr(
+        new CastExpr(
+          parentNodeType().createQualifiedAccess(),
+          new MethodAccess(
+            "getParent",
+            new List()
+          ).qualifiesAccess(
+            new MethodAccess(
+              "getParent",
+              new List()
             )
           )
-        ),
+        )
+      ).qualifiesAccess(
         new MethodAccess(
           childMethod().name() + "ListNoTransform",
           new List()
@@ -348,21 +337,19 @@ aspect Rewrite {
   protected void ReturnStmt.replaceReturnStmts() {
     if(hasResult()) {
       setResult(
-        new MethodDot(
-          new MethodAccess(
-            "getParent",
-            new List()
-          ),
+        new MethodAccess(
+          "getParent",
+          new List()
+        ).qualifiesAccess(
           new MethodAccess(
             "insertList",
             new List().add(
               getResult()
             ).add(
-              new MethodDot(
-                new MethodAccess(
-                  "getParent",
-                  new List()
-                ),
+              new MethodAccess(
+                "getParent",
+                new List()
+              ).qualifiesAccess(
                 new MethodAccess(
                   "getIndexOfChild",
                   new List().add(new ThisAccess(new List(), new IdUse("this")))
@@ -379,14 +366,13 @@ aspect Rewrite {
     // return super.rewriteTo();
     statements.add(
       new ReturnStmt(
-        new MethodDot(
-          new SuperAccess(
-            new List(),
-            new IdUse("super")
-          ),
+        new SuperAccess(
+          new List(),
+          new IdUse("super")
+        ).qualifiesAccess(
           new MethodAccess(
             "rewriteTo",
-			new List()
+            new List()
           )
         )
       )

@@ -210,12 +210,12 @@ aspect GenerateSynCode {
     Expr expr = null;
     if(getNumParameter() == 0) {
       // node.computed = false;
-      fieldAccess = new BoundFieldAccess(fieldComputedFlag(type));
+      fieldAccess = fieldComputedFlag(type).createBoundFieldAccess();
       expr = new BooleanLiteral(false);
     }
     else {
       // node.computed_value = new java.util.HashMap(4);
-      fieldAccess = new BoundFieldAccess(fieldComputedValue(type));
+      fieldAccess = fieldComputedValue(type).createBoundFieldAccess();
       expr = new ClassInstanceExpr(
         lookupType("java.util", "HashMap").createQualifiedAccess(),
         new List().add(new IntegerLiteral(4))
@@ -325,8 +325,7 @@ aspect GenerateSynCode {
       // if(visited_flag.contains("parameters$")) throw new RuntimeException("Circular definition of attr: signature in class: classname.");
       list.add(
         new IfStmt(
-          new MethodDot(
-            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+          fieldVisitedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "contains",
               new List().add(new VarAccess("parameters$"))
@@ -359,8 +358,7 @@ aspect GenerateSynCode {
       // visited_flag.set(parameters$)
       list.add(
         new ExprStmt(
-          new MethodDot(
-            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+          fieldVisitedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "add",
               new List().add(new VarAccess("parameters$"))
@@ -385,8 +383,7 @@ aspect GenerateSynCode {
       // visited_flag.set(parameters$)
       list.add(
         new ExprStmt(
-          new MethodDot(
-            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+          fieldVisitedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "remove",
               new List().add(new VarAccess("parameters$"))
@@ -426,8 +423,7 @@ aspect GenerateSynCode {
       for(int i = 0; i < getNumParameter(); i++) {
         list.add(
           new ExprStmt(
-            new AbstractDot(
-              new VarAccess("parameters$"),
+            new VarAccess("parameters$").qualifiesAccess(
               new MethodAccess(
                 "add",
                 new List().add(
@@ -456,8 +452,7 @@ aspect GenerateSynCode {
       // if(computed_value.containsKey(parameters$) return (type)computed_value.get(parameters$);
       list.add(
         new IfStmt(
-          new MethodDot(
-            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             //new VarAccess(computedValueName()),
             new MethodAccess(
               "containsKey",
@@ -466,8 +461,7 @@ aspect GenerateSynCode {
           ),
           new ReturnStmt(
             type().unbox(
-              new MethodDot(
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
                 //new VarAccess(computedValueName()),
                 new MethodAccess(
                   "get",
@@ -528,13 +522,12 @@ aspect GenerateSynCode {
   }
 
   protected Expr TypeDecl.createUnbox(TypeDecl typeDecl, String methodName, Expr expr) {
-    return new MethodDot(
-      new ParExpr(
-        new CastExpr(
-          typeDecl.createQualifiedAccess(),
-          expr
-        )
-      ),
+    return new ParExpr(
+      new CastExpr(
+        typeDecl.createQualifiedAccess(),
+        expr
+      )
+    ).qualifiesAccess(
       new MethodAccess(methodName, new List())
     );
   }
@@ -576,7 +569,7 @@ aspect GenerateSynCode {
         type().createQualifiedAccess(),
         computedValueName(),
         //new ComputeMethodAccess(name(), args, hostAspect(), type())
-        new BoundMethodAccess(name(), args, targetMethod)
+        targetMethod.createBoundAccess(args)
       )
     );
   }
@@ -618,7 +611,7 @@ aspect GenerateSynCode {
           fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
           //new VarAccess(computedValueName()),
           //new ComputeMethodAccess(name(), args, hostAspect(), type())
-          new BoundMethodAccess(name(), args, targetMethod)
+          targetMethod.createBoundAccess(args)
         )
       );
       // if(cond) computed_flag = true;
@@ -640,21 +633,15 @@ aspect GenerateSynCode {
             type().createQualifiedAccess(),
             computedValueName(),
             //new ComputeMethodAccess(name(), args, hostAspect(), type()))
-            new BoundMethodAccess(name(), args, targetMethod))
-          );
+            targetMethod.createBoundAccess(args)
+          )
+      );
       // if(cond) this.computed_value.put(parameters$, computed_value);
       list.add(
         new IfStmt(
           cond,
           new ExprStmt(
-            new AbstractDot(
-              fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-              /*
-              new AbstractDot(
-                new ThisAccess(new List(), new IdUse("this")),
-                new VarAccess(computedValueName())
-              ),
-              */
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
               new MethodAccess(
                 "put",
                 new List().add(
@@ -695,8 +682,7 @@ aspect GenerateSynCode {
 
         // Add implements tag
         classDecl.addImplements(
-          new TypeDot(
-            hostAspect().createQualifiedAccess(),
+          hostAspect().createQualifiedAccess().qualifiesAccess(
             new TypeAccess(definingInterfaceName())
           )
         );
@@ -742,8 +728,7 @@ aspect GenerateSynCode {
             args.add(getParameter(i).createAccess());
           if(inhEq.getNumChildParameter() == 1) {
             args.add(
-              new MethodDot(
-                new VarAccess("caller"),
+              new VarAccess("caller").qualifiesAccess(
                 new MethodAccess(
                   "getIndexOfChild",
                   new List().add(
@@ -757,11 +742,7 @@ aspect GenerateSynCode {
             new IfStmt(
               inhEq.child().createFromCorrectChildCheck(),
               new ReturnStmt(
-                new BoundMethodAccess(
-                  name() + "$" + inhEq.childName(),
-                  args,
-                  methodDecl
-                )
+                methodDecl.createBoundAccess(args)
               )
             )
           );
@@ -787,11 +768,10 @@ aspect GenerateSynCode {
 
           statements.add(
             new ReturnStmt(
-              new MethodDot(
-                new SuperAccess(
-                  new List(),
-                  new IdUse("super")
-                ),
+              new SuperAccess(
+                new List(),
+                new IdUse("super")
+              ).qualifiesAccess(
                 new MethodAccess(
                   definingInterfaceName(),
                   args
@@ -914,8 +894,7 @@ aspect GenerateSynCode {
           new ParExpr(
             new InstanceOfExpr(
               new VarAccess("n"),
-              new TypeDot(
-                hostAspect().createQualifiedAccess(),
+              hostAspect().createQualifiedAccess().qualifiesAccess(
                 new TypeAccess(definingInterfaceName())
               )
             )
@@ -929,8 +908,7 @@ aspect GenerateSynCode {
           ).add(
             AssignExpr.asStmt(
               new VarAccess("n"),
-              new MethodDot(
-                new VarAccess("n"),
+              new VarAccess("n").qualifiesAccess(
                 new MethodAccess("getParent", new List())
               )
             )
@@ -952,7 +930,7 @@ aspect GenerateSynCode {
       args.add(getParameter(i).createAccess());
     }
     // compute(this, p0, ... , pn-1)
-    return new BoundMethodAccess(name(), args, targetMethod);
+    return targetMethod.createBoundAccess(args);
   }
 
   protected Expr AttributeDecl.createComputeCall() {
@@ -967,16 +945,14 @@ aspect GenerateSynCode {
     for(int i = 0; i < getNumParameter(); i++)
      args.add(getParameter(i).createAccess());
     return 
-      new MethodDot(
-        new ParExpr(
-          new CastExpr(
-            new TypeDot(
-              hostAspect().createQualifiedAccess(),
-              new TypeAccess(definingInterfaceName())
-            ),
-            new VarAccess("n")
-          )
-        ),
+      new ParExpr(
+        new CastExpr(
+          hostAspect().createQualifiedAccess().qualifiesAccess(
+            new TypeAccess(definingInterfaceName())
+          ),
+          new VarAccess("n")
+        )
+      ).qualifiesAccess(
         new MethodAccess(definingInterfaceName(), args)
       );
   }
@@ -1031,14 +1007,7 @@ aspect GenerateSynCode {
       // this.computed_value.put(parameters$, computed_value);
       list.add(
         new ExprStmt(
-          new AbstractDot(
-            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
-            /*
-            new AbstractDot(
-              new ThisAccess(new List(), new IdUse("this")),
-              new VarAccess(computedValueName())
-            ),
-            */
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "put",
               new List().add(

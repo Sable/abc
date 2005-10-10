@@ -214,14 +214,13 @@ aspect ASTGrammar {
     if(statements.getNumChild() != 0) {
       statements.add(
           new ReturnStmt(
-            new MethodDot(
-              new SuperAccess(
-                new List(),
-                new IdUse("super")
-              ),
+            new SuperAccess(
+              new List(),
+              new IdUse("super")
+            ).qualifiesAccess(
               new MethodAccess(
                 "getChild",
-				new List().add(
+                new List().add(
                   new VarAccess("i")
                 )
               )
@@ -365,11 +364,10 @@ aspect ASTGrammar {
         new List(),
         new List().add(
           new ReturnStmt(
-            new MethodDot(
-              new MethodAccess(
-                "get" + name() + "List",
-                new List()
-              ),
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
               new MethodAccess(
                 "getNumChild",
                 new List()
@@ -391,11 +389,10 @@ aspect ASTGrammar {
           new ReturnStmt(
             new CastExpr(
               type().createQualifiedAccess(),
-              new MethodDot(
-                new MethodAccess(
-                  "get" + name() + "List",
-                  new List()
-                ),
+              new MethodAccess(
+                "get" + name() + "List",
+                new List()
+              ).qualifiesAccess(
                 new MethodAccess(
                   "getChild",
                   new List().add(new VarAccess("index"))
@@ -420,11 +417,10 @@ aspect ASTGrammar {
 		),
         new List().add(
           new ExprStmt(
-            new MethodDot(
-              new MethodAccess(
-                "get" + name() + "List",
-                new List()
-              ),
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
               new MethodAccess(
                 "setChild",
                 new List().add(new VarAccess("node")).add(new VarAccess("i"))
@@ -448,11 +444,10 @@ aspect ASTGrammar {
         ),
         new List().add(
           new ExprStmt(
-            new MethodDot(
-              new MethodAccess(
-                "get" + name() + "List",
-                new List()
-              ),
+            new MethodAccess(
+              "get" + name() + "List",
+              new List()
+            ).qualifiesAccess(
               new MethodAccess(
                 "insertChild",
                 new List().add(new VarAccess("node")).add(new VarAccess("i"))
@@ -483,15 +478,13 @@ aspect ASTGrammar {
           )
         ).add(
           new ExprStmt(
-            new MethodDot(
-              new VarAccess("list"),
+            new VarAccess("list").qualifiesAccess(
               new MethodAccess(
                 "setChild",
                 new List().add(
                   new VarAccess("node")
                 ).add(
-                  new MethodDot(
-                    new VarAccess("list"),
+                  new VarAccess("list").qualifiesAccess(
                     new MethodAccess(
                       "getNumChild",
                       new List()
@@ -577,11 +570,10 @@ aspect ASTGrammar {
         new List().add(
           new ReturnStmt(
             new NEExpr(
-              new MethodDot(
-                new MethodAccess(
-                  "get" + name() + "Opt",
-                  new List()
-                ),
+              new MethodAccess(
+                "get" + name() + "Opt",
+                new List()
+              ).qualifiesAccess(
                 new MethodAccess(
                   "getNumChild",
                   new List()
@@ -605,11 +597,10 @@ aspect ASTGrammar {
           new ReturnStmt(
             new CastExpr(
               type().createQualifiedAccess(),
-              new MethodDot(
-                new MethodAccess(
-                  "get" + name() + "Opt",
-                  new List()
-                ),
+              new MethodAccess(
+                "get" + name() + "Opt",
+                new List()
+              ).qualifiesAccess(
                 new MethodAccess(
                   "getChild",
                   new List().add(new IntegerLiteral(0))
@@ -630,11 +621,10 @@ aspect ASTGrammar {
         new List().add(new ParameterDeclaration(type().createQualifiedAccess(), "node")),
         new List().add(
           new ExprStmt(
-            new MethodDot(
-              new MethodAccess(
-                "get" + name() + "Opt",
-                new List()
-              ),
+            new MethodAccess(
+              "get" + name() + "Opt",
+              new List()
+            ).qualifiesAccess(
               new MethodAccess(
                 "setChild",
                 new List().add(new VarAccess("node")).add(new IntegerLiteral(0))

@@ -6,8 +6,8 @@ aspect IntertypeMethodCodegeneration {
   // the IntroducedMethodDecl node type is used to specialize name analysis
   public void IntertypeMethodDecl.generateIntertypeDecls() {
     MethodDecl aspectMethod = createAspectMethod();
-    MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
     hostAspect().addBodyDecl(aspectMethod);
+    MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
     introducedType().addBodyDecl(delegateMethod);
   }
 
@@ -50,9 +50,9 @@ aspect IntertypeMethodCodegeneration {
     // delegate by calling the aspect method
     List statements = new List();
     if(type().isVoid())
-    	statements.add(new ExprStmt(new BoundMethodAccess(name(), args, aspectMethod)));
+    	statements.add(new ExprStmt(aspectMethod.createBoundAccess(args)));
     else
-    	statements.add(new ReturnStmt(new BoundMethodAccess(name(), args, aspectMethod)));
+    	statements.add(new ReturnStmt(aspectMethod.createBoundAccess(args)));
       
     return new MethodDecl(
       (Modifiers)getModifiers().fullCopy(),

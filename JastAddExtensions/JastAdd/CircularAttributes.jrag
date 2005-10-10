@@ -153,8 +153,7 @@ aspect CircularAttributes {
       notVisitedStmt.add(
         new IfStmt(
           new LogNotExpr(
-            new MethodDot(
-              fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+            fieldVisitedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
               new MethodAccess(
                 "contains",
                 new List().add(new VarAccess("parameters$"))
@@ -219,8 +218,7 @@ aspect CircularAttributes {
       list.add(
         new IfStmt(
           new LogNotExpr(
-            new MethodDot(
-              fieldInitializedFlag(typeDecl).createQualifiedBoundAccess(),
+            fieldInitializedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
               new MethodAccess(
                 "contains",
                 new List().add(new VarAccess("parameters$"))
@@ -230,8 +228,7 @@ aspect CircularAttributes {
           new Block(
             new List().add(
               new ExprStmt(
-                new MethodDot(
-                  fieldInitializedFlag(typeDecl).createQualifiedBoundAccess(),
+                fieldInitializedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
                   new MethodAccess(
                     "add",
                     new List().add(new VarAccess("parameters$"))
@@ -240,8 +237,7 @@ aspect CircularAttributes {
               )
             ).add(
               new ExprStmt(
-                new MethodDot(
-                  fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+                fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
                   new MethodAccess(
                     "put",
                     new List().add(
@@ -268,8 +264,7 @@ aspect CircularAttributes {
       // if(computed.containsKey(parameters$) return (type)computed_value.get(parameters$);
       list.add(
         new IfStmt(
-          new MethodDot(
-            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "contains",
               new List().add(new VarAccess("parameters$"))
@@ -277,8 +272,7 @@ aspect CircularAttributes {
           ),
           new ReturnStmt(
             type().unbox(
-              new MethodDot(
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
                 new MethodAccess(
                   "get",
                   new List().add(new VarAccess("parameters$"))
@@ -297,8 +291,7 @@ aspect CircularAttributes {
       // if(computed.containsKey(parameters$) return (type)computed_value.get(parameters$);
       list.add(
         new IfStmt(
-          new MethodDot(
-            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "contains",
               new List().add(new VarAccess("parameters$"))
@@ -306,8 +299,7 @@ aspect CircularAttributes {
           ),
           new ReturnStmt(
             type().unbox(
-              new MethodDot(
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
                 new MethodAccess(
                   "get",
                   new List().add(new VarAccess("parameters$"))
@@ -368,8 +360,7 @@ aspect CircularAttributes {
           computeNotEquals(
             new VarAccess(computedValueName() + "$new"),
             type().unbox(
-              new MethodDot(
-                fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+              fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
                 new MethodAccess(
                   "get",
                   new List().add(new VarAccess("parameters$"))
@@ -392,8 +383,7 @@ aspect CircularAttributes {
     }
     else {
       return new LogNotExpr(
-        new MethodDot(
-          left,
+        left.qualifiesAccess(
           new MethodAccess(
             "equals",
             new List().add(right)
@@ -417,8 +407,7 @@ aspect CircularAttributes {
       // computed_value.put("parameters$", (box)computed_value_new)
       list.add(
         new ExprStmt(
-          new MethodDot(
-            fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+          fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "put",
               new List().add(
@@ -548,8 +537,7 @@ aspect CircularAttributes {
     else {
       list.add(
         new ExprStmt(
-          new MethodDot(
-            fieldComputedFlag(typeDecl).createQualifiedBoundAccess(),
+          fieldComputedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
             new MethodAccess(
               "add",
               new List().add(new VarAccess("parameters$"))
@@ -568,8 +556,7 @@ aspect CircularAttributes {
       list.add(
         new ReturnStmt(
           type().unbox(
-            new MethodDot(
-              fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
               new MethodAccess(
                 "get",
                 new List().add(new VarAccess("parameters$"))
@@ -587,8 +574,7 @@ aspect CircularAttributes {
       list.add(
         new ReturnStmt(
           type().unbox(
-            new MethodDot(
-              fieldComputedValue(typeDecl).createQualifiedBoundAccess(),
+            fieldComputedValue(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
               new MethodAccess(
                 "get",
                 new List().add(new VarAccess("parameters$"))

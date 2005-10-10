@@ -8,11 +8,10 @@ aspect ASTNodeCopy {
         "node",
         new CastExpr(
           createQualifiedAccess(),
-          new MethodDot(
-            new SuperAccess(
-              new List(),
-			  new IdUse("super")
-            ),
+          new SuperAccess(
+            new List(),
+            new IdUse("super")
+          ).qualifiesAccess(
             new MethodAccess(
               "clone",
               new List()
@@ -53,8 +52,7 @@ aspect ASTNodeCopy {
     List list = cloneStatementList();
     list.insertChild(
       AssignExpr.asStmt(
-        new Dot(
-          new VarAccess("node"),
+        new VarAccess("node").qualifiesAccess(
           new VarAccess(fieldName)
         ),
         expr
@@ -68,8 +66,7 @@ aspect ASTNodeCopy {
     List list = cloneStatementList();
     list.insertChild(
       AssignExpr.asStmt(
-        new Dot(
-          new VarAccess("node"),
+        new VarAccess("node").qualifiesAccess(
           fieldAccess
         ),
         expr
