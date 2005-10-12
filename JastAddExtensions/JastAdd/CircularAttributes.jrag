@@ -611,3 +611,13 @@ aspect CircularAttributes {
   }
   syn String AttributeDecl.initializedFlagName() = uniqueSignatureName() + "$initialized";
 }
+
+aspect DefinitelyNonCircularAttributes {
+  // rewrite SynDecl
+  // when !(this instanceof CircularSynDecl)
+  // to new DefinitelyNonCircularSynDecl(...);
+  
+  // rewrite InhDecl
+  // when !(this instanceof CircularInhDecl)
+  // to new DefinitelyNonCircularInhDecl(...);
+}

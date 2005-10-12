@@ -31,6 +31,16 @@ CIRKULÄRA ATTRIBUT - TODO - LOGG
 -  Hur genererar man källkod i bootstrappade JastAdd (om man skulle behöva
    detta för debugging).
 
+*** Implementera stackning ***
+12 okt 2005 (Eva, Görel)
+-  Hur skriver man ut den genererade Java-koden (för debugging)?
+-  Lägga in global variabel i test/ASTNode.java
+-  Inför rewrite till DefinitelyNonCircularAttribute
+   OK Lagt till nya subklasser DefinitelyNonCircularSynDecl etc.
+   OK Lagt till skiss på rewrites i CircularAttributes.jrag
+-  Definiera om kodgenereringen för DNCAs.
+   Template methods i SynDecl och InhDecl??
+
 10 okt 2005 (Eva, Tobbe, Görel)
 RESULTAT: Påbörjat vidareutveckling av CRAGs i bootstrappade JastAdd.
 Vi tittade översiktligt på bootstrappade JastAdd och hur vi skall gå
