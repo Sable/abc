@@ -28,18 +28,30 @@ CIRKULÄRA ATTRIBUT - TODO - LOGG
 *** Mer todo ***
 -  Förpacka bootstrappade JastAdd så att man enkelt kan provköra befintliga
    cirkulära grammatiker som TestCircularGrammar och ContextFreeGrammar.
--  Hur genererar man källkod i bootstrappade JastAdd (om man skulle behöva
-   detta för debugging).
+-  Hur interagerar cirkulära attribut med parametriserade attribut? Med NTAs?
 
 *** Implementera stackning ***
-12 okt 2005 (Eva, Görel)
--  Hur skriver man ut den genererade Java-koden (för debugging)?
--  Lägga in global variabel i test/ASTNode.java
--  Inför rewrite till DefinitelyNonCircularAttribute
+-  Lägg till option för stackning
+-  Gör två testfall: Test58a och Test58b, med och utan stackning. Samma testfall, olika resultatfiler, olika optionsfiler.
+-  Implementera stackningen genom att ändra direkt i SynDecl och InhDecl-koden (AttributesCodegeneration.jrag)
+-  Refaktorisera eventuellt så att stackningen flyttas till CircularAttributes.jrag. Borde gå genom att införa hookar
+    i SynDecl och InhDecl-koden, med default tomma metoder i AttributeDecl. Och sedan lägga in impl. av dessa
+    metoder i SynDecl och InhDecl med intertype declarations i CircularAttributes.jrag.
+
+12 okt 2005 fm(Eva, Görel) + em(Eva, Görel, Tobbe)
+RESULTAT: Koll på hur man kan implementera stackning
+OK Hur skriver man ut den genererade Java-koden (för debugging)?
+      Se programmet PrettyPrintTest58.java (default package).
+      Ett alternativ är också att skriva "test/Test58 true" som argument till RunTest. "true" betyder att
+      JastAdd körs med Verbose-option och det skrivs ut massor av saker, bl.a. den genererade koden.
+OK Hur lägger man till globala variabler?
+      Editera test/ASTNode.java
+OK Hur lägger man till en ny option?
+      Lägg till optionen i main-metoden i JastAdd.java
+      Använd optionen för t.ex. Testfall 58 genom att göra en Test58.options fil
+OK Inför rewrite till DefinitelyNonCircularAttribute. Tagit bort igen!
    OK Lagt till nya subklasser DefinitelyNonCircularSynDecl etc.
    OK Lagt till skiss på rewrites i CircularAttributes.jrag
--  Definiera om kodgenereringen för DNCAs.
-   Template methods i SynDecl och InhDecl??
 
 10 okt 2005 (Eva, Tobbe, Görel)
 RESULTAT: Påbörjat vidareutveckling av CRAGs i bootstrappade JastAdd.
