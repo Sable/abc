@@ -66,7 +66,6 @@ public class Weaver {
           System.err.println("WEAVER DRIVER ***** " + message);
       }
     Map unitBindings = new HashMap();
-    public boolean doCflowOptimization = false;
 
     public Map getUnitBindings() {
         return unitBindings;
@@ -128,7 +127,7 @@ public class Weaver {
             weaveGenerateAspectMethods();
             inlineConstructors();
 
-            if( doCflowOptimization ) {
+            if( OptionsParser.v().O() >= 3 ) {
                 Unweaver unweaver = new Unweaver();
                 unweaver.save();
                 unitBindings = unweaver.restore();
@@ -295,7 +294,6 @@ public class Weaver {
 
                 //if (false)
                 for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
-
                     final AbcClass cl = (AbcClass) clIt.next();
                     for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
                         final SootMethod m = (SootMethod) mIt.next();

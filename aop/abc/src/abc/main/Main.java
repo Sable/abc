@@ -432,7 +432,6 @@ public class Main {
         }
         if(OptionsParser.v().O()>=3) {
             soot_args.add("-w");
-            getAbcExtension().getWeaver().doCflowOptimization = true;
         }
         if(OptionsParser.v().main_class() != null) {
             soot_args.add("-main-class");
@@ -913,6 +912,7 @@ public class Main {
                 	int adviceApplCount=0;
                 	
                     for( Iterator clIt = getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
+                	
                         final AbcClass cl = (AbcClass) clIt.next();
                         for( Iterator methodIt = cl.getSootClass().getMethods().iterator(); methodIt.hasNext(); ) {
                             final SootMethod method = (SootMethod) methodIt.next(); 
