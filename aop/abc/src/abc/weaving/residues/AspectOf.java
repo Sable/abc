@@ -1,6 +1,7 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Ganesh Sittampalam
  * Copyright (C) 2004 Ondrej Lhotak
+ * Copyright (C) 2005 Sascha Kuzins
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

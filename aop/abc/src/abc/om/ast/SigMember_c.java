@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2005
+ * Copyright (C) 2005 Neil Ongkingco
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * if not, write to the Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 package abc.om.ast;
 
 import java.util.Collections;

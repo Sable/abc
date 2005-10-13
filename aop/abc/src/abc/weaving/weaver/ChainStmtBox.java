@@ -40,4 +40,3 @@ public class ChainStmtBox {
 	public ChainStmtBox(Chain chain, Stmt stmt)
 	{ this.chain = chain; this.stmt = stmt; }
 }
-
