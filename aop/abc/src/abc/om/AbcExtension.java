@@ -54,7 +54,7 @@ import abc.weaving.matching.*;
  */
 public class AbcExtension extends abc.main.AbcExtension {
     //debug
-    public static final boolean debug = true;
+    public static final boolean debug = false;
     private static boolean isLoaded = false;
     private GlobalAspectInfo globalAspectInfo = null;
 
