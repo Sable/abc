@@ -14,7 +14,7 @@
     </target>
 
     <target name="jars" 
-            depends="abc-jar,runtime-jar,testing-jar,complete-jar,abc-for-ajc-ant-jar"/>
+            depends="abc-jar,paddle-jar,runtime-jar,testing-jar,complete-jar,abc-for-ajc-ant-jar"/>
 
     <target name="copy-jars" depends="settings,libdir">
         <copy file="${polyglot.loc}" tofile="lib/polyglot.jar" />
@@ -112,14 +112,18 @@
         </javac>
     </target>
 
-   <target name="complete-jar" depends="abc-jar,libdir,runtime">
+   <target name="complete-jar" depends="abc-jar,paddle-jar,libdir,runtime">
         <jar destfile="lib/abc-complete.jar">
             <fileset dir="classes"/>
             <fileset dir="runtime-classes"/>
+            <fileset dir="paddle-classes"/>
             <zipfileset src="${polyglot.loc}"/>
             <zipfileset src="${polyglot.cupclasses.loc}"/>
             <zipfileset src="${soot.loc}"/>
             <zipfileset src="${jasmin.loc}"/>
+            <zipfileset src="${paddle.loc}"/>
+            <zipfileset src="${jedd.runtime.jar}"/>
+            <zipfileset src="${javabdd.jar}"/>
         </jar>
    </target>
 
