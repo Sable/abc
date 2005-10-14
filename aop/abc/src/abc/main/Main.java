@@ -464,6 +464,13 @@ public class Main {
             abcPrintVersion();
             throw new CompilerAbortedException("Acted on -version option.");
         }
+
+	// -O3 optimisations require -main-class option
+        if(OptionsParser.v().main_class() == null && OptionsParser.v().O() >= 3) {
+	    throw new IllegalArgumentException("Interprocedural analyses (-O3 " +
+		  "and above) require specifying the main class for the control-flow " +
+					       "analysis with the -main-class option.");
+	}
     }
 
     
