@@ -18,6 +18,7 @@ Pavel Avgustinov <pavel.avgustinov at magdalen.oxford.ac.uk>
    method infrastructure
  - Re-wrote the lexer to make an LGPL'd version
  - Improved Soot's handling of large methods
+ - Co-implemented tracematches in abc
 
 Aske Simon Christensen <aske at brics.dk>
  - Designed the overall compiler structure, and the connection
@@ -46,11 +47,16 @@ Jennifer Lhotak <jlhotak at sable.mcgill.ca>
 Ondrej Lhotak <olhotak at sable.mcgill.ca>
  - initial weaver
  - Work on Soot class and method handling
+ - interprocedural cflow analyses	
 
 Oege de Moor <oege at comlab.ox.ac.uk>
  - Project leader
  - Implemented frontend
  - Designed and implemented intertype weaver
+ - Designed and implemented large parts of the tracematch analyses
+
+Neil Ongkingco
+ - Designed and implemented open modules for AspectJ.
 
 Jane Panangaden
  - Poinsettiacus logo design
@@ -68,3 +74,4 @@ Ganesh Sittampalam <ganesh at earth.li>
 
 Julian Tibble <julian.tibble at worcester.oxford.ac.uk>
  - EAJ language
+ - Co-implemented tracematches in abc
