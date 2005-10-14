@@ -26,6 +26,7 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.1.0 1129329464
 $Implemented trace match extension. Run this with 'java abc.main.Main
 ;-ext abc.tm'. Trace matches are a mechanism for running advice when
 ;certain properties hold in the execution trace. The design and
