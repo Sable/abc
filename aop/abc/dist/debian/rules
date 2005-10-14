@@ -28,7 +28,6 @@ build-stamp: $(patched)
            echo jasmin.jar=../../lib/jasminclasses-custom.jar ; \
            echo soot.version=custom ; \
            echo release.loc=../../lib/ ; \
-           echo jedd.runtime.jar=../../jedd-runtime-$(JEDD_VER).jar) \
           > ant.settings
 	cd build-tree/soot-$(SOOT_VER) && CLASSPATH= ant classesjar
 
@@ -38,7 +37,10 @@ build-stamp: $(patched)
            echo jflex.loc=/usr/share/java/JFlex.jar ; \
 	   echo soot.loc=../../lib/sootclasses-custom.jar ; \
 	   echo jasmin.loc=../../lib/jasminclasses-custom.jar ; \
-	   echo xact.loc=../../xact-complete-$(XACT_VER).jar) \
+	   echo xact.loc=../../xact-complete-$(XACT_VER).jar) ; \
+           echo paddle.loc=../../paddle-$(PADDLE_VER).jar) ; \
+           echo jedd.runtime.jar=../../jedd-runtime-$(JEDD_VER).jar) ; \
+           echo javabdd.jar=../../javabdd_$(JAVABDD_VER).jar) \
 	  > ant.settings
 	mkdir -p build-tree/abc-$(ABC_VER)/classes/abc/main
 	echo "prerelease=$(PREREL)" \

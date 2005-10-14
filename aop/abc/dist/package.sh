@@ -2,11 +2,15 @@
 
 # Version of the package-body.shtml file to target; update this if you
 # make an incompatible change in that file
-PACKAGE='3'
+PACKAGE='4'
 # The Jedd runtime version
-JEDD='0.2'
+JEDD='0.3pre'
 # The Xact version
 XACT='1.0-1'
+# The JavaBDD version
+JAVABDD='0.6'
+# The Paddle version
+PADDLE='0.1pre'
 
 # these will potentially be out of sync slightly, but never mind
 UNIXTIME=`date +%s`
@@ -39,7 +43,7 @@ mkdir -p package/abc-$VERSION
 mkdir -p package/abc-$VERSION/bin
 mkdir -p package/abc-$VERSION/doc
 cp -a build.xml CREDITS LESSER-GPL CPL LICENSING ant.settings.template lib/ \
-      src/ runtime-src/ testing-src/ generated/ \
+      src/ runtime-src/ testing-src/ paddle-src/ generated/ \
       ajc-harness/ javadoc/ runtime-javadoc/ \
       dist/ \
       package/abc-$VERSION/
@@ -67,6 +71,7 @@ SRCS="\
    abc-$VERSION/LICENSING \
    abc-$VERSION/ant.settings.template \
    abc-$VERSION/src/ \
+   abc-$VERSION/paddle-src/ \
    abc-$VERSION/generated/ \
    abc-$VERSION/runtime-src/ \
    abc-$VERSION/testing-src/ \
@@ -82,6 +87,8 @@ rm -f abc-$VERSION-bin.*
 rm -f abc-$VERSION-src.*
 tar --exclude-from ../dist/tar-excludes -czvf abc-$VERSION-bin.tar.gz $BINS
 tar --exclude-from ../dist/tar-excludes -czvf abc-$VERSION-src.tar.gz $SRCS
+
+exit
 
 rm -rf soot-dev-$DATE/
 rm -f soot-dev-$DATE.tar.gz soot-dev-$DATE.zip
@@ -124,8 +131,14 @@ done
 
 cp /usr/local/src/xact/java/xact-complete.jar \
     xact-complete-$XACT.jar
-cp /usr/local/src/soot-dev/lib/jedd-runtime-$JEDD.jar \
+cp /usr/local/src/jedd-dev/runtime/lib/jedd-runtime.jar \
     jedd-runtime-$JEDD.jar
+cp /usr/local/src/paddle-dev/lib/paddle-custom.jar \
+    paddle-$PADDLE.jar
+cp /usr/local/src/resources/JavaBDD/javabdd_$JAVABDD.jar \
+    javabdd_$JAVABDD.jar
+cp /usr/local/src/resources/javabdd_src_$JAVABDD.tar.gz \
+    javabdd_src_$JAVABDD.tar.gz
 
 mkdir debian
 
@@ -135,7 +148,9 @@ chmod 755 debian/rules
 echo '#!/usr/bin/make -f' >> debian/rules
 echo "export PREREL=$PREREL" >> debian/rules
 echo "export ABC_VER=$VERSION" >> debian/rules
+echo "export PADDLE_VER=$PADDLE" >> debian/rules
 echo "export JEDD_VER=$JEDD" >> debian/rules
+echo "export JAVABDD_VER=$JAVABDD" >> debian/rules
 echo "export XACT_VER=$XACT" >> debian/rules
 echo "export SOOT_VER=dev-$DATE" >> debian/rules
 echo "export POLYGLOT_VER=dev-$DATE" >> debian/rules
@@ -197,6 +212,10 @@ echo "<!--#set var=\"jasminversion\" value=\"dev-$DATE\"-->" \
 echo "<!--#set var=\"polyglotversion\" value=\"dev-$DATE\"-->" \
     >> ../dists/$VERSION/package.shtml
 echo "<!--#set var=\"jeddversion\" value=\"$JEDD\"-->" \
+    >> ../dists/$VERSION/package.shtml
+echo "<!--#set var=\"paddleversion\" value=\"$PADDLE\"-->" \
+    >> ../dists/$VERSION/package.shtml
+echo "<!--#set var=\"javabddversion\" value=\"$JAVABDD\"-->" \
     >> ../dists/$VERSION/package.shtml
 echo "<!--#set var=\"xactversion\" value=\"$XACT\"-->" \
     >> ../dists/$VERSION/package.shtml
