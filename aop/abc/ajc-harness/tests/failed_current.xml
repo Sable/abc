@@ -62,22 +62,1047 @@
             <message text="Usage" kind="abort"></message>
         </compile>
     </ajc-test>
+<ajc-test title="XLint:ignore suppresses XLint warnings" num="820" dir="harness">
+        <compile options="-Xlint:ignore" files="XLintWarningTest.java"></compile>
+    </ajc-test>
+<ajc-test title="declare warnings on main - constructor execution" pr="37020" num="822" keywords="knownLimitation" dir="new/binaryWarnings/src">
+        <compile files="aspects/ConstructorExecutionWarning.java,app/Main.java">
+        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="declare warnings on binary javac 1.4 main - constructor execution" pr="37020" num="823" keywords="knownLimitation" dir="new/binaryWarnings/src">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-javac-1.4.jar">
+        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="declare warnings on binary ajc 1.1 main - constructor execution" pr="37020" num="824" keywords="knownLimitation" dir="new/binaryWarnings/src">
+        <compile files="aspects/ConstructorExecutionWarning.java,../injars/app-ajc-1.1.jar">
+        	<message text="execution(Main.new())" line="23" kind="warning" file="app/Main.java"></message>
+        </compile>
+        <run class="app.Main"></run>
+    </ajc-test>
+<ajc-test title="advice on handler join points should not throw unpermitted checked exceptions" pr="37898" num="825" keywords="knownLimitation" dir="bugs/handlers" abccomment="we only report the error at the join point shadow, not the advice                              body too.">
+        <compile files="ExceptionCheckCE.java">
+			<ajcmessage text="expected" line="8" kind="warning"></ajcmessage>
+			<ajcmessage text="throw checked exception" line="25" kind="error"></ajcmessage>
+			<ajcmessage text="throw checked exception" line="8" kind="error"></ajcmessage>
+			<message line="8" kind="error"></message>
+			<message text="expected" line="8" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="-nowarn suppresses XLint warnings" pr="38134" num="827" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
+        <compile options="-nowarn" files="XLintWarningTest.java"></compile>
+    </ajc-test>
+<ajc-test title="warn:none suppresses XLint warnings" pr="38134" num="828" keywords="knownLimitation" dir="harness" comment="behavior is correct for 1.1 - revisit for 1.2">
+        <compile options="-warn:none" files="XLintWarningTest.java"></compile>
+    </ajc-test>
+<ajc-test title="can not resolve this member warning" pr="38212" num="832" dir="bugs/accessMethods">
+        <compile files="p1/Base.java,p2/Derived.java"></compile>
+        <run class="p2.Derived"></run>
+    </ajc-test>
+<ajc-test title="Compiler crash in ajc 1.1 - terrible error for inaccessible constructor" pr="39458" num="834" dir="bugs" abccomment="abc bails out early">
+        <compile files="NewVoid.java">
+            <ajcmessage line="17" kind="error"></ajcmessage>        
+            <ajcmessage line="20" kind="error"></ajcmessage>        
+            <ajcmessage line="21" kind="error"></ajcmessage>
+                  
+            <ajcmessage line="28" kind="error"></ajcmessage>        
+            <ajcmessage line="29" kind="warning"></ajcmessage>        
+            <ajcmessage line="30" kind="warning"></ajcmessage>            
+
+            <message line="20" kind="error"></message>        
+            <message line="28" kind="error"></message>        
+        </compile>
+    </ajc-test>
+<ajc-test title="Missing import crashes compiler" pr="39460" num="835" dir="bugs">
+        <compile files="MissingImport.java">
+            <message line="13" kind="error"></message>       
+        </compile>
+    </ajc-test>
+<ajc-test title="NPE in bcel.LazyMethodGen when delegating from one ctor to a second that includes a switch" pr="39479" num="836" dir="bugs">
+        <compile files="NewSwitch.java"></compile>
+        <run class="NewSwitch"></run>
+    </ajc-test>
+<ajc-test title="switch statement in aspects crashes weaving" pr="40109" num="837" dir="bugs">
+        <compile files="SwitchInAround.java"></compile>
+        <run class="SwitchInAround"></run>
+    </ajc-test>
+<ajc-test title="ajc stack trace on declaring hashcode() method in aspect" pr="39993" num="838" dir="bugs">
+        <compile files="OverridingInterfaceObjectMethod.java"></compile>
+        <run class="OverridingInterfaceObjectMethod"></run>
+    </ajc-test>
+<ajc-test title="using super in method introduced on interface with multiple supertypes" num="839" dir="bugs">
+        <compile files="MultipleSuperCf.java">
+        	<message line="14" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Compiler crashes in jar and cflow (with no .jar)" pr="39462" num="840" dir="bugs/cflowAndJar">
+        <compile files="TestAspect.aj,Test.java,AbstractAspect.aj">
+        	<message line="16" kind="warning"></message>
+        </compile>
+        <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Default method impl for interface causes internal exception." pr="40589" num="842" dir="bugs">
+        <compile files="CloneMethod.java"></compile>
+        <run class="CloneMethod"></run>
+    </ajc-test>
+<ajc-test title="Class Literals as non final fields (also assert, and this$0)" pr="39711" num="843" dir="bugs">
+        <compile options="-source,1.4" files="ClassLiteralField.java"></compile>
+        <run vm="1.4" class="ClassLiteralField"></run>
+    </ajc-test>
+<ajc-test title="compile error expected for abstract pointcut outside abstract aspect" num="844" dir="errors" abccomment="better errors from abc. 19/07/04 ODM">
+		<compile files="AbstractPointcutCE.java">
+			<ajcmessage line="5" kind="error"></ajcmessage>
+			<ajcmessage line="10" kind="error"></ajcmessage>
+                        <message line="4" kind="error"></message>
+                        <message line="5" kind="error"></message>
+                        <message line="9" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="subtype-qualified pointcut reference" pr="40876" num="845" dir="bugs">
+		<compile files="PointcutLibraryTest.java"></compile>
+		<run class="PointcutLibraryTest"></run>
+	</ajc-test>
+<ajc-test title="weaver trace on mis-qualified pointcut reference" pr="40858" num="846" dir="bugs" comment="super is not permitted in pointcuts in 1.1">
+		<compile files="SuperPointcutCE.java">
+			<message line="23" kind="error"></message>
+			<message line="26" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="interface call signatures when declaring method in aspect" pr="40805" num="848" dir="bugs">
+		<compile files="DeclareWarningAndInterfaceMethodCW.java">
+			<message text="call getSomething" line="27" kind="warning"></message>
+			<message text="call ICanGetSomething.getSomething" line="27" kind="warning"></message>
+			<message text="call getSomething" line="31" kind="warning"></message>
+			<message text="call ICanGetSomething.getSomething" line="31" kind="warning"></message>
+			<message text="call getSomething" line="33" kind="warning"></message>
+			<message text="call ICanGetSomething.getSomething" line="33" kind="warning"></message>
+			<message text="call getSomething" line="35" kind="warning"></message>
+			<message text="call ICanGetSomething.getSomething" line="35" kind="warning"></message>
+			<message text="call getSomething" line="38" kind="warning"></message>
+			<message text="call ICanGetSomething.getSomething" line="38" kind="warning"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="aspect-declared interface members in libraries - baseline" num="849" dir="new/interfaceLibrary">
+		<compile files="lib/LibraryInterface.java,       Client.java,       LibraryAspect.java"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - positive" num="857" dir="bugs/interfaceLibrary" abccomment="problem with loosing exception clauses on newly created soot methods. emailed abc list 19/07/04. ODM">
+		<compile files="Client.java,LibraryAspect.java,lib/LibraryInterface.java"></compile>
+		<run class="Client"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared interface methods - negative" num="858" dir="bugs/interfaceLibrary">
+		<compile files="ClientCE.java,LibraryAspect.java,lib/LibraryInterface.java">
+			<message line="5" kind="error" file="ClientCE.java"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - positive" num="859" dir="bugs/interfaceLibrary">
+		<compile files="ClassClient.java,LibraryClassAspect.java,lib/LibraryClass.java"></compile>
+		<run class="ClassClient"></run>
+		</ajc-test>
+<ajc-test title="exception clause for aspect-declared class methods - negative" num="860" dir="bugs/interfaceLibrary">
+		<compile files="ClassClientCE.java,LibraryClassAspect.java,lib/LibraryClass.java">
+			<message line="5" kind="error" file="ClassClientCE.java"></message>
+			</compile>
+		</ajc-test>
+<ajc-test title="reflective check of declared exceptions from aspect-declared methods" pr="41175" num="861" dir="bugs" abccomment="soot seems to loose declared exceptions on new methods. mailed abc list. 19/07/04 ODM.                             Jennifer found it is due to Jasmin; she will fix. 27/07/04 ODM">
+		<compile files="DeclaredExceptions.java"></compile>
+		<run class="DeclaredExceptions"></run>
+		</ajc-test>
+<ajc-test title="Weaving failure when using injars (no jars)" pr="41123" num="866" dir="bugs/moreInterfaceLibrary">
+		<compile files="lib/ExecutionMonitor.aj,model/BusObj.java,model/MonitorBusObj.java">
+		</compile>
+	</ajc-test>
+<ajc-test title="percflow aspects compiled from jars share one instance for all entry points" pr="41359" num="870" dir="bugs/perCflowAndJar">
+		<compile files="PerCFlowCompileFromJar.java,PerCFlowCompileFromJarTest.java"></compile>
+		<run class="PerCFlowCompileFromJarTest"></run>
+	</ajc-test>
+<ajc-test title="throw derivative pointcuts not advised" pr="42539" num="872" dir="bugs/throwsSignature">
+		<compile files="ExceptionBugTest.java,ExceptionAspect.java">
+		    <message text="throws both" line="5" kind="warning"></message>
+		    <message text="throws Exception" line="5" kind="error"></message>
+		    <message text="throws both" line="7" kind="warning"></message>
+                </compile>
+	</ajc-test>
+<ajc-test title="perthis and signature bad interaction" pr="42652" num="873" dir="bugs">
+        <compile files="InterPerCall.java"></compile>
+        <run class="InterPerCall"></run>
+    </ajc-test>
+<ajc-test title="declare error fails on pointcuts composed from multiple classes" pr="42740" num="874" dir="bugs/declareBinding" abccomment="awaiting tags with source locs, ok. ODM 19/07/04">
+		<compile files="SampleExceptionHandling1.java">
+		    <ajcmessage line="2" kind="error"></ajcmessage>
+		    <message kind="error"></message>
+                </compile>
+	</ajc-test>
+<ajc-test title="declare error fails on pointcuts composed from multiple classes" pr="42740" num="875" dir="bugs/declareSoftWithin">
+		<compile files="aspects/Softener.aj,test/NoSoftener.java"></compile>
+		<run class="test.NoSoftener"></run>
+	</ajc-test>
+<ajc-test title="Interaction between pointcut binding and declare parents" pr="42993" num="876" dir="bugs">
+        <compile files="ParentsAndPointcuts.java"></compile>
+        <run class="ParentsAndPointcuts"></run>
+    </ajc-test>
+<ajc-test title="Non-functional concretezation of ReferencePointcut" pr="43194" num="877" dir="bugs">
+        <compile files="AdviceInteraction.java"></compile>
+        <run class="AdviceInteraction"></run>
+    </ajc-test>
+<ajc-test title="JoinPoint Optimization when targetting 1.4" pr="45441" num="879" dir="bugs/jpOptimization">
+        <compile options="-1.4" files="de/test/MyMain.java,              de/test/MyAspect.java"></compile>
+        <run class="de.test.MyMain"></run>
+    </ajc-test>
+<ajc-test title="priviledged aspects calling methods from advice" pr="42711" num="881" dir="bugs/privilege/packageProtected"> 
+        <compile files="concern/ContextUser.java,concern/BaseTarget.java,core/Base.java"></compile> 
+    </ajc-test>
+<ajc-test title="No error on overloaded pointcuts unless binding variables" pr="49457" num="883" dir="bugs" abccomment="abc text different but ok. ODM 19/07/04">
+        <compile files="OverloadedPointcutsInAspect.java">
+        	<ajcmessage text="duplicate pointcut name: pc" line="15" kind="error"></ajcmessage>
+        	<ajcmessage text="duplicate pointcut name: pc" line="16" kind="error"></ajcmessage>
+        	<ajcmessage text="incompatible type" line="18" kind="error"></ajcmessage>
+        	<ajcmessage text="incompatible type" line="20" kind="error"></ajcmessage>
+                <message line="15" kind="error"></message>
+        	<message line="16" kind="error"></message>
+                <message line="16" kind="error"></message>
+                <message line="17" kind="error"></message>
+                <message line="18" kind="error"></message>
+                <message line="19" kind="error"></message>
+        	<message line="20" kind="error"></message>
+                <message line="21" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="alias getCause for getWrappedThrowable in SoftException" pr="49250" num="884" dir="bugs">
+        <compile options="-Xlint:warning" files="GetCauseOnSoftException.java">
+        </compile>
+        <run vm="1.3" class="GetCauseOnSoftException"></run>
+    </ajc-test>
+<ajc-test title="Declare soft softening other exception types" pr="48522" num="885" dir="bugs">
+        <compile files="SofteningTooMuch.java">
+ 	        <message text="Unhandled exception" line="6" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="static method introduction on interfaces, should not be allowed" pr="47754" num="886" dir="bugs" abccomment="text of message is better in abc. ODM 19/07/04">
+        <compile files="StaticInterfaceMethods.java">
+		  <ajcmessage text="methods in interfaces cannot be declared static" line="7" kind="error"></ajcmessage>
+                  <message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="External pointcut refs not resolved if named pointcut used by declare" pr="45184" num="887" dir="bugs" abccomment="awaiting source pos tags. OK for now ODM 19/07/04">
+        <compile files="DeclareErrorNamedPointcutCE.java">
+ 	        <ajcmessage text="ref" line="10" kind="error"></ajcmessage>
+                <message kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="inner aspect containing declare soft" pr="46750" num="894" dir="bugs">
+       <compile files="TestSoftening.java">
+       </compile>
+    </ajc-test>
+<ajc-test title="Bad parser error recovery in advice" pr="45663" num="895" dir="bugs" abccomment="Polyglot continues beyond parse, and thus has another error. ODM 07/07/04">
+        <compile files="ParserRecoveryTest.java">
+		  <ajcmessage line="7" kind="error"></ajcmessage>
+                  <message line="5" kind="error"></message>
+                  <message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="compiler issues error on inner aspects when privilieged" pr="46280" num="897" dir="bugs">
+        <compile files="PrivilegedParsing.java"></compile>
+        <run class="PrivilegedParsing"></run>
+    </ajc-test>
+<ajc-test title="After throwing advice on ctors doesn't execute for inter-type decl field inits" pr="44586" num="898" dir="bugs" abccomment="ITD field initialisers should not appear in the exec jps of host constructors, but                     they do appear in initialisation jps of the same. Need to discuss with Ganesh.                     ODM 19/07/04">
+        <compile files="AfterThrowingCtor.java">
+        </compile>
+  		<run class="AfterThrowingCtor"></run>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on interface not implemented by subtype (weave altogether)" pr="49784" num="900" dir="bugs/abstractMethods">
+        <compile files="interface/C.java,interface/A.java,interface/B.java"></compile>
+        <run class="C"></run>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on abstract class not implemented by subtype (single source file)" pr="49784" num="903" dir="bugs/abstractMethods" abccomment="abc gives message at intertype decl rather than class. ODM July 14,2004">
+        <compile files="singlesource/C.java">
+        	<ajcmessage line="9" kind="error"></ajcmessage>
+                <message line="4" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on abstract class with introduced concrete method (single source file)" pr="49784" num="904" dir="bugs/abstractMethods">
+        <compile files="singlesource/C1.java"></compile>
+        <run class="C1"></run>
+    </ajc-test>
+<ajc-test title="Introduced abstract method on abstract class with existing concrete method (single source file)" pr="49784" num="905" dir="bugs/abstractMethods">
+        <compile files="singlesource/C2.java"></compile>
+        <run class="C2"></run>
+    </ajc-test>
+<ajc-test title="aspect declares interface method (no modifiers)" pr="49784" num="906" dir="bugs/interAbstract">
+        <compile files="InterfaceMethodDeclarationNone.java">
+        	<message text="requires a body" line="32" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="aspect declares interface method (abstract)" pr="49784" num="907" dir="bugs/interAbstract" abccomment="I believe this to be an ajc bug. The program makes perfect sense,                             it compiles fine, and the test runs ok. ODM 19/07/4">
+        <compile files="InterfaceMethodDeclarationAbstract.java">
+        	<ajcmessage text="must implement" line="40" kind="error"></ajcmessage>
+        </compile>
+        <run class="InterfaceMethodDeclarationAbstract"></run>
+    </ajc-test>
+<ajc-test title="aspect declares interface method (public abstract)" pr="49784" num="908" dir="bugs/interAbstract" comment="working in 1.1.1 - keep with others?">
+        <compile files="InterfaceMethodDeclarationFull.java"></compile>
+        <run class="InterfaceMethodDeclarationFull"></run>
+    </ajc-test>
+<ajc-test title="Use class implementing interface via aspect (weave all together)" pr="43972" num="910" dir="bugs/interfaceDefinition">
+        <compile files="pack/DefineInterface.java,              pack/InterfaceDefinition.java,              pack/MyInterface.java,              Main.java"></compile>
+        <run class="pack.InterfaceDefinition"></run>
+        <run class="Main"></run>
+    </ajc-test>
+<ajc-test title="Erroneous exception conversion" pr="44587" num="912" dir="bugs">
+        <compile files="ErroneousExceptionConversion.java">
+        </compile>
+        <run class="ErroneousExceptionConversion"></run>
+    </ajc-test>
+<ajc-test title="before():execution(new(..)) does not throw NoAspectBoundException" pr="34206" num="913" dir="bugs">
+        <compile files="ErroneousExceptionConversion1.java">
+        </compile>
+        <run class="ErroneousExceptionConversion1"></run>
+    </ajc-test>
+<ajc-test title="Anomalous handling of inter-type declarations to abstract base classes in aspectj 1.1" pr="38824" num="914" dir="bugs">
+	        <compile files="AbstractBaseAndInterTypeInterface.java">
+	        </compile>
+	</ajc-test>
+<ajc-test title="declare warning on subtype constructor" pr="49295" num="916" dir="bugs" abccomment="Fixed grammar to allow space between dots in formal pattern. ODM 14/07/04">
+        <compile files="SubtypeConstructorCW.java">
+			<ajcmessage text="String as first" line="5" kind="warning"></ajcmessage>
+			<ajcmessage text="String as first" line="10" kind="warning"></ajcmessage>
+                        <message line="5" kind="warning"></message>
+                        <message line="10" kind="warning"></message>
+        </compile>
+        <run class="SubtypeConstructorCW"></run>
+    </ajc-test>
+<ajc-test title="CatchClauseSignature has broken operation" pr="50570" num="917" dir="bugs">
+        <compile files="HandlerSig.java"></compile>
+        <run class="HandlerSig"></run>
+    </ajc-test>
+<ajc-test title="after returning with parameter: matching rules" pr="42668" num="918" dir="new">
+        <compile files="AfterReturningParamMatching.java"></compile>
+        <run class="AfterReturningParamMatching"></run>
+    </ajc-test>
+<ajc-test title="mail list VerifyError with protected access" num="922" dir="bugs/protectedvf" abccomment="Need to make all aspects public prior to jimplification.                      ODM 16/07/04">
+		<compile files="main/Driver.java,main/p2/AbstractTest.aj,main/p1/ConcreteTest.aj"></compile>
+		<run class="main.Driver"></run>
+	</ajc-test>
+<ajc-test title="thisJoinPoint etc inside if pointcut" num="923" dir="abctests/design/reflection">
+           <compile files="InsideIf.java"></compile>
+           <run class="InsideIf"></run>
+        </ajc-test>
+<ajc-test title="cflow at handler joinpoints" num="924" dir="abctests/design/cflow">
+           <compile files="Handler.java"></compile>
+           <run class="Handler"></run>
+        </ajc-test>
+<ajc-test title="Polymorphic ITD fails in CVS HEAD (From ajdt 1.1.6)" pr="51919" num="925" dir="bugs">
+        <compile files="OverloadedITDNPE.java"></compile>
+    </ajc-test>
+<ajc-test title="ClasscastException on concretization of if(false) 1" pr="51320" num="926" dir="bugs" abccomment="abc does indirect checks in later phase, and bails out too early,                      hence cloned this test. ODM 10/8/04">
+        <compile files="DecwClassCastException.java">
+        
+         
+         <ajcmessage text="if() pointcut designator cannot be used" line="27" kind="error"></ajcmessage>
+         <ajcmessage text="if() pointcut designator cannot be used" line="29" kind="error"></ajcmessage>
+         <ajcmessage text="cflow() pointcut designator cannot be used" line="31" kind="error"></ajcmessage>
+         <ajcmessage text="cflow() pointcut designator cannot be used" line="33" kind="error"></ajcmessage>
+         
+         <ajcmessage text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></ajcmessage>
+         <ajcmessage text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></ajcmessage>
+         
+         <ajcmessage text="this() pointcut designator cannot be used" line="39" kind="error"></ajcmessage>
+         <ajcmessage text="this() pointcut designator cannot be used" line="41" kind="error"></ajcmessage>
+         
+         <ajcmessage text="target() pointcut designator cannot be used" line="43" kind="error"></ajcmessage>
+         <ajcmessage text="target() pointcut designator cannot be used" line="45" kind="error"></ajcmessage>
+         
+         <ajcmessage text="args() pointcut designator cannot be used" line="47" kind="error"></ajcmessage>
+         <ajcmessage text="args() pointcut designator cannot be used" line="49" kind="error"></ajcmessage>
+         <message text="if() pointcut designator cannot be used" line="27" kind="error"></message>
+         <message text="cflow() pointcut designator cannot be used" line="31" kind="error"></message>
+         <message text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></message>
+         <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
+         <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
+         <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="ClasscastException on concretization of if(false) 1-1" pr="51320" num="92601" dir="abctests/bugs" abccomment="cloned from 926">
+        <compile files="DecwClassCastExceptionIndirect.java">
+        
+         
+         <message text="if() pointcut designator cannot be used" line="29" kind="error"></message>
+         <message text="cflow() pointcut designator cannot be used" line="33" kind="error"></message>
+         <message text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></message>
+         <message text="this() pointcut designator cannot be used" line="41" kind="error"></message>
+         <message text="target() pointcut designator cannot be used" line="45" kind="error"></message>
+         <message text="args() pointcut designator cannot be used" line="49" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="ClasscastException on concretization of if(false) 2-1" pr="51320" num="927" dir="bugs">
+        <compile files="DeclareSoftDynamicPCDs.java">
+        
+         
+         <ajcmessage text="if() pointcut designator cannot be used" line="27" kind="error"></ajcmessage>
+         <ajcmessage text="if() pointcut designator cannot be used" line="29" kind="error"></ajcmessage>
+         
+         <ajcmessage text="cflow() pointcut designator cannot be used" line="31" kind="error"></ajcmessage>
+         <ajcmessage text="cflow() pointcut designator cannot be used" line="33" kind="error"></ajcmessage>
+         
+         <ajcmessage text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></ajcmessage>
+         <ajcmessage text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></ajcmessage>
+         
+         <ajcmessage text="this() pointcut designator cannot be used" line="39" kind="error"></ajcmessage>
+         <ajcmessage text="this() pointcut designator cannot be used" line="41" kind="error"></ajcmessage>
+         
+         <ajcmessage text="target() pointcut designator cannot be used" line="43" kind="error"></ajcmessage>
+         <ajcmessage text="target() pointcut designator cannot be used" line="45" kind="error"></ajcmessage>
+         
+         <ajcmessage text="args() pointcut designator cannot be used" line="47" kind="error"></ajcmessage>
+         <ajcmessage text="args() pointcut designator cannot be used" line="49" kind="error"></ajcmessage>
+         
+         <message text="if() pointcut designator cannot be used" line="27" kind="error"></message>
+         <message text="cflow() pointcut designator cannot be used" line="31" kind="error"></message>
+         
+         <message text="cflowbelow() pointcut designator cannot be used" line="35" kind="error"></message>
+         <message text="this() pointcut designator cannot be used" line="39" kind="error"></message>
+         
+         <message text="target() pointcut designator cannot be used" line="43" kind="error"></message>
+         
+         <message text="args() pointcut designator cannot be used" line="47" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="ClasscastException on concretization of if(false) 2-2" pr="51320" num="92701" dir="abctests/bugs">
+        <compile files="DeclareSoftDynamicPCDsIndirect.java">
+        
+         
+         <message text="if() pointcut designator cannot be used" line="29" kind="error"></message>
+         
+         <message text="cflow() pointcut designator cannot be used" line="33" kind="error"></message>
+         
+         <message text="cflowbelow() pointcut designator cannot be used" line="37" kind="error"></message>
+         
+         <message text="this() pointcut designator cannot be used" line="41" kind="error"></message>
+         
+         <message text="target() pointcut designator cannot be used" line="45" kind="error"></message>
+         
+         <message text="args() pointcut designator cannot be used" line="49" kind="error"></message>
+         
+        </compile>
+    </ajc-test>
+<ajc-test title="SUID: Before execution advice" pr="41181" num="928" dir="bugs/serialVersionUID">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, BeforeExecutionAdvice.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Around closure execution advice (-Xlint:ignore)" pr="41181" num="930" dir="bugs/serialVersionUID" comment="OK because ignoring warnings">
+		<compile files="Test.java, Util.java">
+		</compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:ignore" files="Test.java, Util.java, AroundClosureExecutionAdvice.aj">
+		<message kind="warning"></message>
+		</compile>
+        <run options="-fail" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: thisJoinPoint with clinit method" pr="41181" num="933" dir="bugs/serialVersionUID" comment="OK if tjp private and existing clinit">
+		<compile files="ClinitTest.java, Util.java"></compile>
+        <run class="ClinitTest"></run>
+		<compile options="-Xlint:warning" files="ClinitTest.java, Util.java, TJP.aj"></compile>
+        <run options="-read" class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: After returning staticinitialization advice with serialVersionUID field" pr="41181" num="935" dir="bugs/serialVersionUID" comment="OK because of serialVersionUID field">
+		<compile files="SuidTest.java, Util.java"></compile>
+        <run class="SuidTest"></run>
+		<compile options="-Xlint:warning" files="SuidTest.java, Util.java, AfterReturningStaticinitializationAdvice.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare extends" pr="41181" num="938" dir="bugs/serialVersionUID" comment="OK">
+		<compile files="Test.java, Util.java"></compile>
+        <run class="Test"></run>
+		<compile options="-Xlint:warning" files="Test.java, Util.java, DeclareExtends.aj"></compile>
+        <run class="Util"></run>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements non-Serializable (compile)" pr="41181" num="940" dir="bugs/serialVersionUID" comment="OK because not Serializable">
+		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplements.aj"></compile>
+	</ajc-test>
+<ajc-test title="SUID: Declare implements Serializable (compile)" pr="41181" num="941" dir="bugs/serialVersionUID" comment="OK because adding Serializable">
+		<compile options="-Xlint:warning" files="NonSerializableTest.java, DeclareImplementsSerializable.aj"></compile>
+	</ajc-test>
+<ajc-test title="declare String field on interface" pr="52107" num="945" dir="bugs/fieldsOnInterfaces" abccomment="this is an error for us">
+		<compile files="StringFieldOnInterface.java">
+			<message line="16" kind="error"></message>
+			<message line="17" kind="error"></message>
+			<ajcmessage text="this affected type is not exposed" line="16" kind="warning"></ajcmessage>
+         	<ajcmessage text="this affected type is not exposed" line="17" kind="warning"></ajcmessage>
+		</compile>	   
+	</ajc-test>
+<ajc-test title="declare int field on interface" pr="52107" num="946" dir="bugs/fieldsOnInterfaces" abccomment="this is an error for us">
+		<compile files="IntFieldOnInterface.java">
+		<message line="27" kind="error"></message>
+		<message line="28" kind="error"></message>
+		<ajcmessage text="this affected type is not exposed" line="27" kind="warning"></ajcmessage>
+         	<ajcmessage text="this affected type is not exposed" line="28" kind="warning"></ajcmessage>
+		</compile>
+	</ajc-test>
+<ajc-test title="declare Object field on interface" pr="52107" num="947" dir="bugs/fieldsOnInterfaces" abccomment="this is an error for us">
+		<compile files="ObjectFieldOnInterface.java">
+			<message line="20" kind="error"></message>
+			<message line="21" kind="error"></message>
+			<ajcmessage text="this affected type is not exposed" line="20" kind="warning"></ajcmessage>
+         	<ajcmessage text="this affected type is not exposed" line="21" kind="warning"></ajcmessage>
+		</compile>
+	</ajc-test>
+<ajc-test title="fail in compiling aspect with overriding method introduction with different throws clause " pr="50776" num="948" dir="bugs">
+        <compile files="IntertypeDifferentThrows.java"></compile>
+    </ajc-test>
+<ajc-test title="super call in anonymous class created in around advice" num="949" dir="new" comment="in ajc 1.1.1, VerifyError Illegal use of nonvirtual function call">
+        <compile files="SuperClosure.java"></compile>
+        <run class="SuperClosure"></run>
+    </ajc-test>
 <ajc-test title="-deprecation not working?" pr="54098" num="951" dir="bugs/deprecated" abccomment="we don't support deprecation">
     	 <compile options="-deprecation" files="Deprecation.java, Deprecated.java">
             <message line="5" kind="warning"></message>
             <message line="6" kind="warning"></message>
         </compile>
     </ajc-test>
+<ajc-test title="retitle warning to circular {advice} dependency at ..." pr="44272" num="952" dir="bugs" abccomment="we only report one error, at the application location">
+        <compile files="CircularAdvicePrecedence.java">
+            <ajcmessage line="4" kind="error"></ajcmessage> 
+            <ajcmessage line="5" kind="error"></ajcmessage> 
+            <ajcmessage line="6" kind="error"></ajcmessage> 
+            <message line="11" kind="error"></message> 
+        </compile>
+    </ajc-test>
+<ajc-test title="Private members introduced via an interface are visible to the class" pr="52928" num="957" dir="bugs">
+		<compile files="VisiblePrivateInterfaceITDs.java">
+            <message line="13" kind="error"></message>
+		</compile>
+	</ajc-test>
+<ajc-test title="declare precedence on a class should be a compile-time error 1" pr="53012" num="958" dir="bugs/declarePrecedenceWithClasses">
+        <compile files="DeclarePrecedenceTestClass.java">
+          <message text="Non-aspect types can only be specified" line="10" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare precedence on a class should be a compile-time error 2" pr="53012" num="959" dir="bugs/declarePrecedenceWithClasses">
+        <compile files="Priority.aj"></compile>
+    </ajc-test>
+<ajc-test title="error Type mismatch: cannot convert from java.lang.String to java.lang.String" pr="55341" num="960" keywords="" dir="bugs/StringToString" comment="make helloworld.jar with 'ajc -outjar helloworld.jar HW.java' or run BcweaverJarMaker" abccomment="we think this is an error">
+        <compile files="X.java" classpath="helloworld.jar">
+        	<ajcmessage line="3" kind="warning"></ajcmessage>
+        	<ajcmessage line="7" kind="warning"></ajcmessage>
+        	<message line="3" kind="error"></message>
+        	<message line="7" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error binary-weaving NPE 1" pr="57432" num="961" dir="bugs/systemouts" abccomment="we correctly report two errors at line 13">
+        <compile files="injar-debug.jar,A.java">
+			<ajcmessage line="12" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="13" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="20" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="22" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="23" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="27" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="28" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="29" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="30" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="31" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="32" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="33" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="34" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="35" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="36" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="37" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="38" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="39" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="40" kind="error" file="X.java"></ajcmessage>
+			<ajcmessage line="41" kind="error" file="X.java"></ajcmessage>
+			<message line="12" kind="error" file="X.java"></message>
+			<message line="13" kind="error" file="X.java"></message>
+			<message line="13" kind="error" file="X.java"></message>
+			<message line="20" kind="error" file="X.java"></message>
+			<message line="22" kind="error" file="X.java"></message>
+			<message line="23" kind="error" file="X.java"></message>
+			<message line="27" kind="error" file="X.java"></message>
+			<message line="28" kind="error" file="X.java"></message>
+			<message line="29" kind="error" file="X.java"></message>
+			<message line="30" kind="error" file="X.java"></message>
+			<message line="31" kind="error" file="X.java"></message>
+			<message line="32" kind="error" file="X.java"></message>
+			<message line="33" kind="error" file="X.java"></message>
+			<message line="34" kind="error" file="X.java"></message>
+			<message line="35" kind="error" file="X.java"></message>
+			<message line="36" kind="error" file="X.java"></message>
+			<message line="37" kind="error" file="X.java"></message>
+			<message line="38" kind="error" file="X.java"></message>
+			<message line="39" kind="error" file="X.java"></message>
+			<message line="40" kind="error" file="X.java"></message>
+			<message line="41" kind="error" file="X.java"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="declare error binary-weaving NPE 2 " pr="57432" num="962" dir="bugs/systemouts" abccomment="we generate 21 errors, just like ajc..">
+        <compile files="injar-nodebug.jar,A.java">
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<message kind="error"></message>
+			<ajcmessage line="0" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="Regression from 1.1: NPE in CompilationResult" pr="58679" num="963" dir="bugs/tooManyErrors" abccomment="abc stops after 100 errors, ajc after 101. Nothing               interesting in this test case. PA">
+        <compile files="Joinpoints101.jar,DecErrors.aj">
+         
+          <ajcmessage line="10" kind="error"></ajcmessage><ajcmessage line="11" kind="error"></ajcmessage>
+          <ajcmessage line="12" kind="error"></ajcmessage><ajcmessage line="13" kind="error"></ajcmessage>
+          <ajcmessage line="14" kind="error"></ajcmessage>
+
+          <ajcmessage line="16" kind="error"></ajcmessage><ajcmessage line="17" kind="error"></ajcmessage>
+          <ajcmessage line="18" kind="error"></ajcmessage><ajcmessage line="19" kind="error"></ajcmessage>
+          <ajcmessage line="20" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="22" kind="error"></ajcmessage><ajcmessage line="23" kind="error"></ajcmessage>
+          <ajcmessage line="24" kind="error"></ajcmessage><ajcmessage line="25" kind="error"></ajcmessage>
+          <ajcmessage line="26" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="28" kind="error"></ajcmessage><ajcmessage line="29" kind="error"></ajcmessage>
+          <ajcmessage line="30" kind="error"></ajcmessage><ajcmessage line="31" kind="error"></ajcmessage>
+          <ajcmessage line="32" kind="error"></ajcmessage>
+  
+          <ajcmessage line="34" kind="error"></ajcmessage><ajcmessage line="35" kind="error"></ajcmessage>
+          <ajcmessage line="36" kind="error"></ajcmessage><ajcmessage line="37" kind="error"></ajcmessage>
+          <ajcmessage line="38" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="40" kind="error"></ajcmessage><ajcmessage line="41" kind="error"></ajcmessage>
+          <ajcmessage line="42" kind="error"></ajcmessage><ajcmessage line="43" kind="error"></ajcmessage>
+          <ajcmessage line="44" kind="error"></ajcmessage>
+          
+          <ajcmessage line="46" kind="error"></ajcmessage><ajcmessage line="47" kind="error"></ajcmessage>
+          <ajcmessage line="48" kind="error"></ajcmessage><ajcmessage line="49" kind="error"></ajcmessage>
+          <ajcmessage line="50" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="52" kind="error"></ajcmessage><ajcmessage line="53" kind="error"></ajcmessage>
+          <ajcmessage line="54" kind="error"></ajcmessage><ajcmessage line="55" kind="error"></ajcmessage>
+          <ajcmessage line="56" kind="error"></ajcmessage>
+  
+          <ajcmessage line="58" kind="error"></ajcmessage><ajcmessage line="59" kind="error"></ajcmessage>
+          <ajcmessage line="60" kind="error"></ajcmessage><ajcmessage line="61" kind="error"></ajcmessage>
+          <ajcmessage line="62" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="64" kind="error"></ajcmessage><ajcmessage line="65" kind="error"></ajcmessage>
+          <ajcmessage line="66" kind="error"></ajcmessage><ajcmessage line="67" kind="error"></ajcmessage>
+          <ajcmessage line="68" kind="error"></ajcmessage>
+          
+          <ajcmessage line="70" kind="error"></ajcmessage><ajcmessage line="71" kind="error"></ajcmessage>
+          <ajcmessage line="72" kind="error"></ajcmessage><ajcmessage line="73" kind="error"></ajcmessage>
+          <ajcmessage line="74" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="76" kind="error"></ajcmessage><ajcmessage line="77" kind="error"></ajcmessage>
+          <ajcmessage line="78" kind="error"></ajcmessage><ajcmessage line="79" kind="error"></ajcmessage>
+          <ajcmessage line="80" kind="error"></ajcmessage>
+  
+          <ajcmessage line="82" kind="error"></ajcmessage><ajcmessage line="83" kind="error"></ajcmessage>
+          <ajcmessage line="84" kind="error"></ajcmessage><ajcmessage line="85" kind="error"></ajcmessage>
+          <ajcmessage line="86" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="88" kind="error"></ajcmessage><ajcmessage line="89" kind="error"></ajcmessage>
+          <ajcmessage line="90" kind="error"></ajcmessage><ajcmessage line="91" kind="error"></ajcmessage>
+          <ajcmessage line="92" kind="error"></ajcmessage>
+          
+          <ajcmessage line="94" kind="error"></ajcmessage><ajcmessage line="95" kind="error"></ajcmessage>
+          <ajcmessage line="96" kind="error"></ajcmessage><ajcmessage line="97" kind="error"></ajcmessage>
+          <ajcmessage line="98" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="100" kind="error"></ajcmessage><ajcmessage line="101" kind="error"></ajcmessage>
+          <ajcmessage line="102" kind="error"></ajcmessage><ajcmessage line="103" kind="error"></ajcmessage>
+          <ajcmessage line="104" kind="error"></ajcmessage>
+  
+          <ajcmessage line="106" kind="error"></ajcmessage><ajcmessage line="107" kind="error"></ajcmessage>
+          <ajcmessage line="108" kind="error"></ajcmessage><ajcmessage line="109" kind="error"></ajcmessage>
+          <ajcmessage line="110" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="112" kind="error"></ajcmessage><ajcmessage line="113" kind="error"></ajcmessage>
+          <ajcmessage line="114" kind="error"></ajcmessage><ajcmessage line="115" kind="error"></ajcmessage>
+          <ajcmessage line="116" kind="error"></ajcmessage>
+          
+          <ajcmessage line="118" kind="error"></ajcmessage><ajcmessage line="119" kind="error"></ajcmessage>
+          <ajcmessage line="120" kind="error"></ajcmessage><ajcmessage line="121" kind="error"></ajcmessage>
+          <ajcmessage line="122" kind="error"></ajcmessage>
+  
+          <ajcmessage line="124" kind="error"></ajcmessage><ajcmessage line="125" kind="error"></ajcmessage>
+          <ajcmessage line="126" kind="error"></ajcmessage><ajcmessage line="127" kind="error"></ajcmessage>
+          <ajcmessage line="128" kind="error"></ajcmessage>
+ 
+          <ajcmessage line="130" kind="error"></ajcmessage>
+          
+          <message line="10" kind="error"></message><message line="11" kind="error"></message>
+          <message line="12" kind="error"></message><message line="13" kind="error"></message>
+          <message line="14" kind="error"></message>
+
+          <message line="16" kind="error"></message><message line="17" kind="error"></message>
+          <message line="18" kind="error"></message><message line="19" kind="error"></message>
+          <message line="20" kind="error"></message>
+ 
+          <message line="22" kind="error"></message><message line="23" kind="error"></message>
+          <message line="24" kind="error"></message><message line="25" kind="error"></message>
+          <message line="26" kind="error"></message>
+ 
+          <message line="28" kind="error"></message><message line="29" kind="error"></message>
+          <message line="30" kind="error"></message><message line="31" kind="error"></message>
+          <message line="32" kind="error"></message>
+  
+          <message line="34" kind="error"></message><message line="35" kind="error"></message>
+          <message line="36" kind="error"></message><message line="37" kind="error"></message>
+          <message line="38" kind="error"></message>
+ 
+          <message line="40" kind="error"></message><message line="41" kind="error"></message>
+          <message line="42" kind="error"></message><message line="43" kind="error"></message>
+          <message line="44" kind="error"></message>
+          
+          <message line="46" kind="error"></message><message line="47" kind="error"></message>
+          <message line="48" kind="error"></message><message line="49" kind="error"></message>
+          <message line="50" kind="error"></message>
+ 
+          <message line="52" kind="error"></message><message line="53" kind="error"></message>
+          <message line="54" kind="error"></message><message line="55" kind="error"></message>
+          <message line="56" kind="error"></message>
+  
+          <message line="58" kind="error"></message><message line="59" kind="error"></message>
+          <message line="60" kind="error"></message><message line="61" kind="error"></message>
+          <message line="62" kind="error"></message>
+ 
+          <message line="64" kind="error"></message><message line="65" kind="error"></message>
+          <message line="66" kind="error"></message><message line="67" kind="error"></message>
+          <message line="68" kind="error"></message>
+          
+          <message line="70" kind="error"></message><message line="71" kind="error"></message>
+          <message line="72" kind="error"></message><message line="73" kind="error"></message>
+          <message line="74" kind="error"></message>
+ 
+          <message line="76" kind="error"></message><message line="77" kind="error"></message>
+          <message line="78" kind="error"></message><message line="79" kind="error"></message>
+          <message line="80" kind="error"></message>
+  
+          <message line="82" kind="error"></message><message line="83" kind="error"></message>
+          <message line="84" kind="error"></message><message line="85" kind="error"></message>
+          <message line="86" kind="error"></message>
+ 
+          <message line="88" kind="error"></message><message line="89" kind="error"></message>
+          <message line="90" kind="error"></message><message line="91" kind="error"></message>
+          <message line="92" kind="error"></message>
+          
+          <message line="94" kind="error"></message><message line="95" kind="error"></message>
+          <message line="96" kind="error"></message><message line="97" kind="error"></message>
+          <message line="98" kind="error"></message>
+ 
+          <message line="100" kind="error"></message><message line="101" kind="error"></message>
+          <message line="102" kind="error"></message><message line="103" kind="error"></message>
+          <message line="104" kind="error"></message>
+  
+          <message line="106" kind="error"></message><message line="107" kind="error"></message>
+          <message line="108" kind="error"></message><message line="109" kind="error"></message>
+          <message line="110" kind="error"></message>
+ 
+          <message line="112" kind="error"></message><message line="113" kind="error"></message>
+          <message line="114" kind="error"></message><message line="115" kind="error"></message>
+          <message line="116" kind="error"></message>
+          
+          <message line="118" kind="error"></message><message line="119" kind="error"></message>
+          <message line="120" kind="error"></message><message line="121" kind="error"></message>
+          <message line="122" kind="error"></message>
+  
+          <message line="124" kind="error"></message><message line="125" kind="error"></message>
+          <message line="126" kind="error"></message><message line="127" kind="error"></message>
+          <message line="128" kind="error"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="NPE in compiler when using (an unusual) declare warning against a ctor ITD" pr="59397" num="966" dir="bugs" abccomment="we do the right thing and ignore extra introduced arguments">
+        <compile files="DecwInitializationITD.java">
+        	<ajcmessage line="16" kind="warning"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="nested uses of this() inside constructors not handled properly for initialization and preinitialization pointcuts" pr="61538" num="968" dir="bugs">
+        <compile files="ConstructorMain.java"></compile>
+        <run class="ConstructorMain"></run>
+    </ajc-test>
+<ajc-test title="wrong variable binding in || pointcuts" pr="61568" num="969" dir="bugs" abccomment="we support this fine">
+        <compile files="DisjunctVarBinding.java">
+          <ajcmessage text="Ambiguous binding of type B" line="34" kind="error"></ajcmessage>
+          <ajcmessage text="Ambiguous binding of type A" line="34" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="error message for constructor-execution pcd" pr="60936" num="970" dir="bugs">
+        <compile files="InterfaceConstructor.java">
+          <message text="no interface constructor-execution join point" line="10" kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="false ambigous binding error (introduced in 1.2rc2)" pr="62073" num="971" dir="bugs" abccomment="we support ambiguous bindings">
+        <compile files="DisjunctVarBinding_2.java,DisjunctVarBinding_3.java">
+        	<ajcmessage text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        	<ajcmessage text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        </compile>
+        <compile files="DisjunctVarBinding_3.java,DisjunctVarBinding_2.java">
+        	<ajcmessage text="Ambiguous binding of type B" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        	<ajcmessage text="Ambiguous binding of type A" line="25" kind="error" file="DisjunctVarBinding_2.java"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 1" pr="62458" num="972" dir="bugs/IfPerThis" abccomment="abc supports if() inside per clauses">
+        <compile files="Testcase1.java">
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="15" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="23" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="25" kind="error"></ajcmessage>
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="27" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" pr="62458" num="973" dir="bugs/IfPerThis">
+        <compile files="Testcase2.java"></compile>
+        <run class="Testcase2"></run>
+    </ajc-test>
+<ajc-test title="An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 3" pr="62458" num="974" dir="bugs/IfPerThis" abccomment="abc supports if inside perclauses;                             the error we do produce is complaining about a                             reference to a static member of the aspect,                             which we ought to support but don't yet - AGS 6/8/04">
+        <compile files="Testcase3.java">
+        	<ajcmessage text="if() pointcut designator cannot be used directly in a per clause" line="2" kind="error"></ajcmessage>
+        </compile>
+    </ajc-test>
+<ajc-test title="Test of cast pointcuts" num="975" dir="abctests/eaj/casting">
+         <compile options="-ext,abc.eaj" files="Test.java"></compile>
+         <run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Test of global and private pointcuts" num="976" dir="abctests/eaj/global_pointcuts">
+         <compile options="-ext,abc.eaj" files="aaa/A.java,bbb/B.java"></compile>
+         <run class="aaa.A"></run>
+    </ajc-test>
+<ajc-test title="Test of private pointcuts" num="977" dir="abctests/eaj/local_vars">
+         <compile options="-ext,abc.eaj" files="Fibonacci.java,Observer.java"></compile>
+         <run class="Fibonacci"></run>
+    </ajc-test>
+<ajc-test title="cflowbelow in abstract aspects" num="978" dir="abctests/bugs">
+          <compile files="AbstractPrec1.java"></compile>
+          <run class="AbstractPrec1"></run>
+    </ajc-test>
+<ajc-test title="binding of variables inside || pointcuts" num="980" dir="abctests/bugs">
+      <compile files="BindProblem.java"></compile>
+      <run class="BindProblem"></run>
+    </ajc-test>
+<ajc-test title="needing declare parents to resolve inner class reference" num="982" dir="abctests/bugs">
+       <compile files="DeclareParentsInner.java"></compile>
+    </ajc-test>
+<ajc-test title="declare parents on binary classes needs to modify constructor calls 1" num="983" dir="abctests/bugs/declareparentsbinary">
+       <compile files="BinaryClasses.jar,Aspect.java"></compile>
+       <run class="BinaryClasses"></run>
+    </ajc-test>
+<ajc-test title="declare parents on binary classes needs to modify constructor calls 2" num="984" dir="abctests/bugs/declareparentsbinary">
+       <compile files="BinaryClasses2.jar,Aspect.java">
+           
+           <message line="24" kind="error" file="BinaryClasses2.java"></message>
+       </compile>
+    </ajc-test>
+<ajc-test title="declare parents referring to an otherwise unmentioned class" num="985" dir="abctests/bugs">
+        <compile files="DeclareParentsRef.java"></compile>
+    </ajc-test>
 <ajc-test title="Matching int[].clone()" num="986" dir="abctests/bugs" abccomment="abc fails to parse 'call(* int[].clone())', ajc fails to advise it.         Both work fine with 'call(* Object.clone())'.">
 	<compile files="IntArray.java"></compile>
 	<run class="IntArray"></run>
+    </ajc-test>
+<ajc-test title="method intertype onto inner class" num="987" dir="abctests/bugs" abccomment="abc fails in generation of accessors; ajc fails                     at runtime">
+	<compile files="QualThis.java"></compile>
+	<run class="QualThis"></run>
+    </ajc-test>
+<ajc-test title="separate compilation and references to compile time constants" num="988" dir="abctests/bugs">
+        <compile files="ConstantInit.java"></compile>
+        <compile includeClassesDir="true" files="ConstantUse.java"></compile>
+        <run class="ConstantUse"></run>
+    </ajc-test>
+<ajc-test title="lifting if out of cflow, with correct parameters" num="989" dir="abctests/bugs">
+        <compile files="CflowIf.java"></compile>
+        <run class="CflowIf"></run>
+    </ajc-test>
+<ajc-test title="lifting if out of cflow, with correct parameters 2" num="990" dir="abctests/bugs">
+	<compile files="CflowIf2.java"></compile>
+	<run class="CflowIf2"></run>
     </ajc-test>
 <ajc-test title="cast pointcut can interact badly with jimple type assignment" num="992" dir="abctests/bugs">
        <compile options="-ext,abc.eaj" files="cast.jar,CastAspect.java"></compile>
        <run class="Cast"></run>
     </ajc-test>
+<ajc-test title="Try all advice types on the throw joinpoint" num="993" dir="abctests/eaj/throw_pointcut">
+        <compile options="-ext,abc.eaj" files="Throw.java">
+            <message line="18" kind="warning"></message>
+        </compile>
+        <run class="Throw"></run>
+    </ajc-test>
+<ajc-test title="&amp;&amp; and || interact correctly with binding" num="994" dir="abctests/bugs">
+       <compile files="AndOrBind.java"></compile>
+       <run class="AndOrBind"></run>
+    </ajc-test>
+<ajc-test title="declare parents causes interface to implement itself" num="998" dir="abctests/bugs">
+	<compile files="foo2/Foo.java"></compile>
+    </ajc-test>
+<ajc-test title="declare parents/protected access/inner classes" num="999" dir="abctests/bugs/declareparentsprotectedaccessinnerclasses">
+	<compile files="A.java,bar/C.java"></compile>
+    </ajc-test>
+<ajc-test title="resolving and declared parents" num="1000" dir="abctests/bugs/resolvingdeclareparents">
+	<compile files="B.java"></compile>
+	<compile files="A.java" classpath="."></compile>
+    </ajc-test>
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
+    </ajc-test>
+<ajc-test title="double declare parents" num="1002" dir="abctests/bugs/doubledeclareparents">
+         <compile files="A.java"></compile>
+    </ajc-test>
+<ajc-test title="interaction of around and after returning at execution shadow" num="1003" dir="abctests/bugs">
+         <compile files="AroundAR.java"></compile>
+         <run class="AroundAR"></run>
+    </ajc-test>
+<ajc-test title="around with initialization" num="1004" dir="abctests/around/initialization">
+         <compile files="Foo.java"></compile>
+         <run class="Foo"></run>
+    </ajc-test>
+<ajc-test title="around with alternative binding, changed proceed" num="1005" dir="abctests/around/alternative">
+         <compile files="Foo.java"></compile>
+         <run class="Foo"></run>
+    </ajc-test>
+<ajc-test title="around with circular adviceexecution advice" num="1006" dir="abctests/around/adviceexecution">
+         <compile files="Foo.java">
+                  <message line="10" kind="warning"></message>
+         </compile>
+         <run class="Foo"></run>
+    </ajc-test>
+<ajc-test title="make sure we get valid jimple for perthis/pertarget bind methods" num="1007" dir="abctests/bugs">
+         <compile options="-debug,doValidate" files="PerTarget.java"></compile>
+         <run class="PerTarget"></run>
+    </ajc-test>
+<ajc-test title="precedence of percflowsetups" num="1008" dir="abctests/bugs/percflowinterfaces">
+         <compile files="F.java"></compile>
+    </ajc-test>
+<ajc-test title="correct interaction of advice and constructor inlining" num="1009" dir="abctests/bugs">
+         <compile files="InlinedCons.java"></compile>
+         <run class="InlinedCons"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 1" num="1010" dir="abctests/bugs">
+         <compile files="DollarMethod.java"></compile>
+         <run class="DollarMethod"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 2" num="1011" dir="abctests/bugs">
+         <compile files="DollarMethod2.java"></compile>
+         <run class="DollarMethod2"></run>
+    </ajc-test>
+<ajc-test title="correct handling of methods in source with $ in the name 3" num="1012" dir="abctests/bugs">
+         <compile files="Dollar$Method3.java"></compile>
+         <run class="Dollar$Method3"></run>
+    </ajc-test>
+<ajc-test title="circular pointcuts" num="1013" dir="abctests/bugs">
+         <compile files="TestAspect.java">
+            <message line="11" kind="error"></message>
+            <message line="12" kind="error"></message>
+         </compile>
+    </ajc-test>
+<ajc-test title="interaction of named pointcuts and nested cflow" num="1014" dir="abctests/bugs">
+         <compile files="CflowInliningDepth.java"></compile>
+         <run class="CflowInliningDepth"></run>
+    </ajc-test>
+<ajc-test title="correct topological sorting of precedence" num="1015" dir="abctests/bugs">
+         <compile files="PrecedenceSort.java"></compile>
+    </ajc-test>
+<ajc-test title="checks for declare parents on binary classes" num="1016" dir="abctests/bugs">
+         <compile files="declareparentsbinary/DP.jar,DeclareParentsBinaryAspect.java">
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+            <message kind="error"></message>
+         </compile>
+    </ajc-test>
+<ajc-test title="around weaver incorrectly unboxing double literals in float context" num="1017" dir="abctests/bugs">
+        <compile files="AroundUnboxing.java"></compile>
+        <run class="AroundUnboxing"></run>
+    </ajc-test>
+<ajc-test title="internal around weaver error when trying to capture proceed() into a closure" num="1018" dir="abctests/bugs">
+        <compile files="ExtractedProceed.java">
+         <message kind="warning"></message>
+          <message kind="warning"></message>
+        </compile>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic tracematch" num="1019" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Basic.java"></compile>
+        <run class="Basic"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Plus and Star" num="1020" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PlusStar.java"></compile>
+        <run class="PlusStar"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Alternation" num="1021" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Alternation.java"></compile>
+	<run class="Alternation"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic variable bindings" num="1022" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Variables.java"></compile>
+	<run class="Variables"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 1" num="1023" dir="abctests/tracematches/failsafe">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 2" num="1024" dir="abctests/tracematches/failsafe3">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Failsafe enumerations: tracematch version 3" num="1025" dir="abctests/tracematches/failsafe4">
+        <compile options="-ext,abc.tm" files="leaktest/LeakTest.java,tracematches/FailSafeEnum.java"></compile>
+	<run class="leaktest.LeakTest"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: NoSuchMethodError (shouldn't occur..)" num="1026" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="Test.java"></compile>
+	<run class="Test"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Negative bindings should be checked correctly..." num="1027" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="NegBindings.java"></compile>
+	<run class="NegBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: states where x may be bound or unbound" num="1028" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MoreBindings.java"></compile>
+        <run class="MoreBindings"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Basic around tracematch" num="1029" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="BasicAround.java"></compile>
+        <run class="BasicAround"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Around match with multiple bindings." num="1030" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="MultipleBindingsForAround.java"></compile>
+        <run class="MultipleBindingsForAround"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Testing the `perthread' modifier" num="1031" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PerThread.java"></compile>
+        <run class="PerThread"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Testing self-applying around TM-advice" num="1032" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
+        <run class="AdviseSelf"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Testing if pointcuts in symbols" num="1033" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="IfTest.java"></compile>
+        <run class="IfTest"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: When there is some() advice but not per-symbol" num="1034" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="NoUpdates.java"></compile>
+        <run class="NoUpdates"></run>
     </ajc-test>
  
 </suite>
