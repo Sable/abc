@@ -28,10 +28,10 @@
 $Implemented trace match extension. Run this with 'java abc.main.Main
 ;-ext abc.tm'. Trace matches are a mechanism for running advice when
 ;certain properties hold in the execution trace. The design and
-;implementation is presented in tech report abc-2005-1, available from
+;implementation is presented in our OOPSLA 2005 paper, available from
 ;our website.
 $Implemented open modules extension. Run this with 'java abc.main.Main
-;-ext abc.om'. Our implementation is an extension of Jonathan Aldritch's
+;-ext abc.om'. Our implementation is an extension of Jonathan Aldrich's
 ;work to AspectJ, but includes various novel ideas. It is described in
 ;detail in tech report abc-2005-2, available from our website.
 $Included the interprocedural analyses described in our PLDI'05 paper
@@ -39,8 +39,27 @@ $Included the interprocedural analyses described in our PLDI'05 paper
 ;Note that if you give this option, you will also have to provide the
 ;-main-class <Class> option as a starting point for the control flow
 ;analysis.
-!Made matcher more extensible.
-!Made precedence more extensible.
+$The implementation of advice precedence (which was subtly broken in previous 
+;releases) has been fixed. In MethodAdviceList, advice lists are now 
+;topologically sorted according to precedence. The implementation detects 
+;when there is nondeterminacy in the ordering. Many non-trivial AspectJ 
+;programs are ambiguous in this way, so by default the ambiguities are 
+;not reported. To turn them on, use the flag "-debug warnPrecAmbiguity=true". 
+;We may promote this to a proper flag in future releases, as it is
+;often useful in debugging AspectJ code.
+$If your extension changes the precedence order, or introduces a new
+;kind of advice (other than before/after/around), you should override
+;the getPrecedence method in abcExtension. An example can be found in
+;the tracematch extension abc.tm.
+$If you wish to restrict the matching process by adding conjuncts to
+;existing residue generation, override residueConjuncts in AbcExtension.
+;This provides a way for implementing various aspect interface features
+;via AspectJ. An example can be found in the open modules extension abc.om.
+!The signature of Pointcut.matchesAt has changed to take a MatchingContext
+;that wraps up its previous set of parameters (WeavingEnv, SootClass,
+;SootMethod,ShadowMatch). This makes it possible to write extensions 
+;where matching depends on a richer context than the standard AspectJ
+;one. An example can be found in the open modules extension abc.om.
 
 %1.0.2 1109287327
 $Updated runtime library for a more efficient implementation of cflow. 
