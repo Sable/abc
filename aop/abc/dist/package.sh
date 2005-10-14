@@ -88,8 +88,6 @@ rm -f abc-$VERSION-src.*
 tar --exclude-from ../dist/tar-excludes -czvf abc-$VERSION-bin.tar.gz $BINS
 tar --exclude-from ../dist/tar-excludes -czvf abc-$VERSION-src.tar.gz $SRCS
 
-exit
-
 rm -rf soot-dev-$DATE/
 rm -f soot-dev-$DATE.tar.gz soot-dev-$DATE.zip
 svn export /usr/local/src/soot-dev soot-dev-$DATE
@@ -184,8 +182,14 @@ mkdir ../dists/$VERSION/files/lib
 cp abc-$VERSION/lib/*.jar ../dists/$VERSION/files/lib/
 cp /usr/local/src/xact/java/xact-complete.jar \
     ../dists/$VERSION/files/lib/xact-complete-$XACT.jar
-cp /usr/local/src/soot-dev/lib/jedd-runtime-$JEDD.jar \
+cp /usr/local/src/jedd-dev/runtime/lib/jedd-runtime.jar \
     ../dists/$VERSION/files/lib/jedd-runtime-$JEDD.jar
+cp /usr/local/src/paddle-dev/lib/paddle-custom.jar \
+    ../dists/$VERSION/files/lib/paddle-$PADDLE.jar
+cp /usr/local/src/resources/JavaBDD/javabdd_$JAVABDD.jar \
+    ../dists/$VERSION/files/lib/javabdd_$JAVABDD.jar
+cp /usr/local/src/resources/javabdd_src_$JAVABDD.tar.gz \
+    ../dists/$VERSION/files/lib/javabdd_src_$JAVABDD.tar.gz
 
 mkdir ../dists/$VERSION/files/bin
 cp abc-$VERSION/bin/abc ../dists/$VERSION/files/bin
