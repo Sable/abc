@@ -8,9 +8,18 @@ abc is built on a number of existing efforts:
  - Polyglot, an extensible compiler framework for Java 
    <http://www.cs.cornell.edu/Projects/polyglot/>
  - Soot, a Java optimisation framework <http://www.sable.mcgill.ca/soot/>
+ - Jedd, a Java extension for Decision Diagrams 
+   <http://www.sable.mcgill.ca/jedd/>
+ - Paddle, a BDD-based analysis toolkit for Java
+   <http://www.sable.mcgill.ca/paddle>
+ - JavaBDD, a BDD package for Java
+   <http://javabdd.sourceforge.net/>
 
 In alphabetical order of surname, the following people have contributed
 directly to abc:
+
+Chris Allan <christopher.allan at somerville.oxford.ac.uk>
+ - Original tracematches design
 
 Pavel Avgustinov <pavel.avgustinov at magdalen.oxford.ac.uk>
  - Designed and implemented the abc test harness
