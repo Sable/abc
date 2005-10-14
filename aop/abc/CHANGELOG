@@ -25,6 +25,24 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+%1.1.0 1129322131
+$Implemented trace match extension. Run this with 'java abc.main.Main
+;-ext abc.tm'. Trace matches are a mechanism for running advice when
+;certain properties hold in the execution trace. The design and
+;implementation is presented in tech report abc-2005-1, available from
+;our website.
+$Implemented open modules extension. Run this with 'java abc.main.Main
+;-ext abc.om'. Our implementation is an extension of Jonathan Aldritch's
+;work to AspectJ, but includes various novel ideas. It is described in
+;detail in tech report abc-2005-2, available from our website.
+$Included the interprocedural analyses described in our PLDI'05 paper
+;in the main abc release. They can be run by specifying the option -O3.
+;Note that if you give this option, you will also have to provide the
+;-main-class <Class> option as a starting point for the control flow
+;analysis.
+!Made matcher more extensible.
+!Made precedence more extensible.
+
 %1.0.2 1109287327
 $Updated runtime library for a more efficient implementation of cflow. 
 ;The -abc101runtime option causes abc to generate code for the previous
