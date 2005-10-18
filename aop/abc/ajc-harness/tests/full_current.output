@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@423cc5
+InterfaceAndObject$1@371516
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@134b17d, [Ljava.lang.Object;@70c2af, TwoAnonymous$3@134b17d
+calling run: TwoAnonymous$3@70c2af, [Ljava.lang.Object;@fd81d9, TwoAnonymous$3@70c2af
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@14b7360.foo calls Outer$Inner@83c831.mi
+Outer@83c831.foo calls Outer$Inner@1cc1ec5.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@83c831.mi calls java.io.PrintStream@1cc1ec5.println
+Outer$Inner@1cc1ec5.mi calls java.io.PrintStream@1f8310d.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@14b7360.foo calls Outer$InnerRandom@15c757f.nextHook
+Outer@83c831.foo calls Outer$InnerRandom@125fd23.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@15c757f.nextHook calls Outer$InnerRandom@15c757f.next
+Outer$InnerRandom@125fd23.nextHook calls Outer$InnerRandom@125fd23.next
 Outer.foo() calls Random.nextInt(..)
-Outer@14b7360.foo calls X.nextInt
+Outer@83c831.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1c158a8.foo calls Outer$Inner@a38bd4.mi
+Outer@a38bd4.foo calls Outer$Inner@1312545.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@a38bd4.mi calls java.io.PrintStream@1312545.println
+Outer$Inner@1312545.mi calls java.io.PrintStream@185dccd.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1c158a8.foo calls Outer$InnerRandom@16349c6.nextHook
+Outer@a38bd4.foo calls Outer$InnerRandom@1809c37.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@16349c6.nextHook calls Outer$InnerRandom@16349c6.next
+Outer$InnerRandom@1809c37.nextHook calls Outer$InnerRandom@1809c37.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1c158a8.foo calls X.nextInt
+Outer@a38bd4.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$32$around$1601(AroundAll.java:199)
+	at A.inline$35$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4748,7 +4748,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1812dd7
+LibraryAspect-defined run() for C@876717
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5307,12 +5307,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@14e7dd0
-Invoking command bean:  Command@2618b3
-hello(Command@2618b3)
-Created a PerThis aspect : Testcase2@11fa042
-Invoking command bean:  Command@1526018
-hello again(Command@1526018)
+Created a PerThis aspect : Testcase2@b62d7c
+Invoking command bean:  Command@6439b1
+hello(Command@6439b1)
+Created a PerThis aspect : Testcase2@7c7fb
+Invoking command bean:  Command@da4f8d
+hello again(Command@da4f8d)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
