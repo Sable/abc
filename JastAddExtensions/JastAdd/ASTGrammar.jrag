@@ -53,8 +53,8 @@ aspect ASTGrammar {
 
   syn lazy Collection ASTDecl.components() {
     ArrayList list = new ArrayList();
-    if(hasSuperClass() && getSuperClass() instanceof ASTDecl) {
-      ASTDecl superClass = (ASTDecl)getSuperClass();
+    if(hasSuperclass() && superclass() instanceof ASTDecl) {
+      ASTDecl superClass = (ASTDecl)superclass();
       list.addAll(superClass.components());
     }
     for(int i = 0; i < getNumASTChild(); i++) {
@@ -80,7 +80,7 @@ aspect ASTGrammar {
   }
 
   rewrite ASTDecl {
-    when(!hasSuperClass())
+    when(!hasSuperclass())
     to ASTDecl {
       setSuperClassAccess(new TypeAccess("ASTNode"));
       return this;

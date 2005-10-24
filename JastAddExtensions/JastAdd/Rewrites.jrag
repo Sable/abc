@@ -144,8 +144,8 @@ aspect Rewrite {
   }
 
   syn lazy boolean TypeDecl.mayHaveRewriteRule() = false;
-  eq ClassDecl.mayHaveRewriteRule() = hasSuperClass() ? getSuperClass().mayHaveRewriteRule() : false;
-  eq ASTDecl.mayHaveRewriteRule() = !rewrites().isEmpty() || getSuperClass().mayHaveRewriteRule();
+  eq ClassDecl.mayHaveRewriteRule() = hasSuperclass() ? superclass().mayHaveRewriteRule() : false;
+  eq ASTDecl.mayHaveRewriteRule() = !rewrites().isEmpty() || superclass().mayHaveRewriteRule();
 
   private void ASTDecl.addMayHaveRewrite() {
     addBodyDecl(

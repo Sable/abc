@@ -753,8 +753,8 @@ aspect GenerateSynCode {
         TypeDecl searchType = typeDecl;
         while(!eqInSuperClass && searchType != null && searchType instanceof ASTDecl) {
           ASTDecl astDecl = (ASTDecl)searchType;
-          if(astDecl.hasSuperClass())
-            searchType = astDecl.getSuperClass();
+          if(astDecl.hasSuperclass())
+            searchType = astDecl.superclass();
           if(map.containsKey(searchType) && !((Collection)map.get(searchType)).isEmpty())
             eqInSuperClass = true;
         }

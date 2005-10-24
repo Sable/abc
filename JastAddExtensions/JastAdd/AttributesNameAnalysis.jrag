@@ -133,8 +133,8 @@ aspect JastAdd {
       }
       if(typeDecl instanceof ClassDecl) {
         ClassDecl classDecl = (ClassDecl)typeDecl;
-        if(classDecl.hasSuperClass())
-          typeDecl = classDecl.getSuperClass();
+        if(classDecl.hasSuperclass())
+          typeDecl = classDecl.superclass();
         else
           typeDecl = null;
       }
