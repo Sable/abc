@@ -29,6 +29,8 @@ import polyglot.util.*;
 import abc.aspectj.ast.*;
 
 /**
+ * 
+ * Factory for om AST nodes.
  * @author Neil Ongkingco
  *
  */

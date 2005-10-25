@@ -35,6 +35,7 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * Represents a module member in the AST.
  * @author Neil Ongkingco
  *
  */

@@ -42,10 +42,11 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * An abstract signature member. Extended by exposeDecl and advertiseDecl
  * @author Neil Ongkingco
  *
  */
-public class SigMember_c extends Node_c implements MakesAspectMethods{
+public abstract class SigMember_c extends Node_c implements MakesAspectMethods{
     protected abc.aspectj.ast.Pointcut pc;
     protected boolean isPrivate = false;
     ClassnamePatternExpr toClause;

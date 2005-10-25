@@ -43,6 +43,7 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * Represents an expose signature member.
  * @author Neil Ongkingco 
  *
  */

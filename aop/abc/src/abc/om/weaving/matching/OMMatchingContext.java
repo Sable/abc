@@ -27,8 +27,9 @@ import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.WeavingEnv;
 
 /**
+ * Parameter used by Pointcut.matchesAt.
  * @author Neil Ongkingco
- *
+ * 
  */
 public class OMMatchingContext extends MatchingContext {
     protected Aspect currAspect;

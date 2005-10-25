@@ -35,6 +35,8 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * Represents the entire module declarations. Contains the module
+ * name and the module body.
  * @author Neil Ongkingco
  *  
  */

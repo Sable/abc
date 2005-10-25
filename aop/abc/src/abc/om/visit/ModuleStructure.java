@@ -80,6 +80,7 @@ import abc.weaving.residues.Residue;
 import abc.weaving.weaver.Weaver;
 
 /**
+ * Internal representation of the entire module specification.
  * @author Neil Ongkingco
  *  
  */

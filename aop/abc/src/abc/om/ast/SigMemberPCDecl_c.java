@@ -41,6 +41,9 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * A pointcut signature member (only here to support the version of the 
+ * code found in the MSc dissertation. Unused with in the newer (advertise/expose)
+ * syntax.)
  * @author Neil Ongkingco 
  *
  */

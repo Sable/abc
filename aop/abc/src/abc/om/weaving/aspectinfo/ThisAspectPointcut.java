@@ -37,7 +37,7 @@ import abc.weaving.residues.Residue;
 
 /**
  * @author Neil Ongkingco
- *
+ * Internal representation of the thisAspect pointcut.
  */
 public class ThisAspectPointcut extends Pointcut {
 

@@ -41,6 +41,7 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * Represents an advertise signature member.
  * @author Neil Ongkingco
  *
  */

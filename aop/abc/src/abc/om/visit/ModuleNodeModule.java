@@ -51,6 +51,7 @@ import abc.weaving.aspectinfo.Pointcut;
 import abc.weaving.aspectinfo.Within;
 
 /**
+ * Internal representation of modules.
  * @author Neil Ongkingco
  *
  */

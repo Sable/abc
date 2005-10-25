@@ -34,6 +34,7 @@ import abc.aspectj.visit.PCNode;
 import abc.aspectj.visit.PCStructure;
 
 /**
+ * Internal representation of a member aspect.
  * @author Neil Ongkingco
  *
  */

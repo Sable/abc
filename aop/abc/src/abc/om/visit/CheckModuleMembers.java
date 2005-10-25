@@ -35,8 +35,9 @@ import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
 
 /**
+ * Checks if the module members are in the hierarchy. Also adds them to
+ * the internal representation (ModuleStructure)
  * @author Neil Ongkingco
- *
  */
 public class CheckModuleMembers extends ContextVisitor {
     private ExtensionInfo ext;

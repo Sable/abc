@@ -37,8 +37,9 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * Represents a class member in the AST.
  * @author Neil Ongkingco
- *  
+ * 
  */
 public class ModMemberClass_c extends Node_c implements ModMemberClass {
 

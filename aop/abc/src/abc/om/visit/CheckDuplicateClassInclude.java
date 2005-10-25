@@ -42,8 +42,8 @@ import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
 
 /**
+ * Checks if a class has been included in more than one module.
  * @author Neil Ongkingco
- *
  */
 public class CheckDuplicateClassInclude extends ContextVisitor {
     private ExtensionInfo ext;

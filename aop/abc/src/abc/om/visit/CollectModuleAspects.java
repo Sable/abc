@@ -39,8 +39,8 @@ import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
 
 /**
+ * Attaches the dummy aspect to a module.
  * @author Neil Ongkingco
- *
  */
 public class CollectModuleAspects extends ContextVisitor {
     ExtensionInfo ext = null;

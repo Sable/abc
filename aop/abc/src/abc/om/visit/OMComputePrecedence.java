@@ -35,6 +35,9 @@ import abc.om.AbcExtension;
 import abc.om.ExtensionInfo;
 
 /**
+ * Modifies the aspect precedence relation according to the
+ * aspect order specified in the module definitions.
+ * 
  * @author Neil Ongkingco
  *
  */

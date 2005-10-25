@@ -41,7 +41,8 @@ import abc.om.AbcExtension;
 
 /**
  * @author Neil Ongkingco
- * Dummy aspect declaration used by all modules. Contains a list of all the modules.
+ * Dummy aspect declaration used by modules. 
+ * List contains the module the dummy module represents.
  */
 public class DummyAspectDecl_c extends AspectDecl_c {
     List /*ModuleDecl*/ modules;

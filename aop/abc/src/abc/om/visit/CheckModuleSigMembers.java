@@ -35,8 +35,8 @@ import polyglot.visit.ContextVisitor;
 import polyglot.visit.NodeVisitor;
 
 /**
+ *  Checks the signature members of the module. Comes after checkmembers.
  * @author Neil Ongkingco
- *  Checks the signature members of the module. Comes after checkmembers, as
  */
 public class CheckModuleSigMembers extends ContextVisitor {
     

@@ -26,6 +26,7 @@ package abc.om.visit;
 import abc.aspectj.ast.ClassnamePatternExpr;
 
 /**
+ * Internal representation of class members.
  * @author Neil Ongkingco
  *
  */

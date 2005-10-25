@@ -41,6 +41,8 @@ import polyglot.visit.NodeVisitor;
 import polyglot.visit.PrettyPrinter;
 
 /**
+ * Represents the body of the module. Contains class, aspect and signature
+ * members
  * @author Neil Ongkingco
  *  
  */

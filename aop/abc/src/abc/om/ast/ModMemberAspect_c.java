@@ -42,7 +42,7 @@ import polyglot.visit.PrettyPrinter;
 
 /**
  * @author Neil Ongkingco
- *  
+ * Represents an aspect member in the AST.
  */
 public class ModMemberAspect_c extends Node_c implements ModMemberAspect,
         ContainsNamePattern {
