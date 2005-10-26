@@ -153,7 +153,7 @@
 
 <suite>
 	<!-- start openmodTests.xml (generated comment, please don't delete) -->
-    <ajc-test num="om1" dir="om/simple"
+    <ajc-test num="1101" dir="om/simple"
       title="Simple module compile"
       keywords="from-base">
         <compile files="ModuleTest.java,
@@ -167,7 +167,7 @@
         options="-ext,abc.om"/>
     </ajc-test>
 
-    <ajc-test num="om2" dir="om/duplicatemodule"
+    <ajc-test num="1102" dir="om/duplicatemodule"
       title="Duplicate module name"
       keywords="from-java,purejava">
         <compile files="DuplicateModule1.java,
@@ -182,7 +182,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test num="om3" dir="om/nonexistentaspect"
+    <ajc-test num="1103" dir="om/nonexistentaspect"
       title="Non-existent aspect"
       keywords="from-java,purejava">
         <compile files="NonExistentAspect.java,
@@ -196,7 +196,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test num="om4" dir="om/nonexistentmodule"
+    <ajc-test num="1104" dir="om/nonexistentmodule"
       title="Non-existent module"
       keywords="from-java,purejava">
         <compile files="NonExistentModule.java,
@@ -210,7 +210,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test num="om5" dir="om/duplicatemoduleinclude"
+    <ajc-test num="1105" dir="om/duplicatemoduleinclude"
       title="Duplicate module include"
       keywords="from-java,purejava">
         <compile files="DuplicateModuleInclude.java,
@@ -226,7 +226,7 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="om6" dir="om/duplicateaspectinclude"
+    <ajc-test num="1106" dir="om/duplicateaspectinclude"
       title="Duplicate aspect include"
       keywords="from-java,purejava">
         <compile files="DuplicateAspectInclude1.java,
@@ -241,7 +241,7 @@
         </compile>
     </ajc-test>
     
-    <ajc-test num="om7" dir="om/circularmoduleinclude"
+    <ajc-test num="1107" dir="om/circularmoduleinclude"
       title="Circular module include"
       abccomment="Errors point to the module name, and not the offending include"
       keywords="from-java,purejava">
@@ -260,7 +260,7 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="om8" dir="om/duplicateclassinclude"
+    <ajc-test num="1108" dir="om/duplicateclassinclude"
       title="Class included in multiple modules"
       keywords="from-java,purejava">
         <compile files="DuplicateClassInclude1.java,
@@ -275,7 +275,7 @@
         </compile>
     </ajc-test>
 
-    <ajc-test num="om9" dir="om/matchtest"
+    <ajc-test num="1109" dir="om/matchtest"
       title="Basic matching test"
       keywords="from-java,purejava">
         <compile files="Module1.java,
@@ -295,7 +295,7 @@
         <run class="MatchTestMain"/>
     </ajc-test>
 
-    <ajc-test num="om10" dir="om/extcalltest"
+    <ajc-test num="1110" dir="om/extcalltest"
       title="External call only test"
       keywords="from-java,purejava">
         <compile files="FibMod.java,
@@ -310,7 +310,7 @@
         <run class="ExtCallTestMain"/>
     </ajc-test>
 
-    <ajc-test num="om11" dir="om/prectest"
+    <ajc-test num="1111" dir="om/prectest"
       title="Fib (Aldrich) precedence test"
       keywords="from-java,purejava">
         <compile files="Module1.java,
@@ -326,7 +326,7 @@
         <run class="PrecTestMain"/>
     </ajc-test>
     
-    <ajc-test num="om12" dir="om/prectest"
+    <ajc-test num="1112" dir="om/prectest"
       title="Fib (Aldrich) reverse precedence test"
       keywords="from-java,purejava">
         <compile files="Module2.java,
@@ -342,7 +342,7 @@
         <run class="PrecTestMain2"/>
     </ajc-test>
 
-    <ajc-test num="om13" dir="om/emptysigtest"
+    <ajc-test num="1113" dir="om/emptysigtest"
       title="Empty signature test"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -355,7 +355,7 @@
         <run class="EmptySigTestMain"/>
     </ajc-test>
     
-    <ajc-test num="om14" dir="om/inheritsigtest"
+    <ajc-test num="1114" dir="om/inheritsigtest"
       title="Signature inheritance test"
       keywords="from-java,purejava">
         <compile files="ModuleA.java,
@@ -375,7 +375,7 @@
         <run class="InheritSigTest"/>
     </ajc-test>
 
-    <ajc-test num="om15" dir="om/cflowsigtest"
+    <ajc-test num="1115" dir="om/cflowsigtest"
       title="CFlow signature test"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -387,7 +387,7 @@
         <run class="CflowSigTestMain"/>
     </ajc-test>
 
-    <ajc-test num="om16" dir="om/argstest"
+    <ajc-test num="1116" dir="om/argstest"
       title="Args matching test"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -400,7 +400,7 @@
         <run class="ArgsTestMain"/>
     </ajc-test>
     
-    <ajc-test num="om17" dir="om/emptymoduletest"
+    <ajc-test num="1117" dir="om/emptymoduletest"
       title="Empty module test"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -412,7 +412,7 @@
         <run class="EmptyModuleTestMain"/>
     </ajc-test>
 
-    <ajc-test num="om18" dir="om/privatesigtest"
+    <ajc-test num="1118" dir="om/privatesigtest"
       title="Private signature test"
       keywords="from-java,purejava">
         <compile files="ModuleA.java,
@@ -433,7 +433,7 @@
         <run class="PrivateSigTest"/>
     </ajc-test>
 
-    <ajc-test num="om19" dir="om/constraintest"
+    <ajc-test num="1119" dir="om/constraintest"
       title="Constrained module inclusion test"
       keywords="from-java,purejava">
         <compile files="ModuleA.java,
@@ -461,7 +461,7 @@
         <run class="ConstrainTestMain"/>
     </ajc-test>
 
-    <ajc-test num="om20" dir="om/inheritprectest"
+    <ajc-test num="1120" dir="om/inheritprectest"
       title="Precedence inheritance test"
       keywords="from-java,purejava">
         <compile files="ModuleA.java,
@@ -477,7 +477,7 @@
         <run class="InheritPrecTestMain"/>
     </ajc-test>
 
-    <ajc-test num="om21" dir="om/multimodtest"
+    <ajc-test num="1121" dir="om/multimodtest"
       title="Multiple modules in a single file"
       keywords="from-java,purejava">
         <compile files="Modules.java,
@@ -495,7 +495,7 @@
         <run class="MultiModTest"/>
     </ajc-test>
 
-    <ajc-test num="om22" dir="om/iftest"
+    <ajc-test num="1122" dir="om/iftest"
       title="If pointcut signatures"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -507,7 +507,7 @@
         <run class="IfTest"/>
     </ajc-test>
 
-    <ajc-test num="om23" dir="om/emptysiginctest"
+    <ajc-test num="1123" dir="om/emptysiginctest"
       title="Inclusion with empty signatures"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -527,7 +527,7 @@
         <run class="EmptySigIncTestMain"/>
     </ajc-test>
     
-    <ajc-test num="om24" dir="om/packagetest"
+    <ajc-test num="1124" dir="om/packagetest"
       title="Aspects in packages"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -542,7 +542,7 @@
         <run class="PackageTestMain"/>
     </ajc-test>
     
-    <ajc-test num="om25" dir="om/roottest"
+    <ajc-test num="1125" dir="om/roottest"
       title="Root module test"
       keywords="from-java,purejava">
         <compile files="Module.java,
@@ -554,7 +554,7 @@
         </compile>
     </ajc-test>   
     
-    <ajc-test num="om26" dir="om/totest"
+    <ajc-test num="1126" dir="om/totest"
       title="To test"
       keywords="from-java,purejava">
         <compile files="Module.java,
