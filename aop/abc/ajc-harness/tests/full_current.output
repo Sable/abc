@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@e33d40, [Ljava.lang.Object;@ca4bc5, TwoAnonymous$3@e33d40
+calling run: TwoAnonymous$3@134b17d, [Ljava.lang.Object;@70c2af, TwoAnonymous$3@134b17d
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -4157,8 +4157,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@1ec80ce
-o: Bar@1ec80ce, i: 10
+o: Bar@6a7034
+o: Bar@6a7034, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
