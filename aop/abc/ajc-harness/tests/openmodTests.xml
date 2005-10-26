@@ -152,6 +152,7 @@
   -->
 
 <suite>
+	<!-- start openmodTests.xml (generated comment, please don't delete) -->
     <ajc-test num="om1" dir="om/simple"
       title="Simple module compile"
       keywords="from-base">
@@ -567,4 +568,6 @@
         </compile>
         <run class="ToTestMain"/>
     </ajc-test>       
+	<!-- end openmodTests.xml (generated comment, please don't delete) -->
+    
 </suite>
