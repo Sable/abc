@@ -5162,6 +5162,6 @@
 <ajc-test title="Tracematches: When there is some() advice but not per-symbol" num="1034" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="NoUpdates.java"></compile>
         <run class="NoUpdates"></run>
-    </ajc-test>
+	</ajc-test>
  
 </suite>
