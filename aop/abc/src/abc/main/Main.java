@@ -132,6 +132,7 @@ public class Main {
         soot.G.reset(); // reset all of Soot's global info
         // TODO: add a call here to the reset method for any class that
         //  needs static information reset for repeated calls to main
+        abc.main.Debug.reset();
         abc.main.AbcTimer.reset();
         abc.main.Options.reset();
         abc.soot.util.Restructure.reset();

@@ -27,6 +27,10 @@ package abc.main;
 public class Debug {
     public static Debug v;
     static {
+    	loadDebug();
+    }
+    
+    private static void loadDebug() {
         try {
             v=(Debug)
                 (ClassLoader.getSystemClassLoader()
@@ -39,8 +43,13 @@ public class Debug {
             v=new Debug();
         }
     }
+    
     public static Debug v() {
         return v;
+    }
+    
+    public static void reset() {
+    	loadDebug();
     }
 
 
