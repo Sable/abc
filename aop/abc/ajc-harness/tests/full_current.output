@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@eac235
+creating: A@1f615cb
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@371516
+InterfaceAndObject$1@1223cc9
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@ca4bc5, [Ljava.lang.Object;@134b17d, TwoAnonymous$3@ca4bc5
+calling run: TwoAnonymous$3@12717d9, [Ljava.lang.Object;@18ee8c6, TwoAnonymous$3@12717d9
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@14b7360.foo calls Outer$Inner@83c831.mi
+Outer@d8f356.foo calls Outer$Inner@14fba84.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@83c831.mi calls java.io.PrintStream@1cc1ec5.println
+Outer$Inner@14fba84.mi calls java.io.PrintStream@15e4c7a.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@14b7360.foo calls Outer$InnerRandom@15c757f.nextHook
+Outer@d8f356.foo calls Outer$InnerRandom@cf474.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@15c757f.nextHook calls Outer$InnerRandom@15c757f.next
+Outer$InnerRandom@cf474.nextHook calls Outer$InnerRandom@cf474.next
 Outer.foo() calls Random.nextInt(..)
-Outer@14b7360.foo calls X.nextInt
+Outer@d8f356.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1c158a8.foo calls Outer$Inner@a38bd4.mi
+Outer@1f3581f.foo calls Outer$Inner@11e6da9.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@a38bd4.mi calls java.io.PrintStream@1312545.println
+Outer$Inner@11e6da9.mi calls java.io.PrintStream@b19198.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1c158a8.foo calls Outer$InnerRandom@16349c6.nextHook
+Outer@1f3581f.foo calls Outer$InnerRandom@760689.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@16349c6.nextHook calls Outer$InnerRandom@16349c6.next
+Outer$InnerRandom@760689.nextHook calls Outer$InnerRandom@760689.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@1c158a8.foo calls X.nextInt
+Outer@1f3581f.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$30$around$1601(AroundAll.java:199)
+	at A.inline$29$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -3665,8 +3665,8 @@ jas.jasError: Unknown directive or badly formed number.
 	at soot.PackManager.writeClass(PackManager.java:676)
 	at soot.PackManager.writeOutput(PackManager.java:390)
 	at soot.PackManager.writeOutput(PackManager.java:342)
-	at abc.main.Main.output(Main.java:1029)
-	at abc.main.Main.run(Main.java:571)
+	at abc.main.Main.output(Main.java:1030)
+	at abc.main.Main.run(Main.java:572)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -4074,7 +4074,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1f710c4.x:=-3
+test.Test3@15c2f86.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4157,8 +4157,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@6a7034
-o: Bar@6a7034, i: 10
+o: Bar@14c7c6c
+o: Bar@14c7c6c, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4311,11 +4311,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
 	at aspects.Trace.inline$6$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4351,11 +4351,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
 	at aspects.Trace.inline$18$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4573,14 +4573,14 @@ Running test 812: harness/CLE: no dir specified for sourceroots
 Commandline: abc -d harness -warn-unused-advice:off -sourceroots harness/ErrorTest.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:628)
+	at abc.main.Main.run(Main.java:629)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
 Caused by: java.lang.IllegalArgumentException: Sourceroot harness/ErrorTest.java is not a directory
-	at abc.main.Main.findSourcesInDir(Main.java:715)
-	at abc.main.Main.loadSourceRoots(Main.java:732)
-	at abc.main.Main.run(Main.java:501)
+	at abc.main.Main.findSourcesInDir(Main.java:716)
+	at abc.main.Main.loadSourceRoots(Main.java:733)
+	at abc.main.Main.run(Main.java:502)
 	... 3 more
 FAIL: Test 812: "harness/CLE: no dir specified for sourceroots" failed.
 
@@ -4748,7 +4748,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1812dd7
+LibraryAspect-defined run() for C@132c93c
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5074,7 +5074,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@107dc72
+? Util.read() obj=Test@1959346
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5094,7 +5094,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@1cd9b84
+? Util.read() obj=ClinitTest@1122eaa
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5104,7 +5104,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1ed183b
+? Util.read() obj=SuidTest@52d9a1
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5307,12 +5307,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@b62d7c
-Invoking command bean:  Command@6439b1
-hello(Command@6439b1)
-Created a PerThis aspect : Testcase2@7c7fb
-Invoking command bean:  Command@da4f8d
-hello again(Command@da4f8d)
+Created a PerThis aspect : Testcase2@109e422
+Invoking command bean:  Command@60af2f
+hello(Command@60af2f)
+Created a PerThis aspect : Testcase2@18d3e08
+Invoking command bean:  Command@1e3b768
+hello again(Command@1e3b768)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -5487,7 +5487,7 @@ Running test 1001: abctests/bugs/resolving anonymous classes inside classes with
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ExtraAnon.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: unhandled exception during compilation
 polyglot.util.InternalCompilerError: unhandled exception during compilation
-	at abc.main.Main.run(Main.java:628)
+	at abc.main.Main.run(Main.java:629)
 	at abc.testing.TestCase.runTest(TestCase.java:288)
 	at abc.testing.Main.doCase(Main.java:282)
 	at abc.testing.Main.main(Main.java:116)
@@ -5497,8 +5497,8 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at soot.SootResolver.processResolveWorklist(SootResolver.java:104)
 	at soot.SootResolver.resolveClass(SootResolver.java:89)
 	at soot.Scene.loadClass(Scene.java:329)
-	at abc.main.Main.compile(Main.java:812)
-	at abc.main.Main.run(Main.java:507)
+	at abc.main.Main.compile(Main.java:813)
+	at abc.main.Main.run(Main.java:508)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
@@ -5680,5 +5680,582 @@ PASS: Test 1033: "abctests/tracematches/Tracematches: Testing if pointcuts in sy
 Running test 1034: abctests/tracematches/Tracematches: When there is some() advice but not per-symbol
 Commandline: abc -d abctests/tracematches -warn-unused-advice:off -ext abc.tm abctests/tracematches/NoUpdates.java 
 PASS: Test 1034: "abctests/tracematches/Tracematches: When there is some() advice but not per-symbol" passed.
+
+
+Running test 1101: om/simple/Simple module compile
+Commandline: abc -d om/simple -warn-unused-advice:off -ext abc.om om/simple/ModuleTest.java om/simple/ModuleTest2.java om/simple/ModuleTest3.java om/simple/A.java om/simple/Another.java om/simple/AnotherChild.java om/simple/AspectA.aj om/simple/AspectB.aj 
+PASS: Test 1101: "om/simple/Simple module compile" passed.
+
+
+Running test 1102: om/duplicatemodule/Duplicate module name
+Commandline: abc -d om/duplicatemodule -warn-unused-advice:off -ext abc.om om/duplicatemodule/DuplicateModule1.java om/duplicatemodule/DuplicateModule2.java om/duplicatemodule/A.java om/duplicatemodule/Another.java om/duplicatemodule/AnotherChild.java om/duplicatemodule/AspectA.aj om/duplicatemodule/AspectB.aj 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1102: "om/duplicatemodule/Duplicate module name" passed.
+
+
+Running test 1103: om/nonexistentaspect/Non-existent aspect
+Commandline: abc -d om/nonexistentaspect -warn-unused-advice:off -ext abc.om om/nonexistentaspect/NonExistentAspect.java om/nonexistentaspect/A.java om/nonexistentaspect/Another.java om/nonexistentaspect/AnotherChild.java om/nonexistentaspect/AspectA.aj om/nonexistentaspect/AspectB.aj 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1103: "om/nonexistentaspect/Non-existent aspect" passed.
+
+
+Running test 1104: om/nonexistentmodule/Non-existent module
+Commandline: abc -d om/nonexistentmodule -warn-unused-advice:off -ext abc.om om/nonexistentmodule/NonExistentModule.java om/nonexistentmodule/A.java om/nonexistentmodule/Another.java om/nonexistentmodule/AnotherChild.java om/nonexistentmodule/AspectA.aj om/nonexistentmodule/AspectB.aj 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1104: "om/nonexistentmodule/Non-existent module" passed.
+
+
+Running test 1105: om/duplicatemoduleinclude/Duplicate module include
+Commandline: abc -d om/duplicatemoduleinclude -warn-unused-advice:off -ext abc.om om/duplicatemoduleinclude/DuplicateModuleInclude.java om/duplicatemoduleinclude/DuplicateModuleInclude1.java om/duplicatemoduleinclude/DuplicateModuleInclude2.java om/duplicatemoduleinclude/A.java om/duplicatemoduleinclude/Another.java om/duplicatemoduleinclude/AnotherChild.java om/duplicatemoduleinclude/AspectA.aj om/duplicatemoduleinclude/AspectB.aj 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1105: "om/duplicatemoduleinclude/Duplicate module include" passed.
+
+
+Running test 1106: om/duplicateaspectinclude/Duplicate aspect include
+Commandline: abc -d om/duplicateaspectinclude -warn-unused-advice:off -ext abc.om om/duplicateaspectinclude/DuplicateAspectInclude1.java om/duplicateaspectinclude/DuplicateAspectInclude2.java om/duplicateaspectinclude/A.java om/duplicateaspectinclude/Another.java om/duplicateaspectinclude/AnotherChild.java om/duplicateaspectinclude/AspectA.aj om/duplicateaspectinclude/AspectB.aj 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1106: "om/duplicateaspectinclude/Duplicate aspect include" passed.
+
+
+Running test 1107: om/circularmoduleinclude/Circular module include
+Commandline: abc -d om/circularmoduleinclude -warn-unused-advice:off -ext abc.om om/circularmoduleinclude/Circular1.java om/circularmoduleinclude/Circular2.java om/circularmoduleinclude/Circular3.java om/circularmoduleinclude/A.java om/circularmoduleinclude/Another.java om/circularmoduleinclude/AnotherChild.java om/circularmoduleinclude/AspectA.aj om/circularmoduleinclude/AspectB.aj 
+Compilation failed with 3 errors, which were matched and verified against the expected errors.
+PASS: Test 1107: "om/circularmoduleinclude/Circular module include" passed.
+
+
+Running test 1108: om/duplicateclassinclude/Class included in multiple modules
+Commandline: abc -d om/duplicateclassinclude -warn-unused-advice:off -ext abc.om om/duplicateclassinclude/DuplicateClassInclude1.java om/duplicateclassinclude/DuplicateClassInclude2.java om/duplicateclassinclude/A.java om/duplicateclassinclude/Another.java om/duplicateclassinclude/AnotherChild.java om/duplicateclassinclude/AspectA.aj om/duplicateclassinclude/AspectB.aj 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1108: "om/duplicateclassinclude/Class included in multiple modules" passed.
+
+
+Running test 1109: om/matchtest/Basic matching test
+Commandline: abc -d om/matchtest -warn-unused-advice:off -ext abc.om om/matchtest/Module1.java om/matchtest/Module2.java om/matchtest/MatchTestA.java om/matchtest/MatchTestB.java om/matchtest/MatchTestMain.java om/matchtest/AspectA.aj om/matchtest/AspectB.aj om/matchtest/AspectC.aj 
+Compilation succeeded with 3 warnings, which were matched and verified against the expected warnings.
+Before MatchTestA.a() from AspectA
+Before MatchTestA.a() from AspectC
+Before MatchTestA.a() from AspectB
+MatchTestA.a
+Before MatchTestA.b() from AspectA
+MatchTestA.b
+Before MatchTestB.a() from AspectA
+Before MatchTestB.a() from AspectC
+Before MatchTestB.a() from AspectB
+MatchTestB.a
+Before MatchTestB.b() from AspectA
+Before MatchTestB.b() from AspectB
+MatchTestB.b
+1
+1
+1
+1
+1
+0
+1
+1
+1
+0
+1
+0
+PASS: Test 1109: "om/matchtest/Basic matching test" passed.
+
+
+Running test 1110: om/extcalltest/External call only test
+Commandline: abc -d om/extcalltest -warn-unused-advice:off -ext abc.om om/extcalltest/FibMod.java om/extcalltest/A.java om/extcalltest/ExtCallTestMain.java om/extcalltest/FibAspect.aj om/extcalltest/FibExtAspect.aj 
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+In FibExtAspect: Before fib(5)
+In FibAspect: Before fib(5)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(5)
+In FibAspect: Before fib(4)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(4)
+In FibAspect: Before fib(3)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(3)
+In FibAspect: Before fib(2)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(2)
+In FibAspect: Before fib(1)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(1)
+In FibAspect: Before fib(2)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(2)
+In FibAspect: Before fib(3)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(3)
+In FibAspect: Before fib(2)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(2)
+In FibAspect: Before fib(1)
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+fib(1)
+5
+In FibExtAspect: Before getPrevX
+In FibAspect: Before getPrevX
+In FibExtAspect: Before setPrevX
+In FibAspect: Before setPrevX
+9
+1
+10
+10
+10
+10
+PASS: Test 1110: "om/extcalltest/External call only test" passed.
+
+
+Running test 1111: om/prectest/Fib (Aldrich) precedence test
+Commandline: abc -d om/prectest -warn-unused-advice:off -ext abc.om om/prectest/Module1.java om/prectest/A.java om/prectest/PrecTestMain.java om/prectest/Fib.aj om/prectest/ACache.aj om/prectest/PrecFibExtAspect.aj 
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+before int A.fib(int) in FibExtAspect
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in ACache
+around int A.fib(int)in ACache
+around int A.fib(int)in ACache
+around int A.fib(int)in ACache
+around int A.fib(int)in ACache
+around int A.fib(int)in ACache
+55
+10
+17
+1
+PASS: Test 1111: "om/prectest/Fib (Aldrich) precedence test" passed.
+
+
+Running test 1112: om/prectest/Fib (Aldrich) reverse precedence test
+Commandline: abc -d om/prectest -warn-unused-advice:off -ext abc.om om/prectest/Module2.java om/prectest/A.java om/prectest/PrecTestMain2.java om/prectest/Fib.aj om/prectest/ACache.aj om/prectest/PrecFibExtAspect.aj 
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+before int A.fib(int) in FibExtAspect
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+around int A.fib(int)in Fib
+around int A.fib(int)in ACache
+55
+109
+55
+1
+PASS: Test 1112: "om/prectest/Fib (Aldrich) reverse precedence test" passed.
+
+
+Running test 1113: om/emptysigtest/Empty signature test
+Commandline: abc -d om/emptysigtest -warn-unused-advice:off -ext abc.om om/emptysigtest/Module.java om/emptysigtest/A.java om/emptysigtest/EmptySigTestMain.java om/emptysigtest/AspectA.aj 
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
+Before void java.io.PrintStream.println(String)
+f
+Before void org.aspectj.testing.Tester.checkEqual(int, int, String)
+PASS: Test 1113: "om/emptysigtest/Empty signature test" passed.
+
+
+Running test 1114: om/inheritsigtest/Signature inheritance test
+Commandline: abc -d om/inheritsigtest -warn-unused-advice:off -ext abc.om om/inheritsigtest/ModuleA.java om/inheritsigtest/ModuleB.java om/inheritsigtest/ModuleC.java om/inheritsigtest/A.java om/inheritsigtest/B.java om/inheritsigtest/C.java om/inheritsigtest/InheritSigTest.java om/inheritsigtest/ExtAspectA.aj 
+Compilation succeeded with 4 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
+a.f1
+a.f2
+a.f3
+Before void B.f1()
+b.f1
+Before void B.f2()
+b.f2
+b.f3
+Before void C.f1()
+c.f1
+c.f2
+Before void C.f3()
+c.f3
+PASS: Test 1114: "om/inheritsigtest/Signature inheritance test" passed.
+
+
+Running test 1115: om/cflowsigtest/CFlow signature test
+Commandline: abc -d om/cflowsigtest -warn-unused-advice:off -ext abc.om om/cflowsigtest/Module.java om/cflowsigtest/A.java om/cflowsigtest/CflowSigTestMain.java om/cflowsigtest/CFlowAspect.aj 
+a
+Before void A.b()
+b
+Before void A.e()
+e
+b
+c
+d
+Before void A.e()
+e
+e
+PASS: Test 1115: "om/cflowsigtest/CFlow signature test" passed.
+
+
+Running test 1116: om/argstest/Args matching test
+Commandline: abc -d om/argstest -warn-unused-advice:off -ext abc.om om/argstest/Module.java om/argstest/A.java om/argstest/ArgsTestMain.java om/argstest/ArgsAspect.aj 
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
+before void A.f(int)
+f(int)
+f(float)
+before void A.f(A)
+f(A)
+PASS: Test 1116: "om/argstest/Args matching test" passed.
+
+
+Running test 1117: om/emptymoduletest/Empty module test
+Commandline: abc -d om/emptymoduletest -warn-unused-advice:off -ext abc.om om/emptymoduletest/Module.java om/emptymoduletest/A.java om/emptymoduletest/EmptyModuleTestMain.java om/emptymoduletest/AspectA.aj 
+Before void A.f()
+Before void java.io.PrintStream.println(String)
+f
+Before void org.aspectj.testing.Tester.checkEqual(int, int, String)
+PASS: Test 1117: "om/emptymoduletest/Empty module test" passed.
+
+
+Running test 1118: om/privatesigtest/Private signature test
+Commandline: abc -d om/privatesigtest -warn-unused-advice:off -ext abc.om om/privatesigtest/ModuleA.java om/privatesigtest/ModuleB.java om/privatesigtest/ModuleC.java om/privatesigtest/A.java om/privatesigtest/B.java om/privatesigtest/C.java om/privatesigtest/PrivateSigTest.java om/privatesigtest/ExtAspectA.aj 
+Compilation succeeded with 5 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
+a.f1
+a.f2
+a.f3
+b.f1
+Before void B.f2()
+b.f2
+b.f3
+c.f1
+Before void C.f2()
+c.f2
+Before void C.f3()
+c.f3
+PASS: Test 1118: "om/privatesigtest/Private signature test" passed.
+
+
+Running test 1119: om/constraintest/Constrained module inclusion test
+Commandline: abc -d om/constraintest -warn-unused-advice:off -ext abc.om om/constraintest/ModuleA.java om/constraintest/ModuleB.java om/constraintest/ModuleC.java om/constraintest/A.java om/constraintest/B.java om/constraintest/C.java om/constraintest/AspectA.java om/constraintest/AspectB.java om/constraintest/AspectC.java om/constraintest/ConstrainTestMain.java om/constraintest/ExtAspectA.aj 
+Compilation succeeded with 9 warnings, which were matched and verified against the expected warnings.
+AspectB
+AspectC
+AspectA
+Before void A.f1()
+a.f1
+AspectA
+a.f2
+AspectA
+a.f3
+AspectB
+AspectC
+AspectA
+Before void B.f1()
+b.f1
+AspectB
+AspectC
+AspectA
+Before void B.f2()
+b.f2
+AspectB
+AspectA
+b.f3
+AspectB
+AspectC
+AspectA
+Before void C.f1()
+c.f1
+AspectB
+AspectC
+AspectA
+Before void C.f2()
+c.f2
+AspectB
+AspectC
+AspectA
+c.f3
+PASS: Test 1119: "om/constraintest/Constrained module inclusion test" passed.
+
+
+Running test 1120: om/inheritprectest/Precedence inheritance test
+Commandline: abc -d om/inheritprectest -warn-unused-advice:off -ext abc.om om/inheritprectest/ModuleA.java om/inheritprectest/ModuleB.java om/inheritprectest/ModuleC.java om/inheritprectest/A.java om/inheritprectest/AspectA.aj om/inheritprectest/AspectB.aj om/inheritprectest/AspectC.aj om/inheritprectest/InheritPrecTestMain.java 
+AspectA
+AspectB
+AspectC
+A.f1
+PASS: Test 1120: "om/inheritprectest/Precedence inheritance test" passed.
+
+
+Running test 1121: om/multimodtest/Multiple modules in a single file
+Commandline: abc -d om/multimodtest -warn-unused-advice:off -ext abc.om om/multimodtest/Modules.java om/multimodtest/A.java om/multimodtest/B.java om/multimodtest/C.java om/multimodtest/MultiModTest.java om/multimodtest/ExtAspectA.aj 
+Compilation succeeded with 4 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
+a.f1
+a.f2
+a.f3
+Before void B.f1()
+b.f1
+Before void B.f2()
+b.f2
+b.f3
+Before void C.f1()
+c.f1
+c.f2
+Before void C.f3()
+c.f3
+PASS: Test 1121: "om/multimodtest/Multiple modules in a single file" passed.
+
+
+Running test 1122: om/iftest/If pointcut signatures
+Commandline: abc -d om/iftest -warn-unused-advice:off -ext abc.om om/iftest/Module.java om/iftest/AspectA.java om/iftest/AspectB.java om/iftest/IfTest.java 
+Test
+AspectB
+AspectA
+Test
+PASS: Test 1122: "om/iftest/If pointcut signatures" passed.
+
+
+Running test 1123: om/emptysiginctest/Inclusion with empty signatures
+Commandline: abc -d om/emptysiginctest -warn-unused-advice:off -ext abc.om om/emptysiginctest/Module.java om/emptysiginctest/AspectA.aj om/emptysiginctest/A.java om/emptysiginctest/B.java om/emptysiginctest/C.java om/emptysiginctest/EmptySigIncTestMain.java 
+Compilation succeeded with 6 warnings, which were matched and verified against the expected warnings.
+Before void A.f1()
+A.f1
+A.f2
+A.f3
+Before void B.f1()
+B.f1
+B.f2
+B.f3
+Before void C.f1()
+C.f1
+C.f2
+C.f3
+PASS: Test 1123: "om/emptysiginctest/Inclusion with empty signatures" passed.
+
+
+Running test 1124: om/packagetest/Aspects in packages
+Commandline: abc -d om/packagetest -warn-unused-advice:off -ext abc.om om/packagetest/Module.java om/packagetest/PackageTestMain.java om/packagetest/pack1/A.java om/packagetest/pack1/AspectA.java om/packagetest/pack2/A.java om/packagetest/pack2/AspectA.java 
+Compilation succeeded with 1 warnings, which were matched and verified against the expected warnings.
+pack1.AspectA
+pack1.A
+pack2.AspectA
+pack2.a
+PASS: Test 1124: "om/packagetest/Aspects in packages" passed.
+
+
+Running test 1125: om/roottest/Root module test
+Commandline: abc -d om/roottest -warn-unused-advice:off -ext abc.om om/roottest/Module.java om/roottest/RootTestMain.java om/roottest/A.java om/roottest/AspectA.java 
+Compilation failed with 1 errors, which were matched and verified against the expected errors.
+PASS: Test 1125: "om/roottest/Root module test" passed.
+
+
+Running test 1126: om/totest/To test
+Commandline: abc -d om/totest -warn-unused-advice:off -ext abc.om om/totest/Module.java om/totest/ToTestMain.java om/totest/A.java om/totest/ExtAspectA.java om/totest/ExtAspectB.java 
+Compilation succeeded with 2 warnings, which were matched and verified against the expected warnings.
+ExtAspectA void A.f1()
+ExtAspectB void A.f1()
+f1
+ExtAspectA void A.f2()
+f2
+ExtAspectA void A.f3()
+ExtAspectB void A.f3()
+f3
+ExtAspectB void A.f4()
+f4
+PASS: Test 1126: "om/totest/To test" passed.
 
 
