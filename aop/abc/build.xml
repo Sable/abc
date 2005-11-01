@@ -347,20 +347,20 @@
                 includes="aspectj_ppg.cup"/>
         </dependset>
         <dependset>
-            <srcfileset dir="src/abc/eaj/parse" includes="aspectj.ppg"/>
+            <srcfileset dir="src/abc/eaj/parse" includes="eaj.ppg"/>
             <targetfileset dir="generated/abc/eaj/parse"
                 includes="eaj_ppg.cup"/>
         </dependset>
 
     	<!--NEIL: added for om. Note: Shouldn't the include be omX.ppg? -->
         <dependset>
-            <srcfileset dir="src/abc/om/parse" includes="aspectj.ppg"/>
+            <srcfileset dir="src/abc/om/parse" includes="om.ppg"/>
             <targetfileset dir="generated/abc/om/parse"
                 includes="om_ppg.cup"/>
         </dependset>
         
         <dependset>
-            <srcfileset dir="src/abc/tm/parse" includes="aspectj.ppg"/>
+            <srcfileset dir="src/abc/tm/parse" includes="tm.ppg"/>
             <targetfileset dir="generated/abc/tm/parse"
                 includes="tm_ppg.cup"/>
         </dependset>
