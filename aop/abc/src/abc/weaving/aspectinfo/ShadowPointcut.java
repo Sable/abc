@@ -49,7 +49,7 @@ public abstract class ShadowPointcut extends Pointcut {
     /** Shadow pointcuts just need to know the ShadowMatch */
     protected abstract Residue matchesAt(ShadowMatch sm);
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
                               Hashtable typeEnv,
                               Aspect context,
 			      int cflowdepth) {

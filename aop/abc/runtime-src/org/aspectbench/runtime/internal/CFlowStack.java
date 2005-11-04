@@ -183,4 +183,8 @@ public class CFlowStack {
         return !((Stack)stack).isEmpty();
     }
 
+    public static final int depthStack(Object stack) {
+        return ((Stack)stack).size();
+    }
+
 }

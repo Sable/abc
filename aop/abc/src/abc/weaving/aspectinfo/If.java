@@ -136,7 +136,7 @@ public class If extends Pointcut {
         return ret;
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
                               Hashtable typeEnv,
                               Aspect context,
 			      int cflowdepth) {

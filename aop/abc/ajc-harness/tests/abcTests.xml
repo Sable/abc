@@ -9923,4 +9923,46 @@
     </ajc-test>       
 	<!-- end openmodTests.xml (generated comment, please don't delete) -->
 
+    <ajc-test num="1127" dir="cflowdepth"
+      title="Cflowdepth Factorial">
+        <compile files="Fact.java"
+        options="-ext,abc.eaj">
+        </compile>
+        <run class="Fact"/>
+    </ajc-test>       
+
+    <ajc-test num="1128" dir="cflowdepth"
+      title="Cflowdepth Factorial with arguments">
+        <compile files="Fact2.java"
+        options="-ext,abc.eaj">
+        </compile>
+        <run class="Fact2"/>
+    </ajc-test>       
+
+    <ajc-test num="1129" dir="cflowdepth"
+      title="Cflowbelowdepth Factorial">
+        <compile files="Fact3.java"
+        options="-ext,abc.eaj">
+        </compile>
+        <run class="Fact3"/>
+    </ajc-test>       
+
+    <ajc-test num="1130" dir="cflowdepth"
+      title="Cflowbelowdepth Factorial with arguments">
+        <compile files="Fact4.java"
+        options="-ext,abc.eaj">
+        </compile>
+        <run class="Fact4"/>
+    </ajc-test>       
+
+    <ajc-test num="1131" dir="cflowdepth"
+      title="Cflowdepth Factorial">
+        <compile files="Fact5.java"
+        options="-ext,abc.eaj">
+            <message kind="error" line="14"/>
+            <message kind="error" line="17"/>
+            <message kind="error" line="22"/>
+        </compile>
+    </ajc-test>       
+
 </suite>

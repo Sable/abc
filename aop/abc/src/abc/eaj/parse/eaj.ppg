@@ -1,5 +1,6 @@
 /* abc - The AspectBench Compiler
  * Copyright (C) 2004 Julian Tibble
+ * Copyright (C) 2005 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +44,8 @@ parser Grm extends abc.aspectj.parse.Grm {:
 terminal Token PC_CAST;
 terminal Token PC_THROW;
 terminal Token GLOBAL;
+terminal Token PC_CFLOWDEPTH;
+terminal Token PC_CFLOWBELOWDEPTH;
 
 // ------- new non-terminals -----------------------
 
@@ -76,6 +79,18 @@ extend basic_pointcut_expr ::=
         {:
             Grm.parserTrace("THROW pointcut with type_pattern_expr");
             RESULT = parser.nf.PCThrow(parser.pos(x,y), a);
+        :}
+    |
+        PC_CFLOWDEPTH:x LPAREN IDENTIFIER:i COMMA pointcut_expr:a RPAREN:y
+        {:
+            Grm.parserTrace("CFLOWDEPTH pointcut");
+            RESULT = parser.nf.PCCflowDepth(parser.pos(x,y), parser.nf.Local(parser.pos(i),i.getIdentifier()), a);
+        :}
+    |
+        PC_CFLOWBELOWDEPTH:x LPAREN IDENTIFIER:i COMMA pointcut_expr:a RPAREN:y
+        {:
+            Grm.parserTrace("CFLOWBELOWDEPTH pointcut");
+            RESULT = parser.nf.PCCflowBelowDepth(parser.pos(x,y), parser.nf.Local(parser.pos(i),i.getIdentifier()), a);
         :}
     ;
 

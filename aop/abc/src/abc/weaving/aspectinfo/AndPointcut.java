@@ -68,7 +68,7 @@ public class AndPointcut extends Pointcut {
 				    pc2.matchesAt(mc));
     }
     
-    protected Pointcut inline(Hashtable renameEnv,Hashtable typeEnv, 
+    public Pointcut inline(Hashtable renameEnv,Hashtable typeEnv, 
 			      Aspect context,int cflowdepth) {
 	Pointcut pc1=this.pc1.inline(renameEnv,typeEnv,context,cflowdepth);
 	Pointcut pc2=this.pc2.inline(renameEnv,typeEnv,context,cflowdepth);
@@ -76,7 +76,7 @@ public class AndPointcut extends Pointcut {
 	else return construct(pc1,pc2,getPosition());
     }
 
-    protected DNF dnf() {
+    public DNF dnf() {
 	DNF dnf1=pc1.dnf();
 	DNF dnf2=pc2.dnf();
 	return DNF.and(dnf1,dnf2);

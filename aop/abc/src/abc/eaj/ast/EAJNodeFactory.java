@@ -43,4 +43,7 @@ public interface EAJNodeFactory extends AJNodeFactory {
                                     Position pos,
                                     ClassnamePatternExpr aspect_pattern,
                                     Pointcut pc);
+
+    public PCCflowDepth PCCflowDepth(Position pos, Local var, Pointcut pc);
+    public PCCflowBelowDepth PCCflowBelowDepth(Position pos, Local var, Pointcut pc);
 }

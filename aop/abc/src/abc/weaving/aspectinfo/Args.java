@@ -65,7 +65,7 @@ public class Args extends DynamicValuePointcut {
         return out.toString();
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
                               Hashtable typeEnv,
                               Aspect context,
 			      int cflowdepth) {

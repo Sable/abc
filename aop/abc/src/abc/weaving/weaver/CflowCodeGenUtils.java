@@ -693,6 +693,13 @@ public class CflowCodeGenUtils {
 		 * statement representing it for analyses (cf. conditions for this stmt).
 		 */
 		public abstract ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail);
+
+		/** Generate code for a cflowdepth query.
+		 * @param cFlowLocal The local variable containing the thread-local Cflow bookkeeping class
+		 * @param result The local variable to store the result of the query into
+		 * @return The chain of statements generated for the depth query
+		 */
+		public abstract Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result);
 		
 		/** Generate code to initialise a field to contain the cflow state (in an aspect) 
 		 * @param field The field to contain the cflow state (of type getCflowType())
@@ -857,6 +864,18 @@ public class CflowCodeGenUtils {
 			
 			return new ChainStmtBox (c, get);
 		}
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			
+                    Chain c = new HashChain();
+			Stmt get = 
+				Jimple.v().newAssignStmt(
+						result,
+						Jimple.v().newInstanceFieldRef(
+								cFlowLocal,
+								util.threadCountField()));
+			c.addFirst(get);
+                        return c;
+		}
 	}
 	
 	private static class CflowCounterSingleThreadedCodeGen extends CflowCodeGen {
@@ -915,6 +934,18 @@ public class CflowCodeGenUtils {
 			c.addFirst(get);
 			
 			return new ChainStmtBox(c, get);
+		}
+
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+                    Chain c = new HashChain();
+			Stmt get =
+				Jimple.v().newAssignStmt(
+						result,
+						Jimple.v().newInstanceFieldRef(
+								cFlowLocal,
+								util.singleCounterField()));
+			c.addFirst(get);
+                        return c;
 		}
 
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
@@ -1025,6 +1056,15 @@ public class CflowCodeGenUtils {
 			c.addFirst(get);
 			
 			return new ChainStmtBox(c, get);
+		}
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			
+                    Chain c = new HashChain();
+			Stmt get = Jimple.v().newAssignStmt(result, 
+					Jimple.v().newStaticFieldRef(field));
+			c.addFirst(get);
+			
+                        return c;
 		}
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
 			// Not valid
@@ -1213,6 +1253,37 @@ public class CflowCodeGenUtils {
 			c.addFirst(getTopCell);
 			
 			return new ChainStmtBox(c, getTopCell);
+		}
+		
+		protected Chain protogenDepth(LocalGeneratorEx localgen, 
+				Local cFlowLocal, Local result, 
+				boolean isSingleThreaded, boolean useStaticField) {
+			
+                        Chain c = new HashChain();
+			Local topCellLocal = 
+				localgen.generateLocal(
+						util.threadStackCellType(elemType), "cflowStackCell");
+			
+			Stmt getTopCell = 
+				Jimple.v().newAssignStmt(
+						topCellLocal,
+						getStackFieldInstance(isSingleThreaded, useStaticField, cFlowLocal));
+                        c.add(getTopCell);
+			Stmt testStmt = 
+				Jimple.v().newAssignStmt(
+                                    result,
+                                    Jimple.v().newVirtualInvokeExpr(
+                                        topCellLocal,
+                                        Scene.v().makeMethodRef(
+                                            util.threadStackCellClass(elemType),
+                                            "depth",
+                                            new ArrayList(),
+                                            IntType.v(),
+                                            false),
+                                        new ArrayList()));
+			c.add(testStmt);
+			
+			return c;
 		}
 		
 		protected ChainStmtBox protogenPop(LocalGeneratorEx localgen, 
@@ -1433,6 +1504,10 @@ public class CflowCodeGenUtils {
 		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
 			return protogenIsValid(localgen, cFlowLocal, result, succeed, fail, false, false);
 		}
+
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			return protogenDepth(localgen, cFlowLocal, result, false, false);
+		}
 	
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
 			return protogenPeek(localgen, cFlowLocal, targets, false, false);
@@ -1481,6 +1556,11 @@ public class CflowCodeGenUtils {
 		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
 			return protogenIsValid(localgen, cFlowLocal, result, succeed, fail, true, false);
 		}
+
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			return protogenDepth(localgen, cFlowLocal, result, true, false);
+		}
+	
 	
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
 			return protogenPeek(localgen, cFlowLocal, targets, true, false);
@@ -1524,6 +1604,11 @@ public class CflowCodeGenUtils {
 		public ChainStmtBox genIsValid(LocalGeneratorEx localgen, Local cFlowLocal, Local result, Stmt succeed, Stmt fail) {
 			return protogenIsValid(localgen, cFlowLocal, result, succeed, fail, true, true);
 		}
+
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			return protogenDepth(localgen, cFlowLocal, result, true, true);
+		}
+	
 	
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List/*<Local>*/ targets) {
 			return protogenPeek(localgen, cFlowLocal, targets, true, true);
@@ -1612,6 +1697,16 @@ public class CflowCodeGenUtils {
 					BooleanType.v(),
 					true);
 		}
+		private SootMethodRef depthMethod() {
+			List types = new ArrayList(1);
+			types.add(threadCounterType());
+			return Scene.v().makeMethodRef(
+					counterClass(),
+					"depthCounter",
+					types,
+					IntType.v(),
+					true);
+		}
 		
 		public Chain genInitLocal(LocalGeneratorEx localgen, Local cFlowLocal, Local cFlowInstance) {
 			
@@ -1660,6 +1755,22 @@ public class CflowCodeGenUtils {
 			
 			
 			return new ChainStmtBox(c, testStmt);
+		}
+
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			
+			Chain  c = new HashChain();
+			List args = new ArrayList(1);
+			args.add(cFlowLocal);
+			Stmt testStmt = 
+				Jimple.v().newAssignStmt(
+						result,
+						Jimple.v().newStaticInvokeExpr(
+								depthMethod(),
+								args));
+			c.add(testStmt);
+			
+			return c;
 		}
 
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {
@@ -1777,6 +1888,16 @@ public class CflowCodeGenUtils {
 					BooleanType.v(),
 					true);
 		}
+		private SootMethodRef depthMethod() {
+			List types = new ArrayList(1);
+			types.add(threadStackType());
+			return Scene.v().makeMethodRef(
+					stackClass(),
+					"depthStack",
+					types,
+					IntType.v(),
+					true);
+		}
 		private SootMethodRef peekMethod() {
 			List types = new ArrayList(2);
 			types.add(IntType.v());
@@ -1837,6 +1958,22 @@ public class CflowCodeGenUtils {
 			
 			
 			return new ChainStmtBox(c, testStmt);
+		}
+
+		public Chain genDepth(LocalGeneratorEx localgen, Local cFlowLocal, Local result) {
+			
+			Chain  c = new HashChain();
+			List args = new ArrayList(1);
+			args.add(cFlowLocal);
+			Stmt testStmt = 
+				Jimple.v().newAssignStmt(
+						result,
+						Jimple.v().newStaticInvokeExpr(
+								depthMethod(),
+								args));
+			c.add(testStmt);
+			
+                        return c;
 		}
 
 		public Chain genPeek(LocalGeneratorEx localgen, Local cFlowLocal, List targets) {

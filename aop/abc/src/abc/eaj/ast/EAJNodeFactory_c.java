@@ -72,4 +72,12 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     {
         return new EAJAdviceDecl_c(pos, flags, spec, throwTypes, pc, body);
     }
+
+    public PCCflowDepth PCCflowDepth(Position pos, Local var, Pointcut pc) {
+        return new PCCflowDepth_c(pos,pc,var);
+    }
+
+    public PCCflowBelowDepth PCCflowBelowDepth(Position pos, Local var, Pointcut pc) {
+        return new PCCflowBelowDepth_c(pos,pc,var);
+    }
 }

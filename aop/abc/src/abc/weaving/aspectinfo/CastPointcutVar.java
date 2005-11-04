@@ -70,7 +70,7 @@ public class CastPointcutVar extends Pointcut {
 	return new Copy(we.getWeavingVar(from),we.getWeavingVar(to));
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context,
 			      int cflowdepth) {

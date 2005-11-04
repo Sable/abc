@@ -46,7 +46,7 @@ public abstract class LexicalPointcut extends Pointcut {
     protected abstract Residue matchesAt(SootClass cls,
                                          SootMethod method);
 
-    protected Pointcut inline(Hashtable typeEnv,
+    public Pointcut inline(Hashtable typeEnv,
                               Hashtable renameEnv,
                               Aspect context,
 			      int cflowdepth) {

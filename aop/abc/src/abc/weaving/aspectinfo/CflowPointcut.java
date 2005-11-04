@@ -43,17 +43,17 @@ public abstract class CflowPointcut extends Pointcut {
 
 	// The child pointcut
 	
-	private Pointcut pc;
+	protected Pointcut pc;
 	
     public Pointcut getPointcut() { return pc; }
     protected void setPointcut(Pointcut pc) { this.pc = pc; }
 	
 	// Storing the setup advice
 	
-	private CflowSetup setupadvice;
-	private Hashtable/*<Var,PointcutVarEntry>*/ renaming;
+	protected CflowSetup setupadvice;
+	protected Hashtable/*<Var,PointcutVarEntry>*/ renaming;
 	
-	CflowSetup getCfs() { return setupadvice; }
+	public CflowSetup getCfs() { return setupadvice; }
 	protected void setCfs(CflowSetup cfs) { this.setupadvice = cfs; } 
 	
 	protected Hashtable/*<Var,PointcutVarEntry>*/ getRenaming() { return renaming; }
@@ -61,7 +61,7 @@ public abstract class CflowPointcut extends Pointcut {
 		this.renaming = renaming;
 	}
 	
-	private Hashtable/*<String,AbcType>*/ typeMap;
+	protected Hashtable/*<String,AbcType>*/ typeMap;
 	Hashtable/*<String, AbcType>*/ getTypeMap() {
 		return typeMap;
 	}

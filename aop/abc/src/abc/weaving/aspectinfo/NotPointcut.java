@@ -61,7 +61,7 @@ public class NotPointcut extends Pointcut {
 	return NotResidue.construct(pc.matchesAt(mc));
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context,
 			      int cflowdepth) {
@@ -70,7 +70,7 @@ public class NotPointcut extends Pointcut {
 	else return construct(pc,getPosition());
     }
 
-    protected DNF dnf() {
+    public DNF dnf() {
 	return new DNF(new NotPointcut
 		       (pc.dnf().makePointcut(pc.getPosition()),getPosition()));
     }

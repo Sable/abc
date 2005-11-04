@@ -1,5 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Ganesh Sittampalam
+ * Copyright (C) 2005 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,31 +17,13 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package abc.weaving.aspectinfo;
+package abc.eaj.ast;
 
-import java.util.Hashtable;
+import abc.aspectj.ast.*;
 
-import polyglot.util.Position;
-import abc.weaving.residues.*;
-
-/** A pointcut designator that inspects a dynamic value
- *  (this,target,args)
- *  @author Ganesh Sittampalam
- *  @date 04-May-04
+/**
+ * @author Ondrej Lhotak
  */
-
-public abstract class DynamicValuePointcut extends Pointcut {
-    public DynamicValuePointcut(Position pos) {
-	super(pos);
-    }
-
-    // Check carefully that TargetVar, ThisVar and Args still override
-    // this if you change the signature
-    public Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv,
-			      Aspect context,
-			      int cflowdepth) {
-	return this;
-    }
-
+public interface PCCflowDepth extends PCCflow
+{
 }

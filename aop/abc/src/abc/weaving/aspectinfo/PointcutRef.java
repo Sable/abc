@@ -87,7 +87,7 @@ public class PointcutRef extends Pointcut {
 	    ("PointcutRef should have been inlined by now",getPosition());
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context,
 			      int cflowdepth) {

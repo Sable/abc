@@ -69,7 +69,7 @@ public class ThisAspectPointcut extends Pointcut {
         return ret;
     }
 
-    protected Pointcut inline(Hashtable renameEnv, Hashtable typeEnv,
+    public Pointcut inline(Hashtable renameEnv, Hashtable typeEnv,
             Aspect context, int cflowdepth) {
         return this;
     }

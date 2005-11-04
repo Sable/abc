@@ -56,7 +56,7 @@ public class TargetVar extends TargetAny {
 	    (cv,we.getAbcType(var).getSootType(),we.getWeavingVar(var));
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context,
 			      int cflowdepth) {

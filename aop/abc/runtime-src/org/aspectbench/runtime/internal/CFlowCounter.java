@@ -61,6 +61,10 @@ public class CFlowCounter {
         public boolean isZero() {
             return (c == 0);
 	}
+
+        public int count() {
+            return c;
+	}
     }
 
     private synchronized Counter getThreadCounter() {
@@ -128,6 +132,9 @@ public class CFlowCounter {
 
     public static final boolean isValidCounter(Object c) {
 	return (!((Counter)c).isZero());
+    }
+    public static final int depthCounter(Object c) {
+	return ((Counter)c).count();
     }
 
 }

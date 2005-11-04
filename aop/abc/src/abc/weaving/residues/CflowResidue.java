@@ -38,8 +38,8 @@ import abc.weaving.weaver.*;
  *  @author Damien Sereni
  */
 public class CflowResidue extends Residue {
-    private CflowSetup setup;
-    private List/*<WeavingVar>*/ vars;
+    protected CflowSetup setup;
+    protected List/*<WeavingVar>*/ vars;
 
     public Residue inline(ConstructorInliningMap cim) { 
         return new CflowResidue(setup, WeavingVar.inline(vars, cim));
@@ -70,11 +70,11 @@ public class CflowResidue extends Residue {
           System.err.println("RCG: "+message);
      }
 
-    private Stmt isValidStmt;
+    protected Stmt isValidStmt;
     /** Returns the statement that was woven to test isValid(). */
     public Stmt getIsValidStmt() { return isValidStmt; }
 
-    private Object insertChainAfter(Chain toInsertInto, Chain toInsert, Object insertAfterThis) {
+    protected Object insertChainAfter(Chain toInsertInto, Chain toInsert, Object insertAfterThis) {
     	Iterator it = toInsert.iterator();
     	Object last = insertAfterThis;
     	while (it.hasNext()) {

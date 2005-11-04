@@ -67,7 +67,7 @@ public class LocalPointcutVars extends Pointcut {
 	return pc.matchesAt(new MatchingContext(lwe,cls,method,sm));
     }
 
-    protected Pointcut inline(Hashtable renameEnv,
+    public Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context,
 			      int cflowdepth) {
@@ -93,7 +93,7 @@ public class LocalPointcutVars extends Pointcut {
 	else return new LocalPointcutVars(pc,newFormals,getPosition());
     }
 
-    protected DNF dnf() {
+    public DNF dnf() {
 	return DNF.declare(pc.dnf(),formals);
     }
 

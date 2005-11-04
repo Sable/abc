@@ -203,7 +203,7 @@ public abstract class Pointcut extends Syntax {
      *  children it should be overridden so that at the very least 
      *  the children are converted to DNF.
      */
-    protected DNF dnf() {
+    public DNF dnf() {
         return new DNF(this);
     }
 
@@ -229,7 +229,7 @@ public abstract class Pointcut extends Syntax {
      */
     // It would be better if the list of parameters was wrapped up into
     // a class, so we don't need to change everything each time we add one
-    protected abstract Pointcut inline
+    public abstract Pointcut inline
         (Hashtable/*<String,Var>*/ renameEnv,
          Hashtable/*<String,AbcType>*/ typeEnv,
          Aspect context,

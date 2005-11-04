@@ -1,7 +1,5 @@
 /* abc - The AspectBench Compiler
- * Copyright (C) 2004 Aske Simon Christensen
- * Copyright (C) 2004 Ganesh Sittampalam
- * Copyright (C) 2004 Damien Sereni
+ * Copyright (C) 2005 Ondrej Lhotak
  *
  * This compiler is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +17,11 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-package abc.weaving.aspectinfo;
+package abc.eaj.weaving.aspectinfo;
+
+import polyglot.ast.Local;
+import abc.eaj.weaving.residues.*;
+import abc.weaving.aspectinfo.*;
 
 import java.util.*;
 
@@ -29,62 +31,25 @@ import soot.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
 
-/** Handler for <code>cflowbelow</code> condition pointcut. 
- *  @author Aske Simon Christensen
- *  @author Ganesh Sittampalam
- *  @author Damien Sereni
+/** Handler for <code>cflowdepth</code> pointcut. 
+ *  @author Ondrej Lhotak
  */
-public class CflowBelow extends CflowPointcut {
-    public int depth=-1;
+public class CflowBelowDepth extends CflowBelow {
+    private Local var;
 
-    public CflowBelow(Pointcut pc,Position pos) {
-	super(pos);
-	setPointcut(pc);
+    private CflowBelowDepth(Pointcut pc,Position pos,int depth,Local var) {
+        super(pc,pos,depth);
+        this.var = var;
     }
 
-    protected CflowBelow(Pointcut pc,Position pos,int depth) {
-	super(pos);
-	setPointcut(pc);
-	this.depth=depth;
-    }
-
-    public int getDepth() {
-	return depth;
-    }
-
-    public DNF dnf() {
-	CflowBelow ret=new CflowBelow
-	    (getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth);
-	return new DNF(ret);
+    public CflowBelowDepth(Pointcut pc,Position pos,Local var) {
+	super(pc,pos);
+        this.var = var;
     }
 
     public String toString() {
-	return "cflowbelow("+getPointcut()+")";
+	return "cflowbelowdepth("+var+", "+getPointcut()+")";
     }
-
-    public Pointcut inline(Hashtable renameEnv,
-			      Hashtable typeEnv,
-			      Aspect context,
-			      int cflowdepth) {
-	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context,cflowdepth+1);
-	CflowBelow ret;
-	if(pc==this.getPointcut()) ret=this;
-	else ret=new CflowBelow(pc,getPosition(),depth);
-	if(depth==-1) ret.depth=cflowdepth;
-	return ret;
-    }
-
-    public void registerSetupAdvice(Aspect context,Hashtable typeMap) {
-   	if(depth==-1) 
-	    throw new InternalCompilerError("uninlined cflowbelow registered",getPosition());   
-	GlobalCflowSetupFactory.CfsContainer cfsCont = 
-	    GlobalCflowSetupFactory.construct(context,getPointcut(),true,typeMap,getPosition(),depth);
-	setCfs(cfsCont.getCfs());
-	setRenaming(cfsCont.getRenaming());
-	setTypeMap(typeMap);
-	getCfs().addUse(this);
-    }
-
     public Residue matchesAt(MatchingContext mc) {
     WeavingEnv env = mc.getWeavingEnv();
 	SootClass cls = mc.getSootClass();
@@ -111,29 +76,38 @@ public class CflowBelow extends CflowPointcut {
 		else
 			weavingActuals.add(null);
 	}
-	return new CflowResidue(getCfs(),weavingActuals);
+        WeavingVar wv = env.getWeavingVar(new Var(var.name(),getPosition()));
+	return new CflowDepthResidue(getCfs(),weavingActuals,wv);
     }
-
-    public void getFreeVars(Set result) {
-    	getPointcut().getFreeVars(result);
+        public Pointcut inline(Hashtable renameEnv,
+			      Hashtable typeEnv,
+			      Aspect context,
+			      int cflowdepth) {
+	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context,cflowdepth+1);
+	CflowBelowDepth ret;
+	if(pc==this.getPointcut()) ret=this;
+	else ret=new CflowBelowDepth(pc,getPosition(),depth,var);
+	if(depth==-1) ret.depth=cflowdepth;
+	return ret;
     }
-	
-	/* (non-Javadoc)
-	 * @see abc.weaving.aspectinfo.Pointcut#unify(abc.weaving.aspectinfo.Pointcut, java.util.Hashtable, java.util.Hashtable, abc.weaving.aspectinfo.Pointcut)
-	 */
-	public boolean unify(Pointcut otherpc, Unification unification) {
+    public DNF dnf() {
+	CflowBelowDepth ret=new CflowBelowDepth
+	    (getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth,var);
+	return new DNF(ret);
+    }
+    	public boolean unify(Pointcut otherpc, Unification unification) {
 
 		if (otherpc.getClass() == this.getClass()) {
-			if (getPointcut().unify(((CflowBelow)otherpc).getPointcut(), unification)) {
+			if (getPointcut().unify(((CflowBelowDepth)otherpc).getPointcut(), unification)) {
 				if (unification.getPointcut() == getPointcut())
 					unification.setPointcut(this);
 				else {
 					if (unification.unifyWithFirst())
 						throw new RuntimeException("Unfication error: restricted unification failed");
-					if (unification.getPointcut() == ((CflowBelow)otherpc).getPointcut())
+					if (unification.getPointcut() == ((CflowBelowDepth)otherpc).getPointcut())
 						unification.setPointcut(otherpc);
 					else
-						unification.setPointcut(new CflowBelow(getPointcut(), getPosition(), depth));
+						unification.setPointcut(new CflowBelowDepth(getPointcut(), getPosition(), depth, var));
 				}
 				return true;
 			} else return false;
@@ -141,4 +115,5 @@ public class CflowBelow extends CflowPointcut {
 			return LocalPointcutVars.unifyLocals(this,otherpc,unification);
 
 	}
+
 }
