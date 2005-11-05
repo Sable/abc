@@ -5336,5 +5336,32 @@
         </compile>
         <run class="ToTestMain"></run>
     </ajc-test>
+<ajc-test title="Cflowdepth Factorial" num="1127" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact.java">
+        </compile>
+        <run class="Fact"></run>
+    </ajc-test>
+<ajc-test title="Cflowdepth Factorial with arguments" num="1128" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact2.java">
+        </compile>
+        <run class="Fact2"></run>
+    </ajc-test>
+<ajc-test title="Cflowbelowdepth Factorial" num="1129" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact3.java">
+        </compile>
+        <run class="Fact3"></run>
+    </ajc-test>
+<ajc-test title="Cflowbelowdepth Factorial with arguments" num="1130" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact4.java">
+        </compile>
+        <run class="Fact4"></run>
+    </ajc-test>
+<ajc-test title="Cflowdepth Factorial" num="1131" dir="cflowdepth">
+        <compile options="-ext,abc.eaj" files="Fact5.java">
+            <message line="14" kind="error"></message>
+            <message line="17" kind="error"></message>
+            <message line="22" kind="error"></message>
+        </compile>
+    </ajc-test>
  
 </suite>
