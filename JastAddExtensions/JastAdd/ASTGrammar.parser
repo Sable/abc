@@ -8,13 +8,13 @@ BodyDecl aspect_body_declaration =
 
 ASTDecl tree_node_declaration =
     modifiers_opt AST IDENTIFIER SEMICOLON 
-    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(), new List(), new List(), new List()); :}
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(), new List()); :}
   | modifiers_opt AST IDENTIFIER COLON name SEMICOLON 
-    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(name), new List(), new List(), new List()); :}
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
   | modifiers_opt AST IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(), new List(), new List(), ast_child_list_opt); :}
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
   | modifiers_opt AST IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
-    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(name), new List(), new List(), ast_child_list_opt); :}
+    {: return new ASTDecl(modifiers_opt, new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
   ;
 
 List ast_child_list_opt =

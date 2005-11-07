@@ -140,6 +140,8 @@ aspect Rewrite {
     addGetNumChild();
     addMayHaveRewrite();
 
+    addFinalRootNode();
+
     addNTAGetChildNoTransform();
   }
 
@@ -165,6 +167,22 @@ aspect Rewrite {
         )
       )
     );
+  }
+
+  private void ASTDecl.addFinalRootNode() {
+    if(isRootNode())
+      addBodyDecl(
+        new InstanceInitializer(
+          new Block(
+            new List().add(
+              AssignExpr.asStmt(
+                new VarAccess("isFinal"),
+                new BooleanLiteral(true)
+              )
+            )
+          )
+        )
+      );
   }
 
   private void ASTDecl.addGetNumChild() {

@@ -93,4 +93,7 @@ aspect IntertypeMethodCodegeneration {
   }
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();
   eq IntroducedMethodDecl.getParameter(int index).hostType() = introducedType();
+
+  // TODO: make this use the modifier prior to transformation instead of hardcoded false
+  eq IntroducedMethodDecl.getBlock().inStaticContext() = false;
 }

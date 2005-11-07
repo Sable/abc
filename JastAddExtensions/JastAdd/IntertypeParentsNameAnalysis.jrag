@@ -29,15 +29,13 @@ aspect IntertypeParentsNameAnalysis {
 
 
   private boolean ASTDecl.introducedInterfaces = false;
-  rewrite ASTDecl {
-    when(!introducedInterfaces)
-    to ASTDecl {
-      introducedInterfaces = true;
-      for(Iterator iter = introducedImplements(this).iterator(); iter.hasNext(); ) {
-        IntertypeImplements decl = (IntertypeImplements)iter.next();
-        addImplements(decl.getInterfaceType().type().createQualifiedAccess());
-      }
-      return this;
+
+  syn lazy List ASTDecl.getImplementsList() {
+    List list = new List();
+    for(Iterator iter = introducedImplements(this).iterator(); iter.hasNext(); ) {
+      IntertypeImplements decl = (IntertypeImplements)iter.next();
+      list.add(decl.getInterfaceType().type().createQualifiedAccess());
     }
+    return list;
   }
 }

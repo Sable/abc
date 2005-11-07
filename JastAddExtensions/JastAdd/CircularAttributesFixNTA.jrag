@@ -1,0 +1,10 @@
+aspect CircularAttributesFixNTA {
+  syn lazy List CircularSynDecl.getEmptyBracketList() = new List();
+  syn lazy List CircularSynDecl.getExceptionList() = new List();
+  
+  syn lazy List CircularInhDecl.getEmptyBracketList() = new List();
+  syn lazy List CircularInhDecl.getExceptionList() = new List();
+  syn lazy Opt CircularInhDecl.getBlockOpt() = new Opt(new Block(new List().add(new ThrowStmt(new NullLiteral()))));
+
+}
+

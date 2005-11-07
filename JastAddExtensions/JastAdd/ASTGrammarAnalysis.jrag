@@ -11,13 +11,14 @@ aspect ASTGrammarAnalysis {
     for(int i = 0; i < getNumChild(); i++)
       getChild(i).collectAstParentMap(map);
   }
+  
   protected void ASTDecl.collectAstParentMap(HashMap map) {
     for(Iterator iter = components().iterator(); iter.hasNext(); ) {
       ASTChild child = (ASTChild)iter.next();
       if(!(child instanceof ASTTokenChild)) {
         TypeDecl typeDecl = child.type();
         if(!map.containsKey(typeDecl))
-          map.put(typeDecl, new ArrayList(1));
+          map.put(typeDecl, new HashSet(4));
         Collection c = (Collection)map.get(typeDecl);
         c.add(this);
       }
@@ -27,8 +28,16 @@ aspect ASTGrammarAnalysis {
   eq Program.getCompilationUnit(int i).parents(TypeDecl typeDecl) = 
     astParentMap().containsKey(typeDecl) ? (Collection)astParentMap().get(typeDecl) : new ArrayList(0);
   inh Collection ASTDecl.parents(TypeDecl typeDecl); 
-  syn lazy Collection ASTDecl.parents() = parents(this);
+  syn lazy Collection ASTDecl.parents() {
+    if(superclass() instanceof ASTDecl) {
+      HashSet set = new HashSet();
+      set.addAll(parents(this));
+      set.addAll(((ASTDecl)superclass()).parents());
+      return set;
+    }
+    else
+      return parents(this);
+  }
 
   syn boolean ASTDecl.isRootNode() = parents().isEmpty();
-
 }

@@ -1,4 +1,4 @@
-ASTDecl : ClassDecl ::= Modifiers IdDecl [SuperClassAccess:Access] Implements:Access* BodyDecl* ASTChild*;
+ASTDecl : ClassDecl ::= Modifiers IdDecl [SuperClassAccess:Access] /Implements:Access*/ /BodyDecl*/ ASTChild*;
 
 abstract ASTChild ::= <Name:String> [Type:Access];
 ASTListChild : ASTChild;
