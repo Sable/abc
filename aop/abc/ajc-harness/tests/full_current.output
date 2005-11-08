@@ -106,7 +106,7 @@ PASS: Test 27: "base/test120/unicodes and literals" passed.
 
 Running test 28: base/test121/advises on introduced methods and constructors
 Commandline: abc -d base/test121 -warn-unused-advice:off base/test121/Driver.java 
-creating: A@2b1f0f
+creating: A@1c803ed
 init at initialization(A())
 init at initialization(Foo(int))
 external before advise on execution(void Foo.introducedNonStaticMethod())
@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@e43af6
+InterfaceAndObject$1@61a924
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@c6acb6, [Ljava.lang.Object;@174f8b7, TwoAnonymous$3@c6acb6
+calling run: TwoAnonymous$3@14baacb, [Ljava.lang.Object;@b9fd45, TwoAnonymous$3@14baacb
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2409,32 +2409,32 @@ PASS: Test 439: "new/within and withincode (doesn't all work due to local class 
 Running test 440: new/around advice on calls within inner classes (including protected method calls) 1
 Commandline: abc -d new -warn-unused-advice:off -1.3 new/AroundInnerCalls13.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@1767662.foo calls Outer$Inner@5624e2.mi
+Outer@1cce62a.foo calls Outer$Inner@11aee12.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@5624e2.mi calls java.io.PrintStream@18faf26.println
+Outer$Inner@11aee12.mi calls java.io.PrintStream@103e469.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@1767662.foo calls Outer$InnerRandom@4864e4.nextHook
+Outer@1cce62a.foo calls Outer$InnerRandom@187289b.nextHook
 Outer.InnerRandom.nextHook(..) calls Random.next(..)
-Outer$InnerRandom@4864e4.nextHook calls Outer$InnerRandom@4864e4.next
+Outer$InnerRandom@187289b.nextHook calls Outer$InnerRandom@187289b.next
 Outer.foo() calls Random.nextInt(..)
-Outer@1767662.foo calls X.nextInt
+Outer@1cce62a.foo calls X.nextInt
 PASS: Test 440: "new/around advice on calls within inner classes (including protected method calls) 1" passed.
 
 
 Running test 441: new/around advice on calls within inner classes (including protected method calls) 2
 Commandline: abc -d new -warn-unused-advice:off -1.4 new/AroundInnerCalls.java 
 Outer.foo() calls Outer.Inner.mi()
-Outer@30e04c.foo calls Outer$Inner@d59fba.mi
+Outer@13c1e8a.foo calls Outer$Inner@1f920b7.mi
 Outer.Inner.mi() calls PrintStream.println(..)
-Outer$Inner@d59fba.mi calls java.io.PrintStream@e97f3a.println
+Outer$Inner@1f920b7.mi calls java.io.PrintStream@d2d692.println
 .
 Outer.foo() calls Outer.InnerRandom.nextHook(..)
-Outer@30e04c.foo calls Outer$InnerRandom@306f9d.nextHook
+Outer@13c1e8a.foo calls Outer$InnerRandom@10a7366.nextHook
 Outer.InnerRandom.nextHook(..) calls Outer.InnerRandom.next(..)
-Outer$InnerRandom@306f9d.nextHook calls Outer$InnerRandom@306f9d.next
+Outer$InnerRandom@10a7366.nextHook calls Outer$InnerRandom@10a7366.next
 Outer.foo() calls Outer.1.nextInt(..)
-Outer@30e04c.foo calls X.nextInt
+Outer@13c1e8a.foo calls X.nextInt
 PASS: Test 441: "new/around advice on calls within inner classes (including protected method calls) 2" passed.
 
 
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1601(AroundAll.java:199)
+	at A.inline$34$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4074,7 +4074,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@c878c7.x:=-3
+test.Test3@1eb759a.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4157,8 +4157,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@b42376
-o: Bar@b42376, i: 10
+o: Bar@10ae13e
+o: Bar@10ae13e, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4311,11 +4311,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
 	at aspects.Trace.inline$6$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4351,11 +4351,11 @@ java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
 	at aspects.Trace.inline$18$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$35$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
 	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4748,7 +4748,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@182515
+LibraryAspect-defined run() for C@f8b0d7
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5074,7 +5074,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@1c037c
+? Util.read() obj=Test@a9668e
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5094,7 +5094,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@130a06d
+? Util.read() obj=ClinitTest@3b36c4
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5104,7 +5104,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@1663c6e
+? Util.read() obj=SuidTest@20fc9
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5307,12 +5307,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@11991f5
-Invoking command bean:  Command@1bdad03
-hello(Command@1bdad03)
-Created a PerThis aspect : Testcase2@1a9d52a
-Invoking command bean:  Command@e9e456
-hello again(Command@e9e456)
+Created a PerThis aspect : Testcase2@1f209d2
+Invoking command bean:  Command@162d5a9
+hello(Command@162d5a9)
+Created a PerThis aspect : Testcase2@1b95d6b
+Invoking command bean:  Command@a45b42
+hello again(Command@a45b42)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -6331,5 +6331,22 @@ Running test 1131: cflowdepth/Cflowdepth Factorial
 Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Fact5.java 
 Compilation failed with 3 errors, which were matched and verified against the expected errors.
 PASS: Test 1131: "cflowdepth/Cflowdepth Factorial" passed.
+
+
+Running test 1132: abctests/bugs/Preinit weaving problem
+Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/Preinit.java 
+InvocationTargetException while trying to run compiled class: java.lang.VerifyError: (class: A, method: <init> signature: (Ljava/lang/String;I)V) Accessing value from uninitialized register 5
+java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at abc.testing.TestCase.runTest(TestCase.java:395)
+	at abc.testing.Main.doCase(Main.java:282)
+	at abc.testing.Main.main(Main.java:116)
+Caused by: java.lang.VerifyError: (class: A, method: <init> signature: (Ljava/lang/String;I)V) Accessing value from uninitialized register 5
+	at Preinit.main(Preinit.java:13)
+	... 7 more
+FAIL: Test 1132: "abctests/bugs/Preinit weaving problem" failed.
 
 
