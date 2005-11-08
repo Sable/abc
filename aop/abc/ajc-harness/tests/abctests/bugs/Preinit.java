@@ -1,32 +1,25 @@
 import org.aspectj.testing.Tester;
 
 class A {
-    String x;
     public A(String x) {
-        this.x = x;
     }
-}
-class B extends A {
-    public B(String x) {
-        super(x);
-    }
-    public B(String x, int y) {
-        this(x + "from B");
+    public A(String x, int y) {
+        this(new String(x));
     }
 }
 
 public class Preinit {
     public static void main(String[] args) {
-        B b = new B("b",3);
+        A a = new A("a",3);
     }
 }
 
 aspect JoinPointTraceAspect {
 
-	pointcut tracePoints() : (call(*.new(..)) || preinitialization(*.new(..))) &&
-                                 !within(JoinPointTraceAspect);
+	pointcut tracePoints() : call(java.lang.String.new(String)) ||
+                                  preinitialization(A.new(String, int));
 	   
-	after() : tracePoints() {
+	after() throwing : tracePoints() {
 	    System.out.println(thisJoinPoint);
 	   
 	}
