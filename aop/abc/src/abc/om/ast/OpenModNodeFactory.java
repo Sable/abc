@@ -59,4 +59,8 @@ public interface OpenModNodeFactory extends AJNodeFactory {
             ClassnamePatternExpr toClause);
     
     public AspectDecl DummyAspectDecl(Position pos, String moduleName);
+    
+    public OpenClassMember OpenClassMember(OpenClassFlags flags, 
+    		ClassnamePatternExpr cpe, 
+    		Position pos);
 }

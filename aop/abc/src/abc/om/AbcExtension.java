@@ -103,10 +103,20 @@ public class AbcExtension extends abc.main.AbcExtension {
                 sym.FRIEND), null));
         omLexer.addModuleKeyword("advertise", new LexerAction_c(new Integer(
                 sym.ADVERTISE), new Integer(omLexer.pointcut_state())));
-        //TODO: try to fix this so that the transition to pointcut happens on to
+        //TODO: try to fix this so that the transition to pointcut happens on "to"
         omLexer.addPointcutKeyword("to", new LexerAction_c(new Integer(
                 sym.TO), null));
-
+        
+        //open class tokens
+        omLexer.addModuleKeyword("openclass", new LexerAction_c(new Integer(
+                sym.OPENCLASS), null));
+        omLexer.addModuleKeyword("field", new LexerAction_c(new Integer(
+                sym.FIELD), null));        
+        omLexer.addModuleKeyword("method", new LexerAction_c(new Integer(
+                sym.METHOD), null));
+        omLexer.addModuleKeyword("parent", new LexerAction_c(new Integer(
+                sym.PARENT), null));
+        
         //overrride the class keyword
         omLexer.addGlobalKeyword("class", 
                 new LexerAction_c(new Integer(sym.CLASS)) {

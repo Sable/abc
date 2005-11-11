@@ -74,4 +74,8 @@ public class OpenModNodeFactory_c extends AJNodeFactory_c implements
     public AspectDecl DummyAspectDecl(Position pos, String moduleName) {
         return new DummyAspectDecl_c(pos, moduleName);
     }
+	public OpenClassMember OpenClassMember(OpenClassFlags flags, 
+			ClassnamePatternExpr cpe, 
+			Position pos) {
+		return new OpenClassMember_c(flags, cpe, pos);	}
 }

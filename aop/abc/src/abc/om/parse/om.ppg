@@ -47,12 +47,17 @@ terminal Token EXPOSE;
 terminal Token ADVERTISE;
 terminal Token ROOT;
 terminal Token TO;
+//experimental, openclasses (ITDs)
+terminal Token OPENCLASS;
+terminal Token FIELD;
+terminal Token METHOD;
+terminal Token PARENT;
 
 // ------- new non-terminals -----------------------
 non terminal List/*ModuleDecl*/ module_declaration_list;
 non terminal ModuleDecl module_declaration;
 non terminal ModuleBody module_body;
-non terminal List/*<OMModMember and OMSigMember>*/ module_member_list;
+non terminal List/*<OMModMember,OMSigMember,OpenClassMember>*/ module_member_list;
 non terminal List /*<ModMember>*/ module_member;
 non terminal SigMember signature_member;
 non terminal List /*<ModMemberAspect>*/ aspect_list;
@@ -61,6 +66,11 @@ non terminal NamePattern aspect_name_pattern;
 non terminal SimpleNamePattern aspect_simple_name_pattern;
 non terminal List /*ModMemberModule*/ module_list;
 non terminal ClassnamePatternExpr to_clause;
+
+//open class nonterms
+non terminal OpenClassMember open_class_member;
+non terminal OpenClassFlags open_class_flag;
+non terminal OpenClassFlags open_class_flag_list;
 
 start with goal;
 
@@ -181,6 +191,18 @@ module_member_list ::=
 		RESULT = sl;
 		RESULT.add(sm);
 	:}	
+	|
+	open_class_member:oc
+	{:
+		RESULT = new LinkedList();
+		RESULT.add(oc);
+	:}
+	|
+	module_member_list:ocl open_class_member:oc
+	{:
+		RESULT = ocl;
+		RESULT.add(oc);
+	:}
 ;
 
 module_member ::=
@@ -309,3 +331,50 @@ aspect_simple_name_pattern ::=
            RESULT = parser.nf.SimpleNamePattern(parser.pos(a),a.getIdentifier());
         :}
    ;
+   
+
+//open class syntax
+
+open_class_member ::=
+	OPENCLASS:oc open_class_flag_list:flags COLON classname_pattern_expr:cpe SEMICOLON:sc
+	{:
+		RESULT = parser.nf.OpenClassMember(flags, cpe, parser.pos(oc,sc));
+	:}
+;
+
+open_class_flag ::= 
+	FIELD
+	{:
+		RESULT = new OpenClassFlags();
+		RESULT.setField(true);
+	:}
+	|
+	PARENT
+	{:
+		RESULT = new OpenClassFlags();
+		RESULT.setParent(true);
+	:}
+	|
+	METHOD
+	{:
+		RESULT = new OpenClassFlags();
+		RESULT.setMethod(true);
+	:}
+;
+
+open_class_flag_list ::=
+	{:
+		//default is all allowed
+		RESULT = new OpenClassFlags(true, true, true);
+	:}
+	|
+	open_class_flag:flag
+	{:
+		RESULT = flag;
+	:}
+	|
+	open_class_flag_list:flags COMMA open_class_flag:endflag
+	{:
+		RESULT = flags.disjoin(endflag);
+	:}
+;
