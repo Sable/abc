@@ -4,12 +4,15 @@ import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 
 public class MyWeakRef extends WeakReference {
+	private int hashCode;
 	public MyWeakRef(Object arg0) {
 		super(arg0);
+		hashCode = System.identityHashCode(arg0);
 	}
 
 	public MyWeakRef(Object arg0, ReferenceQueue arg1) {
 		super(arg0, arg1);
+		hashCode = System.identityHashCode(arg0);
 	}
 
 	/**
@@ -26,11 +29,6 @@ public class MyWeakRef extends WeakReference {
 	}
 
 	public int hashCode() {
-		Object thisObject = this.get();
-		if(thisObject == null) {
-			return 0;
-		} else {
-			return thisObject.hashCode();
-		}
+		return hashCode;
 	}
 }
