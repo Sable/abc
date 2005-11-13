@@ -9971,4 +9971,10 @@
         <run class="Preinit" />
     </ajc-test>     
 
+    <ajc-test num="1133" dir="abctests/bugs"
+       title="Preinit weaving problem (test 2)">
+        <compile files="Preinit2.java" />
+        <run class="Preinit2" />
+    </ajc-test>     
+
 </suite>
