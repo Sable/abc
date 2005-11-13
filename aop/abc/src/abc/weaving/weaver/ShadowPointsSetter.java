@@ -161,6 +161,8 @@ public class ShadowPointsSetter {
 		// we get code from a Java compiler, and there is only one
 		// <init>.  If there is more than one <init> throw an exception.
 		Stmt startnop = Jimple.v().newNopStmt();
+		if (abc.main.Debug.v().tagWeavingCode)
+		    startnop.addTag(new soot.tagkit.StringTag("^^ starting nop for method"));
 		if (method.getName().equals(SootMethod.constructorName)) {
 			debug("Need to insert after call to <init> and interface initialisations");
 			// Find call to <init>,  
@@ -201,7 +203,11 @@ public class ShadowPointsSetter {
 		// Now deal with end point.  Rewire all returns to end of method body.
 		// Insert a nop just before the return at end of body.
 		Stmt retnop = Restructure.restructureReturn(method);
+		if (abc.main.Debug.v().tagWeavingCode)
+		    retnop.addTag(new soot.tagkit.StringTag("^^ return nop for method"));
 		Stmt endnop = Jimple.v().newNopStmt();
+		if (abc.main.Debug.v().tagWeavingCode)
+		    endnop.addTag(new soot.tagkit.StringTag("^^ ending nop for method"));
 		units.insertAfter(endnop, retnop);
 		return new RebindingShadowPoints(method, startnop, endnop);
 	} // method restructureBody 
@@ -220,6 +226,11 @@ public class ShadowPointsSetter {
 		// create the beginning and ending nop statements
 		Stmt startnop = Jimple.v().newNopStmt();
 		Stmt endnop = Jimple.v().newNopStmt();
+
+		if (abc.main.Debug.v().tagWeavingCode) {
+		    startnop.addTag(new soot.tagkit.StringTag("^^ starting nop for "+sm));
+		    endnop.addTag(new soot.tagkit.StringTag("^^ ending nop for "+sm));
+		}
 		//System.err.println("Target statement in "+method+": "+targetstmt);
 		Stmt nextstmt = (Stmt) units.getSuccOf(targetstmt);
 
@@ -308,7 +319,10 @@ public class ShadowPointsSetter {
 		Chain units = b.getUnits().getNonPatchingChain();
 		Stmt startnop = Jimple.v().newNopStmt();
 		Stmt endnop = Jimple.v().newNopStmt();
-
+		if (abc.main.Debug.v().tagWeavingCode) {
+		    startnop.addTag(new soot.tagkit.StringTag("^^ starting nop for "+sm));
+		    endnop.addTag(new soot.tagkit.StringTag("^^ ending nop for "+sm));
+		}
 		// Find call to <init>,  
 		Stmt startstmt = Restructure.findInitStmt(units);
 
@@ -345,10 +359,15 @@ public class ShadowPointsSetter {
 			Chain units = b.getUnits().getNonPatchingChain();
 			Stmt startnop = Jimple.v().newNopStmt();
 			Stmt endnop = Jimple.v().newNopStmt();
-
+			if (abc.main.Debug.v().tagWeavingCode) {
+			    startnop.addTag(new soot.tagkit.StringTag("^^ starting nop for "+sm));
+			    endnop.addTag(new soot.tagkit.StringTag("^^ ending nop for "+sm));
+			}
 			// insert startnop at beginning of method, just before first
-			// real statement
-			Stmt firstreal = Restructure.findFirstRealStmt(method, units);
+			// real statement or nop. Must consider nops because there
+			// might be some inserted for the shadow points of join points
+			// occurring within preinitialization
+			Stmt firstreal = Restructure.findFirstRealStmtOrNop(method, units);
 			units.insertBefore(startnop, firstreal);
 
 			// insert endnop just before call to <init>,  

@@ -292,7 +292,7 @@ public class Weaver {
                 // around advice applying to around advice (adviceexecution) is woven in last
                 pg.weaveInAroundAdviceExecutionsPass();
 
-                //if (false)
+                if (abc.main.Debug.v().cleanupAfterAdviceWeave)
                 for( Iterator clIt = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getWeavableClasses().iterator(); clIt.hasNext(); ) {
                     final AbcClass cl = (AbcClass) clIt.next();
                     for( Iterator mIt = cl.getSootClass().getMethods().iterator(); mIt.hasNext(); ) {
@@ -301,6 +301,7 @@ public class Weaver {
                         Body b = m.getActiveBody();
                         CopyPropagator.v().transform(b);
                         ConstantPropagatorAndFolder.v().transform(b);
+			// This has been observed to remove nops as well as dead assignments
                         DeadAssignmentEliminator.v().transform(b);
                         UnusedLocalEliminator.v().transform(b);
                     }

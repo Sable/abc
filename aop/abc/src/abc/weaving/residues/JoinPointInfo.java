@@ -204,6 +204,8 @@ public class JoinPointInfo extends ContextValue {
 
             Stmt startJP=Jimple.v().newNopStmt();
             units.insertBefore(startJP,sm.sp.getBegin());
+	    if (abc.main.Debug.v().tagWeavingCode)
+		startJP.addTag(new soot.tagkit.StringTag("^^ nop for thisJoinPoint = null for " + sm));
 
             Stmt assignStmt=Jimple.v().newAssignStmt(get_thisJoinPoint(),NullConstant.v());
             units.insertAfter(assignStmt,startJP);

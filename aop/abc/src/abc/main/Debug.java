@@ -92,8 +92,14 @@ public class Debug {
     public boolean pointcutCodeGen=false; // main pointcut generator
     public boolean printAdviceInfo=false; // dumps advice info
     public boolean residueCodeGen=false;
+    public boolean tagWeavingCode=false; // add tags to some weaving statements
+                                         // (e.g. nops) to aid debugging
     public boolean tagResidueCode=false; // add tags to some residue statements
                                          // to help with debugging
+
+    // Cleans up code (copy propagation, nop removal, dead code removal, etc) 
+    // immediately after weaving advice
+    public boolean cleanupAfterAdviceWeave=true; 
     public boolean beforeWeaver=false;
     public boolean afterReturningWeaver=false;
     public boolean afterThrowingWeaver=false;
