@@ -1240,7 +1240,8 @@ public class ClassGenHelper {
             doAddLabel(labelVarNotBound);
             Local result = getNewObject(disjunct, singleDisjunct, thisLocal);
             Local targetSet = getFieldLocal(result, "not$" + varName, setType);
-            doMethodCall(targetSet, "add", singleObjectType, BooleanType.v(), paramLocal);
+            Local weakRef = getNewObject(myWeakRef, singleObjectType, paramLocal);
+            doMethodCall(targetSet, "add", singleObjectType, BooleanType.v(), weakRef);
             doReturn(result);
             
             doAddLabel(labelReturnFalse);
