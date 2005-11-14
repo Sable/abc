@@ -100,9 +100,13 @@ aspect GenerateSynCode {
       addParameterStructure(statements);
     if(isLazy())
       addComputedCheck(statements, typeDecl);
+      
+    addInterruptedCircleDeclaration(statements);
     
     addCheckVisited(statements, typeDecl);
     addSetVisited(statements, typeDecl);
+    
+    addCheckInterruptCircle(statements);
     
     if(isLazy())
       addCacheComputeCall(statements, typeDecl, aspectMethod);
@@ -114,6 +118,8 @@ aspect GenerateSynCode {
     }
     
     addClearVisited(statements, typeDecl);
+    
+    addClearInterruptedCircle(statements);
     
     addReturnStmt(statements, typeDecl);
 
@@ -132,6 +138,99 @@ aspect GenerateSynCode {
       )
     );
   }
+  
+  protected void AttributeDecl.addInterruptedCircleDeclaration(List list) {
+    list.add(
+      new VariableDeclaration(
+        new TypeAccess("boolean"),
+        "interruptedCircle",
+        new BooleanLiteral(false)
+      )
+    );
+  }
+  
+  protected void AttributeDecl.addCheckInterruptCircle(List list) {
+  	List ifStatements = new List();
+  	// interruptedCircle = true;
+  	ifStatements.add(
+  	  AssignExpr.asStmt(
+  	      new VarAccess("interruptedCircle"),
+  	      new BooleanLiteral(true)
+  	  )
+  	);
+  	// IN_CIRCLE = FALSE;
+  	ifStatements.add(
+  	  AssignExpr.asStmt(
+  	    new VarAccess("IN_CIRCLE"),
+  	    new BooleanLiteral(false)
+  	  )
+  	);
+  	// circularEvalState.push(new BOOLEAN(CHANGE)); 	
+  	ifStatements.add(
+  	  new ExprStmt(
+  	    new VarAccess("circularEvalState").qualifiesAccess(
+  	      new MethodAccess(
+  	        "push",
+  	         new List().add(
+               new ClassInstanceExpr(
+                 lookupType("java.lang", "Boolean").createQualifiedAccess(),
+                 new List().add(
+                   new VarAccess("CHANGE")
+                 ),
+                 new Opt()
+               )
+             )
+  	      )
+  	    )
+  	  )
+  	);
+  	
+  	list.add(
+  	  new IfStmt(
+  	    new VarAccess("IN_CIRCLE"),
+  	    new Block(
+  	      ifStatements
+  	    )
+  	  )
+  	);
+  }
+  
+  protected void AttributeDecl.addClearInterruptedCircle(List list) {
+    //if (interruptedCircle) { IN_CIRCLE = true; CHANGE = ((Boolean) circuralEvalStack().pop())booleanValue();}
+  	List ifStatements = new List();
+  	ifStatements.add(
+      AssignExpr.asStmt(
+  	    new VarAccess("IN_CIRCLE"),
+  	    new BooleanLiteral(true)
+  	  )
+  	);
+  	/*Expr popStack = 
+  	  TypeDecl.createUnbox(lookupType("java.lang","Boolean"), "booleanValue", 
+  	                      new VarAccess("circularEvalState").qualifiesAccess(
+  	                        new MethodAccess(
+  	                          "pop",
+  	                          new List()
+  	                        )
+  	                      )
+  	                    );
+  	ifStatements.add(
+  	  AssignExpr.asStmt(
+  	    new VarAccess("CHANGE"),
+  	    popStack
+  	  )
+  	);*/
+  	list.add(
+  	  new IfStmt(
+  	    new VarAccess("interruptedCircle"),
+  	    new Block(
+  	      ifStatements
+  	    )
+  	  )
+  	);
+  }
+  // createUnbox static
+  //  ((Boolean)STACK.pop()).booleanValue()
+  // TypeDecl.createUnbox(lookupType("java.lang", "Boolean"), "booleanValue", new VarAccess("STACK").qualifiesAccess(new MethodAccess...)
 
 
   // Add a possibly cached delegate in typeDecl that calls aspectMethod
@@ -186,6 +285,8 @@ aspect GenerateSynCode {
       )
     );
   }
+  
+  
   
 
   protected void AttributeDecl.addStoreNTAValue(List list, TypeDecl typeDecl) {
@@ -521,7 +622,7 @@ aspect GenerateSynCode {
     return new CastExpr(createQualifiedAccess(), expr);
   }
 
-  protected Expr TypeDecl.createUnbox(TypeDecl typeDecl, String methodName, Expr expr) {
+  protected  Expr TypeDecl.createUnbox(TypeDecl typeDecl, String methodName, Expr expr) {
     return new ParExpr(
       new CastExpr(
         typeDecl.createQualifiedAccess(),
@@ -531,6 +632,11 @@ aspect GenerateSynCode {
       new MethodAccess(methodName, new List())
     );
   }
+    
+  
+  
+  
+    
     
   public Expr BooleanType.unbox(Expr expr) {
     return createUnbox(lookupType("java.lang", "Boolean"), "booleanValue", expr);

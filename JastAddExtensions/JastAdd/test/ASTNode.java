@@ -1,5 +1,7 @@
 package test;
 
+import java.util.Stack;
+
 public class ASTNode extends beaver.Symbol  implements Cloneable {
   public ASTNode() {
     super();
@@ -8,6 +10,11 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   static public boolean IN_CIRCLE = false;
   static public boolean CHANGE = false;
   static public boolean LAST_CYCLE = false;
+  
+  static public Stack circularEvalState = new Stack();
+ 
+  
+  
 
   public static int boundariesCrossed = 0;
 
