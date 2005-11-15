@@ -5155,6 +5155,10 @@
         <compile options="-ext,abc.tm" files="AdviseSelf.java"></compile>
         <run class="AdviseSelf"></run>
     </ajc-test>
+<ajc-test title="Tracematches: Testing if pointcuts in symbols" num="1033" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="IfTest.java"></compile>
+        <run class="IfTest"></run>
+    </ajc-test>
 <ajc-test title="Tracematches: When there is some() advice but not per-symbol" num="1034" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="NoUpdates.java"></compile>
         <run class="NoUpdates"></run>
