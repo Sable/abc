@@ -29,9 +29,7 @@ import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.matching.*;
 import abc.tm.weaving.weaver.*;
 
-import soot.Type;
-import soot.SootClass;
-import soot.SootMethod;
+import soot.*;
 
 import java.util.*;
 
@@ -47,6 +45,7 @@ public class TraceMatch
     protected boolean per_thread;
 
     protected List formals;
+    protected Map formal_name_to_type;
     protected List new_advice_body_formals;
     protected Map param_name_to_body_pos = null;
     protected int[] formal_pos_to_body_pos = new int[0];
@@ -67,6 +66,10 @@ public class TraceMatch
     protected SootClass disjunct = null;
     protected SootClass labels = null;
     protected SootClass labels_thread_local = null;
+    protected SootClass tm_weak_ref;
+    protected SootMethod tm_weak_ref_init;
+    protected Map primitive_to_box = null;
+    protected Map primitive_to_box_init = null;
  
     protected CodeGenHelper helper;
     protected Position position;
@@ -84,6 +87,7 @@ public class TraceMatch
         this.per_thread = per_thread;
 
         this.formals = formals;
+        this.formal_name_to_type = new HashMap();
         this.new_advice_body_formals = new_advice_body_formals;
 
         this.state_machine = state_machine;
@@ -98,6 +102,7 @@ public class TraceMatch
         this.position = pos;
 
         makeFormalMaps();
+        makePrimitiveMaps();
 
         this.helper = new CodeGenHelper(this);
     }
@@ -160,6 +165,7 @@ public class TraceMatch
 
             thisjp_vars.remove(f.getName());
 
+            formal_name_to_type.put(f.getName(), f.getType().getSootType());
             formal_pos_to_body_pos[i] = getBodyParameterIndex(f.getName());
         }
 
@@ -335,21 +341,77 @@ public class TraceMatch
 
     public boolean isPrimitive(String name)
     {
-        return false;
+        Type type = bindingType(name);
+        
+        return (type instanceof soot.RefLikeType);
     }
 
     public Type bindingType(String name)
     {
-        return null;
+        return (Type) formal_name_to_type.get(name);
     }
 
     public SootClass weakBindingClass(String name)
     {
-        return null;
+        Type type = bindingType(name);
+
+        if (primitive_to_box.containsKey(type))
+            return (SootClass) primitive_to_box.get(type);
+        else
+            return tm_weak_ref;
     }
 
     public SootMethod weakBindingConstructor(String name)
     {
-        return null;
+        Type type = bindingType(name);
+
+        if (primitive_to_box_init.containsKey(type))
+            return (SootMethod) primitive_to_box_init.get(type);
+        else
+            return tm_weak_ref_init;
+    }
+
+    protected void makePrimitiveMaps()
+    {
+        primitive_to_box = new HashMap();
+        primitive_to_box_init = new HashMap();
+
+        addToPrimitiveMaps(BooleanType.v(),
+                           Scene.v().getSootClass("java.lang.Boolean"));
+        addToPrimitiveMaps(ByteType.v(),
+                           Scene.v().getSootClass("java.lang.Byte"));
+        addToPrimitiveMaps(CharType.v(),
+                           Scene.v().getSootClass("java.lang.Character"));
+        addToPrimitiveMaps(DoubleType.v(),
+                           Scene.v().getSootClass("java.lang.Double"));
+        addToPrimitiveMaps(FloatType.v(),
+                           Scene.v().getSootClass("java.lang.Float"));
+        addToPrimitiveMaps(IntType.v(),
+                           Scene.v().getSootClass("java.lang.Integer"));
+        addToPrimitiveMaps(LongType.v(),
+                           Scene.v().getSootClass("java.lang.Long"));
+        addToPrimitiveMaps(ShortType.v(),
+                           Scene.v().getSootClass("java.lang.Short"));
+
+
+        Type object_type = Scene.v().getRefType("java.lang.Object");
+        tm_weak_ref = Scene.v().getSootClass(
+                        "org.aspectbench.tm.runtime.internal.MyWeakRef");
+        tm_weak_ref_init = getConstructor(tm_weak_ref, object_type);
+    }
+
+    protected void addToPrimitiveMaps(Type type, SootClass box)
+    {
+        primitive_to_box.put(type, box);
+        primitive_to_box_init.put(type, getConstructor(box, type));
+    }
+
+    protected SootMethod getConstructor(SootClass constructed, Type param)
+    {
+        String init_name = SootMethod.constructorName;
+        List type_list = new LinkedList();
+        type_list.add(param);
+
+        return constructed.getMethod(init_name, type_list);
     }
 }
