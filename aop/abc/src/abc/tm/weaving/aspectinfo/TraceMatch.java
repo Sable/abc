@@ -29,6 +29,7 @@ import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.matching.*;
 import abc.tm.weaving.weaver.*;
 
+import soot.Type;
 import soot.SootClass;
 import soot.SootMethod;
 
@@ -330,5 +331,25 @@ public class TraceMatch
     public Collection getUnusedFormals()
     {
         return unused_formals;
+    }
+
+    public boolean isPrimitive(String name)
+    {
+        return false;
+    }
+
+    public Type bindingType(String name)
+    {
+        return null;
+    }
+
+    public SootClass weakBindingClass(String name)
+    {
+        return null;
+    }
+
+    public SootMethod weakBindingConstructor(String name)
+    {
+        return null;
     }
 }
