@@ -67,9 +67,7 @@ public class TraceMatch
     protected SootClass labels = null;
     protected SootClass labels_thread_local = null;
     protected SootClass tm_weak_ref;
-    protected SootMethod tm_weak_ref_init;
     protected Map primitive_to_box = null;
-    protected Map primitive_to_box_init = null;
  
     protected CodeGenHelper helper;
     protected Position position;
@@ -343,7 +341,7 @@ public class TraceMatch
     {
         Type type = bindingType(name);
         
-        return (type instanceof soot.RefLikeType);
+        return (type instanceof RefLikeType);
     }
 
     public Type bindingType(String name)
@@ -355,55 +353,46 @@ public class TraceMatch
     {
         Type type = bindingType(name);
 
-        if (primitive_to_box.containsKey(type))
-            return (SootClass) primitive_to_box.get(type);
-        else
+        if (type instanceof RefLikeType)
             return tm_weak_ref;
+        else
+            return (SootClass) primitive_to_box.get(type);
     }
 
-    public SootMethod weakBindingConstructor(String name)
+    public Type weakBindingConstructorArgType(String name)
     {
         Type type = bindingType(name);
 
-        if (primitive_to_box_init.containsKey(type))
-            return (SootMethod) primitive_to_box_init.get(type);
+        if (type instanceof RefLikeType)
+            return Scene.v().getRefType("java.lang.Object");
         else
-            return tm_weak_ref_init;
+            return type;
     }
 
     protected void makePrimitiveMaps()
     {
         primitive_to_box = new HashMap();
-        primitive_to_box_init = new HashMap();
 
-        addToPrimitiveMaps(BooleanType.v(),
-                           Scene.v().getSootClass("java.lang.Boolean"));
-        addToPrimitiveMaps(ByteType.v(),
-                           Scene.v().getSootClass("java.lang.Byte"));
-        addToPrimitiveMaps(CharType.v(),
-                           Scene.v().getSootClass("java.lang.Character"));
-        addToPrimitiveMaps(DoubleType.v(),
-                           Scene.v().getSootClass("java.lang.Double"));
-        addToPrimitiveMaps(FloatType.v(),
-                           Scene.v().getSootClass("java.lang.Float"));
-        addToPrimitiveMaps(IntType.v(),
-                           Scene.v().getSootClass("java.lang.Integer"));
-        addToPrimitiveMaps(LongType.v(),
-                           Scene.v().getSootClass("java.lang.Long"));
-        addToPrimitiveMaps(ShortType.v(),
-                           Scene.v().getSootClass("java.lang.Short"));
+        primitive_to_box.put(BooleanType.v(),
+                             Scene.v().getSootClass("java.lang.Boolean"));
+        primitive_to_box.put(ByteType.v(),
+                             Scene.v().getSootClass("java.lang.Byte"));
+        primitive_to_box.put(CharType.v(),
+                             Scene.v().getSootClass("java.lang.Character"));
+        primitive_to_box.put(DoubleType.v(),
+                             Scene.v().getSootClass("java.lang.Double"));
+        primitive_to_box.put(FloatType.v(),
+                             Scene.v().getSootClass("java.lang.Float"));
+        primitive_to_box.put(IntType.v(),
+                             Scene.v().getSootClass("java.lang.Integer"));
+        primitive_to_box.put(LongType.v(),
+                             Scene.v().getSootClass("java.lang.Long"));
+        primitive_to_box.put(ShortType.v(),
+                             Scene.v().getSootClass("java.lang.Short"));
 
 
-        Type object_type = Scene.v().getRefType("java.lang.Object");
         tm_weak_ref = Scene.v().getSootClass(
                         "org.aspectbench.tm.runtime.internal.MyWeakRef");
-        tm_weak_ref_init = getConstructor(tm_weak_ref, object_type);
-    }
-
-    protected void addToPrimitiveMaps(Type type, SootClass box)
-    {
-        primitive_to_box.put(type, box);
-        primitive_to_box_init.put(type, getConstructor(box, type));
     }
 
     protected SootMethod getConstructor(SootClass constructed, Type param)
