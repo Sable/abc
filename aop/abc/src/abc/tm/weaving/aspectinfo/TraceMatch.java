@@ -115,16 +115,33 @@ public class TraceMatch
         return dummy_proceed_name != null;
     }
 
-	public Position getPosition() {
-		return position;
-	}
+    public Position getPosition() {
+        return position;
+    }
 	
-    public SootClass getContainerClass() {
+    public SootClass getContainerClass()
+    {
         return container.getInstanceClass().getSootClass();
     }
 
-    public List getFormals() {
+    public List getFormals()
+    {
         return formals;
+    }
+
+    public List getNonPrimitiveFormalNames()
+    {
+        List non_primitive = new ArrayList();
+        Iterator i = formals.iterator();
+
+        while (i.hasNext())
+        {
+            Formal f = (Formal) i.next();
+            if (! isPrimitive(f.getName()))
+                non_primitive.add(f.getName());
+        }
+
+        return non_primitive;
     }
     
     public List getFormalNames()
@@ -341,7 +358,7 @@ public class TraceMatch
     {
         Type type = bindingType(name);
         
-        return (type instanceof RefLikeType);
+        return ! (type instanceof RefLikeType);
     }
 
     public Type bindingType(String name)

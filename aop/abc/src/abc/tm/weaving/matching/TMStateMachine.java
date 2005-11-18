@@ -286,9 +286,9 @@ public class TMStateMachine implements StateMachine {
     	//  flowAlongEdge(e)(X) = X union e.boundVars
     	//
     	// we want to compute the meet-over-all-paths solution at each state
-    	initCollectableWeakRefs(formals);
+    	initCollectableWeakRefs(tm);
     	fixCollectableWeakRefs(tm);
-        collectableWeakRefsToOtherRefs(formals,notused);
+        collectableWeakRefsToOtherRefs(formals,notused,tm);
         if (!formals.isEmpty())
         	generateLeakWarnings(pos);
         initBoundVars(formals);
@@ -301,16 +301,16 @@ public class TMStateMachine implements StateMachine {
      * 
 	 * @param formals all variables declared in the tracematch
 	 */
-	private void initCollectableWeakRefs(Collection formals) {
+	private void initCollectableWeakRefs(TraceMatch tm) {
     	// we want a maximal fixpoint so for all final nodes the
     	// starting value is the empty set
-		// and for all other nodes it is the set of all formals
+		// and for all other nodes it is the set of all non-primitive formals
     	for (Iterator edgeIter = getStateIterator(); edgeIter.hasNext(); ) {
         	SMNode node = (SMNode) edgeIter.next();
         	if (node.isFinalNode())
         		node.collectableWeakRefs = new LinkedHashSet();
         	else
-        		node.collectableWeakRefs = new LinkedHashSet(formals); 
+        		node.collectableWeakRefs = new LinkedHashSet(tm.getNonPrimitiveFormalNames()); 
         }
 	}
 	
@@ -407,12 +407,12 @@ public class TMStateMachine implements StateMachine {
 	  * compute for each node n, n.needStrongRefs := complement(n.collectableWeakRefs);
 	 * @param formals variables declared in the tracematch
 	 */
-	private void collectableWeakRefsToOtherRefs(Collection formals, Collection notUsed) {
+	private void collectableWeakRefsToOtherRefs(Collection formals, Collection notUsed, TraceMatch tm) {
 		// for codegen we really need the complement of src.collectableWeakRefs
         // so compute that in 
 		for (Iterator stateIter = getStateIterator(); stateIter.hasNext(); ) {
 			SMNode node = (SMNode) stateIter.next();
-			// start with the set of all declared symbols
+			// start with the set of all declared formals
 			node.needStrongRefs = new LinkedHashSet(formals);
 			if (noWeakRefs) {
 				node.collectableWeakRefs.clear();
@@ -420,18 +420,12 @@ public class TMStateMachine implements StateMachine {
 				
 			} else {
 			// and remove those that are in node.weakRefs and those that are not used
-			for (Iterator varIter = node.needStrongRefs.iterator(); varIter.hasNext(); ) {
-				String s = (String) varIter.next();
-				if (node.collectableWeakRefs.contains(s) || notUsed.contains(s))
-					varIter.remove(); 
-			}
 			// everything else is a non-collectable weakRef
-			node.weakRefs = new LinkedHashSet(formals);
-			for (Iterator varIter = node.weakRefs.iterator(); varIter.hasNext(); ) {
-				String s = (String) varIter.next();
-				if (node.collectableWeakRefs.contains(s) || node.needStrongRefs.contains(s))
-					varIter.remove(); 
-			}
+			node.weakRefs = new LinkedHashSet(tm.getNonPrimitiveFormalNames());
+                        node.weakRefs.removeAll(node.collectableWeakRefs);
+                        node.weakRefs.retainAll(notUsed);
+                        node.needStrongRefs.removeAll(node.collectableWeakRefs);
+                        node.needStrongRefs.removeAll(node.weakRefs);
 			}
 		}
 	}
