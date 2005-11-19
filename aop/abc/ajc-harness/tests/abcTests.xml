@@ -9983,4 +9983,10 @@
         <run class="ITDPrivate" />
     </ajc-test>
 
+    <ajc-test num="1135" dir="abctests/bugs/inpath"
+       title="Class being woven twice when using -inpath">
+        <compile sourceroots="aspects/" inpath="java/" />
+        <run class="Test" />
+    </ajc-test>
+
 </suite>
