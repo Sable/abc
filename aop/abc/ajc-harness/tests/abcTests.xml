@@ -9977,4 +9977,10 @@
         <run class="Preinit2" />
     </ajc-test>     
 
+    <ajc-test num="1134" dir="abctests/bugs"
+       title="Problem with privileged ITD access to private fields">
+        <compile files="ITDPrivate.java" />
+        <run class="ITDPrivate" />
+    </ajc-test>
+
 </suite>
