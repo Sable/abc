@@ -9923,7 +9923,7 @@
     </ajc-test>       
 	<!-- end openmodTests.xml (generated comment, please don't delete) -->
 
-    <ajc-test num="1127" dir="cflowdepth"
+    <ajc-test num="1200" dir="cflowdepth"
       title="Cflowdepth Factorial">
         <compile files="Fact.java"
         options="-ext,abc.eaj">
@@ -9931,7 +9931,7 @@
         <run class="Fact"/>
     </ajc-test>       
 
-    <ajc-test num="1128" dir="cflowdepth"
+    <ajc-test num="1201" dir="cflowdepth"
       title="Cflowdepth Factorial with arguments">
         <compile files="Fact2.java"
         options="-ext,abc.eaj">
@@ -9939,7 +9939,7 @@
         <run class="Fact2"/>
     </ajc-test>       
 
-    <ajc-test num="1129" dir="cflowdepth"
+    <ajc-test num="1202" dir="cflowdepth"
       title="Cflowbelowdepth Factorial">
         <compile files="Fact3.java"
         options="-ext,abc.eaj">
@@ -9947,7 +9947,7 @@
         <run class="Fact3"/>
     </ajc-test>       
 
-    <ajc-test num="1130" dir="cflowdepth"
+    <ajc-test num="1203" dir="cflowdepth"
       title="Cflowbelowdepth Factorial with arguments">
         <compile files="Fact4.java"
         options="-ext,abc.eaj">
@@ -9955,7 +9955,7 @@
         <run class="Fact4"/>
     </ajc-test>       
 
-    <ajc-test num="1131" dir="cflowdepth"
+    <ajc-test num="1204" dir="cflowdepth"
       title="Cflowdepth Factorial">
         <compile files="Fact5.java"
         options="-ext,abc.eaj">
@@ -9965,25 +9965,25 @@
         </compile>
     </ajc-test>       
 
-    <ajc-test num="1132" dir="abctests/bugs"
+    <ajc-test num="1205" dir="abctests/bugs"
        title="Preinit weaving problem">
         <compile files="Preinit.java" />
         <run class="Preinit" />
     </ajc-test>     
 
-    <ajc-test num="1133" dir="abctests/bugs"
+    <ajc-test num="1206" dir="abctests/bugs"
        title="Preinit weaving problem (test 2)">
         <compile files="Preinit2.java" />
         <run class="Preinit2" />
     </ajc-test>     
 
-    <ajc-test num="1134" dir="abctests/bugs"
+    <ajc-test num="1207" dir="abctests/bugs"
        title="Problem with privileged ITD access to private fields">
         <compile files="ITDPrivate.java" />
         <run class="ITDPrivate" />
     </ajc-test>
 
-    <ajc-test num="1135" dir="abctests/bugs/inpath"
+    <ajc-test num="1208" dir="abctests/bugs/inpath"
        title="Class being woven twice when using -inpath">
         <compile sourceroots="aspects/" inpath="java/" />
         <run class="Test" />
