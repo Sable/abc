@@ -36,24 +36,29 @@ my $endpattern = "<!--\\s*end\\s$filename1.*>.*";
 my $srcline;
 my $destline;
 
+#Find start marker in dest file
 DEST1: while ($destline = <DESTFILE>) {
 	print $destline;
 	last DEST1 if $destline =~$startpattern;
 }
 
+#Find start marker in source file
 SRC1: while ($srcline = <SRCFILE>) {
 	last SRC1 if $srcline =~ $startpattern;
 }
 
+#Print source file lines until the end pattern
 SRC2: while ($srcline = <SRCFILE>) {
 	print $srcline;
 	last SRC2 if $srcline =~ $endpattern;
 }
 
+#Find the end pattern in the test file
 DEST2: while ($destline = <DESTFILE>) {
 	last DEST2 if $destline =~ $endpattern;
 }
 
+#Print the rest of the dest file
 while ($destline = <DESTFILE>) {
 	print $destline;
 }
