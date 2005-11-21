@@ -9989,4 +9989,9 @@
         <run class="Test" />
     </ajc-test>
 
+    <ajc-test num="1209" dir="abctests/tracematches"
+       title="Using private pointcut variables in an if(..) in a TM symbol">
+        <compile files="TracematchAndIfAndPPVs.java"
+            options="-ext,abc.tm" />
+    </ajc-test>
 </suite>
