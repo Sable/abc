@@ -20,9 +20,10 @@
 package abc.tm.types;
 
 import polyglot.types.*;
+import polyglot.ext.jl.types.*;
 import abc.aspectj.types.*;
 
-import java.util.Collection;
+import java.util.*;
 
 /**
  * @author Julian Tibble
@@ -30,33 +31,44 @@ import java.util.Collection;
 public class TMContext_c extends AJContext_c
                          implements TMContext
 {
-    protected boolean inSymbol;
-    protected Collection symbolMustBind;
+    // the set of all locals that can be used, in this
+    // scope (if we are in a symbol), either because the
+    // current symbol binds them, or because they were
+    // added to the scope inside the symbol
+    protected Collection canUse;
 
     public TMContext_c(TypeSystem ts)
     {
         super(ts);
-        inSymbol = false;
-        symbolMustBind = null;
+        canUse = null;
+    }
+
+    protected Context_c push()
+    {
+        TMContext_c tmc = (TMContext_c) super.push();
+        if (canUse != null)
+            tmc.canUse = new HashSet(canUse);
+        return tmc;
     }
 
     public TMContext pushSymbol(Collection mustBind)
     {
         TMContext_c c = (TMContext_c) push();
 
-        c.inSymbol = true;
-        c.symbolMustBind = mustBind;
+        c.canUse = mustBind;
 
         return c;
     }
 
-    public boolean inSymbol()
+    public boolean isUnboundTMFormal(String name)
     {
-        return inSymbol;
+        return (canUse != null) && !canUse.contains(name);
     }
-	
-    public Collection getSymbolMustBind()
+
+    public void addVariableToThisScope(VarInstance var)
     {
-        return symbolMustBind;
+        super.addVariableToThisScope(var);
+        if (canUse != null)
+            canUse.add(var.name());
     }
 }

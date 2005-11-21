@@ -38,7 +38,7 @@ import soot.*;
  * @author Julian Tibble
  * @author Oege de Moor
  */
-public class AbcExtension extends abc.main.AbcExtension
+public class AbcExtension extends abc.eaj.AbcExtension
 {
     private GlobalAspectInfo globalAspectInfo = null;
     private Weaver weaver = null;

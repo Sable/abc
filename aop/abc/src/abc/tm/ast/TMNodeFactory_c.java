@@ -24,6 +24,7 @@ import polyglot.types.*;
 import polyglot.util.*;
 
 import abc.aspectj.ast.*;
+import abc.eaj.ast.*;
 
 import java.util.*;
 
@@ -31,7 +32,7 @@ import java.util.*;
  * NodeFactory for TraceMatching extension.
  * @author Julian Tibble
  */
-public class TMNodeFactory_c extends AJNodeFactory_c
+public class TMNodeFactory_c extends EAJNodeFactory_c
                              implements TMNodeFactory
 {
     private final AJExtFactory extFactory;

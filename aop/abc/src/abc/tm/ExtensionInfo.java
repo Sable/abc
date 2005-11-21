@@ -31,6 +31,8 @@ import polyglot.visit.PrettyPrinter;
 import abc.aspectj.parse.Lexer_c;
 import abc.tm.parse.Grm;
 
+import abc.eaj.types.*;
+
 import abc.tm.ast.*;
 import abc.tm.types.*;
 import abc.tm.visit.*;
@@ -45,7 +47,7 @@ import java.io.Reader;
  * @author Chris Allan
  * @author Julian Tibble
  */
-public class ExtensionInfo extends abc.aspectj.ExtensionInfo
+public class ExtensionInfo extends abc.eaj.ExtensionInfo
 {
     static {
         // force Topics to load
@@ -79,7 +81,7 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
             new Pass.ID("create-tracematch-advice");
 
     public List passes(Job job) {
-        AJTypeSystem ts = (AJTypeSystem) this.ts;
+        EAJTypeSystem ts = (EAJTypeSystem) this.ts;
         TMNodeFactory nf = (TMNodeFactory) this.nf;
 
         List passes = super.passes(job);

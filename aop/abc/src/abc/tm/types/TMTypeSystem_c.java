@@ -20,12 +20,12 @@
 package abc.tm.types;
 
 import polyglot.types.*;
-import abc.aspectj.types.*;
+import abc.eaj.types.*;
 
 /**
  * @author Julian Tibble
  */
-public class TMTypeSystem_c extends AJTypeSystem_c
+public class TMTypeSystem_c extends EAJTypeSystem_c
 {
     public Context createContext()
     {

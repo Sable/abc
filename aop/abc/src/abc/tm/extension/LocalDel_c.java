@@ -34,11 +34,11 @@ public class LocalDel_c extends abc.aspectj.extension.LocalDel_c
     {
         TMContext tmc = (TMContext) tc.context();
 
-        if (tmc.inSymbol() && tmc.inIf())
+        if (tmc.inIf())
         {
             Local m = (Local) node();
 
-            if (! tmc.getSymbolMustBind().contains(m.name()))
+            if (tmc.isUnboundTMFormal(m.name()))
                 throw new SemanticException("Local " + m.name() +
                     " is not bound by this symbol so it cannot be" +
                     " used within if(..)", node().position());

@@ -24,7 +24,7 @@ package abc.tm;
  * @author Chris Allan
  */
 public class Version extends abc.aspectj.Version {
-    public String name() { return "abc+tracematching"; }
+    public String name() { return "abc+eaj+tracematching"; }
 
     public int major() { return 0; }
     public int minor() { return 1; }

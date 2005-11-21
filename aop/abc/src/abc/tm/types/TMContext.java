@@ -34,13 +34,9 @@ public interface TMContext extends AJContext
     TMContext pushSymbol(Collection mustBind);
 
     /**
-     * inside a symbol declaration
+     * return true if name refers to a
+     * tracematch formal which is not
+     * bound by the enclosing symbol
      */
-    boolean inSymbol();
-	
-    /**
-     * get the names of variables that are bound in the
-     * smallest enclosing symbol
-     */
-    Collection getSymbolMustBind();
+    boolean isUnboundTMFormal(String name);
 }
