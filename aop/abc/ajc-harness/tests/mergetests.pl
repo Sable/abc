@@ -3,6 +3,8 @@
 # end pattern <!-- end $srcfile --> from the source file to the destfile and
 # prints the result to stdout.
 #
+# For an example, see openmodTests.xml
+#
 # Can be useful for integrating extension test files with the main test file.
 # Would have been much better implemented if it actually parsed the XML.
 
