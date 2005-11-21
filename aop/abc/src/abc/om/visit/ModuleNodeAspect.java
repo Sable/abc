@@ -54,7 +54,7 @@ public class ModuleNodeAspect extends ModuleNode {
         PCStructure pcStruct = PCStructure.v();
         Set matches = pcStruct.matchName(namePattern, new PCNode(null, null,
                 pcStruct), new HashSet(), new HashSet());
-        assert(matches.size() == 1);
+        assert(matches.size() == 1) : "Duplicate aspect name in list";
         Iterator iter = matches.iterator();
         aspectNode = (PCNode) iter.next();
     }

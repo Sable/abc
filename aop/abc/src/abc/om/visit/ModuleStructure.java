@@ -201,7 +201,7 @@ public class ModuleStructure {
      * Returns the owner of an aspect.
      */
     public ModuleNode getOwner(String name, int type) {
-        assert(type == ModuleNode.TYPE_ASPECT);
+        assert(type == ModuleNode.TYPE_ASPECT) : "Node is not an aspect node";
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
             ModuleNode n = (ModuleNode) iter.next();
@@ -315,7 +315,7 @@ public class ModuleStructure {
         //if the class is in a module an the aspect is not, return false\
         //this should already be handled by another case above
         if (classOwner != null && aspectOwner == null) {
-            assert(false);
+            assert(false) : "ERROR: Unable to determine isInSameModuleSet. Possible ModuleStructure corruption.";
             return false;
         }
         //if both are in a module, see if the aspect belongs to a module that

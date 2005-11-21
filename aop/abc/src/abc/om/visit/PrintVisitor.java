@@ -113,7 +113,7 @@ public class PrintVisitor extends ContextVisitor {
     private void printFromModuleStructure(ModuleDecl decl, CodeWriter w) {
         ModuleNodeModule n = (ModuleNodeModule)ext.moduleStruct.getNode(decl.name(),
                 ModuleNode.TYPE_MODULE);
-        assert(n != null);
+        assert(n != null) : "Node is null";
         //print the module name
         w.write("module " + decl.name());
         w.newline();

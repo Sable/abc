@@ -69,7 +69,7 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
             	this.openClassMembers.add(m);
             }
             else {
-                assert(false); //should never happen
+                assert(false) : "ModuleBody list contains illegal type: " + m.getClass().toString(); //should never happen
             }
         }
     }

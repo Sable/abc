@@ -59,7 +59,7 @@ public class CheckModuleCycles extends ContextVisitor {
             ModuleDecl decl = (ModuleDecl) n;
             ModuleNode module = ext.moduleStruct.getNode(decl.name(),
                     ModuleNode.TYPE_MODULE);
-            assert(module != null); //should have already been caught in
+            assert(module != null) : "Node is null"; //should have already been caught in
                                     // previous passes
 
             Stack nodeParents = new Stack();

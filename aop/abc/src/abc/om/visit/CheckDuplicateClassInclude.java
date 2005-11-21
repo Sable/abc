@@ -58,7 +58,7 @@ public class CheckDuplicateClassInclude extends ContextVisitor {
         //on encountering a class body
         if (n instanceof ClassBody && !(n instanceof AspectBody)) {
             PCNode node = PCStructure.v().getClass(context().currentClass());
-            assert(node!=null);
+            assert(node!=null) : "Node is null";
             if (ext.moduleStruct.hasMultipleOwners(node)) {
                 throw new SemanticException(
                         "Class " + node.toString() + " included in more than one module.", 

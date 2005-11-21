@@ -123,14 +123,14 @@ public class ModuleNodeModule extends ModuleNode {
     }
 
     private Pointcut makeExtPointcut(ModuleNode node) {
-        assert(node.isClass());
+        assert (node.isClass()) : "Parameter is not a class node";
 
         //create !within(node.name) pointcut
         ClassnamePatternExpr cpe = null;
         if (node.isClass()) {
             cpe = ((ModuleNodeClass)node).getCPE();
         } 
-        assert(cpe != null);
+        assert (cpe != null) : "Class node CPE not properly initialized";
 
         ClassnamePattern namePattern = new OMClassnamePattern(cpe);
         Pointcut pc = new Within(namePattern, AbcExtension.generated);
@@ -142,7 +142,7 @@ public class ModuleNodeModule extends ModuleNode {
     //the entire subtree rooted at the module;
     //This should not be called until the module tree has been built
     public Pointcut getExtPointcut() {
-        assert(isModule()); //only allowable for modules
+        assert (isModule()) : "Parameter is not a module node"; //only allowable for modules
         
         if (!extPointcutBuilt) {
             extPointcutBuilt = true;
@@ -241,7 +241,7 @@ public class ModuleNodeModule extends ModuleNode {
     //Gets the names of the aspects that belong to this module and its children
     //Should only be called on modules
     public Set /*<String>*/ getAspectNames() {
-        assert (this.isModule());
+        assert (this.isModule()) : "getAspectNames invoked on non-module node";
         Set ret = new HashSet();
         for (Iterator iter = members.iterator(); iter.hasNext(); ) {
             ModuleNode member = (ModuleNode) iter.next();
