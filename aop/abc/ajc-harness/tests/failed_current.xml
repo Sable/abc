@@ -79,11 +79,11 @@
 <ajc-test title="resolving anonymous classes inside classes with dollar signs" num="1001" dir="abctests/bugs">
          <compile files="ExtraAnon.java"></compile>
     </ajc-test>
-<ajc-test title="Problem with privileged ITD access to private fields" num="1134" dir="abctests/bugs">
+<ajc-test title="Problem with privileged ITD access to private fields" num="1207" dir="abctests/bugs">
         <compile files="ITDPrivate.java"></compile>
         <run class="ITDPrivate"></run>
     </ajc-test>
-<ajc-test title="Class being woven twice when using -inpath" num="1135" dir="abctests/bugs/inpath">
+<ajc-test title="Class being woven twice when using -inpath" num="1208" dir="abctests/bugs/inpath">
         <compile sourceroots="aspects/" inpath="java/"></compile>
         <run class="Test"></run>
     </ajc-test>

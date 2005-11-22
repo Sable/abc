@@ -5336,40 +5336,43 @@
         </compile>
         <run class="ToTestMain"></run>
     </ajc-test>
-<ajc-test title="Cflowdepth Factorial" num="1127" dir="cflowdepth">
+<ajc-test title="Cflowdepth Factorial" num="1200" dir="cflowdepth">
         <compile options="-ext,abc.eaj" files="Fact.java">
         </compile>
         <run class="Fact"></run>
     </ajc-test>
-<ajc-test title="Cflowdepth Factorial with arguments" num="1128" dir="cflowdepth">
+<ajc-test title="Cflowdepth Factorial with arguments" num="1201" dir="cflowdepth">
         <compile options="-ext,abc.eaj" files="Fact2.java">
         </compile>
         <run class="Fact2"></run>
     </ajc-test>
-<ajc-test title="Cflowbelowdepth Factorial" num="1129" dir="cflowdepth">
+<ajc-test title="Cflowbelowdepth Factorial" num="1202" dir="cflowdepth">
         <compile options="-ext,abc.eaj" files="Fact3.java">
         </compile>
         <run class="Fact3"></run>
     </ajc-test>
-<ajc-test title="Cflowbelowdepth Factorial with arguments" num="1130" dir="cflowdepth">
+<ajc-test title="Cflowbelowdepth Factorial with arguments" num="1203" dir="cflowdepth">
         <compile options="-ext,abc.eaj" files="Fact4.java">
         </compile>
         <run class="Fact4"></run>
     </ajc-test>
-<ajc-test title="Cflowdepth Factorial" num="1131" dir="cflowdepth">
+<ajc-test title="Cflowdepth Factorial" num="1204" dir="cflowdepth">
         <compile options="-ext,abc.eaj" files="Fact5.java">
             <message line="14" kind="error"></message>
             <message line="17" kind="error"></message>
             <message line="22" kind="error"></message>
         </compile>
     </ajc-test>
-<ajc-test title="Preinit weaving problem" num="1132" dir="abctests/bugs">
+<ajc-test title="Preinit weaving problem" num="1205" dir="abctests/bugs">
         <compile files="Preinit.java"></compile>
         <run class="Preinit"></run>
     </ajc-test>
-<ajc-test title="Preinit weaving problem (test 2)" num="1133" dir="abctests/bugs">
+<ajc-test title="Preinit weaving problem (test 2)" num="1206" dir="abctests/bugs">
         <compile files="Preinit2.java"></compile>
         <run class="Preinit2"></run>
+    </ajc-test>
+<ajc-test title="Using private pointcut variables in an if(..) in a TM symbol" num="1209" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="TracematchAndIfAndPPVs.java"></compile>
     </ajc-test>
  
 </suite>

@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$28$around$1601(AroundAll.java:199)
+	at A.inline$30$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -199,7 +199,7 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
 
 
-Running test 1134: abctests/bugs/Problem with privileged ITD access to private fields
+Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
 Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ITDPrivate.java 
 Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Aspect: void writex(ITDPrivate,int)>
 polyglot.util.InternalCompilerError: Exception while processing <Aspect: void writex(ITDPrivate,int)>
@@ -227,13 +227,13 @@ Caused by: java.lang.RuntimeException: Trying to get soot type for null polyglot
 	at soot.SootMethod.retrieveActiveBody(SootMethod.java:304)
 	at abc.main.Main.weave(Main.java:881)
 	... 4 more
-FAIL: Test 1134: "abctests/bugs/Problem with privileged ITD access to private fields" failed.
+FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed.
 
 
-Running test 1135: abctests/bugs/inpath/Class being woven twice when using -inpath
+Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath
 Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off 
 File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
-FAIL: Test 1135: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
+FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
 
 
