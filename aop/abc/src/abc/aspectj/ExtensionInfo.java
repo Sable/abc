@@ -91,6 +91,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
 	
     public static final polyglot.frontend.Pass.ID CLEAN_DECLARE = new polyglot.frontend.Pass.ID("clean-declare");
     public static final polyglot.frontend.Pass.ID CAST_INSERTION = new polyglot.frontend.Pass.ID("cast-insertion");
+    public static final polyglot.frontend.Pass.ID ANON_CONSTR_FINDER = new polyglot.frontend.Pass.ID("anon-constr-finder");
     public static final polyglot.frontend.Pass.ID STRICTFP_PROP = new polyglot.frontend.Pass.ID("strictfp-prop");
     public static final polyglot.frontend.Pass.ID SAVE_AST = new polyglot.frontend.Pass.ID("save-ast");
 
@@ -260,6 +261,7 @@ public class ExtensionInfo extends soot.javaToJimple.jj.ExtensionInfo {
         // l.add(new VisitorPass(Pass.EXC_CHECK, job, new ExceptionChecker(job,ts,nf)));
         // insert casts for e.g. byte to int (j2j)
         l.add(new VisitorPass(CAST_INSERTION, job, new CastInsertionVisitor(job, ts, nf)));
+        l.add(new VisitorPass(ANON_CONSTR_FINDER, job, new AnonConstructorFinder(job, ts, nf)));
         // strictfp modifier is propagated to all textually enclosed members
         l.add(new VisitorPass(STRICTFP_PROP, job, new StrictFPPropagator(false)));
         // definite return checks
