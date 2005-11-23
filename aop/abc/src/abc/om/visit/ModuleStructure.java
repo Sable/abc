@@ -483,62 +483,64 @@ public class ModuleStructure {
                 ModuleNode.TYPE_ASPECT);
         if (ms.isInSameModuleSet(aspectNode, owningClass)) {
             return ret;
-        } else {
-            //else
+        } 
+        //check if any of the signatures match this shadow
+        Pointcut sigPointcut = ms.getApplicableSignature(owningClass);
+        Residue sigMatch;
 
-            //check if any of the signatures match this shadow
-            Pointcut sigPointcut = ms.getApplicableSignature(owningClass);
-            Residue sigMatch;
-
-            //if there are no matching signatures, return nevermatch
-            if (sigPointcut == null) {
-                return NeverMatch.v();
-            }
-            
-            try {
-                sigMatch = sigPointcut.matchesAt(
-                        new OMMatchingContext(weaveEnv, 
-                                sm.getContainer().getDeclaringClass(), 
-                                sm.getContainer(), 
-                                sm,
-                                currAspect)
-                        );
-            } catch (SemanticException e) {
-                throw new InternalCompilerError("Error matching signature pc",
-                        e);
-            }
-            if (sigMatch != NeverMatch.v()) {
-                Residue retResidue;
-                //special case for cflowsetup, as cflow pointcuts should not
-                //apply to the cflowsetups, otherwise the counter increment/decrement
-                //would never be called
-                if (ad instanceof CflowSetup) {
-                    retResidue = ret; 
-                } else {
-                    retResidue = AndResidue.construct(sigMatch, ret);
-                }
-                AbcExtension.debPrintln("sigMatch = " + sigMatch);
-                AbcExtension.debPrintln("ret = " + ret);
-                AbcExtension.debPrintln("retResidue = " + retResidue);
-                return retResidue;
+        //if there are no matching signatures, return nevermatch
+        if (sigPointcut == null) {
+            return NeverMatch.v();
+        }
+        
+        //match the signature with the current shadow
+        try {
+            sigMatch = sigPointcut.matchesAt(
+                    new OMMatchingContext(weaveEnv, 
+                            sm.getContainer().getDeclaringClass(), 
+                            sm.getContainer(), 
+                            sm,
+                            currAspect)
+                    );
+        } catch (SemanticException e) {
+            throw new InternalCompilerError("Error matching signature pc",
+                    e);
+        }
+        
+        //if the signature matches, conjoin the residue with the existing residue  
+        if (sigMatch != NeverMatch.v()) {
+            Residue retResidue;
+            //special case for cflowsetup, as cflow pointcuts should not
+            //apply to the cflowsetups, otherwise the counter increment/decrement
+            //would never be called
+            if (ad instanceof CflowSetup) {
+                retResidue = ret; 
             } else {
-                AbcExtension.debPrintln(
-                        "No matching signature in class " + 
-                        containingClass + 
-                        " of advice in aspect " + 
-                        currAspect.getName());
-
-                ModuleNode ownerModule = ms.getOwner(owningClass);
-                String msg = "An advice in aspect " + 
-                		currAspect.getName() + 
-                		" would normally apply here, " +
-                        "but does not match any of the signatures of module " +
-                        ownerModule.name();
-
-                addWarning(msg, sm);
-
-                return NeverMatch.v();
+                retResidue = AndResidue.construct(sigMatch, ret);
             }
+            //debug
+            AbcExtension.debPrintln("sigMatch = " + sigMatch);
+            AbcExtension.debPrintln("ret = " + ret);
+            AbcExtension.debPrintln("retResidue = " + retResidue);
+            return retResidue;
+        } else {
+        //else throw a no signature match warning
+            AbcExtension.debPrintln(
+                    "No matching signature in class " + 
+                    containingClass + 
+                    " of advice in aspect " + 
+                    currAspect.getName());
+
+            ModuleNode ownerModule = ms.getOwner(owningClass);
+            String msg = "An advice in aspect " + 
+            		currAspect.getName() + 
+            		" would normally apply here, " +
+                    "but does not match any of the signatures of module " +
+                    ownerModule.name();
+
+            addWarning(msg, sm);
+
+            return NeverMatch.v();
         }
     }
     
