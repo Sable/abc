@@ -446,6 +446,8 @@ public class AdviceApplicationInfo {
 
 		Stmt failPoint = Jimple.v().newNopStmt();
 		WeavingContext wc = PointcutCodeGen.makeWeavingContext(adviceAppl);
+        wc.setShadowTag(new InstructionShadowTag(adviceAppl.shadowmatch.shadowId));
+        wc.setSourceTag(new InstructionSourceTag(adviceAppl.advice.sourceId));
 
 		Local bindMaskLocal = null;
 		//if (bHasProceed) {
