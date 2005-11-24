@@ -32,6 +32,7 @@ import soot.jimple.Jimple;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
 import abc.weaving.weaver.*;
@@ -70,6 +71,7 @@ public class BindMaskResidue extends Residue {
                             boolean sense, WeavingContext wc) {
                 AssignStmt as=Jimple.v().newAssignStmt(
                         bindMaskLocal, Jimple.v().newOrExpr(bindMaskLocal, IntConstant.v(mask)));
+                Tagger.tagStmt(as, wc);
                 units.insertAfter(as, begin);
                 return getOp().codeGen(method, localgen, units, as, fail, sense, wc);
         }

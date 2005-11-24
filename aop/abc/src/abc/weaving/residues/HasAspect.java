@@ -26,7 +26,8 @@ import soot.util.Chain;
 import soot.jimple.*;
 import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** A residue that puts the relevant aspect instance into a
@@ -74,11 +75,15 @@ public class HasAspect extends Residue {
         AssignStmt stmtHasAspect = Jimple.v().newAssignStmt
             (hasaspect, Jimple.v().newStaticInvokeExpr
              (Scene.v().makeMethodRef(aspct,"hasAspect",paramTypes,BooleanType.v(),true),params));
-
+        if(wc.getKindTag() == null) {
+            wc.setKindTag(InstructionKindTag.ADVICE_TEST);
+        }
+        Tagger.tagStmt(stmtHasAspect, wc);
         units.insertAfter(stmtHasAspect,begin);
 
         Stmt abort=Jimple.v().newIfStmt
             (Jimple.v().newEqExpr(hasaspect,IntConstant.v(0)),fail);
+        Tagger.tagStmt(abort, wc);
         units.insertAfter(abort,stmtHasAspect);
         return abort;
     }

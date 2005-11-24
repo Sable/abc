@@ -27,7 +27,7 @@ import soot.jimple.Stmt;
 import soot.jimple.Jimple;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 import polyglot.util.InternalCompilerError;
 
@@ -75,6 +75,7 @@ public class LocalVar extends WeavingVar {
 	}
 	
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
+    Tagger.tagStmt(assignStmt, wc);
 	units.insertAfter(assignStmt,begin);
 	return assignStmt;
     }

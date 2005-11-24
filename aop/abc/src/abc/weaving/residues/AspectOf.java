@@ -42,6 +42,8 @@ import abc.soot.util.Restructure;
 import abc.weaving.aspectinfo.Aspect;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.aspectinfo.Singleton;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.ConstructorInliningMap;
 import abc.weaving.weaver.WeavingContext;
@@ -144,6 +146,10 @@ public class AspectOf extends Residue {
 				Jimple.v().newStaticInvokeExpr(
 						Scene.v().makeMethodRef(aspct, "aspectOf", paramTypes,
 								aspct.getType(), true), params));
+		//if(wc.kindTag == null) {
+        wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
+        //}
+        Tagger.tagStmt(stmtAspectOf, wc);
 		if (lastStmt==null)
 			lastStmt=stmtAspectOf;
 

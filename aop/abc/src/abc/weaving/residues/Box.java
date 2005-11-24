@@ -26,7 +26,7 @@ import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.Restructure;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** Box a weaving variable (if necessary) into another one
@@ -71,6 +71,7 @@ public class Box extends Residue implements BindingLink {
 	
 	if(!sense) {
 	    Stmt jump=Jimple.v().newGotoStmt(fail);
+        Tagger.tagStmt(jump, wc);
 	    units.insertAfter(jump,begin);
 	    return jump;
 	}
@@ -85,6 +86,7 @@ public class Box extends Residue implements BindingLink {
 	    Stmt constrStmt=Jimple.v().newInvokeStmt
 		(Jimple.v().newSpecialInvokeExpr
 		 (to.get(),Scene.v().makeConstructorRef(boxClass,paramTypeList),from.get()));
+        Tagger.tagStmt(constrStmt, wc);
 	    units.insertAfter(constrStmt,newStmt);
 	    
 	    return succeed(units,constrStmt,fail,sense);

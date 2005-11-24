@@ -26,6 +26,8 @@ import soot.jimple.Jimple;
 import soot.util.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.SingleValueWeavingContext;
 import abc.soot.util.LocalGeneratorEx;
@@ -58,6 +60,13 @@ public class PerThisSetup extends PerSetupAdvice {
                   (Jimple.v().newStaticInvokeExpr
                    (Scene.v().makeMethodRef(aspectclass,"abc$perThisBind",paramTypes,VoidType.v(),true),
                     svwc.value)));
+        Tagger.tagChain(c, InstructionKindTag.PEROBJECT_ENTRY);
+        if(wc.getShadowTag() != null) {
+            Tagger.tagChain(c, wc.getShadowTag());
+        }
+        if(wc.getSourceTag() != null) {
+            Tagger.tagChain(c, wc.getSourceTag());
+        }
 
         return c;
 

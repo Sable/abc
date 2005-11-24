@@ -29,6 +29,8 @@ import polyglot.util.InternalCompilerError;
 
 import abc.soot.util.*;
 import abc.weaving.aspectinfo.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 
 
 /** Adds fields and methods to classes representing aspects.
@@ -171,6 +173,7 @@ public class AspectCodeGen {
              ( nabException, initthrowmethod, arglist) ) ;
       units.addLast( exceptioninit );
       units.addLast( Jimple.v().newThrowStmt( nabException ) );
+      Tagger.tagChain(units, InstructionKindTag.ASPECT_CODE);
 
       // have generated:
       //    theAspect = <AspectType>.abc$perSingletonInstance;
@@ -219,6 +222,7 @@ public class AspectCodeGen {
       units.addLast( Jimple.v().newReturnStmt( IntConstant.v(1) ) );
 
       units.addLast( ret0);
+      Tagger.tagChain(units, InstructionKindTag.ASPECT_CODE);
       // have generated:
       //    theAspect = <AspectType>.abc$PerSingleonInstance
       //    if (theAspect == null) goto newReturnStmt
@@ -298,8 +302,10 @@ public class AspectCodeGen {
                      newInvokeStmt(
                         Jimple.v().newStaticInvokeExpr( postClinit.makeRef() ) );
              units.insertBefore(invokepostClinit,s);
+             Tagger.tagStmt(invokepostClinit, InstructionKindTag.ASPECT_CLINIT);
              // goto return;
              Stmt goto_s = Jimple.v().newGotoStmt(nop);
+             Tagger.tagStmt(goto_s, InstructionKindTag.ASPECT_CLINIT);
              units.insertBefore(goto_s,s);
              // catchlocal := @caughtexception
              Local catchLocal =
@@ -309,6 +315,7 @@ public class AspectCodeGen {
                    Jimple.v().newCaughtExceptionRef();
              Stmt exceptionidentity =
                  Jimple.v().newIdentityStmt(catchLocal, exceptRef);
+             Tagger.tagStmt(exceptionidentity, InstructionKindTag.ASPECT_CLINIT);
              units.insertBefore(exceptionidentity,s);
              // abc$initFailureCause := catchlocal
              StaticFieldRef cause =
@@ -320,7 +327,8 @@ public class AspectCodeGen {
              Stmt assigntofield =
                   Jimple.v().
                      newAssignStmt(cause,catchLocal);
-                        units.insertBefore(assigntofield,s);
+             Tagger.tagStmt(assigntofield, InstructionKindTag.ASPECT_CLINIT);
+             units.insertBefore(assigntofield,s);
              // add nop before return
              units.insertBefore(nop,s);
              // add the try ... catch
@@ -486,6 +494,7 @@ public class AspectCodeGen {
             getunits.addLast(idstmt);
             getunits.addLast(fieldassign);
             getunits.addLast(returnstmt);
+            Tagger.tagChain(getunits, InstructionKindTag.PEROBJECT_GET);
 
             // add the method
             scl.addMethod(getter);
@@ -523,6 +532,7 @@ public class AspectCodeGen {
             setunits.addLast(idstmt2);
             setunits.addLast(fieldassign);
             setunits.addLast(returnstmt);
+            Tagger.tagChain(setunits, InstructionKindTag.PEROBJECT_SET);
 
             // add the method
             scl.addMethod(setter);
@@ -601,6 +611,7 @@ public class AspectCodeGen {
         units.addLast(newexception);
         units.addLast(initexception);
         units.addLast(throwstmt);
+        Tagger.tagChain(units, InstructionKindTag.ASPECT_CODE);
       }
 
     /** fill in body of boolean hasAspect(java.lang.Object) */
@@ -662,6 +673,7 @@ public class AspectCodeGen {
         units.addLast(returnstmt_true);
         units.addLast(label0);
         units.addLast(returnstmt_false);
+        Tagger.tagChain(units, InstructionKindTag.ASPECT_CODE);
       }
 
     /** create method public static void abc$perThisBind(java.lang.Object)  or
@@ -810,6 +822,7 @@ public class AspectCodeGen {
                         (stackClass,"isValid",new ArrayList(),BooleanType.v(),false))));
 
         units.addLast(Jimple.v().newReturnStmt(hasAspectLoc));
+        Tagger.tagChain(units, InstructionKindTag.ASPECT_CODE);
     }
 
     private void genPerCflowAspectOfBody(SootClass cl){
@@ -851,6 +864,7 @@ public class AspectCodeGen {
                       (theAspect,Jimple.v().newCastExpr(theAspectO,cl.getType())));
 
         units.addLast(Jimple.v().newReturnStmt(theAspect));
+        Tagger.tagChain(units, InstructionKindTag.ASPECT_CODE);
     }
 
 
@@ -931,8 +945,9 @@ public class AspectCodeGen {
         // There shouldn't be any identity statements;
         // perhaps we should do getFirstRealStmt or whatever just in case,
         // though
-        clinit.getActiveBody().getUnits().addFirst
-            (Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(preClinit.makeRef())));
+        InvokeStmt preClinitInvoke = Jimple.v().newInvokeStmt(Jimple.v().newStaticInvokeExpr(preClinit.makeRef()));
+        Tagger.tagStmt(preClinitInvoke, InstructionKindTag.ASPECT_CLINIT);
+        clinit.getActiveBody().getUnits().addFirst(preClinitInvoke);
 
         return preClinit;
 

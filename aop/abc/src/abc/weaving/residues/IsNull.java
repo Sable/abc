@@ -26,7 +26,7 @@ import soot.util.Chain;
 import soot.jimple.Stmt;
 import soot.jimple.IntConstant;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** is a context value null?
@@ -58,6 +58,7 @@ public class IsNull extends Residue {
 	if(sense) test=Jimple.v().newNeExpr(v,NullConstant.v());
 	else test=Jimple.v().newEqExpr(v,NullConstant.v());
 	Stmt abort=Jimple.v().newIfStmt(test,fail);
+    Tagger.tagStmt(abort, wc);
 	units.insertAfter(abort,begin);
 	return abort;
     }

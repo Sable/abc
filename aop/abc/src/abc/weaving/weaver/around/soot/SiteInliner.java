@@ -91,10 +91,10 @@ public class SiteInliner
 
     /** Inlines the method <code>inlinee</code> into the <code>container</code>
      * at the point <code>toInline</code>. */
-    public static void inlineSite(SootMethod inlinee, Stmt toInline, 
+    public static List inlineSite(SootMethod inlinee, Stmt toInline, 
                                     SootMethod container)
     {
-        inlineSite(inlinee, toInline, container, new HashMap());
+        return inlineSite(inlinee, toInline, container, new HashMap());
     }
 
     
@@ -145,7 +145,7 @@ public class SiteInliner
         for it to be inlined.  That functionality is handled by the InlinerSafetyManager.
          
      */
-    public static void inlineSite(SootMethod inlinee, Stmt toInline, 
+    public static List inlineSite(SootMethod inlinee, Stmt toInline, 
                                     SootMethod container, Map options)
     {
 
@@ -159,7 +159,7 @@ public class SiteInliner
 
         if (!(inlinee.getDeclaringClass().isApplicationClass() ||
               inlinee.getDeclaringClass().isLibraryClass()))
-            return;
+            return null;
 
         Body inlineeB = (JimpleBody)inlinee.getActiveBody();
         Chain inlineeUnits = inlineeB.getUnits();
@@ -407,10 +407,17 @@ public class SiteInliner
             }
         }
 
+        List newStmts = new ArrayList();
+        for(Iterator i = containerUnits.iterator(containerUnits.getSuccOf(toInline), containerUnits.getPredOf(exitPoint)); i.hasNext();) {
+            newStmts.add(i.next());
+        }
+        
         // Remove the original statement toInline.
         containerUnits.remove(toInline);
 
         // Resolve name collisions.
         LocalNameStandardizer.v().transform(containerB, "ji.lns");
+        
+        return newStmts;
     }
 }

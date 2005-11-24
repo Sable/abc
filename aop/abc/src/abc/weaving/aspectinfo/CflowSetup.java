@@ -29,9 +29,10 @@ import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
-import abc.weaving.weaver.AspectCodeGen;
-import abc.weaving.weaver.WeavingContext;
-import abc.weaving.weaver.CodeGenException;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
@@ -158,6 +159,7 @@ public class CflowSetup extends AbstractAdviceDecl {
                         WeavingContext wc,Value val) {
             if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
             Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
+            Tagger.tagStmt(assignStmt, wc);
             units.insertAfter(assignStmt,begin);
             ((CflowSetupWeavingContext) wc).bounds.setElementAt(loc,pos);
             return assignStmt;
@@ -359,7 +361,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     	
     	l = localgen.generateLocal(codeGen().getCflowType(), codeGen().chooseName());
     	Stmt getIt = Jimple.v().newAssignStmt(l, Jimple.v().newStaticFieldRef(getCflowStack()));
-    	
+        Tagger.tagStmt(getIt, InstructionKindTag.GET_CFLOW_LOCAL);
     	Stmt insertAfter = 
     		getMethodFirstSafeCflowStatement(m);
 		m.getActiveBody().getUnits().insertAfter(getIt, insertAfter);
@@ -374,6 +376,7 @@ public class CflowSetup extends AbstractAdviceDecl {
     	l = localgen.generateLocal(codeGen().getCflowInstanceType(), codeGen().chooseName()+"Instance");
 		
 		Chain c = codeGen().genInitLocalToNull(localgen, l);
+        Tagger.tagChain(c, InstructionKindTag.GET_CFLOW_THREAD_LOCAL);
 
 		Stmt insertAfter = getMethodFirstSafeCflowStatement(m);
 
@@ -439,6 +442,7 @@ public class CflowSetup extends AbstractAdviceDecl {
         	ChainStmtBox pushChain = codeGen().genPush(localgen, cflowLocal, values);
         	c.addAll(pushChain.getChain());
         	pushStmts.put(adviceappl, pushChain.getStmt());
+            Tagger.tagChain(c, InstructionKindTag.CFLOW_ENTRY);
         	
         } else {
         	// POP
@@ -453,8 +457,11 @@ public class CflowSetup extends AbstractAdviceDecl {
         	ChainStmtBox popChain = codeGen().genPop(localgen, cflowLocal);
         	c.addAll(popChain.getChain());
         	popStmts.put(adviceappl, popChain.getStmt());
+            Tagger.tagChain(c, InstructionKindTag.CFLOW_EXIT);
         }
         
+        Tagger.tagChain(c, new InstructionSourceTag(adviceappl.advice.sourceId));
+        Tagger.tagChain(c, new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
         return c;
 
     }

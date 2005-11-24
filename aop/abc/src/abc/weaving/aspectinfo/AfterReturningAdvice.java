@@ -31,6 +31,9 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.Residue;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.TagContainer;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
@@ -80,6 +83,10 @@ public class AfterReturningAdvice extends AbstractAfterAdvice {
 	units.insertBefore(failpoint,endshadow);
 
 	debug("generating residue code");
+    debug("src/shadow: " + adviceappl.shadowmatch.shadowId + " " + adviceappl.advice.sourceId);
+    // store shadow/source tag for this residue in weaving context
+    wc.setShadowTag(new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
+    wc.setSourceTag(new InstructionSourceTag(adviceappl.advice.sourceId));
 	Stmt endresidue=residue.codeGen
 	    (method,localgen,units,prevstmt,failpoint,true,wc);
 

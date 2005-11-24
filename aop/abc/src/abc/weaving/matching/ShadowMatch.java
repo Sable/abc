@@ -40,12 +40,15 @@ import abc.weaving.weaver.*;
  *  @author Ondrej Lhotak
  */
 public abstract class ShadowMatch {
+    private static int nextId = 1;
+    public int shadowId;
     protected SootMethod container;
 
     public abstract ShadowMatch inline(ConstructorInliningMap cim);
     protected ShadowMatch(SootMethod container) {
         this.container=container;
         cachedThisContextValue=findThisContextValue();
+        shadowId = nextId++;
     }
 
     /** return the enclosing ShadowMatch */

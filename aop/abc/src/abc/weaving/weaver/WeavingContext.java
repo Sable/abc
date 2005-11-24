@@ -19,6 +19,11 @@
 
 package abc.weaving.weaver;
 
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.TagContainer;
+
 /** When weaving a piece of advice, various values may need to be
  *  copied into variables and be passed as parameters to the advice
  *  body. The weaving context is passed to residues and to the advice
@@ -32,6 +37,35 @@ package abc.weaving.weaver;
  *  @author Ganesh Sittampalam
  */
 
-public class WeavingContext {
+public class WeavingContext implements TagContainer {
 
+    
+    /* TagContainer implementation */
+    private InstructionShadowTag shadowTag = null;
+    private InstructionSourceTag sourceTag = null;
+    private InstructionKindTag kindTag = null;
+
+    public InstructionKindTag getKindTag() {
+        return this.kindTag;
+    }
+
+    public void setKindTag(InstructionKindTag kindTag) {
+        this.kindTag = kindTag;
+    }
+
+    public InstructionShadowTag getShadowTag() {
+        return this.shadowTag;
+    }
+
+    public void setShadowTag(InstructionShadowTag shadowTag) {
+        this.shadowTag = shadowTag;
+    }
+
+    public InstructionSourceTag getSourceTag() {
+        return this.sourceTag;
+    }
+
+    public void setSourceTag(InstructionSourceTag sourceTag) {
+        this.sourceTag = sourceTag;
+    }
 }

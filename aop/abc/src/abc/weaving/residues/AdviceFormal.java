@@ -28,8 +28,8 @@ import soot.jimple.Stmt;
 import soot.jimple.Jimple;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
-import abc.weaving.weaver.AdviceWeavingContext;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** A weaving variable that represents a formal
@@ -68,6 +68,10 @@ public class AdviceFormal extends WeavingVar {
             System.out.println("Setting argument "+pos+" to "+val+" in "+wc);
         if(loc==null) loc = localgen.generateLocal(type,"adviceformal");
         Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
+        if(wc.getKindTag() == null) {
+            wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
+        }
+        Tagger.tagStmt(assignStmt, wc);
         units.insertAfter(assignStmt,begin);
         ((AdviceWeavingContext) wc).arglist.setElementAt(loc,pos);
         return assignStmt;

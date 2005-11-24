@@ -27,6 +27,10 @@ import soot.util.*;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 
@@ -80,7 +84,9 @@ public class PerCflowSetup extends PerSetupAdvice {
 
 	    c.addLast(Jimple.v().newInvokeStmt
 		      (Jimple.v().newStaticInvokeExpr(push)));
-
+        Tagger.tagChain(c, InstructionKindTag.PERCFLOW_ENTRY);
+        Tagger.tagChain(c, new InstructionSourceTag(adviceappl.advice.sourceId));
+        Tagger.tagChain(c, new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
 	    return c;
 	} else {
 	    Chain c=new HashChain();
@@ -97,6 +103,9 @@ public class PerCflowSetup extends PerSetupAdvice {
 		      (perCflowStackLoc,Jimple.v().newStaticFieldRef(perCflowStackField)));
 	    c.addLast(Jimple.v().newInvokeStmt
 		      (Jimple.v().newVirtualInvokeExpr(perCflowStackLoc,pop)));
+        Tagger.tagChain(c, InstructionKindTag.PERCFLOW_EXIT);
+        Tagger.tagChain(c, new InstructionSourceTag(adviceappl.advice.sourceId));
+        Tagger.tagChain(c, new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
 	    return c;
 	}
     }

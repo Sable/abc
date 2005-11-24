@@ -28,6 +28,8 @@ import soot.jimple.*;
 import soot.util.*;
 import soot.tagkit.*;
 import abc.weaving.aspectinfo.MethodCategory;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import soot.javaToJimple.LocalGenerator;
 
 
@@ -366,6 +368,7 @@ public class AbcSJPInfo implements SJPInfo {
 	newAssignStmt(sigloc, Jimple.v().
 	   newVirtualInvokeExpr(factory_local,sigmethod,
 	      StringConstant.v(signature)));
+      Tagger.tagStmt(makesig, InstructionKindTag.THISJOINPOINT);
       debug("Made the sig creation call " + makesig);
       units.insertBefore(makesig,ip);
     }
@@ -396,6 +399,7 @@ public class AbcSJPInfo implements SJPInfo {
       Stmt getSJP = Jimple.v().
 	newAssignStmt(sjploc, Jimple.v().
 	  newVirtualInvokeExpr(factory_local,makeSJP,args));
+      Tagger.tagStmt(getSJP, InstructionKindTag.THISJOINPOINT);
       debug("Made SJP creation call" + getSJP);
       units.insertBefore(getSJP,ip);
     }
@@ -404,6 +408,7 @@ public class AbcSJPInfo implements SJPInfo {
       StaticFieldRef newfieldref = Jimple.v().newStaticFieldRef(sjpfield.makeRef());
       Stmt assignField = 
 	  Jimple.v().newAssignStmt(newfieldref,sjploc);
+      Tagger.tagStmt(assignField, InstructionKindTag.THISJOINPOINT);
       units.insertBefore(assignField,ip);
     }
     protected SootClass sc;

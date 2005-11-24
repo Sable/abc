@@ -24,7 +24,8 @@ import soot.SootMethod;
 import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** A "dynamic" residue that always matches.
@@ -52,6 +53,10 @@ public class AlwaysMatch extends Residue {
         if(sense) return begin;
 
         Stmt abort=Jimple.v().newGotoStmt(fail);
+        if(wc.getKindTag() == null) {
+            wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
+        }
+        Tagger.tagStmt(abort, wc);
         units.insertAfter(abort,begin);
         return abort;
     }

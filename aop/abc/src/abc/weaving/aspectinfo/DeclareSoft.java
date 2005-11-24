@@ -25,6 +25,8 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.matching.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.SingleValueWeavingContext;
 import abc.soot.util.LocalGeneratorEx;
@@ -110,6 +112,7 @@ public class DeclareSoft extends AbstractAdviceDecl {
 
 
 	units.addLast(Jimple.v().newThrowStmt(softexc));
+    Tagger.tagChain(units, InstructionKindTag.EXCEPTION_SOFTENER);
 
 	return units;
 

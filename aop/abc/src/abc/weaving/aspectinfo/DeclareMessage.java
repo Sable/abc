@@ -35,6 +35,8 @@ import soot.util.*;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.Weaver;
@@ -202,6 +204,7 @@ public class DeclareMessage extends AbstractAdviceDecl {
                         false),
                     StringConstant.v(errorMessage)));
         ret.addLast(print);
+        Tagger.tagChain(ret, InstructionKindTag.DECLARE_MESSAGE);
         debug("created println");
         debug("done makeAdviceExecutionStmts");
         return ret;

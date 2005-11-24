@@ -25,7 +25,8 @@ import soot.util.Chain;
 import soot.jimple.*;
 import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** A residue that sets a local variable to a value
@@ -59,6 +60,10 @@ public class SetResidue extends Residue {
 
 
 	Stmt assign=Jimple.v().newAssignStmt(loc,val);
+    if(wc.getKindTag() == null) {
+        wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
+    }
+    Tagger.tagStmt(assign, wc);
 	units.insertAfter(assign,begin);
 	return assign;
     }

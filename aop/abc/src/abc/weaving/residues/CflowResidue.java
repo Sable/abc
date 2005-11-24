@@ -26,6 +26,8 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.*;
 import abc.weaving.aspectinfo.CflowSetup;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
@@ -38,6 +40,8 @@ import abc.weaving.weaver.*;
  *  @author Damien Sereni
  */
 public class CflowResidue extends Residue {
+    public int id;
+    public static int nextId = 0;
     protected CflowSetup setup;
     protected List/*<WeavingVar>*/ vars;
 
@@ -51,6 +55,7 @@ public class CflowResidue extends Residue {
     }
 
     public CflowResidue(CflowSetup setup,List vars) {
+        this.id = nextId++;
         this.setup=setup;
         this.vars=vars;
     }
@@ -90,8 +95,11 @@ public class CflowResidue extends Residue {
                         WeavingContext wc) {
 
         CflowCodeGenUtils.CflowCodeGen codegen = setup.codeGen();
-
-        debug("beginning cflow codegen");
+        if(wc.getKindTag() == null) {
+            // kind is not CFLOW_TEST
+            wc.setKindTag(InstructionKindTag.ADVICE_TEST);
+        }
+        debug("beginning cflow codegen " + id);
 
         Type object=Scene.v().getSootClass("java.lang.Object").getType();
 
@@ -114,6 +122,7 @@ public class CflowResidue extends Residue {
     				setup.codeGen().genInitLocalLazily(localgen, cflowLocal, cflowStack)
     						:
     				setup.codeGen().genInitLocal(localgen, cflowLocal, cflowStack));
+        Tagger.tagChain(getlocalstack, wc);
         last = (Stmt)insertChainAfter(units, getlocalstack, last);
         
         debug("checking validity");
@@ -129,6 +138,7 @@ public class CflowResidue extends Residue {
         Local isvalid=localgen.generateLocal(BooleanType.v(),"cflowactive");
 
         ChainStmtBox isValidCheck = codegen.genIsValid(localgen, cflowLocal, isvalid, succeedStmt, failStmt);
+        Tagger.tagChain(isValidCheck.getChain(), wc);
         last = (Stmt)insertChainAfter(units, isValidCheck.getChain(), last);
         isValidStmt = isValidCheck.getStmt();
 
@@ -137,6 +147,7 @@ public class CflowResidue extends Residue {
         if(sense) test=Jimple.v().newEqExpr(isvalid,IntConstant.v(0));
         else test=Jimple.v().newNeExpr(isvalid,IntConstant.v(0));
         Stmt abort=Jimple.v().newIfStmt(test,fail);
+        Tagger.tagStmt(abort, wc);
         units.insertAfter(abort,last);
         units.insertAfter(afterAbort, abort);
 
@@ -161,6 +172,7 @@ public class CflowResidue extends Residue {
         
         debug("get bound values");
         Chain peekchain = codegen.genPeek(localgen, cflowLocal, reslocals);
+        Tagger.tagChain(peekchain, wc);
         last = (Stmt)insertChainAfter(units,peekchain, last);
         
         debug("Copy bound values into weaving vars");
@@ -170,6 +182,7 @@ public class CflowResidue extends Residue {
         	WeavingVar to = (WeavingVar) it.next();
         	Local res = (Local)it2.next();
         	last = to.set(localgen, units, last, wc, res);
+        	// last.addTag(InstructionKindTag.ADVICE_TEST)
         }
 
         }

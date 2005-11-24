@@ -27,7 +27,7 @@ import soot.jimple.Stmt;
 import soot.jimple.AssignStmt;
 import soot.jimple.Jimple;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** Load a context value into a local or argument,
@@ -86,9 +86,11 @@ public class Load extends Residue {
                 // OL: need to put in a cast
                 Local tmp1 = localgen.generateLocal(value.getSootValue().getType(), "jpcast");
                 Stmt load = Jimple.v().newAssignStmt(tmp1, value.getSootValue());
+                Tagger.tagStmt(load, wc);
                 units.insertAfter(load, begin);
                 Local tmp2 = localgen.generateLocal(jptype, "jpcast");
                 Stmt cast = Jimple.v().newAssignStmt(tmp2, Jimple.v().newCastExpr(tmp1, jptype));
+                Tagger.tagStmt(cast, wc);
                 units.insertAfter(cast, load);
                 return succeed(units,
                             variable.set(localgen,units,cast,wc,tmp2),

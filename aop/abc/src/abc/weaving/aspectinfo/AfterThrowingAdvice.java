@@ -41,6 +41,10 @@ import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.Residue;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.ShadowPoints;
 import abc.weaving.weaver.WeavingContext;
@@ -94,6 +98,19 @@ public class AfterThrowingAdvice extends AbstractAfterAdvice {
         
         NopStmt nop2 = Jimple.v().newNopStmt();
         GotoStmt goto1 = Jimple.v().newGotoStmt(nop2);
+        if(advicedecl instanceof CflowSetup) {
+            Tagger.tagStmt(goto1, InstructionKindTag.CFLOW_EXIT);
+        } else if(advicedecl instanceof PerCflowSetup) {
+            Tagger.tagStmt(goto1, InstructionKindTag.PERCFLOW_EXIT);
+        } else if(advicedecl instanceof DeclareSoft) {
+            Tagger.tagStmt(goto1, InstructionKindTag.EXCEPTION_SOFTENER);
+        } else if(advicedecl instanceof DeclareMessage) {
+            Tagger.tagStmt(goto1, InstructionKindTag.DECLARE_MESSAGE);
+        } else {
+            Tagger.tagStmt(goto1, InstructionKindTag.AFTER_THROWING_HANDLER);
+        }
+        Tagger.tagStmt(goto1, new InstructionSourceTag(advicedecl.sourceId));
+        Tagger.tagStmt(goto1, new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
         units.insertBefore(nop2, endshadow);
 	units.insertBefore(goto1, nop2);
 
@@ -112,6 +129,30 @@ public class AfterThrowingAdvice extends AbstractAfterAdvice {
 
         ThrowStmt throwStmt = Jimple.v().newThrowStmt(exception);
 	throwStmt.addTag(new ThrowCreatedByCompilerTag());
+    
+    if(advicedecl instanceof CflowSetup) {
+        Tagger.tagStmt(throwStmt, InstructionKindTag.CFLOW_EXIT);
+    } else if(advicedecl instanceof PerCflowSetup) {
+        Tagger.tagStmt(throwStmt, InstructionKindTag.PERCFLOW_EXIT);
+    } else if(advicedecl instanceof DeclareSoft) {
+        Tagger.tagStmt(throwStmt, InstructionKindTag.EXCEPTION_SOFTENER);
+    } else if(advicedecl instanceof DeclareMessage) {
+        Tagger.tagStmt(throwStmt, InstructionKindTag.DECLARE_MESSAGE);
+    } else {
+        Tagger.tagStmt(throwStmt, InstructionKindTag.AFTER_THROWING_HANDLER);
+    }
+    Tagger.tagStmt(throwStmt, new InstructionSourceTag(advicedecl.sourceId));
+    Tagger.tagStmt(throwStmt, new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
+         
+    // store shadow/source tag for this residue in weaving context
+    if(advicedecl instanceof CflowSetup) {
+        wc.setKindTag(InstructionKindTag.CFLOW_TEST);
+    }
+    if(advicedecl instanceof PerCflowSetup) {
+        wc.setKindTag(InstructionKindTag.CFLOW_TEST);
+    }
+    wc.setShadowTag(new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
+    wc.setSourceTag(new InstructionSourceTag(adviceappl.advice.sourceId));
 
 	Stmt endresidue=residue.codeGen
 	    (method,lg,units,idStmt,throwStmt,true,wc);

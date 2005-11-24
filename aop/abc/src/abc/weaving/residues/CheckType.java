@@ -25,7 +25,8 @@ import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** Check the type of a context value
@@ -139,7 +140,12 @@ public class CheckType extends Residue {
         if(sense) test=Jimple.v().newEqExpr(io,IntConstant.v(0));
         else test=Jimple.v().newNeExpr(io,IntConstant.v(0));
         Stmt abort=Jimple.v().newIfStmt(test,fail);
+        if(wc.getKindTag() == null) {
+            wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
+        }
+        Tagger.tagStmt(instancetest, wc);
         units.insertAfter(instancetest,begin);
+        Tagger.tagStmt(abort, wc);
         units.insertAfter(abort,instancetest);
         return abort;
     }

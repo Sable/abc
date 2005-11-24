@@ -27,6 +27,7 @@ import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.Restructure;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import java.util.*;
 import abc.weaving.weaver.*;
@@ -101,6 +102,7 @@ public class IfResidue extends Residue {
 		
 			Stmt assignstmt = Jimple.v().newAssignStmt
 				(ifval, unbox);
+            Tagger.tagStmt(assignstmt, wc);
 				
 			units.insertAfter(assignstmt, currStmt);
 			currStmt = assignstmt;
@@ -117,6 +119,8 @@ public class IfResidue extends Residue {
 	if(sense) test=Jimple.v().newEqExpr(ifresult,IntConstant.v(0));
 	else test=Jimple.v().newNeExpr(ifresult,IntConstant.v(0));
 	IfStmt abort=Jimple.v().newIfStmt(test,fail);
+    Tagger.tagStmt(assign, wc);
+    Tagger.tagStmt(abort, wc);
 	units.insertAfter(assign,currStmt);
 	units.insertAfter(abort,assign);
 	return abort;

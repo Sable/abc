@@ -30,6 +30,10 @@ import polyglot.util.ErrorQueue;
 import polyglot.util.ErrorInfo;
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import abc.weaving.weaver.AdviceWeavingContext;
 import abc.weaving.weaver.PointcutCodeGen;
@@ -253,6 +257,9 @@ public class AdviceDecl extends AbstractAdviceDecl {
             (Jimple.v().newVirtualInvokeExpr
              (awc.aspectinstance,advicemethod.makeRef(),awc.arglist)
              );
+        Tagger.tagStmt(s, InstructionKindTag.ADVICE_EXECUTE);
+        Tagger.tagStmt(s, new InstructionSourceTag(adviceappl.advice.sourceId));
+        Tagger.tagStmt(s, new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
         if(abc.main.Debug.v().tagResidueCode)
             s.addTag(new soot.tagkit.StringTag
                      ("^^ invocation of advice body - residue: "+adviceappl.getResidue()));

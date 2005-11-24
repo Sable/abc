@@ -35,6 +35,9 @@ import abc.soot.util.LocalGeneratorEx;
  *  @author Ganesh Sittampalam
  */
 public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
+    private static int nextId = 1;
+    public int sourceId;
+    
     protected AdviceSpec spec;
     protected Pointcut pc=null;
 
@@ -63,6 +66,7 @@ public abstract class AbstractAdviceDecl extends Syntax implements Cloneable {
                                  List/*<Formal>*/ formals,Position pos,
                                  boolean normalized) {
         super(pos);
+        sourceId = nextId++;
         this.aspct=aspct;
         this.defined_aspct=aspct;
         this.spec=spec;

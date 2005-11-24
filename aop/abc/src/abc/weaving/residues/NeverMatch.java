@@ -25,7 +25,7 @@ import soot.SootMethod;
 import soot.util.Chain;
 import soot.jimple.*;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** A "dynamic" residue that can never match.
@@ -60,6 +60,7 @@ public class NeverMatch extends Residue {
         if(!sense) return begin;
 
         Stmt abort=Jimple.v().newGotoStmt(fail);
+        Tagger.tagStmt(abort, wc);
         units.insertAfter(abort,begin);
         return abort;
     }

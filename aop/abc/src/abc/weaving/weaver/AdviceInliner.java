@@ -37,6 +37,7 @@ import soot.SootClass;
 import soot.SootMethod;
 import soot.SootMethodRef;
 import soot.Type;
+import soot.Unit;
 import soot.Value;
 import soot.VoidType;
 import soot.jimple.InstanceInvokeExpr;
@@ -66,6 +67,12 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.SwitchFolder;
 import abc.weaving.aspectinfo.AbcClass;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
+import abc.weaving.tagkit.InstructionInlineCountTag;
+import abc.weaving.tagkit.InstructionInlineTags;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.around.AroundWeaver;
 import abc.weaving.weaver.around.Util;
 import abc.weaving.weaver.around.soot.SiteInliner;
@@ -388,8 +395,65 @@ public class AdviceInliner { //extends BodyTransformer {
 	            			throw new InternalCompilerError("");
 	            		
 	            		
-	            		inlineSite(expr.getMethod(), stmt, body.getMethod());
-	            		
+	            		List newStmts = inlineSite(expr.getMethod(), stmt, body.getMethod());
+
+                        /* Tag the inlined instructions appropriately */
+                        {
+                            Tagger.tagList(
+                                    newStmts, 
+                                    Tagger.propagateKindTag((InstructionKindTag)stmt.getTag(InstructionKindTag.NAME)),
+                                    false);
+                        
+                            // get the inline count of the invoke stmt
+                            int inlineCount = 0;
+                            {
+                                InstructionInlineCountTag t = (InstructionInlineCountTag) stmt.getTag(InstructionInlineCountTag.NAME);
+                                if(t != null) {
+                                    inlineCount = t.value();
+                                }
+                            }
+                            
+                            // are we inlining an advice body?
+                            boolean adviceBody = false;
+                            if(inlineOptions instanceof AroundAdviceMethodInlineOptions
+                                    || inlineOptions instanceof AfterBeforeMethodInlineOptions)
+                            {
+                                adviceBody = true;
+                            }
+                            
+                            // are we inlining a proceed method?
+                            if(inlineOptions instanceof ProceedMethodInlineOptions) {
+                                Tagger.tagProceedRange(newStmts);
+                            }
+
+                            // add invoke's inline count and inlined shadow/source IDs to invokees'
+                            for(Iterator i = newStmts.iterator(); i.hasNext();) {
+                                Unit u = (Unit) i.next();
+                                InstructionInlineCountTag t = (InstructionInlineCountTag) u.getTag(InstructionInlineCountTag.NAME);
+                                if(t == null) {
+                                    //System.err.println("Adding new InstructionInlineCountTag to " + u);
+                                    //if(adviceBody) {
+                                        u.addTag(new InstructionInlineCountTag(inlineCount + 1));
+                                    //} else {
+                                    //  u.addTag(new InstructionInlineCountTag(inlineCount));
+                                    //}
+                                } else {
+                                    //if(adviceBody) {
+                                        t.increment();
+                                    //}
+                                }
+                                // prepend invoke shadow/source
+                                if(adviceBody) {
+                                    Tagger.addInlineTag(u, (InstructionShadowTag)stmt.getTag(InstructionShadowTag.NAME), (InstructionSourceTag)stmt.getTag(InstructionSourceTag.NAME));
+                                }
+
+                                // prepend invoke list
+                                InstructionInlineTags invokerTags = (InstructionInlineTags)stmt.getTag(InstructionInlineTags.NAME);
+                                if(invokerTags != null) {
+                                    Tagger.addInlineTags(u, invokerTags);
+                                }
+                            }
+                        } /* end of instruction tagging */
 	            		
 	            		
 	            		AccessManager.createAccessorMethods(body, before, after);           		
@@ -545,10 +609,11 @@ public class AdviceInliner { //extends BodyTransformer {
 		//BoxingRemover.removeUnnecessaryCasts(body);
 	}
 	
-	public static void inlineSite(SootMethod inlinee, Stmt invStmt, SootMethod container) {
+	public static List inlineSite(SootMethod inlinee, Stmt invStmt, SootMethod container) {
 		HashMap dummyOptions = new HashMap();
         dummyOptions.put( "enabled", "true" );
-		SiteInliner.inlineSite(inlinee, invStmt, container, dummyOptions);
+		return SiteInliner.inlineSite(inlinee, invStmt, container, dummyOptions);
+        
 	}
 	
 	public boolean aroundForceInline() {

@@ -23,6 +23,7 @@ import java.util.*;
 import soot.*;
 import soot.jimple.*;
 import soot.util.*;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.WeavingContext;
 import abc.soot.util.LocalGeneratorEx;
 import java.util.*;
@@ -53,6 +54,7 @@ public class AssertResidue extends Residue {
         Local excLocal = localgen.generateLocal(RefType.v("java.lang.RuntimeException"), "checkLocal");
         Stmt newStmt = Jimple.v().newAssignStmt(excLocal,
                 Jimple.v().newNewExpr(RefType.v("java.lang.RuntimeException")));
+        Tagger.tagStmt(newStmt, wc);
         units.insertAfter(newStmt, begin);
         ArrayList args = new ArrayList();
         ArrayList types = new ArrayList();
@@ -68,8 +70,10 @@ public class AssertResidue extends Residue {
                         VoidType.v(),
                         false ),
                     args));
+        Tagger.tagStmt(initStmt, wc);
         units.insertAfter(initStmt, newStmt);
         Stmt throwStmt = Jimple.v().newThrowStmt(excLocal);
+        Tagger.tagStmt(throwStmt, wc);
         units.insertAfter(throwStmt, initStmt);
         return throwStmt;
     }

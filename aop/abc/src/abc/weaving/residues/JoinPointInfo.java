@@ -25,6 +25,9 @@ import soot.util.Chain;
 import soot.jimple.*;
 import abc.weaving.matching.ShadowMatch;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 import java.util.*;
 
@@ -95,6 +98,7 @@ public class JoinPointInfo extends ContextValue {
     private Stmt initThisJoinPointStatic(LocalGeneratorEx lg,Chain units,Stmt start) {
         Type object=Scene.v().getSootClass("java.lang.Object").getType();
         WeavingContext wc=new WeavingContext();
+        wc.setShadowTag(new InstructionShadowTag(sm.shadowId));
 
         WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
                 "sjpinfo");
@@ -105,6 +109,10 @@ public class JoinPointInfo extends ContextValue {
                 getThisJoinPoint(),
                 Jimple.v().newCastExpr(sjpVal.get(),
                     RefType.v("org.aspectj.lang.JoinPoint")));
+        if(wc.getKindTag() == null) {
+            wc.setKindTag(InstructionKindTag.THISJOINPOINT);
+        }
+        Tagger.tagStmt(ret, wc);
 
         units.insertAfter(ret,bindSJPInfo);
 
@@ -113,28 +121,34 @@ public class JoinPointInfo extends ContextValue {
     private AssignStmt initThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
         Type object=Scene.v().getSootClass("java.lang.Object").getType();
         WeavingContext wc=new WeavingContext();
+        wc.setShadowTag(new InstructionShadowTag(sm.shadowId));
+        wc.setKindTag(InstructionKindTag.THISJOINPOINT);
 
         WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
                 "sjpinfo");
         Stmt bindSJPInfo
             =new Load(sjp, sjpVal).codeGen(sm.getContainer(),lg,units,start,null,true,wc);
-
+        Tagger.tagStmt(bindSJPInfo, InstructionKindTag.THISJOINPOINT);
+        
         WeavingVar thisVal=new LocalVar(object,"thisval");
         // Sometimes using this would actually cause a pointcut to fail to match,
         // but here we just want a null value in the JoinPointInfo
         Stmt bindThis=Bind
             .construct(thisCV,object,thisVal)
             .codeGen(sm.getContainer(),lg,units,bindSJPInfo,sm.sp.getEnd(),true,wc);
-
+        Tagger.tagStmt(bindThis, InstructionKindTag.THISJOINPOINT);
+        
         WeavingVar targetVal=new LocalVar(object,"targetval");
         Stmt bindTarget=Bind
             .construct(targetCV,object,targetVal)
             .codeGen(sm.getContainer(),lg,units,bindThis,sm.sp.getEnd(),true,wc);
-
+        Tagger.tagStmt(bindTarget, InstructionKindTag.THISJOINPOINT);
+        
         Local argsVal=lg.generateLocal(ArrayType.v(object,1),"argsvals");
 
         Stmt initArgsArray=Jimple.v().newAssignStmt
             (argsVal,Jimple.v().newNewArrayExpr(object,IntConstant.v(argsCVs.size())));
+        Tagger.tagStmt(initArgsArray, wc);
         units.insertAfter(initArgsArray,bindTarget);
 
         Iterator it=argsCVs.iterator();
@@ -146,10 +160,12 @@ public class JoinPointInfo extends ContextValue {
             Stmt bindArg=Bind
                 .construct(argCV,object,argVal)
                 .codeGen(sm.getContainer(),lg,units,last,sm.sp.getEnd(),true,wc);
-
+            Tagger.tagStmt(bindArg, InstructionKindTag.THISJOINPOINT);
+            
             last=Jimple.v().newAssignStmt
                 (Jimple.v().newArrayRef(argsVal,IntConstant.v(i)),
                  argVal.get());
+            Tagger.tagStmt(last, wc);
             units.insertAfter(last,bindArg);
 
             i++;
@@ -180,6 +196,7 @@ public class JoinPointInfo extends ContextValue {
              (Scene.v().makeMethodRef
               (factoryclass,"makeJP",constrTypes,RefType.v("org.aspectj.lang.JoinPoint"),true),
               constrArgs));
+        Tagger.tagStmt(makeJP, wc);
         units.insertAfter(makeJP,last);
 
         return makeJP;
@@ -208,6 +225,8 @@ public class JoinPointInfo extends ContextValue {
 		startJP.addTag(new soot.tagkit.StringTag("^^ nop for thisJoinPoint = null for " + sm));
 
             Stmt assignStmt=Jimple.v().newAssignStmt(get_thisJoinPoint(),NullConstant.v());
+            Tagger.tagStmt(assignStmt, InstructionKindTag.THISJOINPOINT);
+            Tagger.tagStmt(assignStmt, new InstructionShadowTag(sm.shadowId));
             units.insertAfter(assignStmt,startJP);
             //      initThisJoinPoint(lg,units,startJP);
         }
@@ -217,6 +236,8 @@ public class JoinPointInfo extends ContextValue {
         Stmt skip=Jimple.v().newNopStmt();
         Stmt jump=Jimple.v().newIfStmt
             (Jimple.v().newNeExpr(getThisJoinPoint(),NullConstant.v()),skip);
+        Tagger.tagStmt(jump, InstructionKindTag.THISJOINPOINT);
+        Tagger.tagStmt(jump, new InstructionShadowTag(sm.shadowId));
         units.insertAfter(jump,start);
         Stmt init = initThisJoinPoint(lg,units,jump);
         units.insertAfter(skip,init);

@@ -25,7 +25,7 @@ import soot.util.Chain;
 import soot.jimple.*;
 import polyglot.util.InternalCompilerError;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
 /** A residue that tests if a local variable has a value
@@ -58,6 +58,7 @@ public class TestResidue extends Residue {
 	    throw new InternalCompilerError("TestResidue should never be used negated");
 
 	Stmt test=Jimple.v().newIfStmt(Jimple.v().newNeExpr(loc,val),fail);
+    Tagger.tagStmt(test, wc);
 	units.insertAfter(test,begin);
 	return test;
     }

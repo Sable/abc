@@ -41,6 +41,8 @@ import soot.tagkit.SourceFileTag;
 import soot.util.Chain;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.SJPInfo;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 
 /** The purpose of this class is to iterate over all SJPInfo
  *    instances for a Class and to insert the relevant code for the 
@@ -153,6 +155,7 @@ public class GenStaticJoinPoints {
 	    = Scene.v().makeMethodRef(jls,"forName",fornameParams,RefType.v("java.lang.Class"),true);
         Value val = Jimple.v().newStaticInvokeExpr(forname,arg);
         Stmt getjavaclass = Jimple.v().newAssignStmt(javaclass,val);
+        Tagger.tagStmt(getjavaclass, InstructionKindTag.THISJOINPOINT);
         debug("Generating getjavaclass " + getjavaclass);
         units.insertBefore(getjavaclass,ip);
 
@@ -171,6 +174,7 @@ public class GenStaticJoinPoints {
         newAssignStmt(factory_local, 
 			Jimple.v().newNewExpr(
 			  RefType.v(runtimeFactoryClass)));
+        Tagger.tagStmt(newfactory, InstructionKindTag.THISJOINPOINT);
         debug("Generating newfactory " + newfactory);
         units.insertBefore(newfactory,ip);
                   
@@ -191,6 +195,7 @@ public class GenStaticJoinPoints {
          Stmt initfactory = Jimple.v().
 		     newInvokeStmt( Jimple.v().
 			 newSpecialInvokeExpr(factory_local,finit,args));
+        Tagger.tagStmt(initfactory, InstructionKindTag.THISJOINPOINT);
         debug("Generating init " + initfactory);
         units.insertBefore(initfactory,ip);
        }

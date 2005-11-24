@@ -25,7 +25,8 @@ import soot.*;
 import soot.jimple.*;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
-import abc.weaving.weaver.WeavingContext;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 import polyglot.util.InternalCompilerError;
 
@@ -73,6 +74,10 @@ public class PolyLocalVar extends WeavingVar {
 		//	loc=l;
 	}
 	Stmt assignStmt=Jimple.v().newAssignStmt(loc,val);
+    if(wc.getKindTag() == null) {
+        wc.setKindTag(InstructionKindTag.ADVICE_ARG_SETUP);
+    }
+    Tagger.tagStmt(assignStmt, wc);
 	units.insertAfter(assignStmt,begin);
 	return assignStmt;
     }

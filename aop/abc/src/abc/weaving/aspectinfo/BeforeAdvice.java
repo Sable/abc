@@ -30,6 +30,9 @@ import soot.util.Chain;
 
 import abc.weaving.matching.*;
 import abc.weaving.residues.*;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
 import abc.weaving.weaver.*;
 import abc.soot.util.LocalGeneratorEx;
 
@@ -90,6 +93,16 @@ public class BeforeAdvice extends AbstractAdviceSpec {
         debug("Weaving in residue: "+residue);
 
         // weave in residue
+        // store shadow/source tag for this residue in weaving context
+        if(advicedecl instanceof CflowSetup) {
+        wc.setKindTag(InstructionKindTag.CFLOW_TEST);
+        }
+        if(advicedecl instanceof PerCflowSetup) {
+        wc.setKindTag(InstructionKindTag.CFLOW_TEST);
+        }
+        wc.setShadowTag(new InstructionShadowTag(adviceappl.shadowmatch.shadowId));
+        wc.setSourceTag(new InstructionSourceTag(adviceappl.advice.sourceId));
+        
         Stmt endresidue=residue.codeGen
             (method,localgen,units,beginshadow,failpoint,true,wc);
 
