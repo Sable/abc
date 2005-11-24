@@ -96,6 +96,8 @@ public class Debug {
                                          // (e.g. nops) to aid debugging
     public boolean tagResidueCode=false; // add tags to some residue statements
                                          // to help with debugging
+    public boolean instructionTagger = false; // print info about instruction
+                                              // tagging
 
     // Cleans up code (copy propagation, nop removal, dead code removal, etc) 
     // immediately after weaving advice

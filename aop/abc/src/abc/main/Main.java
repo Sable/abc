@@ -56,6 +56,7 @@ import soot.Scene;
 import soot.SootClass;
 import soot.SootMethod;
 import soot.Timers;
+import soot.Transform;
 import soot.javaToJimple.AbstractJBBFactory;
 import soot.javaToJimple.AbstractJimpleBodyBuilder;
 import soot.javaToJimple.AccessFieldJBB;
@@ -79,6 +80,12 @@ import abc.weaving.aspectinfo.DeclareParentsExt;
 import abc.weaving.aspectinfo.DeclareParentsImpl;
 import abc.weaving.aspectinfo.GlobalAspectInfo;
 import abc.weaving.matching.MethodAdviceList;
+import abc.weaving.tagkit.InstructionInlineCountTagAggregator;
+import abc.weaving.tagkit.InstructionInlineTagsAggregator;
+import abc.weaving.tagkit.InstructionKindTagAggregator;
+import abc.weaving.tagkit.InstructionProceedTagAggregator;
+import abc.weaving.tagkit.InstructionShadowTagAggregator;
+import abc.weaving.tagkit.InstructionSourceTagAggregator;
 import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.DeclareParentsConstructorFixup;
 import abc.weaving.weaver.DeclareParentsWeaver;
@@ -685,6 +692,15 @@ public class Main {
 
         getAbcExtension().addJimplePacks();
 
+        if(OptionsParser.v().tag_instructions()) {
+            PackManager.v().getPack("tag").add(new Transform("tag.kindtag", new InstructionKindTagAggregator()));
+            PackManager.v().getPack("tag").add(new Transform("tag.sourcetag", new InstructionSourceTagAggregator()));
+            PackManager.v().getPack("tag").add(new Transform("tag.shadowtag", new InstructionShadowTagAggregator()));
+            PackManager.v().getPack("tag").add(new Transform("tag.inlinecounttag", new InstructionInlineCountTagAggregator()));
+            PackManager.v().getPack("tag").add(new Transform("tag.inlinetag", new InstructionInlineTagsAggregator()));
+            PackManager.v().getPack("tag").add(new Transform("tag.proceedtag", new InstructionProceedTagAggregator()));
+        }
+        
         String[] soot_argv = (String[]) soot_args.toArray(new String[0]);
         //System.out.println(classpath);
         if (!soot.options.Options.v().parse(soot_argv)) {

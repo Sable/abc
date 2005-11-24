@@ -139,6 +139,13 @@ any of their subdirectories.
       <long_desc>Write output class files into the directory specified by
          <use_arg_label/>.</long_desc>
     </stringopt>
+    <boolopt>
+      <alias>tag-instructions</alias>
+      <default>false</default>
+      <short_desc>Tag overhead instructions.</short_desc>
+      <long_desc>Tag overhead instrutions with metadata required for 
+          calculating dynamic metrics.</long_desc>
+    </boolopt>
   </section>
   <section>
     <name>Warning/Error Reporting Options</name>
