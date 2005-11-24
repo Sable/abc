@@ -86,11 +86,11 @@ import abc.weaving.weaver.Weaver;
  */
 public class ModuleStructure {
 
-    private Map moduleNodes;
+    private Map /*<String, ModuleNodeModule>*/ moduleNodes;
 
-    private Map aspectNodes;
+    private Map /*<String, ModuleNodeAspect>*/ aspectNodes;
 
-    private Map classNodes;
+    private Map /*<String, ModuleNodeClass>*/ classNodes;
     
     private ExtensionInfo ext;
 
@@ -306,9 +306,8 @@ public class ModuleStructure {
             return true;
         }
         //if the class is not in a module, but the aspect is, return true
-        //TODO: This decision means that aspects in modules are _can_ access
-        // classes
-        //that are not in modules
+        //TODO: This decision means that aspects in modules _can_ access
+        // classes that are not in modules  
         if (classOwner == null && aspectOwner != null) {
             return true;
         }
@@ -488,7 +487,8 @@ public class ModuleStructure {
         Pointcut sigPointcut = ms.getApplicableSignature(owningClass);
         Residue sigMatch;
 
-        //if there are no matching signatures, return nevermatch
+        //if there are no matching signatures, return nevermatch (that is,
+        //the owning module did not expose any point in the class)
         if (sigPointcut == null) {
             return NeverMatch.v();
         }
@@ -522,8 +522,10 @@ public class ModuleStructure {
             AbcExtension.debPrintln("sigMatch = " + sigMatch);
             AbcExtension.debPrintln("ret = " + ret);
             AbcExtension.debPrintln("retResidue = " + retResidue);
+            
             return retResidue;
-        } else {
+        } 
+        else {
         //else throw a no signature match warning
             AbcExtension.debPrintln(
                     "No matching signature in class " + 
@@ -550,7 +552,7 @@ public class ModuleStructure {
                         sm.getContainer(), sm.getHost()));
     }
 
-    public Collection /* ModuleNodes */getModules() {
+    public Collection /* <ModuleNodes> */getModules() {
         return moduleNodes.values();
     }
     
