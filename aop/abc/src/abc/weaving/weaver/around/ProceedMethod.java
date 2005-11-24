@@ -49,6 +49,8 @@ import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.Restructure;
 import abc.weaving.matching.AdviceApplication;
 import abc.weaving.residues.Residue;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 
 
 public class ProceedMethod {
@@ -282,9 +284,11 @@ public class ProceedMethod {
 		Stmt nonSkippedCase = Jimple.v().newNopStmt();
 		Stmt neverBoundCase = Jimple.v().newNopStmt();
 		Stmt gotoStmt = Jimple.v().newGotoStmt(neverBoundCase);
+        Tagger.tagStmt(gotoStmt, InstructionKindTag.AROUND_PROCEED);
 		Stmt ifStmt = Jimple.v().newIfStmt(
 				Jimple.v().newEqExpr(bindMaskParamLocal, IntConstant.v(1)),
 				skippedCase);
+        Tagger.tagStmt(ifStmt, InstructionKindTag.AROUND_PROCEED);
 		proceedMethodStatements.insertBefore(ifStmt, insertionPoint);
 		proceedMethodStatements.insertBefore(nonSkippedCase, insertionPoint);
 		proceedMethodStatements.insertBefore(gotoStmt, insertionPoint);
@@ -313,6 +317,7 @@ public class ProceedMethod {
 					Local actual2 = (Local) localMap.get(actual);
 					AssignStmt s = Jimple.v()
 							.newAssignStmt(actual2, paramLocal);
+                    Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 					proceedMethodStatements.insertAfter(s, nonSkippedCase);
 					Restructure.insertBoxingCast(sootProceedMethod
 							.getActiveBody(), s, true);
@@ -339,6 +344,7 @@ public class ProceedMethod {
 								Local actual3 = (Local) localMap.get(l);
 								AssignStmt s = Jimple.v().newAssignStmt(
 										actual3, paramLocal);
+                                Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 								proceedMethodStatements.insertBefore(s,
 										afterDefault);
 								Restructure.insertBoxingCast(sootProceedMethod
@@ -358,7 +364,8 @@ public class ProceedMethod {
 							maskLocal,
 							Jimple.v().newShrExpr(maskLocal,
 									IntConstant.v(bindings.getMaskPos(index))));
-
+                    Tagger.tagStmt(as, InstructionKindTag.AROUND_PROCEED);
+                    Tagger.tagStmt(as2, InstructionKindTag.AROUND_PROCEED);
 					proceedMethodStatements.insertAfter(as, afterDefault);
 					proceedMethodStatements.insertAfter(as2, as);
 					NopStmt endStmt = Jimple.v().newNopStmt();
@@ -383,8 +390,10 @@ public class ProceedMethod {
 								.get(index);
 						AssignStmt s = Jimple.v().newAssignStmt(actual3,
 								paramLocal);
+                        Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 						proceedMethodStatements.insertAfter(s, targetNop);
 						GotoStmt g = Jimple.v().newGotoStmt(endStmt);
+                        Tagger.tagStmt(g, InstructionKindTag.AROUND_PROCEED);
 						proceedMethodStatements.insertAfter(g, s);
 						Restructure.insertBoxingCast(sootProceedMethod
 								.getActiveBody(), s, true);
@@ -404,12 +413,16 @@ public class ProceedMethod {
 									exception.getMethod("<init>",
 											new ArrayList()).makeRef()));
 					Stmt throwStmt = Jimple.v().newThrowStmt(ex);
+                    Tagger.tagStmt(newExceptStmt, InstructionKindTag.AROUND_PROCEED);
+                    Tagger.tagStmt(initEx, InstructionKindTag.AROUND_PROCEED);
+                    Tagger.tagStmt(throwStmt, InstructionKindTag.AROUND_PROCEED);
 					proceedMethodStatements.insertAfter(newExceptStmt, as2);
 					proceedMethodStatements.insertAfter(initEx, newExceptStmt);
 					proceedMethodStatements.insertAfter(throwStmt, initEx);
 
 					Stmt lp = Util.newSwitchStmt(// Jimple.v().newLookupSwitchStmt(
 							maskLocal, lookupValues, targets, newExceptStmt);
+                    Tagger.tagStmt(lp, InstructionKindTag.AROUND_PROCEED);
 					proceedMethodStatements.insertAfter(lp, as2);
 				}
 			}
@@ -443,6 +456,7 @@ public class ProceedMethod {
 							.get(argIndex[i]);
 					AssignStmt s = Jimple.v()
 							.newAssignStmt(actual2, paramLocal);
+                    Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 					proceedMethodStatements.insertAfter(s, skippedCase);
 					Restructure.insertBoxingCast(sootProceedMethod
 							.getActiveBody(), s, true);
@@ -454,6 +468,7 @@ public class ProceedMethod {
 				// no binding
 				Local paramLocal = (Local) contextParamLocals.get(argIndex[i]);
 				AssignStmt s = Jimple.v().newAssignStmt(actual2, paramLocal);
+                Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 				proceedMethodStatements.insertAfter(s, neverBoundCase);
 				Util.insertCast(sootProceedMethod.getActiveBody(), s, s
 						.getRightOpBox(), actual2.getType());

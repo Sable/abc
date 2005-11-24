@@ -36,6 +36,8 @@ import soot.jimple.NopStmt;
 import soot.jimple.Stmt;
 import soot.util.Chain;
 import abc.soot.util.LocalGeneratorEx;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.Tagger;
 
 
 public class ProceedInvocation {
@@ -122,6 +124,7 @@ public class ProceedInvocation {
 			} else {
 				s = Jimple.v().newAssignStmt(this.lhs, newInvokeExpr);
 			}
+            Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 			this.dynamicInvoke = s;
 			this.enclosingMethod.interfaceInvocationStmts.add(s);
 		}
@@ -141,6 +144,7 @@ public class ProceedInvocation {
 			} else {
 				s = Jimple.v().newAssignStmt(this.lhs, newInvokeExpr);
 			}
+            Tagger.tagStmt(s, InstructionKindTag.AROUND_PROCEED);
 			this.staticInvokes.add(s);
 			this.enclosingMethod.interfaceInvocationStmts.add(s);
 		}

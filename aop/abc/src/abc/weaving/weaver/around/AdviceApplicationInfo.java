@@ -68,6 +68,10 @@ import abc.weaving.matching.ExecutionAdviceApplication;
 import abc.weaving.matching.ShadowMatch;
 import abc.weaving.residues.AlwaysMatch;
 import abc.weaving.residues.Residue;
+import abc.weaving.tagkit.InstructionKindTag;
+import abc.weaving.tagkit.InstructionShadowTag;
+import abc.weaving.tagkit.InstructionSourceTag;
+import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.CflowCodeGenUtils;
 import abc.weaving.weaver.PointcutCodeGen;
 import abc.weaving.weaver.WeavingContext;
@@ -758,6 +762,8 @@ public class AdviceApplicationInfo {
 									.getMethod("<init>", new LinkedList())
 									.makeRef())));
 			statements.addLast(Jimple.v().newReturnVoidStmt());
+            Tagger.tagChain(statements, InstructionKindTag.CLOSURE_INIT);
+            Tagger.tagChain(statements, new InstructionSourceTag(adviceAppl.advice.sourceId));
 		}
 
 		SootMethod runMethod = new SootMethod(closureRunMethodName,
@@ -848,12 +854,18 @@ public class AdviceApplicationInfo {
 		Local l = lg.generateLocal(closureClass.getType(), "closure");
 		Stmt newStmt = Jimple.v().newAssignStmt(l,
 				Jimple.v().newNewExpr(closureClass.getType()));
+        Tagger.tagStmt(newStmt, InstructionKindTag.ADVICE_ARG_SETUP);
+        Tagger.tagStmt(newStmt, new InstructionSourceTag(adviceAppl.advice.sourceId));
+        Tagger.tagStmt(newStmt, new InstructionShadowTag(adviceAppl.shadowmatch.shadowId));
 		//					Stmt init = Jimple.v().newInvokeStmt(
 		//						Jimple.v().newSpecialInvokeExpr(l, 
 		//							Scene.v().getSootClass("java.lang.Object").getMethod("<init>", new ArrayList())));
 		Stmt init = Jimple.v().newInvokeStmt(
 				Jimple.v().newSpecialInvokeExpr(l,
 						closureClass.getMethodByName("<init>").makeRef()));//, new ArrayList())));
+        Tagger.tagStmt(init, InstructionKindTag.ADVICE_ARG_SETUP);
+        Tagger.tagStmt(init, new InstructionSourceTag(adviceAppl.advice.sourceId));
+        Tagger.tagStmt(init, new InstructionShadowTag(adviceAppl.shadowmatch.shadowId));
 
 		shadowMethodStatements.insertAfter(init, begin);
 		shadowMethodStatements.insertAfter(newStmt, begin);
@@ -868,6 +880,9 @@ public class AdviceApplicationInfo {
 				throw new InternalAroundError("" + f.getType() + " : "
 						+ lContext.getType());
 			shadowMethodStatements.insertAfter(as, init);
+            Tagger.tagStmt(as, InstructionKindTag.ADVICE_ARG_SETUP);
+            Tagger.tagStmt(as, new InstructionSourceTag(adviceAppl.advice.sourceId));
+            Tagger.tagStmt(as, new InstructionShadowTag(adviceAppl.shadowmatch.shadowId));
 		}
 		return l;
 	}
@@ -959,6 +974,9 @@ public class AdviceApplicationInfo {
 		invokeStmt.addTag(attachToInvoke);
 		invokeStmt.addTag(new AroundShadowInfoTag(new ShadowInlineInfo(
 				shadowSize, shadowInternalLocalCount, bDidUnbox)));
+        Tagger.tagStmt(invokeStmt, InstructionKindTag.ADVICE_EXECUTE);
+        Tagger.tagStmt(invokeStmt, new InstructionShadowTag(adviceAppl.shadowmatch.shadowId));
+        Tagger.tagStmt(invokeStmt, new InstructionSourceTag(adviceAppl.advice.sourceId));
 		
 		Stmt beforeEnd = Jimple.v().newNopStmt();
 		shadowMethodStatements.insertBefore(beforeEnd, end);
