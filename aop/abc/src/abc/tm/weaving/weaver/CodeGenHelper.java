@@ -457,7 +457,6 @@ public class CodeGenHelper
         for (int i = 0; i < params; i++)
             args.add(body.getParameterLocal(i));
 
-        System.out.println(constraint.getMethods());
         SootMethodRef ref = constraint.getMethodByName(name).makeRef();
 
         return Jimple.v().newVirtualInvokeExpr(base, ref, args);
