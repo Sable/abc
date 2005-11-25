@@ -779,13 +779,9 @@ public class CodeGenHelper
     {
         String name = local.getName();
         Type type = local.getType();
+        Ref ref = makeDisjunctVarRef(disjunct, name, type);
 
-        Ref ref = makeDisjunctVarRef(disjunct, name, object);
-        Local var_object = addLocal(body, name + "_object", object);
-        units.addLast(Jimple.v().newAssignStmt(var_object, ref));
-
-        CastExpr cast = Jimple.v().newCastExpr(var_object, type);
-        units.addLast(Jimple.v().newAssignStmt(local, cast));
+        units.addLast(Jimple.v().newAssignStmt(local, ref));
     }
 
     protected void makeLabelsThreadLocal(Body body)
