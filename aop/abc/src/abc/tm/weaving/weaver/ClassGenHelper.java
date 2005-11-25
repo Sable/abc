@@ -7,7 +7,7 @@
  * version 2.1 of the License, or (at your option) any later version.
  *
  * This compiler is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * but WITHOUT ANY WARRANTY; 7ithout even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
@@ -52,7 +52,7 @@ public class ClassGenHelper {
 	// Relevant members
 	TraceMatch curTraceMatch;
 	SootClass constraint, disjunct;
-	static SootClass myWeakRef;
+//	static SootClass myWeakRef;
 	
 	private SootClass curClass;
 	private SootMethod curMethod;
@@ -85,8 +85,6 @@ public class ClassGenHelper {
 	 */
 	public ClassGenHelper(TraceMatch tm) {
 		curTraceMatch = tm;
-		
-		myWeakRef = Scene.v().getSootClass("org.aspectbench.tm.runtime.internal.MyWeakRef");
 		
 		// often needed class and type constants
 		objectClass = Scene.v().getSootClass("java.lang.Object");
@@ -177,6 +175,15 @@ public class ClassGenHelper {
 	}
 	
 	/**
+	 * Returns a singleton list containing its argument.
+	 */
+	protected List getList(Object o) {
+		List result = new LinkedList();
+		result.add(o);
+		return result;
+	}
+	
+	/**
 	 * This should be called only once per startMethod() call. It returns a local that holds a reference to
 	 * 'this', via an Identity statement.
 	 */
@@ -199,6 +206,14 @@ public class ClassGenHelper {
 		return paramLocal;
 	}
 	
+	/**
+	 * constructs a weak reference to the given value. It is assumed that the weak reference is intended for 
+	 * the tracematch formal of type varName, so the corresponding weakBindingClass is used.
+	 */
+	protected Local getWeakRef(Value to, String varName) {
+		return getNewObject(curTraceMatch.weakBindingClass(varName), 
+        		getList(curTraceMatch.weakBindingConstructorArgType(varName)), to);
+	}
 	/**
 	 * Returns a new Nop to be used as a jump label
 	 */
@@ -296,6 +311,38 @@ public class ClassGenHelper {
 			curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newVirtualInvokeExpr(target,
 					Scene.v().makeMethodRef(cl, name, formals, returnType, false), actuals)));
 		}
+		return result;
+	}
+	
+	/**
+	 * Returns a local of type returnType containing the result of the method call. The method is called
+	 * statically on the provided SootClass. The method is assumed to have no parameters.
+	 * @param cl the class containing the method
+	 * @param name The name of the method
+	 * @param returnType Return type of the method -- also type of the local to be returned
+	 * @return A local of type returnType containing the return value of the method call.
+	 */
+	protected Local getStaticMethodCallResult(SootClass cl, String name, Type returnType) {
+		Local result = curLGen.generateLocal(returnType, name + "$result");
+		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newStaticInvokeExpr(
+				Scene.v().makeMethodRef(cl, name, emptyList, returnType, true))));
+		return result; 
+	}
+	
+	/**
+	 * Returns a local of type returnType containing the result of the method call. The method is called
+	 * statically on the provided SootClass.
+	 * @param cl the class defining the method.
+	 * @param name The name of the method
+	 * @param formals List of types of the formal parameters -- should contain one member
+	 * @param returnType Return type of the method -- also type of the local to be returned
+	 * @param arg The local to be passed as a parameter
+	 * @return A local of type returnType containing the return value of the method call.
+	 */
+	protected Local getStaticMethodCallResult(SootClass cl, String name, List formals, Type returnType, Local arg) {
+		Local result = curLGen.generateLocal(returnType, name + "$result");
+		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newStaticInvokeExpr(
+				Scene.v().makeMethodRef(cl, name, formals, returnType, true), arg)));
 		return result;
 	}
 	
@@ -494,6 +541,16 @@ public class ClassGenHelper {
         doJumpIfEqual(val, NullConstant.v(), label);
     }
     
+    /**
+     * Inserts a conditional jump to the given label that occurs if both Value parameters are null.
+     
+    protected void doJumpIfBothNull(Value val1, Value val2, Stmt label) {
+    	Stmt labelNoJump = getNewLabel();
+    	doJumpIfNotNull(val1, labelNoJump);
+    	doJumpIfNull(val2, label);
+    	doAddLabel(labelNoJump);
+    }*/
+    
 	/**
 	 * Inserts a conditional jump to the given label at the end of the current method body -- the jump is performed
 	 * if val is NOT null.
@@ -634,6 +691,24 @@ public class ClassGenHelper {
 	 *   constraints.
 	 *   
 	 * This method fills in the members and methods of the constraint class.
+	 * 
+	 * Here an outline of what is generated, assuming the Tracematch is called 'tm':
+	 * 
+	 * public class Constraint$tm {
+	 * 		static final Constraint$tm trueC = new Constraint$tm((new LinkedHashSet()).add(new Disjunct()));
+	 * 		static final Constraint$tm falseC = new Constraint$tm();
+	 * 		public LinkedHashSet disjuncts;;
+	 * 
+	 * 		public Constraint();
+	 * 		public Constraint(LinkedHashSet s);
+	 * 		protected void finalize();
+	 * 		public Constraint$tm or(Constraint$tm arg);
+	 * 		public Constraint$tm copy();
+	 * 		public Disjunct$tm[] getDisjunctArray();
+	 * 
+	 * 		// for each symbol X
+	 * 		public Constraint$tm addBindingsForSymbolX(... bindings ...);
+	 * 		public Constraint$tm addNegativeBindingsForSymbolX(... bindings ...);;
 	 */
 	protected void fillInConstraintClass() {
 		startClass(constraint);
@@ -674,6 +749,18 @@ public class ClassGenHelper {
 	 * Also, there is a constructor that takes a set and uses that set as the disjunct set.
 	 * 
 	 * If debugging is enabled, constructors also print a single 'C' character to stdout.
+	 * 
+	 * public Constraint$tm() {
+	 * 		super();
+	 * 		this.disjuncts = new LinkedHashSet();
+	 * 		if(debugging) System.out.print("C");
+	 * }
+	 * 
+	 * public Constraint$tm(LinkedHashSet s) {
+	 * 		super();
+	 * 		this.disjuncts = s;
+	 * 		if(debugging) System.out.print("C");
+	 * }
 	 */
 	protected void addConstraintInitialiser() {
 		
@@ -727,6 +814,10 @@ public class ClassGenHelper {
 	
 	/**
 	 * If debugging is enabled, finalizing a constraint prints a single 'c' character on stdout.
+	 * 
+	 * protected void finalize() {
+	 * 		if(debugging) System.out.print("c");
+	 * }
 	 */
 	protected void addConstraintFinalizeMethod() {
 		startMethod("finalize", emptyList, VoidType.v(), Modifier.PROTECTED);
@@ -748,6 +839,24 @@ public class ClassGenHelper {
 	 * for the or() method. The reason is rather subtle and follows from the fact that or() is only ever 
 	 * called on temporary constraint labels, so that it doesn't matter if we modify them destructively --
 	 * only after the temporary labels become permanent do we need to worry about doing things functionally.
+	 * 
+	 * public Constraint$tm or(Constraint$tm param) {
+	 * 		if(this == trueC) goto returnTrue;
+	 * 		if(param == trueC) goto returnTrue;
+	 * 		// order is important -- if both are false, we want to return falseC rather than a copy of falseC.
+	 * 		if(param == falseC) goto returnThis;
+	 * 		if(this == falseC) goto returnParamCopy;
+	 * 
+	 * 		this.disjuncts.addAll(param.disjuncts);
+	 * 	returnThis:
+	 * 		return this;
+	 * 
+	 *  returnTrue:
+	 *  	return trueC;
+	 *  
+	 *  returnParamCopy:
+	 *  	return param.copy();
+	 * }
 	 */
 	protected void addConstraintOrMethod() {
 		List singleConstraint = new LinkedList();
@@ -765,8 +874,9 @@ public class ClassGenHelper {
 		
 		doJumpIfEqual(thisLocal, trueC, labelReturnTrue);
 		doJumpIfEqual(paramLocal, trueC, labelReturnTrue);
-		doJumpIfEqual(thisLocal, falseC, labelReturnParamCopy);
+		// order is important -- if both are false, we want to return falseC rather than a copy of falseC.
 		doJumpIfEqual(paramLocal, falseC, labelReturnThis);
+		doJumpIfEqual(thisLocal, falseC, labelReturnParamCopy);
 		
 		// if we're here -- we need to add paramLocal's disjuncts to this.disjuncts
 		List singleCollection = new LinkedList();
@@ -774,14 +884,13 @@ public class ClassGenHelper {
 		Local thisSet = getFieldLocal(thisLocal, "disjuncts", setType);
 		Local paramSet = getFieldLocal(paramLocal, "disjuncts", setType);
 		doMethodCall(thisSet, "addAll", singleCollection, BooleanType.v(), paramSet);
-		doReturn(thisLocal);
-		
+
 		// the jump labels:
-		doAddLabel(labelReturnTrue);
-		doReturn(trueC);
-		
 		doAddLabel(labelReturnThis);
 		doReturn(thisLocal);
+		
+		doAddLabel(labelReturnTrue);
+		doReturn(trueC);
 		
 		doAddLabel(labelReturnParamCopy);
 		doReturn(getMethodCallResult(paramLocal, "copy", constraint.getType()));
@@ -792,6 +901,10 @@ public class ClassGenHelper {
 	 * 
 	 * That method returns a copy of arg. It reuses the same disjuncts, but constructs a new set to hold them, and
 	 * a new Constraint object with that new set as its disjuncts set.
+	 * 
+	 * public Constraint$tm copy() {
+	 * 		return new Constraint$tm(new LinkedHashSet(this.disjuncts));
+	 * }
 	 */
 	protected void addConstraintCopyMethod() {
 		startMethod("copy", emptyList, constraint.getType(), Modifier.PUBLIC);
@@ -814,6 +927,10 @@ public class ClassGenHelper {
      * Add a method with signature Object[] getDisjunctArray();
      * 
      *  Needed by the advice -- it is used to iterate over all solutions to a constraint. Simply uses Set.toArray().
+     *  
+     *  public Object[] getDisjunctArray() {
+     *  	return this.disjuncts.toArray();
+     *  }
      */
     protected void addConstraintGetDisjunctArrayMethod() {
         Type arrayType = ArrayType.v(objectType, 1);
@@ -834,6 +951,34 @@ public class ClassGenHelper {
 	 * The idea is that these methods record new bindings obtained by following a transition in the NFA triggered
 	 * by an event in the program, and return falseC if the new bindings are incompatible with this constarint, 
 	 * or a new constraint that incorporates the new bindings if they *are* compatible.
+	 * 
+	 * For each tracematch symbol S0, with no variables:
+	 * public Constraint$tm addBindingsForSymbolS0(int from, int to) {
+	 * 		return this;
+	 * }
+	 * 
+	 * For each tracematch symbol S with variables x1..xn:
+	 * public Constraint$tm addBindingsForSymbolS(int from, int to, Type1 x1, ..., Typen xn) {
+	 * 		if(this == falseC) goto returnFalse;
+	 * 		LinkedHashSet resultDisjuncts = new LinkedHashSet();
+	 * 		Iterator disjunctsIt = this.disjuncts.iterator();
+	 *  loopBegin:
+	 *  	if(!disjunctsIt.hasNext()) goto loopEnd;
+	 *  	Disjunct$tm curDisjunct = (Disjunct$tm)it.next();
+	 *  	if(curDisjunct.validateDisjunct(to)) goto disjunctValid;
+	 *  	disjunctIt.remove();
+	 *  	goto loopBegin;
+	 *  disjunctValid:
+	 *  	resultDisjuncts.add(curDisjunct.addBindingsForSymbolS(from, to, x1, ..., xn);
+	 *  	goto loopBegin;
+	 *  loopEnd:
+	 *  	resultDisjuncts.remove(Disjunct$tm.falseD);
+	 *  	if(resultDisjuncts.isEmpty()) goto returnFalse;
+	 *  	return new Constraint$tm(resultDisjuncts);
+	 *  returnFalse:
+	 *  	return falseC;
+	 *  }
+	 * 	
 	 */
 	protected void addConstraintAddBindingsMethods() {
 		List singleInt = new LinkedList();
@@ -850,8 +995,8 @@ public class ClassGenHelper {
 			parameterTypes.add(IntType.v()); // number of originating state of the transition
 			parameterTypes.add(IntType.v()); // number of the target state of the transition
 			int varCount = variables.size();
-			for(int i = 0; i < varCount; i++) {
-				parameterTypes.add(objectType); // one Object parameter for each bound variable
+			for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+				parameterTypes.add(curTraceMatch.bindingType((String)varIt.next()));
 			}
 			startMethod("addBindingsForSymbol" + symbol, parameterTypes, constraint.getType(), Modifier.PUBLIC);
 			if(varCount == 0) {
@@ -881,8 +1026,8 @@ public class ClassGenHelper {
 				Local stateTo = getParamLocal(parameterIndex++, IntType.v());
 				parameterLocals.add(stateTo);
 				
-				for(Iterator varIt = variables.iterator(); varIt.hasNext(); varIt.next()) {
-					parameterLocals.add(getParamLocal(parameterIndex++, objectType));
+				for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+					parameterLocals.add(getParamLocal(parameterIndex++, curTraceMatch.bindingType((String)varIt.next())));
 				}
 				
 				Local thisDisjuncts = getFieldLocal(thisLocal, "disjuncts", setType);
@@ -945,6 +1090,55 @@ public class ClassGenHelper {
 	 * The idea is that these methods record new bindings obtained by following a transition in the NFA triggered
 	 * by an event in the program, and return falseC if the new bindings are incompatible with this constarint, 
 	 * or a new constraint that incorporates the new bindings if they *are* compatible.
+	 * 
+	 * For each tracematch symbol S0 with no variables:
+	 * public Constraint$tm addNegativeBindingsForSymbolS0(int from) {
+	 * 		return falseC;
+	 * }
+	 * 
+	 * For each tracematch symbol S with a single variable x:
+	 * public Constraint$tm addNegativeBindingsForSymbolS(int to, TypeX x) {
+	 * 		if(this == falseC) goto returnFalse;
+	 * 		Iterator disjunctsIt = this.disjuncts.iterator();
+	 * 		LinkedHashSet resultSet = new LinkedHashSet();
+	 * 	loopBegin:
+	 * 		if(!disjunctsIt.hasNext()) goto loopEnd;
+	 * 		Disjunct$tm curDisjunct = (Disjunct$tm) disjunctsIt.next();
+	 * 		if(curDisjunct.validateDisjunct(to)) goto disjunctValid;
+	 * 		disjunctIt.remove();
+	 * 		goto loopBegin;
+	 *  disjunctValid:
+	 *  	resultSet.add(curDisjunct.addNegativeBindingsForSymbolS(to, x);
+	 *  	goto loopBegin;
+	 *  loopEnd:
+	 *  	resultSet.remove(Disjunct$tm.falseD);
+	 *  	if(resultSet.isEmpty()) goto returnFalse;
+	 *  	return new Constraint$tm(resultSet);
+	 *  returnFalse:
+	 *  	return falseC;
+	 *  }
+	 * For each tracematch symbol S with variables x1, ..., xn (n > 1):
+	 * public Constraint$tm addNegativeBindingsForSymbolS(int to, Type1 x1, ..., Typen xn) {
+	 * 		if(this == falseC) goto returnFalse;
+	 * 		Iterator disjunctsIt = this.disjuncts.iterator();
+	 * 		LinkedHashSet resultSet = new LinkedHashSet();
+	 * 	loopBegin:
+	 * 		if(!disjunctsIt.hasNext()) goto loopEnd;
+	 * 		Disjunct$tm curDisjunct = (Disjunct$tm) disjunctsIt.next();
+	 * 		if(curDisjunct.validateDisjunct(to)) goto disjunctValid;
+	 * 		disjunctIt.remove();
+	 * 		goto loopBegin;
+	 *  disjunctValid:
+	 *  	resultSet.addAll(curDisjunct.addNegativeBindingsForSymbolS(to, x1, ..., xn);
+	 *  	goto loopBegin;
+	 *  loopEnd:
+	 *  	resultSet.remove(Disjunct$tm.falseD);
+	 *  	if(resultSet.isEmpty()) goto returnFalse;
+	 *  	return new Constraint$tm(resultSet);
+	 *  returnFalse:
+	 *  	return falseC;
+	 *  }
+	 *
 	 */
 	protected void addConstraintAddNegativeBindingsMethods() {
 		List singleInt = new LinkedList();
@@ -960,10 +1154,10 @@ public class ClassGenHelper {
 			symbol = (String) symbolIt.next();
 			List variables = curTraceMatch.getVariableOrder(symbol);
 			List parameterTypes = new LinkedList();
-			parameterTypes.add(IntType.v()); // number of originating state of the transition
+			parameterTypes.add(IntType.v()); // number of target state of the transition
 			int varCount = variables.size();
-			for(int i = 0; i < varCount; i++) {
-				parameterTypes.add(objectType); // one Object parameter for each bound variable
+			for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+				parameterTypes.add(curTraceMatch.bindingType((String)varIt.next()));
 			}
 			startMethod("addNegativeBindingsForSymbol" + symbol, parameterTypes, constraint.getType(), Modifier.PUBLIC);
 			if(varCount == 0) {
@@ -989,8 +1183,8 @@ public class ClassGenHelper {
 				Local stateTo = getParamLocal(parameterIndex++, IntType.v());
 				parameterLocals.add(stateTo);
 				
-				for(Iterator varIt = variables.iterator(); varIt.hasNext(); varIt.next()) {
-					parameterLocals.add(getParamLocal(parameterIndex++, objectType));
+				for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+					parameterLocals.add(getParamLocal(parameterIndex++, curTraceMatch.bindingType((String)varIt.next())));
 				}
 				
 				Local thisDisjuncts = getFieldLocal(thisLocal, "disjuncts", setType);
@@ -1057,13 +1251,49 @@ public class ClassGenHelper {
 	 * Fills in the fields and methods of the disjunct class. A disjunct represents a (potentially incomplete)
 	 * solution of a constraint, i.e. a (potentially incomplete) set of bindings that would make the constraint
 	 * true. For every tracematch formal variable X, the Disjunct class has a field var$X which records the 
-	 * current binding of X (possibly weakly, using MyWeakRef and depending on the state that the disjunct is
-	 * associated with), a boolean flag X$isWeak (indicating whether the binding is weak or not), and a set 
-	 * not$X of negative bindings for X. There is also a method get$X() which returns the value bound by X, 
-	 * whether X is weak or strong. var$X == null if X is not bound. not$X == null iff var$X != null, as we
-	 * don't need to keep track of negative bindings after X is bound.
+	 * current binding of X a set not$X of negative bindings for X, and, for non-primitive types, a field 
+	 * weak$X containing the weak binding for X, if any. There is also a method get$X() which returns the value 
+	 * bound by X, whether X is weak or strong. 
+	 *
+	 * There is also a boolean field X$isBound which is true iff X is bound (weakly or strongly -- thus, for
+	 * reference types, X$isBound == true iff (var$X != null || weak$X != null). For primitive types, this flag
+	 * is needed, as otherwise it's impossible to determine whether a variable has been bound. It is used for
+	 * reference types as well to save some time -- checking for 'boundness' is "if(X$isBound)" rather than
+	 * "if(var$X == null && weak$X == null)", so potentially quicker. We could conceivably trade some space for
+	 * some time here. 
 	 * 
 	 * There are two static fields, trueD and falseD, representing the true and false disjunct respectively.
+	 * 
+	 * Here is an outline of what is generated, assuming the tracematch is called 'tm':
+	 * 
+	 * public class Disjunct$tm {
+	 * 		public static Disjunct$tm trueD = new Disjunct$tm();
+	 * 		public static Disjunct$tm falseD = new Disjunct$tm();
+	 * 
+	 * 		// For each tracematch variable X of type TypeX
+	 * 		TypeX var$X;
+	 * 		boolean X$isBound;
+	 * 		LinkedHashSet not$X;
+	 *		public Disjunct$tm addNegativeBindingsForVariableX(TypeX binding);
+	 *		public TypeX get$X();
+	 * 		// If X is a reference type (and not primitive)
+	 * 		MyWeakRef weak$X;
+	 * 		
+	 * 		public Disjunct$tm();
+	 * 		public Disjunct$tm(Disjunct$tm arg);
+	 * 		protected void finalize();
+	 * 		
+	 *		// For each tracematch variable X
+	 *	
+	 *		// For each tracematch symbol S binding variables x1, ..., xn:
+	 *		public Disjunct$tm addBindingsForSymbolX(int from, int to, Type1 x1, ..., Typen xn);
+	 *		public Disjunct$tm addNegativeBindingsForSymbolX(int to, Type1 x1, ..., Typen xn);
+	 *
+	 *		public boolean equals();
+	 *		public int hashCode();
+	 *
+	 *		public boolean validateDisjunct(int to);
+	 * }
 	 */
 	protected void fillInDisjunctClass() {
 		startClass(disjunct);
@@ -1098,15 +1328,19 @@ public class ClassGenHelper {
         Iterator varIt = varNames.iterator();
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
-            SootField curField = new SootField("var$" + varName, objectType,
+            SootField curField = new SootField("var$" + varName, curTraceMatch.bindingType(varName),
                     Modifier.PUBLIC);
             disjunct.addField(curField);
             curField = new SootField("not$" + varName, setType,
                     Modifier.PUBLIC);
             disjunct.addField(curField);
-            curField = new SootField(varName + "$isWeak", BooleanType.v(),
-                    Modifier.PUBLIC);
+            curField = new SootField(varName + "$isBound", BooleanType.v(), Modifier.PUBLIC);
             disjunct.addField(curField);
+            if(!curTraceMatch.isPrimitive(varName)) {
+		        curField = new SootField("weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(),
+		                Modifier.PUBLIC);
+		        disjunct.addField(curField);
+            }
         }
 	}
     
@@ -1115,6 +1349,32 @@ public class ClassGenHelper {
      * taking a Disjunct as a parameter.
      * 
      * Also, if debugging is enabled, print the character 'D' to stdout whenever a disjunct is constructed.
+     * 
+     * public Disjunct$tm() {
+     * 		super();
+     * 		#for(each Tracematch formal variable X) {
+     * 			this.not$X = new LinkedHashSet();
+     * 		#}
+     * 		if(debug) System.out.println("D");
+     * }
+     * 
+     * public Disjunct$tm(Disjunct$tm param) {
+     * 		super();
+     * 		#for(each Tracematch formal variable X) {
+     * 			curBinding = param.var$X;
+     * 			this.var$X = curBinding;
+     * 			curVarIsBound = param.X$isBound;
+     * 			this.X$isBound = curVarIsBound;
+     * 			#if(X is non-primitive) {
+     * 				curWeakBinding = param.weak$X;
+     * 				this.weak$X = curWeakBinding;
+     * 			#}
+     * 			if(curVarIsBound) goto skipNegBindingsSet;
+     * 			this.not$X = new LinkedHashSet(param.not$X);
+     * 	skipNegBindingsSet:
+     * 		#}
+     * 		if(debug) System.out.println("D");
+     * }
      */
     protected void addDisjunctInitialiser() {
         // no-argument constructor
@@ -1159,18 +1419,26 @@ public class ClassGenHelper {
         // and don't allocate negative bindings sets for those. Probably small effect, though.
         varNames = curTraceMatch.getFormalNames();
         varIt = varNames.iterator();
-        Local curBinding, curSet;
+        Local curBinding, curWeakBinding, curVarIsBound, curSet;
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
             Stmt labelSkipNegBindingsSet = getNewLabel();
-            curBinding = getFieldLocal(paramLocal, "var$" + varName, objectType);
-            doSetField(thisLocal, "var$" + varName, objectType, curBinding);
-            doSetField(thisLocal, varName + "$isWeak", BooleanType.v(), 
-                    getFieldLocal(paramLocal, varName + "$isWeak", BooleanType.v()));
-            doJumpIfNotNull(curBinding, labelSkipNegBindingsSet);
-            curSet = getNewObject(setClass);
-            doMethodCall(curSet, "addAll", singleCollection, BooleanType.v(), 
-                    getFieldLocal(paramLocal, "not$" + varName, setType));
+            curBinding = getFieldLocal(paramLocal, "var$" + varName, curTraceMatch.bindingType(varName));
+            doSetField(thisLocal, "var$" + varName, curTraceMatch.bindingType(varName), curBinding);
+            curVarIsBound = getFieldLocal(paramLocal, varName + "$isBound", BooleanType.v());
+            doSetField(thisLocal, varName + "$isBound", BooleanType.v(), curVarIsBound);
+            if(!curTraceMatch.isPrimitive(varName)) {
+	            curWeakBinding = getFieldLocal(paramLocal, "weak$" + varName, 
+	            		curTraceMatch.weakBindingClass(varName).getType());
+	            doSetField(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(),
+	            		curWeakBinding);
+            }
+
+            // variable is bound if either var$X != null or weak$X != null; the latter is checked above.
+            doJumpIfTrue(curVarIsBound, labelSkipNegBindingsSet);
+            
+            curSet = getNewObject(setClass, singleCollection, 
+            		getFieldLocal(paramLocal, "not$" + varName, setType));
             doSetField(thisLocal, "not$" + varName, setType, curSet);
             
             doAddLabel(labelSkipNegBindingsSet);
@@ -1196,6 +1464,10 @@ public class ClassGenHelper {
     
     /**
      * If debug tracing is enabled, print 'd' to stdout whenever a disjunct is finalized.
+     * 
+     * protected void finalize() { 
+     * 		if(debug) System.out.println("d");
+     * }
      */
     protected void addDisjunctFinalizeMethod() {
         startMethod("finalize", emptyList, VoidType.v(), Modifier.PROTECTED);
@@ -1205,13 +1477,27 @@ public class ClassGenHelper {
     }
     
     /**
-     * Add a method of signature Disjunct addNegativeBindingsForVariableX(Object binding) for each formal
+     * Add a method of signature Disjunct addNegativeBindingsForVariableX(TypeX binding) for each formal
      * tracematch parameter X.
      * 
      * The method adds a negative binding for a single variable to the current disjunct. there are three cases:
      * 1. The variable is bound to the same value as the new binding -- return falseD.
      * 2. The variable is bound to a different value -- return this.copy() (no need to record new negative binding).
      * 3. The variable is not bound -- return this.copy().not$var.add(new MyWeakRef(binding)).
+     * 
+     * public Disjunct$tm AddNegativeBindingsForVariableX(TypeX binding) {
+     * 		if(!this.X$isBound) goto varNotBound;
+     * 		if(this.get$X() == binding) goto returnFalse;
+     * 		return new Disjunct$tm(this);
+     * 
+     *  varNotBound:
+     *  	Disjunct$tm result = new Disjunct$tm(this);
+     *  	result.not$.add(new #WeakRefClass(binding));
+     *  	return result;
+     *  
+     *  returnFalse:
+     *  	return falseD;
+     *  }
      */
     protected void addDisjunctAddNegativeBindingsForVariableMethods() {
         List singleDisjunct = new LinkedList();
@@ -1220,18 +1506,21 @@ public class ClassGenHelper {
         Iterator varIt = varNames.iterator();
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
-            startMethod("addNegativeBindingForVariable" + varName, singleObjectType, disjunct.getType(), Modifier.PUBLIC);
+            Type varType = curTraceMatch.bindingType(varName);
+            startMethod("addNegativeBindingForVariable" + varName, getList(varType),
+            		disjunct.getType(), Modifier.PUBLIC);
 
             Stmt labelReturnFalse = getNewLabel();
             Stmt labelVarNotBound = getNewLabel();
             
             Local thisLocal = getThisLocal();
-            Local paramLocal = getParamLocal(0, objectType);
+            Local paramLocal = getParamLocal(0, varType);
             
-            doJumpIfNull(getFieldLocal(thisLocal, "var$" + varName, objectType), labelVarNotBound);
+            doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), 
+            				labelVarNotBound);
             
             // variable bound -- return false if bound to same value
-            doJumpIfEqual(getMethodCallResult(thisLocal, "get$" + varName, objectType), paramLocal, labelReturnFalse);
+            doJumpIfEqual(getMethodCallResult(thisLocal, "get$" + varName, varType), paramLocal, labelReturnFalse);
             
             // bound to a different value -- return new Disjunct(this); (i.e. this.copy())
             doReturn(getNewObject(disjunct, singleDisjunct, thisLocal));
@@ -1240,7 +1529,7 @@ public class ClassGenHelper {
             doAddLabel(labelVarNotBound);
             Local result = getNewObject(disjunct, singleDisjunct, thisLocal);
             Local targetSet = getFieldLocal(result, "not$" + varName, setType);
-            Local weakRef = getNewObject(myWeakRef, singleObjectType, paramLocal);
+            Local weakRef = getWeakRef(paramLocal, varName);
             doMethodCall(targetSet, "add", singleObjectType, BooleanType.v(), weakRef);
             doReturn(result);
             
@@ -1254,27 +1543,37 @@ public class ClassGenHelper {
      * 
      * Returns the value X is bound to, dereferencing a weak reference if necessary. Throws a runtime
      * exception if X is not bound.
+     * 
+     * public TypeX get$x() {
+     * 		if(this.var$X == null) goto bindingIsWeak;
+     * 		return this.var$X;
+     *  bindingIsWeak:
+     *  	if(this.weak$X == null) goto throwException;
+     *  	return (TypeX)this.weak$X.get();
+     *  throwException:
+     *  	throw new RuntimeException("Attempt to get an unbound variable: " + varName);
+     *  }
      */
     protected void addDisjunctGetVarMethods() {
         List varNames = curTraceMatch.getFormalNames();
         Iterator varIt = varNames.iterator();
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
-            startMethod("get$" + varName, emptyList, objectType, Modifier.PUBLIC);
+            startMethod("get$" + varName, emptyList, curTraceMatch.bindingType(varName), Modifier.PUBLIC);
             Stmt labelThrowException = getNewLabel();
             Stmt labelBindingIsWeak = getNewLabel();
             
             Local thisLocal = getThisLocal();
-            Local var = getFieldLocal(thisLocal, "var$" + varName, objectType);
-            doJumpIfNull(var, labelThrowException);
-            doJumpIfInstanceOf(var, myWeakRef.getType(), labelBindingIsWeak);
-            
+            Local var = getFieldLocal(thisLocal, "var$" + varName, curTraceMatch.bindingType(varName));
+            doJumpIfNull(var, labelBindingIsWeak);
             // binding is strong -- just return it
             doReturn(var);
             
             // binding is weak -- return ((MyWeakRef)var).get();
             doAddLabel(labelBindingIsWeak);
-            doReturn(getMethodCallResult(getCastValue(var, myWeakRef.getType()), "get", objectType));
+            var = getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType());
+            doJumpIfNull(var, labelThrowException);
+            doReturn(getCastValue(getMethodCallResult(var, "get", objectType), curTraceMatch.bindingType(varName)));
             
             // attempt to get an unbound variable -- throw an exception
             doAddLabel(labelThrowException);
@@ -1283,11 +1582,54 @@ public class ClassGenHelper {
     }
     
     /**
-     * Add methods addBindingsForSymbolX(int from, int to, Objects bindings..) for each tracematch symbol X.
+     * Add methods addBindingsForSymbolX(int from, int to, TypeX bindings..) for each tracematch symbol X.
      * 
      * This method should be called when a transition in the NFA is taken after being triggered by an event
      * in the observed program. It checks whether the new bindings are compatible with this disjunct, and 
      * returns falseD if they're not and a new disjunct which records any new information if they are.
+     * 
+     * #for(each tracematch symbol S binding variables x1, ..., xn)
+     * public Disjunct$tm addBindingsForSymbolS(int from, int to, Type1 x1, ..., Typen xn) {
+     * 		#for(each variable X bound by S) {
+     * 			if(this.X$isBound == false) goto curVarNotBound;
+     * 			TypeX curThisVal = thisLocal.get$X();
+     * 			if(curThisVal != X) goto returnFalse;
+     * 			goto checkNextVar;
+     *  curVarNotBound:
+     *  		if(this.not$X.contains(new #WeakRef(X))) goto returnFalse;
+     *  checkNextVar:
+     *  	#}
+     *  	switch(to) {
+     *  		case N: // #for every state number N
+     *  			#if(state N guarantees all tracematch formals bound) {
+     *  				switch(from) {
+     *  					case M: // #for each state M with the same strong-ref behaviour as N
+     *  						goto returnThis;
+     *  				}
+     *  			#}
+     *  			result = new Disjunct$tm(this);
+     *  			#if(there are variables which may have changed) {
+     *  				switch(from) {
+     *  					case M: // #for each state M that has a transition that may change variable state
+     *  						#for(each variable X that may change state in M->N) {
+     *  							#if(X is not guaranteed bound by the previous state)
+     *  								result.X$isBound = true;
+     *  							#if(X must be strong in N) {
+     *  								#if(X is not of primitive type)
+     *  									result.weak$X = null;
+     *  								result.var$X = X;
+     *  							#} else {
+     *  								result.weak$X = new #WeakRef(X);
+     *  							#}
+     *  						#}
+     *  						goto returnResult;
+     *  				}
+	 *  		}
+	 *  returnResult:
+	 *  		return result;
+	 *  	}
+	 *  }
+     * 		
      */
     protected void addDisjunctAddBindingsForSymbolMethods() {
         List singleDisjunct = new LinkedList();
@@ -1302,8 +1644,8 @@ public class ClassGenHelper {
             parameterTypes.add(IntType.v()); // number of originating state of the transition
             parameterTypes.add(IntType.v()); // number of the target state of the transition
             int varCount = variables.size();
-            for(int i = 0; i < varCount; i++) {
-                parameterTypes.add(objectType); // one Object parameter for each bound variable
+            for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+                parameterTypes.add(curTraceMatch.bindingType((String)varIt.next())); // one parameter for each bound variable
             }
             
             startMethod("addBindingsForSymbol" + symbol, parameterTypes, disjunct.getType(), Modifier.PUBLIC);
@@ -1316,12 +1658,12 @@ public class ClassGenHelper {
             Local stateFrom = getParamLocal(parameterIndex++, IntType.v());
             Local stateTo = getParamLocal(parameterIndex++, IntType.v());
             
+
             // we store all bindings in a list
             List/*<Local>*/ bindings = new LinkedList();
             Iterator varIt = variables.iterator();
             while(varIt.hasNext()) {
-                varIt.next();
-                bindings.add(getParamLocal(parameterIndex++, objectType));
+                bindings.add(getParamLocal(parameterIndex++, curTraceMatch.bindingType((String)varIt.next())));
             }
             
             Iterator bindIt = bindings.iterator();
@@ -1331,10 +1673,9 @@ public class ClassGenHelper {
                 Local curVar = (Local)bindIt.next();
                 Stmt labelCurVarNotBound = getNewLabel();
                 Stmt labelCheckNextVar = getNewLabel();
-                Local curThisVar = getFieldLocal(thisLocal, "var$" + varName, objectType);
-                doJumpIfNull(curThisVar, labelCurVarNotBound);
+                doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelCurVarNotBound);
                 
-                Local curThisVarVal = getMethodCallResult(thisLocal, "get$" + varName, objectType);
+                Local curThisVarVal = getMethodCallResult(thisLocal, "get$" + varName, curTraceMatch.bindingType(varName));
                 // return false if already incompatible
                 doJumpIfNotEqual(curThisVarVal, curVar, labelReturnFalse);
                 // since the current variable is bound, we skip the check of the negative binding sets
@@ -1342,12 +1683,15 @@ public class ClassGenHelper {
                 
                 doAddLabel(labelCurVarNotBound);
                 // compare negative binding sets
-                // The check we actually do is if(this.not$var.contains(new MyWeakRef(curVar))), since only
-                // weak bindings are stored in the negative bindings sets. This relies on MyWeakRef.equals()
+                // The check we actually do is if(this.not$var.contains(new #WeakRef(curVar))), since only
+                // weak bindings are stored in the negative bindings sets. This relies on #WeakRef.equals()
                 // returning true if and only if there is reference equality between the two referents.
+                // 
+                // For reference types, we use the MyWeakRef class for the runtime, for primitive types it's
+                // the corresponding boxed type.
                 doJumpIfTrue(getMethodCallResult(getFieldLocal(thisLocal, "not$" + varName, setType),
-                        "contains", singleObjectType, BooleanType.v(), 
-                                getNewObject(myWeakRef, singleObjectType, curVar)), labelReturnFalse);
+                        "contains", singleObjectType, BooleanType.v(), getWeakRef(curVar, varName)), 
+                                labelReturnFalse);
                 
                 doAddLabel(labelCheckNextVar);
             }
@@ -1425,30 +1769,85 @@ public class ClassGenHelper {
                     }
                 }
 
-                // We create a copy of this, add the new bindings and return it
-                Local result = getNewObject(disjunct, singleDisjunct, thisLocal);
-                varIt = variables.iterator();
-                bindIt = bindings.iterator();
-                while(varIt.hasNext()) {
-                    String varName = (String)varIt.next();
-                    Local binding = (Local)bindIt.next();
-                    
-                    if(curState.needStrongRefs.contains(varName)) {
-                        // result.var$isWeak = false;
-                        doSetField(result, varName + "$isWeak", BooleanType.v(), getInt(0));
-                        // result.var = binding;
-                        doSetField(result, "var$" + varName, objectType, binding);
-                    } else {
-                        // result.var$isWeak = true;
-                        doSetField(result, varName + "$isWeak", BooleanType.v(), getInt(0));
-                        // result.var = new MyWeakRef(binding);
-                        doSetField(result, "var$" + varName, objectType, getNewObject(myWeakRef, singleObjectType, binding));
-                    }
-                    
-                    // set negative binding set to null -- we don't need it any more
-                    doSetField(result, "not$" + varName, setType, NullConstant.v());
+                // We only need to reassign those bindings who aren't already present.
+                // Given predecessor state S (with number 'from'), we want to reassign variable X only if
+                // (a) S doesn't bind X, or
+                // (b) S binds X weakly, but the current state binds it strongly.
+                // Thus, we keep, for each predecessor state S, a list of variables which need to be reassigned.
+                Iterator nodeIt = ((TMStateMachine)curTraceMatch.getState_machine()).getStateIterator();
+                List predecessorStates = new LinkedList();
+                Map varsForState = new HashMap();
+                switchLabels = new LinkedList();
+                switchValues = new LinkedList();
+                // Assumption: the nodes are iterated in increasing numeric order (lookup switch labels must be sorted)
+                while(nodeIt.hasNext()) {
+                	SMNode pred = (SMNode)nodeIt.next();
+                	if(pred.hasEdgeTo(curState, symbol)) {
+                		// we're interested in variables bound by this symbol (the List 'variables') that are not guaranteed
+                		// bound by the predecessor symbol, or that are bound weakly by the predecessor and strongly by
+                		// the current state.
+                		Iterator it = variables.iterator();
+                		List varsToUpdate = new LinkedList();
+                		while(it.hasNext()) {
+                			String var = (String)it.next();
+                			if(!pred.boundVars.contains(var) || 
+                					(!pred.needStrongRefs.contains(var) && curState.needStrongRefs.contains(var))) {
+                				varsToUpdate.add(var);
+                			}
+                		}
+                		if(!varsToUpdate.isEmpty()) {
+                			predecessorStates.add(pred);
+                			varsForState.put(pred, varsToUpdate);
+                			switchLabels.add(getNewLabel());
+                			switchValues.add(getInt(pred.getNumber()));
+                		}
+                	}
                 }
                 
+                // varsForState now contains, for each potential predecessor state, the list of variables that could have 
+                // changed and thus need re-binding in going from that state to the current one.
+                // It is empty if and only if every predecessor state binds exactly the same variables as the current state.
+                // If this arises, then we merely want to create a copy of the predecessor constraint.
+                
+                // We create a copy of this, add the new bindings and return it
+                Local result = getNewObject(disjunct, singleDisjunct, thisLocal);
+                
+                if(!varsForState.keySet().isEmpty()) {
+                	Stmt labelReturnResult = getNewLabel();
+                	doLookupSwitch(stateFrom, switchValues, switchLabels, labelReturnResult);
+                	
+                	Iterator labelIterator = switchLabels.iterator();
+                	Iterator predIterator = predecessorStates.iterator();
+                	while(labelIterator.hasNext()) {
+                		Stmt switchLabel = (Stmt)labelIterator.next();
+                		SMNode predState = (SMNode)predIterator.next();
+                		doAddLabel(switchLabel);
+                		varIt = variables.iterator();
+                		bindIt = bindings.iterator();
+                		while(varIt.hasNext()) {
+                			String varName = (String) varIt.next();
+                			Local binding = (Local) bindIt.next();
+                			if(((List)varsForState.get(predState)).contains(varName)) {
+                				// Unless the variable is guaranteed bound by the predecessor state, we need to mark
+                				// it as bound
+                				if(!predState.boundVars.contains(varName))
+                					doSetField(result, varName + "$isBound", BooleanType.v(), getInt(1));
+                				if(curState.needStrongRefs.contains(varName)) {
+                					if(!curTraceMatch.isPrimitive(varName))
+                						doSetField(result, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(),
+                								getNull());
+                					doSetField(result, "var$" + varName, curTraceMatch.bindingType(varName), binding);
+                				} else {
+                					doSetField(result, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType(), 
+                							getWeakRef(binding, varName));
+                				}
+                			}
+                		}
+                		doJump(labelReturnResult);
+                	}
+                	doAddLabel(labelReturnResult);
+                	doReturn(result);
+                }
                 // new bindings are recorded -- return result;
                 doReturn(result);
             }
@@ -1482,6 +1881,56 @@ public class ClassGenHelper {
      * Because of this, the methods return a single disjunct for symbols that bind 0 or 1 variable, and a set
      * of disjuncts for other symbols. Note that all the elements of the set are easily computed by calling
      * addNegativeBindingsForVariableV().
+     * 
+     * For every tracematch symbol S0 binding no variables:
+     * public Disjunct$tm addNegativeBindingsForSymbolS0(int to) {
+     * 		return this.falseD;
+     * }
+     * 
+     * For every tracematch symbol S1 binding one variable X of type TypeX:
+     * public Disjunct$tm addNegativeBindingsForSymbolS1(int to, TypeX x) {
+     * 		switch(to) {
+     * 			case N: // #for every state N with a skip loop that binds all variables -- TODO: can we weaken this?
+     * 				goto checkBindingsOnly;
+     * 			default:
+     * 				goto computeResultNormally;
+     * 		}
+     *  computeResultNormally:
+     *  		result = this.addNegativeBindingsForVariableX(x);
+     *  		return result;
+     *  checkBindingsOnly:
+     *  		if(this.get$X() != x) goto returnThis;
+     *  		return this.falseD;
+     *  returnThis:
+     *  		return this;
+     *  }
+     *  
+     *  For every tracematch symbol S binding two or more variables x1, ..., xn of types Type1, ..., Typen:
+     *  public LinkedHashSet addNegativeBindingsForSymbolS(int to, Type1 x1, ..., Typen xn) {
+     *  	switch(to) {
+     *  		case N: // #for every state N with a skip loop that binds all variables -- TODO: can we weaken this?
+     *  			goto checkBindingsOnly;
+     *  		default:
+     *  			goto computeResultNormally;
+     *  	}
+     *  computeResultNormally:
+     *  	resultSet = new LinkedHashSet();
+     *  	#for(each variable X bound by symbol S) {
+     *  		result = this.addNegativeBindingsForVariableX(x);
+     *  		resultSet.add(result);
+     *  	#}
+     *  	return resultSet;
+     *  checkBindingsOnly:
+     *  	#for(each variable X bound by symbol S) {
+     *  		if(this.get$X() != x) goto returnThis;
+     *  	#}
+     *  	result = this.falseD;
+     *  	resultSet.add(result);
+     *  	return resultSet;;
+     *  returnThis:
+     *  	resultSet.add(this);
+     *  	return resultSet;
+     *  }
      */
     protected void addDisjunctAddNegBindingsForSymbolMethods() {
         List singleDisjunct = new LinkedList();
@@ -1495,8 +1944,8 @@ public class ClassGenHelper {
             List parameterTypes = new LinkedList();
             parameterTypes.add(IntType.v()); // number of the target state of the transition
             int varCount = variables.size();
-            for(int i = 0; i < varCount; i++) {
-                parameterTypes.add(objectType); // one Object parameter for each bound variable
+            for(Iterator it = variables.iterator(); it.hasNext(); ) {
+                parameterTypes.add(curTraceMatch.bindingType((String)it.next())); // one parameter for each bound variable
             }
             
             boolean returnSet = (varCount > 1);
@@ -1517,8 +1966,7 @@ public class ClassGenHelper {
             List/*<Local>*/ bindings = new LinkedList();
             Iterator varIt = variables.iterator();
             while(varIt.hasNext()) {
-                varIt.next();
-                bindings.add(getParamLocal(parameterIndex++, objectType));
+                bindings.add(getParamLocal(parameterIndex++, curTraceMatch.bindingType((String)varIt.next())));
             }
 
             // We implement the following optimisation:
@@ -1539,11 +1987,11 @@ public class ClassGenHelper {
             Iterator stateIt = ((TMStateMachine)curTraceMatch.getState_machine()).getStateIterator();
             while(stateIt.hasNext()) {
                 SMNode curNode = (SMNode)stateIt.next();
-                // if all variables are bound and the state has a state loop -- we want to optimise it.
+                // if all variables are bound and the state has a skip loop -- we want to optimise it.
                 if(curNode.hasEdgeTo(curNode, "") 
                         && curNode.boundVars.equals(new LinkedHashSet(curTraceMatch.getFormalNames()))) {
                     jumpToLabels.add(labelCheckBindingsOnly);
-                    jumpOnValues.add(IntConstant.v(curNode.getNumber()));
+                    jumpOnValues.add(getInt(curNode.getNumber()));
                 }
             }
             
@@ -1565,7 +2013,7 @@ public class ClassGenHelper {
                 Local binding = (Local)bindIt.next();
                 
                 result = getMethodCallResult(thisLocal, "addNegativeBindingForVariable" + varName,
-                        singleObjectType, disjunct.getType(), binding);
+                        getList(curTraceMatch.bindingType(varName)), disjunct.getType(), binding);
                 
                 if(returnSet) {
                     doMethodCall(resultSet, "add", singleObjectType, BooleanType.v(), result);
@@ -1591,7 +2039,7 @@ public class ClassGenHelper {
                     
                     // if there's even just one variable whose binding doesn't contradict the new set of bindings,
                     // then the resulting set of disjuncts would contain 'this', so we just return it.
-                    doJumpIfNotEqual(getMethodCallResult(thisLocal, "get$" + varName, objectType),
+                    doJumpIfNotEqual(getMethodCallResult(thisLocal, "get$" + varName, curTraceMatch.bindingType(varName)),
                             binding, labelReturnThis);
                 }
                 
@@ -1624,6 +2072,29 @@ public class ClassGenHelper {
      * Two disjuncts are considered equal iff either they are the same object or, for every
      * variable X, either both bind X to the same value or neither binds X, and the set of
      * negative bindings for X is the same.
+     * 
+     * public boolean equals(Object param) {
+     * 		if(this == param) goto returnTrue;
+     * 		if(!param instanceof Disjunct$tm) goto returnFalse;
+     * 		paramDisjunct = (Disjunct$tm) param;
+     * 		#for(each tracematch variable X of type TypeX) {
+     * 			if(!this.X$isBound) goto thisNotBound;
+     * 			if(!paramDisjunct.X$isBound) goto returnFalse;
+     * 			if(this.var$X != paramDisjunct.var$X) goto returnFalse;
+     * 			#if(X is not primitive)
+     * 				if(this.weak$X != paramDisjunct.weak$X) goto returnFalse;
+     * 			goto checkNextVar;
+     * 
+     *  thisNotBound:
+     *  		if(paramDisjunct.X$isBound) goto returnFalse;
+     *  		if(!this.not$X.equals(paramDisjunct.not$X)) goto returnFalse;
+     *  checkNextVar:
+     *  	#}
+     *  returnTrue:
+     *  	return true;
+     *  returnFalse:
+     *  	return false;
+     *  }
      */
     protected void addDisjunctEqualsMethod() {
         startMethod("equals", singleObjectType, BooleanType.v(), Modifier.PUBLIC);
@@ -1647,21 +2118,26 @@ public class ClassGenHelper {
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
             
-            Stmt labelThisNull = getNewLabel();
+            Stmt labelThisNotBound = getNewLabel();
             Stmt labelCheckNextVar = getNewLabel();
-            
-            doJumpIfNull(getFieldLocal(thisLocal, "var$" + varName, objectType), labelThisNull);
+
+            doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelThisNotBound);
             // the variable is bound by this -- if it isn't bound by the disjunct, return false
-            doJumpIfNull(getFieldLocal(thisLocal, "var$" + varName, objectType), labelReturnFalse);
+            doJumpIfFalse(getFieldLocal(paramDisjunct, varName + "$isBound", BooleanType.v()), labelReturnFalse);
             // both disjuncts bind the variable -- check reference equality of the bindings
-            doJumpIfEqual(getMethodCallResult(thisLocal, "get$" + varName, objectType),
-                    getMethodCallResult(paramDisjunct, "get$" + varName, objectType), labelCheckNextVar);
-            // bindings not equal -- so disjuncts not equal
-            doJump(labelReturnFalse);
+            doJumpIfNotEqual(getFieldLocal(thisLocal, "var$" + varName, curTraceMatch.bindingType(varName)),
+            		getFieldLocal(paramDisjunct, "var$" + varName, curTraceMatch.bindingType(varName)),
+            		labelReturnFalse);
+            if(!curTraceMatch.isPrimitive(varName)) {
+            	doJumpIfNotEqual(getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
+            			getFieldLocal(paramDisjunct, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
+            			labelReturnFalse);
+            }
+            doJump(labelCheckNextVar);
             
-            doAddLabel(labelThisNull);
+            doAddLabel(labelThisNotBound);
             // the variable is not bound by this -- if it's bound by the disjunct, return false
-            doJumpIfNotNull(getFieldLocal(thisLocal, "var$" + varName, objectType), labelReturnFalse);
+            doJumpIfTrue(getFieldLocal(paramDisjunct, varName + "$isBound", BooleanType.v()), labelReturnFalse);
             // we now have to check whether the negative binding sets agree:
             // if(!this.not$var.equals(paramDisjunct.not$var)) return false;
             doJumpIfFalse(getMethodCallResult(getFieldLocal(thisLocal, "not$" + varName, setType), "equals",
@@ -1685,7 +2161,27 @@ public class ClassGenHelper {
      * behaviour of HashSets and other things relying on them.
      * 
      * A hash code for the disjunct is obtained by adding up the hash codes of all bound variables and
-     * all negative bindings sets for unbound variables, then taking the hashCode of that.
+     * all negative bindings sets for unbound variables. Note that for strong bindings, 
+     * System.identityHashCode() is used, while for weak bindings weakBinding.hashCode(), which 
+     * delegates (for the MyWeakRef implementation, at least) to System.identityHashCode() for its
+     * referent.
+     * 
+     * public int hashCode() {
+     * 		int hashCode = 0;
+     * 		#for(each tracematch variable X) {
+     * 			if(!this.X$isBound) goto varUnbound;
+     * 			curVar = this.var$X;
+     * 			if(curVar == null) goto varIsWeak;
+     * 			hashCode += java.lang.System.identityHashCode(curVar);
+     * 			goto handleNextVar;
+     * 	varIsWeak:
+     * 			hashCode += this.weak$X.hashCode();
+     * 			goto handleNextVar;
+     * 	varUnbound:
+     * 	handleNextVar:
+     * 		#}
+     * 		return hashCode;
+     * 	}
      */
     protected void addDisjunctHashCodeMethod() {
         startMethod("hashCode", emptyList, IntType.v(), Modifier.PUBLIC);
@@ -1696,15 +2192,30 @@ public class ClassGenHelper {
         while(varIt.hasNext()) {
             String varName = (String)varIt.next();
             Stmt labelVarUnbound = getNewLabel();
+            Stmt labelVarIsWeak = getNewLabel();
             Stmt labelHandleNextVar = getNewLabel();
-            Local curVar = getFieldLocal(thisLocal, "var$" + varName, objectType);
-            doJumpIfNull(curVar, labelVarUnbound);
-            doAddToLocal(hashCode, getMethodCallResult(curVar, "hashCode", IntType.v()));
+            doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelVarUnbound);
+            Local curVar = getFieldLocal(thisLocal, "var$" + varName, curTraceMatch.bindingType(varName));
+            doJumpIfNull(curVar, labelVarIsWeak);
+            doAddToLocal(hashCode, getStaticMethodCallResult(Scene.v().getSootClass("java.lang.System"), 
+            		"identityHashCode", singleObjectType, IntType.v(), curVar));
+            doJump(labelHandleNextVar);
+            
+            doAddLabel(labelVarIsWeak);
+            doAddToLocal(hashCode, getMethodCallResult(getFieldLocal(thisLocal, "weak$" + varName, 
+            		curTraceMatch.weakBindingClass(varName).getType()), "hashCode", IntType.v()));
             doJump(labelHandleNextVar);
             
             doAddLabel(labelVarUnbound);
-            doAddToLocal(hashCode, getMethodCallResult(getFieldLocal(thisLocal, "not$" + varName, setType), 
-                    "hashCode", IntType.v()));
+            // We have a choice here: We can either make the hashcode depend on the negative bindings set, or we
+            // can ignore it. If we ignore it, then disjuncts with identical positive bindings but different neg 
+            // binding sets would have the same hashcode, and so would have to all be checked on lookups. If we
+            // don't ignore it, then the computation of hashCode becomes expensive -- proportional to the number
+            // of negative bindings.
+            //
+            // For now ignore negative bindings, but TODO consider this more carefully.
+            //doAddToLocal(hashCode, getMethodCallResult(getFieldLocal(thisLocal, "not$" + varName, setType), 
+            //        "hashCode", IntType.v()));
             
             doAddLabel(labelHandleNextVar);
         }
@@ -1717,6 +2228,21 @@ public class ClassGenHelper {
      * The idea is that the return value is false if one of the collectableWeakRefs of
      * the disjuct has expired, and true otherwise. Validating a disjunct before calling 
      * add[Neg]Bindings on it will enable clean-up of unneeded disjuncts 
+     * 
+     * public boolean validateDisjunct(int state) {
+     * 		switch(state) {
+     * 			case N: // #for each state N which has at least one collectableWeakRef
+     * 				#for(each collectibleWeakRef variable x Of state N) {
+     * 					if(!this.x$isBound) goto curVarNotBound;
+     * 					if(this.weak$x.get() == null) goto returnFalse;
+     * 	curVarNotBound:
+     * 		#}
+     *  labelReturnTrue:
+     *  	return true;
+     *  labelReturnFalse:
+     *  	#if(debug) System.out.println("*");
+     *  	return false;
+     *  }
      */
     protected void addDisjunctValidateDisjunctMethod() {
         List singleInt = new LinkedList();
@@ -1733,17 +2259,23 @@ public class ClassGenHelper {
         // We distinguish which state we're in by doing a lookup switch
         List switchValues = new LinkedList();
         List switchLabels = new LinkedList();
+        List affectedStates = new LinkedList();
         Iterator stateIt = ((TMStateMachine)curTraceMatch.getState_machine()).getStateIterator();
         while(stateIt.hasNext()) {
             SMNode state = (SMNode)stateIt.next();
-            switchValues.add(getInt(state.getNumber()));
-            switchLabels.add(getNewLabel());
+            // States which have no collectableWeakRefs are always valid.
+            if(!state.collectableWeakRefs.isEmpty()) {
+	            switchValues.add(getInt(state.getNumber()));
+	            switchLabels.add(getNewLabel());
+	            affectedStates.add(state);
+            }
         }
         
-        doLookupSwitch(stateTo, switchValues, switchLabels, labelThrowException);
+        if(!switchValues.isEmpty())
+        	doLookupSwitch(stateTo, switchValues, switchLabels, labelReturnTrue);
         
         Iterator labelIt = switchLabels.iterator();
-        stateIt = ((TMStateMachine)curTraceMatch.getState_machine()).getStateIterator();
+        stateIt = affectedStates.iterator();
         while(stateIt.hasNext()) {
             SMNode state = (SMNode)stateIt.next();
             Stmt label = (Stmt)labelIt.next();
@@ -1762,10 +2294,12 @@ public class ClassGenHelper {
                 String varName = (String)collectableWeakRefIt.next();
                 Stmt labelCurVarNotBound = getNewLabel();
                 
-                doJumpIfNull(getFieldLocal(thisLocal, "var$" + varName, objectType), labelCurVarNotBound);
+                doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelCurVarNotBound);
                 
                 // variable is bound -- check it
-                doJumpIfNull(getMethodCallResult(thisLocal, "get$" + varName, objectType), labelReturnFalse);
+                doJumpIfNull(getMethodCallResult(getFieldLocal(thisLocal, "weak$" + varName, 
+                				curTraceMatch.weakBindingClass(varName).getType()), "get", objectType), 
+                		labelReturnFalse);
                 
                 doAddLabel(labelCurVarNotBound);
             }
