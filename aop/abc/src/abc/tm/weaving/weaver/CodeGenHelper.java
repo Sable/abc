@@ -443,32 +443,22 @@ public class CodeGenHelper
         Body body = caller.getActiveBody();
         int params = caller.getParameterCount();
         String name;
-
-        List arg_types = new ArrayList(params);
         List args = new ArrayList(params);
 
         if (positive) {
-            arg_types.add(IntType.v());
             args.add(from_state);
-
-            arg_types.add(IntType.v());
             args.add(to_state);
             name = "addBindingsForSymbol" + symbol;
         } else {
-            arg_types.add(IntType.v());
             args.add(to_state);
             name = "addNegativeBindingsForSymbol" + symbol;
         }
 
         for (int i = 0; i < params; i++)
-        {
-            arg_types.add(object);
             args.add(body.getParameterLocal(i));
-        }
 
-        SootMethodRef ref =
-            Scene.v().makeMethodRef(constraint, name, arg_types,
-                                    constraint.getType(), false);
+        System.out.println(constraint.getMethods());
+        SootMethodRef ref = constraint.getMethodByName(name).makeRef();
 
         return Jimple.v().newVirtualInvokeExpr(base, ref, args);
     }
