@@ -724,6 +724,11 @@ public class CodeGenHelper
 
         for (int i = 0; i < params; i++) {
             Local param = body.getParameterLocal(i);
+
+            // skip this test for primitive bindings
+            if (! (param.getType() instanceof RefLikeType))
+                continue;
+
             EqExpr test = Jimple.v().newEqExpr(param, NullConstant.v());
 
             units.addLast(Jimple.v().newIfStmt(test, jump_to));
