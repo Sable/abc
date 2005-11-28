@@ -9504,6 +9504,29 @@
         <compile files="NoUpdates.java" options="-ext,abc.tm"/>
         <run class="NoUpdates"/>
 	</ajc-test>
+    <ajc-test num="1035" dir="abctests/tracematches"
+        title="Tracematches: Basic primitive variable bindings">
+        <compile files="PrimitiveVariables.java" options="-ext,abc.tm">
+	    <message kind="warning"/>
+	</compile>
+	<run class="PrimitiveVariables"/>
+    </ajc-test>
+    <ajc-test num="1036" dir="abctests/tracematches"
+        title="Tracematches: Primitive bindings don't cause errors.">
+	<compile files="IntVariable.java" options="-ext,abc.tm" >
+	    <message kind="warning"/>
+	</compile>
+	<run class="IntVariable"/>
+    </ajc-test>
+    <ajc-test num="1037" dir="abctests/tracematches"
+        title="Tracematches: Primitive negative bindings should be checked correctly...">
+        <compile files="PrimNegBindings.java" options="-ext,abc.tm">
+	    <message kind="warning"/>
+	</compile>
+	<run class="PrimNegBindings"/>
+    </ajc-test>
+
+
 
 	<!-- start openmodTests.xml (generated comment, please don't delete) -->
     <ajc-test num="1101" dir="om/simple"
