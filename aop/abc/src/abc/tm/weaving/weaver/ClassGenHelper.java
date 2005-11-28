@@ -1321,9 +1321,10 @@ public class ClassGenHelper {
 		disjunct.addField(falseDisjunct);
 		
 		// the remainin fields depend upon the tracematch and its variables. For each tracematch
-		// formal X, X$isWeak (is the reference to X weak?), not$X (which values X mustn't take 
+		// formal X, X$isBound (do we have a binding for X?), not$X (which values X mustn't take 
         // -- a set, and null if X is bound) and var$X (the value X is bound to, or null if X is
-        // unbound).
+        // not bound strongly (0 if X is primitive)). Also, for non-primitive bindings, there is
+		// a field weak$X storing a possible weak binding to X.
         List varNames = curTraceMatch.getFormalNames();
         Iterator varIt = varNames.iterator();
         while(varIt.hasNext()) {
@@ -1434,7 +1435,6 @@ public class ClassGenHelper {
 	            		curWeakBinding);
             }
 
-            // variable is bound if either var$X != null or weak$X != null; the latter is checked above.
             doJumpIfTrue(curVarIsBound, labelSkipNegBindingsSet);
             
             curSet = getNewObject(setClass, singleCollection, 
@@ -1545,11 +1545,16 @@ public class ClassGenHelper {
      * exception if X is not bound.
      * 
      * public TypeX get$x() {
-     * 		if(this.var$X == null) goto bindingIsWeak;
-     * 		return this.var$X;
+     * 		#if(X is primitive) {
+     * 			if(!x$isBound) goto throwException;
+     * 			return this.var$x;
+     * 		#} else {
+     * 			if(this.var$X == null) goto bindingIsWeak;
+     * 			return this.var$X;
      *  bindingIsWeak:
-     *  	if(this.weak$X == null) goto throwException;
-     *  	return (TypeX)this.weak$X.get();
+     *  		if(this.weak$X == null) goto throwException;
+     *  		return (TypeX)this.weak$X.get();
+     *  	#}
      *  throwException:
      *  	throw new RuntimeException("Attempt to get an unbound variable: " + varName);
      *  }
@@ -1565,15 +1570,21 @@ public class ClassGenHelper {
             
             Local thisLocal = getThisLocal();
             Local var = getFieldLocal(thisLocal, "var$" + varName, curTraceMatch.bindingType(varName));
-            doJumpIfNull(var, labelBindingIsWeak);
-            // binding is strong -- just return it
-            doReturn(var);
             
-            // binding is weak -- return ((MyWeakRef)var).get();
-            doAddLabel(labelBindingIsWeak);
-            var = getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType());
-            doJumpIfNull(var, labelThrowException);
-            doReturn(getCastValue(getMethodCallResult(var, "get", objectType), curTraceMatch.bindingType(varName)));
+            if(curTraceMatch.isPrimitive(varName)) {
+            	doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelThrowException);
+            	doReturn(var);
+            } else {
+	            doJumpIfNull(var, labelBindingIsWeak);
+	            // binding is strong -- just return it
+	            doReturn(var);
+	            
+	            // binding is weak -- return ((MyWeakRef)var).get();
+	            doAddLabel(labelBindingIsWeak);
+	            var = getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType());
+	            doJumpIfNull(var, labelThrowException);
+	            doReturn(getCastValue(getMethodCallResult(var, "get", objectType), curTraceMatch.bindingType(varName)));
+            }
             
             // attempt to get an unbound variable -- throw an exception
             doAddLabel(labelThrowException);
@@ -2081,8 +2092,15 @@ public class ClassGenHelper {
      * 			if(!this.X$isBound) goto thisNotBound;
      * 			if(!paramDisjunct.X$isBound) goto returnFalse;
      * 			if(this.var$X != paramDisjunct.var$X) goto returnFalse;
-     * 			#if(X is not primitive)
-     * 				if(this.weak$X != paramDisjunct.weak$X) goto returnFalse;
+     * 			#if(X is not primitive) {
+     * 				if(this.weak$X == null) goto thisWeakNull;
+     * 				if(paramDisjunct.weak$X == null) goto returnFalse;
+     * 				if(!this.weak$X.equals(paramDisjunct.weak$X)) goto returnFalse;
+     * 				goto checkNextVar;
+     * 	thisWeakNull:
+     * 				if(paramDisjunct.weak$X != null) goto returnFalse;
+     * 				goto checkNextVar;
+     * 			#}
      * 			goto checkNextVar;
      * 
      *  thisNotBound:
@@ -2129,9 +2147,22 @@ public class ClassGenHelper {
             		getFieldLocal(paramDisjunct, "var$" + varName, curTraceMatch.bindingType(varName)),
             		labelReturnFalse);
             if(!curTraceMatch.isPrimitive(varName)) {
-            	doJumpIfNotEqual(getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
-            			getFieldLocal(paramDisjunct, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
+            	Stmt labelThisWeakNull = getNewLabel();
+            	doJumpIfNull(getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
+            			labelThisWeakNull);
+            	doJumpIfNull(getFieldLocal(paramDisjunct, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()), 
             			labelReturnFalse);
+            	doJumpIfFalse(getMethodCallResult(
+            			getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
+            			"equals", singleObjectType, BooleanType.v(),
+            					getFieldLocal(paramDisjunct, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType())),
+            			labelReturnFalse);
+            	doJump(labelCheckNextVar);
+            	
+            	doAddLabel(labelThisWeakNull);
+            	doJumpIfNotNull(getFieldLocal(thisLocal, "weak$" + varName, curTraceMatch.weakBindingClass(varName).getType()),
+            			labelReturnFalse);
+            	doJump(labelCheckNextVar);
             }
             doJump(labelCheckNextVar);
             
@@ -2171,12 +2202,17 @@ public class ClassGenHelper {
      * 		#for(each tracematch variable X) {
      * 			if(!this.X$isBound) goto varUnbound;
      * 			curVar = this.var$X;
-     * 			if(curVar == null) goto varIsWeak;
-     * 			hashCode += java.lang.System.identityHashCode(curVar);
-     * 			goto handleNextVar;
+     * 			#if(X is primitive) {
+     * 				hashCode += (int)this.var$X;
+     * 				goto handleNextVar;
+     * 			#} else {
+     * 				if(curVar == null) goto varIsWeak;
+     * 				hashCode += java.lang.System.identityHashCode(curVar);
+     * 				goto handleNextVar;
      * 	varIsWeak:
-     * 			hashCode += this.weak$X.hashCode();
-     * 			goto handleNextVar;
+     * 				hashCode += this.weak$X.hashCode();
+     * 				goto handleNextVar;
+     * 			#}
      * 	varUnbound:
      * 	handleNextVar:
      * 		#}
@@ -2196,15 +2232,20 @@ public class ClassGenHelper {
             Stmt labelHandleNextVar = getNewLabel();
             doJumpIfFalse(getFieldLocal(thisLocal, varName + "$isBound", BooleanType.v()), labelVarUnbound);
             Local curVar = getFieldLocal(thisLocal, "var$" + varName, curTraceMatch.bindingType(varName));
-            doJumpIfNull(curVar, labelVarIsWeak);
-            doAddToLocal(hashCode, getStaticMethodCallResult(Scene.v().getSootClass("java.lang.System"), 
-            		"identityHashCode", singleObjectType, IntType.v(), curVar));
-            doJump(labelHandleNextVar);
-            
-            doAddLabel(labelVarIsWeak);
-            doAddToLocal(hashCode, getMethodCallResult(getFieldLocal(thisLocal, "weak$" + varName, 
-            		curTraceMatch.weakBindingClass(varName).getType()), "hashCode", IntType.v()));
-            doJump(labelHandleNextVar);
+            if(curTraceMatch.isPrimitive(varName)) {
+            	doAddToLocal(hashCode, getCastValue(curVar, IntType.v()));
+            	doJump(labelHandleNextVar);
+            } else {
+	            doJumpIfNull(curVar, labelVarIsWeak);
+	            doAddToLocal(hashCode, getStaticMethodCallResult(Scene.v().getSootClass("java.lang.System"), 
+	            		"identityHashCode", singleObjectType, IntType.v(), curVar));
+	            doJump(labelHandleNextVar);
+	            
+	            doAddLabel(labelVarIsWeak);
+	            doAddToLocal(hashCode, getMethodCallResult(getFieldLocal(thisLocal, "weak$" + varName, 
+	            		curTraceMatch.weakBindingClass(varName).getType()), "hashCode", IntType.v()));
+	            doJump(labelHandleNextVar);
+            }
             
             doAddLabel(labelVarUnbound);
             // We have a choice here: We can either make the hashcode depend on the negative bindings set, or we
