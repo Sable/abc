@@ -23,7 +23,7 @@ aspect Aspect {
     }
 
     after () : execution(* main(..)) {
-        Tester.check(matches==1,"1 match");
+        Tester.check(matches==1,"1 match expected, " + matches + " seen");
     }
 
 }
