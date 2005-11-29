@@ -5163,6 +5163,24 @@
         <compile options="-ext,abc.tm" files="NoUpdates.java"></compile>
         <run class="NoUpdates"></run>
 	</ajc-test>
+<ajc-test title="Tracematches: Basic primitive variable bindings" num="1035" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PrimitiveVariables.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="PrimitiveVariables"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Primitive bindings don't cause errors." num="1036" dir="abctests/tracematches">
+	<compile options="-ext,abc.tm" files="IntVariable.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="IntVariable"></run>
+    </ajc-test>
+<ajc-test title="Tracematches: Primitive negative bindings should be checked correctly..." num="1037" dir="abctests/tracematches">
+        <compile options="-ext,abc.tm" files="PrimNegBindings.java">
+	    <message kind="warning"></message>
+	</compile>
+	<run class="PrimNegBindings"></run>
+    </ajc-test>
 <ajc-test title="Simple module compile" num="1101" keywords="from-base" dir="om/simple">
         <compile options="-ext,abc.om" files="ModuleTest.java,          ModuleTest2.java,          ModuleTest3.java,          A.java,          Another.java,          AnotherChild.java,          AspectA.aj,          AspectB.aj"></compile>
     </ajc-test>
