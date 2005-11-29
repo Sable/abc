@@ -1371,7 +1371,16 @@ public class ClassGenHelper {
      * 				this.weak$X = curWeakBinding;
      * 			#}
      * 			if(curVarIsBound) goto skipNegBindingsSet;
-     * 			this.not$X = new LinkedHashSet(param.not$X);
+     * 			#if(X is primitive) {
+     * 				this.not$x = new LinkedHashSet(param.not$x);
+     * 			#} else {
+     * 				paramSet = param.not$x;
+     * 				Iterator bindingIt = paramSet.iterator();
+     *  loopBegin:
+     *  			if(!bindingIt.hasNext()) goto loopEnd;
+     *  			if(((#WeakRef)bindingIt.next()).get() == null) goto loopBegin;
+     *  loopEnd:
+     *  		#}
      * 	skipNegBindingsSet:
      * 		#}
      * 		if(debug) System.out.println("D");
@@ -1437,8 +1446,28 @@ public class ClassGenHelper {
 
             doJumpIfTrue(curVarIsBound, labelSkipNegBindingsSet);
             
-            curSet = getNewObject(setClass, singleCollection, 
-            		getFieldLocal(paramLocal, "not$" + varName, setType));
+            if(curTraceMatch.isPrimitive(varName)) {
+            	curSet = getNewObject(setClass, singleCollection, getFieldLocal(paramLocal, "not$" + varName, setType));
+            } else {
+	            // We only want non-invalidated weak bindings to be contained in the newly constructed
+	            // negative bindings set
+	            Stmt labelLoopBegin = getNewLabel();
+	            Stmt labelLoopEnd = getNewLabel();
+	            curSet = getNewObject(setClass);
+	            Local paramSet = getFieldLocal(paramLocal, "not$" + varName, setType);
+	            Local bindingIt = getMethodCallResult(paramSet, "iterator", iteratorType);
+	            
+	            doAddLabel(labelLoopBegin);
+	            doJumpIfFalse(getMethodCallResult(bindingIt, "hasNext", BooleanType.v()), labelLoopEnd);
+	            Local curVariable = getMethodCallResult(bindingIt, "next", objectType);
+	            doJumpIfNull(getMethodCallResult(getCastValue(curVariable, 
+	            		curTraceMatch.weakBindingClass(varName).getType()), "get", objectType), labelLoopBegin);
+	            doMethodCall(curSet, "add", singleObjectType, BooleanType.v(), curVariable);
+	            doJump(labelLoopBegin);
+	            
+	            doAddLabel(labelLoopEnd);
+            }
+	            
             doSetField(thisLocal, "not$" + varName, setType, curSet);
             
             doAddLabel(labelSkipNegBindingsSet);
