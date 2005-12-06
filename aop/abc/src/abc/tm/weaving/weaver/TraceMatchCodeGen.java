@@ -100,7 +100,7 @@ public class TraceMatchCodeGen {
 
             helper.genNullChecksJumpTarget(method);
 
-            if (to.hasEdgeTo(to, "")) // (skip-loop)
+            if (to.hasEdgeTo(to, "") && !abc.main.Debug.v().noNegativeBindings) // (skip-loop)
                 helper.genSkipLabelUpdate(to.getNumber(), symbol, method);
         }
     }

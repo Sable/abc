@@ -173,4 +173,6 @@ public class Debug {
     public boolean ajc120Compliance=true; // compliance with ajc 1.2.0 and before
     public boolean java13=false; // java 1.3 semantics
 
+    // temporary tracematch stuff
+    public boolean noNegativeBindings = false;
 }
