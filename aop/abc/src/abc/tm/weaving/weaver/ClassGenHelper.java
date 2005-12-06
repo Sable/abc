@@ -1464,6 +1464,7 @@ public class ClassGenHelper {
 		            // negative bindings set
 		            Stmt labelLoopBegin = getNewLabel();
 		            Stmt labelLoopEnd = getNewLabel();
+		            Stmt labelWeakRefExpired = getNewLabel();
 		            curSet = getNewObject(setClass);
 		            Local paramSet = getFieldLocal(paramLocal, "not$" + varName, setType);
 		            Local bindingIt = getMethodCallResult(paramSet, "iterator", iteratorType);
@@ -1472,8 +1473,14 @@ public class ClassGenHelper {
 		            doJumpIfFalse(getMethodCallResult(bindingIt, "hasNext", BooleanType.v()), labelLoopEnd);
 		            Local curVariable = getMethodCallResult(bindingIt, "next", objectType);
 		            doJumpIfNull(getMethodCallResult(getCastValue(curVariable, 
-		            		curTraceMatch.weakBindingClass(varName).getType()), "get", objectType), labelLoopBegin);
+		            		curTraceMatch.weakBindingClass(varName).getType()), "get", objectType), labelWeakRefExpired);
 		            doMethodCall(curSet, "add", singleObjectType, BooleanType.v(), curVariable);
+		            doJump(labelLoopBegin);
+		            
+		            // XXX may turn disjuncts equal that weren't equal before.
+		            // PA: I *think* that the operations we care about still work fine on LinkedHashSet.
+		            doAddLabel(labelWeakRefExpired);
+		            doMethodCall(bindingIt, "remove", VoidType.v());
 		            doJump(labelLoopBegin);
 		            
 		            doAddLabel(labelLoopEnd);
