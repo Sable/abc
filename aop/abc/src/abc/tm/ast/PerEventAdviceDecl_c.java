@@ -192,6 +192,10 @@ public class PerEventAdviceDecl_c extends AdviceBody_c
         int lastpos = formals().size();
         int jp = -1, jpsp = -1, ejp = -1;
 
+        if (hasEnclosingJoinPointStaticPart) ejp = --lastpos;
+        if (hasJoinPoint) jp = --lastpos;
+        if (hasJoinPointStaticPart) jpsp = --lastpos;
+
         before_spec.setReturnType(returnType());
         after_spec.setReturnType(returnType());
 

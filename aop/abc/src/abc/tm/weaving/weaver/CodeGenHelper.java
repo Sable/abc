@@ -441,7 +441,7 @@ public class CodeGenHelper
                                         Value to_state, boolean positive)
     {
         Body body = caller.getActiveBody();
-        int params = caller.getParameterCount();
+        int params = tm.getVariableOrder(symbol).size();
         String name;
         List args = new ArrayList(params);
 
