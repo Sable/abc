@@ -107,5 +107,8 @@ public class AbcExtension extends abc.main.AbcExtension
         
         // keyword for the "cflowbelowdepth" pointcut extension
         lexer.addPointcutKeyword("cflowbelowdepth", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CFLOWBELOWDEPTH)));
+
+        // keyword for the "let" pointcut extension
+        lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET)));
     }
 }

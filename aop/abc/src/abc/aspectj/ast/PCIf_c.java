@@ -49,8 +49,8 @@ import abc.main.Debug;
 public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 {
     protected Expr expr;
-    private String methodName;
-    private MethodDecl methodDecl;
+    protected String methodName;
+    protected MethodDecl methodDecl;
 
     public PCIf_c(Position pos, Expr expr)  {
 	super(pos);
@@ -186,30 +186,9 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		    Formal f = (Formal)fi.next();
 		    formaltypes.add(f.type().type());
 		}
-		if (hasJoinPointStaticPart()) {
-		    TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
-		    Formal jpsp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPointStaticPart");
-		    LocalInstance li = thisJoinPointStaticPartInstance(ts);
-		    jpsp = jpsp.localInstance(li);
-		    args.add(jpsp);
-		    formaltypes.add(ts.JoinPointStaticPart());
-		}
-		if (hasJoinPoint()) {
-		    TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPoint());
-		    Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisJoinPoint");
-		    LocalInstance li = thisJoinPointInstance(ts);
-		    jp = jp.localInstance(li);
-		    args.add(jp);
-		    formaltypes.add(ts.JoinPoint());
-		}
-		if (hasEnclosingJoinPointStaticPart()) {
-		    TypeNode tn = nf.CanonicalTypeNode(position(),ts.JoinPointStaticPart());
-		    Formal jp = nf.Formal(position(),Flags.FINAL,tn,"thisEnclosingJoinPointStaticPart");
-		    LocalInstance li = thisEnclosingJoinPointStaticPartInstance(ts);
-		    jp = jp.localInstance(li);
-		    args.add(jp);
-		    formaltypes.add(ts.JoinPoint());
-		}
+
+                addJoinPointFormals(nf, ts, args, formaltypes);
+
 		methodName = UniqueID.newID("if");
 		MethodDecl md = nf.MethodDecl(position(),Flags.STATIC.Public(),retType,methodName,args,throwTypes,bl);
 		MethodInstance mi = ts.methodInstance(position, container,
@@ -221,7 +200,42 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
 		methodDecl = md;
 		return md;
 	}
-	
+
+        protected void addJoinPointFormals(AJNodeFactory nf, AJTypeSystem ts,
+                                           List args, List formaltypes)
+        {
+		if (hasJoinPointStaticPart()) {
+		    addJoinPointFormal(nf, ts, args, formaltypes,
+		                       ts.JoinPointStaticPart(),
+                                       "thisJoinPointStaticPart",
+                                       thisJoinPointStaticPartInstance(ts));
+                }
+		if (hasJoinPoint()) {
+		    addJoinPointFormal(nf, ts, args, formaltypes,
+		                       ts.JoinPoint(),
+                                       "thisJoinPoint",
+                                       thisJoinPointInstance(ts));
+                }
+		if (hasEnclosingJoinPointStaticPart()) {
+		    addJoinPointFormal(nf, ts, args, formaltypes,
+		                       ts.JoinPointStaticPart(),
+                                       "thisEnclosingJoinPointStaticPart",
+                                       thisEnclosingJoinPointStaticPartInstance(ts));
+                }
+        }
+
+        protected void addJoinPointFormal(AJNodeFactory nf, AJTypeSystem ts,
+                                          List args, List formaltypes,
+                                          ClassType jpfType, String name,
+                                          LocalInstance li)
+        {
+            TypeNode tn = nf.CanonicalTypeNode(position(), jpfType);
+            Formal jpf = nf.Formal(position(), Flags.FINAL, tn, name);
+            jpf = jpf.localInstance(li);
+            args.add(jpf);
+            formaltypes.add(jpfType);
+        }
+
 	public PCIf liftMethod(AJNodeFactory nf){
 		Expr exp = nf.Call(position(),methodName);
 		return reconstruct(exp);
@@ -267,6 +281,17 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
     public Node aspectMethodsLeave(AspectMethods visitor, AJNodeFactory nf,
                                    AJTypeSystem ts)
     {
+        List formals = calculateMethodParameters(visitor, nf, ts);
+
+        MethodDecl md = exprMethod(nf, ts, formals, visitor.container());
+        visitor.addMethod(md);
+	visitor.popPCIf();
+        return liftMethod(nf); // replace expression by method call
+    }
+
+    protected List calculateMethodParameters(AspectMethods visitor,
+                                            AJNodeFactory nf, AJTypeSystem ts)
+    {
         // construct method for expression in if(..).
         // When the if(..) occurs inside a cflow, the parameters are only the
         // variables bound inside that cflow. Otherwise, the parameters are exactly
@@ -283,10 +308,8 @@ public class PCIf_c extends Pointcut_c implements PCIf, MakesAspectMethods
                 formals.add(vf);
             }
         } else formals = visitor.formals();
-        MethodDecl md = exprMethod(nf, ts, formals, visitor.container());
-        visitor.addMethod(md);
-	visitor.popPCIf();
-        return liftMethod(nf); // replace expression by method call
+
+        return formals;
     }
 
     public void enterAspectReflectionInspect(AspectReflectionInspect v,Node parent) {

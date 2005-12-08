@@ -80,4 +80,9 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     public PCCflowBelowDepth PCCflowBelowDepth(Position pos, Local var, Pointcut pc) {
         return new PCCflowBelowDepth_c(pos,pc,var);
     }
+
+    public PCLet PCLet(Position pos, Local var, Expr expr)
+    {
+        return new PCLet_c(pos, var, expr);
+    }
 }

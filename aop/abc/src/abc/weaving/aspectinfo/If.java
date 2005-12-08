@@ -93,15 +93,13 @@ public class If extends Pointcut {
         return "if(...)";
     }
 
-    public Residue matchesAt(MatchingContext mc) {
+    protected Residue getWeavingVars(List vars, List args, MatchingContext mc)
+    {
         WeavingEnv we = mc.getWeavingEnv();
-        SootClass cls = mc.getSootClass();
-        SootMethod method = mc.getSootMethod();
         ShadowMatch sm = mc.getShadowMatch();
-        
+
         Residue ret=AlwaysMatch.v();
 
-        List/*<WeavingVar>*/ args=new LinkedList();
         Iterator it=vars.iterator();
         int i=0;
         while(it.hasNext()) {
@@ -132,6 +130,14 @@ public class If extends Pointcut {
             args.add(wvar);
             i++;
         }
+
+        return ret;
+    }
+
+    public Residue matchesAt(MatchingContext mc) {
+        List/*<WeavingVar>*/ args=new LinkedList();
+        Residue ret = getWeavingVars(vars, args, mc);
+
         ret=AndResidue.construct(ret,IfResidue.construct(impl.getSootMethod(),args));
         return ret;
     }

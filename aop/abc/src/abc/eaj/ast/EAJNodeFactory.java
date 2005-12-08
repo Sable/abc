@@ -46,4 +46,6 @@ public interface EAJNodeFactory extends AJNodeFactory {
 
     public PCCflowDepth PCCflowDepth(Position pos, Local var, Pointcut pc);
     public PCCflowBelowDepth PCCflowBelowDepth(Position pos, Local var, Pointcut pc);
+
+    public PCLet PCLet(Position pos, Local var, Expr expr);
 }

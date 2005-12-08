@@ -46,6 +46,7 @@ terminal Token PC_THROW;
 terminal Token GLOBAL;
 terminal Token PC_CFLOWDEPTH;
 terminal Token PC_CFLOWBELOWDEPTH;
+terminal Token PC_LET;
 
 // ------- new non-terminals -----------------------
 
@@ -91,6 +92,13 @@ extend basic_pointcut_expr ::=
         {:
             Grm.parserTrace("CFLOWBELOWDEPTH pointcut");
             RESULT = parser.nf.PCCflowBelowDepth(parser.pos(x,y), parser.nf.Local(parser.pos(i),i.getIdentifier()), a);
+        :}
+    |
+        PC_LET:x LPAREN IDENTIFIER:i COMMA expression:e RPAREN:y
+        {:
+            Grm.parserTrace("LET pointcut");
+            Local var = parser.nf.Local(parser.pos(i), i.getIdentifier());
+            RESULT = parser.nf.PCLet(parser.pos(x,y), var, e);
         :}
     ;
 
