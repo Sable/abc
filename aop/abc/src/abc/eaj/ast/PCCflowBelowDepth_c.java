@@ -64,7 +64,8 @@ public class PCCflowBelowDepth_c extends PCCflow_c implements PCCflowBelowDepth
 
     public abc.weaving.aspectinfo.Pointcut makeAIPointcut() {
 	return new abc.eaj.weaving.aspectinfo.CflowBelowDepth
-	    (pc.makeAIPointcut(),position(),var);
+	    (pc.makeAIPointcut(), position(),
+	    new abc.weaving.aspectinfo.Var(var.name(), var.position()));
     }
     public Collection mayBind() throws SemanticException {
         Collection ret = super.mayBind();
@@ -84,6 +85,13 @@ public class PCCflowBelowDepth_c extends PCCflow_c implements PCCflowBelowDepth
 		 Pointcut pc = (Pointcut) visitChild(this.pc, v);
 		 Local var = (Local) visitChild(this.var, v);
 		 return reconstruct(pc,var);
+    }
+
+    public Context enterScope(Context c)
+    {
+        AJContext nc = (AJContext) super.enterScope(c);
+        nc.getCflowMustBind().remove(var.name());
+        return nc;
     }
 
     public Node typeCheck(TypeChecker tc) throws SemanticException {

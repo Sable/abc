@@ -35,21 +35,27 @@ import abc.weaving.residues.*;
  *  @author Ondrej Lhotak
  */
 public class CflowDepth extends abc.weaving.aspectinfo.Cflow {
-    private Local var;
+    private Var depth_var;
 
-    private CflowDepth(Pointcut pc,Position pos,int depth,Local var) {
+    private CflowDepth(Pointcut pc,Position pos,int depth,Var depth_var) {
         super(pc,pos,depth);
-        this.var = var;
+        this.depth_var = depth_var;
     }
 
-    public CflowDepth(Pointcut pc,Position pos,Local var) {
+    public CflowDepth(Pointcut pc,Position pos,Var depth_var) {
 	super(pc,pos);
-        this.var = var;
+        this.depth_var = depth_var;
     }
 
     public String toString() {
-	return "cflowdepth("+var+", "+getPointcut()+")";
+	return "cflowdepth("+depth_var+", "+getPointcut()+")";
     }
+
+    public void getFreeVars(Set result) {
+        super.getFreeVars(result);
+        result.add(depth_var.getName());
+    }
+
     public Residue matchesAt(MatchingContext mc) {
         WeavingEnv env = mc.getWeavingEnv();
 	SootClass cls = mc.getSootClass();
@@ -75,22 +81,23 @@ public class CflowDepth extends abc.weaving.aspectinfo.Cflow {
 		else
 			weavingActuals.add(null);
 	}
-        WeavingVar wv = env.getWeavingVar(new Var(var.name(),getPosition()));
+        WeavingVar wv = env.getWeavingVar(depth_var);
 	return new CflowDepthResidue(getCfs(),weavingActuals,wv);
     }
     public Pointcut inline(Hashtable renameEnv,
 			      Hashtable typeEnv,
 			      Aspect context,
 			      int cflowdepth) {
+        Var depth_var = this.depth_var.rename(renameEnv);
 	Pointcut pc=this.getPointcut().inline(renameEnv,typeEnv,context,cflowdepth+1);
 	CflowDepth ret;
 	if(pc==this.getPointcut()) ret=this;
-	else ret=new CflowDepth(pc,getPosition(),depth,var);
+	else ret=new CflowDepth(pc,getPosition(),depth,depth_var);
 	if(depth==-1) ret.depth=cflowdepth;
 	return ret;
     }
     public DNF dnf() {
-	Cflow ret=new CflowDepth(getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth,var);
+	Cflow ret=new CflowDepth(getPointcut().dnf().makePointcut(getPointcut().getPosition()),getPosition(),depth,depth_var);
 	return new DNF(ret);
     }
     	public boolean unify(Pointcut otherpc, Unification unification) {
@@ -105,7 +112,7 @@ public class CflowDepth extends abc.weaving.aspectinfo.Cflow {
 				if (unification.getPointcut() == ((Cflow)otherpc).getPointcut())
 					unification.setPointcut(otherpc);
 				else
-					unification.setPointcut(new CflowDepth(getPointcut(), getPosition(), depth,var));
+					unification.setPointcut(new CflowDepth(getPointcut(), getPosition(), depth, depth_var));
 			}
 				return true;
 			} else return false;
