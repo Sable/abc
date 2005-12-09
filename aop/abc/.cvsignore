@@ -4,5 +4,6 @@ runtime-javadoc
 javadoc
 testing-classes
 classes
+paddle-classes
 package
 dists
