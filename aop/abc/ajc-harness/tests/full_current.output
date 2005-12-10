@@ -601,7 +601,7 @@ PASS: Test 121: "new/ajc treating Throwable as checked, issuing error if not fou
 
 Running test 122: pureJava/overriding methods from object in interfaces and multiple-inheritance
 Commandline: abc -d pureJava -warn-unused-advice:off pureJava/InterfaceAndObject.java 
-InterfaceAndObject$1@6f633
+InterfaceAndObject$1@a6645c
 PASS: Test 122: "pureJava/overriding methods from object in interfaces and multiple-inheritance" passed.
 
 
@@ -4074,7 +4074,7 @@ PASS: Test 749: "bugs/super call in intertype method declaration body causes Ver
 
 Running test 750: bugs/crashes/Error with certain combination of advice
 Commandline: abc -d bugs/crashes -warn-unused-advice:off bugs/crashes/test/Test3.java 
-test.Test3@1f141a5.x:=-3
+test.Test3@3294cc.x:=-3
 call(void test.Test3.foo(int))
 PASS: Test 750: "bugs/crashes/Error with certain combination of advice" passed.
 
@@ -4157,8 +4157,8 @@ PASS: Test 763: "new/incompatible advice throws clause are a compile-time error"
 Running test 764: bugs/cflow binding issues with ignoring state
 Commandline: abc -d bugs -warn-unused-advice:off bugs/CflowBinding.java 
 i: 10
-o: Bar@eeaac4
-o: Bar@eeaac4, i: 10
+o: Bar@1797c45
+o: Bar@1797c45, i: 10
 m
 PASS: Test 764: "bugs/cflow binding issues with ignoring state" passed.
 
@@ -4309,13 +4309,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$7$around$2689(Trace.aj:92)
+	at aspects.Trace.inline$6$around$2689(Trace.aj:92)
 	at cap.OptionList.shadow$43(OptionList.java:92)
 	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4349,13 +4349,13 @@ Exception Stack Trace:
 
 java.lang.NoSuchMethodException: java.lang.String.getFoo()
 	at java.lang.Class.getMethod(Class.java:978)
-	at aspects.Trace.inline$19$around$2689(Trace.aj:119)
+	at aspects.Trace.inline$18$around$2689(Trace.aj:119)
 	at cap.OptionList.shadow$43(OptionList.java:119)
 	at aspects.Trace.inline$34$around$2689(Trace.aj:88)
 	at cap.OptionList.createListHtmlFromApi(OptionList.java)
-	at aspects.Trace.inline$3$around$2689(Trace.aj:135)
+	at aspects.Trace.inline$2$around$2689(Trace.aj:135)
 	at cap.OptionList.shadow$47(OptionList.java:135)
-	at aspects.Trace.inline$36$around$2689(Trace.aj:88)
+	at aspects.Trace.inline$33$around$2689(Trace.aj:88)
 	at cap.OptionList.main(OptionList.java)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -4749,7 +4749,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@d22105
+LibraryAspect-defined run() for C@ef0d0
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5308,12 +5308,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@16894dc
-Invoking command bean:  Command@10511e2
-hello(Command@10511e2)
-Created a PerThis aspect : Testcase2@1d9183c
-Invoking command bean:  Command@1c63311
-hello again(Command@1c63311)
+Created a PerThis aspect : Testcase2@186c40e
+Invoking command bean:  Command@b1af69
+hello(Command@b1af69)
+Created a PerThis aspect : Testcase2@173491d
+Invoking command bean:  Command@1c55049
+hello again(Command@1c55049)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
