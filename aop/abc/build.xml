@@ -124,6 +124,9 @@
             <zipfileset src="${paddle.loc}"/>
             <zipfileset src="${jedd.runtime.jar}"/>
             <zipfileset src="${javabdd.jar}"/>
+            <manifest>
+               <attribute name="Main-Class" value="abc.main.Main" />
+            </manifest>
         </jar>
    </target>
 
