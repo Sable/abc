@@ -204,11 +204,11 @@ public class JoinPointInfo extends ContextValue {
 
     private Local get_thisJoinPoint() {
         return abc.weaving.weaver.WeavingState.v().
-            get_JoinPointInfo_thisJoinPoint(this);
+            get_JoinPointInfo_thisJoinPoint(sm);
     }
     private void set_thisJoinPoint(Local val) {
         abc.weaving.weaver.WeavingState.v().
-            set_JoinPointInfo_thisJoinPoint(this, val);
+            set_JoinPointInfo_thisJoinPoint(sm, val);
     }
     private Local getThisJoinPoint() {
         if(get_thisJoinPoint()==null) {

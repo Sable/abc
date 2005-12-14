@@ -24,6 +24,7 @@ import java.util.Map;
 
 import soot.Local;
 import abc.weaving.residues.JoinPointInfo;
+import abc.weaving.matching.ShadowMatch;
 
 /** State used during weaving that needs to be reset for reweaving.
  * @author Ondrej Lhotak
@@ -35,10 +36,10 @@ public class WeavingState {
     public static WeavingState v() { return instance; }
     public static void reset() { instance = new WeavingState(); }
     private Map JoinPointInfo_thisJoinPoint = new HashMap();
-    public Local get_JoinPointInfo_thisJoinPoint(JoinPointInfo key) {
+    public Local get_JoinPointInfo_thisJoinPoint(ShadowMatch key) {
         return (Local) JoinPointInfo_thisJoinPoint.get(key);
     }
-    public void set_JoinPointInfo_thisJoinPoint(JoinPointInfo key, Local value) {
+    public void set_JoinPointInfo_thisJoinPoint(ShadowMatch key, Local value) {
         JoinPointInfo_thisJoinPoint.put(key, value);
     }
 }
