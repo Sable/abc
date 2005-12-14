@@ -5,6 +5,9 @@
 # to make one of your own. Lines beginning with '#' are ignored, predictably
 # enough. 
 #
+# You should wrap your lines at 76 characters, so that things which indent
+# it further do not run over 80 characters.
+#
 # Information for "extenders", such as a warning of an interface change, 
 # or an addition of a new interface, should be started with a '!' instead 
 # of a '$'.
