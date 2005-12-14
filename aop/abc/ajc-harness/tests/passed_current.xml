@@ -5392,5 +5392,9 @@
 <ajc-test title="Using private pointcut variables in an if(..) in a TM symbol" num="1209" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="TracematchAndIfAndPPVs.java"></compile>
     </ajc-test>
+<ajc-test title="thisJoinPoint maintains object identity for an entire join point" num="1210" dir="abctests/bugs">
+        <compile files="TJP.java"></compile>
+        <run class="TJP"></run>
+    </ajc-test>
  
 </suite>
