@@ -46,7 +46,7 @@ public class LocalDel_c extends JL_c implements MakesAspectMethods,
      	 AJContext ajc =(AJContext) tc.context();
      	 if (ajc.inCflow() && ajc.inIf()) {
      	 	Local m = (Local) node();
-     	 	if (! ajc.getCflowMustBind().contains(m.name()))
+     	 	if (!m.name().equals("thisJoinPoint") && ! ajc.getCflowMustBind().contains(m.name()))
      	 		throw new SemanticException("Local "+m.name()+" is not bound within enclosing cflow: it cannot be used within if(..)",node().position());
      	 }
      	 return node().typeCheck(tc);
