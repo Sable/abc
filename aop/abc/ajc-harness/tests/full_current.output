@@ -2292,7 +2292,7 @@ PASS: Test 420: "new/advice on field gets in privileged aspects" passed.
 Running test 421: new/Two anonymous classes in the same scope
 Commandline: abc -d new -warn-unused-advice:off new/TwoAnonymous.java 
 setting x
-calling run: TwoAnonymous$3@14c2930, [Ljava.lang.Object;@1243d23, TwoAnonymous$3@14c2930
+calling run: TwoAnonymous$3@29f8b5, [Ljava.lang.Object;@1874ac0, TwoAnonymous$3@29f8b5
 k
 setting x
 PASS: Test 421: "new/Two anonymous classes in the same scope" passed.
@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$31$around$1601(AroundAll.java:199)
+	at A.inline$25$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
