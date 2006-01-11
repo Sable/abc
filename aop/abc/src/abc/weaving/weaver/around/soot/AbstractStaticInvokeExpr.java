@@ -25,7 +25,6 @@ import soot.jimple.*;
 import soot.baf.*;
 import soot.util.*;
 import java.util.*;
-;
 
 
 public abstract class AbstractStaticInvokeExpr extends abc.weaving.weaver.around.soot.AbstractInvokeExpr implements StaticInvokeExpr, ConvertToBaf
