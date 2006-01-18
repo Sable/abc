@@ -189,6 +189,7 @@
         <condition property="jflex-up-to-date">
             <and>
                 <available file="generated/abc/aspectj/parse/Lexer_c.java"/>
+                <available file="generated/abc/om/parse/Lexer_c.java"/>
             </and>
         </condition>
     </target>
