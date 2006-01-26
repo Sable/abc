@@ -35,8 +35,9 @@ public class ModuleNodeClass extends ModuleNode {
 
     public ModuleNodeClass(String parentName, ClassnamePatternExpr cpe) {
         this.cpe = cpe;
-        //name is the class expression itself.
-        this.name = cpe.toString();
+        //name is the class expression itself, prepended with the module name
+        //to make sure there are no clashes in the hashmap
+        this.name = parentName + "." + cpe.toString();
     }
     
     public ClassnamePatternExpr getCPE() {
