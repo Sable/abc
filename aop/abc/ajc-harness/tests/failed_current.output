@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$26$around$1601(AroundAll.java:199)
+	at A.inline$25$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -224,7 +224,7 @@ Caused by: java.lang.RuntimeException: Trying to get soot type for null polyglot
 	at soot.javaToJimple.AbstractJimpleBodyBuilder.createJimpleBody(AbstractJimpleBodyBuilder.java:54)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
-	at soot.SootMethod.retrieveActiveBody(SootMethod.java:304)
+	at soot.SootMethod.retrieveActiveBody(SootMethod.java:319)
 	at abc.main.Main.weave(Main.java:897)
 	... 4 more
 FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed.

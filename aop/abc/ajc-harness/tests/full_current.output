@@ -2723,7 +2723,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$26$around$1601(AroundAll.java:199)
+	at A.inline$25$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -3662,7 +3662,7 @@ jas.jasError: Unknown directive or badly formed number.
 	at sun.nio.cs.StreamEncoder.flush(StreamEncoder.java:152)
 	at java.io.OutputStreamWriter.flush(OutputStreamWriter.java:213)
 	at java.io.PrintWriter.flush(PrintWriter.java:120)
-	at soot.PackManager.writeClass(PackManager.java:676)
+	at soot.PackManager.writeClass(PackManager.java:699)
 	at soot.PackManager.writeOutput(PackManager.java:390)
 	at soot.PackManager.writeOutput(PackManager.java:342)
 	at abc.main.Main.output(Main.java:1046)
@@ -4749,7 +4749,7 @@ PASS: Test 848: "bugs/interface call signatures when declaring method in aspect"
 
 Running test 849: new/interfaceLibrary/aspect-declared interface members in libraries - baseline
 Commandline: abc -d new/interfaceLibrary -warn-unused-advice:off new/interfaceLibrary/lib/LibraryInterface.java new/interfaceLibrary/Client.java new/interfaceLibrary/LibraryAspect.java 
-LibraryAspect-defined run() for C@1698d81
+LibraryAspect-defined run() for C@7744c4
 PASS: Test 849: "new/interfaceLibrary/aspect-declared interface members in libraries - baseline" passed.
 
 
@@ -5075,7 +5075,7 @@ Test.run()
 ? Util.write() suid=Test: static final long serialVersionUID = 6093543801813805496L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/Test.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/BeforeExecutionAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=Test@de69bd
+? Util.read() obj=Test@e60387
 PASS: Test 928: "bugs/serialVersionUID/SUID: Before execution advice" passed.
 
 
@@ -5095,7 +5095,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 ? Util.write() suid=ClinitTest: static final long serialVersionUID = 2526902561815172109L;
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/ClinitTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/TJP.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
-? Util.read() obj=ClinitTest@fe71e2
+? Util.read() obj=ClinitTest@111fd1b
 PASS: Test 933: "bugs/serialVersionUID/SUID: thisJoinPoint with clinit method" passed.
 
 
@@ -5105,7 +5105,7 @@ Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off bugs/serialVer
 Commandline: abc -d bugs/serialVersionUID -warn-unused-advice:off -Xlint:warning bugs/serialVersionUID/SuidTest.java bugs/serialVersionUID/Util.java bugs/serialVersionUID/AfterReturningStaticinitializationAdvice.aj 
 *** Option -Xlint:warning ignored: abc does not support Xlint
 ? AfterReturningStaticinitializationAdvice.staticInit()
-? Util.read() obj=SuidTest@15cda16
+? Util.read() obj=SuidTest@1283b86
 PASS: Test 935: "bugs/serialVersionUID/SUID: After returning staticinitialization advice with serialVersionUID field" passed.
 
 
@@ -5308,12 +5308,12 @@ PASS: Test 972: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an A
 
 Running test 973: bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2
 Commandline: abc -d bugs/IfPerThis -warn-unused-advice:off bugs/IfPerThis/Testcase2.java 
-Created a PerThis aspect : Testcase2@1e453d7
-Invoking command bean:  Command@13c64eb
-hello(Command@13c64eb)
-Created a PerThis aspect : Testcase2@5b95a
-Invoking command bean:  Command@1cbf80a
-hello again(Command@1cbf80a)
+Created a PerThis aspect : Testcase2@ea72a5
+Invoking command bean:  Command@ce36c
+hello(Command@ce36c)
+Created a PerThis aspect : Testcase2@26dd05
+Invoking command bean:  Command@1788e02
+hello again(Command@1788e02)
 PASS: Test 973: "bugs/IfPerThis/An if() pointcut inside a perthis() clauses an ABORT - null pointer exception in ajc - 2" passed.
 
 
@@ -6387,7 +6387,7 @@ Caused by: java.lang.RuntimeException: Trying to get soot type for null polyglot
 	at soot.javaToJimple.AbstractJimpleBodyBuilder.createJimpleBody(AbstractJimpleBodyBuilder.java:54)
 	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
 	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
-	at soot.SootMethod.retrieveActiveBody(SootMethod.java:304)
+	at soot.SootMethod.retrieveActiveBody(SootMethod.java:319)
 	at abc.main.Main.weave(Main.java:897)
 	... 4 more
 FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed.
