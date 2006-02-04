@@ -56,7 +56,8 @@ public class FieldDel_c extends JL_c implements MakesAspectMethods
                     AspectType at = (AspectType) cct;
                     getter = at.getAccessorMethods().accessorGetter(nf, ts, f, (ClassType)f.target().type(), null);
                     setter = at.getAccessorMethods().accessorSetter(nf, ts, f, (ClassType)f.target().type(), null, (Expr)f);
-                    return new JjAccessField_c(f.position(), getter, setter, f);
+                    Expr newf = new JjAccessField_c(f.position(), getter, setter, f);
+                    return newf.type(f.type());
                 }
                 cct = cct.outer();
             }
@@ -70,7 +71,8 @@ public class FieldDel_c extends JL_c implements MakesAspectMethods
             if (itfi.container().toClass().flags().isInterface()){
                 getter = (Call)itfi.getCall(nf, ts, f.target(), itfi.container());
                 setter = (Call)itfi.setCall(nf, ts, f.target(), itfi.container(), (Expr)f);
-                return new JjAccessField_c(f.position(), getter, setter, f);
+                Expr newf = new JjAccessField_c(f.position(), getter, setter, f);
+                return newf.type(f.type());
             }
             f = f.fieldInstance(itfi.mangled()).name(itfi.mangled().name()).targetImplicit(false);
         }
@@ -91,7 +93,8 @@ public class FieldDel_c extends JL_c implements MakesAspectMethods
                         id.thisReference(nf, ts));
                     setter = aspct.getAccessorMethods().accessorSetter(nf, ts, f, id.host().type().toClass(),
                         id.thisReference(nf, ts), (Expr)f);
-                    return new JjAccessField_c(f.position(), getter, setter, f);
+                    Expr newf = new JjAccessField_c(f.position(), getter, setter, f);
+                    return newf.type(f.type());
             }
         }
         return f;
