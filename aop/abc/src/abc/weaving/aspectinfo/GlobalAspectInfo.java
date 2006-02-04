@@ -215,7 +215,8 @@ public class GlobalAspectInfo {
                 return p;
             }
         }
-        throw new InternalCompilerError("Pointcut "+name+" was not found in "+context);
+        return null;
+        // throw new InternalCompilerError("Pointcut "+name+" was not found in "+context);
     }
 
     /** Returns the list of all <code>declare parents</code> declarations.

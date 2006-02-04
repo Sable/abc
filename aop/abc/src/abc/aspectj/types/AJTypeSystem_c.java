@@ -689,6 +689,7 @@ public class AJTypeSystem_c
 			throw new SemanticException("Pointcut "+name+" not found.");
 	   if (ms.size() > 1)
 			throw new SemanticException("Ambiguous pointcut reference.");
+	   // System.out.println("pointcut reference to "+name+" found in "+ ct);
 	   return (PointcutInstance_c) ms.iterator().next(); 
 	}
 

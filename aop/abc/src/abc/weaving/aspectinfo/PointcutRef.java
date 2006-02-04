@@ -39,18 +39,21 @@ public class PointcutRef extends Pointcut {
     private Map/*<Object,PointcutDecl>*/ decl_map;
     private List/*<ArgPattern>*/ args;
     private Map/*<Aspect,PointcutDecl>*/ decls = new HashMap();
+    private boolean hardref;
     
     /** Create an <code>args</code> pointcut.
      *  @param decl_key an object that can later be resolved into the pointcut declaration.
      *  @param decl_map a map from {@link java.lang.Object} to {@link abc.weaving.aspectinfo.PointcutDecl}.
      *  @param args a list of {@link abc.weaving.aspectinfo.ArgPattern} objects
+     *  @param hardref is this a hard reference (with an explicit target) or not?
      */
-    public PointcutRef(Object decl_key, Map decl_map, List args, Position pos) {
+    public PointcutRef(Object decl_key, Map decl_map, List args, Position pos, boolean hardref) {
 	super(pos);
 	decl_map.size();
 	this.decl_key = decl_key;
 	this.decl_map = decl_map;
 	this.args = args;
+    this.hardref = hardref;
     }
 
     private PointcutDecl getDirectDecl() {
@@ -58,17 +61,18 @@ public class PointcutRef extends Pointcut {
     }
 
     public PointcutDecl getDecl(Aspect context) {
-	PointcutDecl decl = (PointcutDecl) decls.get(context);
-	if (decl == null) {
-	    decl = getDirectDecl();
-	    if (decl.isAbstract()) {
-		decl = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPointcutDecl(decl.getName(), context);
-		if(decl.isAbstract()) 
-		    throw new InternalCompilerError("decl for "+this+" in context "+context+" was abstract");
-	    }
-	    decls.put(context, decl);
-	}
-	return decl;
+    	PointcutDecl decl = (PointcutDecl) decls.get(context);
+		if (decl == null) {
+			decl = getDirectDecl();
+			if (!hardref) {
+				decl = abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPointcutDecl(decl.getName(), context);
+				if (decl == null) decl = getDirectDecl();
+			}
+			if(decl.isAbstract()) 
+				throw new InternalCompilerError("decl for "+this+" in context "+context+" was abstract");
+	    	decls.put(context, decl);
+		}
+		return decl;
     }
 
     /** Get the list of argument patterns.

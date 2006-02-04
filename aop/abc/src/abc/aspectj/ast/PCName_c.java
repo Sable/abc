@@ -298,6 +298,6 @@ public class PCName_c extends Pointcut_c implements PCName, DependsCheck
 	Object pcd_key = mi; //Find the pointcut using the method instance as key
 	Map decl_map = AspectInfoHarvester.pointcutDeclarationMap();
 	List args = AspectInfoHarvester.convertArgPatterns(this.args);
-	return new abc.weaving.aspectinfo.PointcutRef(pcd_key, decl_map, args, position());
+	return new abc.weaving.aspectinfo.PointcutRef(pcd_key, decl_map, args, position(),target != null);
     }
 }
