@@ -5,7 +5,7 @@ aspect IntertypeFieldCodegeneration {
         (Modifiers)getModifiers().fullCopy(),
         type().createQualifiedAccess(),
         new IdDecl(name()),
-        (Opt)getAbstractVarInitOpt().fullCopy(),
+        (Opt)getInitOpt().fullCopy(),
         hostType()
       )
     );
@@ -19,11 +19,11 @@ aspect IntertypeFieldCodegeneration {
   }
   private TypeDecl IntroducedFieldDeclaration.aspectType;
   syn TypeDecl IntroducedFieldDeclaration.aspectType() = aspectType;
-  eq IntroducedFieldDeclaration.getAbstractVarInit().lookupVariable(String name) {
+  eq IntroducedFieldDeclaration.getInit().lookupVariable(String name) {
     Collection c = lookupVariable(name);
     if(!c.isEmpty())
       return c;
-    return aspectType().findVariable(name); // TODO: Does this work for fields in nested aspects/classes?
+    return aspectType().lookupMemberField(name); // TODO: Does this work for fields in nested aspects/classes?
   }
 
   eq IntertypeFieldDeclaration.isBytecodeField() = false;

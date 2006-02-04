@@ -1,4 +1,6 @@
 aspect IntertypeMethodNameAnalysis {
+  eq IntertypeMethodDecl.getTargetType().nameType() = NameType.TYPE_NAME;
+  
   // hostAspect is the aspect the declares the intertype method decl
   syn TypeDecl IntertypeMethodDecl.hostAspect() = (TypeDecl)getParent().getParent();
   // introducedType is the type into which the intertype method decl is statically introduced
@@ -93,7 +95,7 @@ aspect IntertypeMethodNameAnalysis {
   }
 
   inh lazy Collection ClassDecl.introducedMethods(TypeDecl typeDecl);
-  inh lazy Collection MemberClass.introducedMethods(TypeDecl typeDecl);
+  inh lazy Collection MemberClassDecl.introducedMethods(TypeDecl typeDecl);
   
   eq Program.getCompilationUnit(int i).introducedMethods(TypeDecl typeDecl) = new ArrayList(0);
   eq AspectDecl.getBodyDecl(int index).introducedMethods(TypeDecl typeDecl) {

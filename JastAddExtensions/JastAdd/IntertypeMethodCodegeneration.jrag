@@ -42,7 +42,7 @@ aspect IntertypeMethodCodegeneration {
     // make arguments from this and method parameters
     List args = new List();
     if(!isStatic())
-      args.add(new ThisAccess(new List(), new IdUse("this")));
+      args.add(new ThisAccess(new IdUse("this")));
     for(int i = 0; i < getNumParameter(); i++) {
       args.add(getParameter(i).createAccess());
     }
@@ -83,12 +83,11 @@ aspect IntertypeMethodCodegeneration {
     return lookupMethod(name);
   }
   eq IntroducedMethodDecl.getBlock().lookupVariable(String name) {
-    Collection c = introducedType().findVariable(name);
+    Collection c = introducedType().lookupMemberField(name);
     if(!c.isEmpty())
       return c;
-    c = localLookupVariable(name);
-    if(!c.isEmpty())
-      return c;
+    Variable v = parameterDeclaration(name);
+    if(v != null) return createVariableCollection(v);
     return lookupVariable(name);
   }
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();

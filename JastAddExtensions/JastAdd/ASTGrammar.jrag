@@ -8,6 +8,8 @@ aspect ASTGrammar {
   inh TypeDecl ASTTokenChild.lookupType(String pack, String name);
   eq ASTTokenChild.type() = hasType() ? getType().type() : lookupType("java.lang", "String");
 
+  eq ASTChild.getType().nameType() = NameType.TYPE_NAME;
+
   syn boolean ASTChild.isNTA() = false;
   eq NTAListChild.isNTA() = true;
   eq NTAOptionalChild.isNTA() = true;
@@ -232,7 +234,6 @@ aspect ASTGrammar {
       statements.add(
           new ReturnStmt(
             new SuperAccess(
-              new List(),
               new IdUse("super")
             ).qualifiesAccess(
               new MethodAccess(

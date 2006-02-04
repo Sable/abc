@@ -1,4 +1,6 @@
 aspect IntertypeMethodNameAnalysis {
+  eq IntertypeConstructorDecl.getTargetType().nameType() = NameType.TYPE_NAME;
+  
   syn TypeDecl IntertypeConstructorDecl.introducedType() = getTargetType().type();
 
   syn TypeDecl IntertypeConstructorDecl.hostType() = introducedType();
@@ -36,7 +38,7 @@ aspect IntertypeMethodNameAnalysis {
   }
 
   inh lazy Collection ClassDecl.introducedConstructors(TypeDecl typeDecl);
-  inh lazy Collection MemberClass.introducedConstructors(TypeDecl typeDecl);
+  inh lazy Collection MemberClassDecl.introducedConstructors(TypeDecl typeDecl);
   
   eq Program.getCompilationUnit(int i).introducedConstructors(TypeDecl typeDecl) = new ArrayList(0);
   eq AspectDecl.getBodyDecl(int index).introducedConstructors(TypeDecl typeDecl) {
@@ -50,7 +52,7 @@ aspect IntertypeMethodNameAnalysis {
     ArrayList maxSpecific = super.findConstructor(argList, typeDecl);
     for(Iterator iter = introducedConstructors(this).iterator(); iter.hasNext(); ) {
       ConstructorDecl decl = (ConstructorDecl)iter.next();
-      if(decl.compatible(argList) && decl.accessableFrom(typeDecl)) {
+      if(decl.compatible(argList) && decl.accessibleFrom(typeDecl)) {
         if(maxSpecific.isEmpty()) {
           maxSpecific.add(decl);
         }

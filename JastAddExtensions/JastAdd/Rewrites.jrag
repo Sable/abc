@@ -1,4 +1,10 @@
 aspect Rewrite {
+  eq RewriteDecl.getAccess().nameType() = NameType.TYPE_NAME;
+  eq RewriteListDecl.getParentType().nameType() = NameType.TYPE_NAME;
+  eq RewriteListDecl.getChildName().nameType() = NameType.METHOD_NAME;
+
+  eq Rewrite.getAccess().nameType() = NameType.TYPE_NAME;
+  
   // Satisfy reachability analysis for rewrite clauses
   eq RewriteDecl.getRewrite().reachable() = true;
 
@@ -370,7 +376,7 @@ aspect Rewrite {
               ).qualifiesAccess(
                 new MethodAccess(
                   "getIndexOfChild",
-                  new List().add(new ThisAccess(new List(), new IdUse("this")))
+                  new List().add(new ThisAccess(new IdUse("this")))
                 )
               )
             )
@@ -385,7 +391,6 @@ aspect Rewrite {
     statements.add(
       new ReturnStmt(
         new SuperAccess(
-          new List(),
           new IdUse("super")
         ).qualifiesAccess(
           new MethodAccess(
@@ -444,8 +449,6 @@ aspect Rewrite {
   }
 
 
-  eq RewriteListDecl.getParentType().nameType() = NameType.TYPE_NAME;
-  eq RewriteListDecl.getChildName().nameType() = NameType.METHOD_NAME;
 
   eq RewriteListDecl.getChildName().lookupMethod(String name) = 
     getParentType().type().remoteLookupMethod(name);

@@ -1,5 +1,11 @@
 aspect JastAdd {
 
+  eq AttributeDecl.getTypeAccess().nameType() = NameType.TYPE_NAME;
+  eq AttributeDecl.getTargetType().nameType() = NameType.TYPE_NAME;
+  eq AttributeEq.getHostType().nameType() = NameType.TYPE_NAME;
+  eq AttributeEq.getParameter().nameType() = NameType.TYPE_NAME;
+  eq InhEq.getChildParameter().nameType() = NameType.TYPE_NAME;
+
   syn boolean SynDecl.hasEqBody() = hasBlock() && !getBlock().isDummy();
   public boolean Block.isDummy() {
     return false;

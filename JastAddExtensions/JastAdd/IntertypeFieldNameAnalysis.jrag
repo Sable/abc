@@ -1,4 +1,7 @@
 aspect IntertypeFieldNameAnalysis {
+
+  eq IntertypeFieldDeclaration.getTargetType().nameType() = NameType.TYPE_NAME;
+  
   // hostAspect is the aspect the declares the intertype field decl
   syn TypeDecl IntertypeFieldDeclaration.hostAspect() = (TypeDecl)getParent().getParent();
   // introducedType is the type into which the intertype field decl is statically introduced
@@ -11,20 +14,21 @@ aspect IntertypeFieldNameAnalysis {
 
   // TODO: Some problems when computing declare before use if the init thinks it is in a different host type
   // comment out works reasonably
-  //eq IntertypeFieldDeclaration.getAbstractVarInit().hostType() = hostType();
+  //eq IntertypeFieldDeclaration.getInit().hostType() = hostType();
   
-  eq IntertypeFieldDeclaration.getAbstractVarInit().lookupVariable(String name) {
-    Collection c = introducedType().findVariable(name);
+  eq IntertypeFieldDeclaration.getInit().lookupVariable(String name) {
+    Collection c = introducedType().lookupMemberField(name);
     if(!c.isEmpty())
       return c;
     return lookupVariable(name);
   }
 
-  eq ASTDecl.localFields() {
-    Collection fields = super.localFields();
+  eq ASTDecl.localFields(String name) {
+    Collection fields = super.localFields(name);
     for(Iterator iter = introducedFields(this).iterator(); iter.hasNext(); ) {
       FieldDeclaration f = (FieldDeclaration)iter.next();
-      fields.add(f);
+      if(f.name().equals(name))
+        fields.add(f);
     }
     return fields;
   }
@@ -44,7 +48,7 @@ aspect IntertypeFieldNameAnalysis {
   }
 
   inh lazy Collection ClassDecl.introducedFields(TypeDecl typeDecl);
-  inh lazy Collection MemberClass.introducedFields(TypeDecl typeDecl);
+  inh lazy Collection MemberClassDecl.introducedFields(TypeDecl typeDecl);
   
   eq Program.getCompilationUnit(int i).introducedFields(TypeDecl typeDecl) = new ArrayList(0);
   eq AspectDecl.getBodyDecl(int index).introducedFields(TypeDecl typeDecl) {

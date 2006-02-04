@@ -1,5 +1,8 @@
 aspect IntertypeParentsNameAnalysis {
 
+  eq IntertypeImplements.getTargetType().nameType() = NameType.TYPE_NAME;
+  eq IntertypeImplements.getInterfaceType().nameType() = NameType.TYPE_NAME;
+
   syn TypeDecl IntertypeImplements.introducedType() = getTargetType().type();
   
   syn lazy Map AspectDecl.intertypeImplementsMap() {
@@ -17,7 +20,7 @@ aspect IntertypeParentsNameAnalysis {
   }
 
   inh lazy Collection ClassDecl.introducedImplements(TypeDecl typeDecl);
-  inh lazy Collection MemberClass.introducedImplements(TypeDecl typeDecl);
+  inh lazy Collection MemberClassDecl.introducedImplements(TypeDecl typeDecl);
   
   eq Program.getCompilationUnit(int i).introducedImplements(TypeDecl typeDecl) = new ArrayList(0);
   eq AspectDecl.getBodyDecl(int index).introducedImplements(TypeDecl typeDecl) {

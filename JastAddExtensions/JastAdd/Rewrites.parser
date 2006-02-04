@@ -9,7 +9,7 @@ RewriteDecl node_rewrite_decl =
     {:  
       Access left = (Access)((Dot)n).getLeftNoTransform();
       ParseName right = (ParseName)((Dot)n).getRightNoTransform();
-      return new RewriteListDecl(type, node_rewrite_list, left, new ParseMethodName(right.getIdUseNoTransform(), new List().add(new IntegerLiteral(0))), IDENTIFIER);
+      return new RewriteListDecl(type, node_rewrite_list, left, new MethodAccess(new List().add(new IntegerLiteral(0)), right.getIdUseNoTransform()), IDENTIFIER);
     :}
   ;
 

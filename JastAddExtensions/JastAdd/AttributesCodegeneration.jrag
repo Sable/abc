@@ -1,4 +1,5 @@
 aspect GenerateSynCode {
+
   public void SynDecl.generateIntertypeDecls() {
     if(hasEqBody()) {
       // public type name(p0, ..., PN-1) { ... }
@@ -510,7 +511,7 @@ aspect GenerateSynCode {
       // object[] parameters$ = {parameter0, .. , paramterN-1};
       List init = new List();
       for(int i = 0; i < getNumParameter(); i++)
-        init.add(new VarInit(getParameter(i).type().box(getParameter(i).createAccess())));
+        init.add(getParameter(i).type().box(getParameter(i).createAccess()));
       list.add(
         new VariableDeclaration(
           lookupType("java.util", "List").createQualifiedAccess(),
@@ -575,8 +576,6 @@ aspect GenerateSynCode {
       );
     }
   }
-
-  inh TypeDecl AttributeDecl.lookupArray(TypeDecl elementType, int dimension);
 
   public Access Parameter.createAccess() {
     return new VarAccess(getIdDecl().getID());
@@ -665,7 +664,7 @@ aspect GenerateSynCode {
 
   protected void AttributeDecl.addComputeCall(List list, MethodDecl targetMethod) {
     List args = new List();
-    args.add(new ThisAccess(new List(), new IdUse("this")));
+    args.add(new ThisAccess(new IdUse("this")));
     for(int i = 0; i < getNumParameter(); i++) {
       args.add(getParameter(i).createAccess());
     }
@@ -706,7 +705,7 @@ aspect GenerateSynCode {
       )
     );
     List args = new List();
-    args.add(new ThisAccess(new List(), new IdUse("this")));
+    args.add(new ThisAccess(new IdUse("this")));
     for(int i = 0; i < getNumParameter(); i++) {
       args.add(getParameter(i).createAccess());
     }
@@ -829,7 +828,7 @@ aspect GenerateSynCode {
 
           // Add conditional delegation 
           List args = new List();
-          args.add(new ThisAccess(new List(), new IdUse("this")));
+          args.add(new ThisAccess(new IdUse("this")));
           for(int i = 0; i < getNumParameter(); i++)
             args.add(getParameter(i).createAccess());
           if(inhEq.getNumChildParameter() == 1) {
@@ -875,7 +874,6 @@ aspect GenerateSynCode {
           statements.add(
             new ReturnStmt(
               new SuperAccess(
-                new List(),
                 new IdUse("super")
               ).qualifiesAccess(
                 new MethodAccess(
@@ -942,7 +940,7 @@ aspect GenerateSynCode {
   // TODO: currently needs to update remote attributes after this operation
   protected void InhDecl.addDefiningInterface() {
     hostAspect().addBodyDecl(
-      new MemberInterface(
+      new MemberInterfaceDecl(
         new InterfaceDecl(
           new Modifiers(new List().add(new Modifier("public"))),
           new IdDecl(definingInterfaceName()),
@@ -977,10 +975,7 @@ aspect GenerateSynCode {
       new VariableDeclaration(
         typeASTNode().createQualifiedAccess(),
         "caller",
-        new ThisAccess(
-          new List(),
-          new IdUse("this")
-        )
+        new ThisAccess(new IdUse("this"))
       )
     ).add(
       new VariableDeclaration(
@@ -1031,7 +1026,7 @@ aspect GenerateSynCode {
     
   protected Expr SynDecl.createComputeCall(MethodDecl targetMethod) {
     List args = new List();
-    args.add(new ThisAccess(new List(), new IdUse("this")));
+    args.add(new ThisAccess(new IdUse("this")));
     for(int i = 0; i < getNumParameter(); i++) {
       args.add(getParameter(i).createAccess());
     }

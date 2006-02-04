@@ -3,9 +3,13 @@ BodyDecl intertype_member_declaration =
   ;
 
 BodyDecl intertype_method_declaration =
-    modifiers_opt.m type name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
+    modifiers.m type name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
     {: return new IntertypeMethodDecl(m, type, new IdDecl(id), p, new List(), t, b, targetType); :}
-  | modifiers_opt.m VOID name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
+  | type name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
+    {: return new IntertypeMethodDecl(new Modifiers(new List()), type, new IdDecl(id), p, new List(), t, b, targetType); :}
+  | modifiers.m VOID name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
     {: return new IntertypeMethodDecl(m, new TypeAccess("void"), new IdDecl(id), p, new List(), t, b, targetType); :}
+  | VOID name.targetType DOT IDENTIFIER.id LPAREN formal_parameter_list_opt.p RPAREN throws_opt.t method_body.b 
+    {: return new IntertypeMethodDecl(new Modifiers(new List()), new TypeAccess("void"), new IdDecl(id), p, new List(), t, b, targetType); :}
   ;
 

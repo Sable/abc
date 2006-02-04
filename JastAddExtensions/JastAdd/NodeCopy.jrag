@@ -9,7 +9,6 @@ aspect ASTNodeCopy {
         new CastExpr(
           createQualifiedAccess(),
           new SuperAccess(
-            new List(),
             new IdUse("super")
           ).qualifiesAccess(
             new MethodAccess(

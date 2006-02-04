@@ -1,4 +1,6 @@
 aspect ASTGrammarAnalysis {
+  // lazy build a map ASTDecl -> ASTDecl*
+  // map an ASTDecl to all left hand sides in productions
   private HashMap Program.astParentMap = null;
   private HashMap Program.astParentMap() {
     if(astParentMap == null) {
