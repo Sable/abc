@@ -158,6 +158,16 @@ any of their subdirectories.
 	generate a warning. 
       </long_desc>
     </boolopt>
+    <boolopt>
+      <alias>warn-prec-ambiguity</alias>
+      <default>false</default>
+      <short_desc>Warn if there is a precedence ambiguity
+      </short_desc>
+      <long_desc>If multiple pieces of advice apply at the same shadow, and the
+      language specification does not dictate a precedence order, generate
+      a warning.
+      </long_desc>
+    </boolopt>
   </section>
   <section>
     <name>Language Options</name>
