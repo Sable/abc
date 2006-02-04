@@ -10023,4 +10023,10 @@
         <compile files="TJP.java" />
         <run class="TJP" />
     </ajc-test>
+
+    <ajc-test num="1211" dir="abctests/new"
+       title="concrete pointcuts in abstract aspects can be overridden">
+        <compile files="PCInh.java" />
+        <run class="PCInh" />
+    </ajc-test>
 </suite>
