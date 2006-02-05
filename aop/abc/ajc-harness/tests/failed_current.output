@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$29$around$1601(AroundAll.java:199)
+	at A.inline$30$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -197,37 +197,6 @@ Caused by: java.lang.RuntimeException: couldn't find class: E$A2$1 (is your soot
 	at abc.main.Main.run(Main.java:515)
 	... 3 more
 FAIL: Test 1001: "abctests/bugs/resolving anonymous classes inside classes with dollar signs" failed.
-
-
-Running test 1207: abctests/bugs/Problem with privileged ITD access to private fields
-Commandline: abc -d abctests/bugs -warn-unused-advice:off abctests/bugs/ITDPrivate.java 
-Unexpected exception while compiling: polyglot.util.InternalCompilerError: Exception while processing <Aspect: void writex(ITDPrivate,int)>
-polyglot.util.InternalCompilerError: Exception while processing <Aspect: void writex(ITDPrivate,int)>
-	at abc.main.Main.weave(Main.java:901)
-	at abc.main.Main.run(Main.java:519)
-	at abc.testing.TestCase.runTest(TestCase.java:288)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-Caused by: java.lang.RuntimeException: Trying to get soot type for null polyglot type
-	at soot.javaToJimple.Util.getSootType(Util.java:400)
-	at soot.javaToJimple.JimpleBodyBuilder.getFieldRef(JimpleBodyBuilder.java:2512)
-	at soot.javaToJimple.JimpleBodyBuilder.getFieldLocalLeft(JimpleBodyBuilder.java:2285)
-	at soot.javaToJimple.JimpleBodyBuilder.createLHS(JimpleBodyBuilder.java:4580)
-	at soot.javaToJimple.AccessFieldJBB.createLHS(AccessFieldJBB.java:179)
-	at soot.javaToJimple.JimpleBodyBuilder.getSimpleAssignLocal(JimpleBodyBuilder.java:2179)
-	at soot.javaToJimple.JimpleBodyBuilder.getAssignLocal(JimpleBodyBuilder.java:2232)
-	at soot.javaToJimple.JimpleBodyBuilder.createExpr(JimpleBodyBuilder.java:1857)
-	at soot.javaToJimple.AccessFieldJBB.createExpr(AccessFieldJBB.java:168)
-	at soot.javaToJimple.JimpleBodyBuilder.createStmt(JimpleBodyBuilder.java:553)
-	at soot.javaToJimple.JimpleBodyBuilder.createBlock(JimpleBodyBuilder.java:347)
-	at soot.javaToJimple.JimpleBodyBuilder.createJimpleBody(JimpleBodyBuilder.java:137)
-	at soot.javaToJimple.AbstractJimpleBodyBuilder.createJimpleBody(AbstractJimpleBodyBuilder.java:54)
-	at soot.javaToJimple.PolyglotMethodSource.getBody(PolyglotMethodSource.java:51)
-	at soot.SootMethod.getBodyFromMethodSource(SootMethod.java:80)
-	at soot.SootMethod.retrieveActiveBody(SootMethod.java:319)
-	at abc.main.Main.weave(Main.java:897)
-	... 4 more
-FAIL: Test 1207: "abctests/bugs/Problem with privileged ITD access to private fields" failed.
 
 
 Running test 1208: abctests/bugs/inpath/Class being woven twice when using -inpath

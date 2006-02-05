@@ -5389,12 +5389,20 @@
         <compile files="Preinit2.java"></compile>
         <run class="Preinit2"></run>
     </ajc-test>
+<ajc-test title="Problem with privileged ITD access to private fields" num="1207" dir="abctests/bugs">
+        <compile files="ITDPrivate.java"></compile>
+        <run class="ITDPrivate"></run>
+    </ajc-test>
 <ajc-test title="Using private pointcut variables in an if(..) in a TM symbol" num="1209" dir="abctests/tracematches">
         <compile options="-ext,abc.tm" files="TracematchAndIfAndPPVs.java"></compile>
     </ajc-test>
 <ajc-test title="thisJoinPoint maintains object identity for an entire join point" num="1210" dir="abctests/bugs">
         <compile files="TJP.java"></compile>
         <run class="TJP"></run>
+    </ajc-test>
+<ajc-test title="concrete pointcuts in abstract aspects can be overridden" num="1211" dir="abctests/new">
+        <compile files="PCInh.java"></compile>
+        <run class="PCInh"></run>
     </ajc-test>
  
 </suite>
