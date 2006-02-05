@@ -29,17 +29,21 @@
 package abc.main;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import polyglot.frontend.Compiler;
 import polyglot.frontend.ExtensionInfo;
@@ -50,6 +54,7 @@ import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.ErrorQueue;
 import polyglot.util.InternalCompilerError;
+import soot.CompilationDeathException;
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
@@ -749,6 +754,71 @@ public class Main {
             findSourcesInDir(root, aspect_sources);
         }
     }
+    
+    
+    private boolean isJar(String path) {
+    	File f = new File(path);	
+    	if(f.isFile() && f.canRead()) { 		
+    	    if(path.endsWith("zip") || path.endsWith("jar")) {
+    		return true;
+    	    } else {
+    		throw new IllegalArgumentException("Warning: the following -injars entry is not a supported archive file (must be .zip or .jar): " + path);
+    	    }
+    	}  
+    	return false;
+        }
+    
+    
+    
+    public List getClassesUnder(String aPath) {
+        List fileNames = new ArrayList();
+        if (isJar(aPath)) {
+    	    try {
+    		ZipFile archive = new ZipFile(aPath);
+    		for (Enumeration entries = archive.entries(); 
+    		     entries.hasMoreElements(); ) {
+    		    ZipEntry entry = (ZipEntry) entries.nextElement();
+    		    String entryName = entry.getName();
+    		    int extensionIndex = entryName.lastIndexOf('.');
+    		    if (extensionIndex >= 0) {
+    			String entryExtension = entryName.substring(extensionIndex);
+    			if (entryExtension.equals(".class")) {
+    			    entryName = entryName.substring(0, extensionIndex);
+    			    entryName = entryName.replace('/', '.');
+    			    fileNames.add(entryName);
+    			}
+    		    }
+    		}
+    	    } catch(IOException e) {
+    	    	throw new IllegalArgumentException("Error reading "+aPath + ":" +e.toString());
+    	    }
+    	} else {   
+	    File file = new File(aPath);
+	    File[] files = file.listFiles();
+	    if (files == null) {
+		  files = new File[1];
+		  files[0] = file;
+	    }
+	    for (int i = 0; i < files.length; i++) {
+		if (files[i].isDirectory()) {
+		    List l =
+			getClassesUnder(aPath + File.separatorChar + files[i].getName());
+		    Iterator it = l.iterator();
+		    while (it.hasNext()) {
+			String s = (String) it.next();
+			fileNames.add(files[i].getName() + "." + s);
+		    }
+		} else {
+		    String fileName = files[i].getName();
+		    if (fileName.endsWith(".class")) {
+			int index = fileName.lastIndexOf(".class");
+			fileNames.add(fileName.substring(0, index));
+		    }
+		}
+	    }
+    	}
+        return fileNames;
+    }
 
     public void loadJars() throws CompilerFailedException {
         // Load the classes in all given jars
@@ -758,12 +828,14 @@ public class Main {
             List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
             jar_classes.addAll(this_jar_classes);
         }
+        // System.out.println("before loop: "+jar_classes);
         jari = OptionsParser.v().inpath().iterator();
         while (jari.hasNext()) {
             String jar = (String)jari.next();
-            List/*String*/ this_jar_classes = soot.SourceLocator.v().getClassesUnder(jar);
+            List/*String*/ this_jar_classes = getClassesUnder(jar);
             jar_classes.addAll(this_jar_classes);
         }
+        // System.out.println(jar_classes);
     }
 
     public void compile() throws CompilerFailedException, IllegalArgumentException {
