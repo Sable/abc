@@ -385,8 +385,8 @@ public class Main {
                     else if (args.top().equals("-O"))
                         OptionsParser.v().set_O(1);
                     else
-                        if(!args.top().equals("-keep-line-number") &&
-                                !args.top().equals("-xml-attributes"))
+                        // --keep-line-number is always added (see later)
+                        if(!args.top().equals("-keep-line-number"))
                             soot_args.add(args.top());
                     args.shift();
                 }
@@ -454,6 +454,8 @@ public class Main {
             soot_args.add("-f");
             soot_args.add("dava");
         }
+
+        // Needed for weaver error messages and ThisJoinPoint info
         soot_args.add("-keep-line-number");
 
         if(OptionsParser.v().time()) {
