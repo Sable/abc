@@ -81,32 +81,44 @@ import abc.weaving.weaver.Weaver;
 
 /**
  * Internal representation of the entire module specification.
+ * 
  * @author Neil Ongkingco
  *  
  */
 public class ModuleStructure {
 
-    private Map /*<String, ModuleNodeModule>*/ moduleNodes;
+    private Map /* <String, ModuleNodeModule> */moduleNodes;
 
-    private Map /*<String, ModuleNodeAspect>*/ aspectNodes;
+    private Map /* <String, ModuleNodeAspect> */aspectNodes;
 
-    private Map /*<String, ModuleNodeClass>*/ classNodes;
-    
+    private Map /* <String, ModuleNodeClass> */classNodes;
+
     private ExtensionInfo ext;
 
     //pseudo-singleton, just so that OMMethodCall can access ModuleStructure
     // without knowing ext.
-    //TODO: Remove this once matching is moved to AdviceApplication
     private static ModuleStructure instance;
-    
+
+    //caches
+    // Caching seems to make openmod run a bit slower (at least for ants)
+    // I'm leaving the code in (but commented) until I get a larger test case
+    // to see it's worth implementing
+    //private Map /* <PCNode,ModuleNode> */ownerCache;
+    //private Map /* <ModuleNode,List> */moduleListCache;
+    //private Map /* <PCNode,Pointcut> */sigCache;
+
     public ModuleStructure(ExtensionInfo ext) {
         moduleNodes = new HashMap();
         aspectNodes = new HashMap();
         classNodes = new HashMap();
+        //caching
+        /*ownerCache = new HashMap();
+        moduleListCache = new HashMap();
+        sigCache = new HashMap();*/
         ModuleStructure.instance = this;
         this.ext = ext;
     }
-    
+
     private Map getMap(int type) {
         switch (type) {
         case ModuleNode.TYPE_ASPECT:
@@ -134,12 +146,12 @@ public class ModuleStructure {
         nodeMap.put(n.name(), n);
         return n;
     }
-    
+
     //for aspect members
     public ModuleNode addAspectNode(String name, CPEName cpe) {
         Map nodeMap = getMap(ModuleNode.TYPE_ASPECT);
         ModuleNode n = (ModuleNode) nodeMap.get(name);
-        if (n!= null) {
+        if (n != null) {
             return null;
         }
         n = new ModuleNodeAspect(name, cpe);
@@ -170,7 +182,7 @@ public class ModuleStructure {
             return null;
         }
         member.setParent(n);
-        ((ModuleNodeModule)n).addMember(member);
+        ((ModuleNodeModule) n).addMember(member);
         return member;
     }
 
@@ -185,7 +197,7 @@ public class ModuleStructure {
             return null;
         }
 
-        ((ModuleNodeModule)n).addSigMember(sigMember);
+        ((ModuleNodeModule) n).addSigMember(sigMember);
         return n;
     }
 
@@ -200,7 +212,7 @@ public class ModuleStructure {
     /**
      * Returns the owner of an aspect.
      */
-    public ModuleNode getOwner(String name, int type) {
+public ModuleNode getOwner(String name, int type) {
         assert(type == ModuleNode.TYPE_ASPECT) : "Node is not an aspect node";
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
@@ -213,17 +225,26 @@ public class ModuleStructure {
         }
         return null;
     }
-
     /**
      * Gets the owner of the class/aspect represented by node
      */
     public ModuleNode getOwner(PCNode node) {
+        ModuleNode ret = null;
+        
+        //caching
+        /*ret = (ModuleNode)ownerCache.get(node);
+        if (ret != null) {
+            return ret;
+        }*/
+        
         //iterate through all module nodes
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
-            ModuleNode n = (ModuleNode) iter.next();
-            if (n.isModule() && ((ModuleNodeModule)n).containsMember(node)) {
-                return n;
+            ret = (ModuleNode) iter.next();
+            if (ret.isModule() && ((ModuleNodeModule) ret).containsMember(node)) {
+                //caching
+                //ownerCache.put(node,ret);
+                return ret;
             }
         }
         return null;
@@ -234,7 +255,7 @@ public class ModuleStructure {
         boolean foundOnce = false;
         for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
             ModuleNode n = (ModuleNode) iter.next();
-            if (n.isModule() && ((ModuleNodeModule)n).containsMember(node)) {
+            if (n.isModule() && ((ModuleNodeModule) n).containsMember(node)) {
                 if (foundOnce == false) {
                     foundOnce = true;
                 } else {
@@ -283,7 +304,7 @@ public class ModuleStructure {
     //Also true if both the aspect and the class are not in modules.
     //Note that aspectNode can be null, meaning that the aspect is not in a
     //module
-    public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
+public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
         if (aspectNode != null && !aspectNode.isAspect()) {
             throw new InternalCompilerError(
                     "Expecting a ModuleNode of type TYPE_ASPECT");
@@ -307,7 +328,7 @@ public class ModuleStructure {
         }
         //if the class is not in a module, but the aspect is, return true
         //TODO: This decision means that aspects in modules _can_ access
-        // classes that are not in modules  
+        // classes that are not in modules
         if (classOwner == null && aspectOwner != null) {
             return true;
         }
@@ -332,7 +353,6 @@ public class ModuleStructure {
 
         return false;
     }
-
     /**
      * Returns true of two classes if they belong to the same module set.
      * Classes in the same module set are considered to be in the same module
@@ -371,12 +391,23 @@ public class ModuleStructure {
     }
 
     /**
-     * Returns the module list of the given node. For a module, the module list is
-     * the module itself and its ancestors, starting from the module itself. 
-     * For aspects and classes, the module list is the module list of its parent.
+     * Returns the module list of the given node. For a module, the module list
+     * is the module itself and its ancestors, starting from the module itself.
+     * For aspects and classes, the module list is the module list of its
+     * parent.
      */
     public List getModuleList(ModuleNode n) {
-        ArrayList ret = new ArrayList();
+        List ret ;
+        
+        //caching
+        /*
+        ret = (List)moduleListCache.get(n);
+        if (ret != null) {
+            return ret;
+        }*/
+        
+        //iterate to get list of ancestors
+        ret = new ArrayList();
         if (n.isModule()) {
             ret.add(n);
         }
@@ -389,33 +420,41 @@ public class ModuleStructure {
 
     /**
      * Returns the pointcut that represents the signatures that apply to the
-     * class
-     *  TODO: Get rid of the iteration, by normalizing the modules...
+     * class TODO: Get rid of the iteration, by normalizing the modules...
      */
     public Pointcut getApplicableSignature(PCNode classNode) {
         Pointcut ret = null;
-        ModuleNodeModule owner = (ModuleNodeModule)getOwner(classNode);
+        
+        //caching
+        /*
+        ret = (Pointcut)sigCache.get(classNode);
+        if (ret != null) {
+            return ret;
+        }*/
+        
+        ModuleNodeModule owner = (ModuleNodeModule) getOwner(classNode);
         if (owner == null) {
             return ret;
         }
-        
+
         //get the private signature for the owning module
         ret = owner.getPrivateSigAIPointcut();
-        
+
         boolean prevIsConstrained = false;
         //get the non-private signatures from the modules in the modulelist
         List /* ModuleNode */moduleList = getModuleList(owner);
         for (Iterator iter = moduleList.iterator(); iter.hasNext();) {
             ModuleNodeModule module = (ModuleNodeModule) iter.next();
             if (prevIsConstrained) {
-                //  (currPC && (childPC)) || (childPC && thisAspect(currModule.aspects))  
-                ret = OrPointcut.construct(
-                        	AndPointcut.construct(ret, module.getSigAIPointcut(),
-                        	        				AbcExtension.generated),
-                        	AndPointcut.construct(ret, module.getThisAspectPointcut(),
-                        	        AbcExtension.generated),
-                        	AbcExtension.generated
-                		); 
+                //  (currPC && (childPC)) || (childPC &&
+                // thisAspect(currModule.aspects))
+                ret = OrPointcut
+                        .construct(AndPointcut.construct(ret, module
+                                .getSigAIPointcut(), AbcExtension.generated),
+                                AndPointcut.construct(ret, module
+                                        .getThisAspectPointcut(),
+                                        AbcExtension.generated),
+                                AbcExtension.generated);
             } else {
                 ret = OrPointcut.construct(ret, module.getSigAIPointcut(),
                         AbcExtension.generated);
@@ -423,11 +462,13 @@ public class ModuleStructure {
             prevIsConstrained = module.isConstrained();
         }
 
+        //caching
+        //sigCache.put(classNode,ret);
         return ret;
     }
 
     /**
-     * Checks result of the match taking the effect of signatures into account 
+     * Checks result of the match taking the effect of signatures into account
      * 
      * @author Neil Ongkingco
      *  
@@ -436,7 +477,8 @@ public class ModuleStructure {
             Aspect currAspect, WeavingEnv weaveEnv, SootClass cls,
             SootMethod method, AbstractAdviceDecl ad) throws SemanticException {
 
-        Residue ret = pc.matchesAt(new MatchingContext(weaveEnv, cls, method, sm));
+        Residue ret = pc.matchesAt(new MatchingContext(weaveEnv, cls, method,
+                sm));
 
         //if openmod is not loaded, just return ret
         if (!AbcExtension.isLoaded()) {
@@ -447,21 +489,26 @@ public class ModuleStructure {
             return ret;
         }
         //get the class the method belongs to
-        //note: Used to be a method getOwningClass() of ShadowMatch+, 
-        //but moved here to avoid contamination of the base code. And yes, it is ugly. 
+        //note: Used to be a method getOwningClass() of ShadowMatch+,
+        //but moved here to avoid contamination of the base code. And yes, it
+        // is ugly.
         SootClass sootOwningClass = null;
         if (sm instanceof MethodCallShadowMatch) {
-            sootOwningClass = ((MethodCallShadowMatch)sm).getMethodRef().declaringClass();
+            sootOwningClass = ((MethodCallShadowMatch) sm).getMethodRef()
+                    .declaringClass();
         } else if (sm instanceof ConstructorCallShadowMatch) {
-            sootOwningClass = ((ConstructorCallShadowMatch)sm).getMethodRef().declaringClass();
+            sootOwningClass = ((ConstructorCallShadowMatch) sm).getMethodRef()
+                    .declaringClass();
         } else if (sm instanceof GetFieldShadowMatch) {
-            sootOwningClass = ((GetFieldShadowMatch)sm).getFieldRef().declaringClass();
+            sootOwningClass = ((GetFieldShadowMatch) sm).getFieldRef()
+                    .declaringClass();
         } else if (sm instanceof SetFieldShadowMatch) {
-            sootOwningClass = ((SetFieldShadowMatch)sm).getFieldRef().declaringClass();
+            sootOwningClass = ((SetFieldShadowMatch) sm).getFieldRef()
+                    .declaringClass();
         } else {
             sootOwningClass = sm.getContainer().getDeclaringClass();
         }
-        
+
         PCNode owningClass = PCStructure.v().getClass(sootOwningClass);
 
         //get the class that contains this statement
@@ -470,19 +517,20 @@ public class ModuleStructure {
 
         //debug
         AbcExtension.debPrintln("ModuleStructure.matchesAt: aspect "
-                + currAspect.getName() + "; owning class " + owningClass.toString() 
-                + "; containing class " + containingClass.toString() 
-                + "; pc " + pc.toString());
+                + currAspect.getName() + "; owning class "
+                + owningClass.toString() + "; containing class "
+                + containingClass.toString() + "; pc " + pc.toString());
 
         //if the aspect and the class belong to the same moduleset, return ret
-        //i.e. it is matching in with an internal class/aspect, so signatures are
+        //i.e. it is matching in with an internal class/aspect, so signatures
+        // are
         //not applied
         ModuleStructure ms = ModuleStructure.v();
         ModuleNode aspectNode = ms.getNode(currAspect.getName(),
                 ModuleNode.TYPE_ASPECT);
         if (ms.isInSameModuleSet(aspectNode, owningClass)) {
             return ret;
-        } 
+        }
         //check if any of the signatures match this shadow
         Pointcut sigPointcut = ms.getApplicableSignature(owningClass);
         Residue sigMatch;
@@ -492,29 +540,26 @@ public class ModuleStructure {
         if (sigPointcut == null) {
             return NeverMatch.v();
         }
-        
+
         //match the signature with the current shadow
         try {
-            sigMatch = sigPointcut.matchesAt(
-                    new OMMatchingContext(weaveEnv, 
-                            sm.getContainer().getDeclaringClass(), 
-                            sm.getContainer(), 
-                            sm,
-                            currAspect)
-                    );
+            sigMatch = sigPointcut.matchesAt(new OMMatchingContext(weaveEnv, sm
+                    .getContainer().getDeclaringClass(), sm.getContainer(), sm,
+                    currAspect));
         } catch (SemanticException e) {
-            throw new InternalCompilerError("Error matching signature pc",
-                    e);
+            throw new InternalCompilerError("Error matching signature pc", e);
         }
-        
-        //if the signature matches, conjoin the residue with the existing residue  
+
+        //if the signature matches, conjoin the residue with the existing
+        // residue
         if (sigMatch != NeverMatch.v()) {
             Residue retResidue;
             //special case for cflowsetup, as cflow pointcuts should not
-            //apply to the cflowsetups, otherwise the counter increment/decrement
+            //apply to the cflowsetups, otherwise the counter
+            // increment/decrement
             //would never be called
             if (ad instanceof CflowSetup) {
-                retResidue = ret; 
+                retResidue = ret;
             } else {
                 retResidue = AndResidue.construct(sigMatch, ret);
             }
@@ -522,45 +567,40 @@ public class ModuleStructure {
             AbcExtension.debPrintln("sigMatch = " + sigMatch);
             AbcExtension.debPrintln("ret = " + ret);
             AbcExtension.debPrintln("retResidue = " + retResidue);
-            
+
             return retResidue;
-        } 
-        else {
-        //else throw a no signature match warning
-            AbcExtension.debPrintln(
-                    "No matching signature in class " + 
-                    containingClass + 
-                    " of advice in aspect " + 
-                    currAspect.getName());
+        } else {
+            //else throw a no signature match warning
+            AbcExtension.debPrintln("No matching signature in class "
+                    + containingClass + " of advice in aspect "
+                    + currAspect.getName());
 
             ModuleNode ownerModule = ms.getOwner(owningClass);
-            String msg = "An advice in aspect " + 
-            		currAspect.getName() + 
-            		" would normally apply here, " +
-                    "but does not match any of the signatures of module " +
-                    ownerModule.name();
+            String msg = "An advice in aspect " + currAspect.getName()
+                    + " would normally apply here, "
+                    + "but does not match any of the signatures of module "
+                    + ownerModule.name();
 
             addWarning(msg, sm);
 
             return NeverMatch.v();
         }
     }
-    
+
     private static void addWarning(String msg, ShadowMatch sm) {
-        abc.main.Main.v().error_queue.enqueue(ErrorInfoFactory
-                .newErrorInfo(ErrorInfo.WARNING, msg,
-                        sm.getContainer(), sm.getHost()));
+        abc.main.Main.v().error_queue.enqueue(ErrorInfoFactory.newErrorInfo(
+                ErrorInfo.WARNING, msg, sm.getContainer(), sm.getHost()));
     }
 
     public Collection /* <ModuleNodes> */getModules() {
         return moduleNodes.values();
     }
-    
+
     public void normalizeSigPointcuts() {
-        for (Iterator iter = moduleNodes.values().iterator(); iter.hasNext(); ) {
+        for (Iterator iter = moduleNodes.values().iterator(); iter.hasNext();) {
             ModuleNode currNode = (ModuleNode) iter.next();
             if (currNode.isModule()) {
-                ((ModuleNodeModule)currNode).normalizeSigPointcut();
+                ((ModuleNodeModule) currNode).normalizeSigPointcut();
             }
         }
     }
