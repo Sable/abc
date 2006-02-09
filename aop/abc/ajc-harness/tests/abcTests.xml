@@ -10029,4 +10029,13 @@
         <compile files="PCInh.java" />
         <run class="PCInh" />
     </ajc-test>
+
+    <ajc-test num="1212" dir="cflowdepth"
+      title="Cflowdepth in complicated booleans">
+        <compile files="Test.java"
+        options="-ext,abc.eaj">
+        </compile>
+        <run class="Test"/>
+    </ajc-test>       
+
 </suite>
