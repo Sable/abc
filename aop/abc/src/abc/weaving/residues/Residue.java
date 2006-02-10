@@ -83,6 +83,25 @@ public abstract class Residue {
         }
     }
 
+    /** This is a more general helper method for codeGen, to allow codeGen
+     * implementations to consider only one value of sense. It can be called
+     * to reverse the value of sense, by starting the codeGen method
+     * with a line like this:
+     * if(!sense) return reverseSense(method, localgen, units, begin, fail, sense, wc);
+     * This will call codeGen back with the opposite value of sense, and
+     * insert all the gotos needed to make it work.
+     */
+    protected Stmt reverseSense(SootMethod method,LocalGeneratorEx localgen,
+        Chain units,Stmt begin,Stmt fail,boolean sense,
+        WeavingContext wc ) {
+        Stmt nop = Jimple.v().newNopStmt();
+        Stmt last = codeGen(method, localgen, units, begin, nop, !sense, wc);
+        Stmt gotoStmt = Jimple.v().newGotoStmt(fail);
+        units.insertAfter(gotoStmt, last);
+        units.insertAfter(nop, gotoStmt);
+        return nop;
+    }
+
     /** Must provide a toString method */
     public abstract String toString();
 

@@ -70,6 +70,7 @@ public class CflowDepthResidue extends CflowResidue {
                         Chain units,Stmt begin,Stmt fail,boolean sense,
                         WeavingContext wc) {
 
+        if(!sense) return reverseSense(method, localgen, units, begin, fail, sense, wc);
         Stmt last = super.codeGen(method, localgen, units, begin, fail, sense, wc);
         CflowCodeGenUtils.CflowCodeGen codegen = setup.codeGen();
         Local depthLocal=localgen.generateLocal(IntType.v(),"depth");
