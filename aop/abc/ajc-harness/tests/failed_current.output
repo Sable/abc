@@ -42,7 +42,7 @@ org.aspectj.bridge.AbortException: steps expected array of length 114 got 132
 	at org.aspectj.testing.Tester.checkEqual(Tester.java:228)
 	at A.checkLog(AroundAll.java:176)
 	at AroundAll.shadow$8(AroundAll.java:9)
-	at A.inline$26$around$1601(AroundAll.java:199)
+	at A.inline$35$around$1601(AroundAll.java:199)
 	at AroundAll.main(AroundAll.java:198)
 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
@@ -204,18 +204,5 @@ Commandline: abc -d abctests/bugs/inpath -warn-unused-advice:off
 File /usr/local/src/abc-dev/ajc-harness/tests/abctests/bugs/inpath/Test.class not found, skipping...
 Failed to find class Test
 FAIL: Test 1208: "abctests/bugs/inpath/Class being woven twice when using -inpath" failed.
-
-
-Running test 1212: cflowdepth/Cflowdepth in complicated booleans
-Commandline: abc -d cflowdepth -warn-unused-advice:off -ext abc.eaj cflowdepth/Test.java 
-Unexpected exception while trying to run compiled class: java.lang.VerifyError: (class: Test, method: main signature: ([Ljava/lang/String;)V) Register 1 contains wrong type
-java.lang.VerifyError: (class: Test, method: main signature: ([Ljava/lang/String;)V) Register 1 contains wrong type
-	at java.lang.Class.getDeclaredMethods0(Native Method)
-	at java.lang.Class.privateGetDeclaredMethods(Class.java:1647)
-	at java.lang.Class.getDeclaredMethod(Class.java:1254)
-	at abc.testing.TestCase.runTest(TestCase.java:384)
-	at abc.testing.Main.doCase(Main.java:282)
-	at abc.testing.Main.main(Main.java:116)
-FAIL: Test 1212: "cflowdepth/Cflowdepth in complicated booleans" failed.
 
 
