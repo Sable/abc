@@ -135,6 +135,10 @@ public static void startReportInOwnThread(final long delayBetweenReports) {
 		public void run() {
 			while(true) {
 				report();
+			    long currentPhaseTime = System.currentTimeMillis() - laststopped;
+			    System.err.println("Time elapsed since last phase:" + currentPhaseTime);
+				  System.err.println(
+		            "================================================"); 
 				try {
 					synchronized(this) {
 						wait(delayBetweenReports);
