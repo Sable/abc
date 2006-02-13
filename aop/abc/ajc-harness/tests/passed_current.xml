@@ -5144,7 +5144,9 @@
         <run class="BasicAround"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Around match with multiple bindings." num="1030" dir="abctests/tracematches">
-        <compile options="-ext,abc.tm" files="MultipleBindingsForAround.java"></compile>
+        <compile options="-ext,abc.tm" files="MultipleBindingsForAround.java">
+            <message line="24" kind="warning"></message>
+        </compile>
         <run class="MultipleBindingsForAround"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Testing the `perthread' modifier" num="1031" dir="abctests/tracematches">
@@ -5170,9 +5172,7 @@
 	<run class="PrimitiveVariables"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Primitive bindings don't cause errors." num="1036" dir="abctests/tracematches">
-	<compile options="-ext,abc.tm" files="IntVariable.java">
-	    <message kind="warning"></message>
-	</compile>
+	<compile options="-ext,abc.tm" files="IntVariable.java"></compile>
 	<run class="IntVariable"></run>
     </ajc-test>
 <ajc-test title="Tracematches: Primitive negative bindings should be checked correctly..." num="1037" dir="abctests/tracematches">
