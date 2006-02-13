@@ -23,10 +23,9 @@ aspect BasicAroundTM
 {
     Integer tracematch(Integer i)
     {
-        sym aaa before    : call(Integer *.foo(..));
-        sym bbb around(i) : call(Integer *.foo(..)) && args(i);
+        sym foocall around(i) : call(Integer *.foo(..)) && args(i);
 
-        aaa bbb
+        foocall
         {
             Integer incremented = new Integer(i.intValue() + 1);
             return proceed(incremented);

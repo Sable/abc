@@ -13,12 +13,12 @@ aspect Aspect {
     int matches = 0;
 
     tracematch(PQ x) {
-	sym r before : call(* r(..));
-	sym q before : call(* q(..));
+	sym r before : call(* r(..)) && target(x);
+	sym q before : call(* q(..)) && target(x);
 	sym p before : call(* p(..)) && target(x);
 	(r | p) p
     {
-	if (x!=null) matches++;
+	matches++;
     }
     }
 

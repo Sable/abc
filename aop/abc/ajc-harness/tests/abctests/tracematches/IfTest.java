@@ -23,13 +23,13 @@ public class IfTest
 
 aspect TMIfTest
 {
-    pointcut aaa() : call(void *.aaa(Integer));
-    pointcut bbb() : call(void *.bbb(Integer));
+    pointcut aaa(IfTest test) : call(void *.aaa(Integer)) && target(test);
+    pointcut bbb(IfTest test) : call(void *.bbb(Integer)) && target(test);
 
-    tracematch(Integer i, Integer j)
+    tracematch(IfTest test, Integer i, Integer j)
     {
-        sym a1 after : aaa() && args(i);
-        sym b1 before : bbb() && args(j) && if(j.intValue() == 1);
+        sym a1 after  : aaa(test) && args(i);
+        sym b1 before : bbb(test) && args(j) && if(j.intValue() == 1);
 
         a1 b1
         {

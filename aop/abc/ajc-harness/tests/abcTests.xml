@@ -9481,7 +9481,9 @@
     </ajc-test>
     <ajc-test num="1030" dir="abctests/tracematches"
         title="Tracematches: Around match with multiple bindings.">
-        <compile files="MultipleBindingsForAround.java" options="-ext,abc.tm"/>
+        <compile files="MultipleBindingsForAround.java" options="-ext,abc.tm">
+            <message kind="warning" line="24" />
+        </compile>
         <run class="MultipleBindingsForAround"/>
     </ajc-test>
     <ajc-test num="1031" dir="abctests/tracematches"
@@ -9513,9 +9515,7 @@
     </ajc-test>
     <ajc-test num="1036" dir="abctests/tracematches"
         title="Tracematches: Primitive bindings don't cause errors.">
-	<compile files="IntVariable.java" options="-ext,abc.tm" >
-	    <message kind="warning"/>
-	</compile>
+	<compile files="IntVariable.java" options="-ext,abc.tm" />
 	<run class="IntVariable"/>
     </ajc-test>
     <ajc-test num="1037" dir="abctests/tracematches"

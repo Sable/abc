@@ -289,10 +289,10 @@ public class TMStateMachine implements StateMachine {
     	initCollectableWeakRefs(tm);
     	fixCollectableWeakRefs(tm);
         collectableWeakRefsToOtherRefs(formals,notused,tm);
-        if (!formals.isEmpty())
-        	generateLeakWarnings(pos);
         initBoundVars(formals);
         fixBoundVars(tm);
+        if (!formals.isEmpty())
+        	generateLeakWarnings(pos);
     }
     
    	
@@ -440,7 +440,11 @@ public class TMStateMachine implements StateMachine {
 		boolean hasWarned = false;
 		for (Iterator it = getStateIterator(); it.hasNext() && !hasWarned; ) {
 			SMNode node = (SMNode) it.next();
-			if (node.collectableWeakRefs.isEmpty() && !node.isFinalNode()) {
+
+			Set rebound = new HashSet(node.collectableWeakRefs);
+			rebound.retainAll(node.boundVars);
+
+			if (rebound.isEmpty() && !node.isInitialNode() && !node.isFinalNode()) {
 				hasWarned = true;
 				String msg="Variable bindings may cause space leak";
 		        abc.main.Main.v().error_queue.enqueue
