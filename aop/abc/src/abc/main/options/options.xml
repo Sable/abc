@@ -300,5 +300,11 @@ Makes abc bug-for-bug compatible with ajc.
 Turns on performance timers that measure the time taken by various phases of abc.
       </long_desc>
     </boolopt>
+    <intopt>
+      <alias>time-report-delay</alias>
+      <default>0</default>
+      <short_desc>Print timing report any n milliseconds.</short_desc>
+      <long_desc>Print timing report any n milliseconds.</long_desc>
+    </intopt>
   </section>
 </options>

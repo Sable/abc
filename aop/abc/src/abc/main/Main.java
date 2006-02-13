@@ -385,7 +385,7 @@ public class Main {
                     else if (args.top().equals("-O"))
                         OptionsParser.v().set_O(1);
                     else
-                        // --keep-line-number is always added (see later)
+                    	// --keep-line-number is always added (see later)
                         if(!args.top().equals("-keep-line-number"))
                             soot_args.add(args.top());
                     args.shift();
@@ -463,6 +463,8 @@ public class Main {
             abc.main.Debug.v().polyglotTimer=true;
             abc.main.Debug.v().sootResolverTimer=true;
         }
+        
+        if(OptionsParser.v().time())
 
         // now we have parsed the arguments we know which AbcExtension
         // to load
@@ -506,6 +508,11 @@ public class Main {
             // Main phases
 
             AbcTimer.start(); // start the AbcTimer
+
+            if(OptionsParser.v().time_report_delay()>0) {
+            	//report timing statistics every n milliseconds
+            	AbcTimer.startReportInOwnThread(OptionsParser.v().time_report_delay());
+            }                        
 
             addJarsToClasspath();
             initSoot();
@@ -602,6 +609,11 @@ public class Main {
                 Timers.v().printProfilingInformation();
             }
 
+            if(OptionsParser.v().time_report_delay()>0) {
+            	//stop reporting timing statistics every n milliseconds
+            	AbcTimer.stopReportInOwnThread();
+            }
+            
             // Print out abc timer information
             AbcTimer.report();
         } catch (CompilerFailedException e) {

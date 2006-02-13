@@ -69,6 +69,8 @@ public class AbcTimer {
   private static Stats polyglot_stats;
 
   private static ArrayList polyglot_passes = null ;
+  
+  private static Thread reportThread;  
 
   /** reset all static vars, for rerunning abc */
   public static void reset()
@@ -123,10 +125,43 @@ public class AbcTimer {
       return("[ " + percfmt.format(percent) + "% ] ");
     }
 
+/**
+ * Spawns a thread printing the report any few milliseconds.
+ * @param delayBetweenReports the delay in milliseconds
+ * @author Eric Bodden
+ */
+public static void startReportInOwnThread(final long delayBetweenReports) {
+	  Runnable r = new Runnable() {
+		public void run() {
+			while(true) {
+				report();
+				try {
+					synchronized(this) {
+						wait(delayBetweenReports);
+					}
+				} catch (InterruptedException e) {
+				}
+			}
+		}		  		  
+	  };
+	  
+	  reportThread = new Thread(r);
+	  reportThread.start();	  
+  }
+
+ /**
+  * Stops the report thread if it is running.
+  * @author Eric Bodden
+  */ 
+  public static void stopReportInOwnThread() {
+	  if(reportThread!=null)
+		  reportThread.interrupt();	 
+  }
+  
   /** Print out report of all phases timed so far. Debug.v().abcTimer 
    *  must be set to true for report to be printed.
    */
-  public static void report()
+  public synchronized static void report()
     { if (Debug.v().abcTimer)
 	{ System.err.println(
             "================================================"); 
