@@ -61,7 +61,7 @@ public class MethodAdviceList {
 				results.add(res);
 		}
 		if (!results.isEmpty()) {
-			if (abc.main.options.OptionsParser.v().warn_unused_advice()
+			if (abc.main.options.OptionsParser.v().warn_prec_ambiguity()
 					&& results.size() > 1)
 		    		reportAmbiguousPrecedence(results);
 			res = (AdviceApplication)results.get(0);
