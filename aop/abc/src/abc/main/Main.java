@@ -464,8 +464,6 @@ public class Main {
             abc.main.Debug.v().sootResolverTimer=true;
         }
         
-        if(OptionsParser.v().time())
-
         // now we have parsed the arguments we know which AbcExtension
         // to load
         loadAbcExtension(OptionsParser.v().ext());
