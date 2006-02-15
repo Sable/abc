@@ -30,8 +30,8 @@ import abc.weaving.tagkit.InstructionKindTag;
 import abc.weaving.tagkit.Tagger;
 import abc.weaving.weaver.*;
 
-/** A residue that puts the relevant aspect instance into a
- * local variable in the weaving context
+/** Used for per-aspects; a residue that evaluates to true if an
+ *  aspect is present, and false otherwise
  *  @author Ganesh Sittampalam
  *  @author Ondrej Lhotak
  */

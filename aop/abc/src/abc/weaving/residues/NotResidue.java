@@ -28,7 +28,7 @@ import abc.weaving.weaver.WeavingContext;
 import java.util.*;
 import abc.weaving.weaver.*;
 
-/** Disjunction of two residues
+/** Negation of a residue
  *  @author Ganesh Sittampalam
  *  @author Ondrej Lhotak
  *  @date 28-Apr-04
