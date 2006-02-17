@@ -468,7 +468,51 @@ public class TMStateMachine implements StateMachine {
             ((SMNode)it.next()).setNumber(cnt++);
         }
     }
-    
+
+    /**
+     * PROTOTYPE METHOD
+     *
+     * Prints out which variables should be used to index the disjuncts
+     * on each state.
+     *
+     * @param tm represents the tracematch for this automaton and has
+     *           lists of the symbols used and the variables that they
+     *           bind
+     */
+    public void chooseIndices(TraceMatch tm)
+    {
+        Iterator nodeIt = nodes.iterator();
+        while(nodeIt.hasNext()) {
+            SMNode cur = (SMNode) nodeIt.next();
+
+            // we do not index on the initial or final node
+            if (cur.isInitialNode() || cur.isFinalNode())
+                continue;
+
+            // calculate indices[i] = intersect[sym] (bound[i] /\ binds[sym])
+            //   BUT only for the symbols where the inner
+            //       intersection is not empty
+            HashSet indices = new HashSet(cur.boundVars);
+            Iterator symIt = tm.getSymbols().iterator();
+            while (symIt.hasNext()) {
+                String symbol = (String) symIt.next();
+                HashSet tmp = new HashSet(cur.boundVars);
+                tmp.retainAll(tm.getVariableOrder(symbol));
+
+                if (!tmp.isEmpty())
+                    indices.retainAll(tmp);
+            }
+
+            HashSet collectable = new HashSet(indices);
+            collectable.retainAll(cur.collectableWeakRefs);
+            indices.removeAll(cur.collectableWeakRefs);
+
+            System.out.print("State " + cur.getNumber());
+            System.out.print(" - collectable indices: " + collectable);
+            System.out.println(" other indices: " + indices);
+        }
+    }
+
     /**
      * Transforms the FSA that was generated from the regular expression into an NFA for
      * matching suffixes interleaved with skips and ending in a declared symbol against
@@ -489,6 +533,11 @@ public class TMStateMachine implements StateMachine {
         compressStates();
         collectBindingInfo(formals, tm, notused, pos);
         renumberStates();
+
+        if (abc.main.Debug.v().chooseIndices) {
+            System.out.println(this);
+            chooseIndices(tm);
+        }
     }
     
     public Iterator getStateIterator() {
