@@ -26,9 +26,11 @@ aspect IntertypeMethodNameAnalysis {
     return maxSpecific;
   }
   
-  eq ASTDecl.localMethods(String name) {
-    Collection methods = super.localMethods(name);
-    for(Iterator iter = introducedMethods(this).iterator(); iter.hasNext(); ) {
+  refine LookupMethod eq TypeDecl.localMethods(String name) {
+    Collection methods = LookupMethod.TypeDecl.localMethods(name);
+    if(!methods.isEmpty()) return methods;
+    methods = new ArrayList();
+    for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
       MethodDecl m = (MethodDecl)iter.next();
       if(m.name().equals(name))
         methods.add(m);
@@ -46,28 +48,22 @@ aspect IntertypeMethodNameAnalysis {
     return c;
   }
 
-  syn lazy Map AspectDecl.intertypeMethodsMap() {
-    Map map = new HashMap();
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
-        IntertypeMethodDecl decl = (IntertypeMethodDecl)getBodyDecl(i);
-        if(!map.containsKey(decl.introducedType()))
-          map.put(decl.introducedType(), new ArrayList(1));
-        Collection c = (Collection)map.get(decl.introducedType());
-      	c.add(getBodyDecl(i));
-      }
-    }
-    return map;
+  protected void IntertypeMethodDecl.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = introducedType();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+    c.add(this);
   }
 
-  inh lazy Collection ClassDecl.introducedMethods(TypeDecl typeDecl);
-  inh lazy Collection MemberClassDecl.introducedMethods(TypeDecl typeDecl);
-  
-  eq Program.getCompilationUnit(int i).introducedMethods(TypeDecl typeDecl) = new ArrayList(0);
-  eq AspectDecl.getBodyDecl(int index).introducedMethods(TypeDecl typeDecl) {
-    Collection c = (Collection)intertypeMethodsMap().get(typeDecl);
-    if(c != null)
-      return c;
-    return new ArrayList(0);
+  syn lazy Collection TypeDecl.introducedMethods() {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
+      ASTNode node = (ASTNode)iter.next();
+      if(node instanceof IntertypeMethodDecl)
+        c.add(node);
+    }
+    return c;
   }
 }

@@ -23,34 +23,9 @@ aspect IntertypeMethodNameAnalysis {
     return signature;
   }
 
-  syn lazy Map AspectDecl.intertypeConstructorsMap() {
-    Map map = new HashMap();
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof IntertypeConstructorDecl) {
-        IntertypeConstructorDecl decl = (IntertypeConstructorDecl)getBodyDecl(i);
-        if(!map.containsKey(decl.introducedType()))
-          map.put(decl.introducedType(), new ArrayList(1));
-        Collection c = (Collection)map.get(decl.introducedType());
-      	c.add(getBodyDecl(i));
-      }
-    }
-    return map;
-  }
-
-  inh lazy Collection ClassDecl.introducedConstructors(TypeDecl typeDecl);
-  inh lazy Collection MemberClassDecl.introducedConstructors(TypeDecl typeDecl);
-  
-  eq Program.getCompilationUnit(int i).introducedConstructors(TypeDecl typeDecl) = new ArrayList(0);
-  eq AspectDecl.getBodyDecl(int index).introducedConstructors(TypeDecl typeDecl) {
-    Collection c = (Collection)intertypeConstructorsMap().get(typeDecl);
-    if(c != null)
-      return c;
-    return new ArrayList(0);
-  }
-
-  public ArrayList ASTDecl.findConstructor(List argList, TypeDecl typeDecl) {
-    ArrayList maxSpecific = super.findConstructor(argList, typeDecl);
-    for(Iterator iter = introducedConstructors(this).iterator(); iter.hasNext(); ) {
+  refine LookupMethod public ArrayList TypeDecl.findConstructor(List argList, TypeDecl typeDecl) {
+    ArrayList maxSpecific = LookupMethod.TypeDecl.findConstructor(argList, typeDecl);
+    for(Iterator iter = introducedConstructors().iterator(); iter.hasNext(); ) {
       ConstructorDecl decl = (ConstructorDecl)iter.next();
       if(decl.compatible(argList) && decl.accessibleFrom(typeDecl)) {
         if(maxSpecific.isEmpty()) {
@@ -69,5 +44,25 @@ aspect IntertypeMethodNameAnalysis {
     }
     return maxSpecific;
   }
+
+  protected void IntertypeConstructorDecl.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = introducedType();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+    c.add(this);
+  }
+
+  syn lazy Collection TypeDecl.introducedConstructors() {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
+      ASTNode node = (ASTNode)iter.next();
+      if(node instanceof IntertypeConstructorDecl)
+        c.add(node);
+    }
+    return c;
+  }
+
 
 }

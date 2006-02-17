@@ -23,9 +23,9 @@ aspect IntertypeFieldNameAnalysis {
     return lookupVariable(name);
   }
 
-  eq ASTDecl.localFields(String name) {
-    Collection fields = super.localFields(name);
-    for(Iterator iter = introducedFields(this).iterator(); iter.hasNext(); ) {
+  refine LookupVariable eq TypeDecl.localFields(String name) {
+    Collection fields = LookupVariable.TypeDecl.localFields(name);
+    for(Iterator iter = introducedFields().iterator(); iter.hasNext(); ) {
       FieldDeclaration f = (FieldDeclaration)iter.next();
       if(f.name().equals(name))
         fields.add(f);
@@ -33,28 +33,23 @@ aspect IntertypeFieldNameAnalysis {
     return fields;
   }
 
-  syn lazy Map AspectDecl.intertypeFieldsMap() {
-    Map map = new HashMap();
-    for(int i = 0; i < getNumBodyDecl(); i++) {
-      if(getBodyDecl(i) instanceof IntertypeFieldDeclaration) {
-        IntertypeFieldDeclaration decl = (IntertypeFieldDeclaration)getBodyDecl(i);
-        if(!map.containsKey(decl.introducedType()))
-          map.put(decl.introducedType(), new ArrayList(1));
-        Collection c = (Collection)map.get(decl.introducedType());
-      	c.add(decl);
-      }
-    }
-    return map;
+  protected void IntertypeFieldDeclaration.collectIntertypeDecls(HashMap map) {
+    super.collectIntertypeDecls(map);
+    TypeDecl typeDecl = introducedType();
+    if(!map.containsKey(typeDecl))
+      map.put(typeDecl, new ArrayList());
+    Collection c = (Collection)map.get(typeDecl);
+    c.add(this);
   }
 
-  inh lazy Collection ClassDecl.introducedFields(TypeDecl typeDecl);
-  inh lazy Collection MemberClassDecl.introducedFields(TypeDecl typeDecl);
-  
-  eq Program.getCompilationUnit(int i).introducedFields(TypeDecl typeDecl) = new ArrayList(0);
-  eq AspectDecl.getBodyDecl(int index).introducedFields(TypeDecl typeDecl) {
-    Collection c = (Collection)intertypeFieldsMap().get(typeDecl);
-    if(c != null)
-      return c;
-    return new ArrayList(0);
+  syn lazy Collection TypeDecl.introducedFields() {
+    Collection c = new ArrayList();
+    for(Iterator iter = intertypeDecls().iterator(); iter.hasNext(); ) {
+      ASTNode node = (ASTNode)iter.next();
+      if(node instanceof IntertypeFieldDeclaration)
+        c.add(node);
+    }
+    return c;
   }
+
 }
