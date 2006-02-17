@@ -18,31 +18,12 @@ aspect IntertypeMethodNameAnalysis {
     return lookupMethod(name);
   }
 
+  // override behavior to allow multiple methods with the same signature (but in different types)
   syn MethodCollection AspectDecl.localLookupMethod(MethodDecl signature) {
     String name = signature.name();
     MethodCollection maxSpecific = MethodCollection.emptyCollection();
     maxSpecific = maxSpecific.add(signature);
     return maxSpecific;
-    /*
-    for(Iterator iter = methods(name).iterator(); iter.hasNext(); ) {
-      MethodDecl decl = (MethodDecl)iter.next();
-      if(decl.compatible(signature)) {
-        if(maxSpecific.isEmpty()) {
-          maxSpecific = maxSpecific.add(decl);
-        }
-        else {
-          if(decl.moreSpecificThan(maxSpecific.first())) {
-            maxSpecific = MethodCollection.emptyCollection();
-            maxSpecific = maxSpecific.add(decl);
-          }
-          else if(!maxSpecific.first().moreSpecificThan(decl)) {
-            maxSpecific = maxSpecific.add(decl);
-          }
-        }
-      }
-    }
-    return maxSpecific;
-    */
   }
   
   eq ASTDecl.localMethods(String name) {
@@ -58,11 +39,6 @@ aspect IntertypeMethodNameAnalysis {
   syn lazy Collection AspectDecl.localIntroductionMethods() {
     Collection c = new ArrayList(1);
     for(int i = 0; i < getNumBodyDecl(); i++) {
-      //if(getBodyDecl(i) instanceof AttributeDecl) {
-      //  AttributeDecl decl = (AttributeDecl)getBodyDecl(i);
-      //  c.add(decl);
-      //}
-      //else 
       if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
       	c.add(getBodyDecl(i));
       }
@@ -73,16 +49,6 @@ aspect IntertypeMethodNameAnalysis {
   syn lazy Map AspectDecl.intertypeMethodsMap() {
     Map map = new HashMap();
     for(int i = 0; i < getNumBodyDecl(); i++) {
-      /*
-      if(getBodyDecl(i) instanceof AttributeDecl) {
-        AttributeDecl decl = (AttributeDecl)getBodyDecl(i);
-        if(!map.containsKey(decl.introducedType()))
-          map.put(decl.introducedType(), new ArrayList(1));
-        Collection c = (Collection)map.get(decl.introducedType());
-        c.add(decl);
-      }
-      else
-      */
       if(getBodyDecl(i) instanceof IntertypeMethodDecl) {
         IntertypeMethodDecl decl = (IntertypeMethodDecl)getBodyDecl(i);
         if(!map.containsKey(decl.introducedType()))
