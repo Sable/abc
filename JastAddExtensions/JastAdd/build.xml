@@ -109,5 +109,15 @@
 	<java classname="RunTests" fork="true"/>
 </target>
 
+<target name="jar" depends="build">
+  <jar destfile="JastAdd.jar" basedir="." includes="**/*.class" excludes="test/**">
+    <manifest>
+      <attribute name="Main-Class" value="JastAdd"/>
+    </manifest>
+  </jar>
+</target>
+
+
+
 </project>
 
