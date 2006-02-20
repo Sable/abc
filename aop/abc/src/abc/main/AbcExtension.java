@@ -530,6 +530,11 @@ public class AbcExtension
 
         if(!a.getDefiningAspect().getName().equals(b.getDefiningAspect().getName()))
             return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(a.getDefiningAspect(),b.getDefiningAspect());
+        
+        //if both advice are inherited from the same aspect but are 
+        //being applied by different concrete aspects
+        if(!a.getAspect().getName().equals(b.getAspect().getName()))
+            return abc.main.Main.v().getAbcExtension().getGlobalAspectInfo().getPrecedence(a.getAspect(),b.getAspect());
 
         if(a instanceof AdviceDecl && b instanceof AdviceDecl)
             return AdviceDecl.getPrecedence((AdviceDecl) a,(AdviceDecl) b);
