@@ -153,7 +153,6 @@
 
 <suite>
 
-
     <ajc-test num="7" dir="base/test100"
       abccomment="I have put this comment in as a test, and this is a very
          long one over multiple lines too. LJH"
@@ -10127,6 +10126,13 @@
         options="-ext,abc.eaj">
         </compile>
         <run class="Test"/>
+    </ajc-test>       
+    
+    <ajc-test num="1213" dir="abctests/bugs"
+      title="Precedence of derived advice">
+        <compile files="DerivedAdvicePrecedence.java">
+        </compile>
+        <run class="DerivedAdvicePrecedence"/>
     </ajc-test>       
 
 </suite>
