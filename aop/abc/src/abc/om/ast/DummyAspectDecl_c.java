@@ -51,7 +51,7 @@ public class DummyAspectDecl_c extends AspectDecl_c {
         super(pos, 
                 false, 
                 Flags.NONE, 
-                moduleName + "_DummyAspect", 
+                moduleName + "$DummyAspect", 
                 null, 
                 new ArrayList(), 
                 new IsSingleton_c(pos), 
@@ -86,5 +86,16 @@ public class DummyAspectDecl_c extends AspectDecl_c {
         }
         
         return reconstruct(newModules, ret);
+    }
+    
+    //Returns true if the aspect name is a dummy aspect
+    //Just does a text match
+    public static boolean isDummyAspect(String name) {
+        String dummyAspectStr = "$DummyAspect";
+        if (name.length() <= dummyAspectStr.length()) {
+            return false;
+        }
+        String tail = name.substring(name.length()-dummyAspectStr.length());
+        return (tail.compareTo(dummyAspectStr) == 0);
     }
 }

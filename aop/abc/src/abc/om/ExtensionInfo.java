@@ -47,6 +47,7 @@ import abc.om.visit.CheckModuleSigMembers;
 import abc.om.visit.CollectModuleAspects;
 import abc.om.visit.CollectModules;
 import abc.om.visit.ModuleStructure;
+import abc.om.visit.OMComputeModulePrecedence;
 import abc.om.visit.OMComputePrecedence;
 import abc.om.visit.PrintVisitor;
 
@@ -115,6 +116,12 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
     public static final Pass.ID AFTER_OM_COMPUTE_PRECEDENCE = new Pass.ID(
             "after-om-compute-precedence");
     
+    public static final Pass.ID OM_COMPUTE_MODULE_PRECEDENCE = new Pass.ID(
+    		"om-compute-module-precedence");
+    
+    public static final Pass.ID AFTER_OM_COMPUTE_MODULE_PRECEDENCE = new Pass.ID(
+    		"after-om-compute-module-precedence");
+    
     public static final Pass.ID INIT_DUMMY_ASPECT = new Pass.ID("init_dummy_aspect");
     
     public static final Pass.ID COLLECT_MODULE_ASPECTS = new Pass.ID("collect_module_aspects");
@@ -177,6 +184,9 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
         l.add(new GlobalBarrierPass(AFTER_OM_COMPUTE_PRECEDENCE, job));
 
         super.passes_precedence_relation(l, job);
+        
+        l.add(new OMComputeModulePrecedence(OM_COMPUTE_MODULE_PRECEDENCE, job, this));
+        l.add(new GlobalBarrierPass(AFTER_OM_COMPUTE_MODULE_PRECEDENCE, job));
 
     }
     
@@ -231,4 +241,5 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
     public AJTypeSystem getTypeSystem() {
         return ts;
     }
+    
 }

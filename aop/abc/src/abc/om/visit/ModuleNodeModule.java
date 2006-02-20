@@ -29,6 +29,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import polyglot.util.Position;
+
 import soot.SootClass;
 
 import abc.aspectj.ast.CPEName_c;
@@ -84,8 +86,9 @@ public class ModuleNodeModule extends ModuleNode {
     
     private boolean isRoot = false;
     
-    public ModuleNodeModule(String name, boolean isRoot) {
+    public ModuleNodeModule(String name, boolean isRoot, Position pos) {
         this.name = name;
+        this.pos = pos;
         members = new LinkedList();
         //initializer values for AIPointcuts
         sigAIPointcut = BoolPointcut.construct(false, AbcExtension.generated);
@@ -108,9 +111,11 @@ public class ModuleNodeModule extends ModuleNode {
     }
     
     public void addMember(ModuleNode node) {
+        //add to list
         members.add(node);
-
-        //add
+        node.setParent(this); //should already be done in module structure, but do here as well anyway
+        
+        //recompute extpointcut
         if (node.isClass()) {
             Pointcut pc = makeExtPointcut(node);
             if (extPointcut == null) {

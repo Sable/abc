@@ -24,6 +24,7 @@
 package abc.om.visit;
 
 import abc.aspectj.ast.ClassnamePatternExpr;
+import polyglot.util.Position;
 
 /**
  * Internal representation of class members.
@@ -33,8 +34,9 @@ import abc.aspectj.ast.ClassnamePatternExpr;
 public class ModuleNodeClass extends ModuleNode {
     private ClassnamePatternExpr cpe;//for TYPE_CLASS nodes
 
-    public ModuleNodeClass(String parentName, ClassnamePatternExpr cpe) {
+    public ModuleNodeClass(String parentName, ClassnamePatternExpr cpe, Position pos) {
         this.cpe = cpe;
+        this.pos = pos;
         //name is the class expression itself, prepended with the module name
         //to make sure there are no clashes in the hashmap
         this.name = parentName + "." + cpe.toString();

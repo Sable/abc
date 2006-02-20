@@ -112,9 +112,10 @@ public class ModuleStructure {
         aspectNodes = new HashMap();
         classNodes = new HashMap();
         //caching
-        /*ownerCache = new HashMap();
-        moduleListCache = new HashMap();
-        sigCache = new HashMap();*/
+        /*
+         * ownerCache = new HashMap(); moduleListCache = new HashMap(); sigCache =
+         * new HashMap();
+         */
         ModuleStructure.instance = this;
         this.ext = ext;
     }
@@ -136,33 +137,33 @@ public class ModuleStructure {
     }
 
     //only for modules
-    public ModuleNode addModuleNode(String name, boolean isRoot) {
+    public ModuleNode addModuleNode(String name, boolean isRoot, Position pos) {
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         ModuleNode n = (ModuleNode) nodeMap.get(name);
         if (n != null) {
             return null;
         }
-        n = new ModuleNodeModule(name, isRoot);
+        n = new ModuleNodeModule(name, isRoot, pos);
         nodeMap.put(n.name(), n);
         return n;
     }
 
     //for aspect members
-    public ModuleNode addAspectNode(String name, CPEName cpe) {
+    public ModuleNode addAspectNode(String name, CPEName cpe, Position pos) {
         Map nodeMap = getMap(ModuleNode.TYPE_ASPECT);
         ModuleNode n = (ModuleNode) nodeMap.get(name);
         if (n != null) {
             return null;
         }
-        n = new ModuleNodeAspect(name, cpe);
+        n = new ModuleNodeAspect(name, cpe, pos);
         nodeMap.put(n.name(), n);
         return n;
     }
 
     //for class members
-    public ModuleNode addClassNode(String parentName, ClassnamePatternExpr cpe) {
+    public ModuleNode addClassNode(String parentName, ClassnamePatternExpr cpe, Position pos) {
         Map nodeMap = getMap(ModuleNode.TYPE_CLASS);
-        ModuleNode n = new ModuleNodeClass(parentName, cpe);
+        ModuleNode n = new ModuleNodeClass(parentName, cpe, pos);
         nodeMap.put(n.name(), n);
         return n;
     }
@@ -213,6 +214,7 @@ public class ModuleStructure {
      * Returns the owner of an aspect.
      */
 public ModuleNode getOwner(String name, int type) {
+    	//TODO: Just get the parent of the ModuleNodeAspect
         assert(type == ModuleNode.TYPE_ASPECT) : "Node is not an aspect node";
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
@@ -230,13 +232,13 @@ public ModuleNode getOwner(String name, int type) {
      */
     public ModuleNode getOwner(PCNode node) {
         ModuleNode ret = null;
-        
+
         //caching
-        /*ret = (ModuleNode)ownerCache.get(node);
-        if (ret != null) {
-            return ret;
-        }*/
-        
+        /*
+         * ret = (ModuleNode)ownerCache.get(node); if (ret != null) { return
+         * ret; }
+         */
+
         //iterate through all module nodes
         Map nodeMap = getMap(ModuleNode.TYPE_MODULE);
         for (Iterator iter = nodeMap.values().iterator(); iter.hasNext();) {
@@ -304,7 +306,7 @@ public ModuleNode getOwner(String name, int type) {
     //Also true if both the aspect and the class are not in modules.
     //Note that aspectNode can be null, meaning that the aspect is not in a
     //module
-public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
+    public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
         if (aspectNode != null && !aspectNode.isAspect()) {
             throw new InternalCompilerError(
                     "Expecting a ModuleNode of type TYPE_ASPECT");
@@ -354,58 +356,19 @@ public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
         return false;
     }
     /**
-     * Returns true of two classes if they belong to the same module set.
-     * Classes in the same module set are considered to be in the same module
-     * for the purposes of determining external calls. TODO: This is not as well
-     * defined as in aspects. There are two possible conditions for two classes
-     * to be in the same module set: (1) One is the root of the subtree to which
-     * the other belongs or (2) they have a common ancestor.
-     * 
-     * Choosing 1 will lead to a less restrictive system (as the members of the
-     * topmost modules will not necessarily be considered as internal to those
-     * below. Choosing 2 will lead to a more restrictive system in that all
-     * classes are considered internal as long as they are in the same subtree.
-     * This does have the advantage of enforcing the signature guarantee of the
-     * top modules (i.e. that only external matches to the joinpoints in the
-     * signature are advised).
-     * 
-     * The implementation below is choice 2
-     */
-    public boolean isInSameModuleSet(PCNode node1, PCNode node2) {
-        ModuleNode owner1 = getOwner(node1);
-        ModuleNode owner2 = getOwner(node2);
-        if (owner1 == null || owner2 == null) {
-            return false;
-        }
-        //check for owner1
-        ModuleNode root1 = owner1;
-        while (root1.getParent() != null) {
-            root1 = root1.getParent();
-        }
-        //check for owner2
-        ModuleNode root2 = owner2;
-        while (root2.getParent() != null) {
-            root2 = root2.getParent();
-        }
-        return root1 == root2;
-    }
-
-    /**
      * Returns the module list of the given node. For a module, the module list
      * is the module itself and its ancestors, starting from the module itself.
      * For aspects and classes, the module list is the module list of its
      * parent.
      */
     public List getModuleList(ModuleNode n) {
-        List ret ;
-        
+        List ret;
+
         //caching
         /*
-        ret = (List)moduleListCache.get(n);
-        if (ret != null) {
-            return ret;
-        }*/
-        
+         * ret = (List)moduleListCache.get(n); if (ret != null) { return ret; }
+         */
+
         //iterate to get list of ancestors
         ret = new ArrayList();
         if (n.isModule()) {
@@ -424,14 +387,13 @@ public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
      */
     public Pointcut getApplicableSignature(PCNode classNode) {
         Pointcut ret = null;
-        
+
         //caching
         /*
-        ret = (Pointcut)sigCache.get(classNode);
-        if (ret != null) {
-            return ret;
-        }*/
-        
+         * ret = (Pointcut)sigCache.get(classNode); if (ret != null) { return
+         * ret; }
+         */
+
         ModuleNodeModule owner = (ModuleNodeModule) getOwner(classNode);
         if (owner == null) {
             return ret;
@@ -587,6 +549,14 @@ public boolean isInSameModuleSet(ModuleNode aspectNode, PCNode classNode) {
         }
     }
 
+    public ModuleNode getTopAncestor(ModuleNode member) {
+        ModuleNode ret = member.getParent();
+        while (ret.getParent() != null) {
+            ret = ret.getParent();
+        }
+        return ret;
+    }
+    
     private static void addWarning(String msg, ShadowMatch sm) {
         abc.main.Main.v().error_queue.enqueue(ErrorInfoFactory.newErrorInfo(
                 ErrorInfo.WARNING, msg, sm.getContainer(), sm.getHost()));

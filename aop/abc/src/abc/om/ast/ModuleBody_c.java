@@ -170,7 +170,7 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
     public void checkMemberClass(ModuleDecl module, ModMemberClass member,
             ExtensionInfo ext) throws SemanticException {
         // add the ModuleNodes that represent the expression
-        ModuleNode n = ext.moduleStruct.addClassNode(module.name(), member.getCPE());
+        ModuleNode n = ext.moduleStruct.addClassNode(module.name(), member.getCPE(), member.position());
         assert(n != null);
         ext.moduleStruct.addMember(module.name(), n);
     }
@@ -191,7 +191,7 @@ public class ModuleBody_c extends Node_c implements ModuleBody {
         }
         //add a ModuleNode that represents the aspect
         ModuleNode aspectNode = ext.moduleStruct.addAspectNode(
-                member.name(), (CPEName)member.getCPE());
+                member.name(), (CPEName)member.getCPE(), member.position());
         assert(aspectNode != null);
         aspectNode = ext.moduleStruct.addMember(module.name(), aspectNode);
         //should always add properly, since we already checked if there is an

@@ -1,0 +1,8 @@
+$2006 Feb 20
+
+Changed precedence order induced by friend and module inclusion to be
+consistent with declare precedence (i.e. first declared is executed first).
+
+Added new constraint on module precedence (aspect precedence inside a
+module is unaffected by external aspects, that is, an external aspect
+cannot come between any 2 internal aspects).

@@ -71,8 +71,14 @@ public abstract class ModuleNode {
     protected String name;
 
     protected ModuleNode parent;
+    
+    protected Position pos;
 
     public String name() {
+        return name;
+    }
+    
+    public String toString() {
         return name;
     }
 
@@ -92,4 +98,11 @@ public abstract class ModuleNode {
         return this.parent;
     }
 
+    public Position position() {
+        return pos;
+    }
+    
+    public void setPosition(Position pos) {
+        this.pos = pos;
+    }
 }

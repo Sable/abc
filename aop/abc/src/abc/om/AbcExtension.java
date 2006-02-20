@@ -58,7 +58,7 @@ public class AbcExtension extends abc.main.AbcExtension {
     private static boolean isLoaded = false;
     private GlobalAspectInfo globalAspectInfo = null;
 
-    public static Position generated = new Position("openmod generated");
+    public static Position generated = new Position("openmod_generated:0");
     
     public AbcExtension() { 
         super();

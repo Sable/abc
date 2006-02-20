@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.LinkedList;
 
 import polyglot.frontend.Job;
 import polyglot.frontend.Pass;
@@ -71,15 +72,34 @@ public class OMComputePrecedence extends OncePass {
             ModuleNodeModule module = (ModuleNodeModule) item;
             Set /*String*/ prevAspects = new HashSet();
            
-            for (Iterator iter2 = module.getMembers().iterator();
+            //NEIL: reverse the precedence to make it consistent with
+            //declare precedence
+            LinkedList reversedMembers = new LinkedList();
+            for (Iterator i = module.getMembers().iterator(); i.hasNext();) {
+                reversedMembers.addFirst(i.next());
+            }
+            for (Iterator iter2 = reversedMembers.iterator();
             	iter2.hasNext(); ) {
                 ModuleNode member = (ModuleNode) iter2.next();
                 
                 if (member.isModule()) {
-                    prevAspects.addAll(((ModuleNodeModule)member).getAspectNames());
+                    Set moduleAspectNames = ((ModuleNodeModule)member).getAspectNames();
+                    for (Iterator iter3 = moduleAspectNames.iterator(); iter3.hasNext(); ) {
+                        String name = (String) iter3.next();
+                        if (ext.prec_rel.get(name) == null) {
+                            ext.prec_rel.put(name, new HashSet());
+                        }
+                        Set lowerAspectNames = (Set) ext.prec_rel.get(name);
+                        lowerAspectNames.addAll(prevAspects);
+                    }
+                    prevAspects.addAll(moduleAspectNames);
                 } else if (member.isAspect()) {
                     AbcExtension.debPrintln("Adding ("+member.name() + "," + prevAspects + ")");
-                    ext.prec_rel.put(member.name(), new HashSet(prevAspects));
+                    if (ext.prec_rel.get(member.name()) == null) {
+                        ext.prec_rel.put(member.name(), new HashSet());
+                    }
+                    Set laterAspects = (Set)ext.prec_rel.get(member.name());
+                    laterAspects.addAll(prevAspects);
                     prevAspects.add(member.name()); 
                 }
             }

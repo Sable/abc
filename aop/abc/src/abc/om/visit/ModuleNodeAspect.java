@@ -33,6 +33,8 @@ import abc.aspectj.ast.NamePattern;
 import abc.aspectj.visit.PCNode;
 import abc.aspectj.visit.PCStructure;
 
+import polyglot.util.Position;
+
 /**
  * Internal representation of a member aspect.
  * @author Neil Ongkingco
@@ -43,9 +45,10 @@ public class ModuleNodeAspect extends ModuleNode {
     private NamePattern aspectNamePattern; //Name pattern for the aspect
     CPEName cpe;
     
-    public ModuleNodeAspect(String name, CPEName cpe) {
+    public ModuleNodeAspect(String name, CPEName cpe, Position pos) {
         this.name = name;
         this.cpe = cpe;
+        this.pos = pos;
         
         //get the PCNode representing the aspect by using PCStructure.matchName
         //TODO: Assumes that aspects are always top-level. Needs to be changed
