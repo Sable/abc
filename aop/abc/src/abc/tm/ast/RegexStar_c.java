@@ -63,11 +63,19 @@ public class RegexStar_c extends Regex_c
         return true;
     }
 
-    public void makeSM(StateMachine sm, State start, State finish)
+    public void makeSM(StateMachine sm, State start, State finish,
+                       boolean own_start)
     {
-        State middle = sm.newState();
-        sm.newTransition(start, middle, null);
-        a.makeSM(sm, middle, middle);
-        sm.newTransition(middle, finish, null);
+        State loop_node;
+        
+        if (own_start) {
+            loop_node = start;
+        } else {
+            loop_node = sm.newState();
+            sm.newTransition(start, loop_node, null);
+        }
+
+        a.makeSM(sm, loop_node, loop_node, false);
+        sm.newTransition(loop_node, finish, null);
     }
 }

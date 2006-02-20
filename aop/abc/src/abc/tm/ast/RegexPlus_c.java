@@ -63,11 +63,19 @@ public class RegexPlus_c extends Regex_c
         return a.matchesEmptyString();
     }
 
-    public void makeSM(StateMachine sm, State start, State finish)
+    public void makeSM(StateMachine sm, State start, State finish,
+                       boolean own_start)
     {
-        State middle = sm.newState();
-        sm.newTransition(start, middle, null);
-        a.makeSM(sm, middle, middle);
-        a.makeSM(sm, middle, finish);
+        State loop_node;
+        
+        if (own_start) {
+            loop_node = start;
+        } else {
+            loop_node = sm.newState();
+            sm.newTransition(start, loop_node, null);
+        }
+
+        a.makeSM(sm, loop_node, loop_node, false);
+        a.makeSM(sm, loop_node, finish, false);
     }
 }

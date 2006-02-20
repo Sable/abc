@@ -71,10 +71,11 @@ public class RegexConjunction_c extends Regex_c
         return a.matchesEmptyString() && b.matchesEmptyString();
     }
 
-    public void makeSM(StateMachine sm, State start, State finish)
+    public void makeSM(StateMachine sm, State start,
+                       State finish, boolean own_start)
     {
         State middle = sm.newState();
-        a.makeSM(sm, start, middle);
-        b.makeSM(sm, middle, finish);
+        a.makeSM(sm, start, middle, own_start);
+        b.makeSM(sm, middle, finish, true);
     }
 }

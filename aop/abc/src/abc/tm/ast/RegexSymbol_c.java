@@ -66,7 +66,8 @@ public class RegexSymbol_c extends Regex_c
         return false;
     }
 
-    public void makeSM(StateMachine sm, State start, State finish)
+    public void makeSM(StateMachine sm, State start, State finish,
+                       boolean own_start)
     {
         sm.newTransition(start, finish, name);
     }

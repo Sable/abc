@@ -73,7 +73,8 @@ public class RegexCount_c extends Regex_c
         return min == 0 || a.matchesEmptyString();
     }
 
-    public void makeSM(StateMachine sm, State start, State finish)
+    public void makeSM(StateMachine sm, State start, State finish,
+                       boolean own_start)
     {
         if (min == 0)
             sm.newTransition(start, finish, null);
@@ -83,12 +84,12 @@ public class RegexCount_c extends Regex_c
         // max is always >= 1
         for (int i = 1; i < max; i++) {
             State s = sm.newState();
-            a.makeSM(sm, middle, s);
+            a.makeSM(sm, middle, s, false);
             if (i >= min)
                 sm.newTransition(s, finish, null);
             middle = s;
         }
 
-        a.makeSM(sm, middle, finish);
+        a.makeSM(sm, middle, finish, false);
     }
 }

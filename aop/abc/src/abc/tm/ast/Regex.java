@@ -70,8 +70,16 @@ public interface Regex extends Node
     public StateMachine makeSM();
 
     /**
-     * Create a finite state machine, given a start and
-     * finish node.
+     * Create a finite state machine for this regular
+     * expression, given a start and finish node.
+     *
+     * @parm sm         the state machine under construction
+     * @param start     the start node
+     * @param finish    the finish node
+     * @param own_start true if, and only if, the current
+     *                  regular expression is the only one
+     *                  to create outgoing transitions from
+     *                  the start node
      */
-    void makeSM(StateMachine sm, State start, State finish);
+    void makeSM(StateMachine sm, State start, State finish, boolean own_start);
 }

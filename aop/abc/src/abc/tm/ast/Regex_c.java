@@ -47,7 +47,7 @@ public abstract class Regex_c extends Node_c
         State finish = sm.newState();
         finish.setFinal(true);
 
-        makeSM(sm, start, finish);
+        makeSM(sm, start, finish, true);
         return sm;
     }
 }

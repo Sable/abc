@@ -69,9 +69,10 @@ public class RegexAlternation_c extends Regex_c
         return a.matchesEmptyString() || b.matchesEmptyString();
     }
 
-    public void makeSM(StateMachine sm, State start, State finish)
+    public void makeSM(StateMachine sm, State start,
+                       State finish, boolean own_start)
     {
-        a.makeSM(sm, start, finish);
-        b.makeSM(sm, start, finish);
+        a.makeSM(sm, start, finish, false);
+        b.makeSM(sm, start, finish, false);
     }
 }
