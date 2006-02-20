@@ -1,0 +1,3134 @@
+Turn Left 1                             ;State 0  SA_start:0 SA_start 
+Turn Left 2                             ;State 1  SA_start:1 
+Sense Ahead 3088 3 Friend               ;State 2  SA_start:2 
+Sense LeftAhead 3078 4 Friend           ;State 3  SA_start:3 
+Sense RightAhead 3066 5 Friend          ;State 4  SA_start:4 
+Mark 1 6                                ;State 5  SA_start:5 
+Turn Left 7                             ;State 6  SA_start:6 
+Move 8 7                                ;State 7  SA_ant_1_1:0 SA_ant_1_1 
+Mark 0 9                                ;State 8  SA_ant_1_1:1 
+Mark 1 10                               ;State 9  SA_ant_1_1:2 
+Unmark 2 11                             ;State 10  SA_ant_1_1:3 
+Turn Left 12                            ;State 11  SA_ant_1_1:4 
+Move 13 12                              ;State 12  SA_ant_1_2:0 SA_ant_1_2 
+Mark 0 14                               ;State 13  SA_ant_1_2:1 
+Mark 1 15                               ;State 14  SA_ant_1_2:2 
+Unmark 2 16                             ;State 15  SA_ant_1_2:3 
+Turn Left 17                            ;State 16  SA_ant_1_2:4 
+Turn Left 18                            ;State 17  SA_ant_1_2:5 
+Turn Left 19                            ;State 18  SA_ant_1_2:6 
+Move 20 19                              ;State 19  SA_ant_1_5:0 SA_ant_1_5 
+Move 21 20                              ;State 20  SA_ant_1_6:0 SA_ant_1_6 
+Turn Right 22                           ;State 21  SA_ant_1_6:1 
+Mark 0 23                               ;State 22  SA_ant_1_6:2 
+Unmark 1 24                             ;State 23  SA_ant_1_6:3 
+Mark 2 25                               ;State 24  SA_ant_1_6:4 
+Move 26 25                              ;State 25  SA_ant_1_8:0 SA_ant_1_8 
+Mark 0 27                               ;State 26  SA_ant_1_8:1 
+Unmark 1 28                             ;State 27  SA_ant_1_8:2 
+Mark 2 29                               ;State 28  SA_ant_1_8:3 
+Move 30 29                              ;State 29  SA_ant_1_9:0 SA_ant_1_9 
+Mark 0 31                               ;State 30  SA_ant_1_9:1 
+Unmark 1 32                             ;State 31  SA_ant_1_9:2 
+Mark 2 33                               ;State 32  SA_ant_1_9:3 
+Sense Here 3065 34 Home                 ;State 33  SA_walk0:0 SA_walk0 
+Sense Here 3031 35 Marker 4             ;State 34  default0 
+Sense Here 3031 36 Marker 5             ;State 35  
+Sense Here 3031 37 Marker 3             ;State 36  
+Sense Here 3030 38 Marker 1             ;State 37  
+Sense Here 3030 39 Marker 2             ;State 38  
+Sense Here 3030 40 Marker 0             ;State 39  
+Mark 1 41                               ;State 40    
+PickUp 3027 42                          ;State 41    
+Flip 8 3026 43                          ;State 42  
+Sense Ahead 3025 44 FoeHome             ;State 43  walkrandomlyfindfood0 findfood0 
+Move 2944 45                            ;State 44  
+Sense Ahead 2941 46 Foe                 ;State 45 
+Sense Ahead 2919 47 FriendWithFood      ;State 46  
+Sense Ahead 2918 48 Friend              ;State 47  
+Sense Ahead 49 2944 Rock                ;State 48  
+Flip 2 2916 50                          ;State 49  
+Flip 2 2915 51                          ;State 50    
+Turn Left 52                            ;State 51    
+Turn Left 53                            ;State 52    
+Sense Ahead 2914 54 FoeHome             ;State 53  walkrandomlyfindfood4 findfood4 
+Move 2830 55                            ;State 54  
+Sense Ahead 2827 56 Foe                 ;State 55 
+Sense Ahead 2804 57 FriendWithFood      ;State 56  
+Sense Ahead 2803 58 Friend              ;State 57  
+Sense Ahead 59 2830 Rock                ;State 58  
+Flip 2 2801 60                          ;State 59  
+Flip 2 2800 61                          ;State 60    
+Turn Left 62                            ;State 61    
+Turn Left 63                            ;State 62    
+Sense Ahead 2799 64 FoeHome             ;State 63  walkrandomlyfindfood2 findfood2 
+Move 2718 65                            ;State 64  
+Sense Ahead 2715 66 Foe                 ;State 65 
+Sense Ahead 2692 67 FriendWithFood      ;State 66  
+Sense Ahead 2691 68 Friend              ;State 67  
+Sense Ahead 69 2718 Rock                ;State 68  
+Flip 2 2689 70                          ;State 69  
+Flip 2 73 71                            ;State 70    
+Turn Left 72                            ;State 71    
+Turn Left 43                            ;State 72    
+Turn Left 74                            ;State 73    
+Sense Ahead 2688 75 FoeHome             ;State 74  walkrandomlyfindfood1 findfood1 
+Move 2596 76                            ;State 75  
+Sense Ahead 2593 77 Foe                 ;State 76 
+Sense Ahead 86 78 FriendWithFood        ;State 77  
+Sense Ahead 85 79 Friend                ;State 78  
+Sense Ahead 80 2596 Rock                ;State 79  
+Flip 2 83 81                            ;State 80  
+Flip 2 72 82                            ;State 81    
+Turn Left 2915                          ;State 82    
+Flip 2 85 84                            ;State 83  
+Turn Right 2691                         ;State 84    
+Turn Right 63                           ;State 85    
+Turn Right 87                           ;State 86  
+Move 2585 88                            ;State 87  goaround2 
+Turn Left 89                            ;State 88 
+Turn Left 90                            ;State 89  
+Move 2577 91                            ;State 90  gootherwayaround0 
+Flip 2 2575 92                          ;State 91  randomescape0 
+Turn Right 93                           ;State 92  escaperight0 
+Move 2572 94                            ;State 93  
+Turn Right 95                           ;State 94  escaperight1 
+Move 2569 96                            ;State 95  
+Turn Right 97                           ;State 96  escaperight2 
+Move 2564 98                            ;State 97  
+Turn Right 99                           ;State 98  escaperight3 
+Move 2559 100                           ;State 99  
+Turn Right 101                          ;State 100  escaperight4 
+Move 107 102                            ;State 101  
+Turn Right 103                          ;State 102  escaperight5 
+Move 104 92                             ;State 103  
+Sense Here 43 105 Marker 0              ;State 104    
+Sense Here 43 106 Marker 2              ;State 105    
+Mark 1 43                               ;State 106    
+Sense Here 112 108 Marker 1             ;State 107    
+Sense Here 112 109 Marker 2             ;State 108    
+Sense Here 112 110 Marker 0             ;State 109    
+Mark 1 111                              ;State 110    
+Mark 0 112                              ;State 111    
+Sense Ahead 2558 113 FoeHome            ;State 112  walkrandomlyfindfood5 findfood5 
+Move 2474 114                           ;State 113  
+Sense Ahead 2471 115 Foe                ;State 114 
+Sense Ahead 124 116 FriendWithFood      ;State 115  
+Sense Ahead 123 117 Friend              ;State 116  
+Sense Ahead 118 2474 Rock               ;State 117  
+Flip 2 121 119                          ;State 118  
+Flip 2 52 120                           ;State 119    
+Turn Left 2800                          ;State 120    
+Flip 2 123 122                          ;State 121  
+Turn Right 2918                         ;State 122    
+Turn Right 43                           ;State 123    
+Turn Right 125                          ;State 124  
+Move 2465 126                           ;State 125  goaround0 
+Turn Left 127                           ;State 126 
+Turn Left 128                           ;State 127  
+Move 138 129                            ;State 128  gootherwayaround4 
+Flip 2 130 100                          ;State 129  randomescape4 
+Turn Left 131                           ;State 130  escapeleft4 
+Move 2564 132                           ;State 131  
+Turn Left 133                           ;State 132  escapeleft3 
+Move 2569 134                           ;State 133  
+Turn Left 135                           ;State 134  escapeleft2 
+Move 2572 136                           ;State 135  
+Turn Left 137                           ;State 136  escapeleft1 
+Move 104 2575                           ;State 137  
+Sense Here 143 139 Marker 1             ;State 138  
+Sense Here 143 140 Marker 2             ;State 139  
+Sense Here 143 141 Marker 0             ;State 140  
+Mark 2 142                              ;State 141  
+Mark 1 143                              ;State 142  
+PickUp 2462 144                         ;State 143  
+Sense Here 149 145 Marker 4             ;State 144  
+Sense Here 149 146 Marker 5             ;State 145  
+Sense Here 149 147 Marker 3             ;State 146  
+Mark 5 148                              ;State 147  
+Mark 3 149                              ;State 148    
+Sense Here 2455 150 Marker 5            ;State 149  followpathtofood4 
+Sense Here 2451 151 Marker 4            ;State 150  
+Sense Here 2450 152 Marker 3            ;State 151  
+Sense Here 157 153 Marker 1             ;State 152  
+Sense Here 157 154 Marker 2             ;State 153  
+Sense Here 157 155 Marker 0             ;State 154  
+Mark 2 156                              ;State 155  
+Mark 1 157                              ;State 156  
+PickUp 2462 158                         ;State 157   
+Turn Right 159                          ;State 158  findlocalfood4 
+Sense RightAhead 2449 160 Food          ;State 159  
+Sense Ahead 2446 161 Food               ;State 160  
+Sense LeftAhead 2443 162 Food           ;State 161  
+Turn Right 163                          ;State 162  
+Turn Right 164                          ;State 163  
+Turn Right 165                          ;State 164  
+Sense RightAhead 2442 166 Food          ;State 165  
+Sense Ahead 2440 167 Food               ;State 166  
+Turn Left 168                           ;State 167  
+Unmark 5 169                            ;State 168  
+Unmark 4 170                            ;State 169  
+Unmark 3 171                            ;State 170  
+Move 172 74                             ;State 171  movetowardshomedelete1 
+Unmark 5 173                            ;State 172  followpathhomedelete1 
+Unmark 4 174                            ;State 173  
+Unmark 3 175                            ;State 174  
+Sense Here 2436 176 Marker 2            ;State 175  
+Sense Here 2435 177 Marker 1            ;State 176  
+Sense Here 2434 178 Marker 0            ;State 177  
+Sense Ahead 2433 179 Marker 1           ;State 178  
+Sense Ahead 2433 180 Marker 2           ;State 179  
+Sense Ahead 2433 181 Marker 0           ;State 180  
+Turn Left 182                           ;State 181  
+Sense Ahead 2432 183 Marker 1           ;State 182  
+Sense Ahead 2432 184 Marker 2           ;State 183  
+Sense Ahead 2432 185 Marker 0           ;State 184  
+Turn Left 186                           ;State 185  
+Sense Ahead 2431 187 Marker 1           ;State 186  
+Sense Ahead 2431 188 Marker 2           ;State 187  
+Sense Ahead 2431 189 Marker 0           ;State 188  
+Turn Right 190                          ;State 189  
+Turn Right 191                          ;State 190  
+Turn Right 192                          ;State 191  
+Sense Ahead 2430 193 Marker 1           ;State 192  
+Sense Ahead 2430 194 Marker 2           ;State 193  
+Sense Ahead 2430 195 Marker 0           ;State 194  
+Turn Right 196                          ;State 195  
+Sense Ahead 201 197 Marker 1            ;State 196  
+Sense Ahead 201 198 Marker 2            ;State 197  
+Sense Ahead 201 199 Marker 0            ;State 198  
+Turn Left 200                           ;State 199  
+Turn Left 2433                          ;State 200  
+Move 202 201                            ;State 201  followpathhomedeleteemergency3:0 followpathhomedeleteemergency3 
+Unmark 5 203                            ;State 202  followpathhomedelete3 
+Unmark 4 204                            ;State 203  
+Unmark 3 205                            ;State 204  
+Sense Here 2425 206 Marker 2            ;State 205  
+Sense Here 2424 207 Marker 1            ;State 206  
+Sense Here 2423 208 Marker 0            ;State 207  
+Sense Ahead 201 209 Marker 1            ;State 208  
+Sense Ahead 201 210 Marker 2            ;State 209  
+Sense Ahead 201 211 Marker 0            ;State 210  
+Turn Left 212                           ;State 211  
+Sense Ahead 2430 213 Marker 1           ;State 212  
+Sense Ahead 2430 214 Marker 2           ;State 213  
+Sense Ahead 2430 215 Marker 0           ;State 214  
+Turn Left 216                           ;State 215  
+Sense Ahead 2433 217 Marker 1           ;State 216  
+Sense Ahead 2433 218 Marker 2           ;State 217  
+Sense Ahead 2433 219 Marker 0           ;State 218  
+Turn Right 220                          ;State 219  
+Turn Right 221                          ;State 220  
+Turn Right 222                          ;State 221  
+Sense Ahead 231 223 Marker 1            ;State 222  
+Sense Ahead 231 224 Marker 2            ;State 223  
+Sense Ahead 231 225 Marker 0            ;State 224  
+Turn Right 226                          ;State 225  
+Sense Ahead 2431 227 Marker 1           ;State 226  
+Sense Ahead 2431 228 Marker 2           ;State 227  
+Sense Ahead 2431 229 Marker 0           ;State 228  
+Turn Left 230                           ;State 229  
+Turn Left 201                           ;State 230  
+Move 232 231                            ;State 231  followpathhomedeleteemergency4:0 followpathhomedeleteemergency4 
+Unmark 5 233                            ;State 232  followpathhomedelete4 
+Unmark 4 234                            ;State 233  
+Unmark 3 235                            ;State 234  
+Sense Here 2418 236 Marker 2            ;State 235  
+Sense Here 262 237 Marker 1             ;State 236  
+Sense Here 261 238 Marker 0             ;State 237  
+Sense Ahead 231 239 Marker 1            ;State 238  
+Sense Ahead 231 240 Marker 2            ;State 239  
+Sense Ahead 231 241 Marker 0            ;State 240  
+Turn Left 242                           ;State 241  
+Sense Ahead 201 243 Marker 1            ;State 242  
+Sense Ahead 201 244 Marker 2            ;State 243  
+Sense Ahead 201 245 Marker 0            ;State 244  
+Turn Left 246                           ;State 245  
+Sense Ahead 2430 247 Marker 1           ;State 246  
+Sense Ahead 2430 248 Marker 2           ;State 247  
+Sense Ahead 2430 249 Marker 0           ;State 248  
+Turn Right 250                          ;State 249  
+Turn Right 251                          ;State 250  
+Turn Right 252                          ;State 251  
+Sense Ahead 2431 253 Marker 1           ;State 252  
+Sense Ahead 2431 254 Marker 2           ;State 253  
+Sense Ahead 2431 255 Marker 0           ;State 254  
+Turn Right 256                          ;State 255  
+Sense Ahead 2432 257 Marker 1           ;State 256  
+Sense Ahead 2432 258 Marker 2           ;State 257  
+Sense Ahead 2432 259 Marker 0           ;State 258  
+Turn Left 260                           ;State 259  
+Turn Left 231                           ;State 260  
+Move 232 53                             ;State 261  movetowardshomedelete4 
+Sense Here 2416 263 Marker 0            ;State 262 
+Turn Left 264                           ;State 263    
+Move 202 265                            ;State 264  movetowardshomedelete3 
+Sense Ahead 2415 266 FoeHome            ;State 265  walkrandomlyfindfood3 findfood3 
+Move 2331 267                           ;State 266  
+Sense Ahead 2328 268 Foe                ;State 267 
+Sense Ahead 277 269 FriendWithFood      ;State 268  
+Sense Ahead 276 270 Friend              ;State 269  
+Sense Ahead 271 2331 Rock               ;State 270  
+Flip 2 274 272                          ;State 271  
+Flip 2 62 273                           ;State 272    
+Turn Left 73                            ;State 273    
+Flip 2 276 275                          ;State 274  
+Turn Right 2803                         ;State 275    
+Turn Right 53                           ;State 276    
+Turn Right 278                          ;State 277  
+Move 2318 279                           ;State 278  goaround4 
+Turn Left 280                           ;State 279 
+Turn Left 281                           ;State 280  
+Move 283 282                            ;State 281  gootherwayaround2 
+Flip 2 134 96                           ;State 282  randomescape2 
+Sense Here 286 284 Marker 1             ;State 283  
+Sense Here 286 285 Marker 0             ;State 284  
+Mark 2 286                              ;State 285  
+PickUp 2315 287                         ;State 286  
+Sense Here 290 288 Marker 4             ;State 287  
+Sense Here 290 289 Marker 5             ;State 288  
+Mark 3 290                              ;State 289    
+Sense Here 2307 291 Marker 5            ;State 290  followpathtofood2 
+Sense Here 2304 292 Marker 4            ;State 291  
+Sense Here 2303 293 Marker 3            ;State 292  
+Sense Here 296 294 Marker 1             ;State 293  
+Sense Here 296 295 Marker 0             ;State 294  
+Mark 2 296                              ;State 295  
+PickUp 2315 297                         ;State 296   
+Turn Right 298                          ;State 297  findlocalfood2 
+Sense RightAhead 2301 299 Food          ;State 298  
+Sense Ahead 2298 300 Food               ;State 299  
+Sense LeftAhead 2295 301 Food           ;State 300  
+Turn Right 302                          ;State 301  
+Turn Right 303                          ;State 302  
+Turn Right 304                          ;State 303  
+Sense RightAhead 2293 305 Food          ;State 304  
+Sense Ahead 2290 306 Food               ;State 305  
+Turn Left 307                           ;State 306  
+Unmark 5 308                            ;State 307  
+Unmark 4 309                            ;State 308  
+Unmark 3 310                            ;State 309  
+Move 311 112                            ;State 310  movetowardshomedelete5 
+Unmark 5 312                            ;State 311  followpathhomedelete5 
+Unmark 4 313                            ;State 312  
+Unmark 3 314                            ;State 313  
+Sense Here 2285 315 Marker 2            ;State 314  
+Sense Here 341 316 Marker 1             ;State 315  
+Sense Here 340 317 Marker 0             ;State 316  
+Sense Ahead 2431 318 Marker 1           ;State 317  
+Sense Ahead 2431 319 Marker 2           ;State 318  
+Sense Ahead 2431 320 Marker 0           ;State 319  
+Turn Left 321                           ;State 320  
+Sense Ahead 231 322 Marker 1            ;State 321  
+Sense Ahead 231 323 Marker 2            ;State 322  
+Sense Ahead 231 324 Marker 0            ;State 323  
+Turn Left 325                           ;State 324  
+Sense Ahead 201 326 Marker 1            ;State 325  
+Sense Ahead 201 327 Marker 2            ;State 326  
+Sense Ahead 201 328 Marker 0            ;State 327  
+Turn Right 329                          ;State 328  
+Turn Right 330                          ;State 329  
+Turn Right 331                          ;State 330  
+Sense Ahead 2432 332 Marker 1           ;State 331  
+Sense Ahead 2432 333 Marker 2           ;State 332  
+Sense Ahead 2432 334 Marker 0           ;State 333  
+Turn Right 335                          ;State 334  
+Sense Ahead 2433 336 Marker 1           ;State 335  
+Sense Ahead 2433 337 Marker 2           ;State 336  
+Sense Ahead 2433 338 Marker 0           ;State 337  
+Turn Left 339                           ;State 338  
+Turn Left 2431                          ;State 339  
+Turn Left 261                           ;State 340   
+Sense Here 343 342 Marker 0             ;State 341 
+Turn Left 263                           ;State 342  
+Turn Right 344                          ;State 343 
+Turn Right 345                          ;State 344   
+Turn Right 346                          ;State 345    
+Move 347 63                             ;State 346  movetowardshomedelete2 
+Unmark 5 348                            ;State 347  followpathhomedelete2 
+Unmark 4 349                            ;State 348  
+Unmark 3 350                            ;State 349  
+Sense Here 379 351 Marker 2             ;State 350  
+Sense Here 377 352 Marker 1             ;State 351  
+Sense Here 376 353 Marker 0             ;State 352  
+Sense Ahead 2430 354 Marker 1           ;State 353  
+Sense Ahead 2430 355 Marker 2           ;State 354  
+Sense Ahead 2430 356 Marker 0           ;State 355  
+Turn Left 357                           ;State 356  
+Sense Ahead 2433 358 Marker 1           ;State 357  
+Sense Ahead 2433 359 Marker 2           ;State 358  
+Sense Ahead 2433 360 Marker 0           ;State 359  
+Turn Left 361                           ;State 360  
+Sense Ahead 2432 362 Marker 1           ;State 361  
+Sense Ahead 2432 363 Marker 2           ;State 362  
+Sense Ahead 2432 364 Marker 0           ;State 363  
+Turn Right 365                          ;State 364  
+Turn Right 366                          ;State 365  
+Turn Right 367                          ;State 366  
+Sense Ahead 201 368 Marker 1            ;State 367  
+Sense Ahead 201 369 Marker 2            ;State 368  
+Sense Ahead 201 370 Marker 0            ;State 369  
+Turn Right 371                          ;State 370  
+Sense Ahead 231 372 Marker 1            ;State 371  
+Sense Ahead 231 373 Marker 2            ;State 372  
+Sense Ahead 231 374 Marker 0            ;State 373  
+Turn Left 375                           ;State 374  
+Turn Left 2430                          ;State 375  
+Turn Right 2423                         ;State 376   
+Sense Here 346 378 Marker 0             ;State 377 
+Turn Right 264                          ;State 378    
+Sense Here 2283 380 Marker 1            ;State 379 
+Sense Here 384 381 Marker 0             ;State 380  
+Turn Right 382                          ;State 381  
+Turn Right 383                          ;State 382    
+Turn Right 310                          ;State 383    
+Turn Left 385                           ;State 384 
+Turn Left 386                           ;State 385   
+Move 387 43                             ;State 386  movetowardshomedelete0 
+Unmark 5 388                            ;State 387  followpathhomedelete0 
+Unmark 4 389                            ;State 388  
+Unmark 3 390                            ;State 389  
+Sense Here 420 391 Marker 2             ;State 390  
+Sense Here 417 392 Marker 1             ;State 391  
+Sense Here 416 393 Marker 0             ;State 392  
+Sense Ahead 2432 394 Marker 1           ;State 393  
+Sense Ahead 2432 395 Marker 2           ;State 394  
+Sense Ahead 2432 396 Marker 0           ;State 395  
+Turn Left 397                           ;State 396  
+Sense Ahead 2431 398 Marker 1           ;State 397  
+Sense Ahead 2431 399 Marker 2           ;State 398  
+Sense Ahead 2431 400 Marker 0           ;State 399  
+Turn Left 401                           ;State 400  
+Sense Ahead 231 402 Marker 1            ;State 401  
+Sense Ahead 231 403 Marker 2            ;State 402  
+Sense Ahead 231 404 Marker 0            ;State 403  
+Turn Right 405                          ;State 404  
+Turn Right 406                          ;State 405  
+Turn Right 407                          ;State 406  
+Sense Ahead 2433 408 Marker 1           ;State 407  
+Sense Ahead 2433 409 Marker 2           ;State 408  
+Sense Ahead 2433 410 Marker 0           ;State 409  
+Turn Right 411                          ;State 410  
+Sense Ahead 2430 412 Marker 1           ;State 411  
+Sense Ahead 2430 413 Marker 2           ;State 412  
+Sense Ahead 2430 414 Marker 0           ;State 413  
+Turn Left 415                           ;State 414  
+Turn Left 2432                          ;State 415  
+Turn Left 340                           ;State 416 
+Sense Here 344 418 Marker 0             ;State 417 
+Turn Right 419                          ;State 418  
+Turn Right 378                          ;State 419    
+Sense Here 423 421 Marker 1             ;State 420 
+Sense Here 386 422 Marker 0             ;State 421  
+Turn Left 310                           ;State 422    
+Sense Here 425 424 Marker 0             ;State 423 
+Turn Right 171                          ;State 424    
+Move 426 425                            ;State 425  keeper:0 keeper 
+Turn Right 427                          ;State 426  keeper:1 
+Turn Right 428                          ;State 427  keeper:2 
+Turn Right 429                          ;State 428  keeper:3 
+Sense Ahead 430 429 Friend              ;State 429  SA_watcher:0 SA_watcher 
+Turn Right 431                          ;State 430  SA_swapover:0 SA_swapover 
+Turn Right 432                          ;State 431  SA_swapover:1 
+Turn Right 433                          ;State 432  SA_swapover:2 
+Sense Here 434 434 Foe                  ;State 433  SA_swapover:3 
+Sense Here 435 435 Foe                  ;State 434  
+Sense Here 436 436 Foe                  ;State 435  
+Sense Here 437 437 Foe                  ;State 436  
+Sense Here 438 438 Foe                  ;State 437  
+Sense Here 439 439 Foe                  ;State 438  
+Sense Here 440 440 Foe                  ;State 439  
+Sense Here 441 441 Foe                  ;State 440  
+Sense Here 442 442 Foe                  ;State 441  
+Sense Here 443 443 Foe                  ;State 442  
+Sense Here 444 444 Foe                  ;State 443  
+Sense Here 445 445 Foe                  ;State 444  
+Sense Here 446 446 Foe                  ;State 445  
+Sense Here 447 447 Foe                  ;State 446  
+Sense Here 448 448 Foe                  ;State 447  
+Sense Here 449 449 Foe                  ;State 448  
+Sense Here 450 450 Foe                  ;State 449  
+Move 451 450                            ;State 450  SA_moveout:0 SA_moveout 
+Flip 2 2282 452                         ;State 451  SA_leave_4:0 SA_leave_4 
+Turn Right 453                          ;State 452  
+Turn Right 454                          ;State 453    
+Sense Here 2281 455 Marker 4            ;State 454  leaveR0 
+Sense Here 2281 456 Marker 5            ;State 455  
+Sense Here 2281 457 Marker 3            ;State 456  
+Sense Here 460 458 Marker 0             ;State 457  
+Sense Here 460 459 Marker 2             ;State 458  
+Mark 1 460                              ;State 459  
+Sense RightAhead 2278 461 Home          ;State 460  
+Turn Right 462                          ;State 461  
+Sense Here 2277 463 Marker 4            ;State 462  leaveR1 
+Sense Here 2277 464 Marker 5            ;State 463  
+Sense Here 2277 465 Marker 3            ;State 464  
+Sense Here 468 466 Marker 1             ;State 465  
+Sense Here 468 467 Marker 2             ;State 466  
+Mark 0 468                              ;State 467  
+Sense RightAhead 2274 469 Home          ;State 468  
+Turn Right 470                          ;State 469  
+Sense Here 2273 471 Marker 4            ;State 470  leaveR2 
+Sense Here 2273 472 Marker 5            ;State 471  
+Sense Here 2273 473 Marker 3            ;State 472  
+Sense Here 476 474 Marker 1             ;State 473  
+Sense Here 476 475 Marker 0             ;State 474  
+Mark 2 476                              ;State 475  
+Sense RightAhead 2270 477 Home          ;State 476  
+Turn Right 478                          ;State 477  
+Turn Left 479                           ;State 478    leaveR3 
+Sense Here 290 480 Marker 4             ;State 479  default2 
+Sense Here 290 481 Marker 5             ;State 480  
+Sense Here 290 482 Marker 3             ;State 481  
+Sense Here 489 483 Marker 1             ;State 482  
+Sense Here 489 484 Marker 2             ;State 483  
+Sense Here 489 485 Marker 0             ;State 484  
+Mark 2 486                              ;State 485    
+PickUp 2315 487                         ;State 486    
+Flip 8 488 63                           ;State 487  
+Flip 2 73 2691                          ;State 488 
+Flip 1000 490 486                       ;State 489      
+Sense Here 2242 491 Marker 2            ;State 490  followpathhomeanyway2 
+Sense Here 2241 492 Marker 1            ;State 491  
+Sense Here 493 63 Marker 0              ;State 492  
+Turn Right 494                          ;State 493   
+Turn Right 495                          ;State 494    
+Sense Ahead 2240 496 Home               ;State 495  movetowardshomeanyway4 
+Move 2208 497                           ;State 496  
+Flip 2 2207 498                         ;State 497 
+Turn Right 499                          ;State 498    
+Sense Ahead 2206 500 Home               ;State 499  movetowardshomeanyway5 
+Move 2173 501                           ;State 500  
+Flip 2 2172 502                         ;State 501 
+Turn Right 503                          ;State 502    
+Sense Ahead 2171 504 Home               ;State 503  movetowardshomeanyway0 
+Move 2138 505                           ;State 504  
+Flip 2 2137 506                         ;State 505 
+Turn Right 507                          ;State 506    
+Sense Ahead 2136 508 Home               ;State 507  movetowardshomeanyway1 
+Move 2102 509                           ;State 508  
+Flip 2 2101 510                         ;State 509 
+Turn Right 511                          ;State 510    
+Sense Ahead 2100 512 Home               ;State 511  movetowardshomeanyway2 
+Move 490 513                            ;State 512  
+Flip 2 2099 514                         ;State 513 
+Turn Right 515                          ;State 514    
+Sense Ahead 558 516 Home                ;State 515  movetowardshomeanyway3 
+Move 519 517                            ;State 516  
+Flip 2 518 494                          ;State 517 
+Turn Left 511                           ;State 518  
+Sense Here 523 520 Marker 2             ;State 519  followpathhomeanyway3 
+Sense Here 522 521 Marker 1             ;State 520  
+Sense Here 494 265 Marker 0             ;State 521  
+Sense Here 518 515 Marker 0             ;State 522 
+Sense Here 528 524 Marker 1             ;State 523 
+Sense Here 526 525 Marker 0             ;State 524  
+Turn Right 498                          ;State 525    
+Turn Right 527                          ;State 526 
+Turn Right 502                          ;State 527   
+Sense Here 530 529 Marker 0             ;State 528 
+Turn Left 2099                          ;State 529  
+Sense Ahead 557 531 Marker 1            ;State 530 
+Sense Ahead 557 532 Marker 2            ;State 531  
+Sense Ahead 557 533 Marker 0            ;State 532  
+Turn Left 534                           ;State 533  
+Sense Ahead 556 535 Marker 1            ;State 534  
+Sense Ahead 556 536 Marker 2            ;State 535  
+Sense Ahead 556 537 Marker 0            ;State 536  
+Turn Left 538                           ;State 537  
+Sense Ahead 555 539 Marker 1            ;State 538  
+Sense Ahead 555 540 Marker 2            ;State 539  
+Sense Ahead 555 541 Marker 0            ;State 540  
+Turn Right 542                          ;State 541  
+Turn Right 543                          ;State 542  
+Turn Right 544                          ;State 543  
+Sense Ahead 554 545 Marker 1            ;State 544  
+Sense Ahead 554 546 Marker 2            ;State 545  
+Sense Ahead 554 547 Marker 0            ;State 546  
+Turn Right 548                          ;State 547  
+Sense Ahead 553 549 Marker 1            ;State 548  
+Sense Ahead 553 550 Marker 2            ;State 549  
+Sense Ahead 553 551 Marker 0            ;State 550  
+Turn Left 552                           ;State 551  
+Turn Left 557                           ;State 552  
+Move 2173 553                           ;State 553  followpathhomeanywayemergency5:0 followpathhomeanywayemergency5 
+Move 2208 554                           ;State 554  followpathhomeanywayemergency4:0 followpathhomeanywayemergency4 
+Move 2102 555                           ;State 555  followpathhomeanywayemergency1:0 followpathhomeanywayemergency1 
+Move 490 556                            ;State 556  followpathhomeanywayemergency2:0 followpathhomeanywayemergency2 
+Move 519 557                            ;State 557  followpathhomeanywayemergency3:0 followpathhomeanywayemergency3 
+Flip 2 2061 559                         ;State 558  homeaheadanyway3 
+Turn Right 560                          ;State 559  rightanyway3 
+Sense Ahead 2048 561 Home               ;State 560  
+Turn Right 562                          ;State 561  rightanyway4 
+Sense Ahead 2047 563 Home               ;State 562  
+Turn Right 564                          ;State 563  rightanyway5 
+Sense Ahead 2035 565 Home               ;State 564  
+Turn Right 566                          ;State 565  rightanyway0 
+Sense Ahead 2011 567 Home               ;State 566  
+Turn Right 568                          ;State 567  rightanyway1 
+Sense Ahead 1987 569 Home               ;State 568  
+Turn Right 570                          ;State 569  rightanyway2 
+Sense Ahead 571 559 Home                ;State 570  
+Sense Here 1986 572 Marker 4            ;State 571  leaveL3 
+Sense Here 1986 573 Marker 5            ;State 572  
+Sense Here 1986 574 Marker 3            ;State 573  
+Sense Here 579 575 Marker 1             ;State 574  
+Sense Here 579 576 Marker 2             ;State 575  
+Sense Here 579 577 Marker 0             ;State 576  
+Mark 2 578                              ;State 577  
+Mark 0 579                              ;State 578  
+Sense LeftAhead 581 580 Home            ;State 579  
+Turn Left 1987                          ;State 580    
+Move 571 582                            ;State 581  
+Turn Right 583                          ;State 582 
+Turn Right 584                          ;State 583  
+Sense Here 1678 585 Marker 4            ;State 584  default5 
+Sense Here 1678 586 Marker 5            ;State 585  
+Sense Here 1678 587 Marker 3            ;State 586  
+Sense Here 1677 588 Marker 1            ;State 587  
+Sense Here 1677 589 Marker 2            ;State 588  
+Sense Here 1677 590 Marker 0            ;State 589  
+Mark 1 591                              ;State 590    
+Mark 0 592                              ;State 591    
+PickUp 595 593                          ;State 592    
+Flip 8 594 112                          ;State 593  
+Flip 2 52 123                           ;State 594 
+Mark 5 596                              ;State 595  foundfoodTrue5 
+Mark 4 597                              ;State 596    
+Mark 3 598                              ;State 597    
+Turn Right 599                          ;State 598   
+Turn Right 600                          ;State 599    
+Turn Right 601                          ;State 600    
+Move 1629 602                           ;State 601  movetowardshome2 
+Sense Here 1623 603 Home                ;State 602 
+Move 1629 604                           ;State 603  movehomebutfinallyescape2     
+Move 1629 605                           ;State 604  
+Move 1629 606                           ;State 605  
+Move 1629 607                           ;State 606  
+Move 1629 608                           ;State 607  
+Move 1629 609                           ;State 608  
+Move 1629 610                           ;State 609  
+Move 1629 611                           ;State 610  
+Move 1629 612                           ;State 611  
+Move 1629 613                           ;State 612  
+Move 1629 614                           ;State 613  
+Move 1629 615                           ;State 614  
+Move 1629 616                           ;State 615  
+Move 1629 617                           ;State 616  
+Move 1629 618                           ;State 617  
+Move 1629 619                           ;State 618  
+Move 1629 620                           ;State 619  
+Move 1629 621                           ;State 620  
+Move 1629 622                           ;State 621  
+Move 1629 623                           ;State 622  
+Move 1629 624                           ;State 623  
+Move 1629 625                           ;State 624  
+Move 1629 626                           ;State 625  
+Move 1629 627                           ;State 626  
+Move 1629 628                           ;State 627  
+Move 1629 629                           ;State 628  
+Move 1629 630                           ;State 629  
+Move 1629 631                           ;State 630  
+Move 1629 632                           ;State 631  
+Move 1629 633                           ;State 632  
+Move 1629 634                           ;State 633  
+Move 1629 635                           ;State 634  
+Move 1629 636                           ;State 635  
+Move 1629 637                           ;State 636  
+Move 1629 638                           ;State 637  
+Move 1629 639                           ;State 638  
+Move 1629 640                           ;State 639  
+Move 1629 641                           ;State 640  
+Move 1629 642                           ;State 641  
+Move 1629 643                           ;State 642  
+Move 1629 644                           ;State 643  
+Move 1629 645                           ;State 644  
+Move 1629 646                           ;State 645  
+Move 1629 647                           ;State 646  
+Move 1629 648                           ;State 647  
+Move 1629 649                           ;State 648  
+Move 1629 650                           ;State 649  
+Move 1629 651                           ;State 650  
+Move 1629 652                           ;State 651  
+Move 1629 653                           ;State 652  
+Sense Here 1613 654 Home                ;State 653  
+Flip 2 1611 655                         ;State 654  randomescapehome2 
+Turn Right 656                          ;State 655  escaperighthome2 
+Move 1591 657                           ;State 656  
+Turn Right 658                          ;State 657  escaperighthome3 
+Move 1571 659                           ;State 658  
+Turn Right 660                          ;State 659  escaperighthome4 
+Move 1551 661                           ;State 660  
+Turn Right 662                          ;State 661  escaperighthome5 
+Move 1531 663                           ;State 662  
+Turn Right 664                          ;State 663  escaperighthome0 
+Move 1511 665                           ;State 664  
+Turn Right 666                          ;State 665  escaperighthome1 
+Move 667 655                            ;State 666  
+Move 668 668                            ;State 667  walkrandomlydeliverfood2 deliverfood2 
+Sense Here 687 669 Marker 1             ;State 668  
+Sense Here 687 670 Marker 2             ;State 669  
+Sense Here 687 671 Marker 0             ;State 670  
+Move 672 672                            ;State 671  
+Sense Here 687 673 Marker 1             ;State 672  
+Sense Here 687 674 Marker 2             ;State 673  
+Sense Here 687 675 Marker 0             ;State 674  
+Move 676 676                            ;State 675  
+Sense Here 687 677 Marker 1             ;State 676  
+Sense Here 687 678 Marker 2             ;State 677  
+Sense Here 687 679 Marker 0             ;State 678  
+Move 680 680                            ;State 679  
+Sense Here 687 681 Marker 1             ;State 680  
+Sense Here 687 682 Marker 2             ;State 681  
+Sense Here 687 683 Marker 0             ;State 682  
+Flip 8 684 667                          ;State 683  
+Flip 2 686 685                          ;State 684 
+Turn Right 1591                         ;State 685  
+Turn Left 1511                          ;State 686 
+Sense Here 1506 688 Marker 2            ;State 687  followpathhomeFalse2 
+Sense Here 1505 689 Marker 1            ;State 688  
+Sense Here 1504 690 Marker 0            ;State 689  
+Sense Ahead 1503 691 Marker 1           ;State 690  
+Sense Ahead 1503 692 Marker 2           ;State 691  
+Sense Ahead 1503 693 Marker 0           ;State 692  
+Turn Left 694                           ;State 693  
+Sense Ahead 1472 695 Marker 1           ;State 694  
+Sense Ahead 1472 696 Marker 2           ;State 695  
+Sense Ahead 1472 697 Marker 0           ;State 696  
+Turn Left 698                           ;State 697  
+Sense Ahead 1441 699 Marker 1           ;State 698  
+Sense Ahead 1441 700 Marker 2           ;State 699  
+Sense Ahead 1441 701 Marker 0           ;State 700  
+Turn Right 702                          ;State 701  
+Turn Right 703                          ;State 702  
+Turn Right 704                          ;State 703  
+Sense Ahead 1410 705 Marker 1           ;State 704  
+Sense Ahead 1410 706 Marker 2           ;State 705  
+Sense Ahead 1410 707 Marker 0           ;State 706  
+Turn Right 708                          ;State 707  
+Sense Ahead 713 709 Marker 1            ;State 708  
+Sense Ahead 713 710 Marker 2            ;State 709  
+Sense Ahead 713 711 Marker 0            ;State 710  
+Turn Left 712                           ;State 711  
+Turn Left 1503                          ;State 712  
+Move 714 713                            ;State 713  followpathhome'emergencyFalse4:0 followpathhome'emergencyFalse4 
+Sense Here 1407 715 Marker 2            ;State 714  followpathhomeFalse4 
+Sense Here 1406 716 Marker 1            ;State 715  
+Sense Here 1337 717 Marker 0            ;State 716  
+Sense Ahead 713 718 Marker 1            ;State 717  
+Sense Ahead 713 719 Marker 2            ;State 718  
+Sense Ahead 713 720 Marker 0            ;State 719  
+Turn Left 721                           ;State 720  
+Sense Ahead 1410 722 Marker 1           ;State 721  
+Sense Ahead 1410 723 Marker 2           ;State 722  
+Sense Ahead 1410 724 Marker 0           ;State 723  
+Turn Left 725                           ;State 724  
+Sense Ahead 1503 726 Marker 1           ;State 725  
+Sense Ahead 1503 727 Marker 2           ;State 726  
+Sense Ahead 1503 728 Marker 0           ;State 727  
+Turn Right 729                          ;State 728  
+Turn Right 730                          ;State 729  
+Turn Right 731                          ;State 730  
+Sense Ahead 740 732 Marker 1            ;State 731  
+Sense Ahead 740 733 Marker 2            ;State 732  
+Sense Ahead 740 734 Marker 0            ;State 733  
+Turn Right 735                          ;State 734  
+Sense Ahead 1441 736 Marker 1           ;State 735  
+Sense Ahead 1441 737 Marker 2           ;State 736  
+Sense Ahead 1441 738 Marker 0           ;State 737  
+Turn Left 739                           ;State 738  
+Turn Left 713                           ;State 739  
+Move 741 740                            ;State 740  followpathhome'emergencyFalse5:0 followpathhome'emergencyFalse5 
+Sense Here 1334 742 Marker 2            ;State 741  followpathhomeFalse5 
+Sense Here 768 743 Marker 1             ;State 742  
+Sense Here 767 744 Marker 0             ;State 743  
+Sense Ahead 740 745 Marker 1            ;State 744  
+Sense Ahead 740 746 Marker 2            ;State 745  
+Sense Ahead 740 747 Marker 0            ;State 746  
+Turn Left 748                           ;State 747  
+Sense Ahead 713 749 Marker 1            ;State 748  
+Sense Ahead 713 750 Marker 2            ;State 749  
+Sense Ahead 713 751 Marker 0            ;State 750  
+Turn Left 752                           ;State 751  
+Sense Ahead 1410 753 Marker 1           ;State 752  
+Sense Ahead 1410 754 Marker 2           ;State 753  
+Sense Ahead 1410 755 Marker 0           ;State 754  
+Turn Right 756                          ;State 755  
+Turn Right 757                          ;State 756  
+Turn Right 758                          ;State 757  
+Sense Ahead 1441 759 Marker 1           ;State 758  
+Sense Ahead 1441 760 Marker 2           ;State 759  
+Sense Ahead 1441 761 Marker 0           ;State 760  
+Turn Right 762                          ;State 761  
+Sense Ahead 1472 763 Marker 1           ;State 762  
+Sense Ahead 1472 764 Marker 2           ;State 763  
+Sense Ahead 1472 765 Marker 0           ;State 764  
+Turn Left 766                           ;State 765  
+Turn Left 740                           ;State 766  
+Turn Left 1337                          ;State 767   
+Sense Here 598 769 Marker 0             ;State 768 
+Turn Left 770                           ;State 769    
+Turn Left 771                           ;State 770    
+Move 852 772                            ;State 771  movetowardshome3 
+Sense Here 845 773 Home                 ;State 772 
+Move 852 774                            ;State 773  movehomebutfinallyescape3     
+Move 852 775                            ;State 774  
+Move 852 776                            ;State 775  
+Move 852 777                            ;State 776  
+Move 852 778                            ;State 777  
+Move 852 779                            ;State 778  
+Move 852 780                            ;State 779  
+Move 852 781                            ;State 780  
+Move 852 782                            ;State 781  
+Move 852 783                            ;State 782  
+Move 852 784                            ;State 783  
+Move 852 785                            ;State 784  
+Move 852 786                            ;State 785  
+Move 852 787                            ;State 786  
+Move 852 788                            ;State 787  
+Move 852 789                            ;State 788  
+Move 852 790                            ;State 789  
+Move 852 791                            ;State 790  
+Move 852 792                            ;State 791  
+Move 852 793                            ;State 792  
+Move 852 794                            ;State 793  
+Move 852 795                            ;State 794  
+Move 852 796                            ;State 795  
+Move 852 797                            ;State 796  
+Move 852 798                            ;State 797  
+Move 852 799                            ;State 798  
+Move 852 800                            ;State 799  
+Move 852 801                            ;State 800  
+Move 852 802                            ;State 801  
+Move 852 803                            ;State 802  
+Move 852 804                            ;State 803  
+Move 852 805                            ;State 804  
+Move 852 806                            ;State 805  
+Move 852 807                            ;State 806  
+Move 852 808                            ;State 807  
+Move 852 809                            ;State 808  
+Move 852 810                            ;State 809  
+Move 852 811                            ;State 810  
+Move 852 812                            ;State 811  
+Move 852 813                            ;State 812  
+Move 852 814                            ;State 813  
+Move 852 815                            ;State 814  
+Move 852 816                            ;State 815  
+Move 852 817                            ;State 816  
+Move 852 818                            ;State 817  
+Move 852 819                            ;State 818  
+Move 852 820                            ;State 819  
+Move 852 821                            ;State 820  
+Move 852 822                            ;State 821  
+Move 852 823                            ;State 822  
+Sense Here 827 824 Home                 ;State 823  
+Flip 2 825 657                          ;State 824  randomescapehome3 
+Turn Left 826                           ;State 825  escapelefthome3 
+Move 667 1611                           ;State 826  
+Sense Ahead 824 828 Foe                 ;State 827 
+Sense LeftAhead 824 829 Foe             ;State 828  
+Sense RightAhead 824 830 Foe            ;State 829  
+Turn Right 831                          ;State 830  
+Turn Right 832                          ;State 831  
+Turn Right 833                          ;State 832  
+Sense Ahead 838 834 Foe                 ;State 833  
+Sense LeftAhead 838 835 Foe             ;State 834  
+Sense RightAhead 838 836 Foe            ;State 835  
+Flip 50 837 838                         ;State 836  
+Drop 43                                 ;State 837   
+Flip 2 839 663                          ;State 838  randomescapehome0 
+Turn Left 840                           ;State 839  escapelefthome0 
+Move 1551 841                           ;State 840  
+Turn Left 842                           ;State 841  escapelefthome5 
+Move 1571 843                           ;State 842  
+Turn Left 844                           ;State 843  escapelefthome4 
+Move 1591 825                           ;State 844  
+Sense Ahead 824 846 Foe                 ;State 845 
+Sense Ahead 847 773 Marker 2            ;State 846  
+Sense Ahead 848 773 Marker 1            ;State 847 
+Sense Ahead 849 773 Marker 0            ;State 848 
+Sense Here 773 850 Food                 ;State 849 
+Sense LeftAhead 773 851 Marker 0        ;State 850  
+Drop 265                                ;State 851   
+Sense Here 1318 853 Marker 2            ;State 852  followpathhomeTrue3 
+Sense Here 1311 854 Marker 1            ;State 853  
+Sense Here 1307 855 Marker 0            ;State 854  
+Sense Ahead 1306 856 Marker 1           ;State 855  
+Sense Ahead 1306 857 Marker 2           ;State 856  
+Sense Ahead 1306 858 Marker 0           ;State 857  
+Turn Left 859                           ;State 858  
+Sense Ahead 1305 860 Marker 1           ;State 859  
+Sense Ahead 1305 861 Marker 2           ;State 860  
+Sense Ahead 1305 862 Marker 0           ;State 861  
+Turn Left 863                           ;State 862  
+Sense Ahead 1304 864 Marker 1           ;State 863  
+Sense Ahead 1304 865 Marker 2           ;State 864  
+Sense Ahead 1304 866 Marker 0           ;State 865  
+Turn Right 867                          ;State 866  
+Turn Right 868                          ;State 867  
+Turn Right 869                          ;State 868  
+Sense Ahead 1250 870 Marker 1           ;State 869  
+Sense Ahead 1250 871 Marker 2           ;State 870  
+Sense Ahead 1250 872 Marker 0           ;State 871  
+Turn Right 873                          ;State 872  
+Sense Ahead 878 874 Marker 1            ;State 873  
+Sense Ahead 878 875 Marker 2            ;State 874  
+Sense Ahead 878 876 Marker 0            ;State 875  
+Turn Left 877                           ;State 876  
+Turn Left 1306                          ;State 877  
+Move 879 878                            ;State 878  followpathhome'emergencyTrue5:0 followpathhome'emergencyTrue5 
+Sense Here 1236 880 Marker 2            ;State 879  followpathhomeTrue5 
+Sense Here 1231 881 Marker 1            ;State 880  
+Sense Here 1228 882 Marker 0            ;State 881  
+Sense Ahead 878 883 Marker 1            ;State 882  
+Sense Ahead 878 884 Marker 2            ;State 883  
+Sense Ahead 878 885 Marker 0            ;State 884  
+Turn Left 886                           ;State 885  
+Sense Ahead 1250 887 Marker 1           ;State 886  
+Sense Ahead 1250 888 Marker 2           ;State 887  
+Sense Ahead 1250 889 Marker 0           ;State 888  
+Turn Left 890                           ;State 889  
+Sense Ahead 1306 891 Marker 1           ;State 890  
+Sense Ahead 1306 892 Marker 2           ;State 891  
+Sense Ahead 1306 893 Marker 0           ;State 892  
+Turn Right 894                          ;State 893  
+Turn Right 895                          ;State 894  
+Turn Right 896                          ;State 895  
+Sense Ahead 905 897 Marker 1            ;State 896  
+Sense Ahead 905 898 Marker 2            ;State 897  
+Sense Ahead 905 899 Marker 0            ;State 898  
+Turn Right 900                          ;State 899  
+Sense Ahead 1304 901 Marker 1           ;State 900  
+Sense Ahead 1304 902 Marker 2           ;State 901  
+Sense Ahead 1304 903 Marker 0           ;State 902  
+Turn Left 904                           ;State 903  
+Turn Left 878                           ;State 904  
+Move 906 905                            ;State 905  followpathhome'emergencyTrue0:0 followpathhome'emergencyTrue0 
+Sense Here 946 907 Marker 2             ;State 906  followpathhomeTrue0 
+Sense Here 936 908 Marker 1             ;State 907  
+Sense Here 932 909 Marker 0             ;State 908  
+Sense Ahead 905 910 Marker 1            ;State 909  
+Sense Ahead 905 911 Marker 2            ;State 910  
+Sense Ahead 905 912 Marker 0            ;State 911  
+Turn Left 913                           ;State 912  
+Sense Ahead 878 914 Marker 1            ;State 913  
+Sense Ahead 878 915 Marker 2            ;State 914  
+Sense Ahead 878 916 Marker 0            ;State 915  
+Turn Left 917                           ;State 916  
+Sense Ahead 1250 918 Marker 1           ;State 917  
+Sense Ahead 1250 919 Marker 2           ;State 918  
+Sense Ahead 1250 920 Marker 0           ;State 919  
+Turn Right 921                          ;State 920  
+Turn Right 922                          ;State 921  
+Turn Right 923                          ;State 922  
+Sense Ahead 1304 924 Marker 1           ;State 923  
+Sense Ahead 1304 925 Marker 2           ;State 924  
+Sense Ahead 1304 926 Marker 0           ;State 925  
+Turn Right 927                          ;State 926  
+Sense Ahead 1305 928 Marker 1           ;State 927  
+Sense Ahead 1305 929 Marker 2           ;State 928  
+Sense Ahead 1305 930 Marker 0           ;State 929  
+Turn Left 931                           ;State 930  
+Turn Left 905                           ;State 931  
+Unmark 5 933                            ;State 932 
+Mark 4 934                              ;State 933  
+Unmark 3 935                            ;State 934  
+Turn Left 767                           ;State 935   
+Sense Here 943 937 Marker 0             ;State 936 
+Unmark 5 938                            ;State 937  
+Mark 4 939                              ;State 938  
+Unmark 3 940                            ;State 939  
+Turn Right 941                          ;State 940    
+Turn Right 942                          ;State 941    
+Turn Right 771                          ;State 942    
+Unmark 5 944                            ;State 943 
+Mark 4 945                              ;State 944  
+Unmark 3 599                            ;State 945  
+Sense Here 1096 947 Marker 1            ;State 946 
+Sense Here 1024 948 Marker 0            ;State 947  
+Unmark 5 949                            ;State 948  
+Mark 4 950                              ;State 949  
+Unmark 3 951                            ;State 950  
+Turn Left 952                           ;State 951    
+Move 879 953                            ;State 952  movetowardshome5 
+Sense Here 1017 954 Home                ;State 953 
+Move 879 955                            ;State 954  movehomebutfinallyescape5     
+Move 879 956                            ;State 955  
+Move 879 957                            ;State 956  
+Move 879 958                            ;State 957  
+Move 879 959                            ;State 958  
+Move 879 960                            ;State 959  
+Move 879 961                            ;State 960  
+Move 879 962                            ;State 961  
+Move 879 963                            ;State 962  
+Move 879 964                            ;State 963  
+Move 879 965                            ;State 964  
+Move 879 966                            ;State 965  
+Move 879 967                            ;State 966  
+Move 879 968                            ;State 967  
+Move 879 969                            ;State 968  
+Move 879 970                            ;State 969  
+Move 879 971                            ;State 970  
+Move 879 972                            ;State 971  
+Move 879 973                            ;State 972  
+Move 879 974                            ;State 973  
+Move 879 975                            ;State 974  
+Move 879 976                            ;State 975  
+Move 879 977                            ;State 976  
+Move 879 978                            ;State 977  
+Move 879 979                            ;State 978  
+Move 879 980                            ;State 979  
+Move 879 981                            ;State 980  
+Move 879 982                            ;State 981  
+Move 879 983                            ;State 982  
+Move 879 984                            ;State 983  
+Move 879 985                            ;State 984  
+Move 879 986                            ;State 985  
+Move 879 987                            ;State 986  
+Move 879 988                            ;State 987  
+Move 879 989                            ;State 988  
+Move 879 990                            ;State 989  
+Move 879 991                            ;State 990  
+Move 879 992                            ;State 991  
+Move 879 993                            ;State 992  
+Move 879 994                            ;State 993  
+Move 879 995                            ;State 994  
+Move 879 996                            ;State 995  
+Move 879 997                            ;State 996  
+Move 879 998                            ;State 997  
+Move 879 999                            ;State 998  
+Move 879 1000                           ;State 999  
+Move 879 1001                           ;State 1000  
+Move 879 1002                           ;State 1001  
+Move 879 1003                           ;State 1002  
+Move 879 1004                           ;State 1003  
+Sense Here 1006 1005 Home               ;State 1004  
+Flip 2 841 661                          ;State 1005  randomescapehome5 
+Sense Ahead 1005 1007 Foe               ;State 1006 
+Sense LeftAhead 1005 1008 Foe           ;State 1007  
+Sense RightAhead 1005 1009 Foe          ;State 1008  
+Turn Right 1010                         ;State 1009  
+Turn Right 1011                         ;State 1010  
+Turn Right 1012                         ;State 1011  
+Sense Ahead 654 1013 Foe                ;State 1012  
+Sense LeftAhead 654 1014 Foe            ;State 1013  
+Sense RightAhead 654 1015 Foe           ;State 1014  
+Flip 50 1016 654                        ;State 1015  
+Drop 63                                 ;State 1016   
+Sense Ahead 1005 1018 Foe               ;State 1017 
+Sense Ahead 1019 954 Marker 2           ;State 1018  
+Sense Ahead 1020 954 Marker 1           ;State 1019 
+Sense Ahead 1021 954 Marker 0           ;State 1020 
+Sense Here 954 1022 Food                ;State 1021 
+Sense LeftAhead 954 1023 Marker 0       ;State 1022  
+Drop 112                                ;State 1023   
+Unmark 5 1025                           ;State 1024 
+Mark 4 1026                             ;State 1025  
+Unmark 3 1027                           ;State 1026  
+Move 906 1028                           ;State 1027  movetowardshome0 
+Sense Here 1090 1029 Home               ;State 1028 
+Move 906 1030                           ;State 1029  movehomebutfinallyescape0     
+Move 906 1031                           ;State 1030  
+Move 906 1032                           ;State 1031  
+Move 906 1033                           ;State 1032  
+Move 906 1034                           ;State 1033  
+Move 906 1035                           ;State 1034  
+Move 906 1036                           ;State 1035  
+Move 906 1037                           ;State 1036  
+Move 906 1038                           ;State 1037  
+Move 906 1039                           ;State 1038  
+Move 906 1040                           ;State 1039  
+Move 906 1041                           ;State 1040  
+Move 906 1042                           ;State 1041  
+Move 906 1043                           ;State 1042  
+Move 906 1044                           ;State 1043  
+Move 906 1045                           ;State 1044  
+Move 906 1046                           ;State 1045  
+Move 906 1047                           ;State 1046  
+Move 906 1048                           ;State 1047  
+Move 906 1049                           ;State 1048  
+Move 906 1050                           ;State 1049  
+Move 906 1051                           ;State 1050  
+Move 906 1052                           ;State 1051  
+Move 906 1053                           ;State 1052  
+Move 906 1054                           ;State 1053  
+Move 906 1055                           ;State 1054  
+Move 906 1056                           ;State 1055  
+Move 906 1057                           ;State 1056  
+Move 906 1058                           ;State 1057  
+Move 906 1059                           ;State 1058  
+Move 906 1060                           ;State 1059  
+Move 906 1061                           ;State 1060  
+Move 906 1062                           ;State 1061  
+Move 906 1063                           ;State 1062  
+Move 906 1064                           ;State 1063  
+Move 906 1065                           ;State 1064  
+Move 906 1066                           ;State 1065  
+Move 906 1067                           ;State 1066  
+Move 906 1068                           ;State 1067  
+Move 906 1069                           ;State 1068  
+Move 906 1070                           ;State 1069  
+Move 906 1071                           ;State 1070  
+Move 906 1072                           ;State 1071  
+Move 906 1073                           ;State 1072  
+Move 906 1074                           ;State 1073  
+Move 906 1075                           ;State 1074  
+Move 906 1076                           ;State 1075  
+Move 906 1077                           ;State 1076  
+Move 906 1078                           ;State 1077  
+Move 906 1079                           ;State 1078  
+Sense Here 1080 838 Home                ;State 1079  
+Sense Ahead 838 1081 Foe                ;State 1080 
+Sense LeftAhead 838 1082 Foe            ;State 1081  
+Sense RightAhead 838 1083 Foe           ;State 1082  
+Turn Right 1084                         ;State 1083  
+Turn Right 1085                         ;State 1084  
+Turn Right 1086                         ;State 1085  
+Sense Ahead 824 1087 Foe                ;State 1086  
+Sense LeftAhead 824 1088 Foe            ;State 1087  
+Sense RightAhead 824 1089 Foe           ;State 1088  
+Flip 50 851 824                         ;State 1089  
+Sense Ahead 838 1091 Foe                ;State 1090 
+Sense Ahead 1092 1029 Marker 2          ;State 1091  
+Sense Ahead 1093 1029 Marker 1          ;State 1092 
+Sense Ahead 1094 1029 Marker 0          ;State 1093 
+Sense Here 1029 1095 Food               ;State 1094 
+Sense LeftAhead 1029 837 Marker 0       ;State 1095  
+Sense Here 1227 1097 Marker 0           ;State 1096 
+Unmark 5 1098                           ;State 1097  
+Mark 4 1099                             ;State 1098  
+Unmark 3 1100                           ;State 1099  
+Turn Right 1101                         ;State 1100    
+Move 1176 1102                          ;State 1101  movetowardshome1 
+Sense Here 1169 1103 Home               ;State 1102 
+Move 1176 1104                          ;State 1103  movehomebutfinallyescape1     
+Move 1176 1105                          ;State 1104  
+Move 1176 1106                          ;State 1105  
+Move 1176 1107                          ;State 1106  
+Move 1176 1108                          ;State 1107  
+Move 1176 1109                          ;State 1108  
+Move 1176 1110                          ;State 1109  
+Move 1176 1111                          ;State 1110  
+Move 1176 1112                          ;State 1111  
+Move 1176 1113                          ;State 1112  
+Move 1176 1114                          ;State 1113  
+Move 1176 1115                          ;State 1114  
+Move 1176 1116                          ;State 1115  
+Move 1176 1117                          ;State 1116  
+Move 1176 1118                          ;State 1117  
+Move 1176 1119                          ;State 1118  
+Move 1176 1120                          ;State 1119  
+Move 1176 1121                          ;State 1120  
+Move 1176 1122                          ;State 1121  
+Move 1176 1123                          ;State 1122  
+Move 1176 1124                          ;State 1123  
+Move 1176 1125                          ;State 1124  
+Move 1176 1126                          ;State 1125  
+Move 1176 1127                          ;State 1126  
+Move 1176 1128                          ;State 1127  
+Move 1176 1129                          ;State 1128  
+Move 1176 1130                          ;State 1129  
+Move 1176 1131                          ;State 1130  
+Move 1176 1132                          ;State 1131  
+Move 1176 1133                          ;State 1132  
+Move 1176 1134                          ;State 1133  
+Move 1176 1135                          ;State 1134  
+Move 1176 1136                          ;State 1135  
+Move 1176 1137                          ;State 1136  
+Move 1176 1138                          ;State 1137  
+Move 1176 1139                          ;State 1138  
+Move 1176 1140                          ;State 1139  
+Move 1176 1141                          ;State 1140  
+Move 1176 1142                          ;State 1141  
+Move 1176 1143                          ;State 1142  
+Move 1176 1144                          ;State 1143  
+Move 1176 1145                          ;State 1144  
+Move 1176 1146                          ;State 1145  
+Move 1176 1147                          ;State 1146  
+Move 1176 1148                          ;State 1147  
+Move 1176 1149                          ;State 1148  
+Move 1176 1150                          ;State 1149  
+Move 1176 1151                          ;State 1150  
+Move 1176 1152                          ;State 1151  
+Move 1176 1153                          ;State 1152  
+Sense Here 1157 1154 Home               ;State 1153  
+Flip 2 1155 665                         ;State 1154  randomescapehome1 
+Turn Left 1156                          ;State 1155  escapelefthome1 
+Move 1531 839                           ;State 1156  
+Sense Ahead 1154 1158 Foe               ;State 1157 
+Sense LeftAhead 1154 1159 Foe           ;State 1158  
+Sense RightAhead 1154 1160 Foe          ;State 1159  
+Turn Right 1161                         ;State 1160  
+Turn Right 1162                         ;State 1161  
+Turn Right 1163                         ;State 1162  
+Sense Ahead 1168 1164 Foe               ;State 1163  
+Sense LeftAhead 1168 1165 Foe           ;State 1164  
+Sense RightAhead 1168 1166 Foe          ;State 1165  
+Flip 50 1167 1168                       ;State 1166  
+Drop 53                                 ;State 1167   
+Flip 2 843 659                          ;State 1168  randomescapehome4 
+Sense Ahead 1154 1170 Foe               ;State 1169 
+Sense Ahead 1171 1103 Marker 2          ;State 1170  
+Sense Ahead 1172 1103 Marker 1          ;State 1171 
+Sense Ahead 1173 1103 Marker 0          ;State 1172 
+Sense Here 1103 1174 Food               ;State 1173 
+Sense LeftAhead 1103 1175 Marker 0      ;State 1174  
+Drop 74                                 ;State 1175   
+Sense Here 1213 1177 Marker 2           ;State 1176  followpathhomeTrue1 
+Sense Here 1206 1178 Marker 1           ;State 1177  
+Sense Here 1202 1179 Marker 0           ;State 1178  
+Sense Ahead 1304 1180 Marker 1          ;State 1179  
+Sense Ahead 1304 1181 Marker 2          ;State 1180  
+Sense Ahead 1304 1182 Marker 0          ;State 1181  
+Turn Left 1183                          ;State 1182  
+Sense Ahead 905 1184 Marker 1           ;State 1183  
+Sense Ahead 905 1185 Marker 2           ;State 1184  
+Sense Ahead 905 1186 Marker 0           ;State 1185  
+Turn Left 1187                          ;State 1186  
+Sense Ahead 878 1188 Marker 1           ;State 1187  
+Sense Ahead 878 1189 Marker 2           ;State 1188  
+Sense Ahead 878 1190 Marker 0           ;State 1189  
+Turn Right 1191                         ;State 1190  
+Turn Right 1192                         ;State 1191  
+Turn Right 1193                         ;State 1192  
+Sense Ahead 1305 1194 Marker 1          ;State 1193  
+Sense Ahead 1305 1195 Marker 2          ;State 1194  
+Sense Ahead 1305 1196 Marker 0          ;State 1195  
+Turn Right 1197                         ;State 1196  
+Sense Ahead 1306 1198 Marker 1          ;State 1197  
+Sense Ahead 1306 1199 Marker 2          ;State 1198  
+Sense Ahead 1306 1200 Marker 0          ;State 1199  
+Turn Left 1201                          ;State 1200  
+Turn Left 1304                          ;State 1201  
+Unmark 5 1203                           ;State 1202 
+Unmark 4 1204                           ;State 1203  
+Mark 3 1205                             ;State 1204    
+Turn Right 1504                         ;State 1205   
+Sense Here 1210 1207 Marker 0           ;State 1206 
+Unmark 5 1208                           ;State 1207  
+Unmark 4 1209                           ;State 1208  
+Mark 3 941                              ;State 1209  
+Unmark 5 1211                           ;State 1210 
+Unmark 4 1212                           ;State 1211  
+Mark 3 600                              ;State 1212  
+Sense Here 1223 1214 Marker 1           ;State 1213 
+Sense Here 1219 1215 Marker 0           ;State 1214  
+Unmark 5 1216                           ;State 1215  
+Unmark 4 1217                           ;State 1216  
+Mark 3 1218                             ;State 1217  
+Turn Left 951                           ;State 1218    
+Unmark 5 1220                           ;State 1219 
+Unmark 4 1221                           ;State 1220  
+Mark 3 1222                             ;State 1221  
+Turn Left 1027                          ;State 1222    
+Sense Here 1227 1224 Marker 0           ;State 1223 
+Unmark 5 1225                           ;State 1224  
+Unmark 4 1226                           ;State 1225  
+Mark 3 1101                             ;State 1226  
+Drop 425                                ;State 1227  
+Unmark 5 1229                           ;State 1228 
+Mark 4 1230                             ;State 1229  
+Mark 3 767                              ;State 1230  
+Sense Here 1235 1232 Marker 0           ;State 1231 
+Unmark 5 1233                           ;State 1232  
+Mark 4 1234                             ;State 1233  
+Mark 3 769                              ;State 1234  
+Unmark 5 596                            ;State 1235 
+Sense Here 1245 1237 Marker 1           ;State 1236 
+Sense Here 1241 1238 Marker 0           ;State 1237  
+Unmark 5 1239                           ;State 1238  
+Mark 4 1240                             ;State 1239  
+Mark 3 952                              ;State 1240  
+Unmark 5 1242                           ;State 1241 
+Mark 4 1243                             ;State 1242  
+Mark 3 1244                             ;State 1243  
+Turn Right 1027                         ;State 1244   
+Sense Here 1227 1246 Marker 0           ;State 1245 
+Unmark 5 1247                           ;State 1246  
+Mark 4 1248                             ;State 1247  
+Mark 3 1249                             ;State 1248  
+Turn Right 1100                         ;State 1249    
+Move 1251 1250                          ;State 1250  followpathhome'emergencyTrue4:0 followpathhome'emergencyTrue4 
+Sense Here 1289 1252 Marker 2           ;State 1251  followpathhomeTrue4 
+Sense Here 1280 1253 Marker 1           ;State 1252  
+Sense Here 1277 1254 Marker 0           ;State 1253  
+Sense Ahead 1250 1255 Marker 1          ;State 1254  
+Sense Ahead 1250 1256 Marker 2          ;State 1255  
+Sense Ahead 1250 1257 Marker 0          ;State 1256  
+Turn Left 1258                          ;State 1257  
+Sense Ahead 1306 1259 Marker 1          ;State 1258  
+Sense Ahead 1306 1260 Marker 2          ;State 1259  
+Sense Ahead 1306 1261 Marker 0          ;State 1260  
+Turn Left 1262                          ;State 1261  
+Sense Ahead 1305 1263 Marker 1          ;State 1262  
+Sense Ahead 1305 1264 Marker 2          ;State 1263  
+Sense Ahead 1305 1265 Marker 0          ;State 1264  
+Turn Right 1266                         ;State 1265  
+Turn Right 1267                         ;State 1266  
+Turn Right 1268                         ;State 1267  
+Sense Ahead 878 1269 Marker 1           ;State 1268  
+Sense Ahead 878 1270 Marker 2           ;State 1269  
+Sense Ahead 878 1271 Marker 0           ;State 1270  
+Turn Right 1272                         ;State 1271  
+Sense Ahead 905 1273 Marker 1           ;State 1272  
+Sense Ahead 905 1274 Marker 2           ;State 1273  
+Sense Ahead 905 1275 Marker 0           ;State 1274  
+Turn Left 1276                          ;State 1275  
+Turn Left 1250                          ;State 1276  
+Mark 5 1278                             ;State 1277 
+Mark 4 1279                             ;State 1278  
+Unmark 3 1337                           ;State 1279  
+Sense Here 1284 1281 Marker 0           ;State 1280 
+Mark 5 1282                             ;State 1281  
+Mark 4 1283                             ;State 1282  
+Unmark 3 770                            ;State 1283  
+Mark 5 1285                             ;State 1284 
+Mark 4 1286                             ;State 1285  
+Unmark 3 1287                           ;State 1286  
+Turn Left 1288                          ;State 1287   
+Turn Left 601                           ;State 1288    
+Sense Here 1299 1290 Marker 1           ;State 1289 
+Sense Here 1295 1291 Marker 0           ;State 1290  
+Mark 5 1292                             ;State 1291  
+Mark 4 1293                             ;State 1292  
+Unmark 3 1294                           ;State 1293  
+Turn Right 952                          ;State 1294    
+Mark 5 1296                             ;State 1295 
+Mark 4 1297                             ;State 1296  
+Unmark 3 1298                           ;State 1297  
+Turn Right 1244                         ;State 1298   
+Sense Here 1227 1300 Marker 0           ;State 1299 
+Mark 5 1301                             ;State 1300  
+Mark 4 1302                             ;State 1301  
+Unmark 3 1303                           ;State 1302  
+Turn Right 1249                         ;State 1303    
+Move 1176 1304                          ;State 1304  followpathhome'emergencyTrue1:0 followpathhome'emergencyTrue1 
+Move 1629 1305                          ;State 1305  followpathhome'emergencyTrue2:0 followpathhome'emergencyTrue2 
+Move 852 1306                           ;State 1306  followpathhome'emergencyTrue3:0 followpathhome'emergencyTrue3 
+Mark 5 1308                             ;State 1307 
+Unmark 4 1309                           ;State 1308  
+Mark 3 1310                             ;State 1309  
+Turn Right 1337                         ;State 1310   
+Sense Here 1315 1312 Marker 0           ;State 1311 
+Mark 5 1313                             ;State 1312  
+Unmark 4 1314                           ;State 1313  
+Mark 3 771                              ;State 1314  
+Mark 5 1316                             ;State 1315 
+Unmark 4 1317                           ;State 1316  
+Mark 3 1288                             ;State 1317  
+Sense Here 1328 1319 Marker 1           ;State 1318 
+Sense Here 1324 1320 Marker 0           ;State 1319  
+Mark 5 1321                             ;State 1320  
+Unmark 4 1322                           ;State 1321  
+Mark 3 1323                             ;State 1322  
+Turn Right 1294                         ;State 1323    
+Mark 5 1325                             ;State 1324 
+Unmark 4 1326                           ;State 1325  
+Mark 3 1327                             ;State 1326    
+Turn Right 1298                         ;State 1327   
+Sense Here 1227 1329 Marker 0           ;State 1328 
+Mark 5 1330                             ;State 1329  
+Unmark 4 1331                           ;State 1330  
+Mark 3 1332                             ;State 1331  
+Turn Left 1333                          ;State 1332    
+Turn Left 1101                          ;State 1333    
+Sense Here 1336 1335 Marker 1           ;State 1334 
+Sense Here 1244 952 Marker 0            ;State 1335  
+Sense Here 1227 1249 Marker 0           ;State 1336 
+Move 1251 1338                          ;State 1337  movetowardshome4 
+Sense Here 1400 1339 Home               ;State 1338 
+Move 1251 1340                          ;State 1339  movehomebutfinallyescape4     
+Move 1251 1341                          ;State 1340  
+Move 1251 1342                          ;State 1341  
+Move 1251 1343                          ;State 1342  
+Move 1251 1344                          ;State 1343  
+Move 1251 1345                          ;State 1344  
+Move 1251 1346                          ;State 1345  
+Move 1251 1347                          ;State 1346  
+Move 1251 1348                          ;State 1347  
+Move 1251 1349                          ;State 1348  
+Move 1251 1350                          ;State 1349  
+Move 1251 1351                          ;State 1350  
+Move 1251 1352                          ;State 1351  
+Move 1251 1353                          ;State 1352  
+Move 1251 1354                          ;State 1353  
+Move 1251 1355                          ;State 1354  
+Move 1251 1356                          ;State 1355  
+Move 1251 1357                          ;State 1356  
+Move 1251 1358                          ;State 1357  
+Move 1251 1359                          ;State 1358  
+Move 1251 1360                          ;State 1359  
+Move 1251 1361                          ;State 1360  
+Move 1251 1362                          ;State 1361  
+Move 1251 1363                          ;State 1362  
+Move 1251 1364                          ;State 1363  
+Move 1251 1365                          ;State 1364  
+Move 1251 1366                          ;State 1365  
+Move 1251 1367                          ;State 1366  
+Move 1251 1368                          ;State 1367  
+Move 1251 1369                          ;State 1368  
+Move 1251 1370                          ;State 1369  
+Move 1251 1371                          ;State 1370  
+Move 1251 1372                          ;State 1371  
+Move 1251 1373                          ;State 1372  
+Move 1251 1374                          ;State 1373  
+Move 1251 1375                          ;State 1374  
+Move 1251 1376                          ;State 1375  
+Move 1251 1377                          ;State 1376  
+Move 1251 1378                          ;State 1377  
+Move 1251 1379                          ;State 1378  
+Move 1251 1380                          ;State 1379  
+Move 1251 1381                          ;State 1380  
+Move 1251 1382                          ;State 1381  
+Move 1251 1383                          ;State 1382  
+Move 1251 1384                          ;State 1383  
+Move 1251 1385                          ;State 1384  
+Move 1251 1386                          ;State 1385  
+Move 1251 1387                          ;State 1386  
+Move 1251 1388                          ;State 1387  
+Move 1251 1389                          ;State 1388  
+Sense Here 1390 1168 Home               ;State 1389  
+Sense Ahead 1168 1391 Foe               ;State 1390 
+Sense LeftAhead 1168 1392 Foe           ;State 1391  
+Sense RightAhead 1168 1393 Foe          ;State 1392  
+Turn Right 1394                         ;State 1393  
+Turn Right 1395                         ;State 1394  
+Turn Right 1396                         ;State 1395  
+Sense Ahead 1154 1397 Foe               ;State 1396  
+Sense LeftAhead 1154 1398 Foe           ;State 1397  
+Sense RightAhead 1154 1399 Foe          ;State 1398  
+Flip 50 1175 1154                       ;State 1399  
+Sense Ahead 1168 1401 Foe               ;State 1400 
+Sense Ahead 1402 1339 Marker 2          ;State 1401  
+Sense Ahead 1403 1339 Marker 1          ;State 1402 
+Sense Ahead 1404 1339 Marker 0          ;State 1403 
+Sense Here 1339 1405 Food               ;State 1404 
+Sense LeftAhead 1339 1167 Marker 0      ;State 1405  
+Sense Here 1287 770 Marker 0            ;State 1406 
+Sense Here 1409 1408 Marker 1           ;State 1407 
+Sense Here 1298 1294 Marker 0           ;State 1408  
+Sense Here 1227 1303 Marker 0           ;State 1409 
+Move 1411 1410                          ;State 1410  followpathhome'emergencyFalse3:0 followpathhome'emergencyFalse3 
+Sense Here 1438 1412 Marker 2           ;State 1411  followpathhomeFalse3 
+Sense Here 1437 1413 Marker 1           ;State 1412  
+Sense Here 1310 1414 Marker 0           ;State 1413  
+Sense Ahead 1410 1415 Marker 1          ;State 1414  
+Sense Ahead 1410 1416 Marker 2          ;State 1415  
+Sense Ahead 1410 1417 Marker 0          ;State 1416  
+Turn Left 1418                          ;State 1417  
+Sense Ahead 1503 1419 Marker 1          ;State 1418  
+Sense Ahead 1503 1420 Marker 2          ;State 1419  
+Sense Ahead 1503 1421 Marker 0          ;State 1420  
+Turn Left 1422                          ;State 1421  
+Sense Ahead 1472 1423 Marker 1          ;State 1422  
+Sense Ahead 1472 1424 Marker 2          ;State 1423  
+Sense Ahead 1472 1425 Marker 0          ;State 1424  
+Turn Right 1426                         ;State 1425  
+Turn Right 1427                         ;State 1426  
+Turn Right 1428                         ;State 1427  
+Sense Ahead 713 1429 Marker 1           ;State 1428  
+Sense Ahead 713 1430 Marker 2           ;State 1429  
+Sense Ahead 713 1431 Marker 0           ;State 1430  
+Turn Right 1432                         ;State 1431  
+Sense Ahead 740 1433 Marker 1           ;State 1432  
+Sense Ahead 740 1434 Marker 2           ;State 1433  
+Sense Ahead 740 1435 Marker 0           ;State 1434  
+Turn Left 1436                          ;State 1435  
+Turn Left 1410                          ;State 1436  
+Sense Here 1288 771 Marker 0            ;State 1437 
+Sense Here 1440 1439 Marker 1           ;State 1438 
+Sense Here 1327 1323 Marker 0           ;State 1439  
+Sense Here 1227 1332 Marker 0           ;State 1440 
+Move 1442 1441                          ;State 1441  followpathhome'emergencyFalse0:0 followpathhome'emergencyFalse0 
+Sense Here 1469 1443 Marker 2           ;State 1442  followpathhomeFalse0 
+Sense Here 1468 1444 Marker 1           ;State 1443  
+Sense Here 935 1445 Marker 0            ;State 1444  
+Sense Ahead 1441 1446 Marker 1          ;State 1445  
+Sense Ahead 1441 1447 Marker 2          ;State 1446  
+Sense Ahead 1441 1448 Marker 0          ;State 1447  
+Turn Left 1449                          ;State 1448  
+Sense Ahead 740 1450 Marker 1           ;State 1449  
+Sense Ahead 740 1451 Marker 2           ;State 1450  
+Sense Ahead 740 1452 Marker 0           ;State 1451  
+Turn Left 1453                          ;State 1452  
+Sense Ahead 713 1454 Marker 1           ;State 1453  
+Sense Ahead 713 1455 Marker 2           ;State 1454  
+Sense Ahead 713 1456 Marker 0           ;State 1455  
+Turn Right 1457                         ;State 1456  
+Turn Right 1458                         ;State 1457  
+Turn Right 1459                         ;State 1458  
+Sense Ahead 1472 1460 Marker 1          ;State 1459  
+Sense Ahead 1472 1461 Marker 2          ;State 1460  
+Sense Ahead 1472 1462 Marker 0          ;State 1461  
+Turn Right 1463                         ;State 1462  
+Sense Ahead 1503 1464 Marker 1          ;State 1463  
+Sense Ahead 1503 1465 Marker 2          ;State 1464  
+Sense Ahead 1503 1466 Marker 0          ;State 1465  
+Turn Left 1467                          ;State 1466  
+Turn Left 1441                          ;State 1467  
+Sense Here 599 940 Marker 0             ;State 1468 
+Sense Here 1471 1470 Marker 1           ;State 1469 
+Sense Here 1027 951 Marker 0            ;State 1470  
+Sense Here 1227 1100 Marker 0           ;State 1471 
+Move 1473 1472                          ;State 1472  followpathhome'emergencyFalse1:0 followpathhome'emergencyFalse1 
+Sense Here 1500 1474 Marker 2           ;State 1473  followpathhomeFalse1 
+Sense Here 1499 1475 Marker 1           ;State 1474  
+Sense Here 1205 1476 Marker 0           ;State 1475  
+Sense Ahead 1472 1477 Marker 1          ;State 1476  
+Sense Ahead 1472 1478 Marker 2          ;State 1477  
+Sense Ahead 1472 1479 Marker 0          ;State 1478  
+Turn Left 1480                          ;State 1479  
+Sense Ahead 1441 1481 Marker 1          ;State 1480  
+Sense Ahead 1441 1482 Marker 2          ;State 1481  
+Sense Ahead 1441 1483 Marker 0          ;State 1482  
+Turn Left 1484                          ;State 1483  
+Sense Ahead 740 1485 Marker 1           ;State 1484  
+Sense Ahead 740 1486 Marker 2           ;State 1485  
+Sense Ahead 740 1487 Marker 0           ;State 1486  
+Turn Right 1488                         ;State 1487  
+Turn Right 1489                         ;State 1488  
+Turn Right 1490                         ;State 1489  
+Sense Ahead 1503 1491 Marker 1          ;State 1490  
+Sense Ahead 1503 1492 Marker 2          ;State 1491  
+Sense Ahead 1503 1493 Marker 0          ;State 1492  
+Turn Right 1494                         ;State 1493  
+Sense Ahead 1410 1495 Marker 1          ;State 1494  
+Sense Ahead 1410 1496 Marker 2          ;State 1495  
+Sense Ahead 1410 1497 Marker 0          ;State 1496  
+Turn Left 1498                          ;State 1497  
+Turn Left 1472                          ;State 1498  
+Sense Here 600 941 Marker 0             ;State 1499 
+Sense Here 1502 1501 Marker 1           ;State 1500 
+Sense Here 1222 1218 Marker 0           ;State 1501  
+Sense Here 1227 1101 Marker 0           ;State 1502 
+Move 687 1503                           ;State 1503  followpathhome'emergencyFalse2:0 followpathhome'emergencyFalse2 
+Turn Right 1310                         ;State 1504   
+Sense Here 601 942 Marker 0             ;State 1505 
+Sense Here 1510 1507 Marker 1           ;State 1506 
+Sense Here 1509 1508 Marker 0           ;State 1507  
+Turn Right 1323                         ;State 1508    
+Turn Left 1222                          ;State 1509   
+Sense Here 1227 1333 Marker 0           ;State 1510 
+Move 1512 1512                          ;State 1511  walkrandomlydeliverfood1 deliverfood1 
+Sense Here 1473 1513 Marker 1           ;State 1512  
+Sense Here 1473 1514 Marker 2           ;State 1513  
+Sense Here 1473 1515 Marker 0           ;State 1514  
+Move 1516 1516                          ;State 1515  
+Sense Here 1473 1517 Marker 1           ;State 1516  
+Sense Here 1473 1518 Marker 2           ;State 1517  
+Sense Here 1473 1519 Marker 0           ;State 1518  
+Move 1520 1520                          ;State 1519  
+Sense Here 1473 1521 Marker 1           ;State 1520  
+Sense Here 1473 1522 Marker 2           ;State 1521  
+Sense Here 1473 1523 Marker 0           ;State 1522  
+Move 1524 1524                          ;State 1523  
+Sense Here 1473 1525 Marker 1           ;State 1524  
+Sense Here 1473 1526 Marker 2           ;State 1525  
+Sense Here 1473 1527 Marker 0           ;State 1526  
+Flip 8 1528 1511                        ;State 1527  
+Flip 2 1530 1529                        ;State 1528 
+Turn Right 667                          ;State 1529  
+Turn Left 1531                          ;State 1530 
+Move 1532 1532                          ;State 1531  walkrandomlydeliverfood0 deliverfood0 
+Sense Here 1442 1533 Marker 1           ;State 1532  
+Sense Here 1442 1534 Marker 2           ;State 1533  
+Sense Here 1442 1535 Marker 0           ;State 1534  
+Move 1536 1536                          ;State 1535  
+Sense Here 1442 1537 Marker 1           ;State 1536  
+Sense Here 1442 1538 Marker 2           ;State 1537  
+Sense Here 1442 1539 Marker 0           ;State 1538  
+Move 1540 1540                          ;State 1539  
+Sense Here 1442 1541 Marker 1           ;State 1540  
+Sense Here 1442 1542 Marker 2           ;State 1541  
+Sense Here 1442 1543 Marker 0           ;State 1542  
+Move 1544 1544                          ;State 1543  
+Sense Here 1442 1545 Marker 1           ;State 1544  
+Sense Here 1442 1546 Marker 2           ;State 1545  
+Sense Here 1442 1547 Marker 0           ;State 1546  
+Flip 8 1548 1531                        ;State 1547  
+Flip 2 1550 1549                        ;State 1548 
+Turn Right 1511                         ;State 1549  
+Turn Left 1551                          ;State 1550 
+Move 1552 1552                          ;State 1551  walkrandomlydeliverfood5 deliverfood5 
+Sense Here 741 1553 Marker 1            ;State 1552  
+Sense Here 741 1554 Marker 2            ;State 1553  
+Sense Here 741 1555 Marker 0            ;State 1554  
+Move 1556 1556                          ;State 1555  
+Sense Here 741 1557 Marker 1            ;State 1556  
+Sense Here 741 1558 Marker 2            ;State 1557  
+Sense Here 741 1559 Marker 0            ;State 1558  
+Move 1560 1560                          ;State 1559  
+Sense Here 741 1561 Marker 1            ;State 1560  
+Sense Here 741 1562 Marker 2            ;State 1561  
+Sense Here 741 1563 Marker 0            ;State 1562  
+Move 1564 1564                          ;State 1563  
+Sense Here 741 1565 Marker 1            ;State 1564  
+Sense Here 741 1566 Marker 2            ;State 1565  
+Sense Here 741 1567 Marker 0            ;State 1566  
+Flip 8 1568 1551                        ;State 1567  
+Flip 2 1570 1569                        ;State 1568 
+Turn Right 1531                         ;State 1569  
+Turn Left 1571                          ;State 1570 
+Move 1572 1572                          ;State 1571  walkrandomlydeliverfood4 deliverfood4 
+Sense Here 714 1573 Marker 1            ;State 1572  
+Sense Here 714 1574 Marker 2            ;State 1573  
+Sense Here 714 1575 Marker 0            ;State 1574  
+Move 1576 1576                          ;State 1575  
+Sense Here 714 1577 Marker 1            ;State 1576  
+Sense Here 714 1578 Marker 2            ;State 1577  
+Sense Here 714 1579 Marker 0            ;State 1578  
+Move 1580 1580                          ;State 1579  
+Sense Here 714 1581 Marker 1            ;State 1580  
+Sense Here 714 1582 Marker 2            ;State 1581  
+Sense Here 714 1583 Marker 0            ;State 1582  
+Move 1584 1584                          ;State 1583  
+Sense Here 714 1585 Marker 1            ;State 1584  
+Sense Here 714 1586 Marker 2            ;State 1585  
+Sense Here 714 1587 Marker 0            ;State 1586  
+Flip 8 1588 1571                        ;State 1587  
+Flip 2 1590 1589                        ;State 1588 
+Turn Right 1551                         ;State 1589  
+Turn Left 1591                          ;State 1590 
+Move 1592 1592                          ;State 1591  walkrandomlydeliverfood3 deliverfood3 
+Sense Here 1411 1593 Marker 1           ;State 1592  
+Sense Here 1411 1594 Marker 2           ;State 1593  
+Sense Here 1411 1595 Marker 0           ;State 1594  
+Move 1596 1596                          ;State 1595  
+Sense Here 1411 1597 Marker 1           ;State 1596  
+Sense Here 1411 1598 Marker 2           ;State 1597  
+Sense Here 1411 1599 Marker 0           ;State 1598  
+Move 1600 1600                          ;State 1599  
+Sense Here 1411 1601 Marker 1           ;State 1600  
+Sense Here 1411 1602 Marker 2           ;State 1601  
+Sense Here 1411 1603 Marker 0           ;State 1602  
+Move 1604 1604                          ;State 1603  
+Sense Here 1411 1605 Marker 1           ;State 1604  
+Sense Here 1411 1606 Marker 2           ;State 1605  
+Sense Here 1411 1607 Marker 0           ;State 1606  
+Flip 8 1608 1591                        ;State 1607  
+Flip 2 1610 1609                        ;State 1608 
+Turn Right 1571                         ;State 1609  
+Turn Left 667                           ;State 1610 
+Turn Left 1612                          ;State 1611  escapelefthome2 
+Move 1511 1155                          ;State 1612  
+Sense Ahead 654 1614 Foe                ;State 1613 
+Sense LeftAhead 654 1615 Foe            ;State 1614  
+Sense RightAhead 654 1616 Foe           ;State 1615  
+Turn Right 1617                         ;State 1616  
+Turn Right 1618                         ;State 1617  
+Turn Right 1619                         ;State 1618  
+Sense Ahead 1005 1620 Foe               ;State 1619  
+Sense LeftAhead 1005 1621 Foe           ;State 1620  
+Sense RightAhead 1005 1622 Foe          ;State 1621  
+Flip 50 1023 1005                       ;State 1622  
+Sense Ahead 654 1624 Foe                ;State 1623 
+Sense Ahead 1625 603 Marker 2           ;State 1624  
+Sense Ahead 1626 603 Marker 1           ;State 1625 
+Sense Ahead 1627 603 Marker 0           ;State 1626 
+Sense Here 603 1628 Food                ;State 1627 
+Sense LeftAhead 603 1016 Marker 0       ;State 1628  
+Sense Here 1665 1630 Marker 2           ;State 1629  followpathhomeTrue2 
+Sense Here 1658 1631 Marker 1           ;State 1630  
+Sense Here 1655 1632 Marker 0           ;State 1631  
+Sense Ahead 1305 1633 Marker 1          ;State 1632  
+Sense Ahead 1305 1634 Marker 2          ;State 1633  
+Sense Ahead 1305 1635 Marker 0          ;State 1634  
+Turn Left 1636                          ;State 1635  
+Sense Ahead 1304 1637 Marker 1          ;State 1636  
+Sense Ahead 1304 1638 Marker 2          ;State 1637  
+Sense Ahead 1304 1639 Marker 0          ;State 1638  
+Turn Left 1640                          ;State 1639  
+Sense Ahead 905 1641 Marker 1           ;State 1640  
+Sense Ahead 905 1642 Marker 2           ;State 1641  
+Sense Ahead 905 1643 Marker 0           ;State 1642  
+Turn Right 1644                         ;State 1643  
+Turn Right 1645                         ;State 1644  
+Turn Right 1646                         ;State 1645  
+Sense Ahead 1306 1647 Marker 1          ;State 1646  
+Sense Ahead 1306 1648 Marker 2          ;State 1647  
+Sense Ahead 1306 1649 Marker 0          ;State 1648  
+Turn Right 1650                         ;State 1649  
+Sense Ahead 1250 1651 Marker 1          ;State 1650  
+Sense Ahead 1250 1652 Marker 2          ;State 1651  
+Sense Ahead 1250 1653 Marker 0          ;State 1652  
+Turn Left 1654                          ;State 1653  
+Turn Left 1305                          ;State 1654  
+Mark 5 1656                             ;State 1655 
+Unmark 4 1657                           ;State 1656  
+Unmark 3 1504                           ;State 1657  
+Sense Here 1662 1659 Marker 0           ;State 1658 
+Mark 5 1660                             ;State 1659  
+Unmark 4 1661                           ;State 1660  
+Unmark 3 942                            ;State 1661  
+Mark 5 1663                             ;State 1662 
+Unmark 4 1664                           ;State 1663  
+Unmark 3 601                            ;State 1664  
+Sense Here 1673 1666 Marker 1           ;State 1665 
+Sense Here 1670 1667 Marker 0           ;State 1666  
+Mark 5 1668                             ;State 1667  
+Unmark 4 1669                           ;State 1668  
+Unmark 3 1508                           ;State 1669  
+Mark 5 1671                             ;State 1670 
+Unmark 4 1672                           ;State 1671  
+Unmark 3 1509                           ;State 1672  
+Sense Here 1227 1674 Marker 0           ;State 1673 
+Mark 5 1675                             ;State 1674  
+Unmark 4 1676                           ;State 1675  
+Unmark 3 1333                           ;State 1676  
+Flip 1000 2173 592                      ;State 1677      
+Sense Here 1978 1679 Marker 5           ;State 1678  followpathtofood5 
+Sense Here 1732 1680 Marker 4           ;State 1679  
+Sense Here 1703 1681 Marker 3           ;State 1680  
+Sense Here 1686 1682 Marker 1           ;State 1681  
+Sense Here 1686 1683 Marker 2           ;State 1682  
+Sense Here 1686 1684 Marker 0           ;State 1683  
+Mark 1 1685                             ;State 1684  
+Mark 0 1686                             ;State 1685  
+PickUp 595 1687                         ;State 1686   
+Turn Right 1688                         ;State 1687  findlocalfood5 
+Sense RightAhead 2293 1689 Food         ;State 1688  
+Sense Ahead 2290 1690 Food              ;State 1689  
+Sense LeftAhead 1700 1691 Food          ;State 1690  
+Turn Right 1692                         ;State 1691  
+Turn Right 1693                         ;State 1692  
+Turn Right 1694                         ;State 1693  
+Sense RightAhead 2301 1695 Food         ;State 1694  
+Sense Ahead 2298 1696 Food              ;State 1695  
+Turn Left 1697                          ;State 1696  
+Unmark 5 1698                           ;State 1697  
+Unmark 4 1699                           ;State 1698  
+Unmark 3 346                            ;State 1699  
+Mark 5 1701                             ;State 1700 
+Unmark 4 1702                           ;State 1701  
+Unmark 3 3031                           ;State 1702    
+PickUp 598 1704                         ;State 1703 
+Turn Left 1705                          ;State 1704    
+Move 149 1706                           ;State 1705  movetowardsfood4 
+Sense Ahead 2804 1707 FriendWithFood    ;State 1706 
+Sense Ahead 2804 1708 Foe               ;State 1707  
+Sense Ahead 1729 1709 Friend            ;State 1708  
+Move 149 1710                           ;State 1709  movebutfinallyescape4   
+Move 149 1711                           ;State 1710  
+Move 149 1712                           ;State 1711  
+Move 149 1713                           ;State 1712  
+Move 149 1714                           ;State 1713  
+Move 149 1715                           ;State 1714  
+Move 149 1716                           ;State 1715  
+Move 149 1717                           ;State 1716  
+Move 149 1718                           ;State 1717  
+Move 149 1719                           ;State 1718  
+Move 149 1720                           ;State 1719  
+Move 149 1721                           ;State 1720  
+Move 149 1722                           ;State 1721  
+Move 149 1723                           ;State 1722  
+Move 149 1724                           ;State 1723  
+Move 149 1725                           ;State 1724  
+Move 149 1726                           ;State 1725  
+Move 149 1727                           ;State 1726  
+Move 149 1728                           ;State 1727  
+Move 149 129                            ;State 1728  
+Sense Ahead 1709 1730 Marker 5          ;State 1729 
+Sense Ahead 1709 1731 Marker 4          ;State 1730  
+Sense Ahead 1709 232 Marker 3           ;State 1731  
+Sense Here 1975 1733 Marker 3           ;State 1732 
+PickUp 598 1734                         ;State 1733  
+Turn Left 1735                          ;State 1734  
+Turn Left 1736                          ;State 1735    
+Move 1764 1737                          ;State 1736  movetowardsfood3 
+Sense Ahead 277 1738 FriendWithFood     ;State 1737 
+Sense Ahead 277 1739 Foe                ;State 1738  
+Sense Ahead 1761 1740 Friend            ;State 1739  
+Move 1764 1741                          ;State 1740  movebutfinallyescape3   
+Move 1764 1742                          ;State 1741  
+Move 1764 1743                          ;State 1742  
+Move 1764 1744                          ;State 1743  
+Move 1764 1745                          ;State 1744  
+Move 1764 1746                          ;State 1745  
+Move 1764 1747                          ;State 1746  
+Move 1764 1748                          ;State 1747  
+Move 1764 1749                          ;State 1748  
+Move 1764 1750                          ;State 1749  
+Move 1764 1751                          ;State 1750  
+Move 1764 1752                          ;State 1751  
+Move 1764 1753                          ;State 1752  
+Move 1764 1754                          ;State 1753  
+Move 1764 1755                          ;State 1754  
+Move 1764 1756                          ;State 1755  
+Move 1764 1757                          ;State 1756  
+Move 1764 1758                          ;State 1757  
+Move 1764 1759                          ;State 1758  
+Move 1764 1760                          ;State 1759  
+Flip 2 132 98                           ;State 1760  randomescape3 
+Sense Ahead 1740 1762 Marker 5          ;State 1761 
+Sense Ahead 1740 1763 Marker 4          ;State 1762  
+Sense Ahead 1740 202 Marker 3           ;State 1763  
+Sense Here 1962 1765 Marker 5           ;State 1764  followpathtofood3 
+Sense Here 1958 1766 Marker 4           ;State 1765  
+Sense Here 1957 1767 Marker 3           ;State 1766  
+Sense Here 1772 1768 Marker 1           ;State 1767  
+Sense Here 1772 1769 Marker 2           ;State 1768  
+Sense Here 1772 1770 Marker 0           ;State 1769  
+Mark 2 1771                             ;State 1770  
+Mark 0 1772                             ;State 1771  
+PickUp 1955 1773                        ;State 1772   
+Turn Right 1774                         ;State 1773  findlocalfood3 
+Sense RightAhead 1953 1775 Food         ;State 1774  
+Sense Ahead 1951 1776 Food              ;State 1775  
+Sense LeftAhead 1948 1777 Food          ;State 1776  
+Turn Right 1778                         ;State 1777  
+Turn Right 1779                         ;State 1778  
+Turn Right 1780                         ;State 1779  
+Sense RightAhead 1945 1781 Food         ;State 1780  
+Sense Ahead 1786 1782 Food              ;State 1781  
+Turn Left 1783                          ;State 1782  
+Unmark 5 1784                           ;State 1783  
+Unmark 4 1785                           ;State 1784  
+Unmark 3 386                            ;State 1785  
+Mark 5 1787                             ;State 1786  
+Mark 4 1788                             ;State 1787    
+Unmark 3 1789                           ;State 1788    
+Sense Here 1851 1790 Marker 5           ;State 1789  followpathtofood1 
+Sense Here 1818 1791 Marker 4           ;State 1790  
+Sense Here 1814 1792 Marker 3           ;State 1791  
+Sense Here 1795 1793 Marker 1           ;State 1792  
+Sense Here 1795 1794 Marker 2           ;State 1793  
+Mark 0 1795                             ;State 1794  
+PickUp 1812 1796                        ;State 1795   
+Turn Right 1797                         ;State 1796  findlocalfood1 
+Sense RightAhead 2442 1798 Food         ;State 1797  
+Sense Ahead 2440 1799 Food              ;State 1798  
+Sense LeftAhead 1809 1800 Food          ;State 1799  
+Turn Right 1801                         ;State 1800  
+Turn Right 1802                         ;State 1801  
+Turn Right 1803                         ;State 1802  
+Sense RightAhead 2449 1804 Food         ;State 1803  
+Sense Ahead 2446 1805 Food              ;State 1804  
+Turn Left 1806                          ;State 1805  
+Unmark 5 1807                           ;State 1806  
+Unmark 4 1808                           ;State 1807  
+Unmark 3 261                            ;State 1808  
+Mark 5 1810                             ;State 1809 
+Mark 4 1811                             ;State 1810    
+Unmark 3 290                            ;State 1811    
+Mark 5 1813                             ;State 1812  foundfoodTrue1 
+Mark 4 1204                             ;State 1813  
+PickUp 1205 1815                        ;State 1814 
+Turn Right 1816                         ;State 1815  
+Turn Right 1817                         ;State 1816    
+Turn Right 1705                         ;State 1817    
+Sense Here 1822 1819 Marker 3           ;State 1818 
+PickUp 1205 1820                        ;State 1819  
+Turn Right 1821                         ;State 1820    
+Turn Right 1736                         ;State 1821    
+PickUp 1205 1823                        ;State 1822 
+Turn Right 1824                         ;State 1823    
+Move 290 1825                           ;State 1824  movetowardsfood2 
+Sense Ahead 2692 1826 FriendWithFood    ;State 1825 
+Sense Ahead 2692 1827 Foe               ;State 1826  
+Sense Ahead 1848 1828 Friend            ;State 1827  
+Move 290 1829                           ;State 1828  movebutfinallyescape2   
+Move 290 1830                           ;State 1829  
+Move 290 1831                           ;State 1830  
+Move 290 1832                           ;State 1831  
+Move 290 1833                           ;State 1832  
+Move 290 1834                           ;State 1833  
+Move 290 1835                           ;State 1834  
+Move 290 1836                           ;State 1835  
+Move 290 1837                           ;State 1836  
+Move 290 1838                           ;State 1837  
+Move 290 1839                           ;State 1838  
+Move 290 1840                           ;State 1839  
+Move 290 1841                           ;State 1840  
+Move 290 1842                           ;State 1841  
+Move 290 1843                           ;State 1842  
+Move 290 1844                           ;State 1843  
+Move 290 1845                           ;State 1844  
+Move 290 1846                           ;State 1845  
+Move 290 1847                           ;State 1846  
+Move 290 282                            ;State 1847  
+Sense Ahead 1828 1849 Marker 5          ;State 1848 
+Sense Ahead 1828 1850 Marker 4          ;State 1849  
+Sense Ahead 1828 347 Marker 3           ;State 1850  
+Sense Here 1915 1852 Marker 4           ;State 1851 
+Sense Here 1886 1853 Marker 3           ;State 1852  
+PickUp 1205 1854                        ;State 1853  
+Turn Left 1855                          ;State 1854  
+Turn Left 1856                          ;State 1855    
+Move 1678 1857                          ;State 1856  movetowardsfood5 
+Sense Ahead 124 1858 FriendWithFood     ;State 1857 
+Sense Ahead 124 1859 Foe                ;State 1858  
+Sense Ahead 1883 1860 Friend            ;State 1859  
+Move 1678 1861                          ;State 1860  movebutfinallyescape5   
+Move 1678 1862                          ;State 1861  
+Move 1678 1863                          ;State 1862  
+Move 1678 1864                          ;State 1863  
+Move 1678 1865                          ;State 1864  
+Move 1678 1866                          ;State 1865  
+Move 1678 1867                          ;State 1866  
+Move 1678 1868                          ;State 1867  
+Move 1678 1869                          ;State 1868  
+Move 1678 1870                          ;State 1869  
+Move 1678 1871                          ;State 1870  
+Move 1678 1872                          ;State 1871  
+Move 1678 1873                          ;State 1872  
+Move 1678 1874                          ;State 1873  
+Move 1678 1875                          ;State 1874  
+Move 1678 1876                          ;State 1875  
+Move 1678 1877                          ;State 1876  
+Move 1678 1878                          ;State 1877  
+Move 1678 1879                          ;State 1878  
+Move 1678 1880                          ;State 1879  
+Flip 2 1881 102                         ;State 1880  randomescape5 
+Turn Left 1882                          ;State 1881  escapeleft5 
+Move 2559 130                           ;State 1882  
+Sense Ahead 1860 1884 Marker 5          ;State 1883 
+Sense Ahead 1860 1885 Marker 4          ;State 1884  
+Sense Ahead 1860 311 Marker 3           ;State 1885  
+PickUp 1205 1887                        ;State 1886 
+Turn Left 1888                          ;State 1887    
+Move 3031 1889                          ;State 1888  movetowardsfood0 
+Sense Ahead 2919 1890 FriendWithFood    ;State 1889 
+Sense Ahead 2919 1891 Foe               ;State 1890  
+Sense Ahead 1912 1892 Friend            ;State 1891  
+Move 3031 1893                          ;State 1892  movebutfinallyescape0   
+Move 3031 1894                          ;State 1893  
+Move 3031 1895                          ;State 1894  
+Move 3031 1896                          ;State 1895  
+Move 3031 1897                          ;State 1896  
+Move 3031 1898                          ;State 1897  
+Move 3031 1899                          ;State 1898  
+Move 3031 1900                          ;State 1899  
+Move 3031 1901                          ;State 1900  
+Move 3031 1902                          ;State 1901  
+Move 3031 1903                          ;State 1902  
+Move 3031 1904                          ;State 1903  
+Move 3031 1905                          ;State 1904  
+Move 3031 1906                          ;State 1905  
+Move 3031 1907                          ;State 1906  
+Move 3031 1908                          ;State 1907  
+Move 3031 1909                          ;State 1908  
+Move 3031 1910                          ;State 1909  
+Move 3031 1911                          ;State 1910  
+Move 3031 91                            ;State 1911  
+Sense Ahead 1892 1913 Marker 5          ;State 1912 
+Sense Ahead 1892 1914 Marker 4          ;State 1913  
+Sense Ahead 1892 387 Marker 3           ;State 1914  
+Sense Here 1795 1916 Marker 3           ;State 1915 
+PickUp 1205 1917                        ;State 1916  
+Move 1789 1918                          ;State 1917  movetowardsfood1 
+Sense Ahead 86 1919 FriendWithFood      ;State 1918 
+Sense Ahead 86 1920 Foe                 ;State 1919  
+Sense Ahead 1942 1921 Friend            ;State 1920  
+Move 1789 1922                          ;State 1921  movebutfinallyescape1   
+Move 1789 1923                          ;State 1922  
+Move 1789 1924                          ;State 1923  
+Move 1789 1925                          ;State 1924  
+Move 1789 1926                          ;State 1925  
+Move 1789 1927                          ;State 1926  
+Move 1789 1928                          ;State 1927  
+Move 1789 1929                          ;State 1928  
+Move 1789 1930                          ;State 1929  
+Move 1789 1931                          ;State 1930  
+Move 1789 1932                          ;State 1931  
+Move 1789 1933                          ;State 1932  
+Move 1789 1934                          ;State 1933  
+Move 1789 1935                          ;State 1934  
+Move 1789 1936                          ;State 1935  
+Move 1789 1937                          ;State 1936  
+Move 1789 1938                          ;State 1937  
+Move 1789 1939                          ;State 1938  
+Move 1789 1940                          ;State 1939  
+Move 1789 1941                          ;State 1940  
+Flip 2 136 94                           ;State 1941  randomescape1 
+Sense Ahead 1921 1943 Marker 5          ;State 1942 
+Sense Ahead 1921 1944 Marker 4          ;State 1943  
+Sense Ahead 1921 172 Marker 3           ;State 1944  
+Unmark 5 1946                           ;State 1945  
+Mark 4 1947                             ;State 1946    
+Mark 3 1789                             ;State 1947    
+Unmark 5 1949                           ;State 1948 
+Mark 4 1950                             ;State 1949  
+Unmark 3 149                            ;State 1950    
+Unmark 5 1952                           ;State 1951  
+Unmark 4 148                            ;State 1952    
+Mark 5 1954                             ;State 1953  
+Unmark 4 1950                           ;State 1954    
+Mark 5 1956                             ;State 1955  foundfoodTrue3 
+Mark 4 1326                             ;State 1956  
+PickUp 1327 1817                        ;State 1957 
+Sense Here 1960 1959 Marker 3           ;State 1958 
+PickUp 1327 1736                        ;State 1959  
+PickUp 1327 1961                        ;State 1960 
+Turn Left 1824                          ;State 1961    
+Sense Here 1971 1963 Marker 4           ;State 1962 
+Sense Here 1967 1964 Marker 3           ;State 1963  
+PickUp 1327 1965                        ;State 1964  
+Turn Right 1966                         ;State 1965    
+Turn Right 1856                         ;State 1966    
+PickUp 1327 1968                        ;State 1967 
+Turn Right 1969                         ;State 1968  
+Turn Right 1970                         ;State 1969    
+Turn Right 1888                         ;State 1970    
+Sense Here 1772 1972 Marker 3           ;State 1971 
+PickUp 1327 1973                        ;State 1972  
+Turn Left 1974                          ;State 1973  
+Turn Left 1917                          ;State 1974    
+PickUp 598 1976                         ;State 1975 
+Turn Right 1977                         ;State 1976  
+Turn Right 1823                         ;State 1977    
+Sense Here 1982 1979 Marker 4           ;State 1978 
+Sense Here 1981 1980 Marker 3           ;State 1979  
+PickUp 598 1856                         ;State 1980  
+PickUp 598 1970                         ;State 1981 
+Sense Here 1686 1983 Marker 3           ;State 1982 
+PickUp 598 1984                         ;State 1983  
+Turn Right 1985                         ;State 1984    
+Turn Right 1917                         ;State 1985    
+Flip 2 1764 574                         ;State 1986  
+Sense Here 2010 1988 Marker 4           ;State 1987  leaveL2 
+Sense Here 2010 1989 Marker 5           ;State 1988  
+Sense Here 2010 1990 Marker 3           ;State 1989  
+Sense Here 1993 1991 Marker 1           ;State 1990  
+Sense Here 1993 1992 Marker 0           ;State 1991  
+Mark 2 1993                             ;State 1992  
+Sense LeftAhead 1995 1994 Home          ;State 1993  
+Turn Left 2011                          ;State 1994  
+Move 1987 1996                          ;State 1995  
+Turn Right 1997                         ;State 1996 
+Turn Right 1998                         ;State 1997  
+Sense Here 149 1999 Marker 4            ;State 1998  default4 
+Sense Here 149 2000 Marker 5            ;State 1999  
+Sense Here 149 2001 Marker 3            ;State 2000  
+Sense Here 2009 2002 Marker 1           ;State 2001  
+Sense Here 2009 2003 Marker 2           ;State 2002  
+Sense Here 2009 2004 Marker 0           ;State 2003  
+Mark 2 2005                             ;State 2004    
+Mark 1 2006                             ;State 2005    
+PickUp 2462 2007                        ;State 2006    
+Flip 8 2008 53                          ;State 2007  
+Flip 2 2800 2803                        ;State 2008 
+Flip 1000 2208 2006                     ;State 2009      
+Flip 2 290 1990                         ;State 2010  
+Sense Here 2034 2012 Marker 4           ;State 2011  leaveL1 
+Sense Here 2034 2013 Marker 5           ;State 2012  
+Sense Here 2034 2014 Marker 3           ;State 2013  
+Sense Here 2017 2015 Marker 1           ;State 2014  
+Sense Here 2017 2016 Marker 2           ;State 2015  
+Mark 0 2017                             ;State 2016  
+Sense LeftAhead 2019 2018 Home          ;State 2017  
+Turn Left 2035                          ;State 2018  
+Move 2011 2020                          ;State 2019  
+Turn Right 2021                         ;State 2020 
+Turn Right 2022                         ;State 2021  
+Sense Here 1764 2023 Marker 4           ;State 2022  default3 
+Sense Here 1764 2024 Marker 5           ;State 2023  
+Sense Here 1764 2025 Marker 3           ;State 2024  
+Sense Here 2033 2026 Marker 1           ;State 2025  
+Sense Here 2033 2027 Marker 2           ;State 2026  
+Sense Here 2033 2028 Marker 0           ;State 2027  
+Mark 2 2029                             ;State 2028    
+Mark 0 2030                             ;State 2029    
+PickUp 1955 2031                        ;State 2030    
+Flip 8 2032 265                         ;State 2031  
+Flip 2 62 276                           ;State 2032 
+Flip 1000 519 2030                      ;State 2033      
+Flip 2 1789 2014                        ;State 2034  
+Sense Here 2046 2036 Marker 4           ;State 2035  leaveL0 
+Sense Here 2046 2037 Marker 5           ;State 2036  
+Sense Here 2046 2038 Marker 3           ;State 2037  
+Sense Here 2041 2039 Marker 0           ;State 2038  
+Sense Here 2041 2040 Marker 2           ;State 2039  
+Mark 1 2041                             ;State 2040  
+Sense LeftAhead 2043 2042 Home          ;State 2041  
+Turn Left 2047                          ;State 2042  
+Move 2035 2044                          ;State 2043  
+Turn Right 2045                         ;State 2044 
+Turn Right 479                          ;State 2045  
+Flip 2 3031 2038                        ;State 2046  
+Turn Right 34                           ;State 2047  leaveL5   
+Sense Here 2060 2049 Marker 4           ;State 2048  leaveL4 
+Sense Here 2060 2050 Marker 5           ;State 2049  
+Sense Here 2060 2051 Marker 3           ;State 2050  
+Sense Here 2056 2052 Marker 1           ;State 2051  
+Sense Here 2056 2053 Marker 2           ;State 2052  
+Sense Here 2056 2054 Marker 0           ;State 2053  
+Mark 2 2055                             ;State 2054  
+Mark 1 2056                             ;State 2055  
+Sense LeftAhead 2058 2057 Home          ;State 2056  
+Turn Left 571                           ;State 2057  
+Move 2048 2059                          ;State 2058  
+Turn Right 2047                         ;State 2059 
+Flip 2 149 2051                         ;State 2060  
+Turn Left 2062                          ;State 2061  leftanyway3 
+Sense Ahead 470 2063 Home               ;State 2062  
+Turn Left 2064                          ;State 2063  leftanyway2 
+Sense Ahead 462 2065 Home               ;State 2064  
+Turn Left 2066                          ;State 2065  leftanyway1 
+Sense Ahead 454 2067 Home               ;State 2066  
+Turn Left 2068                          ;State 2067  leftanyway0 
+Sense Ahead 2086 2069 Home              ;State 2068  
+Turn Left 2070                          ;State 2069  leftanyway5 
+Sense Ahead 2073 2071 Home              ;State 2070  
+Turn Left 2072                          ;State 2071  leftanyway4 
+Sense Ahead 478 2061 Home               ;State 2072  
+Sense Here 2085 2074 Marker 4           ;State 2073  leaveR4 
+Sense Here 2085 2075 Marker 5           ;State 2074  
+Sense Here 2085 2076 Marker 3           ;State 2075  
+Sense Here 2081 2077 Marker 1           ;State 2076  
+Sense Here 2081 2078 Marker 2           ;State 2077  
+Sense Here 2081 2079 Marker 0           ;State 2078  
+Mark 2 2080                             ;State 2079  
+Mark 1 2081                             ;State 2080  
+Sense RightAhead 2083 2082 Home         ;State 2081  
+Turn Right 2086                         ;State 2082  
+Move 2073 2084                          ;State 2083  
+Turn Left 478                           ;State 2084 
+Flip 2 149 2076                         ;State 2085  
+Sense Here 2098 2087 Marker 4           ;State 2086  leaveR5 
+Sense Here 2098 2088 Marker 5           ;State 2087  
+Sense Here 2098 2089 Marker 3           ;State 2088  
+Sense Here 2094 2090 Marker 1           ;State 2089  
+Sense Here 2094 2091 Marker 2           ;State 2090  
+Sense Here 2094 2092 Marker 0           ;State 2091  
+Mark 1 2093                             ;State 2092  
+Mark 0 2094                             ;State 2093  
+Sense RightAhead 2095 453 Home          ;State 2094  
+Move 2086 2096                          ;State 2095  
+Turn Left 2097                          ;State 2096 
+Turn Left 2022                          ;State 2097  
+Flip 2 1678 2089                        ;State 2098  
+Turn Left 507                           ;State 2099   
+Flip 2 2063 569                         ;State 2100  homeaheadanyway2 
+Turn Left 503                           ;State 2101  
+Sense Here 2108 2103 Marker 2           ;State 2102  followpathhomeanyway1 
+Sense Here 2106 2104 Marker 1           ;State 2103  
+Sense Here 2105 74 Marker 0             ;State 2104  
+Turn Right 493                          ;State 2105 
+Sense Here 510 2107 Marker 0            ;State 2106 
+Turn Right 514                          ;State 2107    
+Sense Here 2111 2109 Marker 1           ;State 2108 
+Sense Here 2101 2110 Marker 0           ;State 2109  
+Turn Left 2137                          ;State 2110  
+Sense Here 2112 507 Marker 0            ;State 2111 
+Sense Ahead 555 2113 Marker 1           ;State 2112 
+Sense Ahead 555 2114 Marker 2           ;State 2113  
+Sense Ahead 555 2115 Marker 0           ;State 2114  
+Turn Left 2116                          ;State 2115  
+Sense Ahead 2135 2117 Marker 1          ;State 2116  
+Sense Ahead 2135 2118 Marker 2          ;State 2117  
+Sense Ahead 2135 2119 Marker 0          ;State 2118  
+Turn Left 2120                          ;State 2119  
+Sense Ahead 553 2121 Marker 1           ;State 2120  
+Sense Ahead 553 2122 Marker 2           ;State 2121  
+Sense Ahead 553 2123 Marker 0           ;State 2122  
+Turn Right 2124                         ;State 2123  
+Turn Right 2125                         ;State 2124  
+Turn Right 2126                         ;State 2125  
+Sense Ahead 556 2127 Marker 1           ;State 2126  
+Sense Ahead 556 2128 Marker 2           ;State 2127  
+Sense Ahead 556 2129 Marker 0           ;State 2128  
+Turn Right 2130                         ;State 2129  
+Sense Ahead 557 2131 Marker 1           ;State 2130  
+Sense Ahead 557 2132 Marker 2           ;State 2131  
+Sense Ahead 557 2133 Marker 0           ;State 2132  
+Turn Left 2134                          ;State 2133  
+Turn Left 555                           ;State 2134  
+Move 2138 2135                          ;State 2135  followpathhomeanywayemergency0:0 followpathhomeanywayemergency0 
+Flip 2 2065 567                         ;State 2136  homeaheadanyway1 
+Turn Left 499                           ;State 2137   
+Sense Here 2145 2139 Marker 2           ;State 2138  followpathhomeanyway0 
+Sense Here 2142 2140 Marker 1           ;State 2139  
+Sense Here 2141 43 Marker 0             ;State 2140  
+Turn Left 2172                          ;State 2141 
+Sense Here 2144 2143 Marker 0           ;State 2142 
+Turn Right 2107                         ;State 2143  
+Turn Right 510                          ;State 2144   
+Sense Here 2147 2146 Marker 1           ;State 2145 
+Sense Here 503 2137 Marker 0            ;State 2146  
+Sense Here 2148 506 Marker 0            ;State 2147 
+Sense Ahead 2135 2149 Marker 1          ;State 2148 
+Sense Ahead 2135 2150 Marker 2          ;State 2149  
+Sense Ahead 2135 2151 Marker 0          ;State 2150  
+Turn Left 2152                          ;State 2151  
+Sense Ahead 553 2153 Marker 1           ;State 2152  
+Sense Ahead 553 2154 Marker 2           ;State 2153  
+Sense Ahead 553 2155 Marker 0           ;State 2154  
+Turn Left 2156                          ;State 2155  
+Sense Ahead 554 2157 Marker 1           ;State 2156  
+Sense Ahead 554 2158 Marker 2           ;State 2157  
+Sense Ahead 554 2159 Marker 0           ;State 2158  
+Turn Right 2160                         ;State 2159  
+Turn Right 2161                         ;State 2160  
+Turn Right 2162                         ;State 2161  
+Sense Ahead 555 2163 Marker 1           ;State 2162  
+Sense Ahead 555 2164 Marker 2           ;State 2163  
+Sense Ahead 555 2165 Marker 0           ;State 2164  
+Turn Right 2166                         ;State 2165  
+Sense Ahead 556 2167 Marker 1           ;State 2166  
+Sense Ahead 556 2168 Marker 2           ;State 2167  
+Sense Ahead 556 2169 Marker 0           ;State 2168  
+Turn Left 2170                          ;State 2169  
+Turn Left 2135                          ;State 2170  
+Flip 2 2067 565                         ;State 2171  homeaheadanyway0 
+Turn Left 495                           ;State 2172   
+Sense Here 2179 2174 Marker 2           ;State 2173  followpathhomeanyway5 
+Sense Here 2176 2175 Marker 1           ;State 2174  
+Sense Here 2172 112 Marker 0            ;State 2175  
+Sense Here 2178 2177 Marker 0           ;State 2176 
+Turn Left 2207                          ;State 2177  
+Turn Right 2144                         ;State 2178 
+Sense Here 2181 2180 Marker 1           ;State 2179 
+Sense Here 502 499 Marker 0             ;State 2180  
+Sense Here 2183 2182 Marker 0           ;State 2181 
+Turn Right 506                          ;State 2182    
+Sense Ahead 553 2184 Marker 1           ;State 2183 
+Sense Ahead 553 2185 Marker 2           ;State 2184  
+Sense Ahead 553 2186 Marker 0           ;State 2185  
+Turn Left 2187                          ;State 2186  
+Sense Ahead 554 2188 Marker 1           ;State 2187  
+Sense Ahead 554 2189 Marker 2           ;State 2188  
+Sense Ahead 554 2190 Marker 0           ;State 2189  
+Turn Left 2191                          ;State 2190  
+Sense Ahead 557 2192 Marker 1           ;State 2191  
+Sense Ahead 557 2193 Marker 2           ;State 2192  
+Sense Ahead 557 2194 Marker 0           ;State 2193  
+Turn Right 2195                         ;State 2194  
+Turn Right 2196                         ;State 2195  
+Turn Right 2197                         ;State 2196  
+Sense Ahead 2135 2198 Marker 1          ;State 2197  
+Sense Ahead 2135 2199 Marker 2          ;State 2198  
+Sense Ahead 2135 2200 Marker 0          ;State 2199  
+Turn Right 2201                         ;State 2200  
+Sense Ahead 555 2202 Marker 1           ;State 2201  
+Sense Ahead 555 2203 Marker 2           ;State 2202  
+Sense Ahead 555 2204 Marker 0           ;State 2203  
+Turn Left 2205                          ;State 2204  
+Turn Left 553                           ;State 2205  
+Flip 2 2069 563                         ;State 2206  homeaheadanyway5 
+Turn Left 515                           ;State 2207   
+Sense Here 2213 2209 Marker 2           ;State 2208  followpathhomeanyway4 
+Sense Here 2211 2210 Marker 1           ;State 2209  
+Sense Here 495 53 Marker 0              ;State 2210  
+Sense Here 2212 2207 Marker 0           ;State 2211 
+Turn Left 518                           ;State 2212 
+Sense Here 2215 2214 Marker 1           ;State 2213 
+Sense Here 527 498 Marker 0             ;State 2214  
+Sense Here 2217 2216 Marker 0           ;State 2215 
+Turn Right 2182                         ;State 2216  
+Sense Ahead 554 2218 Marker 1           ;State 2217 
+Sense Ahead 554 2219 Marker 2           ;State 2218  
+Sense Ahead 554 2220 Marker 0           ;State 2219  
+Turn Left 2221                          ;State 2220  
+Sense Ahead 557 2222 Marker 1           ;State 2221  
+Sense Ahead 557 2223 Marker 2           ;State 2222  
+Sense Ahead 557 2224 Marker 0           ;State 2223  
+Turn Left 2225                          ;State 2224  
+Sense Ahead 556 2226 Marker 1           ;State 2225  
+Sense Ahead 556 2227 Marker 2           ;State 2226  
+Sense Ahead 556 2228 Marker 0           ;State 2227  
+Turn Right 2229                         ;State 2228  
+Turn Right 2230                         ;State 2229  
+Turn Right 2231                         ;State 2230  
+Sense Ahead 553 2232 Marker 1           ;State 2231  
+Sense Ahead 553 2233 Marker 2           ;State 2232  
+Sense Ahead 553 2234 Marker 0           ;State 2233  
+Turn Right 2235                         ;State 2234  
+Sense Ahead 2135 2236 Marker 1          ;State 2235  
+Sense Ahead 2135 2237 Marker 2          ;State 2236  
+Sense Ahead 2135 2238 Marker 0          ;State 2237  
+Turn Left 2239                          ;State 2238  
+Turn Left 554                           ;State 2239  
+Flip 2 2071 561                         ;State 2240  homeaheadanyway4 
+Sense Here 511 514 Marker 0             ;State 2241 
+Sense Here 2246 2243 Marker 1           ;State 2242 
+Sense Here 2245 2244 Marker 0           ;State 2243  
+Turn Right 525                          ;State 2244  
+Turn Left 2101                          ;State 2245 
+Sense Here 2247 2099 Marker 0           ;State 2246 
+Sense Ahead 556 2248 Marker 1           ;State 2247 
+Sense Ahead 556 2249 Marker 2           ;State 2248  
+Sense Ahead 556 2250 Marker 0           ;State 2249  
+Turn Left 2251                          ;State 2250  
+Sense Ahead 555 2252 Marker 1           ;State 2251  
+Sense Ahead 555 2253 Marker 2           ;State 2252  
+Sense Ahead 555 2254 Marker 0           ;State 2253  
+Turn Left 2255                          ;State 2254  
+Sense Ahead 2135 2256 Marker 1          ;State 2255  
+Sense Ahead 2135 2257 Marker 2          ;State 2256  
+Sense Ahead 2135 2258 Marker 0          ;State 2257  
+Turn Right 2259                         ;State 2258  
+Turn Right 2260                         ;State 2259  
+Turn Right 2261                         ;State 2260  
+Sense Ahead 557 2262 Marker 1           ;State 2261  
+Sense Ahead 557 2263 Marker 2           ;State 2262  
+Sense Ahead 557 2264 Marker 0           ;State 2263  
+Turn Right 2265                         ;State 2264  
+Sense Ahead 554 2266 Marker 1           ;State 2265  
+Sense Ahead 554 2267 Marker 2           ;State 2266  
+Sense Ahead 554 2268 Marker 0           ;State 2267  
+Turn Left 2269                          ;State 2268  
+Turn Left 556                           ;State 2269  
+Move 470 2271                           ;State 2270  
+Turn Left 2272                          ;State 2271 
+Turn Left 34                            ;State 2272  
+Flip 2 290 473                          ;State 2273  
+Move 462 2275                           ;State 2274  
+Turn Left 2276                          ;State 2275 
+Turn Left 584                           ;State 2276  
+Flip 2 1789 465                         ;State 2277  
+Move 454 2279                           ;State 2278  
+Turn Left 2280                          ;State 2279 
+Turn Left 1998                          ;State 2280  
+Flip 2 3031 457                         ;State 2281  
+Turn Left 580                           ;State 2282 
+Sense Here 425 2284 Marker 0            ;State 2283 
+Turn Left 171                           ;State 2284    
+Sense Here 2288 2286 Marker 1           ;State 2285 
+Sense Here 2287 310 Marker 0            ;State 2286  
+Turn Right 386                          ;State 2287   
+Sense Here 425 2289 Marker 0            ;State 2288 
+Turn Right 424                          ;State 2289    
+Mark 5 2291                             ;State 2290  
+Unmark 4 2292                           ;State 2291    
+Mark 3 3031                             ;State 2292    
+Mark 5 2294                             ;State 2293  
+Mark 4 1702                             ;State 2294    
+Unmark 5 2296                           ;State 2295 
+Mark 4 2297                             ;State 2296  
+Mark 3 1764                             ;State 2297    
+Unmark 5 2299                           ;State 2298  
+Mark 4 2300                             ;State 2299    
+Unmark 3 1764                           ;State 2300    
+Unmark 5 2302                           ;State 2301  
+Unmark 4 2297                           ;State 2302    
+PickUp 1508 1816                        ;State 2303 
+Sense Here 2306 2305 Marker 3           ;State 2304 
+PickUp 1508 1821                        ;State 2305  
+PickUp 1508 1824                        ;State 2306 
+Sense Here 2313 2308 Marker 4           ;State 2307 
+Sense Here 2311 2309 Marker 3           ;State 2308  
+PickUp 1508 2310                        ;State 2309  
+Turn Right 1965                         ;State 2310  
+PickUp 1508 2312                        ;State 2311 
+Turn Left 1887                          ;State 2312  
+Sense Here 296 2314 Marker 3            ;State 2313 
+PickUp 1508 1974                        ;State 2314  
+Mark 5 2316                             ;State 2315  foundfoodTrue2 
+Mark 4 2317                             ;State 2316  
+Mark 3 1508                             ;State 2317  
+Sense Here 2323 2319 Marker 1           ;State 2318  
+Sense Here 2323 2320 Marker 2           ;State 2319  
+Sense Here 2323 2321 Marker 0           ;State 2320  
+Mark 2 2322                             ;State 2321  
+Mark 1 2323                             ;State 2322  
+PickUp 2462 2324                        ;State 2323  
+Sense Here 149 2325 Marker 4            ;State 2324  
+Sense Here 149 2326 Marker 5            ;State 2325  
+Sense Here 149 2327 Marker 3            ;State 2326  
+Mark 4 148                              ;State 2327  
+Flip 2 2330 2329                        ;State 2328  
+Flip 6 62 273                           ;State 2329    
+Flip 6 276 275                          ;State 2330  
+Sense Here 2407 2332 Home               ;State 2331  
+Sense Here 1764 2333 Marker 4           ;State 2332  default3$7677 
+Sense Here 1764 2334 Marker 5           ;State 2333  
+Sense Here 1764 2335 Marker 3           ;State 2334  
+Sense Here 2406 2336 Marker 1           ;State 2335  
+Sense Here 2406 2337 Marker 2           ;State 2336  
+Sense Here 2406 2338 Marker 0           ;State 2337  
+Mark 2 2339                             ;State 2338    
+Mark 0 2340                             ;State 2339    
+PickUp 1955 2341                        ;State 2340    
+Sense Ahead 2415 2342 FoeHome           ;State 2341  
+Move 2347 2343                          ;State 2342  
+Sense Ahead 2328 2344 Foe               ;State 2343 
+Sense Ahead 277 2345 FriendWithFood     ;State 2344  
+Sense Ahead 276 2346 Friend             ;State 2345  
+Sense Ahead 271 2347 Rock               ;State 2346  
+Sense Here 2398 2348 Home               ;State 2347  
+Sense Here 1764 2349 Marker 4           ;State 2348  default3$7676 
+Sense Here 1764 2350 Marker 5           ;State 2349  
+Sense Here 1764 2351 Marker 3           ;State 2350  
+Sense Here 2397 2352 Marker 1           ;State 2351  
+Sense Here 2397 2353 Marker 2           ;State 2352  
+Sense Here 2397 2354 Marker 0           ;State 2353  
+Mark 2 2355                             ;State 2354    
+Mark 0 2356                             ;State 2355    
+PickUp 1955 2357                        ;State 2356    
+Sense Ahead 2415 2358 FoeHome           ;State 2357  
+Move 2363 2359                          ;State 2358  
+Sense Ahead 2328 2360 Foe               ;State 2359 
+Sense Ahead 277 2361 FriendWithFood     ;State 2360  
+Sense Ahead 276 2362 Friend             ;State 2361  
+Sense Ahead 271 2363 Rock               ;State 2362  
+Sense Here 2389 2364 Home               ;State 2363  
+Sense Here 1764 2365 Marker 4           ;State 2364  default3$7675 
+Sense Here 1764 2366 Marker 5           ;State 2365  
+Sense Here 1764 2367 Marker 3           ;State 2366  
+Sense Here 2388 2368 Marker 1           ;State 2367  
+Sense Here 2388 2369 Marker 2           ;State 2368  
+Sense Here 2388 2370 Marker 0           ;State 2369  
+Mark 2 2371                             ;State 2370    
+Mark 0 2372                             ;State 2371    
+PickUp 1955 2373                        ;State 2372    
+Sense Ahead 2415 2374 FoeHome           ;State 2373  
+Move 2379 2375                          ;State 2374  
+Sense Ahead 2328 2376 Foe               ;State 2375 
+Sense Ahead 277 2377 FriendWithFood     ;State 2376  
+Sense Ahead 276 2378 Friend             ;State 2377  
+Sense Ahead 271 2379 Rock               ;State 2378  
+Sense Here 2380 2022 Home               ;State 2379  
+Sense Here 2386 2381 Marker 2           ;State 2380 
+Sense Here 2383 2382 Marker 1           ;State 2381  
+Sense Here 2383 2028 Marker 0           ;State 2382  
+Sense Here 1764 2384 Marker 4           ;State 2383     
+Sense Here 1764 2385 Marker 5           ;State 2384    
+Sense Here 1764 2033 Marker 3           ;State 2385    
+Sense Here 2387 2383 Marker 1           ;State 2386 
+Sense Here 425 2383 Marker 0            ;State 2387 
+Flip 1000 519 2372                      ;State 2388      
+Sense Here 2395 2390 Marker 2           ;State 2389 
+Sense Here 2392 2391 Marker 1           ;State 2390  
+Sense Here 2392 2370 Marker 0           ;State 2391  
+Sense Here 1764 2393 Marker 4           ;State 2392     
+Sense Here 1764 2394 Marker 5           ;State 2393    
+Sense Here 1764 2388 Marker 3           ;State 2394    
+Sense Here 2396 2392 Marker 1           ;State 2395 
+Sense Here 425 2392 Marker 0            ;State 2396 
+Flip 1000 519 2356                      ;State 2397      
+Sense Here 2404 2399 Marker 2           ;State 2398 
+Sense Here 2401 2400 Marker 1           ;State 2399  
+Sense Here 2401 2354 Marker 0           ;State 2400  
+Sense Here 1764 2402 Marker 4           ;State 2401     
+Sense Here 1764 2403 Marker 5           ;State 2402    
+Sense Here 1764 2397 Marker 3           ;State 2403    
+Sense Here 2405 2401 Marker 1           ;State 2404 
+Sense Here 425 2401 Marker 0            ;State 2405 
+Flip 1000 519 2340                      ;State 2406      
+Sense Here 2413 2408 Marker 2           ;State 2407 
+Sense Here 2410 2409 Marker 1           ;State 2408  
+Sense Here 2410 2338 Marker 0           ;State 2409  
+Sense Here 1764 2411 Marker 4           ;State 2410     
+Sense Here 1764 2412 Marker 5           ;State 2411    
+Sense Here 1764 2406 Marker 3           ;State 2412    
+Sense Here 2414 2410 Marker 1           ;State 2413 
+Sense Here 425 2410 Marker 0            ;State 2414 
+Flip 2 276 62                           ;State 2415  
+Turn Left 2417                          ;State 2416 
+Turn Left 346                           ;State 2417   
+Sense Here 2421 2419 Marker 1           ;State 2418 
+Sense Here 2420 383 Marker 0            ;State 2419  
+Turn Right 2287                         ;State 2420   
+Sense Here 425 2422 Marker 0            ;State 2421 
+Turn Right 2289                         ;State 2422  
+Turn Right 261                          ;State 2423   
+Sense Here 2417 264 Marker 0            ;State 2424 
+Sense Here 2428 2426 Marker 1           ;State 2425 
+Sense Here 2427 382 Marker 0            ;State 2426  
+Turn Right 2420                         ;State 2427 
+Sense Here 425 2429 Marker 0            ;State 2428 
+Turn Left 2284                          ;State 2429  
+Move 347 2430                           ;State 2430  followpathhomedeleteemergency2:0 followpathhomedeleteemergency2 
+Move 311 2431                           ;State 2431  followpathhomedeleteemergency5:0 followpathhomedeleteemergency5 
+Move 387 2432                           ;State 2432  followpathhomedeleteemergency0:0 followpathhomedeleteemergency0 
+Move 172 2433                           ;State 2433  followpathhomedeleteemergency1:0 followpathhomedeleteemergency1 
+Turn Right 376                          ;State 2434 
+Sense Here 345 419 Marker 0             ;State 2435 
+Sense Here 2439 2437 Marker 1           ;State 2436 
+Sense Here 385 2438 Marker 0            ;State 2437  
+Turn Left 422                           ;State 2438  
+Sense Here 425 171 Marker 0             ;State 2439 
+Unmark 5 2441                           ;State 2440  
+Mark 4 289                              ;State 2441    
+Unmark 5 1810                           ;State 2442  
+Unmark 5 2444                           ;State 2443 
+Unmark 4 2445                           ;State 2444    
+Mark 3 1678                             ;State 2445    
+Mark 5 2447                             ;State 2446  
+Unmark 4 2448                           ;State 2447    
+Unmark 3 1678                           ;State 2448    
+Mark 5 2444                             ;State 2449  
+PickUp 1303 1705                        ;State 2450 
+Sense Here 2453 2452 Marker 3           ;State 2451 
+PickUp 1303 1735                        ;State 2452  
+PickUp 1303 2454                        ;State 2453 
+Turn Left 1961                          ;State 2454  
+Sense Here 2459 2456 Marker 4           ;State 2455 
+Sense Here 2458 2457 Marker 3           ;State 2456  
+PickUp 1303 1966                        ;State 2457  
+PickUp 1303 1969                        ;State 2458 
+Sense Here 157 2460 Marker 3            ;State 2459 
+PickUp 1303 2461                        ;State 2460  
+Turn Right 1984                         ;State 2461  
+Mark 5 2463                             ;State 2462  foundfoodTrue4 
+Mark 4 2464                             ;State 2463  
+Mark 3 1303                             ;State 2464  
+Sense Here 2468 2466 Marker 0           ;State 2465  
+Sense Here 2468 2467 Marker 2           ;State 2466  
+Mark 1 2468                             ;State 2467  
+PickUp 3027 2469                        ;State 2468  
+Sense Here 3031 2470 Marker 4           ;State 2469  
+Sense Here 3031 2292 Marker 5           ;State 2470  
+Flip 2 2473 2472                        ;State 2471  
+Flip 6 52 120                           ;State 2472    
+Flip 6 123 122                          ;State 2473  
+Sense Here 2550 2475 Home               ;State 2474  
+Sense Here 1678 2476 Marker 4           ;State 2475  default5$11555 
+Sense Here 1678 2477 Marker 5           ;State 2476  
+Sense Here 1678 2478 Marker 3           ;State 2477  
+Sense Here 2549 2479 Marker 1           ;State 2478  
+Sense Here 2549 2480 Marker 2           ;State 2479  
+Sense Here 2549 2481 Marker 0           ;State 2480  
+Mark 1 2482                             ;State 2481    
+Mark 0 2483                             ;State 2482    
+PickUp 595 2484                         ;State 2483    
+Sense Ahead 2558 2485 FoeHome           ;State 2484  
+Move 2490 2486                          ;State 2485  
+Sense Ahead 2471 2487 Foe               ;State 2486 
+Sense Ahead 124 2488 FriendWithFood     ;State 2487  
+Sense Ahead 123 2489 Friend             ;State 2488  
+Sense Ahead 118 2490 Rock               ;State 2489  
+Sense Here 2541 2491 Home               ;State 2490  
+Sense Here 1678 2492 Marker 4           ;State 2491  default5$11554 
+Sense Here 1678 2493 Marker 5           ;State 2492  
+Sense Here 1678 2494 Marker 3           ;State 2493  
+Sense Here 2540 2495 Marker 1           ;State 2494  
+Sense Here 2540 2496 Marker 2           ;State 2495  
+Sense Here 2540 2497 Marker 0           ;State 2496  
+Mark 1 2498                             ;State 2497    
+Mark 0 2499                             ;State 2498    
+PickUp 595 2500                         ;State 2499    
+Sense Ahead 2558 2501 FoeHome           ;State 2500  
+Move 2506 2502                          ;State 2501  
+Sense Ahead 2471 2503 Foe               ;State 2502 
+Sense Ahead 124 2504 FriendWithFood     ;State 2503  
+Sense Ahead 123 2505 Friend             ;State 2504  
+Sense Ahead 118 2506 Rock               ;State 2505  
+Sense Here 2532 2507 Home               ;State 2506  
+Sense Here 1678 2508 Marker 4           ;State 2507  default5$11553 
+Sense Here 1678 2509 Marker 5           ;State 2508  
+Sense Here 1678 2510 Marker 3           ;State 2509  
+Sense Here 2531 2511 Marker 1           ;State 2510  
+Sense Here 2531 2512 Marker 2           ;State 2511  
+Sense Here 2531 2513 Marker 0           ;State 2512  
+Mark 1 2514                             ;State 2513    
+Mark 0 2515                             ;State 2514    
+PickUp 595 2516                         ;State 2515    
+Sense Ahead 2558 2517 FoeHome           ;State 2516  
+Move 2522 2518                          ;State 2517  
+Sense Ahead 2471 2519 Foe               ;State 2518 
+Sense Ahead 124 2520 FriendWithFood     ;State 2519  
+Sense Ahead 123 2521 Friend             ;State 2520  
+Sense Ahead 118 2522 Rock               ;State 2521  
+Sense Here 2523 584 Home                ;State 2522  
+Sense Here 2529 2524 Marker 2           ;State 2523 
+Sense Here 2526 2525 Marker 1           ;State 2524  
+Sense Here 2526 590 Marker 0            ;State 2525  
+Sense Here 1678 2527 Marker 4           ;State 2526     
+Sense Here 1678 2528 Marker 5           ;State 2527    
+Sense Here 1678 1677 Marker 3           ;State 2528    
+Sense Here 2530 2526 Marker 1           ;State 2529 
+Sense Here 425 2526 Marker 0            ;State 2530 
+Flip 1000 2173 2515                     ;State 2531      
+Sense Here 2538 2533 Marker 2           ;State 2532 
+Sense Here 2535 2534 Marker 1           ;State 2533  
+Sense Here 2535 2513 Marker 0           ;State 2534  
+Sense Here 1678 2536 Marker 4           ;State 2535     
+Sense Here 1678 2537 Marker 5           ;State 2536    
+Sense Here 1678 2531 Marker 3           ;State 2537    
+Sense Here 2539 2535 Marker 1           ;State 2538 
+Sense Here 425 2535 Marker 0            ;State 2539 
+Flip 1000 2173 2499                     ;State 2540      
+Sense Here 2547 2542 Marker 2           ;State 2541 
+Sense Here 2544 2543 Marker 1           ;State 2542  
+Sense Here 2544 2497 Marker 0           ;State 2543  
+Sense Here 1678 2545 Marker 4           ;State 2544     
+Sense Here 1678 2546 Marker 5           ;State 2545    
+Sense Here 1678 2540 Marker 3           ;State 2546    
+Sense Here 2548 2544 Marker 1           ;State 2547 
+Sense Here 425 2544 Marker 0            ;State 2548 
+Flip 1000 2173 2483                     ;State 2549      
+Sense Here 2556 2551 Marker 2           ;State 2550 
+Sense Here 2553 2552 Marker 1           ;State 2551  
+Sense Here 2553 2481 Marker 0           ;State 2552  
+Sense Here 1678 2554 Marker 4           ;State 2553     
+Sense Here 1678 2555 Marker 5           ;State 2554    
+Sense Here 1678 2549 Marker 3           ;State 2555    
+Sense Here 2557 2553 Marker 1           ;State 2556 
+Sense Here 425 2553 Marker 0            ;State 2557 
+Flip 2 123 52                           ;State 2558  
+Sense Here 53 2560 Marker 1             ;State 2559    
+Sense Here 53 2561 Marker 2             ;State 2560    
+Sense Here 53 2562 Marker 0             ;State 2561    
+Mark 2 2563                             ;State 2562    
+Mark 1 53                               ;State 2563    
+Sense Here 265 2565 Marker 1            ;State 2564    
+Sense Here 265 2566 Marker 2            ;State 2565    
+Sense Here 265 2567 Marker 0            ;State 2566    
+Mark 2 2568                             ;State 2567    
+Mark 0 265                              ;State 2568    
+Sense Here 63 2570 Marker 1             ;State 2569    
+Sense Here 63 2571 Marker 0             ;State 2570    
+Mark 2 63                               ;State 2571    
+Sense Here 74 2573 Marker 1             ;State 2572    
+Sense Here 74 2574 Marker 2             ;State 2573    
+Mark 0 74                               ;State 2574    
+Turn Left 2576                          ;State 2575  escapeleft0 
+Move 107 1881                           ;State 2576  
+Sense Here 2580 2578 Marker 0           ;State 2577  
+Sense Here 2580 2579 Marker 2           ;State 2578  
+Mark 1 2580                             ;State 2579  
+PickUp 3027 2581                        ;State 2580  
+Sense Here 3031 2582 Marker 4           ;State 2581  
+Sense Here 3031 2583 Marker 5           ;State 2582  
+Sense Here 3031 2584 Marker 3           ;State 2583  
+Mark 4 2292                             ;State 2584  
+Sense Here 2588 2586 Marker 1           ;State 2585  
+Sense Here 2588 2587 Marker 0           ;State 2586  
+Mark 2 2588                             ;State 2587  
+PickUp 2315 2589                        ;State 2588  
+Sense Here 290 2590 Marker 4            ;State 2589  
+Sense Here 290 2591 Marker 5            ;State 2590  
+Sense Here 290 2592 Marker 3            ;State 2591  
+Mark 5 289                              ;State 2592  
+Flip 2 2595 2594                        ;State 2593  
+Flip 6 72 82                            ;State 2594    
+Flip 6 85 84                            ;State 2595  
+Sense Here 2680 2597 Home               ;State 2596  
+Sense Here 1789 2598 Marker 4           ;State 2597  default1$3799 
+Sense Here 1789 2599 Marker 5           ;State 2598  
+Sense Here 1789 2600 Marker 3           ;State 2599  
+Sense Here 2679 2601 Marker 1           ;State 2600  
+Sense Here 2679 2602 Marker 2           ;State 2601  
+Sense Here 2679 2603 Marker 0           ;State 2602  
+Mark 0 2604                             ;State 2603    
+PickUp 1812 2605                        ;State 2604    
+Sense Ahead 2688 2606 FoeHome           ;State 2605  
+Move 2611 2607                          ;State 2606  
+Sense Ahead 2593 2608 Foe               ;State 2607 
+Sense Ahead 86 2609 FriendWithFood      ;State 2608  
+Sense Ahead 85 2610 Friend              ;State 2609  
+Sense Ahead 80 2611 Rock                ;State 2610  
+Sense Here 2671 2612 Home               ;State 2611  
+Sense Here 1789 2613 Marker 4           ;State 2612  default1$3798 
+Sense Here 1789 2614 Marker 5           ;State 2613  
+Sense Here 1789 2615 Marker 3           ;State 2614  
+Sense Here 2670 2616 Marker 1           ;State 2615  
+Sense Here 2670 2617 Marker 2           ;State 2616  
+Sense Here 2670 2618 Marker 0           ;State 2617  
+Mark 0 2619                             ;State 2618    
+PickUp 1812 2620                        ;State 2619    
+Sense Ahead 2688 2621 FoeHome           ;State 2620  
+Move 2626 2622                          ;State 2621  
+Sense Ahead 2593 2623 Foe               ;State 2622 
+Sense Ahead 86 2624 FriendWithFood      ;State 2623  
+Sense Ahead 85 2625 Friend              ;State 2624  
+Sense Ahead 80 2626 Rock                ;State 2625  
+Sense Here 2662 2627 Home               ;State 2626  
+Sense Here 1789 2628 Marker 4           ;State 2627  default1$3797 
+Sense Here 1789 2629 Marker 5           ;State 2628  
+Sense Here 1789 2630 Marker 3           ;State 2629  
+Sense Here 2661 2631 Marker 1           ;State 2630  
+Sense Here 2661 2632 Marker 2           ;State 2631  
+Sense Here 2661 2633 Marker 0           ;State 2632  
+Mark 0 2634                             ;State 2633    
+PickUp 1812 2635                        ;State 2634    
+Sense Ahead 2688 2636 FoeHome           ;State 2635  
+Move 2641 2637                          ;State 2636  
+Sense Ahead 2593 2638 Foe               ;State 2637 
+Sense Ahead 86 2639 FriendWithFood      ;State 2638  
+Sense Ahead 85 2640 Friend              ;State 2639  
+Sense Ahead 80 2641 Rock                ;State 2640  
+Sense Here 2653 2642 Home               ;State 2641  
+Sense Here 1789 2643 Marker 4           ;State 2642  default1 
+Sense Here 1789 2644 Marker 5           ;State 2643  
+Sense Here 1789 2645 Marker 3           ;State 2644  
+Sense Here 2652 2646 Marker 1           ;State 2645  
+Sense Here 2652 2647 Marker 2           ;State 2646  
+Sense Here 2652 2648 Marker 0           ;State 2647  
+Mark 0 2649                             ;State 2648    
+PickUp 1812 2650                        ;State 2649    
+Flip 8 2651 74                          ;State 2650  
+Flip 2 72 85                            ;State 2651 
+Flip 1000 2102 2649                     ;State 2652      
+Sense Here 2659 2654 Marker 2           ;State 2653 
+Sense Here 2656 2655 Marker 1           ;State 2654  
+Sense Here 2656 2648 Marker 0           ;State 2655  
+Sense Here 1789 2657 Marker 4           ;State 2656     
+Sense Here 1789 2658 Marker 5           ;State 2657    
+Sense Here 1789 2652 Marker 3           ;State 2658    
+Sense Here 2660 2656 Marker 1           ;State 2659 
+Sense Here 425 2656 Marker 0            ;State 2660 
+Flip 1000 2102 2634                     ;State 2661      
+Sense Here 2668 2663 Marker 2           ;State 2662 
+Sense Here 2665 2664 Marker 1           ;State 2663  
+Sense Here 2665 2633 Marker 0           ;State 2664  
+Sense Here 1789 2666 Marker 4           ;State 2665     
+Sense Here 1789 2667 Marker 5           ;State 2666    
+Sense Here 1789 2661 Marker 3           ;State 2667    
+Sense Here 2669 2665 Marker 1           ;State 2668 
+Sense Here 425 2665 Marker 0            ;State 2669 
+Flip 1000 2102 2619                     ;State 2670      
+Sense Here 2677 2672 Marker 2           ;State 2671 
+Sense Here 2674 2673 Marker 1           ;State 2672  
+Sense Here 2674 2618 Marker 0           ;State 2673  
+Sense Here 1789 2675 Marker 4           ;State 2674     
+Sense Here 1789 2676 Marker 5           ;State 2675    
+Sense Here 1789 2670 Marker 3           ;State 2676    
+Sense Here 2678 2674 Marker 1           ;State 2677 
+Sense Here 425 2674 Marker 0            ;State 2678 
+Flip 1000 2102 2604                     ;State 2679      
+Sense Here 2686 2681 Marker 2           ;State 2680 
+Sense Here 2683 2682 Marker 1           ;State 2681  
+Sense Here 2683 2603 Marker 0           ;State 2682  
+Sense Here 1789 2684 Marker 4           ;State 2683     
+Sense Here 1789 2685 Marker 5           ;State 2684    
+Sense Here 1789 2679 Marker 3           ;State 2685    
+Sense Here 2687 2683 Marker 1           ;State 2686 
+Sense Here 425 2683 Marker 0            ;State 2687 
+Flip 2 85 72                            ;State 2688  
+Flip 2 2691 2690                        ;State 2689  
+Turn Right 276                          ;State 2690    
+Turn Right 265                          ;State 2691    
+Turn Right 2693                         ;State 2692  
+Move 2704 2694                          ;State 2693  goaround3 
+Turn Left 2695                          ;State 2694 
+Turn Left 2696                          ;State 2695  
+Move 2697 1941                          ;State 2696  gootherwayaround1 
+Sense Here 2700 2698 Marker 1           ;State 2697  
+Sense Here 2700 2699 Marker 2           ;State 2698  
+Mark 0 2700                             ;State 2699  
+PickUp 1812 2701                        ;State 2700  
+Sense Here 1789 2702 Marker 3           ;State 2701  
+Sense Here 1789 2703 Marker 5           ;State 2702  
+Mark 4 1789                             ;State 2703  
+Sense Here 2709 2705 Marker 1           ;State 2704  
+Sense Here 2709 2706 Marker 2           ;State 2705  
+Sense Here 2709 2707 Marker 0           ;State 2706  
+Mark 2 2708                             ;State 2707  
+Mark 0 2709                             ;State 2708  
+PickUp 1955 2710                        ;State 2709  
+Sense Here 1764 2711 Marker 4           ;State 2710  
+Sense Here 1764 2712 Marker 5           ;State 2711  
+Sense Here 1764 2713 Marker 3           ;State 2712  
+Mark 5 2714                             ;State 2713  
+Mark 4 1764                             ;State 2714  
+Flip 2 2717 2716                        ;State 2715  
+Flip 6 73 71                            ;State 2716    
+Flip 6 2691 2690                        ;State 2717  
+Sense Here 2791 2719 Home               ;State 2718  
+Sense Here 290 2720 Marker 4            ;State 2719  default2$5738 
+Sense Here 290 2721 Marker 5            ;State 2720  
+Sense Here 290 2722 Marker 3            ;State 2721  
+Sense Here 2790 2723 Marker 1           ;State 2722  
+Sense Here 2790 2724 Marker 2           ;State 2723  
+Sense Here 2790 2725 Marker 0           ;State 2724  
+Mark 2 2726                             ;State 2725    
+PickUp 2315 2727                        ;State 2726    
+Sense Ahead 2799 2728 FoeHome           ;State 2727  
+Move 2733 2729                          ;State 2728  
+Sense Ahead 2715 2730 Foe               ;State 2729 
+Sense Ahead 2692 2731 FriendWithFood    ;State 2730  
+Sense Ahead 2691 2732 Friend            ;State 2731  
+Sense Ahead 69 2733 Rock                ;State 2732  
+Sense Here 2782 2734 Home               ;State 2733  
+Sense Here 290 2735 Marker 4            ;State 2734  default2$5737 
+Sense Here 290 2736 Marker 5            ;State 2735  
+Sense Here 290 2737 Marker 3            ;State 2736  
+Sense Here 2781 2738 Marker 1           ;State 2737  
+Sense Here 2781 2739 Marker 2           ;State 2738  
+Sense Here 2781 2740 Marker 0           ;State 2739  
+Mark 2 2741                             ;State 2740    
+PickUp 2315 2742                        ;State 2741    
+Sense Ahead 2799 2743 FoeHome           ;State 2742  
+Move 2748 2744                          ;State 2743  
+Sense Ahead 2715 2745 Foe               ;State 2744 
+Sense Ahead 2692 2746 FriendWithFood    ;State 2745  
+Sense Ahead 2691 2747 Friend            ;State 2746  
+Sense Ahead 69 2748 Rock                ;State 2747  
+Sense Here 2773 2749 Home               ;State 2748  
+Sense Here 290 2750 Marker 4            ;State 2749  default2$5736 
+Sense Here 290 2751 Marker 5            ;State 2750  
+Sense Here 290 2752 Marker 3            ;State 2751  
+Sense Here 2772 2753 Marker 1           ;State 2752  
+Sense Here 2772 2754 Marker 2           ;State 2753  
+Sense Here 2772 2755 Marker 0           ;State 2754  
+Mark 2 2756                             ;State 2755    
+PickUp 2315 2757                        ;State 2756    
+Sense Ahead 2799 2758 FoeHome           ;State 2757  
+Move 2763 2759                          ;State 2758  
+Sense Ahead 2715 2760 Foe               ;State 2759 
+Sense Ahead 2692 2761 FriendWithFood    ;State 2760  
+Sense Ahead 2691 2762 Friend            ;State 2761  
+Sense Ahead 69 2763 Rock                ;State 2762  
+Sense Here 2764 479 Home                ;State 2763  
+Sense Here 2770 2765 Marker 2           ;State 2764 
+Sense Here 2767 2766 Marker 1           ;State 2765  
+Sense Here 2767 485 Marker 0            ;State 2766  
+Sense Here 290 2768 Marker 4            ;State 2767     
+Sense Here 290 2769 Marker 5            ;State 2768    
+Sense Here 290 489 Marker 3             ;State 2769    
+Sense Here 2771 2767 Marker 1           ;State 2770 
+Sense Here 425 2767 Marker 0            ;State 2771 
+Flip 1000 490 2756                      ;State 2772      
+Sense Here 2779 2774 Marker 2           ;State 2773 
+Sense Here 2776 2775 Marker 1           ;State 2774  
+Sense Here 2776 2755 Marker 0           ;State 2775  
+Sense Here 290 2777 Marker 4            ;State 2776     
+Sense Here 290 2778 Marker 5            ;State 2777    
+Sense Here 290 2772 Marker 3            ;State 2778    
+Sense Here 2780 2776 Marker 1           ;State 2779 
+Sense Here 425 2776 Marker 0            ;State 2780 
+Flip 1000 490 2741                      ;State 2781      
+Sense Here 2788 2783 Marker 2           ;State 2782 
+Sense Here 2785 2784 Marker 1           ;State 2783  
+Sense Here 2785 2740 Marker 0           ;State 2784  
+Sense Here 290 2786 Marker 4            ;State 2785     
+Sense Here 290 2787 Marker 5            ;State 2786    
+Sense Here 290 2781 Marker 3            ;State 2787    
+Sense Here 2789 2785 Marker 1           ;State 2788 
+Sense Here 425 2785 Marker 0            ;State 2789 
+Flip 1000 490 2726                      ;State 2790      
+Sense Here 2797 2792 Marker 2           ;State 2791 
+Sense Here 2794 2793 Marker 1           ;State 2792  
+Sense Here 2794 2725 Marker 0           ;State 2793  
+Sense Here 290 2795 Marker 4            ;State 2794     
+Sense Here 290 2796 Marker 5            ;State 2795    
+Sense Here 290 2790 Marker 3            ;State 2796    
+Sense Here 2798 2794 Marker 1           ;State 2797 
+Sense Here 425 2794 Marker 0            ;State 2798 
+Flip 2 2691 73                          ;State 2799  
+Turn Left 265                           ;State 2800   
+Flip 2 2803 2802                        ;State 2801  
+Turn Right 123                          ;State 2802    
+Turn Right 112                          ;State 2803  
+Turn Right 2805                         ;State 2804  
+Move 2818 2806                          ;State 2805  goaround5 
+Turn Left 2807                          ;State 2806 
+Turn Left 2808                          ;State 2807  
+Move 2809 1760                          ;State 2808  gootherwayaround3 
+Sense Here 2814 2810 Marker 1           ;State 2809  
+Sense Here 2814 2811 Marker 2           ;State 2810  
+Sense Here 2814 2812 Marker 0           ;State 2811  
+Mark 2 2813                             ;State 2812  
+Mark 0 2814                             ;State 2813  
+PickUp 1955 2815                        ;State 2814  
+Sense Here 1764 2816 Marker 4           ;State 2815  
+Sense Here 1764 2817 Marker 3           ;State 2816  
+Mark 5 1764                             ;State 2817  
+Sense Here 2823 2819 Marker 1           ;State 2818  
+Sense Here 2823 2820 Marker 2           ;State 2819  
+Sense Here 2823 2821 Marker 0           ;State 2820  
+Mark 1 2822                             ;State 2821  
+Mark 0 2823                             ;State 2822  
+PickUp 595 2824                         ;State 2823  
+Sense Here 1678 2825 Marker 3           ;State 2824  
+Sense Here 1678 2826 Marker 5           ;State 2825  
+Mark 4 1678                             ;State 2826    
+Flip 2 2829 2828                        ;State 2827  
+Flip 6 2800 61                          ;State 2828    
+Flip 6 2803 2802                        ;State 2829  
+Sense Here 2906 2831 Home               ;State 2830  
+Sense Here 149 2832 Marker 4            ;State 2831  default4$9616 
+Sense Here 149 2833 Marker 5            ;State 2832  
+Sense Here 149 2834 Marker 3            ;State 2833  
+Sense Here 2905 2835 Marker 1           ;State 2834  
+Sense Here 2905 2836 Marker 2           ;State 2835  
+Sense Here 2905 2837 Marker 0           ;State 2836  
+Mark 2 2838                             ;State 2837    
+Mark 1 2839                             ;State 2838    
+PickUp 2462 2840                        ;State 2839    
+Sense Ahead 2914 2841 FoeHome           ;State 2840  
+Move 2846 2842                          ;State 2841  
+Sense Ahead 2827 2843 Foe               ;State 2842 
+Sense Ahead 2804 2844 FriendWithFood    ;State 2843  
+Sense Ahead 2803 2845 Friend            ;State 2844  
+Sense Ahead 59 2846 Rock                ;State 2845  
+Sense Here 2897 2847 Home               ;State 2846  
+Sense Here 149 2848 Marker 4            ;State 2847  default4$9615 
+Sense Here 149 2849 Marker 5            ;State 2848  
+Sense Here 149 2850 Marker 3            ;State 2849  
+Sense Here 2896 2851 Marker 1           ;State 2850  
+Sense Here 2896 2852 Marker 2           ;State 2851  
+Sense Here 2896 2853 Marker 0           ;State 2852  
+Mark 2 2854                             ;State 2853    
+Mark 1 2855                             ;State 2854    
+PickUp 2462 2856                        ;State 2855    
+Sense Ahead 2914 2857 FoeHome           ;State 2856  
+Move 2862 2858                          ;State 2857  
+Sense Ahead 2827 2859 Foe               ;State 2858 
+Sense Ahead 2804 2860 FriendWithFood    ;State 2859  
+Sense Ahead 2803 2861 Friend            ;State 2860  
+Sense Ahead 59 2862 Rock                ;State 2861  
+Sense Here 2888 2863 Home               ;State 2862  
+Sense Here 149 2864 Marker 4            ;State 2863  default4$9614 
+Sense Here 149 2865 Marker 5            ;State 2864  
+Sense Here 149 2866 Marker 3            ;State 2865  
+Sense Here 2887 2867 Marker 1           ;State 2866  
+Sense Here 2887 2868 Marker 2           ;State 2867  
+Sense Here 2887 2869 Marker 0           ;State 2868  
+Mark 2 2870                             ;State 2869    
+Mark 1 2871                             ;State 2870    
+PickUp 2462 2872                        ;State 2871    
+Sense Ahead 2914 2873 FoeHome           ;State 2872  
+Move 2878 2874                          ;State 2873  
+Sense Ahead 2827 2875 Foe               ;State 2874 
+Sense Ahead 2804 2876 FriendWithFood    ;State 2875  
+Sense Ahead 2803 2877 Friend            ;State 2876  
+Sense Ahead 59 2878 Rock                ;State 2877  
+Sense Here 2879 1998 Home               ;State 2878  
+Sense Here 2885 2880 Marker 2           ;State 2879 
+Sense Here 2882 2881 Marker 1           ;State 2880  
+Sense Here 2882 2004 Marker 0           ;State 2881  
+Sense Here 149 2883 Marker 4            ;State 2882     
+Sense Here 149 2884 Marker 5            ;State 2883    
+Sense Here 149 2009 Marker 3            ;State 2884    
+Sense Here 2886 2882 Marker 1           ;State 2885 
+Sense Here 425 2882 Marker 0            ;State 2886 
+Flip 1000 2208 2871                     ;State 2887      
+Sense Here 2894 2889 Marker 2           ;State 2888 
+Sense Here 2891 2890 Marker 1           ;State 2889  
+Sense Here 2891 2869 Marker 0           ;State 2890  
+Sense Here 149 2892 Marker 4            ;State 2891     
+Sense Here 149 2893 Marker 5            ;State 2892    
+Sense Here 149 2887 Marker 3            ;State 2893    
+Sense Here 2895 2891 Marker 1           ;State 2894 
+Sense Here 425 2891 Marker 0            ;State 2895 
+Flip 1000 2208 2855                     ;State 2896      
+Sense Here 2903 2898 Marker 2           ;State 2897 
+Sense Here 2900 2899 Marker 1           ;State 2898  
+Sense Here 2900 2853 Marker 0           ;State 2899  
+Sense Here 149 2901 Marker 4            ;State 2900     
+Sense Here 149 2902 Marker 5            ;State 2901    
+Sense Here 149 2896 Marker 3            ;State 2902    
+Sense Here 2904 2900 Marker 1           ;State 2903 
+Sense Here 425 2900 Marker 0            ;State 2904 
+Flip 1000 2208 2839                     ;State 2905      
+Sense Here 2912 2907 Marker 2           ;State 2906 
+Sense Here 2909 2908 Marker 1           ;State 2907  
+Sense Here 2909 2837 Marker 0           ;State 2908  
+Sense Here 149 2910 Marker 4            ;State 2909     
+Sense Here 149 2911 Marker 5            ;State 2910    
+Sense Here 149 2905 Marker 3            ;State 2911    
+Sense Here 2913 2909 Marker 1           ;State 2912 
+Sense Here 425 2909 Marker 0            ;State 2913 
+Flip 2 2803 2800                        ;State 2914  
+Turn Left 112                           ;State 2915    
+Flip 2 2918 2917                        ;State 2916  
+Turn Right 85                           ;State 2917    
+Turn Right 74                           ;State 2918    
+Turn Right 2920                         ;State 2919  
+Move 2934 2921                          ;State 2920  goaround1 
+Turn Left 2922                          ;State 2921 
+Turn Left 2923                          ;State 2922  
+Move 2924 1880                          ;State 2923  gootherwayaround5 
+Sense Here 2929 2925 Marker 1           ;State 2924  
+Sense Here 2929 2926 Marker 2           ;State 2925  
+Sense Here 2929 2927 Marker 0           ;State 2926  
+Mark 1 2928                             ;State 2927  
+Mark 0 2929                             ;State 2928  
+PickUp 595 2930                         ;State 2929  
+Sense Here 1678 2931 Marker 4           ;State 2930  
+Sense Here 1678 2932 Marker 5           ;State 2931  
+Sense Here 1678 2933 Marker 3           ;State 2932  
+Mark 5 2826                             ;State 2933  
+Sense Here 2937 2935 Marker 1           ;State 2934  
+Sense Here 2937 2936 Marker 2           ;State 2935  
+Mark 0 2937                             ;State 2936  
+PickUp 1812 2938                        ;State 2937  
+Sense Here 1789 2939 Marker 4           ;State 2938  
+Sense Here 1789 2940 Marker 3           ;State 2939  
+Mark 5 1789                             ;State 2940  
+Flip 2 2943 2942                        ;State 2941  
+Flip 6 2915 51                          ;State 2942    
+Flip 6 2918 2917                        ;State 2943  
+Sense Here 3017 2945 Home               ;State 2944  
+Sense Here 3031 2946 Marker 4           ;State 2945  default0$1860 
+Sense Here 3031 2947 Marker 5           ;State 2946  
+Sense Here 3031 2948 Marker 3           ;State 2947  
+Sense Here 3016 2949 Marker 1           ;State 2948  
+Sense Here 3016 2950 Marker 2           ;State 2949  
+Sense Here 3016 2951 Marker 0           ;State 2950  
+Mark 1 2952                             ;State 2951    
+PickUp 3027 2953                        ;State 2952    
+Sense Ahead 3025 2954 FoeHome           ;State 2953  
+Move 2959 2955                          ;State 2954  
+Sense Ahead 2941 2956 Foe               ;State 2955 
+Sense Ahead 2919 2957 FriendWithFood    ;State 2956  
+Sense Ahead 2918 2958 Friend            ;State 2957  
+Sense Ahead 49 2959 Rock                ;State 2958  
+Sense Here 3008 2960 Home               ;State 2959  
+Sense Here 3031 2961 Marker 4           ;State 2960  default0$1859 
+Sense Here 3031 2962 Marker 5           ;State 2961  
+Sense Here 3031 2963 Marker 3           ;State 2962  
+Sense Here 3007 2964 Marker 1           ;State 2963  
+Sense Here 3007 2965 Marker 2           ;State 2964  
+Sense Here 3007 2966 Marker 0           ;State 2965  
+Mark 1 2967                             ;State 2966    
+PickUp 3027 2968                        ;State 2967    
+Sense Ahead 3025 2969 FoeHome           ;State 2968  
+Move 2974 2970                          ;State 2969  
+Sense Ahead 2941 2971 Foe               ;State 2970 
+Sense Ahead 2919 2972 FriendWithFood    ;State 2971  
+Sense Ahead 2918 2973 Friend            ;State 2972  
+Sense Ahead 49 2974 Rock                ;State 2973  
+Sense Here 2999 2975 Home               ;State 2974  
+Sense Here 3031 2976 Marker 4           ;State 2975  default0$1858 
+Sense Here 3031 2977 Marker 5           ;State 2976  
+Sense Here 3031 2978 Marker 3           ;State 2977  
+Sense Here 2998 2979 Marker 1           ;State 2978  
+Sense Here 2998 2980 Marker 2           ;State 2979  
+Sense Here 2998 2981 Marker 0           ;State 2980  
+Mark 1 2982                             ;State 2981    
+PickUp 3027 2983                        ;State 2982    
+Sense Ahead 3025 2984 FoeHome           ;State 2983  
+Move 2989 2985                          ;State 2984  
+Sense Ahead 2941 2986 Foe               ;State 2985 
+Sense Ahead 2919 2987 FriendWithFood    ;State 2986  
+Sense Ahead 2918 2988 Friend            ;State 2987  
+Sense Ahead 49 2989 Rock                ;State 2988  
+Sense Here 2990 34 Home                 ;State 2989  
+Sense Here 2996 2991 Marker 2           ;State 2990 
+Sense Here 2993 2992 Marker 1           ;State 2991  
+Sense Here 2993 40 Marker 0             ;State 2992  
+Sense Here 3031 2994 Marker 4           ;State 2993     
+Sense Here 3031 2995 Marker 5           ;State 2994    
+Sense Here 3031 3030 Marker 3           ;State 2995    
+Sense Here 2997 2993 Marker 1           ;State 2996 
+Sense Here 425 2993 Marker 0            ;State 2997 
+Flip 1000 2138 2982                     ;State 2998      
+Sense Here 3005 3000 Marker 2           ;State 2999 
+Sense Here 3002 3001 Marker 1           ;State 3000  
+Sense Here 3002 2981 Marker 0           ;State 3001  
+Sense Here 3031 3003 Marker 4           ;State 3002     
+Sense Here 3031 3004 Marker 5           ;State 3003    
+Sense Here 3031 2998 Marker 3           ;State 3004    
+Sense Here 3006 3002 Marker 1           ;State 3005 
+Sense Here 425 3002 Marker 0            ;State 3006 
+Flip 1000 2138 2967                     ;State 3007      
+Sense Here 3014 3009 Marker 2           ;State 3008 
+Sense Here 3011 3010 Marker 1           ;State 3009  
+Sense Here 3011 2966 Marker 0           ;State 3010  
+Sense Here 3031 3012 Marker 4           ;State 3011     
+Sense Here 3031 3013 Marker 5           ;State 3012    
+Sense Here 3031 3007 Marker 3           ;State 3013    
+Sense Here 3015 3011 Marker 1           ;State 3014 
+Sense Here 425 3011 Marker 0            ;State 3015 
+Flip 1000 2138 2952                     ;State 3016      
+Sense Here 3023 3018 Marker 2           ;State 3017 
+Sense Here 3020 3019 Marker 1           ;State 3018  
+Sense Here 3020 2951 Marker 0           ;State 3019  
+Sense Here 3031 3021 Marker 4           ;State 3020     
+Sense Here 3031 3022 Marker 5           ;State 3021    
+Sense Here 3031 3016 Marker 3           ;State 3022    
+Sense Here 3024 3020 Marker 1           ;State 3023 
+Sense Here 425 3020 Marker 0            ;State 3024 
+Flip 2 2918 2915                        ;State 3025  
+Flip 2 2915 2918                        ;State 3026 
+Mark 5 3028                             ;State 3027  foundfoodTrue0 
+Mark 4 3029                             ;State 3028  
+Mark 3 940                              ;State 3029  
+Flip 1000 2138 41                       ;State 3030      
+Sense Here 3059 3032 Marker 5           ;State 3031  followpathtofood0 
+Sense Here 3055 3033 Marker 4           ;State 3032  
+Sense Here 3053 3034 Marker 3           ;State 3033  
+Sense Here 3037 3035 Marker 0           ;State 3034  
+Sense Here 3037 3036 Marker 2           ;State 3035  
+Mark 1 3037                             ;State 3036  
+PickUp 3027 3038                        ;State 3037   
+Turn Right 3039                         ;State 3038  findlocalfood0 
+Sense RightAhead 1945 3040 Food         ;State 3039  
+Sense Ahead 1786 3041 Food              ;State 3040  
+Sense LeftAhead 3051 3042 Food          ;State 3041  
+Turn Right 3043                         ;State 3042  
+Turn Right 3044                         ;State 3043  
+Turn Right 3045                         ;State 3044  
+Sense RightAhead 1953 3046 Food         ;State 3045  
+Sense Ahead 1951 3047 Food              ;State 3046  
+Turn Left 3048                          ;State 3047  
+Unmark 5 3049                           ;State 3048  
+Unmark 4 3050                           ;State 3049  
+Unmark 3 264                            ;State 3050  
+Mark 5 3052                             ;State 3051 
+Unmark 4 1947                           ;State 3052  
+PickUp 940 3054                         ;State 3053 
+Turn Left 1704                          ;State 3054  
+Sense Here 3058 3056 Marker 3           ;State 3055 
+PickUp 940 3057                         ;State 3056  
+Turn Right 1820                         ;State 3057  
+PickUp 940 1977                         ;State 3058 
+Sense Here 3063 3060 Marker 4           ;State 3059 
+Sense Here 3062 3061 Marker 3           ;State 3060  
+PickUp 940 1855                         ;State 3061  
+PickUp 940 1888                         ;State 3062 
+Sense Here 3037 3064 Marker 3           ;State 3063 
+PickUp 940 1985                         ;State 3064  
+Move 33 33                              ;State 3065  SA_walk0:1 
+Sense RightAhead 3076 3067 Marker 1     ;State 3066  SA_ant_2_6_9:0 SA_ant_2_6_9 
+Sense RightAhead 3076 3068 Marker 2     ;State 3067  SA_ant_2_6_9:1 
+Mark 2 3069                             ;State 3068  SA_ant_9:0 SA_ant_9 
+Mark 0 3070                             ;State 3069  SA_ant_9:1 
+Move 3074 3071                          ;State 3070  SA_ant_9:2 
+Turn Left 3072                          ;State 3071  SA_ant_14:2   SA_ant_9_dodge:0 SA_ant_9_dodge 
+Move 3073 3072                          ;State 3072  SA_walk3:0 SA_walk3 
+Sense Here 3072 2022 Home               ;State 3073  SA_walk3:1 
+Sense Here 3075 1998 Home               ;State 3074  SA_walk4:0 SA_walk4 
+Move 3074 3074                          ;State 3075  SA_walk4:1 
+Mark 2 3077                             ;State 3076  SA_ant_3:0 SA_ant_3   SA_ant_2:0 SA_ant_2 
+Sense Here 3077 3077 Foe                ;State 3077  SA_sit:0 SA_sit 
+Sense Here 3079 3079 Foe                ;State 3078  SA_ant_3_7_10:0 SA_ant_3_7_10 
+Sense LeftAhead 3076 3080 Marker 1      ;State 3079  SA_ant_3_7_10:1 
+Sense LeftAhead 3087 3081 Marker 2      ;State 3080  SA_ant_3_7_10:2 
+Mark 1 3082                             ;State 3081  SA_ant_10:0 SA_ant_10 
+Mark 0 3083                             ;State 3082  SA_ant_10:1 
+Move 3074 3084                          ;State 3083  SA_ant_10:2 
+Turn Right 3085                         ;State 3084  SA_ant_15:2   SA_ant_10_dodge:0 SA_ant_10_dodge 
+Move 3086 3085                          ;State 3085  SA_walk5:0 SA_walk5 
+Sense Here 3085 584 Home                ;State 3086  SA_walk5:1 
+Mark 1 3077                             ;State 3087  SA_ant_7:0 SA_ant_7   SA_ant_5:0 SA_ant_5 
+Sense Here 3089 3089 Foe                ;State 3088  SA_ant_4_5_8_11_12_13:0 SA_ant_4_5_8_11_12_13 
+Sense Here 3090 3090 Foe                ;State 3089  SA_ant_4_5_8_11_12_13:1 
+Sense Ahead 3131 3091 Marker 1          ;State 3090  SA_ant_4_5_8_11_12_13:2 
+Sense Ahead 3125 3092 Marker 1          ;State 3091  SA_ant_4_5_8_11_12_13:3 
+Sense RightAhead 3116 3093 Marker 2     ;State 3092  SA_ant_4_5_8_11_12_13:4 
+Sense LeftAhead 3087 3094 Marker 1      ;State 3093  SA_ant_4_5_8_11_12_13:5 
+Sense Ahead 3068 3095 Marker 2          ;State 3094  SA_ant_4_5_8_11_12_13:6 
+Sense Ahead 3081 3096 Marker 1          ;State 3095  SA_ant_4_5_8_11_12_13:7 
+Sense Ahead 3114 3097 Marker 2          ;State 3096  SA_ant_4_5_8_11_12_13:8 
+Sense Ahead 3112 3098 Marker 1          ;State 3097  SA_ant_4_5_8_11_12_13:9 
+Sense Ahead 3114 3099 Marker 2          ;State 3098  SA_ant_4_5_8_11_12_13:10 
+Sense Ahead 3112 3100 Marker 1          ;State 3099  SA_ant_4_5_8_11_12_13:11 
+Sense Ahead 3107 3101 Marker 2          ;State 3100  SA_ant_4_5_8_11_12_13:12 
+Sense Ahead 3104 3102 Marker 1          ;State 3101  SA_ant_4_5_8_11_12_13:13 
+Sense Ahead 3107 3103 Marker 2          ;State 3102  SA_ant_4_5_8_11_12_13:14 
+Sense Ahead 3104 3125 Marker 1          ;State 3103  SA_ant_4_5_8_11_12_13:15 
+Mark 1 3105                             ;State 3104  SA_ant_17:0 SA_ant_17 
+Turn Right 3106                         ;State 3105  SA_ant_17:1 
+Turn Right 33                           ;State 3106  SA_ant_17:2 
+Mark 2 3108                             ;State 3107  SA_ant_16:0 SA_ant_16 
+Turn Left 3109                          ;State 3108  SA_ant_16:1 
+Turn Left 3110                          ;State 3109  SA_ant_16:2 
+Move 3111 3110                          ;State 3110  SA_walk2:0 SA_walk2 
+Sense Here 3110 479 Home                ;State 3111  SA_walk2:1 
+Mark 1 3113                             ;State 3112  SA_ant_15:0 SA_ant_15 
+Mark 0 3084                             ;State 3113  SA_ant_15:1 
+Mark 2 3115                             ;State 3114  SA_ant_14:0 SA_ant_14 
+Mark 0 3071                             ;State 3115  SA_ant_14:1 
+Mark 2 3117                             ;State 3116  SA_ant_4:0 SA_ant_4 
+Turn Right 3118                         ;State 3117  SA_ant_4:1 
+Turn Right 3119                         ;State 3118  SA_ant_4:2 
+Sense Ahead 3120 3119 Food              ;State 3119  
+Sense Ahead 3120 3121 Food              ;State 3120  
+Sense Ahead 3122 3121 Food              ;State 3121  
+Mark 0 3123                             ;State 3122 
+Turn Left 3124                          ;State 3123  
+Turn Left 3077                          ;State 3124  
+Mark 0 3126                             ;State 3125  SA_ant_18:0 SA_ant_18 
+Turn Left 3127                          ;State 3126  SA_ant_18:1 
+Turn Left 3128                          ;State 3127  SA_ant_18:2 
+Turn Left 3129                          ;State 3128  SA_ant_18:3 
+Move 3130 3129                          ;State 3129  SA_walk1:0 SA_walk1 
+Sense Here 3129 2642 Home               ;State 3130  SA_walk1:1 
+Mark 1 3132                             ;State 3131  SA_ant_8:0 SA_ant_8 
+Mark 2 3133                             ;State 3132  SA_ant_8:1 
+Mark 0 425                              ;State 3133  SA_ant_8:2 

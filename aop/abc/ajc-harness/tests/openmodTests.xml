@@ -568,6 +568,97 @@
         </compile>
         <run class="ToTestMain"/>
     </ajc-test>       
-	<!-- end openmodTests.xml (generated comment, please don't delete) -->
+	
+    <ajc-test num="1127" dir="om/omantstest"
+      title="omants test"
+      keywords="from-java,purejava">
+        <compile files="automaton/Automaton.java,
+						benchmark/Main.java,
+						command/Command.java,
+						command/Comment.java,
+						command/Condition.java,
+						command/Drop.java,
+						command/Flip.java,
+						command/Foe.java,
+						command/FoeHome.java,
+						command/FoeMarker.java,
+						command/FoeWithFood.java,
+						command/Food.java,
+						command/Friend.java,
+						command/FriendWithFood.java,
+						command/Home.java,
+						command/Mark.java,
+						command/Marker.java,
+						command/Move.java,
+						command/PickUp.java,
+						command/Rock.java,
+						command/Sense.java,
+						command/Turn.java,
+						command/Unmark.java,
+						debug/CheckScores.java,
+						debug/CommandTracer.java,
+						debug/LiveAnts.java,
+						debug/WorldDumper.java,
+						main/Main.java,
+						model/Ant.java,
+						model/Cell.java,
+						model/Color.java,
+						model/Combat.java,
+						model/Resting.java,
+						model/World.java,
+						modules/Modules.java,
+						parser/CommandParser.java,
+						profile/NoNewInCmd.java,
+						profile/NoNewInRound.java,
+						style/PublicAccessFields.java,
+						viewer/Board.java,
+						viewer/Bug.java,
+						viewer/Hexagon.java,
+						viewer/Update.java,
+						viewer/Viewer.java"
+        options="-ext,abc.om">
+        </compile>
+    </ajc-test>       
     
+    <ajc-test num="1128" dir="om/inheritprectest2"
+      title="Second inherit precedence test (checks for precedence of aspects of included modules)"
+      keywords="from-java,purejava">
+        <compile files="Modules.java,
+        				InheritPrecTestMain2.java"
+        options="-ext,abc.om">
+        </compile>
+        <run class="InheritPrecTestMain2"/>
+    </ajc-test>
+    
+    <ajc-test num="1129" dir="om/modprectest"
+      title="Module precedence test"
+      keywords="from-java,purejava">
+        <compile files="Modules.java,
+        				ModPrecTestMain.java"
+        options="-ext,abc.om">
+        </compile>
+        <run class="ModPrecTestMain"/>
+    </ajc-test>    
+    
+    <ajc-test num="1130" dir="om/modprecaspectcycletest"
+      title="Module-Aspect cycle detection test"
+      keywords="from-java,purejava">
+        <compile files="Modules.java,
+        				ModPrecAspectCycleTest.java"
+        options="-ext,abc.om">
+			<message kind="error" line="0" />
+        </compile>
+    </ajc-test>    
+    
+    <ajc-test num="1131" dir="om/modprecmodcycletest"
+      title="Module-Module cycle detection test"
+      keywords="from-java,purejava">
+        <compile files="Modules.java,
+        				ModPrecModCycleTest.java"
+        options="-ext,abc.om">
+			<message kind="error" line="1-5" />
+        </compile>
+    </ajc-test>        
+	<!-- end openmodTests.xml (generated comment, please don't delete) -->
+	
 </suite>

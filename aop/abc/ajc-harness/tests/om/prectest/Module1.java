@@ -5,7 +5,7 @@ module Module1 {
     class A;
     class Fib || ACache;
 
-    friend Fib, ACache;
+    friend ACache, Fib;
     
     advertise : call(int A.fib(int));
 }

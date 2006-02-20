@@ -3,7 +3,7 @@
 module Module2 {
     class A;
     class ACache || Fib;
-    friend ACache, Fib;
+    friend Fib, ACache;
     
     advertise : call(int A.fib(int));
 }

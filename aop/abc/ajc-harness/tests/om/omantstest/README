@@ -1,0 +1,56 @@
+The viewer for ant tournaments as described in
+
+http://www.cis.upenn.edu/group/proj/plclub/contest/
+
+
+COMPILATION & USE:
+
+Open modules require abc 1.1 or better. 
+
+To compile, run ant while in the omants directory. Make sure that the abc jars are in the classpath.
+
+To manually compile with the open module extension, do
+
+	abc -ext abc.om <sourcefiles>
+
+To run the viewer, do
+
+	java main.Main
+
+
+DIRECTORY STRUCTURE:
+
+automaton: classes for building automata that control ant behaviour
+           currently only the most basic structure  
+benchmark: batch version for benchmarking purposes
+bin:       classfiles  
+command:   ant instructions  
+debug:     debugging aspects  
+main:      main program  
+model:     model of ants, cells, world  
+parser:    parser for instructions  
+profile:   profiling aspects
+sample:    sample input/output files  
+style:     style aspects  
+viewer:    graphical viewer
+module:    module specifications
+
+
+ASPECTS:
+command:   Comment - to include comments in instructions
+                     (uses interface intertype decls)
+debug:     CheckScores - check incremental computation of scores
+                         (uses advice precedence, itds and advice)  
+           CommandTracer - trace individual instructions 
+           LiveAnts - verify invariants about live ants 
+           WorldDumper - dump the world after each round (as suggested
+                         in contest problem statement)
+model:     Combat - combat behaviour for ants (both itds and advice)
+           Resting - resting behaviour for ants
+profile:   NoNewInRound - ensure that there are no heap allocations during play
+           NoNewInCmd - ensure that there are no heap allocations while 
+                        executing commands
+style:     PublicAccessFields - warning for use of public fields
+viewer:    Update - update individual hexagons when changes occur
+                    and also update current scores
+

@@ -1,4 +1,4 @@
 module ModuleA {
-    open ModuleB;
     friend AspectA;
+    open ModuleB;
 }

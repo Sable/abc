@@ -1,0 +1,17 @@
+<project default="default" name="omants">
+	<target name="default">
+		<java classname="abc.main.Main"
+	        fork="true"
+	        dir="."
+	        failonerror="true"
+	    >
+			<arg line="-ext abc.om -sourceroots ."/>
+	    </java>
+	</target>
+	
+    <target name="clean">
+        <delete quiet="true" includeEmptyDirs="yes">
+            <fileset dir="." includes="**/*.class" />
+        </delete> 
+    </target>	
+</project>
