@@ -43,18 +43,23 @@ parser Grm extends abc.aspectj.parse.Grm
 terminal Token PERTHREAD;
 terminal Token TRACEMATCH;
 terminal Token SYM;
+terminal Token FREQUENT;
 
 // ------- new non-terminals -----------------------
 
 // tracematch non-terminals
 non terminal List tracematch;
 non terminal TMModsAndType tracematch_modifiers_and_type;
-non terminal List name_list;
 
 // symbol non-terminals
 non terminal List symbol_declaration_list;
 non terminal SymbolDecl symbol_declaration;
 non terminal SymbolKind symbol_kind;
+non terminal List name_list;
+
+// frequent-declaration non-terminals
+non terminal List frequent_symbols_declaration_opt;
+non terminal List symbol_list;
 
 // regular expression non-terminals
 non terminal Regex regex_or;
@@ -79,6 +84,7 @@ tracematch ::=
     LPAREN formal_parameter_list_opt:p RPAREN throws_opt:e
     LBRACE
         symbol_declaration_list:s
+        frequent_symbols_declaration_opt:f
         regex_or:r
         method_body:b
     RBRACE:y
@@ -87,7 +93,7 @@ tracematch ::=
         String name = UniqueID.newID("tracematch");
         TMDecl tcd =
             parser.nf.TMDecl(parser.pos(t,y), parser.pos(b),
-                                m, name, p, e, s, r, b);
+                                m, name, p, e, s, f, r, b);
 
         List ds = new TypedList(new LinkedList(),ClassMember.class,false);
         ds.add(tcd);
@@ -239,6 +245,51 @@ symbol_kind ::=
 ;
 
 
+name_list ::=
+    IDENTIFIER:a
+    {:
+        Local id = parser.nf.Local(parser.pos(a), a.getIdentifier());
+        RESULT = new LinkedList();
+        RESULT.add(id);
+    :}
+|
+    name_list:a COMMA IDENTIFIER:b
+    {:
+        Local id = parser.nf.Local(parser.pos(b), b.getIdentifier());
+        a.add(id);
+        RESULT = a;
+    :}
+;
+
+
+frequent_symbols_declaration_opt ::=
+    /* empty */
+    {:
+        RESULT = null;
+    :}
+|
+    FREQUENT:x symbol_list:a SEMICOLON:y
+    {:
+        RESULT = a;
+    :}
+; 
+
+
+symbol_list ::=
+    IDENTIFIER:a
+    {:
+        RESULT = new LinkedList();
+        RESULT.add(a.getIdentifier());
+    :}
+|
+    symbol_list:a COMMA IDENTIFIER:b
+    {:
+        a.add(b.getIdentifier());
+        RESULT = a;
+    :}
+;
+
+
 regex_or ::=
     regex_and:a
     {:
@@ -313,23 +364,6 @@ regex_simple ::=
 |
     LPAREN regex_or:a RPAREN
     {:
-        RESULT = a;
-    :}
-;
-
-
-name_list ::=
-    IDENTIFIER:a
-    {:
-        Local id = parser.nf.Local(parser.pos(a), a.getIdentifier());
-        RESULT = new LinkedList();
-        RESULT.add(id);
-    :}
-|
-    name_list:a COMMA IDENTIFIER:b
-    {:
-        Local id = parser.nf.Local(parser.pos(b), b.getIdentifier());
-        a.add(id);
         RESULT = a;
     :}
 ;

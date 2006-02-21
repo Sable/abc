@@ -47,10 +47,12 @@ public class TMNodeFactory_c extends EAJNodeFactory_c
     public TMDecl
         TMDecl(Position pos, Position body_pos, TMModsAndType mods_and_type,
                         String tracematch_name, List formals, List throwTypes,
-                        List symbols, Regex regex, Block body)
+                        List symbols, List freqent_symbols,
+                        Regex regex, Block body)
     {
         return new TMDecl_c(pos, body_pos, mods_and_type, tracematch_name,
-                        formals, throwTypes, symbols, regex, body);
+                        formals, throwTypes, symbols, freqent_symbols,
+                        regex, body);
     }
 
     public TMModsAndType

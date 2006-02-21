@@ -53,9 +53,9 @@ public class TraceMatch
 
     protected StateMachine state_machine;
 
+    protected List frequent_symbols;
     protected Map sym_to_vars;
     protected Map sym_to_advice_name;
-
     protected String synch_advice_name;
     protected String some_advice_name;
     protected String dummy_proceed_name;
@@ -76,10 +76,10 @@ public class TraceMatch
 
     public TraceMatch(String name, List formals, List new_advice_body_formals,
                         StateMachine state_machine, boolean per_thread,
-                        Map sym_to_vars, Map sym_to_advice_name,
-                        String synch_advice_name, String some_advice_name,
-                        String dummy_proceed_name, Aspect container,
-                        Position pos)
+                        Map sym_to_vars, List frequent_symbols,
+                        Map sym_to_advice_name, String synch_advice_name,
+                        String some_advice_name, String dummy_proceed_name,
+                        Aspect container, Position pos)
     {
         this.name = name;
         this.per_thread = per_thread;
@@ -90,6 +90,7 @@ public class TraceMatch
 
         this.state_machine = state_machine;
         this.sym_to_vars = sym_to_vars;
+        this.frequent_symbols = frequent_symbols;
 
         this.sym_to_advice_name = sym_to_advice_name;
         this.synch_advice_name = synch_advice_name;
@@ -216,6 +217,11 @@ public class TraceMatch
 
     public Set getSymbols() {
         return sym_to_vars.keySet();
+    }
+
+    public Collection getFrequentSymbols()
+    {
+        return frequent_symbols;
     }
 
     public List getVariableOrder(String symbol)

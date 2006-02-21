@@ -86,6 +86,8 @@ public class AbcExtension extends abc.eaj.AbcExtension
                             new Integer(abc.tm.parse.sym.SYM)));
         lexer.addAspectJKeyword("perthread", new LexerAction_c(
                             new Integer(abc.tm.parse.sym.PERTHREAD)));
+        lexer.addAspectJKeyword("frequent", new LexerAction_c(
+                            new Integer(abc.tm.parse.sym.FREQUENT)));
     }
     
 	public void addBasicClassesToSoot()

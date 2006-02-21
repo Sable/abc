@@ -48,6 +48,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
     protected boolean isAround;
     protected String tracematch_name;
     protected List symbols;
+    protected List frequent_symbols;
     protected Regex regex;
 
     // the set of variable names bound for each symbol
@@ -74,6 +75,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
                     List formals,
                     List throwTypes,
                     List symbols,
+                    List frequent_symbols,
                     Regex regex,
                     Block body)
     {
@@ -90,6 +92,7 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
 
         this.tracematch_name = tracematch_name;
         this.symbols = symbols;
+        this.frequent_symbols = frequent_symbols;
         this.regex = regex;
 
         sym_to_vars = new HashMap();
@@ -152,6 +155,20 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
                             "\"is already defined.", sd.position());
 
             names.add(sd.name());
+        }
+
+        if (frequent_symbols != null) {
+            // Check for undeclared symbol names in the list
+            // of frequent symbols
+            syms = frequent_symbols.iterator();
+
+            while (syms.hasNext()) {
+                String name = (String) syms.next();
+                if (!names.contains(name))
+                    throw new SemanticException(
+                        "There is no symbol called \"" + name +
+                        "\" but it is declared frequent.", position());
+            }
         }
 
         return super.disambiguateEnter(ar);
@@ -668,8 +685,9 @@ public class TMDecl_c extends AdviceBody_c implements TMDecl
         TraceMatch tm =
             new TraceMatch(tracematch_name, tm_formals, body_formals,
                            regex.makeSM(), isPerThread, orderedSymToVars(),
-                           sym_to_advice_name, synch_advice, some_advice,
-                           proceed_name, current_aspect, position());
+                           frequent_symbols, sym_to_advice_name,
+                           synch_advice, some_advice, proceed_name,
+                           current_aspect, position());
 
         ((TMGlobalAspectInfo) gai).addTraceMatch(tm);
     }

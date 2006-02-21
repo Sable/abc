@@ -37,7 +37,8 @@ public interface TMNodeFactory extends EAJNodeFactory
     TMDecl
         TMDecl(Position pos, Position body_pos, TMModsAndType mods_and_type,
                         String tracematch_name, List formals, List throwTypes,
-                        List symbols, Regex regex, Block body);
+                        List symbols, List frequent_symbols,
+                        Regex regex, Block body);
 
     TMModsAndType
         TMModsAndType(Flags flags, boolean isPerThread,

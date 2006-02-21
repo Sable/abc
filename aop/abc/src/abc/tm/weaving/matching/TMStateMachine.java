@@ -480,8 +480,10 @@ public class TMStateMachine implements StateMachine {
      *           lists of the symbols used and the variables that they
      *           bind
      */
-    public void chooseIndices(TraceMatch tm)
+    private void chooseIndices(TraceMatch tm)
     {
+        Collection frequentSymbols = tm.getFrequentSymbols();
+
         Iterator nodeIt = nodes.iterator();
         while(nodeIt.hasNext()) {
             SMNode cur = (SMNode) nodeIt.next();
@@ -493,10 +495,22 @@ public class TMStateMachine implements StateMachine {
             // calculate indices[i] = intersect[sym] (bound[i] /\ binds[sym])
             //   BUT only for the symbols where the inner
             //       intersection is not empty
+            //
+            // if some symbols have been annotated as frequent
+            // then only consider them when making indexing decisions
+
+            Iterator symIt =
+                frequentSymbols == null ? tm.getSymbols().iterator()
+                                        : frequentSymbols.iterator();
+
             HashSet indices = new HashSet(cur.boundVars);
-            Iterator symIt = tm.getSymbols().iterator();
             while (symIt.hasNext()) {
                 String symbol = (String) symIt.next();
+
+                if (frequentSymbols != null
+                        && !frequentSymbols.contains(symbol))
+                    continue;
+
                 HashSet tmp = new HashSet(cur.boundVars);
                 tmp.retainAll(tm.getVariableOrder(symbol));
 
