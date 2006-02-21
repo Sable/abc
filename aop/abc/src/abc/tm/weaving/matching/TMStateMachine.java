@@ -71,13 +71,12 @@ public class TMStateMachine implements StateMachine {
      * Define the 'closure' of a node N, closure(N), to be the set of all nodes which can
      * be reached by zero or more epsilon transitions from N. Thus N is always in closure(N).
      * 
-     * In a first pass, for each node N, add edges to every node that can be reached via one
-     * (non-epsilon) edge from some node in closure(N). Make all nodes in the closure of any
-     * initial node initial, and make a node N final if closure(N) contains a final node.
+     * In a first pass, for each node N, for each node N' in closure(N) such that N != N', 
+     * copy each non-epsilon incoming transition to N onto N'.
      * 
      * In a second pass, delete each epsilon transition.
      * 
-     * This will leave some nodes inaccessible from the initial nodes and some from which 
+     * This will leave some nodes inaccessible from the initial nodes and some from which
      * one cannot reach a final node -- those should be deleted in a clean-up pass which
      * should be done anyway.
      */
@@ -97,20 +96,22 @@ public class TMStateMachine implements StateMachine {
             closure.remove(cur);
             closureIt = closure.iterator();
             boolean isInitial = cur.isInitialNode();
-            boolean shouldBeFinal = false;
+
             // .. for every node in the closure
             while(closureIt.hasNext()) {
-                next = (SMNode)closureIt.next();
-                // .. add all outgoing non-epsilon transitions to the current node.
-                cur.copySymbolTransitions(next);
-                // Any node in the closure of an initial node is initial.
-                if(isInitial) next.setInitial(true);
-                // If any node in the closure is final, so is the current node.
-                shouldBeFinal |= next.isFinalNode();
+            		next = (SMNode)closureIt.next();
+            		// .. for every edge coming into the original node
+            		edgeIt = cur.getInEdgeIterator();
+            		while(edgeIt.hasNext()) {
+            			edge = (SMEdge)edgeIt.next();
+            			// .. copy that edge onto the node from the closure if it isn't an epsilon transition
+            			if(edge.getLabel() != null && !edge.getSource().hasEdgeTo(next, edge.getLabel())) {
+            				newTransition(edge.getSource(), next, edge.getLabel());
+            			}
+            		}
+            		// Any node in the closure of an initial node is initial.
+            		if(isInitial) next.setInitial(true);
             }
-            // Set the final flag if necessary -- note that we don't clear it even
-            // if shouldBeFinal is false
-            if(shouldBeFinal) cur.setFinal(true);
         }
         // For each edge...
         edgeIt = edges.iterator();
