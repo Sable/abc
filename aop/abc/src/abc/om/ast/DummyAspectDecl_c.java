@@ -40,9 +40,10 @@ import abc.aspectj.ast.PerClause_c;
 import abc.om.AbcExtension;
 
 /**
- * @author Neil Ongkingco
  * Dummy aspect declaration used by modules. 
  * List contains the module the dummy module represents.
+ * 
+ * @author Neil Ongkingco
  */
 public class DummyAspectDecl_c extends AspectDecl_c {
     List /*ModuleDecl*/ modules;
