@@ -628,10 +628,12 @@ public class TMStateMachine implements StateMachine {
                                    Position pos) {
     		eliminateEpsilonTransitions();
 
-        reverse();
-        determinise();
-        reverse();
-        determinise();
+    		if(!abc.main.Debug.v().useNFA) {
+	        reverse();
+	        determinise();
+	        reverse();
+	        determinise();
+    		}
     		
     		addSelfLoops(tm.getSymbols());
         removeSkipToFinal();
