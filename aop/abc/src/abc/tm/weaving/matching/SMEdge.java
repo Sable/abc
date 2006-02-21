@@ -76,6 +76,19 @@ public class SMEdge {
         this.target = target;
     }
     
+    /**
+     * Flips this edge, reversing source and target.
+     */
+    public void flip() {
+    		this.source.removeOutEdge(this);
+    		this.target.removeInEdge(this);
+    		SMNode tmp = this.source;
+    		this.source = this.target;
+    		this.target = tmp;
+    		this.source.addOutgoingEdge(this);
+    		this.target.addIncomingEdge(this);
+    }
+    
     public boolean equals(Object o) {
         if(!(o instanceof SMEdge)) return false;
         SMEdge edge = (SMEdge) o;

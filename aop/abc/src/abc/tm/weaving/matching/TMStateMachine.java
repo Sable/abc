@@ -529,6 +529,90 @@ public class TMStateMachine implements StateMachine {
     }
 
     /**
+     * Reverses the automaton (i.e. flip the direction of every edge, make final states initial
+     * and initial states final).
+     */
+    protected void reverse() {
+    		for(Iterator edgeIt = this.edges.iterator(); edgeIt.hasNext(); ) {
+    			((SMEdge)edgeIt.next()).flip();
+    		}
+    		for(Iterator nodeIt = this.nodes.iterator(); nodeIt.hasNext(); ) {
+    			SMNode node = (SMNode)nodeIt.next();
+    			boolean init = node.isFinalNode();
+    			boolean fin = node.isInitialNode();
+    			node.setInitial(init);
+    			node.setFinal(fin);
+    		}
+    }
+    
+    /**
+     * Uses the standard powerset construction to determinise the current automaton.
+     * Assumes there are no epsilon transitions (eliminate those first).
+     */
+    protected void determinise() {
+    		TMStateMachine result = new TMStateMachine();
+    		HashMap nodeMap = new HashMap();
+    		
+    		// Create the initial state of the new automaton
+    		LinkedHashSet initialNodeSet = new LinkedHashSet();
+    		for(Iterator nodeIt = nodes.iterator(); nodeIt.hasNext(); ) {
+    			SMNode node = (SMNode)nodeIt.next();
+    			if(node.isInitialNode()) initialNodeSet.add(node);
+    		}
+    		nodeMap.put(initialNodeSet, result.newState());
+    		
+    		// add the initial state to the worklist
+    		LinkedList worklist = new LinkedList();
+    		worklist.add(initialNodeSet);
+    		
+    		// While we have things in the worklist...
+    		while(!worklist.isEmpty()) {
+    			LinkedHashSet curSet = (LinkedHashSet)worklist.remove(0);
+    			HashMap/*<String,LinkedHashSet>*/ succForSym = new HashMap();
+    			// ... for each of the nodes in the next worklist item...
+    			for(Iterator nodeIt = curSet.iterator(); nodeIt.hasNext(); ) {
+    				SMNode node = (SMNode)nodeIt.next();
+    				// ... for each outgoing edge of that node...
+    				for(Iterator edgeIt = node.getOutEdgeIterator(); edgeIt.hasNext(); ) {
+    					SMEdge edge = (SMEdge)edgeIt.next();
+    					if(succForSym.get(edge.getLabel()) == null)
+    						succForSym.put(edge.getLabel(), new LinkedHashSet());
+    					// record that the target of the edge is reachable via a transition with the label.
+    					((LinkedHashSet)succForSym.get(edge.getLabel())).add(edge.getTarget());
+    				}
+    			}
+    			// Then, for each of the sets reachable with transitions of a given label, ...
+    			for(Iterator symIt = succForSym.keySet().iterator(); symIt.hasNext(); ) {
+    				String sym = (String)symIt.next();
+    				if(nodeMap.get(succForSym.get(sym)) == null) { 
+    					nodeMap.put(succForSym.get(sym), result.newState());
+    					worklist.addLast(succForSym.get(sym));
+    				}
+    				// if the DFA doesn't have a corresponding transition, add it.
+    				SMNode from = (SMNode)nodeMap.get(curSet);
+    				SMNode to = (SMNode)nodeMap.get(succForSym.get(sym));
+    				if(!from.hasEdgeTo(to, sym))
+    					result.newTransition(from, to, sym);
+    			}
+    		}
+    		// Finally, determine initial and final states of the new automaton.
+    		// The only initial node is the one we started off with.
+    		((SMNode)nodeMap.get(initialNodeSet)).setInitial(true);
+    		
+    		// A node is final if its nodeset contains a node that was final in the NFA.
+    		for(Iterator setIt = nodeMap.keySet().iterator(); setIt.hasNext(); ) {
+    			LinkedHashSet curSet = (LinkedHashSet)setIt.next();
+    			boolean isFinal = false;
+    			for(Iterator nodeIt = curSet.iterator(); nodeIt.hasNext() && !isFinal; ) {
+    				isFinal |= ((SMNode)nodeIt.next()).isFinalNode();
+    			}
+    			((SMNode)nodeMap.get(curSet)).setFinal(isFinal);
+    		}
+    		this.edges = result.edges;
+    		this.nodes = result.nodes;
+    }
+    
+    /**
      * Transforms the FSA that was generated from the regular expression into an NFA for
      * matching suffixes interleaved with skips and ending in a declared symbol against
      * the regular expression. Should be called once.
@@ -542,8 +626,14 @@ public class TMStateMachine implements StateMachine {
                                    List formals, 
                                    Collection notused,
                                    Position pos) {
-    	eliminateEpsilonTransitions();
-        addSelfLoops(tm.getSymbols());
+    		eliminateEpsilonTransitions();
+
+        reverse();
+        determinise();
+        reverse();
+        determinise();
+    		
+    		addSelfLoops(tm.getSymbols());
         removeSkipToFinal();
         compressStates();
         collectBindingInfo(formals, tm, notused, pos);
