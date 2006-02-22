@@ -245,9 +245,44 @@ public class TMStateMachine implements StateMachine {
      */
     protected void removeSkipToFinal() {
         SMNode cur;
-        SMNode newFinalNode = (SMNode)newState();
+        SMNode newFinalNode = null;
         SMEdge edge;
+
+	// Try to find a final state in the current automaton that can be used, i.e. that only
+	// has an outgoing transition labelled with 'skip'.
+	LinkedHashSet finalNodes = new LinkedHashSet();
         Iterator it = nodes.iterator();
+	while(it.hasNext()) {
+	    cur = (SMNode)it.next();
+	    if(cur.isFinalNode()) finalNodes.add(cur);
+	}
+	it = finalNodes.iterator();
+	while(it.hasNext()) {
+	    cur = (SMNode)it.next();
+	    boolean suitable = true;
+	    Iterator edgeIt = cur.getOutEdgeIterator();
+	    while(edgeIt.hasNext()) {
+		edge = (SMEdge)edgeIt.next();
+		if(!edge.getLabel().equals("") || (edge.getTarget() != cur)) {
+		    suitable = false;
+		    break;
+		}
+	    }
+	    if(suitable) {
+		newFinalNode = cur;
+		edgeIt = cur.getOutEdgeIterator();
+		while(edgeIt.hasNext()) {
+		    edge = (SMEdge)edgeIt.next();
+		    cur.removeOutEdge(edge);
+		    edge.getTarget().removeInEdge(edge);
+		    edges.remove(edge);
+		}
+		break;
+	    }
+	}
+	if(newFinalNode == null) newFinalNode = (SMNode)newState();
+
+	it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
             if(cur.isFinalNode()) {
@@ -545,7 +580,7 @@ public class TMStateMachine implements StateMachine {
      * Uses the standard powerset construction to determinise the current automaton.
      * Assumes there are no epsilon transitions (eliminate those first).
      */
-    protected void determinise() {
+    protected TMStateMachine determinise() {
     		TMStateMachine result = new TMStateMachine();
     		HashMap nodeMap = new HashMap();
     		
@@ -604,8 +639,7 @@ public class TMStateMachine implements StateMachine {
     			}
     			((SMNode)nodeMap.get(curSet)).setFinal(isFinal);
     		}
-    		this.edges = result.edges;
-    		this.nodes = result.nodes;
+		return result;
     }
     
     /**
@@ -622,20 +656,35 @@ public class TMStateMachine implements StateMachine {
                                    List formals, 
                                    Collection notused,
                                    Position pos) {
-    		eliminateEpsilonTransitions();
-
-    		if(!abc.main.Debug.v().useNFA) {
-	        reverse();
-	        determinise();
-	        reverse();
-	        determinise();
-    		}
-    		addSelfLoops(tm.getSymbols());
+	TMStateMachine det = null;
+	eliminateEpsilonTransitions();
+	
+	if(!abc.main.Debug.v().useNFA) {
+	    reverse();
+	    det = determinise();
+	    reverse();
+	    det.reverse();
+	    det = det.determinise();
+	    det.addSelfLoops(tm.getSymbols());
+	    det.removeSkipToFinal();
+	    
+	    det.compressStates();
+	    det.renumberStates();
+	}
+	addSelfLoops(tm.getSymbols());
         removeSkipToFinal();
-    		
+	
         compressStates();
-        collectBindingInfo(formals, tm, notused, pos);
         renumberStates();
+
+	if(!abc.main.Debug.v().useNFA) {
+	    if(this.nodes.size() >= det.nodes.size()) {
+		this.edges = det.edges;
+		this.nodes = det.nodes;
+	    }
+	}
+
+        collectBindingInfo(formals, tm, notused, pos);
 
         if (abc.main.Debug.v().chooseIndices) {
             System.out.println(this);
