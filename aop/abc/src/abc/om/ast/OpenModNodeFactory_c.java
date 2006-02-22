@@ -27,6 +27,7 @@ import java.util.List;
 
 import polyglot.util.*;
 import abc.aspectj.ast.*;
+import abc.eaj.ast.EAJNodeFactory_c;
 
 /**
  * 
@@ -34,7 +35,7 @@ import abc.aspectj.ast.*;
  * @author Neil Ongkingco
  *
  */
-public class OpenModNodeFactory_c extends AJNodeFactory_c implements
+public class OpenModNodeFactory_c extends EAJNodeFactory_c implements
         OpenModNodeFactory {
 
     public ModMember ModMemberAspect(Position pos, CPEName cpe) {

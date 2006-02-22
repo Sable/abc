@@ -18,7 +18,8 @@
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-include "../../../../src/abc/aspectj/parse/aspectj.ppg"
+//include "../../../../src/abc/aspectj/parse/aspectj.ppg"
+include "../../eaj/parse/eaj.ppg"
 
 package abc.om.parse;
 

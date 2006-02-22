@@ -68,7 +68,7 @@ import polyglot.util.ErrorQueue;
  * @author Neil Ongkingco
  *  
  */
-public class ExtensionInfo extends abc.aspectj.ExtensionInfo {
+public class ExtensionInfo extends abc.eaj.ExtensionInfo {
     private AJTypeSystem ts = null;
     private AbcExtension extension = null;
     

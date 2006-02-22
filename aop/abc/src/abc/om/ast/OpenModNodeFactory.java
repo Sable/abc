@@ -25,6 +25,7 @@ package abc.om.ast;
 
 import polyglot.util.*;
 import abc.aspectj.ast.*;
+import abc.eaj.ast.EAJNodeFactory;
 
 import java.util.*;
 
@@ -32,7 +33,7 @@ import java.util.*;
  * @author Neil Ongkingco
  *  
  */
-public interface OpenModNodeFactory extends AJNodeFactory {
+public interface OpenModNodeFactory extends EAJNodeFactory {
     public ModuleDecl ModuleDecl(Position pos, 
             String name, 
             ModuleBody body, 

@@ -52,7 +52,7 @@ import abc.weaving.matching.*;
  * @author Neil Ongkingco
  *  
  */
-public class AbcExtension extends abc.main.AbcExtension {
+public class AbcExtension extends abc.eaj.AbcExtension {
     //debug
     public static final boolean debug = false;
     private static boolean isLoaded = false;
