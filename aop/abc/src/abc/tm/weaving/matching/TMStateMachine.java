@@ -197,6 +197,10 @@ public class TMStateMachine implements StateMachine {
      * a self-loop for each declared symbol for initial states. Compare email from Oege
      * from 13:22 04/07/05.
      * 
+     * Ammendment: We don't actually include the self loops on initial states, since their
+     * constraints are always considered true (we match all suffixes, i.e. we can always be
+     * in an initial state).
+     * 
      * This assumes that no state already has a skip loop. Skips are empty labels (as opposed
      * to null labels, which represent epsilon transitions -- those should have been eliminated).
      */
@@ -206,17 +210,9 @@ public class TMStateMachine implements StateMachine {
         Iterator it = nodes.iterator();
         while(it.hasNext()) {
             cur = (SMNode)it.next();
-            newTransition(cur, cur, ""); // add skip loop
-            if(cur.isInitialNode()) {
-                // need to add self-loops for every declared symbol
-                Iterator symIt = declaredSymbols.iterator();
-                while(symIt.hasNext()) {
-                    l = (String)symIt.next();
-                    if(!cur.hasEdgeTo(cur, l)) {
-                        newTransition(cur, cur, l);
-                    }
-                }
-            }
+	    // Initial states always have 'true' constraints anyway.
+	    if(!cur.isInitialNode()) 
+		newTransition(cur, cur, ""); // add skip loop
         }
     }
     
@@ -634,9 +630,9 @@ public class TMStateMachine implements StateMachine {
 	        reverse();
 	        determinise();
     		}
-    		
     		addSelfLoops(tm.getSymbols());
         removeSkipToFinal();
+    		
         compressStates();
         collectBindingInfo(formals, tm, notused, pos);
         renumberStates();
