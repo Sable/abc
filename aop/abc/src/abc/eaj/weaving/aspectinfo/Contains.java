@@ -98,8 +98,6 @@ public class Contains extends Pointcut {
             if (doShadows(mc, pos) == AlwaysMatch.v() ||
                     doShadows(mc, newPos) == AlwaysMatch.v()) {
                 ret = AlwaysMatch.v();
-                //DEBUG
-                System.out.println(mc.getSootMethod().toString());
                 break;
             }
         }
