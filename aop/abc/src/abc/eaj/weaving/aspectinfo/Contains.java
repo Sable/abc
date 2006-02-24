@@ -48,10 +48,12 @@ import abc.weaving.residues.Residue;
 //MatchingContext, not just the ShadowMatch
 public class Contains extends Pointcut {
     Pointcut param = null;
+    protected Position position; //TODO: Workaround. aspectinfo.pos should be protected, not private
 
     public Contains(Position pos, Pointcut param) {
         super(pos);
         this.param = param;
+        this.position = pos;
     }
 
     public void getFreeVars(Set result) {
@@ -62,7 +64,11 @@ public class Contains extends Pointcut {
 
     public Pointcut inline(Hashtable renameEnv, Hashtable typeEnv,
             Aspect context, int cflowdepth) {
-        return this;
+        Pointcut newParam = param.inline(renameEnv, typeEnv, context, cflowdepth);
+        if (newParam == param) {
+            return this;
+        }
+        return new Contains(this.position, newParam);
     }
 
     public String toString() {
