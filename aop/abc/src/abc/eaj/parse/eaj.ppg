@@ -47,6 +47,7 @@ terminal Token GLOBAL;
 terminal Token PC_CFLOWDEPTH;
 terminal Token PC_CFLOWBELOWDEPTH;
 terminal Token PC_LET;
+terminal Token PC_CONTAINS;
 
 // ------- new non-terminals -----------------------
 
@@ -100,6 +101,12 @@ extend basic_pointcut_expr ::=
             Local var = parser.nf.Local(parser.pos(i), i.getIdentifier());
             RESULT = parser.nf.PCLet(parser.pos(x,y), var, e);
         :}
+    |
+    	PC_CONTAINS:x LPAREN pointcut_expr:pc RPAREN:y
+    	{:
+    		Grm.parserTrace("CONTAINS pointcut");
+    		RESULT = parser.nf.PCContains(parser.pos(x,y), pc);
+    	:}
     ;
 
 extend class_member_declaration ::=

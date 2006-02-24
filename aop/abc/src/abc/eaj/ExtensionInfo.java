@@ -49,6 +49,9 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
     public static final Pass.ID CONJOINED_GLOBAL_POINTCUTS =
             new Pass.ID("conjoined-global-pointcuts");
 
+    public static final Pass.ID CHECK_PCCONTAINS_STATIC = 
+        	new Pass.ID("check_pccontains_static");
+    
     static {
         // force Topics to load
         Topics t = new Topics();
@@ -94,5 +97,10 @@ public class ExtensionInfo extends abc.aspectj.ExtensionInfo
                                                   job,
                                                   (EAJTypeSystem) ts,
                                                   (EAJNodeFactory) nf)));
+        l.add(new VisitorPass(CHECK_PCCONTAINS_STATIC,
+                			  job,
+                			  new CheckPCContainsStatic(job,
+                			          				(EAJTypeSystem) ts, 
+                			          				(EAJNodeFactory)nf)));
     }
 }

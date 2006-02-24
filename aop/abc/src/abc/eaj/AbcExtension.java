@@ -110,5 +110,8 @@ public class AbcExtension extends abc.main.AbcExtension
 
         // keyword for the "let" pointcut extension
         lexer.addPointcutKeyword("let", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_LET)));
+        
+        // keyword for the "contains" pointcut extension
+        lexer.addPointcutKeyword("contains", new LexerAction_c(new Integer(abc.eaj.parse.sym.PC_CONTAINS)));
     }
 }

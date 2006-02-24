@@ -85,4 +85,8 @@ public class EAJNodeFactory_c extends AJNodeFactory_c
     {
         return new PCLet_c(pos, var, expr);
     }
+    
+    public PCContains PCContains(Position pos, Pointcut param) {
+        return new PCContains_c(pos, param);
+    }
 }
