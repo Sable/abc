@@ -21,6 +21,9 @@ public class MyWeakRef extends WeakReference {
 	 * between that object and the referent of this MyWeakRef.
 	 */
 	public boolean equals(Object obj) {
+		if(this==obj) {
+			return true;
+		}
 		if(obj instanceof MyWeakRef) {
 			return this.get() == ((MyWeakRef)obj).get();
 		} else {
