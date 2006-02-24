@@ -60,7 +60,8 @@ public class ContainsTest {
 }
 
 aspect A {
-	pointcut pc() : contains(call(* f())) && !within(A);
+    pointcut f() : call(* f());
+	pointcut pc() : contains(f()) && !within(A);
 
 	before() : pc() {
 		System.out.println(thisJoinPoint.getSignature());
