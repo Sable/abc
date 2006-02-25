@@ -10134,5 +10134,23 @@
         </compile>
         <run class="DerivedAdvicePrecedence"/>
     </ajc-test>       
+    
+    <ajc-test num="1214" dir="contains/checkstatic"
+      title="Contains static test">
+        <compile files="ContainsTest.java"
+        	options="-ext,abc.eaj">
+          <message kind="error" line="3"/>  
+          <message kind="error" line="4"/>  
+        </compile>
+    </ajc-test>       
+
+    <ajc-test num="1215" dir="contains/basic"
+      title="Contains static test">
+        <compile files="ContainsTest.java"
+        	options="-ext,abc.eaj">
+        </compile>
+        <run class="ContainsTest"/>
+    </ajc-test>       
+
 
 </suite>
