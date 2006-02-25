@@ -78,9 +78,11 @@ public class Contains extends Pointcut {
     public Residue matchesAt(MatchingContext mc) throws SemanticException {
         Residue ret = NeverMatch.v();
         
+        //only applies to body shadow matches
         if (!(mc.getShadowMatch() instanceof BodyShadowMatch)) {
             return NeverMatch.v();
         }
+        
         //taken from AdviceApplication.doShadows and
         // AbcExtension.findMethodShadows
         Chain stmtsChain = mc.getSootMethod().getActiveBody().getUnits();
