@@ -5438,5 +5438,16 @@
         </compile>
         <run class="DerivedAdvicePrecedence"></run>
     </ajc-test>
+<ajc-test title="Contains static test" num="1214" dir="contains/checkstatic">
+        <compile options="-ext,abc.eaj" files="ContainsTest.java">
+          <message line="3" kind="error"></message>  
+          <message line="4" kind="error"></message>  
+        </compile>
+    </ajc-test>
+<ajc-test title="Contains static test" num="1215" dir="contains/basic">
+        <compile options="-ext,abc.eaj" files="ContainsTest.java">
+        </compile>
+        <run class="ContainsTest"></run>
+    </ajc-test>
  
 </suite>
