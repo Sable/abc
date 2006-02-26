@@ -5444,7 +5444,7 @@
           <message line="4" kind="error"></message>  
         </compile>
     </ajc-test>
-<ajc-test title="Contains static test" num="1215" dir="contains/basic">
+<ajc-test title="Contains basic matching test" num="1215" dir="contains/basic">
         <compile options="-ext,abc.eaj" files="ContainsTest.java">
         </compile>
         <run class="ContainsTest"></run>
