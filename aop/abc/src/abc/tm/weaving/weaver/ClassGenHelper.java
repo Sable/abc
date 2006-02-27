@@ -2570,6 +2570,9 @@ public class ClassGenHelper {
 		args.add(lhs);
 		Value true_object = getNewObject(constraint, int_and_set, args);
 		Local true_local = getNewLocal(constraint.getType(), true_object, "trueConstraint");
+
+		// return the new constraint
+		doReturn(true_local);
 	}
 	
 	/**
