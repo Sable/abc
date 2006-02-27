@@ -26,6 +26,7 @@ import soot.util.*;
 import soot.coffi.parameter_annotation;
 import soot.jimple.*;
 
+import abc.main.Debug;
 import abc.soot.util.LocalGeneratorEx;
 import abc.soot.util.UnUsedParams;
 import abc.tm.weaving.aspectinfo.*;
@@ -48,6 +49,18 @@ public class ClassGenHelper {
     // following command: cat output_file | tr "D" "\n" | wc -l
     // (replacing "D" by "d" or "C" or "c" or "*" as appropriate).
     private boolean enableDebugTraces = false;
+    
+    /**
+     * With the intention of providing a -debug switch to turn indexing on and off, all
+     * indexing-related inclusions will be guarded by "if(useIndexing())". The body of
+     * this method can be adapted to take into account the command-line parameters, 
+     * preferably after we have a way of adding extension-specific parameters.
+     *  
+     * @return <code>true</code> if indexing-related code should be generated.
+     */
+    private boolean useIndexing() {
+    		return false;
+    }
 
 	// Relevant members
 	TraceMatch curTraceMatch;
@@ -64,9 +77,11 @@ public class ClassGenHelper {
 	static SootClass objectClass;
 	static SootClass setClass;
 	static SootClass iteratorClass;
+	static SootClass mapClass;
 	static Type objectType;
 	static Type setType;
 	static Type iteratorType;
+	static Type mapType;
 	
 	// other often-needed constants
 	List emptyList = new LinkedList();
@@ -93,6 +108,11 @@ public class ClassGenHelper {
 		objectType = RefType.v("java.lang.Object");
 		setType = RefType.v("java.util.LinkedHashSet");
 		iteratorType = RefType.v("java.util.Iterator");
+
+		if(useIndexing()) {
+			mapClass = Scene.v().getSootClass("org.apache.commons.collections.map.ReferenceIdentityMap");
+			mapType = RefType.v("org.apache.commons.collections.map.ReferenceIdentityMap");
+		}
 
 		singleObjectType.add(objectType);
 	}
@@ -712,16 +732,30 @@ public class ClassGenHelper {
 	 */
 	protected void fillInConstraintClass() {
 		startClass(constraint);
-		addConstraintClassMembers();
-        addConstraintInitialiser();
-        addConstraintStaticInitialiser();
-        addConstraintFinalizeMethod();
-		addConstraintOrMethod();
-		addConstraintCopyMethod();
-        addConstraintGetDisjunctArrayMethod();
-        addConstraintAddBindingsMethods();
-        if(!abc.main.Debug.v().noNegativeBindings)
-        	addConstraintAddNegativeBindingsMethods();
+		if(!useIndexing()) {
+			addConstraintClassMembers();
+	        addConstraintInitialiser();
+	        addConstraintStaticInitialiser();
+	        addConstraintFinalizeMethod();
+			addConstraintOrMethod();
+			addConstraintCopyMethod();
+	        addConstraintGetDisjunctArrayMethod();
+	        addConstraintAddBindingsMethods();
+	        if(!abc.main.Debug.v().noNegativeBindings)
+	        		addConstraintAddNegativeBindingsMethods();
+		} else {
+			addIndConstraintClassMembers();
+			addIndConstraintInitialiser();
+			addIndConstraintStaticInitialiser();
+			addIndConstraintFinalizeMethod();
+			addIndConstraintHelperMethods();
+			addIndConstraintGetTrueMethod();
+			addIndConstraintMergeMethod();
+			addIndConstraintGetDisjungtArrayMethod();
+			addIndConstraintGetBindingsMethods();
+			if(!abc.main.Debug.v().noNegativeBindings) 
+				addIndConstraintQueueNegativeBindingsMethods();
+		}
 	}
 	
 	/**
@@ -2412,4 +2446,86 @@ public class ClassGenHelper {
         doThrowException("Disjunct.validateDisjunct() called with an invalid state number");
 
     }
+    
+    
+    
+    /**
+     * Methods to fill in the constraint class if indexing is to be used.
+     */
+
+    /**
+     * Fills in the class members of the constraint class, i.e. three LinkedHashSets, three
+     * Maps and one integer (to record which state we're on).
+     */
+	protected void addIndConstraintClassMembers() {
+		
+	}
+	
+	/**
+	 * Fills in the constraint constructor(s).
+	 */
+	protected void addIndConstraintInitialiser() {
+		
+	}
+
+	/**
+	 * Fills in the constraint static initialiser.
+	 */
+	protected void addIndConstraintStaticInitialiser() {
+		
+	}
+	
+	/**
+	 * Fills in the constraint finalize() method.
+	 */
+	protected void addIndConstraintFinalizeMethod() {
+		
+	}
+	
+	/**
+	 * Adds a static method that constructs a constraint representing 'true', i.e. a constraint
+	 * whose Set of disjuncts contains a single disjunct.
+	 */
+	protected void addIndConstraintGetTrueMethod() {
+		
+	}
+	
+	/**
+	 * Adds 'merge' method which combines the _skip and _tmp-labelled constraints and prepares the
+	 * constraint for the next event.
+	 */
+	protected void addIndConstraintMergeMethod() {
+		
+	}
+	
+	/**
+	 * Adds a method for obtaining an array of the disjuncts on this state.
+	 */
+	protected void addIndConstraintGetDisjungtArrayMethod() {
+		
+	}
+	
+	/**
+	 * The 'addBindingsForSymbol' methods in the indexed case are called 'getBindingsForSymbol', since
+	 * they return a LinkedHashSet of the changed bindings.
+	 */
+	protected void addIndConstraintGetBindingsMethods() {
+		
+	}
+	
+	/**
+	 * The 'addNegativeBindingsForSymbol' methods in the indexed case are called 'queueNegativeBindingsForSymbol'
+	 * as they maintain a queue of changes.
+	 */
+	protected void addIndConstraintQueueNegativeBindingsMethods() {
+		
+	}
+
+	/**
+	 * Adds small helper methods, like lookup(), lookup2(), overwrite() and queue().
+	 */
+	protected void addIndConstraintHelperMethods() {
+		
+	}
+
 }
