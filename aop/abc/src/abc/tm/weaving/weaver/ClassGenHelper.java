@@ -2496,7 +2496,21 @@ public class ClassGenHelper {
      * Maps and one integer (to record which state we're on).
      */
 	protected void addIndConstraintClassMembers() {
+		SootField disjuncts = new SootField("disjuncts", setType, Modifier.PUBLIC);
+		SootField disjuncts_tmp = new SootField("disjuncts_tmp", setType, Modifier.PUBLIC);
+		SootField disjuncts_skip = new SootField("disjuncts_skip", setType, Modifier.PUBLIC);
+		SootField indDisjuncts = new SootField("indexedDisjuncts", mapType, Modifier.PUBLIC);
+		SootField indDisjuncts_tmp = new SootField("indexedDisjuncts_tmp", mapType, Modifier.PUBLIC);
+		SootField indDisjuncts_skip = new SootField("indexedDisjuncts_skip", mapType, Modifier.PUBLIC);
+		SootField onState = new SootField("onState", IntType.v(), Modifier.PUBLIC);
 		
+		constraint.addField(disjuncts);
+		constraint.addField(disjuncts_tmp);
+		constraint.addField(disjuncts_skip);
+		constraint.addField(indDisjuncts);
+		constraint.addField(indDisjuncts_tmp);
+		constraint.addField(indDisjuncts_skip);
+		constraint.addField(onState);
 	}
 	
 	/**
