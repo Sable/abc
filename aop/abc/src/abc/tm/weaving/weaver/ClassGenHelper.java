@@ -59,7 +59,7 @@ public class ClassGenHelper {
      * @return <code>true</code> if indexing-related code should be generated.
      */
     private boolean useIndexing() {
-    		return false;
+    		return true;
     }
 
 	// Relevant members
@@ -109,10 +109,10 @@ public class ClassGenHelper {
 		setType = RefType.v("java.util.LinkedHashSet");
 		iteratorType = RefType.v("java.util.Iterator");
 
-		if(useIndexing()) {
+		// if(useIndexing()) {
 			mapClass = Scene.v().getSootClass("org.apache.commons.collections.map.ReferenceIdentityMap");
 			mapType = RefType.v("org.apache.commons.collections.map.ReferenceIdentityMap");
-		}
+		// }
 
 		singleObjectType.add(objectType);
 	}
@@ -770,7 +770,7 @@ public class ClassGenHelper {
 	 */
 	protected void fillInConstraintClass() {
 		startClass(constraint);
-		if(!useIndexing()) {
+		// if(!useIndexing()) {
 			addConstraintClassMembers();
 	        addConstraintInitialiser();
 	        addConstraintStaticInitialiser();
@@ -781,7 +781,7 @@ public class ClassGenHelper {
 	        addConstraintAddBindingsMethods();
 	        if(!abc.main.Debug.v().noNegativeBindings)
 	        		addConstraintAddNegativeBindingsMethods();
-		} else {
+		// } else {
 			addIndConstraintClassMembers();
 			addIndConstraintInitialiser();
 			addIndConstraintStaticInitialiser();
@@ -793,7 +793,7 @@ public class ClassGenHelper {
 			addIndConstraintGetBindingsMethods();
 			if(!abc.main.Debug.v().noNegativeBindings) 
 				addIndConstraintQueueNegativeBindingsMethods();
-		}
+		// }
 	}
 	
 	/**
@@ -2537,9 +2537,39 @@ public class ClassGenHelper {
 	/**
 	 * Adds a static method that constructs a constraint representing 'true', i.e. a constraint
 	 * whose Set of disjuncts contains a single disjunct.
+	 *
+	 * The generated method should look like:
+	 *     public static Constraint$tm getTrue(int state) {
+	 *         LinkedHashSet lhs = new LinkedHashSet();
+	 *         lhs.add(new Disjunct$tm());
+	 *         return new Constraint$tm(state, lhs);
+	 *     }
 	 */
 	protected void addIndConstraintGetTrueMethod() {
-		
+		// the getTrue method takes a single int parameter
+		List singleInt = new ArrayList(1);
+		singleInt.add(IntType.v());
+
+		// the constraint constructor takes an int and a set
+		List int_and_set = new ArrayList(2);
+		int_and_set.add(IntType.v());
+		int_and_set.add(setType);
+
+		startMethod("getTrue", singleInt, constraint.getType(), Modifier.STATIC | Modifier.PUBLIC);
+
+		// create a new linked hashset and a new disjunct
+		Local lhs = getNewLocal(setType, getNewObject(setClass), "lhs");
+		Local new_disjunct = getNewLocal(disjunct.getType(), getNewObject(disjunct), "disjunct");
+
+		// add the disjunct to the hashset
+		doMethodCall(lhs, "add", singleObjectType, VoidType.v(), new_disjunct);
+
+		// create a new constraint
+		List args = new ArrayList(2);
+		args.add(getParamLocal(0, IntType.v()));
+		args.add(lhs);
+		Value true_object = getNewObject(constraint, int_and_set, args);
+		Local true_local = getNewLocal(constraint.getType(), true_object, "trueConstraint");
 	}
 	
 	/**

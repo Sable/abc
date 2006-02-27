@@ -102,6 +102,7 @@ public class AbcExtension extends abc.eaj.AbcExtension
            Scene.v().addBasicClass("java.util.Set", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.MyWeakRef", SootClass.SIGNATURES);
            Scene.v().addBasicClass("org.aspectbench.tm.runtime.internal.Lock", SootClass.SIGNATURES);
+		   Scene.v().addBasicClass("org.apache.commons.collections.map.ReferenceIdentityMap", SootClass.SIGNATURES);
 	   }
     
     /** within a single tracematch, normal precedence rules apply for recognition of symbols.
