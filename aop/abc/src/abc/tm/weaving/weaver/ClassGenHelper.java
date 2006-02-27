@@ -81,7 +81,7 @@ public class ClassGenHelper {
 	static Type objectType;
 	static Type setType;
 	static Type iteratorType;
-	static Type mapType;
+	static RefType mapType;
 	
 	// other often-needed constants
 	List emptyList = new LinkedList();
@@ -432,7 +432,45 @@ public class ClassGenHelper {
 		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newStaticFieldRef(fieldRef)));
 		return result;
 	}
-    
+
+	/**
+	 * Constructs a new ReferenceIdentityMap, using weak keys and hard value referneces, and purging
+	 * the values when the keys expire.
+	 * @return a local containing the new object
+	 */
+	protected Local getNewMap() {
+		return getNewMap(true);
+	}
+	
+	/**
+	 * Constructs a new ReferenceIdentityMap, using weak or strong keys depending on its argument.
+	 * If weak keys are used, values are purged when keys expire.
+	 * @param weakKeys <code>true</code> if weak keys should be used.
+	 * @return a local containing the new object.
+	 */
+	protected Local getNewMap(boolean weakKeys) {
+		Local result = curLGen.generateLocal(mapType, "map$");
+		LinkedList formals = new LinkedList(), actuals = new LinkedList();
+		formals.add(IntType.v());
+		formals.add(IntType.v());
+		if(weakKeys) {
+			formals.add(BooleanType.v());
+			actuals.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+					"WEAK", IntType.v()));
+			actuals.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+					"HARD", IntType.v()));
+			actuals.add(getInt(1));
+		} else {
+			actuals.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+					"HARD", IntType.v()));
+			actuals.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+					"HARD", IntType.v()));
+		}
+		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
+		doConstructorCall(result, mapClass, formals, actuals);
+		return result;
+	}
+	
     /**
      * Arithmetic helper function -- adds 'value' to the (primitive numeric type'd) 'local' and stores the
      * result in 'local'
