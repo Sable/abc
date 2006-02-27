@@ -73,7 +73,7 @@ public class TraceMatchCodeGen {
     protected void fillInSymbolAdviceBody(String symbol, SootMethod method,
                                             TraceMatch tm, CodeGenHelper helper)
     {
-        TMStateMachine sm = (TMStateMachine) tm.getState_machine();
+        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
         Iterator to_states = sm.getStateIterator();
 
         while (to_states.hasNext()) {
@@ -108,7 +108,7 @@ public class TraceMatchCodeGen {
     protected void fillInSomeAdviceBody(SootMethod method, TraceMatch tm,
                                     CodeGenHelper helper)
     {
-        TMStateMachine sm = (TMStateMachine) tm.getState_machine();
+        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
         Iterator states = sm.getStateIterator();
 
         helper.genReturnIfNotUpdated(method);
@@ -142,7 +142,7 @@ public class TraceMatchCodeGen {
      * @param tm the tracecmatch to deal with.
      */
     public void fillInTraceMatch(TraceMatch tm) {
-        TMStateMachine tmsm = (TMStateMachine)tm.getState_machine();
+        TMStateMachine tmsm = (TMStateMachine)tm.getStateMachine();
 
 		Collection unused = tm.getUnusedFormals();
         

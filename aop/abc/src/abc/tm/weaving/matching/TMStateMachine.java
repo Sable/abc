@@ -553,9 +553,17 @@ public class TMStateMachine implements StateMachine {
             collectable.retainAll(cur.collectableWeakRefs);
             indices.removeAll(cur.collectableWeakRefs);
 
-            System.out.print("State " + cur.getNumber());
-            System.out.print(" - collectable indices: " + collectable);
-            System.out.println(" other indices: " + indices);
+            if (abc.main.Debug.v().printIndices) {
+                System.out.println(this);
+                System.out.print("State " + cur.getNumber());
+                System.out.print(" - collectable indices: " + collectable);
+                System.out.println(" other indices: " + indices);
+            }
+
+            // index by collectable weak-references first, so that whole
+            // subtrees of the index will be automatically thrown away
+            cur.indices.addAll(collectable);
+            cur.indices.addAll(indices);
         }
     }
 
@@ -685,11 +693,7 @@ public class TMStateMachine implements StateMachine {
 	}
 
         collectBindingInfo(formals, tm, notused, pos);
-
-        if (abc.main.Debug.v().chooseIndices) {
-            System.out.println(this);
-            chooseIndices(tm);
-        }
+        chooseIndices(tm);
     }
     
     public Iterator getStateIterator() {

@@ -175,6 +175,6 @@ public class Debug {
 
     // temporary tracematch stuff
     public boolean noNegativeBindings = false;
-    public boolean chooseIndices = false;
+    public boolean printIndices = false;
     public boolean useNFA = false;
 }

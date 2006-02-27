@@ -20,6 +20,8 @@
 package abc.tm.weaving.matching;
 
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -56,7 +58,14 @@ public class SMNode implements State {
 	 *   information whether it is necessary to create a set of disjuncts as the return value
 	 */
 	public LinkedHashSet/*<String>*/ boundVars = new LinkedHashSet();
-    
+ 
+    /** list of variables that should be used to index the disjuncts
+     *   stored for this state - the index is, in general, multi-level
+     *   and the variables are used in the order they appear in this
+     *   list
+     */
+    public List/*<String>*/ indices = new LinkedList();
+
     private TMStateMachine hostFSA;
     
     public SMNode(TMStateMachine fsa, boolean isInitial, boolean isFinal) {

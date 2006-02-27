@@ -211,7 +211,7 @@ public class TraceMatch
         return non_around_formals;
     }
 
-    public StateMachine getState_machine() {
+    public StateMachine getStateMachine() {
         return state_machine;
     }
 
