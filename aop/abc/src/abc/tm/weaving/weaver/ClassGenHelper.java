@@ -2558,21 +2558,17 @@ public class ClassGenHelper {
 		startMethod("getTrue", singleInt, constraint.getType(), Modifier.STATIC | Modifier.PUBLIC);
 
 		// create a new linked hashset and a new disjunct
-		Local lhs = getNewLocal(setType, getNewObject(setClass), "lhs");
-		Local new_disjunct = getNewLocal(disjunct.getType(), getNewObject(disjunct), "disjunct");
+		Local lhs = getNewObject(setClass);
+		Local new_disjunct = getNewObject(disjunct);
 
 		// add the disjunct to the hashset
 		doMethodCall(lhs, "add", singleObjectType, VoidType.v(), new_disjunct);
 
-		// create a new constraint
+		// create and return a new constraint
 		List args = new ArrayList(2);
 		args.add(getParamLocal(0, IntType.v()));
 		args.add(lhs);
-		Value true_object = getNewObject(constraint, int_and_set, args);
-		Local true_local = getNewLocal(constraint.getType(), true_object, "trueConstraint");
-
-		// return the new constraint
-		doReturn(true_local);
+		doReturn(getNewObject(constraint, int_and_set, args));
 	}
 	
 	/**
