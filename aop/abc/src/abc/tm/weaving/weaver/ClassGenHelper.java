@@ -2539,6 +2539,9 @@ public class ClassGenHelper {
 		// call super()
 		doConstructorCall(thisLocal, objectClass);
 		
+		// For debugging -- print a "C" for constraint construction
+		doPrintString("C");
+
 		// record which state we're on
 		Local state = getParamLocal(0, IntType.v());
 		doSetField(thisLocal, "onState", IntType.v(), state);
@@ -2612,7 +2615,10 @@ public class ClassGenHelper {
 
 		// call super()
 		doConstructorCall(thisLocal, objectClass);
-		
+
+		// For debugging -- print a "C" for constraint construction
+		doPrintString("C");
+
 		// record which state we're on
 		state = getParamLocal(0, IntType.v());
 		Local paramDisjuncts = getParamLocal(1, setType);
@@ -2642,7 +2648,10 @@ public class ClassGenHelper {
 	 * Fills in the constraint finalize() method.
 	 */
 	protected void addIndConstraintFinalizeMethod() {
-		
+		startMethod("finalize", emptyList, VoidType.v(), Modifier.PROTECTED);
+		// For debugging -- print a "c" for constraint destruction
+		doPrintString("c");
+		doReturnVoid();
 	}
 	
 	/**
