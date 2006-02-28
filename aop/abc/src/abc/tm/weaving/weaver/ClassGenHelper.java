@@ -2599,6 +2599,34 @@ public class ClassGenHelper {
 		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(0));
 		
 		doReturnVoid();
+		
+		// Constructor taking an int and a set. The int is the state it's on, the set is the initial set of
+		// disjuncts. I assume this implies the constructor will only be called on states that don't partition:
+		// TODO XXX Check this.
+
+		// args still contains the single int from above
+		args.add(setType);
+		startMethod(SootMethod.constructorName, args, VoidType.v(), Modifier.PUBLIC);
+		
+		thisLocal = getThisLocal();
+
+		// call super()
+		doConstructorCall(thisLocal, objectClass);
+		
+		// record which state we're on
+		state = getParamLocal(0, IntType.v());
+		Local paramDisjuncts = getParamLocal(1, setType);
+		doSetField(thisLocal, "onState", IntType.v(), state);
+	
+		// We assume this is a non-partitioning state, so
+		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(0));
+		
+		doSetField(thisLocal, "disjuncts", setType, paramDisjuncts);
+		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
+		
+		// we initialise this.disjuncts_skip to new LinkedHashSet(this.disjuncts);
+		args.clear(); args.add(setType);
+		doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass, args, paramDisjuncts));
 	}
 
 	/**
