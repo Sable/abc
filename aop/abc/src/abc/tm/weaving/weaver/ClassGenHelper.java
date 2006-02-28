@@ -2627,13 +2627,15 @@ public class ClassGenHelper {
 		// we initialise this.disjuncts_skip to new LinkedHashSet(this.disjuncts);
 		args.clear(); args.add(setType);
 		doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass, args, paramDisjuncts));
+		
+		doReturnVoid();
 	}
 
 	/**
 	 * Fills in the constraint static initialiser.
 	 */
 	protected void addIndConstraintStaticInitialiser() {
-		
+		// don't think there's anything to do..
 	}
 	
 	/**
