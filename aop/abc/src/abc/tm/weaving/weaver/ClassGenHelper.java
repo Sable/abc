@@ -2599,7 +2599,7 @@ public class ClassGenHelper {
 		doSetField(thisLocal, "disjuncts", setType, getNewObject(setClass));
 		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
 		doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass));
-		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(0));
+		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(-1));
 		
 		doReturnVoid();
 		
@@ -2624,8 +2624,8 @@ public class ClassGenHelper {
 		Local paramDisjuncts = getParamLocal(1, setType);
 		doSetField(thisLocal, "onState", IntType.v(), state);
 	
-		// We assume this is a non-partitioning state, so
-		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(0));
+		// We assume this is a non-partitioning state, so set numWeakIndices = -1;
+		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(-1));
 		
 		doSetField(thisLocal, "disjuncts", setType, paramDisjuncts);
 		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
