@@ -2512,6 +2512,7 @@ public class ClassGenHelper {
 		SootField indDisjuncts_tmp = new SootField("indexedDisjuncts_tmp", mapType, Modifier.PUBLIC);
 		SootField indDisjuncts_skip = new SootField("indexedDisjuncts_skip", mapType, Modifier.PUBLIC);
 		SootField onState = new SootField("onState", IntType.v(), Modifier.PUBLIC);
+		SootField numWeakIndices = new SootField("numWeakIndices", IntType.v(), Modifier.PUBLIC);
 		
 		// constraint.addField(disjuncts);
 		constraint.addField(disjuncts_tmp);
@@ -2520,6 +2521,7 @@ public class ClassGenHelper {
 		constraint.addField(indDisjuncts_tmp);
 		constraint.addField(indDisjuncts_skip);
 		constraint.addField(onState);
+		constraint.addField(numWeakIndices);;
 	}
 	
 	/**
@@ -2540,29 +2542,63 @@ public class ClassGenHelper {
 		// record which state we're on
 		Local state = getParamLocal(0, IntType.v());
 		doSetField(thisLocal, "onState", IntType.v(), state);
-		
+	
+		// Each constraint that uses indexing keeps in this.numWeakIndices the number of (collectable or
+		// non-collectable) weakly referenced bindings in an initial segment of the indexing variables list.
 		// Based on the state we're in, we have to initialise either the disjunct sets or the maps.
 		// Thus, we do a lookup switch. Collect all the states in which we would partition the 
 		// disjuncts, and treat everything else as the 'default:' clause.
 		List switchValues = new LinkedList();
 		List switchLabels = new LinkedList();
-		Stmt labelUseMap = getNewLabel(), labelDefault = getNewLabel();
+		Stmt[] labelsForNumWeakInd = new Stmt[curTraceMatch.getFormals().size()]; 
+		Stmt  labelDefault = getNewLabel();
+		int nWeakMap = 0, nStrongMap = 0;
 		Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
 		while(stateIt.hasNext()) {
 			SMNode node = (SMNode)stateIt.next();
 			if(node.indices != null && !node.indices.isEmpty()) {
 				switchValues.add(getInt(node.getNumber()));
-				switchLabels.add(labelUseMap);
+				int numWeakInd = 0;
+				while(numWeakInd < node.indices.size() && 
+						(node.collectableWeakRefs.contains(node.indices.get(numWeakInd)))
+						|| (node.weakRefs.contains(node.indices.get(numWeakInd)))) {
+					numWeakInd++;
+				}
+				if(labelsForNumWeakInd[numWeakInd] == null) labelsForNumWeakInd[numWeakInd] = getNewLabel();
+				switchLabels.add(labelsForNumWeakInd[numWeakInd]);
 			}
 		}
 		
 		if(!switchValues.isEmpty()) {
 			doLookupSwitch(state, switchValues, switchLabels, labelDefault);
 			
-			doAddLabel(labelUseMap);
-			doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap());
+			for(int i = 0; i < labelsForNumWeakInd.length; i++) {
+				if(labelsForNumWeakInd[i] != null) {
+					doAddLabel(labelsForNumWeakInd[i]);
+					doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(i));
+					if(i > 0) {
+						doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(true));
+						doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(true));
+						doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(true));
+					} else {
+						doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(false));
+						doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(false));
+						doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(false));
+					}
+				}
+			}
+
+			doReturnVoid();
 		}
 		
+		// In any case, we will have to provide the 'default' behaviour of initialising the sets
+		doAddLabel(labelDefault);
+		doSetField(thisLocal, "disjuncts", setType, getNewObject(setClass));
+		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
+		doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass));
+		doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(0));
+		
+		doReturnVoid();
 	}
 
 	/**
