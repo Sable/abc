@@ -177,4 +177,5 @@ public class Debug {
     public boolean noNegativeBindings = false;
     public boolean printIndices = false;
     public boolean useNFA = false;
+    public boolean useIndexing = false;
 }

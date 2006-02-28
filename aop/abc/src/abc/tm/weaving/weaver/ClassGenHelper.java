@@ -59,7 +59,7 @@ public class ClassGenHelper {
      * @return <code>true</code> if indexing-related code should be generated.
      */
     private boolean useIndexing() {
-    		return true;
+    		return abc.main.Debug.v().useIndexing;
     }
 
 	// Relevant members
@@ -109,10 +109,10 @@ public class ClassGenHelper {
 		setType = RefType.v("java.util.LinkedHashSet");
 		iteratorType = RefType.v("java.util.Iterator");
 
-		// if(useIndexing()) {
+		if(useIndexing()) {
 			mapClass = Scene.v().getSootClass("org.apache.commons.collections.map.ReferenceIdentityMap");
 			mapType = RefType.v("org.apache.commons.collections.map.ReferenceIdentityMap");
-		// }
+		}
 
 		singleObjectType.add(objectType);
 	}
@@ -770,18 +770,7 @@ public class ClassGenHelper {
 	 */
 	protected void fillInConstraintClass() {
 		startClass(constraint);
-		// if(!useIndexing()) {
-			addConstraintClassMembers();
-	        addConstraintInitialiser();
-	        addConstraintStaticInitialiser();
-	        addConstraintFinalizeMethod();
-			addConstraintOrMethod();
-			addConstraintCopyMethod();
-	        addConstraintGetDisjunctArrayMethod();
-	        addConstraintAddBindingsMethods();
-	        if(!abc.main.Debug.v().noNegativeBindings)
-	        		addConstraintAddNegativeBindingsMethods();
-		// } else {
+		if(useIndexing()) {
 			addIndConstraintClassMembers();
 			addIndConstraintInitialiser();
 			addIndConstraintStaticInitialiser();
@@ -793,6 +782,17 @@ public class ClassGenHelper {
 			addIndConstraintGetBindingsMethods();
 			if(!abc.main.Debug.v().noNegativeBindings) 
 				addIndConstraintQueueNegativeBindingsMethods();
+		} // else {
+			addConstraintClassMembers();
+	        addConstraintInitialiser();
+	        addConstraintStaticInitialiser();
+	        addConstraintFinalizeMethod();
+			addConstraintOrMethod();
+			addConstraintCopyMethod();
+	        addConstraintGetDisjunctArrayMethod();
+	        addConstraintAddBindingsMethods();
+	        if(!abc.main.Debug.v().noNegativeBindings)
+	        		addConstraintAddNegativeBindingsMethods();
 		// }
 	}
 	
