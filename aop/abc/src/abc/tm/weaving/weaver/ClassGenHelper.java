@@ -480,6 +480,15 @@ public class ClassGenHelper {
     protected void doAddToLocal(Local local, Value value) {
         curUnits.addLast(Jimple.v().newAssignStmt(local, Jimple.v().newAddExpr(local, value)));
     }
+    
+    /**
+     * Assigns a value to a local.
+     * @param local the variable to assign to
+     * @param value the new value of the variable
+     */
+    protected void doAssign(Local local, Value value){
+    		curUnits.addLast(Jimple.v().newAssignStmt(local, value));
+    }
 	
 	/**
 	 * Call a method with given name and return type on target. The method is assumed to have no arguments.
@@ -2517,6 +2526,42 @@ public class ClassGenHelper {
 	 * Fills in the constraint constructor(s).
 	 */
 	protected void addIndConstraintInitialiser() {
+		
+		// Single-int argument constructor -- the int is meant to be the state this constraint is for.
+		List args = new LinkedList();
+		args.add(IntType.v());
+		startMethod(SootMethod.constructorName, args, VoidType.v(), Modifier.PUBLIC);
+		
+		Local thisLocal = getThisLocal();
+		
+		// call super()
+		doConstructorCall(thisLocal, objectClass);
+		
+		// record which state we're on
+		Local state = getParamLocal(0, IntType.v());
+		doSetField(thisLocal, "onState", IntType.v(), state);
+		
+		// Based on the state we're in, we have to initialise either the disjunct sets or the maps.
+		// Thus, we do a lookup switch. Collect all the states in which we would partition the 
+		// disjuncts, and treat everything else as the 'default:' clause.
+		List switchValues = new LinkedList();
+		List switchLabels = new LinkedList();
+		Stmt labelUseMap = getNewLabel(), labelDefault = getNewLabel();
+		Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
+		while(stateIt.hasNext()) {
+			SMNode node = (SMNode)stateIt.next();
+			if(node.indices != null && !node.indices.isEmpty()) {
+				switchValues.add(getInt(node.getNumber()));
+				switchLabels.add(labelUseMap);
+			}
+		}
+		
+		if(!switchValues.isEmpty()) {
+			doLookupSwitch(state, switchValues, switchLabels, labelDefault);
+			
+			doAddLabel(labelUseMap);
+			doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap());
+		}
 		
 	}
 
