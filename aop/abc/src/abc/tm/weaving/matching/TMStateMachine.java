@@ -553,6 +553,9 @@ public class TMStateMachine implements StateMachine {
             collectable.retainAll(cur.collectableWeakRefs);
             indices.removeAll(cur.collectableWeakRefs);
 
+			// IGNORE NON-COLLECTABLE TROUBLE-CAUSING WEAKREFS
+			indices.removeAll(cur.weakRefs);
+
             if (abc.main.Debug.v().printIndices) {
                 System.out.println(this);
                 System.out.print("State " + cur.getNumber());
@@ -698,6 +701,10 @@ public class TMStateMachine implements StateMachine {
     
     public Iterator getStateIterator() {
         return nodes.iterator();
+    }
+    
+    public int getNumberOfStates() {
+        return nodes.size();
     }
     
     public String toString() {
