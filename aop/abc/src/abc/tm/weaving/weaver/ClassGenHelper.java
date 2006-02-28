@@ -470,6 +470,47 @@ public class ClassGenHelper {
 		doConstructorCall(result, mapClass, formals, actuals);
 		return result;
 	}
+
+	/**
+	 * Constructs a new ReferenceIdentityMap, using weak or strong keys depending on its argument.
+	 * @param depth The nesting depth that this map will reside at. We use this.numWeakIndices to determine whether
+	 * 				at that depth the keys should be strongly or weakly referenced.
+	 * @return a local containing the new object.
+	 */
+	protected Local getNewMapForDepth(Value depth) {
+		Local result = curLGen.generateLocal(mapType, "map$");
+		LinkedList formals = new LinkedList(), actualsWeak = new LinkedList(), actualsStrong = new LinkedList();
+		formals.add(IntType.v());
+		formals.add(IntType.v());
+		formals.add(BooleanType.v());
+		actualsWeak.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+				"WEAK", IntType.v()));
+		actualsWeak.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+				"HARD", IntType.v()));
+		actualsStrong.add(getInt(1));
+		actualsStrong.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+				"HARD", IntType.v()));
+		actualsStrong.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+				"HARD", IntType.v()));
+		actualsWeak.add(getInt(0));
+		
+		Stmt labelUseStrong = getNewLabel(), labelEnd = getNewLabel();
+		
+		doJumpIfGreater(depth, getFieldLocal(getThisLocal(), "numWeakIndices", IntType.v()), labelUseStrong);
+		
+		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
+		doConstructorCall(result, mapClass, formals, actualsWeak);
+		
+		doJump(labelEnd);
+		
+		doAddLabel(labelUseStrong);
+		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
+		doConstructorCall(result, mapClass, formals, actualsStrong);
+		
+		doAddLabel(labelEnd);
+		
+		return result;
+	}
 	
     /**
      * Arithmetic helper function -- adds 'value' to the (primitive numeric type'd) 'local' and stores the
@@ -590,6 +631,14 @@ public class ClassGenHelper {
 	 */
 	protected void doJumpIfEqual(Value val1, Value val2, Stmt label) {
 		curUnits.addLast(Jimple.v().newIfStmt(Jimple.v().newEqExpr(val1, val2), label));
+	}
+    
+	/**
+	 * Inserts a conditional jump to the given label at the end of the current method body -- the jump is performed
+	 * if val1 and val2 are equal (w.r.t. ==).
+	 */
+	protected void doJumpIfGreater(Value val1, Value val2, Stmt label) {
+		curUnits.addLast(Jimple.v().newIfStmt(Jimple.v().newGtExpr(val1, val2), label));
 	}
     
 	/**
