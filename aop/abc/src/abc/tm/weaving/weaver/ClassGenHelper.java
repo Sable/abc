@@ -2908,11 +2908,11 @@ public class ClassGenHelper {
                     for(int i = depth - 1; i >= 0; i--) {
                         doJump(loopBegins[i]);
                         doAddLabel(loopEnds[i]);
+                        doReturnVoid();
                     }
                 }
             }
         }
-        doReturnVoid();
         
         doAddLabel(labelDefault);
         doThrowException("merge() called on a non-indexing state");
