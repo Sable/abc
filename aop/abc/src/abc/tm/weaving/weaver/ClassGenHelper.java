@@ -2774,6 +2774,7 @@ public class ClassGenHelper {
 		doReturnVoid();
 		
 		// If the current state uses indexing -- we have to merge the maps.
+        doAddLabel(labelMergeIndices);
 		List formals = new LinkedList(), actuals = new LinkedList();
 		formals.add(mapType);
 		formals.add(BooleanType.v());
@@ -2883,6 +2884,7 @@ public class ClassGenHelper {
                             
                             // The original 'then' branch:
                             // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
+                            doAddLabel(labelElse);
                             List formalsOverwrite = new LinkedList();
                             List actualsOverwrite = new LinkedList();
                             formalsOverwrite.add(mapType);
