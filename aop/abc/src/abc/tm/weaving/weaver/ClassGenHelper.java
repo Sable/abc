@@ -477,7 +477,7 @@ public class ClassGenHelper {
 	 * 				at that depth the keys should be strongly or weakly referenced.
 	 * @return a local containing the new object.
 	 */
-	protected Local getNewMapForDepth(Value depth) {
+	protected Local getNewMapForDepth(Value numWeakIndices, Value depth) {
 		Local result = curLGen.generateLocal(mapType, "map$");
 		LinkedList formals = new LinkedList(), actualsWeak = new LinkedList(), actualsStrong = new LinkedList();
 		formals.add(IntType.v());
@@ -496,7 +496,7 @@ public class ClassGenHelper {
 		
 		Stmt labelUseStrong = getNewLabel(), labelEnd = getNewLabel();
 		
-		doJumpIfGreater(depth, getFieldLocal(getThisLocal(), "numWeakIndices", IntType.v()), labelUseStrong);
+		doJumpIfGreater(depth, numWeakIndices, labelUseStrong);
 		
 		curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
 		doConstructorCall(result, mapClass, formals, actualsWeak);
