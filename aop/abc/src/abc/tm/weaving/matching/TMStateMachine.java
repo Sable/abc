@@ -513,6 +513,9 @@ public class TMStateMachine implements StateMachine {
      */
     private void chooseIndices(TraceMatch tm)
     {
+        if (abc.main.Debug.v().printIndices)
+        	System.out.println(this);
+
         Collection frequentSymbols = tm.getFrequentSymbols();
 
         Iterator nodeIt = nodes.iterator();
@@ -557,7 +560,6 @@ public class TMStateMachine implements StateMachine {
 			indices.removeAll(cur.weakRefs);
 
             if (abc.main.Debug.v().printIndices) {
-                System.out.println(this);
                 System.out.print("State " + cur.getNumber());
                 System.out.print(" - collectable indices: " + collectable);
                 System.out.println(" other indices: " + indices);

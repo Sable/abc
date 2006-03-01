@@ -832,7 +832,7 @@ public class ClassGenHelper {
 			addIndConstraintClassMembers();
 			addIndConstraintInitialiser();
 			addIndConstraintStaticInitialiser();
-			addIndConstraintFinalizeMethod();
+//			addIndConstraintFinalizeMethod();
 			addIndConstraintHelperMethods();
 			addIndConstraintGetTrueMethod();
 			addIndConstraintMergeMethod();
@@ -2612,8 +2612,8 @@ public class ClassGenHelper {
 				switchValues.add(getInt(node.getNumber()));
 				int numWeakInd = 0;
 				while(numWeakInd < node.indices.size() && 
-						(node.collectableWeakRefs.contains(node.indices.get(numWeakInd)))
-						|| (node.weakRefs.contains(node.indices.get(numWeakInd)))) {
+						(node.collectableWeakRefs.contains(node.indices.get(numWeakInd))
+						|| node.weakRefs.contains(node.indices.get(numWeakInd)))) {
 					numWeakInd++;
 				}
 				if(labelsForNumWeakInd[numWeakInd] == null) labelsForNumWeakInd[numWeakInd] = getNewLabel();
@@ -2680,7 +2680,7 @@ public class ClassGenHelper {
 		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
 		
 		// we initialise this.disjuncts_skip to new LinkedHashSet(this.disjuncts);
-		args.clear(); args.add(setType);
+		args.clear(); args.add(Scene.v().getRefType("java.util.Collection"));
 		doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass, args, paramDisjuncts));
 		
 		doReturnVoid();
@@ -2731,7 +2731,7 @@ public class ClassGenHelper {
 		Local new_disjunct = getNewObject(disjunct);
 
 		// add the disjunct to the hashset
-		doMethodCall(lhs, "add", singleObjectType, VoidType.v(), new_disjunct);
+		doMethodCall(lhs, "add", singleObjectType, BooleanType.v(), new_disjunct);
 
 		// create and return a new constraint
 		List args = new ArrayList(2);
@@ -2775,7 +2775,143 @@ public class ClassGenHelper {
 	 * Adds small helper methods, like lookup(), lookup2(), overwrite() and queue().
 	 */
 	protected void addIndConstraintHelperMethods() {
-		
+		int[] index_depths = curTraceMatch.getIndexingDepths();
+
+		for (int i = 0; i < index_depths.length; i++) {
+			addIndConstraintLookupMethod(index_depths[i]);
+			addIndConstraintOverwriteMethod(index_depths[i]);
+		}
 	}
 
+	/**
+	 * Generate a method to lookup a LinkedHashSet in an index of maps of a
+	 * specified depth. The generated method will take the map and the correct
+	 * number of keys as parameters.
+	 *
+	 * @param depth the depth of the index of maps
+	 */
+	protected void addIndConstraintLookupMethod(int depth) {
+		String name = "lookup" + depth;
+		List param_types = new ArrayList(depth + 1);
+
+		// the parameters to the lookup method are one map, and "depth" keys
+		param_types.add(mapType);
+		for (int i = 0; i < depth; i++)
+			param_types.add(objectType);
+
+		startMethod(name, param_types, setType, Modifier.PUBLIC);
+		Local map = getParamLocal(0, mapType);
+		Local found = null;
+
+		for (int i = 1; i <= depth; i++) {
+			Local key = getParamLocal(i, objectType);
+			found = getMethodCallResult(map, "get", singleObjectType,
+			                            objectType, key);
+			if (i == depth)
+				break;
+
+			// cast looked-up-value to a map, and return if it is null
+			map = getCastValue(found, mapType);
+			Stmt non_null_case = getNewLabel();
+			doJumpIfNotNull(map, non_null_case);
+			doReturn(getNull());
+			doAddLabel(non_null_case);
+		}
+
+		// cast the final looked-up-value to a set and return it
+		doReturn(getCastValue(found, setType));
+	}
+	
+	/**
+	 * Generate a method to overwrite a LinkedHashSet in an index of maps
+	 * of a specified depth.  The generated method will take as parameters:
+	 * the map, the correct number of keys, the LinkedHashSet to insert into
+	 * the map, and a boolean flag for whether or not to cleanup empty
+	 * sets/maps afterwards.
+	 *
+	 * @param depth the depth of the index of maps
+	 */
+	protected void addIndConstraintOverwriteMethod(int depth) {
+		String name = "overwrite" + depth;
+		List param_types = new ArrayList(depth + 3);
+
+		// the parameters to the overwrite method are one map, "depth" keys,
+		// a set, and a boolean flag to tell overwrite whether or not it
+		// should clean up empty sets/maps
+		param_types.add(mapType);
+		for (int i = 0; i < depth; i++)
+			param_types.add(objectType);
+		param_types.add(setType);
+		param_types.add(BooleanType.v());
+
+		startMethod(name, param_types, VoidType.v(), Modifier.PUBLIC);
+
+		Local this_local = getThisLocal();
+		Local num_weak_indices =
+		    getFieldLocal(this_local, "numWeakIndices", IntType.v());
+		Local[] keys = new Local[depth];
+		Local[] maps = new Local[depth];
+		maps[0] = getParamLocal(0, mapType);
+		for (int i = 0; i < depth; i++)
+			keys[i] = getParamLocal(1 + i, objectType);
+		Local set = getParamLocal(depth + 1, setType);
+		Local cleanup = getParamLocal(depth + 2, BooleanType.v());
+
+		// the method map.put(...) takes two object parameters
+		List put_types = new ArrayList(2);
+		put_types.add(objectType);
+		put_types.add(objectType);
+
+		for (int i = 1; i < depth; i++) {
+			Local child = getMethodCallResult(maps[i-1], "get",
+			                                  singleObjectType,
+			                                  objectType, keys[i-1]);
+
+			// if the value is non-null, cast it to a map, else
+			// create a new map and insert it
+			Stmt null_case = getNewLabel();
+			Stmt end_if = getNewLabel();
+
+			doJumpIfNull(child, null_case);
+			maps[i] = getCastValue(child, mapType);
+			doJump(end_if);
+
+			doAddLabel(null_case);
+			child = getNewMapForDepth(num_weak_indices, getInt(i));
+			List put_args = new ArrayList(2);
+			put_args.add(keys[i-1]);
+			put_args.add(child);
+			doMethodCall(maps[i-1], "put", put_types, objectType, put_args);
+			doAssign(maps[i], child);
+
+			doAddLabel(end_if);
+		}
+
+		List put_args = new ArrayList(2);
+		put_args.add(keys[depth - 1]);
+		put_args.add(set);
+		doMethodCall(maps[depth - 1], "put", put_types, objectType, put_args);
+
+		// cleanup iff the boolean cleanup flag is true
+		Stmt cleanup_code = getNewLabel();
+
+		doJumpIfTrue(cleanup, cleanup_code);
+		doReturnVoid();
+
+		doAddLabel(cleanup_code);
+		Local test_for_empty = set;
+
+		for (int i = depth - 1; i >= 0; i--) {
+			Local empty = getMethodCallResult(set, "isEmpty", BooleanType.v());
+			Stmt end_if = getNewLabel();
+			doJumpIfFalse(empty, end_if);
+			doMethodCall(maps[i], "remove", singleObjectType,
+			             objectType, keys[i]);
+
+			doAddLabel(end_if);
+			test_for_empty = maps[i];
+		}
+				
+		doReturnVoid();
+	}
 }

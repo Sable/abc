@@ -229,6 +229,39 @@ public class TraceMatch
         return (List) sym_to_vars.get(symbol);
     }
 
+	public int[] getIndexingDepths()
+	{
+		TMStateMachine sm = (TMStateMachine) state_machine;
+		boolean[] depths = new boolean[sm.getNumberOfStates()];
+		Iterator states = sm.getStateIterator();
+
+		// assign to depths, such that,
+		//   depths[i-1] == true <==>  some state has i indices
+		while (states.hasNext()) {
+			SMNode node = (SMNode) states.next();
+			int num_indices = node.indices.size();
+
+			if (num_indices != 0)
+				depths[num_indices - 1] = true;
+		}
+
+		// count the number of different depths
+		int num_depths = 0;
+		for (int i = 0; i < depths.length; i++)
+			if (depths[i])
+				num_depths++;
+
+		// create the array of used depths to return
+		int[] used_depths = new int[num_depths];
+
+		int current = 0;
+		for (int i = 0; i < depths.length; i++)
+			if (depths[i])
+				used_depths[current++] = i + 1;
+
+		return used_depths;
+	}
+
     public String getName() {
         return name;
     }
