@@ -57,7 +57,7 @@ import abc.weaving.aspectinfo.Within;
  * @author Neil Ongkingco
  *
  */
-public class ModuleNodeModule extends ModuleNode {
+public class ModuleNodeModule extends ModuleNode implements ModulePrecedence {
     private List /* ModuleNode */members = null;
 
     private List /* SigMember */sigMembers = null;

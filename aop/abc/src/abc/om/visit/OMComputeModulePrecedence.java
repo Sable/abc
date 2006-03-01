@@ -41,11 +41,11 @@ public class OMComputeModulePrecedence extends OncePass {
 
     private ExtensionInfo ext;
 
-    private HashMap mod_prec_rel; /*<ModuleNodeModule || ExtAspect, Set <ModuleNodeModule || ExtAspect>>*/
+    private HashMap mod_prec_rel; /*<ModulePrecedence, Set <ModulePrecedence>>*/
     private HashMap extAspectMap; /*<String ,ExtAspect>*/
     
     //Representation of an external aspect in mod_prec_rel
-    private class ExtAspect {
+    private class ExtAspect implements ModulePrecedence{
         String name;
         public ExtAspect(String name) {
             this.name = name;
@@ -55,6 +55,11 @@ public class OMComputeModulePrecedence extends OncePass {
         }
         public String toString() {
             return name;
+        }
+        public Set getAspectNames() {
+            Set ret = new HashSet();
+            ret.add(name);
+            return ret;
         }
     }
 
@@ -72,9 +77,7 @@ public class OMComputeModulePrecedence extends OncePass {
         return (ExtAspect)extAspectMap.get(name);
     }
 
-    private Set getLowerSet(Map map, Object key) {
-        assert (key instanceof ModuleNodeModule || key instanceof ExtAspect) :
-            "Invalid parameter type";
+    private Set getLowerSet(Map map, ModulePrecedence key) {
         if (map.get(key) == null) {
             map.put(key,new HashSet());
         }
@@ -210,7 +213,8 @@ public class OMComputeModulePrecedence extends OncePass {
         //generate the prec_rel defined by the topological sort
         Set/*<String>*/ prevAspectNames = new HashSet();
         while (sorted.size() > 0) {
-            Set/*<String>*/ aspectNames = getAspectNames(sorted.removeLast());
+            ModulePrecedence mp = (ModulePrecedence)sorted.removeLast();
+            Set/*<String>*/ aspectNames = mp.getAspectNames();
             for (Iterator i = aspectNames.iterator(); i.hasNext();) {
                 String aspectName = (String) i.next();
                 if (ext.prec_rel.get(aspectName) == null) {
@@ -230,10 +234,7 @@ public class OMComputeModulePrecedence extends OncePass {
     }
     
     //true if m1 has higher precedence than m2
-    private boolean hasHigherPrecedence(Object m1, Object m2) {
-    	assert ((m1 instanceof ModuleNode || m1 instanceof ExtAspect) &&
-    	        (m2 instanceof ModuleNode || m2 instanceof ExtAspect)) : 
-    	            "Invalid parameter types"; 
+    private boolean hasHigherPrecedence(ModulePrecedence m1, ModulePrecedence m2) {
     	
         Set m1Set = (Set)mod_prec_rel.get(m1);
         if (m1Set == null) {
@@ -279,8 +280,7 @@ public class OMComputeModulePrecedence extends OncePass {
     }
 
     //Topological sort on the precedence relation
-    private LinkedList/*<ModuleNodeModule || ExtAspect>*/ 
-    		topologicalSort(Map map) {
+    private LinkedList/*<ModulePrecedence>*/ topologicalSort(Map map) {
         LinkedList ret = new LinkedList();
         //Create (semi)deep copy of map  
         HashMap map_copy = new HashMap();
@@ -313,7 +313,8 @@ public class OMComputeModulePrecedence extends OncePass {
             for (Iterator i = map_copy.values().iterator(); i.hasNext(); ) {
                 Set currSet = (Set) i.next();
                 for (Iterator j = currSet.iterator(); j.hasNext(); ) {
-                    cycledAspects.addAll(getAspectNames(j.next()));
+                    ModulePrecedence mp = (ModulePrecedence)j.next();
+                    cycledAspects.addAll(mp.getAspectNames());
                 }
             }
             addTopSortCycleError(cycledAspects);
@@ -347,22 +348,5 @@ public class OMComputeModulePrecedence extends OncePass {
             }
             AbcExtension.debPrintln("]");
         }
-    }
-    
-    private Set /*<String>*/ getAspectNames(Object entry) {
-        Set ret = null;
-        ModuleNodeModule module;
-        ExtAspect extAspect;
-        if (entry instanceof ModuleNodeModule) {
-            module = (ModuleNodeModule) entry;
-            ret = module.getAspectNames();
-        } else if (entry instanceof ExtAspect){
-            extAspect = (ExtAspect) entry;
-            ret = new HashSet();
-            ret.add(extAspect.name());
-        } else {
-            assert (false) : "Invalid paramter type";
-        }
-        return ret;
     }
 }
