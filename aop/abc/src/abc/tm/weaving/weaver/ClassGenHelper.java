@@ -2785,8 +2785,9 @@ public class ClassGenHelper {
 		actuals.add(getInt(0));
 		doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
 		
-		doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMapForDepth(getInt(0)));
-		doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMapForDepth(getInt(0)));
+        Local numWeakInd = getFieldLocal(thisLocal, "numWeakIndices", IntType.v());
+		doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMapForDepth(numWeakInd, getInt(0)));
+		doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMapForDepth(numWeakInd, getInt(0)));
 		doReturnVoid();
 		
 		// The second version of merge takes a Map and a boolean flag. It merges the contents of the map
