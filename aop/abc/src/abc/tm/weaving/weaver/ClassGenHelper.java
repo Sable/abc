@@ -80,6 +80,7 @@ public class ClassGenHelper {
 	static SootClass mapClass;
 	static Type objectType;
 	static Type setType;
+    static Type jusetType;
 	static Type iteratorType;
 	static RefType mapType;
 	
@@ -107,6 +108,7 @@ public class ClassGenHelper {
 		iteratorClass = Scene.v().getSootClass("java.util.Iterator");
 		objectType = RefType.v("java.lang.Object");
 		setType = RefType.v("java.util.LinkedHashSet");
+        jusetType = RefType.v("java.util.Set");
 		iteratorType = RefType.v("java.util.Iterator");
 
 		if(useIndexing()) {
@@ -2602,7 +2604,7 @@ public class ClassGenHelper {
 		// disjuncts, and treat everything else as the 'default:' clause.
 		List switchValues = new LinkedList();
 		List switchLabels = new LinkedList();
-		Stmt[] labelsForNumWeakInd = new Stmt[curTraceMatch.getFormals().size()]; 
+		Stmt[] labelsForNumWeakInd = new Stmt[curTraceMatch.getFormals().size() + 1]; 
 		Stmt  labelDefault = getNewLabel();
 		int nWeakMap = 0, nStrongMap = 0;
 		Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
@@ -2743,9 +2745,174 @@ public class ClassGenHelper {
 	/**
 	 * Adds 'merge' method which combines the _skip and _tmp-labelled constraints and prepares the
 	 * constraint for the next event.
+	 * 
+	 * The actual implementation uses two methods called 'merge'. One takes no arguments, while the
+	 * other takes a Map and a boolean operation flag. For descriptions, see comments in this method.
 	 */
 	protected void addIndConstraintMergeMethod() {
+		List singleCollection = new LinkedList(); 
+		singleCollection.add(RefType.v("java.util.Collection"));
 		
+		// First version of merge checks if the current state is indexed. If not, disjuncts{"", "_tmp",
+		// "-skip"} are updated. Otherwise the indexedDisjunct* maps are updated, making use of the 
+		// other auxiliary merge() method.
+		startMethod("merge", emptyList, VoidType.v(), Modifier.PUBLIC);
+		
+		Local thisLocal = getThisLocal();
+		Local numWeakIndices = getFieldLocal(thisLocal, "numWeakIndices", IntType.v());
+		Stmt labelMergeIndices = getNewLabel();
+		
+		// If the current state uses indexing, we skip the simple case.
+		doJumpIfGreater(numWeakIndices, getInt(-1), labelMergeIndices);
+		
+		// Otherwise, the current state doesn't use indexing, so we merely update the disjunct sets.
+		doSetField(thisLocal, "disjuncts", setType, getFieldLocal(thisLocal, "disjuncts_skip", setType));
+		doMethodCall(getFieldLocal(thisLocal, "disjuncts", setType), "addAll", singleCollection, VoidType.v(),
+					getFieldLocal(thisLocal, "disjuncts_tmp", setType));
+		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass, singleCollection, 
+					getFieldLocal(thisLocal, "disjuncts", setType)));
+		doReturnVoid();
+		
+		// If the current state uses indexing -- we have to merge the maps.
+		List formals = new LinkedList(), actuals = new LinkedList();
+		formals.add(mapType);
+		formals.add(BooleanType.v());
+		actuals.add(getFieldLocal(thisLocal, "indexedDisjuncts_skip", mapType));
+		actuals.add(getInt(1));
+		doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
+		actuals.clear();
+		actuals.add(getFieldLocal(thisLocal, "indexedDisjuncts_tmp", mapType));
+		actuals.add(getInt(0));
+		doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
+		
+		doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMapForDepth(getInt(0)));
+		doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMapForDepth(getInt(0)));
+		doReturnVoid();
+		
+		// The second version of merge takes a Map and a boolean flag. It merges the contents of the map
+		// onto this.indexedDisjuncts. If the flag is true, it replaces existing disjunct sets; otherwise,
+		// it computes set unions.
+		// Note that the local 'formals' still contains the correct list of types from above.
+		startMethod("merge", formals, VoidType.v(), Modifier.PUBLIC);
+		
+		thisLocal = getThisLocal();
+		Local paramMap = getParamLocal(0, mapType);
+		Local operation = getParamLocal(1, BooleanType.v());
+		
+		// The assumption is that (a) this method never gets called when we're not on a state that uses
+		// indexing, and (b) the map it gets passed has the same structure as this.indexedDisjuncts (with
+		// respect to order of indexing variables).
+		// We iterate over paramMap rather than this.indexedDisjuncts, assuming that it will in general 
+		// be smaller.
+        
+        // In order to know how many levels of iteration there are, we need to do a lookup switch of the
+        // state we're in.
+        List switchValues = new LinkedList();
+        List switchLabels = new LinkedList();
+        Stmt[] labelsForIterDepth = new Stmt[curTraceMatch.getFormals().size() + 1];
+        Stmt labelDefault = getNewLabel();
+		Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
+        int nDifferentOptions = 0;
+        while(stateIt.hasNext()) {
+            SMNode node = (SMNode) stateIt.next();
+            if(node.indices != null && !node.indices.isEmpty()) {
+                switchValues.add(getInt(node.getNumber()));
+                if(labelsForIterDepth[node.indices.size()] == null) {
+                    nDifferentOptions++;
+                    labelsForIterDepth[node.indices.size()] = getNewLabel();
+                }
+                switchLabels.add(labelsForIterDepth[node.indices.size()]);
+            }
+        }
+        
+        // Now we have constructed the necessarily lists for the lookup switch. Of course if all
+        // states index on the *same* number of variables, the switch itself would be useless, so...
+        if(!switchValues.isEmpty()) {
+            if(nDifferentOptions > 1) {
+                doLookupSwitch(getFieldLocal(thisLocal, "onState", IntType.v()), 
+                        switchValues, switchLabels, labelDefault);
+            }
+            for(int depth = 0; depth < labelsForIterDepth.length; depth++) {
+                if(labelsForIterDepth[depth] != null) {
+                    doAddLabel(labelsForIterDepth[depth]);
+                    Local[] iterators = new Local[depth];
+                    Local[] maps = new Local[depth];
+                    Local[] keys = new Local[depth];
+                    Stmt[] loopBegins = new Stmt[depth];
+                    Stmt[] loopEnds = new Stmt[depth];
+                    maps[0] = paramMap;
+                    for(int i = 0; i < depth; i++) {
+                        iterators[i] = getMethodCallResult(
+                                            getMethodCallResult(maps[i], "keyset", jusetType),
+                                            "iterator", iteratorType);
+                        loopBegins[i] = getNewLabel();
+                        loopEnds[i] = getNewLabel();
+                        doAddLabel(loopBegins[i]);
+                        doJumpIfFalse(getMethodCallResult(iterators[i], "hasNext", BooleanType.v()), loopEnds[i]);
+                        keys[i] = getMethodCallResult(iterators[i], "next", objectType);
+                        if(i + 1 < depth) {
+                            maps[i + 1] = getCastValue(getMethodCallResult(maps[i], "get", 
+                                    singleObjectType, objectType, keys[i]), mapType);
+                        } else {
+                            Local mergedSet = getCastValue(getMethodCallResult(maps[i], "get", 
+                                    singleObjectType, objectType, keys[i]), setType);
+                            // We have finally reached a set in the mapping structure.
+                            // We need to do `updated = lookup_depth(indexedDisjuncts, key[0], ..., key[depth-1]);`
+                            List formalsLookup= new LinkedList();
+                            List actualsLookup= new LinkedList();
+                            formalsLookup.add(mapType);
+                            actualsLookup.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+                            for(int j = 0; j < depth; j++) {
+                                formalsLookup.add(objectType);
+                                actualsLookup.add(keys[j]);
+                            }
+                            Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
+                                    formalsLookup, setType, actualsLookup);
+                            
+                            Stmt labelElse = getNewLabel(), labelEndIf = getNewLabel();
+                            // if(op || updated == null) is equivalent to
+                            // if(!op && updated != null) with then- and else-branches reversed.
+                            doJumpIfFalse(operation, labelElse);
+                            doJumpIfNotEqual(updatedSet, getNull(), labelElse);
+                            
+                            // The original 'else' branch:
+                            // updatedSet.addAll(mergedSet)
+                            doMethodCall(updatedSet, "addAll", singleCollection, BooleanType.v(), mergedSet);
+                            doJump(labelEndIf);
+                            
+                            // The original 'then' branch:
+                            // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
+                            List formalsOverwrite = new LinkedList();
+                            List actualsOverwrite = new LinkedList();
+                            formalsOverwrite.add(mapType);
+                            actualsOverwrite.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+                            for(int j = 0; j < depth; j++) {
+                                formalsOverwrite.add(objectType);
+                                actualsOverwrite.add(keys[j]);
+                            }
+                            formalsOverwrite.add(setType);
+                            actualsOverwrite.add(mergedSet);
+                            formalsOverwrite.add(BooleanType.v());
+                            actualsOverwrite.add(getInt(1));
+                            doMethodCall(thisLocal, "overwrite" + depth, formalsOverwrite, VoidType.v(),
+                                    actualsOverwrite);
+                            
+                            doAddLabel(labelEndIf);
+                        }
+                    }
+                    // We now need to add the jumps back to the loop beginnings and the labels for loop end
+                    // in reverse order.
+                    for(int i = depth - 1; i >= 0; i--) {
+                        doJump(loopBegins[i]);
+                        doAddLabel(loopEnds[i]);
+                    }
+                }
+            }
+        }
+        doReturnVoid();
+        
+        doAddLabel(labelDefault);
+        doThrowException("merge() called on a non-indexing state");
 	}
 	
 	/**
