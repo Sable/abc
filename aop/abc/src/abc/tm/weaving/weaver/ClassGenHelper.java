@@ -2767,7 +2767,7 @@ public class ClassGenHelper {
 		
 		// Otherwise, the current state doesn't use indexing, so we merely update the disjunct sets.
 		doSetField(thisLocal, "disjuncts", setType, getFieldLocal(thisLocal, "disjuncts_skip", setType));
-		doMethodCall(getFieldLocal(thisLocal, "disjuncts", setType), "addAll", singleCollection, VoidType.v(),
+		doMethodCall(getFieldLocal(thisLocal, "disjuncts", setType), "addAll", singleCollection, BooleanType.v(),
 					getFieldLocal(thisLocal, "disjuncts_tmp", setType));
 		doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass, singleCollection, 
 					getFieldLocal(thisLocal, "disjuncts", setType)));
@@ -2845,7 +2845,7 @@ public class ClassGenHelper {
                     maps[0] = paramMap;
                     for(int i = 0; i < depth; i++) {
                         iterators[i] = getMethodCallResult(
-                                            getMethodCallResult(maps[i], "keyset", jusetType),
+                                            getMethodCallResult(maps[i], "keySet", jusetType),
                                             "iterator", iteratorType);
                         loopBegins[i] = getNewLabel();
                         loopEnds[i] = getNewLabel();
