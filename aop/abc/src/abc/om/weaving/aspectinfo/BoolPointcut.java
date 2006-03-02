@@ -31,9 +31,10 @@ import abc.weaving.residues.NeverMatch;
 import abc.weaving.residues.Residue;
 
 /**
- * @author Neil Ongkingco
  * Boolean pointcut. Returns AlwaysMatch if true, NeverMatch if false.
  * Used as initial values in signatures.
+ * 
+ * @author Neil Ongkingco
  */
 public class BoolPointcut extends ShadowPointcut {
 
