@@ -118,12 +118,25 @@ public class JoinPointInfo extends ContextValue {
 
         return ret;
     }
-    private AssignStmt initThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
+    private Stmt initThisJoinPoint(LocalGeneratorEx lg,Chain units,Stmt start) {
         Type object=Scene.v().getSootClass("java.lang.Object").getType();
         WeavingContext wc=new WeavingContext();
         wc.setShadowTag(new InstructionShadowTag(sm.shadowId));
         wc.setKindTag(InstructionKindTag.THISJOINPOINT);
 
+	if (abc.main.Debug.v().thisJoinPointOnlyIdentity) {
+	    AssignStmt makeDummyJP = Jimple.v().newAssignStmt
+		(getThisJoinPoint(), 
+		 Jimple.v().newNewExpr((RefType)object));
+	    units.insertAfter(makeDummyJP, start);
+
+	    InvokeStmt initDummyJP = Jimple.v().newInvokeStmt
+		(Jimple.v().newSpecialInvokeExpr
+		 (getThisJoinPoint(), Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.Object"), new LinkedList())));
+	    units.insertAfter(initDummyJP, makeDummyJP);
+
+	    return initDummyJP;
+	}
         WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
                 "sjpinfo");
         Stmt bindSJPInfo
@@ -131,8 +144,6 @@ public class JoinPointInfo extends ContextValue {
         Tagger.tagStmt(bindSJPInfo, InstructionKindTag.THISJOINPOINT);
         
         WeavingVar thisVal=new LocalVar(object,"thisval");
-        // Sometimes using this would actually cause a pointcut to fail to match,
-        // but here we just want a null value in the JoinPointInfo
         Stmt bindThis=Bind
             .construct(thisCV,object,thisVal)
             .codeGen(sm.getContainer(),lg,units,bindSJPInfo,sm.sp.getEnd(),true,wc);
@@ -216,8 +227,10 @@ public class JoinPointInfo extends ContextValue {
 
             Chain units=sm.getContainer().getActiveBody().getUnits();
 
-            set_thisJoinPoint(lg.generateLocal
-                (RefType.v("org.aspectj.lang.JoinPoint"),"thisJoinPoint"));
+            set_thisJoinPoint
+		(lg.generateLocal
+		 (RefType.v(abc.main.Debug.v().thisJoinPointOnlyIdentity ? "java.lang.Object" : "org.aspectj.lang.JoinPoint"),
+		  "thisJoinPoint"));
 
             Stmt startJP=Jimple.v().newNopStmt();
             units.insertBefore(startJP,sm.sp.getBegin());

@@ -62,8 +62,13 @@ public class AJTypeSystem_c
     // importing the aspectJ runtime classes
 	protected ClassType JOINPOINT_;
 	
-    public ClassType JoinPoint()  { if (JOINPOINT_ != null) return JOINPOINT_;
-									 return JOINPOINT_ = load("org.aspectj.lang.JoinPoint"); }
+    public ClassType JoinPoint()  { 
+	if (JOINPOINT_ != null) return JOINPOINT_;
+	if (abc.main.Debug.v().thisJoinPointOnlyIdentity) {
+	    return JOINPOINT_ = load("java.lang.Object");
+	}
+	return JOINPOINT_ = load("org.aspectj.lang.JoinPoint"); 
+    }
 
 	public ClassType JoinPointStaticPart() { 
 		ClassType jp = JoinPoint();

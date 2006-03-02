@@ -78,6 +78,10 @@ public class Debug {
                                                    // or things it sees (like patterns)
     public boolean traceMatcher=false;
 
+    // Make thisJoinPoint be of type Object (but still construct a new one at each joinpoint),
+    // making it useful only for comparing identity of joinpoints.
+    public boolean thisJoinPointOnlyIdentity = false; 
+
     // Weaver
     public boolean testITDsOnly = false; // will skip advice weaving
 
