@@ -3168,7 +3168,7 @@ public class ClassGenHelper {
 		    getFieldLocal(this_local, "indexedDisjuncts_tmp", mapType);
 
 		Stmt no_index_case = getNewLabel();
-		Map indices_to_label = addIndTableLookup(state, no_index_case, true);
+		Map indices_to_label = addIndLookupSwitch(state, no_index_case, true);
 
 		Iterator index_lists = indices_to_label.keySet().iterator();
 		while (index_lists.hasNext()) {
@@ -3263,8 +3263,8 @@ public class ClassGenHelper {
 	 *                      indexing variables but the same number of
 	 *                      indices should be treated separately
 	 */
-	protected Map addIndTableLookup(Local lookup_key, Stmt default_label,
-	                                boolean names_matter)
+	protected Map addIndLookupSwitch(Local lookup_key, Stmt default_label,
+	                                 boolean names_matter)
 	{
 		TMStateMachine sm = ((TMStateMachine) curTraceMatch.getStateMachine());
 		Iterator states = sm.getStateIterator();
