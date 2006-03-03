@@ -840,7 +840,7 @@ public class ClassGenHelper {
 			addIndConstraintHelperMethods();
 			addIndConstraintGetTrueMethod();
 			addIndConstraintMergeMethod();
-			addIndConstraintGetDisjunctArrayMethod();
+//			addIndConstraintGetDisjunctArrayMethod();
 			addIndConstraintGetBindingsMethods();
 			if(!abc.main.Debug.v().noNegativeBindings) 
 				addIndConstraintQueueNegativeBindingsMethods();
@@ -2911,9 +2911,15 @@ public class ClassGenHelper {
 	
 	/**
 	 * Adds a method for obtaining an array of the disjuncts on this state.
+	 * We assume that final states are never indexed, so the disjuncts forming the solution
+	 * are simply in this.disjuncts.
 	 */
 	protected void addIndConstraintGetDisjunctArrayMethod() {
-		
+        Type arrayType = ArrayType.v(objectType, 1);
+        startMethod("getDisjunctArray", emptyList, arrayType, Modifier.PUBLIC);
+        
+        // return this.disjuncts.toArray();
+        doReturn(getMethodCallResult(getFieldLocal(getThisLocal(), "disjuncts", setType), "toArray", arrayType));
 	}
 	
 	/**
