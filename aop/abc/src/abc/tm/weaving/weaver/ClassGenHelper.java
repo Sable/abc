@@ -3175,8 +3175,6 @@ public class ClassGenHelper {
 			List indices = (List) index_lists.next();
 			Stmt label = (Stmt) indices_to_label.get(indices);
 
-			System.out.println("Queue, indexing on: " + indices);
-
 			doAddLabel(label);
 			Local iter =
 			    getMethodCallResult(disjuncts, "iterator", iteratorType);
@@ -3199,14 +3197,18 @@ public class ClassGenHelper {
 			args.add(index_tmp);
 
 			// get keys from disjunct
-			// FIXME: what about primitive bindings?
 			int depth = indices.size();
 			for (int i = 0; i < depth; i++) {
 				String varname = (String) indices.get(i);
 				String name = "get$" + varname;
 				Type type = curTraceMatch.bindingType(varname);
+
+				Local var = getMethodCallResult(next_disjunct, name, type);
+				if (curTraceMatch.isPrimitive(varname))
+					var = getWeakRef(var, varname);
+
 				params.add(objectType);
-				args.add(getMethodCallResult(next_disjunct, name, type));
+				args.add(var);
 			}
 
 			Local updated = getMethodCallResult(this_local, "lookup" + depth,
