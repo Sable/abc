@@ -87,6 +87,7 @@ public class ClassGenHelper {
         public int depth;
         
         public IterationContext(int depth, Local map) {
+            this.depth = depth;
             keys = new Local[depth];
             maps = new Local[depth];
             iterators = new Local[depth];
