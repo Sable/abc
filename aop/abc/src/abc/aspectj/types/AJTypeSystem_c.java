@@ -64,7 +64,7 @@ public class AJTypeSystem_c
 	
     public ClassType JoinPoint()  { 
 	if (JOINPOINT_ != null) return JOINPOINT_;
-	if (abc.main.Debug.v().thisJoinPointOnlyIdentity) {
+	if (abc.main.Debug.v().thisJoinPointObject) {
 	    return JOINPOINT_ = load("java.lang.Object");
 	}
 	return JOINPOINT_ = load("org.aspectj.lang.JoinPoint"); 

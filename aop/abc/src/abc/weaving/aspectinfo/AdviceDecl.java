@@ -214,7 +214,7 @@ public class AdviceDecl extends AbstractAdviceDecl {
                  (new JoinPointInfo(sm),
                   new AdviceFormal
                   (joinPointPos(),
-                   RefType.v("org.aspectj.lang.JoinPoint"))));
+		   abc.weaving.residues.JoinPointInfo.sootType())));
             // make sure the SJP info will be around later for
             // the JoinPointInfo residue
             sm.recordSJPInfo();

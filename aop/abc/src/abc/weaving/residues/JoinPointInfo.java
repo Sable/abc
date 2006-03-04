@@ -81,6 +81,12 @@ public class JoinPointInfo extends ContextValue {
     }
 
     public Type getSootType() {
+	return sootType();
+    }
+
+    // This possibly should be moved elsewhere
+    public static RefType sootType() {
+	if (abc.main.Debug.v().thisJoinPointObject) return RefType.v("java.lang.Object");
 	return RefType.v("org.aspectj.lang.JoinPoint");
     }
 
@@ -107,8 +113,8 @@ public class JoinPointInfo extends ContextValue {
 
         Stmt ret=Jimple.v().newAssignStmt(
                 getThisJoinPoint(),
-                Jimple.v().newCastExpr(sjpVal.get(),
-                    RefType.v("org.aspectj.lang.JoinPoint")));
+                Jimple.v().newCastExpr(sjpVal.get(), getSootType()));
+
         if(wc.getKindTag() == null) {
             wc.setKindTag(InstructionKindTag.THISJOINPOINT);
         }
@@ -124,19 +130,34 @@ public class JoinPointInfo extends ContextValue {
         wc.setShadowTag(new InstructionShadowTag(sm.shadowId));
         wc.setKindTag(InstructionKindTag.THISJOINPOINT);
 
-	if (abc.main.Debug.v().thisJoinPointOnlyIdentity) {
-	    AssignStmt makeDummyJP = Jimple.v().newAssignStmt
+	if (abc.main.Debug.v().thisJoinPointObject) {
+	    AssignStmt makeObjectJP = Jimple.v().newAssignStmt
 		(getThisJoinPoint(), 
 		 Jimple.v().newNewExpr((RefType)object));
+	    units.insertAfter(makeObjectJP, start);
+
+	    InvokeStmt initObjectJP = Jimple.v().newInvokeStmt
+		(Jimple.v().newSpecialInvokeExpr
+		 (getThisJoinPoint(), Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.Object"), new LinkedList())));
+	    units.insertAfter(initObjectJP, makeObjectJP);
+
+	    return initObjectJP;
+	}
+
+	if (abc.main.Debug.v().thisJoinPointDummy) {
+	    AssignStmt makeDummyJP = Jimple.v().newAssignStmt
+		(getThisJoinPoint(), 
+		 Jimple.v().newNewExpr(RefType.v("DummyJP")));
 	    units.insertAfter(makeDummyJP, start);
 
 	    InvokeStmt initDummyJP = Jimple.v().newInvokeStmt
 		(Jimple.v().newSpecialInvokeExpr
-		 (getThisJoinPoint(), Scene.v().makeConstructorRef(Scene.v().getSootClass("java.lang.Object"), new LinkedList())));
+		 (getThisJoinPoint(), Scene.v().makeConstructorRef(Scene.v().getSootClass("DummyJP"), new LinkedList())));
 	    units.insertAfter(initDummyJP, makeDummyJP);
 
 	    return initDummyJP;
 	}
+
         WeavingVar sjpVal=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint$StaticPart"),
                 "sjpinfo");
         Stmt bindSJPInfo
@@ -228,9 +249,7 @@ public class JoinPointInfo extends ContextValue {
             Chain units=sm.getContainer().getActiveBody().getUnits();
 
             set_thisJoinPoint
-		(lg.generateLocal
-		 (RefType.v(abc.main.Debug.v().thisJoinPointOnlyIdentity ? "java.lang.Object" : "org.aspectj.lang.JoinPoint"),
-		  "thisJoinPoint"));
+		(lg.generateLocal(getSootType(), "thisJoinPoint"));
 
             Stmt startJP=Jimple.v().newNopStmt();
             units.insertBefore(startJP,sm.sp.getBegin());

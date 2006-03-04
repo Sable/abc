@@ -80,7 +80,11 @@ public class Debug {
 
     // Make thisJoinPoint be of type Object (but still construct a new one at each joinpoint),
     // making it useful only for comparing identity of joinpoints.
-    public boolean thisJoinPointOnlyIdentity = false; 
+    public boolean thisJoinPointObject = false; 
+
+    // Make thisJoinPoint be constructed using new DummyJP() (you must supply an implementation of
+    // this class), again making it useful only for comparing identity, but with less type safety.
+    public boolean thisJoinPointDummy = false; 
 
     // Weaver
     public boolean testITDsOnly = false; // will skip advice weaving

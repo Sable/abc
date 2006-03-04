@@ -81,7 +81,7 @@ public class Load extends Residue {
 		begin=jpi.doInit(localgen,units,begin);
             }
 
-            RefType jptype = RefType.v("org.aspectj.lang.JoinPoint");
+            RefType jptype = JoinPointInfo.sootType();
             if(value instanceof StaticJoinPointInfo && variable.getType().equals(jptype)) {
                 // OL: need to put in a cast
                 Local tmp1 = localgen.generateLocal(value.getSootValue().getType(), "jpcast");

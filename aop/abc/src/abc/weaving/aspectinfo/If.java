@@ -117,7 +117,7 @@ public class If extends Pointcut {
                 ret=AndResidue.construct
                     (ret,new Load(new StaticJoinPointInfo(sm.getEnclosing().getSJPInfo()),wvar));
             } else if(i==joinPointPos()) {
-                wvar=new LocalVar(RefType.v("org.aspectj.lang.JoinPoint"),
+                wvar=new LocalVar(abc.weaving.residues.JoinPointInfo.sootType(),
                                  "thisJoinPoint");
                 ret=AndResidue.construct
                     (ret,new Load(new JoinPointInfo(sm),wvar));
