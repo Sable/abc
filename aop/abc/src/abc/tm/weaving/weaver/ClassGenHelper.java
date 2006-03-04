@@ -61,6 +61,50 @@ public class ClassGenHelper {
     private boolean useIndexing() {
     		return abc.main.Debug.v().useIndexing;
     }
+    
+    /**
+     * Class to store the context information required to iterate over a mapping. It can be
+     * used to both walk an entire mapping and to pick out a specific value, as well as
+     * a mixture of the two.
+     * 
+     * Consider first the case when the entire mapping should be walked, and there is some
+     * code that should be executed for every LinkedHashSet in the mapping structure. Use
+     * the first constructor (IterationContext(int, Local)). The map will be walked up to
+     * the indicated depth; at each level, an iterator of the keyset will be stored into
+     * the iterators[] field, the current map for that level will be stored in maps[] and
+     * the current key in keys[]. While the iterator.hasNext(), we get the next key and
+     * proceed. At the final level, we cast the result of map.get() to setType.
+     * 
+     * If a particular set of keys is known, these should be passed to the second form of the
+     * constructor. A 'null' entry in the keys[] array indicates "iterate over the keyset at
+     * this level". A non-null entry means "get the value for this key; if it is non-null,
+     * proceed deeper; if it is null, back out to the parent level". 
+     */
+    class IterationContext {
+        public Local[] keys, maps, iterators;
+        public Stmt[] loopBegins, loopEnds;
+        public Local relevantSet;
+        public int depth;
+        
+        public IterationContext(int depth, Local map) {
+            keys = new Local[depth];
+            maps = new Local[depth];
+            iterators = new Local[depth];
+            
+            loopBegins = new Stmt[depth];
+            loopEnds = new Stmt[depth];
+            
+            maps[0] = map;
+        }
+        
+        public IterationContext(int depth, Local map, Local[] keys) {
+            this(depth, map);
+            for(int i = 0; i < depth; i++) {
+                this.keys[i] = keys[i];
+            }
+        }
+        
+    }
 
 	// Relevant members
 	TraceMatch curTraceMatch;
@@ -779,6 +823,74 @@ public class ClassGenHelper {
                 Scene.v().getSootClass("java.lang.RuntimeException"), singleString, StringConstant.v(s))));
     }
 	
+    /**
+     * Generates the 'top half' of the map iteration code required to walk over all sets of an
+     * indexed Constraint. See comments on IterationContext for details.
+     * @param context the IterationContext in which to store the information about this iteration
+     */    
+    protected void startIteration(IterationContext context) {
+		for(int i = 0; i < context.depth; i++) {
+            context.loopEnds[i] = getNewLabel();
+            if(context.keys[i] == null) {
+                context.loopBegins[i] = getNewLabel();
+                doAddLabel(context.loopBegins[i]);
+    			context.iterators[i] = getMethodCallResult(
+                        getMethodCallResult(context.maps[i], "keySet", jusetType),
+    					"iterator", iteratorType);
+    			doJumpIfFalse(getMethodCallResult(context.iterators[i], "hasNext", 
+                        BooleanType.v()), context.loopEnds[i]);
+                context.keys[i] = getMethodCallResult(context.iterators[i], "next", objectType);
+    			if(i + 1 < context.depth) {
+                    context.maps[i + 1] = getCastValue(
+                            getMethodCallResult(context.maps[i], "get", singleObjectType, 
+    						objectType, context.keys[i]), mapType);
+                } else {
+                    context.relevantSet = getCastValue(
+                        getMethodCallResult(context.maps[context.depth - 1], "get", 
+                        singleObjectType, objectType, context.keys[context.depth - 1]), setType); 
+                }
+			} else {
+			    if(i + 1 < context.depth) {
+			        context.maps[i + 1] = getCastValue(
+			                getMethodCallResult(context.maps[i], "get", singleObjectType, 
+                            objectType, context.keys[i]), mapType);
+                    doJumpIfNull(context.maps[i + 1], context.loopEnds[i]);
+                } else {
+                    context.relevantSet = getCastValue(
+                            getMethodCallResult(context.maps[context.depth - 1], "get", 
+                            singleObjectType, objectType, context.keys[context.depth - 1]), setType);
+                    doJumpIfNull(context.relevantSet, context.loopEnds[i]);
+                }
+            }
+		}
+    }
+    
+    /**
+     * Gets a local containing the 'relevant set' in the middle of the iteration identified by
+     * context. Note that this value will never be null.
+     * @param context the IterationContext that was passed to startIteration
+     * @return a Local of type setType containing the current set
+     */
+    protected Local getRelevantSet(IterationContext context) {
+        return context.relevantSet;
+    }
+
+    /**
+     * Finishes off the nested loop structure started by startIteration() by adding jumps to
+     * the loopBegin labels (if needed) and the loopEnd labels in reverse order.
+     * @param context the IterationContext that was passed to startIteration()
+     */
+    protected void endIteration(IterationContext context) {
+		for(int i = context.depth - 1; i >= 0; i--) {
+            // We only have a real loop if loopBegins[i] isn't null; otherwise we just looked 
+		    // a specific key and don't need to jump back.
+            if(context.loopBegins[i] != null) {
+                doJump(context.loopBegins[i]);
+            }
+            doAddLabel(context.loopEnds[i]);
+		}
+    }
+    
 	/**
 	 * Inserts code to print s to stdout at the end of the current method body.
 	 */
@@ -2828,79 +2940,59 @@ public class ClassGenHelper {
             for(int depth = 0; depth < labelsForIterDepth.length; depth++) {
                 if(labelsForIterDepth[depth] != null) {
                     doAddLabel(labelsForIterDepth[depth]);
-                    Local[] iterators = new Local[depth];
-                    Local[] maps = new Local[depth];
-                    Local[] keys = new Local[depth];
-                    Stmt[] loopBegins = new Stmt[depth];
-                    Stmt[] loopEnds = new Stmt[depth];
-                    maps[0] = paramMap;
-                    for(int i = 0; i < depth; i++) {
-                        iterators[i] = getMethodCallResult(
-                                            getMethodCallResult(maps[i], "keySet", jusetType),
-                                            "iterator", iteratorType);
-                        loopBegins[i] = getNewLabel();
-                        loopEnds[i] = getNewLabel();
-                        doAddLabel(loopBegins[i]);
-                        doJumpIfFalse(getMethodCallResult(iterators[i], "hasNext", BooleanType.v()), loopEnds[i]);
-                        keys[i] = getMethodCallResult(iterators[i], "next", objectType);
-                        if(i + 1 < depth) {
-                            maps[i + 1] = getCastValue(getMethodCallResult(maps[i], "get", 
-                                    singleObjectType, objectType, keys[i]), mapType);
-                        } else {
-                            Local mergedSet = getCastValue(getMethodCallResult(maps[i], "get", 
-                                    singleObjectType, objectType, keys[i]), setType);
-                            // We have finally reached a set in the mapping structure.
-                            // We need to do `updated = lookup_depth(indexedDisjuncts, key[0], ..., key[depth-1]);`
-                            List formalsLookup= new LinkedList();
-                            List actualsLookup= new LinkedList();
-                            formalsLookup.add(mapType);
-                            actualsLookup.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
-                            for(int j = 0; j < depth; j++) {
-                                formalsLookup.add(objectType);
-                                actualsLookup.add(keys[j]);
-                            }
-                            Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
-                                    formalsLookup, setType, actualsLookup);
-                            
-                            Stmt labelElse = getNewLabel(), labelEndIf = getNewLabel();
-                            // if(op || updated == null) is equivalent to
-                            // if(!op && updated != null) with then- and else-branches reversed.
-                            doJumpIfFalse(operation, labelElse);
-                            doJumpIfNotEqual(updatedSet, getNull(), labelElse);
-                            
-                            // The original 'else' branch:
-                            // updatedSet.addAll(mergedSet)
-                            doMethodCall(updatedSet, "addAll", singleCollectionType, BooleanType.v(), mergedSet);
-                            doJump(labelEndIf);
-                            
-                            // The original 'then' branch:
-                            // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
-                            doAddLabel(labelElse);
-                            List formalsOverwrite = new LinkedList();
-                            List actualsOverwrite = new LinkedList();
-                            formalsOverwrite.add(mapType);
-                            actualsOverwrite.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
-                            for(int j = 0; j < depth; j++) {
-                                formalsOverwrite.add(objectType);
-                                actualsOverwrite.add(keys[j]);
-                            }
-                            formalsOverwrite.add(setType);
-                            actualsOverwrite.add(mergedSet);
-                            formalsOverwrite.add(BooleanType.v());
-                            actualsOverwrite.add(getInt(1));
-                            doMethodCall(thisLocal, "overwrite" + depth, formalsOverwrite, VoidType.v(),
-                                    actualsOverwrite);
-                            
-                            doAddLabel(labelEndIf);
-                        }
+                    
+                    // All this happens for every LinkedHashSet contained in the mapping structure:
+                    IterationContext context = new IterationContext(depth, paramMap);
+                    startIteration(context);
+                    Local mergedSet = getRelevantSet(context);
+                    
+                    // We have finally reached a set in the mapping structure.
+                    // We need to do `updated = lookup_depth(indexedDisjuncts, key[0], ..., key[depth-1]);`
+                    List formalsLookup= new LinkedList();
+                    List actualsLookup= new LinkedList();
+                    formalsLookup.add(mapType);
+                    actualsLookup.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+                    for(int j = 0; j < depth; j++) {
+                        formalsLookup.add(objectType);
+                        actualsLookup.add(context.keys[j]);
                     }
-                    // We now need to add the jumps back to the loop beginnings and the labels for loop end
-                    // in reverse order.
-                    for(int i = depth - 1; i >= 0; i--) {
-                        doJump(loopBegins[i]);
-                        doAddLabel(loopEnds[i]);
-                        doReturnVoid();
+                    Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
+                            formalsLookup, setType, actualsLookup);
+                    
+                    Stmt labelThen = getNewLabel(), labelEndIf = getNewLabel();
+                    // if(op || updated == null) 
+                    doJumpIfTrue(operation, labelThen);
+                    doJumpIfEqual(updatedSet, getNull(), labelThen);
+                    
+                    // The 'else' branch:
+                    // updatedSet.addAll(mergedSet)
+                    doMethodCall(updatedSet, "addAll", singleCollectionType, BooleanType.v(), mergedSet);
+                    doJump(labelEndIf);
+                    
+                    // The 'then' branch:
+                    // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
+                    doAddLabel(labelThen);
+                    List formalsOverwrite = new LinkedList();
+                    List actualsOverwrite = new LinkedList();
+                    formalsOverwrite.add(mapType);
+                    actualsOverwrite.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+                    for(int j = 0; j < depth; j++) {
+                        formalsOverwrite.add(objectType);
+                        actualsOverwrite.add(context.keys[j]);
                     }
+                    formalsOverwrite.add(setType);
+                    actualsOverwrite.add(mergedSet);
+                    formalsOverwrite.add(BooleanType.v());
+                    actualsOverwrite.add(getInt(1));
+                    doMethodCall(thisLocal, "overwrite" + depth, formalsOverwrite, VoidType.v(),
+                            actualsOverwrite);
+                    
+                    // endif
+                    doAddLabel(labelEndIf);
+
+                    endIteration(context);
+                    
+                    doReturnVoid();
                 }
             }
         }
@@ -2925,9 +3017,50 @@ public class ClassGenHelper {
 	/**
 	 * The 'addBindingsForSymbol' methods in the indexed case are called 'getBindingsForSymbol', since
 	 * they return a LinkedHashSet of the changed bindings.
+	 * 
+	 * The general plan is to determine the 'relevant' LinkedHashSets of disjuncts and iterate over them,
+	 * calling addBindingsForSymbol on each disjunct, and storing the results in a set which is ultimately
+	 * returned.
 	 */
 	protected void addIndConstraintGetBindingsMethods() {
-		
+		Iterator symbolIt = curTraceMatch.getSymbols().iterator();
+		while(symbolIt.hasNext()) {
+			String symbol = (String)symbolIt.next();
+			addIndConstraintGetBindingsForSymbolMethod(symbol);
+		}
+	}
+	
+	/**
+	 * Adds a getBindingsForSymbol method for the specified symbol
+	 * @param symbol
+	 */
+	protected void addIndConstraintGetBindingsForSymbolMethod(String symbol) {
+		List variables = curTraceMatch.getVariableOrder(symbol);
+		List methodFormals = new LinkedList();
+		methodFormals.add(IntType.v()); // number of the target state of the current transition
+		int varCount = variables.size();
+        for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+            methodFormals.add(curTraceMatch.bindingType((String)varIt.next()));
+        }
+        startMethod("getBindingsForSymbol" + symbol, methodFormals, setType, Modifier.PUBLIC);
+        
+        Local thisLocal = getThisLocal();
+        
+        if(varCount == 0) {
+            // if we have no variables, we simply return the contents of our current
+            // disjunct set
+            doReturn(getNewObject(setClass, singleCollectionType, 
+                    getFieldLocal(thisLocal, "disjuncts", setType)));
+        } else {
+            // Normally we'd do "if this == false then return false", however, our representation
+            // of false depends on which state we're on, so we first do a jump based on states.
+            
+            // We need to differentiate between the following cases:
+            // - This state does not use indexing
+            // - This state uses indexing, and the event binds all indexing variables
+            // - This state uses indexing, and the event does *not* bind all indexing
+            //      variables.
+        }
 	}
 	
 	/**
