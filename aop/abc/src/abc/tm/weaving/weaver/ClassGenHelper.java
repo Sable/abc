@@ -96,6 +96,8 @@ public class ClassGenHelper {
             loopEnds = new Stmt[depth];
             
             maps[0] = map;
+            
+            this.depth = depth;
         }
         
         public IterationContext(int depth, Local map, Local[] keys) {
@@ -886,7 +888,31 @@ public class ClassGenHelper {
             // We only have a real loop if loopBegins[i] isn't null; otherwise we just looked 
             // a specific key and don't need to jump back.
             if(context.loopBegins[i] != null) {
+                // cleanup: If the map or set has become empty, we remove it. We iterated over
+                // a keyset at level i, so we need to use iterators[i].remove() to drop the mapping
+                // if necessary -- to avoid disturbing the iterator.
+                if(i == context.depth-1) {
+                    doJumpIfFalse(getMethodCallResult(context.relevantSet, "isEmpty", BooleanType.v()),
+                            context.loopBegins[i]);
+                } else {
+                    doJumpIfFalse(getMethodCallResult(context.maps[i+1], "isEmpty", BooleanType.v()), 
+                            context.loopBegins[i]);
+                }
+                doMethodCall(context.iterators[i], "remove", VoidType.v());
+                // In particular, we jump back to the beginning of the loop!
                 doJump(context.loopBegins[i]);
+            } else {
+                // cleanup: If the map or set has become empty, we remove it. We specified key[i]
+                // without iterating, so we can just directly drop the mapping
+                if(i == context.depth-1) {
+                    doJumpIfFalse(getMethodCallResult(context.relevantSet, "isEmpty", BooleanType.v()),
+                            context.loopEnds[i]);
+                } else {
+                    doJumpIfFalse(getMethodCallResult(context.maps[i+1], "isEmpty", BooleanType.v()),
+                            context.loopEnds[i]);
+                }
+                doMethodCall(context.maps[i], "remove", singleObjectType, objectType, 
+                        context.keys[i]);
             }
             doAddLabel(context.loopEnds[i]);
         }
@@ -1485,7 +1511,7 @@ public class ClassGenHelper {
                 doAddLabel(labelReturnFalse);
                 doReturn(falseC);
             }
-        }
+		}
     }
     
     //////////////// Generation of the Disjunct class
@@ -2911,94 +2937,72 @@ public class ClassGenHelper {
         // We iterate over paramMap rather than this.indexedDisjuncts, assuming that it will in general 
         // be smaller.
         
-        // In order to know how many levels of iteration there are, we need to do a lookup switch of the
-        // state we're in.
-        List switchValues = new LinkedList();
-        List switchLabels = new LinkedList();
-        Stmt[] labelsForIterDepth = new Stmt[curTraceMatch.getFormals().size() + 1];
-        Stmt labelDefault = getNewLabel();
-        Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
-        int nDifferentOptions = 0;
-        while(stateIt.hasNext()) {
-            SMNode node = (SMNode) stateIt.next();
-            if(node.indices != null && !node.indices.isEmpty()) {
-                switchValues.add(getInt(node.getNumber()));
-                if(labelsForIterDepth[node.indices.size()] == null) {
-                    nDifferentOptions++;
-                    labelsForIterDepth[node.indices.size()] = getNewLabel();
-                }
-                switchLabels.add(labelsForIterDepth[node.indices.size()]);
-            }
-        }
+        Stmt labelNoIndices = getNewLabel();
+        Map keyToLabel = addIndLookupSwitch(
+                getFieldLocal(thisLocal, "onState", IntType.v()), 
+                labelNoIndices, false);
         
-        // Now we have constructed the necessarily lists for the lookup switch. Of course if all
-        // states index on the *same* number of variables, the switch itself would be useless, so...
-        if(!switchValues.isEmpty()) {
-            if(nDifferentOptions > 1) {
-                doLookupSwitch(getFieldLocal(thisLocal, "onState", IntType.v()), 
-                        switchValues, switchLabels, labelDefault);
-            }
-            for(int depth = 0; depth < labelsForIterDepth.length; depth++) {
-                if(labelsForIterDepth[depth] != null) {
-                    doAddLabel(labelsForIterDepth[depth]);
-                    
-                    // All this happens for every LinkedHashSet contained in the mapping structure:
-                    IterationContext context = new IterationContext(depth, paramMap);
-                    startIteration(context);
-                    Local mergedSet = getRelevantSet(context);
-                    
-                    // We have finally reached a set in the mapping structure.
-                    // We need to do `updated = lookup_depth(indexedDisjuncts, key[0], ..., key[depth-1]);`
-                    List formalsLookup= new LinkedList();
-                    List actualsLookup= new LinkedList();
-                    formalsLookup.add(mapType);
-                    actualsLookup.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
-                    for(int j = 0; j < depth; j++) {
-                        formalsLookup.add(objectType);
-                        actualsLookup.add(context.keys[j]);
-                    }
-                    Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
-                            formalsLookup, setType, actualsLookup);
-                    
-                    Stmt labelThen = getNewLabel(), labelEndIf = getNewLabel();
-                    // if(op || updated == null) 
-                    doJumpIfTrue(operation, labelThen);
-                    doJumpIfEqual(updatedSet, getNull(), labelThen);
-                    
-                    // The 'else' branch:
-                    // updatedSet.addAll(mergedSet)
-                    doMethodCall(updatedSet, "addAll", singleCollectionType, BooleanType.v(), mergedSet);
-                    doJump(labelEndIf);
-                    
-                    // The 'then' branch:
-                    // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
-                    doAddLabel(labelThen);
-                    List formalsOverwrite = new LinkedList();
-                    List actualsOverwrite = new LinkedList();
-                    formalsOverwrite.add(mapType);
-                    actualsOverwrite.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
-                    for(int j = 0; j < depth; j++) {
-                        formalsOverwrite.add(objectType);
-                        actualsOverwrite.add(context.keys[j]);
-                    }
-                    formalsOverwrite.add(setType);
-                    actualsOverwrite.add(mergedSet);
-                    formalsOverwrite.add(BooleanType.v());
-                    actualsOverwrite.add(getInt(1));
-                    doMethodCall(thisLocal, "overwrite" + depth, formalsOverwrite, VoidType.v(),
-                            actualsOverwrite);
-                    
-                    // endif
-                    doAddLabel(labelEndIf);
+        for(Iterator keyIt = keyToLabel.keySet().iterator(); keyIt.hasNext(); ) {
+            Integer key = (Integer)keyIt.next();
+            int depth = key.intValue();
 
-                    endIteration(context);
-                    
-                    doReturnVoid();
-                }
+            doAddLabel((Stmt)keyToLabel.get(key));
+            
+            // All this happens for every LinkedHashSet contained in the mapping structure:
+            IterationContext context = new IterationContext(depth, paramMap);
+            startIteration(context);
+            Local mergedSet = getRelevantSet(context);
+            
+            // We have finally reached a set in the mapping structure.
+            // We need to do `updated = lookup_depth(indexedDisjuncts, key[0], ..., key[depth-1]);`
+            List formalsLookup= new LinkedList();
+            List actualsLookup= new LinkedList();
+            formalsLookup.add(mapType);
+            actualsLookup.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+            for(int j = 0; j < depth; j++) {
+                formalsLookup.add(objectType);
+                actualsLookup.add(context.keys[j]);
             }
+            Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
+                    formalsLookup, setType, actualsLookup);
+            
+            Stmt labelThen = getNewLabel(), labelEndIf = getNewLabel();
+            // if(op || updated == null) 
+            doJumpIfTrue(operation, labelThen);
+            doJumpIfEqual(updatedSet, getNull(), labelThen);
+            
+            // The 'else' branch:
+            // updatedSet.addAll(mergedSet)
+            doMethodCall(updatedSet, "addAll", singleCollectionType, BooleanType.v(), mergedSet);
+            doJump(labelEndIf);
+            
+            // The 'then' branch:
+            // overwrite_depth(indexedDisjuncts, keys[0], ..., keys[depth], mergedSet, true);
+            doAddLabel(labelThen);
+            List formalsOverwrite = new LinkedList();
+            List actualsOverwrite = new LinkedList();
+            formalsOverwrite.add(mapType);
+            actualsOverwrite.add(getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+            for(int j = 0; j < depth; j++) {
+                formalsOverwrite.add(objectType);
+                actualsOverwrite.add(context.keys[j]);
+            }
+            formalsOverwrite.add(setType);
+            actualsOverwrite.add(mergedSet);
+            formalsOverwrite.add(BooleanType.v());
+            actualsOverwrite.add(getInt(1));
+            doMethodCall(thisLocal, "overwrite" + depth, formalsOverwrite, VoidType.v(),
+                    actualsOverwrite);
+            
+            // endif
+            doAddLabel(labelEndIf);
+
+            endIteration(context);
+            
+            doReturnVoid();
         }
         
-        doAddLabel(labelDefault);
+        doAddLabel(labelNoIndices);
         doThrowException("merge() called on a non-indexing state");
     }
     
@@ -3053,14 +3057,151 @@ public class ClassGenHelper {
             doReturn(getNewObject(setClass, singleCollectionType, 
                     getFieldLocal(thisLocal, "disjuncts", setType)));
         } else {
+            // Create locals for all the parameters
+            List parameterLocals = new LinkedList();
+            int parameterIndex = 0;
+            Local stateTo = getParamLocal(parameterIndex++, IntType.v());
+            parameterLocals.add(stateTo);
+            for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
+                parameterLocals.add(getParamLocal(parameterIndex++, 
+                        curTraceMatch.bindingType((String)varIt.next())));
+            }
+            
+            // LinkedHashSet to store the result in
+            Local result = getNewObject(setClass);
+            
+            // Disjunct.falseD -- for comparison
+            Local falseDisjunct = getFieldLocal(thisLocal, "falseD", disjunct.getType());
+ 
+
             // Normally we'd do "if this == false then return false", however, our representation
             // of false depends on which state we're on, so we first do a jump based on states.
             
             // We need to differentiate between the following cases:
             // - This state does not use indexing
-            // - This state uses indexing, and the event binds all indexing variables
-            // - This state uses indexing, and the event does *not* bind all indexing
-            //      variables.
+            // - This state uses indexing. In this case, there will be a distinction on the depth
+            //    of the index map.
+            Local onState = getFieldLocal(thisLocal, "onState", IntType.v());
+            Stmt labelNoIndexing = getNewLabel();
+            
+            Map caseToLabel = addIndLookupSwitch(onState, labelNoIndexing, true);
+            
+            for(Iterator caseIt = caseToLabel.keySet().iterator(); caseIt.hasNext(); ) {
+                List indices = (List)caseIt.next();
+                doAddLabel((Stmt)caseToLabel.get(indices));
+                int depth = indices.size();
+                
+                // We need to construct an array Local[] keys that holds the indexing variables
+                // bound by the current symbol
+                Local[] keys = new Local[depth];
+                int keyIndex = 0;
+                for(Iterator indexIt = indices.iterator(); indexIt.hasNext(); keyIndex++) {
+                    String var = (String)indexIt.next();
+                    if(variables.contains(var)) {
+                        // since the first parameterLocal is the target state number, we need 
+                        // keyIndex+1.
+                        keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 1);
+                    }
+                }
+                
+                // keys[] now contains sufficient information to construct the IterationContext
+                IterationContext context = new IterationContext(depth, 
+                        getFieldLocal(thisLocal, "indexedDisjuncts", mapType),
+                        keys);
+                
+                startIteration(context);
+                
+                Local relevantSet = getRelevantSet(context);
+                
+                Local setIterator = getMethodCallResult(relevantSet, "iterator", iteratorType);
+                
+                Stmt labelLoopBegin = getNewLabel(), labelLoopEnd = getNewLabel();
+                
+                doAddLabel(labelLoopBegin);
+                doJumpIfFalse(getMethodCallResult(setIterator, "hasNext", BooleanType.v()), 
+                        labelLoopEnd);
+                
+                Local curDisjunct = getCastValue(getMethodCallResult(setIterator, "next", objectType), 
+                        this.disjunct.getType());
+                
+                ////////// Cleanup of invalid disjuncts -- if the current disjunct isn't valid,
+                // just remove it from the disjunct set and continue with the next.
+                // if(!curDisjunct.validateDisjunct(stateTo)) {it.remove(); goto labelLoopBegin;}
+                Stmt labelDisjunctValid = getNewLabel();
+                List singleInt = new LinkedList();
+                singleInt.add(IntType.v());
+                doJumpIfTrue(getMethodCallResult(curDisjunct, "validateDisjunct", singleInt,
+                        BooleanType.v(), stateTo), labelDisjunctValid);
+                doMethodCall(setIterator, "remove", VoidType.v());
+                doJump(labelLoopBegin);
+                
+                doAddLabel(labelDisjunctValid);
+                ////////// end cleanup code
+                
+                Local resultDisjunct = getMethodCallResult(curDisjunct, "addBindingsForSymbol" + symbol,
+                        methodFormals, disjunct.getType(), parameterLocals);
+                
+                // If the result is the false disjunct anyway, there's no point in adding it
+                doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
+                
+                // if the disjunct is not false, add it
+                doMethodCall(resultDisjunct, "add", singleObjectType, BooleanType.v(), resultDisjunct);
+                
+                doJump(labelLoopBegin);
+                // end of loop
+                
+                doAddLabel(labelLoopEnd);
+                
+                endIteration(context);
+                
+                doReturn(result);
+            }
+            
+            // The case that doesn't require indexing...
+            doAddLabel(labelNoIndexing);
+            
+            Local relevantSet = getFieldLocal(thisLocal, "disjuncts", setType);
+            
+            Local setIterator = getMethodCallResult(relevantSet, "iterator", iteratorType);
+            
+            Stmt labelLoopBegin = getNewLabel(), labelLoopEnd = getNewLabel();
+            
+            doAddLabel(labelLoopBegin);
+            doJumpIfFalse(getMethodCallResult(setIterator, "hasNext", BooleanType.v()), 
+                    labelLoopEnd);
+            
+            Local curDisjunct = getCastValue(getMethodCallResult(setIterator, "next", objectType), 
+                    this.disjunct.getType());
+            
+            ////////// Cleanup of invalid disjuncts -- if the current disjunct isn't valid,
+            // just remove it from the disjunct set and continue with the next.
+            // if(!curDisjunct.validateDisjunct(stateTo)) {it.remove(); goto labelLoopBegin;}
+            Stmt labelDisjunctValid = getNewLabel();
+            List singleInt = new LinkedList();
+            singleInt.add(IntType.v());
+            doJumpIfTrue(getMethodCallResult(curDisjunct, "validateDisjunct", singleInt,
+                    BooleanType.v(), stateTo), labelDisjunctValid);
+            doMethodCall(setIterator, "remove", VoidType.v());
+            doJump(labelLoopBegin);
+            
+            doAddLabel(labelDisjunctValid);
+            ////////// end cleanup code
+            
+            Local resultDisjunct = getMethodCallResult(curDisjunct, "addBindingsForSymbol" + symbol,
+                    methodFormals, disjunct.getType(), parameterLocals);
+            
+            // If the result is the false disjunct anyway, there's no point in adding it
+            doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
+            
+            // if the disjunct is not false, add it
+            doMethodCall(resultDisjunct, "add", singleObjectType, BooleanType.v(), resultDisjunct);
+            
+            doJump(labelLoopBegin);
+            // end of loop
+            
+            doAddLabel(labelLoopEnd);
+            
+            doReturn(result);
         }
     }
     
