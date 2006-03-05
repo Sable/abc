@@ -87,7 +87,6 @@ public class ClassGenHelper {
         public int depth;
         
         public IterationContext(int depth, Local map) {
-            this.depth = depth;
             keys = new Local[depth];
             maps = new Local[depth];
             iterators = new Local[depth];
@@ -978,9 +977,9 @@ public class ClassGenHelper {
 //          addIndConstraintFinalizeMethod();
             addIndConstraintHelperMethods();
             addIndConstraintGetTrueMethod();
-            addIndConstraintMergeMethod();
+//          addIndConstraintMergeMethod();
 //          addIndConstraintGetDisjunctArrayMethod();
-            addIndConstraintGetBindingsMethods();
+//          addIndConstraintGetBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings) 
                 addIndConstraintQueueNegativeBindingsMethods();
         } // else {
@@ -3204,13 +3203,219 @@ public class ClassGenHelper {
             doReturn(result);
         }
     }
-    
+ 
     /**
      * The 'addNegativeBindingsForSymbol' methods in the indexed case are called 'queueNegativeBindingsForSymbol'
      * as they maintain a queue of changes.
      */
     protected void addIndConstraintQueueNegativeBindingsMethods() {
-        
+        List params = new LinkedList();
+        List args = new LinkedList();
+
+        Iterator syms = curTraceMatch.getSymbols().iterator();
+
+        while (syms.hasNext()) {
+            String symbol = (String) syms.next();
+
+            params.clear();
+            args.clear();
+
+            List sym_binds = curTraceMatch.getVariableOrder(symbol);
+
+            Iterator vars = sym_binds.iterator();
+            while (vars.hasNext()) {
+                String var = (String) vars.next();
+                Type type = curTraceMatch.bindingType(var);
+
+                params.add(type);
+            }
+
+            startMethod("queueNegativeBindingsForSymbol" + symbol,
+                        params, VoidType.v(), Modifier.PUBLIC);
+            Local this_local = getThisLocal();
+            Local state = getFieldLocal(this_local, "onState", IntType.v());
+            Local[] values = new Local[sym_binds.size()];
+            for (int i = 0; i < sym_binds.size(); i++)
+                values[i] = getParamLocal(i, (Type) params.get(i));
+
+            Stmt no_index_case = getNewLabel();
+            Map indices_to_labels =
+               addIndLookupSwitch(state, no_index_case, true);
+
+            Iterator index_lists = indices_to_labels.keySet().iterator();
+            while (index_lists.hasNext()) {
+                List indices = (List) index_lists.next();
+                Stmt label = (Stmt) indices_to_labels.get(indices);
+                boolean fully_indexed = sym_binds.containsAll(indices);
+
+                doAddLabel(label);
+                if (fully_indexed)
+                    addQueueNegativeBindingsBodyFullIndex(symbol,
+                        this_local, values, sym_binds, indices, state);
+                else
+                    addQueueNegativeBindingsBodyPartialIndex(symbol,
+                        this_local, values, sym_binds, indices, state);
+
+                doReturnVoid();
+            }
+
+            doAddLabel(no_index_case);
+            addQueueNegativeBindingsBodyNoIndex(symbol, this_local,
+                values, sym_binds, state);
+            doReturnVoid();
+        }
+    }
+
+    /**
+     * Adding negative bindings in the case that the symbol
+     * binds all the variables used in the index for the
+     * current state.
+     */
+    protected void addQueueNegativeBindingsBodyFullIndex(String symbol,
+                                  Local this_local, Local[] values,
+                                  List sym_binds, List indices, Local state) {
+
+    }
+
+    /**
+     * Adding negative bindings in the case that the symbol
+     * does not all the variables used in the index for the
+     * current state.
+     */
+    protected void addQueueNegativeBindingsBodyPartialIndex(String symbol,
+                                  Local this_local, Local[] values,
+                                  List sym_binds, List indices, Local state)
+    {
+        // create an array of locals for storing indices, and fill
+        // in the ones already known (because they are bound by
+        // the symbol we are calculating negative bindings for)
+        int depth = indices.size();
+        Local[] keys = new Local[depth];
+        Iterator vars_bound = sym_binds.iterator();
+        for (int i = 0; i < values.length; i++) {
+            Object var = vars_bound.next();
+            int index_level = indices.indexOf(var);
+            if (index_level >= 0)
+                keys[index_level] = values[i];
+        }
+
+        // Get the map to iterate over: indexedDisjuncts.
+        // Yes, we may actually end up getting disjuncts from
+        // indexedDisjuncts_skip, but the indices used in the
+        // former are guaranteed to be a superset of those
+        // used in the latter.
+        Local map = getFieldLocal(this_local, "indexedDisjuncts", mapType);
+        Local skip_map =
+            getFieldLocal(this_local, "indexedDisjuncts_skip", mapType);
+
+        IterationContext context = new IterationContext(depth, map, keys);
+        startIteration(context);
+
+        // look the disjunct up in indexedDisjuncts_skip, but if the
+        // result is null, then get it from indexedDisjuncts
+        List params = new LinkedList();
+        List args = new LinkedList();
+        params.add(mapType);
+        args.add(skip_map);
+        for (int i = 0; i < keys.length; i++) {
+            params.add(objectType);
+            args.add(context.keys[i]);
+        }
+        Local source = getMethodCallResult(this_local, "lookup" + depth,
+                                params, setType, args);
+        Stmt end_if = getNewLabel();
+        doJumpIfNotNull(source, end_if);
+        Local original_source = getRelevantSet(context);
+        doAssign(source, original_source);
+        doAddLabel(end_if);
+
+        // do the actual negative bindings bit
+        Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
+                           state, values);
+
+        // put the result in indexedDisjunct_skip
+        params.add(setType);
+        args.add(result);
+        params.add(BooleanType.v());
+        args.add(getInt(0));
+
+        endIteration(context);
+    }
+
+    /**
+     * Adding negative bindings in the case that the current
+     * state is not indexed.
+     */
+    protected void addQueueNegativeBindingsBodyNoIndex(String symbol,
+                                  Local this_local, Local[] values,
+                                  List sym_binds, Local state)
+    {
+        Local source = getFieldLocal(this_local, "disjuncts_skip", setType);
+        Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
+                           state, values);
+        doSetField(this_local, "disjuncts_skip", setType, result);
+    }
+
+    /**
+     * The code-generation common to all cases of adding negative
+     * bindings. This generates code that takes a set and calculates
+     * the new set produced by adding negative bindings.
+     */
+    protected Local addQueueNegativeBindingsSetProcessing(String symbol,
+                                        Local set, Local state, Local[] values)
+    {
+        // types and argument for calls
+        List params = new LinkedList();
+        List args = new LinkedList();
+
+        // create result set
+        Local result = getNewObject(setClass);
+
+        Local iter = getMethodCallResult(set, "iterator", iteratorType);
+        Stmt loop_test = getNewLabel();
+        Stmt invalid = getNewLabel();
+        Stmt loop_end = getNewLabel();
+
+        doAddLabel(loop_test);
+        Local has_next = getMethodCallResult(iter, "hasNext", BooleanType.v());
+        doJumpIfFalse(has_next, loop_end);
+
+        Local next_disjunct =
+            getCastValue(getMethodCallResult(iter, "next", objectType),
+                         disjunct.getType());
+
+        params.add(IntType.v());
+        args.add(state);
+        Local is_valid =
+            getMethodCallResult(next_disjunct, "validateDisjunct", params,
+                         BooleanType.v(), args);
+        doJumpIfFalse(is_valid, invalid);
+
+        for (int i = 0; i < values.length; i++) {
+            params.add(values[i].getType());
+            args.add(values[i]);
+        }
+
+        // deal with optimisation:
+        //   Disjunct.addNegativeBindingsForX is of type Disjunct
+        //                                    if X binds less than 2 variables
+        //   otherwise it returns a set
+        boolean optimise = values.length < 2;
+        Type ret_type   = optimise ? disjunct.getType() : setType;
+        String add_name = optimise ? "add"              : "addAll";
+        List add_types  = optimise ? singleObjectType   : singleCollectionType;
+ 
+        Local updated = getMethodCallResult(next_disjunct,
+            "addNegativeBindingsForSymbol" + symbol, params, ret_type, args);
+        doMethodCall(result, add_name, add_types, BooleanType.v(), updated);
+        doJump(loop_test);
+
+        doAddLabel(invalid);
+        doMethodCall(iter, "remove", VoidType.v());
+        doJump(loop_test);
+
+        doAddLabel(loop_end);
+        return result;
     }
 
     /**
