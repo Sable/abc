@@ -977,9 +977,9 @@ public class ClassGenHelper {
 //          addIndConstraintFinalizeMethod();
             addIndConstraintHelperMethods();
             addIndConstraintGetTrueMethod();
-//          addIndConstraintMergeMethod();
+            addIndConstraintMergeMethod();
 //          addIndConstraintGetDisjunctArrayMethod();
-//          addIndConstraintGetBindingsMethods();
+            addIndConstraintGetBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings) 
                 addIndConstraintQueueNegativeBindingsMethods();
         } // else {
@@ -3216,6 +3216,7 @@ public class ClassGenHelper {
 
         while (syms.hasNext()) {
             String symbol = (String) syms.next();
+            Stmt method_end = getNewLabel();
 
             params.clear();
             args.clear();
@@ -3256,12 +3257,14 @@ public class ClassGenHelper {
                     addQueueNegativeBindingsBodyPartialIndex(symbol,
                         this_local, values, sym_binds, indices, state);
 
-                doReturnVoid();
+                doJump(method_end);
             }
 
             doAddLabel(no_index_case);
             addQueueNegativeBindingsBodyNoIndex(symbol, this_local,
                 values, sym_binds, state);
+
+            doAddLabel(method_end);
             doReturnVoid();
         }
     }
@@ -3273,8 +3276,55 @@ public class ClassGenHelper {
      */
     protected void addQueueNegativeBindingsBodyFullIndex(String symbol,
                                   Local this_local, Local[] values,
-                                  List sym_binds, List indices, Local state) {
+                                  List sym_binds, List indices, Local state)
+    {
+        // create an array of locals for storing indices, and fill
+        // in the ones already known (because they are bound by
+        // the symbol we are calculating negative bindings for)
+        int depth = indices.size();
+        Local[] keys = new Local[depth];
+        Iterator vars_bound = sym_binds.iterator();
+        for (int i = 0; i < values.length; i++) {
+            Object var = vars_bound.next();
+            int index_level = indices.indexOf(var);
+            if (index_level >= 0)
+                keys[index_level] = values[i];
+        }
 
+        // Lookup in indexedDisjuncts_skip
+        Local skip_map =
+            getFieldLocal(this_local, "indexedDisjuncts_skip", mapType);
+        List params = new LinkedList();
+        List args = new LinkedList();
+        params.add(mapType);
+        args.add(skip_map);
+        for (int i = 0; i < depth; i++) {
+            params.add(objectType);
+            args.add(keys[i]);
+        }
+        Local source = getMethodCallResult(this_local, "lookup" + depth,
+                        params, setType, args);
+
+        // If that lookup returned null, try in indexedDisjuncts
+        Stmt end_if = getNewLabel();
+        doJumpIfNotNull(source, end_if);
+        Local map = getFieldLocal(this_local, "indexedDisjuncts", mapType);
+        Local orig_source = getMethodCallResult(this_local, "lookup" + depth,
+                                params, setType, args);
+        doAssign(source, orig_source);
+        doAddLabel(end_if);
+
+        // add negative bindings
+        Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
+                           state, values);
+
+        // assign the result
+        params.add(setType);
+        args.add(result);
+        params.add(BooleanType.v());
+        args.add(getInt(0));
+        doMethodCall(this_local, "overwrite" + depth, params,
+                        VoidType.v(), args);
     }
 
     /**
@@ -3338,6 +3388,8 @@ public class ClassGenHelper {
         args.add(result);
         params.add(BooleanType.v());
         args.add(getInt(0));
+        doMethodCall(this_local, "overwrite" + depth, params,
+                        VoidType.v(), args);
 
         endIteration(context);
     }
