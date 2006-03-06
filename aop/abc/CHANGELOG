@@ -29,6 +29,10 @@
 # dist/addchangelogrelease.pl - to record a new release in the file, below
 # these comments.
 
+!You can now customise inlining behaviour by overriding the
+;makeAdviceInliner method in abcExtension. An example can be
+;found in the EAJ extension.
+
 %1.1.0 1129329464
 $Implemented trace match extension. Run this with 'java abc.main.Main
 ;-ext abc.tm'. Trace matches are a mechanism for running advice when
