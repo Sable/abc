@@ -103,7 +103,10 @@ public class TraceMatch
         makeFormalMaps();
         makePrimitiveMaps();
 
-        this.helper = new CodeGenHelper(this);
+        if (abc.main.Debug.v().useIndexing)
+            this.helper = new IndexedCodeGenHelper(this);
+        else
+            this.helper = new CodeGenHelper(this);
     }
 
     public boolean isPerThread()

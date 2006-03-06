@@ -974,15 +974,15 @@ public class ClassGenHelper {
             addIndConstraintClassMembers();
             addIndConstraintInitialiser();
             addIndConstraintStaticInitialiser();
-//          addIndConstraintFinalizeMethod();
+            addIndConstraintFinalizeMethod();
             addIndConstraintHelperMethods();
             addIndConstraintGetTrueMethod();
             addIndConstraintMergeMethod();
-//          addIndConstraintGetDisjunctArrayMethod();
+            addIndConstraintGetDisjunctArrayMethod();
             addIndConstraintGetBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings) 
                 addIndConstraintQueueNegativeBindingsMethods();
-        } // else {
+        } else {
             addConstraintClassMembers();
             addConstraintInitialiser();
             addConstraintStaticInitialiser();
@@ -993,7 +993,7 @@ public class ClassGenHelper {
             addConstraintAddBindingsMethods();
             if(!abc.main.Debug.v().noNegativeBindings)
                     addConstraintAddNegativeBindingsMethods();
-        // }
+        }
     }
     
     /**
@@ -2688,7 +2688,7 @@ public class ClassGenHelper {
      * Maps and one integer (to record which state we're on).
      */
     protected void addIndConstraintClassMembers() {
-        // SootField disjuncts = new SootField("disjuncts", setType, Modifier.PUBLIC);
+        SootField disjuncts = new SootField("disjuncts", setType, Modifier.PUBLIC);
         SootField disjuncts_tmp = new SootField("disjuncts_tmp", setType, Modifier.PUBLIC);
         SootField disjuncts_skip = new SootField("disjuncts_skip", setType, Modifier.PUBLIC);
         SootField indDisjuncts = new SootField("indexedDisjuncts", mapType, Modifier.PUBLIC);
@@ -2697,7 +2697,7 @@ public class ClassGenHelper {
         SootField onState = new SootField("onState", IntType.v(), Modifier.PUBLIC);
         SootField numWeakIndices = new SootField("numWeakIndices", IntType.v(), Modifier.PUBLIC);
         
-        // constraint.addField(disjuncts);
+        constraint.addField(disjuncts);
         constraint.addField(disjuncts_tmp);
         constraint.addField(disjuncts_skip);
         constraint.addField(indDisjuncts);
@@ -3049,6 +3049,8 @@ public class ClassGenHelper {
         startMethod("getBindingsForSymbol" + symbol, methodFormals, setType, Modifier.PUBLIC);
         
         Local thisLocal = getThisLocal();
+        Local state = getFieldLocal(thisLocal, "onState", IntType.v());
+        methodFormals.add(0, IntType.v()); // for calling Disjunct.addBindings...
         
         if(varCount == 0) {
             // if we have no variables, we simply return the contents of our current
@@ -3060,6 +3062,7 @@ public class ClassGenHelper {
             List parameterLocals = new LinkedList();
             int parameterIndex = 0;
             Local stateTo = getParamLocal(parameterIndex++, IntType.v());
+            parameterLocals.add(state);
             parameterLocals.add(stateTo);
             for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
                 parameterLocals.add(getParamLocal(parameterIndex++, 
@@ -3070,7 +3073,7 @@ public class ClassGenHelper {
             Local result = getNewObject(setClass);
             
             // Disjunct.falseD -- for comparison
-            Local falseDisjunct = getFieldLocal(thisLocal, "falseD", disjunct.getType());
+            Local falseDisjunct = getStaticFieldLocal(disjunct, "falseD", disjunct.getType());
  
 
             // Normally we'd do "if this == false then return false", however, our representation
@@ -3097,9 +3100,9 @@ public class ClassGenHelper {
                 for(Iterator indexIt = indices.iterator(); indexIt.hasNext(); keyIndex++) {
                     String var = (String)indexIt.next();
                     if(variables.contains(var)) {
-                        // since the first parameterLocal is the target state number, we need 
-                        // keyIndex+1.
-                        keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 1);
+                        // since the first two parameters are the from-state and to-state, we need 
+                        // keyIndex+2.
+                        keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 2);
                     }
                 }
                 
@@ -3144,7 +3147,7 @@ public class ClassGenHelper {
                 doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
                 
                 // if the disjunct is not false, add it
-                doMethodCall(resultDisjunct, "add", singleObjectType, BooleanType.v(), resultDisjunct);
+                doMethodCall(result, "add", singleObjectType, BooleanType.v(), resultDisjunct);
                 
                 doJump(labelLoopBegin);
                 // end of loop
@@ -3193,7 +3196,7 @@ public class ClassGenHelper {
             doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
             
             // if the disjunct is not false, add it
-            doMethodCall(resultDisjunct, "add", singleObjectType, BooleanType.v(), resultDisjunct);
+            doMethodCall(result, "add", singleObjectType, BooleanType.v(), resultDisjunct);
             
             doJump(labelLoopBegin);
             // end of loop
