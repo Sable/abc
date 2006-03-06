@@ -78,6 +78,7 @@ import abc.weaving.matching.SetFieldShadowType;
 import abc.weaving.matching.StmtMethodPosition;
 import abc.weaving.matching.TrapMethodPosition;
 import abc.weaving.matching.WholeMethodPosition;
+import abc.weaving.weaver.AdviceInliner;
 import abc.weaving.weaver.CflowCodeGenUtils;
 import abc.weaving.weaver.Weaver;
 
@@ -152,6 +153,19 @@ public class AbcExtension
 
         return weaver;
     }
+
+    /**
+     *  Make a new AdviceInliner, which is responsible for inlining
+     *  advice bodies, as well as pointcuts which are implemented by 
+     *  methods, such as if.
+     *  The instance is cached in abc.weaving.weaver.AdviceInliner,
+     *  so we don't do so here like we do with the Weaver.
+     */
+    public AdviceInliner makeAdviceInliner()
+    {
+	return new AdviceInliner();
+    }
+    
 
     /**
      * Get all the shadow joinpoints that are matched

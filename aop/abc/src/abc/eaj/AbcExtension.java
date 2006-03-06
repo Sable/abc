@@ -61,6 +61,11 @@ public class AbcExtension extends abc.main.AbcExtension
         return shadowTypes;
     }
 
+    public abc.weaving.weaver.AdviceInliner makeAdviceInliner()
+    {
+	return new abc.eaj.weaving.weaver.AdviceInliner();
+    }
+
     public void addBasicClassesToSoot()
     {
         super.addBasicClassesToSoot();

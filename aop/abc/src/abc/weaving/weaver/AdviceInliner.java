@@ -82,10 +82,18 @@ import abc.weaving.weaver.around.soot.SiteInliner;
  *
  */
 public class AdviceInliner { //extends BodyTransformer {
-	private static AdviceInliner instance = 
-		new AdviceInliner();
-	public static void reset() { instance = new AdviceInliner(); 	uniqueID=0; }
-	public static AdviceInliner v() { return instance; }
+    private static AdviceInliner instance = null;
+    public static void reset()
+    { 
+	instance = null;
+	uniqueID = 0;
+    }
+    public static AdviceInliner v()
+    {
+	if (instance == null)
+	    instance = abc.main.Main.v().getAbcExtension().makeAdviceInliner();
+	return instance;
+    }
 	
 	
 	private Set shadowMethods=new HashSet();
@@ -95,7 +103,7 @@ public class AdviceInliner { //extends BodyTransformer {
 	}
 	private Set allStaticInlineMethods=new HashSet();
 	
-	InlineOptions getInlineOptions() {
+	protected InlineOptions getInlineOptions() {
 		CombinedInlineOptions opts=new CombinedInlineOptions();
 		if (OptionsParser.v().around_inlining()) {
 			opts.inlineOptions.add(new AroundAdviceMethodInlineOptions());
@@ -742,7 +750,7 @@ public class AdviceInliner { //extends BodyTransformer {
 	}
 	protected class IfMethodInlineOptions implements InlineOptions {
 		public boolean considerForInlining(String name) {
-			return name.startsWith("if$");
+		    return name.startsWith("if$");
 		}
 		public int inline(SootMethod container, Stmt stmt, InvokeExpr expr) {
 			SootMethod method=expr.getMethod();
@@ -756,7 +764,7 @@ public class AdviceInliner { //extends BodyTransformer {
 			//if (!method.getDeclaringClass().equals(container.getDeclaringClass()))
 			//	return false;
 			
-			debug("Trying to inline if method " + method);
+			debug("Trying to inline method " + method);
 			
 			if (aroundForceInline() || afterBeforeForceInline()) { /// hack
 				debug("force inline on.");
@@ -777,7 +785,7 @@ public class AdviceInliner { //extends BodyTransformer {
 			
 			//if (info.proceedInvocations>1)
 			int size=body.getUnits().size();
-			debug(" Size of if method: " + size);
+			debug(" Size of method: " + size);
 			int addedLocals=body.getLocalCount()-method.getParameterCount();
 			debug(" Number of added locals (approximately): " + addedLocals);			
 						
