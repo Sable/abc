@@ -160,7 +160,7 @@ public class ClassGenHelper {
 
         if(useIndexing()) {
             mapClass = Scene.v().getSootClass("org.apache.commons.collections.map.ReferenceIdentityMap");
-            mapType = RefType.v("org.apache.commons.collections.map.ReferenceIdentityMap");
+            mapType = RefType.v("java.util.Map");
         }
 
         singleObjectType.add(objectType);
@@ -876,43 +876,62 @@ public class ClassGenHelper {
     protected Local getRelevantSet(IterationContext context) {
         return context.relevantSet;
     }
-
+    
     /**
      * Finishes off the nested loop structure started by startIteration() by adding jumps to
-     * the loopBegin labels (if needed) and the loopEnd labels in reverse order.
+     * the loopBegin labels (if needed) and the loopEnd labels in reverse order. This version
+     * does cleanup after every iteration, removing emtpy sets and maps
      * @param context the IterationContext that was passed to startIteration()
      */
     protected void endIteration(IterationContext context) {
+    		endIteration(context, true);
+    }
+    
+    /**
+     * Finishes off the nexted loop structure started by startIteration() by adding jumps to
+     * the loopBegin labels (if needed) and the loopEnd labels in reverse order. If 'cleanup'
+     * is true, empty maps/sets are checked for and removed from the mapping.
+     * @param context the IterationContext that was passed to startIteration
+     * @param cleanup true iff empty maps/sets should be removed.
+     */
+    protected void endIteration(IterationContext context, boolean cleanup) {
         for(int i = context.depth - 1; i >= 0; i--) {
-            // We only have a real loop if loopBegins[i] isn't null; otherwise we just looked 
-            // a specific key and don't need to jump back.
-            if(context.loopBegins[i] != null) {
-                // cleanup: If the map or set has become empty, we remove it. We iterated over
-                // a keyset at level i, so we need to use iterators[i].remove() to drop the mapping
-                // if necessary -- to avoid disturbing the iterator.
-                if(i == context.depth-1) {
-                    doJumpIfFalse(getMethodCallResult(context.relevantSet, "isEmpty", BooleanType.v()),
-                            context.loopBegins[i]);
-                } else {
-                    doJumpIfFalse(getMethodCallResult(context.maps[i+1], "isEmpty", BooleanType.v()), 
-                            context.loopBegins[i]);
-                }
-                doMethodCall(context.iterators[i], "remove", VoidType.v());
-                // In particular, we jump back to the beginning of the loop!
-                doJump(context.loopBegins[i]);
-            } else {
-                // cleanup: If the map or set has become empty, we remove it. We specified key[i]
-                // without iterating, so we can just directly drop the mapping
-                if(i == context.depth-1) {
-                    doJumpIfFalse(getMethodCallResult(context.relevantSet, "isEmpty", BooleanType.v()),
-                            context.loopEnds[i]);
-                } else {
-                    doJumpIfFalse(getMethodCallResult(context.maps[i+1], "isEmpty", BooleanType.v()),
-                            context.loopEnds[i]);
-                }
-                doMethodCall(context.maps[i], "remove", singleObjectType, objectType, 
-                        context.keys[i]);
-            }
+        		if(cleanup) {
+	            // We only have a real loop if loopBegins[i] isn't null; otherwise we just looked 
+	            // a specific key and don't need to jump back.
+	            if(context.loopBegins[i] != null) {
+	                // cleanup: If the map or set has become empty, we remove it. We iterated over
+	                // a keyset at level i, so we need to use iterators[i].remove() to drop the mapping
+	                // if necessary -- to avoid disturbing the iterator.
+	                if(i == context.depth-1) {
+	                    doJumpIfFalse(getMethodCallResult(context.relevantSet, "isEmpty", BooleanType.v()),
+	                            context.loopBegins[i]);
+	                } else {
+	                    doJumpIfFalse(getMethodCallResult(context.maps[i+1], "isEmpty", BooleanType.v()), 
+	                            context.loopBegins[i]);
+	                }
+	                doMethodCall(context.iterators[i], "remove", VoidType.v());
+	                // In particular, we jump back to the beginning of the loop!
+	                doJump(context.loopBegins[i]);
+	            } else {
+	                // cleanup: If the map or set has become empty, we remove it. We specified key[i]
+	                // without iterating, so we can just directly drop the mapping
+	                if(i == context.depth-1) {
+	                    doJumpIfFalse(getMethodCallResult(context.relevantSet, "isEmpty", BooleanType.v()),
+	                            context.loopEnds[i]);
+	                } else {
+	                    doJumpIfFalse(getMethodCallResult(context.maps[i+1], "isEmpty", BooleanType.v()),
+	                            context.loopEnds[i]);
+	                }
+	                doMethodCall(context.maps[i], "remove", singleObjectType, objectType, 
+	                        context.keys[i]);
+	            }
+        		} else {
+        			// no cleanup -- just jump back to beginning of loop
+        			if(context.loopBegins[i] != null) {
+        				doAddLabel(context.loopBegins[i]);
+        			}
+        		}
             doAddLabel(context.loopEnds[i]);
         }
     }
@@ -3099,9 +3118,14 @@ public class ClassGenHelper {
                 for(Iterator indexIt = indices.iterator(); indexIt.hasNext(); keyIndex++) {
                     String var = (String)indexIt.next();
                     if(variables.contains(var)) {
-                        // since the first two parameters are the from-state and to-state, we need 
-                        // keyIndex+2.
-                        keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 2);
+                        // since the first parameterLocal is the target state number, we need 
+                        // keyIndex+1. However, if the variable is primitive,
+                		// we need to box it using getWeakRef() before using as a key
+                		if(curTraceMatch.isPrimitive(var)) {
+                			keys[keyIndex] = getWeakRef((Local)parameterLocals.get(keyIndex + 1), var);
+                		} else {
+                			keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 1);
+                		}
                     }
                 }
                 
@@ -3249,16 +3273,11 @@ public class ClassGenHelper {
             while (index_lists.hasNext()) {
                 List indices = (List) index_lists.next();
                 Stmt label = (Stmt) indices_to_labels.get(indices);
-                boolean fully_indexed = sym_binds.containsAll(indices);
-
+                
                 doAddLabel(label);
-                if (fully_indexed)
-                    addQueueNegativeBindingsBodyFullIndex(symbol,
-                        this_local, values, sym_binds, indices, state);
-                else
-                    addQueueNegativeBindingsBodyPartialIndex(symbol,
-                        this_local, values, sym_binds, indices, state);
-
+                addQueueNegativeBindingsBodyIndex(symbol, this_local,
+                        values, sym_binds, indices, state);
+                
                 doJump(method_end);
             }
 
@@ -3272,127 +3291,75 @@ public class ClassGenHelper {
     }
 
     /**
-     * Adding negative bindings in the case that the symbol
-     * binds all the variables used in the index for the
-     * current state.
+     * Adding negative bindings in the case that the current
+     * state uses indexing
      */
-    protected void addQueueNegativeBindingsBodyFullIndex(String symbol,
+    protected void addQueueNegativeBindingsBodyIndex(String symbol,
                                   Local this_local, Local[] values,
                                   List sym_binds, List indices, Local state)
     {
-        // create an array of locals for storing indices, and fill
-        // in the ones already known (because they are bound by
-        // the symbol we are calculating negative bindings for)
         int depth = indices.size();
         Local[] keys = new Local[depth];
         Iterator vars_bound = sym_binds.iterator();
-        for (int i = 0; i < values.length; i++) {
-            Object var = vars_bound.next();
+        for(int i = 0; i < values.length; i++) {
+            String var = (String)vars_bound.next();
             int index_level = indices.indexOf(var);
-            if (index_level >= 0)
-                keys[index_level] = values[i];
+            if(index_level >= 0) {
+                // if the variable is primitive it needs to be boxed
+                if(curTraceMatch.isPrimitive(var)) {
+                    keys[index_level] = getWeakRef(values[i], var);
+                } else {
+                    keys[index_level] = values[i];
+                }
+            }
         }
-
-        // Lookup in indexedDisjuncts_skip
-        Local skip_map =
-            getFieldLocal(this_local, "indexedDisjuncts_skip", mapType);
-        List params = new LinkedList();
-        List args = new LinkedList();
-        params.add(mapType);
-        args.add(skip_map);
-        for (int i = 0; i < depth; i++) {
-            params.add(objectType);
-            args.add(keys[i]);
-        }
-        Local source = getMethodCallResult(this_local, "lookup" + depth,
-                        params, setType, args);
-
-        // If that lookup returned null, try in indexedDisjuncts
-        Stmt end_if = getNewLabel();
-        doJumpIfNotNull(source, end_if);
-        Local map = getFieldLocal(this_local, "indexedDisjuncts", mapType);
-        Local orig_source = getMethodCallResult(this_local, "lookup" + depth,
-                                params, setType, args);
-        doAssign(source, orig_source);
-        doAddLabel(end_if);
-
-        // add negative bindings
-        Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
-                           state, values);
-
-        // assign the result
-        params.add(setType);
-        args.add(result);
-        params.add(BooleanType.v());
-        args.add(getInt(0));
-        doMethodCall(this_local, "overwrite" + depth, params,
-                        VoidType.v(), args);
-    }
-
-    /**
-     * Adding negative bindings in the case that the symbol
-     * does not all the variables used in the index for the
-     * current state.
-     */
-    protected void addQueueNegativeBindingsBodyPartialIndex(String symbol,
-                                  Local this_local, Local[] values,
-                                  List sym_binds, List indices, Local state)
-    {
-        // create an array of locals for storing indices, and fill
-        // in the ones already known (because they are bound by
-        // the symbol we are calculating negative bindings for)
-        int depth = indices.size();
-        Local[] keys = new Local[depth];
-        Iterator vars_bound = sym_binds.iterator();
-        for (int i = 0; i < values.length; i++) {
-            Object var = vars_bound.next();
-            int index_level = indices.indexOf(var);
-            if (index_level >= 0)
-                keys[index_level] = values[i];
-        }
-
+        
         // Get the map to iterate over: indexedDisjuncts.
         // Yes, we may actually end up getting disjuncts from
         // indexedDisjuncts_skip, but the indices used in the
         // former are guaranteed to be a superset of those
         // used in the latter.
         Local map = getFieldLocal(this_local, "indexedDisjuncts", mapType);
-        Local skip_map =
-            getFieldLocal(this_local, "indexedDisjuncts_skip", mapType);
-
+        Local skip_map = getFieldLocal(this_local,
+                "indexedDisjuncts_skip", mapType);
+        
         IterationContext context = new IterationContext(depth, map, keys);
+        
         startIteration(context);
-
-        // look the disjunct up in indexedDisjuncts_skip, but if the
-        // result is null, then get it from indexedDisjuncts
+        
+        // look the disjunct up in indexedDisjuncts_skip, but if the result is null,
+        // then get it from indexedDisjuncts
         List params = new LinkedList();
         List args = new LinkedList();
         params.add(mapType);
         args.add(skip_map);
-        for (int i = 0; i < keys.length; i++) {
+        for(int i = 0; i < keys.length; i++) {
             params.add(objectType);
             args.add(context.keys[i]);
         }
+
         Local source = getMethodCallResult(this_local, "lookup" + depth,
-                                params, setType, args);
+                params, setType, args);
+        
         Stmt end_if = getNewLabel();
         doJumpIfNotNull(source, end_if);
         Local original_source = getRelevantSet(context);
         doAssign(source, original_source);
         doAddLabel(end_if);
-
+        
         // do the actual negative bindings bit
         Local result = addQueueNegativeBindingsSetProcessing(symbol, source,
-                           state, values);
-
+                state, values);
+        
         // put the result in indexedDisjunct_skip
+        // params and args still contain the values from the call to lookup()
         params.add(setType);
         args.add(result);
         params.add(BooleanType.v());
         args.add(getInt(0));
         doMethodCall(this_local, "overwrite" + depth, params,
-                        VoidType.v(), args);
-
+                VoidType.v(), args);
+        
         endIteration(context);
     }
 
@@ -3492,6 +3459,9 @@ public class ClassGenHelper {
      * specified depth. The generated method will take the map and the correct
      * number of keys as parameters.
      *
+     * If there are primitive index variables, they should be boxed before 
+     * being passed to this method.
+     *
      * @param depth the depth of the index of maps
      */
     protected void addIndConstraintLookupMethod(int depth) {
@@ -3505,25 +3475,21 @@ public class ClassGenHelper {
 
         startMethod(name, param_types, setType, Modifier.PUBLIC);
         Local map = getParamLocal(0, mapType);
-        Local found = null;
-
-        for (int i = 1; i <= depth; i++) {
-            Local key = getParamLocal(i, objectType);
-            found = getMethodCallResult(map, "get", singleObjectType,
-                                        objectType, key);
-            if (i == depth)
-                break;
-
-            // cast looked-up-value to a map, and return if it is null
-            map = getCastValue(found, mapType);
-            Stmt non_null_case = getNewLabel();
-            doJumpIfNotNull(map, non_null_case);
-            doReturn(getNull());
-            doAddLabel(non_null_case);
+        
+        Local[] keys = new Local[depth];
+        for(int i = 1; i <= depth; i++) {
+            keys[i-1] = getParamLocal(i, objectType);
         }
-
-        // cast the final looked-up-value to a set and return it
-        doReturn(getCastValue(found, setType));
+        
+        IterationContext context = new IterationContext(depth, map, keys);
+        
+        startIteration(context);
+        
+        doReturn(getRelevantSet(context));
+        
+        endIteration(context, false);
+        
+        doReturn(getNull());
     }
     
     /**
@@ -3532,6 +3498,9 @@ public class ClassGenHelper {
      * the map, the correct number of keys, the LinkedHashSet to insert into
      * the map, and a boolean flag for whether or not to cleanup empty
      * sets/maps afterwards.
+     * 
+     * If there are primitive index variables, they should be boxed before 
+     * being passed to this method.
      *
      * @param depth the depth of the index of maps
      */
@@ -3606,7 +3575,7 @@ public class ClassGenHelper {
         Local test_for_empty = set;
 
         for (int i = depth - 1; i >= 0; i--) {
-            Local empty = getMethodCallResult(set, "isEmpty", BooleanType.v());
+            Local empty = getMethodCallResult(test_for_empty, "isEmpty", BooleanType.v());
             Stmt end_if = getNewLabel();
             doJumpIfFalse(empty, end_if);
             doMethodCall(maps[i], "remove", singleObjectType,
@@ -3844,4 +3813,42 @@ public class ClassGenHelper {
 
         return case_to_label;
     }
+
+    /**
+     * Creates a lookup switch on a state number. Creates a new label for each state (unless
+     * 'nonIndexingToDefault' is true, in which case states that don't use indexing don't
+     * get special labels and thus map to the default label).
+     * 
+     * Returns a map from SMNodes to labels dealing with each SMNode.
+     * @param key the Local containing the state number to switch on
+     * @param labelDefault the default label
+     * @param nonIndexingToDefault true iff nonindexing states should be handled by the 'default' case
+     * @return map from SMNodes to labels
+     */
+	protected Map addStateLookupSwitch(Local key, Stmt labelDefault, boolean nonIndexingToDefault) {
+		List switchValues = new LinkedList(), switchLabels = new LinkedList();
+		Map stateToLabel = new HashMap();
+		for(Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator(); 
+						stateIt.hasNext(); ) {
+			SMNode state = (SMNode) stateIt.next();
+			
+			if((state.indices == null || state.indices.isEmpty()) && nonIndexingToDefault)
+				continue;
+			
+			Stmt label = (Stmt)stateToLabel.get(state);
+			
+			if(label == null) {
+				label = getNewLabel();
+				stateToLabel.put(state, label);
+			}
+			
+			switchValues.add(getInt(state.getNumber()));
+			switchLabels.add(label);
+		}
+		
+		if(!stateToLabel.isEmpty())
+			doLookupSwitch(key, switchValues, switchLabels, labelDefault);
+		
+		return stateToLabel;
+	}
 }
