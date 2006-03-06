@@ -3163,8 +3163,13 @@ public class ClassGenHelper {
                 doAddLabel(labelDisjunctValid);
                 ////////// end cleanup code
                 
+                List formals = new LinkedList(), actuals = new LinkedList();
+                formals.add(IntType.v());
+                actuals.add(onState);
+                formals.addAll(methodFormals);
+                actuals.addAll(parameterLocals);
                 Local resultDisjunct = getMethodCallResult(curDisjunct, "addBindingsForSymbol" + symbol,
-                        methodFormals, disjunct.getType(), parameterLocals);
+                        formals, disjunct.getType(), actuals);
                 
                 // If the result is the false disjunct anyway, there's no point in adding it
                 doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
@@ -3212,8 +3217,13 @@ public class ClassGenHelper {
             doAddLabel(labelDisjunctValid);
             ////////// end cleanup code
             
+            List formals = new LinkedList(), actuals = new LinkedList();
+            formals.add(IntType.v());
+            actuals.add(onState);
+            formals.addAll(methodFormals);
+            actuals.addAll(parameterLocals);
             Local resultDisjunct = getMethodCallResult(curDisjunct, "addBindingsForSymbol" + symbol,
-                    methodFormals, disjunct.getType(), parameterLocals);
+                    formals, disjunct.getType(), actuals);
             
             // If the result is the false disjunct anyway, there's no point in adding it
             doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
