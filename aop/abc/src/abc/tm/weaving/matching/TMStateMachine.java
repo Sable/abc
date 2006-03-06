@@ -554,20 +554,29 @@ public class TMStateMachine implements StateMachine {
 
             HashSet collectable = new HashSet(indices);
             collectable.retainAll(cur.collectableWeakRefs);
-            indices.removeAll(cur.collectableWeakRefs);
+            HashSet primitive = new HashSet(indices);
+            primitive.removeAll(tm.getNonPrimitiveFormalNames());
+            HashSet weak = new HashSet(indices);
+            weak.retainAll(cur.weakRefs);
 
-			// IGNORE NON-COLLECTABLE TROUBLE-CAUSING WEAKREFS
-			indices.removeAll(cur.weakRefs);
+            indices.removeAll(collectable);
+            indices.removeAll(primitive);
+            indices.removeAll(weak);
+
 
             if (abc.main.Debug.v().printIndices) {
-                System.out.print("State " + cur.getNumber());
-                System.out.print(" - collectable indices: " + collectable);
-                System.out.println(" other indices: " + indices);
+                System.out.println("State " + cur.getNumber());
+                System.out.println(" - collectable indices: " + collectable);
+                System.out.println(" -   primitive indices: " + primitive);
+                System.out.println(" -        weak indices: " + weak);
+                System.out.println(" -       other indices: " + indices);
             }
 
             // index by collectable weak-references first, so that whole
             // subtrees of the index will be automatically thrown away
             cur.indices.addAll(collectable);
+            cur.indices.addAll(primitive);
+            cur.indices.addAll(weak);
             cur.indices.addAll(indices);
         }
     }
