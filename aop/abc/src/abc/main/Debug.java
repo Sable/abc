@@ -136,7 +136,7 @@ public class Debug {
     
     public boolean farJumpEliminator=false; 
     
-    public boolean doValidate=true;  // validate jimple
+    public boolean doValidate=false;  // validate jimple
     // dump CFG as dot plot, doValidate must also be true to enable it
     public boolean doValidateDumpCFG=false;
 
@@ -185,5 +185,5 @@ public class Debug {
     public boolean noNegativeBindings = false;
     public boolean printIndices = false;
     public boolean useNFA = false;
-    public boolean useIndexing = true;
+    public boolean useIndexing = false;
 }
