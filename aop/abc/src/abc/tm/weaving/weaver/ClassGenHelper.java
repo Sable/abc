@@ -482,6 +482,13 @@ public class ClassGenHelper {
         curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newStaticFieldRef(fieldRef)));
         return result;
     }
+    
+    /**
+     * Constructs a new java.util.HashMap.
+     */
+    protected Local getNewHashMap() {
+        return getNewObject(Scene.v().getSootClass("java.util.HashMap"));
+    }
 
     /**
      * Constructs a new ReferenceIdentityMap, using weak keys and hard value referneces, and purging
@@ -522,40 +529,49 @@ public class ClassGenHelper {
     }
 
     /**
-     * Constructs a new ReferenceIdentityMap, using weak or strong keys depending on its argument.
-     * @param depth The nesting depth that this map will reside at. We use this.numWeakIndices to determine whether
-     *              at that depth the keys should be strongly or weakly referenced.
+     * Constructs a new map, using weak or strong keys depending on its argument.
+     * 
+     * @param weakKeysUntil If the depth is less than this parameter, a ReferenceIdentityMap
+     *                       with weak keys is constructed
+     * @param strongKeysAbove If the depth is greater than this parameter, a ReferenceIdentityMap
+     *                       with strong keys is constructed (ootherwise, a HashMap is used)
+     * @param depth The nesting depth that this map will reside at. 
      * @return a local containing the new object.
      */
-    protected Local getNewMapForDepth(Value numWeakIndices, Value depth) {
+    protected Local getNewMapForDepth(Value weakKeysUntil, Value strongKeysAbove, Value depth) {
         Local result = curLGen.generateLocal(mapType, "map$");
         LinkedList formals = new LinkedList(), actualsWeak = new LinkedList(), actualsStrong = new LinkedList();
+        Local hard = getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+                "HARD", IntType.v());
+        Local weak = getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
+                "WEAK", IntType.v());
         formals.add(IntType.v());
         formals.add(IntType.v());
         formals.add(BooleanType.v());
-        actualsWeak.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
-                "WEAK", IntType.v()));
-        actualsWeak.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
-                "HARD", IntType.v()));
+        actualsWeak.add(weak);
+        actualsWeak.add(hard);
         actualsStrong.add(getInt(1));
-        actualsStrong.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
-                "HARD", IntType.v()));
-        actualsStrong.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
-                "HARD", IntType.v()));
+        actualsStrong.add(hard);
+        actualsStrong.add(hard);
         actualsWeak.add(getInt(0));
         
-        Stmt labelUseStrong = getNewLabel(), labelEnd = getNewLabel();
+        Stmt labelUseHashMap = getNewLabel();
+        Stmt labelUseStrong = getNewLabel();
+        Stmt labelEnd = getNewLabel();
         
-        doJumpIfGreater(depth, numWeakIndices, labelUseStrong);
+        doJumpIfGreater(depth, strongKeysAbove, labelUseStrong);
         
-        curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
-        doConstructorCall(result, mapClass, formals, actualsWeak);
+        doJumpIfGreater(depth, weakKeysUntil, labelUseHashMap);
         
+        result = getNewObject(mapClass, formals, actualsWeak);
         doJump(labelEnd);
         
         doAddLabel(labelUseStrong);
-        curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
-        doConstructorCall(result, mapClass, formals, actualsStrong);
+        result = getNewObject(mapClass, formals, actualsStrong);
+        doJump(labelEnd);
+        
+        doAddLabel(labelUseHashMap);
+        result = getNewObject(Scene.v().getSootClass("java.util.HashMap"));
         
         doAddLabel(labelEnd);
         
@@ -2714,7 +2730,8 @@ public class ClassGenHelper {
         SootField indDisjuncts_tmp = new SootField("indexedDisjuncts_tmp", mapType, Modifier.PUBLIC);
         SootField indDisjuncts_skip = new SootField("indexedDisjuncts_skip", mapType, Modifier.PUBLIC);
         SootField onState = new SootField("onState", IntType.v(), Modifier.PUBLIC);
-        SootField numWeakIndices = new SootField("numWeakIndices", IntType.v(), Modifier.PUBLIC);
+        SootField weakKeysUntil = new SootField("weakKeysUntil", IntType.v(), Modifier.PUBLIC);
+        SootField strongKeysAbove = new SootField("strongKeysAbove", IntType.v(), Modifier.PUBLIC);
         
         constraint.addField(disjuncts);
         constraint.addField(disjuncts_tmp);
@@ -2723,7 +2740,8 @@ public class ClassGenHelper {
         constraint.addField(indDisjuncts_tmp);
         constraint.addField(indDisjuncts_skip);
         constraint.addField(onState);
-        constraint.addField(numWeakIndices);;
+        constraint.addField(weakKeysUntil);
+        constraint.addField(strongKeysAbove);
     }
     
     /**
@@ -2748,51 +2766,53 @@ public class ClassGenHelper {
         Local state = getParamLocal(0, IntType.v());
         doSetField(thisLocal, "onState", IntType.v(), state);
     
-        // Each constraint that uses indexing keeps in this.numWeakIndices the number of (collectable or
+        // Each constraint that uses indexing keeps in this.weakKeysUntil the number of (collectable or
         // non-collectable) weakly referenced bindings in an initial segment of the indexing variables list.
         // Based on the state we're in, we have to initialise either the disjunct sets or the maps.
         // Thus, we do a lookup switch. Collect all the states in which we would partition the 
         // disjuncts, and treat everything else as the 'default:' clause.
-        List switchValues = new LinkedList();
-        List switchLabels = new LinkedList();
-        Stmt[] labelsForNumWeakInd = new Stmt[curTraceMatch.getFormals().size() + 1]; 
-        Stmt  labelDefault = getNewLabel();
-        int nWeakMap = 0, nStrongMap = 0;
-        Iterator stateIt = ((TMStateMachine)curTraceMatch.getStateMachine()).getStateIterator();
-        while(stateIt.hasNext()) {
-            SMNode node = (SMNode)stateIt.next();
-            if(node.indices != null && !node.indices.isEmpty()) {
-                switchValues.add(getInt(node.getNumber()));
-                int numWeakInd = 0;
-                while(numWeakInd < node.indices.size() && 
-                        (node.collectableWeakRefs.contains(node.indices.get(numWeakInd))
-                        || node.weakRefs.contains(node.indices.get(numWeakInd)))) {
-                    numWeakInd++;
-                }
-                if(labelsForNumWeakInd[numWeakInd] == null) labelsForNumWeakInd[numWeakInd] = getNewLabel();
-                switchLabels.add(labelsForNumWeakInd[numWeakInd]);
-            }
-        }
         
-        if(!switchValues.isEmpty()) {
-            doLookupSwitch(state, switchValues, switchLabels, labelDefault);
+        Stmt  labelDefault = getNewLabel();
+        Map nodeToLabel = addStateLookupSwitch(state, labelDefault, true);
+        
+        for(Iterator nodeIt = nodeToLabel.keySet().iterator(); nodeIt.hasNext(); ) {
+            SMNode node = (SMNode)nodeIt.next();
+            doAddLabel((Stmt)nodeToLabel.get(node));
             
-            for(int i = 0; i < labelsForNumWeakInd.length; i++) {
-                if(labelsForNumWeakInd[i] != null) {
-                    doAddLabel(labelsForNumWeakInd[i]);
-                    doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(i));
-                    if(i > 0) {
-                        doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(true));
-                        doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(true));
-                        doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(true));
-                    } else {
-                        doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(false));
-                        doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(false));
-                        doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(false));
-                    }
+            int weakKeysUntil = 0;
+            while(weakKeysUntil < node.indices.size() && 
+                    node.collectableWeakRefs.contains(node.indices.get(weakKeysUntil)))
+                weakKeysUntil++;
+            
+            int strongKeysAbove = node.indices.size() - 1;
+            while(strongKeysAbove > -1 && 
+                    node.needStrongRefs.contains(node.indices.get(strongKeysAbove)))
+                strongKeysAbove--;
+            
+            if(weakKeysUntil == 0) {
+                // the first-level map of this state doesn't use weak keys
+                if(strongKeysAbove > -1) {
+                    // the interval [weakKeysUntil; strongKeysAbove] isn't empty,
+                    // i.e. there is at least one binding that requires a HashMap
+                    doSetField(thisLocal, "indexedDisjuncts", mapType, getNewHashMap());
+                    doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewHashMap());
+                    doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewHashMap());
+                } else {
+                    // there are only strong-keyed indices
+                    doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(false));
+                    doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(false));
+                    doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(false));
                 }
+            } else {
+                doSetField(thisLocal, "indexedDisjuncts", mapType, getNewMap(true));
+                doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMap(true));
+                doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMap(true));
             }
 
+            doSetField(thisLocal, "weakKeysUntil", IntType.v(), getInt(weakKeysUntil));
+
+            doSetField(thisLocal, "strongKeysAbove", IntType.v(), getInt(strongKeysAbove));
+            
             doReturnVoid();
         }
         
@@ -2801,7 +2821,9 @@ public class ClassGenHelper {
         doSetField(thisLocal, "disjuncts", setType, getNewObject(setClass));
         doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
         doSetField(thisLocal, "disjuncts_skip", setType, getNewObject(setClass));
-        doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(-1));
+        doSetField(thisLocal, "weakKeysUntil", IntType.v(), getInt(-1));
+        doSetField(thisLocal, "strongKeysAbove", IntType.v(), 
+                getInt(curTraceMatch.getFormals().size()));
         
         doReturnVoid();
         
@@ -2826,8 +2848,8 @@ public class ClassGenHelper {
         Local paramDisjuncts = getParamLocal(1, setType);
         doSetField(thisLocal, "onState", IntType.v(), state);
     
-        // We assume this is a non-partitioning state, so set numWeakIndices = -1;
-        doSetField(thisLocal, "numWeakIndices", IntType.v(), getInt(-1));
+        // We assume this is a non-partitioning state, so set weakKeysUntil = -1;
+        doSetField(thisLocal, "weakKeysUntil", IntType.v(), getInt(-1));
         
         doSetField(thisLocal, "disjuncts", setType, paramDisjuncts);
         doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
@@ -2907,11 +2929,11 @@ public class ClassGenHelper {
         startMethod("merge", emptyList, VoidType.v(), Modifier.PUBLIC);
         
         Local thisLocal = getThisLocal();
-        Local numWeakIndices = getFieldLocal(thisLocal, "numWeakIndices", IntType.v());
+        Local weakKeysUntil = getFieldLocal(thisLocal, "weakKeysUntil", IntType.v());
         Stmt labelMergeIndices = getNewLabel();
         
         // If the current state uses indexing, we skip the simple case.
-        doJumpIfGreater(numWeakIndices, getInt(-1), labelMergeIndices);
+        doJumpIfGreater(weakKeysUntil, getInt(-1), labelMergeIndices);
         
         // Otherwise, the current state doesn't use indexing, so we merely update the disjunct sets.
         doSetField(thisLocal, "disjuncts", setType, getFieldLocal(thisLocal, "disjuncts_skip", setType));
@@ -2934,9 +2956,11 @@ public class ClassGenHelper {
         actuals.add(getInt(0));
         doMethodCall(thisLocal, "merge", formals, VoidType.v(), actuals);
         
-        Local numWeakInd = getFieldLocal(thisLocal, "numWeakIndices", IntType.v());
-        doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, getNewMapForDepth(numWeakInd, getInt(0)));
-        doSetField(thisLocal, "indexedDisjuncts_skip", mapType, getNewMapForDepth(numWeakInd, getInt(0)));
+        Local strongKeysAbove = getFieldLocal(thisLocal, "strongKeysAbove", IntType.v());
+        doSetField(thisLocal, "indexedDisjuncts_tmp", mapType, 
+                getNewMapForDepth(weakKeysUntil, strongKeysAbove, getInt(0)));
+        doSetField(thisLocal, "indexedDisjuncts_skip", mapType, 
+                getNewMapForDepth(weakKeysUntil, strongKeysAbove, getInt(0)));
         doReturnVoid();
         
         // The second version of merge takes a Map and a boolean flag. It merges the contents of the map
@@ -3520,8 +3544,10 @@ public class ClassGenHelper {
         startMethod(name, param_types, VoidType.v(), Modifier.PUBLIC);
 
         Local this_local = getThisLocal();
-        Local num_weak_indices =
-            getFieldLocal(this_local, "numWeakIndices", IntType.v());
+        Local weakKeysUntil =
+            getFieldLocal(this_local, "weakKeysUntil", IntType.v());
+        Local strongKeysAbove =
+            getFieldLocal(this_local, "strongKeysAbove", IntType.v());
         Local[] keys = new Local[depth];
         Local[] maps = new Local[depth];
         maps[0] = getParamLocal(0, mapType);
@@ -3550,7 +3576,7 @@ public class ClassGenHelper {
             doJump(end_if);
 
             doAddLabel(null_case);
-            child = getNewMapForDepth(num_weak_indices, getInt(i));
+            child = getNewMapForDepth(weakKeysUntil, strongKeysAbove, getInt(i));
             List put_args = new ArrayList(2);
             put_args.add(keys[i-1]);
             put_args.add(child);
