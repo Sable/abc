@@ -3118,13 +3118,13 @@ public class ClassGenHelper {
                 for(Iterator indexIt = indices.iterator(); indexIt.hasNext(); keyIndex++) {
                     String var = (String)indexIt.next();
                     if(variables.contains(var)) {
-                        // since the first parameterLocal is the target state number, we need 
-                        // keyIndex+1. However, if the variable is primitive,
+                        // since the first parameterLocals are the source and target state 
+                        // number, we need keyIndex+2. However, if the variable is primitive,
                 		// we need to box it using getWeakRef() before using as a key
                 		if(curTraceMatch.isPrimitive(var)) {
-                			keys[keyIndex] = getWeakRef((Local)parameterLocals.get(keyIndex + 1), var);
+                			keys[keyIndex] = getWeakRef((Local)parameterLocals.get(keyIndex + 2), var);
                 		} else {
-                			keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 1);
+                			keys[keyIndex] = (Local)parameterLocals.get(keyIndex + 2);
                 		}
                     }
                 }
@@ -3163,13 +3163,8 @@ public class ClassGenHelper {
                 doAddLabel(labelDisjunctValid);
                 ////////// end cleanup code
                 
-                List formals = new LinkedList(), actuals = new LinkedList();
-                formals.add(IntType.v());
-                actuals.add(onState);
-                formals.addAll(methodFormals);
-                actuals.addAll(parameterLocals);
                 Local resultDisjunct = getMethodCallResult(curDisjunct, "addBindingsForSymbol" + symbol,
-                        formals, disjunct.getType(), actuals);
+                        methodFormals, disjunct.getType(), parameterLocals);
                 
                 // If the result is the false disjunct anyway, there's no point in adding it
                 doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
@@ -3217,13 +3212,8 @@ public class ClassGenHelper {
             doAddLabel(labelDisjunctValid);
             ////////// end cleanup code
             
-            List formals = new LinkedList(), actuals = new LinkedList();
-            formals.add(IntType.v());
-            actuals.add(onState);
-            formals.addAll(methodFormals);
-            actuals.addAll(parameterLocals);
             Local resultDisjunct = getMethodCallResult(curDisjunct, "addBindingsForSymbol" + symbol,
-                    formals, disjunct.getType(), actuals);
+                    methodFormals, disjunct.getType(), parameterLocals);
             
             // If the result is the false disjunct anyway, there's no point in adding it
             doJumpIfEqual(resultDisjunct, falseDisjunct, labelLoopBegin);
