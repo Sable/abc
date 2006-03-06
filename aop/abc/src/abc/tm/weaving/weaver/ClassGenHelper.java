@@ -3049,7 +3049,7 @@ public class ClassGenHelper {
         startMethod("getBindingsForSymbol" + symbol, methodFormals, setType, Modifier.PUBLIC);
         
         Local thisLocal = getThisLocal();
-        Local state = getFieldLocal(thisLocal, "onState", IntType.v());
+        Local onState = getFieldLocal(thisLocal, "onState", IntType.v());
         methodFormals.add(0, IntType.v()); // for calling Disjunct.addBindings...
         
         if(varCount == 0) {
@@ -3062,7 +3062,7 @@ public class ClassGenHelper {
             List parameterLocals = new LinkedList();
             int parameterIndex = 0;
             Local stateTo = getParamLocal(parameterIndex++, IntType.v());
-            parameterLocals.add(state);
+            parameterLocals.add(onState);
             parameterLocals.add(stateTo);
             for(Iterator varIt = variables.iterator(); varIt.hasNext(); ) {
                 parameterLocals.add(getParamLocal(parameterIndex++, 
@@ -3083,7 +3083,6 @@ public class ClassGenHelper {
             // - This state does not use indexing
             // - This state uses indexing. In this case, there will be a distinction on the depth
             //    of the index map.
-            Local onState = getFieldLocal(thisLocal, "onState", IntType.v());
             Stmt labelNoIndexing = getNewLabel();
             
             Map caseToLabel = addIndLookupSwitch(onState, labelNoIndexing, true);
