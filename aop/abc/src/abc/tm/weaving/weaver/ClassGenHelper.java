@@ -852,11 +852,11 @@ public class ClassGenHelper {
         for(int i = 0; i < context.depth; i++) {
             context.loopEnds[i] = getNewLabel();
             if(context.keys[i] == null) {
-                context.loopBegins[i] = getNewLabel();
-                doAddLabel(context.loopBegins[i]);
                 context.iterators[i] = getMethodCallResult(
                         getMethodCallResult(context.maps[i], "keySet", jusetType),
                         "iterator", iteratorType);
+                context.loopBegins[i] = getNewLabel();
+                doAddLabel(context.loopBegins[i]);
                 doJumpIfFalse(getMethodCallResult(context.iterators[i], "hasNext", 
                         BooleanType.v()), context.loopEnds[i]);
                 context.keys[i] = getMethodCallResult(context.iterators[i], "next", objectType);
