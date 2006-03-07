@@ -2907,7 +2907,8 @@ public class ClassGenHelper {
 
         // create a new linked hashset and a new disjunct
         Local lhs = getNewObject(setClass);
-        Local new_disjunct = getNewObject(disjunct);
+        //Local new_disjunct = getNewObject(disjunct);
+        Local new_disjunct = getStaticFieldLocal(disjunct, "trueD", disjunct.getType());
 
         // add the disjunct to the hashset
         doMethodCall(lhs, "add", singleObjectType, BooleanType.v(), new_disjunct);
@@ -2943,8 +2944,7 @@ public class ClassGenHelper {
         doSetField(thisLocal, "disjuncts", setType, getFieldLocal(thisLocal, "disjuncts_skip", setType));
         doMethodCall(getFieldLocal(thisLocal, "disjuncts", setType), "addAll", singleCollectionType, BooleanType.v(),
                     getFieldLocal(thisLocal, "disjuncts_tmp", setType));
-        doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass, singleCollectionType, 
-                    getFieldLocal(thisLocal, "disjuncts", setType)));
+        doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
         doReturnVoid();
         
         // If the current state uses indexing -- we have to merge the maps.
