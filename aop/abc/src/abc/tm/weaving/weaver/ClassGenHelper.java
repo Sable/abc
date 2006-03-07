@@ -947,7 +947,7 @@ public class ClassGenHelper {
         		} else {
         			// no cleanup -- just jump back to beginning of loop
         			if(context.loopBegins[i] != null) {
-        				doAddLabel(context.loopBegins[i]);
+        				doJump(context.loopBegins[i]);
         			}
         		}
             doAddLabel(context.loopEnds[i]);
@@ -2852,6 +2852,8 @@ public class ClassGenHelper {
     
         // We assume this is a non-partitioning state, so set weakKeysUntil = -1;
         doSetField(thisLocal, "weakKeysUntil", IntType.v(), getInt(-1));
+        doSetField(thisLocal, "strongKeysAbove", IntType.v(), 
+                getInt(curTraceMatch.getFormals().size()));
         
         doSetField(thisLocal, "disjuncts", setType, paramDisjuncts);
         doSetField(thisLocal, "disjuncts_tmp", setType, getNewObject(setClass));
@@ -3007,12 +3009,13 @@ public class ClassGenHelper {
                 formalsLookup.add(objectType);
                 actualsLookup.add(context.keys[j]);
             }
-            Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
-                    formalsLookup, setType, actualsLookup);
             
             Stmt labelThen = getNewLabel(), labelEndIf = getNewLabel();
             // if(op || updated == null) 
             doJumpIfTrue(operation, labelThen);
+
+            Local updatedSet = getMethodCallResult(thisLocal, "lookup" + depth,
+                    formalsLookup, setType, actualsLookup);
             doJumpIfEqual(updatedSet, getNull(), labelThen);
             
             // The 'else' branch:
@@ -3041,7 +3044,8 @@ public class ClassGenHelper {
             // endif
             doAddLabel(labelEndIf);
 
-            endIteration(context);
+            // No cleanup is needed on this iteration since overwrite() does a cleanup already.
+            endIteration(context, false);
             
             doReturnVoid();
         }
@@ -3546,6 +3550,7 @@ public class ClassGenHelper {
         startMethod(name, param_types, VoidType.v(), Modifier.PUBLIC);
 
         Local this_local = getThisLocal();
+
         Local weakKeysUntil =
             getFieldLocal(this_local, "weakKeysUntil", IntType.v());
         Local strongKeysAbove =
@@ -3557,6 +3562,27 @@ public class ClassGenHelper {
             keys[i] = getParamLocal(1 + i, objectType);
         Local set = getParamLocal(depth + 1, setType);
         Local cleanup = getParamLocal(depth + 2, BooleanType.v());
+
+        // cleanup: iff the boolean flag is true, we should check for empty sets and maps.
+        // However, assuming that every other operation cleans up behind itself, the only
+        // case in which a cleanup is actually needed is if the set we're passed is empty.
+        Stmt labelNoCleanup = getNewLabel();
+        doJumpIfFalse(cleanup, labelNoCleanup);
+        doJumpIfFalse(getMethodCallResult(set, "isEmpty", BooleanType.v()), labelNoCleanup);
+        
+        // if we're here, we're meant to do a cleanup step, *and* the set we've been passed
+        // is empty. This amounts to deleting the currently existing set at the given indices.
+        IterationContext context = new IterationContext(depth, maps[0], keys);
+        startIteration(context);
+        // the code here will only be executed if the keys lead us to a particular set. We simply
+        // empty the set and let endIteration perform the cleanup.
+        doMethodCall(getRelevantSet(context), "clear", VoidType.v());
+        endIteration(context, true);
+
+        doReturnVoid();
+        // End cleanup
+        
+        doAddLabel(labelNoCleanup);
 
         // the method map.put(...) takes two object parameters
         List put_types = new ArrayList(2);
@@ -3593,26 +3619,6 @@ public class ClassGenHelper {
         put_args.add(set);
         doMethodCall(maps[depth - 1], "put", put_types, objectType, put_args);
 
-        // cleanup iff the boolean cleanup flag is true
-        Stmt cleanup_code = getNewLabel();
-
-        doJumpIfTrue(cleanup, cleanup_code);
-        doReturnVoid();
-
-        doAddLabel(cleanup_code);
-        Local test_for_empty = set;
-
-        for (int i = depth - 1; i >= 0; i--) {
-            Local empty = getMethodCallResult(test_for_empty, "isEmpty", BooleanType.v());
-            Stmt end_if = getNewLabel();
-            doJumpIfFalse(empty, end_if);
-            doMethodCall(maps[i], "remove", singleObjectType,
-                         objectType, keys[i]);
-
-            doAddLabel(end_if);
-            test_for_empty = maps[i];
-        }
-                
         doReturnVoid();
     }
 
