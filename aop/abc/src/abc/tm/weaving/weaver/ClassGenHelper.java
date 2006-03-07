@@ -3051,7 +3051,7 @@ public class ClassGenHelper {
         }
         
         doAddLabel(labelNoIndices);
-        doThrowException("merge() called on a non-indexing state");
+        doThrowException("merge(Map, boolean) called on a non-indexing state");
     }
     
     /**
@@ -3466,6 +3466,10 @@ public class ClassGenHelper {
         doJump(loop_test);
 
         doAddLabel(loop_end);
+        
+        // Remove Disjunct.falseD if it has ended up in the set
+        doMethodCall(result, "remove", singleObjectType, BooleanType.v(), 
+        		getStaticFieldLocal(disjunct, "falseD", disjunct.getType()));
         return result;
     }
 
