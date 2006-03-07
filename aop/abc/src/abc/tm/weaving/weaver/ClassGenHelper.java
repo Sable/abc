@@ -506,7 +506,9 @@ public class ClassGenHelper {
      * @return a local containing the new object.
      */
     protected Local getNewMap(boolean weakKeys) {
-        Local result = curLGen.generateLocal(mapType, "map$");
+        RefType refIdMapType = Scene.v().getRefType(
+            "org.apache.commons.collections.map.ReferenceIdentityMap");
+        Local result = curLGen.generateLocal(refIdMapType, "map$");
         LinkedList formals = new LinkedList(), actuals = new LinkedList();
         formals.add(IntType.v());
         formals.add(IntType.v());
@@ -523,7 +525,7 @@ public class ClassGenHelper {
             actuals.add(getStaticFieldLocal(Scene.v().getSootClass("org.apache.commons.collections.map.AbstractReferenceMap"), 
                     "HARD", IntType.v()));
         }
-        curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(mapType)));
+        curUnits.addLast(Jimple.v().newAssignStmt(result, Jimple.v().newNewExpr(refIdMapType)));
         doConstructorCall(result, mapClass, formals, actuals);
         return result;
     }
@@ -563,15 +565,15 @@ public class ClassGenHelper {
         
         doJumpIfGreater(depth, weakKeysUntil, labelUseHashMap);
         
-        result = getNewObject(mapClass, formals, actualsWeak);
+        doAssign(result, getNewObject(mapClass, formals, actualsWeak));
         doJump(labelEnd);
         
         doAddLabel(labelUseStrong);
-        result = getNewObject(mapClass, formals, actualsStrong);
+        doAssign(result, getNewObject(mapClass, formals, actualsStrong));
         doJump(labelEnd);
         
         doAddLabel(labelUseHashMap);
-        result = getNewObject(Scene.v().getSootClass("java.util.HashMap"));
+        doAssign(result, getNewObject(Scene.v().getSootClass("java.util.HashMap")));
         
         doAddLabel(labelEnd);
         
