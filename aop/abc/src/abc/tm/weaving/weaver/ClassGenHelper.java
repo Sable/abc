@@ -552,10 +552,10 @@ public class ClassGenHelper {
         formals.add(BooleanType.v());
         actualsWeak.add(weak);
         actualsWeak.add(hard);
-        actualsStrong.add(getInt(1));
+        actualsWeak.add(getInt(1));
         actualsStrong.add(hard);
         actualsStrong.add(hard);
-        actualsWeak.add(getInt(0));
+        actualsStrong.add(getInt(0));
         
         Stmt labelUseHashMap = getNewLabel();
         Stmt labelUseStrong = getNewLabel();
