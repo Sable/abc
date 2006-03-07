@@ -1765,8 +1765,7 @@ public class CodeGenHelper
         Local lab_final =
             getLabel(body, units, label_base, final_state, LABEL);
         callDisjunctsMethod(body, units, lab_final, disjuncts);
-        assignToLabel(body, units, label_base, final_state,
-                        LABEL, NullConstant.v());
+        eraseLabelOnFinalState(body, units, label_base);
 
         if (! tm.isPerThread())
             genLockRelease(body, units, lab_final, false);
@@ -1793,6 +1792,13 @@ public class CodeGenHelper
 
         insertPlaceHolder(units, end);
         insertReturn(units, result);           
+    }
+
+    protected void eraseLabelOnFinalState(Body body, Chain units,
+                                          Local label_base)
+    {
+        assignToLabel(body, units, label_base, final_state,
+                        LABEL, NullConstant.v());
     }
 
     protected void genIdentityStmts(SootMethod method, Body body, Chain units)

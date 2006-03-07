@@ -506,59 +506,6 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
-     * Generate code to jump over some updates if any of the bindings
-     * are null.
-     */
-    public void genNullChecks(SootMethod method)
-    {
-        Body body = method.getActiveBody();
-        Chain units = newChain();
-
-        null_checks_jump_target = newPlaceHolder();
-        insertNullChecks(method, units, null_checks_jump_target);
-        
-        insertBeforeReturn(units, body.getUnits());
-    }
-
-    /**
-     * Generate the target for the null-check jump
-     */
-    public void genNullChecksJumpTarget(SootMethod method)
-    {
-        Body body = method.getActiveBody();
-        Chain units = newChain();
-        
-        insertPlaceHolder(units, null_checks_jump_target);
-        null_checks_jump_target = null;
-
-        insertBeforeReturn(units, body.getUnits());
-    }
-
-    /**
-     * Generate code to acquire a tracematch lock while the
-     * labels are being updated.
-     */
-    public void genAcquireLock()
-    {
-        SootMethod method = tm.getSynchAdviceMethod();
-        Body body = method.getActiveBody();
-        Local this_local = body.getThisLocal();
-
-        Chain units = newChain();
-
-        // acquire lock if the tracematch is not per-thread
-        if (! tm.isPerThread())
-            getLock(body, units);
-
-        // reset updated flag
-        Local updated_base = getLabelBase(body, units, this_local);
-        Local updated = getUpdated(body, units, updated_base);
-        setUpdated(units, updated_base, IntConstant.v(0));
-
-        insertBeforeReturn(units, body.getUnits());
-    }
-
-    /**
      * Generate code to update a label with the constraint
      * for performing a "from --->[symbol] to" transition.
      */
@@ -634,5 +581,17 @@ public class IndexedCodeGenHelper extends CodeGenHelper
             genLockRelease(body, units, label, true);
 
         insertBeforeReturn(units, body.getUnits());
+    }
+
+    /**
+     * Erase the final state by assigning a new label to it,
+     * not writing null to the field as we did before with
+     * the old constraint-API
+     */
+    protected void eraseLabelOnFinalState(Body body, Chain units,
+                                          Local label_base)
+    {
+        Local con = makeNewConstraint(body, units, final_state);
+        assignToLabel(body, units, label_base, final_state, LABEL, con);
     }
 }
