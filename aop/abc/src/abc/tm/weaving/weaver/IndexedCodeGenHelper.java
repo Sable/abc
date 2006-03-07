@@ -127,7 +127,8 @@ public class IndexedCodeGenHelper extends CodeGenHelper
      * indices the state has, and if they can be used for this a
      * particular call to queue.
      */
-    protected InvokeExpr queueMethod(Local base, List args)
+    protected InvokeExpr queueMethod(Local base, List args,
+                                     int state, String symbol)
     {
         int num_args = args.size();
         List arg_types = new ArrayList(num_args);
@@ -193,6 +194,37 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     }
 
     /**
+     * Create a box for a primitive binding which we need to use
+     * as an index.
+     */
+    protected Local makeNewBox(Body body, Chain units, SootClass box_class,
+                                Local value)
+    {
+        List arg_types = new ArrayList(1);
+        arg_types.add(value.getType());
+
+        List args = new ArrayList(1);
+        args.add(value);
+
+        SootMethodRef ref = Scene.v().makeMethodRef(
+                                        box_class,
+                                        SootMethod.constructorName,
+                                        arg_types,
+                                        VoidType.v(),
+                                        false);
+
+        Local box = addLocal(body, "box", box_class.getType());
+        Value new_expr = Jimple.v().newNewExpr(box_class.getType());
+        Value init_call = Jimple.v().newSpecialInvokeExpr(box, ref, args);
+
+        units.addLast(Jimple.v().newAssignStmt(box, new_expr));
+        units.addLast(Jimple.v().newInvokeStmt(init_call));
+        
+        return box;
+    }
+
+
+    /**
      * Call a bindings method (addBindingsForSymbolx or
      * addNegativeBindingsForSymbolx, depending on positive_bindings).
      *
@@ -235,9 +267,34 @@ public class IndexedCodeGenHelper extends CodeGenHelper
      * particular call to queue.
      */
     protected void callQueueMethod(Body body, Chain units, Local base,
-                                   List args)
+                                   List args, int state, String symbol)
     {
-        Value call = queueMethod(base, args);
+        // if this state is indexed, and the symbol that
+        // triggered this method call binds all the indices,
+        // then add them to the "queue" call
+        TMStateMachine sm = (TMStateMachine) tm.getStateMachine();
+        SMNode node = sm.getStateByNumber(state);
+        List sym_binds = tm.getVariableOrder(symbol);
+
+        if (sym_binds.containsAll(node.indices)) {
+            Local[] keys = new Local[node.indices.size()];
+
+            for (int i = 0; i < keys.length; i++) {
+                String var = (String) node.indices.get(i);
+                int param_num = sym_binds.indexOf(var);
+                Local param = body.getParameterLocal(param_num);
+
+                if (tm.isPrimitive(var)) {
+                    SootClass box_class = tm.weakBindingClass(var);
+                    Type box_type = box_class.getType();
+                    param = makeNewBox(body, units, box_class, param);
+                }
+
+                args.add(param);
+            }
+        }
+
+        Value call = queueMethod(base, args, state, symbol);
         units.addLast(Jimple.v().newInvokeStmt(call));
     }
 
@@ -249,213 +306,6 @@ public class IndexedCodeGenHelper extends CodeGenHelper
     {
         Value call = mergeMethod(base);
         units.addLast(Jimple.v().newInvokeStmt(call));
-    }
-
-    /**
-     * Call the getDisjunctIterator method on a constraint.
-     * Assign the result to the passed disjuncts local.
-     */
-    protected void callDisjunctsMethod(Body body, Chain units, Local base,
-                                        Local disjuncts)
-    {
-        Value call = disjunctsMethod(base);
-        units.addLast(Jimple.v().newAssignStmt(disjuncts, call));
-    }
-
-    /**
-     * Assign an empty Object array to the passed local.
-     */
-    protected void makeEmptyArray(Chain units, Local result)
-    {
-        Expr new_array = Jimple.v().newNewArrayExpr(object, getInt(0));
-        units.addLast(Jimple.v().newAssignStmt(result, new_array));
-    }
-
-    /**
-     * return true if the offset is not passed the
-     * end of the array, otherwise false
-     */
-    protected Expr arrayAtEnd(Body body, Chain units, Local base, Local offset)
-    {
-        Local length = addLocal(body, "length", IntType.v());
-
-        Expr array_length = Jimple.v().newLengthExpr(base);
-
-        units.addLast(Jimple.v().newAssignStmt(length, array_length));
-
-        return Jimple.v().newGeExpr(offset, length);
-    }
-
-    /**
-     * return base[offset++] as a new Jimple local
-     * (that is, the increment is done afterwards)
-     */
-    protected Local arrayGet(Body body, Chain units,
-                             Local base, Local offset)
-    {
-        Local result = addLocal(body, "next", object);
-
-        Ref result_ref = Jimple.v().newArrayRef(base, offset);
-
-        units.addLast(Jimple.v().newAssignStmt(result, result_ref));
-
-        return result;
-    }
-
-    protected void swapAssignForIdentity(Chain units, String local_name,
-                                            int param)
-    {
-        Object current = units.getFirst();
-        boolean found = false;
-
-        while (!found) {
-            if (! (current instanceof AssignStmt)) {
-                current = units.getSuccOf(current);
-                continue;
-            }
-
-            AssignStmt assign = (AssignStmt) current;
-
-            if (! (assign.getLeftOp() instanceof Local)) {
-                current = units.getSuccOf(current);
-                continue;
-            }
-
-            Local assigned = (Local) assign.getLeftOp();
-
-            if (! assigned.getName().equals(local_name)) {
-                current = units.getSuccOf(current);
-                continue;
-            }
-
-            ParameterRef param_ref =
-                Jimple.v().newParameterRef(assigned.getType(), param);
-            IdentityStmt id_stmt =
-                Jimple.v().newIdentityStmt(assigned, param_ref);
-
-            units.swapWith(assign, id_stmt);
-            found = true;
-        }
-    }
-
-    protected Local callLockMethod(Body body, Chain units, String name)
-    {
-        Local this_local = body.getThisLocal();
-        Local lock_local = addLocal(body, "lock", lock.getType());
-        Local result = null;
-
-        Ref lock_ref = makeLockRef(this_local);
-        Expr call = lockMethod(lock_local, name);
-
-        units.addLast(Jimple.v().newAssignStmt(lock_local, lock_ref));
-
-        if (name.equals("own")) {
-            result = addLocal(body, "own", BooleanType.v());
-            units.addLast(Jimple.v().newAssignStmt(result, call));
-        } else {
-            units.addLast(Jimple.v().newInvokeStmt(call));
-        }
-
-        return result;
-    }
-
-    protected Local callDummyProceedMethod(Body body, Chain units)
-    {
-        SootClass container = tm.getContainerClass();
-        String proceed_name = tm.getDummyProceedName();
-        SootMethod proceed = container.getMethodByName(proceed_name);
-        Type ret_type = proceed.getReturnType();
-
-        Local this_local = body.getThisLocal();
-        Local result = null;
-     
-        Value call = bodyMethod(proceed, body, this_local, new LinkedList());
-
-        if (ret_type == VoidType.v()) {
-            units.addLast(Jimple.v().newInvokeStmt(call));
-        } else {
-            result = addLocal(body, "ret_val", ret_type);
-            units.addLast(Jimple.v().newAssignStmt(result, call));
-        }
-
-        return result;
-    }
-
-    /**
-     * Call the TraceMatch body method.
-     */
-    protected void callBodyMethod(Body body, Chain units,
-                                    List args, Local result)
-    {
-        SootMethod method = tm.getBodyMethod();
-        Local this_local = body.getThisLocal();
-
-        Value call = bodyMethod(method, body, this_local, args);
-
-        if (result == null)
-            units.addLast(Jimple.v().newInvokeStmt(call));
-        else
-            units.addLast(Jimple.v().newAssignStmt(result, call));
-    }
-
-    protected Stmt updateBodyCall(SootMethod method, Chain units, Stmt call)
-    {
-        Body body = method.getActiveBody();
-        Local this_local = body.getThisLocal();
-        InvokeExpr call_expr;
-        Local result;
-
-        if (call instanceof InvokeStmt) {
-            call_expr = ((InvokeStmt) call).getInvokeExpr();
-            result = null;
-        } else {
-            AssignStmt assign = (AssignStmt) call;
-            call_expr = (InvokeExpr) assign.getRightOp();
-            result = (Local) assign.getLeftOp();
-        }
-
-        List args = call_expr.getArgs();
-
-        // We are planning to re-write body(...) -> real_body(...)
-        //
-        // BUT, if this call to body(...) has the correct number
-        // of arguments then it is not one of the proceed() calls
-        // we re-wrote - it is a woven advice-call and should
-        // be left alone!
- 
-        if (args.size() == tm.getBodyMethod().getParameterCount())
-            return (Stmt) units.getSuccOf(call);
-
-
-        Value new_call_expr = bodyMethod(method, body, this_local, args);
-        Stmt new_call;
-
-        if (result == null)
-            new_call = Jimple.v().newInvokeStmt(new_call_expr);
-        else
-            new_call = Jimple.v().newAssignStmt(result, new_call_expr);
-
-        units.swapWith(call, new_call);
-
-        return new_call;
-    }
-
-    protected Local callRealBodyMethod(Body body, Chain units,
-                                        Local disjuncts, Local offset)
-    {
-        Type ret_type = tm.getRealBodyMethod().getReturnType();
-
-        Value call = realBodyMethod(body, disjuncts, offset);
-        Local result = null;
-
-        if (ret_type != VoidType.v()) {
-            result = addLocal(body, "result", ret_type);
-            units.addLast(Jimple.v().newAssignStmt(result, call));
-        } else {
-            units.addLast(Jimple.v().newInvokeStmt(call));
-        }
-
-        return result;
     }
 
     /**
@@ -529,9 +379,9 @@ public class IndexedCodeGenHelper extends CodeGenHelper
                                 method, from_state, to_state, true);
 
         Local lab_to = getLabel(body, units, label_base, to, TMP_LABEL);
-        List args = new ArrayList(1);
+        List args = new LinkedList();
         args.add(bind_result);
-        callQueueMethod(body, units, lab_to, args);
+        callQueueMethod(body, units, lab_to, args, to, symbol);
 
         insertBeforeReturn(units, body.getUnits());
     }

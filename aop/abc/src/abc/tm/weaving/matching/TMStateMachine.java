@@ -713,7 +713,18 @@ public class TMStateMachine implements StateMachine {
     public Iterator getStateIterator() {
         return nodes.iterator();
     }
-    
+ 
+    public SMNode getStateByNumber(int n) {
+        Iterator i = getStateIterator();
+        while (i.hasNext()) {
+            SMNode node = (SMNode) i.next();
+            if (node.getNumber() == n)
+                return node;
+        }
+        throw new RuntimeException("Looking up state number " + n +
+                        ", but it does not exist.\n" + this);
+    }
+
     public int getNumberOfStates() {
         return nodes.size();
     }
