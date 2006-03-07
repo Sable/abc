@@ -186,4 +186,6 @@ public class Debug {
     public boolean printIndices = false;
     public boolean useNFA = false;
     public boolean useIndexing = false;
+    public boolean onlyStrongRefs = false; 			//makes all references strong references 
+    public boolean noCollectableWeakRefs = false;	//makes all collectable weak refs "normal" weak refs
 }

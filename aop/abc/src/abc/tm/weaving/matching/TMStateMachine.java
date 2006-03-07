@@ -27,6 +27,7 @@ import polyglot.types.SemanticException;
 import polyglot.util.ErrorInfo;
 import polyglot.util.Position;
 import polyglot.util.ErrorQueue;
+import abc.main.Debug;
 import abc.polyglot.util.ErrorInfoFactory;
 
 /**
@@ -37,7 +38,6 @@ import abc.polyglot.util.ErrorInfoFactory;
 public class TMStateMachine implements StateMachine {
 
     protected LinkedHashSet edges = new LinkedHashSet(), nodes = new LinkedHashSet();
-    private static boolean noWeakRefs = false;
     
     public State newState() {
         SMNode n = new SMNode(this, false, false);
@@ -446,10 +446,15 @@ public class TMStateMachine implements StateMachine {
 			SMNode node = (SMNode) stateIter.next();
 			// start with the set of all declared formals
 			node.needStrongRefs = new LinkedHashSet(formals);
-			if (noWeakRefs) {
+			if (Debug.v().onlyStrongRefs) {
+				//use only strong references
 				node.collectableWeakRefs.clear();
 				node.weakRefs = new LinkedHashSet();
-				
+			} else if (Debug.v().noCollectableWeakRefs) {
+				//use no collectable weak refs
+				//i.e. make them all "usual" weak refs
+				node.weakRefs.addAll(node.collectableWeakRefs);
+				node.collectableWeakRefs.clear();
 			} else {
 			// and remove those that are in node.weakRefs and those that are not used
 			// everything else is a non-collectable weakRef
