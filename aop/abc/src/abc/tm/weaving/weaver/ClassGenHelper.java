@@ -2788,7 +2788,8 @@ public class ClassGenHelper {
             
             int strongKeysAbove = node.indices.size() - 1;
             while(strongKeysAbove > -1 && 
-                    node.needStrongRefs.contains(node.indices.get(strongKeysAbove)))
+                    node.needStrongRefs.contains(node.indices.get(strongKeysAbove)) &&
+                    !curTraceMatch.isPrimitive((String)node.indices.get(strongKeysAbove)))
                 strongKeysAbove--;
             
             if(weakKeysUntil == 0) {
