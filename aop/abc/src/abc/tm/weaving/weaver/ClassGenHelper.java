@@ -3103,10 +3103,34 @@ public class ClassGenHelper {
         methodFormals.add(0, IntType.v()); // for calling Disjunct.addBindings...
         
         if(varCount == 0) {
-            // if we have no variables, we simply return the contents of our current
-            // disjunct set
-            doReturn(getNewObject(setClass, singleCollectionType, 
-                    getFieldLocal(thisLocal, "disjuncts", setType)));
+            // if the symbol binds no variables, we simply return the contents of our current
+            // disjunct set. We may still be indexing, however..
+
+        		Stmt labelNoIndexing = getNewLabel();
+            
+            	Map depthToLabel = addIndLookupSwitch(onState, labelNoIndexing, false);
+            	
+            	for(Iterator keyIt = depthToLabel.keySet().iterator(); keyIt.hasNext(); ) {
+            		// In the indexing case, the result is the union of all sets in the indexed mapping.
+            		Integer key = (Integer)keyIt.next();
+            		doAddLabel((Stmt)depthToLabel.get(key));
+            		IterationContext context = new IterationContext(key.intValue(), 
+            				getFieldLocal(thisLocal, "indexedDisjuncts", mapType));
+            		
+            		Local result = getNewObject(setClass);
+            		
+            		startIteration(context);
+            		doMethodCall(result, "addAll", singleCollectionType, BooleanType.v(), 
+            				getRelevantSet(context));
+            		endIteration(context, false);
+            		
+            		doReturn(result);
+            	}
+            	
+            	doAddLabel(labelNoIndexing);
+            	// In the non-indexing case, the result is this.disjuncts
+            	doReturn(getNewObject(setClass, singleCollectionType, 
+            			getFieldLocal(thisLocal, "disjuncts", setType)));
         } else {
             // Create locals for all the parameters
             List parameterLocals = new LinkedList();
