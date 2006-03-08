@@ -8,12 +8,10 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeConstructorDecl.getConstructorInvocation().hostType() = hostType();
   eq IntertypeConstructorDecl.getParameter(int index).hostType() = hostType();
 
-  eq IntertypeConstructorDecl.getConstructorInvocation().lookupConstructor(ConstructorAccess a) = hostType().lookupConstructor(a);
-  eq IntertypeConstructorDecl.getBlock().lookupConstructor(ConstructorAccess a) = hostType().lookupConstructor(a);
-  eq IntertypeConstructorDecl.getConstructorInvocation().lookupSuperConstructor(ConstructorAccess a) = hostType().lookupSuperConstructor(a);
-  eq IntertypeConstructorDecl.getBlock().lookupSuperConstructor(ConstructorAccess a) = hostType().lookupSuperConstructor(a);
-
-
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupConstructor() = hostType().constructors();
+  eq IntertypeConstructorDecl.getBlock().lookupConstructor() = hostType().constructors();
+  eq IntertypeConstructorDecl.getConstructorInvocation().lookupSuperConstructor() = hostType().lookupSuperConstructor();
+  eq IntertypeConstructorDecl.getBlock().lookupSuperConstructor() = hostType().lookupSuperConstructor();
 
   // Hack to avoid multiple declared intertype constructors
   public ConstructorDecl AspectDecl.lookupConstructor(ConstructorDecl signature) {
@@ -23,26 +21,32 @@ aspect IntertypeMethodNameAnalysis {
     return signature;
   }
 
-  refine LookupMethod public ArrayList TypeDecl.findConstructor(List argList, TypeDecl typeDecl) {
-    ArrayList maxSpecific = LookupMethod.TypeDecl.findConstructor(argList, typeDecl);
-    for(Iterator iter = introducedConstructors().iterator(); iter.hasNext(); ) {
-      ConstructorDecl decl = (ConstructorDecl)iter.next();
-      if(decl.compatible(argList) && decl.accessibleFrom(typeDecl)) {
-        if(maxSpecific.isEmpty()) {
-          maxSpecific.add(decl);
-        }
-        else {
-          if(decl.moreSpecificThan((ConstructorDecl)maxSpecific.get(0))) {
-            maxSpecific.clear();
-            maxSpecific.add(decl);
-          }
-          else if(!((ConstructorDecl)maxSpecific.get(0)).moreSpecificThan(decl)) {
-            maxSpecific.add(decl);
-          }
-        }
+  refine LookupConstructor eq TypeDecl.constructors() {
+    Collection c = new ArrayList();
+    c.addAll(introducedConstructors());
+    for(int i = 0; i < getNumBodyDecl(); i++) {
+      if(getBodyDecl(i) instanceof ConstructorDecl) {
+        c.add(getBodyDecl(i));
       }
     }
-    return maxSpecific;
+    if(c.isEmpty() && isClassDecl()) {
+      Modifiers m = new Modifiers();
+      if(isPublic()) m.addModifier(new Modifier("public"));
+      if(isProtected()) m.addModifier(new Modifier("protected"));
+      if(isPrivate()) m.addModifier(new Modifier("private"));
+      addBodyDecl(
+          new ConstructorDecl(
+            m,
+            new IdDecl(name()),
+            new List(),
+            new List(),
+            new Opt(),
+            new Block()
+          )
+      );
+      c.add(getBodyDecl(getNumBodyDecl()-1));
+    }
+    return c;
   }
 
   protected void IntertypeConstructorDecl.collectIntertypeDecls(HashMap map) {

@@ -1,7 +1,7 @@
 import java.util.*;
 
 aspect ASTGrammar {
-  eq ASTDecl.isStatic() = true;
+  eq ASTDecl.isStatic() = !isTopLevelType();
 
   syn String ASTChild.name() = getName();
   syn TypeDecl ASTChild.type() = hasType() ? getType().type() : extractSingleType(lookupType(name()));
@@ -51,7 +51,7 @@ aspect ASTGrammar {
     );
   }
 
-  inh TypeCollection ASTChild.lookupType(String name);
+  inh SimpleSet ASTChild.lookupType(String name);
 
   syn lazy Collection ASTDecl.components() {
     ArrayList list = new ArrayList();
@@ -88,7 +88,9 @@ aspect ASTGrammar {
   public ClassDecl ASTDecl.superclass() {
     if(hasSuperClassAccess() && !isCircular() && getSuperClassAccess().type().isClassDecl())
       return (ClassDecl)getSuperClassAccess().type();
-    return (ClassDecl)extractSingleType(lookupType("ASTNode"));
+    ClassDecl classDecl = (ClassDecl)extractSingleType(lookupType("ASTNode"));
+    if(classDecl != null) return classDecl;
+    return (ClassDecl)typeObject();
   }
 
   eq ASTDecl.noConstructor() = false;

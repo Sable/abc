@@ -926,7 +926,7 @@ aspect GenerateSynCode {
     );
   }
   
-  inh TypeCollection InhDecl.lookupType(String name);
+  inh SimpleSet InhDecl.lookupType(String name);
   syn lazy TypeDecl InhDecl.typeASTNode() = extractSingleType(lookupType("ASTNode"));
   public List InhDecl.createDefiningInterfaceParameterList() {
     List list = new List();

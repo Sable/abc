@@ -451,10 +451,10 @@ aspect Rewrite {
 
 
   eq RewriteListDecl.getChildName().lookupMethod(String name) = 
-    getParentType().type().remoteLookupMethod(name);
+    getParentType().type().memberMethods(name);
 
   eq RewriteDecl.getRewrite(int index).lookupMethod(String name) = 
-    getAccess().type().remoteLookupMethod(name);
+    getAccess().type().memberMethods(name);
 
   eq RewriteDecl.getRewrite(int index).hostType() = getAccess().type();
 }

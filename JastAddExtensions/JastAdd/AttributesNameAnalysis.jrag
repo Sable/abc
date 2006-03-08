@@ -191,14 +191,12 @@ aspect JastAdd {
   eq AttributeEq.getParameter().lookupVariable(String name) = localLookupVariable(name);
   eq InhEq.getChildParameter().lookupVariable(String name) = localLookupVariable(name);
 
-  syn lazy Collection AttributeEq.localLookupVariable(String name) {
+  syn lazy SimpleSet AttributeEq.localLookupVariable(String name) {
     for(int i = 0; i < getNumParameter(); i++) {
       if(getParameter(i) instanceof Variable) {
         Variable v = (Variable)getParameter(i);
         if(v.name().equals(name)) {
-          Collection list = newVariableList();
-          list.add(v);
-          return list;
+          return SimpleSet.emptySet.add(v);
         }
       }
     }
@@ -210,9 +208,7 @@ aspect JastAdd {
       if(getChildParameter(i) instanceof Variable) {
         Variable v = (Variable)getChildParameter(i);
         if(v.name().equals(name)) {
-          Collection list = newVariableList();
-          list.add(v);
-          return list;
+          return SimpleSet.emptySet.add(v);
         }
       }
     }
@@ -220,13 +216,13 @@ aspect JastAdd {
   }
 
   eq AttributeEq.getBlock().lookupMethod(String name) {
-    MethodCollection c = introducedType().remoteLookupMethod(name);
+    Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;
     return lookupMethod(name);
   }
   eq SynDecl.getBlock().lookupMethod(String name) {
-    MethodCollection c = introducedType().remoteLookupMethod(name);
+    Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;
     return lookupMethod(name);

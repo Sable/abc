@@ -4,6 +4,8 @@ import java.util.*;
 import java.io.*;
 import parser.*;
 
+import AST.List;
+
 public class JastAdd {
   public static void main(String args[]) {
     if(!compile(args))
@@ -24,6 +26,7 @@ public class JastAdd {
 
     program.addKeyOption("-no_cache_cycle");
     program.addKeyOption("-no_visit_check");
+    program.addKeyValueOption("-package");
     
     program.addOptions(args);
     Collection files = program.files();
@@ -43,17 +46,40 @@ public class JastAdd {
       try {
         Reader reader = new FileReader(name);
         JavaScanner scanner = new JavaScanner(new UnicodeEscapes(new BufferedReader(reader)));
-        CompilationUnit unit = ((Program)parser.parse(scanner)).getCompilationUnit(0);
-        unit.setFromSource(true);
-        unit.setRelativeName(name);
-        unit.setPathName(".");
-      	reader.close();
-        program.addCompilationUnit(unit);
+        if(name.endsWith(".java") || name.endsWith(".jrag") || name.endsWith(".jadd")) {
+          CompilationUnit unit = ((Program)parser.parse(scanner)).getCompilationUnit(0);
+          unit.setFromSource(true);
+          unit.setRelativeName(name);
+          unit.setPathName(".");
+          program.addCompilationUnit(unit);
+        }
+        else if(name.endsWith(".ast")) {
+          scanner.enterJastAdd();
+          CompilationUnit cu = (CompilationUnit)parser.parse(scanner, JavaParser.AltGoals.ast_file);
+          scanner.previousState();
+          List packageList = cu.getPackageDeclList();
+          List importList = cu.getImportDeclList();
+          for(int i = 0; i < cu.getTypeDeclList().getNumChild(); i++) {
+            TypeDecl typeDecl = (TypeDecl)cu.getTypeDeclList().getChildNoTransform(i);
+            CompilationUnit unit = new CompilationUnit(
+              (List)packageList.fullCopy(),
+              (List)importList.fullCopy(),
+              new List().add(typeDecl)
+            );
+            unit.setFromSource(true);
+            unit.setRelativeName(name);
+            unit.setPathName(".");
+            program.addCompilationUnit(unit);
+          }
+        }
+        reader.close();
       } catch (Error e) {
         System.err.println(name + ": " + e.getMessage());
+        e.printStackTrace();
         return false;
       } catch (RuntimeException e) {
         System.err.println(name + ": " + e.getMessage());
+        e.printStackTrace();
         return false;
       } catch (IOException e) {
         System.err.println("error: " + e.getMessage());

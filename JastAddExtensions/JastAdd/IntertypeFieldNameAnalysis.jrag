@@ -17,18 +17,18 @@ aspect IntertypeFieldNameAnalysis {
   //eq IntertypeFieldDeclaration.getInit().hostType() = hostType();
   
   eq IntertypeFieldDeclaration.getInit().lookupVariable(String name) {
-    Collection c = introducedType().lookupMemberField(name);
-    if(!c.isEmpty())
-      return c;
+    SimpleSet set = introducedType().lookupMemberField(name);
+    if(!set.isEmpty())
+      return set;
     return lookupVariable(name);
   }
 
   refine LookupVariable eq TypeDecl.localFields(String name) {
-    Collection fields = LookupVariable.TypeDecl.localFields(name);
+    SimpleSet fields = LookupVariable.TypeDecl.localFields(name);
     for(Iterator iter = introducedFields().iterator(); iter.hasNext(); ) {
       FieldDeclaration f = (FieldDeclaration)iter.next();
       if(f.name().equals(name))
-        fields.add(f);
+        fields = fields.add(f);
     }
     return fields;
   }

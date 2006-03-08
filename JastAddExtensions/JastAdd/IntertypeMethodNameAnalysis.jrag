@@ -12,30 +12,24 @@ aspect IntertypeMethodNameAnalysis {
   eq IntertypeMethodDecl.getBlock().hostType() = hostType();
   eq IntertypeMethodDecl.getParameter(int index).hostType() = hostType();
   eq IntertypeMethodDecl.getBlock().lookupMethod(String name) {
-    MethodCollection c = introducedType().remoteLookupMethod(name);
+    Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;
     return lookupMethod(name);
   }
 
   // override behavior to allow multiple methods with the same signature (but in different types)
-  syn MethodCollection AspectDecl.localLookupMethod(MethodDecl signature) {
-    String name = signature.name();
-    MethodCollection maxSpecific = MethodCollection.emptyCollection();
-    maxSpecific = maxSpecific.add(signature);
-    return maxSpecific;
+  syn SimpleSet AspectDecl.localLookupMethod(MethodDecl signature) {
+    return SimpleSet.emptySet.add(signature);
   }
   
-  refine LookupMethod eq TypeDecl.localMethods(String name) {
-    Collection methods = LookupMethod.TypeDecl.localMethods(name);
-    if(!methods.isEmpty()) return methods;
-    methods = new ArrayList();
+  refine LookupMethod eq TypeDecl.localMethodsSignatureMap() {
+    HashMap map = LookupMethod.TypeDecl.localMethodsSignatureMap();
     for(Iterator iter = introducedMethods().iterator(); iter.hasNext(); ) {
-      MethodDecl m = (MethodDecl)iter.next();
-      if(m.name().equals(name))
-        methods.add(m);
+      MethodDecl decl = (MethodDecl)iter.next();
+      map.put(decl.signature(), decl);
     }
-    return methods;
+    return map;
   }
 
   syn lazy Collection AspectDecl.localIntroductionMethods() {

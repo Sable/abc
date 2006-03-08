@@ -1,10 +1,43 @@
+%goal goal ;
+%goal ast_file ;
+
+
 TypeDecl type_declaration =
   tree_node_declaration                                {: return tree_node_declaration; :}
   ;
 
+
 BodyDecl aspect_body_declaration =
   tree_node_declaration                                {: return new MemberClassDecl(tree_node_declaration); :}
   ;
+
+CompilationUnit ast_file =
+    package_declaration.p import_declarations.i ast_declarations.t {: return new CompilationUnit(p, i, t); :}
+  |                       import_declarations.i ast_declarations.t {: return new CompilationUnit(new List(), i, t); :}
+  | package_declaration.p                       ast_declarations.t {: return new CompilationUnit(p, new List(), t); :}
+  |                                             ast_declarations.t {: return new CompilationUnit(new List(), new List(), t); :}
+  | package_declaration.p import_declarations.i                     {: return new CompilationUnit(p, i, new List()); :}
+  |                       import_declarations.i                     {: return new CompilationUnit(new List(), i, new List()); :}
+  | package_declaration.p                                           {: return new CompilationUnit(p, new List(), new List()); :}
+  |                                                                 {: return new CompilationUnit(new List(), new List(), new List()); :}
+  ;
+
+List ast_declarations =
+    ast_declaration {: return new List().add(ast_declaration); :}
+  | ast_declarations ast_declaration {: return ast_declarations.add(ast_declaration); :}
+  ;
+
+ASTDecl ast_declaration =
+    IDENTIFIER SEMICOLON 
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(), new List()); :}
+  | IDENTIFIER COLON name SEMICOLON 
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
+  | IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
+  | IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
+  ;
+  
 
 ASTDecl tree_node_declaration =
     modifiers AST IDENTIFIER SEMICOLON 

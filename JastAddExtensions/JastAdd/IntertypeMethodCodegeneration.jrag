@@ -77,19 +77,22 @@ aspect IntertypeMethodCodegeneration {
   // change name binding to search for methods in introducedType in IntroducedMethodDecl body
   syn TypeDecl IntroducedMethodDecl.introducedType() = getIntroducedType();
   eq IntroducedMethodDecl.getBlock().lookupMethod(String name) {
-    MethodCollection c = introducedType().remoteLookupMethod(name);
+    Collection c = introducedType().memberMethods(name);
     if(!c.isEmpty())
       return c;
     return lookupMethod(name);
   }
+  inh Collection BodyDecl.lookupMethod(String name);
+  
   eq IntroducedMethodDecl.getBlock().lookupVariable(String name) {
-    Collection c = introducedType().lookupMemberField(name);
-    if(!c.isEmpty())
-      return c;
-    Variable v = parameterDeclaration(name);
-    if(v != null) return createVariableCollection(v);
+    SimpleSet set = introducedType().lookupMemberField(name);
+    if(!set.isEmpty())
+      return set;
+    SimpleSet v = parameterDeclaration(name);
+    if(!v.isEmpty()) return v;
     return lookupVariable(name);
   }
+  
   eq IntroducedMethodDecl.getBlock().hostType() = introducedType();
   eq IntroducedMethodDecl.getParameter(int index).hostType() = introducedType();
 
