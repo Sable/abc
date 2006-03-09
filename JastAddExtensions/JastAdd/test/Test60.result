@@ -1,4 +1,4 @@
-58, Circular: no stack of strongly connected components
+60, Circular: inherited attrs, no stack of strongly connected components
 Order: c1 before c2
 c1_a() = 5
 c2_a() = 2

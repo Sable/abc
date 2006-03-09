@@ -26,6 +26,7 @@ public class JastAdd {
 
     program.addKeyOption("-no_cache_cycle");
     program.addKeyOption("-no_visit_check");
+    program.addKeyOption("-no_component_check");
     program.addKeyValueOption("-package");
     
     program.addOptions(args);

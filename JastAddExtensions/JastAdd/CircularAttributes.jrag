@@ -10,12 +10,18 @@ aspect CircularAttributes {
     }
     
     List statements = new List();
+    
+    
     if(isLazy()) {
       // build structure that hashes parameters to same value
       addParameterStructure(statements);
       // return computed value if stored in cache
       addComputedCheck(statements, typeDecl);
     }
+    
+    if (!Program.hasOption("-no_component_check"))
+      addComponentCheck(statements,typeDecl);
+    
     // lazily add bottom value initialization (may depend on other lazy attributes)
     addBottomInit(statements, typeDecl);
     // if not in cycle then start new cyclic evaluation phase
@@ -48,12 +54,18 @@ aspect CircularAttributes {
     }
     
     List statements = new List();
+    
+    
     if(isLazy()) {
       // build structure that hashes parameters to same value
       addParameterStructure(statements);
       // return computed value if stored in cache
       addComputedCheck(statements, typeDecl);
     }
+    
+    if (!Program.hasOption("-no_component_check"))
+      addComponentCheck(statements,typeDecl);
+      
     // lazily add bottom value initialization (may depend on other lazy attributes)
     addBottomInit(statements, typeDecl);
     // if not in cycle then start new cyclic evaluation phase
@@ -75,6 +87,63 @@ aspect CircularAttributes {
         new Opt(new Block(statements))
       )
     );
+  }
+  
+  protected void AttributeDecl.addComponentCheck(List list, TypeDecl typeDecl) {
+    List parameterList = new List();
+    parameterList.add(
+      new ThisAccess(
+        new IdUse("this")
+      )
+    );
+    parameterList.add(new StringLiteral(name()));
+    if (getNumParameter() == 0)
+    	  parameterList.add(new NullLiteral("null"));	
+    	else
+    	  parameterList.add(new VarAccess("parameters$"));
+    Expr cond;
+    if (getNumParameter() == 0) {
+      cond = 
+  	  	new AndLogicalExpr(
+  	  		fieldVisitedFlag(typeDecl).createQualifiedBoundAccess(),
+  	  		new LogNotExpr(
+  	  			new MethodAccess(
+  	  				"containsEvalEntry",
+  	  				parameterList
+  	  			)
+  	  		)
+  	 	 );
+  	 }
+  	 else {
+  	   cond =
+  	     new AndLogicalExpr(
+  	       fieldVisitedFlag(typeDecl).createQualifiedBoundAccess().qualifiesAccess(
+  	         new MethodAccess(
+  	           "contains",
+  	           new List().add(new VarAccess("parameters$"))
+  	         )
+  	       ),
+  	       new LogNotExpr(
+  	  			new MethodAccess(
+  	  				"containsEvalEntry",
+  	  				parameterList
+  	  			)
+  	  	   )
+  	     );
+  	 }
+  	  list.add(
+  	    new IfStmt(
+  	    	  cond,
+  	    	  new ThrowStmt(
+  	    	    new ClassInstanceExpr(
+  	    	      lookupType("java.lang","RuntimeException").createQualifiedAccess(),
+  	    	      new List().add(
+  	    	        new StringLiteral("XXX")
+  	    	      )
+  	    	    )
+  	    	  )
+  	    )
+  	  );
   }
 
   protected void AttributeDecl.addInCircleComputation(List inCircleStmt, TypeDecl typeDecl, MethodDecl targetMethod) {
@@ -99,6 +168,10 @@ aspect CircularAttributes {
     addSetIN_CIRCLE(list);
     // visited = true;
     addSetVisited(list, typeDecl);
+    
+    if (!Program.hasOption("-no_component_check"))
+      addAddToComponent(list,typeDecl);
+    
     // do { DO_BLOCK } while(CHANGE);
     list.add(
       new DoStmt(
@@ -130,6 +203,28 @@ aspect CircularAttributes {
     addCheckUpdateChange(doList, typeDecl);
     // value = new_value;
     addUpdateValue(doList, typeDecl);
+  }
+  
+  protected void AttributeDecl.addAddToComponent(List list, TypeDecl typeDecl) {
+    List paramList = new List();
+    paramList.add(
+      new ThisAccess(
+        new IdUse("this")
+      )
+    );
+    paramList.add(new StringLiteral(name()));
+    if (getNumParameter() == 0)
+      paramList.add(new NullLiteral("null"));
+    	else
+    	  paramList.add(new VarAccess("parameters$"));
+    list.add(
+      new ExprStmt(
+    	    new MethodAccess(
+    	  	  "addEvalEntry",
+    	  	  paramList
+    	    )
+    	  )
+    );
   }
   
   protected void AttributeDecl.addNotVisitedComputation(List notVisitedStmt, TypeDecl typeDecl, MethodDecl targetMethod) {
@@ -173,6 +268,10 @@ aspect CircularAttributes {
       // if(LAST_CYCLE) { computed = true; return compute( ... ); }
       addCheckCacheCycle(list, typeDecl, targetMethod);
     // visited = true;
+    
+    if (!Program.hasOption("-no_component_check"))
+      addAddToComponent(list,typeDecl);
+    
     addSetVisited(list, typeDecl);
     // new_value = compute(this, p0, ... , pN-1);
     addComputeNewValue(list, targetMethod);

@@ -1,6 +1,6 @@
 package test;
 
-public aspect Test58 {
+public aspect Test59 {
 	ast A;
 	
 	syn int A.c2_a() circular [1]  {
@@ -30,10 +30,6 @@ public aspect Test58 {
 		return c1_a();
 	}
 	
-	syn int A.x(boolean b, String y) circular [1] {
-		return 1;
-	}
-	
 	public int A.c1_acount;
 	public int A.c1_bcount;
 	public int A.c3count;
@@ -41,7 +37,7 @@ public aspect Test58 {
 	public int A.c2_bcount;
 	
 	public static void main(String[] args) {
-		System.out.println("58, Circular: no stack of strongly connected components");
+		System.out.println("59, Circular: stack strongly connected components");
 		A root = new A();
     System.out.println("Order: c1 before c2");
 		System.out.println("c1_a() = " + root.c1_a());

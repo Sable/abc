@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 import parser.*;
 
-public class PrettyPrintTest58 {
+public class PrettyPrintTest56 {
 
   public static void main(String args[]) {
     Program program = new Program();
@@ -24,7 +24,7 @@ public class PrettyPrintTest58 {
     files.add("test/ASTNode.java");
     files.add("test/Opt.java");
     files.add("test/List.java");
-    files.add("test/Test58.java");
+    files.add("test/Test56.java");
     
     JavaParser parser = new JavaParser();
     for(Iterator iter = files.iterator(); iter.hasNext(); ) {

@@ -178,9 +178,9 @@ aspect ASTGrammar {
       )
     );
 
-    // add constructor with no arguments for backward compability with jjtree
+    // add constructor with a single int argument for backward compability with jjtree
 
-    if(list.getNumChild() > 0) {
+    //if(list.getNumChild() > 0) {
     statements = new List();
     index = 0;
     for(Iterator iter = components().iterator(); iter.hasNext(); index++) {
@@ -200,6 +200,7 @@ aspect ASTGrammar {
         );
       }
     }
+    
     /*
     if(isRootNode()) {
       statements.add(
@@ -214,7 +215,7 @@ aspect ASTGrammar {
       new ConstructorDecl(
         new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
         new IdDecl(name()),
-        new List(),
+        new List().add(new ParameterDeclaration(new TypeAccess("int"), "kind")),
         new List(),
         new Opt(),
         new Block(
@@ -223,7 +224,7 @@ aspect ASTGrammar {
       )
     );
   
-    }
+    //}
     return bodyDeclList;
   }
 

@@ -102,12 +102,14 @@ aspect GenerateSynCode {
     if(isLazy())
       addComputedCheck(statements, typeDecl);
       
-    addInterruptedCircleDeclaration(statements);
+    if (!Program.hasOption("-no_component_check")) 
+      addInterruptedCircleDeclaration(statements);
     
     addCheckVisited(statements, typeDecl);
     addSetVisited(statements, typeDecl);
     
-    addCheckInterruptCircle(statements);
+    if (!Program.hasOption("-no_component_check"))
+      addCheckInterruptCircle(statements);
     
     if(isLazy())
       addCacheComputeCall(statements, typeDecl, aspectMethod);
@@ -120,7 +122,8 @@ aspect GenerateSynCode {
     
     addClearVisited(statements, typeDecl);
     
-    addClearInterruptedCircle(statements);
+    if (!Program.hasOption("-no_component_check"))
+    	  addClearInterruptedCircle(statements);
     
     addReturnStmt(statements, typeDecl);
 
@@ -167,7 +170,7 @@ aspect GenerateSynCode {
   	  )
   	);
   	// circularEvalState.push(new BOOLEAN(CHANGE)); 	
-  	ifStatements.add(
+  	/*ifStatements.add(
   	  new ExprStmt(
   	    new VarAccess("circularEvalState").qualifiesAccess(
   	      new MethodAccess(
@@ -182,6 +185,14 @@ aspect GenerateSynCode {
                )
              )
   	      )
+  	    )
+  	  )
+  	);*/
+  	ifStatements.add(
+  	  new ExprStmt(
+  	    new MethodAccess(
+  	      "pushEvalStack",
+  	      new List()
   	    )
   	  )
   	);
@@ -220,6 +231,14 @@ aspect GenerateSynCode {
   	    popStack
   	  )
   	);*/
+  	ifStatements.add(
+  	  new ExprStmt(
+  	    new MethodAccess(
+  	      "popEvalStack",
+  	      new List()
+  	    )
+  	  )
+  	);
   	list.add(
   	  new IfStmt(
   	    new VarAccess("interruptedCircle"),
@@ -247,6 +266,9 @@ aspect GenerateSynCode {
       addParameterStructure(statements);
     if(isLazy())
       addComputedCheck(statements, typeDecl);
+      
+    if (!Program.hasOption("-no_component_check")) 
+      addInterruptedCircleDeclaration(statements);
     
     if(!Program.hasOption("-no_visit_check")) {
       // if(visited) throw new RuntimeException("Circular definition...");
@@ -254,6 +276,11 @@ aspect GenerateSynCode {
       // visited = true;
       addSetVisited(statements, typeDecl);
     }
+    
+    
+      
+    if (!Program.hasOption("-no_component_check"))
+      addCheckInterruptCircle(statements);
     
     if(isLazy())
       addCacheComputeCall(statements, typeDecl);
@@ -267,6 +294,9 @@ aspect GenerateSynCode {
     if(!Program.hasOption("-no_visit_check"))
       // visited = false;
       addClearVisited(statements, typeDecl);
+      
+     if (!Program.hasOption("-no_component_check"))
+    	  addClearInterruptedCircle(statements);
     
     addReturnStmt(statements, typeDecl);
 
@@ -621,7 +651,7 @@ aspect GenerateSynCode {
     return new CastExpr(createQualifiedAccess(), expr);
   }
 
-  protected  Expr TypeDecl.createUnbox(TypeDecl typeDecl, String methodName, Expr expr) {
+  protected  static Expr TypeDecl.createUnbox(TypeDecl typeDecl, String methodName, Expr expr) {
     return new ParExpr(
       new CastExpr(
         typeDecl.createQualifiedAccess(),

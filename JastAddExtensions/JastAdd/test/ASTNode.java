@@ -1,6 +1,7 @@
 package test;
 
 import java.util.Stack;
+import java.util.*;
 
 public class ASTNode extends beaver.Symbol  implements Cloneable {
   public ASTNode() {
@@ -10,12 +11,73 @@ public class ASTNode extends beaver.Symbol  implements Cloneable {
   static public boolean IN_CIRCLE = false;
   static public boolean CHANGE = false;
   static public boolean LAST_CYCLE = false;
+  static public Set circularEvalSet = new HashSet();
+  static public Stack circularEvalStack = new Stack();
   
-  static public Stack circularEvalState = new Stack();
+  static class CircularEvalEntry {
+  	ASTNode node;
+  	String attrName;
+  	Object parameters;
+  	
+  	public CircularEvalEntry(ASTNode node, String attrName, Object parameters) {
+  		this.node = node;
+  		this.attrName = attrName;
+  		this.parameters = parameters;
+  	}
+  	
+  	public boolean equals(Object rhs) {
+  		CircularEvalEntry s = (CircularEvalEntry) rhs;
+  		if (parameters == null && s.parameters == null)
+  			return node == s.node && attrName.equals(s.attrName);
+  		else if (parameters != null && s.parameters != null)
+  			return node == s.node && attrName.equals(s.attrName) && parameters.equals(s.parameters);
+  		else
+  			return false;
+  	} 
+  
+  	
+  	public int hashCode() {
+  		return node.hashCode();
+  	}
+  	
+  	
+  }
+  
+  public void addEvalEntry(ASTNode node, String attrName, Object parameters) {
+  	circularEvalSet.add(new CircularEvalEntry(node,attrName,parameters));
+  }
+  
  
   
+  public boolean containsEvalEntry(ASTNode node, String attrName, Object parameters) {
+  	return circularEvalSet.contains(new CircularEvalEntry(node,attrName,parameters));
+  }
   
-
+  
+  
+  static class CircularStackEntry {
+  	Set circularEvalSet;
+  	boolean changeValue;
+  	
+  	public CircularStackEntry(Set set, boolean change) {
+  		circularEvalSet = set;
+  		changeValue = change;
+  	}
+  }
+  
+  public void pushEvalStack() {
+  	circularEvalStack.push(new CircularStackEntry(circularEvalSet, CHANGE));
+  	circularEvalSet = new HashSet();
+  	CHANGE = false;
+  }
+  
+  public void popEvalStack() {
+  	CircularStackEntry c = (CircularStackEntry) circularEvalStack.pop();
+  	circularEvalSet = c.circularEvalSet;
+  	CHANGE = c.changeValue;
+  }
+ 
+  
   public static int boundariesCrossed = 0;
 
   static class State {

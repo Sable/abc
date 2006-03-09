@@ -1,0 +1,3 @@
+Circular: two mutually circular paramterized attributes
+a("x") == true: true
+a(1) == 1: true
