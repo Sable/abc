@@ -36,6 +36,14 @@ ASTDecl ast_declaration =
     {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
   | IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
     {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public"))), new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
+  | ABSTRACT IDENTIFIER SEMICOLON 
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(), new List()); :}
+  | ABSTRACT IDENTIFIER COLON name SEMICOLON 
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(name), new List()); :}
+  | ABSTRACT IDENTIFIER ASTEQ ast_child_list_opt SEMICOLON
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(), ast_child_list_opt); :}
+  | ABSTRACT IDENTIFIER COLON name ASTEQ ast_child_list_opt SEMICOLON
+    {: return new ASTDecl(new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))), new IdDecl(IDENTIFIER), new Opt(name), ast_child_list_opt); :}
   ;
   
 

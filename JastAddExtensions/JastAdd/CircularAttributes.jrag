@@ -31,7 +31,7 @@ aspect CircularAttributes {
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
         new IdDecl(name()),
-        (List)getParameterList().fullCopy(),
+        copyParameterList(getParameterList()),
         new List(),
         new List(),
         new Opt(new Block(statements))
@@ -69,7 +69,7 @@ aspect CircularAttributes {
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
         new IdDecl(name()),
-        (List)getParameterList().fullCopy(),
+        copyParameterList(getParameterList()),
         new List(),
         new List(),
         new Opt(new Block(statements))

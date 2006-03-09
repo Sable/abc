@@ -4,7 +4,7 @@ aspect GenerateSynCode {
     if(hasEqBody()) {
       // public type name(p0, ..., PN-1) { ... }
       List modifierList = (List)getModifiers().getModifierList().fullCopy();
-      modifierList.add(new Modifier("static"));
+      modifierList.add(new Modifier("static")).add(new Modifier("public"));
       MethodDecl aspectMethod =
           new IntroducedMethodDecl(
             new Modifiers(modifierList),
@@ -29,7 +29,7 @@ aspect GenerateSynCode {
           new Modifiers(new List().add(new Modifier("public")).add(new Modifier("abstract"))),
           type().createQualifiedAccess(),
           new IdDecl(name()),
-          (List)getParameterList().fullCopy(),
+          copyParameterList(getParameterList()),
           new List(),
           new List(),
           new Opt()
@@ -48,7 +48,7 @@ aspect GenerateSynCode {
   public void SynEq.generateIntertypeDecls() {
     SynDecl synDecl = decl();
     List modifierList = (List)synDecl.getModifiers().getModifierList().fullCopy();
-    modifierList.add(new Modifier("static"));
+    modifierList.add(new Modifier("static")).add(new Modifier("public"));
     MethodDecl aspectMethod =
       new IntroducedMethodDecl(
         new Modifiers(modifierList),
@@ -132,7 +132,7 @@ aspect GenerateSynCode {
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
         new IdDecl(name()),
-        (List)getParameterList().fullCopy(),
+        copyParameterList(getParameterList()),
         new List(),
         new List(),
         new Opt(new Block(statements))
@@ -279,7 +279,7 @@ aspect GenerateSynCode {
         new Modifiers(new List().add(new Modifier("public"))),
         type().createQualifiedAccess(),
         new IdDecl(name()),
-        (List)getParameterList().fullCopy(),
+        copyParameterList(getParameterList()),
         new List(),
         new List(),
         new Opt(new Block(statements))
@@ -770,7 +770,40 @@ aspect GenerateSynCode {
     return s.toString();
   }
 
+
+  private HashSet ClassDecl.addImplementedInterface = null;
+  public void ClassDecl.addImplementedInterface(String name) {
+    if(addImplementedInterface == null)
+      addImplementedInterface = new HashSet();
+    if(addImplementedInterface.contains(name))
+      return;
+    addImplementedInterface.add(name);
+    addImplements(
+      typeASTNode().createQualifiedAccess().qualifiesAccess(
+        new TypeAccess(name)
+      )
+    );
+  }
+  syn lazy TypeDecl TypeDecl.typeASTNode() = extractSingleType(lookupType("ASTNode"));
+  
+  private HashMap TypeDecl.addMethod = null;
+  public MethodDecl TypeDecl.addMethod(String name, MethodDecl m) {
+    if(addMethod == null)
+      addMethod = new HashMap();
+    if(addMethod.containsKey(name))
+      return (MethodDecl)addMethod.get(name);
+    addMethod.put(name, m);
+    addBodyDecl(m);
+    return (MethodDecl)getBodyDecl(getNumBodyDecl()-1);
+  }
+  
+
+  private boolean InhDecl.addInterfaceTagging = false;
   public void InhDecl.addInterfaceTagging() {
+    if(addInterfaceTagging)
+      return;
+    addInterfaceTagging = true;
+    
     Map map = new HashMap();
     for(Iterator iter = decls().iterator(); iter.hasNext(); ) {
       InhEq inhEq = (InhEq)iter.next();
@@ -786,11 +819,14 @@ aspect GenerateSynCode {
         ClassDecl classDecl = (ClassDecl)typeDecl;
 
         // Add implements tag
+        classDecl.addImplementedInterface(definingInterfaceName());
+        /*
         classDecl.addImplements(
-          hostAspect().createQualifiedAccess().qualifiesAccess(
+          typeASTNode().createQualifiedAccess().qualifiesAccess(
             new TypeAccess(definingInterfaceName())
           )
         );
+        */
 
         // statements in delegation method
         List statements = new List(); 
@@ -824,7 +860,8 @@ aspect GenerateSynCode {
               inhEq.introducedType()
             );
           
-          inhEq.hostType().addBodyDecl(methodDecl);
+          methodDecl = inhEq.hostType().addMethod(name() + "$" + inhEq.childName(), methodDecl);
+          //inhEq.hostType().addBodyDecl(methodDecl);
 
           // Add conditional delegation 
           List args = new List();
@@ -887,8 +924,8 @@ aspect GenerateSynCode {
         else {
           addDelegateToAncestorDefinition(statements);
         }
-        
-        classDecl.addBodyDecl(
+
+        classDecl.addMethod(definingInterfaceName(),
           new MethodDecl(
             new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
             type().createQualifiedAccess(),
@@ -937,9 +974,12 @@ aspect GenerateSynCode {
     return list;
   }
   
+
   // TODO: currently needs to update remote attributes after this operation
   protected void InhDecl.addDefiningInterface() {
-    hostAspect().addBodyDecl(
+    if(typeASTNode().firstDefiningInterfaceQuery(definingInterfaceName()))
+    typeASTNode().addBodyDecl(
+    //hostAspect().addBodyDecl(
       new MemberInterfaceDecl(
         new InterfaceDecl(
           new Modifiers(new List().add(new Modifier("public"))),
@@ -961,6 +1001,16 @@ aspect GenerateSynCode {
     );
   }
 
+  private HashSet TypeDecl.hasDefiningInterface = null;
+  public boolean TypeDecl.firstDefiningInterfaceQuery(String name) {
+    if(hasDefiningInterface == null)
+      hasDefiningInterface = new HashSet();
+    if(hasDefiningInterface.contains(name))
+      return false;
+    hasDefiningInterface.add(name);
+    return true;
+  }
+    
   protected void InhDecl.addSearchAncestorForEquation(List list) {
     // ASTNode n = getParent();
     // ASTNode caller = this;
@@ -995,7 +1045,7 @@ aspect GenerateSynCode {
           new ParExpr(
             new InstanceOfExpr(
               new VarAccess("n"),
-              hostAspect().createQualifiedAccess().qualifiesAccess(
+              typeASTNode().createQualifiedAccess().qualifiesAccess(
                 new TypeAccess(definingInterfaceName())
               )
             )
@@ -1048,7 +1098,7 @@ aspect GenerateSynCode {
     return 
       new ParExpr(
         new CastExpr(
-          hostAspect().createQualifiedAccess().qualifiesAccess(
+          typeASTNode().createQualifiedAccess().qualifiesAccess(
             new TypeAccess(definingInterfaceName())
           ),
           new VarAccess("n")

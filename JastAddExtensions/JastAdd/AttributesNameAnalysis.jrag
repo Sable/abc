@@ -1,5 +1,12 @@
 aspect JastAdd {
 
+  eq AttributeDecl.getBlock().hostType() = getTargetType().type();
+  eq AttributeDecl.getParameter().hostType() = getTargetType().type();
+  
+  eq AttributeEq.getBlock().hostType() = getHostType().type();
+  eq AttributeEq.getParameter().hostType() = getHostType().type();
+  eq InhEq.getChildParameter().hostType() = getHostType().type();
+
   eq AttributeDecl.getTypeAccess().nameType() = NameType.TYPE_NAME;
   eq AttributeDecl.getTargetType().nameType() = NameType.TYPE_NAME;
   eq AttributeEq.getHostType().nameType() = NameType.TYPE_NAME;
@@ -105,8 +112,14 @@ aspect JastAdd {
     return false;
   }
 
+  public void SynEq.nameCheck() {
+    super.nameCheck();
+    if(decl() == null)
+      error("Can not find declaration for attribute");
+  }
+
   syn boolean SynEq.matches(SynDecl decl) {
-    if(name().equals(decl.name()) && getNumParameter() != decl.getNumParameter())
+    if(!name().equals(decl.name()) || getNumParameter() != decl.getNumParameter())
       return false;
     for(int i = 0; i < getNumParameter(); i++)
       if(getParameter(i).type() != decl.getParameter(i).type())
@@ -131,6 +144,18 @@ aspect JastAdd {
 
   syn SynDecl SynEq.decl() {
     TypeDecl typeDecl = introducedType();
+    Collection c = typeDecl.memberMethods(name());
+    for(Iterator iter = c.iterator(); iter.hasNext(); ) {
+      MethodDecl m = (MethodDecl)iter.next();
+      if(m instanceof SynDecl) {
+        SynDecl decl = (SynDecl)m;
+        if(matches(decl))
+          return decl;
+      }
+    }
+    return null;
+    /*
+    
     while(typeDecl != null) {
       for(Iterator iter = lookupSynDecl(typeDecl, name()).iterator(); iter.hasNext(); ) {
         SynDecl synDecl = (SynDecl)iter.next();
@@ -148,6 +173,7 @@ aspect JastAdd {
         typeDecl = null;
     }
     return null;
+    */
   } 
 
   syn TypeDecl AttributeEq.introducedType() = getHostType().type();   // type in which this equation is valid

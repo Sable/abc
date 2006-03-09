@@ -21,8 +21,12 @@ aspect ASTGrammar {
   eq ASTOptionalChild.parameterType() = extractSingleType(lookupType("Opt"));
 
   syn ASTChild InhEq.child() {
-    if(introducedType() instanceof ASTDecl)
-      return ((ASTDecl)introducedType()).lookupChild(childName());
+    if(introducedType() instanceof ASTDecl) {
+      ASTChild child = ((ASTDecl)introducedType()).lookupChild(childName());
+      if(child != null)
+        return child;
+      throw new Error("Can not find child for equation " + errorPrefix());
+    }
     return null;
   }
 

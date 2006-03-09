@@ -5,6 +5,7 @@ aspect IntertypeMethodCodegeneration {
   // the delegation methods are needed to give the desired semantics for instance methods
   // the IntroducedMethodDecl node type is used to specialize name analysis
   public void IntertypeMethodDecl.generateIntertypeDecls() {
+    super.generateIntertypeDecls();
     MethodDecl aspectMethod = createAspectMethod();
     hostAspect().addBodyDecl(aspectMethod);
     MethodDecl delegateMethod = createDelegateMethod(aspectMethod);
@@ -37,6 +38,103 @@ aspect IntertypeMethodCodegeneration {
       introducedType()
     );
   }
+
+
+  public void MethodAccess.generateIntertypeDecls() {
+    super.generateIntertypeDecls();
+    if(hasPrevExpr() && prevExpr().isSuperAccess() && enclosingBodyDecl() instanceof IntroducedMethodDecl) {
+      SimpleSet maxSpecific = SimpleSet.emptySet;
+      for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
+        MethodDecl decl = (MethodDecl)iter.next();
+        if(applicable(decl) && accessible(decl)) {
+          if(maxSpecific.isEmpty())
+            maxSpecific = maxSpecific.add(decl);
+          else {
+            if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
+              maxSpecific = SimpleSet.emptySet.add(decl);
+            else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
+              maxSpecific = maxSpecific.add(decl);
+          }
+        }
+      }
+      if(maxSpecific.size() == 1) {
+        MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
+        m.createSuperDispatchDelegate();
+      }
+    }
+  }
+
+  refine CreateBCode public void MethodAccess.createBCode(CodeGeneration gen) {
+    if(hasPrevExpr() && prevExpr().isSuperAccess() && enclosingBodyDecl() instanceof IntroducedMethodDecl) {
+      SimpleSet maxSpecific = SimpleSet.emptySet;
+      for(Iterator iter = hostType().memberMethods(name()).iterator(); iter.hasNext(); ) {
+        MethodDecl decl = (MethodDecl)iter.next();
+        if(applicable(decl) && accessible(decl)) {
+          if(maxSpecific.isEmpty())
+            maxSpecific = maxSpecific.add(decl);
+          else {
+            if(decl.moreSpecificThan((MethodDecl)maxSpecific.iterator().next()))
+              maxSpecific = SimpleSet.emptySet.add(decl);
+            else if(!((MethodDecl)maxSpecific.iterator().next()).moreSpecificThan(decl))
+              maxSpecific = maxSpecific.add(decl);
+          }
+        }
+      }
+      if(maxSpecific.size() == 1) {
+        MethodDecl m = (MethodDecl)maxSpecific.iterator().next();
+        m = m.createSuperDispatchDelegate();
+        // invoke m virtually
+        gen.emitLoadReference(0);
+        for (int i = 0; i < getNumArg(); ++i) {
+          getArg(i).createBCode(gen);
+          getArg(i).type().emitCastTo(gen, m.getParameter(i).type()); // MethodInvocationConversion
+        }
+        m.emitInvokeMethod(gen, m.hostType());
+      }
+      else
+        throw new Error("Used super." + name() + " in introduced method, hostType:" + hostType().typeName() + ", decl().hostType: " + decl().hostType().typeName());
+    }
+    else
+      CreateBCode.MethodAccess.createBCode(gen);
+  }
+
+  protected static List ASTNode.copyParameterList(List l) {
+    List list = new List();
+    for(int i = 0; i < l.getNumChild(); i++) {
+      ParameterDeclaration p = (ParameterDeclaration)l.getChild(i);
+      list.add(new ParameterDeclaration(p.type().createQualifiedAccess(), p.name()));
+    }
+    return list;
+  }
+    
+  syn lazy MethodDecl MethodDecl.createSuperDispatchDelegate() {
+    String name = "superDispatch$" + name();
+    List statements = new List();
+    List args = new List();
+    for(int i = 0; i < getNumParameter(); i++)
+      args.add(getParameter(i).createAccess());
+    Expr e = new SuperAccess(new IdUse("super")).qualifiesAccess(new MethodAccess(name(), args));
+    if(type().isVoid())
+      statements.add(new ExprStmt(e));
+    else
+      statements.add(new ReturnStmt(e));
+    MethodDecl m = new MethodDecl(
+      new Modifiers(new List().add(new Modifier("public"))),
+      type().createQualifiedAccess(),
+      new IdDecl(name),
+      copyParameterList(getParameterList()),
+      new List(),
+      (List)getExceptionList().fullCopy(),
+      new Opt(new Block(statements))
+    );
+    hostType().addBodyDecl(m);
+    hostType().getBodyDecl(hostType().getNumBodyDecl()-1);
+    return m;
+  }
+
+  // decl().signature() -> method to call using invoke super
+  // hostType() -> type to hold the new method
+  // a new method called dispatchSuper$signature
   
   private MethodDecl IntertypeMethodDecl.createDelegateMethod(MethodDecl aspectMethod) {
     // make arguments from this and method parameters
@@ -58,7 +156,7 @@ aspect IntertypeMethodCodegeneration {
       (Modifiers)getModifiers().fullCopy(),
       type().createQualifiedAccess(),
       new IdDecl(name()),
-      (List)getParameterList().fullCopy(),
+      copyParameterList(getParameterList()),
       new List(),
       new List(),
       new Opt(

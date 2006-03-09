@@ -6,7 +6,7 @@ aspect IntertypeMethodCodegeneration {
       new ConstructorDecl(
         (Modifiers)getModifiers().fullCopy(),
         (IdDecl)getIdDecl().fullCopy(),
-        (List)getParameterList().fullCopy(),
+        copyParameterList(getParameterList()),
         (List)getExceptionList().fullCopy(),
         (Opt)getConstructorInvocationOpt().fullCopy(),
         (Block)getBlock().fullCopy()

@@ -40,6 +40,7 @@ public class JastAdd {
       return false;
     }
 
+    int numFiles = 0;
     JavaParser parser = new JavaParser();
     for(Iterator iter = files.iterator(); iter.hasNext(); ) {
       String name = (String)iter.next();
@@ -52,6 +53,7 @@ public class JastAdd {
           unit.setRelativeName(name);
           unit.setPathName(".");
           program.addCompilationUnit(unit);
+          numFiles++;
         }
         else if(name.endsWith(".ast")) {
           scanner.enterJastAdd();
@@ -70,6 +72,7 @@ public class JastAdd {
             unit.setRelativeName(name);
             unit.setPathName(".");
             program.addCompilationUnit(unit);
+            numFiles++;
           }
         }
         reader.close();
@@ -89,19 +92,19 @@ public class JastAdd {
         e.printStackTrace();
       }
     }
-    program.updateRemoteAttributeCollections(files.size());
+    program.updateRemoteAttributeCollections(numFiles);
     if(Program.verbose())
-        program.prettyPrint(files.size());
-    if(program.errorCheck(files.size())) {
+        program.prettyPrint(numFiles);
+    if(program.errorCheck(numFiles)) {
       if(Program.verbose())
-        program.prettyPrint(files.size());
+        program.prettyPrint(numFiles);
     }
     else {
-      program.generateIntertypeDecls(files.size());
+      program.generateIntertypeDecls(numFiles);
       if(Program.verbose())
-        program.prettyPrint(files.size());
-      program.updateRemoteAttributeCollections(files.size());
-      program.generateClassfile(files.size());
+        program.prettyPrint(numFiles);
+      program.updateRemoteAttributeCollections(numFiles);
+      program.generateClassfile(numFiles);
       return true;
     }
     return false;
