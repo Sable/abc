@@ -223,6 +223,20 @@ aspect ASTGrammar {
         )
       )
     );
+    if(list.getNumChild() > 0) {
+      bodyDeclList.add(
+        new ConstructorDecl(
+          new Modifiers(new List().add(new Modifier("public")).add(new Modifier("synthetic"))),
+          new IdDecl(name()),
+          new List(),
+          new List(),
+          new Opt(),
+          new Block(
+            (List)statements.fullCopy()
+          )
+        )
+      );
+    }
   
     //}
     return bodyDeclList;
